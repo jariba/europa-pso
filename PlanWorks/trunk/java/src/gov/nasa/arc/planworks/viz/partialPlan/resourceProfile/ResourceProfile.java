@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.15 2004-07-29 01:36:39 taylor Exp $
+// $Id: ResourceProfile.java,v 1.16 2004-08-23 22:07:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -148,7 +148,9 @@ public class ResourceProfile extends BasicNode {
                                           final FontMetrics levelScaleFontMetrics) {
     int maxLabelWidth = 0;
     double minMax[] = ResourceProfile.getResourceMinMax( resource);
-    int tickDelta = ((int) minMax[1] - (int) minMax[0]) / NUM_LEVEL_SCALE_TICKS;
+    int tickDelta = Math.max( ((int) minMax[1] - (int) minMax[0]) / NUM_LEVEL_SCALE_TICKS, 1);
+    // System.err.println( "getResourceMinMax: minMax[0] " + (int) minMax[0] +
+    //                     " minMax[1] " + (int) minMax[1] + " tickDelta " + tickDelta);
     int level = (int) minMax[0];
     while (level < (int) minMax[1]) {
       String tickLabel = new Double( level).toString();
@@ -165,6 +167,7 @@ public class ResourceProfile extends BasicNode {
     double minMax[] = new double[] { resource.getLevelLimitMin(), resource.getLevelLimitMax() };
     List instantList = resource.getInstantList();
     Iterator instantItr = instantList.iterator();
+    // System.err.println( "getResourceMinMax: len instantList " + instantList.size());
     while (instantItr.hasNext()) {
       PwResourceInstant instant = (PwResourceInstant) instantItr.next();
       if (instant.getLevelMax() > minMax[1]) {
@@ -174,6 +177,8 @@ public class ResourceProfile extends BasicNode {
         minMax[0] = instant.getLevelMin();
       }
     }
+    // System.err.println( "getResourceMinMax: minMax[0] " + (int) minMax[0] +
+    //                     " minMax[1] " + (int) minMax[1] );
     return minMax;
   } // end getResourceMinMax
 
@@ -209,15 +214,15 @@ public class ResourceProfile extends BasicNode {
 
     levelLimitMin = resource.getLevelLimitMin();
     levelLimitMax = resource.getLevelLimitMax();
-//     System.err.println( "resourceProfile: levelLimitMin " + levelLimitMin +
-//                         " levelLimitMax " + levelLimitMax);
+    // System.err.println( "resourceProfile: levelLimitMin " + levelLimitMin +
+    //                     " levelLimitMax " + levelLimitMax);
     double minMax[] = ResourceProfile.getResourceMinMax( resource);
     levelMin = (int) minMax[0];
     levelMax = (int) minMax[1];
     levelScaleScaling = (extentYBottom - extentYTop) / (levelMax - levelMin);
-//     System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
-//     System.err.println( " levelMin " + levelMin + " levelMax " +
-//                         levelMax + " levelScaleScaling " + levelScaleScaling);
+    // System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
+    // System.err.println( " levelMin " + levelMin + " levelMax " +
+    //                     levelMax + " levelScaleScaling " + levelScaleScaling);
 
     renderLevelScaleLinesAndTicks();
 
@@ -266,7 +271,7 @@ public class ResourceProfile extends BasicNode {
   }
 
   private void renderLevelScaleLinesAndTicks() {
-    int tickDelta = ((int) levelMax - (int) levelMin) / NUM_LEVEL_SCALE_TICKS;
+    int tickDelta = Math.max( ((int) levelMax - (int) levelMin) / NUM_LEVEL_SCALE_TICKS, 1);
 //      System.err.println( "renderLevelScale: max " + levelMax + " min " + levelMin +
 //                          " tickDelta " + tickDelta);
     int level = (int) levelMin;

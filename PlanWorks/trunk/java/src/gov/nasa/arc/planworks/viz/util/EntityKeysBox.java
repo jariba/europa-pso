@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: EntityKeysBox.java,v 1.1 2004-08-21 00:31:59 taylor Exp $
+// $Id: EntityKeysBox.java,v 1.2 2004-08-23 22:07:41 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.util;
 
@@ -132,8 +132,11 @@ public class EntityKeysBox extends JPanel implements ContentSpecElement {
     throws IllegalArgumentException {
     boolean isKeyValid = false;
     if (partialPlanView instanceof ConstraintNetworkView) {
-      if ((partialPlan.getEntity( entityKey) != null) &&
-          (partialPlan.getSlot( entityKey) == null)) {
+      if ((partialPlan.getToken( entityKey) != null) ||
+          (partialPlan.getVariable( entityKey) != null) ||
+          (partialPlan.getConstraint( entityKey) != null) ||
+          (partialPlan.getRuleInstance( entityKey) != null) ||
+          (partialPlan.getObject(entityKey) != null)) {
         isKeyValid = true;
       }
     } else if (partialPlanView instanceof NavigatorView) {

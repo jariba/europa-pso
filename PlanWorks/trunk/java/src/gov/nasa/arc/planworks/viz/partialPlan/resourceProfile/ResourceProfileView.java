@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.26 2004-08-21 00:31:56 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.27 2004-08-23 22:07:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -171,15 +171,12 @@ public class ResourceProfileView extends ResourceView  {
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
-      // System.err.println( "resource " + resource.getName());
       int width = ResourceProfile.getNodeLabelWidth( resource.getName(), this);
-      // System.err.println( "  labelWidth " + width);
       if (width > maxWidth) {
         maxWidth = width;
       }
       int tickLabelMaxWidth =
         ResourceProfile.getTickLabelMaxWidth( resource, levelScaleFontMetrics);
-      // System.err.println( "  tickLabelMaxWidth " + tickLabelMaxWidth);
       if (tickLabelMaxWidth > maxWidth) {
         maxWidth = tickLabelMaxWidth;
       }
