@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.18 2003-12-20 01:54:51 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.19 2003-12-30 01:11:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -145,7 +145,8 @@ public class TokenNetworkView extends PartialPlanView {
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
-
+    
+    addStepButtons(jGoView);
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
