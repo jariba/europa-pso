@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.2 2003-08-01 18:20:34 miatauro Exp $
+// $Id: ContentSpec.java,v 1.3 2003-08-07 01:17:15 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -41,6 +41,7 @@ public class ContentSpec {
   private Long partialPlanKey;
   private PwPartialPlan partialPlan;
   private RedrawNotifier redrawNotifier;
+
   /**
    * Creates the ContentSpec object, then makes a query to determine the size of the
    * <code>BitSet</code> that represents the current specification, and sets all of the bits
@@ -57,10 +58,7 @@ public class ContentSpec {
     this.partialPlan = partialPlan;
     this.redrawNotifier = redrawNotifier;
     this.validTokenIds = new ArrayList();
-    ResultSet validTokens = MySQLDB.queryDatabase("SELECT TokenId FROM Token WHERE PartialPlanId=".concat(partialPlanKey.toString()));
-    while(validTokens.next()) {
-      validTokenIds.add(new Integer(validTokens.getInt("TokenId")));
-    }
+    queryValidTokens();
   }
   /**
    * Sets all of the bits to true, then informs the views governed by the spec that they need to
@@ -68,21 +66,17 @@ public class ContentSpec {
    */
   public void resetSpec() throws SQLException {
     validTokenIds.clear();
+    queryValidTokens();
+    redrawNotifier.notifyRedraw();
+  }
+  private void queryValidTokens() throws SQLException {
     ResultSet validTokens = MySQLDB.queryDatabase("SELECT TokenId FROM Token WHERE PartialPlanId=".concat(partialPlanKey.toString()));
     while(validTokens.next()) {
       validTokenIds.add(new Integer(validTokens.getInt("TokenId")));
     }
-    redrawNotifier.notifyRedraw();
   }
   public List getValidTokenIds(){return validTokenIds;}
-  /**
-   * Given a key, returns true or false depending on whether or not the key is in the current
-   * spec.
-   * @param key the key being tested.
-   */
-  public boolean isInContentSpec(Integer key) {
-    return true;
-  }
+
   public void printSpec() {
     System.err.println("Allowable tokens: ");
     ListIterator tokenIdIterator = validTokenIds.listIterator();

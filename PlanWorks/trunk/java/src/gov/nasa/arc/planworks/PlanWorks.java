@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.37 2003-08-06 01:20:12 taylor Exp $
+// $Id: PlanWorks.java,v 1.38 2003-08-07 01:16:33 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -37,6 +37,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
@@ -348,7 +349,7 @@ public class PlanWorks extends MDIDesktopFrame {
           // ask user for a single sequence directory of partialPlan directories
           int returnVal = sequenceDirChooser.showDialog( this, "");
           if (returnVal == JFileChooser.APPROVE_OPTION) {
-            if (! validateSequenceDirectory( sequenceDirectory)) {
+            if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
               continue;
             } else {
               break;
@@ -411,7 +412,7 @@ public class PlanWorks extends MDIDesktopFrame {
     return project;
   } // end createProject
 
-  private boolean validateSequenceDirectory( String sequenceDirectory) {
+  /*  private boolean validateSequenceDirectory( String sequenceDirectory) {
     // System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
     //                    sequenceDirectory + "'");
     // determine sequence's partial plan directories
@@ -438,72 +439,13 @@ public class PlanWorks extends MDIDesktopFrame {
     for (int i = 0, n = partialPlanDirs.size(); i < n; i++) {
       String partialPlanPath = sequenceDirectory + System.getProperty( "file.separator") +
         partialPlanDirs.get( i);
-      fileNames = new File( partialPlanPath).list( new FilenameFilter () {
-          public boolean accept(File dir, String name) {
-            return (name.indexOf( DbConstants.PP_PARTIAL_PLAN_EXT) != -1 ||
-                    name.indexOf( DbConstants.PP_OBJECTS_EXT) != -1 ||
-                    name.indexOf( DbConstants.PP_TIMELINES_EXT) != -1 ||
-                    name.indexOf( DbConstants.PP_SLOTS_EXT) != -1 || 
-                    name.indexOf( DbConstants.PP_TOKENS_EXT) != -1 ||
-                    name.indexOf( DbConstants.PP_VARIABLES_EXT) != -1 || 
-                    name.indexOf( DbConstants.PP_PREDICATES_EXT) != -1 ||
-                    name.indexOf( DbConstants.PP_PARAMETERS_EXT) != -1 ||
-                    name.indexOf( DbConstants.PP_ENUMERATED_DOMAINS_EXT) != -1 ||
-                    name.indexOf( DbConstants.PP_INTERVAL_DOMAINS_EXT) != -1 ||
-                    name.indexOf( DbConstants.PP_CONSTRAINTS_EXT) != -1 ||
-                    name.indexOf( DbConstants.PP_TOKEN_RELATIONS_EXT) != -1 || 
-                    name.indexOf( DbConstants.PP_PARAM_VAR_TOKEN_MAP_EXT) != -1 || 
-                    name.indexOf( DbConstants.PP_CONSTRAINT_VAR_MAP_EXT) != -1);
-          }
-        });
-      if (! validateSQLInputFiles( partialPlanPath, fileNames)) {
+      fileNames = new File(partialPlanPath).list(new PwSQLFilenameFilter());
+      if(fileNames.length != DbConstants.NUMBER_OF_PP_FILES) {
         return false;
       }
     }
     return true;
-  } // end validateSequenceDirectory
-
-  private boolean validateSQLInputFiles( String partialPlanPath, String[] fileNames) {
-    // determine whether the 14 SQL-input files have the correct extentions.
-    // Using Arrays.asList( DbConstants.PARTIAL_PLAN_FILE_EXTS)
-    // gets java.lang.UnsupportedOperationException
-    //      at java.util.AbstractList.remove(AbstractList.java:167)
-    List requiredFiles = new ArrayList();
-    requiredFiles.add( DbConstants.PP_PARTIAL_PLAN_EXT);
-    requiredFiles.add( DbConstants.PP_OBJECTS_EXT);
-    requiredFiles.add( DbConstants.PP_TIMELINES_EXT);
-    requiredFiles.add( DbConstants.PP_SLOTS_EXT);
-    requiredFiles.add( DbConstants.PP_TOKENS_EXT);
-    requiredFiles.add( DbConstants.PP_VARIABLES_EXT);
-    requiredFiles.add( DbConstants.PP_PREDICATES_EXT);
-    requiredFiles.add( DbConstants.PP_PARAMETERS_EXT);
-    requiredFiles.add( DbConstants.PP_ENUMERATED_DOMAINS_EXT);
-    requiredFiles.add( DbConstants.PP_INTERVAL_DOMAINS_EXT);
-    requiredFiles.add( DbConstants.PP_CONSTRAINTS_EXT);
-    requiredFiles.add( DbConstants.PP_TOKEN_RELATIONS_EXT);
-    requiredFiles.add( DbConstants.PP_PARAM_VAR_TOKEN_MAP_EXT);
-    requiredFiles.add( DbConstants.PP_CONSTRAINT_VAR_MAP_EXT);
-    for (int i = 0, n = fileNames.length; i < n; i++) {
-      String fileName = fileNames[i];
-      int index = fileName.indexOf( ".");
-      String fileExt = fileName.substring( index);
-      // System.err.println( "fileName " + fileName);
-      for (int j = 0, m = requiredFiles.size(); j < m; j++) {
-        if (fileExt.equals( requiredFiles.get( j))) {
-          // System.err.println( "found " + requiredFiles.get( j));
-          requiredFiles.remove( j);
-          break;
-        }
-      }
-    }
-    if (requiredFiles.size() != 0) {
-      JOptionPane.showMessageDialog
-        (PlanWorks.this, requiredFiles,
-         "Partial Plan Files Not Found", JOptionPane.ERROR_MESSAGE);
-      return false;
-    }
-    return true;
-  } // end validateSQLInputFiles
+    } // end validateSequenceDirectory*/
 
   private PwProject openProject() {
     PwProject project = null;
@@ -644,7 +586,7 @@ public class PlanWorks extends MDIDesktopFrame {
         // ask user for a single sequence directory of partialPlan directories
         int returnVal = sequenceDirChooser.showDialog( this, "");
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-          if (! validateSequenceDirectory( sequenceDirectory)) {
+          if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
             continue;
           } else {
             break;
