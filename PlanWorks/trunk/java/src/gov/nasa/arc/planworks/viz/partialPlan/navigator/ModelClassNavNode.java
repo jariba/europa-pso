@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.3 2004-01-16 19:05:37 taylor Exp $
+// $Id: ModelClassNavNode.java,v 1.4 2004-01-20 19:57:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -226,9 +226,10 @@ public class ModelClassNavNode extends ExtendedBasicNode {
     StringBuffer tip = new StringBuffer( "<html> ");
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( timelineLinkCount));
+      tip.append( "<br>");
     }
     if (! hasSingleTimeline) {
-      tip.append( "<br> Mouse-L: ").append( operation);
+      tip.append( "Mouse-L: ").append( operation);
     }
     return tip.append("</html>").toString();
   } // end getToolTipText
