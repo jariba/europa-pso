@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.9 2003-06-26 19:47:03 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.10 2003-06-26 20:09:18 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -68,6 +68,7 @@ public interface PwPlanningSequence {
 
   public abstract List listPartialPlans();
 
+  public abstract List listPartialPlanNames();
   /**
    * <code>getPartialPlan</code>
    *
