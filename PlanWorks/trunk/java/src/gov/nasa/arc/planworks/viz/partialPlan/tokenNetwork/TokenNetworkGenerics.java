@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkGenerics.java,v 1.2 2004-08-26 20:51:27 taylor Exp $
+// $Id: TokenNetworkGenerics.java,v 1.3 2004-09-28 01:40:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -61,18 +61,18 @@ public final class TokenNetworkGenerics {
                                            final TokenNetworkView tokenNetworkView,
                                            final boolean isDebugPrint) {
     boolean areNodesChanged = false;
-    // System.err.println( "parent(s) " + tokNetNode.getParentEntityList());
-    // System.err.println( "children " + tokNetNode.getComponentEntityList());
+    // System.err.println( "addEntityTokNetNodes entityNode " + tokNetNode.getId());
     Iterator parentEntityItr = tokNetNode.getParentEntityList().iterator();
     while (parentEntityItr.hasNext()) {
       PwEntity parentEntity = (PwEntity) parentEntityItr.next();
+      // System.err.println( "   addEntityTokNetNodes parentEntity " + parentEntity.getId());
       tokenNetworkView.addEntityTokNetNode( parentEntity, isDebugPrint);
       areNodesChanged = true;
     }
     Iterator childEntityItr = tokNetNode.getComponentEntityList().iterator();
     while (childEntityItr.hasNext()) {
       PwEntity childEntity = (PwEntity) childEntityItr.next();
-      // System.err.println( "addEntityTokNetNodes childEntity " + childEntity);
+      // System.err.println( "   addEntityTokNetNodes childEntity " + childEntity.getId());
       tokenNetworkView.addEntityTokNetNode( childEntity, isDebugPrint);
       areNodesChanged = true;
     }
