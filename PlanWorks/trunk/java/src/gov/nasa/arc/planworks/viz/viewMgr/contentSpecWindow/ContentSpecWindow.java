@@ -4,20 +4,27 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.4 2003-06-16 18:51:08 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.5 2003-06-19 19:54:55 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
+import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.viewMgr.ContentSpec;
@@ -41,6 +48,7 @@ public class ContentSpecWindow extends JPanel {
 
   protected ContentSpec contentSpec;
 
+  private static boolean queryTestExists;
   /**
    * <code>ContentSpecWindow
    * Constructs the entire content specification window.
@@ -51,6 +59,7 @@ public class ContentSpecWindow extends JPanel {
    */
   public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec) {
     this.contentSpec = contentSpec;
+    queryTestExists = false;
 
     GridBagLayout gridBag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
@@ -98,7 +107,51 @@ public class ContentSpecWindow extends JPanel {
     c.gridx++;
     gridBag.setConstraints(resetButton, c);
     add(resetButton);
+
+    getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Q, 
+                                             InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK, false),
+                      "shiftCtrlQPressed");
+    getActionMap().put("shiftCtrlQPressed", new QueryTestAction(contentSpec));
   }
+
+  private static class QueryTestAction extends AbstractAction {
+    private ContentSpec contentSpec;
+    public QueryTestAction(ContentSpec contentSpec) {
+      super("shiftCtrlQPressed");
+      this.contentSpec = contentSpec;
+    }
+    public void actionPerformed(ActionEvent ae) {
+      System.err.println("shift ctrl q pressed");
+      new QueryTestWindow(contentSpec);
+    }
+  }
+
+  private static class QueryTestWindow extends JFrame {
+    protected ContentSpec contentSpec;
+    protected JTextField queryText;
+    public QueryTestWindow(ContentSpec contentSpec) {
+      super("Mike's Handy-Dandy Query Test Window");
+      this.contentSpec = contentSpec;
+      Container contentPane = getContentPane();
+      queryText = new JTextField(50);
+      contentPane.add(queryText, BorderLayout.EAST);
+      contentPane.add(new JButton(new QueryButtonAction(this)), BorderLayout.WEST);
+      setLocation(300, 300);
+      pack();
+      setVisible(true);
+    }
+    class QueryButtonAction extends AbstractAction {
+      private QueryTestWindow testWindow;
+      public QueryButtonAction(QueryTestWindow testWindow) {
+        super("Execute Query");
+        this.testWindow = testWindow;
+      }
+      public void actionPerformed(ActionEvent ae) {
+        testWindow.contentSpec.executeQuery(testWindow.queryText.getText().trim());
+      }
+    }
+  }
+
   /**
    * <code>SpecButtonListener</code> -
    *                       ActionListener->SpecButtonListener
@@ -186,6 +239,7 @@ public class ContentSpecWindow extends JPanel {
         specWindow.contentSpec.printSpec();
       }
       else if(ae.getActionCommand().equals("Reset Spec")) {
+        
         specWindow.contentSpec.resetSpec();
         specWindow.constraintGroup.reset();
         specWindow.timeIntervalGroup.reset();

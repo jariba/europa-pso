@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineViewTest.java,v 1.13 2003-06-19 00:31:20 taylor Exp $
+// $Id: TimelineViewTest.java,v 1.14 2003-06-19 19:54:09 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.views.test;
 
@@ -15,11 +15,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import javax.swing.JButton;
+import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-// import javax.swing.JTextField;
+import javax.swing.JTextField;
 import javax.swing.MenuElement;
 
 import junit.extensions.jfcunit.*;
@@ -39,7 +41,17 @@ import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
-
+//<<<<<<< TimelineViewTest.java
+import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.GroupBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.KeyEntryBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.LogicComboBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.NegationCheckBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineGroupBox;
+//=======
+//>>>>>>> 1.13
 
 /**
  * <code>TimelineViewTest</code> - JFCUnit test case for timeline view, along with
@@ -85,13 +97,14 @@ public class TimelineViewTest extends JFCTestCase{
     }
     planWorks = new PlanWorks( PlanWorks.buildConstantMenus());
     PlanWorks.setPlanWorks( planWorks);
-
-    if (testType.equals( "create") || testType.equals( "open")) {
-      // CreateProjectTestCase
-      // OpenProjectTestCase
-    } else {
+    /*
+      if (testType.equals( "create") || testType.equals( "open") || testType.equals("contentSpec")) {
+      CreateProjectTestCase
+      OpenProjectTestCase
+      } else {
       throw new Exception( "setup: testType " + testType + " not handled");
-    }
+      }
+    */
     // Give a little extra time for the painting/construction
     Thread.currentThread().sleep(500);
     flushAWT();
@@ -231,7 +244,7 @@ public class TimelineViewTest extends JFCTestCase{
       button = (JButton) TestHelper.findComponent(JButton.class, planWorksDialog, 0);
       assertNotNull("Could not find \"Enter\" button", button);
       helper.enterClickAndLeave(new MouseEventData(this, button));
-    } else if (testType.equals( "open")) {
+    } else if (testType.equals( "open") || testType.equals("contentSpec")) {
       List dialogs = new ArrayList();
       while (dialogs.size() == 0) {
         // System.err.println( "wait for open dialog");
@@ -392,12 +405,124 @@ public class TimelineViewTest extends JFCTestCase{
   } // end exitPlanWorks
 
 
+  private void confirmTimelineSpec(ContentSpecWindow contentSpecWindow,
+                                   TimelineView timelineView) throws Exception {
+    JButton activateSpecButton = null;
+    JButton resetSpecButton = null;
+    GroupBox timelineGroup = null;
+    for(int i = 0; i < contentSpecWindow.getComponentCount(); i++) {
+      if(contentSpecWindow.getComponent(i) instanceof JButton) {
+        if(((JButton)contentSpecWindow.getComponent(i)).getText().equals("Apply Spec")) {
+          activateSpecButton = (JButton) contentSpecWindow.getComponent(i);
+        }
+        else if(((JButton)contentSpecWindow.getComponent(i)).getText().equals("Reset Spec")) {
+          System.err.println("found reset spec button");
+          resetSpecButton = (JButton) contentSpecWindow.getComponent(i);
+        }
+      }
+      else if(contentSpecWindow.getComponent(i) instanceof TimelineGroupBox) {
+        timelineGroup = (GroupBox) contentSpecWindow.getComponent(i);
+      }
+    }
+    assertNotNull("Failed to get \"Apply Spec\" button.", activateSpecButton);
+    assertNotNull("Failed to get \"Reset Spec\" button.", resetSpecButton);
+    assertNotNull("Failed to get Timline GroupBox.", timelineGroup);
+    JTextField keyBox = null;
+    NegationCheckBox negationBox = null;
+    for(int i = 0; i < timelineGroup.getComponentCount(); i++) {
+      if(timelineGroup.getComponent(i) instanceof TimelineBox) {
+        TimelineBox timelineBox = (TimelineBox) timelineGroup.getComponent(i);
+        for(int j = 0; j < timelineBox.getComponentCount(); j++) {
+          if(timelineBox.getComponent(j) instanceof LogicComboBox) {
+            if(!((LogicComboBox)timelineBox.getComponent(j)).isEnabled()) {
+              System.err.println("Found first timeline box!");
+              for(int k = 0; k < timelineBox.getComponentCount(); k++) {
+                System.err.println(timelineBox.getComponentCount() + ":" + k);
+                if(timelineBox.getComponent(k) instanceof NegationCheckBox) {
+                  negationBox = (NegationCheckBox) timelineBox.getComponent(k);
+                }
+                else if(timelineBox.getComponent(k) instanceof JTextField) {
+                  keyBox = (JTextField) timelineBox.getComponent(k);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    assertNotNull("Failed to get key text field.", keyBox);
+    assertNotNull("Failed to get negation check box.", negationBox);
+    keyBox.setText("K3");
+    helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
+    List timelineNodes;
+    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
+      Thread.sleep(50);
+    }
+    //Thread.sleep(2000);
+    assertTrue("Content spec not specing correctly: Too many timeline nodes.",
+               timelineNodes.size() == 1);
+    TimelineNode timeline = (TimelineNode) timelineNodes.toArray()[0];
+    assertTrue("Content spec specified incorrect timeline.", 
+               timeline.getTimelineName().indexOf("Monkey1 : LOCATION_SV") != -1);
+    List slotNodes = timeline.getSlotNodeList();
+    ListIterator slotNodeIterator = slotNodes.listIterator();
+    while(slotNodeIterator.hasNext()) {
+      SlotNode slotNode = (SlotNode) slotNodeIterator.next();
+      String slotName = slotNode.getPredicateName();
+      if(slotName.indexOf("At") == -1 && slotName.indexOf("Going") == -1) {
+        assertTrue("Invalid slot name for LOCATION_SV timeline.", false);
+      }
+    }
+    negationBox.setSelected(true);
+    helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
+    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
+      Thread.sleep(50);
+    }
+    assertTrue("Content spec not specing correctly: incorrect number of timelines.",
+               timelineNodes.size() == 2);
+    Object [] temp = timelineNodes.toArray();
+    TimelineNode [] timelines = new TimelineNode[temp.length];
+    System.arraycopy(temp, 0, timelines, 0, temp.length);
+    for(int i = 0; i < timelines.length; i++) {
+      slotNodeIterator = timelines[i].getSlotNodeList().listIterator();
+      assertTrue("Invalid timeline name.", timelines[i].getTimelineName().indexOf("Monkey1 : ALTITUDE_SV") != -1 || timelines[i].getTimelineName().indexOf("Monkey1 : BANANA_SV") != -1);
+      if(timelines[i].getTimelineName().indexOf("Monkey1 : ALTITUDE_SV") != -1) {
+        while(slotNodeIterator.hasNext()) {
+          SlotNode slotNode =  (SlotNode) slotNodeIterator.next();
+          String slotName = slotNode.getPredicateName();
+          if(slotName.indexOf("LOW") == -1 && slotName.indexOf("HIGH") == -1 &&
+             slotName.indexOf("CLIMBING") == -1 && slotName.indexOf("CLIMBING_DOWN") == -1) {
+            assertTrue("Invalid slot name for ALTITUDE_SV timeline: ".concat(slotName), false);
+          }
+        }
+      }
+      else if(timelines[i].getTimelineName().indexOf("Monkey1 : BANANA_SV") != -1) {
+        while(slotNodeIterator.hasNext()) {
+          SlotNode slotNode = (SlotNode) slotNodeIterator.next();
+          String slotName = slotNode.getPredicateName();
+          if(slotName.indexOf("NOT_HAVE_BANANA") == -1 && 
+             slotName.indexOf("GRABBING_BANANA") == -1 && 
+             slotName.indexOf("HAVE_BANANA") == -1) {
+            assertTrue("Invalid slot name for BANANA_SV", false);
+          }
+        }
+      }
+    }
+    helper.enterClickAndLeave(new MouseEventData(this, resetSpecButton));
+    while(timelineView.getTimelineNodeList() == null) {
+      Thread.sleep(50);
+    }
+    validateTimelines(timelineView);
+    assertTrue("Reset spec didn't reset text box", keyBox.getText().trim().equals(""));
+    assertTrue("Reset spec didn't reset check box", !negationBox.isSelected());
+  }
+
   /**
    * <code>testOpenProject</code>
    *
    * @exception Exception if an error occurs
    */
-  public void testOpenProject() throws Exception {
+  /*  public void testOpenProject() throws Exception {
     System.err.println( "\n\nOpenProjectTestCase\n\n");
     awtSleep();
     Set windows = helper.getWindows();
@@ -440,17 +565,86 @@ public class TimelineViewTest extends JFCTestCase{
 //     }
     exitPlanWorks( menuBar);
   } // end testOpenProject
+  */
 
+  public void testOpenAndContentSpec() throws Exception {
+    System.err.println( "\n\nContentSpecTestCase\n\n");
+    awtSleep();
+    Set windows = helper.getWindows();
+    assertEquals("PlanWorks window failed to open", 1, windows.size());
+    frame = (JFrame)(windows.toArray())[0];
+    assertNotNull("Failed to get frame from set", frame);
+    JMenuBar menuBar = frame.getJMenuBar();
+    assertNotNull("Failed to get menu bar from frame", menuBar);
+    JMenu projectMenu = null;
+    MenuElement [] elements = menuBar.getSubElements();
+    for(int i = 0; i < elements.length; i++) {
+      if(((JMenu)elements[i]).getText().equals("Project")) {
+        projectMenu = (JMenu) elements[i];
+      }
+    }
+    assertNotNull("Failed to get \"Project\" menu", projectMenu);
+    assertTrue("Failed to get \"Project\" menu.", projectMenu.getText().equals("Project"));
+    JMenuItem openItem = null;
+    for(int i = 0; i < projectMenu.getItemCount(); i++) {
+      if(projectMenu.getItem(i).getText().equals("Open ...")) {
+        openItem = projectMenu.getItem(i);
+      }
+    }
+    assertNotNull("Failed to get \"Open ...\" item.", openItem);
+    assertTrue("Failed to get \"Open ...\" item.", openItem.getText().equals("Open ..."));
+    helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
+    helper.enterClickAndLeave(new MouseEventData(this, openItem));
 
+    String [] seqAndPlanNames = selectTimelineView();
+
+    //<<<<<<< TimelineViewTest.java
+    TimelineView timelineView = getTimelineView( seqAndPlanNames);
+    Container contentPane = frame.getContentPane();
+    JDesktopPane desktopPane = null;
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof JDesktopPane) {
+        desktopPane = (JDesktopPane) contentPane.getComponent(i);
+      }
+    }
+    
+    assertNotNull("Failed to get Desktop Pane.", desktopPane);
+    JInternalFrame [] internalFrames = desktopPane.getAllFrames();
+    JInternalFrame contentSpecFrame = null;
+    for(int i = 0; i < internalFrames.length; i++) {
+      if(internalFrames[i].getTitle().indexOf("Content") != -1) {
+        contentSpecFrame = internalFrames[i];
+        break;
+      }
+    }
+    assertNotNull("Failed to get Content Specification frame.", contentSpecFrame);
+    validateTimelines( timelineView);
+    contentSpecFrame.setSelected(true);
+    contentPane = contentSpecFrame.getContentPane();
+    ContentSpecWindow contentSpecWindow = null;
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof ContentSpecWindow) {
+        contentSpecWindow = (ContentSpecWindow) contentPane.getComponent(i);
+        break;
+      }
+    }
+    assertNotNull("Failed to get Content Specification window.");
+    confirmTimelineSpec(contentSpecWindow, timelineView);
+    exitPlanWorks( menuBar);
+  }
+  
+  //=======
   /**
    * <code>suite</code> - create the test cases for the TestRunner
    *
    * @return - <code>TestSuite</code> - 
    */
+  //>>>>>>> 1.13
   public static TestSuite suite() {
     TestSuite testSuite = new TestSuite();
     testSuite.addTest( new TimelineViewTest( "testCreateProject", "create"));
-    testSuite.addTest( new TimelineViewTest( "testOpenProject", "open"));
+    //testSuite.addTest( new TimelineViewTest( "testOpenProject", "open"));
+    testSuite.addTest( new TimelineViewTest("testOpenAndContentSpec", "contentSpec"));
     return testSuite;
   }
 
