@@ -4,11 +4,15 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.53 2003-09-18 20:48:42 taylor Exp $
+// $Id: PlanWorks.java,v 1.54 2003-09-19 22:16:05 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
 import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.DisplayMode;
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsDevice;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
@@ -63,8 +67,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class PlanWorks extends MDIDesktopFrame {
 
-  private static final int DESKTOP_FRAME_WIDTH = 900;
-  private static final int DESKTOP_FRAME_HEIGHT = 850;
+    private static final int DESKTOP_FRAME_WIDTH;// = 900;
+    private static final int DESKTOP_FRAME_HEIGHT;// = 750;
   private static final int FRAME_X_LOCATION = 100;
   private static final int FRAME_Y_LOCATION = 125;
   private static final int INTERNAL_FRAME_X_DELTA = 100;
@@ -79,17 +83,28 @@ public class PlanWorks extends MDIDesktopFrame {
   private static final String CREATE = "create";
   private static final String OPEN = "open";
 
+    static {
+      GraphicsDevice [] devices = 
+	  GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+      DESKTOP_FRAME_WIDTH = 
+	  devices[0].getDisplayMode().getWidth() - 100;
+      DESKTOP_FRAME_HEIGHT =
+	  devices[0].getDisplayMode().getHeight() - 50;
+      INTERNAL_FRAME_WIDTH = (int)(DESKTOP_FRAME_WIDTH * 0.75);
+      INTERNAL_FRAME_HEIGHT = (int)(DESKTOP_FRAME_HEIGHT * 0.75);
+    }
+
   /**
    * constant <code>INTERNAL_FRAME_WIDTH</code>
    *
    */
-  public static final int INTERNAL_FRAME_WIDTH = 400;
+    public static final int INTERNAL_FRAME_WIDTH;// = 400;
 
   /**
    * constant <code>INTERNAL_FRAME_HEIGHT</code>
    *
    */
-  public static final int INTERNAL_FRAME_HEIGHT = 350;
+    public static final int INTERNAL_FRAME_HEIGHT;// = 350;
   /**
    * variable <code>name</code> - make it accessible to JFCUnit tests
    *
@@ -1219,6 +1234,13 @@ class SequenceDirectoryFilter extends FileFilter {
     // System.err.println( "osType " + osType);
     planWorksRoot = System.getProperty( "planworks.root");
 
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice [] gs = ge.getScreenDevices();
+    for(int i = 0; i < gs.length; i++) {
+	DisplayMode dm = gs[i].getDisplayMode();
+	System.err.println(dm.getWidth() + " " + dm.getHeight());
+    }
+    
     planWorks = new PlanWorks( buildConstantMenus());
 
   } // end main
