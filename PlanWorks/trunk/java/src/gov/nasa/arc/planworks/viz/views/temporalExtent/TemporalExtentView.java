@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.1 2003-07-25 15:54:57 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.2 2003-07-30 00:38:42 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -69,6 +69,7 @@ public class TemporalExtentView extends VizView {
   private long startTimeMSecs;
   private ViewSet viewSet;
   private JGoView jGoView;
+  private String viewName;
   private JGoDocument jGoDocument;
   private JGoSelection jGoSelection;
   // temporalNodeList & tmpTemporalNodeList used by JFCUnit test case
@@ -104,8 +105,9 @@ public class TemporalExtentView extends VizView {
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
-    this.temporalNodeList = new ArrayList();
-    this.tmpTemporalNodeList = new ArrayList();
+    viewName = "temporalExtentView";
+    temporalNodeList = new ArrayList();
+    tmpTemporalNodeList = new ArrayList();
 
     startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
@@ -169,7 +171,7 @@ public class TemporalExtentView extends VizView {
     freeTokenList = partialPlan.getFreeTokenList();
     // setVisible( true | false) depending on ContentSpec
     setNodesVisible();
-    expandViewFrame();
+    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
 
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
@@ -190,16 +192,8 @@ public class TemporalExtentView extends VizView {
   public void redraw() {
     // setVisible(true | false) depending on keys
     setNodesVisible();
-    expandViewFrame();
+    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
   } // end redraw
-
-
-  private void expandViewFrame() {
-    MDIInternalFrame viewFrame = viewSet.openTemporalExtentView( 0L);
-    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
-                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
-  } // end expandViewFrame
-
 
   /**
    * <code>getJGoDocument</code>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.7 2003-07-16 01:15:43 taylor Exp $
+// $Id: TokenNode.java,v 1.8 2003-07-30 00:38:41 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,6 +13,8 @@
 package gov.nasa.arc.planworks.viz.nodes;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -52,6 +54,7 @@ public class TokenNode extends BasicNode {
   private VizView view;
   private String predicateName;
   private String nodeLabel;
+  private List variableNodeList; // element VariableNode
 
   /**
    * <code>TokenNode</code> - constructor 
@@ -77,8 +80,9 @@ public class TokenNode extends BasicNode {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
       nodeLabel = predicateName;
     }
-    // System.err.println( "TokenNode: " + nodeLabel);
-
+    
+    System.err.println( "TokenNode: " + nodeLabel);
+    variableNodeList = new ArrayList();
     configure( tokenLocation);
   } // end constructor
 
@@ -101,6 +105,15 @@ public class TokenNode extends BasicNode {
     getPort().setVisible( false);
   } // end configure
 
+  /**
+   * <code>equals</code>
+   *
+   * @param node - <code>TokenNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean equals( TokenNode node) {
+    return (this.getToken().getKey().equals( node.getToken().getKey()));
+  }
 
   /**
    * <code>getToken</code>
@@ -139,4 +152,23 @@ public class TokenNode extends BasicNode {
   } // end getToolTipText
 
 
+  /**
+   * <code>getVariableNodeList</code>
+   *
+   * @return - <code>List</code> - of VariableNode
+   */
+  public List getVariableNodeList() {
+    return variableNodeList;
+  }
+
+  /**
+   * <code>addVariableNode</code>
+   *
+   * @param variableNode - <code>VariableNode</code> - 
+   */
+  public void addVariableNode( VariableNode variableNode) {
+    variableNodeList.add( variableNode);
+  }
+
+  
 } // end class TokenNode

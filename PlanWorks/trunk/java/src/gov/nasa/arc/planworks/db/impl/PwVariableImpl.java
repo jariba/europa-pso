@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.9 2003-07-30 00:15:30 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.10 2003-07-30 00:38:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -73,6 +73,15 @@ public class PwVariableImpl implements PwVariable {
   }
 
   /**
+   * <code>getType</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getType() {
+    return this.type;
+  }
+
+  /**
    * <code>getDomain</code>
    *
    * @return - <code>PwDomain</code> - 
@@ -108,11 +117,17 @@ public class PwVariableImpl implements PwVariable {
     return retval;
   }
 
+  /**
+   * <code>getTokenList</code>
+   *
+   * @return - <code>List</code> - of PwToken
+   */
   public List getTokenList() {
     List retval = new ArrayList(tokenIdList.size());
     for(int i = 0; i < tokenIdList.size(); i++) {
-      retval.add(partialPlan.getConstraint((Integer) tokenIdList.get(i)));
+      retval.add(partialPlan.getToken((Integer) tokenIdList.get(i)));
     }
     return retval;
   }
+
 } // end class PwVariableImpl
