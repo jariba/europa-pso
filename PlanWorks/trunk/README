@@ -4,16 +4,25 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.36 2003-09-30 19:18:53 taylor Exp $
+# $Id: README,v 1.37 2003-10-08 19:10:27 taylor Exp $
 #
 
 SUMMARY
 =======
+Each sequence in the "Planning Sequence" menu now includes the
+"Sequence Steps" view, which is a histogram of the partial plan
+data base size.
 
+The Token Network View now is freshly layed out after applying a
+Content Spec filter.
 
-Completed several change requests and bug fixes.
+In all the partial plan views, Mouse-Right on the background offers
+"Find Token by Key" which allows the user to enter a token's key and
+have the view scroll to the token's location.
 
 o  GNATS PRs and CRs completed:
+   #2107: Issues with display of Token Network and other windows.
+   #2108: Changes in Token Network View.
 
 
 CVS CHECKOUT
@@ -48,6 +57,16 @@ Set environment varibles:
 
   o EUROPA_HOME - path to the root Europa directory
     e.g. setenv EUROPA_HOME ~/NewPlan
+
+
+OPTIONAL SETTINGS
+=================
+The default value for the maximum memory required by the Java Virtual Machine
+is 200 mega-bytes.  It is posible to set it to a much higher value, but only
+to this one particular value:
+
+> setenv JVM_GC_MAX 975
+
 
 BUILDING THE PARTIAL PLAN WRITER
 ================================

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.5 2003-10-02 23:24:22 taylor Exp $
+// $Id: TimelineView.java,v 1.6 2003-10-08 19:10:29 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -56,6 +56,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.AskTokenByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -642,6 +643,9 @@ public class TimelineView extends PartialPlanView {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem tokenByKeyItem = new JMenuItem( "Find Token by Key");
+    createTokenByKeyItem( tokenByKeyItem);
+    mouseRightPopup.add( tokenByKeyItem);
     JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
@@ -656,59 +660,83 @@ public class TimelineView extends PartialPlanView {
           PwToken activeToken =
             ((PartialPlanViewSet) TimelineView.this.getViewSet()).getActiveToken();
           if (activeToken != null) {
-            boolean isTokenFound = false;
-            Iterator timelineNodeListItr = timelineNodeList.iterator();
-            foundIt:
-            while (timelineNodeListItr.hasNext()) {
-              TimelineNode timelineNode = (TimelineNode) timelineNodeListItr.next();
-              Iterator slotNodeListItr = timelineNode.getSlotNodeList().iterator();
-              while (slotNodeListItr.hasNext()) {
-                SlotNode slotNode = (SlotNode) slotNodeListItr.next();
-                List tokenList = slotNode.getSlot().getTokenList();
-                if (tokenList == null) { // empty slot
-                  continue;
-                }
-                Iterator tokenItr = tokenList.iterator();
-                while (tokenItr.hasNext()) {
-                  PwToken token = (PwToken) tokenItr.next();
-                  if (token.getId().equals( activeToken.getId())) {
-                    System.err.println( "TimelineView snapToActiveToken: " +
-                                        activeToken.getPredicate().getName());                   
-                    NodeGenerics.focusViewOnNode( slotNode, jGoView);
-                  // secondary nodes do not apply here
-                    isTokenFound = true;
-                    break foundIt;
-                  }
-                }
-              }
-            }
-            if (! isTokenFound) {
-              Iterator freeTokenNodeItr = freeTokenNodeList.iterator();
-              while (freeTokenNodeItr.hasNext()) {
-                TokenNode freeTokenNode = (TokenNode) freeTokenNodeItr.next();
-                if (freeTokenNode.getToken().getId().equals( activeToken.getId())) {
-                  System.err.println( "TimelineView snapToActiveToken: " +
-                                      activeToken.getPredicate().getName());                   
-                  NodeGenerics.focusViewOnNode( freeTokenNode, jGoView);
-                  // secondary nodes do not apply here
-                  isTokenFound = true;
-                  break;
-                }
-              }
-            }
-            if (! isTokenFound) {
-              String message = "active token '" + activeToken.getPredicate().getName() +
-                "' not found in TimelineView";
-              JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
-                                             "Active Token Not Found",
-                                             JOptionPane.ERROR_MESSAGE);
-              System.err.println( message);
-              System.exit( 1);
-            }
+            boolean isByKey = false;
+            findAndSelectToken( activeToken, isByKey);
           }
         }
       });
   } // end createActiveTokenItem
+
+
+  private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
+    tokenByKeyItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          AskTokenByKey tokenByKeyDialog = new AskTokenByKey( partialPlan);
+          Integer tokenKey = tokenByKeyDialog.getTokenKey();
+          if (tokenKey != null) {
+            // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());
+            PwToken tokenToFind = partialPlan.getToken( tokenKey);
+            boolean isByKey = true;
+            findAndSelectToken( tokenToFind, isByKey);
+          }
+        }
+      });
+  } // end createTokenByKeyItem
+
+
+  private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
+    boolean isTokenFound = false;
+    Iterator timelineNodeListItr = timelineNodeList.iterator();
+    foundIt:
+    while (timelineNodeListItr.hasNext()) {
+      TimelineNode timelineNode = (TimelineNode) timelineNodeListItr.next();
+      Iterator slotNodeListItr = timelineNode.getSlotNodeList().iterator();
+      while (slotNodeListItr.hasNext()) {
+        SlotNode slotNode = (SlotNode) slotNodeListItr.next();
+        List tokenList = slotNode.getSlot().getTokenList();
+        if (tokenList == null) { // empty slot
+          continue;
+        }
+        Iterator tokenItr = tokenList.iterator();
+        while (tokenItr.hasNext()) {
+          PwToken token = (PwToken) tokenItr.next();
+          if (token.getId().equals( tokenToFind.getId())) {
+            System.err.println( "TimelineView found token: " +
+                                tokenToFind.getPredicate().getName() +
+                                " (key=" + tokenToFind.getId().toString() + ")");
+            NodeGenerics.focusViewOnNode( slotNode, jGoView);
+            // secondary nodes do not apply here
+            isTokenFound = true;
+            break foundIt;
+          }
+        }
+      }
+    }
+    if (! isTokenFound) {
+      Iterator freeTokenNodeItr = freeTokenNodeList.iterator();
+      while (freeTokenNodeItr.hasNext()) {
+        TokenNode freeTokenNode = (TokenNode) freeTokenNodeItr.next();
+        if (freeTokenNode.getToken().getId().equals( tokenToFind.getId())) {
+          System.err.println( "TimelineView found token: " +
+                              tokenToFind.getPredicate().getName() +                   
+                              " (key=" + tokenToFind.getId().toString() + ")");
+          NodeGenerics.focusViewOnNode( freeTokenNode, jGoView);
+          // secondary nodes do not apply here
+          isTokenFound = true;
+          break;
+        }
+      }
+    }
+    if (! isTokenFound) {
+      String message = "Token " + tokenToFind.getPredicate().getName() +
+        " (key=" + tokenToFind.getId().toString() + ") not found.";
+      JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                     "Token Not Found in TimelineView",
+                                     JOptionPane.ERROR_MESSAGE);
+      System.err.println( message);
+      System.exit( 1);
+    }
+  } // end findAndSelectToken
 
 
 

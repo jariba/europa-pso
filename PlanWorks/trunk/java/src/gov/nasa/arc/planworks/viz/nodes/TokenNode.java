@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.25 2003-09-30 21:14:55 taylor Exp $
+// $Id: TokenNode.java,v 1.26 2003-10-08 19:10:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -190,11 +190,12 @@ public class TokenNode extends BasicNode {
     JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          ((PartialPlanViewSet) partialPlanView.getViewSet()).
-            setActiveToken( TokenNode.this.getToken());
+          PwToken activeToken = TokenNode.this.getToken();
+          ((PartialPlanViewSet) partialPlanView.getViewSet()).setActiveToken( activeToken);
           ((PartialPlanViewSet) partialPlanView.getViewSet()).setSecondaryTokens( null);
           System.err.println( "TokenNode setActiveToken: " +
-                              TokenNode.this.getToken().getPredicate().getName());
+                              activeToken.getPredicate().getName() +
+                              " (key=" + activeToken.getId().toString() + ")");
         }
       });
     mouseRightPopup.add( activeTokenItem);

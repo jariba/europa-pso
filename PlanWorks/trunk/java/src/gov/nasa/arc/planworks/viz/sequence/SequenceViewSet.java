@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.4 2003-10-04 01:16:12 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.5 2003-10-08 19:10:29 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.viz.sequence;
 
 import java.awt.Container;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.util.SequenceContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
@@ -50,8 +51,10 @@ public class SequenceViewSet extends ViewSet {
 
     this.contentSpecWindow.setSize( 300, 100); // until contentSpec created
 
-    int delta = ((ViewManager) remover).getContentSpecWindowCnt() *
-      ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4;
+    int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
+                                 ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+                          (int) ((PlanWorks.planWorks.getSize().getHeight() -
+                                  ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
     this.contentSpecWindow.setLocation( delta, delta);
     this.contentSpecWindow.setVisible(true);
   }

@@ -1,13 +1,18 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.16 2003-10-02 23:14:35 miatauro Exp $ -->
+<!-- $Id: planWorks.xml,v 1.17 2003-10-08 19:10:27 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
-<target name="launch" depends="totalbuild">
+
+<property name="default_gcMax" value="200"/>
+
+<target name="launch" depends="totalbuild,chk_jvm_gcMax_1,chk_jvm_gcMax_2">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
-	<property name="arg_gcMax" value="975"/>
+	<!-- property name="arg_gcMax" value="975"/ -->
 	<property name="name.application" value="PlanWorks Plan Visualization"/>
 	<property name="boolean.isMaxScreen" value="false"/>
 	<property environment="env"/>
+
+        <echo message="JVM arg_gcMax ${arg_gcMax}"/>
 
 	<path id="planworks.jars">
 		<pathelement path="${planworks.root}/java/classes"/>
@@ -93,4 +98,29 @@ value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.t
 <target name="totalbuild" description="conditionally build class files">
 	<ant dir="./java"/>
 </target>
+
+  <target name="chk_jvm_gcMax">
+    <!-- not able to check for arbitrary integer, so for now, require 975 
+         to be the only overrride value -->
+    <condition property="jvm.override_gcMax">
+        <equals arg1="${env.JVM_GC_MAX}" arg2="975"/>
+        <!--  this does not work because of self-evaluation, and the absence
+              of env var JVM_GC_MAX produces the value of ${env.JVM_GC_MAX} -->
+        <!-- equals arg1="${env.JVM_GC_MAX}" arg2="${env.JVM_GC_MAX}"/ -->
+    </condition>
+    <!-- echo message="env.JVM_GC_MAX ${env.JVM_GC_MAX}"/ -->
+  </target>
+
+  <target name="chk_jvm_gcMax_1" depends="chk_jvm_gcMax" if="jvm.override_gcMax">
+    <property name="arg_gcMax" value="${env.JVM_GC_MAX}"/>
+    <!-- echo message="jvm.override_gcMax ${jvm.override_gcMax}"/ -->
+  </target>
+
+  <target name="chk_jvm_gcMax_2" depends="chk_jvm_gcMax" unless="jvm.override_gcMax">
+    <property name="arg_gcMax" value="${default_gcMax}"/>
+    <!-- echo message="jvm.override_gcMax ${jvm.override_gcMax}"/ -->
+  </target>
+
+
+
 </project>
