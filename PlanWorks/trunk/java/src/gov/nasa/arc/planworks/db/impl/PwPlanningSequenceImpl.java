@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.46 2003-10-18 01:27:54 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.47 2003-10-23 17:56:23 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -64,6 +64,10 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   //private List partialPlanNames; // List of String
   private List contentSpec;
   private Map partialPlans; // partialPlanName Map of PwPartialPlan
+
+  //these should go away
+  private long timeSpentLoadingFiles;
+  private long timeSpentAnalyzingDatabase;
 
   /**
    * <code>PwPlanningSequenceImpl</code> - constructor - for CreateProject
@@ -150,6 +154,9 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     }
     HashMap temp = new HashMap();
     File [] planDirs = sequenceDir.listFiles();
+    long t1 = 0;
+    timeSpentLoadingFiles = 0L;
+    timeSpentAnalyzingDatabase = 0L;
     for(int i = 0; i < planDirs.length; i++) {
       if(planDirs[i].isDirectory()) {
         String [] names = planDirs[i].list(new PwSQLFilenameFilter());
@@ -157,10 +164,18 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
           //temp.put(planDirs[i].getName(), new Integer(0));
           partialPlans.put(planDirs[i].getName(), null);
           stepCount++;
+          long start = System.currentTimeMillis();
           loadFiles(planDirs[i]);
+          t1 += System.currentTimeMillis() - start;
         }
       }
     }
+    System.err.println("Loading files took " + t1 + "ms");
+    System.err.println("Spent " + timeSpentLoadingFiles + "ms loading files.");
+    t1 = System.currentTimeMillis();
+    MySQLDB.analyzeDatabase();
+    timeSpentAnalyzingDatabase += System.currentTimeMillis() - t1;
+    System.err.println("Spent " + timeSpentAnalyzingDatabase + "ms analyzing the database");
     loadTransactions();
     //partialPlanNames.addAll(temp.keySet());
     //this.partialPlans = new ArrayList(partialPlanNames.size());
@@ -185,10 +200,14 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       if(tableName.equals("Constraint")) {
         tableName = "VConstraint";
       }
+      long t1 = System.currentTimeMillis();
       MySQLDB.loadFile(planDir.getAbsolutePath().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
+      timeSpentLoadingFiles += System.currentTimeMillis() - t1;
       //MySQLDB.loadFile(url.toString().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
     }
-    MySQLDB.analyzeDatabase();
+    //long t1 = System.currentTimeMillis();
+    //MySQLDB.analyzeDatabase();
+    //timeSpentAnalyzingDatabase += System.currentTimeMillis() - t1;
   }
 
   private void loadTransactions() {
