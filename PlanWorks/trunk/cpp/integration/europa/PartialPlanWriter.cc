@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.31 2004-02-05 23:21:12 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.32 2004-02-12 23:00:28 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -318,7 +318,7 @@ void PartialPlanWriter::write(void) {
     for(int i = timelineId; i < timelineId + timelineNames.getSize(); i++) {
       objectOut << i << ",";
     }
-    objectOut << TAB << SNULL << endl;
+    objectOut << TAB << SNULL << TAB << SNULL << endl;
 
     ListIterator<AttributeId> timelineNameIterator = ListIterator<AttributeId>(timelineNames);
     while(!timelineNameIterator.isDone()) {
