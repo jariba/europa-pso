@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.4 2003-08-06 01:20:15 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.5 2003-08-06 17:11:28 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -173,7 +173,6 @@ public class ConstraintNetworkView extends VizView {
     ConstraintNetworkLayout layout =
       new ConstraintNetworkLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
-
     computeExpandedViewFrame();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
 

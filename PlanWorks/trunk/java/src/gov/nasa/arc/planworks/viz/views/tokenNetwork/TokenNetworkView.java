@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.15 2003-08-06 01:20:16 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.16 2003-08-06 17:11:48 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.views.tokenNetwork;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -30,6 +31,7 @@ import javax.swing.SwingUtilities;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoView;
+import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwObject;
@@ -159,7 +161,13 @@ public class TokenNetworkView extends VizView {
 
     TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
+    /*long t1 = System.currentTimeMillis();
+    TreeRingLayout layout = new TreeRingLayout(linkList, getWidth(), getHeight());
+    //layout.ensureAllPositive();
+    //layout.position(getWidth(), getHeight());
+    System.err.println("Ring layout took " + (System.currentTimeMillis() - t1));*/
     computeExpandedViewFrame();
+    System.err.println(maxViewWidth + " " + maxViewHeight);
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
 
     // print out info for created nodes
@@ -181,16 +189,28 @@ public class TokenNetworkView extends VizView {
 
 
   private void computeExpandedViewFrame() {
+    int minx = Integer.MAX_VALUE;
+    int miny = Integer.MAX_VALUE;
+    int maxx = Integer.MIN_VALUE;
+    int maxy = Integer.MIN_VALUE;
     Iterator tokenNodeIterator = nodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-      int maxWidth = (int) tokenNode.getLocation().getX() +
+      /*int maxWidth = (int) tokenNode.getLocation().getX() +
         (int) tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;
       maxViewWidth = Math.max( maxWidth, maxViewWidth);
       int maxHeight = (int) tokenNode.getLocation().getY() +
         ViewConstants.TIMELINE_VIEW_Y_INIT;
-      maxViewHeight = Math.max( maxHeight, maxViewHeight);
+        maxViewHeight = Math.max( maxHeight, maxViewHeight);*/
+      int x = (int)tokenNode.getLocation().getX();
+      int y = (int)tokenNode.getLocation().getY();
+      minx = Math.min(x, minx);
+      miny = Math.min(y, miny);
+      maxx = Math.max(x, maxx);
+      maxy = Math.max(y, maxy);
     } 
+    maxViewWidth = maxx - minx + 300;
+    maxViewHeight = maxy - miny + 300;
   } // end computeExpandedViewFrame
 
   /**
@@ -381,9 +401,11 @@ public class TokenNetworkView extends VizView {
         x += freeTokenNode.getSize().getWidth() * 0.5;
         freeTokenNode.setLocation( x, y);
       }
-      tmpNodeList.add( freeTokenNode);
-      jGoDocument.addObjectAtTail( freeTokenNode);
-      x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+      if(!tmpNodeList.contains(freeTokenNode)) {
+        tmpNodeList.add( freeTokenNode);
+        jGoDocument.addObjectAtTail( freeTokenNode);
+        x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+      }
     }
     createTokenParentChildRelationships();
     nodeList = tmpNodeList;
@@ -405,9 +427,12 @@ public class TokenNetworkView extends VizView {
           x += tokenNode.getSize().getWidth() * 0.5;
           tokenNode.setLocation( x, y);
         }
-        tmpNodeList.add( tokenNode);
-        jGoDocument.addObjectAtTail( tokenNode);
-        x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        //MIKE
+        if(!tmpNodeList.contains(tokenNode)) {
+          tmpNodeList.add( tokenNode);
+          jGoDocument.addObjectAtTail( tokenNode);
+          x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        }
       }
     }
   } // end createTokenNodes

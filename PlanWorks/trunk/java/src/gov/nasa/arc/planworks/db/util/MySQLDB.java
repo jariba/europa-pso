@@ -313,7 +313,7 @@ public class MySQLDB {
     try {
       ResultSet partialPlan = 
         queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
-      partialPlan.first();
+      partialPlan.last();
       retval = new Long(partialPlan.getLong("PartialPlanId"));
     }
     catch(SQLException sqle) {
