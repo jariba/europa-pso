@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineViewTest.java,v 1.15 2003-06-30 21:52:47 taylor Exp $
+// $Id: TimelineViewTest.java,v 1.16 2003-07-02 21:46:10 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.views.test;
 
@@ -664,8 +664,6 @@ public class TimelineViewTest extends JFCTestCase{
     }
     PlanWorks.osName = System.getProperty("os.name");
     PlanWorks.planWorksRoot = System.getProperty( "planworks.root");
-    PlanWorks.userCollectionName = System.getProperty( "file.separator") +
-      System.getProperty( "user");
 
     TestRunner.run( suite());
   }
