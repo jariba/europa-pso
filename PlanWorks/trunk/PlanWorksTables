@@ -434,11 +434,12 @@ CREATE TABLE VConstraint (
 CREATE TABLE Variable (
   VariableId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
+  TokenId int(10) default '0',
   DomainType enum('EnumeratedDomain','IntervalDomain') NOT NULL default 'IntervalDomain',
   DomainId int(10) unsigned NOT NULL default '-1',
   VariableType enum('START_VAR','END_VAR','DURATION_VAR','OBJECT_VAR','PARAMETER_VAR','REJECT_VAR','GLOBAL_VAR') NOT NULL,
   PRIMARY KEY  (PartialPlanId,VariableId),
-  INDEX (VariableId), INDEX (DomainId), INDEX (VariableType)
+  INDEX (VariableId), INDEX (DomainId), INDEX (VariableType), INDEX (TokenId)
 ) TYPE=MyISAM;
 
 --
