@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.45 2003-09-28 00:19:29 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.46 2003-09-29 23:52:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -92,8 +92,9 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     predicateMap = new HashMap();
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
-    this.seqName = url.substring(url.lastIndexOf(System.getProperty("file.separator")) + 1).
-      concat(System.getProperty("file.separator")).concat(planName);
+    // PlanWorks.renderPartialPlanView invokes setSeqName() to set this.seqName
+//     this.seqName = url.substring(url.lastIndexOf(System.getProperty("file.separator")) + 1).
+//       concat(System.getProperty("file.separator")).concat(planName);    
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
     contentSpec = new ArrayList();
     this.name = planName;
@@ -817,6 +818,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
   }
 
+  // implement ViewableObject
+
   public void setContentSpec(List spec) {
     contentSpec.clear();
     contentSpec.addAll(spec);
@@ -829,5 +832,18 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   public String getName() {
     return seqName;
   }
+
+  // end implement ViewableObject
+
+  /**
+   * <code>setSeqName</code> - sequenceDir/stepDir
+   *      PlanWorks.renderPartialPlanView invokes this method 
+   *
+   * @param seqName - <code>String</code> - 
+   */
+  public void setSeqName( String seqName) {
+    this.seqName = seqName;
+  }
+
 
 } // end class PwPartialPlanImpl

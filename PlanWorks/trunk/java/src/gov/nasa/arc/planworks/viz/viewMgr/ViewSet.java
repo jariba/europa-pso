@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.35 2003-09-28 00:19:31 taylor Exp $
+// $Id: ViewSet.java,v 1.36 2003-09-29 23:52:12 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JButton;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.mdi.MDIFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
@@ -94,8 +95,6 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     try {
       viewClass = Class.forName(viewClassName);
     } catch (ClassNotFoundException excp) {
-      System.err.println( "ViewSet.openView Class.forName failed for viewClassName " +
-                          viewClassName);
       excp.printStackTrace();
       System.exit(1);
     }
@@ -301,8 +300,6 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     try {
       return views.containsKey(Class.forName(viewClassName));
     } catch (ClassNotFoundException excp) {
-      System.err.println( "ViewSet.openView Class.forName failed for viewClassName " +
-                          viewClassName);
       excp.printStackTrace();
       System.exit(1);
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.2 2003-09-28 00:19:30 taylor Exp $
+// $Id: PartialPlanContentSpec.java,v 1.3 2003-09-29 23:52:11 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -81,11 +81,11 @@ public class PartialPlanContentSpec implements ContentSpec {
     queryValidTokens();
     currentSpec = partialPlan.getContentSpec();
 
-    currentSpec.add( null);
-    currentSpec.add( null);
-    currentSpec.add( null);
-    currentSpec.add( new Boolean( false));
-    currentSpec.add( new Integer( 0));
+    currentSpec.add( null); // timeline
+    currentSpec.add( null); // predicate
+    currentSpec.add( null); // time interval
+    currentSpec.add( new Boolean( false)); // merge
+    currentSpec.add( new Integer( ALL)); // tokenTypes
 
 //     if (currentSpec.size() != 0) {
 //       applySpec((List)currentSpec.get(0), (List)currentSpec.get(1), (List)currentSpec.get(2),
