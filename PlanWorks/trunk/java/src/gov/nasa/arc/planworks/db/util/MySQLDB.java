@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.101 2004-05-12 00:14:35 miatauro Exp $
+// $Id: MySQLDB.java,v 1.102 2004-05-14 17:46:40 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -363,6 +363,19 @@ public class MySQLDB {
     return retval;
   }
 
+	synchronized public static Long getSequenceId(final String url) {
+		Long retval = null;
+		try {
+			ResultSet rows = queryDatabase("SELECT SequenceId FROM Sequence WHERE SequenceURL='".concat(url).concat("'"));
+			rows.last();
+			retval = new Long(rows.getLong("SequenceId"));
+		}
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		}
+		return retval;
+	}
+
   synchronized public static void setSequenceUrl(final Long id, final String url) {
       updateDatabase("UPDATE Sequence SET SequenceURL='".concat(url).concat("' WHERE SequenceId=").concat(id.toString()));
   }
@@ -456,6 +469,7 @@ public class MySQLDB {
       return new Long(newId.getLong("SequenceId"));
     }
     catch(SQLException sqle) {
+			sqle.printStackTrace();
     }
     return null;
   }
@@ -1579,32 +1593,6 @@ public class MySQLDB {
     return retval;
   }
   
-//   synchronized public static List queryConstraintTransactionNames() {
-//     return queryTransactionNames("'CONSTRAINT%'");
-//   }
-
-//   synchronized public static List queryTokenTransactionNames() {
-//     return queryTransactionNames("'TOKEN%'");
-//   }
-
-//   synchronized public static List queryVariableTransactionNames() {
-//     return queryTransactionNames("'VAR%'");
-//   }
-
-//   synchronized public static List queryTransactionNames(String type) {
-//     List retval = new ArrayList();
-//     try {
-//       ResultSet names = 
-//         queryDatabase("SELECT DISTINCT TransactionName FROM Transaction WHERE TransactionName LIKE " + type);
-//       while(names.next()) {
-//         retval.add(names.getString("TransactionName"));
-//       }
-//     }
-//     catch(SQLException sqle) {
-//     }
-//     return retval;
-//   }
-
 	synchronized public static List queryTransactionNameList() {
 		List retval = new ArrayList();
 		try {
@@ -1665,6 +1653,23 @@ public class MySQLDB {
 			ioe.printStackTrace();
 		}
 	}
+
+// 	public static List queryTests(String projectName) {
+// 		List retval = new ArrayList();
+// 		try {
+// 			ResultSet testSet = queryDatabase("SELECT Tests FROM Project WHERE ProjectName='".concat(projectName).concat("'"));
+// 			Blob blob = testSet.getBlob("Tests");
+// 			String tests = new String(blob.getBytes(1, (int) blob.length()));
+// 			StringTokenizer strTok = new StringTokenizer(tests, DbConstants.SEQ_COL_SEP);
+// 			while(strTok.hasMoreTokens()) {
+// 				retval.add(strTok.nextToken());
+// 			}
+// 		}
+// 		catch(SQLException sqle) {
+// 			sqle.printStackTrace();
+// 		}
+// 		return retval;
+// 	}
 }
 
 class ObjectIdComparator implements Comparator {
