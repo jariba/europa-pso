@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.8 2003-08-29 22:08:59 taylor Exp $
+// $Id: TemporalNode.java,v 1.9 2003-09-02 00:52:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -72,6 +72,7 @@ public class TemporalNode extends BasicNode implements Extent {
   private boolean isEarliestStartMinusInf;
   private boolean isLatestStartPlusInf;
   private boolean isEarliestEndMinusInf;
+  private boolean isEarliestEndPlusInf;
   private boolean isLatestEndPlusInf;
 
   private String predicateName;
@@ -114,9 +115,13 @@ public class TemporalNode extends BasicNode implements Extent {
     }
     earliestEndTime = endTimeIntervalDomain.getLowerBoundInt();
     isEarliestEndMinusInf = false;
+    isEarliestEndPlusInf = false;
     if (earliestEndTime == PwDomain.MINUS_INFINITY_INT) {
       isEarliestEndMinusInf = true;
       earliestEndTime = view.getTimeScaleStart();
+    } else if (earliestEndTime == PwDomain.PLUS_INFINITY_INT) {
+      isEarliestEndPlusInf = true;
+      earliestEndTime = view.getTimeScaleEnd();
     }
     latestEndTime = endTimeIntervalDomain.getUpperBoundInt();
     isLatestEndPlusInf = false;
@@ -206,6 +211,8 @@ public class TemporalNode extends BasicNode implements Extent {
     yLoc = scaleY() + ViewConstants.TEMPORAL_NODE_Y_END_OFFSET;
     if (isEarliestEndMinusInf) {
       renderMinusInfinityMark( earliestEndTime, yLoc);
+    } else if (isEarliestEndPlusInf) {
+      renderPlusInfinityMark( earliestEndTime, yLoc);
     } else {
       renderEndMark( earliestEndTime, yLoc);
     }

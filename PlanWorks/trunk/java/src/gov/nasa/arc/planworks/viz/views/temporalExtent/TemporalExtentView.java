@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.9 2003-08-29 22:08:59 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.10 2003-09-02 00:52:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -312,7 +312,7 @@ public class TemporalExtentView extends VizView {
           PwToken token = slot.getBaseToken();
           slotCnt++;
           PwDomain[] intervalArray =
-            SlotNode.getStartEndIntervals( slot, previousToken, isLastSlot,
+            SlotNode.getStartEndIntervals( this, slot, previousToken, isLastSlot,
                                            alwaysReturnEnd);
           collectTimeScaleMetrics( intervalArray[0], intervalArray[1]);
           previousToken = token;
@@ -341,6 +341,7 @@ public class TemporalExtentView extends VizView {
       }
       int latestTime = startTimeIntervalDomain.getUpperBoundInt();
       if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
+          (latestTime != PwDomain.MINUS_INFINITY_INT) &&
           (latestTime < timeScaleStart)) {
         timeScaleStart = latestTime;
       }
@@ -356,6 +357,7 @@ public class TemporalExtentView extends VizView {
       }
       int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
       if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
+          (earliestTime != PwDomain.PLUS_INFINITY_INT) &&
           (earliestTime > timeScaleEnd)) {
         timeScaleEnd = earliestTime;
       }
@@ -367,21 +369,35 @@ public class TemporalExtentView extends VizView {
     timeScale = ((float) (endXLoc - startXLoc)) / ((float) (timeScaleEnd - timeScaleStart));
     System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
                         " endXLoc " + endXLoc);
+    System.err.println( "Temporal Extent View time scale: " + timeScaleStart + " " +
+                        timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
     int timeScaleRange = timeScaleEnd - timeScaleStart;
     timeDelta = 5;
+    int maxIterationCnt = 25, iterationCnt = 0;
     while ((timeDelta * maxSlots) < timeScaleRange) {
       timeDelta *= 2;
 //       System.err.println( "range " + timeScaleRange + " maxSlots " +
 //                           maxSlots + " timeDelta " + timeDelta);
+      iterationCnt++;
+      if (iterationCnt > maxIterationCnt) {
+        String message = "Range (" + timeScaleRange + ") execeeds functionality";
+        JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                       "Temporal Extent View Exception",
+                                       JOptionPane.ERROR_MESSAGE);
+        System.err.println( message);
+        System.exit( 1);
+      }
     }
     tickTime = 0;
     xOrigin = startXLoc;
-    while (timeScaleStart < tickTime) {
-      tickTime -= timeDelta;
-      xOrigin += (int) scaleTime( timeDelta); 
+    int scaleStart = timeScaleStart;
+    if ((scaleStart < 0) && ((scaleStart % timeDelta) == 0)) {
+      scaleStart -= 1;
     }
-    System.err.println( "Temporal Extent View time scale: " + timeScaleStart + " " +
-                        timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
+    while (scaleStart < tickTime) {
+      tickTime -= timeDelta;
+      xOrigin += (int) timeScale * timeDelta; 
+    }
   } // end computeTimeScaleMetrics
 
   private void collectFreeTokenMetrics() {
@@ -426,13 +442,14 @@ public class TemporalExtentView extends VizView {
   } // end collectFreeTokenMetrics
 
   private void createTimeScale() {
-    int xLoc = startXLoc;
+    // int xLoc = startXLoc;
+    int xLoc = (int) scaleTime( tickTime);
     int yLoc = startYLoc + ((maxCellRow + 1) * ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2;
     int scaleWidth = 2, tickHeight = ViewConstants.TIMELINE_VIEW_Y_INIT / 2;
     JGoStroke timeScaleRuler = new JGoStroke();
     timeScaleRuler.setPen( new JGoPen( JGoPen.SOLID, scaleWidth, ColorMap.getColor( "black")));
     timeScaleRuler.setDraggable( false);
-    timeScaleRuler.setResizable(false);
+    timeScaleRuler.setResizable( false);
     while (tickTime < timeScaleEnd) {
       timeScaleRuler.addPoint( xLoc, yLoc);
       timeScaleRuler.addPoint( xLoc, yLoc + tickHeight);
@@ -493,9 +510,8 @@ public class TemporalExtentView extends VizView {
           PwSlot slot = (PwSlot) slotIterator.next();
           boolean isLastSlot = (! slotIterator.hasNext());
           PwToken token = slot.getBaseToken();
-          // this handles empty slots
           PwDomain[] intervalArray =
-            SlotNode.getStartEndIntervals( slot, previousToken, isLastSlot,
+            SlotNode.getStartEndIntervals( this, slot, previousToken, isLastSlot,
                                            alwaysReturnEnd);
           PwDomain startTimeIntervalDomain = intervalArray[0];
           PwDomain endTimeIntervalDomain = intervalArray[1];

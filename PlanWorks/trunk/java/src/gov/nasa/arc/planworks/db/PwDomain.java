@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomain.java,v 1.4 2003-08-26 01:37:10 taylor Exp $
+// $Id: PwDomain.java,v 1.5 2003-09-02 00:52:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -57,11 +57,18 @@ public interface PwDomain {
     (PwDomain) new PwIntervalDomainImpl( "INTEGER_SORT", "0", "0");
 
   /**
-   * constant <code>INFINITY_INTERVAL_DOMAIN</code> - PwIntervalDomain
+   * constant <code>MINUS_INFINITY_INTERVAL_DOMAIN</code> - PwIntervalDomain
    *
    */
-  public static final PwDomain INFINITY_INTERVAL_DOMAIN =
-    (PwDomain) new PwIntervalDomainImpl( "INTEGER_SORT", "-Infinity", "Infinity");
+  public static final PwDomain MINUS_INFINITY_INTERVAL_DOMAIN =
+    (PwDomain) new PwIntervalDomainImpl( "INTEGER_SORT", "-Infinity", "-Infinity");
+
+  /**
+   * constant <code>PLUS_INFINITY_INTERVAL_DOMAIN</code> - PwIntervalDomain
+   *
+   */
+  public static final PwDomain PLUS_INFINITY_INTERVAL_DOMAIN =
+    (PwDomain) new PwIntervalDomainImpl( "INTEGER_SORT", "Infinity", "Infinity");
 
   /**
    * <code>getLowerBound</code>

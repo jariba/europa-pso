@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.36 2003-08-26 19:38:01 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.37 2003-09-02 00:52:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,6 +26,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
@@ -350,6 +351,84 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     return (PwVariable) variableMap.get(id);
   } // end getVariable
 
+
+  /**
+   * <code>getStartHorizonInterval</code>
+   *
+   * @return - <code>PwDomain</code> - 
+   */
+  public PwDomain getStartHorizonInterval() {
+    int startHorizon = PwDomain.PLUS_INFINITY_INT;
+    Iterator objectIterator = this.getObjectList().iterator();
+    while (objectIterator.hasNext()) {
+      PwObject object = (PwObject) objectIterator.next();
+      Iterator timelineIterator = object.getTimelineList().iterator();
+      while (timelineIterator.hasNext()) {
+        PwTimeline timeline = (PwTimeline) timelineIterator.next();
+        List slotList = timeline.getSlotList();
+        Iterator slotIterator = timeline.getSlotList().iterator();
+        while (slotIterator.hasNext()) {
+          PwSlot slot = (PwSlot) slotIterator.next();
+          PwToken baseToken = slot.getBaseToken();
+          if (baseToken != null) { // 1st non-empty slot
+            int earliestTime = baseToken.getStartVariable().getDomain().getLowerBoundInt();
+            if (earliestTime < startHorizon) {
+              startHorizon = earliestTime;
+            }
+            break;
+          }
+        }
+      }
+    }
+    // System.err.println( "getStartHorizonInterval: timelines startHorizon " + startHorizon);
+    String startHorizonString = "";
+    if (startHorizon == PwDomain.MINUS_INFINITY_INT) {
+      startHorizonString = PwDomain.MINUS_INFINITY;
+    } else {
+      startHorizonString = String.valueOf( startHorizon);
+    }
+    return (PwDomain) new PwIntervalDomainImpl( "INTEGER_SORT", startHorizonString,
+                                                startHorizonString);
+  } // end getStartHorizonInterval
+
+  /**
+   * <code>getEndHorizonInterval</code>
+   *
+   * @return - <code>PwDomain</code> - 
+   */
+  public PwDomain getEndHorizonInterval() {
+    int endHorizon = PwDomain.MINUS_INFINITY_INT;
+    Iterator objectIterator = this.getObjectList().iterator();
+    while (objectIterator.hasNext()) {
+      PwObject object = (PwObject) objectIterator.next();
+      Iterator timelineIterator = object.getTimelineList().iterator();
+      while (timelineIterator.hasNext()) {
+        PwTimeline timeline = (PwTimeline) timelineIterator.next();
+        List slotList = timeline.getSlotList();
+        int numSlots = slotList.size();
+        for (int i = numSlots - 1; i > 0; i--) {
+          PwSlot slot = (PwSlot) slotList.get( i);
+          PwToken baseToken = slot.getBaseToken();
+          if (baseToken != null) { // first non-empty slot
+            int latestTime = baseToken.getEndVariable().getDomain().getUpperBoundInt();
+            if (latestTime > endHorizon) {
+              endHorizon = latestTime;
+            }
+            break;
+          }
+        }
+      }
+    }
+    // System.err.println( "getEndHorizonInterval: endHorizon " + endHorizon);
+    String endHorizonString = "";
+    if (endHorizon == PwDomain.PLUS_INFINITY_INT) {
+      endHorizonString = PwDomain.PLUS_INFINITY;
+    } else {
+      endHorizonString = String.valueOf( endHorizon);
+    }
+    return (PwDomain) new PwIntervalDomainImpl( "INTEGER_SORT", endHorizonString,
+                                                endHorizonString);
+  } // end getEndHorizonInterval
 
   // END IMPLEMENT PwPartialPlan INTERFACE 
     
