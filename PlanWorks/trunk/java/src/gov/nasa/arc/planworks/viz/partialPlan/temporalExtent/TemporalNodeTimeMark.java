@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNodeTimeMark.java,v 1.3 2004-05-08 01:44:16 taylor Exp $
+// $Id: TemporalNodeTimeMark.java,v 1.4 2004-07-12 18:16:30 miatauro Exp $
 //
 // PlanWorks
 //
@@ -66,9 +66,11 @@ public class TemporalNodeTimeMark extends JGoPolygon {
    */
   public String getToolTipText() {
     if (time == DbConstants.PLUS_INFINITY_INT) {
-      return "Infinity";
+      //return "Infinity";
+      return DbConstants.PLUS_INFINITY_UNIC;
     } else if (time == DbConstants.MINUS_INFINITY_INT) {
-      return "-Infinity";
+      //return "-Infinity";
+      return DbConstants.MINUS_INFINITY_UNIC;
     } else {
       return String.valueOf( time);
     }

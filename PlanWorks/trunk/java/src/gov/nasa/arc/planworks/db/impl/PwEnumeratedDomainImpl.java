@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomainImpl.java,v 1.9 2003-10-18 00:01:07 miatauro Exp $
+// $Id: PwEnumeratedDomainImpl.java,v 1.10 2004-07-12 18:13:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -134,12 +135,16 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
     } else {
       enumBuf.append( "[");
     }
-    for (int i = 0; i < enumeration.size() - 1; i++) {
-      enumBuf.append( (String) enumeration.get(i));
-      enumBuf.append( ", ");
-    }
-    if (enumeration.size() > 0) {
-      enumBuf.append( (String) enumeration.get(enumeration.size() - 1));
+   
+    for(Iterator it = enumeration.iterator(); it.hasNext();) {
+      String elem = (String) it.next();
+      if(elem.equals(DbConstants.PLUS_INFINITY))
+        elem = DbConstants.PLUS_INFINITY_UNIC;
+      else if(elem.equals(DbConstants.MINUS_INFINITY))
+        elem = DbConstants.MINUS_INFINITY_UNIC;
+      enumBuf.append(elem);
+      if(it.hasNext())
+        enumBuf.append(", ");
     }
     if (isSingleton) {
       enumBuf.append( "}");
