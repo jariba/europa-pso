@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.14 2004-08-25 18:40:57 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.15 2004-09-03 00:35:30 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -14,6 +14,7 @@
 
 package gov.nasa.arc.planworks;
 
+import java.io.File;
 import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
@@ -73,7 +74,10 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
     boolean isSequenceAdded = false;
     while (! isSequenceAdded) {
       try {
-        List selectedAndInvalidUrls = PlanWorks.getPlanWorks().askSequenceDirectory();
+        File workingDir =
+          new File( PlanWorks.getPlanWorks().getCurrentProject().getWorkingDir());
+        List selectedAndInvalidUrls =
+          PlanWorks.getPlanWorks().askSequenceDirectory( workingDir);
         List selectedSequenceUrls = (List) selectedAndInvalidUrls.get( 0);
         List invalidSequenceUrls = (List) selectedAndInvalidUrls.get( 1);
 

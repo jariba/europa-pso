@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.52 2004-08-26 22:57:26 miatauro Exp $ -->
+<!-- $Id: build.xml,v 1.53 2004-09-03 00:35:13 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
   </description>
 
   <property environment="env"/>
-  <property name="name.application" value="PlanWorks (PW_M_16): Plan Visualization"/>
+  <property name="name.application" value="PlanWorks (pre-PW_M_17): Plan Visualization"/>
   <property name="boolean.isMaxScreen" value="false"/>
   <property name="planworks.root" value="${basedir}"/>
   <property name="planworks.config" value="${basedir}/planWorks.config"/>
+  <property name="projects.config" value="${basedir}/projects.config"/>
   <property name="mysql.basedir" value="${planworks.root}/lib/mysql"/>
   <property name="mysql.datadir" value="${mysql.basedir}/data"/>
   <property name="mysql.log" value="${mysql.basedir}/log/mysql.log"/>
@@ -35,9 +36,6 @@
   <property name="planworks.test.data.dir" value="${planworks.root}/java/src/gov/nasa/arc/planworks/test/data"/>
   <property name="europa.home" value="${env.EUROPA_HOME}"/>
   <property name="testLang.home" value="${planworks.root}/java/lib/testLang"/>
-  <!-- specify values for the next two properties to have PlanWorks have a default project -->
-  <property name="default.project.name" value=""/>
-  <property name="default.sequence.dir" value=""/>
   <property name="model.rule.delimiter" value="{}"/>
 
   <target name="testLangTest" depends="chk_ostype_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2,compile,cleanDb">
@@ -130,15 +128,13 @@
 
   <target name="chk_linux_1">
     <condition property="os.linux">
-      <equals arg1="${env.OSTYPE}" arg2="linux"/>
+      <or>
+        <equals arg1="${env.OSTYPE}" arg2="linux"/>
+        <equals arg1="${env.OSTYPE}" arg2="linux-gnu"/>
+        <equals arg1="${env.OSTYPE}" arg2="gnu-linux"/>
+      </or>
     </condition>
-    <condition property="os.linux">
-      <equals arg1="${env.OSTYPE}" arg2="linux-gnu"/>
-    </condition>
-    <condition property="os.linux">
-      <equals arg1="${env.OSTYPE}" arg2="gnu-linux"/>
-    </condition>
-    <echo message="os.linux ${os.linux}"/>
+    <!-- echo message="os.linux ${os.linux}"/ -->
   </target>
 
   <target name="chk_linux_2" depends="chk_linux_1" if="os.linux">
@@ -152,7 +148,7 @@
     <condition property="os.cygwin">
       <equals arg1="${env.OSTYPE}" arg2="cygwin"/>
     </condition>
-    <!-- echo message="os.macosx ${os.macosx}"/ -->
+    <!-- echo message="os.cygwin ${os.cygwin}"/ -->
   </target>
 
   <target name="chk_cygwin_2" depends="chk_cygwin_1" if="os.cygwin">

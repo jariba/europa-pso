@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.14 2004-08-23 22:07:40 taylor Exp $
+// $Id: PWTestHelper.java,v 1.15 2004-09-03 00:35:36 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -53,6 +53,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.SequenceViewMenuItem;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -221,15 +222,15 @@ public abstract class PWTestHelper {
     throws Exception {
     // create new DirectoryChooser because using the same instance for several
     // createProjects results in getSelectedFiles returning null
-    planWorks.createDirectoryChooser();
+    DirectoryChooser dirChooser =
+      planWorks.createSequenceDirChooser( new File( sequenceDirectory));
     guiTest.flushAWT(); guiTest.awtSleep();
     System.err.println( "createProject sequenceDirectory " + sequenceDirectory);
     for (int i = 0, n = sequenceFileArray.length; i < n; i++) {
       System.err.println( "  i " + i + " sequenceFileArray " + sequenceFileArray[i].getName());
     }
-    planWorks.getSequenceDirChooser().setCurrentDirectory( new File( sequenceDirectory));
     guiTest.flushAWT(); guiTest.awtSleep();
-    planWorks.getSequenceDirChooser().setSelectedFiles( sequenceFileArray);
+    dirChooser.setSelectedFiles( sequenceFileArray);
     guiTest.flushAWT(); guiTest.awtSleep();
 
     JMenuItem createItem =
@@ -389,14 +390,14 @@ public abstract class PWTestHelper {
     throws Exception {
     // create new DirectoryChooser because using the same instance for several
     // createProject's results in getSelectedFiles returning null
-    planWorks.createDirectoryChooser();
+    DirectoryChooser dirChooser =
+      planWorks.createSequenceDirChooser( new File( sequenceDirectory));
     guiTest.flushAWT(); guiTest.awtSleep();
 //     System.err.println( "createProject sequenceDirectory " + sequenceDirectory);
 //     for (int i = 0, n = sequenceFileArray.length; i < n; i++) {
 //       System.err.println( "  i " + i + " sequenceFileArray " + sequenceFileArray[i].getName());
 //     }
-    planWorks.getSequenceDirChooser().setCurrentDirectory( new File( sequenceDirectory));
-    planWorks.getSequenceDirChooser().setSelectedFiles( sequenceFileArray);
+    dirChooser.setSelectedFiles( sequenceFileArray);
 
     JMenuItem addSeqItem =
       PWTestHelper.findMenuItem( PlanWorks.PROJECT_MENU, PlanWorks.ADDSEQ_MENU_ITEM,

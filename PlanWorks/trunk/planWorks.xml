@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.35 2004-08-26 22:57:26 miatauro Exp $ -->
+<!-- $Id: planWorks.xml,v 1.36 2004-09-03 00:35:13 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -33,6 +33,7 @@
             <jvmarg value="-Xmx${arg_gcMax}m"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
             <jvmarg value="-Dplanworks.config=${planworks.config}"/>
+            <jvmarg value="-Dprojects.config=${projects.config}"/>
             <jvmarg value="-Duser=${env.USER}"/>
             <jvmarg value="-Dos.type=${env.OSTYPE}"/>
 	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
@@ -42,8 +43,6 @@
 	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
 	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
 	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
-            <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
-            <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
 	    <jvmarg value="-Dsplash.image=${splash.image}"/>
 	    <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/>
             <jvmarg value="-Dant.target.test=false"/>
@@ -82,6 +81,7 @@
             <jvmarg value="-Xmx${arg_gcMax}m"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
             <jvmarg value="-Dplanworks.config=${planworks.config}"/>
+            <jvmarg value="-Dprojects.config=${projects.config}"/>
             <jvmarg value="-Duser=${env.USER}"/>
             <jvmarg value="-Dos.type=${env.OSTYPE}"/>
 	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
@@ -91,8 +91,6 @@
 	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
 	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
 	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
-            <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
-            <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
 	    <jvmarg value="-Dsplash.image=${splash.image}"/>
 	    <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/>
             <jvmarg value="-Dant.target.test=false"/>
@@ -135,6 +133,7 @@ value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.t
 	    <jvmarg value="-Xrunhprof:cpu=old,file=planWorksProf.txt"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
             <jvmarg value="-Dplanworks.config=${planworks.config}"/>
+            <jvmarg value="-Dprojects.config=${projects.config}"/>
             <jvmarg value="-Duser=${env.USER}"/>
             <jvmarg value="-Dos.type=${env.OSTYPE}"/>
 	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
@@ -144,8 +143,6 @@ value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.t
 	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
 	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
 	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
-            <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
-            <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
             <jvmarg value="-Dant.target.test=false"/>
             <arg value="${name.application}"/>
             <arg value="${boolean.isMaxScreen}"/>

@@ -342,6 +342,8 @@ public abstract class ViewConstants {
   public static final String SEQUENCE_QUERY_TITLE = "SequenceQuery";
   public static final String SEQUENCE_QUERY_RESULTS_TITLE = "QueryResults";
 
+  public static final String PLANNER_CONTROLLER_TITLE = "PlannerController";
+
   static {
 
     SEQUENCE_VIEW_LIST = new ArrayList();

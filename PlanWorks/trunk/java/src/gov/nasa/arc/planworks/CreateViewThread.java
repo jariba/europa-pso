@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.19 2004-08-14 01:39:08 taylor Exp $
+// $Id: CreateViewThread.java,v 1.20 2004-09-03 00:35:31 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -76,7 +76,7 @@ public class CreateViewThread extends ThreadWithProgressMonitor {
 
       viewFrame =
         PlanWorks.getPlanWorks().viewManager.openView( viewable, viewClassName, viewListener);
-
+      
       finishViewRendering( viewFrame, PlanWorks.getPlanWorks().viewManager, viewExists,
                            viewName, viewable);
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.4 2004-08-02 18:54:50 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.5 2004-09-03 00:35:30 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,16 +13,19 @@
 package gov.nasa.arc.planworks;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.jar.Attributes;
@@ -49,6 +52,17 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 public class ConfigureAndPlugins {
 
   public static final String CONFIG_FILE_EXT = "config";
+  public static final String PROJECT_NAME = "projectName";
+  public static final String DEFAULT_PROJECT_NAME = "default";
+  public static final String PROJECT_WORKING_DIR = "projectWorkingDir";
+  public static final String PROJECT_PLANNER_PATH = "projectPlannerPath";
+  public static final String PROJECT_MODEL_NAME = "projectModelName";
+  public static final String PROJECT_MODEL_PATH = "projectModelPath";
+  public static final String PROJECT_MODEL_OUTPUT_DEST_DIR = "projectModelOutputDestDir";
+  public static final String PROJECT_MODEL_INIT_STATE_PATH = "projectModelInitStatePath";
+  public static final String PLANNER_LIB_NAME_MATCH = "_JNI_adapter.so"; 
+  public static List PROJECT_CONFIG_PARAMS;
+  public static List PROJECT_PATH_DIR_CONFIG_PARAMS;
 
   private static final String CONFIGURE_CLASS_NAME = "gov.nasa.arc.planworks.ConfigureAndPlugins";
   private static final String MAP_PLUG_IN_METHOD_NAME = "mapPlugIn";
@@ -64,6 +78,18 @@ public class ConfigureAndPlugins {
 
 
   static {
+    PROJECT_CONFIG_PARAMS = new ArrayList();
+    PROJECT_CONFIG_PARAMS.add( PROJECT_WORKING_DIR);
+    PROJECT_CONFIG_PARAMS.add( PROJECT_PLANNER_PATH);
+    PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_NAME);
+    PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_PATH);
+    PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_OUTPUT_DEST_DIR);
+    PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_INIT_STATE_PATH);
+
+    PROJECT_PATH_DIR_CONFIG_PARAMS = new ArrayList( PROJECT_CONFIG_PARAMS);
+    int indx = PROJECT_PATH_DIR_CONFIG_PARAMS.indexOf( PROJECT_MODEL_NAME);
+    PROJECT_PATH_DIR_CONFIG_PARAMS.remove( indx);
+
     PLUG_IN_JAR_MAP = new HashMap();
     PLUG_IN_LOADER_MAP = new HashMap();
     PLUG_IN_CLASS_MAP = new HashMap();
@@ -80,7 +106,7 @@ public class ConfigureAndPlugins {
                           configFile.getCanonicalPath());
     } catch (IOException ioExcep) {
     }
-    processConfigFile( configFile, "PlanWorks");
+    processPlanWorksConfigFileDoit( configFile, "PlanWorks");
 
     Iterator configNameItr = pluginNameList.iterator();
     Iterator configPathItr = pluginConfigPathList.iterator();
@@ -89,11 +115,11 @@ public class ConfigureAndPlugins {
       String anotherAppName = (String) configNameItr.next();
       System.err.println( "Processing " + anotherAppName + " configure file: " +
                           anotherConfigFile);
-      processConfigFile( anotherConfigFile, anotherAppName);
+      processPlanWorksConfigFileDoit( anotherConfigFile, anotherAppName);
     }
   } // end processPlanWorksConfigFile
 
-  private static void processConfigFile( File configFile, String applicationName) {
+  private static void processPlanWorksConfigFileDoit( File configFile, String applicationName) {
     try {
       BufferedReader in = new BufferedReader( new FileReader( configFile));
       String line = null;
@@ -174,7 +200,7 @@ public class ConfigureAndPlugins {
       iteExcep.printStackTrace();
       System.exit( -1);
     }
-  } // end processConfigFile
+  } // end processPlanWorksConfigFileDoit
 
   private static Object [] collectQuotedNameParts( List liveTokens) {
     Object [] returnArray = new Object [2];
@@ -305,10 +331,199 @@ public class ConfigureAndPlugins {
   } // end invokeLoadPlugin
 
 
+  /**
+   * <code>processProjectsConfigFile</code>
+   *
+   * @param configFile - <code>File</code> - 
+   */
+  public static void processProjectsConfigFile( File configFile) {
+    try {
+      System.err.println( "Processing Projects configure file: " +
+                          configFile.getCanonicalPath());
+    } catch (IOException ioExcep) {
+    }
+    try {
+      BufferedReader in = new BufferedReader( new FileReader( configFile));
+      List liveTokens = null, nameValueList = null;
+      String fieldName = "", fieldValue = "", projectName = "";
+      String line = null;
+      boolean isDefaultProjectFound = false;
+      while ((line = in.readLine()) != null) {
+        // System.err.println( configFile.getName() + ": '" + line + "'");
+        String uncommentedLine = line.split( "//", 2)[0];
+        // System.err.println( "uncommentedLine '" + uncommentedLine + "'");
+        if (uncommentedLine.length() == 0) {
+          continue;
+        }
+        String [] tokens = uncommentedLine.split( "\\s+"); // one or more spaces or a tab
+        liveTokens = new ArrayList();
+        for (int i = 0; i < tokens.length; i++) {
+          String token = (String) tokens[i];
+          // System.err.println( "liveToken '" + token + "'");
+          liveTokens.add( token);
+        }
+        // process name arg pairs
+        if (liveTokens.size() > 1) {
+          fieldName = (String) liveTokens.get( 0);
+          fieldValue = (String) liveTokens.get( 1);
+          // System.err.println( "fieldName '" + fieldName + "'");
+          // System.err.println( "fieldValue '" + fieldValue + "'");
+          if (fieldName.equals( PROJECT_NAME)) {
+            if (nameValueList != null) {
+              PlanWorks.PROJECT_CONFIG_MAP.put( projectName, nameValueList);
+            }
+            projectName = fieldValue;
+            nameValueList = new ArrayList();
+            if (fieldValue.equals( DEFAULT_PROJECT_NAME)) {
+              isDefaultProjectFound = true;
+            }
+          } else {
+            nameValueList.add( fieldName);
+            nameValueList.add( fieldValue);
+          }
+        }
+      }
+      in.close();
+      PlanWorks.PROJECT_CONFIG_MAP.put( projectName, nameValueList);
+      if (! isDefaultProjectFound) {
+        System.err.println( "processProjectsConfigFile: default project entry (" +
+                            "projectName=" + DEFAULT_PROJECT_NAME + ") not found");
+        System.exit( -1);
+      }
+    } catch (FileNotFoundException fnfExcep) {
+      System.err.println( "projects configure file '" + configFile + "' not found");
+      System.exit( -1);
+    } catch (IOException ioExcep) {
+      ioExcep.printStackTrace();
+      System.exit( -1);
+    }
+  } // end processProjectsConfigFile
 
+  /**
+   * <code>isProjectInConfigMap</code>
+   *
+   * @param projectName - <code>String</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public static boolean isProjectInConfigMap( String projectName) {
+    return (PlanWorks.PROJECT_CONFIG_MAP.get( projectName) != null);
+  }
+
+  /**
+   * <code>getProjectConfigValue</code>
+   *
+   * @param configName - <code>String</code> - 
+   * @param projectName - <code>String</code> - 
+   * @return - <code>String</code> - 
+   */
+  public static String getProjectConfigValue( String configName, String projectName) {
+//     System.err.println( "getProjectConfigValue: configName '" + configName +
+//                         "' projectName '" + projectName + "'");
+    List nameValueList = (List) PlanWorks.PROJECT_CONFIG_MAP.get( projectName);
+    if (nameValueList == null) {
+      System.err.println( "getProjectConfigValue: projectName " + projectName +
+                          " has no entry in PROJECT_CONFIG_MAP, using project: " +
+                          DEFAULT_PROJECT_NAME);
+      nameValueList = (List) PlanWorks.PROJECT_CONFIG_MAP.get( DEFAULT_PROJECT_NAME);
+    }
+    String retval = getProjectConfigValue( configName, nameValueList);
+    if (retval == null) {
+      // not yet set for this project -- use default
+      // System.err.println( "getProjectConfigValue: config name " + configName +
+      //                     " not found for projectName " + projectName);
+      nameValueList = (List) PlanWorks.PROJECT_CONFIG_MAP.get( DEFAULT_PROJECT_NAME);
+      return getProjectConfigValue( configName, nameValueList);
+    } else {
+      return retval;
+    }
+  } // end getProjectConfigValue
+
+  private static String getProjectConfigValue( String configName, List nameValueList) {
+    Iterator nameValueItr = nameValueList.iterator();
+    while (nameValueItr.hasNext()) {
+      String name = (String) nameValueItr.next();
+      if (name.equals( configName)) {
+        if (PROJECT_PATH_DIR_CONFIG_PARAMS.contains( name)) {
+          try {
+            return new File( (String) nameValueItr.next()).getCanonicalPath();
+          } catch (IOException ioExcep) {
+          }
+        } else {
+          return (String) nameValueItr.next();
+        }
+      } else {
+         nameValueItr.next();
+      }
+    }
+    return null;
+  } // end getProjectConfigValue
+
+  /**
+   * <code>updateProjectConfigMap</code>
+   *
+   * @param projectName - <code>String</code> - 
+   * @param nameValueList - <code>List</code> - 
+   */
+  public static void updateProjectConfigMap( String projectName, List nameValueList) {
+    Iterator nameValueItr = nameValueList.iterator();
+    while (nameValueItr.hasNext()) {
+      String configName = (String) nameValueItr.next();
+      if (PROJECT_CONFIG_PARAMS.contains( configName)) {
+        nameValueItr.next();
+      } else {
+        System.err.println( "updateProjectConfigMap: config name " + configName +
+                            " not handled");
+        return;
+      }
+    }
+    PlanWorks.PROJECT_CONFIG_MAP.put( projectName, nameValueList);
+  } // end updateProjectConfigMap
+
+  /**
+   * <code>writeProjectConfigMap</code>
+   *
+   */
+  public static void writeProjectConfigMap() {
+    File configFile = new File( System.getProperty( "projects.config"));
+    try {
+      BufferedWriter out = new BufferedWriter( new FileWriter( configFile));
+      String line = null;
+      List keyList = new ArrayList( PlanWorks.PROJECT_CONFIG_MAP.keySet());
+      Collections.sort( keyList);
+      Iterator keyListItr = keyList.iterator();
+      while (keyListItr.hasNext()) {
+        out.write( "// ======== project configuration ========");
+        out.newLine();
+        String key = (String) keyListItr.next();
+        List nameValueList = (List) PlanWorks.PROJECT_CONFIG_MAP.get( key);
+        line = PROJECT_NAME + " " + key;
+        out.write( line);
+        out.newLine();
+        Iterator nameValueItr = nameValueList.iterator();
+        while (nameValueItr.hasNext()) {
+          String name = (String) nameValueItr.next();
+          String value = (String) nameValueItr.next();
+          if (PROJECT_PATH_DIR_CONFIG_PARAMS.contains( name)) {
+            try {
+              value = new File( value).getCanonicalPath();
+            } catch (IOException ioExcep) {
+            }
+          }
+          line = name + " " + value;
+          out.write( line);
+          out.newLine();
+        }
+      }
+      out.close();
+    } catch (IOException ioExcep) {
+      ioExcep.printStackTrace();
+      System.exit( -1);
+    }
+  } // end writeProjectConfigMap
 
 } // end class ConfigureAndPlugins
 
+        
 
 
 

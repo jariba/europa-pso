@@ -69,6 +69,7 @@
           <jvmarg value="-Xmx300m"/>
           <jvmarg value="-Dplanworks.root=${planworks.root}"/>
           <jvmarg value="-Dplanworks.config=${planworks.config}"/>
+          <jvmarg value="-Dprojects.config=${projects.config}"/>
           <jvmarg value="-Duser=${env.USER}"/>
           <jvmarg value="-Dos.type=${env.OSTYPE}"/>
           <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
@@ -78,8 +79,6 @@
           <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
           <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
           <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
-          <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
-          <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
           <jvmarg value="-Dsplash.image=${splash.image}"/>
           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
           <jvmarg value="-Dname.application=${name.application}"/>
@@ -119,8 +118,6 @@
 <!--           <jvmarg value="-Dmysql.sock=${mysql.sock}"/> -->
 <!--           <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/> -->
 <!--           <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/> -->
-<!--           <jvmarg value="-Ddefault.project.name=${default.project.name}"/> -->
-<!--           <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/> -->
 <!--           <jvmarg value="-Dsplash.image=${splash.image}"/> -->
 <!--           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/> -->
 <!--           <jvmarg value="-Dname.application=${name.application}"/> -->

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.50 2004-08-14 01:39:10 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.51 2004-09-03 00:35:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -23,6 +23,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import javax.swing.JOptionPane;
 
+import gov.nasa.arc.planworks.ConfigureAndPlugins;
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
@@ -52,28 +54,55 @@ public class PwProjectImpl extends PwProject {
     projects = new HashMap();
     connectToDataBase();
 
+    boolean isProjectInDb = false;
     ListIterator dbProjectNameIterator = MySQLDB.getProjectNames().listIterator();
     while(dbProjectNameIterator.hasNext()) {
+      String workingDir = null, plannerPath = null, modelName = null, modelPath = null;
+      String modelOutputDestDir = null, modelInitStatePath = null;
       String name = (String) dbProjectNameIterator.next();
-      projects.put(name, new PwProjectImpl(name, true));
+      if (ConfigureAndPlugins.isProjectInConfigMap( name)) {
+          workingDir = ConfigureAndPlugins.getProjectConfigValue
+            ( ConfigureAndPlugins.PROJECT_WORKING_DIR, name);
+          plannerPath = ConfigureAndPlugins.getProjectConfigValue
+            ( ConfigureAndPlugins.PROJECT_PLANNER_PATH, name);
+          modelName = ConfigureAndPlugins.getProjectConfigValue
+            ( ConfigureAndPlugins.PROJECT_MODEL_NAME, name);
+          modelPath = ConfigureAndPlugins.getProjectConfigValue
+            ( ConfigureAndPlugins.PROJECT_MODEL_PATH, name);
+          modelOutputDestDir = ConfigureAndPlugins.getProjectConfigValue
+            ( ConfigureAndPlugins.PROJECT_MODEL_OUTPUT_DEST_DIR, name);
+          modelInitStatePath = ConfigureAndPlugins.getProjectConfigValue
+            ( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH, name);
+      } else {
+        System.err.println( "initProjects: PROJECT_CONFIG_MAP entry created for project '" +
+                             name + "'");
+        List nameValueList = new ArrayList();
+        nameValueList.add( ConfigureAndPlugins.PROJECT_WORKING_DIR);
+        workingDir = ConfigureAndPlugins.getProjectConfigValue
+          ( ConfigureAndPlugins.PROJECT_WORKING_DIR, ConfigureAndPlugins.DEFAULT_PROJECT_NAME);
+        nameValueList.add( workingDir);
+        ConfigureAndPlugins.updateProjectConfigMap( name, nameValueList);
+      }
+      projects.put(name, new PwProjectImpl( name, true, workingDir, plannerPath, modelName,
+                                            modelPath, modelOutputDestDir, modelInitStatePath));
     }
   } // end initProjects
-    
 
   /**
    * <code>createProject</code> - create named project not in database
    *
-   * @param name - <code>String</code> - the name of the project
-   * @return <code>PwProject</code> the complete project object.
-   * @exception DuplicateNameException - if the a probect by the given name exists in the database
+   * @param name - <code>String</code> - 
+   * @param workingDir - <code>String</code> - 
+   * @return - <code>PwProject</code> - 
+   * @exception DuplicateNameException if an error occurs
    */
-
-  public static PwProject createProject(final String name) throws DuplicateNameException {
+  public static PwProject createProject( final String name, final String workingDir)
+    throws DuplicateNameException {
     if(MySQLDB.projectExists(name)) {
       throw new DuplicateNameException("A project named '" + name + "' already exists.");
     }
     PwProjectImpl retval = null;
-    retval = new PwProjectImpl(name);
+    retval = new PwProjectImpl( name, workingDir);
     projects.put(name, retval);
 
     MySQLDB.addProject(name);
@@ -126,7 +155,14 @@ public class PwProjectImpl extends PwProject {
   private Integer id;
   private List planningSequences; // element PwPlanningSequence
   private Map sequenceIdUrlMap;
-  
+  // set from projects config file
+  private String workingDir;
+  private String plannerPath;
+  private String modelName;
+  private String modelPath;
+  private String modelOutputDestDir;
+  private String modelInitStatePath;
+  private boolean jniAdapterLoaded;
   
   //for use in testing only!
   public PwProjectImpl(final Integer id, final String name) {
@@ -142,28 +178,49 @@ public class PwProjectImpl extends PwProject {
    *                  called from PwProject.createProject
    *
    * @param name - <code>String</code> - 
-   * @exception DuplicateNameException if an error occurs
+   * @param workingDir - <code>String</code> - 
    */
-  public PwProjectImpl( final String name)  throws DuplicateNameException {
+  public PwProjectImpl( final String name, final String workingDir) {
     this.name = name;
     id = new Integer(-1);
+    this.workingDir = workingDir;
+    this.plannerPath = null;
+    this.modelName = null;
+    this.modelPath = null;
+    this.modelOutputDestDir = null;
+    this.modelInitStatePath = null;
+    jniAdapterLoaded = false;
     planningSequences = new ArrayList();
     //sequenceIdUrlMap = new HashMap();
     sequenceIdUrlMap = new HashMap();
   } // end  constructor PwProjectImpl.createProject
 
-
   /**
    * <code>PwProjectImpl</code> - constructor
    *                  construct project from information in database.
    *
-   * @param name - <code>String</code> - project name
-   * @param isInDb - <code>boolean</code> - boolean used to differentiate between constructors
+   * @param name - <code>String</code> project name
+   * @param isInDb - <code>boolean</code> -  boolean used to differentiate between constructors
+   * @param workingDir - <code>String</code> - 
+   * @param plannerPath - <code>String</code> - 
+   * @param modelName - <code>String</code> - 
+   * @param modelPath - <code>String</code> - 
+   * @param modelOutputDestDir - <code>String</code> - 
+   * @param modelInitStatePath - <code>String</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwProjectImpl( final String name, final boolean isInDb) 
+  public PwProjectImpl( final String name, final boolean isInDb, final String workingDir,
+                        final String plannerPath, final String modelName, final String modelPath,
+                        final String modelOutputDestDir, final String modelInitStatePath) 
     throws ResourceNotFoundException {
     this.name = name;
+    this.workingDir = workingDir;
+    this.plannerPath = plannerPath;
+    this.modelName = modelName;
+    this.modelPath = modelPath;
+    this.modelOutputDestDir = modelOutputDestDir;
+    this.modelInitStatePath = modelInitStatePath;
+    jniAdapterLoaded = false;
     
     id = MySQLDB.getProjectIdByName(name);
     if(id == null) {
@@ -226,6 +283,60 @@ public class PwProjectImpl extends PwProject {
   public String getName() {
     return name;
   } // end getName
+
+  /**
+   * <code>getWorkingDir</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getWorkingDir() {
+    return workingDir;
+  }
+
+  /**
+   * <code>getPlannerPath</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getPlannerPath() {
+    return plannerPath;
+  }
+
+  /**
+   * <code>getModelName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getModelName() {
+    return modelName;
+  }
+
+  /**
+   * <code>getModelPath</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getModelPath() {
+    return modelPath;
+  }
+
+  /**
+   * <code>getModelOutputDestDir</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getModelOutputDestDir() {
+    return modelOutputDestDir;
+  }
+
+  /**
+   * <code>getModelInitStatePath</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getModelInitStatePath() {
+    return modelInitStatePath;
+  }
 
   /**
    * <code>listPlanningSequences</code>
@@ -369,4 +480,21 @@ public class PwProjectImpl extends PwProject {
     retval.append("\t").append(name).append("\n");
     return retval.toString();
   }
+
+
+//   public abstract void setWorkingDir( final String dir);
+//   public abstract void setPlannerPath( final String path);
+//   public abstract void setModelName( final String name);
+//   public abstract void setModelPath( final String path);
+//   public abstract void setModelOutputDestDir( final String dir);
+//   public abstract void setModelInitStatePath( final String path);
+
+  public boolean getJNIAdapterLoaded() {
+    return jniAdapterLoaded;
+  }
+
+  public void setJNIAdapterLoaded( boolean value) {
+    jniAdapterLoaded = value;
+  }
+
 } // end class PwProjectImpl

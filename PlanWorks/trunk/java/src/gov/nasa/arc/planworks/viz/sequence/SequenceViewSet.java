@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.19 2004-05-04 01:27:21 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.20 2004-09-03 00:35:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,6 +42,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQue
  */
 public class SequenceViewSet extends ViewSet {
 
+  private int planControllerFrameCnt;
+
   /**
    * <code>SequenceViewSet</code> - constructor 
    *
@@ -73,7 +75,51 @@ public class SequenceViewSet extends ViewSet {
 
     this.contentSpecWindow.setLocation( delta, delta);
     this.contentSpecWindow.setVisible(true);
+    planControllerFrameCnt = 0;
+  } // end constructor
+
+  /**
+   * <code>getPlanControllerFrameCnt</code>
+   *
+   * @return - <code>int</code> - 
+   */
+//   public int getPlanControllerFrameCnt() {
+//     return planControllerFrameCnt;
+//   }
+
+  /**
+   * <code>incrPlanControllerFrameCnt</code>
+   *
+   */
+//   public void incrPlanControllerFrameCnt() {
+//     planControllerFrameCnt++;
+//   }
+
+  /**
+   * <code>setPlanControllerFrameCnt</code> - would be needed for a menu item: delete
+   *                                    plan controller windows
+   *
+   * @param cnt - <code>int</code> - 
+   */
+//   public void setPlanControllerFrameCnt( int cnt) {
+//     planControllerFrameCnt = cnt;
+//   }
+
+  /**
+   * <code>getPlanControllerViewSetKey</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getPlanControllerViewSetKey() {
+    planControllerFrameCnt++;
+    return new String( ViewConstants.PLANNER_CONTROLLER_TITLE.replaceAll( " ", "") + "-" +
+                       planControllerFrameCnt);
   }
+
+  /**
+   * <code>close</code>
+   *
+   */
   public void close() {
     super.close();
     List partialPlans = ((PwPlanningSequence) viewable).getPartialPlansList();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.16 2004-07-15 21:24:46 taylor Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.17 2004-09-03 00:35:35 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -25,6 +25,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.SequenceViewMenuItem;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -571,6 +572,30 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
       menu.setEnabled(true);
     }
   } // end enableMenu
+
+  /**
+   * <code>getPlanSeqItem</code>
+   *
+   * @param seqUrl - <code>String</code> - 
+   * @return - <code>JMenuItem</code> - 
+   */
+  public JMenuItem getPlanSeqItem( String seqUrl) {
+    for (int i = 0, n = getMenuCount(); i < n; i++) {
+      if (((JMenu) getMenu( i)).getText().equals( PlanWorks.PLANSEQ_MENU)) {
+        JMenu menu = (JMenu) getMenu( i);
+        for (int j = 0, m = menu.getItemCount(); j < m; j++) {
+          JMenuItem menuItem = (JMenuItem) menu.getItem( j);
+          if (menuItem instanceof SequenceViewMenuItem) {
+            if (((SequenceViewMenuItem) menuItem).getSeqUrl().equals( seqUrl)) {
+              return menuItem;
+            }
+          }
+        }
+      }
+    }
+    return null;
+  } // end getPlanSeqItem
+
 
 
 } // end class MDIDynamicMenuBar

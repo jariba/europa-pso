@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.124 2004-08-26 20:51:24 taylor Exp $
+# $Id: README,v 1.125 2004-09-03 00:35:12 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -16,102 +16,12 @@ The current known-good MySQL versions are:
 
 SUMMARY
 =======
-o PlanWorks now reads a configuration file during start-up, and supports a
-  Java plugin capability.  See README.ConfigureAndPlugins.
-
-o If you are using PlanWorks with PLASMA, this revision requires PLASMA
-  from the CVS head.  The PartialPlanWriter has been modified to capture
-  rule instances.
-
-o Usage of the test language requires an updated version of MySQL.  You 
-  *must* be working with MySQL 4.1 or later.
-
-o The Token Network View handling of rules has been revised:
-  - Mouse-Right: "Rule Window" on the view background has been removed;
-  - links between token nodes are no longer mouse sensitive;
-  - rule instance nodes, rendered as ovals, with the instance key and the
-    rule key values in the label, now are linked bewteen token nodes;
-  - Mouse-Right on the rule instance nodes brings up the selections "Open
-    Constraint Network View", "Open Navigator View" and "Open Rule Instance View".  
-    Selecting the third creates an internal frame titled "RuleInstanceView of 
-    <plan-name>/stepnn - n", which displays the "from" token, and "to" token key 
-    values and predicates, followed by the text of the rule;
-  - A "RuleInstanceView ..." internal frame may be created for every rule instance
-    node in the Token Network View;
-  - Mouse-Right: "Close Rule Instance Views" on the view background has been added.
-
-o Rule Instance nodes, which have variables, now appear rendered as ovals in the
-  Constraint Network View.  Rule Instance nodes are now included in the Navigator
-  View.  "Open Rule Instance View" is available as a Mouse-Right selection on these
-  nodes.
-
-o "Help->Node Shapes" has been added to the PlanWorks menubar.  It will create a
-  top-level window, separate from the PlanWorks desktop, which shows the shapes
-  of the different nodes rendered in the partial plan views.
-
-o The first version of the Test Definition Language has been completed. The
-  specification is located at PlanWorks/doc/TestLangSpec.txt.  It can be
-  accessed through Project->Run Test
-
-o PlanWorksGUITest now supports tests 1-11 of 25, defined in testCases/planViz.txt
-
-o The sequence directory chooser now supports the selection of a directory,
-  whose children are all sequence directories, so that user multiple directory 
-  selection is not necessary.
-
-o "Progress monitors" have been added for functions which can be cpu intensive, such
-  as creating partial plans and rendering views.  The user has the option to "Cancel" 
-  these operations, if desired.
-
-o Added new Ant target 'createJars' which creates PlanWorksDB.jar and PlanWorksPlugin.jar
-  in PlanWorks/java/jars.  (These jar files are checked in to CVS).
-
-o The TokenNetwork View is now incremental -- it opens with the "root" tokens and t
-  heir immediate rule instance nodes.  They can be expanded incrementally as in the 
-  Navigator View.  The layout is maintained when "stepping".
-
-o The PLASMA PartialPlanWriter configuration file now resides at
-  PLASMA/CBPlanner/component/sample-ppw-config.  Your PPW_CONFIG environment variable
-  should reflect this change.
-
-o The PLASMA PartialPlanWriter (PPW) can now output a plan with complete transaction 
-  and statistics files, but with only the last step's partial plan files.  Put the
-  following lines are in your PPW configuration file:
-    AutoWrite=0
-    StepsPerWrite=1
-    WriteFinalStep=1 
-
-o PLASMA can now be run with interactive control over which step's partial plan files
-  are output.  This is done using gdb.  See PLASMA/CBPlanner/component/ppw-gdb-commands.
-
-  NOTE: There is a naming issue with the these commands.  gdb 6.1.1 requires full
-  namespace qualifications (Prototype:: and Prototype::PlanWriter::).  gdb 5.2.1-4 does
-  not work for any combination of qualifications.  gdb 5.0 requires no namespace 
-  qualification of any sort (it seems to completely ignore namespaces).
-
-o The Constraint Network View, the Token Network View, and the Navigator View have
-  two new background Mouse-Right selection options: "Find Entity Path" and
-  "Highlight Current Path".  "Find Entity Path" requests two entity keys, class 
-  node types to search, and an optional maximum path length.  "Find Path" finds a 
-  path through the classes specified, rendering the selected nodes and highlighting them.  
-  This dialog also offers "Does Path Exist" which determines whether a path exists, 
-  without finding the nodes.  Selected nodes are dragged as a group, which may be 
-  inconvenient.  To deal with this, click Mouse-Left in the background to discard 
-  the selections, drag the nodes to new locations, and then on the background select
-  Mouse-Right: "Highlight Current Path".
-
-o The Navigator View has a new background Mouse-Right selection option: "Find by Key",
-  which requests a single entity key and finds that node, opening it and its neighbors,
-  if necessary.
+o "Project->Configure" and "Project->New Sequence" have been added to support
+  integration with PLASMA.  The "Planner Controller" window allows the user
+  to run plans in PLASMA and view the results in PlanWorks.
 
 
 o GNATS PRs and CRs completed:
-  #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.
-  #2452: Right mouse click popup menu not supported by any nodes in Navigator View.
-  #2473: Deleted sequences shouldn't kill PlanWorks.
-  #2474: Extra empty node in DecisionView.
-  #2514: Comments not being correctly parsed in the PlanWorks config file.
-  #2538: Garbage Collection killing Tatianas machine on Resource Profile.
 
 
 CVS CHECKOUT
@@ -119,7 +29,7 @@ CVS CHECKOUT
 Latest development state:
   > cvs co PlanWorks  or
   > cvs update PlanWorks
-Latest tagged milestone: (see Summary above)
+Latest tagged milestone: (see Summary below)
   > cvs co -r PW_M_16 PlanWorks
 
 
@@ -232,6 +142,106 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+26august04: Milestone 16
+========================
+o PlanWorks now reads a configuration file during start-up, and supports a
+  Java plugin capability.  See README.ConfigureAndPlugins.
+
+o If you are using PlanWorks with PLASMA, this revision requires PLASMA
+  from the CVS head.  The PartialPlanWriter has been modified to capture
+  rule instances.
+
+o Usage of the test language requires an updated version of MySQL.  You 
+  *must* be working with MySQL 4.1 or later.
+
+o The Token Network View handling of rules has been revised:
+  - Mouse-Right: "Rule Window" on the view background has been removed;
+  - links between token nodes are no longer mouse sensitive;
+  - rule instance nodes, rendered as ovals, with the instance key and the
+    rule key values in the label, now are linked bewteen token nodes;
+  - Mouse-Right on the rule instance nodes brings up the selections "Open
+    Constraint Network View", "Open Navigator View" and "Open Rule Instance View".  
+    Selecting the third creates an internal frame titled "RuleInstanceView of 
+    <plan-name>/stepnn - n", which displays the "from" token, and "to" token key 
+    values and predicates, followed by the text of the rule;
+  - A "RuleInstanceView ..." internal frame may be created for every rule instance
+    node in the Token Network View;
+  - Mouse-Right: "Close Rule Instance Views" on the view background has been added.
+
+o Rule Instance nodes, which have variables, now appear rendered as ovals in the
+  Constraint Network View.  Rule Instance nodes are now included in the Navigator
+  View.  "Open Rule Instance View" is available as a Mouse-Right selection on these
+  nodes.
+
+o "Help->Node Shapes" has been added to the PlanWorks menubar.  It will create a
+  top-level window, separate from the PlanWorks desktop, which shows the shapes
+  of the different nodes rendered in the partial plan views.
+
+o The first version of the Test Definition Language has been completed. The
+  specification is located at PlanWorks/doc/TestLangSpec.txt.  It can be
+  accessed through Project->Run Test
+
+o PlanWorksGUITest now supports tests 1-11 of 25, defined in testCases/planViz.txt
+
+o The sequence directory chooser now supports the selection of a directory,
+  whose children are all sequence directories, so that user multiple directory 
+  selection is not necessary.
+
+o "Progress monitors" have been added for functions which can be cpu intensive, such
+  as creating partial plans and rendering views.  The user has the option to "Cancel" 
+  these operations, if desired.
+
+o Added new Ant target 'createJars' which creates PlanWorksDB.jar and PlanWorksPlugin.jar
+  in PlanWorks/java/jars.  (These jar files are checked in to CVS).
+
+o The TokenNetwork View is now incremental -- it opens with the "root" tokens and t
+  heir immediate rule instance nodes.  They can be expanded incrementally as in the 
+  Navigator View.  The layout is maintained when "stepping".
+
+o The PLASMA PartialPlanWriter configuration file now resides at
+  PLASMA/CBPlanner/component/sample-ppw-config.  Your PPW_CONFIG environment variable
+  should reflect this change.
+
+o The PLASMA PartialPlanWriter (PPW) can now output a plan with complete transaction 
+  and statistics files, but with only the last step's partial plan files.  Put the
+  following lines are in your PPW configuration file:
+    AutoWrite=0
+    StepsPerWrite=1
+    WriteFinalStep=1 
+
+o PLASMA can now be run with interactive control over which step's partial plan files
+  are output.  This is done using gdb.  See PLASMA/CBPlanner/component/ppw-gdb-commands.
+
+  NOTE: There is a naming issue with the these commands.  gdb 6.1.1 requires full
+  namespace qualifications (Prototype:: and Prototype::PlanWriter::).  gdb 5.2.1-4 does
+  not work for any combination of qualifications.  gdb 5.0 requires no namespace 
+  qualification of any sort (it seems to completely ignore namespaces).
+
+o The Constraint Network View, the Token Network View, and the Navigator View have
+  two new background Mouse-Right selection options: "Find Entity Path" and
+  "Highlight Current Path".  "Find Entity Path" requests two entity keys, class 
+  node types to search, and an optional maximum path length.  "Find Path" finds a 
+  path through the classes specified, rendering the selected nodes and highlighting them.  
+  This dialog also offers "Does Path Exist" which determines whether a path exists, 
+  without finding the nodes.  Selected nodes are dragged as a group, which may be 
+  inconvenient.  To deal with this, click Mouse-Left in the background to discard 
+  the selections, drag the nodes to new locations, and then on the background select
+  Mouse-Right: "Highlight Current Path".
+
+o The Navigator View has a new background Mouse-Right selection option: "Find by Key",
+  which requests a single entity key and finds that node, opening it and its neighbors,
+  if necessary.
+
+
+o GNATS PRs and CRs completed:
+  #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.
+  #2452: Right mouse click popup menu not supported by any nodes in Navigator View.
+  #2473: Deleted sequences shouldn't kill PlanWorks.
+  #2474: Extra empty node in DecisionView.
+  #2514: Comments not being correctly parsed in the PlanWorks config file.
+  #2538: Garbage Collection killing Tatianas machine on Resource Profile.
+
 
 04june04: Milestone 15
 =====================

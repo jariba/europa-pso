@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.82 2004-08-25 18:40:56 taylor Exp $
+# $Id: build-tags-file.csh,v 1.83 2004-09-03 00:35:14 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -28,6 +28,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/ExecutePlannerThread.java \
     src/gov/nasa/arc/planworks/InstantiateProjectThread.java \
     src/gov/nasa/arc/planworks/NewSequenceThread.java \
+    src/gov/nasa/arc/planworks/PlannerControlJNI.java \
     src/gov/nasa/arc/planworks/PlanWorks.java \
     src/gov/nasa/arc/planworks/PlanWorksPlugin.java \
     src/gov/nasa/arc/planworks/SequenceViewMenuItem.java \
@@ -97,6 +98,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/dbg/testLang/EnumeratedDomain.java \
     src/gov/nasa/arc/planworks/dbg/testLang/IntervalDomain.java \
     src/gov/nasa/arc/planworks/dbg/testLang/TestLangHelper.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/TestLangInterpreter.java \
     src/gov/nasa/arc/planworks/dbg/testLang/TestLangLexer.java \
     src/gov/nasa/arc/planworks/dbg/testLang/TestLangParser.java \
     src/gov/nasa/arc/planworks/dbg/testLang/TestLangParseException.java \
@@ -130,6 +132,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/CollectionUtils.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/ColorStream.java \
+    src/gov/nasa/arc/planworks/util/ConfigureNewSequenceDialog.java \
+    src/gov/nasa/arc/planworks/util/ConfigureProjectDialog.java \
     src/gov/nasa/arc/planworks/util/CreatePartialPlanException.java \
     src/gov/nasa/arc/planworks/util/DirectoryChooser.java \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
@@ -140,6 +144,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/MouseEventOSX.java \
     src/gov/nasa/arc/planworks/util/OneToManyMap.java \
     src/gov/nasa/arc/planworks/util/PlannerCommandLineDialog.java \
+    src/gov/nasa/arc/planworks/util/PlannerController.java \
     src/gov/nasa/arc/planworks/util/ProgressMonitorException.java \
     src/gov/nasa/arc/planworks/util/ProjectNameDialog.java \
     src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java \

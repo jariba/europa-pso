@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.16 2004-08-25 18:40:58 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.17 2004-09-03 00:35:31 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -14,6 +14,8 @@
 
 package gov.nasa.arc.planworks;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
@@ -115,7 +117,8 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
     PwProject project = null;
     while (! isProjectCreated) {
       ProjectNameDialog projectNameDialog = new ProjectNameDialog( PlanWorks.getPlanWorks());
-      String inputName = projectNameDialog.getTypedText();
+      String inputName = projectNameDialog.getProjectName();
+      String workingDir = projectNameDialog.getWorkingDir();
       if ((inputName == null) || (inputName.equals( ""))) {
         return null;
       }
@@ -126,7 +129,8 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
         }
         ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
 
-        List selectedAndInvalidUrls = PlanWorks.getPlanWorks().askSequenceDirectory();
+        List selectedAndInvalidUrls =
+          PlanWorks.getPlanWorks().askSequenceDirectory( new File( workingDir));
         List selectedSequenceUrls = (List) selectedAndInvalidUrls.get( 0);
         List invalidSequenceUrls = (List) selectedAndInvalidUrls.get( 1);
 
@@ -137,17 +141,21 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
           }
           progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
         }
-        project = PwProject.createProject( inputName);
+
+        project = PwProject.createProject( inputName, workingDir);
+
         PlanWorks.getPlanWorks().currentProjectName = inputName;
         isProjectCreated = true;
         //System.err.println( "Create Project: " + currentProjectName);
         PlanWorks.getPlanWorks().setTitle( PlanWorks.getPlanWorksTitle() + " of Project =>  " +
                                       PlanWorks.getPlanWorks().currentProjectName);
         PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, true);
+        PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.CONFIGURE_MENU_ITEM, true);
         PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
         PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.NEWSEQ_MENU_ITEM, true);
         if (PwProject.listProjects().size() > 1) {
           PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
+          PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.CONFIGURE_MENU_ITEM, true);
           PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         }
         if (selectedSequenceUrls.size() > 0) {
@@ -155,6 +163,10 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
                                                          invalidSequenceUrls);
           PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         }
+        List nameValueList = new ArrayList();
+        nameValueList.add( ConfigureAndPlugins.PROJECT_WORKING_DIR);
+        nameValueList.add( workingDir);
+        ConfigureAndPlugins.updateProjectConfigMap( inputName, nameValueList);
         if (doProgMonitor) {
           isProgressMonitorCancel = true;
         }
@@ -220,7 +232,8 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
             if (PlanWorks.getPlanWorks().getProjectsLessCurrent().size() == 0) {
               PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
             }
-            PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, true);
+            PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.CONFIGURE_MENU_ITEM, true);
+            PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.NEWSEQ_MENU_ITEM, true);
             PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
             PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
           } catch (ResourceNotFoundException rnfExcep) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteProjectThread.java,v 1.6 2004-08-25 18:40:58 taylor Exp $
+// $Id: DeleteProjectThread.java,v 1.7 2004-09-03 00:35:31 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -90,6 +90,7 @@ public class DeleteProjectThread extends ThreadWithProgressMonitor {
             }
             if (PwProject.listProjects().size() == 0) {
               PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, false);
+              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.CONFIGURE_MENU_ITEM, false);
               PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
               PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, false);
               PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
