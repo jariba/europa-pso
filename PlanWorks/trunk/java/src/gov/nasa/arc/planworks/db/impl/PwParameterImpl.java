@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwParameterImpl.java,v 1.1 2003-05-15 22:16:23 taylor Exp $
+// $Id: PwParameterImpl.java,v 1.2 2003-05-16 20:06:20 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -32,7 +32,6 @@ public class PwParameterImpl implements PwParameter {
   private String name;
   private String key;
 
-
   /**
    * <code>Parameter</code> - constructor 
    *
@@ -42,7 +41,6 @@ public class PwParameterImpl implements PwParameter {
   public PwParameterImpl( String name, String key) {
     this.name = name;
     this.key = key;
-
   } // end constructor
 
 
