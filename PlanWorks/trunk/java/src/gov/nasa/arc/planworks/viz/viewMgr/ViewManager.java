@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.16 2003-09-28 00:19:31 taylor Exp $
+// $Id: ViewManager.java,v 1.17 2003-10-01 23:53:57 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -13,12 +13,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 //import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 
 /**
  * <code>ViewManager</code> -
@@ -29,18 +33,13 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
  */
 
 public class ViewManager implements ViewSetRemover {
-//   public static final String CNET_VIEW = //"constraintNetworkView";
-//     "gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView";
-//   public static final String TEMPEXT_VIEW = //"temporalExtentView";
-//     "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView";
-//   public static final String TEMPNET_VIEW = "";//"temporalNetworkView";
-//   public static final String TIMELINE_VIEW = //"timelineView";
-//     "gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView";
-//   public static final String TNET_VIEW = //"tokenNetworkView";
-//     "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView";
+
   private MDIDesktopFrame desktopFrame;
   private HashMap viewSets;
   private Object [] constructorArgs;
+  private boolean partialPlanSeen;
+  private boolean planSequenceSeen;
+  private int contentSpecWindowCnt;
 
   /**
    * Creates the ViewManager object and prepares it for adding views.
@@ -48,13 +47,30 @@ public class ViewManager implements ViewSetRemover {
   public ViewManager(MDIDesktopFrame desktopFrame) {
     viewSets = new HashMap();
     this.desktopFrame = desktopFrame;
+    this.contentSpecWindowCnt = 0;
+    this.partialPlanSeen = false;
+    this.planSequenceSeen = false;
   }
 
   public MDIInternalFrame openView(ViewableObject viewable, String viewClassName) {
     if(!viewSets.containsKey(viewable)) {
 	if(viewable instanceof PwPartialPlan) {
 	    viewSets.put(viewable,
-                         new PartialPlanViewSet(desktopFrame, (PwPartialPlan) viewable, this));
+                         new PartialPlanViewSet(desktopFrame,
+                                                (PwPartialPlan) viewable, this));
+            if (! partialPlanSeen) {
+              contentSpecWindowCnt++;
+              partialPlanSeen = true;
+            }
+	}
+	else if(viewable instanceof PwPlanningSequence) {
+	    viewSets.put(viewable,
+                         new SequenceViewSet(desktopFrame,
+                                             (PwPlanningSequence) viewable, this));
+            if (! planSequenceSeen) {
+              contentSpecWindowCnt++;
+              planSequenceSeen = true;
+            }
 	}
 	else {
 	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
@@ -158,4 +174,10 @@ public class ViewManager implements ViewSetRemover {
     return (ViewSet) viewSets.get(viewable);
       //return null;
   }
+
+  public int getContentSpecWindowCnt() {
+    return this.contentSpecWindowCnt;
+  }
+
+
 }

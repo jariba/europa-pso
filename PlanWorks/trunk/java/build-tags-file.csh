@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.31 2003-09-30 19:18:53 taylor Exp $
+# $Id: build-tags-file.csh,v 1.32 2003-10-01 23:53:53 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -14,7 +14,8 @@ endif
 etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/AddSequenceThread.java \
     src/gov/nasa/arc/planworks/CreatePartialPlanViewThread.java \
-    src/gov/nasa/arc/planworks/CreatePlanStepsViewThread.java \
+    src/gov/nasa/arc/planworks/CreateSequenceViewThread.java \
+    src/gov/nasa/arc/planworks/CreateViewThread.java \
     src/gov/nasa/arc/planworks/DeleteProjectThread.java \
     src/gov/nasa/arc/planworks/DeleteSequenceThread.java \
     src/gov/nasa/arc/planworks/InstantiateProjectThread.java \
@@ -59,6 +60,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/util/MySQLDB.java \
     src/gov/nasa/arc/planworks/db/util/PartialPlanContentSpec.java \
     src/gov/nasa/arc/planworks/db/util/PwSQLFilenameFilter.java \
+    src/gov/nasa/arc/planworks/db/util/SequenceContentSpec.java \
     src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopFrame.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopPane.java \
@@ -97,22 +99,23 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewManager.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewSet.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewSetRemover.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ContentSpecElement.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ContentSpecGroup.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ContentSpecWindow.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/GroupBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/KeyEntryBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/LogicComboBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/MergeBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/NegationCheckBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/PredicateBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/PredicateGroupBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/SpecBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimeIntervalBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimeIntervalGroupBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineGroupBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TokenTypeBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/ContentSpecElement.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/ContentSpecGroup.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/ContentSpecWindow.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/GroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/KeyEntryBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/LogicComboBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/MergeBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/NegationCheckBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/PredicateBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/PredicateGroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/SpecBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TimeIntervalBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TimeIntervalGroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TimelineBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TimelineGroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TokenTypeBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/sequence/ContentSpecWindow.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodeLink.java \
@@ -135,7 +138,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
-    src/gov/nasa/arc/planworks/viz/sequence/planDbSize/PlanDbSizeView.java
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java
 
 
 echo "Writing `pwd`/planWorks.TAGS"

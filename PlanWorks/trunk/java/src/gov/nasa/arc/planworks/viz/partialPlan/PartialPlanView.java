@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.1 2003-09-25 23:52:44 taylor Exp $
+// $Id: PartialPlanView.java,v 1.2 2003-10-01 23:53:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class PartialPlanView extends VizView {
 
+  protected PwPartialPlan partialPlan;
   protected List validTokenIds;
   protected List displayedTokenIds;
 
@@ -56,7 +57,8 @@ public class PartialPlanView extends VizView {
    * @param viewSet - <code>ViewSet</code> - 
    */
   public PartialPlanView( PwPartialPlan partialPlan, ViewSet viewSet) {
-    super( partialPlan, viewSet);
+    super( viewSet);
+    this.partialPlan = partialPlan;
     validTokenIds = null;
     displayedTokenIds = null;
     

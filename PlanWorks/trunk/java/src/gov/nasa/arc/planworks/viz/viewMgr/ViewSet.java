@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.37 2003-09-30 17:13:08 miatauro Exp $
+// $Id: ViewSet.java,v 1.38 2003-10-01 23:53:57 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -34,7 +34,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
 
 /**
  * <code>ViewSet</code> -

@@ -4,9 +4,9 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: GroupBox.java,v 1.5 2003-09-23 21:54:35 miatauro Exp $
+// $Id: GroupBox.java,v 1.1 2003-10-01 23:54:01 taylor Exp $
 //
-package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
+package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import java.awt.Component;
 import java.awt.Dimension;

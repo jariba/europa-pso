@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.30 2003-09-09 20:40:12 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.31 2003-10-01 23:53:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,6 +33,8 @@ import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.FileCopy;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UniqueSet;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
+
 
 /**
  * <code>PwPlanningSequenceImpl</code> - 
@@ -41,7 +43,7 @@ import gov.nasa.arc.planworks.util.UniqueSet;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-class PwPlanningSequenceImpl implements PwPlanningSequence {
+class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
 
   private Integer id;
   private String projectName;
@@ -53,6 +55,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   private List transactions; // List of List of PwTransaction
   private String name;
   private List partialPlanNames; // List of String
+  private List contentSpec;
 
   /**
    * <code>PwPlanningSequenceImpl</code> - constructor - for CreateProject
@@ -81,7 +84,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
                                            System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
-    
+    contentSpec = new ArrayList();
+        
     List planNames = MySQLDB.getPlanNamesInSequence(id);
     partialPlanNames.addAll(MySQLDB.getPlanNamesInSequence(id));
     stepCount = partialPlanNames.size();
@@ -118,6 +122,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
                                            System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
+    contentSpec = new ArrayList();
     
     MySQLDB.addSequence(url, project.getId());
     this.id = MySQLDB.latestSequenceId();
@@ -280,4 +285,31 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   public void delete() throws ResourceNotFoundException {
     MySQLDB.deletePlanningSequence(id);
   }
+
+  // implement ViewableObject
+
+  public void setContentSpec(List spec) {
+    contentSpec.clear();
+    contentSpec.addAll(spec);
+  }
+  
+  public List getContentSpec() {
+    return new ArrayList(contentSpec);
+  }
+
+  // getName already defined
+
+  // end implement ViewableObject
+
+  /**
+   * <code>setSeqName</code> - sequenceDir
+   *      PlanWorks.renderSequenceView invokes this method 
+   *
+   * @param seqName - <code>String</code> - 
+   */
+  public void setSeqName( String seqName) {
+    this.name = seqName;
+  }
+
+
 }

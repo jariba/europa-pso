@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.2 2003-09-28 00:19:30 taylor Exp $
+// $Id: VizView.java,v 1.3 2003-10-01 23:53:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,7 +43,6 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class VizView extends JPanel {
 
-  protected PwPartialPlan partialPlan;
   protected ViewSet viewSet;
 
 
@@ -53,9 +52,8 @@ public class VizView extends JPanel {
    * @param partialPlan - <code>PwPartialPlan</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    */
-  public VizView( PwPartialPlan partialPlan, ViewSet viewSet) {
+  public VizView( ViewSet viewSet) {
     super();
-    this.partialPlan = partialPlan;
     this.viewSet = viewSet;
   }
 

@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanDbSizeView.java,v 1.2 2003-09-30 19:18:57 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.1 2003-10-01 23:53:57 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 24sep03
 //
 
-package gov.nasa.arc.planworks.viz.sequence.planDbSize;
+package gov.nasa.arc.planworks.viz.sequence.sequenceSteps;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -50,6 +50,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -61,46 +62,49 @@ import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.HistogramElement;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.sequence.SequenceView;
+import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
 /**
- * <code>PlanDbSizeView</code> - render a histogram of plan data base size
+ * <code>SequenceStepsView</code> - render a histogram of plan data base size
  *                        over sequence steps
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class PlanDbSizeView extends JFrame {
+public class SequenceStepsView extends SequenceView {
 
-  private static final int X_LOCATION = 300;
-  private static final int Y_LOCATION = 40;
-  private static final int FRAME_WIDTH = 400;
-  private static final int FRAME_HEIGHT = 200;
-
-  PlanDbSizeJGoView jGoView;
-  JGoDocument document;
-  Graphics graphics;
-  FontMetrics fontMetrics;
-  Font font;
+  private PwPlanningSequence planSequence;
+  private long startTimeMSecs;
+  private ViewSet viewSet;
+  private SequenceStepsJGoView jGoView;
+  private JGoDocument document;
+  private Graphics graphics;
+  private FontMetrics fontMetrics;
+  private Font font;
 
   /**
-   * <code>PlanDbSizeView</code> - constructor 
+   * <code>SequenceStepsView</code> - constructor 
+   *                             Use SwingUtilities.invokeLater( runInit) to
+   *                             properly render the JGo widgets
    *
+   * @param planSequence - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
    */
-  public PlanDbSizeView() {
-    super( "Plan Data Base Size Histogram");
+  public SequenceStepsView( ViewableObject planSequence,  ViewSet viewSet) {
+    super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
+    this.planSequence = (PwPlanningSequence) planSequence;
+    this.startTimeMSecs = System.currentTimeMillis();
+    this.viewSet = (SequenceViewSet) viewSet;
 
-    // setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
-    getContentPane().setLayout( new GridLayout( 1, 1)); // if JFrame
-    setSize( FRAME_WIDTH, FRAME_HEIGHT);
-    setLocation( X_LOCATION, Y_LOCATION);
-    setVisible( true);
+    setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
-    jGoView = new PlanDbSizeJGoView();
+    jGoView = new SequenceStepsJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-    // add( jGoView, BorderLayout.NORTH);
-    getContentPane().add( jGoView, BorderLayout.NORTH); // if JFrame
+    add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
@@ -149,6 +153,13 @@ public class PlanDbSizeView extends JFrame {
 
     renderHistogram();
 
+    expandViewFrame( this.getClass().getName(),
+                     (int) jGoView.getDocumentSize().getWidth(),
+                     (int) jGoView.getDocumentSize().getHeight());
+
+    long stopTimeMSecs = System.currentTimeMillis();
+    System.err.println( "   ... elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
@@ -227,16 +238,16 @@ public class PlanDbSizeView extends JFrame {
 
 
   /**
-   * <code>PlanDbSizeJGoView</code> - subclass JGoView to add doBackgroundClick
+   * <code>SequenceStepsJGoView</code> - subclass JGoView to add doBackgroundClick
    *
    */
-  class PlanDbSizeJGoView extends JGoView {
+  class SequenceStepsJGoView extends JGoView {
 
     /**
-     * <code>PlanDbSizeJGoView</code> - constructor 
+     * <code>SequenceStepsJGoView</code> - constructor 
      *
      */
-    public PlanDbSizeJGoView() {
+    public SequenceStepsJGoView() {
       super();
     }
 
@@ -255,8 +266,8 @@ public class PlanDbSizeView extends JFrame {
       }
     } // end doBackgroundClick
 
-  } // end class PlanDbSizeJGoView
+  } // end class SequenceStepsJGoView
 
 
 
-} // end class PlanDbSizeView
+} // end class SequenceStepsView

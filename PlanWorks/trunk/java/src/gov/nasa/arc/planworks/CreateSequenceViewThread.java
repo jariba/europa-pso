@@ -1,9 +1,5 @@
 // 
-// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
-// * information on usage and redistribution of this file, 
-// * and for a DISCLAIMER OF ALL WARRANTIES. 
-// 
-// $Id: CreatePartialPlanViewThread.java,v 1.2 2003-10-01 23:53:54 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.1 2003-10-01 23:53:54 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -16,55 +12,48 @@ package gov.nasa.arc.planworks;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
-import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
 
 /**
- * <code>CreatePartialPlanViewThread</code> - handles PlanWorks partial plan view actions
+ * <code>CreateSequenceViewThread</code> - handles PlanWorks sequence view actions
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
  * @version 0.0 
  */
-public class CreatePartialPlanViewThread extends CreateViewThread {
+public class CreateSequenceViewThread extends CreateViewThread {
 
-  private String partialPlanName;
-  private PwPartialPlan partialPlan;
+  private PwPlanningSequence planSequence;
 
   /**
-   * <code>CreatePartialPlanViewThread</code> - constructor 
+   * <code>CreateSequenceViewThread</code> - constructor 
    *
    * @param viewName - <code>String</code> - 
-   * @param menuItem - <code>PlanWorks.SeqPartPlanViewMenuItem</code> - 
+   * @param menuItem - <code>JMenuItem</code> - 
    */
-  public CreatePartialPlanViewThread( String viewName,
-                                      PlanWorks.SeqPartPlanViewMenuItem menuItem) {
+  public CreateSequenceViewThread( String viewName,
+                                   PlanWorks.SequenceViewMenuItem menuItem) {
     super( viewName);
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();
-    this.partialPlanName = menuItem.getPartialPlanName();
-  }  // end constructor
+  }
 
   /**
    * <code>run</code>
    *
    */
-  public void run() { 
+  public void run() {
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-    PlanWorks.projectMenu.setEnabled( false);
+    PlanWorks.planWorks.projectMenu.setEnabled( false);
 
     try {
-      PwPlanningSequence planSequence =
-        PlanWorks.planWorks.currentProject.getPlanningSequence( seqUrl);
-        
-      PwPartialPlan partialPlan = planSequence.getPartialPlan(partialPlanName);
-        
-      renderView( sequenceName + System.getProperty("file.separator") + partialPlanName,
-                  partialPlan);
+      planSequence = PlanWorks.planWorks.currentProject.getPlanningSequence( seqUrl);
+
+      renderView( sequenceName, planSequence);
 
     } catch (ResourceNotFoundException rnfExcep) {
       int index = rnfExcep.getMessage().indexOf( ":");
@@ -77,10 +66,7 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
 
     PlanWorks.planWorks.projectMenu.setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
-  } //end run
+  } // end run
 
 
-
-
-
-} // end class CreatePartialPlanViewThread
+} // end class CreateSequenceViewThread

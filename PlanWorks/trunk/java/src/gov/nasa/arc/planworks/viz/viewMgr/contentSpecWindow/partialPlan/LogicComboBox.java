@@ -4,9 +4,9 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: LogicComboBox.java,v 1.5 2003-09-16 15:52:18 miatauro Exp $
+// $Id: LogicComboBox.java,v 1.1 2003-10-01 23:54:01 taylor Exp $
 //
-package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
+package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import javax.swing.JComboBox;
 

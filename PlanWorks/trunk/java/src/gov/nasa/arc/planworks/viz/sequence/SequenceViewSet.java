@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.1 2003-09-25 23:52:47 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.2 2003-10-01 23:53:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,10 +13,17 @@
 
 package gov.nasa.arc.planworks.viz.sequence;
 
-import gov.nasa.arc.planworks.db.PwPartialPlan;
+import java.awt.Container;
+
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.db.util.SequenceContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
+import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSetRemover;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.ContentSpecWindow;
 
 
 /**
@@ -28,9 +35,27 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSetRemover;
  */
 public class SequenceViewSet extends ViewSet {
 
-  public SequenceViewSet( MDIDesktopFrame desktopFrame, PwPartialPlan partialPlan,
+  public SequenceViewSet( MDIDesktopFrame desktopFrame, ViewableObject viewable,
                              ViewSetRemover remover) {
-    super( desktopFrame, partialPlan, remover);
+    super( desktopFrame, viewable, remover);
+    this.contentSpecWindow = desktopFrame.createFrame( "Content specification for " +
+                                                       viewable.getName(),
+                                                       this, true, false, false, true);
+    Container contentPane = this.contentSpecWindow.getContentPane();
+
+    System.err.println( "SequenceViewSet currentSpec " +
+                        ((PwPlanningSequence) viewable).getContentSpec());
+
+    this.contentSpec = new SequenceContentSpec( viewable, this);
+    ((PwPlanningSequence) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
+    contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec));
+    this.contentSpecWindow.pack();
+
+    this.contentSpecWindow.setSize( 300, 100); // until contentSpec created
+
+    this.contentSpecWindow.setLocation( ((ViewManager) remover).getContentSpecWindowCnt() *
+                                        ViewConstants.INTERNAL_FRAME_X_DELTA, 0);
+    this.contentSpecWindow.setVisible(true);
   }
 
 
