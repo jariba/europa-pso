@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomain.java,v 1.1 2003-05-15 22:16:21 taylor Exp $
+// $Id: PwDomain.java,v 1.2 2003-07-24 20:57:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,6 +25,26 @@ import java.util.List;
  */
 public interface PwDomain {
 
+  /**
+   * <code>getLowerBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getLowerBound();
+
+  /**
+   * <code>getUpperBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getUpperBound();
+		
+  /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String toString();
 
 
 } // end interface PwDomain

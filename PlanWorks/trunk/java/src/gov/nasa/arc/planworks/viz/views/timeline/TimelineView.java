@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.23 2003-07-17 17:22:19 miatauro Exp $
+// $Id: TimelineView.java,v 1.24 2003-07-24 20:57:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,6 +19,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
@@ -34,11 +35,13 @@ import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
@@ -60,6 +63,7 @@ import gov.nasa.arc.planworks.util.ViewRenderingException;
 public class TimelineView extends VizView {
 
   private PwPartialPlan partialPlan;
+  private long startTimeMSecs;
   private ViewSet viewSet;
   private JGoView jGoView;
   private JGoDocument jGoDocument;
@@ -71,7 +75,8 @@ public class TimelineView extends VizView {
   private Font font;
   private FontMetrics fontMetrics;
   private int slotLabelMinLength;
-
+  private int maxViewWidth;
+  private int maxViewHeight;
 
   /**
    * <code>TimelineView</code> - constructor - called by ViewSet.openTimelineView.
@@ -79,15 +84,19 @@ public class TimelineView extends VizView {
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param startTimeMSecs - <code>long</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    */
-  public TimelineView( PwPartialPlan partialPlan, ViewSet viewSet) {
+  public TimelineView( PwPartialPlan partialPlan, long startTimeMSecs, ViewSet viewSet) {
     super( partialPlan);
     this.partialPlan = partialPlan;
+    this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
     this.timelineNodeList = new ArrayList();
     this.freeTokenNodeList = new ArrayList();
     this.tmpTimelineNodeList = new ArrayList();
+    maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
+    maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
@@ -142,11 +151,15 @@ public class TimelineView extends VizView {
     createTimelineAndSlotNodes();
     // setVisible( true | false) depending on ContentSpec
     setNodesVisible();
+    expandViewFrame();
 
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
 
+    long stopTimeMSecs = (new Date()).getTime();
+    System.err.println( "   ... elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end init
 
 
@@ -159,7 +172,15 @@ public class TimelineView extends VizView {
   public void redraw() {
     // setVisible(true | false) depending on keys
     setNodesVisible();
+    expandViewFrame();
   } // end redraw
+
+
+  private void expandViewFrame() {
+    MDIInternalFrame viewFrame = viewSet.openTimelineView( 0L);
+    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
+                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
+  } // end expandViewFrame
 
 
   /**
@@ -272,6 +293,7 @@ public class TimelineView extends VizView {
     List slotList = timeline.getSlotList();
     Iterator slotIterator = slotList.iterator();
     PwToken previousToken = null;
+    SlotNode slotNode = null;
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
       PwToken token = null;
@@ -280,14 +302,26 @@ public class TimelineView extends VizView {
       }
       String slotNodeLabel = getSlotNodeLabel( token);
       boolean isLastSlot = (! slotIterator.hasNext());
-      SlotNode slotNode =
-        new SlotNode( slotNodeLabel, slot, new Point( x, y), previousToken,
-                      isLastSlot, objectCnt, this);
+      slotNode = new SlotNode( slotNodeLabel, slot, new Point( x, y), previousToken,
+                               isLastSlot, objectCnt, this);
       timelineNode.addToSlotNodeList( slotNode);
       // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
       jGoDocument.addObjectAtTail( slotNode);
       previousToken = token;
       x += slotNode.getSize().getWidth();
+    }
+    int maxHeight = y + ViewConstants.TIMELINE_VIEW_Y_INIT;
+    if (maxHeight > maxViewHeight) {
+      maxViewHeight = maxHeight;
+    }
+    JGoText endIntervalTextObject = slotNode.getEndTimeIntervalObject();
+    if (endIntervalTextObject != null) {
+      int maxWidth = (int) endIntervalTextObject.getLocation().getX() +
+        (int) endIntervalTextObject.getSize().getWidth() +
+        ViewConstants.TIMELINE_VIEW_X_INIT;
+      if (maxWidth > maxViewWidth) {
+        maxViewWidth = maxWidth;
+      }
     }
   } // end createSlotNodes
 
@@ -375,7 +409,7 @@ public class TimelineView extends VizView {
             ((JGoText) timeLabels.get( 1)).setVisible( true);
           }
         } else {
-          System.err.println("Setting slot " + slotNode.getSlot().getKey() + " invisible");
+          // System.err.println("Setting slot " + slotNode.getSlot().getKey() + " invisible");
           slotNode.setVisible( false);
           boolean visibleValue = false;
           // display interval time label, if previous slot is not being displayed

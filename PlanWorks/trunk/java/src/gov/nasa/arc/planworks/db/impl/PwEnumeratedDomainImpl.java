@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomainImpl.java,v 1.4 2003-07-12 01:36:30 taylor Exp $
+// $Id: PwEnumeratedDomainImpl.java,v 1.5 2003-07-24 20:57:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -54,11 +54,37 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
   }
 		
   /**
+   * <code>getLowerBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getLowerBound() {
+    if (enumeration.size() > 0) {
+      return (String) enumeration.get( 0);
+    } else {
+      return "";
+    }
+  }
+
+  /**
+   * <code>getUpperBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getUpperBound() {
+    if (enumeration.size() > 0) {
+      return (String) enumeration.get( enumeration.size() - 1);
+    } else {
+      return "";
+    }
+  }
+		
+  /**
    * <code>toString</code>
    *
    * @return - <code>String</code> - 
    */
-  public String toString(){
+  public String toString() {
     StringBuffer enumBuf = new StringBuffer( "");
     boolean isSingleton = (enumeration.size() == 1);
     if (isSingleton) {

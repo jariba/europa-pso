@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.19 2003-07-16 01:15:43 taylor Exp $
+// $Id: ViewSet.java,v 1.20 2003-07-24 20:57:11 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -23,6 +23,7 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIWindowBar;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
@@ -76,7 +77,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    * then returns it.  If a TimelineView already exists for this partial plan, returns that.
    * @return MDIInternalFrame the frame containing the vew.
    */
-  public MDIInternalFrame openTimelineView() {
+  public MDIInternalFrame openTimelineView( long startTimeMSecs) {
     if(viewExists("timelineView")) {
       return (MDIInternalFrame) views.get("timelineView");
     }
@@ -84,7 +85,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
       desktopFrame.createFrame("Timeline view of ".concat(planName), this, true, true, true, true);
     views.put("timelineView", timelineViewFrame);
     Container contentPane = timelineViewFrame.getContentPane();
-    contentPane.add(new TimelineView(partialPlan, this));
+    contentPane.add(new TimelineView(partialPlan, startTimeMSecs, this));
     return timelineViewFrame;
   }
 
@@ -107,6 +108,25 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
     return tokenNetworkViewFrame;
   }
 
+  /**
+   * Opens a new TemporalExtentView, stuffs it in an MDIInternalFrame, adds it to the hash
+   * of frames, then returns it.  If a TemporalExtentView already exists for this partial
+   * plan, returns that.
+   * @return MDIInternalFrame the frame containing the vew.
+   */
+  public MDIInternalFrame openTemporalExtentView( long startTimeMSecs) {
+    if(viewExists("temporalExtentView")) {
+      return (MDIInternalFrame) views.get("temporalExtentView");
+    }
+    MDIInternalFrame temporalExtentViewFrame = 
+      desktopFrame.createFrame("Temporal Extent view of ".concat(planName), this, true, true,
+                               true, true);
+    views.put("temporalExtentView", temporalExtentViewFrame);
+    Container contentPane = temporalExtentViewFrame.getContentPane();
+    contentPane.add(new TemporalExtentView(partialPlan, startTimeMSecs, this));
+    return temporalExtentViewFrame;
+  }
+
   //  public void addViewFrame(MDIInternalFrame viewFrame) {
   // if(!views.contains(viewFrame)) {
   //   views.add(viewFrame);
@@ -125,6 +145,8 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
           views.remove("timelineView");
         } else if(contentPane.getComponent(i) instanceof TokenNetworkView) {
           views.remove("tokenNetworkView");
+        } else if(contentPane.getComponent(i) instanceof TemporalExtentView) {
+          views.remove("temporalExtentView");
         }
       }
     }

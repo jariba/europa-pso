@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomainImpl.java,v 1.1 2003-05-15 22:16:22 taylor Exp $
+// $Id: PwDomainImpl.java,v 1.2 2003-07-24 20:57:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -29,6 +29,32 @@ public class PwDomainImpl implements PwDomain {
   public PwDomainImpl() {
   } // end constructor
 
+  /**
+   * <code>getLowerBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getLowerBound() {
+    return "";
+  }
+
+  /**
+   * <code>getUpperBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getUpperBound() {
+    return "";
+  }
+		
+  /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String toString() {
+    return "";
+  }
 
 
 } // end class PwDomainImpl

@@ -173,5 +173,56 @@ public interface ViewConstants {
    */
   public static final int EMPTY_SLOT_WIDTH = 10;
 
+  // Temporal Extent View
+
+  /**
+   * constant <code>TEMPORAL_NODE_X_DELTA</code>
+   *
+   */
+  public static final int TEMPORAL_NODE_X_DELTA = 5;
+
+  /**
+   * constant <code>TEMPORAL_NODE_Y_DELTA</code>
+   *
+   */
+  public static final int TEMPORAL_NODE_Y_DELTA = 10;
+
+  /**
+   * constant <code>TEMPORAL_NODE_CELL_HEIGHT</code>
+   *
+   */
+  public static final int TEMPORAL_NODE_CELL_HEIGHT = 46;
+
+  /**
+   * constant <code>TEMPORAL_NODE_Y_LABEL_OFFSET</code>
+   *
+   */
+  public static final int TEMPORAL_NODE_Y_LABEL_OFFSET = 10;
+
+  /**
+   * constant <code>TEMPORAL_NODE_Y_START_OFFSET</code>
+   *
+   */
+  public static final int TEMPORAL_NODE_Y_START_OFFSET = 22;
+
+  /**
+   * constant <code>TEMPORAL_NODE_Y_END_OFFSET</code>
+   *
+   */
+  public static final int TEMPORAL_NODE_Y_END_OFFSET = 34;
+
+  // cannot figure out how to get this from MDIInternalFrame
+  /**
+   * constant <code>MDI_FRAME_DECORATION_HEIGHT</code>
+   *
+   */
+  public static final int MDI_FRAME_DECORATION_HEIGHT = 65;
+
+  // cannot figure out how to get this from MDIInternalFrame
+  /**
+   * constant <code>MDI_FRAME_DECORATION_WIDTH</code>
+   *
+   */
+  public static final int MDI_FRAME_DECORATION_WIDTH = 30;
 
 } // end ViewConstants

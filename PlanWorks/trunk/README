@@ -4,32 +4,33 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.14 2003-07-17 17:17:13 miatauro Exp $
+# $Id: README,v 1.15 2003-07-24 20:57:10 taylor Exp $
 #
 
 SUMMARY
 =======
-Milestone 3 changes the backend data base content from XML accessed by
-eXist using XPATH, to MySQL.  This results in a performance improvement 
-of at least a factor of 3, and much simpler and quicker data
-base queries by the Content Specification processor.  An XML to
-MySQL convertor program has been added to convert planGen's XML output
-to MySQL files.  The Token Network view has been added.  Project
-management is now handled completely in MysQL, rather than using
-Java "beans".  The Content Specification processor now filters only
-by tokens, and predicates.  It will later add time intervals.
+Milestone 4 adds the Temporal Extent View.  It also automatically
+expands the three view internal frame windows to display their
+content, without scrolling.
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_3 PlanWorks
+> cvs co -r PW_M_4 PlanWorks
 
 
 PREREQUISITES
 =============
 Set environment varibles:
   o JAVA_HOME - location of J2SDK >= 1.4.1
-    e.g. setenv JAVA_HOME /home/wtaylor/pub/j2sdk1.4.1_02
+    On Solaris (Code IC)
+      setenv JAVA_HOME /usr/local/j2sdk1.4.1
+    On Linux, e.g.
+      setenv JAVA_HOME /home/wtaylor/pub/j2sdk1.4.1_02
+    On MacOSX, in terminal window
+      setenv JAVA_HOME /usr
+      or, put this statement in
+      $HOME/.MACOSX/env.plist
 
   o ANT_HOME - location of Apache Ant 
     e.g. setenv ANT_HOME <root>/PlanWorks/java/lib/apache-ant
@@ -81,6 +82,16 @@ Default target: planWorks
 
 PREVIOUS MILESTONES
 ===================
+17july03: Milestone 3 changes the backend data base content from XML accessed by
+eXist using XPATH, to MySQL.  This results in a performance improvement 
+of at least a factor of 3, and much simpler and quicker data
+base queries by the Content Specification processor.  An XML to
+MySQL convertor program has been added to convert planGen's XML output
+to MySQL files.  The Token Network view has been added.  Project
+management is now handled completely in MysQL, rather than using
+Java "beans".  The Content Specification processor now filters only
+by tokens, and predicates.  It will later add time intervals.
+
 19june03: Milestone 2 integrates the Multiple Document Interface (MDI) for window
 management, project management (creating, saving, opening and deleting),
 the plan generator, and the Content Specification functionality for 

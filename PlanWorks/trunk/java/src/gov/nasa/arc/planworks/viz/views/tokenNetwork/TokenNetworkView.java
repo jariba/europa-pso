@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.12 2003-07-17 17:22:43 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.13 2003-07-24 20:57:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -34,12 +34,14 @@ import com.nwoods.jgo.JGoLayer;
 import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTokenRelation;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.TokenLink;
@@ -73,13 +75,16 @@ public class TokenNetworkView extends VizView {
   private List linkList; // element TokenLink
   private Map relationships; // master, slave, self relationships
   private List linkNameList; // element String
+  private int maxViewWidth;
+  private int maxViewHeight;
 
   /**
    * <code>TokenNetworkView</code> - constructor - called by ViewSet.openTokenNetworkView.
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
-   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param partialPlan - <code>PwPartialPlan</code> -
+   * @param startTimeMSecs - <code>long</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    */
   public TokenNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
@@ -93,6 +98,8 @@ public class TokenNetworkView extends VizView {
     this.linkList = new ArrayList();
     this.relationships = new HashMap();
     this.linkNameList = new ArrayList();
+    maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
+    maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
 
     buildTokenParentChildRelationships();
 
@@ -155,6 +162,8 @@ public class TokenNetworkView extends VizView {
     LayeredDigraphAutoLayout layout =
       new LayeredDigraphAutoLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
+    computeExpandedViewFrame();
+    expandViewFrame();
 
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
@@ -168,15 +177,34 @@ public class TokenNetworkView extends VizView {
    *
    */
   public void redraw() {
-    long startTimeMSecs = (new Date()).getTime();
     // setVisible(true | false) depending on keys
     setNodesVisible();
-
-    LayeredDigraphAutoLayout layout =
-      new LayeredDigraphAutoLayout( jGoDocument, startTimeMSecs);
-    layout.performLayout();
+    expandViewFrame();
   } // end redraw
 
+
+  private void computeExpandedViewFrame() {
+    Iterator tokenNodeIterator = nodeList.iterator();
+    while (tokenNodeIterator.hasNext()) {
+      TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
+      int maxHeight = (int) tokenNode.getLocation().getY() +
+        ViewConstants.TIMELINE_VIEW_Y_INIT;
+      if (maxHeight > maxViewHeight) {
+        maxViewHeight = maxHeight;
+      }
+      int maxWidth = (int) tokenNode.getLocation().getX() +
+        (int) tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;
+      if (maxWidth > maxViewWidth) {
+        maxViewWidth = maxWidth;
+      }
+    }
+  } // end computeExpandedViewFrame
+
+  private void expandViewFrame() {
+    MDIInternalFrame viewFrame = viewSet.openTokenNetworkView( 0L);
+    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
+                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
+  } // end expandViewFrame
 
   /**
    * <code>getJGoDocument</code>

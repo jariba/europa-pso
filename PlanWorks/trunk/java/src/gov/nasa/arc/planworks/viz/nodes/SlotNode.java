@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.16 2003-07-11 00:02:31 taylor Exp $
+// $Id: SlotNode.java,v 1.17 2003-07-24 20:57:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -32,6 +32,7 @@ import com.nwoods.jgo.examples.TextNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
+import gov.nasa.arc.planworks.db.PwIntervalDomain;
 import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -80,6 +81,7 @@ public class SlotNode extends TextNode {
   private PwDomain endTimeIntervalDomain;
   private PwPredicate predicate;
   private List timeIntervalLabels;
+  private JGoText endTimeIntervalObject;
 
   /**
    * <code>SlotNode</code> - constructor 
@@ -103,6 +105,7 @@ public class SlotNode extends TextNode {
     this.objectCnt = objectCnt;
     this.view = view;
     this.timeIntervalLabels = new ArrayList();
+    this.endTimeIntervalObject = null;
     // System.err.println( "SlotNode: predicateName " + predicateName);
     configure( nodeLabel, slotLocation);
   } // end constructor
@@ -164,6 +167,15 @@ public class SlotNode extends TextNode {
   }
 
   /**
+   * <code>getEndTimeIntervalObject</code>
+   *
+   * @return - <code>JGoText</code> - 
+   */
+  public JGoText getEndTimeIntervalObject() {
+    return endTimeIntervalObject;
+  }
+
+  /**
    * <code>getStartTimeIntervalString</code>
    *
    * @return - <code>String</code> - 
@@ -181,10 +193,23 @@ public class SlotNode extends TextNode {
     return endTimeIntervalDomain.toString();
   }
 
-  // use startVariable for every token + the endVariable for the last one
-  // if a slot is empty, and has no tokens, use the endVariable from
-  // the previous slot
-  private void renderTimeIntervals() {
+  /**
+   * <code>getStartEndIntervals</code>
+   *
+   * use startVariable for every token + the endVariable for the last one
+   * if a slot is empty, and has no tokens, use the endVariable from
+   * the previous slot
+   *
+   * @param slot - <code>PwSlot</code> - 
+   * @param previousToken - <code>PwToken</code> - 
+   * @param isLastSlot - <code>boolean</code> - 
+   * @return - <code>PwDomain[]</code> - 
+   */
+  public static PwDomain[] getStartEndIntervals( PwSlot slot, PwToken previousToken,
+                                       boolean isLastSlot, boolean alwaysReturnEnd) {
+    PwDomain[] intervalArray = new PwDomain[2];
+    PwDomain startIntervalDomain = null;
+    PwDomain endIntervalDomain = null;
     PwVariable intervalVariable = null, lastIntervalVariable = null;
     PwToken baseToken = null;
     PwDomain intervalDomain = null, lastIntervalDomain = null;
@@ -214,27 +239,48 @@ public class SlotNode extends TextNode {
     }
 
     if (intervalVariable == null) {
-      startTimeIntervalDomain = intervalDomain;
+      startIntervalDomain = intervalDomain;
     } else {
-      startTimeIntervalDomain = intervalVariable.getDomain();
+      startIntervalDomain = intervalVariable.getDomain();
     }
-    // System.err.println( "startTimeIntervalDomain " + startTimeIntervalDomain.toString());
+    // System.err.println( "startIntervalDomain " + startIntervalDomain.toString());
+
+    if ((lastIntervalVariable != null) || (lastIntervalDomain != null) ||
+        alwaysReturnEnd) {
+      if (lastIntervalVariable == null) {
+        endIntervalDomain = lastIntervalDomain;
+      } else {
+        endIntervalDomain = lastIntervalVariable.getDomain();
+      }
+      // System.err.println( "endIntervalDomain " + endIntervalDomain.toString());
+    }
+    if (alwaysReturnEnd && (endIntervalDomain == null)) {
+      endIntervalDomain = startIntervalDomain;
+    }
+    intervalArray[0] = startIntervalDomain;
+    intervalArray[1] = endIntervalDomain;
+    return intervalArray;
+  } // end getStartEndIntervals
+
+
+  private void renderTimeIntervals() {
+    boolean alwaysReturnEnd = false;
+    PwDomain[] intervalArray = getStartEndIntervals( slot, previousToken, isLastSlot,
+                                                     alwaysReturnEnd);
+    startTimeIntervalDomain = intervalArray[0];
+    endTimeIntervalDomain = intervalArray[1];
+
     Point startLoc = new Point( (int) this.getLocation().getX() - this.getXOffset(),
                                 (int) this.getLocation().getY() +
                                 (int) this.getSize().getHeight());
     renderIntervalText( startTimeIntervalDomain.toString(), startLoc);
 
-    if ((lastIntervalVariable != null) || (lastIntervalDomain != null)) {
-      if (lastIntervalVariable == null) {
-        endTimeIntervalDomain = lastIntervalDomain;
-      } else {
-        endTimeIntervalDomain = lastIntervalVariable.getDomain();
-      }
-      // System.err.println( "endTimeIntervalDomain " + endTimeIntervalDomain.toString());
+    if (endTimeIntervalDomain != null) {
       Point endLoc = new Point( (int) (this.getLocation().getX() +
                                        this.getSize().getWidth()),
                                 (int) startLoc.getY());
-      renderIntervalText( endTimeIntervalDomain.toString(), endLoc);
+      endTimeIntervalObject =
+        renderIntervalText( endTimeIntervalDomain.toString(), endLoc);
     }
   } // end renderTimeIntervals
 
