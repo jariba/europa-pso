@@ -170,8 +170,7 @@ public class MySQLDB {
 
     try {
       ResultSet timelineSlotTokens = 
-        queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.ObjectId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, Token.TimelineId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline, Slot, Token LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.TokenId=Token.TokenId && ParamVarTokenMap.PartialPlanId=Token.PartialPlanId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Timeline.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" && Slot.TimelineId=Timeline.TimelineId && Token.SlotId=Slot.SlotId ORDER BY Timeline.TimelineId, Slot.SlotId, Token.TokenId, ParamVarTokenMap.ParameterId"));
-
+        queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.ObjectId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, Token.TimelineId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline LEFT JOIN Slot ON Slot.TimelineId=Timeline.TimelineId && Slot.PartialPlanId=Timeline.PartialPlanId LEFT JOIN Token ON Token.PartialPlanId=Slot.PartialPlanId && Token.SlotId=Slot.SlotId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Token.PartialPlanId && ParamVarTokenMap.TokenId=Token.TokenId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Timeline.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" ORDER BY Timeline.TimelineId, Slot.SlotId, Token.TokenId, ParamVarTokenMap.ParameterId"));
       Integer timelineId = new Integer(-1);
       String timelineName = "";
       Integer objectId = new Integer(-1);
@@ -227,7 +226,7 @@ public class MySQLDB {
           tokenRelationId = currTokenRelationId;
         }
         if(!objectId.equals(currObjectId) && !currObjectId.equals(NULL)) {
-          if(!objectId.equals(M1)) {
+          if(!objectId.equals(M1) && !tokenId.equals(M1)) {
             token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
                           tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
                           tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
@@ -241,7 +240,7 @@ public class MySQLDB {
           object = partialPlan.getObjectImpl(objectId);
         }
         if(!timelineId.equals(currTimelineId) && !currTimelineId.equals(NULL)) {
-          if(!timelineId.equals(M1)) {
+          if(!timelineId.equals(M1) && !tokenId.equals(M1)) {
             token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
                           tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
                           tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
@@ -255,7 +254,7 @@ public class MySQLDB {
           timeline = object.addTimeline(currTimelineName, timelineId);
         }
         if(!slotId.equals(currSlotId) && !currSlotId.equals(NULL)) {
-          if(!slotId.equals(M1)) {
+          if(!slotId.equals(M1) && !tokenId.equals(M1)) {
             token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
                           tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
                           tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
@@ -266,6 +265,7 @@ public class MySQLDB {
             paramVars.clear();
           }
           slotId = currSlotId;
+          System.err.println("Creating slot " + slotId);
           slot = timeline.addSlot(slotId);
           slots.add(slot);
         }
