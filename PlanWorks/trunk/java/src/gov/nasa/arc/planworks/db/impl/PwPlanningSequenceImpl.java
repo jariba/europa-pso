@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.12 2003-06-26 19:46:55 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.13 2003-06-26 20:09:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -191,6 +191,10 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
 
   public List listPartialPlans() {
     return partialPlans;
+  }
+
+  public List listPartialPlanNames() {
+    return partialPlanNames;
   }
   /**
    * <code>getPartialPlan</code>
