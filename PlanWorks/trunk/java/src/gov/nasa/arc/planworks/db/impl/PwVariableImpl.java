@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.22 2004-03-23 18:20:51 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.23 2004-04-02 00:58:28 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -20,7 +20,6 @@ import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
-import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.UniqueSet;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.94 2004-03-26 22:09:19 miatauro Exp $
+// $Id: MySQLDB.java,v 1.95 2004-04-02 00:58:42 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -32,7 +32,6 @@ import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwObjectImpl;
-import gov.nasa.arc.planworks.db.impl.PwParameterImpl;
 import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
 import gov.nasa.arc.planworks.db.impl.PwPlanningSequenceImpl;
 import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
