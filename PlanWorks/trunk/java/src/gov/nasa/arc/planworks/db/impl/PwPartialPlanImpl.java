@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.102 2004-08-06 00:53:26 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.103 2004-08-06 16:35:37 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -1542,6 +1542,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
   public List getPath(final Integer sKey, final Integer eKey, final List classes, 
                       final int maxLength) {
+    long t1 = System.currentTimeMillis();
     PwEntity start, end;
     if(sKey == null)
       throw new IllegalArgumentException("Start key can't be null");
@@ -1565,26 +1566,45 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       throw new IllegalArgumentException("Valid class list must contain end type '" + 
                                          end.getClass() + "'");
     LinkedList path = new LinkedList();
-    getPathRecurse(start, eKey, classes, maxLength, path);
+    if(pathExists(start, eKey, classes))
+      for(int i = 1; i < maxLength; i++)
+        if(getPathRecurse(start, eKey, classes, path, 0, i))
+          break;
+    System.err.println("Finding path took " + (System.currentTimeMillis() - t1));
     return path;
   }
 
+  private boolean pathExists(final PwEntity start, final Integer end, final List classes) {
+    LinkedList component = new LinkedList();
+    buildConnectedComponent(start, classes, component);
+    return component.contains(end);
+  }
+
+  private void buildConnectedComponent(final PwEntity ent, final List classes, LinkedList component) {
+    if(component.contains(ent.getId()))
+      return;
+    component.addLast(ent.getId());
+    for(Iterator it = ent.getNeighbors(classes).iterator(); it.hasNext();)
+      buildConnectedComponent((PwEntity)it.next(), classes, component);
+  }
+
   private boolean getPathRecurse(final PwEntity current, final Integer eKey,
-                                 final List classes, final int maxLength, 
-                                 final LinkedList path) {
+                                 final List classes, LinkedList path, 
+                                 int currentDepth, final int finalDepth) {
     if(path.contains(current.getId()))
       return false;
-    if(path.size() >= maxLength)
+    if(currentDepth == finalDepth)
       return false;
     path.addLast(current.getId());
-    System.err.println("current path: " + path);
+    currentDepth++;
     if(current.getId().equals(eKey))
       return true;
     for(Iterator it = current.getNeighbors(classes).iterator(); it.hasNext();) {
-      if(getPathRecurse((PwEntity)it.next(), eKey, classes, maxLength, path))
+      if(getPathRecurse((PwEntity)it.next(), eKey, classes, path, currentDepth, finalDepth))
         return true;
     }
     path.removeLast();
+    currentDepth--;
     return false;
   }
 
