@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkLayout.java,v 1.1 2003-08-06 01:20:15 taylor Exp $
+// $Id: ConstraintNetworkLayout.java,v 1.2 2003-08-20 18:52:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,7 +18,10 @@ import java.util.Date;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
+
+// PlanWorks/java/lib/JGo/JGoLayout.jar
 import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
+import com.nwoods.jgo.layout.JGoNetwork;
 
 import gov.nasa.arc.planworks.PlanWorks;
 
@@ -41,8 +44,9 @@ public class ConstraintNetworkLayout extends JGoLayeredDigraphAutoLayout {
    * @param jGoDocument - <code>JGoDocument</code> - 
    * @param startTimeMSecs - <code>long</code> - 
    */
-  public ConstraintNetworkLayout( JGoDocument jGoDocument, long startTimeMSecs) {
-    super( jGoDocument);
+  public ConstraintNetworkLayout( JGoDocument jGoDocument, JGoNetwork jGoNetwork,
+                                  long startTimeMSecs) {
+    super( jGoDocument, jGoNetwork);
     this.startTimeMSecs = startTimeMSecs;
     setDirectionOption( JGoLayeredDigraphAutoLayout.LD_DIRECTION_DOWN);
     setColumnSpacing( getColumnSpacing() / 4);
@@ -50,11 +54,19 @@ public class ConstraintNetworkLayout extends JGoLayeredDigraphAutoLayout {
     setCycleRemoveOption( JGoLayeredDigraphAutoLayout.LD_CYCLEREMOVE_DFS);
     setInitializeOption( JGoLayeredDigraphAutoLayout.LD_INITIALIZE_DFSIN);
     // setLayeringOption( JGoLayeredDigraphAutoLayout.LD_LAYERING_LONGESTPATHSINK);
-    setLayeringOption( JGoLayeredDigraphAutoLayout.LD_LAYERING_LONGESTPATHSOURCE);
+    // setLayeringOption( JGoLayeredDigraphAutoLayout.LD_LAYERING_LONGESTPATHSOURCE);
+    setLayeringOption( JGoLayeredDigraphAutoLayout.LD_LAYERING_OPTIMALLINKLENGTH);
+    setAggressiveOption( JGoLayeredDigraphAutoLayout.LD_AGGRESSIVE_FALSE);
+    setIterations( 4);
 
     // int NlayerSpacing, int NcolumnSpacing, int NdirectionOption, int NcycleremoveOption, int NlayeringOption, int NinitializeOption, int Niterations, int NaggressiveOption) 
 
   } // end constructor
+
+
+  protected void removeCycles() {
+    // no cycles to remove
+  }
 
 
   /**
@@ -73,4 +85,4 @@ public class ConstraintNetworkLayout extends JGoLayeredDigraphAutoLayout {
     }
   } // end progressUpdate
 
-} // end class ConstraintNetworkLayout
+} // end class ConstraintNetworkLayout 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.28 2003-08-12 22:57:24 miatauro Exp $
+// $Id: TimelineView.java,v 1.29 2003-08-20 18:52:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.views.timeline;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -133,6 +134,7 @@ public class TimelineView extends VizView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -160,6 +162,7 @@ public class TimelineView extends VizView {
     long stopTimeMSecs = (new Date()).getTime();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
 
@@ -271,8 +274,7 @@ public class TimelineView extends VizView {
     while (freeTokenItr.hasNext()) {
       TokenNode freeTokenNode = new TokenNode( (PwToken) freeTokenItr.next(),
                                                new Point( x, y), objectCnt,
-                                               isFreeToken, isDraggable,
-                                               viewName, this);
+                                               isFreeToken, isDraggable, this);
       freeTokenNodeList.add( freeTokenNode);
       jGoDocument.addObjectAtTail( freeTokenNode);
       x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;

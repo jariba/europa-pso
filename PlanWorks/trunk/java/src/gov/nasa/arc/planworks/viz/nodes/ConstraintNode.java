@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.5 2003-08-12 22:54:44 miatauro Exp $
+// $Id: ConstraintNode.java,v 1.6 2003-08-20 18:52:36 taylor Exp $
 //
 // PlanWorks
 //
@@ -21,9 +21,11 @@ import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDrawable;
 import com.nwoods.jgo.JGoEllipse;
 import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoPort;
 import com.nwoods.jgo.JGoRectangle;
 import com.nwoods.jgo.JGoText;
+import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/com/nwoods/jgo/examples/Diamond.class
 import com.nwoods.jgo.examples.Diamond;
@@ -31,10 +33,13 @@ import com.nwoods.jgo.examples.Diamond;
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
 
 
 /**
@@ -58,11 +63,17 @@ public class ConstraintNode extends BasicNode {
   private PwConstraint constraint;
   private VariableNode variableNode;
   private int objectCnt;
-  private VizView view;
+  private VizView vizView;
   private String nodeLabel;
-  private List variableNodeList;
+  private List variableNodeList; // element VariableNode
   private boolean isDiamond = true;
-  private List constraintVariableLinkList;
+  private List constraintVariableLinkList; // element BasicNodeLink
+  private boolean areNeighborsShown;
+  private boolean inLayout;
+  private boolean isUnaryConstraint;
+  private int variableLinkCount;
+  private boolean isDebug;
+  private boolean hasBeenVisited;
 
   /**
    * <code>ConstraintNode</code> - constructor 
@@ -72,24 +83,37 @@ public class ConstraintNode extends BasicNode {
    * @param constraintLocation - <code>Point</code> - 
    * @param objectCnt - <code>int</code> - 
    * @param isDraggable - <code>boolean</code> - 
-   * @param view - <code>VizView</code> - 
+   * @param vizView - <code>VizView</code> - 
    */
   public ConstraintNode( PwConstraint constraint, VariableNode variableNode,
                          Point constraintLocation, int objectCnt, boolean isDraggable,
-                         VizView view) { 
+                         VizView vizView) { 
     super();
     this.constraint = constraint;
     this.variableNode = variableNode;
     this.objectCnt = objectCnt;
-    this.view = view;
+    this.vizView = vizView;
     variableNodeList = new ArrayList();
     variableNodeList.add( variableNode);
     constraintVariableLinkList = new ArrayList();
-    // debug
-    // nodeLabel = constraint.getType().substring( 0, 1) + "_" +
-    //   constraint.getKey().toString();
-    nodeLabel = constraint.getName();
+
+    inLayout = false;
+    isUnaryConstraint = true;
+    if (constraint.getVariablesList().size() > 1) {
+      isUnaryConstraint = false;
+    }
+    // isDebug = false;
+    isDebug = true;
+    if (isDebug) {
+      nodeLabel = constraint.getType().substring( 0, 1) + "_" +
+        constraint.getId().toString();
+    } else {
+      nodeLabel = constraint.getName();
+    }
     // System.err.println( "ConstraintNode: " + nodeLabel);
+
+    hasBeenVisited = false;
+    resetNode( false);
 
     configure( constraintLocation, isDraggable);
   } // end constructor
@@ -107,6 +131,9 @@ public class ConstraintNode extends BasicNode {
     setDraggable( isDraggable);
     // do not allow user links
     getPort().setVisible( false);
+    if (isUnaryConstraint) {
+      setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    }
   } // end configure
 
 
@@ -203,12 +230,147 @@ public class ConstraintNode extends BasicNode {
   }
 
   /**
+   * <code>getObjectCnt</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getObjectCnt() {
+    return objectCnt;
+  }
+ 
+  /**
+   * <code>getVizView</code>
+   *
+   * @return - <code>VizView</code> - 
+   */
+  public VizView getVizView() {
+    return vizView;
+  }
+
+  /**
+   * <code>inLayout</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean inLayout() {
+    return inLayout;
+  }
+
+  /**
+   * <code>setInLayout</code>
+   *
+   * @param value - <code>boolean</code> - 
+   */
+  public void setInLayout( boolean value) {
+    int width = 1;
+    inLayout = value;
+    if (value == false) {
+      if (isUnaryConstraint) {
+        width = 2;
+      }
+      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
+      areNeighborsShown = false;
+    }
+  }
+
+  /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String toString() {
+    return constraint.getId().toString();
+  }
+
+  /**
+   * <code>incrVariableLinkCount</code>
+   *
+   */
+  public void incrVariableLinkCount() {
+    variableLinkCount++;
+  }
+
+  /**
+   * <code>decVariableLinkCount</code>
+   *
+   */
+  public void decVariableLinkCount() {
+    variableLinkCount--;
+  }
+
+  /**
+   * <code>getVariableLinkCount</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getVariableLinkCount() {
+    return variableLinkCount;
+  }
+
+  /**
+   * <code>getLinkCount</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getLinkCount() {
+    return variableLinkCount;
+  }
+
+  /**
+   * <code>resetNode</code> - when closed by token close traversal
+   *
+   * @param isDebug - <code>boolean</code> - 
+   */
+  public void resetNode( boolean isDebug) {
+    areNeighborsShown = false;
+    if (isDebug && (variableLinkCount != 0)) {
+      System.err.println( "reset constraint node: " + constraint.getId() +
+                          "; variableLinkCount != 0: " + variableLinkCount);
+    }
+    variableLinkCount = 0;
+  } // end resetNode
+
+  /**
+   * <code>setNodeOpen</code>
+   *
+   */
+  public void setNodeOpen() {
+    areNeighborsShown = true;
+    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+  }
+
+  /**
+   * <code>setNodeOpen</code>
+   *
+   */
+  public void setNodeClosed() {
+    areNeighborsShown = false;
+    setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
+  }
+
+  /**
    * <code>getToolTipText</code>
    *
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-    return constraint.getType();
+      String operation = null;
+      if (areNeighborsShown) {
+        operation = "close";
+      } else {
+        operation = "open";
+      }
+    if ((! isUnaryConstraint)  && (vizView instanceof ConstraintNetworkView)) {
+      StringBuffer tip = new StringBuffer( "<html> ");
+      tip.append( constraint.getType());
+      if (isDebug) {
+        tip.append( " linkCnt ").append( String.valueOf( variableLinkCount));
+      }
+       tip.append( "<br> Mouse-L: ").append( operation);
+       return tip.append(" nearest token variables</html>").toString();
+    } else {
+      return constraint.getType();
+    }
   } // end getToolTipText
 
   /**
@@ -250,6 +412,75 @@ public class ConstraintNode extends BasicNode {
       constraintVariableLinkList.add( link);
     }
   }
+
+  /**
+   * <code>setHasBeenVisited</code>
+   *
+   * @param value - <code>boolean</code> - 
+   */
+  public void setHasBeenVisited( boolean value) {
+    hasBeenVisited =  value;
+  }
+
+  /**
+   * <code>hasBeenVisited</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean hasBeenVisited() {
+    return hasBeenVisited;
+  }
+
+  /**
+   * <code>doMouseClick</code> - For Constraint Network View, Mouse-left opens/closes
+   *            constarintNode to show variableNodes 
+   *
+   * @param modifiers - <code>int</code> - 
+   * @param dc - <code>Point</code> - 
+   * @param vc - <code>Point</code> - 
+   * @param view - <code>JGoView</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
+    JGoObject obj = view.pickDocObject( dc, false);
+    //         System.err.println( "doMouseClick obj class " +
+    //                             obj.getTopLevelObject().getClass().getName());
+    ConstraintNode constraintNode = (ConstraintNode) obj.getTopLevelObject();
+    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      if ((! isUnaryConstraint) && (vizView instanceof ConstraintNetworkView)) {
+        if (! areNeighborsShown) {
+          System.err.println( "doMouseClick: Mouse-L show variable nodes of constraint id " +
+                              constraintNode.getConstraint().getId());
+          addConstraintNodeVariables( this);
+          setNodeOpen();
+        } else {
+          System.err.println( "doMouseClick: Mouse-L hide variable nodes of constraint id " +
+                              constraintNode.getConstraint().getId());
+          removeConstraintNodeVariables( this);
+          setNodeClosed();
+        }
+        return true;
+      }
+    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+    }
+    return false;
+  } // end doMouseClick   
+
+  private void addConstraintNodeVariables( ConstraintNode constraintNode) {
+    ConstraintNetworkView constraintNetworkView =
+      (ConstraintNetworkView) constraintNode.getVizView();
+    constraintNetworkView.addVariableNodes( constraintNode);
+    constraintNetworkView.addConstraintToVariableLinks( constraintNode);
+    constraintNetworkView.redraw();
+  } // end addConstraintNodeVariables
+
+  private void removeConstraintNodeVariables( ConstraintNode constraintNode) {
+    ConstraintNetworkView constraintNetworkView =
+      (ConstraintNetworkView) constraintNode.getVizView();
+    constraintNetworkView.removeConstraintToVariableLinks( constraintNode);
+    constraintNetworkView.removeVariableNodes( constraintNode);
+    constraintNetworkView.redraw();
+  } // end addConstraintnodeVariablesConstraints
 
 
 } // end class ConstraintNode

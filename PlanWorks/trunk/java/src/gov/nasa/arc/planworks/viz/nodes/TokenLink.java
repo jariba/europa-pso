@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenLink.java,v 1.2 2003-07-17 17:21:51 miatauro Exp $
+// $Id: TokenLink.java,v 1.3 2003-08-20 18:52:36 taylor Exp $
 //
 // PlanWorks
 //
@@ -43,6 +43,8 @@ public class TokenLink extends JGoLabeledLink {
     this.fromTokenNode = fromTokenNode;
     this.toTokenNode = toTokenNode;
     this.setArrowHeads( false, true); // fromArrowHead toArrowHead
+    // do no allow user to select and move links
+    this.setRelinkable( false);
   } // end constgructor
 
   /**

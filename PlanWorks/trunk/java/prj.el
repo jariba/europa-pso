@@ -1,12 +1,12 @@
-;;; $Id: prj.el,v 1.2 2003-05-23 22:20:20 taylor Exp $
+;;; $Id: prj.el,v 1.3 2003-08-20 18:52:35 taylor Exp $
 ;;;
 ;;; JAVA_HOME ANT_HOME JDE_HOME & PLANWORKS_ROOT must be set properly
 ;;;
 (jde-project-file-version "1.0")
 (jde-set-variables
  '(jde-ant-args (concat "-emacs -Djavac=" (getenv "JAVA_HOME")
-                        "/bin/javac -Djar=" (getenv "JAVA_HOME") "/bin/jar -v"))
- '(jde-ant-buildfile (concat (getenv "PLANWORKS_ROOT") "/java/build.xml"))
+                        "/bin/javac -Djar=" (getenv "JAVA_HOME") "/bin/jar compile"))
+ '(jde-ant-buildfile (concat (getenv "PLANWORKS_ROOT") "/build.xml"))
  '(jde-ant-complete-target nil)
  '(jde-ant-home (getenv "ANT_HOME"))
  '(jde-ant-read-target nil)
@@ -23,11 +23,6 @@
  '(jde-compile-option-classpath
    (list (concat (getenv "JAVA_HOME") "/jre/lib/rt.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/classes/")
-         (concat (getenv "PLANWORKS_ROOT") "/java/lib/eXist/exist.jar")
-         (concat (getenv "PLANWORKS_ROOT") "/java/lib/eXist/lib/core/xmldb.jar")
-         (concat (getenv "PLANWORKS_ROOT") "/java/lib/eXist/lib/core/xmlrpc-1.1.jar")
-         (concat (getenv "PLANWORKS_ROOT") "/java/lib/eXist/lib/core/log4j.jar")
-         (concat (getenv "PLANWORKS_ROOT") "/java/lib/eXist/lib/core/resolver-20020130.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/JGo.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/JGoLayout.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/Classier.jar")
@@ -51,9 +46,7 @@
  '(jde-db-option-classpath nil)
  '(jde-db-option-vm-args (list "-verbose:gc" "-Xms32m" "-Xmx192m"
                                (concat "-Dplanviz.root=" (getenv "PLANWORKS_ROOT"))
-                               "-Duser=wtaylor" "-Dexist.initdb=true"
-                               (concat "-Dexist.home=" (getenv "PLANWORKS_ROOT") "/java/lib/eXist")
-                               "-Dexist.conf.xml=conf-nolog.xml"))
+                               ))
  '(jde-db-set-initial-breakpoint nil)
  '(jde-db-source-directories (list (concat (getenv "PLANWORKS_ROOT") "/java/src")
                                    (concat (getenv "JAVA_HOME") "/src")))
@@ -66,8 +59,6 @@
          (concat (getenv "JDE_HOME") "/java/lib/bsh.jar")
          (concat (getenv "JDE_HOME") "/java/lib/jde.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/classes/")
-         (concat (getenv "PLANWORKS_ROOT") "/java/lib/eXist/exist.jar")
-         (concat (getenv "PLANWORKS_ROOT") "/java/lib/eXist/lib/core/xmldb.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/JGo.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/JGoLayout.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/Classier.jar")
@@ -101,9 +92,7 @@
  '(jde-run-option-vm-args
    (list "-verbose:gc" "-Xms32m" "-Xmx192m"
          (concat "-Dplanviz.root=" (getenv "PLANWORKS_ROOT"))
-         "-Duser=wtaylor" "-Dexist.initdb=true"
-         (concat "-Dexist.home=" (getenv "PLANWORKS_ROOT") "/java/lib/eXist")
-         "-Dexist.conf.xml=conf-nolog.xml"))
+         "-Duser=wtaylor" ))
  '(jde-run-working-directory (concat (getenv "PLANWORKS_ROOT") "/java/src"))
  '(jde-sourcepath
    (list (concat (getenv "PLANWORKS_ROOT") "/java/src/gov/nasa/arc/planworks")
