@@ -4,8 +4,17 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.5 2003-06-19 20:49:19 taylor Exp $
+# $Id: README,v 1.6 2003-06-19 20:57:31 taylor Exp $
 #
+
+SUMMARY
+=======
+Milestone 2 integates the Multiple Document Interface (MDI) for window
+management, project management (creating, saving, opening and deleting),
+and introduces the Content Specification functionality for filtering partial
+plan rendering in the user selected views, which is currently restricted
+to the Timeline View.
+
 
 CVS CHECKOUT
 ============
