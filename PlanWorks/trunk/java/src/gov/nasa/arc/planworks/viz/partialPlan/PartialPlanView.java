@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.23 2004-02-05 23:24:47 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.24 2004-02-06 00:27:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -301,7 +301,7 @@ public class PartialPlanView extends VizView {
       this.pView = pView;
     }
     public void actionPerformed(ActionEvent e) {
-      view.getSelection().clearSelection();
+      //  view.getSelection().clearSelection();
       ViewSet viewSet = pView.getViewSet();
       MDIInternalFrame viewFrame = viewSet.getViewByClass(pView.getClass());
       ViewManager viewManager = viewSet.getViewManager();
@@ -422,7 +422,7 @@ public class PartialPlanView extends VizView {
     }
     public void adjustmentValueChanged(AdjustmentEvent evt) {
       Rectangle viewRect = view.getViewRect();
-      view.getSelection().clearSelection();
+      //view.getSelection().clearSelection();
       back.setLocation((int)(viewRect.getX() + back.getSize().getWidth()),
                        (int)(viewRect.getY() + viewRect.getHeight() -
                              back.getSize().getHeight()));
@@ -454,7 +454,7 @@ public class PartialPlanView extends VizView {
     public void viewChanged(JGoViewEvent e) {
       //if(e.getHint() == JGoViewEvent.POSITION_CHANGED || e.getHint() == JGoViewEvent.CHANGED) {
         Rectangle viewRect = view.getViewRect();
-        view.getSelection().clearSelection();
+        //view.getSelection().clearSelection();
         back.setLocation((int)(viewRect.getX() + back.getSize().getWidth()),
                          (int)(viewRect.getY() + viewRect.getHeight() -
                                back.getSize().getHeight()));
