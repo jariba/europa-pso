@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PluginEvent.java,v 1.1 2004-07-27 21:58:06 taylor Exp $
+// $Id: PwPluginEvent.java,v 1.1 2005-01-20 21:00:58 meboyce Exp $
 //
 
 package gov.nasa.arc.planworks.plugin;
@@ -31,7 +31,8 @@ public class PluginEvent extends EventObject
 	public static int NOTHING = 0;
 	// FLAGS
 	public static int VIEW = 16;
-	public static int TRANSACTION = 32;
+	public static int MODEL = 32;
+	public static int TRANSACTION = 64;
 	public static int SELF = 128;
 	// ACTION TYPES
 	public static int OPEN = 1;

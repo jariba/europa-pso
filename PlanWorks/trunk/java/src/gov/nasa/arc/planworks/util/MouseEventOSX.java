@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: MouseEventOSX.java,v 1.3 2004-09-22 22:37:18 taylor Exp $
+// $Id: MouseEventOSX.java,v 1.4 2005-01-20 21:01:01 meboyce Exp $
 //
 // Will Taylor -- started 12sept02 - in PlanViz
 //
@@ -45,6 +45,9 @@ public class MouseEventOSX {
    * @return - <code>boolean</code> - 
    */
   public static boolean isMouseLeftClick( final MouseEvent mouseEvent, final boolean isMacOSX) {
+		if (isMacOSX && (mouseEvent.getModifiers() & MouseEvent.META_MASK) != 0) {
+			return false;
+		}
     if ((mouseEvent.getModifiers() & MouseEvent.BUTTON1_MASK) > 0) {
       return true;
     } else {
@@ -75,6 +78,9 @@ public class MouseEventOSX {
   public static boolean isMouseLeftClick( final int modifiers, final boolean isMacOSX) {
 //     System.err.println( "isMouseLeftClick modifiers " + modifiers + " mask " +
 //                         MouseEvent.BUTTON1_MASK);
+		if (isMacOSX && (modifiers & MouseEvent.META_MASK) != 0) {
+			return false;
+		}
     if ((modifiers & MouseEvent.BUTTON1_MASK) > 0) {
       return true;
     } else {
@@ -158,6 +164,11 @@ public class MouseEventOSX {
    * @return - <code>boolean</code> - 
    */
   public static boolean isMouseRightClick( final MouseEvent mouseEvent, final boolean isMacOSX) {
+		if (isMacOSX &&
+		    (mouseEvent.getModifiers() & MouseEvent.META_MASK) != 0 &&
+				(mouseEvent.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
+			return true;
+		}
     if ((mouseEvent.getModifiers() & MouseEvent.BUTTON3_MASK) > 0) {
       return true;
     } else {
@@ -189,6 +200,11 @@ public class MouseEventOSX {
   public static boolean isMouseRightClick( final int modifiers, final boolean isMacOSX) {
 //     System.err.println( "isMouseRightClick modifiers " + modifiers + " mask " +
 //                         MouseEvent.BUTTON3_MASK);
+		if (isMacOSX &&
+		    (modifiers & MouseEvent.META_MASK) != 0 &&
+				(modifiers & MouseEvent.BUTTON1_MASK) != 0) {
+			return true;
+		}
     if ((modifiers & MouseEvent.BUTTON3_MASK) > 0) {
       return true;
     } else {

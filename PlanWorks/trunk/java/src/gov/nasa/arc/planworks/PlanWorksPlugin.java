@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PlanWorksPlugin.java,v 1.1 2004-07-15 21:24:45 taylor Exp $
+// $Id: PlanWorksPlugin.java,v 1.2 2005-01-20 21:00:54 meboyce Exp $
 //
 // PlanWorks
 //
@@ -12,7 +12,8 @@
 
 package gov.nasa.arc.planworks;
 
-import javax.swing.JMenuItem;
+import gov.nasa.arc.planworks.plugin.PluginListener;
+import javax.swing.JMenu;
 
 /**
  * <code>PlanWorksPlugin</code> - 
@@ -21,14 +22,14 @@ import javax.swing.JMenuItem;
  *             NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public abstract class PlanWorksPlugin {
+public interface PlanWorksPlugin implements PluginListener {
 
   /**
    * <code>loadPlugin</code>
    *
-   * @param plugInMenu - <code>JMenuItem</code> - 
+   * @param plugInMenu - <code>JMenu</code> - 
    */
-  public static void loadPlugin( JMenuItem plugInMenu) {}
+  public void loadPlugin( JMenu plugInMenu);
 
 } // end interface PlanWorksPlugin
 
