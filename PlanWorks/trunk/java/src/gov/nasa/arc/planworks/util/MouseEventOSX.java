@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: MouseEventOSX.java,v 1.2 2004-02-03 19:23:56 miatauro Exp $
+// $Id: MouseEventOSX.java,v 1.3 2004-09-22 22:37:18 taylor Exp $
 //
 // Will Taylor -- started 12sept02 - in PlanViz
 //
@@ -13,11 +13,10 @@ package gov.nasa.arc.planworks.util;
 import java.awt.event.MouseEvent;
 
   /**
-   * MouseEventOSX - handle mouse clicks for Apple Laptop with
-   *     one-button mouse
-   *         M-left: M-left
-   *         M-middle: shift M-left
-   *         M-right: control M-left
+   * MouseEventOSX - handle mouse clicks for Apple Laptop with three button mouse
+   *         M-left: modifiers = 16
+   *         M-middle: modifiers = 8
+   *         M-right: modifiers = 4
    *
    * @version .0.
    * @author Will Taylor NASA Ames Research Center, Code IC
@@ -46,17 +45,22 @@ public class MouseEventOSX {
    * @return - <code>boolean</code> - 
    */
   public static boolean isMouseLeftClick( final MouseEvent mouseEvent, final boolean isMacOSX) {
-    if ((! isMacOSX) &&
-        (mouseEvent.getModifiers() & mouseEvent.BUTTON1_MASK) > 0) {
-      return true;
-    } else if (isMacOSX &&
-               (((mouseEvent.getModifiers() & mouseEvent.BUTTON1_MASK) > 0) &&
-                (! ((mouseEvent.getModifiers() & mouseEvent.SHIFT_MASK) > 0)) &&
-                (! ((mouseEvent.getModifiers() & mouseEvent.CTRL_MASK) > 0)))) {
+    if ((mouseEvent.getModifiers() & MouseEvent.BUTTON1_MASK) > 0) {
       return true;
     } else {
       return false;
     }
+//     if ((! isMacOSX) &&
+//         (mouseEvent.getModifiers() & mouseEvent.BUTTON1_MASK) > 0) {
+//       return true;
+//     } else if (isMacOSX &&
+//                (((mouseEvent.getModifiers() & mouseEvent.BUTTON1_MASK) > 0) &&
+//                 (! ((mouseEvent.getModifiers() & mouseEvent.SHIFT_MASK) > 0)) &&
+//                 (! ((mouseEvent.getModifiers() & mouseEvent.CTRL_MASK) > 0)))) {
+//       return true;
+//     } else {
+//       return false;
+//     }
   } // end isMouseLeftClick
 
   /**
@@ -69,16 +73,22 @@ public class MouseEventOSX {
    * @return - <code>boolean</code> - 
    */
   public static boolean isMouseLeftClick( final int modifiers, final boolean isMacOSX) {
-    if ((! isMacOSX) && (modifiers & MouseEvent.BUTTON1_MASK) > 0) {
-      return true;
-    } else if (isMacOSX &&
-               (((modifiers & MouseEvent.BUTTON1_MASK) > 0) &&
-                (! ((modifiers & MouseEvent.SHIFT_MASK) > 0)) &&
-                (! ((modifiers & MouseEvent.CTRL_MASK) > 0)))) {
+//     System.err.println( "isMouseLeftClick modifiers " + modifiers + " mask " +
+//                         MouseEvent.BUTTON1_MASK);
+    if ((modifiers & MouseEvent.BUTTON1_MASK) > 0) {
       return true;
     } else {
       return false;
     }
+//     if ((! isMacOSX) && (modifiers & MouseEvent.BUTTON1_MASK) > 0) {
+//       return true;
+//     }               (((modifiers & MouseEvent.BUTTON1_MASK) > 0) &&
+//                 (! ((modifiers & MouseEvent.SHIFT_MASK) > 0)) &&
+//                 (! ((modifiers & MouseEvent.CTRL_MASK) > 0)))) {
+//       return true;
+//     } else {
+//       return false;
+//     }
   } // end isMouseLeftClick
 
   /**
@@ -91,17 +101,22 @@ public class MouseEventOSX {
    * @return - <code>boolean</code> - 
    */
   public static boolean isMouseMiddleClick( final MouseEvent mouseEvent, final boolean isMacOSX) {
-    if ((! isMacOSX) &&
-        (mouseEvent.getModifiers() & mouseEvent.BUTTON2_MASK) > 0) {
-      return true;
-    } else if (isMacOSX &&
-               (((mouseEvent.getModifiers() & mouseEvent.BUTTON1_MASK) > 0) &&
-                ((mouseEvent.getModifiers() & mouseEvent.SHIFT_MASK) > 0) &&
-                (! ((mouseEvent.getModifiers() & mouseEvent.CTRL_MASK) > 0)))) {
+    if ((mouseEvent.getModifiers() & MouseEvent.BUTTON2_MASK) > 0) {
       return true;
     } else {
       return false;
     }
+//     if ((! isMacOSX) &&
+//         (mouseEvent.getModifiers() & mouseEvent.BUTTON2_MASK) > 0) {
+//       return true;
+//     } else if (isMacOSX &&
+//                (((mouseEvent.getModifiers() & mouseEvent.BUTTON1_MASK) > 0) &&
+//                 ((mouseEvent.getModifiers() & mouseEvent.SHIFT_MASK) > 0) &&
+//                 (! ((mouseEvent.getModifiers() & mouseEvent.CTRL_MASK) > 0)))) {
+//       return true;
+//     } else {
+//       return false;
+//     }
   } // end isMouseMiddleClick
 
   /**
@@ -114,16 +129,23 @@ public class MouseEventOSX {
    * @return - <code>boolean</code> - 
    */
   public static boolean isMouseMiddleClick( final int modifiers, final boolean isMacOSX) {
-    if ((! isMacOSX) && (modifiers & MouseEvent.BUTTON2_MASK) > 0) {
-      return true;
-    } else if (isMacOSX &&
-               (((modifiers & MouseEvent.BUTTON1_MASK) > 0) &&
-                ((modifiers & MouseEvent.SHIFT_MASK) > 0) &&
-                (! ((modifiers & MouseEvent.CTRL_MASK) > 0)))) {
+//     System.err.println( "isMouseMiddleClick modifiers " + modifiers + " mask " +
+//                         MouseEvent.BUTTON2_MASK);
+    if ((modifiers & MouseEvent.BUTTON2_MASK) > 0) {
       return true;
     } else {
       return false;
     }
+//     if ((! isMacOSX) && (modifiers & MouseEvent.BUTTON2_MASK) > 0) {
+//       return true;
+//     } else if (isMacOSX &&
+//                (((modifiers & MouseEvent.BUTTON1_MASK) > 0) &&
+//                 ((modifiers & MouseEvent.SHIFT_MASK) > 0) &&
+//                 (! ((modifiers & MouseEvent.CTRL_MASK) > 0)))) {
+//       return true;
+//     } else {
+//       return false;
+//     }
   } // end isMouseMiddleClick
 
   /**
@@ -136,18 +158,23 @@ public class MouseEventOSX {
    * @return - <code>boolean</code> - 
    */
   public static boolean isMouseRightClick( final MouseEvent mouseEvent, final boolean isMacOSX) {
-    if ((! isMacOSX) &&
-        (mouseEvent.getModifiers() & mouseEvent.BUTTON3_MASK) > 0) {
-      return true;
-    } else if (isMacOSX &&
-               ((mouseEvent.getModifiers() & MAC_OSX_CTRL_MOUSE_LEFT) > 0)) {
-      // (((mouseEvent.getModifiers() & mouseEvent.BUTTON1_MASK) > 0) &&
-      // (! ((mouseEvent.getModifiers() & mouseEvent.SHIFT_MASK) > 0)) &&
-      // ((mouseEvent.getModifiers() & mouseEvent.CTRL_MASK) > 0))) {
+    if ((mouseEvent.getModifiers() & MouseEvent.BUTTON3_MASK) > 0) {
       return true;
     } else {
       return false;
     }
+//     if ((! isMacOSX) &&
+//         (mouseEvent.getModifiers() & mouseEvent.BUTTON3_MASK) > 0) {
+//       return true;
+//     } else if (isMacOSX &&
+//                ((mouseEvent.getModifiers() & MAC_OSX_CTRL_MOUSE_LEFT) > 0)) {
+//       // (((mouseEvent.getModifiers() & mouseEvent.BUTTON1_MASK) > 0) &&
+//       // (! ((mouseEvent.getModifiers() & mouseEvent.SHIFT_MASK) > 0)) &&
+//       // ((mouseEvent.getModifiers() & mouseEvent.CTRL_MASK) > 0))) {
+//       return true;
+//     } else {
+//       return false;
+//     }
   } // end isMouseRightClick
 
   /**
@@ -160,17 +187,24 @@ public class MouseEventOSX {
    * @return - <code>boolean</code> - 
    */
   public static boolean isMouseRightClick( final int modifiers, final boolean isMacOSX) {
-    if ((! isMacOSX) && (modifiers & MouseEvent.BUTTON3_MASK) > 0) {
-      return true;
-    } else if (isMacOSX &&
-               ((modifiers & MAC_OSX_CTRL_MOUSE_LEFT) > 0)) {
-      // (((modifiers & MouseEvent.BUTTON1_MASK) > 0) &&
-      // (! ((modifiers & MouseEvent.SHIFT_MASK) > 0)) &&
-      // ((modifiers & MouseEvent.CTRL_MASK) > 0))) {
+//     System.err.println( "isMouseRightClick modifiers " + modifiers + " mask " +
+//                         MouseEvent.BUTTON3_MASK);
+    if ((modifiers & MouseEvent.BUTTON3_MASK) > 0) {
       return true;
     } else {
       return false;
     }
+//     if ((! isMacOSX) && (modifiers & MouseEvent.BUTTON3_MASK) > 0) {
+//       return true;
+//     } else if (isMacOSX &&
+//                ((modifiers & MAC_OSX_CTRL_MOUSE_LEFT) > 0)) {
+//       // (((modifiers & MouseEvent.BUTTON1_MASK) > 0) &&
+//       // (! ((modifiers & MouseEvent.SHIFT_MASK) > 0)) &&
+//       // ((modifiers & MouseEvent.CTRL_MASK) > 0))) {
+//       return true;
+//     } else {
+//       return false;
+//     }
   } // end isMouseRightClick
 
 } // end class MouseEventOSX

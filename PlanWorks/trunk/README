@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.128 2004-09-21 01:07:02 taylor Exp $
+# $Id: README,v 1.129 2004-09-22 22:37:18 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -48,6 +48,11 @@ Latest tagged milestone: (see Summary below)
   > cvs co -r PW_M_16 PlanWorks
 
 
+PLATFORM REQUIREMENTS
+=====================
+Mac OSX - three button mouse is required.
+
+
 PREREQUISITES
 =============
 Set environment varibles:
@@ -57,18 +62,23 @@ Set environment varibles:
     On Linux, e.g.
       setenv JAVA_HOME /home/wtaylor/pub/j2sdk1.4.1_02
     On MacOSX, in terminal window
-      setenv JAVA_HOME /usr
+      setenv JAVA_HOME /System/Library/Frameworks/JavaVM.framework/Home
       or, put this statement in
       $HOME/.MACOSX/env.plist
 
   o PATH - should include Ant 
-    e.g. tcsh: set path = ($path <root>/PlanWorks/java/lib/apache-ant/bin)
+    e.g. tcsh: set path = ($path /home/wtaylor/PlanWorksProject/PlanWorks/java/lib/apache-ant/bin)
 
-  o OSTYPE - linux, solaris, or darwin (MacOS)
-    Should be set by user's standard environment
+  o OSTYPE - linux, solaris, or darwin (MacOSX)
+    Should be set by user's standard environment (may need to be set locally on
+    MacOSX to "darwin", since global setting is "darwin7.0")
 
   o USER - user's account name, used in defining the data base collection
     Should be set by user's standard environment
+
+  o PLANWORKS_HOME - path to this directory
+    On Linux, e.g.
+      setenv PLANWORKS_HOME /home/wtaylor/PlanWorksProject/PlanWorks
 
 
 OPTIONAL CONFIGURATION
@@ -78,13 +88,6 @@ o The default value for the maximum memory required by the Java Virtual Machine
   to this one particular value (Ant is reponsible for this restriction):
 
   > setenv JVM_GC_MAX 975
-
-o PlanWorks starts up without any default project name or default sequence
-  directory.  To specify such, go to PlanWorks/build.xml:
-
-  <!-- specify values for the next two properties to have PlanWorks have a default project -->
-  <property name="default.project.name" value=""/>
-  <property name="default.sequence.dir" value=""/>
 
 
 BUILDING THE PARTIAL PLAN WRITER
