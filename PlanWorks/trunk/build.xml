@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.14 2003-06-26 20:47:18 miatauro Exp $ -->
+<!-- $Id: build.xml,v 1.15 2003-06-30 21:52:45 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
   </description>
 
   <property name="planworks.root" value="${basedir}"/>
-  <property name="exist.home" location="${planworks.root}/java/lib/eXist"/>
-  <property name="exist.conf.file" value="conf-nolog.xml"/>
   <property name="mysql.basedir" value="${planworks.root}/lib/mysql"/>
   <property name="mysql.datadir" value="${mysql.basedir}/data"/>
   <property name="mysql.log" value="${mysql.basedir}/log/mysql.log"/>
@@ -15,12 +13,6 @@
   <property name="mysql.sock" value="${mysql.basedir}/mysql.sock"/>
   <property name="mysql.tmpdir" value="${mysql.basedir}/tmp"/>
   <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
-  <property name="default.project.dir" location="${planworks.root}/xml/test"/>
-  <property name="projects.xml.data.dir" location="${planworks.root}/xml/db/proj"/>
-  <property name="projects.xml.data.pathname" 
-      location="${planworks.root}/xml/db/proj/projects.xml"/>
-  <property name="xml.dtd.pathname" 
-      location="${planworks.root}/xml/dtd/PlanDb.dtd"/>
   <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
   <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
 
@@ -32,11 +24,6 @@
   <target name="planWorksProf" depends="check_jvm_2"
     description="-- launch application with profiling info">
     <ant dir="./" antfile="planWorks.xml" target="planWorksProf"/>
-  </target>
-
-  <target name="existTest"  depends="check_jvm_2, cleanDb"
-    description="-- prototyping test (compile, cleanDb dependencies)">
-    <ant dir="./test" antfile="exist-test.xml"/>
   </target>
 
   <target name="timelineViewTest" depends="check_jvm_2, cleanDb" 
@@ -57,12 +44,14 @@
 
   <target name="cleanDb" unless="no.clean.db"
       description="-- delete loaded projects from data base, unless -Dno.clean.db=yes">
+<!--
     <delete>
       <fileset dir="${planworks.root}/xml/db/data" includes="*.dbx"/>
       <fileset dir="${planworks.root}/xml/db/logs" includes="*.log"/>
       <fileset dir="${planworks.root}/xml/db/logs" includes="*.log*"/>
       <fileset dir="${planworks.root}/xml/db/proj" includes="*.xml"/>
     </delete>
+-->
   </target>
 
   <!-- JVM checking from Tarang Patel -->

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.2 2003-06-25 17:42:55 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.3 2003-06-30 21:52:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -34,7 +34,7 @@ import com.nwoods.jgo.JGoListPosition;
 import com.nwoods.jgo.JGoPort;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
-
+import com.nwoods.jgo.layout.JGoForceDirectedAutoLayout;
 
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -140,6 +140,9 @@ public class TokenNetworkView extends VizView {
 
     createTokenNodes();
 
+    JGoForceDirectedAutoLayout layout = new JGoForceDirectedAutoLayout( jGoDocument);
+    layout.performLayout();
+
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
@@ -160,6 +163,9 @@ public class TokenNetworkView extends VizView {
     jGoDocument.deleteContents();
    
     createTokenNodes();
+
+    JGoForceDirectedAutoLayout layout = new JGoForceDirectedAutoLayout( jGoDocument);
+    layout.performLayout();
   } // end redraw
 
 

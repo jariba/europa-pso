@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.14 2003-06-25 17:04:04 taylor Exp $
+// $Id: PlanWorks.java,v 1.15 2003-06-30 21:52:46 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -15,25 +15,33 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.util.FileUtils;
+import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
-import gov.nasa.arc.planworks.util.ParseProjectUrl;
+import gov.nasa.arc.planworks.util.DirectoryChooser;
+import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
@@ -114,11 +122,11 @@ public class PlanWorks extends MDIDesktopFrame {
    *
    */
   public static PlanWorks planWorks;
-
   private static JMenu projectMenu;
+  private final DirectoryChooser sequenceDirChooser;
 
-  private String defaultProjectUrl;
-  private String currentProjectUrl;
+  private String currentProjectName;
+  private static String sequenceDirectory;
   private PwProject currentProject;
   private ViewManager viewManager;
 
@@ -129,21 +137,15 @@ public class PlanWorks extends MDIDesktopFrame {
    */                                
   public PlanWorks( JMenu[] constantMenus) {
     super( name, constantMenus);
-    currentProjectUrl = null;
+    sequenceDirChooser = new DirectoryChooser();
+    createDirectoryChooser();
+    sequenceDirectory = "";
+    currentProjectName = "";
     currentProject = null;
     viewManager = null;
     // Closes from title bar 
     addWindowListener( new WindowAdapter() {
         public void windowClosing( WindowEvent e) {
-//           if (JOptionPane.showConfirmDialog
-//               (PlanWorks.this, "", "Exiting: Save Active Projects?",
-//                JOptionPane.YES_NO_OPTION) == 0) {
-            try {
-              PwProject.saveProjects();
-            } catch (Exception excp) {
-              System.err.println( excp );
-            }
-//           }
           System.exit( 0);
         }});
     this.setSize( DESKTOP_FRAME_WIDTH, DESKTOP_FRAME_HEIGHT);
@@ -158,13 +160,10 @@ public class PlanWorks extends MDIDesktopFrame {
         break;
       }
     }
-    // default project url
-    defaultProjectUrl =
-      FileUtils.getCanonicalPath( System.getProperty( "default.project.dir"));
     this.setVisible( true);
 
     setProjectMenuEnabled( "Create ...", true);
-    if (PwProject.listProjects().size() > 0) {
+    if ((PwProject.listProjects() != null) && (PwProject.listProjects().size() > 0)) {
       setProjectMenuEnabled( "Open ...", true);
       setProjectMenuEnabled( "Delete ...", true);
     } else {
@@ -175,12 +174,12 @@ public class PlanWorks extends MDIDesktopFrame {
 
 
   /**
-   * <code>getCurrentProjectUrl</code>
+   * <code>getCurrentProjectName</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getCurrentProjectUrl() {
-    return currentProjectUrl;
+  public String getCurrentProjectName() {
+    return currentProjectName;
   }
 
   /**
@@ -202,15 +201,6 @@ public class PlanWorks extends MDIDesktopFrame {
   }
 
   /**
-   * <code>getDefaultProjectUrl</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public String getDefaultProjectUrl() {
-    return defaultProjectUrl;
-  }
-
-  /**
    * <code>setPlanWorks</code> - needed by TimelineViewTest (JFCUnit Test)
    *
    * @param planWorksInstance - <code>PlanWorks</code> - 
@@ -219,18 +209,18 @@ public class PlanWorks extends MDIDesktopFrame {
     planWorks = planWorksInstance;
   }
 
-  private List getUrlsLessCurrent() {
-    List projectUrls = PwProject.listProjects();
-    List urlsLessCurrent = new ArrayList();
-    for (int i = 0, n = projectUrls.size(); i < n; i++) {
-      String projectUrl = (String) projectUrls.get( i);
+  private List getProjectsLessCurrent() {
+    List projectNames = PwProject.listProjects();
+    List projectsLessCurrent = new ArrayList();
+    for (int i = 0, n = projectNames.size(); i < n; i++) {
+      String projectName = (String) projectNames.get( i);
       // discard current project
-      if (! projectUrl.equals( this.currentProjectUrl)) {
-        urlsLessCurrent.add( projectUrl);
+      if (! projectName.equals( this.currentProjectName)) {
+        projectsLessCurrent.add( projectName);
       }
     }
-    return urlsLessCurrent;
-  } // end getUrlsLessCurrent
+    return projectsLessCurrent;
+  } // end getProjectsLessCurrent
 
 
   private static void setProjectMenuEnabled( String textName, boolean isEnabled) {
@@ -254,15 +244,6 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenuItem exitItem = new JMenuItem( "Exit");
     exitItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent e) {
-//           if (JOptionPane.showConfirmDialog
-//               (PlanWorks.planWorks, "", "Exiting: Save Active Projects?",
-//                JOptionPane.YES_NO_OPTION) == 0) {
-            try {
-              PwProject.saveProjects();
-            } catch (Exception excp) {
-              System.err.println( excp );
-            }
-//           }
           System.exit(0);
         } });
     fileMenu.add( exitItem);
@@ -318,14 +299,6 @@ public class PlanWorks extends MDIDesktopFrame {
         currentProject = instantiatedProject;
         JMenu partialPlanMenu = clearSeqPartialPlanViewMenu();
         addSeqPartialPlanViewMenu( instantiatedProject, partialPlanMenu);
-        if (type.equals( "create")) {
-          // cache the project info
-          try {
-            PwProject.saveProjects();
-          } catch (Exception excp) {
-            System.err.println( excp );
-          }
-        }
         // clear the old project's views
         if (viewManager != null) {
           viewManager.clearViewSets();
@@ -342,24 +315,29 @@ public class PlanWorks extends MDIDesktopFrame {
     PwProject project = null;
     while (! isProjectCreated) {
 
-      ParseProjectUrl urlMenuItem = new ParseProjectUrl( this);
+      ProjectNameDialog projectNameDialog = new ProjectNameDialog( this);
 
-      String inputUrl = urlMenuItem.getTypedText();
-      if (inputUrl == null) { // user selected Cancel
+      String inputName = projectNameDialog.getTypedText();
+      if ((inputName == null) || (inputName.equals( ""))) {
         return null;
-      } else {
-        if (! (new File( inputUrl)).exists()) {
-          JOptionPane.showMessageDialog
-            (PlanWorks.this, inputUrl, "URL Not Found", JOptionPane.ERROR_MESSAGE);
-          continue;        
-        }
       }
       try {
+        // ask user for a single sequence directory of partialPlan directories
+        // or use dialog to do multiple selection of sequence dirs of pp dirs
+        int returnVal = sequenceDirChooser.showDialog( this, "");
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          if (! validateSequenceDirectory( sequenceDirectory)) {
+            continue;
+          }
+        } else {
+          return null;
+        }
+        project = PwProject.createProject( inputName);
+        project.addPlanningSequence( sequenceDirectory);
         isProjectCreated = true;
-        project = PwProject.createProject( inputUrl);
-        currentProjectUrl = inputUrl;
-        System.err.println( "Create Project: " + currentProjectUrl);
-        this.setTitle( name + "  --  project: " + currentProjectUrl);
+        currentProjectName = inputName;
+        System.err.println( "Create Project: " + currentProjectName);
+        this.setTitle( name + "  --  project: " + currentProjectName);
         setProjectMenuEnabled( "Delete ...", true);
         if (PwProject.listProjects().size() > 1) {
           setProjectMenuEnabled( "Open ...", true);
@@ -378,21 +356,111 @@ public class PlanWorks extends MDIDesktopFrame {
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
           System.err.println( dupExcep);
           isProjectCreated = false; 
+      } catch (SQLException sqlExcep) {
+        int index = sqlExcep.getMessage().indexOf( ":");
+        JOptionPane.showMessageDialog
+          (PlanWorks.this, sqlExcep.getMessage().substring( index + 1),
+           "SQL Exception", JOptionPane.ERROR_MESSAGE);
+          System.err.println( sqlExcep);
+          isProjectCreated = false; 
       }
     }
     return project;
   } // end createProject
 
+  private boolean validateSequenceDirectory( String sequenceDirectory) {
+    System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
+                        sequenceDirectory + "'");
+    // determine sequence's partial plan directories
+    List partialPlanDirs = new ArrayList();
+    String [] fileNames = new File( sequenceDirectory).list();
+    for (int i = 0; i < fileNames.length; i++) {
+      String fileName = fileNames[i];
+      if ((! fileName.equals( "CVS")) &&
+          (new File( sequenceDirectory + System.getProperty( "file.separator") +
+                     fileName)).isDirectory()) {
+        System.err.println( "Sequence " + sequenceDirectory +
+                            " => partialPlanDirName: " + fileName);
+        partialPlanDirs.add( fileName);
+      }
+    }
+    if (partialPlanDirs.size() == 0) {
+      JOptionPane.showMessageDialog
+        (PlanWorks.this, sequenceDirectory,
+         "Sequence Directory Does Not Have Any Partial Plan Directories",
+         JOptionPane.ERROR_MESSAGE);
+      return false;
+    }
+    // determine existence of the 14 SQL-input files in partial plan directories (steps)
+    for (int i = 0, n = partialPlanDirs.size(); i < n; i++) {
+      String partialPlanPath = sequenceDirectory + System.getProperty( "file.separator") +
+        partialPlanDirs.get( i);
+      fileNames = new File( partialPlanPath).list();
+//       if (fileNames.length != DbConstants.NUMBER_OF_PP_FILES) {
+//         JOptionPane.showMessageDialog
+//           (PlanWorks.this, partialPlanPath,
+//            "Partial Plan Directory Does Not Have " + DbConstants.NUMBER_OF_PP_FILES +
+//            " files", JOptionPane.ERROR_MESSAGE);
+//         return false;
+//       } else
+      if (! validateSQLInputFiles( partialPlanPath, fileNames)) {
+        return false;
+      }
+    }
+    return true;
+  } // end validateSequenceDirectory
+
+  private boolean validateSQLInputFiles( String partialPlanPath, String[] fileNames) {
+    // determine whether the 14 SQL-input files have the correct extentions.
+    // Using Arrays.asList( DbConstants.PARTIAL_PLAN_FILE_EXTS)
+    // gets java.lang.UnsupportedOperationException
+    //      at java.util.AbstractList.remove(AbstractList.java:167)
+    List requiredFiles = new ArrayList();
+    requiredFiles.add( DbConstants.PP_PARTIAL_PLAN_EXT);
+    requiredFiles.add( DbConstants.PP_OBJECTS_EXT);
+    requiredFiles.add( DbConstants.PP_TIMELINES_EXT);
+    requiredFiles.add( DbConstants.PP_SLOTS_EXT);
+    requiredFiles.add( DbConstants.PP_TOKENS_EXT);
+    requiredFiles.add( DbConstants.PP_VARIABLES_EXT);
+    requiredFiles.add( DbConstants.PP_PREDICATES_EXT);
+    requiredFiles.add( DbConstants.PP_PARAMETERS_EXT);
+    requiredFiles.add( DbConstants.PP_ENUMERATED_DOMAINS_EXT);
+    requiredFiles.add( DbConstants.PP_INTERVAL_DOMAINS_EXT);
+    requiredFiles.add( DbConstants.PP_CONSTRAINTS_EXT);
+    requiredFiles.add( DbConstants.PP_TOKEN_RELATIONS_EXT);
+    requiredFiles.add( DbConstants.PP_PARAM_VAR_TOKEN_MAP_EXT);
+    requiredFiles.add( DbConstants.PP_CONSTRAINT_VAR_MAP_EXT);
+    for (int i = 0, n = fileNames.length; i < n; i++) {
+      String fileName = fileNames[i];
+      int index = fileName.indexOf( ".");
+      String fileExt = fileName.substring( index);
+      // System.err.println( "fileName " + fileName);
+      for (int j = 0, m = requiredFiles.size(); j < m; j++) {
+        if (fileExt.equals( requiredFiles.get( j))) {
+          // System.err.println( "found " + requiredFiles.get( j));
+          requiredFiles.remove( j);
+          break;
+        }
+      }
+    }
+    if (requiredFiles.size() != 0) {
+      JOptionPane.showMessageDialog
+        (PlanWorks.this, requiredFiles,
+         "Partial Plan Files Not Found", JOptionPane.ERROR_MESSAGE);
+      return false;
+    }
+    return true;
+  } // end validateSQLInputFiles
 
   private PwProject openProject() {
     PwProject project = null;
     List projectUrls = PwProject.listProjects();
     // System.err.println( "projectUrls " + projectUrls);
-    List urlsLessCurrent = getUrlsLessCurrent();
-    // System.err.println( "urlsLessCurrent " + urlsLessCurrent);
-    Object[] options = new Object[urlsLessCurrent.size()];
-    for (int i = 0, n = urlsLessCurrent.size(); i < n; i++) {
-        options[i] = (String) urlsLessCurrent.get( i);
+    List namesLessCurrent = getProjectsLessCurrent();
+    // System.err.println( "namesLessCurrent " + namesLessCurrent);
+    Object[] options = new Object[namesLessCurrent.size()];
+    for (int i = 0, n = namesLessCurrent.size(); i < n; i++) {
+        options[i] = (String) namesLessCurrent.get( i);
     }
     Object response = JOptionPane.showInputDialog
       ( this, "", "Open Project", JOptionPane.QUESTION_MESSAGE, null,
@@ -401,13 +469,13 @@ public class PlanWorks extends MDIDesktopFrame {
     if (response instanceof String) {
       for (int i = 0, n = options.length; i < n; i++) {
         if (((String) options[i]).equals( response)) {
-          String projectUrl = (String) urlsLessCurrent.get( i);
+          String projectName = (String) namesLessCurrent.get( i);
           try {
-            project = PwProject.getProject( projectUrl);
-            currentProjectUrl = projectUrl;
-            System.err.println( "Open Project: " + currentProjectUrl);
-            this.setTitle( name + "  --  project: " + currentProjectUrl);
-            if (getUrlsLessCurrent().size() == 0) {
+            project = PwProject.getProject( projectName);
+            currentProjectName = projectName;
+            System.err.println( "Open Project: " + currentProjectName);
+            this.setTitle( name + "  --  project: " + currentProjectName);
+            if (getProjectsLessCurrent().size() == 0) {
               setProjectMenuEnabled( "Open ...", false);
             }
           } catch (ResourceNotFoundException rnfExcep) {
@@ -444,10 +512,10 @@ public class PlanWorks extends MDIDesktopFrame {
 
 
   private void deleteProject() {
-    List projectUrls = PwProject.listProjects();
-    Object[] options = new Object[projectUrls.size()];
-    for (int i = 0, n = projectUrls.size(); i < n; i++) {
-      options[i] = (String) projectUrls.get( i);
+    List projectNames = PwProject.listProjects();
+    Object[] options = new Object[projectNames.size()];
+    for (int i = 0, n = projectNames.size(); i < n; i++) {
+      options[i] = (String) projectNames.get( i);
     }
     Object response = JOptionPane.showInputDialog
       ( this, "", "Delete Project", JOptionPane.QUESTION_MESSAGE, null,
@@ -455,17 +523,14 @@ public class PlanWorks extends MDIDesktopFrame {
     if (response instanceof String) {
       for (int i = 0, n = options.length; i < n; i++) {
         if (((String) options[i]).equals( response)) {
-          String projectUrl = (String) projectUrls.get( i);
-          System.out.println( "Delete Project: " + projectUrl);
+          String projectName = (String) projectNames.get( i);
+          System.out.println( "Delete Project: " + projectName);
           try {
-              PwProject.getProject( projectUrl).close();
-            try {
-              PwProject.saveProjects();
-            } catch (Exception excp) {
-              System.err.println( excp );
-            }
-            if ((this.currentProjectUrl != null) &&
-                this.currentProjectUrl.equals( projectUrl)) {
+
+              PwProject.getProject( projectName).delete();
+
+            if ((! this.currentProjectName.equals( "")) &&
+                this.currentProjectName.equals( projectName)) {
               viewManager.clearViewSets();
               this.setTitle( name);
               clearSeqPartialPlanViewMenu();
@@ -473,7 +538,7 @@ public class PlanWorks extends MDIDesktopFrame {
             if (PwProject.listProjects().size() == 0) {
               setProjectMenuEnabled( "Delete ...", false);
               setProjectMenuEnabled( "Open ...", false);
-            } else if (getUrlsLessCurrent().size() == 0) {
+            } else if (getProjectsLessCurrent().size() == 0) {
               setProjectMenuEnabled( "Open ...", false);
             } else {
               setProjectMenuEnabled( "Open ...", true);
@@ -521,29 +586,40 @@ public class PlanWorks extends MDIDesktopFrame {
       seqPartialPlanViewMenu = new JMenu( "Partial Plan");
     }
     System.err.println( "buildSeqPartialPlanViewMenu");
-    Iterator seqNamesItr = project.getPlanningSequenceNames().iterator();
-    while (seqNamesItr.hasNext()) {
-      String seqName = (String) seqNamesItr.next();
-      System.err.println( "  planningSequenceName " + seqName);
+    Iterator seqUrlsItr = project.listPlanningSequences().iterator();
+    while (seqUrlsItr.hasNext()) {
+      String seqUrl = (String) seqUrlsItr.next();
+      System.err.println( " seqUrl " + seqUrl);
+      String seqName = getUrlLeaf( seqUrl);
       JMenu seqMenu = new JMenu( seqName);
       seqPartialPlanViewMenu.add( seqMenu);
-      Iterator ppNamesItr = project.getPartialPlanNames( seqName).iterator();
-      while (ppNamesItr.hasNext()) {
-        String partialPlanName = (String) ppNamesItr.next();
-        System.err.println( "    partialPlanName " + partialPlanName);
-        JMenu partialPlanMenu = new JMenu( partialPlanName);
-        buildViewSubMenu( partialPlanMenu, seqName, partialPlanName);
-        seqMenu.add( partialPlanMenu);
+
+      try {
+        Iterator ppNamesItr =
+          project.getPlanningSequence( seqUrl).listPartialPlanNames().iterator();
+        while (ppNamesItr.hasNext()) {
+          String partialPlanName = (String) ppNamesItr.next();
+          System.err.println( "    partialPlanName " + partialPlanName);
+          JMenu partialPlanMenu = new JMenu( partialPlanName);
+          buildViewSubMenu( partialPlanMenu, seqUrl, partialPlanName);
+          seqMenu.add( partialPlanMenu);
+        }
+      } catch (ResourceNotFoundException rnfExcep) {
+        int index = rnfExcep.getMessage().indexOf( ":");
+        JOptionPane.showMessageDialog
+          (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
+           "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+        System.err.println( rnfExcep);
       }
     }
     return seqPartialPlanViewMenu;
   } // end buildSeqPartialPlanViewMenu
 
 
-  private void buildViewSubMenu( JMenu partialPlanMenu, String seqName,
+  private void buildViewSubMenu( JMenu partialPlanMenu, String seqUrl,
                                  String partialPlanName) {
     SeqPartPlanViewMenuItem constraintNetworkViewItem =
-          new SeqPartPlanViewMenuItem( "Constraint Network", seqName, partialPlanName);
+          new SeqPartPlanViewMenuItem( "Constraint Network", seqUrl, partialPlanName);
     constraintNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -552,7 +628,7 @@ public class PlanWorks extends MDIDesktopFrame {
     partialPlanMenu.add( constraintNetworkViewItem);
 
     SeqPartPlanViewMenuItem temporalExtentViewItem =
-          new SeqPartPlanViewMenuItem( "Temporal Extent", seqName, partialPlanName);
+          new SeqPartPlanViewMenuItem( "Temporal Extent", seqUrl, partialPlanName);
     temporalExtentViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -561,7 +637,7 @@ public class PlanWorks extends MDIDesktopFrame {
     partialPlanMenu.add( temporalExtentViewItem);
 
     SeqPartPlanViewMenuItem temporalNetworkViewItem =
-          new SeqPartPlanViewMenuItem( "Temporal Network", seqName, partialPlanName);
+          new SeqPartPlanViewMenuItem( "Temporal Network", seqUrl, partialPlanName);
     temporalNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -569,7 +645,7 @@ public class PlanWorks extends MDIDesktopFrame {
             }});
     partialPlanMenu.add( temporalNetworkViewItem);
     SeqPartPlanViewMenuItem timelineViewItem =
-          new SeqPartPlanViewMenuItem( "Timeline", seqName, partialPlanName);
+          new SeqPartPlanViewMenuItem( "Timeline", seqUrl, partialPlanName);
     timelineViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -578,7 +654,7 @@ public class PlanWorks extends MDIDesktopFrame {
     partialPlanMenu.add( timelineViewItem);
 
     SeqPartPlanViewMenuItem tokenNetworkViewItem =
-          new SeqPartPlanViewMenuItem( "Token Network", seqName, partialPlanName);
+          new SeqPartPlanViewMenuItem( "Token Network", seqUrl, partialPlanName);
     tokenNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -623,12 +699,14 @@ public class PlanWorks extends MDIDesktopFrame {
 
   class CreatePartialPlanViewThread implements Runnable {
 
+    private String seqUrl;
     private String sequenceName;
     private String partialPlanName;
     private PwPartialPlan partialPlan;
     private String viewName;
 
     public CreatePartialPlanViewThread( String viewName, SeqPartPlanViewMenuItem menuItem) {
+      this.seqUrl = menuItem.getSeqUrl();
       this.sequenceName = menuItem.getSequenceName();
       this.partialPlanName = menuItem.getPartialPlanName();
       this.viewName = viewName;
@@ -636,13 +714,10 @@ public class PlanWorks extends MDIDesktopFrame {
 
     public void run() { 
       try {
-        String sequenceUrl = currentProjectUrl + System.getProperty( "file.separator") +
-          sequenceName;
-        PwPlanningSequence planSequence = currentProject.getPlanningSequence( sequenceUrl);
-        PwPartialPlan partialPlan = planSequence.getPartialPlan( partialPlanName);
-        if (partialPlan == null) {
-          partialPlan = planSequence.addPartialPlan( sequenceUrl, partialPlanName);
-        }
+        PwPlanningSequence planSequence =
+          currentProject.getPlanningSequence( seqUrl);
+
+//         PwPartialPlan partialPlan = planSequence.addPartialPlan( partialPlanName);
 
         renderView( viewName, sequenceName, partialPlanName, partialPlan);
 
@@ -721,15 +796,25 @@ public class PlanWorks extends MDIDesktopFrame {
 
 
 
-  class SeqPartPlanViewMenuItem extends JMenuItem {
+  /**
+   * <code>SeqPartPlanViewMenuItem</code> - class is public for JFCUnit Test classes
+   *
+   */
+  public class SeqPartPlanViewMenuItem extends JMenuItem {
 
+    private String seqUrl;
     private String sequenceName;
     private String partialPlanName;
 
-    public SeqPartPlanViewMenuItem( String viewName, String seqName, String partialPlanName) {
+    public SeqPartPlanViewMenuItem( String viewName, String seqUrl, String partialPlanName) {
       super( viewName);
-      this.sequenceName = seqName;
+      this.seqUrl = seqUrl;
+      this.sequenceName = getUrlLeaf( seqUrl);
       this.partialPlanName = partialPlanName;
+    }
+
+    public String getSeqUrl() {
+      return seqUrl;
     }
 
     public String getSequenceName() {
@@ -742,6 +827,34 @@ public class PlanWorks extends MDIDesktopFrame {
 
   } // end class SeqPartPlanViewMenuItem
 
+  private final void createDirectoryChooser() {
+    sequenceDirChooser.setCurrentDirectory( new File( planWorksRoot));
+    sequenceDirChooser.setDialogTitle
+      ( "Select Sequence Directory of Partial Plan Directorie(s)");
+    sequenceDirChooser.getOkButton().addActionListener( new ActionListener()
+      {
+        public void actionPerformed(ActionEvent e) {
+          File ff = sequenceDirChooser.getCurrentDirectory();
+          String dirChoice = ff.getAbsolutePath();
+          if ((dirChoice != null) && (dirChoice.length() > 0) &&
+              (new File( dirChoice)).isDirectory()) {
+            // System.err.println( "directory choice " + dirChoice);
+            PlanWorks.sequenceDirectory = dirChoice;
+            sequenceDirChooser.approveSelection();
+          } else {
+            JOptionPane.showMessageDialog
+              ( PlanWorks.this,
+                "`" + dirChoice + "'\ndoes not exist or is not a directory.",
+                "No Directory Selected", JOptionPane.ERROR_MESSAGE);
+          }
+        }
+      });
+  } // end createDirectoryChooser
+
+  private String getUrlLeaf( String seqUrl) {
+    int index = seqUrl.lastIndexOf( System.getProperty( "file.separator"));
+    return seqUrl.substring( index + 1);
+  }
 
   /**
    * <code>main</code> - pass in JFrame name
@@ -763,16 +876,22 @@ public class PlanWorks extends MDIDesktopFrame {
     planWorksRoot = System.getProperty( "planworks.root");
     userCollectionName = System.getProperty( "file.separator") + System.getProperty( "user");
 
-    try {
-      PwProject.initProjects();
-    } catch (ResourceNotFoundException rnfExcep) {
-      System.err.println( rnfExcep);
-      System.exit( -1);
-    }
-
     planWorks = new PlanWorks( buildConstantMenus());
 
+    try {
+      PwProject.initProjects();
+    } catch (IOException excp) {
+      System.err.println( excp);
+      System.exit( -1);
+    } catch (ResourceNotFoundException rnfExcp) {
+      System.err.println( rnfExcp);
+      System.exit( -1);
+    } catch (SQLException sqlExcp) {
+      System.err.println( sqlExcp);
+      System.exit( -1);
+    }
   } // end main
 
 
 } // end  class PlanWorks
+        

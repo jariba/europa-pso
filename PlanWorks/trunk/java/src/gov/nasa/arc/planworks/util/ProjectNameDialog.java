@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ParseProjectUrl.java,v 1.1 2003-06-17 22:19:02 taylor Exp $
+// $Id: ProjectNameDialog.java,v 1.1 2003-06-30 21:52:47 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -23,13 +23,13 @@ import gov.nasa.arc.planworks.PlanWorks;
 
 
 /**
- * <code>ParseProjectUrl</code> - create JOptionPane for user to enter project url
+ * <code>ProjectNameDialog</code> - create JOptionPane for user to enter project name
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
                     NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ParseProjectUrl extends JDialog {
+public class ProjectNameDialog extends JDialog {
 
   private String typedText = null;
   private JOptionPane optionPane;
@@ -38,26 +38,22 @@ public class ParseProjectUrl extends JDialog {
   private String btnString2;
 
   /**
-   * <code>ParseProjectUrl</code> - constructor 
+   * <code>ProjectNameDialog</code> - constructor 
    *
    * @param planWorks - <code>PlanWorks</code> - 
    */
-  public ParseProjectUrl ( PlanWorks planWorks) {
+  public ProjectNameDialog ( PlanWorks planWorks) {
     // modal dialog - blocks other activity
     super( planWorks, true);
     setTitle( "Create Project");
-    final String msgString1 = "url (string)";
+    final String msgString1 = "name (string)";
     textField = new JTextField( 30);
     Object[] array = {msgString1, textField};
     btnString1 = "Enter";
     btnString2 = "Cancel";
     Object[] options = {btnString1, btnString2};
     // current value
-    String url = planWorks.getCurrentProjectUrl();
-    if (url == null) {
-      url =  planWorks.getDefaultProjectUrl();
-    }
-    textField.setText( String.valueOf( url));
+    textField.setText( planWorks.getCurrentProjectName());
     optionPane = new JOptionPane
       ( array, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
         null, options, options[0]);
@@ -137,4 +133,4 @@ public class ParseProjectUrl extends JDialog {
     return typedText;
   }
 
-} // end class ParseProjectUrl
+} // end class ProjectNameDialog
