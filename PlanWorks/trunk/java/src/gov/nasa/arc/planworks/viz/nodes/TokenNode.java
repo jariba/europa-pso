@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.6 2003-07-15 00:33:52 taylor Exp $
+// $Id: TokenNode.java,v 1.7 2003-07-16 01:15:43 taylor Exp $
 //
 // PlanWorks
 //
@@ -109,6 +109,15 @@ public class TokenNode extends BasicNode {
    */
   public PwToken getToken() {
     return token;
+  }
+
+  /**
+   * <code>isFreeToken</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isFreeToken() {
+    return isFreeToken;
   }
 
   /**

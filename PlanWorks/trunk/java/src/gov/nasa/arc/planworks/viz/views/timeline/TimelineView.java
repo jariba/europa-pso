@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.21 2003-07-15 16:12:43 miatauro Exp $
+// $Id: TimelineView.java,v 1.22 2003-07-16 01:15:43 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -248,7 +248,7 @@ public class TimelineView extends VizView {
       objectCnt += 1;
     }
     // free tokens
-    y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
+    y += ViewConstants.TIMELINE_VIEW_Y_INIT;
     List freeTokenList = partialPlan.getFreeTokenList();
     // System.err.println( "freeTokenList " + freeTokenList);
     Iterator freeTokenItr = freeTokenList.iterator();
@@ -259,7 +259,7 @@ public class TimelineView extends VizView {
                                                isFreeToken, this);
       freeTokenNodeList.add( freeTokenNode);
       jGoDocument.addObjectAtTail( freeTokenNode);
-      x += freeTokenNode.getSize().getWidth();
+      x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;
     }
     timelineNodeList = tmpTimelineNodeList;
   } // end createTimelineAndSlotNodes
@@ -335,8 +335,8 @@ public class TimelineView extends VizView {
   // set them visible
   private void setNodesVisible() {
     // print content spec
-    System.err.println( "TimelineView - contentSpec");
-    viewSet.printSpec();
+    // System.err.println( "TimelineView - contentSpec");
+    // viewSet.printSpec();
     validTokenIds = viewSet.getValidTokenIds();
     displayedTokenIds = new ArrayList();
     Iterator timelineIterator = timelineNodeList.iterator();

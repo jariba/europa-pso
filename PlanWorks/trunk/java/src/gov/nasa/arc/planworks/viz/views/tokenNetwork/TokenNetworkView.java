@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.10 2003-07-15 16:12:30 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.11 2003-07-16 01:15:43 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,6 +19,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
@@ -59,6 +60,7 @@ import gov.nasa.arc.planworks.viz.views.VizView;
 public class TokenNetworkView extends VizView {
 
   private PwPartialPlan partialPlan;
+  private long startTimeMSecs;
   private ViewSet viewSet;
   private JGoView jGoView;
   private JGoDocument jGoDocument;
@@ -80,9 +82,11 @@ public class TokenNetworkView extends VizView {
    * @param partialPlan - <code>PwPartialPlan</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    */
-  public TokenNetworkView( PwPartialPlan partialPlan, ViewSet viewSet) {
+  public TokenNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
+                           ViewSet viewSet) {
     super( partialPlan);
     this.partialPlan = partialPlan;
+    this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
     this.nodeList = null;
     this.tmpNodeList = new ArrayList();
@@ -148,10 +152,8 @@ public class TokenNetworkView extends VizView {
     // setVisible( true | false) depending on ContentSpec
     setNodesVisible();
 
-    JGoLayeredDigraphAutoLayout layout = new JGoLayeredDigraphAutoLayout( jGoDocument);
-    layout.setDirectionOption( JGoLayeredDigraphAutoLayout.LD_DIRECTION_DOWN);
-    layout.setColumnSpacing( layout.getColumnSpacing() / 4);
-    layout.setLayerSpacing( layout.getLayerSpacing() / 4);
+    LayeredDigraphAutoLayout layout =
+      new LayeredDigraphAutoLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
 
     // print out info for created nodes
@@ -166,13 +168,12 @@ public class TokenNetworkView extends VizView {
    *
    */
   public void redraw() {
+    long startTimeMSecs = (new Date()).getTime();
     // setVisible(true | false) depending on keys
     setNodesVisible();
 
-    JGoLayeredDigraphAutoLayout layout = new JGoLayeredDigraphAutoLayout( jGoDocument);
-    layout.setDirectionOption( JGoLayeredDigraphAutoLayout.LD_DIRECTION_DOWN);
-    layout.setColumnSpacing( layout.getColumnSpacing() / 4);
-    layout.setLayerSpacing( layout.getLayerSpacing() / 4);
+    LayeredDigraphAutoLayout layout =
+      new LayeredDigraphAutoLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
   } // end redraw
 
@@ -334,7 +335,7 @@ public class TokenNetworkView extends VizView {
     // free tokens
     List freeTokenList = partialPlan.getFreeTokenList();
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
-    System.err.println( "token network view freeTokenList " + freeTokenList);
+    // System.err.println( "token network view freeTokenList " + freeTokenList);
     Iterator freeTokenItr = freeTokenList.iterator();
     boolean isFreeToken = true; objectCnt = -1;
     while (freeTokenItr.hasNext()) {
@@ -444,8 +445,8 @@ public class TokenNetworkView extends VizView {
 
   private void setNodesVisible() {
     // print content spec
-    System.err.println( "Token Network View - contentSpec");
-    viewSet.printSpec();
+    // System.err.println( "Token Network View - contentSpec");
+    // viewSet.printSpec();
     validTokenIds = viewSet.getValidTokenIds();
     displayedTokenIds = new ArrayList();
     Iterator tokenNodeIterator = nodeList.iterator();

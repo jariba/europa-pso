@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.4 2003-07-12 01:36:30 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.5 2003-07-16 01:15:42 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -12,6 +12,7 @@ import java.awt.Container;
 // import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -105,22 +106,25 @@ public class PlanWorksTest extends JFCTestCase{
     PlanWorks.setPlanWorks( planWorks);
 
     planWorks.setCurrentProjectName( "");
-    // set proper test files
-    String[] args = {};
+    sequenceName = "seq0";
+    partialPlanName = "step0";
+    // set proper test filesi
     if ((testType.equals( "create")) || (testType.equals("contentSpec"))) {
       // System.getProperty( "default.project.name")
       // System.getProperty( "default.sequence.dir")
-      projectName = "test";
-      sequenceName = "sqlseq";
-      partialPlanName = "pp1";
+      projectName = "monkey";
       System.setProperty( "default.project.name", projectName);
       System.setProperty( "default.sequence.dir",
                           System.getProperty( "planworks.test.data.dir") +
                           System.getProperty( "file.separator") + sequenceName);
-    } else if (testType.equals( "planGen0")) {
-      projectName = "planGen0";
-      sequenceName = "seq0";
-      partialPlanName = "step0";
+    } else if (testType.equals( "freeTokens")) {
+      projectName = "freeTokens";
+      System.setProperty( "default.project.name", projectName);
+      System.setProperty( "default.sequence.dir",
+                          System.getProperty( "planworks.test.data.dir") +
+                          System.getProperty( "file.separator") + sequenceName);
+    } else if (testType.equals( "emptySlots")) {
+      projectName = "emptySlots";
       System.setProperty( "default.project.name", projectName);
       System.setProperty( "default.sequence.dir",
                           System.getProperty( "planworks.test.data.dir") +
@@ -198,14 +202,14 @@ public class PlanWorksTest extends JFCTestCase{
 
     if (testType.equals( "create")) {
       validateMonkeyTimelines( timelineView);
-    } else if (testType.equals( "planGen0")) {
-      validatePlanGen0Timelines( timelineView);
+    } else if (testType.equals( "freeTokens")) {
+      validateFreeTokensTimelines( timelineView);
     }
     seqAndPlanNames = selectView( "Token Network");
     TokenNetworkView tokenNetworkView = getTokenNetworkView( seqAndPlanNames);
 
     exitPlanWorks( menuBar);
-  } // end testCreateProject
+  } // end createProject
 
   private String [] selectView( String viewName) throws Exception {
     // clicking enter on CreateProject or OpenProject dialog creates Partial Plan menu
@@ -420,10 +424,11 @@ public class PlanWorksTest extends JFCTestCase{
     MDIInternalFrame viewFrame = null;
     TokenNetworkView tokenNetworkView = null;
     Thread.sleep( 3000);
+    long startTimeMSecs = (new Date()).getTime();
     viewFrame =
       viewManager.openTokenNetworkView( partialPlan, sequenceName +
                                     System.getProperty( "file.separator") +
-                                    partialPlanName);
+                                    partialPlanName, startTimeMSecs);
     assertNotNull("Failed to get tokenNetwork view MDI internal frame.", viewFrame);
 
     Container contentPane = viewFrame.getContentPane();
@@ -481,9 +486,9 @@ public class PlanWorksTest extends JFCTestCase{
     }
   } // end validateMonkeyTimelines
 
-  private void validatePlanGen0Timelines( TimelineView timelineView) {
-    System.err.println( "\n\nvalidatePlanGen0Timelines does nothing\n\n");
-  } // end validatePlanGen0Timelines
+  private void validateFreeTokensTimelines( TimelineView timelineView) {
+    System.err.println( "\n\nvalidateFreeTokensTimelines does nothing\n\n");
+  } // end validateFreeTokensimelines
 
   private void exitPlanWorks( JMenuBar menuBar) throws Exception {
     // exit from CreateProject Test
@@ -710,14 +715,24 @@ public class PlanWorksTest extends JFCTestCase{
   }
 
   /**
-   * <code>testPlanGen0</code>
+   * <code>testFreeTokens</code>
    *
    * @exception Exception if an error occurs
    */
-  public void testPlanGen0() throws Exception {
-    System.err.println( "\n\nPlanGen0TestCase\n\n");
+  public void testFreeTokens() throws Exception {
+    System.err.println( "\n\nFreeTokensTestCase\n\n");
     createProject();
-  } // end testPlanGen0
+  } // end testFreeTokens
+
+  /**
+   * <code>testEmptySlots</code>
+   *
+   * @exception Exception if an error occurs
+   */
+  public void testEmptySlots() throws Exception {
+    System.err.println( "\n\nEmptySlotsTestCase\n\n");
+    createProject();
+  } // end testEmptySlots
 
   /**
    * <code>suite</code> - create the test cases for the TestRunner
@@ -728,7 +743,8 @@ public class PlanWorksTest extends JFCTestCase{
     TestSuite testSuite = new TestSuite();
     testSuite.addTest( new PlanWorksTest( "testCreateProject", "create"));
     testSuite.addTest( new PlanWorksTest( "testOpenAndContentSpec", "contentSpec"));
-    // testSuite.addTest( new PlanWorksTest( "testPlanGen0", "planGen0"));
+    // testSuite.addTest( new PlanWorksTest( "testFreeTokens", "freeTokens"));
+    // testSuite.addTest( new PlanWorksTest( "testEmptySlots", "emptySlots"));
     return testSuite;
   }
 

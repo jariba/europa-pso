@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: build.xml,v 1.5 2003-06-30 22:18:22 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.6 2003-07-16 01:15:42 taylor Exp $ -->
 <project name="PlanWorks" default="compile" basedir=".">
     <description>
         Planworks Build Targets
@@ -11,10 +11,7 @@
   <!-- show line numbers in stack trace -->
   <property name="debug"  value="true"/>
   <property name="javahDestdir"  value="../cpp/include/europa"/>
-  <property name="jgo.home"  value="lib/JGo"/>
-  <!-- property environment="env"/ -->
-  <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
-  <property name="jfcunit.home" value="lib/JFCUnit"/>
+  <property environment="env"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -30,7 +27,7 @@
     <javac srcdir="${src}" destdir="${build}" debug="${debug}">
        <classpath>
           <pathelement location="${jgo.home}/JGo.jar"/>
-          <pathelement location="${jgo.home}/JGoLayout.jar"/>
+          <pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
           <pathelement location="${jgo.home}/Classier.jar"/>
           <pathelement location="${jfcunit.home}/junit.jar"/>
           <pathelement location="${jfcunit.home}/jfcunit.jar"/>

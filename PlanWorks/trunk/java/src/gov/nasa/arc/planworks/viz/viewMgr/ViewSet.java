@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.18 2003-07-15 23:06:23 miatauro Exp $
+// $Id: ViewSet.java,v 1.19 2003-07-16 01:15:43 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -94,7 +94,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    * plan, returns that.
    * @return MDIInternalFrame the frame containing the vew.
    */
-  public MDIInternalFrame openTokenNetworkView() {
+  public MDIInternalFrame openTokenNetworkView( long startTimeMSecs) {
     if(viewExists("tokenNetworkView")) {
       return (MDIInternalFrame) views.get("tokenNetworkView");
     }
@@ -103,7 +103,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
                                true, true);
     views.put("tokenNetworkView", tokenNetworkViewFrame);
     Container contentPane = tokenNetworkViewFrame.getContentPane();
-    contentPane.add(new TokenNetworkView(partialPlan, this));
+    contentPane.add(new TokenNetworkView(partialPlan, startTimeMSecs, this));
     return tokenNetworkViewFrame;
   }
 
