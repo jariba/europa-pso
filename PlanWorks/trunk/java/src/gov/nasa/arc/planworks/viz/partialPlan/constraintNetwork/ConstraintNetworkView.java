@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.90 2004-09-24 22:40:00 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.91 2004-09-28 20:45:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -740,7 +740,8 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
         String linkName = var.getId() + "->" + parent.getId();
         BasicNodeLink link;
         if((link = getVariableLink(linkName)) == null) {
-          link = new BasicNodeLink(varNode, (BasicNode) parentNode, linkName);
+          link = new BasicNodeLink(varNode, (BasicNode) parentNode, linkName,
+                                   getLinkType( varNode, (BasicNode) parentNode));
           variableLinkMap.put(link.getLinkName(), link);
           document.addObjectAtHead(link);
           //document.insertObjectBefore(document.findObject(tokenNode), link);
@@ -774,7 +775,8 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
         BasicNodeLink link;
         String linkName = constr.getId() + "->" + var.getId();
         if((link = getConstraintLink(linkName)) == null) {
-          link = new BasicNodeLink(constrNode, varNode, linkName);
+          link = new BasicNodeLink(constrNode, varNode, linkName,
+                                   getLinkType( constrNode, varNode));
           document.addObjectAtHead(link);
           //document.insertObjectBefore(document.findObject(varNode), link);
         }
@@ -815,13 +817,15 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
         String link2Name = var.getId() + "->" + parent.getId();
         BasicNodeLink link1, link2;
         if((link1 = getConstraintLink(link1Name)) == null) {
-          link1 = new BasicNodeLink(constrNode, varNode, link1Name);
+          link1 = new BasicNodeLink(constrNode, varNode, link1Name,
+                                    getLinkType( constrNode, varNode));
           constraintLinkMap.put(link1Name, link1);
           //document.insertObjectBefore(document.findObject(tokenNode), link1);
           document.addObjectAtHead(link1);
         }
         if((link2 = getVariableLink(link2Name)) == null) {
-          link2 = new BasicNodeLink(varNode, (BasicNode) parentNode, link2Name);
+          link2 = new BasicNodeLink(varNode, (BasicNode) parentNode, link2Name,
+                                    getLinkType( varNode, (BasicNode) parentNode));
           variableLinkMap.put(link2Name, link2);
           document.addObjectAtHead(link2);
           //document.insertObjectBefore(document.findObject(tokenNode), link2);
@@ -1910,8 +1914,11 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
 	  break;
 	}
         if (nodeList.size() >= 2) {
-          linkList.add( getLinkFromNodes( (Object) nodeList.get( nodeList.size() - 2),
-                                          (Object) nodeList.get( nodeList.size() - 1)));
+          BasicNodeLink link = getLinkFromNodes( (Object) nodeList.get( nodeList.size() - 2),
+                                                 (Object) nodeList.get( nodeList.size() - 1));
+          if (link != null) {
+            linkList.add( link);
+          }
         }
       }
       setLayoutNeeded();
@@ -2177,6 +2184,32 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
     return null;
   } // end getVariableNodeInLayout
 
+  private static String getLinkType( final BasicNode fromNode,
+                                    final BasicNode toNode) {
+    if ((fromNode instanceof ConstraintNetworkTokenNode) &&
+        (toNode instanceof VariableNode)) {
+      return ViewConstants.TOKEN_TO_VARIABLE_LINK_TYPE;
+    } else if ((fromNode instanceof VariableNode) &&
+               (toNode instanceof ConstraintNode)) {
+      return ViewConstants.VARIABLE_TO_CONSTRAINT_LINK_TYPE;
+    } else if ((fromNode instanceof ConstraintNetworkObjectNode) &&
+               (toNode instanceof VariableNode)) {
+      return ViewConstants.OBJECT_TO_VARIABLE_LINK_TYPE;
+    } else if ((fromNode instanceof ConstraintNetworkTimelineNode) &&
+               (toNode instanceof VariableNode)) {
+      return ViewConstants.TIMELINE_TO_VARIABLE_LINK_TYPE;
+    } else if ((fromNode instanceof ConstraintNetworkResourceNode) &&
+               (toNode instanceof VariableNode)) {
+      return ViewConstants.RESOURCE_TO_VARIABLE_LINK_TYPE;
+    } else if ((fromNode instanceof ConstraintNetworkRuleInstanceNode) &&
+               (toNode instanceof VariableNode)) {
+      return ViewConstants.RULE_INST_TO_VARIABLE_LINK_TYPE;
+    } else {
+      System.err.println( "ConstraintNetworkView.getLinkType: no link type for " +
+                          fromNode + " => " + toNode);
+      return null;
+    }
+  } // end getLinkType
 
 } // end class ConstraintNetworkView
 
