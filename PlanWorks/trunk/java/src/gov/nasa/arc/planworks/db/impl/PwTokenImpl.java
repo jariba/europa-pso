@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.17 2003-07-30 00:38:40 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.18 2003-07-31 21:52:29 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -117,6 +117,14 @@ public class PwTokenImpl implements PwToken {
    */
   public PwVariable getEndVariable() {
     return partialPlan.getVariable( endVarId);
+  }
+
+  public Integer getEarliestStart() {
+    return new Integer(partialPlan.getVariable(startVarId).getDomain().getLowerBound());
+  }
+
+  public Integer getLatestEnd() {
+    return new Integer(partialPlan.getVariable(endVarId).getDomain().getUpperBound());
   }
 
   /**
