@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.34 2003-07-16 01:15:42 taylor Exp $
+// $Id: PlanWorks.java,v 1.35 2003-07-24 20:57:10 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -61,14 +61,22 @@ public class PlanWorks extends MDIDesktopFrame {
 
   private static final int DESKTOP_FRAME_WIDTH = 900;
   private static final int DESKTOP_FRAME_HEIGHT = 850;
-  private static final int INTERNAL_FRAME_WIDTH = 400;
-  private static final int INTERNAL_FRAME_HEIGHT = 350;
   private static final int FRAME_X_LOCATION = 100;
   private static final int FRAME_Y_LOCATION = 125;
   private static final int INTERNAL_FRAME_X_DELTA = 100;
   private static final int INTERNAL_FRAME_Y_DELTA = 75;
 
+  /**
+   * constant <code>INTERNAL_FRAME_WIDTH</code>
+   *
+   */
+  public static final int INTERNAL_FRAME_WIDTH = 400;
 
+  /**
+   * constant <code>INTERNAL_FRAME_HEIGHT</code>
+   *
+   */
+  public static final int INTERNAL_FRAME_HEIGHT = 350;
   /**
    * variable <code>name</code> - make it accessible to JFCUnit tests
    *
@@ -877,22 +885,26 @@ public class PlanWorks extends MDIDesktopFrame {
           if (! viewExists) {
             System.err.println( "Rendering Timeline View ...");
           }
-          viewFrame = viewManager.openTimelineView( partialPlan, sequenceName +
-                                                    System.getProperty( "file.separator") +
-                                                    partialPlanName);
+          viewFrame = viewManager.openTimelineView
+            ( partialPlan, sequenceName + System.getProperty( "file.separator") +
+              partialPlanName, startTimeMSecs);
           finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
         } else if (viewName.equals( "tokenNetworkView")) {
           if (! viewExists) {
             System.err.println( "Rendering Token Network View ...");
           }
-          viewFrame = viewManager.openTokenNetworkView( partialPlan, sequenceName +
-                                                        System.getProperty( "file.separator") +
-                                                        partialPlanName, startTimeMSecs);        
+          viewFrame = viewManager.openTokenNetworkView
+            ( partialPlan, sequenceName + System.getProperty( "file.separator") +
+              partialPlanName, startTimeMSecs);        
           finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
         } else if (viewName.equals( "temporalExtentView")) {
-          JOptionPane.showMessageDialog
-            (PlanWorks.this, viewName, "View Not Supported", 
-             JOptionPane.INFORMATION_MESSAGE);
+          if (! viewExists) {
+            System.err.println( "Rendering Temporal Extent View ...");
+          }
+          viewFrame = viewManager.openTemporalExtentView
+            ( partialPlan, sequenceName + System.getProperty( "file.separator") +
+              partialPlanName, startTimeMSecs);        
+          finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
         } else if (viewName.equals( "constraintNetworkView")) {
           JOptionPane.showMessageDialog
             (PlanWorks.this, viewName, "View Not Supported", 
@@ -919,11 +931,6 @@ public class PlanWorks extends MDIDesktopFrame {
     private void finishViewRendering( MDIInternalFrame viewFrame, String viewName,
                                       boolean viewExists, long startTimeMSecs) {
       if (! viewExists) {
-        if (! viewName.equals( "tokenNetworkView")) {
-          long stopTimeMSecs = (new Date()).getTime();
-          System.err.println( "   ... elapsed time: " +
-                              (stopTimeMSecs - startTimeMSecs) + " msecs.");
-        }
         viewFrame.setSize( INTERNAL_FRAME_WIDTH, INTERNAL_FRAME_HEIGHT);
         int viewIndex = 0;
         for (int i = 0, n = ViewConstants.orderedViewNames.length; i < n; i++) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomain.java,v 1.3 2003-06-11 01:02:11 taylor Exp $
+// $Id: PwEnumeratedDomain.java,v 1.4 2003-07-24 20:57:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,6 +32,20 @@ public interface PwEnumeratedDomain {
    */
   public abstract List getEnumeration();
 
+  /**
+   * <code>getLowerBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getLowerBound();
+
+  /**
+   * <code>getUpperBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getUpperBound();
+		
   /**
    * <code>toString</code>
    *

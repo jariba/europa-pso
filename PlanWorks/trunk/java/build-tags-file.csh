@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.19 2003-07-16 01:15:42 taylor Exp $
+# $Id: build-tags-file.csh,v 1.20 2003-07-24 20:57:10 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -70,6 +70,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
     src/gov/nasa/arc/planworks/viz/nodes/SlotNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TemporalNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenLink.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
@@ -79,8 +80,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewManager.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewSet.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewSetRemover.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ConstraintBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ConstraintGroupBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ContentSpecElement.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ContentSpecGroup.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ContentSpecWindow.java \
@@ -95,9 +94,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimeIntervalGroupBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineGroupBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/VariableTypeBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/VariableTypeGroupBox.java \
     src/gov/nasa/arc/planworks/viz/views/VizView.java \
+    src/gov/nasa/arc/planworks/viz/views/temporalExtent/TemporalExtentView.java \
     src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java \
     src/gov/nasa/arc/planworks/viz/views/tokenNetwork/LayeredDigraphAutoLayout.java \
     src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java

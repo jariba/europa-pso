@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.6 2003-07-17 17:19:11 miatauro Exp $
+// $Id: PlanWorksTest.java,v 1.7 2003-07-24 20:57:11 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -42,10 +42,12 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
+import gov.nasa.arc.planworks.viz.nodes.TemporalNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenLink;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
@@ -220,6 +222,14 @@ public class PlanWorksTest extends JFCTestCase{
     if(testType.equals("freeTokens")) {
       validateFreeTokensNetwork(tokenNetworkView);
     }
+
+    seqAndPlanNames = selectView( "Temporal Extent");
+    TemporalExtentView temporalExtentView = getTemporalExtentView( seqAndPlanNames);
+
+    if(testType.equals("freeTokens")) {
+      validateFreeTokensTemporalExtent( temporalExtentView);
+    }
+
     exitPlanWorks( menuBar);
   } // end createProject
 
@@ -388,10 +398,11 @@ public class PlanWorksTest extends JFCTestCase{
     MDIInternalFrame viewFrame = null;
     TimelineView timelineView = null;
     Thread.sleep( 3000);
+    long startTimeMSecs = (new Date()).getTime();
     viewFrame =
       viewManager.openTimelineView( partialPlan, sequenceName +
                                     System.getProperty( "file.separator") +
-                                    partialPlanName);
+                                    partialPlanName, startTimeMSecs);
     assertNotNull("Failed to get timeline view MDI internal frame.", viewFrame);
 
     Container contentPane = viewFrame.getContentPane();
@@ -453,6 +464,38 @@ public class PlanWorksTest extends JFCTestCase{
     assertNotNull("Failed to get TokenNetworkView object.", tokenNetworkView);
     return tokenNetworkView;
   } // end getTokenNetworkView
+
+  private TemporalExtentView getTemporalExtentView( String [] seqAndPlanNames) throws Exception {
+    String sequenceName = seqAndPlanNames[0];
+    String partialPlanName = seqAndPlanNames[1];
+    String sequenceUrl = seqAndPlanNames[2];
+    PwPartialPlan partialPlan = getPartialPlan( sequenceUrl, partialPlanName);
+
+    ViewManager viewManager = null;
+    viewManager = planWorks.getViewManager();
+    assertNotNull( "Failed to get ViewManager.", viewManager);
+
+    //System.err.println( "\n\nGot to here 3\n\n");
+    MDIInternalFrame viewFrame = null;
+    TemporalExtentView temporalExtentView = null;
+    Thread.sleep( 3000);
+    long startTimeMSecs = (new Date()).getTime();
+    viewFrame =
+      viewManager.openTemporalExtentView( partialPlan, sequenceName +
+                                    System.getProperty( "file.separator") +
+                                    partialPlanName, startTimeMSecs);
+    assertNotNull("Failed to get temporalExtent view MDI internal frame.", viewFrame);
+
+    Container contentPane = viewFrame.getContentPane();
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof TemporalExtentView) {
+        temporalExtentView = (TemporalExtentView) contentPane.getComponent(i);
+        break;
+      }
+    }
+    assertNotNull("Failed to get TemporalExtentView object.", temporalExtentView);
+    return temporalExtentView;
+  } // end getTemporalExtentView
 
   private void validateMonkeyTimelines( TimelineView timelineView) {
     List timelineNodes = timelineView.getTimelineNodeList();
@@ -534,6 +577,18 @@ public class PlanWorksTest extends JFCTestCase{
                  tokenLink.getFromTokenNode().isFreeToken() == false);
     }
   }
+
+  private void validateFreeTokensTemporalExtent( TemporalExtentView temporalExtentView) {
+    List temporalNodeList = temporalExtentView.getTemporalNodeList();
+    ListIterator temporalNodeIterator = temporalNodeList.listIterator();
+    int numTemporalNodes = 0;
+    while(temporalNodeIterator.hasNext()) {
+      TemporalNode temporalNode = (TemporalNode) temporalNodeIterator.next();
+      numTemporalNodes++;
+    }
+    assertTrue("Incorrect number of temporal nodes in Temporal Extent View",
+               numTemporalNodes == 15);
+  } // end validateFreeTokensTemporalExtent
 
   private void validateEmptySlotsTimelines(TimelineView timelineView) {
     ListIterator timelineNodeIterator = timelineView.getTimelineNodeList().listIterator();
@@ -735,10 +790,12 @@ public class PlanWorksTest extends JFCTestCase{
 
     openProjectEnter();
 
-   String [] seqAndPlanNames = selectView( "Timeline");
+    String [] seqAndPlanNames = selectView( "Timeline");
     TimelineView timelineView = getTimelineView( seqAndPlanNames);
     seqAndPlanNames = selectView( "Token Network");
     TokenNetworkView tokenNetworkView = getTokenNetworkView( seqAndPlanNames);
+    seqAndPlanNames = selectView( "Temporal Extent");
+    TemporalExtentView temporalExtentView = getTemporalExtentView( seqAndPlanNames);
 
     Container contentPane = frame.getContentPane();
     JDesktopPane desktopPane = null;
