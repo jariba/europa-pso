@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPluginListener.java,v 1.1 2005-01-20 21:01:00 meboyce Exp $
+// $Id: PwPluginListener.java,v 1.2 2005-01-20 21:07:48 meboyce Exp $
 //
 
 package gov.nasa.arc.planworks.plugin;
@@ -18,7 +18,7 @@ import java.util.EventListener;
  *                             NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PluginListener extends EventListener
+public interface PwPluginListener extends EventListener
 {
-	public abstract void pluginRequest(PluginEvent evt);
+	public abstract void pluginRequest(PwPluginEvent evt);
 }
