@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.7 2003-10-16 20:29:08 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.8 2003-10-21 14:21:41 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H
@@ -53,6 +53,7 @@ public:
   void notifyOfDeletedToken(TokenId);
   void notifyOfNewVariable(VarId);
   void notifySpecifiedDomainChanged(VarId); //signals plan step
+  void notifySpecifiedDomainReset(VarId);
   void notifyDerivedDomainChanged(VarId);
   void notifyOfDeletedVariable(VarId);
   void notifyConstraintInserted(ConstraintId&);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.6 2003-10-16 21:40:41 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.7 2003-10-21 14:22:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -20,8 +20,11 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -171,10 +174,14 @@ public class ConstraintNetworkView extends PartialPlanView {
 
     document = jGoView.getDocument();
     network = new ConstraintNetwork();
-
     createTokenNodes();
     // setVisible( true | false) depending on ContentSpec
     setNodesLinksVisible();
+
+    ListIterator tokenIterator = tokenNodeList.listIterator();
+    while(tokenIterator.hasNext()) {
+      ((ConstraintNetworkTokenNode)tokenIterator.next()).discoverLinkage();
+    }
 
     ConstraintNetworkLayout layout =
       new ConstraintNetworkLayout( document, network, startTimeMSecs);
@@ -1329,10 +1336,6 @@ public class ConstraintNetworkView extends PartialPlanView {
       System.exit( 1);
     }
   } // end findAndSelectToken
-
-
-
-
 } // end class ConstraintNetworkView
 
 

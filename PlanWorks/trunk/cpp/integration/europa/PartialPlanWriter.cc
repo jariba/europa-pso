@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.8 2003-10-21 01:29:19 taylor Exp $
+// $Id: PartialPlanWriter.cc,v 1.9 2003-10-21 14:21:41 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -697,6 +697,12 @@ void PartialPlanWriter::notifySpecifiedDomainChanged(VarId varId) { //signals pl
   if(stepsPerWrite) {
     transactionList->append(Transaction(VAR_DOMAIN_SPECIFIED, varId->getKey(), UNKNOWN,
                                         transactionId++, sequenceId, nstep));
+  }
+}
+void PartialPlanWriter::notifySpecifiedDomainReset(VarId varId) {
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(VAR_DOMAIN_RESET, varId->getKey(), USER, transactionId++, 
+					sequenceId, nstep));
   }
 }
 void PartialPlanWriter::notifyDerivedDomainChanged(VarId varId) {
