@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.36 2004-03-23 20:06:00 taylor Exp $
+// $Id: planViz.txt,v 1.37 2004-03-30 22:01:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -414,6 +414,8 @@ Method:
  14. In the Timeline View, Mouse-Right click on the background and select
      "Enable Auto Snap". Then move the mouse cursor over slots, and free tokens.
      (empty slots are not recognized)
+ 15. In the Token Network, Mouse-Right click on the background and select
+     "Rule Window".  Then move the mouse cursor over token links.
 
 Post-conditions:
   1. Method:2 - In turn, each of the views should re-oriented itself to
@@ -452,6 +454,9 @@ Post-conditions:
      follow the movement of the mouse cursor over the Timeline View's non-
      empty slots (base tokens) and free tokens.  If a slot has merged tokens, 
      the merged tokens will be highlighted turquoise.
+ 14. Method:15 - The "Rule View for <sequence-name>/step<nn>" will show the "to" 
+     token's predicate and parameter list, its key, and the model rule which is 
+     responsible for its creation.
 
 Requirements: TBD
 

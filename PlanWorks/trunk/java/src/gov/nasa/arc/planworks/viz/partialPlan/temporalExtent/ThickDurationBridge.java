@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ThickDurationBridge.java,v 1.3 2004-01-17 01:22:54 taylor Exp $
+// $Id: ThickDurationBridge.java,v 1.4 2004-03-30 22:01:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -146,12 +146,14 @@ public class ThickDurationBridge extends JGoRectangle {
     JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
     navigatorItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          MDIInternalFrame navigatorFrame = temporalExtentView.openNavigatorViewFrame();
+          String viewSetKey = temporalExtentView.getNavigatorViewSetKey();
+          MDIInternalFrame navigatorFrame =
+            temporalExtentView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = temporalExtentView.getPartialPlan();
           contentPane.add( new NavigatorView( temporalNode, partialPlan,
                                               temporalExtentView.getViewSet(),
-                                              navigatorFrame));
+                                              viewSetKey, navigatorFrame));
         }
       });
     mouseRightPopup.add( navigatorItem);

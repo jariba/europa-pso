@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.17 2004-03-20 01:00:41 taylor Exp $
+// $Id: TemporalNode.java,v 1.18 2004-03-30 22:01:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -696,12 +696,14 @@ public class TemporalNode extends BasicNode implements Extent {
     JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
     navigatorItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          MDIInternalFrame navigatorFrame = temporalExtentView.openNavigatorViewFrame();
+          String viewSetKey = temporalExtentView.getNavigatorViewSetKey();
+          MDIInternalFrame navigatorFrame =
+            temporalExtentView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = temporalExtentView.getPartialPlan();
           contentPane.add( new NavigatorView( TemporalNode.this, partialPlan,
                                               temporalExtentView.getViewSet(),
-                                              navigatorFrame));
+                                              viewSetKey, navigatorFrame));
         }
       });
     mouseRightPopup.add( navigatorItem);

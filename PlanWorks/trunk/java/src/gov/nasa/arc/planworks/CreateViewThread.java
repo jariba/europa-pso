@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.13 2004-03-12 23:19:01 miatauro Exp $
+// $Id: CreateViewThread.java,v 1.14 2004-03-30 22:01:00 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -153,8 +153,6 @@ public class CreateViewThread extends Thread {
       }
       viewFrame.setSelected( false);
       viewFrame.setSelected( true);
-
-      ViewGenerics.openExistingOverviewFrame( viewName, viewable, viewSet);
 
     } catch (PropertyVetoException excp) {
     }

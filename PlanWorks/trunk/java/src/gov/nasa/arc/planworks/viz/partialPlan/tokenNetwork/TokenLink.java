@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenLink.java,v 1.2 2004-03-24 02:31:05 taylor Exp $
+// $Id: TokenLink.java,v 1.3 2004-03-30 22:01:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,12 +12,20 @@
 
 package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
 
+import java.awt.Container;
+import java.awt.Point;
+
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoLabeledLink;
+import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
+import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.VizViewRuleView;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 
 
@@ -34,18 +42,14 @@ public class TokenLink extends JGoLabeledLink {
 
   private TokenNode fromTokenNode;
   private TokenNode toTokenNode;
+  private TokenNetworkView tokenNetworkView;
 
-  /**
-   * <code>TokenLink</code> - constructor 
-   *
-   * @param fromTokenNode - <code>TokenNode</code> - 
-   * @param toTokenNode - <code>TokenNode</code> - 
-   * @param penWidth - <code>int</code> - 
-   */
-  public TokenLink( TokenNode fromTokenNode, TokenNode toTokenNode, int penWidth) {
+  public TokenLink( TokenNode fromTokenNode, TokenNode toTokenNode, int penWidth,
+                    TokenNetworkView tokenNetworkView) {
     super( fromTokenNode.getPort(), toTokenNode.getPort());
     this.fromTokenNode = fromTokenNode;
     this.toTokenNode = toTokenNode;
+    this.tokenNetworkView = tokenNetworkView;
     this.setArrowHeads( false, true); // fromArrowHead toArrowHead
     // do no allow user to select and move links
     this.setRelinkable( false);
@@ -90,17 +94,47 @@ public class TokenLink extends JGoLabeledLink {
 
 
   /**
-   * <code>getToolTipText</code>
+   * <code>doUncapturedMouseMove</code> -- handles RuleView window
    *
-   * @return - <code>String</code> - 
+   * @param modifiers - <code>int</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   * @param view - <code>JGoView</code> - 
+   * @return - <code>boolean</code> - 
    */
-  public String getToolTipText() {
-    StringBuffer tip = new StringBuffer( "<html> ");
-    tip.append( "model rule: ");
-    tip.append( this.toTokenNode.getToken().getModelRule());
-    tip.append( "</html>");
-    return tip.toString();
-  } // end getToolTipText
+  public boolean doUncapturedMouseMove( int modifiers, Point docCoords, Point viewCoords,
+                                        JGoView view) {
+    JGoObject obj = view.pickDocObject( docCoords, false);
+    TokenLink tokenLink = (TokenLink) obj.getTopLevelObject();
+    TokenLink currentMouseOverLink = tokenNetworkView.getMouseOverLink();
+    PwToken toToken = tokenLink.getToToken();
+    if ((currentMouseOverLink == null) ||
+        ((currentMouseOverLink != null) &&
+         (! ((TokenLink) currentMouseOverLink).getToToken().getId().equals
+          ( toToken.getId())))) {
+      tokenNetworkView.setMouseOverLink( tokenLink);
+      String ruleViewKey = ViewGenerics.RULE_VIEW_TITLE +
+        tokenNetworkView.getPartialPlan().getName();
+      MDIInternalFrame ruleViewFrame = tokenNetworkView.getViewSet().getView( ruleViewKey);
+      if (tokenNetworkView.getViewSet().getView( ruleViewKey) != null) {
+        Container contentPane = ruleViewFrame.getContentPane();
+        for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
+          // System.err.println( "i " + i + " " +
+          //                    contentPane.getComponent( i).getClass().getName());
+          if (contentPane.getComponent( i) instanceof VizViewRuleView) {
+            VizViewRuleView ruleView = (VizViewRuleView) contentPane.getComponent( i);
+            ruleView.renderRuleText( toToken, tokenLink.getFromToken());
+            break;
+          }
+        }
+      } else {
+        tokenNetworkView.setMouseOverLink( null);
+      }
+      return true;
+    } else {
+      return false;
+    }
+  } // end doUncapturedMouseMove
 
 
 

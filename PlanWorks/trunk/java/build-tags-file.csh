@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.62 2004-03-23 20:05:56 taylor Exp $
+# $Id: build-tags-file.csh,v 1.63 2004-03-30 22:00:59 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -129,6 +129,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/DBTransactionHeaderView.java \
     src/gov/nasa/arc/planworks/viz/StepContentView.java \
     src/gov/nasa/arc/planworks/viz/StepHeaderView.java \
+    src/gov/nasa/arc/planworks/viz/StringViewSetKey.java \
     src/gov/nasa/arc/planworks/viz/TokenQueryContentView.java \
     src/gov/nasa/arc/planworks/viz/TokenQueryHeaderView.java \
     src/gov/nasa/arc/planworks/viz/VariableQueryContentView.java \
@@ -138,6 +139,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/ViewListener.java \
     src/gov/nasa/arc/planworks/viz/VizView.java \
     src/gov/nasa/arc/planworks/viz/VizViewOverview.java \
+    src/gov/nasa/arc/planworks/viz/VizViewRuleView.java \
     src/gov/nasa/arc/planworks/viz/nodes/BasicNodeLink.java \
     src/gov/nasa/arc/planworks/viz/nodes/DBTransactionHeaderNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNodePort.java \

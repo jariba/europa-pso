@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.34 2004-03-20 01:00:38 taylor Exp $
+// $Id: PartialPlanView.java,v 1.35 2004-03-30 22:01:03 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -55,6 +55,7 @@ import gov.nasa.arc.planworks.util.ViewRenderingException;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
+import gov.nasa.arc.planworks.viz.VizViewRuleView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
 import gov.nasa.arc.planworks.viz.util.StepButton;
@@ -90,6 +91,8 @@ public class PartialPlanView extends VizView {
   private ButtonViewListener buttonViewListener;
 
   private Map navigatorFrameNameMap;
+  private String stringViewSetKey; // key for viewSet hash map - NavigatorView,
+                                   // VizViewOverview, & VizViewRuleView
 
   /**
    * <code>PartialPlanView</code> - constructor 
@@ -103,6 +106,7 @@ public class PartialPlanView extends VizView {
     validTokenIds = null;
     displayedTokenIds = null;
     navigatorFrameNameMap = new HashMap();
+    stringViewSetKey = null;
     backwardButton = null;
     forwardButton = null;
     horizontalAdjustmentListener = null;
@@ -654,12 +658,22 @@ public class PartialPlanView extends VizView {
   } // end createRaiseContentSpecItem
 
   /**
+   * <code>getNavigatorViewSetKey</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getNavigatorViewSetKey() {
+    ((PartialPlanViewSet) viewSet).incrNavigatorFrameCnt();
+    return new String( PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "") +
+                       ((PartialPlanViewSet) viewSet).getNavigatorFrameCnt());
+  }
+
+  /**
    * <code>openNavigatorViewFrame</code>
    *
    * @return - <code>MDIInternalFrame</code> - 
    */
-  public MDIInternalFrame openNavigatorViewFrame() {
-    ((PartialPlanViewSet) viewSet).incrNavigatorFrameCnt();
+  public MDIInternalFrame openNavigatorViewFrame( String viewSetKey) {
     String viewName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
     String rootNavigatorViewName = viewName + " for " + partialPlan.getName();
     String navigatorViewName = getNavigatorViewName( rootNavigatorViewName);
@@ -667,9 +681,7 @@ public class PartialPlanView extends VizView {
       ((MDIDesktopFrame) PlanWorks.getPlanWorks()).createFrame( navigatorViewName,
                                                                 viewSet, true, true,
                                                                 true, true);
-    viewSet.getViews().put( new String( viewName +
-                                        ((PartialPlanViewSet) viewSet).getNavigatorFrameCnt()),
-                            navigatorFrame);
+    viewSet.getViews().put( viewSetKey, navigatorFrame);
     return navigatorFrame;
   } // end openNavigatorViewFrame
 

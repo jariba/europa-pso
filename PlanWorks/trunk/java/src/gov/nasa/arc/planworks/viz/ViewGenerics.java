@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.9 2004-03-12 23:21:54 miatauro Exp $
+// $Id: ViewGenerics.java,v 1.10 2004-03-30 22:01:01 taylor Exp $
 //
 // PlanWorks
 //
@@ -51,10 +51,12 @@ import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -70,7 +72,12 @@ public class ViewGenerics {
 
   public static final String VIEW_TITLE = "View for ";
   public static final String OVERVIEW_TITLE = "Overview for ";
+  public static final String RULE_VIEW_TITLE = "RuleView for ";
+
+  private static final int RULE_VIEW_WIDTH = 400;
+  private static final int RULE_VIEW_HEIGHT = 100;
   private static final ViewGenerics generics = new ViewGenerics();
+
   private ViewGenerics() {
   }
 
@@ -167,7 +174,7 @@ public class ViewGenerics {
                                                          ViewableObject viewable,
                                                          VizView vizView, ViewSet viewSet,
                                                          JGoView jGoView, Point viewCoords) {
-    MDIInternalFrame overviewFrame = (MDIInternalFrame) viewSet.getViews().get( overviewTitle);
+    MDIInternalFrame overviewFrame = (MDIInternalFrame) viewSet.getView( overviewTitle);
     VizViewOverview overview = null;
     // System.err.println( "openOverviewFrame " + overviewFrame);
     if (overviewFrame == null) {
@@ -178,7 +185,7 @@ public class ViewGenerics {
       Container contentPane = overviewFrame.getContentPane();
 
       overview = new VizViewOverview( overviewTitle, vizView);
-      vizView.setOverview(overview);
+      vizView.setOverview( overview);
       overview.setObserved( jGoView);
       // do not allow drag & drop copying 
       jGoView.setInternalMouseActions( DnDConstants.ACTION_MOVE);
@@ -202,43 +209,70 @@ public class ViewGenerics {
                                (int) overviewDocSize.getHeight());
     }
 
-    raiseOverviewFrame( overviewFrame);
+    raiseFrame( overviewFrame);
     
     return overview;
   } // end openOverviewFrameCommon
 
-  /**
-   * <code>openExistingOverviewFrame</code>
-   *
-   * @param viewName - <code>String</code> - 
-   * @param viewable - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   */
-  public static void openExistingOverviewFrame( String viewName, ViewableObject viewable,
-                                                ViewSet viewSet) {
-    String overviewTitle = Utilities.trimView( viewName).replaceAll( " ", "") +
-      OVERVIEW_TITLE + viewable.getName();
-    // System.err.println( "overviewTitle " + overviewTitle);
-    // System.err.println( "views " + viewSet.getViews());
-    MDIInternalFrame overviewFrame = (MDIInternalFrame) viewSet.getViews().get( overviewTitle);
-    // System.err.println( "openOverviewFrame " + overviewFrame);
-    if (overviewFrame != null) {
-      raiseOverviewFrame( overviewFrame);
-    }
-  } // end openExistingOverviewFrame
-
-  private static void raiseOverviewFrame( MDIInternalFrame overviewFrame) {
+  private static void raiseFrame( MDIInternalFrame frame) {
     // make window appear & bring to the front
     try {
       // in case view existed and was iconified
-      if (overviewFrame.isIcon()) {
-        overviewFrame.setIcon( false);
+      if (frame.isIcon()) {
+        frame.setIcon( false);
       }
-      overviewFrame.setSelected( false);
-      overviewFrame.setSelected( true);
+      frame.setSelected( false);
+      frame.setSelected( true);
     } catch (PropertyVetoException excp) {
     }
-  } // end raiseOverviewFrame
+  } // end raiseFrame
+
+
+  /**
+   * <code>openRuleViewFrame</code>
+   *
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param tokenNetworkView - <code>TokenNetworkView</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   * @return - <code>VizViewRuleView</code> - 
+   */
+  public static VizViewRuleView openRuleViewFrame( PwPartialPlan partialPlan,
+                                                   TokenNetworkView tokenNetworkView,
+                                                   ViewSet viewSet, Point viewCoords) {
+    String ruleViewTitle = RULE_VIEW_TITLE + partialPlan.getName();
+    MDIInternalFrame ruleViewFrame = (MDIInternalFrame) viewSet.getView( ruleViewTitle);
+    VizViewRuleView ruleView = null;
+    // System.err.println( "openRuleViewFrame " + ruleViewFrame);
+    if (ruleViewFrame == null) {
+      ruleViewFrame = viewSet.getDesktopFrame().createFrame( ruleViewTitle, viewSet,
+                                                             true, true, true, true);
+      viewSet.getViews().put( ruleViewTitle, ruleViewFrame);
+      // System.err.println( "views " + viewSet.getViews());
+      Container contentPane = ruleViewFrame.getContentPane();
+      ruleView = new VizViewRuleView( ruleViewTitle, tokenNetworkView);
+      ruleView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
+      tokenNetworkView.setRuleView( ruleView);
+      ruleView.validate();
+      ruleView.setVisible( true);
+      contentPane.add( ruleView);
+
+      ruleViewFrame.setLocation( viewCoords);
+      ruleView.getDocument().setDocumentSize( RULE_VIEW_WIDTH, RULE_VIEW_HEIGHT);
+      Dimension ruleViewDocSize = new Dimension( ruleView.getDocument().getDocumentSize());
+      ruleView.convertDocToView( ruleViewDocSize);
+      tokenNetworkView.expandViewFrame( ruleViewFrame,
+                                        (int) ruleViewDocSize.getWidth(),
+                                        (int) ruleViewDocSize.getHeight());
+    }
+
+    raiseFrame( ruleViewFrame);
+    
+    return ruleView;
+  } // end openRuleViewFrame
+
+
+
 
   class TemporalExtentViewFinder implements BooleanFunctor {
     public TemporalExtentViewFinder(){}

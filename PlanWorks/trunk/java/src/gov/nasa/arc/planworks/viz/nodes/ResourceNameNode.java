@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceNameNode.java,v 1.3 2004-03-07 01:49:27 taylor Exp $
+// $Id: ResourceNameNode.java,v 1.4 2004-03-30 22:01:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -106,11 +106,12 @@ public class ResourceNameNode extends JGoText {
     JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
     navigatorItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent evt) {
-          MDIInternalFrame navigatorFrame = resourceView.openNavigatorViewFrame();
+          String viewSetKey = resourceView.getNavigatorViewSetKey();
+          MDIInternalFrame navigatorFrame = resourceView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = resourceView.getPartialPlan();
           contentPane.add( new NavigatorView( ResourceNameNode.this, partialPlan,
-                                              resourceView.getViewSet(),
+                                              resourceView.getViewSet(), viewSetKey,
                                               navigatorFrame));
         }
       });

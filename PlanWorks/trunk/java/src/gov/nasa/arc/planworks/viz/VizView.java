@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.17 2004-03-24 02:31:04 taylor Exp $
+// $Id: VizView.java,v 1.18 2004-03-30 22:01:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -84,6 +86,7 @@ public class VizView extends JPanel {
   protected Font font;
   protected FontMetrics fontMetrics;
   protected VizViewOverview overview;
+  protected VizViewRuleView ruleView;
   protected int zoomFactor;
   private List listenerList;
 
@@ -102,6 +105,7 @@ public class VizView extends JPanel {
                      ViewConstants.TIMELINE_VIEW_FONT_SIZE);
     fontMetrics = null;  // see computeFontMetrics
     overview = null;
+    ruleView = null;
     zoomFactor = 1;
 
     JGoText.setDefaultFontFaceName( "Monospaced");
@@ -139,6 +143,24 @@ public class VizView extends JPanel {
    */
   public void setOverview( VizViewOverview overview) {
     this.overview = overview;
+  }
+
+  /**
+   * <code>getRuleView</code>
+   *
+   * @return - <code>VizViewRuleView</code> - 
+   */
+  public VizViewRuleView getRuleView() {
+    return ruleView;
+  }
+
+  /**
+   * <code>setRuleView</code>
+   *
+   * @param view - <code>VizViewRuleView</code> - 
+   */
+  public void setRuleView( VizViewRuleView view) {
+    this.ruleView = view;
   }
 
   /**
@@ -203,17 +225,16 @@ public class VizView extends JPanel {
 
 
   /**
-   * <code>getFontMetrics</code> - called in "leaf" view class's init method
+   * <code>computeFontMetrics</code> - called in "leaf" view class's init method
    *                       view must be displayable, before graphics is non-null
    *
    * @param view - <code>VizView</code> - 
-   * @return - <code>FontMetrics</code> - 
    */
   protected void computeFontMetrics( VizView view) {
     Graphics graphics = ((JPanel) view).getGraphics();
     fontMetrics = graphics.getFontMetrics( font);
     graphics.dispose();
-  } // end getFontMetrics
+  } // end computeFontMetrics
 
 
   /**

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.83 2004-03-24 02:31:04 taylor Exp $
+# $Id: README,v 1.84 2004-03-30 22:00:59 taylor Exp $
 #
 
 SUMMARY
@@ -27,6 +27,13 @@ o The Sequence Steps View now has Mouse-Right "Step Backward step<nn>
 o In the Sequence Steps View above each histogram step is a colored dot: 
   green - partial plan loaded into data base; yellow - partial plan on 
   disk; and red - partial plan not on disk.
+
+o The Token Network View now has a Mouse-Right selection "Rule Window",
+  such that when it exists, moving the mouse over the view's token node 
+  links will present in the "Rule View for <sequence-name>/step<nn>"
+  window, the "from" and "to" token predicates and parameter lists,
+  their keys, and the model rule which is responsible.
+
 
 o  GNATS PRs and CRs completed:
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.11 2004-03-16 02:24:08 taylor Exp $
+// $Id: VizViewOverview.java,v 1.12 2004-03-30 22:01:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -50,7 +50,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
  *               NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class VizViewOverview extends Overview {
+public class VizViewOverview extends Overview implements StringViewSetKey {
 
   private String overviewTitle; // key for viewSet hash map
   private VizView vizView;
@@ -69,11 +69,11 @@ public class VizViewOverview extends Overview {
   }
 
   /**
-   * <code>getTitle</code> - key for viewSet hash map
+   * <code>getViewSetKey</code> - implements StringViewSetKey
    *
    * @return - <code>String</code> - 
    */
-  public String getTitle() {
+  public final String getViewSetKey() {
     return overviewTitle;
   }
 
@@ -82,7 +82,7 @@ public class VizViewOverview extends Overview {
    *
    * @return - <code>VizView</code> - 
    */
-  public VizView getVizView() {
+  public final VizView getVizView() {
     return vizView;
   }
 

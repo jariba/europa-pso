@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.41 2004-03-27 01:04:42 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.42 2004-03-30 22:01:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -38,20 +38,17 @@ import com.nwoods.jgo.JGoView;
 //import org.jgraph.graph.ParentMap;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.DbConstants;
-import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
-import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwTokenRelation;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
+import gov.nasa.arc.planworks.viz.VizViewRuleView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
@@ -79,6 +76,7 @@ public class TokenNetworkView extends PartialPlanView {
   private Map tokenNodeMap; // key = tokenId, element TokenNode
   private Map tokenLinkMap; // key = linkName, element TokenLink
   private boolean isStepButtonView;
+  private TokenLink mouseOverLink;
   // radial private Object[] rootNodes;
   // radial private ParentMap parentMap;
 
@@ -90,9 +88,9 @@ public class TokenNetworkView extends PartialPlanView {
    * @param partialPlan - <code>ViewableObject</code> -
    * @param viewSet - <code>ViewSet</code> - 
    */
-  public TokenNetworkView( ViewableObject partialPlan,  ViewSet viewSet) {
+  public TokenNetworkView( final ViewableObject partialPlan,  final ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    tokenNetworkViewInit(viewSet);
+    tokenNetworkViewInit( viewSet);
     isStepButtonView = false;
     // print content spec
     // viewSet.printSpec();
@@ -100,15 +98,23 @@ public class TokenNetworkView extends PartialPlanView {
     SwingUtilities.invokeLater( runInit);
   } // end constructor
 
-  public TokenNetworkView(ViewableObject partialPlan, ViewSet viewSet, PartialPlanViewState s) {
+  /**
+   * <code>TokenNetworkView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   */
+  public TokenNetworkView( final ViewableObject partialPlan, final ViewSet viewSet,
+                           final PartialPlanViewState s) {
     super((PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    tokenNetworkViewInit(viewSet);
+    tokenNetworkViewInit( viewSet);
     isStepButtonView = true;
-    setState(s);
-    SwingUtilities.invokeLater(runInit);
+    setState( s);
+    SwingUtilities.invokeLater( runInit);
   }
 
-  private void tokenNetworkViewInit(ViewSet viewSet) {
+  private void tokenNetworkViewInit( final ViewSet viewSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
@@ -118,10 +124,12 @@ public class TokenNetworkView extends PartialPlanView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
+
+    mouseOverLink = null;
   }
 
-  Runnable runInit = new Runnable() {
-      public void run() {
+  private Runnable runInit = new Runnable() {
+      public final void run() {
         init();
       }
     };
@@ -136,12 +144,12 @@ public class TokenNetworkView extends PartialPlanView {
    *    called by componentShown method on the JFrame
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
-  public void init() {
+  public final void init() {
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
-        Thread.currentThread().sleep(50);
+        Thread.currentThread().sleep( 50);
       } catch (InterruptedException excp) {
       }
       // System.err.println( "tokenNetworkView displayable " + this.isDisplayable());
@@ -173,9 +181,14 @@ public class TokenNetworkView extends PartialPlanView {
   } // end init
 
 
-  public void setState( PartialPlanViewState s) {
+  /**
+   * <code>setState</code>
+   *
+   * @param s - <code>PartialPlanViewState</code> - 
+   */
+  public final void setState( final PartialPlanViewState s) {
     super.setState( s);
-    if(s == null) {
+    if (s == null) {
       return;
     }
     zoomFactor = s.getCurrentZoomFactor();
@@ -187,9 +200,9 @@ public class TokenNetworkView extends PartialPlanView {
    * <code>redraw</code> - called by Content Spec to apply user's content spec request.
    *
    */
-  public void redraw() {
+  public final void redraw() {
     Thread thread = new RedrawViewThread();
-    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.setPriority( Thread.MIN_PRIORITY);
     thread.start();
   }
 
@@ -198,7 +211,7 @@ public class TokenNetworkView extends PartialPlanView {
     public RedrawViewThread() {
     }  // end constructor
 
-    public void run() {
+    public final void run() {
       boolean isRedraw = true;
       renderTokenNetwork( isRedraw);
       addStepButtons( jGoView);
@@ -210,7 +223,7 @@ public class TokenNetworkView extends PartialPlanView {
 
   } // end class RedrawViewThread
 
-  private void renderTokenNetwork( boolean isRedraw) {
+  private void renderTokenNetwork( final boolean isRedraw) {
     if (isRedraw) {
       jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
       System.err.println( "Redrawing Token Network View ...");
@@ -258,7 +271,7 @@ public class TokenNetworkView extends PartialPlanView {
    *
    * @return - <code>JGoView</code> - 
    */
-  public JGoView getJGoView()  {
+  public final JGoView getJGoView()  {
     return jGoView;
   }
 
@@ -267,8 +280,26 @@ public class TokenNetworkView extends PartialPlanView {
    *
    * @return - <code>JGoDocument</code> - 
    */
-  public JGoDocument getJGoDocument()  {
+  public final JGoDocument getJGoDocument()  {
     return this.jGoDocument;
+  }
+
+  /**
+   * <code>getMouseOverLink</code> - link over which the mouse is moving - TokenLink
+   *
+   * @return - <code>TokenLink</code> - 
+   */
+  public final TokenLink getMouseOverLink() {
+    return mouseOverLink;
+  }
+
+  /**
+   * <code>setMouseOverLink</code>
+   *
+   * @param mouseOverLink - <code>TokenLink</code> - 
+   */
+  public final void setMouseOverLink( final TokenLink mouseOverLink) {
+    this.mouseOverLink = mouseOverLink;
   }
 
   private void createTokenNodes() {
@@ -347,8 +378,8 @@ public class TokenNetworkView extends PartialPlanView {
     // radial this.rootNodes = rootList.toArray();
   } // end createTokenParentChildRelationships
 
-  private void createTokenLink( TokenNode fromTokenNode, TokenNode toTokenNode,
-                                String type) {
+  private void createTokenLink( final TokenNode fromTokenNode, final TokenNode toTokenNode,
+                                final String type) {
     String linkName = fromTokenNode.getToken().getId().toString() + "->" +
       toTokenNode.getToken().getId().toString();
 //     if (tokenLinkMap.get( linkName) != null) {
@@ -359,7 +390,7 @@ public class TokenNetworkView extends PartialPlanView {
     // this view is not being redrawn when zoomFactor changes, so we need
     // the extra width for the higher zoomFactors
     TokenLink link = new TokenLink( fromTokenNode, toTokenNode,
-                                    getOpenJGoPenWidth( getZoomFactor()));
+                                    getOpenJGoPenWidth( getZoomFactor()), this);
     tokenLinkMap.put( linkName, link);
     // jGoDocument.addObjectAtTail( link);
     // put links behind nodes
@@ -388,7 +419,8 @@ public class TokenNetworkView extends PartialPlanView {
      * @param docCoords - <code>Point</code> - 
      * @param viewCoords - <code>Point</code> - 
      */
-    public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
+    public final void doBackgroundClick( final int modifiers, final Point docCoords,
+                                         final Point viewCoords) {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
         // do nothing
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -399,7 +431,7 @@ public class TokenNetworkView extends PartialPlanView {
   } // end class TokenNetworkJGoView
 
 
-  private void mouseRightPopupMenu( Point viewCoords) {
+  private void mouseRightPopupMenu( final Point viewCoords) {
     String partialPlanName = partialPlan.getPartialPlanName();
     PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
@@ -419,6 +451,10 @@ public class TokenNetworkView extends PartialPlanView {
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
     
+    JMenuItem ruleWindowItem = new JMenuItem( "Rule Window");
+    createRuleWindowItem( ruleWindowItem, this, viewCoords);
+    mouseRightPopup.add( ruleWindowItem);
+
     if (((PartialPlanViewSet) this.getViewSet()).getActiveToken() != null) {
       JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
       createActiveTokenItem( activeTokenItem);
@@ -438,9 +474,9 @@ public class TokenNetworkView extends PartialPlanView {
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
-  private void createActiveTokenItem( JMenuItem activeTokenItem) {
+  private void createActiveTokenItem( final JMenuItem activeTokenItem) {
     activeTokenItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
+        public final void actionPerformed( final ActionEvent evt) {
           PwToken activeToken =
             ((PartialPlanViewSet) TokenNetworkView.this.getViewSet()).getActiveToken();
           if (activeToken != null) {
@@ -451,9 +487,9 @@ public class TokenNetworkView extends PartialPlanView {
       });
   } // end createActiveTokenItem
 
-  private void createNodeByKeyItem( JMenuItem nodeByKeyItem) {
+  private void createNodeByKeyItem( final JMenuItem nodeByKeyItem) {
     nodeByKeyItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
+        public final void actionPerformed( final ActionEvent evt) {
           AskNodeByKey nodeByKeyDialog =
             new AskNodeByKey( "Find by Key", "key (int)", TokenNetworkView.this);
           Integer nodeKey = nodeByKeyDialog.getNodeKey();
@@ -467,7 +503,7 @@ public class TokenNetworkView extends PartialPlanView {
       });
   } // end createNodeByKeyItem
 
-  private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
+  private void findAndSelectToken( final PwToken tokenToFind, final boolean isByKey) {
     boolean isTokenFound = false;
     boolean isHighlightNode = true;
     List tokenNodeList = new ArrayList( tokenNodeMap.values());
@@ -487,7 +523,7 @@ public class TokenNetworkView extends PartialPlanView {
     if (isTokenFound && (! isByKey)) {
       NodeGenerics.selectSecondaryNodes
         ( NodeGenerics.mapTokensToTokenNodes
-          (((PartialPlanViewSet) TokenNetworkView.this.getViewSet()).getSecondaryTokens(),
+          ( ((PartialPlanViewSet) TokenNetworkView.this.getViewSet()).getSecondaryTokens(),
            tokenNodeList),
           jGoView);
     }
@@ -506,7 +542,7 @@ public class TokenNetworkView extends PartialPlanView {
                                          final TokenNetworkView tokenNetworkView,
                                          final Point viewCoords) {
     overviewWindowItem.addActionListener( new ActionListener() { 
-        public void actionPerformed( ActionEvent evt) {
+        public final void actionPerformed( final ActionEvent evt) {
           VizViewOverview currentOverview =
             ViewGenerics.openOverviewFrame( PlanWorks.TOKEN_NETWORK_VIEW, partialPlan,
                                             tokenNetworkView, viewSet, jGoView, viewCoords);
@@ -516,6 +552,21 @@ public class TokenNetworkView extends PartialPlanView {
         }
       });
   } // end createOverviewWindowItem
+
+  private void createRuleWindowItem( JMenuItem ruleWindowItem,
+                                         final TokenNetworkView tokenNetworkView,
+                                         final Point viewCoords) {
+    ruleWindowItem.addActionListener( new ActionListener() { 
+        public final void actionPerformed( final ActionEvent evt) {
+          VizViewRuleView currentRuleView =
+            ViewGenerics.openRuleViewFrame( partialPlan, tokenNetworkView, viewSet, 
+                                            viewCoords);
+          if (currentRuleView != null) {
+            ruleView = currentRuleView;
+          }
+        }
+      });
+  } // end createRuleWindowItem
 
 
 } // end class TokenNetworkView

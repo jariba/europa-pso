@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineViewTimelineNode.java,v 1.2 2004-03-16 02:24:13 taylor Exp $
+// $Id: TimelineViewTimelineNode.java,v 1.3 2004-03-30 22:01:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -251,11 +251,12 @@ public class TimelineViewTimelineNode extends TextNode {
     JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
     navigatorItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          MDIInternalFrame navigatorFrame = timelineView.openNavigatorViewFrame();
+          String viewSetKey = timelineView.getNavigatorViewSetKey();
+          MDIInternalFrame navigatorFrame = timelineView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = timelineView.getPartialPlan();
           contentPane.add( new NavigatorView( TimelineViewTimelineNode.this, partialPlan,
-                                              timelineView.getViewSet(),
+                                              timelineView.getViewSet(), viewSetKey,
                                               navigatorFrame));
         }
       });

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.39 2004-03-25 01:01:53 taylor Exp $
+# $Id: GETTING_STARTED,v 1.40 2004-03-30 22:00:58 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -231,6 +231,10 @@ a  Content Filter specification is applied.  Mouse cursor over token nodes displ
 Clicking Mouse-Left on a node link will make visible two small hollow squares,
 one at the "root" of the link, and the other at the tip of the arrow.
 
+Mouse-Right selection "Rule Window" brings up a window, such that when it exists, 
+moving the mouse over the view's token node links will present in the "Rule View 
+for <sequence-name>/step<nn>" window, the "from" and "to" token predicates and 
+parameter lists, their keys, and the model rule which is responsible.
 
 DB Transaction View
 ----------------

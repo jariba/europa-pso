@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.57 2004-03-12 23:24:17 miatauro Exp $
+// $Id: ViewSet.java,v 1.58 2004-03-30 22:01:05 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -33,11 +33,14 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.StringViewSetKey;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
+import gov.nasa.arc.planworks.viz.VizViewRuleView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
@@ -172,33 +175,32 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     if(views.containsValue(viewFrame)) {
       //System.err.println("have frame");
       Container contentPane = viewFrame.getContentPane();
-      for(int i = 0; i < contentPane.getComponentCount(); i++) {
-        if(contentPane.getComponent(i) instanceof VizView) {
+      for (int i = 0; i < contentPane.getComponentCount(); i++) {
+        // String viewSet keys: NavigatorView, VizViewOverview, VizViewRuleView
+        if (contentPane.getComponent(i) instanceof StringViewSetKey) {
+          views.remove( ((StringViewSetKey) contentPane.getComponent(i)).getViewSetKey());
+          if (contentPane.getComponent(i) instanceof VizViewOverview) {
+            ((VizViewOverview) contentPane.getComponent(i)).removeNotifyFromViewSet();
+          }
+        } else if (contentPane.getComponent(i) instanceof VizView) {
+          // class viewSet keys
           views.remove(contentPane.getComponent(i).getClass());
-          String overviewTitle = null;
           VizViewOverview overview =
             ((VizView) contentPane.getComponent(i)).getOverview();
           if (overview != null) {
-            overviewTitle = overview.getTitle();
-          // System.err.println( "VizView overviewTitle " + overviewTitle);
-            MDIInternalFrame overviewFrame = (MDIInternalFrame) views.get( overviewTitle);
-            if (overviewFrame != null) {
-              try {
-                //System.err.println("closing frame");
-                overviewFrame.setClosed( true);
-              } catch(PropertyVetoException pve){
-                pve.printStackTrace();
-              }
-              //System.err.println("removing frame");
-              views.remove( overviewTitle);
-            }
+            String overviewStringKey = overview.getViewSetKey();
+            // System.err.println( "VizView overviewStringKey " + overviewStringKey);
+            removeViewByStringKey( overviewStringKey);
           }
-        } else if (contentPane.getComponent(i) instanceof VizViewOverview) {
-          ((VizViewOverview) contentPane.getComponent(i)).removeNotifyFromViewSet();
-          views.remove( ((VizViewOverview) contentPane.getComponent(i)).getTitle());
+          VizViewRuleView ruleView =
+            ((VizView) contentPane.getComponent(i)).getRuleView();
+          if (ruleView != null) {
+            String ruleViewStringKey = ruleView.getViewSetKey();
+            // System.err.println( "VizView ruleViewStringKey " + ruleViewStringKey);
+            removeViewByStringKey( ruleViewStringKey);
+          }
         }
       }
-      //System.err.println( "removeViewFrame " + viewFrame.getTitle());
     }
     if(views.isEmpty()) {
       if (contentSpecWindow != null) {
@@ -241,7 +243,22 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
 //         System.exit(-1);
 //       }
     }
-  }  
+  }
+
+  private void removeViewByStringKey( String stringKey) {
+    MDIInternalFrame frame = (MDIInternalFrame) views.get( stringKey);
+    if (frame != null) {
+      try {
+        //System.err.println("closing frame");
+        frame.setClosed( true);
+      } catch( PropertyVetoException pve){
+        pve.printStackTrace();
+      }
+      //System.err.println("removeViewByStringKey: removing frame" + frame);
+      views.remove( stringKey);
+    }
+  } // end removeViewByStringKey
+
   /**
    * Notifies all open views of a change in the ContentSpec, and therefore a need to redraw.
    */
