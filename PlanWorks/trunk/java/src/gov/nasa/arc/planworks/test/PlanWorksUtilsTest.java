@@ -30,6 +30,7 @@ public class PlanWorksUtilsTest extends TestCase {
     super(testType);
   }
   public void testCollectionMaps() {
+		System.err.println("In testCollectionMaps");
     Integer [] array = new Integer[4];
     for(int i = 0; i < array.length; i++) {
       array[i] = new Integer(i);
@@ -80,9 +81,11 @@ public class PlanWorksUtilsTest extends TestCase {
       assertTrue("In-place mapped list wasn't incremented.",
                  ((InPlaceInteger)inPlaceList.get(i)).intValue() == i + 1);
     }
+		System.err.println("testCollectionMaps done");
   }
 
   public void testCollectionGreps() {
+		System.err.println("In testCollectionGreps");
     Integer [] array = new Integer[4];
     for(int i = 0; i < array.length; i++) {
       array[i] = new Integer(i);
@@ -123,10 +126,12 @@ public class PlanWorksUtilsTest extends TestCase {
       assertTrue("In-place grep list failed to eliminate correct elements.",
                  ((Integer)list.get(i)).intValue() > compInt);
     }
+		System.err.println("testCollectionGreps done");
   }
 
   //testMapUtils
   public void testMapUtils() {
+		System.err.println("In testMapUtils");
     Map testMap = new HashMap();
     testMap.put("foo", null);
     testMap.put("bar", "mumble");
@@ -164,38 +169,51 @@ public class PlanWorksUtilsTest extends TestCase {
     for(Iterator i = vals.iterator(); i.hasNext();) {
       assertTrue("ValidValues returned a null value: " + vals, i.next() != null);
     }
+		System.err.println("testMapUtils done");
   }
   //testListUtils
   public void testListUtils() {
+		System.err.println("In testListUtils");
     Object [] testArray = {"foo", "bar", "baz", "quux", "mumble", "wango"};
     List testList = Arrays.asList(testArray);
     
     Object test = CollectionUtils.findFirst(new FindSuccessFunctor(), testArray);
+
     assertTrue("Array find first failed unexpectedly: " + test, 
                test != null && test.equals("quux"));
+
     boolean in = false;
     for(int i = 0; i < testArray.length; i++) {
       if(testArray[i].equals(test)) {
         in = true;
       }
     }
+
     assertTrue("Array find found element not in array: " + test, in);
 
     test = CollectionUtils.findFirst(new FindFailureFunctor(), testArray);
+
     assertTrue("Array find first failed to fail expectedly: " + test, test == null);
-    
+
 
     test = CollectionUtils.findFirst(new FindSuccessFunctor(), testList);
+
     assertTrue("List find first failed unexpectedly: " + test,
                test != null && test.equals("quux"));
+
     in = false;
-    for(Iterator i = testList.iterator(); i.hasNext();) {
+
+		int check = testList.size();
+    for(Iterator i = testList.iterator(); i.hasNext() && check != 0; check--) {
       in = in || i.next().equals(test);
     }
+
     assertTrue("List find first found element not in list: " + test, in);
 
     test = CollectionUtils.findFirst(new FindFailureFunctor(), testList);
+
     assertTrue("List find first failed to fail expectedly: " + test, test == null);
+		System.err.println("testListUtils done");
   }
 
   class InPlaceInteger {
