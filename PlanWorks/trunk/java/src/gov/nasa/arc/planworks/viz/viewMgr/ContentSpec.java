@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.14 2003-07-08 20:28:17 miatauro Exp $
+// $Id: ContentSpec.java,v 1.15 2003-07-08 20:44:18 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -35,30 +35,6 @@ import gov.nasa.arc.planworks.db.util.MySQLDB;
  */
 
 public class ContentSpec {
-  //private static final String EQ = "=";
-  private static final String EQ = "&=";
-  private static final String NE = "!=";
-  private static final String OR = " | ";
-  private static final String TIMELINE = "/Timeline";
-  private static final String SLOT = "/Slot";
-  private static final String TOKEN = "/Token";
-  private static final String VARIABLE = "/Variable";
-  private static final String CONSTRAINT ="/Constraint";
-  private static final String PREDICATE = "/Predicate";
-  private static final String PARAMETER = "/Parameter";
-  private static final String KEY = "@key";
-  private static final String PREDID = "@predicateId";
-  private static final String SVID = "@startVarId";
-  private static final String EVID = "@endVarId";
-  private static final String DVID = "@durationVarId";
-  private static final String OVID = "@objectVarId"; //RIP17CE
-  private static final String RVID = "@rejectVarId";
-  private static final String TOKRELIDS = "@tokenRelationIds";
-  private static final String PARAMVIDS = "@paramVarIds";
-  private static final String CONSTRIDS = "@constraintIds";
-  private static final String PARAMID = "@paramid";
-  private static final String VARIDS = "@variableIds";
-  private static final String VTYPE = "@type";
   
   private BitSet currentSpec;
   private Long partialPlanKey;
@@ -124,13 +100,11 @@ public class ContentSpec {
    * goverend by this spec that they need to redraw themselves to the new specification.
    * @param timeline the result of getValues() in TimelineGroupBox.
    * @param predicate the result of getValues() in PredicateGroupBox.
-   * @param constraint the result of getValues() in ConstraintGroupBox.
-   * @param variableType the result of getValues() in VariableTypeGroupBox.
    * @param timeInterval the result of getValues() in TimeIntervalGroupBox.
    */
   //REALLY INEFFICIENT INITIAL RUN.  some of this should probably be refactored
-  public void applySpec(List timeline, List predicate, /*List constraint, */List variableType, 
-                        List timeInterval) throws NumberFormatException {
+  public void applySpec(List timeline, List predicate, List timeInterval) 
+    throws NumberFormatException {
   }
   public void executeQuery(String query) throws SQLException {
     System.err.println("Test: executing query " + query);
