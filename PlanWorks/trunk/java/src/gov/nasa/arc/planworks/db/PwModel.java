@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwModel.java,v 1.3 2003-06-11 01:02:11 taylor Exp $
+// $Id: PwModel.java,v 1.4 2003-12-03 02:29:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,10 +42,16 @@ public interface PwModel {
   /**
    * <code>listParameters</code>
    *
-   * @return - <code>List</code> -  List of PwParamter
+   * @return - <code>List</code> -  List of PwParameter
    */
   public abstract List listParameters();
 
+  /**
+   * <code>listRules</code>
+   *
+   * @return - <code>List</code> - List of PwRule
+   */
+  public abstract List listRules();
 
 
 } // end interface PwModel

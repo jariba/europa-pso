@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.14 2003-11-06 21:52:20 miatauro Exp $
+// $Id: DbConstants.java,v 1.15 2003-12-03 02:29:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -137,7 +137,7 @@ public interface DbConstants {
   
   public static final String SEQ_TRANSACTIONS = "transactions";
 
-  //public static final String PP_TRANSACTIONS_EXT = "transactions";
+  public static final String SEQ_MODEL_PATH = "modelUrl";
 
   /**
    * constant <code>PARTIAL_PLAN_FILE_EXTS</code> - array of Strings

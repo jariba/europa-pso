@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.13 2003-11-21 00:41:51 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.14 2003-12-03 02:29:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -207,7 +207,7 @@ public class TokenNetworkView extends PartialPlanView {
       this.setVisible( true);
       jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
     }
-  } // end redrawView
+  } // end renderTokenNetwork
 
   /**
    * <code>getJGoDocument</code>

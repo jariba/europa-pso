@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.36 2003-10-31 00:50:24 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.37 2003-12-03 02:29:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,9 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -24,6 +27,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
@@ -108,7 +113,6 @@ public class PwProjectImpl extends PwProject {
     if(!projects.containsKey(name)) {
       throw new ResourceNotFoundException("Project " + name + " not found.");
     }
-    
     return (PwProject) projects.get(name);
   } // end getProject
 
@@ -161,9 +165,9 @@ public class PwProjectImpl extends PwProject {
     Iterator seqIdIterator = sequences.keySet().iterator();
     while(seqIdIterator.hasNext()) {
       Long sequenceId = (Long) seqIdIterator.next();
-      System.err.println(sequenceId + " : " + ((String)sequences.get(sequenceId)));
-      planningSequences.add(new PwPlanningSequenceImpl((String) sequences.get(sequenceId), 
-                                                       sequenceId, new PwModelImpl()));
+      String seqUrl = (String) sequences.get(sequenceId);
+      System.err.println(sequenceId + " : " + seqUrl);
+      planningSequences.add( new PwPlanningSequenceImpl( seqUrl, sequenceId));
     }
   } // end  constructor PwProjectImpl.openProject
 
@@ -241,7 +245,7 @@ public class PwProjectImpl extends PwProject {
     if(MySQLDB.sequenceExists(url)) {
       throw new DuplicateNameException("Sequence at " + url + " already in database.");
     }
-    planningSequences.add(retval = new PwPlanningSequenceImpl(url, this, new PwModelImpl()));
+    planningSequences.add(retval = new PwPlanningSequenceImpl( url, this));
     return retval;
   }
 
@@ -279,4 +283,6 @@ public class PwProjectImpl extends PwProject {
     MySQLDB.deleteProject(id);
     System.err.println("Deleting project took " + (System.currentTimeMillis() - t1) + "ms");
   } // end delete
+
+
 } // end class PwProjectImpl

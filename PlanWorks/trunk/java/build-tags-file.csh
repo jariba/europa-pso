@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.46 2003-11-18 23:54:14 taylor Exp $
+# $Id: build-tags-file.csh,v 1.47 2003-12-03 02:29:49 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -17,7 +17,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/CreateViewThread.java \
     src/gov/nasa/arc/planworks/DeleteProjectThread.java \
     src/gov/nasa/arc/planworks/DeleteSequenceThread.java \
+    src/gov/nasa/arc/planworks/ExecutePlannerThread.java \
     src/gov/nasa/arc/planworks/InstantiateProjectThread.java \
+    src/gov/nasa/arc/planworks/NewSequenceThread.java \
     src/gov/nasa/arc/planworks/PlanWorks.java \
     src/gov/nasa/arc/planworks/SequenceViewMenuItem.java \
     src/gov/nasa/arc/planworks/db/DbConstants.java \
@@ -32,6 +34,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/PwPlanningSequence.java \
     src/gov/nasa/arc/planworks/db/PwPredicate.java \
     src/gov/nasa/arc/planworks/db/PwProject.java \
+    src/gov/nasa/arc/planworks/db/PwRule.java \
     src/gov/nasa/arc/planworks/db/PwSlot.java \
     src/gov/nasa/arc/planworks/db/PwTimeline.java \
     src/gov/nasa/arc/planworks/db/PwToken.java \
@@ -49,6 +52,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/impl/PwPlanningSequenceImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwPredicateImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java \
+    src/gov/nasa/arc/planworks/db/impl/PwRuleImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwSlotImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTimelineImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTokenImpl.java \
@@ -59,6 +63,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/util/FileUtils.java \
     src/gov/nasa/arc/planworks/db/util/MySQLDB.java \
     src/gov/nasa/arc/planworks/db/util/PartialPlanContentSpec.java \
+    src/gov/nasa/arc/planworks/db/util/PwSequenceFilenameFilter.java \
     src/gov/nasa/arc/planworks/db/util/PwSQLFilenameFilter.java \
     src/gov/nasa/arc/planworks/db/util/SequenceContentSpec.java \
     src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java \
@@ -85,6 +90,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/FileCopy.java \
     src/gov/nasa/arc/planworks/util/MouseEventOSX.java \
     src/gov/nasa/arc/planworks/util/OneToManyMap.java \
+    src/gov/nasa/arc/planworks/util/PlannerCommandLineDialog.java \
     src/gov/nasa/arc/planworks/util/ProjectNameDialog.java \
     src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java \
     src/gov/nasa/arc/planworks/util/StringNameComparator.java \
@@ -162,6 +168,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/transaction/TransactionView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ModelRulesView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/PredicateNode.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/RuleLink.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/StepQueryView.java \
