@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.15 2004-02-07 00:32:30 miatauro Exp $
+// $Id: SequenceViewSet.java,v 1.16 2004-02-11 02:29:31 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -64,10 +64,12 @@ public class SequenceViewSet extends ViewSet {
                                               viewable, this));
     this.contentSpecWindow.pack();
 
-    int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
-                                 ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-                          (int) ((PlanWorks.getPlanWorks().getSize().getHeight() -
-                                  ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
+    int delta = 0;
+    // do not use deltas -- causes windows to slip off screen
+//     int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
+//                                  ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+//                           (int) ((PlanWorks.getPlanWorks().getSize().getHeight() -
+//                                   ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
 
     this.contentSpecWindow.setLocation( delta, delta);
     this.contentSpecWindow.setVisible(true);

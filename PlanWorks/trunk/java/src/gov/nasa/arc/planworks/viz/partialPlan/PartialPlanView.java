@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.25 2004-02-10 02:35:54 taylor Exp $
+// $Id: PartialPlanView.java,v 1.26 2004-02-11 02:29:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -348,8 +348,12 @@ public class PartialPlanView extends VizView {
         nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" +
                          (currStepNumber + dir));
       }
+      // pass ContentSpec window location to next view frame
+      Point specWindowLocation = new Point( viewSet.getContentSpecWindow().getLocation());
+      PartialPlanViewState partialPlanViewState = PartialPlanView.this.getState();
+      partialPlanViewState.setContentSpecWindowLocation( specWindowLocation);
       MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),
-                                                            pView.getState());
+                                                            partialPlanViewState);
       try {
         nextViewFrame.setBounds(viewFrame.getBounds());
         nextViewFrame.setNormalBounds(viewFrame.getNormalBounds());

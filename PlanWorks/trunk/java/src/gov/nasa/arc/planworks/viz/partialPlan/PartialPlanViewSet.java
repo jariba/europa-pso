@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.14 2004-02-03 20:43:54 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.15 2004-02-11 02:29:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.viz.partialPlan;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -67,6 +68,8 @@ public class PartialPlanViewSet extends ViewSet {
   private List secondaryTokens; // in timeline view, the overloaded tokens
   private PwResource activeResource; // in resource extent view
   private int navigatorFrameCnt;
+  private MDIDesktopFrame desktopFrame;
+  private PartialPlanViewState state;
 
 
   /**
@@ -79,8 +82,34 @@ public class PartialPlanViewSet extends ViewSet {
   public PartialPlanViewSet( MDIDesktopFrame desktopFrame, ViewableObject viewable,
                              ViewSetRemover remover) {
     super( desktopFrame, viewable, remover);
+    this.desktopFrame = desktopFrame;
+    this.state = null; // view initiated from SequenceStepsView
+    commonConstructor();
+  }
+
+  /**
+   * <code>PartialPlanViewSet</code> - constructor 
+   *
+   * @param desktopFrame - <code>MDIDesktopFrame</code> - 
+   * @param viewable - <code>ViewableObject</code> - 
+   * @param state - <code>PartialPlanViewState</code> - 
+   * @param remover - <code>ViewSetRemover</code> - 
+   */
+  public PartialPlanViewSet( MDIDesktopFrame desktopFrame, ViewableObject viewable,
+                             PartialPlanViewState state, ViewSetRemover remover) {
+    super( desktopFrame, viewable, remover);
+    this.desktopFrame = desktopFrame;
+    this.state = state; // view initiated by View step buttons
+    commonConstructor();
+  }
+
+  private void commonConstructor() {
     this.colorStream = new ColorStream();
     this.activeResource = null;
+    Point windowLocation = null;
+    if (this.contentSpecWindow != null) {
+      windowLocation = this.contentSpecWindow.getLocation();
+    }
     this.contentSpecWindow = desktopFrame.createFrame( ContentSpec.CONTENT_SPEC_TITLE +
                                                        " for " + viewable.getName(),
                                                        this, true, false, false, true);
@@ -89,20 +118,28 @@ public class PartialPlanViewSet extends ViewSet {
     ((PwPartialPlan) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
     contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec, this));
     this.contentSpecWindow.pack();
-    String seqUrl = ((PwPartialPlan) viewable).getSequenceUrl();
-    int sequenceStepsViewHeight =
-      (int) (PlanWorks.getPlanWorks().
-              getSequenceStepsViewFrame( seqUrl).getSize().getHeight() * 0.5);
-    int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
-                                 ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-                          (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
-                                 sequenceStepsViewHeight -
-                                 (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
-    this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
+
+    if (state == null) { // do not relocate for step buttons creation
+      String seqUrl = ((PwPartialPlan) viewable).getSequenceUrl();
+      int sequenceStepsViewHeight =
+        (int) ((PlanWorks.getPlanWorks().
+               getSequenceStepsViewFrame( seqUrl).getSize().getHeight() * 0.5) +
+               (ViewConstants.MDI_FRAME_DECORATION_HEIGHT / 2.0));
+      int delta = 0;
+      // do not use deltas -- causes windows to slip off screen
+//       int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
+//                                    ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+//                             (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
+//                                    sequenceStepsViewHeight -
+//                                    (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
+      this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
+    } else {
+      this.contentSpecWindow.setLocation( state.getContentSpecWindowLocation());
+    }
     this.contentSpecWindow.setVisible(true);
 
     navigatorFrameCnt = 0;
-  } // end constructor
+  } // end commonConstructor
 
   public MDIInternalFrame openView(String viewClassName) {
     MDIInternalFrame retval = super.openView(viewClassName);

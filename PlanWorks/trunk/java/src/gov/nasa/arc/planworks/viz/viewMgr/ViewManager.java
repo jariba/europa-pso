@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.23 2004-01-09 20:44:07 miatauro Exp $
+// $Id: ViewManager.java,v 1.24 2004-02-11 02:29:31 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -38,7 +38,7 @@ public class ViewManager implements ViewSetRemover {
   private MDIDesktopFrame desktopFrame;
   private HashMap viewSets;
   private Object [] constructorArgs;
-  private int contentSpecWindowCnt;
+  // private int contentSpecWindowCnt;
 
   /**
    * Creates the ViewManager object and prepares it for adding views.
@@ -46,7 +46,7 @@ public class ViewManager implements ViewSetRemover {
   public ViewManager(MDIDesktopFrame desktopFrame) {
     viewSets = new HashMap();
     this.desktopFrame = desktopFrame;
-    this.contentSpecWindowCnt = 0;
+    // this.contentSpecWindowCnt = 0;
   }
 
   public MDIInternalFrame openView(ViewableObject viewable, String viewClassName) {
@@ -55,13 +55,13 @@ public class ViewManager implements ViewSetRemover {
 	    viewSets.put(viewable,
                          new PartialPlanViewSet(desktopFrame,
                                                 (PwPartialPlan) viewable, this));
-            contentSpecWindowCnt++;
+            // contentSpecWindowCnt++;
 	}
 	else if (viewable instanceof PwPlanningSequence) {
 	    viewSets.put(viewable,
                          new SequenceViewSet(desktopFrame,
                                              (PwPlanningSequence) viewable, this));
-            contentSpecWindowCnt++;
+            // contentSpecWindowCnt++;
 	}
 	else {
 	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
@@ -76,14 +76,14 @@ public class ViewManager implements ViewSetRemover {
 	if (viewable instanceof PwPartialPlan) {
 	    viewSets.put(viewable,
                          new PartialPlanViewSet(desktopFrame,
-                                                (PwPartialPlan) viewable, this));
-            contentSpecWindowCnt++;
+                                                (PwPartialPlan) viewable, state, this));
+            // contentSpecWindowCnt++;
 	}
 	else if (viewable instanceof PwPlanningSequence) {
 	    viewSets.put(viewable,
                          new SequenceViewSet(desktopFrame,
                                              (PwPlanningSequence) viewable, this));
-            contentSpecWindowCnt++;
+            // contentSpecWindowCnt++;
 	}
 	else {
 	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
@@ -124,22 +124,22 @@ public class ViewManager implements ViewSetRemover {
       //return null;
   }
 
-  /**
-   * <code>getContentSpecWindowCnt</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getContentSpecWindowCnt() {
-    return this.contentSpecWindowCnt;
-  }
+//   /**
+//    * <code>getContentSpecWindowCnt</code>
+//    *
+//    * @return - <code>int</code> - 
+//    */
+//   public int getContentSpecWindowCnt() {
+//     return this.contentSpecWindowCnt;
+//   }
 
-  /**
-   * <code>decrementContentSpecWindowCnt</code>
-   *
-   */
-  public void decrementContentSpecWindowCnt() {
-    this.contentSpecWindowCnt--;
-  }
+//   /**
+//    * <code>decrementContentSpecWindowCnt</code>
+//    *
+//    */
+//   public void decrementContentSpecWindowCnt() {
+//     this.contentSpecWindowCnt--;
+//   }
 
 
 }

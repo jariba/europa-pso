@@ -4,20 +4,35 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewState.java,v 1.3 2004-02-10 17:49:13 miatauro Exp $
+// $Id: PartialPlanViewState.java,v 1.4 2004-02-11 02:29:30 taylor Exp $
 //
 // PlanWorks -- 
 
 package gov.nasa.arc.planworks.viz.partialPlan;
 
+import java.awt.Point;
 import java.util.List;
 
 public class PartialPlanViewState {
+
   private List contentSpec;
-  public PartialPlanViewState(PartialPlanView view) {
+  private Point contentSpecWindowLocation;
+
+  public PartialPlanViewState( final PartialPlanView view) {
     contentSpec = ((PartialPlanViewSet)view.getViewSet()).getCurrentSpec();
+    contentSpecWindowLocation = null;
   }
-  public List getContentSpec(){
+
+  public final List getContentSpec(){
     return contentSpec;
   }
+
+  public final Point getContentSpecWindowLocation() {
+    return this.contentSpecWindowLocation;
+  }
+
+  public final void setContentSpecWindowLocation( final Point loc) {
+    this.contentSpecWindowLocation = loc;
+  }
+
 }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.4 2004-02-10 02:35:55 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.5 2004-02-11 02:29:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -764,12 +764,20 @@ public class ResourceProfileView extends PartialPlanView  {
      * @return - <code>Dimension</code> - 
      */
     public final Dimension getPreferredSize() {
-      return new Dimension
-        ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
-                 jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
-          (int) (ResourceProfileView.this.getSize().getHeight() -
-                 jGoRulerView.getDocumentSize().getHeight() -
-                 jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
+      if ((jGoLevelScaleView.getVerticalScrollBar() == null) ||
+          (jGoRulerView.getHorizontalScrollBar() == null)) {
+        return new Dimension
+          ( (int) jGoLevelScaleView.getDocumentSize().getWidth(),
+            (int) (ResourceProfileView.this.getSize().getHeight() -
+                   jGoRulerView.getDocumentSize().getHeight()));
+      } else {
+        return new Dimension
+          ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
+                   jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
+            (int) (ResourceProfileView.this.getSize().getHeight() -
+                   jGoRulerView.getDocumentSize().getHeight() -
+                   jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
+      }
     }
 
   } // end class LevelScalePanel

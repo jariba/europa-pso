@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.70 2004-02-10 02:35:51 taylor Exp $
+# $Id: README,v 1.71 2004-02-11 02:29:29 taylor Exp $
 #
 
 SUMMARY
@@ -12,19 +12,24 @@ SUMMARY
 o Two resource views have been added: ResourceProfileView and
   ResourceTransactionView.  When both are present, Mouse-Right:
   "Set Time Scale Line" on one will display it on both views.
-  The "slave" view will be scrolled to the consistent time and
-  resource.
+  The "slave" view will be scrolled to the same time and resource.
 
 o The forward/backward step buttons on the partial plan views
   are now initially placed so that is most cases, they do not 
   overlay displayed nodes.
 
-o The forward/backward step buttons on the partial plan views
-  now maintain the user's view frame size.
+o Automatic location offsets for partial plan views and Content Filter
+  windows will no longer be used -- the user will relocate overlaying 
+  windows, manually.
 
 
 o  GNATS PRs and CRs completed:
-   
+   #2241: Timeline view disappear and does not reappear after the 
+          non-monotonic timeline error message.
+   #2249: Partial Plan View frames do not maintain user's resizing when stepping.
+   #2250: Always show timeline objects in Timeline View.
+   #2251: Keep Content Filter frame and view frames in same position when stepping.
+
 
 CVS CHECKOUT
 ============
