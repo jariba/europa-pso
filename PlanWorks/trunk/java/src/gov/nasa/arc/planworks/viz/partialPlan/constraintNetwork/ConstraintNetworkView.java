@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.70 2004-06-21 22:43:02 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.71 2004-06-23 21:36:37 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -596,9 +596,20 @@ public class ConstraintNetworkView extends PartialPlanView {
       PwRuleInstance ruleInstance = (PwRuleInstance) ruleInstanceItr.next();
       if (! ruleInstance.getVariables().isEmpty()) {
         Color backgroundColor = ViewConstants.RULE_INSTANCE_BG_COLOR;
+        //get fromTokenNode and toTokenNodes
+        Integer masterId = ruleInstance.getMasterId();
+        TokenNode fromTokenNode = (TokenNode) containerNodeMap.get(ruleInstance.getMasterId());
+        List slaveIds = ruleInstance.getSlaveIdsList();
+        List toTokenNodeList = new ArrayList();
+        Iterator sidIterator = slaveIds.iterator();
+        while (sidIterator.hasNext()) {
+          TokenNode tokenNode = (TokenNode) containerNodeMap.get((Integer)sidIterator.next());
+          toTokenNodeList.add(tokenNode);
+        }
         VariableContainerNode node =
-          new ConstraintNetworkRuleInstanceNode( ruleInstance, new Point(x, y),
-                                                 backgroundColor, isDraggable, this);
+          new ConstraintNetworkRuleInstanceNode( ruleInstance, fromTokenNode, toTokenNodeList,
+                                                 new Point(x, y), backgroundColor, isDraggable, this);
+
         containerNodeMap.put( ruleInstance.getId(), node);
         document.addObjectAtTail( (JGoObject) node);
       }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRuleInstanceImpl.java,v 1.2 2004-06-09 20:10:33 miatauro Exp $
+// $Id: PwRuleInstanceImpl.java,v 1.3 2004-06-23 21:36:35 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -109,6 +109,15 @@ public class PwRuleInstanceImpl implements PwRuleInstance {
    */
   public List getSlaveIdsList() {
     return new ArrayList(slaveIds);
+  }
+
+  /**
+   * <code>getRuleVarIdList</code>
+   *
+   * @return - <code>List</code> - of Integer. 
+   */
+  public List getRuleVarIdList() {
+    return new ArrayList(ruleVarIds);
   }
 
   /**

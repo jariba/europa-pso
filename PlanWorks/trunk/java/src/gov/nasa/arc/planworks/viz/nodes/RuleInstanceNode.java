@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNode.java,v 1.5 2004-06-21 22:43:00 taylor Exp $
+// $Id: RuleInstanceNode.java,v 1.6 2004-06-23 21:36:36 pdaley Exp $
 //
 // PlanWorks
 //
@@ -251,8 +251,8 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
       return false;
     }
     JGoObject obj = view.pickDocObject( docCoords, false);
-//     System.err.println( "RuleInstanceNode: doMouseClick obj class " +
-//                         obj.getTopLevelObject().getClass().getName());
+     //System.err.println( "RuleInstanceNode: doMouseClick obj class " +
+     //                    obj.getTopLevelObject().getClass().getName());
     RuleInstanceNode ruleInstanceNode = (RuleInstanceNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       // do nothing
