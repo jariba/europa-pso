@@ -16,7 +16,7 @@
   </target>
 
   <target name="TimelineViewTest" 
-      description="JUNIT_HOME, JFCUNIT_HOME, and JAKARTA_REGEXP_HOME must be set">
+      description="requires JUNIT_HOME, JFCUNIT_HOME, and JAKARTA_REGEXP_HOME">
     <ant dir="./java/src/gov/nasa/arc/planworks/viz/views/test" 
        antfile="timeline-view-test.xml"/>
   </target>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectTest.java,v 1.4 2003-05-21 23:48:35 taylor Exp $
+// $Id: PwProjectTest.java,v 1.5 2003-05-23 19:06:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -73,10 +73,30 @@ public class PwProjectTest extends JFrame {
   private static String xmlFilesDirectory;
   private static String userCollectionName; // e.g. /wtaylor
 
-  private static final int FRAME_WIDTH = 900;
-  private static final int FRAME_HEIGHT = 850;
-  private static final int FRAME_X_LOCATION = 100;
-  private static final int FRAME_Y_LOCATION = 100;
+  /**
+   * constant <code>FRAME_WIDTH</code>
+   *
+   */
+  public static final int FRAME_WIDTH = 900;
+
+  /**
+   * constant <code>FRAME_HEIGHT</code>
+   *
+   */
+  public static final int FRAME_HEIGHT = 850;
+
+  /**
+   * constant <code>FRAME_X_LOCATION</code>
+   *
+   */
+  public static final int FRAME_X_LOCATION = 100;
+
+  /**
+   * constant <code>FRAME_Y_LOCATION</code>
+   *
+   */
+  public static final int FRAME_Y_LOCATION = 100;
+
   private Container contentPane;
   private VizView timelineView;
   private PwPartialPlan partialPlan;
@@ -85,11 +105,51 @@ public class PwProjectTest extends JFrame {
 
 
   /**
-   * <code>PwProjectTest</code> - constructor 
+   * <code>PwProjectTest</code> - constructor
+   *                     for cmd line invocation (reads arg list in main)
    *
    */
   public PwProjectTest() {
     super( "PlanWorks Timeline View");
+    // Closes from title bar 
+    addWindowListener( new WindowAdapter() {
+        public void windowClosing( WindowEvent e) {
+          System.exit( 0);
+        }});
+
+    // ONE PROJECT FOR NOW, WITH ONE SEQUENCE, WITH ONE PARTIAL PLAN
+    // PlanWorks/xml/test/monkey/monkey.xml
+
+    // PwProjectMgmt.openProject
+    // PwPartialPlan partialPlan = getTestPartialPlan();
+
+    // PwProjectMgmt.createProject
+    String url = System.getProperty( "planworks.root") + "/xml/test";
+    partialPlan = createTestPartialPlan( url);
+    // System.out.println( "Test partialPlan " + partialPlan);
+
+    contentPane = getContentPane();
+    contentPane.setLayout( new BoxLayout( contentPane, BoxLayout.Y_AXIS));
+
+    buildMenuBar();
+
+  } // end constructor
+
+
+  /**
+   * <code>PwProjectTest</code> - constructor
+   *                     for TimelineViewTest invocation (args passed in)
+   *
+   */
+  public PwProjectTest( String osType, boolean isJvmGtEq1_4, String pathname) {
+    super( "PlanWorks Timeline View");
+    this.osType = osType;
+    this.isJvmGtEq1_4 = isJvmGtEq1_4;
+    this.xmlFilesDirectory = FileUtils.getCanonicalPath( pathname);
+    this.planWorksRoot = System.getProperty( "planworks.root");
+    this.userName = System.getProperty( "user");
+    this.userCollectionName = "/" + userName;
+
     // Closes from title bar 
     addWindowListener( new WindowAdapter() {
         public void windowClosing( WindowEvent e) {
