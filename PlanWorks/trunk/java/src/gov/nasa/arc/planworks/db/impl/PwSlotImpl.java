@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.20 2004-02-03 19:22:18 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.21 2004-02-03 22:43:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 
@@ -30,9 +31,12 @@ import gov.nasa.arc.planworks.db.PwToken;
  */
 public class PwSlotImpl implements PwSlot {
 
+  private boolean hasSetTimes;
   private Integer id;
   private Integer timelineId;
   private List tokenIdList; // element String
+  private PwDomain startTime;
+  private PwDomain endTime;
   private PwPartialPlanImpl partialPlan;
 
   /**
@@ -46,6 +50,8 @@ public class PwSlotImpl implements PwSlot {
     this.id = id;
     this.timelineId = timelineId;
     this.partialPlan = partialPlan;
+    startTime = endTime = null;
+    hasSetTimes = false;
     tokenIdList = new ArrayList();
   } // end constructor
 
@@ -129,19 +135,43 @@ public class PwSlotImpl implements PwSlot {
     return token;
   }
 
+  public boolean isEmpty() {return tokenIdList.isEmpty();}
+
+  public void calcTimes(PwSlot prev, PwSlot next) {
+    if(hasSetTimes) {
+      return;
+    }
+    if(isEmpty()) {
+      if(prev == null || next == null) {
+        return;
+      }
+      startTime = prev.getBaseToken().getEndVariable().getDomain();
+      endTime = next.getBaseToken().getStartVariable().getDomain();
+    }
+    else {
+      PwToken base = getBaseToken();
+      startTime = base.getStartVariable().getDomain();
+      endTime = base.getEndVariable().getDomain();
+    }
+  }
+ 
+  public PwDomain getStartTime() {return startTime;}
+  public PwDomain getEndTime() {return endTime;}
+
   /**
    * <code>getBaseToken</code>
    *
    * @return - <code>PwToken</code> - 
    */
   public PwToken getBaseToken() {
-    PwToken token = null;
-    List tokenList = getTokenList();
-    if (tokenList.size() > 0) {
-      token = (PwToken) tokenList.get( 0);
+//    PwToken token = null;
+//     List tokenList = getTokenList();
+//     if (tokenList.size() > 0) {
+//       token = (PwToken) tokenList.get( 0);
+//     }
+    if(tokenIdList.size() > 0) {
+      return partialPlan.getToken((Integer)tokenIdList.get(0));
     }
-    return token;
+    return null;
   }
-
-
 } // end class PwSlotImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.1 2004-02-03 20:43:54 taylor Exp $
+// $Id: TimeScaleView.java,v 1.2 2004-02-03 22:44:20 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -166,10 +166,11 @@ public class TimeScaleView extends JGoView  {
           boolean isLastSlot = (! slotIterator.hasNext());
           PwToken token = slot.getBaseToken();
           slotCnt++;
-          PwDomain[] intervalArray =
-            NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot,
-                                               alwaysReturnEnd);
-          collectTimeScaleMetrics( intervalArray[0], intervalArray[1], token);
+//           PwDomain[] intervalArray =
+//             NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot,
+//                                                alwaysReturnEnd);
+//           collectTimeScaleMetrics( intervalArray[0], intervalArray[1], token);
+          collectTimeScaleMetrics(slot.getStartTime(), slot.getEndTime(), token);
           previousSlot = slot;
         }
         if (slotCnt > maxSlots) {

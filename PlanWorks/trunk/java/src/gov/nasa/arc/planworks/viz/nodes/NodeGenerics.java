@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.14 2004-02-03 20:43:53 taylor Exp $
+// $Id: NodeGenerics.java,v 1.15 2004-02-03 22:44:05 miatauro Exp $
 //
 // PlanWorks
 //
@@ -83,9 +83,9 @@ public class NodeGenerics {
    * @param alwaysReturnEnd - <code>boolean</code> - 
    * @return - <code>PwDomain[]</code> - 
    */
-  public static PwDomain[] getStartEndIntervals( PwSlot slot, PwSlot previousSlot,
-                                                 boolean isLastSlot,
-                                                 boolean alwaysReturnEnd) {
+  public static PwDomain[] getStartEndIntervals(PwSlot slot, PwSlot previousSlot, PwSlot nextSlot,
+                                                boolean isLastSlot, boolean alwaysReturnEnd) 
+  {
     PwDomain[] intervalArray = new PwDomain[2];
     PwDomain startIntervalDomain = null;
     PwDomain endIntervalDomain = null;
@@ -102,23 +102,26 @@ public class NodeGenerics {
         intervalArray[0] = null;
         intervalArray[1] = null;
         return intervalArray;
-     } else {
+      } 
+      else {
         // empty slot between filled slots
         intervalVariable = previousToken.getEndVariable();
+        //startIntervalDomain = previousSlot.getBaseToken().getEndVariable().getDomain();
+        endIntervalDomain = nextSlot.getBaseToken().getStartVariable().getDomain();
       }
-    } else if (isLastSlot || alwaysReturnEnd) {
+    } else if (isLastSlot) {
       intervalVariable = baseToken.getStartVariable();
       lastIntervalVariable = baseToken.getEndVariable();
     } else {
       intervalVariable = baseToken.getStartVariable();      
     }
-
+    
     if (intervalVariable == null) {
       startIntervalDomain = intervalDomain;
     } else {
       startIntervalDomain = intervalVariable.getDomain();
     }
-
+    
     if ((lastIntervalVariable != null) || (lastIntervalDomain != null)) {
       if (lastIntervalVariable == null) {
         endIntervalDomain = lastIntervalDomain;
@@ -127,11 +130,12 @@ public class NodeGenerics {
       }
     }
     if (alwaysReturnEnd && (endIntervalDomain == null)) {
+      System.err.println("EQ");
       endIntervalDomain = startIntervalDomain;
     }
-//     System.err.println( "getStartEndIntervals: " + slot.getBaseToken());
-//     System.err.println( "  startIntervalDomain " + startIntervalDomain.toString());
-//     System.err.println( "  endIntervalDomain " + endIntervalDomain.toString());
+         System.err.println( "getStartEndIntervals: " + slot.getBaseToken());
+         System.err.println( "  startIntervalDomain " + startIntervalDomain.toString());
+         System.err.println( "  endIntervalDomain " + endIntervalDomain.toString());
     intervalArray[0] = startIntervalDomain;
     intervalArray[1] = endIntervalDomain;
     return intervalArray;
