@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.16 2004-02-11 02:29:31 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.17 2004-03-09 22:02:15 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -86,14 +86,8 @@ public class SequenceViewSet extends ViewSet {
         getViewManager().removeViewSet(partialPlan);
       }
     }
-    try {
-      PlanWorks.getPlanWorks().getCurrentProject().
-        deletePlanningSequence(((PwPlanningSequence)viewable).getId());
-    }
-    catch(ResourceNotFoundException rnfe) {
-      rnfe.printStackTrace();
-      //System.exit(-1);
-    }
+    PlanWorks.getPlanWorks().getCurrentProject().
+      closePlanningSequence(((PwPlanningSequence)viewable).getId());
   }
 
 } // end class SequenceViewSet
