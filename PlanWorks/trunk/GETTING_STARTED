@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.24 2003-12-31 01:02:18 taylor Exp $
+# $Id: GETTING_STARTED,v 1.25 2004-01-02 18:58:56 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -128,7 +128,8 @@ selections is "Set Time Scale Line".  Selecting it will cause a red vertical
 time scale line to be drawn.  A Mouse-Right "Set Time Scale Line" selection 
 at another location will move the time scale line.  "Hide/Show Node Labels"
 is another available selection, where the large label rectangles vanish and
-the token duration line expands.
+the token duration line expands to a thick bar. Mouse-Right also offers
+"Show Earliest" and "Show Latest", as options to "Show Intervals".
 
 Timeline View
 -------------

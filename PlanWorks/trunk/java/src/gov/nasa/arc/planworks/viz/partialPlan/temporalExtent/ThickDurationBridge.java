@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ThickDurationBridge.java,v 1.1 2003-12-20 01:54:51 taylor Exp $
+// $Id: ThickDurationBridge.java,v 1.2 2004-01-02 18:58:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -71,18 +71,29 @@ public class ThickDurationBridge extends JGoRectangle {
   public String getToolTipText() {
     StringBuffer buffer = new StringBuffer( "<html>");
     buffer.append( labelLines[0]).append( "<br>");
-    buffer.append( labelLines[1]).append( "<br>[");
-    if (minDurationTime == DbConstants.MINUS_INFINITY_INT) {
-      buffer.append( "-Infinity");
+    buffer.append( labelLines[1]).append( "<br>");
+    if (minDurationTime != maxDurationTime) {
+      buffer.append( "[");
+      if (minDurationTime == DbConstants.MINUS_INFINITY_INT) {
+        buffer.append( "-Infinity");
+      } else {
+        buffer.append( String.valueOf( minDurationTime));
+      }
+      if (maxDurationTime == DbConstants.PLUS_INFINITY_INT) {
+        buffer.append( ", ").append( "Infinity");
+      } else {
+        buffer.append( ", ").append( String.valueOf( maxDurationTime));
+      }
+      buffer.append( "]");
     } else {
-      buffer.append( String.valueOf( minDurationTime));
+      if (maxDurationTime == DbConstants.PLUS_INFINITY_INT) {
+        buffer.append( "Infinity");
+      } else {
+        buffer.append( String.valueOf( maxDurationTime));
+      }
     }
-    if (maxDurationTime == DbConstants.PLUS_INFINITY_INT) {
-      buffer.append( ", ").append( "Infinity");
-    } else {
-      buffer.append( ", ").append( String.valueOf( maxDurationTime));
-    }
-    return buffer.append( "]</html>").toString();
+    return buffer.append( "</html>").toString();
+    
   } // end getToolTipText
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.23 2003-12-31 01:02:24 taylor Exp $
+// $Id: TimelineView.java,v 1.24 2004-01-02 18:58:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -179,6 +179,7 @@ public class TimelineView extends PartialPlanView {
 
     public void run() {
       renderTimelineAndSlotNodes();
+      addStepButtons(jGoView);
     } //end run
 
   } // end class RedrawViewThread

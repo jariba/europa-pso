@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.8 2003-12-31 01:02:22 taylor Exp $
+// $Id: TemporalNode.java,v 1.9 2004-01-02 18:58:58 taylor Exp $
 //
 // PlanWorks
 //
@@ -87,6 +87,9 @@ public class TemporalNode extends BasicNode implements Extent {
   private List markAndBridgeList; // elements JGoPolygon & JGoStroke
   private int cellRow; // for layout algorithm
   private String [] labelLines;
+  private int temporalDisplayMode;
+  private boolean isShowLabels;
+  private String tokenId;
 
   /**
    * <code>TemporalNode</code> - constructor 
@@ -94,20 +97,24 @@ public class TemporalNode extends BasicNode implements Extent {
    * @param token - <code>PwToken</code> - 
    * @param slot - <code>PwSlot</code> - 
    * @param startTimeIntervalDomain - <code>PwDomain</code> - 
-   * @param endTimeIntervalDomain - <code>PwDomain</code> -  
-   * @param earliestDurationString - <code>String</code> -  
-   * @param latestDurationString - <code>String</code> -  
+   * @param endTimeIntervalDomain - <code>PwDomain</code> - 
+   * @param earliestDurationString - <code>String</code> - 
+   * @param latestDurationString - <code>String</code> - 
    * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
+   * @param isShowLabels - <code>boolean</code> - 
+   * @param temporalDisplayMode - <code>int</code> - 
    * @param temporalExtentView - <code>TemporalExtentView</code> - 
    */
   public TemporalNode( PwToken token, PwSlot slot, PwDomain startTimeIntervalDomain,
                        PwDomain endTimeIntervalDomain, String earliestDurationString,
                        String latestDurationString, Color backgroundColor,
-                       boolean isFreeToken, TemporalExtentView temporalExtentView) {
+                       boolean isFreeToken, boolean isShowLabels, int temporalDisplayMode,
+                       TemporalExtentView temporalExtentView) {
     super();
     this.token = token;
     this.slot = slot;
+    this.temporalDisplayMode = temporalDisplayMode;
     earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
     isEarliestStartMinusInf = false;
     if (earliestStartTime == DbConstants.MINUS_INFINITY_INT) {
@@ -136,7 +143,7 @@ public class TemporalNode extends BasicNode implements Extent {
       isLatestEndPlusInf = true;
       latestEndTime = temporalExtentView.getTimeScaleEnd();
     }
-    String tokenId = "";
+    tokenId = "";
     if (token != null) {
       tokenId = token.getId().toString();
     }
@@ -156,6 +163,7 @@ public class TemporalNode extends BasicNode implements Extent {
 
     this.backgroundColor = backgroundColor;
     this.isFreeToken = isFreeToken;
+    this.isShowLabels = isShowLabels;
     this.temporalExtentView = temporalExtentView;
     labelLines = TemporalNode.createNodeLabel( token);
     predicateName = labelLines[0];
@@ -208,16 +216,15 @@ public class TemporalNode extends BasicNode implements Extent {
 
 
   /**
-   * <code>configure</code>
+   * <code>configure</code> - called by TemoralExtentView.layoutTemporalNodes
    *
-   * @param isShowLabel - <code>boolean</code> - 
    */
-  public void configure( boolean isShowLabel) {
-    if (isShowLabel) {
-//       int midpointTime = earliestStartTime + (latestEndTime - earliestStartTime) / 2;
-//       Point tokenLocation = new Point( temporalExtentView.scaleTime( midpointTime),
-//                                        scaleY() +
-//                                        ViewConstants.TEMPORAL_NODE_Y_LABEL_OFFSET);
+  public void configure() {
+    if (isShowLabels) {
+      //       int midpointTime = earliestStartTime + (latestEndTime - earliestStartTime) / 2;
+      //       Point tokenLocation = new Point( temporalExtentView.scaleTime( midpointTime),
+      //                                        scaleY() +
+      //                                        ViewConstants.TEMPORAL_NODE_Y_LABEL_OFFSET);
       // set center point of label to earliestStartTime
       Point tokenLocation = new Point( temporalExtentView.scaleTime( earliestStartTime),
                                        scaleY() +
@@ -226,22 +233,26 @@ public class TemporalNode extends BasicNode implements Extent {
       setLabelSpot( JGoObject.Center);
       initialize( tokenLocation, nodeLabel, isRectangular);
       // BasicNode's initial location is its center - move left edge to  earliestStartTime
-//       int newXLoc =
-//         (int) temporalExtentView.scaleTime
-//         ( (int) (earliestStartTime + temporalExtentView.scaleXLoc
-//                  ( (int) (getSize().getWidth() * 0.5))));
+      //       int newXLoc =
+      //         (int) temporalExtentView.scaleTime
+      //         ( (int) (earliestStartTime + temporalExtentView.scaleXLoc
+      //                  ( (int) (getSize().getWidth() * 0.5))));
 
-//       int newXLoc =
-//         (int) temporalExtentView.scaleTime
-//         ( (int) (earliestStartTime + ((getSize().getWidth() * 0.5) /
-//                                       temporalExtentView.getTimeScale())));
+      //       int newXLoc =
+      //         (int) temporalExtentView.scaleTime
+      //         ( (int) (earliestStartTime + ((getSize().getWidth() * 0.5) /
+      //                                       temporalExtentView.getTimeScale())));
 
+      int startTime = earliestStartTime;
+      if (temporalDisplayMode == TemporalExtentView.SHOW_LATEST) {
+        startTime = latestStartTime;
+      }
       int newXLoc =
         (int) temporalExtentView.scaleTime
-        ( (int) (earliestStartTime + (((nodeLabelWidth -
-                                        (ViewConstants.TIMELINE_VIEW_INSET_SIZE * 2))
-                                       * 0.5) /
-                                      temporalExtentView.getTimeScale())));
+        ( (int) (startTime + (((nodeLabelWidth -
+                                (ViewConstants.TIMELINE_VIEW_INSET_SIZE * 2))
+                               * 0.5) /
+                              temporalExtentView.getTimeScale())));
       setLocation( newXLoc, (int) getLocation().getY());
 
       setBrush( JGoBrush.makeStockBrush( backgroundColor));  
@@ -251,52 +262,75 @@ public class TemporalNode extends BasicNode implements Extent {
       getPort().setVisible( false);
       getLabel().setMultiline( true);
     }
-    // render time interval extents
+
+    renderTimeIntervalExtents();
+  } // end configure
+
+
+  private void renderTimeIntervalExtents() {
     int yLoc = scaleY() + ViewConstants.TEMPORAL_NODE_Y_START_OFFSET;
-    if (! isShowLabel) {
+    if (! isShowLabels) {
       yLoc -= ViewConstants.TEMPORAL_NODE_Y_DELTA;
     }
-    // if (isFreeToken) {
-    if (isEarliestStartMinusInf) {
-      renderMinusInfinityMark( earliestStartTime, yLoc);
-    } else {
-      renderStartMark( earliestStartTime, yLoc);
+    if (temporalDisplayMode != TemporalExtentView.SHOW_LATEST) {
+      if (isEarliestStartMinusInf) {
+        renderMinusInfinityMark( earliestStartTime, yLoc);
+      } else {
+        renderStartMark( earliestStartTime, yLoc);
+      }
     }
-    if (isLatestStartPlusInf) {
-      renderPlusInfinityMark( latestStartTime, yLoc);
-    } else {
-      renderStartMark( latestStartTime, yLoc);
+    if (temporalDisplayMode != TemporalExtentView.SHOW_EARLIEST) {
+      if (isLatestStartPlusInf) {
+        renderPlusInfinityMark( latestStartTime, yLoc);
+      } else {
+        renderStartMark( latestStartTime, yLoc);
+      }
     }
-
     yLoc = scaleY() + ViewConstants.TEMPORAL_NODE_Y_END_OFFSET;
-    if (isEarliestEndMinusInf) {
-      renderMinusInfinityMark( earliestEndTime, yLoc);
-    } else if (isEarliestEndPlusInf) {
-      renderPlusInfinityMark( earliestEndTime, yLoc);
-    } else {
-      renderEndMark( earliestEndTime, yLoc);
+    if (temporalDisplayMode != TemporalExtentView.SHOW_LATEST) {
+      if (isEarliestEndMinusInf) {
+        renderMinusInfinityMark( earliestEndTime, yLoc);
+      } else if (isEarliestEndPlusInf) {
+        renderPlusInfinityMark( earliestEndTime, yLoc);
+      } else {
+        renderEndMark( earliestEndTime, yLoc);
+      }
     }
-    // if (isFreeToken) {
-    if (isLatestEndPlusInf) {
-      renderPlusInfinityMark( latestEndTime, yLoc);
-    } else {
-      renderEndMark( latestEndTime, yLoc);
+    if (temporalDisplayMode != TemporalExtentView.SHOW_EARLIEST) {
+      if (isLatestEndPlusInf) {
+        renderPlusInfinityMark( latestEndTime, yLoc);
+      } else {
+        renderEndMark( latestEndTime, yLoc);
+      }
     }
-//     if (isFreeToken) {
-//       renderBridge( temporalExtentView.getTimeScaleStart(), temporalExtentView.getTimeScaleEnd(), yLoc,
-//                     durationIntervalDomain);
-//     } else {
-
-    if (isShowLabel) {
-      renderBridge( earliestStartTime, latestEndTime, yLoc, earliestDurationTime,
-                    latestDurationTime);
-    } else {
-      renderThickBridge( earliestStartTime, latestEndTime,
-                         yLoc - ViewConstants.TEMPORAL_NODE_Y_DELTA,
-                         earliestDurationTime, latestDurationTime);
+    int startTime = earliestStartTime;
+    int endTime = latestEndTime;
+    int startDurationTime = earliestDurationTime;
+    int endDurationTime = latestDurationTime;
+    if (temporalDisplayMode == TemporalExtentView.SHOW_EARLIEST) {
+      endTime = earliestEndTime;
+      if (isEarliestStartMinusInf || isEarliestEndMinusInf) {
+        startDurationTime = DbConstants.PLUS_INFINITY_INT;
+      } else {
+        startDurationTime = earliestEndTime - earliestStartTime;
+      }
+      endDurationTime = startDurationTime;
+    } else if (temporalDisplayMode == TemporalExtentView.SHOW_LATEST) {
+      startTime = latestStartTime;
+      if (isLatestStartPlusInf || isLatestEndPlusInf) {
+        startDurationTime = DbConstants.PLUS_INFINITY_INT;
+      } else {
+        startDurationTime = latestEndTime - latestStartTime;
+      }
+      endDurationTime = startDurationTime;
     }
-//     }
-  } // end configure
+    if (isShowLabels) {
+      renderBridge( startTime, endTime, yLoc, startDurationTime, endDurationTime);
+    } else {
+      renderThickBridge( startTime, endTime, yLoc - ViewConstants.TEMPORAL_NODE_Y_DELTA,
+                         startDurationTime, endDurationTime);
+    }
+  } // end renderTimeIntervalExtents
 
 
   /**
@@ -376,6 +410,30 @@ public class TemporalNode extends BasicNode implements Extent {
     return tip.toString();
   } // end getToolTipText
 
+  private int getStartTime() {
+    int startTime = 0;
+    if (temporalDisplayMode == TemporalExtentView.SHOW_INTERVALS) {
+      startTime = earliestStartTime;
+    } else if (temporalDisplayMode == TemporalExtentView.SHOW_EARLIEST) {
+      startTime = earliestStartTime;
+    } else if (temporalDisplayMode == TemporalExtentView.SHOW_LATEST) {
+      startTime = latestStartTime;
+    }
+    return startTime;
+  } // end getStartTime
+
+  private int getEndTime() {
+    int endTime = 0;
+    if (temporalDisplayMode == TemporalExtentView.SHOW_INTERVALS) {
+      endTime = latestEndTime;
+    } else if (temporalDisplayMode == TemporalExtentView.SHOW_EARLIEST) {
+      endTime = earliestEndTime;
+    } else if (temporalDisplayMode == TemporalExtentView.SHOW_LATEST) {
+      endTime = latestEndTime;
+    }
+    return endTime;
+  } // end getStartTime
+
   /**
    * <code>getStart</code> - implements Extent
    *
@@ -384,13 +442,12 @@ public class TemporalNode extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getStart() {
-    int xStart = temporalExtentView.scaleTime( earliestStartTime);
-    int xMiddle = xStart + ((temporalExtentView.scaleTime( latestEndTime) - xStart) / 2);
-//     System.err.println( "getStart: " + predicateName + " xStart " +
-//                         String.valueOf( xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE) +
-//                         " labelStart " + String.valueOf( xMiddle - nodeLabelWidth));
-    return Math.min( xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE,
-                     xMiddle - nodeLabelWidth);
+    int xStart = temporalExtentView.scaleTime( getStartTime());
+//     if (tokenId.equals( "185") || tokenId.equals( "978")) {
+//       System.err.println( "xStart: " + predicateName + " xStart " +
+//                           String.valueOf( (xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE)));
+//     }
+    return xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE;
   }
 
   /**
@@ -401,14 +458,22 @@ public class TemporalNode extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getEnd() {
-    int xStart = temporalExtentView.scaleTime( earliestStartTime);
-    int xEnd = temporalExtentView.scaleTime( latestEndTime);
-    int xMiddle = xStart + ((xEnd - xStart) / 2);
-//     System.err.println( "getEnd: " + predicateName + " xEnd " +
-//                         String.valueOf( xEnd + ViewConstants.TIMELINE_VIEW_INSET_SIZE) +
-//                         " labelEnd " + String.valueOf( xMiddle + nodeLabelWidth));
-    return Math.max( xEnd + ViewConstants.TIMELINE_VIEW_INSET_SIZE,
-                     xMiddle + nodeLabelWidth);
+    int xStart = temporalExtentView.scaleTime( getStartTime());
+    int xEnd = temporalExtentView.scaleTime( getEndTime());
+    int xStartPlusLabel = xStart;
+    if (isShowLabels) {
+      xStartPlusLabel = xStartPlusLabel + nodeLabelWidth;
+    }
+//     if (tokenId.equals( "185") || tokenId.equals( "978")) {
+//       System.err.println( "xEnd: " + predicateName + " xEnd " +
+//                           String.valueOf( (xEnd + ViewConstants.TIMELINE_VIEW_INSET_SIZE)) +
+//                           " xStartPlusLabel " +
+//                           String.valueOf( (xStartPlusLabel +
+//                                           ViewConstants.TIMELINE_VIEW_INSET_SIZE)));
+//       System.err.println( "isShowLabels " + isShowLabels + " nodeLabelWidth " +
+//                           String.valueOf( nodeLabelWidth));
+//     }
+    return Math.max( xEnd, xStartPlusLabel) + ViewConstants.TIMELINE_VIEW_INSET_SIZE;
   }
 
   /**
@@ -517,12 +582,12 @@ public class TemporalNode extends BasicNode implements Extent {
     TemporalNodeDurationBridge bridge =
       new TemporalNodeDurationBridge( earliestDurationTime, latestDurationTime);
     int xStartTime = temporalExtentView.scaleTime( startTime);
-    if (isEarliestStartMinusInf) {
+    if (isEarliestStartMinusInf && (temporalDisplayMode != TemporalExtentView.SHOW_LATEST)) {
       xStartTime -= ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     }
     bridge.addPoint( xStartTime, y);
     int xEndTime = temporalExtentView.scaleTime( endTime);
-    if (isLatestEndPlusInf) {
+    if (isLatestEndPlusInf && (temporalDisplayMode != TemporalExtentView.SHOW_EARLIEST)) {
       xEndTime += ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     }
     bridge.addPoint( xEndTime, y);
@@ -534,16 +599,18 @@ public class TemporalNode extends BasicNode implements Extent {
                                   int earliestDurationTime, int latestDurationTime) {
     int lineWidth = 1;
     int xStartTime = temporalExtentView.scaleTime( startTime);
-    if (isEarliestStartMinusInf) {
+    if (isEarliestStartMinusInf && (temporalDisplayMode != TemporalExtentView.SHOW_LATEST)) {
       xStartTime -= ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     }
     int xEndTime = temporalExtentView.scaleTime( endTime);
-    if (isLatestEndPlusInf) {
+    if (isLatestEndPlusInf && (temporalDisplayMode != TemporalExtentView.SHOW_EARLIEST)) {
       xEndTime += ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     }
     ThickDurationBridge bridge =
       new ThickDurationBridge( earliestDurationTime, latestDurationTime,
-                               xStartTime, y, (xEndTime - xStartTime),
+                               xStartTime, y,
+                               // minumum width of 2 to allow tooltip to register
+                               Math.max( xEndTime - xStartTime, 2),
                                ViewConstants.TEMPORAL_NODE_Y_DELTA,
                                backgroundColor, labelLines);
     markAndBridgeList.add( bridge);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.20 2003-12-31 01:02:24 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.21 2004-01-02 18:58:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -169,6 +169,7 @@ public class TokenNetworkView extends PartialPlanView {
     public void run() {
       boolean isRedraw = true;
       renderTokenNetwork( isRedraw);
+      addStepButtons(jGoView);
     } //end run
 
   } // end class RedrawViewThread

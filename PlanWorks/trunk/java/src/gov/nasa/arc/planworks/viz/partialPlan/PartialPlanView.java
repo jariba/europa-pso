@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.14 2003-12-31 01:02:20 taylor Exp $
+// $Id: PartialPlanView.java,v 1.15 2004-01-02 18:58:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -298,7 +298,7 @@ public class PartialPlanView extends VizView {
         }
         JOptionPane.showMessageDialog(PlanWorks.planWorks, message, "Step Exception", 
                                       JOptionPane.ERROR_MESSAGE);
-        ibe.printStackTrace();
+        // ibe.printStackTrace();
         return;
       }
       catch(ResourceNotFoundException rnfe) {

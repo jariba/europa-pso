@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.23 2003-12-31 01:02:26 taylor Exp $
+// $Id: planViz.txt,v 1.24 2004-01-02 18:58:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -368,7 +368,8 @@ Method:
      Right click on the background, and select "Snap to Active Token".
   8. In the Temporal Extent view, Mouse-Right click on the background, and
      select "Set Time Scale Line".  Also select "Hide/Show Node Labels"
-     from the Mouse-Right pop-up menu.
+     from the Mouse-Right pop-up menu, as well as "Show Earliest" and 
+     "Show Latest", which are options to "Show Intervals".
   9. In the Transaction view, Mouse-Right click on the background of the 
      "header" portion of the view, and select "Find Transaction by Obj_Key".
      Enter an OBJ_KEY value.
@@ -413,6 +414,8 @@ Post-conditions:
      mouse click, and placing the mouse cursor over the red line will cause
      a "tool tip" to appear with the value of the "x" or time coordinate.
      The node labels will disappear/appear with selections of "Hide/Show Node Labels".
+     "Show Earliest", "Show Latest", and "Show Intervals" will redraw the nodes
+     based on earliest/latest/interval for their start, end, and duration times.
   8. Method:9 - The lower portion of the Transaction view will scroll up to 
      show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
      value will be highlighted.
