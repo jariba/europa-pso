@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.6 2003-06-11 01:02:12 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.7 2003-06-12 00:08:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -418,10 +418,13 @@ public class PwProjectImpl extends PwProject {
     requiresSaving = false;
 
     // remove XML:DB collection
-    StringBuffer projectCollectionName = new StringBuffer( "/");
-    projectCollectionName.append( System.getProperty( "user")).append( "/");
-    projectCollectionName.append( name);
-    XmlDBeXist.INSTANCE.removeCollection( projectCollectionName.toString());
+    StringBuffer projectCollectionNameBuf = new StringBuffer( "/");
+    projectCollectionNameBuf.append( System.getProperty( "user")).append( "/");
+    projectCollectionNameBuf.append( name);
+    String projectCollectionName = projectCollectionNameBuf.toString();
+    if (XmlDBeXist.INSTANCE.getCollection( projectCollectionName) != null) {
+      XmlDBeXist.INSTANCE.removeCollection( projectCollectionName);
+    }
   } // end close
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.9 2003-06-11 01:02:12 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.10 2003-06-12 00:08:53 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -503,7 +503,7 @@ public class XmlDBeXist {
       try {
         currentCollection.close();
       } catch (XMLDBException ex) {
-        System.err.println( "changeCurrrentCollection: closing currentCollection" +
+        System.err.println( "changeCurrrentCollection: error closing currentCollection" +
                             ex.errorCode + " " + ex.getMessage());
         ex.printStackTrace();
         System.exit( -1);
@@ -536,6 +536,10 @@ public class XmlDBeXist {
    * @return - <code>Collection</code>
    */
   public static Collection getCollection(  String collectionName) {
+    if (collectionName.startsWith( ROOT_COLLECTION_NAME)) {
+      // remove /db if specified
+      collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
+    }
     try {
       return DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME +
                                             collectionName, USER, PASSWORD);

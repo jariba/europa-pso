@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.10 2003-06-11 01:02:12 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.11 2003-06-12 00:08:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -152,8 +152,12 @@ public class PwPartialPlanImpl implements PwPartialPlan {
       }
       XmlDBeXist.INSTANCE.createTimelineSlotTokenNodesStructure( this, collectionName);
  
+      System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
+      long start2TimeMSecs = (new Date()).getTime();
       fillElementMaps();
-
+      long stop2TimeMSecs = (new Date()).getTime();
+      System.err.println( "   ... elapsed time: " +
+                          (stop2TimeMSecs - start2TimeMSecs) + " msecs.");
     }
     long stopTimeMSecs = (new Date()).getTime();
     System.err.println( "   ... elapsed time: " +
@@ -192,15 +196,16 @@ public class PwPartialPlanImpl implements PwPartialPlan {
       getVariable( (String) keysIterator.next());
     }
 
-    System.err.println( "objectMap #keys " + objectMap.keySet().size());
-    System.err.println( "timelineMap #keys " + timelineMap.keySet().size());
-    System.err.println( "slotMap #keys " + slotMap.keySet().size());
-    System.err.println( "tokenMap #keys " + tokenMap.keySet().size());
-    System.err.println( "constraintMap #keys " + constraintMap.keySet().size());
-    System.err.println( "predicateMap #keys " + predicateMap.keySet().size());
-    System.err.println( "parameterMap #keys " + parameterMap.keySet().size());
-    System.err.println( "tokenRelationMap #keys " + tokenRelationMap.keySet().size());
-    System.err.println( "variableMap #keys " + variableMap.keySet().size());
+    System.err.println( "Partial Plan keys:");
+    System.err.println( "  objectMap        " + objectMap.keySet().size());
+    System.err.println( "  timelineMap      " + timelineMap.keySet().size());
+    System.err.println( "  slotMap          " + slotMap.keySet().size());
+    System.err.println( "  tokenMap         " + tokenMap.keySet().size());
+    System.err.println( "  constraintMap    " + constraintMap.keySet().size());
+    System.err.println( "  predicateMap     " + predicateMap.keySet().size());
+    System.err.println( "  parameterMap     " + parameterMap.keySet().size());
+    System.err.println( "  tokenRelationMap " + tokenRelationMap.keySet().size());
+    System.err.println( "  variableMap      " + variableMap.keySet().size());
   } // end fillElementMaps
 
 
