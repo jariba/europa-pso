@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.75 2004-01-02 22:28:32 miatauro Exp $
+// $Id: MySQLDB.java,v 1.76 2004-01-05 19:58:42 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -632,12 +632,17 @@ public class MySQLDB {
   synchronized public static void createObjects(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet objects = 
-        queryDatabase("SELECT ObjectName, ObjectId FROM Object WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
+        queryDatabase("SELECT ObjectName, ObjectId, EmptySlotInfo FROM Object WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
       while(objects.next()) {
         Integer objectId = new Integer(objects.getInt("ObjectId"));
+        Blob blob = objects.getBlob("EmptySlotInfo");
+        String info = null;
+        if(!objects.wasNull()) {
+          info = new String(blob.getBytes(1, (int) blob.length()));
+        }
         partialPlan.addObject(objectId, new PwObjectImpl(objectId, 
-                                                          objects.getString("ObjectName"),
-                                                          partialPlan));
+                                                         objects.getString("ObjectName"),
+                                                         partialPlan, info));
       }
     }
     catch(SQLException sqle) {
