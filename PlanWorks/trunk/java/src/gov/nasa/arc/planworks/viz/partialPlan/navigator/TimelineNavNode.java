@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.3 2004-01-20 19:57:48 taylor Exp $
+// $Id: TimelineNavNode.java,v 1.4 2004-02-13 18:56:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -241,7 +241,7 @@ public class TimelineNavNode extends ExtendedBasicNode {
     } else {
       operation = "open";
     }
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>timeline<br>");
     if (isDebug) {
       tip.append( " linkCntObj ").append( String.valueOf( objectLinkCount));
       tip.append( " linkCntSlot ").append( String.valueOf( slotLinkCount));
@@ -259,7 +259,7 @@ public class TimelineNavNode extends ExtendedBasicNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText( boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>timeline<br>");
     tip.append( timeline.getName());
     tip.append( "<br>key=");
     tip.append( timeline.getId().toString());
@@ -311,15 +311,28 @@ public class TimelineNavNode extends ExtendedBasicNode {
   private boolean addTimelineObjects( TimelineNavNode timelineNavNode,
                                       NavigatorView navigatorView) {
     boolean areNodesChanged = navigatorView.addObjectNavNodes( timelineNavNode);
-    boolean areLinksChanged = navigatorView.addObjectToTimelineNavLinks( timelineNavNode);
+    boolean areLinksChanged = false;
+    boolean isParentLinkChanged =
+      navigatorView.addObjectToTimelineNavLinks( timelineNavNode);
+     boolean areChildLinksChanged =
+      navigatorView.addTimelineToObjectNavLinks( timelineNavNode);
+     if (isParentLinkChanged || areChildLinksChanged) {
+       areLinksChanged = true;
+     }
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
   } // end addTimelineObjects
 
   private boolean removeTimelineObjects( TimelineNavNode timelineNavNode,
                                          NavigatorView navigatorView) {
-    boolean areLinksChanged =
+    boolean areLinksChanged = false;
+    boolean isParentLinkChanged =
       navigatorView.removeObjectToTimelineNavLinks( timelineNavNode);
+    boolean areChildLinksChanged =
+      navigatorView.removeTimelineToObjectNavLinks( timelineNavNode);
+     if (isParentLinkChanged || areChildLinksChanged) {
+       areLinksChanged = true;
+     }
     boolean areNodesChanged = navigatorView.removeObjectNavNodes( timelineNavNode);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
