@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.25 2003-07-29 00:11:55 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.26 2003-07-29 23:24:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -50,14 +50,8 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 public class PwPartialPlanImpl implements PwPartialPlan {
 
   private String url; // pathaname of xml file (no extension)
-  //  private String projectCollectionName; // e.g. test
-  //private String sequenceCollectionName; // e.g. monkey
   private Integer projectId;
   private Integer sequenceId;
-
-  //private String userCollectionName; // e.g. /wtaylor
-  //private String collectionName; // e.g. /wtaylor/test/monkey (xml files directory)
-  //private String xmlFileName; // with no extension
 
   private String model;
   private String name;
@@ -101,15 +95,13 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     if(existingPartialPlan.getRow() < 1) {
       String [] fileNames = new File(url).list(new FilenameFilter () {
           public boolean accept(File dir, String name) {
-            return (name.indexOf(".partialPlan") != -1 || name.indexOf(".objects") != -1 ||
-                    name.indexOf(".timelines") != -1 || name.indexOf(".slots") != -1 || 
-                    name.indexOf(".tokens") != -1 || name.indexOf(".variables") != -1 || 
-                    name.indexOf(".predicates") != -1 || name.indexOf(".parameters") != -1 ||
-                    name.indexOf(".enumeratedDomains") != -1 ||
-                    name.indexOf(".intervalDomains") != -1 ||
-                    name.indexOf(".constraints") != -1 || name.indexOf(".tokenRelations") != -1 || 
-                    name.indexOf(".paramVarTokenMap") != -1 || 
-                    name.indexOf(".constraintVarMap") != -1);
+            return (name.endsWith(".partialPlan") || name.endsWith(".objects") || 
+                    name.endsWith(".timelines") || name.endsWith(".slots") ||
+                    name.endsWith(".tokens") || name.endsWith(".variables") ||
+                    name.endsWith(".predicates") || name.endsWith(".parameters") ||
+                    name.endsWith(".enumeratedDomains") || name.endsWith(".intervalDomains") ||
+                    name.endsWith(".constraints") || name.endsWith(".tokenRelations") || 
+                    name.endsWith(".paramVarTokenMap") || name.endsWith(".constraintVarMap"));
           }
         });
       for(int i = 0; i < fileNames.length; i++) {
@@ -264,12 +256,6 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @return - <code>PwObject</code> - 
    */
   public PwObject getObject( Integer key) {
-    /*    PwObject object = (PwObject) objectMap.get( key);
-    /*if (object == null) {
-//       object = XmlDBeXist.INSTANCE.queryObjectByKey( key, this, collectionName);
-objectMap.put( key, object);
-}
-return object;*/
     return (PwObject)objectMap.get(key);
   } // end getObject
 
@@ -281,12 +267,6 @@ return object;*/
    * @return - <code>PwTimeline</code> - 
    */
   public PwTimeline getTimeline( Integer key) {
-    /*    PwTimeline timeline = (PwTimeline) timelineMap.get( key);
-    if (timeline == null) {
-//       timeline = XmlDBeXist.INSTANCE.queryTimelineByKey( key, this, collectionName);
-      timelineMap.put( key, timeline);
-    }
-    return timeline;*/
     return (PwTimeline)timelineMap.get(key);
   } // end getTimeline
 
@@ -298,12 +278,6 @@ return object;*/
    * @return - <code>PwSlot</code> - 
    */
   public PwSlot getSlot( Integer key) {
-    /*    PwSlot slot = (PwSlot) slotMap.get( key);
-    if (slot == null) {
-//       slot = XmlDBeXist.INSTANCE.querySlotByKey( key, this, collectionName);
-      slotMap.put( key, slot);
-    }
-    return slot;*/
     return (PwSlot)slotMap.get(key);
   } // end getSlot
 
@@ -315,12 +289,6 @@ return object;*/
    * @return - <code>PwToken</code> - 
    */
   public PwToken getToken( Integer key) {
-    /*    PwToken token = (PwToken) tokenMap.get( key);
-    if (token == null) {
-//       token = XmlDBeXist.INSTANCE.queryTokenByKey( key, this, collectionName);
-      tokenMap.put( key, token);
-    }
-    return token;*/
     return (PwToken) tokenMap.get(key);
   } // end getToken
 
@@ -332,12 +300,6 @@ return object;*/
    * @return - <code>PwConstraint</code> - 
    */
   public PwConstraint getConstraint( Integer key) {
-    /*    PwConstraint constraint = (PwConstraint) constraintMap.get( key);
-    if (constraint == null) {
-      constraint = XmlDBeXist.INSTANCE.queryConstraintByKey( key, this, collectionName);
-      constraintMap.put( key, constraint);
-    }
-    return constraint;*/
     return (PwConstraint) constraintMap.get(key);
   } // end getConstraint
 
@@ -349,12 +311,6 @@ return object;*/
    * @return - <code>PwParameter</code> - 
    */
   public PwParameter getParameter( Integer key) {
-    /*    PwParameter parameter = (PwParameter) parameterMap.get( key);
-    if (parameter == null) {
-//       parameter = XmlDBeXist.INSTANCE.queryParameterByKey( key, this, collectionName);
-      parameterMap.put( key, parameter);
-    }
-    return parameter;*/
     return (PwParameter) parameterMap.get(key);
   } // end getParameter
 
@@ -366,12 +322,6 @@ return object;*/
    * @return - <code>PwPredicate</code> - 
    */
   public PwPredicate getPredicate( Integer key) {
-    /*    PwPredicate predicate = (PwPredicate) predicateMap.get( key);
-    if (predicate == null) {
-      predicate = XmlDBeXist.INSTANCE.queryPredicateByKey( key, this, collectionName);
-      predicateMap.put( key, predicate);
-    }
-    return predicate;*/
     return (PwPredicate) predicateMap.get(key);
   } // end getPredicate
 
@@ -383,13 +333,6 @@ return object;*/
    * @return - <code>PwTokenRelation</code> - 
    */
   public PwTokenRelation getTokenRelation( Integer key) {
-    /*    PwTokenRelation tokenRelation = (PwTokenRelation) tokenRelationMap.get( key);
-    if (tokenRelation == null) {
-      tokenRelation =
-        XmlDBeXist.INSTANCE.queryTokenRelationByKey( key, this, collectionName);
-      tokenRelationMap.put( key, tokenRelation);
-    }
-    return tokenRelation;*/
     return (PwTokenRelation) tokenRelationMap.get(key);
   } // end getTokenRelation
 
@@ -401,13 +344,6 @@ return object;*/
    * @return - <code>PwVariable</code> - 
    */
   public PwVariable getVariable( Integer key) {
-    /*    PwVariable variable = (PwVariable) variableMap.get( key);
-    // System.err.println( "getVariable: key  " + key + " variable " + variable);
-    if (variable == null) {
-      variable = XmlDBeXist.INSTANCE.queryVariableByKey( key, this, collectionName);
-      variableMap.put( key, variable);
-    }
-    return variable;*/
     return (PwVariable) variableMap.get(key);
   } // end getVariable
 
