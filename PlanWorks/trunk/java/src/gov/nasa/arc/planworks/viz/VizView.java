@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.15 2004-03-23 18:22:32 miatauro Exp $
+// $Id: VizView.java,v 1.16 2004-03-23 20:05:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -160,6 +160,15 @@ public class VizView extends JPanel {
    *
    */  
   public void redraw() {
+  }
+
+
+  /**
+   * <code>getJGoView</code> - each subclass of VizView will implement, as needed
+   *
+   */  
+  public JGoView getJGoView() {
+    return null;
   }
 
 

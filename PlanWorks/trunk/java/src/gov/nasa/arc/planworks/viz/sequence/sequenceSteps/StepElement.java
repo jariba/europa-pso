@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.11 2004-02-12 01:26:51 taylor Exp $
+// $Id: StepElement.java,v 1.12 2004-03-23 20:06:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -109,6 +109,24 @@ public class StepElement extends HistogramElement {
     this.sequenceView = sequenceView;
   } // end constructor
 
+
+  /**
+   * <code>getStepNumber</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getStepNumber() {
+    return stepNumber;
+  }
+
+  /**
+   * <code>getPartialPlanName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getPartialPlanName() {
+    return partialPlanName;
+  }
 
   /**
    * <code>getDbBgColor</code>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.39 2004-03-20 01:00:40 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.40 2004-03-23 20:05:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -311,6 +311,15 @@ public class TemporalExtentView extends PartialPlanView  {
     equalizeViewWidths( isRedraw);
 
   } // end createTemporalExtentView
+
+  /**
+   * <code>getJGoView</code>
+   *
+   * @return - <code>JGoView</code> - 
+   */
+  public JGoView getJGoView()  {
+    return this.jGoExtentView;
+  }
 
   /**
    * <code>getJGoDocument</code> - 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.89 2004-03-23 18:19:12 miatauro Exp $
+// $Id: PlanWorks.java,v 1.90 2004-03-23 20:05:56 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -320,6 +320,15 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public static String getPlanWorksTitle() {
     return planWorksTitle;
+  }
+
+  /**
+   * <code>getViewManager</code>
+   *
+   * @return - <code>ViewManager</code> - 
+   */
+  public final ViewManager getViewManager() {
+    return viewManager;
   }
 
   /**

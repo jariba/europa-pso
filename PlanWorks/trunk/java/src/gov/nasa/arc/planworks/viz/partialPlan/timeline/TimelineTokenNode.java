@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineTokenNode.java,v 1.2 2004-02-03 20:43:58 taylor Exp $
+// $Id: TimelineTokenNode.java,v 1.3 2004-03-23 20:05:58 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,8 +24,10 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 
 /**
@@ -60,7 +62,7 @@ public class TimelineTokenNode extends TokenNode {
   } // end constructor
 
   /**
-   * <code>doUncapturedMouseMove</code>
+   * <code>doUncapturedMouseMove</code> -- handles Auto-Snap of TemporalExtentView
    *
    * @param modifiers - <code>int</code> - 
    * @param docCoords - <code>Point</code> - 
@@ -83,11 +85,15 @@ public class TimelineTokenNode extends TokenNode {
       String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
       if (timelineView.isAutoSnapEnabled() &&
           timelineView.getViewSet().viewExists( className)) {
+        PwSlot slot = null; // free token has no slot
+        PwToken freeToken = tokenNode.getToken();
+        ((PartialPlanViewSet) timelineView.getViewSet()).setActiveToken( freeToken);
+        NodeGenerics.setSecondaryTokensForSlot
+          ( freeToken, slot, (PartialPlanViewSet) timelineView.getViewSet());
         TemporalExtentView temporalExtentView =
           ViewGenerics.getTemporalExtentView( timelineView.getViewSet().openView( className));
         boolean isByKey = false;
-        PwSlot slot = null; // free token has no slot
-        temporalExtentView.findAndSelectToken( tokenNode.getToken(), slot, isByKey);
+        temporalExtentView.findAndSelectToken( freeToken, slot, isByKey);
       }
       return true;
     } else {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.9 2004-02-11 01:09:20 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.10 2004-03-23 20:06:00 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -37,6 +37,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+
+// PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -405,6 +408,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
           System.err.println(e);
           e.printStackTrace();
         }
+        scrollViewsToZeroZero();
         System.err.println("Done applying Filter.");
         //specWindow.contentSpec.printSpec();
       }
@@ -418,6 +422,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
         specWindow.mergeBox.reset();
         specWindow.tokenTypeBox.reset();
         specWindow.uniqueKeyGroup.reset();
+        scrollViewsToZeroZero();
       }
     }
   } // end class SpecButtonListener
@@ -435,6 +440,19 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
       }
     }
   } // end forceConstraintNetworkViewLayout
+
+  private void scrollViewsToZeroZero() {
+    int numToReturn = 0; // all of them
+    List partialPlanViews = partialPlanViewSet.getPartialPlanViews( numToReturn);
+    Iterator viewsItr = partialPlanViews.iterator();
+    while (viewsItr.hasNext()) {
+      JGoView jGoView = ((PartialPlanView) viewsItr.next()).getJGoView();
+      if (jGoView != null) {
+        jGoView.getHorizontalScrollBar().setValue( 0);
+        jGoView.getVerticalScrollBar().setValue( 0);
+      }
+    }
+  } // end scrollViewsToZeroZero
 
   /**
    * mouseEntered - implement MouseListener - do nothing

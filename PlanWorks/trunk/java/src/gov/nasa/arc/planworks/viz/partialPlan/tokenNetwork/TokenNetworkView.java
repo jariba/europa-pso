@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.36 2004-03-20 01:00:41 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.37 2004-03-23 20:05:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -241,6 +241,15 @@ public class TokenNetworkView extends PartialPlanView {
       jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
     }
   } // end renderTokenNetwork
+
+  /**
+   * <code>getJGoView</code> - 
+   *
+   * @return - <code>JGoView</code> - 
+   */
+  public JGoView getJGoView()  {
+    return jGoView;
+  }
 
   /**
    * <code>getJGoDocument</code>

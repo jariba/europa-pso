@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.15 2004-03-16 02:24:13 taylor Exp $
+// $Id: SlotNode.java,v 1.16 2004-03-23 20:05:58 taylor Exp $
 //
 // PlanWorks
 //
@@ -400,13 +400,9 @@ public class SlotNode extends TextNode {
           public void actionPerformed( ActionEvent evt) {
             PwToken activeToken = SlotNode.this.getSlot().getBaseToken();
             ((PartialPlanViewSet) timelineView.getViewSet()).setActiveToken( activeToken);
-            List secondaryTokens = SlotNode.this.getSlot().getTokenList();
-            secondaryTokens.remove( activeToken);
-            if (secondaryTokens.size() == 0) {
-              secondaryTokens = null;
-            }
-            ((PartialPlanViewSet) timelineView.getViewSet()).
-              setSecondaryTokens( secondaryTokens);
+            NodeGenerics.setSecondaryTokensForSlot
+              ( activeToken, SlotNode.this.getSlot(),
+                (PartialPlanViewSet) timelineView.getViewSet());
             System.err.println( "SlotNode setActiveToken " +
                                 activeToken.getPredicateName() +
                                 " (key=" + activeToken.getId().toString() + ")");
@@ -419,7 +415,7 @@ public class SlotNode extends TextNode {
   } // end mouseRightPopupMenu
 
   /**
-   * <code>doUncapturedMouseMove</code>
+   * <code>doUncapturedMouseMove</code> -- handles Auto-Snap of TemporalExtentView
    *
    * @param modifiers - <code>int</code> - 
    * @param docCoords - <code>Point</code> - 
@@ -443,6 +439,9 @@ public class SlotNode extends TextNode {
         String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
         if (timelineView.isAutoSnapEnabled() &&
             timelineView.getViewSet().viewExists( className)) {
+          ((PartialPlanViewSet) timelineView.getViewSet()).setActiveToken( token);
+          NodeGenerics.setSecondaryTokensForSlot
+            ( token, slot, (PartialPlanViewSet) timelineView.getViewSet());
           TemporalExtentView temporalExtentView =
             ViewGenerics.getTemporalExtentView( timelineView.getViewSet().openView( className));
           boolean isByKey = false;

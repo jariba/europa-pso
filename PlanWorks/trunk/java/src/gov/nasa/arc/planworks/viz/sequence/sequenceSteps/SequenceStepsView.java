@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.19 2004-03-23 18:24:24 miatauro Exp $
+// $Id: SequenceStepsView.java,v 1.20 2004-03-23 20:05:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.viz.sequence.sequenceSteps;
 
+import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -28,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -72,8 +74,11 @@ import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
+import gov.nasa.arc.planworks.viz.util.StepButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -457,6 +462,21 @@ public class SequenceStepsView extends SequenceView {
     createRefreshItem(refreshItem, this);
     mouseRightPopup.add(refreshItem);
 
+    List partialPlanViewList = null;
+    if ((selectedStepElement != null) &&
+        ((partialPlanViewList = getPartialPlanViewList()).size() != 0)) {
+      String stepTitle = selectedStepElement.getPartialPlanName() + " Active Views";
+      String stepBackwardTitle = "Step Backward " + stepTitle;
+      JMenuItem stepBackwardItem = new JMenuItem( stepBackwardTitle);
+      createStepBackwardItem( stepBackwardItem, partialPlanViewList);
+      mouseRightPopup.add( stepBackwardItem);
+
+      String stepForwardTitle = "Step Forward " + stepTitle;
+      JMenuItem stepForwardItem = new JMenuItem( stepForwardTitle);
+      createStepForwardItem( stepForwardItem, partialPlanViewList);
+      mouseRightPopup.add( stepForwardItem);
+    }
+
     createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
     createCloseHideShowViewItems( mouseRightPopup);
@@ -464,20 +484,6 @@ public class SequenceStepsView extends SequenceView {
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
-
-  private void createRefreshItem(JMenuItem refreshItem, 
-                                 final SequenceStepsView sequenceStepsView) {
-    refreshItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          System.err.println("Refreshing planning sequence...");
-          planSequence.refresh();
-          System.err.println("Redrawing sequence steps view...");
-          heightScaleFactor = computeHeightScaleFactor();
-          redraw();
-          System.err.println("   ... Done.");
-        }
-      });
-  }
 
   private void createOverviewWindowItem( JMenuItem overviewWindowItem,
                                          final SequenceStepsView sequenceStepsView,
@@ -510,6 +516,91 @@ public class SequenceStepsView extends SequenceView {
         }
       });
   } // end createModelRulesViewItem
+
+  private void createRefreshItem(JMenuItem refreshItem, 
+                                 final SequenceStepsView sequenceStepsView) {
+    refreshItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          System.err.println("Refreshing planning sequence...");
+          planSequence.refresh();
+          System.err.println("Redrawing sequence steps view...");
+          heightScaleFactor = computeHeightScaleFactor();
+          redraw();
+          System.err.println("   ... Done.");
+        }
+      });
+  }
+
+  private List getPartialPlanViewList() {
+    List partialPlanViewList = new ArrayList();
+    int currentStep = selectedStepElement.getStepNumber();
+    // System.err.println( "createStepBackwardItem currentStep " + currentStep);
+    PwPartialPlan partialPlan = null;
+    try {
+      partialPlan = planSequence.getPartialPlan( currentStep);
+    } catch (IndexOutOfBoundsException excp) {
+    } catch (ResourceNotFoundException excpR) {
+    }
+    PartialPlanViewSet partialPlanViewSet =
+      (PartialPlanViewSet) PlanWorks.getPlanWorks().getViewManager().getViewSet( partialPlan);
+    if (partialPlanViewSet != null) {
+      int numToReturn = 0; // return all
+      List partialPlanViews = partialPlanViewSet.getPartialPlanViews( numToReturn);
+      Iterator viewsItr = partialPlanViews.iterator();
+      while (viewsItr.hasNext()) {
+        PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
+        StepButton backwardButton = partialPlanView.getBackwardButton();
+        // DBTransactionView does not have step buttons
+        if (backwardButton != null) {
+          // System.err.println( "partialPlanView " + partialPlanView);
+          partialPlanViewList.add( partialPlanView);
+        }
+      }
+    }
+    return partialPlanViewList;
+  } // end getPartialPlanViewList
+
+  private void createStepBackwardItem( JMenuItem stepBackwardItem, 
+                                       final List partialPlanViewList) {
+    stepBackwardItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          Iterator viewsItr = partialPlanViewList.iterator();
+          while (viewsItr.hasNext()) {
+            PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
+            StepButton backwardButton = partialPlanView.getBackwardButton();
+            ListIterator actionList =
+              backwardButton.getActionListeners().listIterator();
+            ActionEvent e =
+              new ActionEvent( backwardButton, ActionEvent.ACTION_PERFORMED, "LeftClick", 
+                               (int) AWTEvent.MOUSE_EVENT_MASK);
+            while (actionList.hasNext()) {
+              ((ActionListener) actionList.next()).actionPerformed( e);
+            }
+          }
+        }
+      });
+  } // end createStepBackwardItem
+
+  private void createStepForwardItem( JMenuItem stepForwardItem, 
+                                      final List partialPlanViewList) {
+    stepForwardItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          Iterator viewsItr = partialPlanViewList.iterator();
+          while (viewsItr.hasNext()) {
+            PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
+            StepButton forwardButton = partialPlanView.getForwardButton();
+            ListIterator actionList =
+              forwardButton.getActionListeners().listIterator();
+            ActionEvent e =
+              new ActionEvent( forwardButton, ActionEvent.ACTION_PERFORMED, "LeftClick", 
+                               (int) AWTEvent.MOUSE_EVENT_MASK);
+            while (actionList.hasNext()) {
+              ((ActionListener) actionList.next()).actionPerformed( e);
+            }
+          }
+        }
+      });
+  } // end createStepForwardItem
 
 
 } // end class SequenceStepsView
