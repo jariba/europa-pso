@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.26 2004-05-21 21:39:03 taylor Exp $
+// $Id: NodeGenerics.java,v 1.27 2004-06-14 22:11:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -332,7 +332,7 @@ public class NodeGenerics {
           tip.append("<br>");
         }
       }
-    } else if (typeName.equals( DbConstants.PARAMETER_VAR)) {
+    } else {
       tip.append ( ": ");
 //       System.err.println( "key " + variable.getId().toString() + 
 //                           " paramName " + variable.getParameterNameList().get( 0));

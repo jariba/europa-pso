@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.17 2004-06-10 01:36:03 taylor Exp $
+// $Id: VariableNode.java,v 1.18 2004-06-14 22:11:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -180,17 +180,9 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
       operation = "open";
     }
     StringBuffer tip = new StringBuffer( "<html> ");
-    boolean isVariableWithConstraints =
-      (! hasZeroConstraints) && (partialPlanView instanceof ConstraintNetworkView);
-    if (isVariableWithConstraints) {
-      NodeGenerics.getVariableNodeToolTipText( variable, partialPlanView, tip);
-      if (isDebug) {
-        tip.append( " linkCnt ").append( String.valueOf( containerLinkCount +
-                                                         constraintLinkCount));
-      }
-    } else {
-      tip.append( variable.getType());
-    }
+    boolean isVariableWithConstraints = (! hasZeroConstraints) &&
+      (partialPlanView instanceof ConstraintNetworkView);
+    NodeGenerics.getVariableNodeToolTipText( variable, partialPlanView, tip);
     if (partialPlanView.getZoomFactor() > 1) {
       tip.append( "<br>key=");
       tip.append( variable.getId().toString());
@@ -199,7 +191,6 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
       tip.append( "<br> Mouse-L: ").append( operation);
     }
     return tip.append("</html>").toString();
-
   } // end getToolTipText
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.25 2004-06-08 21:48:55 pdaley Exp $
+// $Id: PwVariableImpl.java,v 1.26 2004-06-14 22:11:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -51,23 +51,10 @@ public class PwVariableImpl implements PwVariable {
    *
    * @param id - <code>Integer</code> - 
    * @param type - <code>String</code> - 
-   * @param constraintIdList - <code>List</code> - 
-   * @param paramId - <code>Integer</code> - 
-   * @param domain - <code>PwDomainImpl</code> - PwEnumeratedDomainImpl || PwIntervalDomainImpl
+   * @param parentId - <code>Integer</code> - 
+   * @param domain - <code>PwDomainImpl</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwVariableImpl( final Integer id, final String type, final List constraintIds, 
-                         final List parameterNames, final Integer parentId, 
-                         final PwDomainImpl domain, final PwPartialPlanImpl partialPlan) {
-    this.id = id;
-    this.type = type;
-    this.constraintIdList = new UniqueSet(constraintIds);
-    this.parameterNameList = new UniqueSet(parameterNames);
-    this.parentId = parentId;
-    this.domain = domain;
-    this.partialPlan = partialPlan;
-  } // end constructor
-
   public PwVariableImpl( final Integer id, final String type, final Integer parentId,
                          final PwDomainImpl domain, final PwPartialPlanImpl partialPlan) {
     this.id = id;

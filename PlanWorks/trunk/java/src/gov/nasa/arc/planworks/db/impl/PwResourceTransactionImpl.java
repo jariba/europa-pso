@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceTransactionImpl.java,v 1.7 2004-06-08 21:48:53 pdaley Exp $
+// $Id: PwResourceTransactionImpl.java,v 1.8 2004-06-14 22:11:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -103,7 +103,6 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
     retval.append(parentId).append("\t");
     retval.append(partialPlan.getObject(parentId).getName()).append("\t");
     retval.append(objectVarId).append("\t");
-    retval.append("\\N");
     if(!paramVarIds.isEmpty()) {
       for(ListIterator it = paramVarIds.listIterator(); it.hasNext();) {
         retval.append(it.next()).append(":");

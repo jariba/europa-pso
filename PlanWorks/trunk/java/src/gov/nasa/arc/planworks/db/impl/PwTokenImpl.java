@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.47 2004-06-08 23:01:31 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.48 2004-06-14 22:11:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -428,7 +428,6 @@ public class PwTokenImpl implements PwToken {
       retval.append(partialPlan.getObject(parentId).getName()).append("\t");
     }
     retval.append(objectVarId).append("\t");
-    retval.append("\\N");
     if(!paramVarIds.isEmpty()) {
       for(ListIterator it = paramVarIds.listIterator(); it.hasNext();) {
         retval.append(it.next()).append(":");

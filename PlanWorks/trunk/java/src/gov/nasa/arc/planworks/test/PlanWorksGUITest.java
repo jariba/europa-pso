@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.10 2004-06-10 18:51:39 miatauro Exp $
+// $Id: PlanWorksGUITest.java,v 1.11 2004-06-14 22:11:24 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -63,6 +63,7 @@ import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPartialPlan;    
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
@@ -80,6 +81,7 @@ import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -87,6 +89,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkResourceNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkRuleInstanceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
@@ -364,9 +367,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     int seq2FilesRemaining = DbConstants.SEQUENCE_FILES.length - seq2NumFilesDeleted;
     PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK", seq2FilesRemaining +
                                " sequence files in directory -- " +
-                               DbConstants.SEQUENCE_FILES.length + " are required", helper, this);
+                               DbConstants.SEQUENCE_FILES.length + " are required",
+                               helper, this);
     // try{Thread.sleep(2000);}catch(Exception e){}
-    int seq3Step1FilesRemaining = DbConstants.PARTIAL_PLAN_FILE_EXTS.length - seq3Step1FilesDeleted;
+    int seq3Step1FilesRemaining = DbConstants.PARTIAL_PLAN_FILE_EXTS.length -
+      seq3Step1FilesDeleted;
     PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK",
                                "Has " + seq3Step1FilesRemaining + " files -- " +
                                DbConstants.PARTIAL_PLAN_FILE_EXTS.length + " are required",
@@ -1037,7 +1042,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     ViewGenerics.raiseFrame( constraintNetworkView.getViewFrame());
     // open interval token, resource, variable, and constraint nodes in ConstraintNetworkView
     int numTokensOpened = 3, numResourcesOpened = 1, numResTransactionsOpened = 1;
-    int numTimelinesOpened = 1, numObjectsOpened = 1;
+    int numTimelinesOpened = 1, numObjectsOpened = 1, numRuleInstancesOpened = 1;
     ConstraintNetworkTokenNode baseTokenNode = null;
     ConstraintNetworkTokenNode mergedTokenNode = null;
     ConstraintNetworkTokenNode freeTokenNode = null;
@@ -1045,9 +1050,10 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     ConstraintNetworkResourceNode resourceNode = null;
     ConstraintNetworkTimelineNode timelineNode = null;
     ConstraintNetworkObjectNode objectNode = null;
+    ConstraintNetworkRuleInstanceNode ruleInstanceNode = null;
     
     int numTokenNodes = 0, numResourceNodes = 0, numResTransactionNodes = 0;
-    int numTimelineNodes = 0, numObjectNodes = 0;
+    int numTimelineNodes = 0, numObjectNodes = 0, numRuleInstanceNodes = 0;
     Iterator containerNodeItr = constraintNetworkView.getContainerNodeList().iterator();
     while (containerNodeItr.hasNext()) {
       VariableContainerNode contNode = (VariableContainerNode) containerNodeItr.next();
@@ -1090,6 +1096,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
           objectNode = (ConstraintNetworkObjectNode) contNode;
         }
         numObjectNodes++;
+      } else if (contNode instanceof ConstraintNetworkRuleInstanceNode) {
+        if (ruleInstanceNode == null) {
+          ruleInstanceNode = (ConstraintNetworkRuleInstanceNode) contNode;
+        }
+        numRuleInstanceNodes++;
       }
     }
     // find mergedTokenNode
@@ -1126,8 +1137,10 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                           timelineNode, "not ");
     assertNotNullVerbose( "Did not find ConstraintNetworkObjectNode objectNode",
                           objectNode, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetworkRuleInstanceNode ruleInstanceNode",
+                          ruleInstanceNode, "not ");
     assertTrueVerbose
-      ( "Number of partial plan interval tokens and resrource transactions (" +
+      ( "Number of partial plan interval tokens and resource transactions (" +
         partialPlan.getTokenList().size() +
         ") not equal number of ContraintNetwork interval token and resource transaction " +
         "nodes (" + numTokenNodes + ")", (partialPlan.getTokenList().size() == numTokenNodes),
@@ -1151,6 +1164,10 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
         partialPlan.getObjectList().size() +
         ") not equal number of ContraintNetwork object, timeline, & resources nodes (" +
         numNodes + ")", (partialPlan.getObjectList().size() == numNodes), "not ");
+    assertTrueVerbose
+      ( "Number of partial plan rule instances (" + partialPlan.getRuleInstanceList().size() +
+        ") not equal number of ContraintNetwork rule instance nodes (" + numRuleInstanceNodes +
+        ")", (partialPlan.getRuleInstanceList().size() == numRuleInstanceNodes), "not ");
     assertTrueVerbose
       ( "Token id=" + mergedTokenNode.getToken().getId() + " is not a merged " +
         " token of base token id=" + baseTokenNode.getToken().getId(),
@@ -1178,13 +1195,17 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     objectNode.doMouseClick( MouseEvent.BUTTON1_MASK, objectNode.getLocation(),
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
+    ruleInstanceNode.doMouseClick( MouseEvent.BUTTON1_MASK, ruleInstanceNode.getLocation(),
+                                   new Point( 0, 0), constraintNetworkView.getJGoView());
+    flushAWT(); awtSleep();
     int numVarNodesInView = constraintNetworkView.getVariableNodeList().size();
     int numVarNodesOpened =
       (numTokensOpened * PWSetupHelper.NUM_VARS_PER_TOKEN) +
       (numResourcesOpened * PWSetupHelper.NUM_VARS_PER_RESOURCE) +
       (numResTransactionsOpened * PWSetupHelper.NUM_VARS_PER_RESOURCE_TRANS) +
       (numTimelinesOpened * PWSetupHelper.NUM_VARS_PER_TIMELINE) +
-      (numObjectsOpened * PWSetupHelper.NUM_VARS_PER_OBJECT);
+      (numObjectsOpened * PWSetupHelper.NUM_VARS_PER_OBJECT) +
+      (numRuleInstancesOpened * PWSetupHelper.NUM_VARS_PER_RULE_INSTANCE);
     assertTrueVerbose( "Number of ContraintNetwork variable nodes (" + numVarNodesInView +
                        ") not equal number of token (interval & resTrans) and resource " +
                        "variables opened (" + numVarNodesOpened + ")",
@@ -1308,6 +1329,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     objectNode.doMouseClick( MouseEvent.BUTTON1_MASK, objectNode.getLocation(),
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
+    ruleInstanceNode.doMouseClick( MouseEvent.BUTTON1_MASK, ruleInstanceNode.getLocation(),
+                                   new Point( 0, 0), constraintNetworkView.getJGoView());
+    flushAWT(); awtSleep();
 
     assertTrueVerbose( "constraintNode1 is not closed",
                         (! constraintNode1.areNeighborsShown()), "not ");
@@ -1333,6 +1357,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                        (! timelineNode.areNeighborsShown()), "not ");
     assertTrueVerbose( "objectNode is not closed",
                        (! objectNode.areNeighborsShown()), "not ");
+    assertTrueVerbose( "ruleInstanceNode is not closed",
+                       (! ruleInstanceNode.areNeighborsShown()), "not ");
 
 //     System.err.println( "baseTokenNode.getToolTipText() " + baseTokenNode.getToolTipText());
 //     System.err.println( "baseTokenNode.getText() " + baseTokenNode.getText());
@@ -1458,6 +1484,19 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                        constraintNode1.getConstraint().getId().toString() +
                        ") label does not contain '" + nameSubString + "'",
                        (labelText.indexOf( nameSubString) >= 0), "not ");
+
+    labelText = ruleInstanceNode.getText();
+    toolTipText = ruleInstanceNode.getToolTipText();
+    String keyString = "key=" + ruleInstanceNode.getRuleInstance().getId().toString();
+    String ruleString = "rule ";
+    assertTrueVerbose( "ConstraintNetworkView rule instance node (" +
+                       ruleInstanceNode.getRuleInstance().getId().toString() +
+                       ") label does not contain '" + ruleString + "'",
+                       (labelText.indexOf( ruleString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView rule instance node (" +
+                       ruleInstanceNode.getRuleInstance().getId().toString() +
+                       ") label does not contain '" + keyString + "'",
+                       (labelText.indexOf( keyString) >= 0), "not ");
   } // end planViz10CNet
 
  
@@ -1777,7 +1816,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     ViewGenerics.raiseFrame( tokenNetworkView.getViewFrame());
     // try{Thread.sleep(6000);}catch(Exception e){}
     TokenNode slottedTokenNode = null, freeTokenNode = null, resTransactionNode = null;
+    RuleInstanceNode ruleInstanceNode = null;
     int numSlottedTokenNodes = 0, numFreeTokenNodes = 0, numResTransactionNodes = 0;
+    int numRuleInstanceNodes = 0;
     Iterator tokenNodeKeyItr = tokenNetworkView.getTokenNodeKeyList().iterator();
     while (tokenNodeKeyItr.hasNext()) {
       TokenNode tokenNode = tokenNetworkView.getTokenNode( (Integer) tokenNodeKeyItr.next());
@@ -1802,6 +1843,16 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
         }
       }
     }
+    Iterator ruleInstKeyItr = tokenNetworkView.getRuleInstanceNodeKeyList().iterator();
+    while (ruleInstKeyItr.hasNext()) {
+      RuleInstanceNode ruleInstNode =
+        tokenNetworkView.getRuleInstanceNode( (Integer) ruleInstKeyItr.next());
+        if (ruleInstanceNode == null) {
+          ruleInstanceNode = ruleInstNode;
+        }
+        numRuleInstanceNodes++;
+    }
+       
 //     System.err.println( "numSlottedTokenNodes " + numSlottedTokenNodes +
 //                         "numFreeTokenNodes " + numFreeTokenNodes +
 //                         " numResTransactionNodes " + numResTransactionNodes);
@@ -1813,6 +1864,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                           freeTokenNode, "not ");
     assertNotNullVerbose( "Did not find TokenNetworkView resTransactionNode (TokenNode)",
                           resTransactionNode, "not ");
+    assertNotNullVerbose( "Did not find TokenNetworkView ruleInstanceNode (RuleInstanceNode)",
+                          ruleInstanceNode, "not ");
     assertTrueVerbose( "Number of partial plan interval tokens and resource transactions (" +
                        partialPlan.getTokenList().size() +
                        ") not equal to number of TokenNetworkView slotted token, " +
@@ -1842,6 +1895,12 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                        numResTransactionNodes + ")",
                        partialPlan.getResTransactionList().size() ==
                        numResTransactionNodes, "not ");
+    assertTrueVerbose( "Number of partial plan rule instances (" +
+                       partialPlan.getRuleInstanceList().size() +
+                       ") not equal to number of TokenNetworkView rule instance nodes (" +
+                       numRuleInstanceNodes + ")",
+                       partialPlan.getRuleInstanceList().size() ==
+                       numRuleInstanceNodes, "not ");
  
     System.err.println( "slottedTokenNode labelText " + slottedTokenNode.getText());
     System.err.println( "slottedTokenNode toolTipText " + slottedTokenNode.getToolTipText());
@@ -1923,6 +1982,21 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                        ") tool tip does not contain '" +
                        slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
                        "not ");
+
+    System.err.println( "ruleInstanceNode labelText " + ruleInstanceNode.getText());
+    System.err.println( "ruleInstanceNode toolTipText " + ruleInstanceNode.getToolTipText());
+    labelText = ruleInstanceNode.getText();
+    toolTipText = ruleInstanceNode.getToolTipText();
+    keyString = "key=" + ruleInstanceNode.getRuleInstance().getId().toString();
+    String ruleString = "rule ";
+    assertTrueVerbose( "TokenNetworkView rule instances node (" +
+                       ruleInstanceNode.getRuleInstance().getId().toString() +
+                       ") label does not contain '" + ruleString + "'",
+                       (labelText.indexOf( ruleString) >= 0), "not ");
+    assertTrueVerbose( "TokenNetworkView rule instances node (" +
+                       ruleInstanceNode.getRuleInstance().getId().toString() +
+                       ") label does not contain '" + keyString + "'",
+                       (labelText.indexOf( keyString) >= 0), "not ");
   } // end planViz10TokNet
 
   private void planViz10DBTrans( DBTransactionView dbTransactionView, int stepNumber,

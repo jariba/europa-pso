@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.30 2004-05-14 17:41:38 miatauro Exp $
+// $Id: PlanWorksTest.java,v 1.31 2004-06-14 22:11:24 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -36,16 +36,20 @@ public class PlanWorksTest extends JFCTestCase {
     //printFailures(result);
     //MySQLDBTest.suite().run(result);
     //printFailures(result);
-		System.err.println("Backend test...");
-		BackendTest.suite().run(result);
-		printFailures(result);
-		System.err.println("Backend done.");
+
+		// System.err.println("Backend test...");
+		// BackendTest.suite().run(result);
+		// printFailures(result);
+		// System.err.println("Backend done.");
+
 // 		MySQLDBTest.suite().run(result);
 // 		printFailures(result);
+
 		System.err.println("Utils test...");
 		PlanWorksUtilsTest.suite().run(result);
 		printFailures(result);
 		System.err.println("Utils done.");
+
 		System.err.println("GUI test...");
 		PlanWorksGUITest.suite().run(result);
 		printFailures(result);

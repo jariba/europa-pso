@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.7 2004-05-13 20:24:06 taylor Exp $
+// $Id: PWTestHelper.java,v 1.8 2004-06-14 22:11:23 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -193,7 +193,7 @@ public abstract class PWTestHelper {
                                          PlanWorksGUITest guiTest, PlanWorks planWorks)
     throws Exception {
     // create new DirectoryChooser because using the same instance for several
-    // createProject's results in getSelectedFiles returning null
+    // createProjects results in getSelectedFiles returning null
     planWorks.createDirectoryChooser();
     guiTest.flushAWT(); guiTest.awtSleep();
 //     System.err.println( "createProject sequenceDirectory " + sequenceDirectory);

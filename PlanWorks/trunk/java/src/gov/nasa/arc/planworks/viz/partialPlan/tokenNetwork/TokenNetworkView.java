@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.55 2004-06-10 19:11:07 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.56 2004-06-14 22:11:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -39,6 +39,7 @@ import com.nwoods.jgo.examples.BasicNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
@@ -73,7 +74,7 @@ public class TokenNetworkView extends PartialPlanView {
   private JGoDocument jGoDocument;
   private Map tokenNodeMap; // key = tokenId, element TokenNode
   private Map tokenLinkMap; // key = linkName, element TokenLink
-  private Map ruleInstanceNodeMap; // key = linkName, element RuleInstanceNode
+  private Map ruleInstanceNodeMap; // key = ruleInstanceId, element RuleInstanceNode
   private boolean isStepButtonView;
   private List rootNodes;
 
@@ -316,6 +317,15 @@ public class TokenNetworkView extends PartialPlanView {
   }
 
   /**
+   * <code>getRuleInstanceNodeKeyList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public final List getRuleInstanceNodeKeyList() {
+    return new ArrayList( ruleInstanceNodeMap.keySet());
+  }
+
+  /**
    * <code>getTokenNode</code>
    *
    * @param id - <code>Integer</code> - 
@@ -323,6 +333,16 @@ public class TokenNetworkView extends PartialPlanView {
    */
   public final TokenNode getTokenNode( final Integer id) {
     return (TokenNode) tokenNodeMap.get( id);
+  }
+
+  /**
+   * <code>getRuleInstanceNode</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @return - <code>RuleInstanceNode</code> - 
+   */
+  public final RuleInstanceNode getRuleInstanceNode( final Integer id) {
+    return (RuleInstanceNode) ruleInstanceNodeMap.get( id);
   }
 
   private void createTokenNodes() {
@@ -557,10 +577,17 @@ public class TokenNetworkView extends PartialPlanView {
             new AskNodeByKey( "Find by Key", "key (int)", TokenNetworkView.this);
           Integer nodeKey = nodeByKeyDialog.getNodeKey();
           if (nodeKey != null) {
+            boolean isByKey = true;
             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
             PwToken tokenToFind = partialPlan.getToken( nodeKey);
-            boolean isByKey = true;
-            findAndSelectToken( tokenToFind, isByKey);
+            if (tokenToFind != null) {
+              findAndSelectToken( tokenToFind, isByKey);
+            } else {
+              PwRuleInstance ruleInstanceToFind =  partialPlan.getRuleInstance( nodeKey);
+              if (ruleInstanceToFind != null) {
+                findAndSelectRuleInstance( ruleInstanceToFind);
+              }
+            }
           }
         }
       });
@@ -606,6 +633,34 @@ public class TokenNetworkView extends PartialPlanView {
       System.err.println( message);
     }
   } // end findAndSelectToken
+
+  public final void findAndSelectRuleInstance( final PwRuleInstance ruleInstanceToFind) {
+    boolean isRuleInstanceFound = false;
+    boolean isHighlightNode = true;
+    List ruleInstanceNodeList = new ArrayList( ruleInstanceNodeMap.values());
+    Iterator ruleInstanceNodeListItr = ruleInstanceNodeList.iterator();
+    while (ruleInstanceNodeListItr.hasNext()) {
+      RuleInstanceNode ruleInstanceNode = (RuleInstanceNode) ruleInstanceNodeListItr.next();
+      if ((ruleInstanceNode.getRuleInstance() != null) &&
+          (ruleInstanceNode.getRuleInstance().getId().equals( ruleInstanceToFind.getId()))) {
+        System.err.println( "TokenNetworkView found ruleInstance: rule " +
+                            ruleInstanceToFind.getRuleId() +
+                            " (key=" + ruleInstanceToFind.getId().toString() + ")");
+        NodeGenerics.focusViewOnNode( ruleInstanceNode, isHighlightNode, jGoView);
+        isRuleInstanceFound = true;
+        break;
+      }
+    }
+    if (! isRuleInstanceFound) {
+      // Content Spec filtering may cause this to happen
+      String message = "RuleInstance 'rule " + ruleInstanceToFind.getRuleId() +
+        "' (key=" + ruleInstanceToFind.getId().toString() + ") not found.";
+      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                     "RuleInstance Not Found in TokenNetworkView",
+                                     JOptionPane.ERROR_MESSAGE);
+      System.err.println( message);
+    }
+  } // end findAndSelectRuleInstance
 
   private void createOverviewWindowItem( final JMenuItem overviewWindowItem,
                                          final TokenNetworkView tokenNetworkView,
