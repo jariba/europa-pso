@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.3 2003-05-15 22:16:23 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -38,15 +38,16 @@ import org.xmldb.api.modules.CollectionManagementService;
 import org.xmldb.api.modules.XMLResource;
 import org.xmldb.api.modules.XPathQueryService;
 
-// import gov.nasa.arc.planviz.xmlStructure.Domain;
-// import gov.nasa.arc.planviz.xmlStructure.EnumeratedDomain;
-// import gov.nasa.arc.planviz.xmlStructure.IntervalDomain;
-// import gov.nasa.arc.planviz.xmlStructure.PartialPlan;
-// import gov.nasa.arc.planviz.xmlStructure.Predicate;
-// import gov.nasa.arc.planviz.xmlStructure.Slot;
-// import gov.nasa.arc.planviz.xmlStructure.Timeline;
-// import gov.nasa.arc.planviz.xmlStructure.Token;
-// import gov.nasa.arc.planviz.xmlStructure.Variable;
+import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
+import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
+import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
+import gov.nasa.arc.planworks.db.impl.PwObjectImpl;
+import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
+import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
+import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
+import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
+import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
+
 
 /**
  * <code>XmlDBeXist</code> - XML data base interface thru XML:DB API to
@@ -568,7 +569,6 @@ public class XmlDBeXist {
    *
    * @param query - <code>String</code> - 
    * @param collectionName - <code>String</code> - 
-   * @param xmlParserLog - <code>ParserLog</code> - 
    * @return attributeValues - <code>List of String</code> - 
    */
   public static String queryAttributeValue( String query, String collectionName) {
@@ -657,34 +657,32 @@ public class XmlDBeXist {
   } // end getPartialPlanObjectsByKey
 
 
-  public static List getTimelinesSlotsTokens( String collectionName) {
+  private static List getTimelinesSlotsTokens( String collectionName) {
     List nodeContentList = queryCollection( collectionName, PARTIAL_PLAN_OBJECT_QUERY);
 
-    System.err.println( "\nDOM tree:");
-    printDomNodeTriplets( nodeContentList);
+//     System.err.println( "\nDOM tree:");
+//     printDomNodeTriplets( nodeContentList);
 
-    return new ArrayList();
+    return nodeContentList;
   } // end getTimelinesSlotsTokens
 
 
-    /**
+  /**
    * <code>createTimelineSlotTokenNodesStructure</code>
    *              query => /PartialPlan/Object
    *
-   * @param objectContentList - <code>List of ParsedDomNode</code> - 
-   * @param objectNodeList - <code>List of Object</code> - 
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param collectionName - <code>String</code> - 
    */
-  private static void createTimelineSlotTokenNodesStructure( List objectContentList,
-                                                             PartialPlan partialPlan,
-                                                             String collectionName,
-                                                             ParserLog xmlParserLog) {
+  public static void createTimelineSlotTokenNodesStructure( PwPartialPlanImpl partialPlan,
+                                                            String collectionName) {
+    List nodeContentList = getTimelinesSlotsTokens( collectionName);
     String timelineName = "", timelineKey = "";
-    int objectIndex = -1; String currentNodeName = "";
-    gov.nasa.arc.planviz.xmlStructure.Object object = null;
-    Timeline timeline = null; Slot slot = null; List tokenAttributeList = null;
+    int objectIndex = -1; String currentNodeName = ""; PwObjectImpl object = null;
+    PwTimelineImpl timeline = null; PwSlotImpl slot = null; List tokenAttributeList = null;
     List objectNodeList = partialPlan.getObjectList();
-    for (int i = 0, n = objectContentList.size(); i < n; i++) {
-      ParsedDomNode domNode = (ParsedDomNode) objectContentList.get( i);
+    for (int i = 0, n = nodeContentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) nodeContentList.get( i);
       short nodeType = domNode.getNodeType().shortValue();
       String nodeName = domNode.getNodeName();
       String nodeValue = domNode.getNodeValue();
@@ -692,8 +690,7 @@ public class XmlDBeXist {
       if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
         if (nodeName.equals( OBJECT_ELEMENT)) {
           objectIndex += 1;
-          object = (gov.nasa.arc.planviz.xmlStructure.Object)
-            objectNodeList.get( objectIndex);
+          object = (PwObjectImpl) objectNodeList.get( objectIndex);
           currentNodeName = OBJECT_ELEMENT;
         } else if (nodeName.equals( TIMELINE_ELEMENT)) {
           timelineName = ""; timelineKey = "";
@@ -718,8 +715,7 @@ public class XmlDBeXist {
         } else if (currentNodeName.equals( TOKEN_ELEMENT)) {
           tokenAttributeList.add( nodeValue);
           if (tokenAttributeList.size() == NUM_TOKEN_ATTRIBUTES) {
-            slot.addToken( tokenAttributeList, partialPlan, collectionName,
-                           xmlParserLog);
+            slot.addToken( tokenAttributeList, partialPlan, collectionName);
           }
         }
       }
@@ -731,6 +727,109 @@ public class XmlDBeXist {
   } // end createTimelineSlotTokenNodesStructure
 
 
+  /**
+   * <code>queryVariable</code> -- /PartialPlan/Variable[@key="K55"]
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwVariableImpl</code> - 
+   */
+  public static PwVariableImpl queryVariable( String key, String collectionName) {
+    String varType = "", constraintIds = "", paramId = "";
+    String enumeration = "", intDomainType = "", lowerBound = "";
+    String upperBound = "", currentNodeName = "";
+    PwVariableImpl variable = null; PwDomainImpl domain = null;
+    StringBuffer query = new StringBuffer( VARIABLE_KEY_QUERY);
+    query.append( key).append( END_SELECT_VALUE);
+    List contentList = queryCollection( collectionName, query.toString());
+    for (int i = 0, n = contentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( " type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+        if (nodeName.equals( VARIABLE_ELEMENT)) {
+          currentNodeName = VARIABLE_ELEMENT;
+        } else if (nodeName.equals( ENUMERATED_DOMAIN_ELEMENT)) {
+          currentNodeName = ENUMERATED_DOMAIN_ELEMENT;
+        } else if (nodeName.equals( INTERVAL_DOMAIN_ELEMENT)) {
+          currentNodeName = INTERVAL_DOMAIN_ELEMENT;
+        } else { currentNodeName = ""; }
+      } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        if (currentNodeName.equals( VARIABLE_ELEMENT)) {
+          if (nodeName.equals( VARIABLE_TYPE_ATTRIBUTE)) {
+            varType = nodeValue;
+          } else if (nodeName.equals( VARIABLE_CONSTRAINT_IDS_ATTRIBUTE)) {
+            constraintIds = nodeValue;
+          } else if (nodeName.equals( VARIABLE_PARAM_ID_ATTRIBUTE)) {
+            paramId = nodeValue;
+          }
+        } else if (currentNodeName.equals( INTERVAL_DOMAIN_ELEMENT)) {
+          if (nodeName.equals( INTERVAL_DOMAIN_TYPE_ATTRIBUTE)) {
+            intDomainType = nodeValue;
+          } else if (nodeName.equals( INTERVAL_DOMAIN_LOWER_BOUND_ATTRIBUTE)) {
+            lowerBound = nodeValue;
+          } else if (nodeName.equals( INTERVAL_DOMAIN_UPPER_BOUND_ATTRIBUTE)) {
+            upperBound = nodeValue;
+          }
+        }
+      } else if ((nodeType == org.w3c.dom.Node.TEXT_NODE) &&
+                 currentNodeName.equals( ENUMERATED_DOMAIN_ELEMENT)) {
+        enumeration = nodeValue;
+      }
+    } // end for
+    if (enumeration.equals( "")) {
+      domain = new PwIntervalDomainImpl( intDomainType, lowerBound, upperBound);
+    } else {
+      domain = new PwEnumeratedDomainImpl( enumeration);
+    }
+    variable = new PwVariableImpl( key, varType, constraintIds, paramId, domain);
+    return variable;
+  } // end queryVariable
+
+
+  /**
+   * <code>queryPredicate</code> - /PartialPlan/Predicate[@key="K32"]
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return predicate - <code>PwPredicate</code> - 
+   */
+  public static PwPredicateImpl queryPredicate( String key, String collectionName) {
+    PwPredicateImpl predicate = null;
+    String parameterKey = "", currentNodeName = "";
+    StringBuffer query = new StringBuffer( PREDICATE_KEY_QUERY);
+    query.append( key).append( END_SELECT_VALUE);
+    List contentList = queryCollection( collectionName, query.toString());
+    for (int i = 0, n = contentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( " type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+        if (nodeName.equals( PREDICATE_ELEMENT)) {
+          currentNodeName = PREDICATE_ELEMENT;
+        } else if (nodeName.equals( PARAMETER_ELEMENT)) {
+          currentNodeName = PARAMETER_ELEMENT;
+        } else { currentNodeName = ""; }
+      } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        if (currentNodeName.equals( PREDICATE_ELEMENT)) {
+          if (nodeName.equals( PREDICATE_NAME_ATTRIBUTE)) {
+            predicate = new PwPredicateImpl( nodeValue, key);
+          }
+        } else if (currentNodeName.equals( PARAMETER_ELEMENT)) {
+          if (nodeName.equals( PARAMETER_KEY_ATTRIBUTE)) {
+            parameterKey = nodeValue;
+          } else if (nodeName.equals( PARAMETER_NAME_ATTRIBUTE)) {
+            predicate.addParameter( nodeValue, parameterKey);
+          }
+        }
+      }
+    }
+    return predicate;
+  } // end queryPredicate
 
 } // end class XmlDBeXist
 
