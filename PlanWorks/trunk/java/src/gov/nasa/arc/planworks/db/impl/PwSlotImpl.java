@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.27 2004-03-12 23:19:53 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.28 2004-03-17 23:34:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -133,14 +133,20 @@ public class PwSlotImpl implements PwSlot {
   public PwToken getBaseToken() {
     if(baseTokenId == null) {
       ListIterator tokenIdIterator = tokenIdList.listIterator();
-      int slotIndex = 99;
+      // int slotIndex = 99;
       while(tokenIdIterator.hasNext()) {
         Integer tokId = (Integer) tokenIdIterator.next();
-        if(((PwTokenImpl)partialPlan.getToken(tokId)).getSlotIndex() < slotIndex) {
+//         System.err.println( "slot id " + id + " tokId " + tokId.toString() +
+//                             " tokSlotIndex " +
+//                             ((PwTokenImpl)partialPlan.getToken(tokId)).getSlotIndex());
+        // if(((PwTokenImpl)partialPlan.getToken(tokId)).getSlotIndex() < slotIndex) {
+        if (((PwTokenImpl) partialPlan.getToken(tokId)).getSlotIndex() == 0) {
           baseTokenId = tokId;
+          break;
         }
       }
     }
+//     System.err.println( "slot id " + id + " baseTokenId " + baseTokenId);
     return partialPlan.getToken(baseTokenId);
   }
 } // end class PwSlotImpl
