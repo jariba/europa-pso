@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.132 2004-09-27 23:27:25 taylor Exp $
+# $Id: README,v 1.133 2004-09-28 18:54:45 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -21,6 +21,7 @@ o
 
 o GNATS PRs and CRs completed:
   #2541: Sequence Query Results tables, when sorted, do not find object key entry.
+  #2544: Token Network View's redraws do not do layout.
   #2593: Move rule delimiter chars into configuration.
 
 

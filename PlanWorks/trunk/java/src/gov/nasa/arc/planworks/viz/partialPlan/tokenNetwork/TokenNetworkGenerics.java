@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkGenerics.java,v 1.3 2004-09-28 01:40:55 taylor Exp $
+// $Id: TokenNetworkGenerics.java,v 1.4 2004-09-28 18:54:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -240,7 +240,7 @@ public final class TokenNetworkGenerics {
     BasicNodeLink link = (BasicNodeLink) tokenNetworkView.tokNetLinkMap.get( linkName);
     if (link == null) {
       link = new BasicNodeLink( (ExtendedBasicNode) fromTokNetNode,
-                                (ExtendedBasicNode) toTokNetNode, linkName);
+                                (ExtendedBasicNode) toTokNetNode, linkName, linkType);
       link.setArrowHeads( false, true);
       returnLink = link;
       tokenNetworkView.tokNetLinkMap.put( linkName, link);

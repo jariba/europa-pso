@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodeLink.java,v 1.8 2004-08-05 00:24:24 taylor Exp $
+// $Id: BasicNodeLink.java,v 1.9 2004-09-28 18:54:46 taylor Exp $
 //
 // PlanWorks
 //
@@ -35,6 +35,7 @@ public class BasicNodeLink extends JGoLabeledLink {
   private BasicNode fromNode;
   private BasicNode toNode;
   private String linkName;
+  private String linkType;
   private boolean inLayout;
   private int linkCount;
   private boolean isDebug;
@@ -51,6 +52,33 @@ public class BasicNodeLink extends JGoLabeledLink {
     this.fromNode = fromNode;
     this.toNode = toNode;
     this.linkName = linkName;
+    this.linkType = "";
+    inLayout = false;
+    resetLink( false);
+
+    isDebug = false;
+    // isDebug = true;
+
+    this.setArrowHeads( true, false); // fromArrowHead toArrowHead
+    // do no allow user to select and move links
+    this.setRelinkable( false);
+  } // end constructor
+
+  /**
+   * <code>BasicNodeLink</code> - constructor 
+   *
+   * @param fromNode - <code>BasicNode</code> - 
+   * @param toNode - <code>BasicNode</code> - 
+   * @param linkName - <code>String</code> - 
+   * @param linkType - <code>String</code> - 
+   */
+  public BasicNodeLink( BasicNode fromNode, BasicNode toNode, String linkName,
+                        String linkType) {
+    super( fromNode.getPort(), toNode.getPort());
+    this.fromNode = fromNode;
+    this.toNode = toNode;
+    this.linkName = linkName;
+    this.linkType = linkType;
     inLayout = false;
     resetLink( false);
 
@@ -78,6 +106,15 @@ public class BasicNodeLink extends JGoLabeledLink {
    */
   public BasicNode getToNode() {
     return this.toNode;
+  }
+
+  /**
+   * <code>getLinkType</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getLinkType() {
+    return this.linkType;
   }
 
   /**
