@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.13 2003-06-26 20:09:08 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.14 2003-06-30 22:21:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -123,8 +123,25 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     File [] planDirs = sequenceDir.listFiles();
     for(int i = 0; i < planDirs.length; i++) {
       if(planDirs[i].isDirectory()) {
-        temp.put(planDirs[i].getName(), new Integer(0));
-        stepCount++;
+        String [] names = planDirs[i].list(new FilenameFilter () 
+          {
+            public boolean accept(File dir, String name) {
+              return (name.indexOf(".partialPlan") != -1 || name.indexOf(".objects") != -1 ||
+                      name.indexOf(".timelines") != -1 || name.indexOf(".slots") != -1 || 
+                      name.indexOf(".tokens") != -1 || name.indexOf(".variables") != -1 || 
+                      name.indexOf(".predicates") != -1 || name.indexOf(".parameters") != -1 ||
+                      name.indexOf(".enumeratedDomains") != -1 ||
+                      name.indexOf(".intervalDomains") != -1 ||
+                      name.indexOf(".constraints") != -1 || 
+                      name.indexOf(".tokenRelations") != -1 || 
+                      name.indexOf(".paramVarTokenMap") != -1 || 
+                      name.indexOf(".constraintVarMap") != -1);
+            }
+          });
+        if(names.length == 14) {
+          temp.put(planDirs[i].getName(), new Integer(0));
+          stepCount++;
+        }
       }
     }
     partialPlanNames.addAll(temp.keySet());
