@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.76 2003-12-05 00:33:16 miatauro Exp $
+// $Id: PlanWorks.java,v 1.77 2003-12-11 22:24:48 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -466,23 +466,38 @@ public class PlanWorks extends MDIDesktopFrame {
 
   private void instantiateProjectThread( String type) {
     sequenceStepsViewMap = new HashMap();
-    new InstantiateProjectThread( type).start();
+    Thread thread = new InstantiateProjectThread(type);
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+    //new InstantiateProjectThread( type).start();
   }
 
   private void deleteProjectThread() {
-    new DeleteProjectThread().start();
+    Thread thread = new DeleteProjectThread();
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+    //new DeleteProjectThread().start();
   }
 
   private void newSequenceThread() {
-    new NewSequenceThread().start();
+    Thread thread = new NewSequenceThread();
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+    //new NewSequenceThread().start();
   }
 
   private void addSequenceThread() {
-    new AddSequenceThread().start();
+    Thread thread = new AddSequenceThread();
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+    //new AddSequenceThread().start();
   }
 
   private void deleteSequenceThread() {
-    new DeleteSequenceThread().start();
+    Thread thread = new DeleteSequenceThread();
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+    //new DeleteSequenceThread().start();
   }
 
   /**
@@ -555,7 +570,10 @@ public class PlanWorks extends MDIDesktopFrame {
 
 
   private void createSequenceViewThread( String viewName, SequenceViewMenuItem menuItem) {
-    new CreateSequenceViewThread( viewName, menuItem).start();
+    Thread thread = new CreateSequenceViewThread(viewName, menuItem);
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+    //new CreateSequenceViewThread( viewName, menuItem).start();
   } // end createSequenceViewThread
 
   private final void createDirectoryChooser() {

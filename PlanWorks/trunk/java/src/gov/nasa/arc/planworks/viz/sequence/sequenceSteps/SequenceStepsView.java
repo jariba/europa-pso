@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.13 2003-12-11 22:01:59 miatauro Exp $
+// $Id: SequenceStepsView.java,v 1.14 2003-12-11 22:26:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -184,7 +184,10 @@ public class SequenceStepsView extends SequenceView {
    *
    */
   public void redraw() {
-    new RedrawViewThread().start();
+    Thread thread = new RedrawViewThread();
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+    //new RedrawViewThread().start();
   }
 
   class RedrawViewThread extends Thread {
@@ -405,8 +408,12 @@ public class SequenceStepsView extends SequenceView {
           String seqName = planSequence.getName();
           SequenceViewMenuItem modelRulesItem =
             new SequenceViewMenuItem( seqName, planSequence.getUrl(), seqName);
-          new CreateSequenceViewThread( PlanWorks.MODEL_RULES_VIEW,
-                                        modelRulesItem).start();
+          Thread thread = new CreateSequenceViewThread(PlanWorks.MODEL_RULES_VIEW,
+                                                       modelRulesItem);
+          thread.setPriority(Thread.MIN_PRIORITY);
+          thread.start();
+          //new CreateSequenceViewThread( PlanWorks.MODEL_RULES_VIEW,
+          //                              modelRulesItem).start();
         }
       });
   } // end createModelRulesViewItem
