@@ -21,26 +21,35 @@ import java.util.ListIterator;
 public class TokenBoundingBox {
   private ConstraintNetworkTokenNode tokenNode;
   private LinkedList variableBoundingBoxes;
-  public TokenBoundingBox(ConstraintNetworkTokenNode tokenNode) {
+  private NewConstraintNetworkLayout layout;
+  public TokenBoundingBox(NewConstraintNetworkLayout layout, ConstraintNetworkTokenNode tokenNode) {
     this.tokenNode = tokenNode;
+    this.layout = layout;
+    variableBoundingBoxes = new LinkedList();
     ListIterator variableIterator = tokenNode.getVariableNodeList().listIterator();
     while(variableIterator.hasNext()) {
-      variableBoundingBoxes.add(new VariableBoundingBox((VariableNode) variableIterator.next()));
+      variableBoundingBoxes.add(new VariableBoundingBox((VariableNode) variableIterator.next(), 
+                                                        layout));
     }
   }
-  public TokenBoundingBox(ConstraintNetworkTokenNode tokenNode, List variables) {
+  public TokenBoundingBox(NewConstraintNetworkLayout layout, ConstraintNetworkTokenNode tokenNode,
+                          List variables) {
     this.tokenNode = tokenNode;
+    this.layout = layout;
+    variableBoundingBoxes = new LinkedList();
     ListIterator variableIterator = variables.listIterator();
     while(variableIterator.hasNext()) {
-      variableBoundingBoxes.add(new VariableBoundingBox((VariableNode)variableIterator.next()));
+      variableBoundingBoxes.add(new VariableBoundingBox((VariableNode)variableIterator.next(),
+                                                        layout));
     }
   }
   public void addVariable(VariableNode variable) {
-    variableBoundingBoxes.add(new VariableBoundingBox(variable));
+    variableBoundingBoxes.add(new VariableBoundingBox(variable, layout));
   }
+  public boolean isVisible() { return tokenNode.isVisible();}
   public double getHeight() {
     double retval = 0.;
-    if(NewConstraintNetworkLayout.layoutHorizontal()) {
+    if(layout.layoutHorizontal()) {
       retval = ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y -
         ConstraintNetworkView.HORIZONTAL_TOKEN_BAND_Y;
     }
@@ -58,7 +67,7 @@ public class TokenBoundingBox {
   }
   public double getWidth() {
     double retval = 0.;
-    if(NewConstraintNetworkLayout.layoutHorizontal()) {
+    if(layout.layoutHorizontal()) {
       if(tokenNode.isVisible()) {
         ListIterator variableBoxIterator = variableBoundingBoxes.listIterator();
         double varBoxesWidth = 0.;
@@ -78,7 +87,7 @@ public class TokenBoundingBox {
     if(!tokenNode.isVisible()) {
       return;
     }
-    if(NewConstraintNetworkLayout.layoutHorizontal()) {
+    if(layout.layoutHorizontal()) {
       positionHorizontal(pos);
     }
     else {
@@ -95,6 +104,7 @@ public class TokenBoundingBox {
       VariableBoundingBox varBox = (VariableBoundingBox) varBoxIterator.next();
       lastBoxHeight += varBox.getHeight();
       varBox.positionNodes(boxY - lastBoxHeight);
+      varBox.setVisited();
     }
   }
   private void positionHorizontal(double boxX) {
@@ -107,6 +117,10 @@ public class TokenBoundingBox {
       VariableBoundingBox varBox = (VariableBoundingBox) varBoxIterator.next();
       lastBoxWidth += varBox.getWidth();
       varBox.positionNodes(boxX - lastBoxWidth);
+      varBox.setVisited();
     }
+  }
+  public List getVariableBoxes() {
+    return variableBoundingBoxes;
   }
 }
