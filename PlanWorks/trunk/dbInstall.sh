@@ -8,7 +8,9 @@ c_h="" i_h=""
 c_u="" i_u=""
 c_f="" i_f=""
 c_t="" c_c=""
-
+c_m=""
+  echo "Preparing mysql database"
+  c_m="CREATE DATABASE IF NOT EXISTS mysql;"
   echo "Preparing db table"
 
   # mysqld --bootstrap wants one command/line
@@ -170,15 +172,12 @@ sleep 1
 echo "Setting root password..."
 eval "$1/mysqladmin -u root password 'root' --socket=$6"
 sleep 1
-#echo "Creating PlanWorks database..."
-#eval "$1/mysql --user=root --password=root --socket=$6 --execute=\"CREATE DATABASE IF NOT EXISTS PlanWorks\""
+echo "Creating PlanWorks database..."
+eval "$1/mysql --user=root --password=root --socket=$6 --execute=\"CREATE DATABASE IF NOT EXISTS PlanWorks\""
 echo "Creating PlanWorks tables..."
 eval "$1/mysql --user=root --password=root --database=PlanWorks --socket=$6 < PlanWorksTables"
 sleep 1
 echo "Creating PlanWorksUser..."
-#eval "$1/mysql --user=root --password=root --socket=$6 --execute=\"GRANT CREATE TEMPORARY TABLES, FILE, LOCK TABLES, RELOAD, SHUTDOWN ON * TO 'PlanWorksUser' IDENTIFIED BY 'PlanWorksUser'\""
-#eval "$1/mysql --user=root --password=root --socket=$6 --execute=\"GRANT SELECT, INSERT, UPDATE, DELETE, INDEX ON PlanWorks.* TO 'PlanWorksUser'\""
-#eval "$1/mysql --user=root --password=root --socket=$6 --execute=\"GRANT ALL ON PlanWorks.* TO 'PlanWorksUser' IDENTIFIED BY 'PlanWorksUser'\""
 eval "$1/mysql --user=root --password=root --socket=$6 --database=mysql --execute=\"INSERT INTO user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Shutdown_priv, File_priv, Create_tmp_table_priv, Lock_tables_priv) VALUES ('localhost', 'PlanWorksUser', PASSWORD('PlanWorksUser'), 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y')\""
 sleep 1
 echo "Shutting down database..."
