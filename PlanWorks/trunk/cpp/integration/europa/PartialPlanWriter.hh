@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.14 2003-12-23 01:04:34 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.15 2003-12-30 01:41:00 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H
@@ -43,7 +43,7 @@ public:
     info = other.info;
   }
 
-  void write(ofstream &, long long int);
+  void write(std::ostream &, long long int);
 
 private:
   int transactionType, objectKey, source, id, stepNum;
@@ -71,26 +71,25 @@ public:
   void write();
 private:
   int nstep, tokenRelationId, enumeratedDomainId, intervalDomainId, transactionId, stepsPerWrite;
-  int writeCounter, numTransactions, numTokens, numVariables, numConstraints;
-;
+  int writeCounter, numTransactions, numTokens, numVariables, numConstraints, noWrite;
   long long int sequenceId;
   String dest;
   TokenNetwork *tnet;
   Value izero, rzero;
   List<Transaction> *transactionList;
   //FILE *transactionOut, *statsOut;
-  ofstream *transactionOut, *statsOut;
+  std::ofstream *transactionOut, *statsOut;
   ModelId modelId;
   void outputVariable(const VarId &, const char *, const long long int, const TokenId &, 
-                      ofstream &, ofstream &, ofstream &);
+                      std::ofstream &, std::ofstream &, std::ofstream &);
   void outputToken(const TokenId &, const bool, const long long int, const ObjectId *, 
-                   const int,  const SlotId *, ofstream &, ofstream &, ofstream &, ofstream &, 
-                   ofstream &, ofstream &);
+                   const int,  const SlotId *, std::ofstream &, std::ofstream &, std::ofstream &, std::ofstream &, 
+                   std::ofstream &, std::ofstream &);
   void outputPredicate(PredicateId &, const long long int partialPlanId, 
-                       ofstream &, ofstream &);
-  void outputConstraint(const ConstraintId &, const long long int, ofstream &, ofstream &);
-  void outputIntervalDomain(const Domain &, const long long int, ofstream &);
-  void outputEnumDomain(const Domain &, const long long int, ofstream &);
+                       std::ofstream &, std::ofstream &);
+  void outputConstraint(const ConstraintId &, const long long int, std::ofstream &, std::ofstream &);
+  void outputIntervalDomain(const Domain &, const long long int, std::ofstream &);
+  void outputEnumDomain(const Domain &, const long long int, std::ofstream &);
   String getBoundString(const Domain &, const Value &);
   String getEnumString(const Domain &);
   const String getNameForConstraint(const ConstraintId &);
