@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.16 2003-12-12 01:23:04 taylor Exp $
+// $Id: DbConstants.java,v 1.17 2003-12-19 18:40:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -324,5 +324,18 @@ public interface DbConstants {
   public static final String RULE_CONTAINS = "contains";
   public static final String RULE_CONTAINED_BY = "contained-by";
 
+  public static final String START_VAR = "START_VAR";
+  public static final String END_VAR = "END_VAR";
+  public static final String DURATION_VAR = "DURATION_VAR";
+  public static final String OBJECT_VAR = "OBJECT_VAR";
+  public static final String PARAMETER_VAR = "PARAMETER_VAR";
+  public static final String REJECT_VAR = "REJECT_VAR";
+  public static final String GLOBAL_VAR = "GLOBAL_VAR";
+
+  public static final String [] DB_VARIABLE_TYPES = new String [] {
+    START_VAR, END_VAR, DURATION_VAR, OBJECT_VAR, PARAMETER_VAR, REJECT_VAR, GLOBAL_VAR};
+
 
 } // end interface DbConstants
+
+    
