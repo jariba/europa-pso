@@ -1,0 +1,262 @@
+# 
+# * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+# * information on usage and redistribution of this file, 
+# * and for a DISCLAIMER OF ALL WARRANTIES. 
+# 
+
+# $Id: README,v 1.30 2003-09-19 00:33:59 taylor Exp $
+#
+
+SUMMARY
+=======
+Milestone 6
+===========
+File "PlanWorks/GETTING_STARTED" has been added to assist new users.
+
+The sequence directory chooser invoked by "Project->Create ..." and 
+"Project->Add Sequence" now supports multiple selection of sequence
+directories, by using Ctrl-Mouse-Left for the second and subsequent
+selections.  Mouse-left is used for the first selection and Mouse-
+Left-Double is used to open directories.  When selection is complete,
+click on "OK".
+
+The Temporal Extent View's time scale is now in a separate pane, so
+that scrolling the token pane does not lose the time scale.  A
+Mouse-Right selection "Set Time Scale Line" has been added.
+
+The Temporal Extent View and  Timeline View are now redrawn after
+Content Spec filtering is applied, so as to use screen space more
+efficiently.
+
+Each timeline now has a unique color, such that its tokens, in all
+views, will have that same color.  In the Constraint Network View,
+the variable and constraint nodes associated with a particular token 
+will have that token's color.
+
+The "Window" pull-down menu offers screen management with "Tile Windows"
+and "Cascade".
+
+Using the Content Specification, it is also possible to limit the set of 
+valid tokens to, only free tokens, or only slotted tokens, as well as 
+the first token on a slot ("Merge tokens").
+
+Token focus in views has been implemented using Mouse-Right selections
+on token or slot nodes to make them "active", and by Mouse-Right selections
+on view backgrounds to "snap" the view to the active token.
+
+
+o  GNATS PRs and CRs completed:
+   #2044: Need a minimal getting started guide.
+   #2048: In large plans, may lose the time scale with current approach.
+   #2049: Project vertical line on clicks for Temporal Extent View.
+   #2050: Synchronize focus among views.
+   #2051: Need better window management - how about a tiling option?
+   #2052: Need to handle redraw on content spec change to use space better.
+   #2053: Post error message if trying to add sequence from other project.
+   #2055: Bug creating project.
+   #2057: Floating data left over filtering timeline view.
+   #2058: Timeline color coding incorrect.  
+   #2081: Must be able to filter free tokens in the content spec.
+   #2082: Need to be able to filter merged Tokens.
+
+
+CVS CHECKOUT
+============
+> cvs co -r PW_M_6 PlanWorks
+
+
+PREREQUISITES
+=============
+Set environment varibles:
+  o JAVA_HOME - location of J2SDK >= 1.4.1
+    On Solaris (Code IC)
+      setenv JAVA_HOME /usr/local/j2sdk1.4.1
+    On Linux, e.g.
+      setenv JAVA_HOME /home/wtaylor/pub/j2sdk1.4.1_02
+    On MacOSX, in terminal window
+      setenv JAVA_HOME /usr
+      or, put this statement in
+      $HOME/.MACOSX/env.plist
+
+  o ANT_HOME - location of Apache Ant 
+    e.g. setenv ANT_HOME <root>/PlanWorks/java/lib/apache-ant
+
+  o PATH - should include Ant 
+    e.g. tcsh: set path = ($path <root>/PlanWorks/java/lib/apache-ant/bin)
+
+  o OSTYPE - linux, solaris, or darwin (MacOS)
+    Should be set by user's standard environment
+
+  o USER - user's account name, used in defining the data base collection
+    Should be set by user's standard environment
+
+  o EUROPA_HOME - path to the root Europa directory
+    e.g. setenv EUROPA_HOME ~/NewPlan
+
+BUILDING THE PARTIAL PLAN WRITER
+================================
+
+Instructions for building the PartialPlanWriter class are in 
+PlanWorks/cpp/integration/europa/README
+
+
+BUILDING & RUNNING PLANWORKS
+============================
+If you're running Solaris 8, everything should work right out of
+CVS.  Just follow the instructions below.  If you're running Linux, you'll
+have to go download the MySQL binary release version 12.20 distrib
+4.0.13 for your system
+(ftp://mirror.aphix.com/pub/mysql/Downloads/MySQL-Max-4.0/mysql-max-4.0.13-sun-solaris2.8-sparc.tar.gz
+for solaris and
+ftp://mirror.aphix.com/pub/mysql/Downloads/MySQL-Max-4.0/mysql-max-4.0.13-pc-linux-i686.tar.gz
+for linux), un[zip|tar] it, and copy the "mysql", "mysqld", and
+"mysqladmin" executables from the bin directory into
+PlanWorks/lib/mysql/bin, then follow the instructions below.  If you
+are, for whatever reason, not going to use MySQL 4.0.13, then you'll
+need to overwrite the files in PlanWorks/lib/mysql/share/mysql/english/
+with the files in /path/to/your/mysql/share/mysql/english/.  If you're
+on any other system, the above advice still holds, but you're on your own
+beyond that.
+Alternately, if you have an existing MySQL binary installation and wish to use
+that, you can do so by editing build.xml, setting the property
+"mysql.custom.bindir" to point to the directory containing the binaries,
+then commenting out the line in which the property "mysql.bindir" is set
+for your operating system in the chk_[linux|solaris]_2 targets.
+If you run 'ant planWorksTest', you have to hit C-c to exit the testing
+after it prints its report.  Also, it is strongly recommended that you run
+'ant cleanDb' after the tests to make sure the test data is purged from
+the database.
+
+> cd PlanWorks
+
+> ant planWorksDbInstall # this sets up the database and must be run before
+			 # anything else
+
+> ant # default is to run the application with compilation of all PlanWorks
+      # Java source as a dependency.
+
+> ant -projecthelp # lists available targets
+
+ cleanCls           -- delete the 'java/classes' directory tree
+ cleanDb            -- delete loaded projects from data base, unless -Dno.clean.db=yes
+ compile            -- compile 'java/src' tree into 'java/classes' tree
+ hurtPlanWorks      -- Big JFCUnit test (compile, cleandb dependencies)
+ planWorks          -- run PlanWorks application (compile dependency)
+ planWorksDbInstall -- create all necessary databases and tables
+ planWorksProf      -- run PlanWorks with profiling info
+ planWorksTest      -- JFCunit test (compile, cleanDb dependencies)
+
+Default target: planWorks
+
+See file "PlanWorks/GETTING_STARTED" for PlanWorks usage.
+
+
+PREVIOUS MILESTONES
+===================
+===================
+
+05september03: Milestone 5
+==========================
+Milestone 5 adds the Constraint Network View. Because of its
+complexity, initially only the token nodes are displayed.  They
+are "opened" by mouse clicks which lay out the token's
+variable nodes. Clicking on variable nodes "opens" them to show
+or link to their nearest neighbors (constraints or tokens).
+Similarly, clicking on constraint nodes "opens" their nearest 
+neighbors.  Clicking on an "open" node (bold border), "closes"
+that nodes nearest neighbor nodes/links, provided the link counts
+are 1.  Then the node becomes "closed" and has an unbold border.
+
+The Temporal Extent View layout has been improved.  The extent line
+and associated arrows are displayed immediately below each predicate
+node.  Downward arrows are start times, upward arrows are end times,
+lefward arrows are -Infinity, and rightward arrows are +Infinity.
+
+Free tokens are now presented in all views.  The automatic expansion
+of the four view internal frame windows, now restricts the expansion 
+to the size of the enclosing PlanWorks frame.  
+
+The Content Specification processor now filters time intervals, as 
+well as predicates and timelines.
+
+Massive performance improvements have been made on database end, often by 
+a factor of 4.
+
+The first stage in Europa integration, the PartialPlanWriter is
+included.  Instructions for its use are in
+PlanWorks/cpp/integration/europa/README.
+
+A new build target, hurtPlanWorks, has been added.  It finds all
+directories containing planning sequences under the path pointed to by the
+EUROPA_HOME environment variable, opens all available views for each
+sequence, validates the views, then deletes the sequence from the
+PlanWorks database.
+
+PlanWorks now has a splash screen at startup.  The current image is not
+permanent.
+
+GNATS PRs fixed:
+   #2011: Temporal extent view is wrong
+
+
+24july03: Milestone 4 
+=====================
+Milestone 4 adds the Temporal Extent View.  It also automatically
+expands the three view internal frame windows to display their
+content, without scrolling.
+
+
+17july03: Milestone 3 
+=====================
+Milestone 3 changes the backend data base content from XML accessed by
+eXist using XPATH, to MySQL.  This results in a performance improvement 
+of at least a factor of 3, and much simpler and quicker data
+base queries by the Content Specification processor.  An XML to
+MySQL convertor program has been added to convert planGen's XML output
+to MySQL files.  The Token Network view has been added.  Project
+management is now handled completely in MysQL, rather than using
+Java "beans".  The Content Specification processor now filters only
+by predicates and timelines.  It will later add time intervals.
+o  PRs & CRs completed:
+   #1841: Suggestion: group timelines for the same object
+          Use alternating colors for grouping
+   #1844: Suggestion: consider making interval endpoints immovable
+   #1851: Closed View Windows are not restored by Partial Plan->seq->plan->view
+   #1990: INSTALLATION: Problems with build.xml under linux
+
+
+19june03: Milestone 2 
+=====================
+Milestone 2 integrates the Multiple Document Interface (MDI) for window
+management, project management (creating, saving, opening and deleting),
+the plan generator, and the Content Specification functionality for 
+filtering partial plan rendering in the user selected views, which is 
+currently restricted to the Timeline View.
+
+
+27may03: Milestone 1 
+=====================
+Milestone 1 includes basic Timeline View, basic eXist XPATH DB
+implementation, ant build/startup script, and basic JFCUnit test of 
+Timeline View with major deficiencies.
+
+
+
+DEVELOPING PLANWORKS
+====================
+Supports Emacs/XEmacs with JDE integrated development environment
+http://jde.sunsite.dk/    # version 2.3.2
+
+Additional Required environment varibles:
+  o JDE_HOME - location of JDE 
+    e.g. setenv JDE_HOME /home/wtaylor/pub/jde/jde-2.3.2
+  o PLANWORKS_ROOT - directory pathname of this file
+    e.g. setenv PLANWORKS_ROOT /home/wtaylor/PlanWorksProject/PlanWorks
+
+used by PlanWorks/java/prj.el -- JDE configuration file
+
+Other files used by  Emacs/XEmacs/JDE:
+  PlanWorks/java/build-tags-file.csh
+  PlanWorks/java/planWorks.TAGS
+
+

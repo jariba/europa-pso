@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!-- $Id: planWorks.xml,v 1.13 2003-08-19 00:22:09 miatauro Exp $ -->
+<project name="planWorks" default="launch" basedir=".">
+<target name="launch" depends="totalbuild">
+        <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
+	<property name="arg_gcInit" value="192"/>
+	<property name="arg_gcMax" value="975"/>
+	<property name="name.application" value="PlanWorks Plan Visualization"/>
+	<property environment="env"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${jgo.home}/JGo.jar"/>
+		<pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+		<pathelement location="${jgo.home}/Classier.jar"/>
+                <pathelement location="${jgo.home}"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+	</path>
+
+	<java dir="${planworks.root}/java/src" 
+                classname="gov.nasa.arc.planworks.PlanWorks" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dos.type=${env.OSTYPE}"/>
+	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
+	    <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
+	    <jvmarg value="-Dmysql.log=${mysql.log}"/>
+	    <jvmarg value="-Dmysql.log.err=${mysql.log.err}"/>
+	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
+	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
+	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+            <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
+            <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
+	    <jvmarg value="-Dsplash.image=${splash.image}"/>
+           <arg value="${name.application}"/>
+	</java>
+
+</target>
+
+<target name="planWorksProf" depends="totalbuild">
+        <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
+	<property name="arg_gcInit" value="192"/>
+	<property name="arg_gcMax" value="975"/>
+	<property environment="env"/>
+	<property name="name.application" value="PlanWorks -- Plan Visualization"/>
+	<property environment="env"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${jgo.home}/JGo.jar"/>
+		<pathelement location="${jgo.home}/JGoLayout.jar"/>
+		<pathelement location="${jgo.home}/Classier.jar"/>
+                <pathelement location="${jgo.home}"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+                <pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+	</path>
+
+	<java dir="${planworks.root}/java/src" 
+                classname="gov.nasa.arc.planworks.PlanWorks" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+<!--	    <jvmarg
+value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.txt,depth=0"/>
+-->
+	    <jvmarg value="-Xprof"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dos.type=${env.OSTYPE}"/>
+	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
+	    <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
+	    <jvmarg value="-Dmysql.log=${mysql.log}"/>
+	    <jvmarg value="-Dmysql.log.err=${mysql.log.err}"/>
+	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
+	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
+	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+            <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
+            <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
+            <arg value="${name.application}"/>
+	</java>
+</target>
+
+<target name="totalbuild" description="conditionally build class files">
+	<ant dir="./java"/>
+</target>
+</project>
