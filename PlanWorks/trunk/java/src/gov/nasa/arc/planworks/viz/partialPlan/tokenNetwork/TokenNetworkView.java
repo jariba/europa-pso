@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.75 2004-09-28 01:40:55 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.76 2004-09-28 18:54:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -780,8 +780,14 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
       }
       if (tokenNode.inLayout() && inContentSpec) {
         tokenNode.setVisible( true);
+        if (jGoDocument.findObject( tokenNode) == null) {
+          jGoDocument.addObjectAtTail( tokenNode);
+        }
       } else {
         tokenNode.setVisible( false);
+        if (jGoDocument.findObject( tokenNode) != null) {
+          jGoDocument.removeObject( tokenNode);
+        }
       }
     }
     List ruleInstanceNodeKeyList = new ArrayList( ruleInstanceNodeMap.keySet());
@@ -809,8 +815,14 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
       }
       if (ruleInstanceNode.inLayout() && isOneNodeVisible) {
         ruleInstanceNode.setVisible( true);
+        if (jGoDocument.findObject( ruleInstanceNode) == null) {
+          jGoDocument.addObjectAtTail( ruleInstanceNode);
+        }
       } else {
         ruleInstanceNode.setVisible( false);
+        if (jGoDocument.findObject( ruleInstanceNode) != null) {
+          jGoDocument.removeObject( ruleInstanceNode);
+        }
       }
     }
     List tokNetLinkKeyList = new ArrayList( tokNetLinkMap.keySet());
@@ -827,11 +839,25 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
       }
       if (tokNetLink.inLayout() && isOneNodeVisible) {
         tokNetLink.setVisible( true);
+        if (jGoDocument.findObject( tokNetLink) == null) {
+          // recreate the link
+          String linkName = ((IncrementalNode) tokNetLink.getFromNode()).getId().toString() +
+            "->" + ((IncrementalNode) tokNetLink.getToNode()).getId().toString();
+          tokNetLinkMap.remove( linkName);
+          TokenNetworkGenerics.addTokNetLink( (IncrementalNode) tokNetLink.getFromNode(),
+                                              (IncrementalNode) tokNetLink.getToNode(),
+                                              tokNetLink.getLinkType(),
+                                              (IncrementalNode) tokNetLink.getFromNode(),
+                                              this, isDebugPrint);
+        }
         if (isDebugPrint && (tokNetLink.getMidLabel() != null)) {
           tokNetLink.getMidLabel().setVisible( true);
         }
       } else {
         tokNetLink.setVisible( false);
+        if (jGoDocument.findObject( tokNetLink) != null) {
+          jGoDocument.removeObject( tokNetLink);
+        }
         if (isDebugPrint && (tokNetLink.getMidLabel() != null)) {
           tokNetLink.getMidLabel().setVisible( false);
         }
