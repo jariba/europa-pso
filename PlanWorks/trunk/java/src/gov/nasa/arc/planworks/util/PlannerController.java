@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlannerController.java,v 1.4 2004-11-23 23:08:13 pdaley Exp $
+// $Id: PlannerController.java,v 1.5 2004-11-24 00:38:05 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -233,6 +233,7 @@ public class PlannerController extends JPanel {
                PlannerControlJNI.terminatePlannerRun();
                plannerControllerFrame.dispose();
                notifyPlannerException();    
+               return null;
             }
             writeStepField.setText( "");
             currentStepLabel.setText( "Current step: " + writeStepStep);
@@ -309,6 +310,7 @@ public class PlannerController extends JPanel {
                PlannerControlJNI.terminatePlannerRun();
                plannerControllerFrame.dispose();
                notifyPlannerException();    
+               return null;
             }
             currentStatusLabel.setText( "Planner: Ready  ");
             currentStepLabel.setText( "Current step: " + (currentStepNum + writeNextSteps));
@@ -370,6 +372,7 @@ public class PlannerController extends JPanel {
                PlannerControlJNI.terminatePlannerRun();
                plannerControllerFrame.dispose();
                notifyPlannerException();    
+               return null;
             }
             int plannerStatus = -1;
             while ((plannerStatus != PlannerControlJNI.PLANNER_TIMEOUT_REACHED) &&
