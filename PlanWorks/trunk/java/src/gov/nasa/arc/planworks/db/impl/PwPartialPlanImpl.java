@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.34 2003-08-21 18:38:36 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.35 2003-08-22 21:39:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -121,7 +121,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
         loadTime += System.currentTimeMillis() - time1;
       }
       MySQLDB.updatePartialPlanSequenceId(sequenceId);
-      //MySQLDB.analyzeDatabase();
+      MySQLDB.analyzeDatabase();
     }
     id = MySQLDB.getNewPartialPlanId(sequenceId, name);
     System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
@@ -706,12 +706,19 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    *                                    have, and are in only the relations they have.
    */
   private void checkTokenRelations(PwTokenImpl token) {
-    List relations = token.getTokenRelationsList();
-    ListIterator relationIterator = relations.listIterator();
-    while(relationIterator.hasNext()) {
-      PwTokenRelationImpl tokenRelation = (PwTokenRelationImpl) relationIterator.next();
+    List relations = token.getTokenRelationIdsList();
+    if(relations.size() == 0) {
+      return;
+    }
+    ListIterator relationIdIterator = relations.listIterator();
+    while(relationIdIterator.hasNext()) {
+      Integer tokenRelationId = (Integer) relationIdIterator.next();
+      PwTokenRelationImpl tokenRelation = 
+        (PwTokenRelationImpl) tokenRelationMap.get(tokenRelationId);
+      
       if(tokenRelation == null) {
-        System.err.println("Token " + token.getId() + " has null token relation!");
+        System.err.println("Token " + token.getId() + " has nonexistant token relation " +
+                           tokenRelationId);
         continue;
       }
       if(tokenRelation.getTokenAId() == null) {
@@ -741,7 +748,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     while(tokenRelationIterator.hasNext()) {
       PwTokenRelationImpl tokenRelation = (PwTokenRelationImpl) tokenRelationIterator.next();
       if((tokenRelation.getTokenAId().equals(token.getId()) || 
-          tokenRelation.getTokenBId().equals(token.getId())) && !relations.contains(tokenRelation)) {
+          tokenRelation.getTokenBId().equals(token.getId())) && !relations.contains(tokenRelation.getId())) {
         System.err.println("Token " + token.getId() + " is in relation " + tokenRelation.getId() +
                            " but doesn't have it.");
       }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.20 2003-08-19 00:24:31 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.21 2003-08-22 21:39:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -24,8 +24,8 @@ import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwVariable;
-//import gov.nasa.arc.planworks.db.util.XmlDBeXist;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.util.UniqueSet;
 
 /**
  * <code>PwTokenImpl</code> - Java mapping of database structure
@@ -70,12 +70,32 @@ public class PwTokenImpl implements PwToken {
     this.objectVarId = objectVarId;
     this.objectId = objectId;
     this.rejectVarId = rejectVarId;
-    this.tokenRelationIds = new ArrayList(tokenRelationIds);
-    this.paramVarIds = new ArrayList(paramVarIds);
+    this.tokenRelationIds = new UniqueSet(tokenRelationIds);
+    this.paramVarIds = new UniqueSet(paramVarIds);
     this.partialPlan = partialPlan;
     this.timelineId = timelineId;
   }
-		
+
+  public PwTokenImpl(Integer id, boolean isValueToken, Integer slotId, Integer predicateId,
+                     Integer startVarId, Integer endVarId, Integer durationVarId,
+                     Integer objectId, Integer rejectVarId, Integer objectVarId,
+                     Integer timelineId, PwPartialPlanImpl partialPlan) {
+    this.id = id;
+    this.isValueToken = isValueToken;
+    this.slotId = slotId;
+    this.predicateId = predicateId;
+    this.startVarId = startVarId;
+    this.endVarId = endVarId;
+    this.durationVarId = durationVarId;
+    this.objectVarId = objectVarId;
+    this.objectId = objectId;
+    this.rejectVarId = rejectVarId;
+    this.tokenRelationIds = new UniqueSet();
+    this.paramVarIds = new UniqueSet();
+    this.partialPlan = partialPlan;
+    this.timelineId = timelineId;
+  }
+  
   /**
    * <code>getId</code>
    *
@@ -203,6 +223,10 @@ public class PwTokenImpl implements PwToken {
     return retval;
   }
 
+  public List getTokenRelationIdsList() {
+    return new ArrayList(tokenRelationIds);
+  }
+
   /**
    * <code>getVariablesList</code>
    *
@@ -265,7 +289,13 @@ public class PwTokenImpl implements PwToken {
     return buffer.toString();
   }
 
-
+  public void addParamVar(Integer paramVarId) {
+    paramVarIds.add(paramVarId);
+  }
+  
+  public void addTokenRelation(Integer tokenRelationId) {
+    tokenRelationIds.add(tokenRelationId);
+  }
 
 } // end class PwTokenImpl
 

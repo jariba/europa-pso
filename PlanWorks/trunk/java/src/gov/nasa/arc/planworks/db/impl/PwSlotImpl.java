@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.15 2003-08-19 00:24:30 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.16 2003-08-22 21:39:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -100,5 +100,13 @@ public class PwSlotImpl implements PwSlot {
     partialPlan.addToken( id, token);
     return token;
   } // end addToken
+
+  public PwTokenImpl addToken(PwTokenImpl token) {
+    if(!tokenIdList.contains(token.getId())) {
+      tokenIdList.add(token.getId());
+    }
+    partialPlan.addToken(token.getId(), token);
+    return token;
+  }
 
 } // end class PwSlotImpl

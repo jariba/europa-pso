@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.41 2003-08-20 23:33:34 miatauro Exp $
+// $Id: PlanWorks.java,v 1.42 2003-08-22 21:39:24 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -667,12 +668,31 @@ public class PlanWorks extends MDIDesktopFrame {
     if (seqPartialPlanViewMenu == null) {
       seqPartialPlanViewMenu = new JMenu( PLANSEQ_MENU);
     }
+    seqPartialPlanViewMenu.removeAll();
     System.err.println( "buildSeqPartialPlanViewMenu");
-    Iterator seqUrlsItr = project.listPlanningSequences().iterator();
+    List planSeqNames = project.listPlanningSequences();
+    Object [] sortedArray = planSeqNames.toArray();
+    Arrays.sort(sortedArray, new SeqNameComparator());
+    planSeqNames = Arrays.asList(sortedArray);
+    Iterator seqUrlsItr = planSeqNames.iterator();
     while (seqUrlsItr.hasNext()) {
       String seqUrl = (String) seqUrlsItr.next();
-      // System.err.println( " seqUrl " + seqUrl);
       String seqName = getUrlLeaf( seqUrl);
+      int nameCount = 0;
+      for(int i = 0; i < seqPartialPlanViewMenu.getItemCount(); i++) {
+        JMenuItem item = seqPartialPlanViewMenu.getItem(i);
+        String itemName = item.getText();
+        int index = itemName.indexOf(" (");
+        if(index != -1) {
+          itemName = itemName.substring(0, index);
+        }
+        if(itemName.equals(seqName)) {
+          nameCount++;
+        }
+      }
+      if(nameCount > 0) {
+        seqName = seqName.concat(" (").concat(Integer.toString(nameCount)).concat(")");
+      }
       System.err.println( "  sequenceName " + seqName);
       JMenu seqMenu = new JMenu( seqName);
       seqPartialPlanViewMenu.add( seqMenu);
@@ -1010,6 +1030,21 @@ public class PlanWorks extends MDIDesktopFrame {
 
   } // end main
 
+  private class SeqNameComparator implements Comparator {
+    public SeqNameComparator() {
+    }
+    public int compare(Object o1, Object o2) {
+      String s1 = getUrlLeaf((String) o1);
+      String s2 = getUrlLeaf((String) o2);
+      System.err.println("Comparing " + s1 + " to " + s2);
+      return s1.compareTo(s2);
+    }
+    public boolean equals(Object o1, Object o2) {
+      String s1 = getUrlLeaf((String)o1);
+      String s2 = getUrlLeaf((String)o2);
+      return s1.equals(s2);
+    }
+  }
 
 } // end  class PlanWorks
         
