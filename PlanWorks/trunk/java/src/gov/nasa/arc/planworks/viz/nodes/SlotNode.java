@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.19 2003-08-26 01:37:12 taylor Exp $
+// $Id: SlotNode.java,v 1.20 2003-08-29 01:21:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,6 +12,7 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class SlotNode extends TextNode {
   private String predicateName;
   private PwSlot slot;
   private PwToken previousToken;
+  private boolean isFirstSlot;
   private boolean isLastSlot;
   private int objectCnt;
   private TimelineView view;
@@ -79,8 +81,9 @@ public class SlotNode extends TextNode {
   private PwDomain startTimeIntervalDomain;
   private PwDomain endTimeIntervalDomain;
   private PwPredicate predicate;
-  private List timeIntervalLabels;
+  private JGoText startTimeIntervalObject;
   private JGoText endTimeIntervalObject;
+
 
   /**
    * <code>SlotNode</code> - constructor 
@@ -89,21 +92,23 @@ public class SlotNode extends TextNode {
    * @param slot - <code>PwSlot</code> - 
    * @param slotLocation - <code>Point</code> - 
    * @param previousToken - <code>PwToken</code> - 
+   * @param isFirstSlot - <code>boolean</code> - 
    * @param isLastSlot - <code>boolean</code> - 
    * @param objectCnt - <code>int</code> - 
    * @param view - <code>TimelineView</code> - 
    */
   public SlotNode( String nodeLabel, PwSlot slot, Point slotLocation,
-                   PwToken previousToken, boolean isLastSlot, int objectCnt,
-                   TimelineView view) {
+                   PwToken previousToken, boolean isFirstSlot, boolean isLastSlot,
+                   int objectCnt, TimelineView view) {
     super( nodeLabel);
     this.predicateName = nodeLabel;
     this.slot = slot;
     this.previousToken = previousToken;
+    this.isFirstSlot = isFirstSlot;
     this.isLastSlot = isLastSlot;
     this.objectCnt = objectCnt;
     this.view = view;
-    this.timeIntervalLabels = new ArrayList();
+    this.startTimeIntervalObject = null;
     this.endTimeIntervalObject = null;
     // System.err.println( "SlotNode: predicateName " + predicateName);
     configure( nodeLabel, slotLocation);
@@ -123,6 +128,13 @@ public class SlotNode extends TextNode {
     }
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
+    // to override VizView:
+    // JGoText.setDefaultFontFaceName( ViewConstants.TIMELINE_VIEW_FONT_NAME);
+    // JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+
+    // getLabel().setFaceName( ViewConstants.TIMELINE_VIEW_FONT_NAME);
+    // getLabel().setFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+
     setDraggable( false);
     // do not allow user links
     getTopPort().setVisible( false);
@@ -136,7 +148,6 @@ public class SlotNode extends TextNode {
     renderTimeIntervals();
 
   } // end configure
-
 
   /**
    * <code>getPredicateName</code>
@@ -157,12 +168,12 @@ public class SlotNode extends TextNode {
   }
 
   /**
-   * <code>getTimeIntervalLabels</code>
+   * <code>getStartTimeIntervalObject</code>
    *
-   * @return - <code>List</code> - 
+   * @return - <code>JGoText</code> - 
    */
-  public List getTimeIntervalLabels() {
-    return timeIntervalLabels;
+  public JGoText getStartTimeIntervalObject() {
+    return startTimeIntervalObject;
   }
 
   /**
@@ -210,11 +221,8 @@ public class SlotNode extends TextNode {
     PwDomain startIntervalDomain = null;
     PwDomain endIntervalDomain = null;
     PwVariable intervalVariable = null, lastIntervalVariable = null;
-    PwToken baseToken = null;
+    PwToken baseToken = slot.getBaseToken();
     PwDomain intervalDomain = null, lastIntervalDomain = null;
-    if (slot.getTokenList().size() > 0) {
-      baseToken = (PwToken) slot.getTokenList().get( 0);
-    }
     if (baseToken == null) {
       if (previousToken == null) {
         // first slot is empty
@@ -260,30 +268,75 @@ public class SlotNode extends TextNode {
   } // end getStartEndIntervals
 
   /**
-   * <code>getDurationInterval</code>
+   * <code>getShortestDuration</code>
    *
    * @param slot - <code>PwSlot</code> - 
-   * @return - <code>PwDomain</code> - 
+   * @param startTimeIntervalDomain - <code>PwDomain</code> - 
+   * @param endTimeIntervalDomain - <code>PwDomain</code> - 
+   * @return - <code>String</code> - 
    */
-  public static PwDomain getDurationInterval( PwSlot slot) {
-    PwDomain durationDomain = null;
+  public static String getShortestDuration( PwSlot slot,
+                                            PwDomain startTimeIntervalDomain,
+                                            PwDomain endTimeIntervalDomain) {
     PwVariable durationVariable = null;
-    PwToken baseToken = null;
-    if (slot.getTokenList().size() > 0) {
-      baseToken = (PwToken) slot.getTokenList().get( 0);
-    }
-    if (baseToken == null) {
-      durationDomain = PwDomain.ZERO_INTERVAL_DOMAIN;
+    if ((slot == null) ||  // free token
+        (slot.getBaseToken() == null)) { // empty slot
+      int lowerDiff = PwDomain.PLUS_INFINITY_INT;
+      if ((endTimeIntervalDomain.getLowerBoundInt() != PwDomain.PLUS_INFINITY_INT) &&
+          (startTimeIntervalDomain.getLowerBoundInt() != PwDomain.PLUS_INFINITY_INT)) {
+        lowerDiff = endTimeIntervalDomain.getLowerBoundInt() -
+          startTimeIntervalDomain.getLowerBoundInt();
+      }
+      int upperDiff = PwDomain.PLUS_INFINITY_INT;
+      if ((endTimeIntervalDomain.getUpperBoundInt() != PwDomain.PLUS_INFINITY_INT) &&
+          (startTimeIntervalDomain.getUpperBoundInt() != PwDomain.PLUS_INFINITY_INT)) {
+        upperDiff = endTimeIntervalDomain.getUpperBoundInt() -
+          startTimeIntervalDomain.getUpperBoundInt();
+      }
+      return String.valueOf( Math.min( lowerDiff, upperDiff));
     } else {
-      durationVariable = baseToken.getDurationVariable();
+      durationVariable = slot.getBaseToken().getDurationVariable();
       if (durationVariable != null) {
-        durationDomain = durationVariable.getDomain();
+        return durationVariable.getDomain().getLowerBound();
       } else {
-        durationDomain = PwDomain.ZERO_INTERVAL_DOMAIN;
+        return "0";
       }
     }
-    return durationDomain;
-  } // end getDurationInterval
+  } // end getEarliestDuration
+
+  /**
+   * <code>getLongestDuration</code>
+   *
+   * @param slot - <code>PwSlot</code> - 
+   * @param startTimeIntervalDomain - <code>PwDomain</code> - 
+   * @param endTimeIntervalDomain - <code>PwDomain</code> - 
+   * @return - <code>String</code> - 
+   */
+  public static String getLongestDuration( PwSlot slot,
+                                           PwDomain startTimeIntervalDomain,
+                                           PwDomain endTimeIntervalDomain) {
+    PwVariable durationVariable = null;
+    if ((slot == null) ||  // free token
+        (slot.getBaseToken() == null)) { // empty slot
+      String upperBound = endTimeIntervalDomain.getUpperBound();
+      String lowerBound = startTimeIntervalDomain.getLowerBound();
+      if (upperBound.equals( PwDomain.PLUS_INFINITY)) {
+        return PwDomain.PLUS_INFINITY;
+      } else if (lowerBound.equals( PwDomain.MINUS_INFINITY)) {
+        return PwDomain.PLUS_INFINITY;
+      } else {
+        return String.valueOf( endTimeIntervalDomain.getUpperBoundInt() -
+                               startTimeIntervalDomain.getLowerBoundInt());      
+      }
+    } else {
+      durationVariable = slot.getBaseToken().getDurationVariable();
+      if (durationVariable != null) {
+        return durationVariable.getDomain().getUpperBound();
+      } else {
+        return "0";
+      }
+    }
+  } // end getLatestDuration
 
 
   private void renderTimeIntervals() {
@@ -296,7 +349,8 @@ public class SlotNode extends TextNode {
     Point startLoc = new Point( (int) this.getLocation().getX() - this.getXOffset(),
                                 (int) this.getLocation().getY() +
                                 (int) this.getSize().getHeight());
-    renderIntervalText( startTimeIntervalDomain.toString(), startLoc);
+    startTimeIntervalObject =
+      renderIntervalText( startTimeIntervalDomain.toString(), startLoc);
 
     if (endTimeIntervalDomain != null) {
       Point endLoc = new Point( (int) (this.getLocation().getX() +
@@ -309,23 +363,6 @@ public class SlotNode extends TextNode {
 
 
   private JGoText renderIntervalText( String text, Point textLoc) {
-    // make sure that time interval strings do not overlap
-    int textLength = text.length() + ViewConstants.TIME_INTERVAL_STRINGS_OVERLAP_OFFSET;
-    int minLength = view.getSlotLabelMinLength();
-    if (textLength > minLength) {
-      view.setSlotLabelMinLength( minLength + textLength);
-      // stretch this slot's label
-      String label = this.getText();
-      PwToken token = null;
-      if (slot.getTokenList().size() > 0) {
-        token = (PwToken) slot.getTokenList().get( 0);
-      }
-      this.setText( view.getSlotNodeLabel( token));
-     }
-    // System.err.println( "renderIntervalText: text '" + text + "' minLen " +
-    //                     view.getSlotLabelMinLength());
-
-    // Object->JGoObject->JGoText
     JGoText textObject = new JGoText( textLoc, ViewConstants.TIMELINE_VIEW_FONT_SIZE,
                                       text, ViewConstants.TIMELINE_VIEW_FONT_NAME,
                                       ViewConstants.TIMELINE_VIEW_IS_FONT_BOLD,
@@ -338,7 +375,6 @@ public class SlotNode extends TextNode {
     textObject.setEditable( false);
     textObject.setDraggable( false);
     textObject.setBkColor( ColorMap.getColor( "lightGray"));
-    timeIntervalLabels.add( textObject);
     view.getJGoDocument().addObjectAtTail( textObject);
     return textObject;
   } // end renderText
@@ -346,7 +382,7 @@ public class SlotNode extends TextNode {
 
     // offset time interval labels, so they do not overlap previous & current slot nodes
   private int getXOffset() {
-    if (previousToken == null) {
+    if (isFirstSlot) {
       return 0;
     } else {
       return SwingUtilities.computeStringWidth( view.getFontMetrics(),

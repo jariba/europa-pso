@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.20 2003-08-26 01:37:13 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.21 2003-08-29 01:21:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -108,10 +108,6 @@ public class TokenNetworkView extends VizView {
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
     jGoView.setVisible( true);
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-    jGoView.setFont( font);
     this.setVisible( true);
     // print content spec
     // viewSet.printSpec();
@@ -146,6 +142,11 @@ public class TokenNetworkView extends VizView {
       // System.err.println( "tokenNetworkView displayable " + this.isDisplayable());
     }
     Graphics graphics = ((JPanel) this).getGraphics();
+    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
+                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
+                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+    // does nothing
+    // jGoView.setFont( font);
     fontMetrics = graphics.getFontMetrics( font);
     graphics.dispose();
 

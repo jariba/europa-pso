@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkLayout.java,v 1.2 2003-08-20 18:52:37 taylor Exp $
+// $Id: ConstraintNetworkLayout.java,v 1.3 2003-08-29 01:21:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -64,10 +64,19 @@ public class ConstraintNetworkLayout extends JGoLayeredDigraphAutoLayout {
   } // end constructor
 
 
+  // preformance variations
   protected void removeCycles() {
     // no cycles to remove
   }
 
+//   protected void  reduceCrossings() {  // 5% faster
+//   }
+
+//   protected void  straightenAndPack() { // 10% slower
+//   }
+
+//   protected void layoutNodesAndLinks() { // very fast, but user must drag nodes to improve it
+//   }
 
   /**
    * <code>progressUpdate</code>

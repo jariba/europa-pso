@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.2 2003-06-08 00:14:08 taylor Exp $
+// $Id: Utilities.java,v 1.3 2003-08-29 01:21:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.util;
 
 import java.awt.Container;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 
 
@@ -57,6 +58,20 @@ public class Utilities {
   } // end computePopUpLocation
 
 
+  /**
+   * <code>printFontNames</code>
+   *
+   */
+  public static void printFontNames() {
+    GraphicsEnvironment graphicsEnv =
+      GraphicsEnvironment.getLocalGraphicsEnvironment();
+    String[] fontNames = graphicsEnv.getAvailableFontFamilyNames();
+    System.err.println( " Font names: ");
+    for (int i = 0, n = fontNames.length; i < n; i++) {
+      System.err.println( "  " + fontNames[i]);
+    }
+  }
 
-        
+
+
 } // end class Utilities

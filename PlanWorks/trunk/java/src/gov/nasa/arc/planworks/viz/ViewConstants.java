@@ -36,7 +36,7 @@ public interface ViewConstants {
    * constant <code>TIMELINE_VIEW_X_INIT</code>
    *
    */
-  public static final int TIMELINE_VIEW_X_INIT = 10;
+  public static final int TIMELINE_VIEW_X_INIT = 10; 
 
   /**
    * constant <code>TIMELINE_VIEW_Y_INIT</code>
@@ -57,10 +57,10 @@ public interface ViewConstants {
   public static final int TIMELINE_VIEW_FONT_SIZE = 12;
 
   /**
-   * constant <code>TIMELINE_VIEW_FONT_NAME</code>
+   * constant <code>TIMELINE_VIEW_FONT_NAME</code> - fixed width font
    *
    */
-  public static final String TIMELINE_VIEW_FONT_NAME = "Serif";
+  public static final String TIMELINE_VIEW_FONT_NAME = "Monospaced";
 
   /**
    * constant <code>TIMELINE_VIEW_FONT_STYLE</code>
@@ -72,7 +72,7 @@ public interface ViewConstants {
    * constant <code>TIME_INTERVAL_STRINGS_OVERLAP_OFFSET</code>
    *
    */
-  public static final int TIME_INTERVAL_STRINGS_OVERLAP_OFFSET = 2;
+  public static final int TIME_INTERVAL_STRINGS_OVERLAP_OFFSET = 4;
 
   /**
    * constant <code>TIMELINE_VIEW_EMPTY_NODE_LABEL</code>
