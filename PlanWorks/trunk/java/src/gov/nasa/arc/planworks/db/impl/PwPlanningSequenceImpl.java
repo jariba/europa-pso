@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.29 2003-09-05 16:51:10 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.30 2003-09-09 20:40:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -64,7 +64,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * @exception ResourceNotFoundException if an error occurs
    */
   public PwPlanningSequenceImpl( String url, Integer id, PwProjectImpl project, PwModelImpl model)
-    throws ResourceNotFoundException, SQLException {
+    throws ResourceNotFoundException {
     //System.err.println("In PwPlanningSequenceImpl(String, Integer, PwProjectImpl, PwModelImpl");
     this.url = url;
     this.id = id;
@@ -103,7 +103,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * @exception ResourceNotFoundException if an error occurs
    */ 
   public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
-    throws ResourceNotFoundException, SQLException {
+    throws ResourceNotFoundException {
     //System.err.println("In PwPlanningSequenceImpl(String, PwProjectImpl, PwModelImpl)");
     this.url = url;
     this.projectName = project.getName();
@@ -263,7 +263,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * @exception ResourceNotFoundException if an error occurs
    */
   public PwPartialPlan addPartialPlan(String partialPlanName) 
-    throws ResourceNotFoundException, SQLException {
+    throws ResourceNotFoundException {
     //System.err.println("In addPartialPlan");
     int index = -1;
     if((index = partialPlanNames.indexOf(partialPlanName)) != -1) {

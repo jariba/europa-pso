@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.17 2003-08-28 20:45:06 miatauro Exp $
+// $Id: PwProject.java,v 1.18 2003-09-09 20:39:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -40,9 +40,6 @@ public abstract class PwProject {
     } catch (ResourceNotFoundException rnfExcp) {
       System.err.println( rnfExcp);
       System.exit( -1);
-    } catch (SQLException sqlExcp) {
-      System.err.println( sqlExcp);
-      System.exit( -1);
     }
   }
 
@@ -56,7 +53,7 @@ public abstract class PwProject {
    * @exception ResourceNotFoundException if an error occurs
    */
   public static PwProject createProject( String url)
-    throws DuplicateNameException, ResourceNotFoundException, SQLException {
+    throws DuplicateNameException, ResourceNotFoundException {
     //return (new PwProjectImpl( url));
     return PwProjectImpl.createProject(url);
   }
@@ -120,5 +117,5 @@ public abstract class PwProject {
   public abstract void deletePlanningSequence(String seqName) throws ResourceNotFoundException;
 
   public abstract PwPlanningSequence addPlanningSequence(String url) 
-    throws DuplicateNameException, ResourceNotFoundException, SQLException;
+    throws DuplicateNameException, ResourceNotFoundException;
 } // end class PwProject

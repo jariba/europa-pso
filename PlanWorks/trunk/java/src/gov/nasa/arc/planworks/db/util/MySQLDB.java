@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.40 2003-09-05 16:51:42 miatauro Exp $
+// $Id: MySQLDB.java,v 1.41 2003-09-09 20:40:30 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -465,7 +465,7 @@ public class MySQLDB {
         queryDatabase("SELECT SequenceId FROM Sequence WHERE ProjectId=".concat(id.toString()));
       while(sequenceIds.next()) {
         Integer sequenceId = new Integer(sequenceIds.getInt("SequenceId"));
-        deletePlanningSequence(id);
+        deletePlanningSequence(sequenceId);
       }
       updateDatabase("DELETE FROM Project WHERE ProjectId=".concat(id.toString()));
     }

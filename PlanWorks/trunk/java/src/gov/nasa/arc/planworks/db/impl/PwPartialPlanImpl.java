@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.39 2003-09-05 16:51:10 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.40 2003-09-09 20:40:11 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -78,7 +78,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    */
 
   public PwPartialPlanImpl(String url, String planName, Integer sequenceId)  
-    throws ResourceNotFoundException, SQLException {
+    throws ResourceNotFoundException {
     //System.err.println("In PwPartialPlanImpl");
     objectMap = new HashMap();
     timelineMap = new HashMap();
@@ -101,7 +101,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @exception ResourceNotFoundException if the plan data is invalid
    */
 
-  private void createPartialPlan(Integer sequenceId) throws ResourceNotFoundException, SQLException  {
+  private void createPartialPlan(Integer sequenceId) throws ResourceNotFoundException {
     //System.err.println( "Creating PwPartialPlan  ..." + url);
     long startTimeMSecs = System.currentTimeMillis();
     long loadTime = 0L;
