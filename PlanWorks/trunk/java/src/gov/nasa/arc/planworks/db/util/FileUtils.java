@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.13 2004-04-06 01:31:42 taylor Exp $
+// $Id: FileUtils.java,v 1.14 2004-04-30 21:50:34 miatauro Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -94,9 +94,10 @@ public abstract class FileUtils {
         //                    " => partialPlanDirName: " + fileName);
         partialPlanDirs.add( fileName);
       }
-      if(fileName.equals(DbConstants.SEQ_PP_STATS) || fileName.equals(DbConstants.SEQ_FILE) ||
-         fileName.equals(DbConstants.SEQ_TRANSACTIONS)) {
-        seenSequenceFiles++;
+      for(int j = 0; j < DbConstants.NUMBER_OF_SEQ_FILES; j++) {
+        if(fileName.equals(DbConstants.SEQUENCE_FILES[j])) {
+          seenSequenceFiles++;
+        }
       }
     }
     if (seenSequenceFiles != DbConstants.NUMBER_OF_SEQ_FILES) {
