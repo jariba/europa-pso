@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.21 2003-09-23 16:10:40 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.1 2003-09-25 23:52:45 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 21July03
 //
 
-package gov.nasa.arc.planworks.viz.views.temporalExtent;
+package gov.nasa.arc.planworks.viz.partialPlan.temporalExtent;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -61,8 +61,8 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 
 /**
@@ -73,11 +73,11 @@ import gov.nasa.arc.planworks.viz.views.VizView;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TemporalExtentView extends VizView  {
+public class TemporalExtentView extends PartialPlanView  {
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
-  private ViewSet viewSet;
+  private PartialPlanViewSet viewSet;
   private ExtentView jGoExtentView;
   private JGoView jGoRulerView;
   private RulerPanel rulerPanel;
@@ -105,16 +105,16 @@ public class TemporalExtentView extends VizView  {
 
 
   /**
-   * <code>TemporalExtentView</code> - constructor - called by ViewSet.openTemporalExtentView.
+   * <code>TemporalExtentView</code> - constructor 
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>PwPartialPlan</code> - 
    * @param startTimeMSecs - <code>long</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewSet - <code>PartialPlanViewSet</code> - 
    */
   public TemporalExtentView( PwPartialPlan partialPlan, long startTimeMSecs,
-                             ViewSet viewSet) {
+                             PartialPlanViewSet viewSet) {
     super( partialPlan, viewSet);
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
@@ -243,7 +243,7 @@ public class TemporalExtentView extends VizView  {
   private void renderTemporalExtent( boolean isRedraw) {
     jGoExtentView.getDocument().deleteContents();
 
-    validTokenIds = viewSet.getValidTokenIds();
+    validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     temporalNodeList = null;
     tmpTemporalNodeList = new ArrayList();
@@ -699,7 +699,7 @@ public class TemporalExtentView extends VizView  {
 //     // print content spec
 //     // System.err.println( "TemporalExtentView - contentSpec");
 //     // viewSet.printSpec();
-//     validTokenIds = viewSet.getValidTokenIds();
+//     validTokenIds = viewSet.getValidIds();
 //     displayedTokenIds = new ArrayList();
 //     Iterator temporalNodeIterator = temporalNodeList.iterator();
 //     while (temporalNodeIterator.hasNext()) {
@@ -949,7 +949,8 @@ public class TemporalExtentView extends VizView  {
   private void createActiveTokenItem( JMenuItem activeTokenItem) {
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          PwToken activeToken = TemporalExtentView.this.getViewSet().getActiveToken();
+          PwToken activeToken =
+            ((PartialPlanViewSet) TemporalExtentView.this.getViewSet()).getActiveToken();
           boolean isTokenFound = false;
           if (activeToken != null) {
             Iterator temporalNodeListItr = temporalNodeList.iterator();

@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.3 2003-09-23 19:28:16 taylor Exp $
+// $Id: VariableNode.java,v 1.1 2003-09-25 23:52:45 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 28july03
 //
 
-package gov.nasa.arc.planworks.viz.views.constraintNetwork;
+package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -31,8 +31,8 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
 /**
@@ -56,7 +56,7 @@ public class VariableNode extends BasicNode {
   private PwVariable variable;
   private TokenNode tokenNode;
   private boolean isFreeToken;
-  private VizView vizView;
+  private PartialPlanView partialPlanView;
   private String nodeLabel;
   private List tokenNodeList; // element TokenNode
   private List constraintNodeList; // element ConstraintNode
@@ -78,15 +78,15 @@ public class VariableNode extends BasicNode {
    * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
-   * @param vizView - <code>VizView</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
    */
   public VariableNode( PwVariable variable, TokenNode tokenNode, Point variableLocation, 
                        Color backgroundColor, boolean isFreeToken, boolean isDraggable,
-                       VizView vizView) { 
+                       PartialPlanView partialPlanView) { 
     super();
     this.variable = variable;
     this.isFreeToken = isFreeToken;
-    this.vizView = vizView;
+    this.partialPlanView = partialPlanView;
     tokenNodeList = new ArrayList();
     tokenNodeList.add( tokenNode);
     constraintNodeList = new ArrayList();
@@ -147,12 +147,12 @@ public class VariableNode extends BasicNode {
   }
 
   /**
-   * <code>getVizView</code>
+   * <code>getPartialPlanView</code>
    *
-   * @return - <code>VizView</code> - 
+   * @return - <code>PartialPlanView</code> - 
    */
-  public VizView getVizView() {
-    return vizView;
+  public PartialPlanView getPartialPlanView() {
+    return partialPlanView;
   }
 
   /**
@@ -167,7 +167,7 @@ public class VariableNode extends BasicNode {
       } else {
         operation = "open";
       }
-    if ((! hasZeroConstraints) && (vizView instanceof ConstraintNetworkView)) {
+    if ((! hasZeroConstraints) && (partialPlanView instanceof ConstraintNetworkView)) {
       StringBuffer tip = new StringBuffer( "<html> ");
       tip.append( variable.getType());
       if (isDebug) {
@@ -406,7 +406,7 @@ public class VariableNode extends BasicNode {
     //                             obj.getTopLevelObject().getClass().getName());
     VariableNode variableNode = (VariableNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      if ((! hasZeroConstraints) && (vizView instanceof ConstraintNetworkView)) {
+      if ((! hasZeroConstraints) && (partialPlanView instanceof ConstraintNetworkView)) {
         if (! areNeighborsShown) {
           //System.err.println
           //  ( "doMouseClick: Mouse-L show constraint/token nodes of variable id " +
@@ -420,7 +420,7 @@ public class VariableNode extends BasicNode {
           removeVariableNodeTokensAndConstraints( this);
           setNodeClosed();
         }
-        ((ConstraintNetworkView) vizView).setFocusNode( variableNode);
+        ((ConstraintNetworkView) partialPlanView).setFocusNode( variableNode);
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -430,7 +430,7 @@ public class VariableNode extends BasicNode {
 
   private void addVariableNodeTokensAndConstraints( VariableNode variableNode) {
     ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) variableNode.getVizView();
+      (ConstraintNetworkView) variableNode.getPartialPlanView();
     boolean areNodesChanged = constraintNetworkView.addConstraintNodes( variableNode);
     boolean areLinksChanged =
       constraintNetworkView.addTokenAndConstraintToVariableLinks( variableNode);
@@ -442,7 +442,7 @@ public class VariableNode extends BasicNode {
 
   private void removeVariableNodeTokensAndConstraints( VariableNode variableNode) {
     ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) variableNode.getVizView();
+      (ConstraintNetworkView) variableNode.getPartialPlanView();
     boolean areLinksChanged = constraintNetworkView.removeTokenToVariableLinks( variableNode);
     boolean areNodesChanged = constraintNetworkView.removeConstraintNodes( variableNode);
     if (areNodesChanged || areLinksChanged) {

@@ -4,11 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSetRemover.java,v 1.3 2003-06-16 18:50:40 miatauro Exp $
+// $Id: ViewSetRemover.java,v 1.4 2003-09-25 23:52:47 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
-import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 /**
  * <code>ViewSetRemover</code> -
@@ -17,5 +17,5 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
  */
 
 public interface ViewSetRemover {
-  public void removeViewSet(PwPartialPlan key);
+  public void removeViewSet(ViewableObject key);
 }

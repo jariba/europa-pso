@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.56 2003-09-23 16:43:01 miatauro Exp $
+// $Id: PlanWorks.java,v 1.57 2003-09-25 23:52:43 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -55,6 +55,7 @@ import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.sequence.planDbSize.PlanDbSizeView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -74,16 +75,24 @@ public class PlanWorks extends MDIDesktopFrame {
   private static final int FRAME_Y_LOCATION;// = 125;
   private static final int INTERNAL_FRAME_X_DELTA = 100;
   private static final int INTERNAL_FRAME_Y_DELTA = 75;
-  private static final String PLANSEQ_MENU = "Planning Sequence";
-  private static final String CREATE_MENU = "Create ...";
-  private static final String ADDSEQ_MENU = "Add Sequence ...";
-  private static final String DELSEQ_MENU = "Delete Sequence ...";
-  private static final String OPEN_MENU = "Open ...";
-  private static final String DELETE_MENU = "Delete ...";
   private static final String PROJECT_MENU = "Project";
+  private static final String CREATE_MENU_ITEM = "Create ...";
+  private static final String OPEN_MENU_ITEM = "Open ...";
+  private static final String DELETE_MENU_ITEM = "Delete ...";
+  private static final String ADDSEQ_MENU_ITEM = "Add Sequence ...";
+  private static final String DELSEQ_MENU_ITEM = "Delete Sequence ...";
   private static final String CREATE = "create";
   private static final String OPEN = "open";
-  
+  private static final String PLANSEQ_MENU = "Planning Sequence";
+  private static final String SEQSTEPS_MENU = "Sequence Steps";
+  private static final String PLAN_DB_SIZE_MENU_ITEM = "Plan Database Size Histogram";
+  private static final String PLAN_DEPTH_MENU_ITEM = "Plan Depth Histogram";
+  public static final Map viewNameMap;
+  public static final String CONSTRAINT_NETWORK_VIEW = "Constraint Network View";
+  public static final String TEMPORAL_EXTENT_VIEW = "Temporal Extent View";
+  public static final String TIMELINE_VIEW = "Timeline View";
+  public static final String TOKEN_NETWORK_VIEW = "Token Network View";
+
   static {
     GraphicsDevice [] devices = 
       GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
@@ -94,6 +103,16 @@ public class PlanWorks extends MDIDesktopFrame {
     FRAME_X_LOCATION = (devices[0].getDisplayMode().getWidth() - DESKTOP_FRAME_WIDTH) / 2;
     FRAME_Y_LOCATION = devices[0].getDisplayMode().getHeight() - DESKTOP_FRAME_HEIGHT;
     System.err.println(FRAME_X_LOCATION + " " + FRAME_Y_LOCATION);
+
+    viewNameMap = new HashMap();
+    viewNameMap.put( CONSTRAINT_NETWORK_VIEW,
+                     "gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView");
+    viewNameMap.put( TEMPORAL_EXTENT_VIEW,
+                     "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView");
+    viewNameMap.put( TIMELINE_VIEW,
+                     "gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView");
+    viewNameMap.put( TOKEN_NETWORK_VIEW,
+                     "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView");
   }
 
   /**
@@ -142,11 +161,6 @@ public class PlanWorks extends MDIDesktopFrame {
   private final DirectoryChooser sequenceDirChooser;
   private static String sequenceParentDirectory; // pathname
   private static File [] sequenceDirectories; // directory name
-
-  private String currentProjectName;
-  private PwProject currentProject;
-  private ViewManager viewManager;
-  private Map sequenceNameMap;
   private static boolean windowBuilt = false;
   private static boolean usingSplash;
 
@@ -163,6 +177,11 @@ public class PlanWorks extends MDIDesktopFrame {
   }
   
   synchronized public static boolean isWindowBuilt() { return windowBuilt;}
+
+  private String currentProjectName;
+  private PwProject currentProject;
+  private ViewManager viewManager;
+  private Map sequenceNameMap;
 
   /**
    * <code>PlanWorks</code> - constructor 
@@ -206,15 +225,15 @@ public class PlanWorks extends MDIDesktopFrame {
       this.toBack();
     }
 
-    setProjectMenuEnabled(CREATE_MENU, true);
-    setProjectMenuEnabled( ADDSEQ_MENU, false);
-    setProjectMenuEnabled(DELSEQ_MENU, false);
+    setProjectMenuEnabled(CREATE_MENU_ITEM, true);
+    setProjectMenuEnabled( ADDSEQ_MENU_ITEM, false);
+    setProjectMenuEnabled(DELSEQ_MENU_ITEM, false);
     if ((PwProject.listProjects() != null) && (PwProject.listProjects().size() > 0)) {
-      setProjectMenuEnabled( OPEN_MENU, true);
-      setProjectMenuEnabled( DELETE_MENU, true);
+      setProjectMenuEnabled( OPEN_MENU_ITEM, true);
+      setProjectMenuEnabled( DELETE_MENU_ITEM, true);
     } else {
-      setProjectMenuEnabled( OPEN_MENU, false);
-      setProjectMenuEnabled( DELETE_MENU, false);
+      setProjectMenuEnabled( OPEN_MENU_ITEM, false);
+      setProjectMenuEnabled( DELETE_MENU_ITEM, false);
     }
     projectMenu.setEnabled(true);
     windowBuilt = true;
@@ -330,11 +349,11 @@ public class PlanWorks extends MDIDesktopFrame {
     fileMenu.add( exitItem);
 
     projectMenu = new JMenu( PROJECT_MENU);
-    JMenuItem createProjectItem = new JMenuItem( CREATE_MENU);
-    JMenuItem openProjectItem = new JMenuItem( OPEN_MENU);
-    JMenuItem deleteProjectItem = new JMenuItem( DELETE_MENU);
-    JMenuItem addSequenceItem = new JMenuItem( ADDSEQ_MENU);
-    JMenuItem deleteSequenceItem = new JMenuItem(DELSEQ_MENU);
+    JMenuItem createProjectItem = new JMenuItem( CREATE_MENU_ITEM);
+    JMenuItem openProjectItem = new JMenuItem( OPEN_MENU_ITEM);
+    JMenuItem deleteProjectItem = new JMenuItem( DELETE_MENU_ITEM);
+    JMenuItem addSequenceItem = new JMenuItem( ADDSEQ_MENU_ITEM);
+    JMenuItem deleteSequenceItem = new JMenuItem(DELSEQ_MENU_ITEM);
     createProjectItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent e) {
           while(PlanWorks.planWorks == null) {
@@ -400,15 +419,16 @@ public class PlanWorks extends MDIDesktopFrame {
       }
       if (instantiatedProject != null) {
         currentProject = instantiatedProject;
-        JMenu partialPlanMenu = clearSeqPartialPlanViewMenu();
+        MDIDynamicMenuBar dynamicMenuBar =
+          (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
+        int numProjects = PwProject.listProjects().size();
+        JMenu partialPlanMenu = dynamicMenuBar.clearMenu( PLANSEQ_MENU, numProjects);
         addSeqPartialPlanViewMenu( instantiatedProject, partialPlanMenu);
-        if(currentProject.listPlanningSequences().size() == 0) {
-          JMenuBar menuBar = PlanWorks.this.getJMenuBar();
-          for(int i = 0; i < menuBar.getMenuCount(); i++) {
-            if(menuBar.getMenu(i).getText().equals("Planning Sequence")) {
-              menuBar.getMenu(i).setEnabled(false);
-            }
-          }
+        JMenu planStepsMenu = dynamicMenuBar.clearMenu( SEQSTEPS_MENU, numProjects);
+        addPlanStepsMenu( instantiatedProject, planStepsMenu);
+        if (currentProject.listPlanningSequences().size() == 0) {
+          dynamicMenuBar.disableMenu( PLANSEQ_MENU);
+          dynamicMenuBar.disableMenu( SEQSTEPS_MENU);
         }
         // clear the old project's views
         if (viewManager != null) {
@@ -466,11 +486,11 @@ public class PlanWorks extends MDIDesktopFrame {
         isProjectCreated = true;
         //System.err.println( "Create Project: " + currentProjectName);
         this.setTitle( name + " of Project =>  " + currentProjectName);
-        setProjectMenuEnabled( DELETE_MENU, true);
-        setProjectMenuEnabled( ADDSEQ_MENU, true);
-        setProjectMenuEnabled(DELSEQ_MENU, true);
+        setProjectMenuEnabled( DELETE_MENU_ITEM, true);
+        setProjectMenuEnabled( ADDSEQ_MENU_ITEM, true);
+        setProjectMenuEnabled(DELSEQ_MENU_ITEM, true);
         if (PwProject.listProjects().size() > 1) {
-          setProjectMenuEnabled( OPEN_MENU, true);
+          setProjectMenuEnabled( OPEN_MENU_ITEM, true);
         }
         for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
           String sequenceDirectory = sequenceParentDirectory +
@@ -536,10 +556,10 @@ public class PlanWorks extends MDIDesktopFrame {
             //System.err.println( "Open Project: " + currentProjectName);
             this.setTitle( name + " of Project =>  " + currentProjectName);
             if (getProjectsLessCurrent().size() == 0) {
-              setProjectMenuEnabled( OPEN_MENU, false);
+              setProjectMenuEnabled( OPEN_MENU_ITEM, false);
             }
-            setProjectMenuEnabled( ADDSEQ_MENU, true);
-            setProjectMenuEnabled(DELSEQ_MENU, true);
+            setProjectMenuEnabled( ADDSEQ_MENU_ITEM, true);
+            setProjectMenuEnabled(DELSEQ_MENU_ITEM, true);
           } catch (ResourceNotFoundException rnfExcep) {
             // System.err.println( "Project " + projectName + " not found: " + rnfExcep1);
             int index = rnfExcep.getMessage().indexOf( ":");
@@ -577,6 +597,7 @@ public class PlanWorks extends MDIDesktopFrame {
   private void deleteProject() {
     List projectNames = PwProject.listProjects();
     Object[] options = new Object[projectNames.size()];
+    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
     for (int i = 0, n = projectNames.size(); i < n; i++) {
       options[i] = (String) projectNames.get( i);
     }
@@ -596,17 +617,19 @@ public class PlanWorks extends MDIDesktopFrame {
                 this.currentProjectName.equals( projectName)) {
               viewManager.clearViewSets();
               this.setTitle( name);
-              clearSeqPartialPlanViewMenu();
+              int numProjects = PwProject.listProjects().size();
+              dynamicMenuBar.clearMenu( PLANSEQ_MENU, numProjects);
+              dynamicMenuBar.clearMenu( SEQSTEPS_MENU, numProjects);
             }
             if (PwProject.listProjects().size() == 0) {
-              setProjectMenuEnabled( DELETE_MENU, false);
-              setProjectMenuEnabled( OPEN_MENU, false);
-              setProjectMenuEnabled( ADDSEQ_MENU, false);
-              setProjectMenuEnabled(DELSEQ_MENU, false);
+              setProjectMenuEnabled( DELETE_MENU_ITEM, false);
+              setProjectMenuEnabled( OPEN_MENU_ITEM, false);
+              setProjectMenuEnabled( ADDSEQ_MENU_ITEM, false);
+              setProjectMenuEnabled(DELSEQ_MENU_ITEM, false);
             } else if (getProjectsLessCurrent().size() == 0) {
-              setProjectMenuEnabled( OPEN_MENU, false);
+              setProjectMenuEnabled( OPEN_MENU_ITEM, false);
             } else {
-              setProjectMenuEnabled( OPEN_MENU, true);
+              setProjectMenuEnabled( OPEN_MENU_ITEM, true);
             }
           } catch (ResourceNotFoundException rnfExcep) {
             int index = rnfExcep.getMessage().indexOf( ":");
@@ -643,25 +666,17 @@ public class PlanWorks extends MDIDesktopFrame {
     }  // end constructor
     
     public void run() {
-      MDIDynamicMenuBar dynamicMenuBar =
-        (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-      JMenu planSeqMenu = null;
-      for(int i = 0; i < dynamicMenuBar.getMenuCount(); i++) {
-        if(dynamicMenuBar.getMenu(i) != null && 
-           dynamicMenuBar.getMenu(i).getText().equals("Planning Sequence")) {
-          planSeqMenu = dynamicMenuBar.getMenu(i);
-        }
-      }
-      if(planSeqMenu != null) {
-        planSeqMenu.setEnabled(false);
-      }
+      MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
+      JMenu planSeqMenu = dynamicMenuBar.disableMenu( PLANSEQ_MENU);
+      JMenu seqStepsMenu = dynamicMenuBar.disableMenu( SEQSTEPS_MENU);
       projectMenu.setEnabled(false);
+
       addSequence();
+
       projectMenu.setEnabled(true);
-      setProjectMenuEnabled(DELSEQ_MENU, true);
-      if(planSeqMenu != null && planSeqMenu.getItemCount() != 0) {
-        planSeqMenu.setEnabled(true);
-      }
+      setProjectMenuEnabled(DELSEQ_MENU_ITEM, true);
+      dynamicMenuBar.enableMenu( planSeqMenu);
+      dynamicMenuBar.enableMenu( seqStepsMenu);
     } //end run
 
   } // end class AddSequenceThread
@@ -721,8 +736,12 @@ public class PlanWorks extends MDIDesktopFrame {
         System.err.println( rnfExcep);
         rnfExcep.printStackTrace();
       }
-      JMenu partialPlanMenu = clearSeqPartialPlanViewMenu();
+      MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
+      int numProjects = PwProject.listProjects().size();
+      JMenu partialPlanMenu = dynamicMenuBar.clearMenu( PLANSEQ_MENU, numProjects);
       addSeqPartialPlanViewMenu( currentProject, partialPlanMenu);
+      JMenu planStepsMenu = dynamicMenuBar.clearMenu( SEQSTEPS_MENU, numProjects);
+      addPlanStepsMenu( currentProject, planStepsMenu);
     }
   } // end addSequence
 
@@ -737,22 +756,15 @@ public class PlanWorks extends MDIDesktopFrame {
 
     public void run() {
       MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-      JMenu planSeqMenu = null;
-      for(int i = 0; i < dynamicMenuBar.getMenuCount(); i++) {
-        if(dynamicMenuBar.getMenu(i) != null &&
-           dynamicMenuBar.getMenu(i).getText().equals("Planning Sequence")) {
-          planSeqMenu = dynamicMenuBar.getMenu(i);
-        }
-      }
-      if(planSeqMenu != null) {
-        planSeqMenu.setEnabled(false);
-      }
+      JMenu planSeqMenu = dynamicMenuBar.disableMenu( PLANSEQ_MENU);
+      JMenu seqStepsMenu = dynamicMenuBar.disableMenu( SEQSTEPS_MENU);
       projectMenu.setEnabled(false);
+
       deleteSequence();
+
       projectMenu.setEnabled(true);
-      if(planSeqMenu != null && planSeqMenu.getItemCount() != 0) {
-        planSeqMenu.setEnabled(true);
-      }
+      dynamicMenuBar.enableMenu( planSeqMenu);
+      dynamicMenuBar.enableMenu( seqStepsMenu);
     }
   }
 
@@ -785,7 +797,7 @@ public class PlanWorks extends MDIDesktopFrame {
             MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
             JMenu sequenceMenu = null;
             for(int j = 0; j < dynamicMenuBar.getMenuCount(); j++) {
-              if(dynamicMenuBar.getMenu(j).getText().equals("Planning Sequence")) {
+              if(dynamicMenuBar.getMenu(j).getText().equals(PLANSEQ_MENU)) {
                 sequenceMenu = dynamicMenuBar.getMenu(j);
               }
             }
@@ -801,7 +813,7 @@ public class PlanWorks extends MDIDesktopFrame {
             }
             if(sequenceMenu.getItemCount() == 0) {
               dynamicMenuBar.remove(sequenceMenu);
-              setProjectMenuEnabled(DELSEQ_MENU, false);
+              setProjectMenuEnabled(DELSEQ_MENU_ITEM, false);
             }
           } catch (ResourceNotFoundException rnfExcep) {
             int index = rnfExcep.getMessage().indexOf( ":");
@@ -829,8 +841,7 @@ public class PlanWorks extends MDIDesktopFrame {
 
   private void addSeqPartialPlanViewMenu( PwProject project, JMenu partialPlanMenu) {
     // Create Dynamic Cascading Seq/PartialPlan/View Menu
-    MDIDynamicMenuBar dynamicMenuBar =
-      (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
+    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
     if (partialPlanMenu == null) {
       dynamicMenuBar.addConstantMenu
         ( buildSeqPartialPlanViewMenu( project, partialPlanMenu));
@@ -959,26 +970,68 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end buildViewSubMenu
 
 
-  private JMenu clearSeqPartialPlanViewMenu() {
-    // clear out previous project's Partial Plan cascading menu
-    MDIDynamicMenuBar dynamicMenuBar =
-      (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-    for (int i = 0, n = dynamicMenuBar.getMenuCount(); i < n; i++) {
-      if (((JMenu) dynamicMenuBar.getMenu( i)).getText().equals( PLANSEQ_MENU)) {
-        JMenu partialPlanMenu = (JMenu) dynamicMenuBar.getMenu( i);
-        if (PwProject.listProjects().size() == 0) {
-          dynamicMenuBar.remove(partialPlanMenu);
-          partialPlanMenu = null;
-        } else {
-          partialPlanMenu.removeAll();
-        }
-        dynamicMenuBar.validate();
-        dynamicMenuBar.repaint();
-        return partialPlanMenu;
-      }
+  private void addPlanStepsMenu( PwProject project, JMenu planStepsMenu) {
+    // Create Plan Steps histogram views menu
+    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
+    if (planStepsMenu == null) {
+      dynamicMenuBar.addConstantMenu
+        ( buildPlanStepsMenu( project, planStepsMenu));
+    } else {
+      buildPlanStepsMenu( project, planStepsMenu);
     }
-    return null;
-  } // end clearSeqPartialPlanViewMenu
+    dynamicMenuBar.validate();
+  } // end addSeqPartialPlanMenu
+
+
+  private JMenu buildPlanStepsMenu( PwProject project, JMenu planStepsMenu) {
+    if (planStepsMenu == null) {
+      planStepsMenu = new JMenu( SEQSTEPS_MENU);
+    }
+    planStepsMenu.removeAll();
+
+    JMenuItem planDbSizeItem = new JMenuItem( PLAN_DB_SIZE_MENU_ITEM);
+    planDbSizeItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          System.err.println( PLAN_DB_SIZE_MENU_ITEM);
+          PlanWorks.planWorks.planDbSizeViewThread();
+        }
+      });
+    planStepsMenu.add( planDbSizeItem);
+
+    JMenuItem planDepthItem = new JMenuItem( PLAN_DEPTH_MENU_ITEM);
+    planDepthItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          System.err.println( PLAN_DEPTH_MENU_ITEM);
+        }
+      });
+    planStepsMenu.add( planDepthItem);
+
+    return planStepsMenu;
+  } // end buildPlanStepsMenu
+
+
+    private void planDbSizeViewThread() {
+    new PlanDbSizeViewThread().start();
+  }
+
+  class PlanDbSizeViewThread extends Thread {
+
+    public PlanDbSizeViewThread() {
+    }
+
+    public void run() {
+      MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
+      JMenu planSeqMenu = dynamicMenuBar.disableMenu( PLANSEQ_MENU);
+      JMenu seqStepsMenu = dynamicMenuBar.disableMenu( SEQSTEPS_MENU);
+      projectMenu.setEnabled( false);
+
+      new PlanDbSizeView();
+
+      projectMenu.setEnabled( true);
+      dynamicMenuBar.enableMenu( planSeqMenu);
+      dynamicMenuBar.enableMenu( seqStepsMenu);
+    }
+  } // end class PlanDbSizeViewThread
 
 
   private void createPartialPlanViewThread( final String viewName,
@@ -1029,7 +1082,6 @@ public class PlanWorks extends MDIDesktopFrame {
       }
     } //end run
 
-
     private void renderView( String viewName, String sequenceName, String partialPlanName,
                              PwPartialPlan partialPlan) {
       ViewSet viewSet = viewManager.getViewSet( partialPlan);
@@ -1043,33 +1095,29 @@ public class PlanWorks extends MDIDesktopFrame {
         if (! viewExists) {
           System.err.println( "Rendering Timeline View ...");
         }
-        viewFrame = viewManager.openTimelineView
-          ( partialPlan, sequenceName + System.getProperty( "file.separator") +
-            partialPlanName, startTimeMSecs);
+        viewFrame = viewManager.openView( partialPlan,
+                                          (String) viewNameMap.get( TIMELINE_VIEW));
         finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
       } else if (viewName.equals( ViewManager.TNET_VIEW)) {
         if (! viewExists) {
           System.err.println( "Rendering Token Network View ...");
         }
-        viewFrame = viewManager.openTokenNetworkView
-          ( partialPlan, sequenceName + System.getProperty( "file.separator") +
-            partialPlanName, startTimeMSecs);        
+        viewFrame = viewManager.openView( partialPlan,
+                                          (String) viewNameMap.get( TOKEN_NETWORK_VIEW));
         finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
       } else if (viewName.equals( ViewManager.TEMPEXT_VIEW)) {
         if (! viewExists) {
           System.err.println( "Rendering Temporal Extent View ...");
         }
-        viewFrame = viewManager.openTemporalExtentView
-          ( partialPlan, sequenceName + System.getProperty( "file.separator") +
-            partialPlanName, startTimeMSecs);        
+        viewFrame = viewManager.openView( partialPlan,
+                                          (String) viewNameMap.get( TEMPORAL_EXTENT_VIEW));
         finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
       } else if (viewName.equals( ViewManager.CNET_VIEW)) {
         if (! viewExists) {
           System.err.println( "Rendering Constraint Network View ...");
         }
-        viewFrame = viewManager.openConstraintNetworkView
-          ( partialPlan, sequenceName + System.getProperty( "file.separator") +
-            partialPlanName, startTimeMSecs);        
+        viewFrame = viewManager.openView( partialPlan,
+                                          (String) viewNameMap.get( CONSTRAINT_NETWORK_VIEW));
         finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
       } else if (viewName.equals( ViewManager.TEMPNET_VIEW)) {
         JOptionPane.showMessageDialog

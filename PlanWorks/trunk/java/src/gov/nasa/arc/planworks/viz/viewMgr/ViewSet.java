@@ -4,13 +4,15 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.32 2003-09-25 21:29:10 miatauro Exp $
+// $Id: ViewSet.java,v 1.33 2003-09-25 23:52:47 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
 import java.awt.Container;
 import java.beans.PropertyVetoException;
+import java.lang.reflect.Constructor;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,12 +27,11 @@ import gov.nasa.arc.planworks.mdi.MDIWindowBar;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
-import gov.nasa.arc.planworks.util.ColorStream;
-import gov.nasa.arc.planworks.viz.views.VizView;
-import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
-import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
-import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
-import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
+import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 
@@ -90,16 +91,27 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   }
 
   public MDIInternalFrame openView(String viewName) {
-    Class viewClass = Class.forName(viewName);
-    if(viewExists(viewClass)) {
+    Class viewClass = null;
+    try {
+      viewClass = Class.forName(viewName);
+    } catch (ClassNotFoundException excp) {
+      System.exit(1);
+    }
+    if(views.containsKey(viewClass)) {
       return getViewByClass(viewClass);
     }
     Constructor [] constructors = viewClass.getDeclaredConstructors();
-    MDIInternalFrame viewFrame = desktopFrame.createFrame(viewName + " view of " + planName,
+    MDIInternalFrame viewFrame = desktopFrame.createFrame(viewName + " view of " +
+                                                          viewable.getName(),
                                                           this, true, true, true, true);
     views.put(viewClass, viewFrame);
     Container contentPane = viewFrame.getContentPane();
-    VizView view = constructors[0].newInstance(constructorArgs);
+    VizView view = null;
+    try {
+      view = (VizView) constructors[0].newInstance(constructorArgs);
+    } catch (Exception excp) {
+      System.exit(1);
+    }
     contentPane.add(view);
     return viewFrame;
   }
@@ -234,10 +246,12 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       }
     }
   }
-  //public List getValidTokenIds() {
-  //  return contentSpec.getValidTokenIds();
+  //public List getValidIds() {
+  //  return contentSpec.getValidIds();
   //}
-  public abstract List getValidIds();
+  public List getValidIds() {
+    return new ArrayList();
+  }
 
   //public void printSpec() {
   //  contentSpec.printSpec();
@@ -263,60 +277,19 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
    */
   public boolean viewExists(String viewName) {
     //return views.containsKey(viewName);
-    return views.containsKey(Class.forName(viewName));
+    try {
+      return views.containsKey(Class.forName(viewName));
+    } catch (ClassNotFoundException excp) {
+      System.exit(1);
+    }
+    return false;
   }
   
   public void notifyDeleted(MDIFrame frame) {
     removeViewFrame((MDIInternalFrame) frame);
   }
-
-   public void add(JButton button) {
-   }
-
-//    /**
-//     * <code>getColorStream</code> - manages timeline colors
-//     *
-//     * @return - <code>ColorStream</code> - 
-//     */
-//    public ColorStream getColorStream() {
-//      return colorStream;
-//    }
-
-//   /** 
-//    * <code>getActiveToken</code> - user selected view focus
-//    *
-//    * @return - <code>PwToken</code>
-//    */
-//   public PwToken getActiveToken() {
-//     return activeToken;
-//   }
-
-//   /**
-//    * <code>setActiveToken</code> - make this token the view focus
-//    *
-//    * @param token - <code>PwToken</code>
-//    */
-//   public void setActiveToken( PwToken token) {
-//     activeToken = token;
-//   }
-
-//   /**
-//    * <code>getSecondaryTokens</code> - in timeline view, the overloaded tokens
-//    *
-//    * @return - <code>List</code> - 
-//    */
-//   public List getSecondaryTokens() {
-//     return secondaryTokens;
-//   }
-
-//   /**
-//    * <code>setSecondaryTokens</code> - in timeline view, the overloaded tokens
-//    *
-//    * @param tokenList - <code>List</code> 
-//    */
-//   public void setSecondaryTokens( List tokenList) {
-//     secondaryTokens = tokenList;
-//   }
+  public void add(JButton button) {
+  }
 
 
 }

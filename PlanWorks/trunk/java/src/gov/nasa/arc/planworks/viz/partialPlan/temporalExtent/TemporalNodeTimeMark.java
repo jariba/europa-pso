@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNodeTimeMark.java,v 1.1 2003-09-18 20:48:48 taylor Exp $
+// $Id: TemporalNodeTimeMark.java,v 1.1 2003-09-25 23:52:46 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 21August03
 //
 
-package gov.nasa.arc.planworks.viz.views.temporalExtent;
+package gov.nasa.arc.planworks.viz.partialPlan.temporalExtent;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoPolygon;

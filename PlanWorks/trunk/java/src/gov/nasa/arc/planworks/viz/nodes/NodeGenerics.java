@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.2 2003-09-23 16:10:39 taylor Exp $
+// $Id: NodeGenerics.java,v 1.3 2003-09-25 23:52:43 taylor Exp $
 //
 // PlanWorks
 //
@@ -31,9 +31,9 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.views.VizView;
-import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalNode;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 
 
 /**

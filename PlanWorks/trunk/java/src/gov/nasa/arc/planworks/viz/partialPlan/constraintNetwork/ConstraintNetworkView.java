@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.19 2003-09-23 19:28:16 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.1 2003-09-25 23:52:45 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 28July03
 //
 
-package gov.nasa.arc.planworks.viz.views.constraintNetwork;
+package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -54,8 +54,8 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 
 /**
@@ -74,20 +74,18 @@ import gov.nasa.arc.planworks.viz.views.VizView;
  *                this scheme assumes that variableNodes are not shared between
  *                tokenNodes
  *
- *                JPanel->VizView->ConstraintNetworkView
- *                JComponent->JGoView
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ConstraintNetworkView extends VizView {
+public class ConstraintNetworkView extends PartialPlanView {
 
   private static final int SET_VISIBLE = 1;
   private static final int VIEW_HEIGHT = 250;
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
-  private ViewSet viewSet;
+  private PartialPlanViewSet viewSet;
   private String viewName;
   private ConstraintJGoView jGoView;
   private JGoDocument document;
@@ -109,16 +107,15 @@ public class ConstraintNetworkView extends VizView {
 
   /**
    * <code>ConstraintNetworkView</code> - constructor -
-   *                                      called by ViewSet.openConstraintNetworkView.
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>PwPartialPlan</code> -
    * @param startTimeMSecs - <code>long</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewSet - <code>PartialPlanViewSet</code> - 
    */
   public ConstraintNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
-                           ViewSet viewSet) {
+                           PartialPlanViewSet viewSet) {
     super( partialPlan, viewSet);
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
@@ -1164,7 +1161,7 @@ public class ConstraintNetworkView extends VizView {
   private void setNodesLinksVisible() {
     // System.err.println( "Constraint Network View - contentSpec");
     // viewSet.printSpec();
-    validTokenIds = viewSet.getValidTokenIds();
+    validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     Iterator constraintNodeItr = constraintNodeList.iterator();
     while (constraintNodeItr.hasNext()) {
@@ -1289,7 +1286,8 @@ public class ConstraintNetworkView extends VizView {
   private void createActiveTokenItem( JMenuItem activeTokenItem) {
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          PwToken activeToken = ConstraintNetworkView.this.getViewSet().getActiveToken();
+          PwToken activeToken =
+            ((PartialPlanViewSet) ConstraintNetworkView.this.getViewSet()).getActiveToken();
           boolean isTokenFound = false;
           if (activeToken != null) {
             Iterator tokenNodeListItr = tokenNodeList.iterator();
@@ -1307,8 +1305,8 @@ public class ConstraintNetworkView extends VizView {
             if (isTokenFound) {
               NodeGenerics.selectSecondaryNodes
                 ( NodeGenerics.mapTokensToTokenNodes
-                  (ConstraintNetworkView.this.getViewSet().getSecondaryTokens(),
-                   tokenNodeList),
+                  (((PartialPlanViewSet) ConstraintNetworkView.this.getViewSet()).
+                   getSecondaryTokens(), tokenNodeList),
                   jGoView);
             } else {
               String message = "active token '" + activeToken.getPredicate().getName() +

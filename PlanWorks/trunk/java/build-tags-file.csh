@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.28 2003-09-23 16:10:38 taylor Exp $
+# $Id: build-tags-file.csh,v 1.29 2003-09-25 23:52:42 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -80,6 +80,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
+    src/gov/nasa/arc/planworks/viz/VizView.java \
+    src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java \
@@ -103,23 +105,28 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineGroupBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TokenTypeBox.java \
-    src/gov/nasa/arc/planworks/viz/views/VizView.java \
-    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/BasicNodeLink.java \
-    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/BasicNodePortWDiamond.java \
-    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNetwork.java \
-    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNetworkLayout.java \
-    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNetworkView.java \
-    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNode.java \
-    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/VariableNode.java \
-    src/gov/nasa/arc/planworks/viz/views/temporalExtent/TemporalExtentView.java \
-    src/gov/nasa/arc/planworks/viz/views/temporalExtent/TemporalNode.java \
-    src/gov/nasa/arc/planworks/viz/views/temporalExtent/TemporalNodeDurationBridge.java \
-    src/gov/nasa/arc/planworks/viz/views/temporalExtent/TemporalNodeTimeMark.java \
-    src/gov/nasa/arc/planworks/viz/views/timeline/SlotNode.java \
-    src/gov/nasa/arc/planworks/viz/views/timeline/TimelineNode.java \
-    src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenLink.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkLayout.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java
+    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodeLink.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodePortWDiamond.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNodeDurationBridge.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNodeTimeMark.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/SlotNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenLink.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
+    src/gov/nasa/arc/planworks/viz/sequence/planDbSize/PlanDbSizeView.java
+
 
 echo "Writing `pwd`/planWorks.TAGS"

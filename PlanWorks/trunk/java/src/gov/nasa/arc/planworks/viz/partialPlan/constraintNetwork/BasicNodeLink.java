@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodeLink.java,v 1.1 2003-09-18 20:48:46 taylor Exp $
+// $Id: BasicNodeLink.java,v 1.1 2003-09-25 23:52:44 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 28july03
 //
 
-package gov.nasa.arc.planworks.viz.views.constraintNetwork;
+package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoLabeledLink;

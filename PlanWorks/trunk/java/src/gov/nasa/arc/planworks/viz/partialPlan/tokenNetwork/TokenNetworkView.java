@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.26 2003-09-23 16:10:40 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.1 2003-09-25 23:52:47 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 19June03
 //
 
-package gov.nasa.arc.planworks.viz.views.tokenNetwork;
+package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -50,24 +50,23 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 
 /**
  * <code>TokenNetworkView</code> - render a partial plan's tokens, their
  *                                 parents and children
- *                JPanel->VizView->TokenNetworkView
- *                JComponent->JGoView
+ *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TokenNetworkView extends VizView {
+public class TokenNetworkView extends PartialPlanView {
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
-  private ViewSet viewSet;
+  private PartialPlanViewSet viewSet;
   private TokenNetworkJGoView jGoView;
   private String viewName;
   private JGoDocument jGoDocument;
@@ -82,16 +81,16 @@ public class TokenNetworkView extends VizView {
   private List linkNameList; // element String
 
   /**
-   * <code>TokenNetworkView</code> - constructor - called by ViewSet.openTokenNetworkView.
+   * <code>TokenNetworkView</code> - constructor - 
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>PwPartialPlan</code> -
    * @param startTimeMSecs - <code>long</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewSet - <code>PartialPlanViewSet</code> - 
    */
   public TokenNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
-                           ViewSet viewSet) {
+                           PartialPlanViewSet viewSet) {
     super( partialPlan, viewSet);
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
@@ -502,7 +501,7 @@ public class TokenNetworkView extends VizView {
     // print content spec
     // System.err.println( "Token Network View - contentSpec");
     // viewSet.printSpec();
-    validTokenIds = viewSet.getValidTokenIds();
+    validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     Iterator tokenNodeIterator = nodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
@@ -573,7 +572,8 @@ public class TokenNetworkView extends VizView {
   private void createActiveTokenItem( JMenuItem activeTokenItem) {
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          PwToken activeToken = TokenNetworkView.this.getViewSet().getActiveToken();
+          PwToken activeToken =
+            ((PartialPlanViewSet) TokenNetworkView.this.getViewSet()).getActiveToken();
           boolean isTokenFound = false;
           if (activeToken != null) {
             Iterator tokenNodeListItr = nodeList.iterator();
@@ -591,7 +591,8 @@ public class TokenNetworkView extends VizView {
             if (isTokenFound) {
               NodeGenerics.selectSecondaryNodes
                 ( NodeGenerics.mapTokensToTokenNodes
-                  (TokenNetworkView.this.getViewSet().getSecondaryTokens(), nodeList),
+                  (((PartialPlanViewSet) TokenNetworkView.this.getViewSet()).
+                   getSecondaryTokens(), nodeList),
                   jGoView);
             } else {
               String message = "active token '" + activeToken.getPredicate().getName() +

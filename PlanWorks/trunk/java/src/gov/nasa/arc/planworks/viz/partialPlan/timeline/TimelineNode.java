@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.2 2003-09-23 19:28:17 taylor Exp $
+// $Id: TimelineNode.java,v 1.1 2003-09-25 23:52:46 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 18may03
 //
 
-package gov.nasa.arc.planworks.viz.views.timeline;
+package gov.nasa.arc.planworks.viz.partialPlan.timeline;
 
 import java.awt.Color;
 import java.awt.Insets;
@@ -28,7 +28,6 @@ import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.views.VizView;
 
 
 /**
@@ -52,7 +51,6 @@ public class TimelineNode extends TextNode {
 
   private String timelineName;
   private PwTimeline timeline;
-  private VizView vizView;
 
   private List slotNodeList; // element SlotNode
 
@@ -63,14 +61,12 @@ public class TimelineNode extends TextNode {
    * @param timeline - <code>PwTimeline</code> - 
    * @param timelineLocation - <code>Point</code> - 
    * @param backgroundColor - <code>Color</code> - 
-   * @param vizView - <code>VizView</code> - 
    */
   public TimelineNode( String timelineName, PwTimeline timeline, Point timelineLocation,
-                       Color backgroundColor, VizView vizView) {
+                       Color backgroundColor) {
     super( timelineName);
     this.timelineName = timelineName;
     this.timeline = timeline;
-    this.vizView = vizView;
     // System.err.println( "TimelineNode: timelineName " + timelineName);
     this.slotNodeList = new ArrayList();
 
