@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.106 2004-05-28 20:21:16 taylor Exp $
+// $Id: MySQLDB.java,v 1.107 2004-06-02 19:12:02 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1117,6 +1117,20 @@ public class MySQLDB {
     return retval;
   }
 
+  synchronized public static Integer queryCurrentDecisionIdForStep(final Long ppId) {
+    Integer retval = new Integer(-1);
+    try {
+      ResultSet transactions = queryDatabase("SELECT ObjectId from Transaction WHERE PartialPlanId=".concat(ppId.toString()).concat(" && TransactionName REGEXP '^(ASSIGN|RETRACT).+DECISION_(SUCCEEDED|FAILED)$'"));
+      if(transactions.last()) {
+        retval = new Integer(transactions.getInt("ObjectId"));
+      }
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
+  
   synchronized public static List queryTransactionsForStep(final Long seqId, final Long ppId) {
     List retval = new ArrayList();
     try {
@@ -1683,7 +1697,7 @@ public class MySQLDB {
 		}
 	}
 
- 	public static List queryTests(String projectName) {
+ 	synchronized public static List queryTests(String projectName) {
  		List retval = new ArrayList();
  		try {
  			ResultSet testSet = queryDatabase("SELECT Tests FROM Project WHERE ProjectName='".concat(projectName).concat("'"));
@@ -1699,6 +1713,36 @@ public class MySQLDB {
  		}
  		return retval;
  	}
+
+  synchronized public static List queryPartialPlanIds(Long seqId) {
+    List retval = new ArrayList();
+    try {
+      ResultSet ppIds = 
+        queryDatabase("SELECT PartialPlanId FROM PartialPlanStats WHERE SequenceId=".concat(seqId.toString()));
+      while(ppIds.next()) {
+        retval.add(new Long(ppIds.getLong("PartialPlanId")));
+      }
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
+
+  synchronized public static List queryPartialPlanIds(Long seqId, String comparison) {
+    List retval = new ArrayList();
+    try {
+      ResultSet ppIds =
+        queryDatabase("SELECT PartialPlanId FROM PartialPlanStats WHERE SequenceId=".concat(seqId.toString()).concat(" && ").concat(comparison));
+      while(ppIds.next()) {
+        retval.add(new Long(ppIds.getLong("PartialPlanId")));
+      }
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
 }
 
 class EntityIdComparator implements Comparator {
