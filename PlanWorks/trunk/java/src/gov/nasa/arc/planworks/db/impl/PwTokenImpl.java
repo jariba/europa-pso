@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.29 2004-02-05 23:23:56 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.30 2004-02-19 21:56:48 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -139,6 +139,10 @@ public class PwTokenImpl implements PwToken {
     return predicateName;
   }
 
+  public String getName() {
+    return predicateName;
+  }
+
   /**
    * <code>getStartVariable</code>
    *
@@ -226,6 +230,10 @@ public class PwTokenImpl implements PwToken {
    */
   public List getTokenRelationIdsList() {
     return new ArrayList(tokenRelationIds);
+  }
+
+  public List getVariables() {
+    return getVariablesList();
   }
 
   /**

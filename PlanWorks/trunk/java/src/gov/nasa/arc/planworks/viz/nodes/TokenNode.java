@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.34 2004-02-17 23:30:04 miatauro Exp $
+// $Id: TokenNode.java,v 1.35 2004-02-19 21:57:14 miatauro Exp $
 //
 // PlanWorks
 //
@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
@@ -67,7 +68,7 @@ public class TokenNode extends BasicNode implements VariableContainerNode {
   protected PartialPlanView partialPlanView;
   protected String predicateName;
   protected String nodeLabel;
-
+  protected Color backgroundColor;
 
   /**
    * <code>TokenNode</code> - constructor 
@@ -83,6 +84,7 @@ public class TokenNode extends BasicNode implements VariableContainerNode {
   public TokenNode( PwToken token, PwSlot slot, Point tokenLocation, Color backgroundColor,
                     boolean isFreeToken, boolean isDraggable, PartialPlanView partialPlanView) {
     super();
+    this.backgroundColor = backgroundColor;
     this.token = token;
     this.slot = slot;
     this.tokenLocation = tokenLocation;
@@ -180,6 +182,15 @@ public class TokenNode extends BasicNode implements VariableContainerNode {
   public int getContainerLinkCount(){return 0;}
   public int getContainerLinkCount(VariableContainerNode other){return 0;}
   public List getConnectedContainerNodes(){return new ArrayList();}
+  public boolean areNeighborsShown(){return false;}
+  public void setAreNeighborsShown(boolean v){}
+  public void discoverLinkage(){}
+  public void connectNodes(Map m){}
+  public Color getColor(){return backgroundColor;}
+  public void addVariableNode(Object v){}
+  public void incrVariableLinkCount(){}
+  public void decVariableLinkCount(){}
+  public void addContainerNodeVariables(Object p, Object v){}
 
   /**
    * <code>getToolTipText</code>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkViewState.java,v 1.2 2004-02-03 20:43:55 taylor Exp $
+// $Id: ConstraintNetworkViewState.java,v 1.3 2004-02-19 21:57:52 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -12,24 +12,26 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import gov.nasa.arc.planworks.db.PwVariableContainer;
+import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 
 public class ConstraintNetworkViewState extends PartialPlanViewState {
-  private List modTokens;
+  private List modContainers;
   private List modVars;
   private List modConstrs;
   private boolean layoutHorizontal;
   public ConstraintNetworkViewState(ConstraintNetworkView view) {
     super(view);
     layoutHorizontal = view.getNewLayout().layoutHorizontal();
-    modTokens = new LinkedList();
+    modContainers = new LinkedList();
     modVars = new LinkedList();
     modConstrs = new LinkedList();
-    ListIterator nodeIterator = view.getTokenNodeList().listIterator();
+    ListIterator nodeIterator = view.getContainerNodeList().listIterator();
     while(nodeIterator.hasNext()) {
-      ConstraintNetworkTokenNode node = (ConstraintNetworkTokenNode) nodeIterator.next();
+      VariableContainerNode node = (VariableContainerNode) nodeIterator.next();
       if(node.areNeighborsShown()) {
-        modTokens.add(node.getToken().getId());
+        modContainers.add(node.getContainer().getId());
       }
     }
     nodeIterator = view.getVariableNodeList().listIterator();
@@ -47,7 +49,7 @@ public class ConstraintNetworkViewState extends PartialPlanViewState {
       }
     }
   }
-  public List getModTokens(){return modTokens;}
+  public List getModContainers(){return modContainers;}
   public List getModVariables(){return modVars;}
   public List getModConstraints(){return modConstrs;}
   public boolean layoutHorizontal(){return layoutHorizontal;}

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObject.java,v 1.9 2004-02-13 21:22:27 miatauro Exp $
+// $Id: PwObject.java,v 1.10 2004-02-19 21:56:29 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -53,4 +53,6 @@ public interface PwObject extends PwVariableContainer {
   public abstract PwObject getParent();
 
   public abstract Integer getParentId();
+
+  public abstract List getVariables();
 } // end interface PwObject

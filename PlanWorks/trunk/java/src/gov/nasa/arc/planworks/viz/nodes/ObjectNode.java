@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -97,5 +98,14 @@ public class ObjectNode extends ExtendedBasicNode implements VariableContainerNo
   public int getContainerLinkCount(){return 0;}
   public int getContainerLinkCount(VariableContainerNode other){return 0;}
   public List getConnectedContainerNodes(){return new ArrayList();}
-  
+  public boolean areNeighborsShown(){return false;}
+  public void setAreNeighborsShown(boolean v){}
+  public void discoverLinkage(){};
+  public void connectNodes(Map m){};
+  public Color getColor() {return backgroundColor;}
+  public void addVariableNode(Object v){}
+  public void incrVariableLinkCount(){}
+  public void decVariableLinkCount(){}
+  public void addContainerNodeVariables(Object p, Object v){}
+
 }
