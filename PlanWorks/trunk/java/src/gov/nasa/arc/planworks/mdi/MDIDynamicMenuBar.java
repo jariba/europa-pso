@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.4 2003-09-10 00:32:15 miatauro Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.5 2003-09-10 01:15:44 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -193,6 +193,7 @@ class SelectedActionListener implements ActionListener {
   }
   public void actionPerformed(ActionEvent e) {
     try {
+      frame.setIcon(false);
       frame.setSelected(true);
     }
     catch(Exception f){}
