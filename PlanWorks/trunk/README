@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.107 2004-06-22 22:57:58 miatauro Exp $
+# $Id: README,v 1.108 2004-06-29 00:47:15 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -39,7 +39,8 @@ o The Token Network View handling of rules has been revised:
 
 o Rule Instance nodes, which have variables, now appear rendered as ovals in the
   Constraint Network View.  Rule Instance nodes are now included in the Navigator
-  View.
+  View.  "Open Rule Instance View" is available as a Mouse-Right selection on these
+  nodes.
 
 o "Help->Node Shapes" has been added to the PlanWorks menubar.  It will create a
   top-level window, separate from the PlanWorks desktop, which shows the shapes
@@ -50,6 +51,8 @@ o The first version of the Test Definition Language has been completed. The
   accessed through Project->Run Test
 
 o  GNATS PRs and CRs completed:
+   #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.
+   #2452: Right mouse click popup menu not supported by any nodes in Navigator View.
 
 
 CVS CHECKOUT

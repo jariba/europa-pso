@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNavNode.java,v 1.1 2004-06-15 19:26:47 taylor Exp $
+// $Id: RuleInstanceNavNode.java,v 1.2 2004-06-29 00:47:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -17,6 +17,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoObject;
@@ -31,6 +32,7 @@ import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -48,22 +50,27 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
 
   private PwRuleInstance ruleInstance;
   private NavigatorView navigatorView;
-  private TokenNode fromTokenNode;
-  private List toTokenNodeList;
 
   private int linkCount;
   private boolean inLayout;
   private boolean isDebugPrint;
 
-  public RuleInstanceNavNode( final PwRuleInstance ruleInstance, final TokenNode fromTokenNode,
-                              final List toTokenNodeList, final Point ruleInstanceLocation, 
+  /**
+   * <code>RuleInstanceNavNode</code> - constructor 
+   *
+   * @param ruleInstance - <code>PwRuleInstance</code> - 
+   * @param ruleInstanceLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   * @param isDraggable - <code>boolean</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   */
+  public RuleInstanceNavNode( final PwRuleInstance ruleInstance,
+                              final Point ruleInstanceLocation, 
                               final Color backgroundColor, final boolean isDraggable, 
                               final PartialPlanView partialPlanView) { 
-    super(ruleInstance, fromTokenNode, toTokenNodeList, ruleInstanceLocation, backgroundColor,
+    super( ruleInstance, null, null, ruleInstanceLocation, backgroundColor,
           isDraggable, partialPlanView);
     this.ruleInstance = ruleInstance;
-    this.fromTokenNode = fromTokenNode;
-    this.toTokenNodeList = toTokenNodeList;
     navigatorView = (NavigatorView) partialPlanView;
     isDebugPrint = false;
     // isDebugPrint = true;
@@ -234,14 +241,15 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
    *            constraintNode to show variableNodes 
    *
    * @param modifiers - <code>int</code> - 
-   * @param dc - <code>Point</code> - 
-   * @param vc - <code>Point</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public final boolean doMouseClick( final int modifiers, final Point dc, final Point vc,
+  public final boolean doMouseClick( final int modifiers, final Point docCoords,
+                                     final Point viewCoords,
                                      final JGoView view) {
-    JGoObject obj = view.pickDocObject( dc, false);
+    JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
     RuleInstanceNavNode ruleInstanceNode = (RuleInstanceNavNode) obj.getTopLevelObject();
@@ -263,6 +271,11 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
       }
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      JPopupMenu menu = new JPopupMenu();
+      menu.add( ViewGenerics.createRuleInstanceViewItem
+                ( (RuleInstanceNode) ruleInstanceNode, partialPlanView));
+      ViewGenerics.showPopupMenu( menu, partialPlanView, viewCoords);
+      return true;
     }
     return false;
   } // end doMouseClick   

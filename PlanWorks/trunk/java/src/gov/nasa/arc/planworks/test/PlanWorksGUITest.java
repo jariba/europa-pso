@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.13 2004-06-21 22:42:59 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.14 2004-06-29 00:47:15 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -296,12 +296,12 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   // catch assert errors and Exceptions here, since JUnit seems to not do it 
   public void planVizTests() throws Exception {
     try {
-      planViz01(); 
-      planViz02(); 
-      planViz03(); planViz04(); // 04 depends on 03
-      planViz05(); 
-      planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
-      planViz10(); 
+//       planViz01(); 
+//       planViz02(); 
+//       planViz03(); planViz04(); // 04 depends on 03
+//       planViz05(); 
+//       planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
+//       planViz10(); 
       planViz11(); 
 
       PWTestHelper.exitPlanWorks( helper, this);
@@ -2497,8 +2497,20 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
    PWTestHelper.viewBackgroundItemSelection( temporalExtentView, "Show Intervals",
                                              new Point( xLoc, yLoc), helper, this); 
    System.err.println( "Method 9 -------------");
-
-
+   DBTransactionView dbTransactionView =
+     ( DBTransactionView) PWTestHelper.getPartialPlanView
+     ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, this);
+   ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
+   PWTestHelper.viewBackgroundItemSelection( dbTransactionView,
+                                             "Find Transaction by Entity_Key", helper, this);
+   int transIndx = dbTransactionView.getDBTransactionList().size() - 1;
+   PwDBTransaction dbTransaction =
+     (PwDBTransaction) dbTransactionView.getDBTransactionList().get( transIndx);
+   PWTestHelper.handleDialogValueEntry( "Find Transaction by Entity_Key",
+                                        dbTransaction.getEntityId().toString(),
+                                         helper, this);
+   System.err.println( "Method 10 -------------");
+ 
 
 
 

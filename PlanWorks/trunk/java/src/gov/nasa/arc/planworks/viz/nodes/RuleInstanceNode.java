@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNode.java,v 1.6 2004-06-23 21:36:36 pdaley Exp $
+// $Id: RuleInstanceNode.java,v 1.7 2004-06-29 00:47:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -210,7 +210,11 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    * @return - <code>PwToken</code> 
    */
   public final PwToken getFromToken() {
-    return fromTokenNode.getToken();
+    if (fromTokenNode != null) {
+      return fromTokenNode.getToken();
+    } else {
+      return partialPlanView.getPartialPlan().getToken( ruleInstance.getMasterId());
+    }
   }
 
   /**
@@ -220,9 +224,16 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    */
   public final List getToTokenList() {
     List toTokenList = new ArrayList();
-    Iterator tokenNodeItr = toTokenNodeList.iterator();
-    while (tokenNodeItr.hasNext()) {
-      toTokenList.add( ((TokenNode) tokenNodeItr.next()).getToken());
+    if (toTokenNodeList != null) {
+      Iterator tokenNodeItr = toTokenNodeList.iterator();
+      while (tokenNodeItr.hasNext()) {
+        toTokenList.add( ((TokenNode) tokenNodeItr.next()).getToken());
+      }
+    } else {
+      Iterator slaveItr = ruleInstance.getSlaveIdsList().iterator();
+      while (slaveItr.hasNext()) {
+        toTokenList.add( partialPlanView.getPartialPlan().getToken( (Integer) slaveItr.next()));
+      }
     }
     return toTokenList;
   }
@@ -295,36 +306,9 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
       });
     mouseRightPopup.add( navigatorItem);
 
-    JMenuItem ruleInstanceViewItem = new JMenuItem( "Open Rule Instance View");
-    ruleInstanceViewItem.addActionListener( new ActionListener() {
-        public final void actionPerformed( final ActionEvent evt) {
-          MDIInternalFrame ruleInstanceViewFrame = null;
-          RuleInstanceView ruleInstanceView = null;
-          ViewSet viewSet = partialPlanView.getViewSet();
-          Iterator viewItr = viewSet.getViews().keySet().iterator();
-          while (viewItr.hasNext()) {
-            MDIInternalFrame viewFrame = viewSet.getView( (Object) viewItr.next());
-            if (((ruleInstanceView = ViewGenerics.getRuleInstanceView( viewFrame)) != null) &&
-                (ruleInstanceView.getRuleInstanceId().equals
-                 ( ruleInstanceNode.getRuleInstance().getId()))) {
-              ruleInstanceViewFrame = viewFrame;
-              break;
-            }
-          }
-          if (ruleInstanceViewFrame == null) {
-            String viewSetKey = partialPlanView.getRuleViewSetKey();
-            ruleInstanceViewFrame = partialPlanView.openRuleViewFrame( viewSetKey);
-            Container contentPane = ruleInstanceViewFrame.getContentPane();
-            PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
-            contentPane.add( new RuleInstanceView( RuleInstanceNode.this, partialPlan,
-                                                   partialPlanView.getViewSet(),
-                                                   viewSetKey, ruleInstanceViewFrame));
-          } else {
-            ViewGenerics.raiseFrame( ruleInstanceViewFrame);
-          }
-        }
-      });
-    mouseRightPopup.add( ruleInstanceViewItem);
+    mouseRightPopup.add( ViewGenerics.createRuleInstanceViewItem( RuleInstanceNode.this,
+                                                                  partialPlanView));
+
     ViewGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
   } // end mouseRightPopupMenu
 

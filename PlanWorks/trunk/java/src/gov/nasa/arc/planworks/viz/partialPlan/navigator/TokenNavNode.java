@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.12 2004-06-15 19:26:47 taylor Exp $
+// $Id: TokenNavNode.java,v 1.13 2004-06-29 00:47:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,9 +14,13 @@ package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -38,9 +42,11 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 
 /**
@@ -324,14 +330,14 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode, Overview
    *            constarintNode to show variableNodes 
    *
    * @param modifiers - <code>int</code> - 
-   * @param dc - <code>Point</code> - 
-   * @param vc - <code>Point</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public final boolean doMouseClick( final int modifiers, final Point dc, final Point vc,
-                                     final JGoView view) {
-    JGoObject obj = view.pickDocObject( dc, false);
+  public final boolean doMouseClick( final int modifiers, final Point docCoords,
+                                     final Point viewCoords, final JGoView view) {
+    JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
     TokenNavNode tokenNavNode = (TokenNavNode) obj.getTopLevelObject();
@@ -352,6 +358,8 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode, Overview
       }
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( viewCoords);
+      return true;
     }
     return false;
   } // end doMouseClick   
@@ -387,6 +395,24 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode, Overview
     return (areNodesChanged || areLinksChanged);
   } // end removeTokenObjects
 
+  public void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
+    activeTokenItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          PwToken activeToken = TokenNavNode.this.getToken();
+          ((PartialPlanViewSet) partialPlanView.getViewSet()).setActiveToken( activeToken);
+          ((PartialPlanViewSet) partialPlanView.getViewSet()).setSecondaryTokens( null);
+          System.err.println( "TokenNode setActiveToken: " +
+                              activeToken.getPredicateName() +
+                              " (key=" + activeToken.getId().toString() + ")");
+        }
+      });
+    mouseRightPopup.add( activeTokenItem);
+
+    ViewGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
+  } // end mouseRightPopupMenu
 
 } // end class TokenNavNode
 

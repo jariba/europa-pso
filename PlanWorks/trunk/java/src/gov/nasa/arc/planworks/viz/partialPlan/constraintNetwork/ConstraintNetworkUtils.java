@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ConstraintNetworkUtils.java,v 1.6 2004-06-23 21:36:37 pdaley Exp $
+// $Id: ConstraintNetworkUtils.java,v 1.7 2004-06-29 00:47:16 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -137,9 +137,9 @@ public final class ConstraintNetworkUtils {
       });
     menu.add(navItem);
 
-     if (node instanceof ConstraintNetworkRuleInstanceNode) {
-       menu.add( ViewGenerics.createRuleInstanceViewItem( (RuleInstanceNode) node, view));
-     }
+    if (node instanceof ConstraintNetworkRuleInstanceNode) {
+      menu.add( ViewGenerics.createRuleInstanceViewItem( (RuleInstanceNode) node, view));
+    }
 
     ViewGenerics.showPopupMenu(menu, view, viewCoords);
   }

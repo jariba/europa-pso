@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.29 2004-06-16 22:09:14 taylor Exp $
+// $Id: NavigatorView.java,v 1.30 2004-06-29 00:47:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -506,10 +506,8 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     RuleInstanceNavNode ruleInstanceNavNode =
       (RuleInstanceNavNode) entityNavNodeMap.get( ruleInstance.getId());
     if (ruleInstanceNavNode == null) {
-      TokenNode fromTokenNode = null;
-      List toTokenNodeList = new ArrayList();
       ruleInstanceNavNode =
-        new RuleInstanceNavNode( ruleInstance, fromTokenNode, toTokenNodeList,
+        new RuleInstanceNavNode( ruleInstance,
                                  new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                             ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
                                  ViewConstants.RULE_INSTANCE_BG_COLOR, isDraggable, this);
