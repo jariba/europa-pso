@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.34 2003-09-23 19:27:59 taylor Exp $
+# $Id: README,v 1.35 2003-09-23 19:47:26 taylor Exp $
 #
 
 SUMMARY
@@ -13,7 +13,7 @@ SUMMARY
 In the Timeline View, clicking Mouse-Right "Set Active Token" on a slot,
 will now set the overloaded tokens as "secondary tokens", such that when
 Mouse-Right "Snap to Active Token" is invoked in the background of the
-Constraint Network View and the Token Network View, these secondary tokens
+Constraint Network View or the Token Network View, these secondary tokens
 will be given secondary highlighting (turquoise).  The basic token will
 have the primary highlighting color (light green).
 
