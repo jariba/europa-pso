@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.4 2003-11-20 19:11:24 taylor Exp $
+// $Id: VariableNode.java,v 1.5 2003-12-19 18:30:32 taylor Exp $
 //
 // PlanWorks
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -28,6 +29,10 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwEnumeratedDomain;
+import gov.nasa.arc.planworks.db.PwObject;
+import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -169,7 +174,30 @@ public class VariableNode extends BasicNode {
       }
     if ((! hasZeroConstraints) && (partialPlanView instanceof ConstraintNetworkView)) {
       StringBuffer tip = new StringBuffer( "<html> ");
-      tip.append( variable.getType());
+      String typeName = variable.getType();
+      tip.append( typeName);
+      if (typeName.equals( DbConstants.OBJECT_VAR)) {
+        String objectName = "_not_found_";
+        Integer objectId =
+          Integer.valueOf( ((PwEnumeratedDomain) variable.getDomain()).getLowerBound());
+        Iterator objectIterator = partialPlanView.getPartialPlan().getObjectList().iterator();
+        while (objectIterator.hasNext()) {
+          PwObject object = (PwObject) objectIterator.next();
+          if (object.getId().equals( objectId)) {
+            objectName = object.getName();
+            break;
+          }
+        }
+        tip.append ( ": ");
+        tip.append( objectName);
+      } else if (typeName.equals( DbConstants.PARAMETER_VAR)) {
+        tip.append ( ": ");
+//         System.err.println( "key " + variable.getId().toString() + " paramId " +
+//                             ((PwParameter) variable.getParameterList().get( 0)).getId() +
+//                             " paramName " +
+//                             ((PwParameter) variable.getParameterList().get( 0)).getName());
+        tip.append( ((PwParameter) variable.getParameterList().get( 0)).getName());
+      }
       if (isDebug) {
         tip.append( " linkCnt ").append( String.valueOf( tokenLinkCount +
                                                          constraintLinkCount));
