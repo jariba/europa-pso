@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.32 2003-10-02 23:16:36 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.33 2003-10-03 00:02:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -54,7 +54,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
 
   private int stepCount;
   //private List partialPlans; // List of of PwPartialPlan
-  private List transactions; // List of List of PwTransaction
+  //private List transactions; // List of List of PwTransaction
+  private Map transactions;
   private String name;
   //private List partialPlanNames; // List of String
   private List contentSpec;
@@ -95,6 +96,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
       partialPlans.put((String) planNameIterator.next(), null);
       stepCount++;
     }
+    loadTransactions();
     //List planNames = MySQLDB.getPlanNamesInSequence(id);
     //partialPlanNames.addAll(MySQLDB.getPlanNamesInSequence(id));
     //stepCount = partialPlanNames.size();
@@ -155,6 +157,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
         }
       }
     }
+    loadTransactions();
     //partialPlanNames.addAll(temp.keySet());
     //this.partialPlans = new ArrayList(partialPlanNames.size());
     //ListIterator partialPlanIterator = partialPlanNames.listIterator();
@@ -182,6 +185,10 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
       //MySQLDB.loadFile(url.toString().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
     }
     MySQLDB.analyzeDatabase();
+  }
+
+  private void loadTransactions() {
+    transactions = MySQLDB.queryTransactions(id);
   }
   
   // IMPLEMENT INTERFACE 

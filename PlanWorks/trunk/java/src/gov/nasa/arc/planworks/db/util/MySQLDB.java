@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.42 2003-10-02 23:16:55 miatauro Exp $
+// $Id: MySQLDB.java,v 1.43 2003-10-03 00:01:50 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -33,7 +33,9 @@ import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
+import gov.nasa.arc.planworks.db.impl.PwTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
+import gov.nasa.arc.planworks.util.OneToManyMap;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
 public class MySQLDB {
@@ -593,6 +595,32 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
+  }
+
+  synchronized public static Map queryTransactions(Long sequenceId) {
+    Map retval = new OneToManyMap();
+    try {
+      ResultSet transactions =
+        queryDatabase("SELECT TransactionType, ObjectId, Source, TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
+      int stepnum = -1;
+      Long partialPlanId = new Long(0L);
+      while(transactions.next()) {
+        Long currPartialPlanId = new Long(transactions.getLong("PartialPlanId"));
+        if(!partialPlanId.equals(currPartialPlanId)) {
+          stepnum++;
+          partialPlanId = currPartialPlanId;
+        }
+        retval.put(partialPlanId, new PwTransactionImpl(transactions.getString("TransactionType"),
+                                                        new Integer(transactions.getInt("TransactionId")),
+                                                        transactions.getString("Source"),
+                                                        new Integer(transactions.getInt("ObjectId")),
+                                                        new Integer(stepnum),
+                                                        sequenceId,
+                                                        new Long(transactions.getLong("PartialPlanId"))));
+      }
+    }
+    catch(SQLException sqle) {}
+    return retval;
   }
 
   /**
