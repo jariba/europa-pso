@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.5 2003-10-16 21:40:42 taylor Exp $
+// $Id: StepElement.java,v 1.6 2003-11-06 00:02:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -93,9 +93,9 @@ public class StepElement extends HistogramElement {
     super( x, y, STEP_WIDTH, planDBSize / ViewConstants.STEP_VIEW_DB_SIZE_SCALING,
            STEP_LINE_WIDTH, STEP_LINE_TYPE, STEP_LINE_COLOR, STEP_BG_COLOR);
     this.planDBSize = planDBSize;
-    this.height = planDBSize / ViewConstants.STEP_VIEW_DB_SIZE_SCALING;
+    height = planDBSize / ViewConstants.STEP_VIEW_DB_SIZE_SCALING;
     this.partialPlanName = partialPlanName;
-    this.stepNumber = Utilities.getStepNumber( partialPlanName);
+    stepNumber = Utilities.getStepNumber( partialPlanName);
     this.planSequence = planSequence;
     this.sequenceView = sequenceView;
 

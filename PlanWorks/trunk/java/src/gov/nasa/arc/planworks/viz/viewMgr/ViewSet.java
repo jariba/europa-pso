@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.42 2003-11-03 19:02:42 taylor Exp $
+// $Id: ViewSet.java,v 1.43 2003-11-06 00:02:20 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -111,6 +111,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     MDIInternalFrame viewFrame = desktopFrame.createFrame( frameViewName + " of " +
                                                            viewable.getName(),
                                                            this, true, closable, true, true);
+    viewFrame.setIconifiable( true);
     views.put(viewClass, viewFrame);
     Container contentPane = viewFrame.getContentPane();
     VizView view = null;
@@ -286,6 +287,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   //public void printSpec() {
   //  contentSpec.printSpec();
   //}
+
   /**
    * Closes all of the views in the ViewSet.
    */
@@ -301,7 +303,29 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
         }
       }
     catch(PropertyVetoException pve){}
+
+    ((ViewManager) remover).decrementContentSpecWindowCnt();
   }
+
+  /**
+   * Iconifies all of the views in the ViewSet.
+   *
+   *     viewFrame.setIconifiable( true); must be set
+   */
+  public void iconify() {
+    Object [] viewSet = views.values().toArray();
+    try
+      {
+        for(int i = 0; i < viewSet.length; i++) {
+          ((MDIInternalFrame)viewSet[i]).setIcon(true);
+        }
+        if (contentSpecWindow != null) {
+          contentSpecWindow.setIcon(true);
+        }
+      }
+    catch(PropertyVetoException pve){}
+  }
+
   /**
    * Determines whether or not a view already exists.
    * @param viewClassName the name of the view

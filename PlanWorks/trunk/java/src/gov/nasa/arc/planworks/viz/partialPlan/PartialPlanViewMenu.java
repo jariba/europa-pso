@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.2 2003-10-16 21:40:41 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.3 2003-11-06 00:02:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -128,21 +128,3 @@ public class PartialPlanViewMenu extends JPopupMenu{
 } // end PartialPlanViewMenu
 
 
-
-
-//       try {
-//         partialPlan = planSequence.getPartialPlan( partialPlanName);
-//         transactionList = planSequence.getTransactionsList( stepNumber);
-//         // System.err.println( "stepNum " + stepNumber);
-//         // if (transactionList != null) {
-//         //   System.err.println( "transactionList size " + transactionList.size());
-//         // }
-//       } catch (ResourceNotFoundException rnfExcep) {
-//         int index = rnfExcep.getMessage().indexOf( ":");
-//         JOptionPane.showMessageDialog
-//           (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
-//            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-//         System.err.println( rnfExcep);
-//         rnfExcep.printStackTrace();
-//         System.exit( -1);
-//       }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.23 2003-11-03 19:02:39 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.24 2003-11-06 00:02:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -153,20 +153,27 @@ public interface PwPartialPlan extends ViewableObject {
   public abstract List getContentSpec();
 
   /**
-   * <code>getName</code>
+   * <code>setName</code> - sequenceDir/stepDir
    *
-   * @return - <code>String</code> - 
+   * @param name - <code>String</code> - 
+   */
+  public abstract void setName( String name);
+
+  /**
+   * <code>getName</code> - sequenceDir/stepDir
+   *
+   * @return - <code>String</code> 
    */
   public abstract String getName();
   
   // end extend ViewableObject
 
   /**
-   * <code>setSeqName</code>
+   * <code>getPartialPlanName</code> - stepDir
    *
-   * @param seqName - <code>String</code> - 
+   * @return - <code>String</code> - 
    */
-  public abstract void setSeqName( String seqName);
+  public abstract String getPartialPlanName();
 
   /**
    * <code>getPlanDBSize</code> - sum of hash map sizes of all plan objects
@@ -182,6 +189,12 @@ public interface PwPartialPlan extends ViewableObject {
    */
   public abstract int getStepNumber();
 
+  /**
+   * <code>getSequenceUrl</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getSequenceUrl();
   
 } // end interface PwPartialPlan
 

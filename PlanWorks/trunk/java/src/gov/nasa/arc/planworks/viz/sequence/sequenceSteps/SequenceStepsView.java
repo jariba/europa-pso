@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.7 2003-10-16 21:40:42 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.8 2003-11-06 00:02:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -41,6 +41,7 @@ import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoRectangle;
+import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
@@ -239,6 +240,29 @@ public class SequenceStepsView extends SequenceView {
       StepElement stepElement = new StepElement( x, y, planDBSize, partialPlanName,
                                                  planSequence, this);
       document.addObjectAtTail( stepElement);
+
+      // display step number for every 10th step
+      int stepNumber = Utilities.getStepNumber( partialPlanName);
+      if ((stepNumber % 10) == 0) {
+        JGoText textObject =
+          new JGoText( new Point( x, y + planDBSize /
+                                  ViewConstants.STEP_VIEW_DB_SIZE_SCALING + 4),
+                       ViewConstants.TIMELINE_VIEW_FONT_SIZE,
+                       String.valueOf( stepNumber),
+                       ViewConstants.TIMELINE_VIEW_FONT_NAME,
+                       ViewConstants.TIMELINE_VIEW_IS_FONT_BOLD,
+                       ViewConstants.TIMELINE_VIEW_IS_FONT_UNDERLINED,
+                       ViewConstants.TIMELINE_VIEW_IS_FONT_ITALIC,
+                       ViewConstants.TIMELINE_VIEW_TEXT_ALIGNMENT,
+                       ViewConstants.TIMELINE_VIEW_IS_TEXT_MULTILINE,
+                       ViewConstants.TIMELINE_VIEW_IS_TEXT_EDITABLE);
+        textObject.setResizable( false);
+        textObject.setEditable( false);
+        textObject.setDraggable( false);
+        textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
+        document.addObjectAtTail( textObject);
+      }
+
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
       tmpStepList.add( stepElement);
     }

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.7 2003-11-03 19:02:39 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.8 2003-11-06 00:02:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -256,9 +256,13 @@ public class TransactionHeaderView extends JGoView {
     mouseRightPopup.add( transByKeyItem);
 
     if (vizView instanceof TransactionView) {
-      JMenuItem changeViewItem = new JMenuItem( "Get Partial Plan View");
-      createChangeViewItem( changeViewItem, viewCoords);
+      PwPartialPlan partialPlan = ((TransactionView) vizView).getPartialPlan();
+      JMenuItem changeViewItem = new JMenuItem( "Open a View");
+      ((TransactionView) vizView).createChangeViewItem( changeViewItem, partialPlan,
+                                                        viewCoords);
       mouseRightPopup.add( changeViewItem);
+
+      ((TransactionView) vizView).createAllViewItems( partialPlan, mouseRightPopup);
     }
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
@@ -288,31 +292,8 @@ public class TransactionHeaderView extends JGoView {
           }
         }
       });
-  } // end createTokenByKeyItem
+  } // end createTransByKeyItem
 
-
-  private void createChangeViewItem( JMenuItem changeViewItem, final Point viewCoords) {
-    changeViewItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          PwPartialPlan partialPlan = ((TransactionView) vizView).getPartialPlan();
-          String seqName = partialPlan.getName();
-          String partialPlanName =
-            seqName.substring( seqName.lastIndexOf( System.getProperty( "file.separator")) + 1);
-          int stepNumber = partialPlan.getStepNumber();
-          PwPlanningSequence planSequence =
-            PlanWorks.planWorks.getPlanSequence( partialPlan);
-
-          PartialPlanViewMenu mouseRightPopup = new PartialPlanViewMenu();
-          JMenuItem header = new JMenuItem( "step" + stepNumber);
-          mouseRightPopup.add( header);
-          mouseRightPopup.addSeparator();
-
-          mouseRightPopup.buildPartialPlanViewMenu( partialPlanName, planSequence);
-          mouseRightPopup.show( PlanWorks.planWorks, (int) viewCoords.getX(),
-                    (int) viewCoords.getY());
-        }
-      });
-  } // end createChangeViewItem
 
 
 } // end class TransactionHeaderView

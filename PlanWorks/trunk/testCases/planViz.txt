@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.7 2003-11-03 19:02:42 taylor Exp $
+// $Id: planViz.txt,v 1.8 2003-11-06 00:02:20 taylor Exp $
 //
 // PlanWorks
 //
@@ -296,14 +296,17 @@ Pre-conditions:
 
 Method:
   1. Using either the Constraint Network, Temporal Extent, Timeline, or
-     Token Network view, choose token keys for a slotted token and a
-     free token.
+     Token Network view, choose keys for a slotted token, a free token,
+     a slot, a variable, and a constraint.
   2. Mouse-Right click, in turn, on the Constraint Network , Temporal Extent, 
-     Timeline, and Token Network views, selecting "Find Token By Key",
+     Timeline, and Token Network views, selecting "Find by Key",
      entering the slotted token key value, and then selecting "Enter".
-  3. Mouse-Right, in turn, the Constraint Network , Temporal Extent, 
-     Timeline, and Token Network views, selecting "Find Token By Key",
+  3. Mouse-Right, in turn, the Constraint Network, Temporal Extent, 
+     Timeline, and Token Network views, selecting "Find by Key",
      entering the free token key value, and then selecting "Enter".
+     For the Timeline view, enter the slot key value in "Find by Key".
+     For the Constraint Network view, enter the variable and constraint
+     key values in "Find by Key".
   4. Arbitrarily, pick a slotted token node in one of the views, and Mouse-
      Right click on the node, selecting "Set Active Token".
   5. In each of the other views, except for the Transaction view, Mouse-
@@ -315,22 +318,29 @@ Method:
   8. In the Temporal Extent view, Mouse-Right click on the background, and
      select "Set Time Scale Line".
   9. In the Transaction view, Mouse-Right click on the background of the 
-     "header" portion of the view, and select "Find Transaction By Obj_Key".
+     "header" portion of the view, and select "Find Transaction by Obj_Key".
      Enter an OBJ_KEY value.
  10. In the Transaction view, move the mouse over any of the column header
      nodes to see whether that column is sortable, in either ascending or
      descending order.  Mouse-left click to initiate the sort.  Sort all
      the columns.
- 11. In each partial plan view, use Mouse-Right "Get Partial Plan View" to
+ 11. In each partial plan view, use Mouse-Right "Open a View" to
      navigate to the other views.  In all views, except Transaction view,
      use Mouse-Right "Raise Content Spec" to set focus on the Content Spec
      window.
+ 12. For a selected partial plan step, open only one partial plan view, and
+     use Mouse-Right "Open All Views", then "Hide All Views", and finally
+     "Close All Views".  Do this for each of the partial plan views.
+
 
 Post-conditions:
   1. Method:2 - In turn, each of the views should re-oriented itself to
      display the selected slotted token node with a green highlight around it.
   2. Method:3 - In turn, each of the views should re-oriented itself to
-     display the selected free token node with a green highlight around it.
+     display the selected frre token node key with a green highlight around it.
+     The same behavior should be observed for the Timeline view with the slot 
+     key value; and the Constraint Network view with the variable and constraint
+     key values.
   3. Method:4 - the selected slotted token node will have a green highlight 
      around it.
   4. Method:5 - Each of the other views should re-oriented itself to
@@ -348,6 +358,8 @@ Post-conditions:
      in the proper order.
  10. Method:11 - The selected view or window will be raised to the top of the
      internal frame, and will have focus.
+ 11. Method:12 - the partial plan step's views will respond appropriately to
+     the "Open", "Hide", and "Close" selections.
 
 Requirements: TBD
 
@@ -448,7 +460,7 @@ Method:
      transaction types for each object type.  Click on "Apply Query".
   4. In each of the "QueryResults" windows created by Method:3, Mouse-Right 
      click on the background of the "header" portion of the view, and select 
-     "Find Transaction By Obj_Key".  Enter an OBJ_KEY value.
+     "Find Transaction by Obj_Key".  Enter an OBJ_KEY value.
   5. Using the "SequenceQuery" dialog, select "Steps" and then select in
      turn the qualified "Steps" queries: With Non-unit Decisions/Restrictions/
      Unit Decisions.  These queries do not expand.  Click on "Apply Query".
@@ -459,11 +471,14 @@ Method:
      fields, and click on "Apply Query".
   7. In each of the "QueryResults" windows created by Method:6, Mouse-Right 
      click on the background of the "header" portion of the view, and select 
-     "Find Transaction By Obj_Key".  Enter an OBJ_KEY value.
+     "Find Transaction by Obj_Key".  Enter an OBJ_KEY value.
   8. In each of the "QueryResults" windows, move the mouse over any of the 
      column header nodes to see whether that column is sortable, in either 
      ascending or descending order.  Mouse-left click to initiate the sort.  
      Sort all the columns.
+  9. On the background of the "SequenceQuery ..." dialog, click Mouse-Right
+     and select "Discard Query Results Windows".
+
 
 Post-conditions:
   1. Method:1 - the Sequence Query and Sequence Steps View windows appear.
@@ -481,6 +496,8 @@ Post-conditions:
      to show the transaction entry with the selected OBJ_KEY value.
   8. Method:8 - The values in the columns which are sorted will be redisplayed
      in the proper order.
+  9. Method:9 - All "QueryResults" windows created from the "SequenceQuery ..." 
+     dialog, will be deleted.
 
 Requirements: 4.3.1.a-g, 4.3.2.b-e
 

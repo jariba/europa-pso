@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskTokenByKey.java,v 1.3 2003-10-25 00:58:18 taylor Exp $
+// $Id: AskNodeByKey.java,v 1.1 2003-11-06 00:02:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -27,20 +27,24 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 
 
 /**
- * <code>AskTokenByKey</code> - custom dialog to allow user to enter
- *           a value for a token key, and check that it exists.
+ * <code>AskNodeByKey</code> - custom dialog to allow user to enter
+ *           a value for a token/slot/constraint/variable node key, and check that it exists.
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *           NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class AskTokenByKey extends JDialog { 
+public class AskNodeByKey extends JDialog { 
 
-  private PwPartialPlan partialPlan;
-  private Integer tokenKey;
+  private PartialPlanView partialPlanView;
+  private Integer nodeKey;
 
   private String typedText = null;
   private JOptionPane optionPane;
@@ -49,14 +53,17 @@ public class AskTokenByKey extends JDialog {
   private String btnString2;
 
   /**
-   * <code>AskTokenByKey</code> - constructor 
+   * <code>AskNodeByKey</code> - constructor 
    *
-   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param dialogTitle - <code>String</code> - 
+   * @param textFieldLabel - <code>String</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public AskTokenByKey( PwPartialPlan partialPlan, String dialogTitle, String textFieldLabel) {
+  public AskNodeByKey( String dialogTitle, String textFieldLabel,
+                       PartialPlanView partialPlanView) {
     // modal dialog - blocks other activity
     super( PlanWorks.planWorks, true);
-    this.partialPlan = partialPlan;
+    this.partialPlanView = partialPlanView;
 
     setTitle( dialogTitle);
     final String msgString1 = textFieldLabel;
@@ -102,12 +109,12 @@ public class AskTokenByKey extends JDialog {
 
 
   /**
-   * <code>getTokenKey</code>
+   * <code>getNodeKey</code>
    *
-   * @return tokenKey - <code>Integer</code> - 
+   * @return nodeKey - <code>Integer</code> - 
    */
-  public Integer getTokenKey() {
-    return tokenKey;
+  public Integer getNodeKey() {
+    return nodeKey;
   }
 
   private void addInputListener() {
@@ -132,14 +139,13 @@ public class AskTokenByKey extends JDialog {
             if (value.equals( btnString1)) {
               typedText = textField.getText();
               try {
-                tokenKey = new Integer( Integer.parseInt( typedText));
-                // System.err.println( "AskTokenByKey key " + typedText + " partialPlan " +
-                //                     partialPlan);
-                if ((partialPlan != null) && (partialPlan.getToken( tokenKey) == null)) {
+                nodeKey = new Integer( Integer.parseInt( typedText));
+                // System.err.println( "AskNodeByKey key " + typedText);
+                if (! isNodeKeyValid( nodeKey)) {
                   JOptionPane.showMessageDialog
                     (PlanWorks.planWorks,
-                     "Sorry, \"" + tokenKey.toString() + "\" " + "isn't a valid token key.",
-                     "Invalid token key", JOptionPane.ERROR_MESSAGE);
+                     "Sorry, \"" + nodeKey.toString() + "\" " + "is not a valid key.",
+                     "Invalid Key", JOptionPane.ERROR_MESSAGE);
                 } else {
                   // we're done; dismiss the dialog
                   setVisible( false);
@@ -152,10 +158,10 @@ public class AskTokenByKey extends JDialog {
                    "Sorry, \"" + typedText + "\" " + "isn't a valid response.\n" +
                    "Please enter a intger number",
                    "Invalid value for key", JOptionPane.ERROR_MESSAGE);
-                tokenKey = null;
+                nodeKey = null;
               }
             } else { // user closed dialog or clicked cancel
-              tokenKey = null;
+              nodeKey = null;
               setVisible( false);
             }
           }
@@ -163,5 +169,34 @@ public class AskTokenByKey extends JDialog {
       });
   } // end addInputListener
 
-} // end class AskTokenByKey
+  private boolean isNodeKeyValid( Integer nodeKey) {
+    boolean isValid = false;
+    PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+    if ((partialPlanView instanceof TemporalExtentView) ||
+        (partialPlanView instanceof TokenNetworkView)) {
+      if (partialPlan.getToken( nodeKey) != null) {
+        return true;
+      }
+    } else if ((partialPlanView instanceof TimelineView)) {
+      if ((partialPlan.getToken( nodeKey) != null) ||
+          (partialPlan.getSlot( nodeKey) != null)) {
+         return true;
+      }
+    } else if ((partialPlanView instanceof ConstraintNetworkView)) {
+      if ((partialPlan.getToken( nodeKey) != null) ||
+          (partialPlan.getVariable( nodeKey) != null) ||
+          (partialPlan.getConstraint( nodeKey) != null)) {
+        return true;
+      }
+    } else {
+      System.err.println( "AskNodeByKey.isNodeKeyValid: " + partialPlanView +
+                          " not handled");
+      System.exit( -1);
+    }
+    return isValid;
+  } // end isNodeKeyValid
+
+
+
+} // end class AskNodeByKey
 

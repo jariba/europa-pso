@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.20 2003-10-18 00:01:07 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.21 2003-11-06 00:02:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,13 +42,6 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>String</code> - 
    */
   public abstract String getUrl();
-
-  /**
-   * <code>getName</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public abstract String getName();
 
   public abstract Long getId();
 
@@ -129,16 +122,21 @@ public interface PwPlanningSequence extends ViewableObject {
    */
   public abstract List getContentSpec();
 
-  // getName already defined
-  
-  // end extend ViewableObject
+  /**
+   * <code>setName</code> - sequenceDir
+   *
+   * @param name - <code>String</code> - 
+   */
+  public void setName( String name);
 
   /**
-   * <code>setSeqName</code>
+   * <code>getName</code> - sequenceDir
    *
-   * @param seqName - <code>String</code> - 
+   * @return - <code>String</code> 
    */
-  public void setSeqName( String seqName);
+  public abstract String getName();
+  
+  // end extend ViewableObject
 
   public List getTransactionsForConstraint(Integer id);
 

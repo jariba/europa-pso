@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.71 2003-11-03 19:02:39 taylor Exp $
+// $Id: PlanWorks.java,v 1.72 2003-11-06 00:02:17 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -37,6 +37,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileFilter;
 
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -271,6 +272,16 @@ public class PlanWorks extends MDIDesktopFrame {
     if(usingSplash) {
       this.toFront();
     }
+
+    ToolTipManager toolTipManager = ToolTipManager.sharedInstance();
+//     System.err.println( "PlanWorks.toolTipManager InitialDelay " +
+//                         toolTipManager.getInitialDelay() + " DismissDelay " +
+//                         toolTipManager.getDismissDelay() + " ReshowDelay " +
+//                         toolTipManager.getReshowDelay());
+    // milliseconds
+    toolTipManager.setInitialDelay( 100); // default 750
+    // toolTipManager.setDismissDelay( 8000); // default 4000
+    toolTipManager.setReshowDelay( 100); // default 500
   } // end constructor 
 
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.9 2003-10-30 22:12:22 taylor Exp $
+// $Id: NodeGenerics.java,v 1.10 2003-11-06 00:02:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -218,12 +218,14 @@ public class NodeGenerics {
 
 
   /**
-   * <code>focusViewOnNode</code> - scroll view's scroll bars to put node in middle
+   * <code>focusViewOnNode</code> - scroll view's scroll bars to put node in middle,
+   *                                and optionally highlight node
    *
    * @param node - <code>JGoArea</code> - 
+   * @param isHighlightNode - <code>boolean</code> - 
    * @param jGoView - <code>JGoView</code> - 
    */
-  public static void focusViewOnNode( JGoArea node, JGoView jGoView) {
+  public static void focusViewOnNode( JGoArea node, boolean isHighlightNode, JGoView jGoView) {
     // System.err.println( "focusViewOnNode: loc " + node.getLocation().getX() +
     //                     " extent " + jGoView.getExtentSize().getWidth());
 //     if (node instanceof TokenNode) {
@@ -245,7 +247,9 @@ public class NodeGenerics {
                           (int) (node.getLocation().getY() -
                                  (jGoView.getExtentSize().getHeight() / 2))));
     jGoView.getSelection().clearSelection();
-    jGoView.getSelection().extendSelection( node);
+    if (isHighlightNode) {
+      jGoView.getSelection().extendSelection( node);
+    }
   } // end focusViewOnNode
 
 

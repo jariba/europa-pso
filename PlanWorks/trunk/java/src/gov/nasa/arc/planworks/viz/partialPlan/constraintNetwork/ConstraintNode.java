@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.3 2003-10-30 22:12:23 taylor Exp $
+// $Id: ConstraintNode.java,v 1.4 2003-11-06 00:02:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -321,24 +321,6 @@ public class ConstraintNode extends BasicNode {
   } // end resetNode
 
   /**
-   * <code>setNodeOpen</code>
-   *
-   */
-  public void setNodeOpen() {
-    areNeighborsShown = true;
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-  }
-
-  /**
-   * <code>setNodeOpen</code>
-   *
-   */
-  public void setNodeClosed() {
-    areNeighborsShown = false;
-    setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
-  }
-
-  /**
    * <code>getToolTipText</code>
    *
    * @return - <code>String</code> - 
@@ -446,12 +428,12 @@ public class ConstraintNode extends BasicNode {
           //System.err.println( "doMouseClick: Mouse-L show variable nodes of constraint id " +
           //                    constraintNode.getConstraint().getId());
           addConstraintNodeVariables( this, (ConstraintNetworkView) partialPlanView);
-          setNodeOpen();
+          areNeighborsShown = true;
         } else {
           //System.err.println( "doMouseClick: Mouse-L hide variable nodes of constraint id " +
           //                    constraintNode.getConstraint().getId());
           removeConstraintNodeVariables( this, (ConstraintNetworkView) partialPlanView);
-          setNodeClosed();
+          areNeighborsShown = false;
         }
         return true;
       }
@@ -470,6 +452,7 @@ public class ConstraintNode extends BasicNode {
       constraintNetworkView.setFocusNode( constraintNode);
       constraintNetworkView.redraw();
     }
+    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
   } // end addConstraintNodeVariables
 
   private void removeConstraintNodeVariables( ConstraintNode constraintNode,
@@ -482,6 +465,7 @@ public class ConstraintNode extends BasicNode {
       constraintNetworkView.setFocusNode( constraintNode);
       constraintNetworkView.redraw();
     }
+    setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
   } // end addConstraintnodeVariablesConstraints
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.20 2003-10-16 21:40:42 taylor Exp $
+// $Id: ViewManager.java,v 1.21 2003-11-06 00:02:19 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -165,8 +165,21 @@ public class ViewManager implements ViewSetRemover {
       //return null;
   }
 
+  /**
+   * <code>getContentSpecWindowCnt</code>
+   *
+   * @return - <code>int</code> - 
+   */
   public int getContentSpecWindowCnt() {
     return this.contentSpecWindowCnt;
+  }
+
+  /**
+   * <code>decrementContentSpecWindowCnt</code>
+   *
+   */
+  public void decrementContentSpecWindowCnt() {
+    this.contentSpecWindowCnt--;
   }
 
 

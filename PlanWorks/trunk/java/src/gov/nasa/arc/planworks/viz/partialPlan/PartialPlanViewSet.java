@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.6 2003-10-10 23:59:52 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.7 2003-11-06 00:02:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -71,8 +71,7 @@ public class PartialPlanViewSet extends ViewSet {
                                  ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
                           (int) ((PlanWorks.planWorks.getSize().getHeight() -
                                   ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
-    String url = ((PwPartialPlan) viewable).getUrl();
-    String seqUrl = url.substring( 0, url.lastIndexOf( System.getProperty( "file.separator")));
+    String seqUrl = ((PwPartialPlan) viewable).getSequenceUrl();
     int sequenceStepsViewHeight =
       (int) ((MDIInternalFrame) PlanWorks.planWorks.
              sequenceStepsViewMap.get( seqUrl)).getSize().getHeight();

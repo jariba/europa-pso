@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.49 2003-11-03 19:02:38 taylor Exp $
+# $Id: README,v 1.50 2003-11-06 00:02:17 taylor Exp $
 #
 
 SUMMARY
@@ -24,7 +24,10 @@ for a key value and the transaction type; "With Non-unit Variable
 Decisions", "With Restrictions", and "With Unit Variable Decisions".  
 "Transactions": "For Constraint/Token/Variable ..." which asks for a key 
 value; and "In Range ...", which asks for "StartStep" and "EndStep" values.
-The query results are displayed in windows entitled "Query Results for ...".
+The query results are displayed in windows entitled "QueryResults for ...".
+The query results windows can be removing by clicking Mouse-Right on 
+the background of the "SequenceQuery ..." dialog, and selecting
+"Discard Query Results Windows".
 
 For each plan sequence step, there is now an additional partial plan
 view: "Transaction View".  It displays the transactions for the step.
@@ -40,10 +43,21 @@ windows, offer sorting of that columns's values, alternately in
 ascending order and descending order.
 
 All partial plan view's  Mouse-Right pop-ups offer the user a second
-pop-up selection ("Get Partial Plan View") of the other partial plan views, 
+pop-up selection ("Open a View") of the other partial plan views, 
 which will create them as needed.  All views, except for Transaction View,
 also offer "Raise Content Spec", which will set focus on the appropriate
 partial plan Content Spec window.
+
+In addition, all partial plan view's  Mouse-Right pop-ups offer the user
+"Close All Views", "Hide All Views", and "Open All Views".
+
+Each partial plan view, except for Transaction View, had a Mouse-Right
+choice of "Find Token By Key".  This has been changed and generalized to
+"Find By Key".  For Temporal Extent and Token Network views, entered keys
+will find token nodes; for the Timeline view, entered keys will find 
+token and slot nodes; and for the Constraint Network view, entered keys
+will find find token, variable, and constraint nodes -- opening
+appropriate connecting nodes, if needed.
 
 The current PartialPlanWriter (PlanWorks/cpp/integration/europa/README)
 requires a recent version of EUROPA.  The earliest known working
@@ -52,7 +66,9 @@ version is tagged with the PlanWorks milestone release tag PW_M_8.
 The PartialPlanWriter has changed since PW_M_8, and must be rebuilt.
 
 o  GNATS PRs and CRs completed:
+   #2150: Constraint Network View: find constraint/variable nodes by key.
    #2157: Add window choices on pop-up menu for within Partial Plan.
+   #2159: Change option to Find By Key instead of Find Token By Key.
    #2161: Project menu goes away after deleting a sequence.
 
 

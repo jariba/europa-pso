@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.4 2003-10-30 22:12:23 taylor Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.5 2003-11-06 00:02:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -151,6 +151,24 @@ public class ConstraintNetworkTokenNode extends TokenNode {
   }
 
   /**
+   * <code>setAreNeighborsShown</code>
+   *
+   * @param areShown - <code>boolean</code> - 
+   */
+  protected void setAreNeighborsShown( boolean areShown) {
+    areNeighborsShown = areShown;
+  }
+
+  /**
+   * <code>areNeighborsShown</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean areNeighborsShown() {
+    return areNeighborsShown;
+  }
+
+  /**
    * <code>doMouseClick</code> - For Constraint Network View, Mouse-Left opens/closes
    *            tokenNode to show variableNodes.  Mouse-Right: Set Active Token
    *
@@ -187,8 +205,15 @@ public class ConstraintNetworkTokenNode extends TokenNode {
     return false;
   } // end doMouseClick   
 
-  private void addTokenNodeVariables( ConstraintNetworkTokenNode tokenNode,
-                                      ConstraintNetworkView constraintNetworkView) {
+  /**
+   * <code>addTokenNodeVariables</code> - protected since
+   *                                           needed by ConstraintJGoView
+   *
+   * @param tokenNode - <code>ConstraintNetworkTokenNode</code> - 
+   * @param constraintNetworkView - <code>ConstraintNetworkView</code> - 
+   */
+  protected void addTokenNodeVariables( ConstraintNetworkTokenNode tokenNode,
+                                        ConstraintNetworkView constraintNetworkView) {
     boolean areNodesChanged = constraintNetworkView.addVariableNodes( tokenNode);
     boolean areLinksChanged = constraintNetworkView.addVariableToTokenLinks( tokenNode);
     if (areNodesChanged || areLinksChanged) {

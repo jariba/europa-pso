@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.7 2003-11-03 19:02:42 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.8 2003-11-06 00:02:20 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -12,18 +12,24 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 import gov.nasa.arc.planworks.PlanWorks;
@@ -33,6 +39,9 @@ import gov.nasa.arc.planworks.db.util.ContentSpec;
 // import gov.nasa.arc.planworks.db.util.SequenceContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
@@ -45,8 +54,9 @@ import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
  * The complete, displayable window for defining a query for the associated 
  * plan sequence.  
  */
-public class SequenceQueryWindow extends JPanel { 
+public class SequenceQueryWindow extends JPanel implements MouseListener { 
 
+  private static final String QUERY_RESULT_FRAME = "QueryResultFrame";
   private static final String QUERY_VERB = "Get";
   private static final String QUERY_FOR_STEPS = "Steps";
   private static final String QUERY_FOR_TRANSACTIONS = "Transactions";
@@ -140,6 +150,7 @@ public class SequenceQueryWindow extends JPanel {
     this.desktopFrame = desktopFrame;
     this.viewable = viewable;
     this.viewSet = (SequenceViewSet) viewSet;
+    
     queryResultFrameCnt = 0;
 
     GridBagLayout gridBag = new GridBagLayout();
@@ -196,6 +207,7 @@ public class SequenceQueryWindow extends JPanel {
     gridBag.setConstraints(buttonPanel, constraints);
     add( buttonPanel);
 
+    addMouseListener( this);
   }
 
   private void refresh() {
@@ -316,7 +328,7 @@ public class SequenceQueryWindow extends JPanel {
                                   " for " + viewable.getName(),
                                   viewSet, true, true, false, true);
       ((SequenceViewSet) viewSet).getViews().
-        put( new String( "QueryResultFrame" + queryResultFrameCnt), stepQueryFrame);
+        put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt), stepQueryFrame);
       Container contentPane = stepQueryFrame.getContentPane();
       StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_STEPS);
       int ellipsesIndx = stepsQuery.indexOf( " ...");
@@ -342,7 +354,7 @@ public class SequenceQueryWindow extends JPanel {
                                   " for " + viewable.getName(),
                                   viewSet, true, true, false, true);
       ((SequenceViewSet) viewSet).getViews().
-        put( new String( "QueryResultFrame" + queryResultFrameCnt), transactionQueryFrame);
+        put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt), transactionQueryFrame);
       Container contentPane = transactionQueryFrame.getContentPane();
       StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_TRANSACTIONS);
       String transactionsQueryShort = transactionsQuery;
@@ -686,6 +698,90 @@ public class SequenceQueryWindow extends JPanel {
      } // end extendQueryForTransactionsInRange
 
   } // end class MinorTypeListener
+
+  /**
+   * mouseEntered - implement MouseListener - do nothing
+   *
+   * @param mouseEvent - MouseEvent 
+   */
+  public void mouseEntered( MouseEvent mouseEvent) {
+    // System.err.println( "mouseEntered " + mouseEvent.getPoint());
+  }
+
+  /**
+   * mouseExited - implement MouseListener -  do nothing
+   *
+   * @param mouseEvent - MouseEvent 
+   */
+  public void mouseExited( MouseEvent mouseEvent) {
+    // System.err.println( "mouseExited " + mouseEvent.getPoint());
+  }
+
+  /**
+   * mouseClicked - implement MouseListener -
+   *
+   * @param mouseEvent - MouseEvent 
+   */ 
+  public void mouseClicked( MouseEvent mouseEvent) {
+    // System.err.println( "mouseClicked " + mouseEvent.getModifiers());
+    if (MouseEventOSX.isMouseLeftClick( mouseEvent, PlanWorks.isMacOSX())) {
+
+    } else if (MouseEventOSX.isMouseRightClick( mouseEvent, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( mouseEvent.getPoint());
+    }
+  } // end mouseClicked 
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem discardWindowsItem = new JMenuItem( "Discard Query Results Windows");
+    createDiscardWindowsItem( discardWindowsItem);
+    mouseRightPopup.add( discardWindowsItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+  } // end mouseRightPopupMenu
+
+  private void createDiscardWindowsItem( JMenuItem discardWindowsItem) {
+    discardWindowsItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          List windowKeyList =
+            new ArrayList( ((SequenceViewSet) viewSet).getViews().keySet());
+          Iterator windowListItr = windowKeyList.iterator();
+          while (windowListItr.hasNext()) {
+            Object windowKey = (Object) windowListItr.next();
+            if (windowKey instanceof String) {
+              String resultsWindowKey = (String) windowKey;
+              if (resultsWindowKey.indexOf( QUERY_RESULT_FRAME) >= 0) {
+                MDIInternalFrame window = 
+                  (MDIInternalFrame) ((SequenceViewSet) viewSet).getViews().
+                  get( resultsWindowKey);
+                try {
+                  window.setClosed( true);
+                } catch ( PropertyVetoException pve){
+                }
+              }
+            }
+          }
+        }
+      });
+  } // end createDiscardWindowsItem
+
+  /**
+   * mousePressed - implement MouseListener - do nothing
+   *
+   * @param mouseEvent - MouseEvent 
+   */
+  public void mousePressed( MouseEvent mouseEvent) {
+    // System.err.println( "mousePressed " + mouseEvent.getPoint());
+  } // end mousePressed
+
+  /**
+   * mouseReleased - implement MouseListener - do nothing
+   *
+   * @param mouseEvent - MouseEvent
+   */
+  public void mouseReleased( MouseEvent mouseEvent) {
+    // System.err.println( "mouseReleased " + mouseEvent.getPoint());
+  } // end mouseReleased
 
 
 } // end class SequenceQueryWindow

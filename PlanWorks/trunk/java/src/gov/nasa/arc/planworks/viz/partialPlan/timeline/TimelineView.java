@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.10 2003-11-03 19:02:40 taylor Exp $
+// $Id: TimelineView.java,v 1.11 2003-11-06 00:02:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -47,7 +47,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.AskTokenByKey;
+import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -63,7 +63,6 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class TimelineView extends PartialPlanView {
 
-  private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
   private TimelineJGoView jGoView;
@@ -85,7 +84,6 @@ public class TimelineView extends PartialPlanView {
    */
   public TimelineView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
 
@@ -615,11 +613,11 @@ public class TimelineView extends PartialPlanView {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
-    JMenuItem tokenByKeyItem = new JMenuItem( "Find Token by Key");
-    createTokenByKeyItem( tokenByKeyItem);
-    mouseRightPopup.add( tokenByKeyItem);
+    JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
+    createNodeByKeyItem( nodeByKeyItem);
+    mouseRightPopup.add( nodeByKeyItem);
 
-    JMenuItem changeViewItem = new JMenuItem( "Get Partial Plan View");
+    JMenuItem changeViewItem = new JMenuItem( "Open a View");
     createChangeViewItem( changeViewItem, partialPlan, viewCoords);
     mouseRightPopup.add( changeViewItem);
     
@@ -631,25 +629,34 @@ public class TimelineView extends PartialPlanView {
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
+    createAllViewItems( partialPlan, mouseRightPopup);
+
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
 
-  private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
-    tokenByKeyItem.addActionListener( new ActionListener() {
+  private void createNodeByKeyItem( JMenuItem nodeByKeyItem) {
+    nodeByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          AskTokenByKey tokenByKeyDialog =
-            new AskTokenByKey( partialPlan, "Find Token by Key", "key (int)");
-          Integer tokenKey = tokenByKeyDialog.getTokenKey();
-          if (tokenKey != null) {
-            // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());
-            PwToken tokenToFind = partialPlan.getToken( tokenKey);
-            boolean isByKey = true;
-            findAndSelectToken( tokenToFind, isByKey);
+          AskNodeByKey nodeByKeyDialog =
+            new AskNodeByKey( "Find by Key", "key (int)", TimelineView.this);
+          Integer nodeKey = nodeByKeyDialog.getNodeKey();
+          if (nodeKey != null) {
+            // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
+            PwToken tokenToFind = partialPlan.getToken( nodeKey);
+            if (tokenToFind != null) {
+              boolean isByKey = true;
+              findAndSelectToken( tokenToFind, isByKey);
+            } else {
+              PwSlot slotToFind = partialPlan.getSlot( nodeKey);
+              if (slotToFind != null) {
+                findAndSelectSlot( slotToFind);
+              }
+            }
           }
         }
       });
-  } // end createTokenByKeyItem
+  } // end createNodeByKeyItem
 
 
   private void createActiveTokenItem( JMenuItem activeTokenItem) {
@@ -666,7 +673,7 @@ public class TimelineView extends PartialPlanView {
   } // end createActiveTokenItem
 
   private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
-    boolean isTokenFound = false;
+    boolean isTokenFound = false, isHighlightNode = true;
     Iterator timelineNodeListItr = timelineNodeList.iterator();
     foundIt:
     while (timelineNodeListItr.hasNext()) {
@@ -685,7 +692,7 @@ public class TimelineView extends PartialPlanView {
             System.err.println( "TimelineView found token: " +
                                 tokenToFind.getPredicate().getName() +
                                 " (key=" + tokenToFind.getId().toString() + ")");
-            NodeGenerics.focusViewOnNode( slotNode, jGoView);
+            NodeGenerics.focusViewOnNode( slotNode, isHighlightNode, jGoView);
             // secondary nodes do not apply here
             isTokenFound = true;
             break foundIt;
@@ -701,7 +708,7 @@ public class TimelineView extends PartialPlanView {
           System.err.println( "TimelineView found token: " +
                               tokenToFind.getPredicate().getName() +                   
                               " (key=" + tokenToFind.getId().toString() + ")");
-          NodeGenerics.focusViewOnNode( freeTokenNode, jGoView);
+          NodeGenerics.focusViewOnNode( freeTokenNode, isHighlightNode, jGoView);
           // secondary nodes do not apply here
           isTokenFound = true;
           break;
@@ -718,6 +725,38 @@ public class TimelineView extends PartialPlanView {
       System.exit( 1);
     }
   } // end findAndSelectToken
+
+
+  private void findAndSelectSlot( PwSlot slotToFind) {
+    boolean isSlotFound = false;
+    boolean isHighlightNode = true;
+    Iterator timelineNodeListItr = timelineNodeList.iterator();
+    foundIt:
+    while (timelineNodeListItr.hasNext()) {
+      TimelineNode timelineNode = (TimelineNode) timelineNodeListItr.next();
+      Iterator slotNodeListItr = timelineNode.getSlotNodeList().iterator();
+      while (slotNodeListItr.hasNext()) {
+        SlotNode slotNode = (SlotNode) slotNodeListItr.next();
+        if (slotNode.getSlot().getId().equals( slotToFind.getId())) {
+          System.err.println( "TimelineView found slot: " +
+                              slotNode.getPredicateName() +
+                              " (key=" + slotToFind.getId().toString() + ")");
+          NodeGenerics.focusViewOnNode( slotNode, isHighlightNode, jGoView);
+          // secondary nodes do not apply here
+          isSlotFound = true;
+          break foundIt;
+        }
+      }
+    }
+    if (! isSlotFound) {
+      String message = "Slot (key=" + slotToFind.getId().toString() + ") not found.";
+      JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                     "Slot Not Found in TimelineView",
+                                     JOptionPane.ERROR_MESSAGE);
+      System.err.println( message);
+      System.exit( 1);
+    }
+  } // end findAndSelectSlot
 
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.13 2003-11-03 19:02:40 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.14 2003-11-06 00:02:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,16 +17,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import javax.swing.BoxLayout;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -46,11 +41,9 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
-import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.AskTokenByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -92,7 +85,6 @@ public class ConstraintNetworkView extends PartialPlanView {
   private static final double VERTICAL_BAND_DISTANCE = 200;
   public static final double NODE_SPACING = 10.;
 
-  private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
   private ConstraintJGoView jGoView;
@@ -121,7 +113,6 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public ConstraintNetworkView( ViewableObject partialPlan, ViewSet viewSet) {
     super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
-    this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     tokenNodeList = null;
@@ -139,7 +130,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
-    jGoView = new ConstraintJGoView();
+    jGoView = new ConstraintJGoView( this);
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -260,8 +251,14 @@ public class ConstraintNetworkView extends PartialPlanView {
       //layout.performLayout();
       newLayout.performLayout();
 
+      // do not highlight node, if it has been removed
+      boolean isHighlightNode = ((focusNode instanceof ConstraintNetworkTokenNode) ||
+                                 ((focusNode instanceof VariableNode) &&
+                                  (((VariableNode) focusNode).inLayout())) ||
+                                 ((focusNode instanceof ConstraintNode) &&
+                                  (((ConstraintNode) focusNode).inLayout())));
       if (focusNode != null) {
-        NodeGenerics.focusViewOnNode( focusNode, jGoView);
+        NodeGenerics.focusViewOnNode( focusNode, isHighlightNode, jGoView);
       }
       isLayoutNeeded = false;
     }
@@ -339,6 +336,15 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public void setFocusNode( JGoArea node) {
     this.focusNode = node;
+  }
+
+  /**
+   * <code>getNewLayout</code>
+   *
+   * @return - <code>NewConstraintNetworkLayout</code> - 
+   */
+  protected NewConstraintNetworkLayout getNewLayout() {
+    return newLayout;
   }
 
   private void createTokenNodes() {
@@ -1068,17 +1074,19 @@ public class ConstraintNetworkView extends PartialPlanView {
           }
         }
       }
-      Iterator varTokLinkItr = variableNode.getVariableTokenLinkList().iterator();
-      while (varTokLinkItr.hasNext()) {
-        BasicNodeLink link = (BasicNodeLink) varTokLinkItr.next();
-        if (link.inLayout() &&
-            ((VariableNode) link.getFromNode()).equals( variableNode)) {
-          if (removeVariableToTokenLink( link, variableNode,
-                                         (ConstraintNetworkTokenNode) link.getToNode())) {
-            areLinksChanged = true;
-          }
-        }
-      }
+      // this decrements/removes token->variable links when constraintNode is
+      // closed -- do not do it - will 04nov03
+//       Iterator varTokLinkItr = variableNode.getVariableTokenLinkList().iterator();
+//       while (varTokLinkItr.hasNext()) {
+//         BasicNodeLink link = (BasicNodeLink) varTokLinkItr.next();
+//         if (link.inLayout() &&
+//             ((VariableNode) link.getFromNode()).equals( variableNode)) {
+//           if (removeVariableToTokenLink( link, variableNode,
+//                                          (ConstraintNetworkTokenNode) link.getToNode())) {
+//             areLinksChanged = true;
+//           }
+//         }
+//       }
     }
     return areLinksChanged;
   } // end removeConstraintToVariableLinks( ConstraintNode constraintNode) {
@@ -1253,147 +1261,6 @@ public class ConstraintNetworkView extends PartialPlanView {
     }
   } // end setLinksVisible
 
-
-  /**
-   * <code>ConstraintJGoView</code> - subclass JGoView to add doBackgroundClick
-   *
-   */
-  class ConstraintJGoView extends JGoView {
-
-    /**
-     * <code>ConstraintJGoView</code> - constructor 
-     *
-     */
-    public ConstraintJGoView() {
-      super();
-    }
-
-    /**
-     * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
-     *                                 1) snap to active token
-     *
-     * @param modifiers - <code>int</code> - 
-     * @param docCoords - <code>Point</code> - 
-     * @param viewCoords - <code>Point</code> - 
-     */
-    public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
-      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-        // do nothing
-      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-        mouseRightPopupMenu( viewCoords);
-      }
-    } // end doBackgroundClick
-
-  } // end class ConstraintJGoView
-
-
-  private void mouseRightPopupMenu( Point viewCoords) {
-    JPopupMenu mouseRightPopup = new JPopupMenu();
-    JMenuItem tokenByKeyItem = new JMenuItem( "Find Token by Key");
-    createTokenByKeyItem( tokenByKeyItem);
-    mouseRightPopup.add( tokenByKeyItem);
-
-    JMenuItem changeViewItem = new JMenuItem( "Get Partial Plan View");
-    createChangeViewItem( changeViewItem, partialPlan, viewCoords);
-    mouseRightPopup.add( changeViewItem);
-    
-    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
-    createRaiseContentSpecItem( raiseContentSpecItem);
-    mouseRightPopup.add( raiseContentSpecItem);
-    
-    JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
-    createActiveTokenItem( activeTokenItem);
-    mouseRightPopup.add( activeTokenItem);
-
-    JMenuItem changeLayoutItem = null;
-    if(newLayout.layoutHorizontal()) {
-      changeLayoutItem = new JMenuItem("Vertical Layout");
-    }
-    else {
-      changeLayoutItem = new JMenuItem("Horizontal Layout");
-    }
-    createChangeLayoutItem(changeLayoutItem);
-    mouseRightPopup.add(changeLayoutItem);
-
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
-  } // end mouseRightPopupMenu
-
-  private void createActiveTokenItem( JMenuItem activeTokenItem) {
-    activeTokenItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          PwToken activeToken =
-            ((PartialPlanViewSet) ConstraintNetworkView.this.getViewSet()).getActiveToken();
-          if (activeToken != null) {
-            boolean isByKey = false;
-            findAndSelectToken( activeToken, isByKey);
-          }
-        }
-      });
-  } // end createActiveTokenItem
-
-  private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
-    tokenByKeyItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          AskTokenByKey tokenByKeyDialog =
-            new AskTokenByKey( partialPlan, "Find Token by Key", "key (int)");
-          Integer tokenKey = tokenByKeyDialog.getTokenKey();
-          if (tokenKey != null) {
-            // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());
-            PwToken tokenToFind = partialPlan.getToken( tokenKey);
-            boolean isByKey = true;
-            findAndSelectToken( tokenToFind, isByKey);
-          }
-        }
-      });
-  } // end createTokenByKeyItem
-
-  private void createChangeLayoutItem(JMenuItem changeLayoutItem) {
-    changeLayoutItem.addActionListener( new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if(newLayout.layoutHorizontal()) {
-            newLayout.setLayoutVertical();
-          }
-          else {
-            newLayout.setLayoutHorizontal();
-          }
-          newLayout.performLayout();
-          redraw();
-        }
-      });
-  }
-
-  private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
-    boolean isTokenFound = false;
-    Iterator tokenNodeListItr = tokenNodeList.iterator();
-    while (tokenNodeListItr.hasNext()) {
-      TokenNode tokenNode = (TokenNode) tokenNodeListItr.next();
-      if ((tokenNode.getToken() != null) &&
-          (tokenNode.getToken().getId().equals( tokenToFind.getId()))) {
-        System.err.println( "ConstraintNetworkView found token: " +
-                            tokenToFind.getPredicate().getName() +
-                            " (key=" + tokenToFind.getId().toString() + ")");
-        NodeGenerics.focusViewOnNode( tokenNode, jGoView);
-        isTokenFound = true;
-        break;
-      }
-    }
-    if (isTokenFound && (! isByKey)) {
-      NodeGenerics.selectSecondaryNodes
-        ( NodeGenerics.mapTokensToTokenNodes
-          (((PartialPlanViewSet) ConstraintNetworkView.this.getViewSet()).
-           getSecondaryTokens(), tokenNodeList),
-          jGoView);
-    }
-    if (! isTokenFound) {
-      String message = "Token " + tokenToFind.getPredicate().getName() +
-        " (key=" + tokenToFind.getId().toString() + ") not found.";
-      JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
-                                     "Token Not Found in ConstraintNetworkView",
-                                     JOptionPane.ERROR_MESSAGE);
-      System.err.println( message);
-      System.exit( 1);
-    }
-  } // end findAndSelectToken
 } // end class ConstraintNetworkView
 
 
