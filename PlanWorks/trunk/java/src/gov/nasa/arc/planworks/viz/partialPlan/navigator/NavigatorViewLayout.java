@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorViewLayout.java,v 1.1 2004-01-12 19:46:30 taylor Exp $
+// $Id: NavigatorViewLayout.java,v 1.2 2004-08-16 22:01:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -76,13 +76,13 @@ public class NavigatorViewLayout extends JGoLayeredDigraphAutoLayout {
    *
    * @param progress - <code>double</code> - 
    */
-  public void progressUpdate( double progress) {
-    // System.err.println( "NavigatorViewLayout progress: " + progress);
-    if (progress == 1.0) {
-      long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... elapsed time: " +
-                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    }
-  } // end progressUpdate
+//   public void progressUpdate( double progress) {
+//     // System.err.println( "NavigatorViewLayout progress: " + progress);
+//     if (progress == 1.0) {
+//       long stopTimeMSecs = System.currentTimeMillis();
+//       System.err.println( "   ... elapsed time: " +
+//                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
+//     }
+//   } // end progressUpdate
 
 } // end class NavigatorViewLayout

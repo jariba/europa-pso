@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.55 2004-08-16 18:40:13 taylor Exp $
+// $Id: planViz.txt,v 1.56 2004-08-16 22:01:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -867,13 +867,17 @@ Method:
  10. On the background of any of the Navigator Views, click Mouse-Right and select
      "Find Entity Path", entering in turn all the permutations of token, variable,
      constraint, rule instance, slot, object, resource, and timeline keys
+ 11. On the background of any of the Navigator Views, click Mouse-Right and select
+     "Find by Key", entering any appropriate entity key.
 
 Post-conditions:
-  1. Methods: 1-8 - Use the other views to verify the relationships rendered on 
+  1. Methods:1-8 - Use the other views to verify the relationships rendered on 
      the Navigator Views.
-  2. Method: 9 - Verify that the selected operations are completed.
-  3. Method: 10 - Verify that the proper node path is found and rendered, and the
+  2. Method:9 - Verify that the selected operations are completed.
+  3. Method:10 - Verify that the proper node path is found and rendered, and the
      path nodes are highlighted.
+  4. Method:11 - Verify that that node appears, being opening along with its
+     neighbors, if necessary.
 
 Requirements: N/A
 
@@ -899,8 +903,8 @@ Method:
 Post-conditions:
   1. Method:1 - All views vanish, but are listed by clicking on the "Window"
      menu bar item.
-  2. Method:1 - All views reappear in their same locations.
-  3. Method:1 - All views vanish, and are not listed by clicking on the "Window"
+  2. Method:2 - All views reappear in their same locations.
+  3. Method:3 - All views vanish, and are not listed by clicking on the "Window"
      menu bar item.
  
 

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.56 2004-08-14 01:39:06 taylor Exp $
+# $Id: GETTING_STARTED,v 1.57 2004-08-16 22:01:00 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -350,10 +350,12 @@ Timeline, and the Token Network views, there is a Mouse-Right selection
 "Open Navigator View" which allows navigation through all relationships 
 in the partial plan data base, beginning with the selected entity.
 
-The Navigator View has two background Mouse-Right selection options: "Find 
-Entity Path" and "Highlight Current Path".  "Find Entity Path" requests 
-two entity keys and finds a path through tokens, variables, constraints, rule 
-instances, slots, objects, resources, and timelines.  This node path is saved.  
+In addition to the "standard" selections, the Navigator View has three
+background Mouse-Right selection options: "Find by Key", "Find Entity Path",
+and "Highlight Current Path".  "Find by Key" requests a single entity key and 
+finds that node, opening it and its neighbors, if necessary.  "Find Entity Path" 
+requests two entity keys and finds a path through tokens, variables, constraints, 
+rule instances, slots, objects, resources, and timelines.  This node path is saved.  
 Selected nodes are dragged as a group, which may be inconvenient.  To deal with 
 this, click Mouse-Left in the background to discard the selections, drag the
 nodes to new locations, and then on the background select Mouse-Right: 
