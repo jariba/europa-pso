@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.14 2003-06-26 20:00:25 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.15 2003-06-30 18:03:52 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -115,7 +115,7 @@ public class PwProjectImpl extends PwProject {
    * @exception DuplicateNameException if an error occurs
    */
   public PwProjectImpl( String name)  throws DuplicateNameException, SQLException {
-    ResultSet projects = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName=".concat(name));
+    ResultSet projects = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName='".concat(name).concat("'"));
     if(projects.getFetchSize() != 0) {
       throw new DuplicateNameException(projects.getFetchSize() + " projects with name '" + name +
                                        "were found.");
@@ -139,7 +139,7 @@ public class PwProjectImpl extends PwProject {
   public PwProjectImpl( String name, boolean isInDb) 
     throws ResourceNotFoundException, SQLException {
     this.name = name;
-    ResultSet dbProject = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName=".concat(name));
+    ResultSet dbProject = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName='".concat(name).concat("'"));
 
     key = new Integer(dbProject.getInt("ProjectId"));
     planningSequences = new ArrayList();
