@@ -1,0 +1,17 @@
+connect PlanWorks;
+DELETE FROM ConstraintVarMap;
+DELETE FROM EnumeratedDomain;
+DELETE FROM IntervalDomain;
+DELETE FROM Object;
+DELETE FROM ParamVarTokenMap;
+DELETE FROM Parameter;
+DELETE FROM PartialPlan;
+DELETE FROM Predicate;
+DELETE FROM Project;
+DELETE FROM Sequence;
+DELETE FROM Slot;
+DELETE FROM Timeline;
+DELETE FROM Token;
+DELETE FROM TokenRelation;
+DELETE FROM VConstraint;
+DELETE FROM Variable;
