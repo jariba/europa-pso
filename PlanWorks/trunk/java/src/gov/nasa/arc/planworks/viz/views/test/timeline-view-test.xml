@@ -6,9 +6,11 @@
 	<property name="arg_gcMax" value="975"/>
 	<property name="eXist_conf_file" value="conf-nolog.xml"/>
 	<property name="xml_files_dir" value="xml/test/monkey"/>
-	<property environment="env"/>
 	<property name="EXIST_HOME" location="${PLANWORKS_ROOT}/java/lib/eXist"/>
 	<property environment="env"/>
+        <property name="junit.home" location="${env.JUNIT_HOME}"/>
+        <property name="jfcunit.home" location="${env.JFCUNIT_HOME}"/>
+        <property name="jakarta.regexp.home" location="${env.JAKARTA_REGEXP_HOME}"/>
 
 	<path id="planworks.jars">
 		<pathelement path="${PLANWORKS_ROOT}/java/classes"/>
@@ -18,9 +20,9 @@
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
                 <pathelement location="${EXIST_HOME}/exist.jar"/>
                 <fileset dir="${EXIST_HOME}/lib/core" includes="*.jar"/>
-                <pathelement location="${JUNIT_HOME}/junit.jar"/>
-                <pathelement location="${JFCUNIT_HOME}/jfcunit.jar"/>
-                <pathelement location="${JAKARTA_REGEXP_HOME}/jakarta-regexp-1.2.jar"/>
+                <pathelement location="${junit.home}/junit.jar"/>
+                <pathelement location="${jfcunit.home}/jfcunit.jar"/>
+                <pathelement location="${jakarta.regexp.home}/jakarta-regexp-1.2.jar"/>
 	</path>
 	<delete>
 		<fileset dir="${PLANWORKS_ROOT}/xml/db/data" includes="*.dbx"/>

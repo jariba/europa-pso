@@ -1,5 +1,6 @@
 package gov.nasa.arc.planworks.viz.views.test;
 
+import java.awt.Color;
 import java.util.Set;
 import junit.extensions.jfcunit.*;
 import gov.nasa.arc.planworks.proj.test.PwProjectTest;
@@ -24,19 +25,32 @@ public class TimelineViewTest extends JFCTestCase
 				super.tearDown();
 		}
 
-		public void testMain()
+                public void testMain()
 		{
 				Set windows;
-				String [] args = new String [3];
-				String jvm_ge_14 = new String("false");
-				if(System.getProperty("java.version").compareTo("1.4.1") >= 0)
-						jvm_ge_14 = new String("true");
-				args[0] = System.getProperty("os.name");
-				args[1] = jvm_ge_14;
-				args[2] = System.getProperty("xml.files.dir");
-				PwProjectTest.main(args);
+
 				awtSleep();
 				windows = helper.getWindows();
 				assertEquals("Timeline window failed to open", 1, windows.size());
 		}
+
+                public static void main( String[] args)
+                {
+                                boolean jvm_ge_14 = false;
+				if(System.getProperty("java.version").compareTo("1.4.1") >= 0)
+						jvm_ge_14 = true;
+				PwProjectTest projectTest =
+                                  new PwProjectTest( System.getProperty("os.name"),
+                                                     jvm_ge_14,
+                                                     System.getProperty("xml.files.dir"));
+                                projectTest.setSize( PwProjectTest.FRAME_WIDTH,
+                                                     PwProjectTest.FRAME_HEIGHT);
+                                projectTest.setLocation( PwProjectTest.FRAME_X_LOCATION,
+                                                         PwProjectTest.FRAME_Y_LOCATION);
+                                projectTest.setBackground( Color.gray);
+                                projectTest.setVisible( true);
+
+                                // testMain();
+                }
 }
+ 

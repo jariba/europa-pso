@@ -12,6 +12,10 @@
   <property name="javahDestdir"  value="../cpp/include/europa"/>
   <property name="eXistRoot"  value="lib/eXist"/>
   <property name="jGoRoot"  value="lib/JGo"/>
+  <property environment="env"/>
+  <property name="junit.home" location="${env.JUNIT_HOME}"/>
+  <property name="jfcunit.home" location="${env.JFCUNIT_HOME}"/>
+  <property name="jakarta.regexp.home" location="${env.JAKARTA_REGEXP_HOME}"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -31,6 +35,9 @@
           <pathelement location="${jGoRoot}/JGo.jar"/>
           <pathelement location="${jGoRoot}/JGoLayout.jar"/>
           <pathelement location="${jGoRoot}/Classier.jar"/>
+          <pathelement location="${junit.home}/junit.jar"/>
+          <pathelement location="${jfcunit.home}/jfcunit.jar"/>
+          <pathelement location="${jakarta.regexp.home}/jakarta-regexp-1.2.jar"/>
        </classpath>
     </javac>
     <!-- Compile local mods to eXist-0.9.1 (see xpath.README) -->
