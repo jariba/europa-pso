@@ -4,21 +4,25 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.10 2003-07-08 22:57:31 taylor Exp $
+# $Id: README,v 1.11 2003-07-09 23:52:48 taylor Exp $
 #
 
 SUMMARY
 =======
-Milestone 2 integates the Multiple Document Interface (MDI) for window
-management, project management (creating, saving, opening and deleting),
-the plan generator, and the Content Specification functionality for 
-filtering partial plan rendering in the user selected views, which is 
-currently restricted to the Timeline View.
+Milestone 3 changes the backend data base content from XML accessed by
+eXist using XPATH, to MySQL.  This results in a performance improvement 
+of at least a factor of 3, and much simpler and quicker data
+base queries by the Content Specification processor.  An XML to
+MySQL convertor program has been added to convert planGen's XML output
+to MySQL files.  The Token Network view has been added.  Project
+management is now handled completely in MysQL, rather than using
+Java "beans".  THe Content Specification processor now filters only
+by tokens, predicates, and time intervals.
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_2 PlanWorks
+> cvs co -r PW_M_3 PlanWorks
 
 
 PREREQUISITES
@@ -66,6 +70,15 @@ still holds, but you're on your own beyond that.
  planWorksTest     -- JFCunit test (compile, cleanDb dependencies)
 
 Default target: planWorks
+
+
+PREVIOUS MILESTONES
+===================
+Milestone 2 integrates the Multiple Document Interface (MDI) for window
+management, project management (creating, saving, opening and deleting),
+the plan generator, and the Content Specification functionality for 
+filtering partial plan rendering in the user selected views, which is 
+currently restricted to the Timeline View.
 
 
 DEVELOPING PLANWORKS
