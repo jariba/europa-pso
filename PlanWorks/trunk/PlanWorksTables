@@ -218,7 +218,6 @@ CREATE TABLE PartialPlan (
 CREATE TABLE Project (
   ProjectId int(11) NOT NULL auto_increment,
   ProjectName varchar(255) NOT NULL default 'ErrorProject',
-  Tests longblob default NULL,
   PRIMARY KEY  (ProjectId)
 ) TYPE=MyISAM;
 
