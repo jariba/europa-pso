@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.77 2004-01-05 23:34:17 taylor Exp $
+// $Id: MySQLDB.java,v 1.78 2004-01-14 21:22:57 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -232,8 +232,8 @@ public class MySQLDB {
       stmt.execute("ANALYZE TABLE Variable");
       stmt.execute("ANALYZE TABLE VConstraint");
       stmt.execute("ANALYZE TABLE ConstraintVarMap");
-      stmt.execute("ANALYZE TABLE Predicate");
-      stmt.execute("ANALYZE TABLE Parameter");
+      //stmt.execute("ANALYZE TABLE Predicate");
+      //stmt.execute("ANALYZE TABLE Parameter");
       stmt.execute("ANALYZE TABLE TokenRelation");
       stmt.execute("ANALYZE TABLE Transaction");
     }
@@ -517,8 +517,8 @@ public class MySQLDB {
         updateDatabase("DELETE FROM VConstraint".concat(whereClause.toString()));
         updateDatabase("DELETE FROM TokenRelation".concat(whereClause.toString()));
         updateDatabase("DELETE FROM ConstraintVarMap".concat(whereClause.toString()));
-        updateDatabase("DELETE FROM Predicate".concat(whereClause.toString()));
-        updateDatabase("DELETE FROM Parameter".concat(whereClause.toString()));
+        //updateDatabase("DELETE FROM Predicate".concat(whereClause.toString()));
+        //updateDatabase("DELETE FROM Parameter".concat(whereClause.toString()));
         updateDatabase("DELETE FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
       }
       updateDatabase("DELETE FROM PartialPlanStats WHERE SequenceId=".concat(sequenceId.toString()));
@@ -700,7 +700,7 @@ public class MySQLDB {
 
     try {
       ResultSet timelineSlotTokens = 
-        queryDatabase("SELECT Token.TimelineId, Token.TimelineName, Token.ObjectId, Token.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, Token.ParamVarIds, Token.TokenRelationIds FROM Token WHERE Token.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.ObjectId, Token.TimelineId, Token.SlotIndex, Token.TokenId"));
+        queryDatabase("SELECT Token.TimelineId, Token.TimelineName, Token.ObjectId, Token.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds FROM Token WHERE Token.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.ObjectId, Token.TimelineId, Token.SlotIndex, Token.TokenId"));
       PwObjectImpl object = null;
       PwTimelineImpl timeline = null;
       PwSlotImpl slot = null;
@@ -731,7 +731,8 @@ public class MySQLDB {
         if(token == null || !token.getId().equals(tokenId)) {
           token = new PwTokenImpl(tokenId, timelineSlotTokens.getBoolean("Token.IsValueToken"),
                                   slot.getId(), 
-                                  new Integer(timelineSlotTokens.getInt("Token.PredicateId")),
+                                  timelineSlotTokens.getString("Token.PredicateName"),
+                                  //new Integer(timelineSlotTokens.getInt("Token.PredicateId")),
                                   new Integer(timelineSlotTokens.getInt("Token.StartVarId")),
                                   new Integer(timelineSlotTokens.getInt("Token.EndVarId")),
                                   new Integer(timelineSlotTokens.getInt("Token.DurationVarId")),
@@ -772,14 +773,15 @@ public class MySQLDB {
           slot.addToken(token);
         }
       }
-      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.RejectVarId, Token.PredicateId, Token.ParamVarIds, Token.TokenRelationIds FROM Token WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
+      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.RejectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds FROM Token WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
       token = null;
       while(freeTokens.next()) {
         Integer tokenId = new Integer(freeTokens.getInt("Token.TokenId"));
         if(token == null || !token.getId().equals(tokenId)) {
           token = new PwTokenImpl(tokenId, freeTokens.getBoolean("Token.IsValueToken"),
                                   (Integer) null, 
-                                  new Integer(freeTokens.getInt("Token.PredicateId")),
+                                  freeTokens.getString("Token.PredicateName"),
+                                  //new Integer(freeTokens.getInt("Token.PredicateId")),
                                   new Integer(freeTokens.getInt("Token.StartVarId")),
                                   new Integer(freeTokens.getInt("Token.EndVarId")),
                                   new Integer(freeTokens.getInt("Token.DurationVarId")),
@@ -861,36 +863,6 @@ public class MySQLDB {
   }
 
   /**
-   * Instantiate PwPredicateImpl/PwParameterImpl objects from data in the database
-   *
-   * @param partialPlan The partial plan to which the PwPredicateImpl structure should be attached.
-   */
-
-  synchronized public static void queryPredicates(PwPartialPlanImpl partialPlan) {
-    try {
-      ResultSet predicates = 
-        queryDatabase("SELECT PredicateId, PredicateName FROM Predicate WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
-      while(predicates.next()) {
-        Integer predicateId = new Integer(predicates.getInt("PredicateId"));
-        PwPredicateImpl predicate =  new PwPredicateImpl(predicateId,
-                                                         predicates.getString("PredicateName"),
-                                                         partialPlan);
-        partialPlan.addPredicate(predicateId, predicate);
-        ResultSet parameters =
-          queryDatabase("SELECT ParameterId, ParameterName FROM Parameter WHERE PartialPlanId=".concat(partialPlan.getId().toString()).concat(" && PredicateId=").concat(predicateId.toString()));
-        while(parameters.next()) {
-          Integer parameterId = new Integer(parameters.getInt("ParameterId"));
-          predicate.addParameter(parameterId, parameters.getString("ParameterName"));
-        }
-      }
-    }
-    catch(SQLException sqle) {
-      System.err.println(sqle);
-      sqle.printStackTrace();
-    }
-  }
-
-  /**
    * Instantiate PwVariableImpl objects from data in the database
    *
    * @param partialPlan The partial plan to which the PwVariableImpls should be attached
@@ -898,7 +870,7 @@ public class MySQLDB {
   synchronized public static void queryVariables(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet variables =
-        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.EnumDomain, Variable.IntDomainType, Variable.IntDomainLowerBound, Variable.IntDomainUpperBound, Variable.TokenId, Variable.ParameterId, ConstraintVarMap.ConstraintId FROM Variable LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getId().toString()));
+        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.EnumDomain, Variable.IntDomainType, Variable.IntDomainLowerBound, Variable.IntDomainUpperBound, Variable.TokenId, Variable.ParameterName, ConstraintVarMap.ConstraintId FROM Variable LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getId().toString()));
       PwVariableImpl variable = null;
       while(variables.next()) {
         Integer variableId = new Integer(variables.getInt("Variable.VariableId"));
@@ -918,9 +890,11 @@ public class MySQLDB {
           variable = new PwVariableImpl(variableId, variables.getString("Variable.VariableType"),
                                         domain, partialPlan);
           partialPlan.addVariable(variableId, variable);
-          Integer parameterId = new Integer(variables.getInt("Variable.ParameterId"));
-          if(!variables.wasNull() && parameterId.intValue() != -1) {
-            variable.addParameter(parameterId);
+
+          //Integer parameterId = new Integer(variables.getInt("Variable.ParameterId"));
+          String parameterName = variables.getString("Variable.ParameterName");
+          if(!variables.wasNull()) {
+            variable.addParameter(parameterName);
           }
           Integer tokenId = new Integer(variables.getInt("Variable.TokenId"));
           variable.addToken(tokenId);
@@ -1169,7 +1143,7 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       Long partialPlanId = getPartialPlanIdByStepNum(seq.getId(), stepNum);
-      String queryString = "SELECT Token.TokenId, Token.PredicateId, Token.PartialPlanId, Predicate.PredicateName FROM Token LEFT JOIN Predicate ON Predicate.PartialPlanId=Token.PartialPlanId && Predicate.PredicateId=Token.PredicateId WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlanId.toString());
+      String queryString = "SELECT Token.TokenId, Token.PredicateName, Token.PartialPlanId FROM Token WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlanId.toString());
 
       // System.err.println( "queryString " + queryString);
       ResultSet queryResults = queryDatabase( queryString);
@@ -1178,7 +1152,7 @@ public class MySQLDB {
         retvalObject.add( new Integer( queryResults.getInt( "Token.TokenId")));
         retvalObject.add(new Long( queryResults.getLong( "Token.PartialPlanId")));
         retvalObject.add(new Integer(stepNum));
-        retvalObject.add( queryResults.getString( "Predicate.PredicateName"));
+        retvalObject.add( queryResults.getString( "Token.PredicateName"));
         // System.err.println( "retvalObject " + retvalObject);
         retval.add( retvalObject);
       }
@@ -1199,15 +1173,6 @@ public class MySQLDB {
       while(vars.next()) {
         instantiateVar = false;
         if(vars.getString("DomainType").equals("IntervalDomain")) {
-          // does not handle "Infinity" bounds
-//           if(vars.getString("IntDomainType").equals("INTEGER_SORT")) {
-//             instantiateVar = !(Long.parseLong(vars.getString("IntDomainLowerBound")) == 
-//                                Long.parseLong(vars.getString("IntDomainUpperBound")));
-//           }
-//           else {
-//             instantiateVar = !(Double.parseDouble(vars.getString("IntDomainLowerBound")) == 
-//                                Double.parseDouble(vars.getString("IntDomainUpperBound")));
-//           }
           instantiateVar =
             ! vars.getString("IntDomainLowerBound").equals
             ( vars.getString("IntDomainUpperBound"));
@@ -1345,10 +1310,10 @@ public class MySQLDB {
       while(ids.next()) {
         retval.put(DbConstants.TBL_OBJECT, new Integer(ids.getInt("ObjectId")));
       }
-      ids = queryDatabase("SELECT PredicateId FROM Predicate WHERE PartialPlanId=".concat(ppId.toString()));
-      while(ids.next()) {
-        retval.put(DbConstants.TBL_PREDICATE, new Integer(ids.getInt("PredicateId")));
-      }
+//       ids = queryDatabase("SELECT PredicateId FROM Predicate WHERE PartialPlanId=".concat(ppId.toString()));
+//       while(ids.next()) {
+//         retval.put(DbConstants.TBL_PREDICATE, new Integer(ids.getInt("PredicateId")));
+//       }
       ids = queryDatabase("SELECT TokenId FROM Token WHERE PartialPlanId=".concat(ppId.toString()));
       while(ids.next()) {
         retval.put(DbConstants.TBL_TOKEN, new Integer(ids.getInt("TokenId")));

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SpecBox.java,v 1.1 2003-10-01 23:54:02 taylor Exp $
+// $Id: SpecBox.java,v 1.2 2004-01-14 21:27:38 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -121,7 +121,7 @@ public class SpecBox extends JPanel implements ContentSpecElement {
       connective.append(" not");
     }
     retval.add(connective.toString());
-    retval.add((Integer) names.get(keyField.getSelectedItem()));
+    retval.add(names.get(keyField.getSelectedItem()));
     return retval;
   }
   /**

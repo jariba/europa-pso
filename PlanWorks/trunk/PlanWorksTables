@@ -165,43 +165,6 @@ CREATE TABLE ConstraintVarMap (
 -- Dumping data for table 'ConstraintVarMap'
 --
 
-
---
--- Table structure for table 'EnumeratedDomain'
---
-
---CREATE TABLE EnumeratedDomain (
---  EnumeratedDomainId int(11) NOT NULL default '0',
---  PartialPlanId bigint(20) NOT NULL default '0',
---  Domain blob NOT NULL,
---  PRIMARY KEY  (PartialPlanId,EnumeratedDomainId),
---  INDEX (EnumeratedDomainId)
---) TYPE=MyISAM;
-
---
--- Dumping data for table 'EnumeratedDomain'
---
-
-
---
--- Table structure for table 'IntervalDomain'
---
-
---CREATE TABLE IntervalDomain (
---  IntervalDomainId int(11) NOT NULL default '0',
---  PartialPlanId bigint(20) NOT NULL default '0',
---  LowerBound varchar(255) NOT NULL default '',
---  UpperBound varchar(255) NOT NULL default '',
---  IntervalDomainType enum('INTEGER_SORT','REAL_SORT') NOT NULL,
---  PRIMARY KEY  (PartialPlanId,IntervalDomainid),
---  INDEX (IntervalDomainId)
---) TYPE=MyISAM;
-
---
--- Dumping data for table 'IntervalDomain'
---
-
-
 --
 -- Table structure for table 'Object'
 --
@@ -220,38 +183,18 @@ CREATE TABLE Object (
 -- Dumping data for table 'Object'
 --
 
-
---
--- Table structure for table 'ParamVarTokenMap'
---
-
---CREATE TABLE ParamVarTokenMap (
---  VariableId int(11) NOT NULL default '0',
---  TokenId int(11) NOT NULL default '0',
---  ParameterId int(11) NOT NULL default '0',
---  PartialPlanId bigint(20) NOT NULL default '0',
---  PRIMARY KEY  (PartialPlanId,TokenId,VariableId,ParameterId),
---  INDEX (VariableId), INDEX (TokenId), INDEX (ParameterId),
---  INDEX (VariableId, PartialPlanId)
---) TYPE=MyISAM;
-
---
--- Dumping data for table 'ParamVarTokenMap'
---
-
-
 --
 -- Table structure for table 'Parameter'
 --
 
-CREATE TABLE Parameter (
-  ParameterId int(11) NOT NULL default '0',
-  PredicateId int(11) NOT NULL default '0',
-  PartialPlanId bigint(20) NOT NULL default '0',
-  ParameterName varchar(255) NOT NULL default 'ErrorParameter',
-  PRIMARY KEY  (PartialPlanId,ParameterId,PredicateId),
-  INDEX (ParameterId), INDEX (PredicateId)
-) TYPE=MyISAM;
+--CREATE TABLE Parameter (
+--  ParameterId int(11) NOT NULL default '0',
+--  PredicateId int(11) NOT NULL default '0',
+--  PartialPlanId bigint(20) NOT NULL default '0',
+--  ParameterName varchar(255) NOT NULL default 'ErrorParameter',
+--  PRIMARY KEY  (PartialPlanId,ParameterId,PredicateId),
+--  INDEX (ParameterId), INDEX (PredicateId)
+--) TYPE=MyISAM;
 
 --
 -- Dumping data for table 'Parameter'
@@ -280,13 +223,13 @@ CREATE TABLE PartialPlan (
 -- Table structure for table 'Predicate'
 --
 
-CREATE TABLE Predicate (
-  PredicateId int(11) NOT NULL default '0',
-  PredicateName varchar(25) NOT NULL default 'ErrorPredicate',
-  PartialPlanId bigint(20) NOT NULL default '0',
-  PRIMARY KEY  (PartialPlanId,PredicateId),
-  INDEX (PredicateId)
-) TYPE=MyISAM;
+--CREATE TABLE Predicate (
+--  PredicateId int(11) NOT NULL default '0',
+--  PredicateName varchar(25) NOT NULL default 'ErrorPredicate',
+--  PartialPlanId bigint(20) NOT NULL default '0',
+--  PRIMARY KEY  (PartialPlanId,PredicateId),
+--  INDEX (PredicateId)
+--) TYPE=MyISAM;
 
 --
 -- Dumping data for table 'Predicate'
@@ -325,44 +268,6 @@ CREATE TABLE Sequence (
 -- Dumping data for table 'Sequence'
 --
 
-
---
--- Table structure for table 'Slot'
---
-
---CREATE TABLE Slot (
---  SlotId int(11) NOT NULL default '0',
---  TimelineId int(11) NOT NULL default '0',
---  PartialPlanId bigint(20) NOT NULL default '0',
---  ObjectId int(11) NOT NULL default '0',
---  SlotIndex int(11) NOT NULL default '0',
---  PRIMARY KEY  (PartialPlanId,SlotId),
---  INDEX (SlotId), INDEX (SlotIndex)
---) TYPE=MyISAM;
-
---
--- Dumping data for table 'Slot'
---
-
-
---
--- Table structure for table 'Timeline'
---
-
---CREATE TABLE Timeline (
---  TimelineId int(11) NOT NULL default '0',
---  ObjectId int(11) NOT NULL default '0',
---  PartialPlanId bigint(20) NOT NULL default '0',
---  TimelineName varchar(255) NOT NULL default 'ErrorTimeline',
---  PRIMARY KEY  (PartialPlanId,ObjectId,TimelineId),
---  INDEX (TimelineId), INDEX (ObjectId)
---) TYPE=MyISAM;
-
---
--- Dumping data for table 'Timeline'
---
-
-
 --
 -- Table structure for table 'Token'
 --
@@ -380,7 +285,7 @@ CREATE TABLE Token (
   EndVarId int(11) NOT NULL default '0',
   DurationVarId int(11) default NULL,
   RejectVarId int(11) NOT NULL default '0',
-  PredicateId int(11) NOT NULL default '0',
+  PredicateName varchar(255) default 'ErrorPredicate',
   TimelineId int(11) default NULL,
   TimelineName varchar(255) default 'ErrorTimeline',
   ObjectId int(11) default NULL,
@@ -389,7 +294,7 @@ CREATE TABLE Token (
   ParamVarIds blob default NULL,
   PRIMARY KEY  (PartialPlanId,TokenId),
   INDEX (TokenId), INDEX (SlotId), INDEX (SlotIndex), INDEX (StartVarId), INDEX (EndVarId), 
-  INDEX (DurationVarId), INDEX (RejectVarId), INDEX (PredicateId), INDEX (TimelineId), 
+  INDEX (DurationVarId), INDEX (RejectVarId), INDEX (PredicateName), INDEX (TimelineId), 
   INDEX (ObjectId), INDEX (ObjectVarId)
 ) TYPE=MyISAM;
 
@@ -443,7 +348,7 @@ CREATE TABLE Variable (
   VariableId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
   TokenId int(10) NOT NULL default '0',
-  ParameterId int(10) default '-1',
+  ParameterName varchar(255) default 'ErrorParam',
   DomainType enum('EnumeratedDomain','IntervalDomain') NOT NULL default 'IntervalDomain',
   EnumDomain blob,
   IntDomainType enum('INTEGER_SORT','REAL_SORT'),
@@ -451,7 +356,8 @@ CREATE TABLE Variable (
   IntDomainUpperBound varchar(255),
   VariableType enum('START_VAR','END_VAR','DURATION_VAR','OBJECT_VAR','PARAMETER_VAR','REJECT_VAR','GLOBAL_VAR') NOT NULL,
   PRIMARY KEY  (PartialPlanId,VariableId),
-  INDEX (VariableId), INDEX (VariableType), INDEX (TokenId), INDEX (DomainType)
+  INDEX (VariableId), INDEX (VariableType), INDEX (TokenId), INDEX (DomainType), 
+  INDEX (ParameterName)
 ) TYPE=MyISAM;
 
 --

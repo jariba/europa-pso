@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.6 2004-01-05 23:34:20 taylor Exp $
+// $Id: SlotNode.java,v 1.7 2004-01-14 21:26:49 miatauro Exp $
 //
 // PlanWorks
 //
@@ -111,7 +111,7 @@ public class SlotNode extends TextNode {
     if (token == null) { // empty slot
       this.predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
     } else {
-      this.predicateName = token.getPredicate().getName();
+      this.predicateName = token.getPredicateName();
     }
     this.slot = slot; 
     this.previousSlotNode = previousSlotNode;
@@ -406,7 +406,7 @@ public class SlotNode extends TextNode {
             ((PartialPlanViewSet) timelineView.getViewSet()).
               setSecondaryTokens( secondaryTokens);
             System.err.println( "SlotNode setActiveToken " +
-                                activeToken.getPredicate().getName() +
+                                activeToken.getPredicateName() +
                                 " (key=" + activeToken.getId().toString() + ")");
           }
         });

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.9 2004-01-12 19:46:24 taylor Exp $
+// $Id: VariableNode.java,v 1.10 2004-01-14 21:25:56 miatauro Exp $
 //
 // PlanWorks
 //
@@ -204,7 +204,7 @@ public class VariableNode extends ExtendedBasicNode {
 //                             ((PwParameter) variable.getParameterList().get( 0)).getId() +
 //                             " paramName " +
 //                             ((PwParameter) variable.getParameterList().get( 0)).getName());
-        tip.append( ((PwParameter) variable.getParameterList().get( 0)).getName());
+        tip.append( variable.getParameterNameList().get(0));
       }
       if (isDebug) {
         tip.append( " linkCnt ").append( String.valueOf( tokenLinkCount +

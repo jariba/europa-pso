@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.29 2004-01-13 21:56:01 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.30 2004-01-14 21:28:16 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -94,18 +94,11 @@ const String TRANSACTIONS("/transactions");
 const String SEQUENCE("/sequence");
 const String PARTIAL_PLAN(".partialPlan");
 const String OBJECTS(".objects");
-//const String TIMELINES(".timelines");
-//const String SLOTS(".slots");
 const String TOKENS(".tokens");
-//const String PARAM_VAR_TOKEN_MAP(".paramVarTokenMap");
 const String TOKEN_RELATIONS(".tokenRelations");
 const String VARIABLES(".variables");
-//const String ENUMERATED_DOMAINS(".enumeratedDomains");
-//const String INTERVAL_DOMAINS(".intervalDomains");
 const String CONSTRAINTS(".constraints");
 const String CONSTRAINT_VAR_MAP(".constraintVarMap");
-const String PREDICATES(".predicates");
-const String PARAMETERS(".parameters");
 const String E_DOMAIN("E");
 const String I_DOMAIN("I");
 
@@ -291,18 +284,6 @@ void PartialPlanWriter::write(void) {
     FatalError(strerror(errno));
   }
 
-  String ppPredicates = partialPlanDest + SLASH + stepnum + PREDICATES;
-  ofstream predOut(ppPredicates.chars());
-  if(!predOut) {
-    FatalError(strerror(errno));
-  }
-
-  String ppParameters = partialPlanDest + SLASH + stepnum + PARAMETERS;
-  ofstream paramOut(ppParameters.chars());
-  if(!paramOut) {
-    FatalError(strerror(errno));
-  }
-
   /*List<VarId> globalVars = tnet->getGlobalVars();
   ListIterator<VarId> globalVarIterator = ListIterator<VarId>(globalVars);
   while(!globalVarIterator.isDone()) {
@@ -323,25 +304,6 @@ void PartialPlanWriter::write(void) {
     numTokens++;
     freeTokenIterator.step();
   }
-  List<ModelClassId> modelClassList = modelId.getAllModelClasses();
-  ListIterator<ModelClassId> modelClassIterator = ListIterator<ModelClassId>(modelClassList);
-  while(!modelClassIterator.isDone()) {
-    ModelClassId modelClass = modelClassIterator.item();
-    List<AttributeId> classAttributes = modelId.getAttributes(modelClass);
-    ListIterator<AttributeId> attributeIterator = ListIterator<AttributeId>(classAttributes);
-    while(!attributeIterator.isDone()) {
-      AttributeId classAttribute = attributeIterator.item();
-      List<PredicateId> predicates = modelId.getAttributePredicates(modelClass, classAttribute);
-      ListIterator<PredicateId> predicateIterator = ListIterator<PredicateId>(predicates);
-      while(!predicateIterator.isDone()) {
-        PredicateId predicate = predicateIterator.item();
-        outputPredicate(predicate, partialPlanId, predOut, paramOut);
-        predicateIterator.step();
-      }
-      attributeIterator.step();
-    }
-    modelClassIterator.step();
-  }
   List<ObjectId> objectList = tnet->getAllObjects();
   ListIterator<ObjectId> objectIterator = ListIterator<ObjectId>(objectList);
   int timelineId = 0;
@@ -350,7 +312,6 @@ void PartialPlanWriter::write(void) {
     objectOut << objectId->getKey() << TAB << partialPlanId << TAB << objectId->getName() << TAB;
     List<AttributeId> timelineNames = tnet->getAttributes(objectId);
     ListIterator<AttributeId> timelineNameIterator = ListIterator<AttributeId>(timelineNames);
-    //String emptySlotInfo("");
     while(!timelineNameIterator.isDone()) {
       AttributeId timelineAttId = timelineNameIterator.item();
       List<SlotInfo> slotList = tnet->getAllSlots(objectId, timelineAttId);
@@ -416,25 +377,8 @@ void PartialPlanWriter::write(void) {
   tokenRelationOut.close();
   variableOut.close();
   constraintOut.close();
-  predOut.close();
-  paramOut.close();
   constraintVarMapOut.close();
   nstep++;
-}
-
-void PartialPlanWriter::outputPredicate(PredicateId &predicate, const long long int partialPlanId,
-                                        ofstream &predOut, ofstream &paramOut) {
-  predOut << predicate.getKey() << TAB << modelId.getPredicateName(predicate) << TAB 
-          << partialPlanId << endl;
-  Vector<Symbol> params = modelId.getPredicateArgumentNames(predicate);
-  VectorIterator<Symbol> paramIterator = VectorIterator<Symbol>(params);
-  int paramIndex = 0;
-  while(!paramIterator.isDone()) {
-    Symbol parameter = paramIterator.item();
-    paramOut << paramIndex++ << TAB << predicate.getKey() << TAB << partialPlanId << TAB 
-             << parameter << endl;
-    paramIterator.step();
-  }
 }
 
 void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree, 
@@ -453,7 +397,7 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
              << tokenId->getEndVariable()->getKey() << TAB
              << tokenId->getDurationVariable()->getKey() << TAB
              << tokenId->getRejectVariable()->getKey() << TAB
-             << predicateId.getKey() << TAB << SNULL << TAB << SNULL << TAB << SNULL << TAB
+             << predicateId->getName() << TAB << SNULL << TAB << SNULL << TAB << SNULL << TAB
              << tokenId->getObjectVariable()->getKey() << TAB;
   }
   else {
@@ -463,7 +407,7 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
              << tokenId->getEndVariable()->getKey() << TAB
              << tokenId->getDurationVariable()->getKey() << TAB
              << tokenId->getRejectVariable()->getKey() << TAB
-             << predicateId.getKey() << TAB << timelineId << TAB << timelineName << TAB
+             << predicateId->getName() << TAB << timelineId << TAB << timelineName << TAB
              << (*objectId)->getKey() << TAB
              << tokenId->getObjectVariable()->getKey() << TAB;
   }
@@ -479,29 +423,32 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
   else {
     tokenOut << tokenRelationIds << TAB;
   }
-  outputVariable(tokenId->getStartVariable(), "START_VAR", partialPlanId, tokenId, -1,
-                 variableOut/*, intDomainOut, enumDomainOut*/);
-  outputVariable(tokenId->getEndVariable(), "END_VAR", partialPlanId, tokenId, -1, variableOut
-                 /*,intDomainOut, enumDomainOut*/);
-  outputVariable(tokenId->getDurationVariable(), "DURATION_VAR", partialPlanId, tokenId, -1,
-                 variableOut/*, intDomainOut, enumDomainOut*/);
-  outputVariable(tokenId->getRejectVariable(), "REJECT_VAR", partialPlanId, tokenId, -1,
-                 variableOut/*, intDomainOut, enumDomainOut*/);
-  outputVariable(tokenId->getObjectVariable(), "OBJECT_VAR", partialPlanId, tokenId, -1,
-                 variableOut/*, intDomainOut, enumDomainOut*/);
+  outputVariable(tokenId->getStartVariable(), "START_VAR", partialPlanId, tokenId, SNULL,
+                 variableOut);
+  outputVariable(tokenId->getEndVariable(), "END_VAR", partialPlanId, tokenId, SNULL, 
+                 variableOut);
+  outputVariable(tokenId->getDurationVariable(), "DURATION_VAR", partialPlanId, tokenId, SNULL,
+                 variableOut);
+  outputVariable(tokenId->getRejectVariable(), "REJECT_VAR", partialPlanId, tokenId, SNULL,
+                 variableOut);
+  outputVariable(tokenId->getObjectVariable(), "OBJECT_VAR", partialPlanId, tokenId, SNULL,
+                 variableOut);
   List<VarId> paramVarList = tokenId->getParameterVariables();
   ListIterator<VarId> paramVarIterator = ListIterator<VarId>(paramVarList);
+  Vector<Symbol> paramNameList = predicateId->getArgumentNames();
+  VectorIterator<Symbol> paramNameIterator(paramNameList);
+
   int paramIndex = 0;
   
   while(!paramVarIterator.isDone()) {
     VarId variableId = paramVarIterator.item();
-    outputVariable(variableId, "PARAMETER_VAR", partialPlanId, tokenId, paramIndex, variableOut
-                   /*,intDomainOut, enumDomainOut*/);
-    //paramVarTokenMapOut << variableId->getKey() << TAB << tokenId->getKey() << TAB << paramIndex
-    //                    << TAB << partialPlanId << endl;
+    outputVariable(variableId, "PARAMETER_VAR", partialPlanId, tokenId, paramNameIterator.item(),
+                   variableOut);
+
     paramVarIds += String(variableId->getKey()) + COLON;
     paramIndex++;
     paramVarIterator.step();
+    paramNameIterator.step();
   }
   if(paramVarIds == String("")) {
     tokenOut << SNULL << endl;
@@ -513,17 +460,14 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
 
 void PartialPlanWriter::outputVariable(const VarId &variable, const char *type, 
                                        const long long int partialPlanId, const TokenId &tokenId,
-                                       int paramId, ofstream &variableOut
-                                       /*, ofstream &intervalDomainOut,
-                                         ofstream &enumeratedDomainOut*/) {
+                                       const Symbol &paramName, ofstream &variableOut) {
   numVariables++;
   Domain domain = variable->getCurrentDomain();
   variableOut << variable->getKey() << TAB << partialPlanId << TAB << tokenId->getKey() << TAB 
-              << paramId << TAB;
+              << paramName << TAB;
   if(domain.isDynamic() || domain.isEnumerated()) {
     variableOut << "EnumeratedDomain" << TAB << getEnumString(domain) << TAB << SNULL << TAB
                 << SNULL << TAB << SNULL << TAB;
-    //outputEnumDomain(domain, partialPlanId, enumeratedDomainOut);
   }
   else if (domain.isInterval()) {
     variableOut << "IntervalDomain" << TAB << SNULL << TAB;
@@ -538,29 +482,9 @@ void PartialPlanWriter::outputVariable(const VarId &variable, const char *type,
       sort = REAL_SORT;
     }
     variableOut << sort << TAB << lowerBoundStr << TAB << upperBoundStr << TAB;
-    //outputIntervalDomain(domain, partialPlanId, intervalDomainOut);
   }
   variableOut << type << endl;
 }
-
-// void PartialPlanWriter::outputIntervalDomain(const Domain &domain, 
-//                                              const long long int partialPlanId, 
-//                                              ofstream &intervalDomainOut) {
-//   String upperBoundStr = getBoundString(domain, ((Domain &)domain).getUpperBound());
-//   String lowerBoundStr = getBoundString(domain, ((Domain &)domain).getLowerBound());
-
-//   SortId sortId = domain.getSort();
-//   String sort;
-//   if(sortId.isInt()) {
-//     sort = INTEGER_SORT;
-//   }
-//   else if(sortId.isReal()) {
-//     sort = REAL_SORT;
-//   }
-//   intervalDomainOut << intervalDomainId << TAB << partialPlanId << TAB << lowerBoundStr << TAB
-//                     << upperBoundStr << TAB << sort << endl;
-//   intervalDomainId++;
-// }
 
 String PartialPlanWriter::getBoundString(const Domain &domain, const Value &bound) {
   String retval("");
@@ -607,14 +531,6 @@ String PartialPlanWriter::getBoundString(const Domain &domain, const Value &boun
   }
   return retval;
 }
-
-// void PartialPlanWriter::outputEnumDomain(const Domain &domain, const long long int partialPlanId,
-//                                          ofstream &enumeratedDomainOut) {
-//   String enumStr = getEnumString(domain);
-//   enumeratedDomainOut << enumeratedDomainId << TAB << partialPlanId << TAB << enumStr << endl;
-//   enumeratedDomainId++;
-// }
-
 
 String PartialPlanWriter::getEnumString(const Domain &domain) {
   Set<Value> enumeration;

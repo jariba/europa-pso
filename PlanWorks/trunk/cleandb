@@ -1,10 +1,8 @@
 connect PlanWorks;
 DELETE FROM ConstraintVarMap;
 DELETE FROM Object;
-DELETE FROM Parameter;
 DELETE FROM PartialPlan;
 DELETE FROM PartialPlanStats;
-DELETE FROM Predicate;
 DELETE FROM Project;
 DELETE FROM Sequence;
 DELETE FROM Token;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.18 2004-01-02 19:04:44 miatauro Exp $
+// $Id: DbConstants.java,v 1.19 2004-01-14 21:22:10 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -87,13 +87,13 @@ public interface DbConstants {
    * constant <code>PP_PREDICATES_EXT</code>
    *
    */
-  public static final String PP_PREDICATES_EXT = "predicates";
+  //public static final String PP_PREDICATES_EXT = "predicates";
 
   /**
    * constant <code>PP_PARAMETERS_EXT</code>
    *
    */
-  public static final String PP_PARAMETERS_EXT = "parameters";
+  //public static final String PP_PARAMETERS_EXT = "parameters";
 
   /**
    * constant <code>PP_ENUMERATED_DOMAINS_EXT</code>
@@ -148,7 +148,7 @@ public interface DbConstants {
       { PP_PARTIAL_PLAN_EXT, PP_OBJECTS_EXT,
         //PP_TIMELINES_EXT, PP_SLOTS_EXT,
         PP_TOKENS_EXT, PP_VARIABLES_EXT,
-        PP_PREDICATES_EXT, PP_PARAMETERS_EXT,
+        //PP_PREDICATES_EXT, PP_PARAMETERS_EXT,
         //PP_ENUMERATED_DOMAINS_EXT, PP_INTERVAL_DOMAINS_EXT,
         PP_CONSTRAINTS_EXT, PP_TOKEN_RELATIONS_EXT,
         /*PP_PARAM_VAR_TOKEN_MAP_EXT,*/ PP_CONSTRAINT_VAR_MAP_EXT/*, PP_TRANSACTIONS_EXT */};
@@ -299,9 +299,9 @@ public interface DbConstants {
   //public static final String TBL_INTDOMAIN = "IntervalDomain";
   public static final String TBL_OBJECT = "Object";
   //public static final String TBL_PARAMVARTOKMAP = "ParamVarTokenMap";
-  public static final String TBL_PARAMETER = "Parameter";
+  //public static final String TBL_PARAMETER = "Parameter";
   public static final String TBL_PARTIALPLAN = "PartialPlan";
-  public static final String TBL_PREDICATE = "Predicate";
+  //public static final String TBL_PREDICATE = "Predicate";
   public static final String TBL_PROJECT = "Project";
   public static final String TBL_SEQUENCE = "Sequence";
   //public static final String TBL_SLOT = "Slot";
@@ -312,8 +312,8 @@ public interface DbConstants {
   public static final String TBL_TRANSACTION = "Transaction";
 
   public static final String [] PW_DB_TABLES = new String [] {
-    TBL_PARTIALPLAN, TBL_OBJECT, /*TBL_TIMELINE, TBL_SLOT,*/ TBL_TOKEN, TBL_VARIABLE, TBL_PREDICATE,
-    TBL_PARAMETER, /*TBL_ENUMDOMAIN, TBL_INTDOMAIN,*/ TBL_CONSTRAINT, TBL_TOKENREL, /*TBL_PARAMVARTOKMAP,*/
+    TBL_PARTIALPLAN, TBL_OBJECT, /*TBL_TIMELINE, TBL_SLOT,*/ TBL_TOKEN, TBL_VARIABLE, /*TBL_PREDICATE,
+    TBL_PARAMETER, TBL_ENUMDOMAIN, TBL_INTDOMAIN,*/ TBL_CONSTRAINT, TBL_TOKENREL, /*TBL_PARAMVARTOKMAP,*/
     TBL_CONSTVARMAP, TBL_TRANSACTION, TBL_SEQUENCE, TBL_PROJECT};
 
   // number of numeric characters in a type long value

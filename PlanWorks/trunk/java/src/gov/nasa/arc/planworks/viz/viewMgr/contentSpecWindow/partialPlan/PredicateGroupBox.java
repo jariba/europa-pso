@@ -4,13 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PredicateGroupBox.java,v 1.2 2003-10-09 17:23:31 miatauro Exp $
+// $Id: PredicateGroupBox.java,v 1.3 2004-01-14 21:27:37 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Window;
+import java.util.List;
 import java.util.Map;
 
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;

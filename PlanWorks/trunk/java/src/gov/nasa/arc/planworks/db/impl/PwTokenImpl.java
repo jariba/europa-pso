@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.26 2004-01-02 19:05:03 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.27 2004-01-14 21:22:37 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -40,7 +40,8 @@ public class PwTokenImpl implements PwToken {
 
   private Integer id;
   private boolean isValueToken;
-  private Integer predicateId;
+  //private Integer predicateId;
+  private String predicateName;
   private Integer startVarId;
   private Integer endVarId;
   private Integer durationVarId;
@@ -55,7 +56,7 @@ public class PwTokenImpl implements PwToken {
   private PwPartialPlanImpl partialPlan;
 
 
-  public PwTokenImpl(Integer id, boolean isValueToken, Integer slotId, Integer predicateId, 
+  public PwTokenImpl(Integer id, boolean isValueToken, Integer slotId, String predicateName,
                      Integer startVarId, Integer endVarId, Integer durationVarId, 
                      Integer objectId, Integer rejectVarId, Integer objectVarId,
                      Integer timelineId, List tokenRelationIds, List paramVarIds, 
@@ -64,7 +65,8 @@ public class PwTokenImpl implements PwToken {
     this.id = id;
     this.isValueToken = isValueToken;
     this.slotId = slotId;
-    this.predicateId = predicateId;
+    //this.predicateId = predicateId;
+    this.predicateName = predicateName;
     this.startVarId = startVarId;
     this.endVarId = endVarId;
     this.durationVarId = durationVarId;
@@ -77,14 +79,15 @@ public class PwTokenImpl implements PwToken {
     this.timelineId = timelineId;
   }
 
-  public PwTokenImpl(Integer id, boolean isValueToken, Integer slotId, Integer predicateId,
+  public PwTokenImpl(Integer id, boolean isValueToken, Integer slotId, String predicateName,
                      Integer startVarId, Integer endVarId, Integer durationVarId,
                      Integer objectId, Integer rejectVarId, Integer objectVarId,
                      Integer timelineId, PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.isValueToken = isValueToken;
     this.slotId = slotId;
-    this.predicateId = predicateId;
+    //this.predicateId = predicateId;
+    this.predicateName = predicateName;
     this.startVarId = startVarId;
     this.endVarId = endVarId;
     this.durationVarId = durationVarId;
@@ -128,8 +131,12 @@ public class PwTokenImpl implements PwToken {
    *
    * @return - <code>PwPredicate</code> - 
    */
-  public PwPredicate getPredicate() {
-    return partialPlan.getPredicate( predicateId);
+//   public PwPredicate getPredicate() {
+//     return partialPlan.getPredicate( predicateId);
+//   }
+
+  public String getPredicateName() {
+    return predicateName;
   }
 
   /**
@@ -285,7 +292,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>String</code> - 
    */
   public String toString() {
-    StringBuffer buffer = new StringBuffer( getPredicate().getName());
+    StringBuffer buffer = new StringBuffer( predicateName);
     buffer.append( " ( ");
     List paramVarsList = getParamVarsList();
     for (int i = 0; i < paramVarsList.size() - 1; i++) {

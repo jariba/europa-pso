@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.30 2003-11-20 19:11:23 taylor Exp $
+// $Id: TokenNode.java,v 1.31 2004-01-14 21:25:37 miatauro Exp $
 //
 // PlanWorks
 //
@@ -84,7 +84,7 @@ public class TokenNode extends BasicNode {
     this.isFreeToken = isFreeToken;
     this.partialPlanView = partialPlanView;
     if (token != null) {
-      predicateName = token.getPredicate().getName();
+      predicateName = token.getPredicateName();
     } else {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
     }
@@ -239,7 +239,7 @@ public class TokenNode extends BasicNode {
           ((PartialPlanViewSet) partialPlanView.getViewSet()).setActiveToken( activeToken);
           ((PartialPlanViewSet) partialPlanView.getViewSet()).setSecondaryTokens( null);
           System.err.println( "TokenNode setActiveToken: " +
-                              activeToken.getPredicate().getName() +
+                              activeToken.getPredicateName() +
                               " (key=" + activeToken.getId().toString() + ")");
         }
       });

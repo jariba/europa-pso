@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.25 2004-01-09 23:10:26 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.26 2004-01-14 21:26:18 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -1135,7 +1135,7 @@ public class TemporalExtentView extends PartialPlanView  {
     if (isTokenFound) {
       if (tokenToFind != null) {
         System.err.println( "TemporalExtentView found token: " +
-                            tokenToFind.getPredicate().getName() +
+                            tokenToFind.getPredicateName() +
                             " (key=" + tokenToFind.getId().toString() + ")");
       }
       NodeGenerics.focusViewOnNode( temporalNode, isHighlightNode, jGoExtentView);
@@ -1149,7 +1149,7 @@ public class TemporalExtentView extends PartialPlanView  {
       }
     } else {
       // Content Spec filtering may cause this to happen
-      String message = "Token " + tokenToFind.getPredicate().getName() +
+      String message = "Token " + tokenToFind.getPredicateName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Token Not Found in TemporalExtentView",

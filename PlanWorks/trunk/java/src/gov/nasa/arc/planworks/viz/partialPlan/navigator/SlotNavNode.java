@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNavNode.java,v 1.1 2004-01-12 19:46:32 taylor Exp $
+// $Id: SlotNavNode.java,v 1.2 2004-01-14 21:26:31 miatauro Exp $
 //
 // PlanWorks
 //
@@ -85,7 +85,7 @@ public class SlotNavNode extends ExtendedBasicNode {
       labelBuf = new StringBuffer( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
       isEmptySlot = true;
     } else {
-      labelBuf = new StringBuffer( token.getPredicate().getName());
+      labelBuf = new StringBuffer( token.getPredicateName());
       labelBuf.append( " (").append( String.valueOf( slot.getTokenList().size()));
       labelBuf.append( ")");
       isEmptySlot = false;

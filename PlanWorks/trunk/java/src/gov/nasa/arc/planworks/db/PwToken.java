@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.14 2004-01-02 19:04:45 miatauro Exp $
+// $Id: PwToken.java,v 1.15 2004-01-14 21:22:11 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -39,7 +39,9 @@ public interface PwToken {
    *
    * @return - <code>PwPredicate</code> - 
    */
-  public abstract PwPredicate getPredicate();
+  //public abstract PwPredicate getPredicate();
+
+  public abstract String getPredicateName();
 
   /**
    * <code>getStartVariable</code>
