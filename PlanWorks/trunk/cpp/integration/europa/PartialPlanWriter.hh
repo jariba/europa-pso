@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.11 2003-11-06 21:51:04 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.12 2003-11-13 15:34:54 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H
@@ -14,7 +14,7 @@
 #include "String.hh"
 #include "Subscriber.hh"
 #include "TokenNetwork.hh"
-#include <stl.h>
+//#include <stl.h>
 #include <stdio.h>
 
 using namespace Europa;
@@ -80,8 +80,8 @@ private:
   void outputPredicate(PredicateId &, const long long int partialPlanId, 
                        FILE *, FILE *);
   void outputConstraint(const ConstraintId &, const long long int, FILE *, FILE *);
-  const String &getNameForConstraint(const ConstraintId &);
-  const String &getTemporalityForConstraint(const ConstraintId &);
+  const String getNameForConstraint(const ConstraintId &);
+  const String getTemporalityForConstraint(const ConstraintId &);
   String PartialPlanWriter::getVarInfo(const VarId &);
 
 };

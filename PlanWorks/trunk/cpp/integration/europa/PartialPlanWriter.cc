@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.12 2003-11-06 21:51:05 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.13 2003-11-13 15:34:24 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -619,8 +619,8 @@ void PartialPlanWriter::outputConstraint(const ConstraintId &constraintId,
   }
 }
 
-const String &PartialPlanWriter::getNameForConstraint(const ConstraintId &constraintId) {
-  String retval = String("");
+const String PartialPlanWriter::getNameForConstraint(const ConstraintId &constraintId) {
+  String retval("");
   if(tnet->isTemporalVariableConstraint(constraintId)) {
     retval = String("variableTempConstr");
   }
@@ -650,7 +650,7 @@ const String &PartialPlanWriter::getNameForConstraint(const ConstraintId &constr
   return retval;
 }
 
-const String &PartialPlanWriter::getTemporalityForConstraint(const ConstraintId &constraintId) {
+const String PartialPlanWriter::getTemporalityForConstraint(const ConstraintId &constraintId) {
   String retval("");
   if(tnet->isTemporalVariableConstraint(constraintId) || 
      tnet->isTemporalBoundConstraint(constraintId) || 
@@ -822,8 +822,14 @@ String PartialPlanWriter::getVarInfo(const VarId &varId) {
     break;
   }
 
-  String retval = type + String(",") + modelId.getPredicateName(parentToken->getPredicate()) + 
-    String(",") + paramName;
+  String retval = type + String(",");
+  if(parentToken->getTokenClass() == valueTokenClass) {
+    retval += modelId.getPredicateName(parentToken->getPredicate());
+  }
+  else {
+    retval += String("notValueToken");
+    }
+  retval += String(",") + paramName;
   return retval;
 }
 
