@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.45 2003-10-07 20:19:23 miatauro Exp $
+// $Id: MySQLDB.java,v 1.46 2003-10-07 22:19:19 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
 import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
@@ -37,6 +38,7 @@ import gov.nasa.arc.planworks.db.impl.PwTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 import gov.nasa.arc.planworks.util.OneToManyMap;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.UniqueSet;
 
 public class MySQLDB {
   
@@ -600,26 +602,27 @@ public class MySQLDB {
     }
   }
 
-  synchronized public static Map queryTransactions(Long sequenceId) {
-    Map retval = new OneToManyMap();
+  synchronized public static List queryTransactions(Long sequenceId) {
+    List retval = new ArrayList(2);
+    Map planToTransMap = new OneToManyMap();
+    List trans = new ArrayList();
+    retval.add(trans);
+    retval.add(planToTransMap);
     try {
-      long startQuery = System.currentTimeMillis();
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
-      long endQuery = System.currentTimeMillis();
-      System.err.println("Transaction query took " + (endQuery-startQuery) + "ms");
+        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId, TransactionId"));
+
       while(transactions.next()) {
         Long partialPlanId = new Long(transactions.getLong("PartialPlanId"));
-        retval.put(partialPlanId, new PwTransactionImpl(transactions.getString("TransactionType"),
-                                                        new Integer(transactions.getInt("TransactionId")),
-                                                        transactions.getString("Source"),
-                                                        new Integer(transactions.getInt("ObjectId")),
-                                                        new Integer(transactions.getInt("StepNumber")),
-                                                        sequenceId,
-                                                        new Long(transactions.getLong("PartialPlanId"))));
+        Integer transactionId = new Integer(transactions.getInt("TransactionId"));
+
+        trans.add(new PwTransactionImpl(transactions.getString("TransactionType"),
+                                        transactionId, transactions.getString("Source"),
+                                        new Integer(transactions.getInt("ObjectId")),
+                                        new Integer(transactions.getInt("StepNumber")),
+                                        sequenceId, partialPlanId));
+        planToTransMap.put(partialPlanId, transactionId);
       }
-      long endLoop = System.currentTimeMillis();
-      System.err.println("Transaction building took " + (endLoop - endQuery) + "ms");
     }
     catch(SQLException sqle) {}
     return retval;
@@ -895,5 +898,120 @@ public class MySQLDB {
       System.err.println(sqle);
       sqle.printStackTrace();
     }
+  }
+
+  synchronized public static List queryTransactionsForConstraint(Long sequenceId, 
+                                                                 Integer constraintId) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet transactions =
+        queryDatabase("SELECT TransactionId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" ORDER BY TransactionId"));
+      while(transactions.next()) {
+        retval.add(new Integer(transactions.getInt("TransactionId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryTransactionsForToken(Long sequenceId, Integer tokenId) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet transactions =
+        queryDatabase("SELECT TransactionId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" ORDER BY TransactionId"));
+      while(transactions.next()) {
+        retval.add(new Integer(transactions.getInt("TransactionId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryTransactionsForVariable(Long sequenceId, Integer varId) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet transactions =
+        queryDatabase("SELECT TransactionId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" ORDER BY TransactionId"));
+      while(transactions.next()) {
+        retval.add(new Integer(transactions.getInt("TransactionId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithTokenTransaction(Long sequenceId, Integer tokenId,
+                                                                 String type) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet steps =
+        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionType='").concat(type).concat("'"));
+      while(steps.next()) {
+        retval.add(new Integer(steps.getInt("StepNumber")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithVariableTransaction(Long sequenceId, Integer varId,
+                                                                    String type) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet steps =
+        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionType='").concat(type).concat("'"));
+      while(steps.next()) {
+        retval.add(new Integer(steps.getInt("StepNumber")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithConstraintTransaction(Long sequenceId, 
+                                                                      Integer constraintId,
+                                                                      String type) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet steps =
+        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionType='").concat(type).concat("'"));
+      while(steps.next()) {
+        retval.add(new Integer(steps.getInt("StepNumber")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithRestrictions(Long sequenceId) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet steps = queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RESTRICTED).concat("'"));
+      while(steps.next()) {
+        retval.add(new Integer(steps.getInt("StepNumber")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithRelaxations(Long sequenceId) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet steps = queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RELAXED).concat("'"));
+      while(steps.next()) {
+        retval.add(new Integer(steps.getInt("StepNumber")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
   }
 }

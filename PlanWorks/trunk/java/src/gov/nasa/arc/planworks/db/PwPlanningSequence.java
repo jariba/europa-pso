@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.17 2003-10-07 20:19:04 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.18 2003-10-07 22:18:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -139,5 +139,29 @@ public interface PwPlanningSequence extends ViewableObject {
    * @param seqName - <code>String</code> - 
    */
   public void setSeqName( String seqName);
+
+  public List getTransactionsForConstraint(Integer id);
+
+  public List getTransactionsForToken(Integer id);
+ 
+  public List getTransactionsForVariable(Integer id);
+  
+  public List getTransactionsInRange(int start, int end);
+
+  public List getTransactionsInRange(Integer start, Integer end);
+  
+  public List getStepsWhereTokenTransacted(Integer id, String type) throws IllegalArgumentException;
+
+  public List getStepsWhereVariableTransacted(Integer id, String type) throws IllegalArgumentException;
+
+  public List getStepsWhereConstraintTransacted(Integer id, String type) throws IllegalArgumentException;
+
+  public List getStepsWithRestrictions();
+
+  public List getStepsWithRelaxations();
+
+  public List getStepsWithUnitDecisions();
+
+  public List getStepsWithNonUnitDecisions();
 
 } // end interface PwPlanningSequence
