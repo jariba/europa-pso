@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceImpl.java,v 1.2 2004-02-27 18:04:38 miatauro Exp $
+// $Id: PwResourceImpl.java,v 1.3 2004-03-12 23:19:52 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -117,19 +117,7 @@ public class PwResourceImpl extends PwObjectImpl implements PwResource {
    * @return - <code>List</code> - of PwResourceInstant
    */
   public List getInstantList() {
-    List retval = new ArrayList(instantIdList.size());
-    ListIterator instIdIterator = instantIdList.listIterator();
-    while(instIdIterator.hasNext()) {
-      Integer instId = (Integer) instIdIterator.next();
-      PwResourceInstant inst = partialPlan.getInstant(instId);
-      if(inst != null) {
-        retval.add(inst);
-      }
-      else {
-        System.err.println("PwResourceImpl.getInstantList: InstantId " + instId + " is null.");
-      }
-    }
-    return retval;
+    return partialPlan.getInstantList(instantIdList);
   }
 
 

@@ -40,15 +40,6 @@ public class ObjectNode extends ExtendedBasicNode {
     StringBuffer labelBuf = new StringBuffer( object.getName());
     labelBuf.append( "\nkey=").append( object.getId().toString());
     nodeLabel = labelBuf.toString();
-    // System.err.println( "ModelClassNavNode: " + nodeLabel);
-//     hasSingleTimeline = false;
-//     if (object.getComponentList().size() == 1) {
-//       hasSingleTimeline = true;
-//     }
-
-    //inLayout = false;
-    //areNeighborsShown = false;
-    //timelineLinkCount = 0;
 
     configure( objectLocation, backgroundColor, isDraggable);
 
@@ -64,9 +55,6 @@ public class ObjectNode extends ExtendedBasicNode {
     // do not allow user links
     getPort().setVisible( false);
     getLabel().setMultiline( true);
-//     if (hasSingleTimeline) {
-//       setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-//     }
   } // end configure 
 
   public boolean equals( ObjectNode node) {

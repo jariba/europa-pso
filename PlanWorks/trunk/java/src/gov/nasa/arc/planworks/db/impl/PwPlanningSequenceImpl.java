@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.71 2004-03-04 20:50:26 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.72 2004-03-12 23:19:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -38,7 +38,9 @@ import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.util.PwSequenceFilenameFilter;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
+import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.FileCopy;
+import gov.nasa.arc.planworks.util.FunctorFactory;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.util.OneToManyMap;
@@ -245,14 +247,12 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     if(transactions == null) {
       loadTransactions();
     }
+    List temp = CollectionUtils.lGrep(FunctorFactory.containsStrFunctor(partialPlanId.toString()),
+                                        new ArrayList(transactions.keySet()));
     List retval = new ArrayList();
-    String ppId = partialPlanId.toString();
-    ListIterator transactionKeyIterator = (new ArrayList(transactions.keySet())).listIterator();
+    ListIterator transactionKeyIterator = temp.listIterator();
     while(transactionKeyIterator.hasNext()) {
-      String key = (String) transactionKeyIterator.next();
-      if(key.indexOf(ppId) == 0) {
-        retval.add(transactions.get(key));
-      }
+      retval.add(transactions.get(transactionKeyIterator.next()));
     }
     return retval;
   } // end listTransactions
@@ -268,15 +268,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @return List of PwPartialPlan objects
    */
   public List getPartialPlansList() {
-    List retval = new ArrayList();
-    Iterator nameIterator = partialPlans.keySet().iterator();
-    while(nameIterator.hasNext()) {
-      String name = (String) nameIterator.next();
-      if(partialPlans.get(name) != null) {
-        retval.add(partialPlans.get(name));
-      }
-    }
-    return retval;
+    return CollectionUtils.validValues(partialPlans);
   }
 
   /**
@@ -286,12 +278,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @return List of Strings
    */
   public List getPartialPlanNamesList() {
-    // return new ArrayList(partialPlans.keySet());
-    List names = new ArrayList();
-    Iterator keyItr = partialPlans.keySet().iterator();
-    while (keyItr.hasNext()) {
-      names.add( (String) keyItr.next());
-    }
+    List names = new ArrayList(partialPlans.keySet());
     Collections.sort( names, new PartialPlanNameComparator());
     return names;
   }
@@ -653,14 +640,6 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     if(files.length == DbConstants.NUMBER_OF_SEQ_FILES) {
       return "No step directories.";
     }
-//     Arrays.sort(files, new StepDirectoryComparator());
-//     for(int i = 0; i < files.length; i++) {
-//       if(files[i].isDirectory()) {
-//         if(!files[i].getName().equals("step" + i)) {
-//           return "Skipped step " + i;
-//         }
-//       }
-//     }
     return null;
   }
   private static final Pattern stepPattern = Pattern.compile("step(\\d+)");

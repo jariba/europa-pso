@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.16 2004-02-20 18:16:44 miatauro Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.17 2004-03-12 23:22:59 miatauro Exp $
 //
 // PlanWorks
 //
@@ -235,29 +235,9 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
    */
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
                                JGoView view) {
-    JGoObject obj = view.pickDocObject( docCoords, false);
-    // System.err.println( "ConstraintNetworkTokenNode: doMouseClick obj class " +
-    //                     obj.getTopLevelObject().getClass().getName());
-    ConstraintNetworkTokenNode tokenNode =
-      (ConstraintNetworkTokenNode) obj.getTopLevelObject();
-    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      if (! areNeighborsShown) {
-        //System.err.println( "doMouseClick: Mouse-L show variable nodes of " +
-        //                    tokenNode.getPredicateName());
-        addContainerNodeVariables( this, (ConstraintNetworkView) partialPlanView);
-        areNeighborsShown = true;
-      } else {
-        // System.err.println( "doMouseClick: Mouse-L hide variable nodes of " +
-        //                    tokenNode.getPredicateName());
-        removeContainerNodeVariables( this, (ConstraintNetworkView) partialPlanView);
-        areNeighborsShown = false;
-      }
-      return true;
-    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      super.doMouseClick( modifiers, docCoords, viewCoords, view);
-      return true;
-    }
-    return false;
+    return ConstraintNetworkUtils.containerDoMouseClick(modifiers, docCoords, viewCoords, view, 
+                                                        this, 
+                                                        (ConstraintNetworkView) partialPlanView);
   } // end doMouseClick   
 
   public void addContainerNodeVariables(Object n, Object v) {
@@ -271,55 +251,20 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
    * @param tokenNode - <code>ConstraintNetworkTokenNode</code> - 
    * @param constraintNetworkView - <code>ConstraintNetworkView</code> - 
    */
-  protected void addContainerNodeVariables( VariableContainerNode tokenNode,
+  public void addContainerNodeVariables( VariableContainerNode tokenNode,
                                             ConstraintNetworkView constraintNetworkView) {
-    constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
-    boolean areNodesChanged = constraintNetworkView.addVariableNodes( tokenNode);
-    boolean areLinksChanged = constraintNetworkView.addVariableToContainerLinks( tokenNode);
-    if (areNodesChanged || areLinksChanged) {
-      constraintNetworkView.setLayoutNeeded();
-      constraintNetworkView.setFocusNode( (JGoArea) tokenNode);
-      constraintNetworkView.redraw();
-    }
+    ConstraintNetworkUtils.addContainerNodeVariables(tokenNode, constraintNetworkView);
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
   } // end addTokenNodeVariables
 
-  private void removeContainerNodeVariables( VariableContainerNode tokenNode,
+  public void removeContainerNodeVariables( VariableContainerNode tokenNode,
                                          ConstraintNetworkView constraintNetworkView) {
-    constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
-    boolean areLinksChanged = constraintNetworkView.removeVariableToContainerLinks( tokenNode);
-    boolean areNodesChanged = constraintNetworkView.removeVariableNodes( tokenNode);
-    if (areNodesChanged || areLinksChanged) {
-      constraintNetworkView.setLayoutNeeded();
-      constraintNetworkView.setFocusNode( (JGoArea) tokenNode);
-      constraintNetworkView.redraw();
-    }
+    ConstraintNetworkUtils.removeContainerNodeVariables(tokenNode, constraintNetworkView);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
   } // end adremoveTokenNodeVariables
 
-    public void discoverLinkage() {
-    ListIterator varIterator = token.getVariablesList().listIterator();
-    while(varIterator.hasNext()) {
-      PwVariable var = (PwVariable) varIterator.next();
-      ListIterator constraintIterator = var.getConstraintList().listIterator();
-      while(constraintIterator.hasNext()) {
-	PwConstraint constr = (PwConstraint) constraintIterator.next();
-	ListIterator constrainedVarIterator = constr.getVariablesList().listIterator();
-	while(constrainedVarIterator.hasNext()) {
-	  PwVariable constrVar = (PwVariable) constrainedVarIterator.next();
-	  if(constrVar.equals(var)) {
-	    continue;
-	  }
-          PwVariableContainer varContainer = (PwVariableContainer) constrVar.getParent();
-          if(!connectedContainerMap.containsKey(varContainer)) {
-            connectedContainerMap.put(varContainer, new Integer(0));
-          }
-          connectedContainerMap.put(varContainer, new Integer(((Integer)connectedContainerMap.
-                                                               get(varContainer)).intValue() + 1));
-          connectedContainerCount++;
-	}
-      }
-    }
+  public void discoverLinkage() {
+    connectedContainerCount = ConstraintNetworkUtils.discoverLinkage(this, connectedContainerMap);
     hasDiscoveredLinks = true;
   }
 
@@ -353,13 +298,8 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
   }
 
   public void connectNodes(Map containerNodeMap) {
-    Iterator containerIterator = connectedContainerMap.keySet().iterator();
-    while(containerIterator.hasNext()) {
-      PwVariableContainer otherContainer = (PwVariableContainer) containerIterator.next();
-      if(containerNodeMap.containsKey(otherContainer.getId())) {
-        connectedContainerNodes.add(containerNodeMap.get(otherContainer.getId()));
-      }
-    }
+    ConstraintNetworkUtils.connectNodes(containerNodeMap, connectedContainerMap,
+                                        connectedContainerNodes);
   }
 
   public List getConnectedContainerNodes() {

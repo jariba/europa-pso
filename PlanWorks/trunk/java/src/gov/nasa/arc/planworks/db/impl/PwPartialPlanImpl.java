@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.77 2004-03-09 01:48:27 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.78 2004-03-12 23:19:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -42,7 +42,11 @@ import gov.nasa.arc.planworks.db.PwTokenRelation;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
+import gov.nasa.arc.planworks.util.BooleanFunctor;
+import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.util.FunctorFactory;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
@@ -171,6 +175,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
   }
 
+  class TimelineSlotCreator implements UnaryFunctor {
+    public TimelineSlotCreator(){}
+    public Object func(Object o) {
+      if(o instanceof PwTimelineImpl){((PwTimelineImpl)o).finishSlots();} return o;}
+  }
+
   /**
    * <code>fillElementMaps</code> - construct constraint, predicate, token relation, and variable
    *                                structures.
@@ -182,13 +192,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     MySQLDB.queryTokenRelations( this);
     MySQLDB.queryVariables( this);
     MySQLDB.queryResourceInstants(this);
-    Iterator objIterator = objectMap.values().iterator();
-    while(objIterator.hasNext()) {
-      PwObject obj = (PwObject) objIterator.next();
-      if(obj.getObjectType() == DbConstants.O_TIMELINE) {
-        ((PwTimelineImpl)obj).finishSlots();
-      }
-    }
+    CollectionUtils.cInPlaceMap(new TimelineSlotCreator(), objectMap.values());
+
     initTokenRelationships();
     buildTokenRelationships();
     // printTokenRelationships();
@@ -265,6 +270,11 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return retval;
   }
 
+  class FreeTokenFunctor implements BooleanFunctor {
+    public FreeTokenFunctor(){}
+    public boolean func(Object o){return ((PwToken)o).isFree();}
+  }
+
   /**
    * <code>getFreeTokenList</code> - get a list of free tokens in this plan
    *
@@ -272,31 +282,48 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    */
 
   public List getFreeTokenList() {
-    List retval = new ArrayList();
-    Iterator tokenIterator = tokenMap.values().iterator();
-    while(tokenIterator.hasNext()) {
-      PwToken token = (PwToken) tokenIterator.next();
-      if(token.isFree()) {
-        retval.add(token);
-      }
-    }
-    return retval;
+    return new ArrayList(CollectionUtils.cGrep(new FreeTokenFunctor(), tokenMap.values()));
+  }
+
+  class SlottedTokenFunctor implements BooleanFunctor {
+    public SlottedTokenFunctor(){}
+    public boolean func(Object o){return ((PwToken)o).isSlotted();}
   }
 
   public List getSlottedTokenList() {
-    List retval = new ArrayList();
-    Iterator tokenIterator = tokenMap.values().iterator();
-    while(tokenIterator.hasNext()) {
-      PwToken token = (PwToken) tokenIterator.next();
-      if(token.isSlotted()) {
-        retval.add(token);
-      }
-    }
-    return retval;
+    return new ArrayList(CollectionUtils.cGrep(new SlottedTokenFunctor(), tokenMap.values()));
   }
 
   public List getTokenList() {
     return new ArrayList(tokenMap.values());
+  }
+
+  public List getObjectList(List objectIds) {
+    return CollectionUtils.validValues(objectMap, objectIds);
+  }
+
+  public List getVariableList(List varIds) {
+    return CollectionUtils.validValues(variableMap, varIds);
+  }
+
+  public List getTokenList(List tokenIds) {
+    return CollectionUtils.validValues(tokenMap, tokenIds);
+  }
+
+  public List getSlotList(List slotIds) {
+    return CollectionUtils.validValues(slotMap, slotIds);
+  }
+
+  public List getInstantList(List instIds) {
+    return CollectionUtils.validValues(instantMap, instIds);
+  }
+
+  public List getConstraintList(List constrIds) {
+    return CollectionUtils.validValues(constraintMap, constrIds);
+  }
+
+  public List getResourceTransactionList(List resTransIds) {
+    return CollectionUtils.validValues(resTransactionMap, resTransIds);
   }
 
   /**

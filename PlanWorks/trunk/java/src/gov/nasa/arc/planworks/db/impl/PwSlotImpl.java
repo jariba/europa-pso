@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.26 2004-03-10 02:21:19 taylor Exp $
+// $Id: PwSlotImpl.java,v 1.27 2004-03-12 23:19:53 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -83,10 +83,7 @@ public class PwSlotImpl implements PwSlot {
    * @return - <code>List</code> - of PwToken
    */
   public List getTokenList() {
-    List retval = new ArrayList( tokenIdList.size());
-    for (int i = 0; i < tokenIdList.size(); i++)
-      retval.add( partialPlan.getToken( (Integer)tokenIdList.get( i)));
-    return retval;
+    return partialPlan.getTokenList(tokenIdList);
   }
 
   /**

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.36 2004-02-20 18:16:20 miatauro Exp $
+// $Id: TokenNode.java,v 1.37 2004-03-12 23:22:16 miatauro Exp $
 //
 // PlanWorks
 //
@@ -239,7 +239,7 @@ public class TokenNode extends BasicNode {
     return false;
   } // end doMouseClick   
 
-  private void mouseRightPopupMenu( Point viewCoords) {
+  public void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
     JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");

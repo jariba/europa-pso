@@ -21,6 +21,7 @@ public class PlanWorksTest extends TestCase {
     final TestSuite suite = new TestSuite();
     suite.addTest(BackendTest.suite());
     suite.addTest(MySQLDBTest.suite());
+    suite.addTest(PlanWorksUtilsTest.suite());
     return suite;
   }
   private static void printFailures(TestResult result) {

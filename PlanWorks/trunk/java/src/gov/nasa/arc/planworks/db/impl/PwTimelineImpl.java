@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.21 2004-02-27 18:04:39 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.22 2004-03-12 23:19:53 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -57,11 +57,7 @@ public class PwTimelineImpl extends PwObjectImpl implements PwTimeline {
    * @return name - <code>List</code> - of PwSlot
    */
   public List getSlotList() {
-    List retval = new ArrayList( slotIdList.size());
-    for (int i = 0; i < slotIdList.size(); i++) {
-      retval.add( partialPlan.getSlot( (Integer) slotIdList.get(i)));
-    }
-    return retval;
+    return partialPlan.getSlotList(slotIdList);
   }
 
   /**
