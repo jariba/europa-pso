@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.38 2004-05-04 01:27:16 taylor Exp $
+// $Id: PartialPlanView.java,v 1.39 2004-05-07 19:51:43 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -81,6 +81,8 @@ public class PartialPlanView extends VizView {
   private static final String [] FORWARD_BUTTONS_LABELS =
   { ">", "> >\n> >", "> > > >\n> > > >\n> > > >\n> > > >",
     "> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >\n> > > > > > > >" };
+
+	private static final int DISP_WAIT_INTERVAL = 50; //in milliseconds
 
   protected PwPartialPlan partialPlan;
   protected List validTokenIds;
@@ -488,6 +490,7 @@ public class PartialPlanView extends VizView {
     throws ViewRenderingException {
     int currentStepNumber = getPartialPlan().getStepNumber();
     int nextStepNumber = nextStep.getStepNumber();
+    System.err.println("Stepping " + currentStepNumber + " -> " + nextStepNumber);
     MDIInternalFrame seqStepsViewFrame =
       PlanWorks.getPlanWorks().getSequenceStepsViewFrame( getPartialPlan().getSequenceUrl());
     SequenceStepsView sequenceStepsView = null;
@@ -769,6 +772,17 @@ public class PartialPlanView extends VizView {
     return ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineId);
   }
 
-
+	public boolean displayableWait() {
+		int waitTime = 10;
+		while(!this.isDisplayable() && waitTime != 0) {
+			try {
+				Thread.currentThread().sleep(50);
+			}
+			catch(InterruptedException ie) {}
+				waitTime--;
+		}
+		return waitTime != 0;
+	}
+		
 } // end class PartialPlanView
 
