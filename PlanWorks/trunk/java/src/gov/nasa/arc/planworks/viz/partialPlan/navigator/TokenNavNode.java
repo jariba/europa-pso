@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.11 2004-06-10 01:36:05 taylor Exp $
+// $Id: TokenNavNode.java,v 1.12 2004-06-15 19:26:47 taylor Exp $
 //
 // PlanWorks
 //
@@ -35,6 +35,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
@@ -213,10 +214,11 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode, Overview
     } else {
       // free token
     }
-    Integer masterId = partialPlan.getMasterTokenId( token.getId());
-    if (masterId != null) {
-      PwToken master = partialPlan.getToken( masterId);
-      returnList.add( master);
+    Integer ruleInstanceId = token.getRuleInstanceId();
+    if ((ruleInstanceId != null) && (ruleInstanceId.intValue() > 0)) {
+//       System.err.println( "getParentEntityList ruleInstanceId " + ruleInstanceId +
+//                           " ruleInstance " + partialPlan.getRuleInstance( ruleInstanceId));
+      returnList.add( partialPlan.getRuleInstance( ruleInstanceId));
     }
     return returnList;
   }
@@ -227,14 +229,19 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode, Overview
    * @return - <code>List</code> - of PwEntity
    */
   public final List getComponentEntityList() {
-    List returnList = new ArrayList();
-    // returnList.addAll( token.getVariablesList());
+    List returnList = new UniqueSet();
     returnList.addAll( ((PwVariableContainer) token).getVariables());
     Iterator slaveIdItr = partialPlan.getSlaveTokenIds( token.getId()).iterator();
     while (slaveIdItr.hasNext()) {
-      returnList.add( partialPlan.getToken( (Integer) slaveIdItr.next()));
+      Integer ruleInstanceId =
+        partialPlan.getToken( (Integer) slaveIdItr.next()).getRuleInstanceId();
+      if ((ruleInstanceId != null) && (ruleInstanceId.intValue() > 0)) {
+         returnList.add( partialPlan.getRuleInstance( ruleInstanceId));
+//          System.err.println( "getComponentEntityList ruleInstanceId " + ruleInstanceId);
+      }
     }
-    return returnList;
+//     System.err.println( "getComponentEntityList returnList len " + returnList.size());
+    return new ArrayList( returnList);
   }
 
   /**

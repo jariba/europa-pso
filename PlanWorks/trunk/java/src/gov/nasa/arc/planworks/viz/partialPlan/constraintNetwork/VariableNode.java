@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.18 2004-06-14 22:11:25 taylor Exp $
+// $Id: VariableNode.java,v 1.19 2004-06-15 19:26:46 taylor Exp $
 //
 // PlanWorks
 //
@@ -201,7 +201,7 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
    */
   public String getToolTipText( boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html> ");
-    tip.append( variable.getDomain().toString());
+     NodeGenerics.getVariableNodeToolTipText( variable, partialPlanView, tip);
     tip.append( "<br>key=");
     tip.append( variable.getId().toString());
     tip.append( "</html>");

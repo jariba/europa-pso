@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.27 2004-06-10 01:36:04 taylor Exp $
+// $Id: NavigatorView.java,v 1.28 2004-06-15 19:26:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -39,6 +39,7 @@ import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -53,11 +54,13 @@ import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkResourceNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkRuleInstanceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -141,6 +144,8 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     PwEntity entity = null;
     if (node instanceof ConstraintNetworkObjectNode) {
       entity = ((ConstraintNetworkObjectNode) node).getObject();
+    } else if (node instanceof ConstraintNetworkRuleInstanceNode) {
+      entity = ((ConstraintNetworkRuleInstanceNode) node).getRuleInstance();
     } else if (node instanceof ConstraintNetworkResourceNode) {
       entity = ((ConstraintNetworkResourceNode) node).getResource();
     } else if (node instanceof ConstraintNetworkTimelineNode) {
@@ -404,6 +409,8 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
       node = addVariableNavNode( (PwVariable) object);
     } else if (object instanceof PwConstraint) {
       node = addConstraintNavNode( (PwConstraint) object);
+    } else if (object instanceof PwRuleInstance) {
+      node = addRuleInstanceNavNode( (PwRuleInstance) object);
     } else if (object instanceof PwObject) {
       node = addModelClassNavNode( (PwObject) object);
     } else {
@@ -490,6 +497,31 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     }
     return resourceNavNode;
   } // end addResourceNavNode
+
+  /**
+   * <code>addRuleInstanceNavNode</code>
+   *
+   * @param ruleInstance - <code>PwRuleInstance</code> - 
+   * @return - <code>RuleInstanceNavNode</code> - 
+   */
+  protected final RuleInstanceNavNode addRuleInstanceNavNode
+    ( final PwRuleInstance ruleInstance) {
+    boolean isDraggable = true;
+    RuleInstanceNavNode ruleInstanceNavNode =
+      (RuleInstanceNavNode) entityNavNodeMap.get( ruleInstance.getId());
+    if (ruleInstanceNavNode == null) {
+      TokenNode fromTokenNode = null;
+      List toTokenNodeList = new ArrayList();
+      ruleInstanceNavNode =
+        new RuleInstanceNavNode( ruleInstance, fromTokenNode, toTokenNodeList,
+                                 new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
+                                            ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
+                                 ViewConstants.RULE_INSTANCE_BG_COLOR, isDraggable, this);
+      entityNavNodeMap.put( ruleInstance.getId(), ruleInstanceNavNode);
+      jGoDocument.addObjectAtTail( ruleInstanceNavNode);
+    }
+    return ruleInstanceNavNode;
+  } // end addRuleInstanceNavNode
 
   /**
    * <code>addSlotNavNode</code>

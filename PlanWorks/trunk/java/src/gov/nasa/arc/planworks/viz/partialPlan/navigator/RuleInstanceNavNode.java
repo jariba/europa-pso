@@ -3,11 +3,11 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.12 2004-06-15 19:26:48 taylor Exp $
+// $Id: RuleInstanceNavNode.java,v 1.1 2004-06-15 19:26:47 taylor Exp $
 //
 // PlanWorks
 //
-// Will Taylor -- started 13jan04
+// Will Taylor -- started 26feb04
 //
 
 package gov.nasa.arc.planworks.viz.partialPlan.navigator;
@@ -15,98 +15,63 @@ package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.PwObject;
-import gov.nasa.arc.planworks.db.PwTimeline;
-import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
-import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
-import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
 /**
- * <code>VariableNavNode</code> - JGo widget to render a plan variable and its neighbors
+ * <code>RuleInstanceNavNode</code> - JGo widget to render a plan ruleInstance and its neighbors
  *                                   for the navigator view
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class VariableNavNode extends ExtendedBasicNode implements NavNode, OverviewToolTip {
+public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, OverviewToolTip {
 
-  private PwVariable variable;
+  private PwRuleInstance ruleInstance;
   private NavigatorView navigatorView;
-  private String nodeLabel;
-  private boolean isDebug;
-  private boolean hasZeroConstraints;
+  private TokenNode fromTokenNode;
+  private List toTokenNodeList;
+
   private int linkCount;
   private boolean inLayout;
+  private boolean isDebugPrint;
 
-  /**
-   * <code>VariableNavNode</code> - constructor 
-   *
-   * @param variable - <code>PwVariable</code> - 
-   * @param variableLocation - <code>Point</code> - 
-   * @param backgroundColor - <code>Color</code> - 
-   * @param isDraggable - <code>boolean</code> - 
-   * @param partialPlanView - <code>PartialPlanView</code> - 
-   */
-  public VariableNavNode( final PwVariable variable, final Point variableLocation,
-                          final Color backgroundColor, final boolean isDraggable,
-                          final PartialPlanView partialPlanView) { 
-    super( ViewConstants.PINCHED_RECTANGLE);
-    // super( ViewConstants.ELLIPSE);
-    this.variable = variable;
+  public RuleInstanceNavNode( final PwRuleInstance ruleInstance, final TokenNode fromTokenNode,
+                              final List toTokenNodeList, final Point ruleInstanceLocation, 
+                              final Color backgroundColor, final boolean isDraggable, 
+                              final PartialPlanView partialPlanView) { 
+    super(ruleInstance, fromTokenNode, toTokenNodeList, ruleInstanceLocation, backgroundColor,
+          isDraggable, partialPlanView);
+    this.ruleInstance = ruleInstance;
+    this.fromTokenNode = fromTokenNode;
+    this.toTokenNodeList = toTokenNodeList;
     navigatorView = (NavigatorView) partialPlanView;
-
-    isDebug = false;
-    // isDebug = true;
-    StringBuffer labelBuf = new StringBuffer( variable.getDomain().toString());
-    labelBuf.append( "\nkey=").append( variable.getId().toString());
-    nodeLabel = labelBuf.toString();
-    // System.err.println( "VariableNavNode: " + nodeLabel);
+    isDebugPrint = false;
+    // isDebugPrint = true;
 
     inLayout = false;
     setAreNeighborsShown( false);
-    hasZeroConstraints = true;
-    if (variable.getConstraintList().size() > 0) {
-      hasZeroConstraints = false;
-    }
     linkCount = 0;
-
-    configure( variableLocation, backgroundColor, isDraggable);
   } // end constructor
-
-  private final void configure( final Point variableLocation, final Color backgroundColor,
-                                final boolean isDraggable) {
-    setLabelSpot( JGoObject.Center);
-    initialize( variableLocation, nodeLabel);
-    setBrush( JGoBrush.makeStockBrush( backgroundColor));  
-    getLabel().setEditable( false);
-    setDraggable( isDraggable);
-    // do not allow user links
-    getPort().setVisible( false);
-    getLabel().setMultiline( true);
-    if (hasZeroConstraints) {
-      setAreNeighborsShown( true);
-      int penWidth = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
-      setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
-    }
-  } // end configure
 
   /**
    * <code>getId</code> - implements NavNode
@@ -114,7 +79,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
    * @return - <code>Integer</code> - 
    */
   public final Integer getId() {
-    return variable.getId();
+    return ruleInstance.getId();
   }
 
   /**
@@ -123,7 +88,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
    * @return - <code>String</code> - 
    */
   public final String getTypeName() {
-    return "variable";
+    return "ruleInstance";
   }
 
   /**
@@ -171,10 +136,6 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
     if (value == false) {
       setAreNeighborsShown( false);
     }
-    if (hasZeroConstraints) {
-      setAreNeighborsShown( true);
-      width = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
-    }
     setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
@@ -183,10 +144,10 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
    *
    * @param isDebug - <code>boolean</code> - 
    */
-  public final void resetNode( final boolean isDbg) {
+  public final void resetNode( final boolean isDebug) {
     setAreNeighborsShown( false);
-    if (isDbg && (linkCount != 0)) {
-      System.err.println( "reset variable node: " + variable.getId() +
+    if (isDebug && (linkCount != 0)) {
+      System.err.println( "reset ruleInstance node: " + ruleInstance.getId() +
                           "; linkCount != 0: " + linkCount);
     }
     linkCount = 0;
@@ -199,13 +160,8 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
    */
   public final List getParentEntityList() {
     List returnList = new ArrayList();
-    PwVariableContainer variableContainer = variable.getParent();
-    if (variableContainer instanceof PwTimeline) {
-      returnList.add( (PwTimeline) variableContainer);
-    } else if (variableContainer instanceof PwToken) {
-      returnList.add( (PwToken) variableContainer);
-    } else if (variableContainer instanceof PwObject) {
-      returnList.add( (PwObject) variableContainer);
+    if (ruleInstance.getMasterId() != null) {
+      returnList.add( partialPlanView.getPartialPlan().getToken( ruleInstance.getMasterId()));
     }
     return returnList;
   }
@@ -213,40 +169,17 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   /**
    * <code>getComponentEntityList</code> - implements NavNode
    *
-   * @return - <code>List</code> - of PwEntity
+   * @return - <code>List</code> - of PwEntity 
    */
   public final List getComponentEntityList() {
     List returnList = new ArrayList();
-    returnList.addAll( variable.getConstraintList());
+    PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+    Iterator slaveIdItr = ruleInstance.getSlaveIdsList().iterator();
+    while (slaveIdItr.hasNext()) {
+      returnList.add( partialPlan.getToken( (Integer) slaveIdItr.next()));
+    }
+    returnList.addAll( ((PwVariableContainer) ruleInstance).getVariables());
     return returnList;
-  }
-
-  /**
-   * <code>equals</code>
-   *
-   * @param node - <code>VariableNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public final boolean equals( final VariableNavNode node) {
-    return (this.getVariable().getId().equals( node.getVariable().getId()));
-  }
-
-  /**
-   * <code>getVariable</code>
-   *
-   * @return - <code>PwVariable</code> - 
-   */
-  public final PwVariable getVariable() {
-    return variable;
-  }
-
-  /**
-   * <code>toString</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public final String toString() {
-    return variable.getId().toString();
   }
 
   /**
@@ -261,41 +194,44 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
     } else {
       operation = "open";
     }
+    // StringBuffer tip = new StringBuffer( "<html>ruleInstance<br>");
     StringBuffer tip = new StringBuffer( "<html>");
-    boolean isVariableWithConstraints = (! hasZeroConstraints);
-    NodeGenerics.getVariableNodeToolTipText( variable, navigatorView, tip);
-    if (isDebug) {
-      tip.append( " linkCnt ").append( String.valueOf( linkCount));
-    }
-    if (navigatorView.getZoomFactor() > 1) {
+    if (partialPlanView.getZoomFactor() > 1) {
+      tip.append( "rule ");
+      tip.append( ruleInstance.getRuleId().toString());
       tip.append( "<br>key=");
-      tip.append( variable.getId().toString());
+      tip.append( ruleInstance.getId().toString());
+      tip.append( "<br>");
     }
-    if (isVariableWithConstraints) {
-      tip.append( "<br>Mouse-L: ").append( operation);
+    if (isDebugPrint) {
+      tip.append( " linkCnt ").append( String.valueOf( linkCount));
+      tip.append( "<br>");
     }
+    tip.append( "Mouse-L: ").append( operation);
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
 
   /**
-   * <code>getToolTipText</code> - when over 1/8 scale overview variable node
+   * <code>getToolTipText</code> - when over 1/8 scale overview ruleInstance node
    *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
   public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html>");
-    NodeGenerics.getVariableNodeToolTipText( variable, navigatorView, tip);
+    tip.append( "rule ");
+    tip.append( ruleInstance.getRuleId().toString());
     tip.append( "<br>key=");
-    tip.append( variable.getId().toString());
+    tip.append( ruleInstance.getId().toString());
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
 
+
   /**
    * <code>doMouseClick</code> - For Model Network View, Mouse-left opens/closes
-   *            constarintNode to show constraintNodes 
+   *            constraintNode to show variableNodes 
    *
    * @param modifiers - <code>int</code> - 
    * @param dc - <code>Point</code> - 
@@ -308,15 +244,16 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
     JGoObject obj = view.pickDocObject( dc, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
-    VariableNavNode variableNavNode = (VariableNavNode) obj.getTopLevelObject();
+    RuleInstanceNavNode ruleInstanceNode = (RuleInstanceNavNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      NavigatorView navigatorView = (NavigatorView) partialPlanView;
       navigatorView.setStartTimeMSecs( System.currentTimeMillis());
       boolean areObjectsChanged = false;
       if (! areNeighborsShown()) {
-        areObjectsChanged = addVariableObjects( this);
+        areObjectsChanged = addRuleInstanceObjects( this);
         setAreNeighborsShown( true);
       } else {
-        areObjectsChanged = removeVariableObjects( this);
+        areObjectsChanged = removeRuleInstanceObjects( this);
         setAreNeighborsShown( false);
       }
       if (areObjectsChanged) {
@@ -330,36 +267,38 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
     return false;
   } // end doMouseClick   
 
-  private boolean addVariableObjects( final VariableNavNode variableNavNode) {
+  private boolean addRuleInstanceObjects( final RuleInstanceNavNode ruleInstanceNavNode) {
     boolean areNodesChanged =
-      NavNodeGenerics.addEntityNavNodes( variableNavNode, navigatorView, isDebug);
+      NavNodeGenerics.addEntityNavNodes( ruleInstanceNavNode, navigatorView, isDebugPrint);
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      NavNodeGenerics.addParentToEntityNavLinks( variableNavNode, navigatorView, isDebug);
+      NavNodeGenerics.addParentToEntityNavLinks( ruleInstanceNavNode, navigatorView, isDebugPrint);
      boolean areChildLinksChanged =
-       NavNodeGenerics.addEntityToChildNavLinks( variableNavNode, navigatorView, isDebug);
+       NavNodeGenerics.addEntityToChildNavLinks( ruleInstanceNavNode, navigatorView, isDebugPrint);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
-    int penWidth = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end addVariableObjects
+  } // end addRuleInstanceObjects
 
-  private boolean removeVariableObjects( final VariableNavNode variableNavNode) {
+  private boolean removeRuleInstanceObjects( final RuleInstanceNavNode ruleInstanceNavNode) {
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      NavNodeGenerics.removeParentToEntityNavLinks( variableNavNode, navigatorView, isDebug);
+      NavNodeGenerics.removeParentToEntityNavLinks( ruleInstanceNavNode, navigatorView,
+                                                    isDebugPrint);
     boolean areChildLinksChanged =
-      NavNodeGenerics.removeEntityToChildNavLinks( variableNavNode, navigatorView, isDebug);
+      NavNodeGenerics.removeEntityToChildNavLinks( ruleInstanceNavNode, navigatorView,
+                                                   isDebugPrint);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
     boolean areNodesChanged =
-      NavNodeGenerics.removeEntityNavNodes( variableNavNode, navigatorView, isDebug);
+      NavNodeGenerics.removeEntityNavNodes( ruleInstanceNavNode, navigatorView, isDebugPrint);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end removeVariableObjects
+  } // end removeRuleInstanceObjects
 
-} // end class VariableNavNode
 
+} // end class RuleInstanceNavNode

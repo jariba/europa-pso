@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNode.java,v 1.2 2004-06-14 22:11:25 taylor Exp $
+// $Id: RuleInstanceNode.java,v 1.3 2004-06-15 19:26:46 taylor Exp $
 //
 // PlanWorks
 //
@@ -39,6 +39,7 @@ import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -60,10 +61,10 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
   private static final boolean IS_TEXT_EDITABLE = false;
 
   protected PwRuleInstance ruleInstance;
+  protected PartialPlanView partialPlanView;
 
   private TokenNode fromTokenNode;
   private List toTokenNodeList; // element TokenNode
-  private PartialPlanView partialPlanView;
   private String nodeLabel;
   private Color backgroundColor;
 
@@ -238,6 +239,20 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
   public final void mouseRightPopupMenu( final RuleInstanceNode ruleInstanceNode,
                                          final Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          String viewSetKey = partialPlanView.getNavigatorViewSetKey();
+          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame( viewSetKey);
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+          contentPane.add( new NavigatorView( RuleInstanceNode.this.getRuleInstance(),
+                                              partialPlan, partialPlanView.getViewSet(),
+                                              viewSetKey, navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
 
     JMenuItem ruleInstanceViewItem = new JMenuItem( "Open Rule Instance View");
     ruleInstanceViewItem.addActionListener( new ActionListener() {

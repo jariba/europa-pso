@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.47 2004-06-14 22:11:26 taylor Exp $
+// $Id: planViz.txt,v 1.48 2004-06-15 19:26:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -333,8 +333,9 @@ Post-conditions:
      token.  Mouse cursor over start/end interval "triangles" displays their time 
      scale value.  Mouse cursor over a token's duration line displays the duration 
      time interval.
-  3. Timeline nodes, slot nodes, and free token nodes appear in the Timeline View.
-     Timeline node labels consist of the object name, the timeline name, and the timeline
+  3. Timeline nodes (colored rectangles), slot nodes (peaked rectangles), and free 
+     token nodes (transparent rectangles) appear in the Timeline View.  Timeline 
+     node labels consist of the object name, the timeline name, and the timeline
      key value.  Slot node labels consist of the slotted token predicate name, the
      number of tokens on the slot, and the slot key value.  Empty slot labels
      replace the predicate name and number of tokens with "-empty-".  Mouse cursor
@@ -343,7 +344,7 @@ Post-conditions:
      Free token labels consist of the predicate name, and the token key value.  The
      mouse cursor over free token nodes displays the free token's
      "predicateName( parameterValues)".
-  4. Interval tokens (slotted and free), resource transactions, abd rule instances appear
+  4. Interval tokens (slotted and free), resource transactions, and rule instances appear
      as nodes, with interval tokens as "master roots" in the Token Network View.  Node
      labels consist of the name and the key value.  Mouse cursor over interval token nodes 
      displays "predicateName( parameterValues)", and the second line displays its 
@@ -832,12 +833,12 @@ Method:
      a interval token node, a free token node, and a resource transaction node.  
      Further expand the relationships of the token nodes.
   5. In the Token Network View, Mouse-Right "Open Navigator View" on
-     a interval token node, a free token node, and a resource transaction node.
-     Further expand the relationships of the token nodes.
+     a interval token node, a free token node, a resource transaction node, and
+     a rule instance node.  Further expand the relationships of the selected nodes.
   6. In the Constraint Network View, Mouse-Right "Open Navigator View" on
      a interval token node, a free token node,  resource transaction node,
-     a timeline node, and a resource node.  Further expand the relationships
-     of the nodes.
+     a timeline node, a resource node, and a rule instance node.  Further expand 
+     the relationships of the nodes.
   7. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
      variable node.  Further expand the relationships of the variable node.
   8. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
