@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.88 2004-06-08 21:48:53 pdaley Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.89 2004-06-22 22:39:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -368,6 +368,15 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     return retval;
   } // end getPartialPlan( String)
 
+  public PwPartialPlan getPartialPlan(final Long ppId) throws ResourceNotFoundException {
+    for(Iterator it = partialPlans.values().iterator(); it.hasNext();) {
+      PwPartialPlan pp = (PwPartialPlan) it.next();
+      if(pp != null && pp.getId().equals(ppId))
+        return pp;
+    }
+    return addPartialPlan(ppId);
+  }
+
   public PwPartialPlan getNextPartialPlan(final int step) throws ResourceNotFoundException, 
   IndexOutOfBoundsException {
     return getPartialPlan(step+1);
@@ -425,6 +434,21 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     }
     throw new ResourceNotFoundException("Failed to find plan " + partialPlanName +
                                         " in sequence " + name);
+  }
+
+  private PwPartialPlan addPartialPlan(final Long ppId) throws ResourceNotFoundException {
+      String planName = MySQLDB.getPartialPlanNameById(id, ppId);
+      if(planName == null) {
+        planNamesInFilesystem.remove(planName);
+        handleEvent(EVT_PP_REMOVED);
+        throw new ResourceNotFoundException("Failed to find plan " + planName +
+                                            "in sequence " + name);
+      }
+      PwPartialPlanImpl pp = new PwPartialPlanImpl(url, planName, this);
+      partialPlans.put(planName, pp);
+      planNamesInDb.add(planName);
+      handleEvent(EVT_PP_ADDED);
+      return pp;
   }
 
   /**
@@ -495,7 +519,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
 
   public List getOpenDecisionsForStep(final int stepNum) throws ResourceNotFoundException {
     loadPartialPlanFiles("step" + stepNum);
-    System.err.println("=====>" + getCurrentDecisionIdForStep(stepNum));
     return MySQLDB.queryOpenDecisionsForStep( MySQLDB.getPartialPlanIdByStepNum(id, stepNum),
                                               getPartialPlan( stepNum));
   }
