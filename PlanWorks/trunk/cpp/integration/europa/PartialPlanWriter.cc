@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.32 2004-02-12 23:00:28 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.33 2004-03-02 17:45:36 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -102,6 +102,7 @@ const String TOKEN_RELATIONS(".tokenRelations");
 const String VARIABLES(".variables");
 const String CONSTRAINTS(".constraints");
 const String CONSTRAINT_VAR_MAP(".constraintVarMap");
+const String INSTANTS(".instants");
 const String E_DOMAIN("E");
 const String I_DOMAIN("I");
 
@@ -287,6 +288,13 @@ void PartialPlanWriter::write(void) {
     FatalError(strerror(errno));
   }
 
+  String ppInsts = partialPlanDest + SLASH + stepnum + INSTANTS;
+  ofstream resInstOut(ppInsts.chars());
+  if(!resInstOut) {
+    FatalError(strerror(errno));
+  }
+  resInstOut.close();
+
   /*List<VarId> globalVars = tnet->getGlobalVars();
   ListIterator<VarId> globalVarIterator = ListIterator<VarId>(globalVars);
   while(!globalVarIterator.isDone()) {
@@ -318,14 +326,14 @@ void PartialPlanWriter::write(void) {
     for(int i = timelineId; i < timelineId + timelineNames.getSize(); i++) {
       objectOut << i << ",";
     }
-    objectOut << TAB << SNULL << TAB << SNULL << endl;
+    objectOut << TAB << SNULL << TAB << SNULL << TAB << SNULL << endl;
 
     ListIterator<AttributeId> timelineNameIterator = ListIterator<AttributeId>(timelineNames);
     while(!timelineNameIterator.isDone()) {
       AttributeId timelineAttId = timelineNameIterator.item();
       objectOut << timelineId << TAB << O_TIMELINE << TAB << objectId->getKey() << TAB 
                 << partialPlanId << TAB << modelId.getAttributeName(timelineAttId) << TAB
-                << SNULL << TAB;
+                << SNULL << TAB << SNULL << TAB << SNULL << TAB;
 
       List<SlotInfo> slotList = tnet->getAllSlots(objectId, timelineAttId);
       ListIterator<SlotInfo> slotIterator = ListIterator<SlotInfo>(slotList);
@@ -464,11 +472,12 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
     paramNameIterator.step();
   }
   if(paramVarIds == String("")) {
-    tokenOut << SNULL << endl;
+    tokenOut << SNULL << TAB;
   }
   else {
-    tokenOut << paramVarIds << endl;
+    tokenOut << paramVarIds << TAB;
   }
+  tokenOut << SNULL << endl;
 }
 
 void PartialPlanWriter::outputVariable(const VarId &variable, const char *type, 
