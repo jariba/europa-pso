@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.15 2003-11-13 23:21:17 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.16 2003-11-20 19:11:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -198,9 +199,19 @@ public class ConstraintNetworkView extends PartialPlanView {
     //  new ConstraintNetworkLayout( document, network, startTimeMSecs);
     //layout.performLayout();
     newLayout.performLayout();
-    expandViewFrame( this.getClass().getName(),
-                     (int) jGoView.getDocumentSize().getWidth(), VIEW_HEIGHT);
 
+    Rectangle documentBounds = jGoView.getDocument().computeBounds();
+    jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
+                                           (ViewConstants.TIMELINE_VIEW_X_INIT * 2),
+                                           (int) documentBounds.getHeight() +
+                                           (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
+    expandViewFrame( viewSet.openView( this.getClass().getName()),
+                     (int) jGoView.getDocumentSize().getWidth(), VIEW_HEIGHT);
+ 
+    long stopTimeMSecs = System.currentTimeMillis();
+    System.err.println( "   ... elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    startTimeMSecs = 0L;
     isLayoutNeeded = false;
     focusNode = null;
 
@@ -235,14 +246,16 @@ public class ConstraintNetworkView extends PartialPlanView {
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // prevent user from seeing intermediate layouts
     this.setVisible( false);
-    long startTimeMSecs = System.currentTimeMillis();
+    System.err.println( "Redrawing Constraint Network View ...");
+    if (startTimeMSecs == 0L) {
+      startTimeMSecs = System.currentTimeMillis();
+    }
     // setVisible(true | false) depending on keys
     setNodesLinksVisible();
 
     // content spec apply/reset do not change layout, only ConstraintNetworkTokenNode/
     // variableNode/constraintNode opening/closing
     if (isLayoutNeeded) {
-      System.err.println( "Redrawing Constraint Network View ...");
       if (isDebugPrint) {
         //network.validateConstraintNetwork();
       }
@@ -260,6 +273,10 @@ public class ConstraintNetworkView extends PartialPlanView {
       NodeGenerics.focusViewOnNode( focusNode, isHighlightNode, jGoView);
       isLayoutNeeded = false;
     }
+    long stopTimeMSecs = System.currentTimeMillis();
+    System.err.println( "   ... elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    startTimeMSecs = 0L;
     this.setVisible( true);
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end redrawView
@@ -343,6 +360,15 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   protected NewConstraintNetworkLayout getNewLayout() {
     return newLayout;
+  }
+
+  /**
+   * <code>setStartTimeMSecs</code>
+   *
+   * @param msecs - <code>long</code> - 
+   */
+  protected void setStartTimeMSecs( long msecs) {
+    startTimeMSecs = msecs;
   }
 
   private void createTokenNodes() {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.3 2003-11-06 00:02:19 taylor Exp $
+// $Id: VariableNode.java,v 1.4 2003-11-20 19:11:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -179,6 +179,21 @@ public class VariableNode extends BasicNode {
     } else {
       return variable.getType();
     }
+  } // end getToolTipText
+
+  /**
+   * <code>getToolTipText</code> - when over 1/8 scale overview variable node
+   *
+   * @param isOverview - <code>boolean</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText( boolean isOverview) {
+    StringBuffer tip = new StringBuffer( "<html> ");
+    tip.append( variable.getDomain().toString());
+    tip.append( "<br>key=");
+    tip.append( variable.getId().toString());
+    tip.append( "</html>");
+    return tip.toString();
   } // end getToolTipText
 
   /**
@@ -436,6 +451,7 @@ public class VariableNode extends BasicNode {
    */
   protected void addVariableNodeTokensAndConstraints
     ( VariableNode variableNode, ConstraintNetworkView constraintNetworkView) {
+    constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
     boolean areNodesChanged = constraintNetworkView.addConstraintNodes( variableNode);
     boolean areLinksChanged =
       constraintNetworkView.addTokenAndConstraintToVariableLinks( variableNode);
@@ -449,6 +465,7 @@ public class VariableNode extends BasicNode {
 
   private void removeVariableNodeTokensAndConstraints
     ( VariableNode variableNode, ConstraintNetworkView constraintNetworkView) {
+    constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
     boolean areLinksChanged = constraintNetworkView.removeTokenToVariableLinks( variableNode);
     boolean areNodesChanged = constraintNetworkView.removeConstraintNodes( variableNode);
     if (areNodesChanged || areLinksChanged) {

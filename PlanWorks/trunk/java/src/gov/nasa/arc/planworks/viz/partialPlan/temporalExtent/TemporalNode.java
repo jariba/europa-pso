@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.5 2003-11-13 23:21:17 taylor Exp $
+// $Id: TemporalNode.java,v 1.6 2003-11-20 19:11:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -318,13 +318,32 @@ public class TemporalNode extends BasicNode implements Extent {
     if (token != null) {
       tip.append( token.toString());
     } else {
-      tip.append( "<empty>");
+      tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
     }
     // check for free token
     if (slot != null) {
       tip.append( "<br>");
       tip.append( "slot key=");
       tip.append( slot.getId().toString());
+    }
+    tip.append( "</html>");
+    return tip.toString();
+  } // end getToolTipText
+
+  /**
+   * <code>getToolTipText</code> - when over 1/8 scale overview temporal node
+   *
+   * @param isOverview - <code>boolean</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText( boolean isOverview) {
+    StringBuffer tip = new StringBuffer( "<html> ");
+    if (token != null) {
+      tip.append( predicateName);
+      tip.append( "<br>key=");
+      tip.append( token.getId().toString());
+    } else {
+      tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
     }
     tip.append( "</html>");
     return tip.toString();

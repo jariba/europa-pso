@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.1 2003-11-18 23:54:15 taylor Exp $
+// $Id: VizViewOverview.java,v 1.2 2003-11-20 19:11:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,30 +12,22 @@
 
 package gov.nasa.arc.planworks.viz;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.dnd.DnDConstants;
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
+import java.awt.event.MouseEvent;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoRectangle;
+import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.Overview;
+
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
 
 
 /**
@@ -53,6 +45,7 @@ public class VizViewOverview extends Overview {
   /**
    * <code>VizViewOverview</code> - constructor 
    *
+   * @param overviewTitle - <code>String</code> - 
    * @param vizView - <code>VizView</code> - 
    */
   public VizViewOverview( String overviewTitle, VizView vizView) {
@@ -100,8 +93,7 @@ public class VizViewOverview extends Overview {
    * Then make sure these operations are performed when the JInternalFrame
    * holdiong the JGoOverview is closed.
    */
-  public void removeNotify()
-  {
+  public void removeNotify() {
     // System.err.println( "VizViewOverview.removeNotify");
     // System.err.println( "myObserved " + getObserved());
 //     removeListeners();
@@ -116,12 +108,56 @@ public class VizViewOverview extends Overview {
   public void removeNotifyFromViewSet() {
     OverviewRectangle overviewRect = getOverviewRect();
     JGoView observed = getObserved();
-    System.err.println( "removeNotifyFromViewSet");
+    // System.err.println( "removeNotifyFromViewSet");
     if (observed != null && overviewRect != null) {
       observed.getDocument().removeDocumentListener(this);
       observed.removeViewListener(overviewRect);
       observed.getCanvas().removeComponentListener(overviewRect);
     }
+  }
+
+  // show tooltips, so users might get a clue about which object is which
+  // even though the objects are so small
+  /**
+   * <code>getToolTipText</code> -
+   *            show tooltips, so users might get a clue about which object is which
+   *            even though the objects are so small.
+   *            Show the node label, not its tool tip.
+   *
+   * @param evt - <code>MouseEvent</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText( MouseEvent evt) {
+    if (getObserved() == null) return null;
+    boolean isOverview = true;
+    Point p = new Point(evt.getPoint());
+    convertViewToDoc(p);
+    String tip = null;
+    JGoObject obj = getObserved().pickDocObject(p, false);
+
+    while (obj != null) {
+      if (obj instanceof ConstraintNetworkTokenNode) {
+        tip = ((ConstraintNetworkTokenNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ConstraintNode) {
+        tip = ((ConstraintNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof VariableNode) {
+        tip = ((VariableNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TemporalNode) {
+        tip = ((TemporalNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TokenNode) {
+        tip = ((TokenNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof SlotNode) {
+        tip = ((SlotNode) obj).getToolTipText( isOverview);
+      } else {
+        tip = obj.getToolTipText();
+      }
+      if (tip != null) {
+        return tip;
+      } else {
+        obj = obj.getParent();
+      }
+    }
+    return null;
   }
 
 } // end class VizViewOverview

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.9 2003-11-07 00:05:00 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.10 2003-11-20 19:11:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -61,7 +61,9 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
@@ -164,7 +166,7 @@ public class SequenceStepsView extends SequenceView {
     heightScaleFactor = computeHeightScaleFactor();
     renderHistogram();
 
-    expandViewFrame( this.getClass().getName(),
+    expandViewFrame( viewSet.openView( this.getClass().getName()),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
 
@@ -334,7 +336,7 @@ public class SequenceStepsView extends SequenceView {
         // do nothing
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
 
-        // mouseRightPopupMenu( viewCoords);
+        mouseRightPopupMenu( viewCoords);
 
       }
     } // end doBackgroundClick
@@ -343,25 +345,29 @@ public class SequenceStepsView extends SequenceView {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
-    JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
-    createActiveTokenItem( activeTokenItem);
-    mouseRightPopup.add( activeTokenItem);
+
+    JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
+    createOverviewWindowItem( overviewWindowItem, this, viewCoords);
+    mouseRightPopup.add( overviewWindowItem);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
 
-  private void createActiveTokenItem( JMenuItem activeTokenItem) {
-    activeTokenItem.addActionListener( new ActionListener() {
+  private void createOverviewWindowItem( JMenuItem overviewWindowItem,
+                                         final SequenceStepsView sequenceStepsView,
+                                         final Point viewCoords) {
+    overviewWindowItem.addActionListener( new ActionListener() { 
         public void actionPerformed( ActionEvent evt) {
-          // get activeToken from viewManager -- Michael will write accessor
-//           PwToken activeToken =
-//             ((SequenceViewSet) SequenceStepsView.this.getViewSet()).getActiveToken();
-//           if (activeToken != null) {
-
-//           }
+          VizViewOverview currentOverview =
+            ViewGenerics.openOverviewFrame( PlanWorks.SEQUENCE_STEPS_VIEW, planSequence,
+                                            sequenceStepsView, viewSet, jGoView, viewCoords);
+          if (currentOverview != null) {
+            overview = currentOverview;
+          }
         }
       });
-  } // end createActiveTokenItem
+  } // end createOverviewWindowItem
+
 
 } // end class SequenceStepsView

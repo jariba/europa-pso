@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.12 2003-11-18 22:16:03 miatauro Exp $
+// $Id: planViz.txt,v 1.13 2003-11-20 19:11:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -263,6 +263,11 @@ Method:
   7. On "step<nn>" element of "SequenceStepsView of test-seq-1", click
      Mouse-Right and select "Hide All Views", then "Open All Views", and then
      "Close All Views".
+  8. On the Sequence Steps View, use Mouse-Right "Overview Window" to open a
+     1/8th scale overview of the entire "observed" view.  Drag the scoping
+     rectangle to cause the "observed" view to scroll.  Use Mouse-Left clicks
+     on areas outside the rectangle to cause the "observed" view to jump to
+     a new location.  
 
 Post-conditions:
   1. All token nodes (rectangles) appear in the Constraint Network View, and 
@@ -291,8 +296,11 @@ Post-conditions:
      VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  Entries with 
      TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = PARAMETER_VAR have values 
      for PARAMETER_NAME.
-  6. Method:7 - first all the "step<nn>" windows should be iconified, then 
+  6. Method:7 - First all the "step<nn>" windows should be iconified, then 
      opened, and then deleted.
+  7. Method:8 - The "observed" view should respond properly to operatins on
+     the overview window.
+
 
 Requirements: 4.2.1, 4.2.2, 4.2.3.d, 4.2.3.e, 4.2.3.f, 4.3.2.a
 
@@ -336,15 +344,19 @@ Method:
      nodes to see whether that column is sortable, in either ascending or
      descending order.  Mouse-left click to initiate the sort.  Sort all
      the columns.
- 11. In each partial plan view, use Mouse-Right "Open a View" to
+ 11. In each partial plan view, use Mouse-Right "Open <view-name> View" to
      navigate to the other views.  Iconify the Content Spec window, by clicking
      on the "minimize" icon of its title bar.  In all views, except Transaction view,
      use Mouse-Right "Raise Content Spec" to set focus on the Content Spec
      window.
- 12. For a selected partial plan step, open only one partial plan view, and
+ 12. For a selected plan sequence step, open only one partial plan view, and
      use Mouse-Right "Open All Views", then "Hide All Views", and finally
      "Close All Views".  Do this for each of the partial plan views.
-
+ 13. In each partial plan view, use Mouse-Right "Overview Window" to open a
+     1/8th scale overview of the entire "observed" view.  Drag the scoping
+     rectangle to cause the "observed" view to scroll.  Use Mouse-Left clicks
+     on areas outside the rectangle to cause the "observed" view to jump to
+     a new location.  Do this for all partial plan views, except Transaction.
 
 Post-conditions:
   1. Method:2 - In turn, each of the views should re-oriented itself to
@@ -373,6 +385,8 @@ Post-conditions:
      internal frame, and will have focus.
  11. Method:12 - the partial plan step's views will respond appropriately to
      the "Open", "Hide", and "Close" selections.
+ 12. Method:13 - The "observed" views should respond properly to operatins on
+     the overview windows.
 
 Requirements: TBD
 

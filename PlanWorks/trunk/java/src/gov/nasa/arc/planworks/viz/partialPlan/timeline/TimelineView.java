@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.15 2003-11-18 23:54:15 taylor Exp $
+// $Id: TimelineView.java,v 1.16 2003-11-20 19:11:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -139,9 +139,7 @@ public class TimelineView extends PartialPlanView {
     // create all nodes
     renderTimelineAndSlotNodes();
 
-    // jGoView.setScale( 0.5);
-
-    expandViewFrame( this.getClass().getName(),
+    expandViewFrame( viewSet.openView( this.getClass().getName()),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
 
@@ -258,18 +256,18 @@ public class TimelineView extends PartialPlanView {
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
         if (isTimelineInContentSpec( timeline)) {
           String timelineName = timeline.getName();
-          String timelineNodeName = objectName + " : " + timelineName +
-            "\ntimeline key=" + timeline.getId().toString();
+          String timelineLabel = objectName + " : " + timelineName + 
+                                  "\ntimeline key=" + timeline.getId().toString();
           Color timelineColor =
             ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
           TimelineNode timelineNode =
-            new TimelineNode( timelineNodeName, timeline, new Point( x, y),
-                              timelineColor);
+            new TimelineNode( timelineLabel, timeline, new Point( x, y), timelineColor);
           tmpTimelineNodeList.add( timelineNode);
           // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
           jGoDocument.addObjectAtTail( timelineNode);
-          timelineNode.setSize( timelineNodeWidth,
-                                (int) timelineNode.getSize().getHeight());
+          if (timelineNodeWidth > timelineNode.getSize().getWidth()) {
+            timelineNode.setSize( timelineNodeWidth, (int) timelineNode.getSize().getHeight());
+          }
           x += timelineNode.getSize().getWidth(); 
           createSlotNodes( timeline, timelineNode, x, y, timelineColor);
           y += ViewConstants.TIMELINE_VIEW_Y_DELTA; 
@@ -279,7 +277,6 @@ public class TimelineView extends PartialPlanView {
     }
     y += ViewConstants.TIMELINE_VIEW_Y_INIT;
     List freeTokenList = partialPlan.getFreeTokenList();
-    // System.err.println( "freeTokenList " + freeTokenList);
     Iterator freeTokenItr = freeTokenList.iterator();
     boolean isFreeToken = true, isDraggable = false;
     Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
@@ -291,8 +288,7 @@ public class TimelineView extends PartialPlanView {
         x = x +  SwingUtilities.computeStringWidth( this.fontMetrics,
                                                     freeToken.getPredicate().getName()) / 2;
         TokenNode freeTokenNode = new TokenNode( freeToken, slot, new Point( x, y),
-                                                 backgroundColor, isFreeToken,
-                                                 isDraggable, this);
+                                                 backgroundColor, isFreeToken, isDraggable, this);
         freeTokenNodeList.add( freeTokenNode);
         jGoDocument.addObjectAtTail( freeTokenNode);
         x = x + (int) freeTokenNode.getSize().getWidth();
@@ -419,7 +415,7 @@ public class TimelineView extends PartialPlanView {
       PwTimeline timeline = (PwTimeline) timelineIterator.next();
       String timelineName = timeline.getName();
       String timelineNodeName = objectName + " : " + timelineName;
-      String timelineKey = "key=" + timeline.getId().toString();
+      String timelineKey = "timeline key=" + timeline.getId().toString();
       int nodeWidth = Math.max( SwingUtilities.computeStringWidth( this.fontMetrics,
                                                                    timelineNodeName),
                                 SwingUtilities.computeStringWidth( this.fontMetrics,
@@ -439,7 +435,7 @@ public class TimelineView extends PartialPlanView {
    *
    * @param token - <code>PwToken</code> - 
    * @param slot - <code>PwSlot</code> - 
-   * @param  isFirstSlot - <code>boolean</code> - 
+   * @param  isFirstSlot - <code>boolean</code> -  
    * @return - <code>String</code> - 
    */
   public String getSlotNodeLabel( PwToken token, PwSlot slot, boolean isFirstSlot) {

@@ -93,7 +93,7 @@ public interface ViewConstants {
    * constant <code>TIMELINE_VIEW_EMPTY_NODE_LABEL</code>
    *
    */
-  public static final String TIMELINE_VIEW_EMPTY_NODE_LABEL = "<empty>";
+  public static final String TIMELINE_VIEW_EMPTY_NODE_LABEL = "-empty-";
 
   /**
    * constant <code>TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN</code>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.6 2003-11-13 23:21:17 taylor Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.7 2003-11-20 19:11:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -135,7 +135,7 @@ public class ConstraintNetworkTokenNode extends TokenNode {
     if (token != null) {
       tip.append( token.toString());
     } else {
-      tip.append( "<empty>");
+      tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
     }
     // check for free token
     if (slot != null) {
@@ -144,6 +144,25 @@ public class ConstraintNetworkTokenNode extends TokenNode {
       tip.append( slot.getId().toString());
     }
     tip.append( "<br> Mouse-L: ").append( operation).append( " nearest variables</html>");
+    return tip.toString();
+  } // end getToolTipText
+
+  /**
+   * <code>getToolTipText</code> - when over 1/8 scale overview token node
+   *
+   * @param isOverview - <code>boolean</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText( boolean isOverview) {
+    StringBuffer tip = new StringBuffer( "<html> ");
+    if (token != null) {
+      tip.append( getPredicateName());
+    } else {
+      tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
+    }
+    tip.append( "<br>key=");
+    tip.append( token.getId().toString());
+    tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
 
@@ -229,6 +248,7 @@ public class ConstraintNetworkTokenNode extends TokenNode {
    */
   protected void addTokenNodeVariables( ConstraintNetworkTokenNode tokenNode,
                                         ConstraintNetworkView constraintNetworkView) {
+    constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
     boolean areNodesChanged = constraintNetworkView.addVariableNodes( tokenNode);
     boolean areLinksChanged = constraintNetworkView.addVariableToTokenLinks( tokenNode);
     if (areNodesChanged || areLinksChanged) {
@@ -241,6 +261,7 @@ public class ConstraintNetworkTokenNode extends TokenNode {
 
   private void removeTokenNodeVariables( ConstraintNetworkTokenNode tokenNode,
                                          ConstraintNetworkView constraintNetworkView) {
+    constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
     boolean areLinksChanged = constraintNetworkView.removeVariableToTokenLinks( tokenNode);
     boolean areNodesChanged = constraintNetworkView.removeVariableNodes( tokenNode);
     if (areNodesChanged || areLinksChanged) {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.3 2003-11-13 23:21:17 taylor Exp $
+// $Id: SlotNode.java,v 1.4 2003-11-20 19:11:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,7 +46,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 /**
  * <code>SlotNode</code> - JGo widget to render a timeline slot with a
  *                         label consisting of the slot's predicate name,
- *                         or "<empty>".  Below each slot's border with
+ *                         or "-empty-".  Below each slot's border with
  *                         the next one, the start/end time interval is displayed
  *             Object->JGoObject->JGoArea->TextNode->SlotNode
  *
@@ -83,6 +83,7 @@ public class SlotNode extends TextNode {
   private JGoText startTimeIntervalObject;
   private JGoText endTimeIntervalObject;
   private boolean isTimeLabelYLocLevel1;
+  private PwToken token;
 
 
   /**
@@ -102,7 +103,7 @@ public class SlotNode extends TextNode {
                    Color backgroundColor, TimelineView timelineView) {
     super( nodeLabel);
     // node label now contains \nkey=nnn
-    PwToken token = slot.getBaseToken();
+    token = slot.getBaseToken();
     if (token == null) { // empty slot
       this.predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
     } else {
@@ -325,6 +326,25 @@ public class SlotNode extends TextNode {
     } else {
       return "";
     }
+  } // end getToolTipText
+
+  /**
+   * <code>getToolTipText</code> - when over 1/8 scale overview slot node
+   *
+   * @param isOverview - <code>boolean</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText( boolean isOverview) {
+    StringBuffer tip = new StringBuffer( "<html> ");
+    if (token != null) {
+      tip.append( predicateName);
+    } else {
+      tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
+    }
+    tip.append( "<br>slot key=");
+    tip.append( slot.getId().toString());
+    tip.append( "</html>");
+    return tip.toString();
   } // end getToolTipText
 
   /**
