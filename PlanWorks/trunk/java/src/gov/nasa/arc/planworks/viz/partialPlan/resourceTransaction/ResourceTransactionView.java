@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.27 2004-09-21 01:07:06 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.28 2004-10-07 20:19:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -111,6 +111,21 @@ public class ResourceTransactionView extends ResourceView  {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, viewListener,
            ViewConstants.RESOURCE_TRANSACTION_VIEW);
   } // end constructor
+
+  /**
+   * <code>ResourceTransactionView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param vSet - <code>ViewSet</code> - 
+   * @param state - <code>PartialPlanViewState</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public ResourceTransactionView( final ViewableObject partialPlan, final ViewSet vSet, 
+                                  final PartialPlanViewState state,
+                                  final ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, state, viewListener,
+           ViewConstants.RESOURCE_TRANSACTION_VIEW);
+  }
 
   /**
    * <code>getState</code>

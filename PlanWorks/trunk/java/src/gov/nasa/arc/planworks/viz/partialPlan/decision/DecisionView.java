@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.16 2004-09-24 22:40:00 taylor Exp $
+// $Id: DecisionView.java,v 1.17 2004-10-07 20:19:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -147,8 +147,8 @@ public class DecisionView extends PartialPlanView {
    * @param viewSet - <code>ViewSet</code> - 
    * @param s - <code>PartialPlanViewState</code> - 
    */
-  public DecisionView(ViewableObject partialPlan, ViewSet viewSet,
-                      PartialPlanViewState s) {
+  public DecisionView( ViewableObject partialPlan, ViewSet viewSet,
+                       PartialPlanViewState s) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     isStepButtonView = true;
     decisionViewInit( (PwPartialPlan) partialPlan, viewSet);
@@ -178,6 +178,33 @@ public class DecisionView extends PartialPlanView {
     if (viewListener != null) {
       addViewListener( viewListener);
     }
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
+  }
+
+  /**
+   * <code>DecisionView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public DecisionView( ViewableObject partialPlan, ViewSet viewSet,
+                       PartialPlanViewState s, ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    isStepButtonView = true;
+    decisionViewInit( (PwPartialPlan) partialPlan, viewSet);
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    setState(s);
     // SwingUtilities.invokeLater( runInit);
     final SwingWorker worker = new SwingWorker() {
         public Object construct() {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.66 2004-09-21 01:07:08 taylor Exp $
+// $Id: ViewSet.java,v 1.67 2004-10-07 20:19:16 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -195,6 +195,65 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     return viewFrame;
   }
 
+  public MDIInternalFrame openView(String viewClassName, PartialPlanViewState viewState,
+                                   ViewListener viewListener) {
+    Class viewClass = null;
+    Class [] constructorParams = new Class [4];
+    // System.err.println( "ViewSet.openView viewClassName " + viewClassName);
+    try {
+      viewClass = Class.forName(viewClassName);
+      constructorParams[0] = Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject");
+      constructorParams[1] = Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet");
+      constructorParams[2] =
+        Class.forName("gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState");
+      constructorParams[3] = Class.forName("gov.nasa.arc.planworks.viz.ViewListener");
+    } catch (ClassNotFoundException excp) {
+      excp.printStackTrace();
+      System.exit(1);
+    }
+    if(views.containsKey(viewClass)) {
+      return getViewByClass(viewClass);
+    }
+    // Constructor [] constructors = viewClass.getDeclaredConstructors();
+    String frameViewName = viewClassName.substring( viewClassName.lastIndexOf( ".") + 1);
+    MDIInternalFrame viewFrame = desktopFrame.createFrame( frameViewName + " of " +
+                                                           viewable.getName(),
+                                                           this, true, true, true, true);
+    viewFrame.setIconifiable( true);
+    views.put(viewClass, viewFrame);
+    Container contentPane = viewFrame.getContentPane();
+    VizView view = null;
+    Object [] stateConstructorArgs = new Object[4];
+    stateConstructorArgs[0] = viewable;
+    stateConstructorArgs[1] = this;
+    stateConstructorArgs[2] = viewState;
+    stateConstructorArgs[3] = viewListener;
+
+    Constructor constructor = null;
+    try {
+      constructor = viewClass.getConstructor(constructorParams);
+    }
+    catch (NoSuchMethodException nsme) {
+      nsme.printStackTrace();
+      System.exit(1);
+    }
+
+    try {
+      view = (VizView) constructor.newInstance(stateConstructorArgs);
+      // view = (VizView) constructors[1].newInstance(stateConstructorArgs);
+    } 
+    catch (InvocationTargetException ite) {
+	ite.getCause().printStackTrace();
+	System.exit(-1);
+    }
+    catch (Exception excp) {
+	excp.printStackTrace();
+	System.exit(1);
+    }
+    contentPane.add(view);
+    return viewFrame;
+  }
+
   public MDIInternalFrame getViewByClass(Class viewClass) {
     return (MDIInternalFrame) views.get(viewClass);
   }
@@ -206,7 +265,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   public void removeViewFrame(MDIInternalFrame viewFrame) {
     // System.err.println("in removeViewFrame " + viewFrame);
     if(views.containsValue(viewFrame)) {
-      //System.err.println("have frame");
+      // System.err.println("have frame");
       Container contentPane = viewFrame.getContentPane();
       for (int i = 0; i < contentPane.getComponentCount(); i++) {
         // String viewSet keys: NavigatorView, VizViewOverview, RuleView
@@ -217,6 +276,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
           }
         } else if (contentPane.getComponent(i) instanceof VizView) {
           // class viewSet keys
+          // System.err.println("remove " + contentPane.getComponent(i).getClass().getName());
           views.remove(contentPane.getComponent(i).getClass());
           VizViewOverview overview =
             ((VizView) contentPane.getComponent(i)).getOverview();

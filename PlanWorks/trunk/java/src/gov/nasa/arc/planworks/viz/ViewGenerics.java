@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.26 2004-09-08 20:59:51 taylor Exp $
+// $Id: ViewGenerics.java,v 1.27 2004-10-07 20:19:06 taylor Exp $
 //
 // PlanWorks
 //
@@ -509,7 +509,7 @@ public class ViewGenerics {
    */
   public static RuleInstanceView getRuleInstanceView( MDIInternalFrame frame) {
     return generics._getRuleInstanceView(frame);
-  } // end getRuleView
+  } // end getRuleInstanceView
 
   private final RuleInstanceView _getRuleInstanceView(MDIInternalFrame frame) {
     return (RuleInstanceView) CollectionUtils.findFirst
@@ -530,7 +530,7 @@ public class ViewGenerics {
    */
   public static SequenceStepsView getSequenceStepsView( MDIInternalFrame frame) {
     return generics._getSequenceStepsView(frame);
-  } // end getRuleView
+  } // end getSequenceStepsView
 
   private final SequenceStepsView _getSequenceStepsView(MDIInternalFrame frame) {
 //     Component [] components = frame.getContentPane().getComponents();
@@ -541,6 +541,21 @@ public class ViewGenerics {
 //     }
     return (SequenceStepsView) CollectionUtils.findFirst
       ( new SequenceStepsViewFinder(), frame.getContentPane().getComponents());
+  }
+
+
+  class OverviewViewFinder implements BooleanFunctor {
+    public OverviewViewFinder(){}
+    public final boolean func(Object o){return (o instanceof VizViewOverview);}
+  }
+
+  public static VizViewOverview getOverviewView( MDIInternalFrame frame) {
+    return generics._getOverviewView(frame);
+  } // end getOverviewView
+
+  private final VizViewOverview _getOverviewView(MDIInternalFrame frame) {
+    return (VizViewOverview) CollectionUtils.findFirst
+      ( new OverviewViewFinder(), frame.getContentPane().getComponents());
   }
 
 

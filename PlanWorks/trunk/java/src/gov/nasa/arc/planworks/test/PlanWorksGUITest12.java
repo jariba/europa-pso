@@ -4,12 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest12.java,v 1.1 2004-10-01 20:04:34 taylor Exp $
+// $Id: PlanWorksGUITest12.java,v 1.2 2004-10-07 20:19:05 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -79,8 +80,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TokenTyp
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.UniqueKeyBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.UniqueKeyGroupBox;
 
-// methods 1-15 of 18 complete for TimelineView; no other views yet
-
+// complete for TimelineView
+//              ConstraintNetwork, TemporalExtent, & TokenNetwork -- not yet
 public class PlanWorksGUITest12 {
 
   private PlanWorksGUITest12() {
@@ -96,7 +97,8 @@ public class PlanWorksGUITest12 {
     sequenceFileArray[0] = new File( sequenceDirectory +
                                      System.getProperty("file.separator") +
                                      sequenceUrls.get( seqUrlIndex));
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, guiTest, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, guiTest,
+                                planWorks);
     // try{Thread.sleep(2000);}catch(Exception e){}
     PWTestHelper.addSequencesToProject( sequenceFileArray, helper, guiTest, planWorks);
 
@@ -167,7 +169,8 @@ public class PlanWorksGUITest12 {
 
    // validateConstraintsOpen( constraintNetworkView);
 
-   confirmSpecForViews( contentSpecWindow, timelineView, planWorks, helper, guiTest);
+   confirmSpecForViews( contentSpecWindow, timelineView, viewNameSuffix, planWorks,
+                        helper, guiTest);
 
    // try{Thread.sleep(4000);}catch(Exception e){}
 
@@ -239,8 +242,9 @@ public class PlanWorksGUITest12 {
 
 
   private static void confirmSpecForViews( ContentSpecWindow contentSpecWindow,
-                                           TimelineView timelineView, PlanWorks planWorks,
-                                           JFCTestHelper helper, PlanWorksGUITest guiTest)
+                                           TimelineView timelineView, String viewNameSuffix,
+                                           PlanWorks planWorks, JFCTestHelper helper,
+                                           PlanWorksGUITest guiTest)
     throws Exception {
     JButton activateFilterButton = null;
     JButton resetFilterButton = null;
@@ -665,7 +669,7 @@ public class PlanWorksGUITest12 {
     helper.enterClickAndLeave(new MouseEventData(guiTest, activateFilterButton));
     guiTest.flushAWT(); guiTest.awtSleep();
 
-    isBaseTokenOnly = false;
+    isBaseTokenOnly = true;
     slottedTokens = getTimelineViewSlottedTokenList( timelineView, selectedTimelineName,
                                                      isBaseTokenOnly, planWorks,
                                                      helper, guiTest);
@@ -674,7 +678,7 @@ public class PlanWorksGUITest12 {
     // try{Thread.sleep(4000);}catch(Exception e){}
 
     guiTest.assertTrueVerbose( "Timeline '" + selectedTimelineName +
-                               "' does not show only two tokens",
+                               "' does not show only two non-empty slots",
                                (slottedTokens.size() == 2), "not ");
     guiTest.assertTrueVerbose( "Timeline '" + selectedTimelineName + "' does not show token '" +
                                requiredToken1 + "'", slottedTokens.contains( requiredToken1),
@@ -684,7 +688,33 @@ public class PlanWorksGUITest12 {
                                "not ");
 
     System.err.println( "Method 16 -------------");
-    // exclude Remove
+    // Select "Remove" for the second required key, and change "require"
+    // to "exclude" for the first key.  Uncheck the "NOT" for the
+    // selected timeline.  Apply it.
+    removeButton1.doClick();
+    excludeButton0.doClick();
+    negationBox0.setSelected( false);
+
+    System.err.println( "Apply Filter");
+    helper.enterClickAndLeave(new MouseEventData(guiTest, activateFilterButton));
+    guiTest.flushAWT(); guiTest.awtSleep();
+
+    slottedTokens = getTimelineViewSlottedTokenList( timelineView, selectedTimelineName,
+                                                     isBaseTokenOnly, planWorks,
+                                                     helper, guiTest);
+    System.err.println( "slottedTokens.size() " + slottedTokens.size());
+
+    guiTest.assertTrueVerbose( "Timeline '" + selectedTimelineName +
+                               "' does not show only four non-empty slots",
+                               (slottedTokens.size() == 4), "not ");
+    guiTest.assertFalseVerbose( "Timeline '" + selectedTimelineName +
+                                "' does not not show token '" + requiredToken1 + "'",
+                                slottedTokens.contains( requiredToken1),
+                               "not ");
+    guiTest.assertTrueVerbose( "Timeline '" + selectedTimelineName + "' does not show token '" +
+                               requiredToken2 + "'", slottedTokens.contains( requiredToken2),
+                               "not ");
+
 //     JRadioButton excludeButton = uniqueKeyGroupBox.getUniqueKeyBox().getExcludeButton();
 //     JButton removeButton = uniqueKeyGroupBox.getUniqueKeyBox().getRemoveButton();
 //     keyField = uniqueKeyGroupBox.getUniqueKeyBox().getKeyField();
@@ -699,9 +729,54 @@ public class PlanWorksGUITest12 {
     // Click Mouse-Right on a background area of the Content Filter dialog,
     //  and choose either opening an individual partial plan view or all
     //  the partial plan views.
+    // delete a view first
+    ConstraintNetworkView constraintNetworkView =
+      (ConstraintNetworkView) PWTestHelper.getPartialPlanView
+      ( ViewConstants.CONSTRAINT_NETWORK_VIEW, viewNameSuffix, guiTest);
+    timelineView = (TimelineView) PWTestHelper.getPartialPlanView
+     ( ViewConstants.TIMELINE_VIEW, viewNameSuffix, guiTest);
+    constraintNetworkView.getViewSet().removeViewFrame( timelineView.getViewFrame());
+    try { timelineView.getViewFrame().setClosed( true); } 
+    catch ( PropertyVetoException pve) { }
+    guiTest.flushAWT(); guiTest.awtSleep();
+    boolean timelineViewExists =
+      constraintNetworkView.getViewSet().viewExists
+      ( (String) PlanWorks.VIEW_CLASS_NAME_MAP.get( ViewConstants.TIMELINE_VIEW));
+
+    guiTest.assertTrueVerbose( "Timeline View has not been deleted",
+                               (! timelineViewExists), "not ");
+
+    List viewListenerList = guiTest.createViewListenerList();
+    contentSpecWindow.mouseRightPopupMenu( viewListenerList, new Point( 0, 0));
+    guiTest.flushAWT(); guiTest.awtSleep();
+    String frameMenuItemName = "Open Timeline View";
+    PWTestHelper.selectFrameMenuItem( contentSpecWindow.getFrame(), frameMenuItemName,
+                                      helper, guiTest);
+    guiTest.viewListenerListWait( PlanWorksGUITest.TIMELINE_VIEW_INDEX, viewListenerList);
+    timelineView = (TimelineView) PWTestHelper.getPartialPlanView
+     ( ViewConstants.TIMELINE_VIEW, viewNameSuffix, guiTest);
+    guiTest.assertTrueVerbose( "Timeline View has not been created",
+                               (timelineView != null), "not ");
+
+    contentSpecWindow.mouseRightPopupMenu( viewListenerList, new Point( 0, 0));
+    guiTest.flushAWT(); guiTest.awtSleep();
+    frameMenuItemName = "Hide All Views";
+    PWTestHelper.selectFrameMenuItem( contentSpecWindow.getFrame(), frameMenuItemName,
+                                      helper, guiTest);
+    guiTest.assertTrueVerbose( "Timeline View has not been hidden",
+                               timelineView.getViewFrame().isIcon(), "not ");
+
+    contentSpecWindow.mouseRightPopupMenu( viewListenerList, new Point( 0, 0));
+    guiTest.flushAWT(); guiTest.awtSleep();
+    frameMenuItemName = "Show All Views";
+    PWTestHelper.selectFrameMenuItem( contentSpecWindow.getFrame(), frameMenuItemName,
+                                      helper, guiTest);
+    guiTest.assertTrueVerbose( "Timeline View has not been shown",
+                               (! timelineView.getViewFrame().isIcon()), "not ");
+    try{Thread.sleep(1000);}catch(Exception e){} 
 
 
-   } // end confirmSpecForViews
+  } // end confirmSpecForViews
 
 
   private static Object[] getPredicateGroupBoxes( GroupBox predicateGroup,
@@ -903,6 +978,7 @@ public class PlanWorksGUITest12 {
                                                     PlanWorks planWorks, JFCTestHelper helper,
                                                     PlanWorksGUITest guiTest)
     throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
     Iterator timelineNodeItr = timelineView.getTimelineNodeList().iterator();
     while (timelineNodeItr.hasNext()) {
       TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineNodeItr.next();
@@ -935,6 +1011,7 @@ public class PlanWorksGUITest12 {
                                                         JFCTestHelper helper,
                                                         PlanWorksGUITest guiTest)
     throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
     Iterator timelineNodeItr = timelineView.getTimelineNodeList().iterator();
     while (timelineNodeItr.hasNext()) {
       TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineNodeItr.next();
@@ -972,9 +1049,10 @@ public class PlanWorksGUITest12 {
         while (slotNodeItr.hasNext()) {
           PwSlot slot = ((SlotNode) slotNodeItr.next()).getSlot();
           if (isBaseTokenOnly) {
-            if ((! slotIdList.contains( slot.getId())) &&
-                (slot.getTokenList().size() == 1)) {
-              tokenList.add( slot.getBaseToken());
+            if (! slotIdList.contains( slot.getId())) {
+              if (! slot.isEmpty()) {
+                tokenList.add( slot.getBaseToken());
+              }
               slotIdList.add( slot.getId());
             }
           } else {

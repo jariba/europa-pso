@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.16 2004-07-29 20:31:44 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.17 2004-10-07 20:19:03 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -744,7 +744,8 @@ public abstract class PWSetupHelper {
                                           final String transactions,
                                           final PwPartialPlanImpl partialPlan) {
     PwResourceInstantImpl resourceInstant =
-      new PwResourceInstantImpl( id, resourceId, time, levelMin, levelMax, transactions, partialPlan);
+      new PwResourceInstantImpl( id, resourceId, time, levelMin, levelMax, transactions,
+                                 partialPlan);
     partialPlan.addResourceInstant( id, resourceInstant);
   } // end addResourceInstant
 
@@ -760,7 +761,8 @@ public abstract class PWSetupHelper {
     PwRuleImpl rule = 
       new PwRuleImpl( planSequence.getId(), id, blob);
     rulesForSequence.add(rule);
-    //System.err.println( "PWSetupHelper.buildTestData: addRule " + planSequence.getId() + " " + id + " " + blob);
+    //System.err.println( "PWSetupHelper.buildTestData: addRule " + planSequence.getId() +
+    // " " + id + " " + blob);
   } // end addRule
 
 } // end class PWSetupHelper

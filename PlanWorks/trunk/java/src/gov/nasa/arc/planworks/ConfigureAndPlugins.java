@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.8 2004-09-27 19:18:56 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.9 2004-10-07 20:19:01 taylor Exp $
 //
 // PlanWorks
 //
@@ -54,7 +54,8 @@ public class ConfigureAndPlugins {
   public static final String PROJECT_MODEL_INIT_STATE_PATH = "projectModelInitStatePath";
   public static final String PROJECT_MODEL_OUTPUT_DEST_DIR = "projectModelOutputDestDir";
   public static final String PROJECT_MODEL_RULE_DELIMITERS = "projectModelRuleDelimiters";
-  public static final String PLANNER_LIB_NAME_MATCH = "_JNI_adapter.so"; 
+  public static final String PLANNER_LIB_NAME_MATCH = ".so"; 
+  public static final String PLANNER_CONTROL_JNI_LIB = "libPlannerControlJNI.so"; 
   public static List PROJECT_CONFIG_PARAMS;
   public static List PROJECT_PATH_DIR_CONFIG_PARAMS;
 

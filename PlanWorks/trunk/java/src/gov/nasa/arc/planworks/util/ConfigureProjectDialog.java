@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.6 2004-09-27 19:19:03 taylor Exp $
+// $Id: ConfigureProjectDialog.java,v 1.7 2004-10-07 20:19:06 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -354,7 +354,7 @@ public class ConfigureProjectDialog extends JDialog {
               setVisible( false);
             } else { // user closed dialog or clicked cancel
               projectName = null; workingDir = null;
-              plannerPath = null; modelName = null;
+              plannerPath = null; // modelName = null;
               modelPath = null; modelOutputDestDir = null;
               modelInitStatePath = null; modelRuleDelimiters = null;
               setVisible( false);
@@ -367,16 +367,16 @@ public class ConfigureProjectDialog extends JDialog {
   private boolean handleTextFieldValues() {
     boolean haveSeenError = false;
     String workingDirTemp = workingDirField.getText().trim();
-    if (! workingDir.equals( workingDirTemp)) {
+    //    if (! workingDir.equals( workingDirTemp)) {
       if (! doesPathExist( workingDirTemp)) {
         haveSeenError = true;
       } else {
         workingDir = workingDirTemp;
       }
-    }
+      //}
 
     String plannerPathTemp = plannerPathField.getText().trim();
-    if (! plannerPath.equals( plannerPathTemp)) {
+    // if (! plannerPath.equals( plannerPathTemp)) {
       if (! doesPathExist( plannerPathTemp)) {
         haveSeenError = true;
       } else if (plannerPathTemp.indexOf( ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH) == -1) {
@@ -384,44 +384,44 @@ public class ConfigureProjectDialog extends JDialog {
           ( PlanWorks.getPlanWorks(),
             "Library name does not match 'lib<planner-name>" +
             ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH + "'",
-            "Invalid Planner JNI Library", JOptionPane.ERROR_MESSAGE);
+            "Invalid Planner Library", JOptionPane.ERROR_MESSAGE);
         haveSeenError = true;
       } else {
         plannerPath = plannerPathTemp;
       }
-    }
+    // }
 
 //     modelName = modelNameField.getText().trim();
 
     String modelPathTemp = modelPathField.getText().trim();
-    if (! modelPath.equals( modelPathTemp)) {
+    // if (! modelPath.equals( modelPathTemp)) {
       if (! doesPathExist( modelPathTemp)) {
         haveSeenError = true;
       } else {
         modelPath = modelPathTemp;
       }
-    }
+      // }
 
     String modelInitStatePathTemp = modelInitStatePathField.getText().trim();
-    if (! modelInitStatePath.equals( modelInitStatePathTemp)) {
+    // if (! modelInitStatePath.equals( modelInitStatePathTemp)) {
       if (! doesPathExist( modelInitStatePathTemp)) {
         haveSeenError = true;
       } else {
         modelInitStatePath = modelInitStatePathTemp;
       }
-    }
+      // }
 
     String modelOutputDestDirTemp = modelOutputDestDirField.getText().trim();
-    if (! modelOutputDestDir.equals( modelOutputDestDirTemp)) {
+    // if (! modelOutputDestDir.equals( modelOutputDestDirTemp)) {
       if (! doesPathExist( modelOutputDestDirTemp)) {
         haveSeenError = true;
       } else {
         modelOutputDestDir = modelOutputDestDirTemp;
       }
-    }
+      // }
 
     String modelRuleDelimitersTemp = modelRuleDelimitersField.getText().trim();
-    if (! modelRuleDelimiters.equals( modelRuleDelimitersTemp)) {
+    // if (! modelRuleDelimiters.equals( modelRuleDelimitersTemp)) {
       if (modelRuleDelimitersTemp.length() != 2) {
         JOptionPane.showMessageDialog
           ( PlanWorks.getPlanWorks(), "Not exactly two characters",
@@ -430,7 +430,7 @@ public class ConfigureProjectDialog extends JDialog {
       } else {
         modelRuleDelimiters = modelRuleDelimitersTemp;
       }
-    }
+      // }
 
     return haveSeenError;
   } // end handleTextFieldValues

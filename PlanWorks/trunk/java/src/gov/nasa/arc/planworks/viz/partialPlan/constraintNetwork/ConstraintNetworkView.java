@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.93 2004-09-30 22:04:33 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.94 2004-10-07 20:19:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -218,6 +218,34 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
       };
     worker.start();  
   } // end constructor
+
+  /**
+   * <code>ConstraintNetworkView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public ConstraintNetworkView(ViewableObject partialPlan, ViewSet viewSet, 
+                               PartialPlanViewState s, ViewListener viewListener) {
+    super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
+    constraintNetworkViewInit(viewSet);
+    isStepButtonView = true;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    //setState(s);
+    this.s = s;
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+      };
+    worker.start();  
+  }
 
   private void constraintNetworkViewInit(ViewSet viewSet) {
     this.viewSet = (PartialPlanViewSet) viewSet;

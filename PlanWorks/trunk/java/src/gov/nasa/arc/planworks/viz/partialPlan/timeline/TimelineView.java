@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.69 2004-09-24 22:40:01 taylor Exp $
+// $Id: TimelineView.java,v 1.70 2004-10-07 20:19:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -158,6 +158,33 @@ public class TimelineView extends PartialPlanView {
     if (viewListener != null) {
       addViewListener( viewListener);
     }
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
+  }
+
+  /**
+   * <code>TimelineView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public TimelineView(ViewableObject partialPlan, ViewSet viewSet,
+                      PartialPlanViewState s, ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    timelineViewInit( (PwPartialPlan) partialPlan, viewSet);
+    isStepButtonView = true;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    setState(s);
     // SwingUtilities.invokeLater( runInit);
     final SwingWorker worker = new SwingWorker() {
         public Object construct() {

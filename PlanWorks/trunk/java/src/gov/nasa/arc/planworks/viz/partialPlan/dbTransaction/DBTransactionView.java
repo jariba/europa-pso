@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.19 2004-09-27 23:27:26 taylor Exp $
+// $Id: DBTransactionView.java,v 1.20 2004-10-07 20:19:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -99,6 +99,13 @@ public class DBTransactionView extends PartialPlanView {
     worker.start();  
   } // end constructor
 
+  /**
+   * <code>DBTransactionView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   */
   public DBTransactionView( final ViewableObject partialPlan,  final ViewSet viewSet,
                             final PartialPlanViewState s) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
@@ -133,6 +140,35 @@ public class DBTransactionView extends PartialPlanView {
     if (viewListener != null) {
       addViewListener( viewListener);
     }
+
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
+  } // end constructor
+
+  /**
+   * <code>DBTransactionView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public DBTransactionView( final ViewableObject partialPlan,  final ViewSet viewSet,
+                            final PartialPlanViewState s, final ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    isStepButtonView = true;
+    dBTransactionViewInit();
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    setState(s);
 
     // SwingUtilities.invokeLater( runInit);
     final SwingWorker worker = new SwingWorker() {
