@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomainImpl.java,v 1.6 2003-08-26 01:37:11 taylor Exp $
+// $Id: PwEnumeratedDomainImpl.java,v 1.7 2003-09-02 00:52:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -89,6 +89,8 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
     String lowerBound = getLowerBound();
     if (lowerBound.equals( PwDomain.MINUS_INFINITY)) {
       return PwDomain.MINUS_INFINITY_INT;
+    } else if (lowerBound.equals( PwDomain.PLUS_INFINITY)) {
+      return PwDomain.PLUS_INFINITY_INT;
     } else if (lowerBound.equals( "")) {
       return -1;
     } else {
@@ -105,6 +107,8 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
     String upperBound = getUpperBound();
     if (upperBound.equals( PwDomain.PLUS_INFINITY)) {
       return PwDomain.PLUS_INFINITY_INT;
+    } else if (upperBound.equals( PwDomain.MINUS_INFINITY)) {
+      return PwDomain.MINUS_INFINITY_INT;
     } else if (upperBound.equals( "")) {
       return -1;
     } else {

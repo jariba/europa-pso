@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomainImpl.java,v 1.4 2003-08-26 01:37:11 taylor Exp $
+// $Id: PwIntervalDomainImpl.java,v 1.5 2003-09-02 00:52:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -74,6 +74,8 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
   public int getLowerBoundInt() {
     if (lowerBound.equals( PwDomain.MINUS_INFINITY)) {
       return PwDomain.MINUS_INFINITY_INT;
+    } else if (lowerBound.equals( PwDomain.PLUS_INFINITY)) {
+      return PwDomain.PLUS_INFINITY_INT;
     } else {
       return Integer.parseInt( lowerBound);
     }
@@ -87,6 +89,8 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
   public int getUpperBoundInt() {
     if (upperBound.equals( PwDomain.PLUS_INFINITY)) {
       return PwDomain.PLUS_INFINITY_INT;
+    } else if (upperBound.equals( PwDomain.MINUS_INFINITY)) {
+      return PwDomain.MINUS_INFINITY_INT;
     } else {
       return Integer.parseInt( upperBound);
     }
@@ -98,11 +102,26 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
    * @return - <code>String</code> - 
    */
   public String toString() {
-    StringBuffer boundBuf = new StringBuffer("[");
+    StringBuffer boundBuf = new StringBuffer("");
+    boolean isSingleton = false;
+    if (lowerBound.equals( upperBound)) {
+      isSingleton = true;
+    }
+    if (isSingleton) {
+      boundBuf.append( "{");
+    } else {
+      boundBuf.append( "[");
+    }
     boundBuf.append( lowerBound);
-    boundBuf.append( " ");
-    boundBuf.append( upperBound);
-    boundBuf.append("]");
+    if (! isSingleton) {
+      boundBuf.append( " ");
+      boundBuf.append( upperBound);
+    }
+    if (isSingleton) {
+      boundBuf.append( "}");
+    } else {
+      boundBuf.append( "]");
+    }
     return boundBuf.toString();
   }
 		

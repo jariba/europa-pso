@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.21 2003-08-29 22:08:59 taylor Exp $
+// $Id: SlotNode.java,v 1.22 2003-09-02 00:52:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -40,6 +40,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 
 
@@ -210,29 +211,28 @@ public class SlotNode extends TextNode {
    * if a slot is empty, and has no tokens, use the endVariable from
    * the previous slot
    *
+   * @param view - <code>VizView</code> - 
    * @param slot - <code>PwSlot</code> - 
    * @param previousToken - <code>PwToken</code> - 
    * @param isLastSlot - <code>boolean</code> - 
    * @return - <code>PwDomain[]</code> - 
    */
-  public static PwDomain[] getStartEndIntervals( PwSlot slot, PwToken previousToken,
-                                       boolean isLastSlot, boolean alwaysReturnEnd) {
+  public static PwDomain[] getStartEndIntervals( VizView view, PwSlot slot,
+                                                 PwToken previousToken,
+                                                 boolean isLastSlot,
+                                                 boolean alwaysReturnEnd) {
     PwDomain[] intervalArray = new PwDomain[2];
     PwDomain startIntervalDomain = null;
     PwDomain endIntervalDomain = null;
     PwVariable intervalVariable = null, lastIntervalVariable = null;
     PwToken baseToken = slot.getBaseToken();
     PwDomain intervalDomain = null, lastIntervalDomain = null;
-    if (baseToken == null) {
-      if (previousToken == null) {
-        // first slot is empty
-        if (isLastSlot == true) {
-          // this is also the last slot
-          intervalDomain = PwDomain.ZERO_INTERVAL_DOMAIN;
-          lastIntervalDomain = PwDomain.INFINITY_INTERVAL_DOMAIN;
-        } else {
-           intervalDomain = PwDomain.ZERO_INTERVAL_DOMAIN;
-        }
+    if (baseToken == null) { // empty slot
+      if (previousToken == null) { // first slot is empty
+        intervalDomain = view.getStartHorizonInterval();
+      } else if (isLastSlot == true) { // this is also the last slot
+        intervalVariable = previousToken.getEndVariable();
+        lastIntervalDomain = view.getEndHorizonInterval();
       } else {
         // empty slot between filled slots
         intervalVariable = previousToken.getEndVariable();
@@ -297,7 +297,7 @@ public class SlotNode extends TextNode {
         valueEnd = Math.max( endLower, endUpper);
       }
       if (valueEnd == PwDomain.PLUS_INFINITY_INT) {
-        valueEnd = 0;
+        valueEnd = valueStart;
       }
       return String.valueOf( Math.abs( valueEnd - valueStart));
     } else {
@@ -347,11 +347,10 @@ public class SlotNode extends TextNode {
 
   private void renderTimeIntervals() {
     boolean alwaysReturnEnd = false;
-    PwDomain[] intervalArray = getStartEndIntervals( slot, previousToken, isLastSlot,
+    PwDomain[] intervalArray = getStartEndIntervals( view, slot, previousToken, isLastSlot,
                                                      alwaysReturnEnd);
     startTimeIntervalDomain = intervalArray[0];
     endTimeIntervalDomain = intervalArray[1];
-
     Point startLoc = new Point( (int) this.getLocation().getX() - this.getXOffset(),
                                 (int) this.getLocation().getY() +
                                 (int) this.getSize().getHeight());
