@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.8 2004-02-13 00:50:14 miatauro Exp $
+// $Id: NavigatorView.java,v 1.9 2004-02-13 02:37:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -863,39 +863,47 @@ public class NavigatorView extends PartialPlanView {
    * @return - <code>boolean</code> - 
    */
   public boolean addObjectNavNodes( TimelineNavNode timelineNavNode) {
-    boolean areNodesChanged = false, isDraggable = true;
+    boolean areNodesChanged = false;
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
-    foundObject:
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
-      List timelineList = object.getComponentList();
-      Iterator timelineIterator = timelineList.iterator();
-      while (timelineIterator.hasNext()) {
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
+      if (object instanceof PwTimeline) {
+        PwTimeline timeline = (PwTimeline) object;
         if (timeline.getId().equals( timelineNavNode.getTimeline().getId())) {
-          ModelClassNavNode objectNavNode =
-            (ModelClassNavNode) objectNavNodeMap.get( object.getId());
-          if (objectNavNode == null) {
-            objectNavNode =
-              new ModelClassNavNode( object, 
-                                     new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                              ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                                     ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
-                                     isDraggable, this);
-            objectNavNodeMap.put( object.getId(), objectNavNode);
-            jGoDocument.addObjectAtTail( objectNavNode);
+          // System.err.println( "parent " + timeline.getParent());
+          // System.err.println( "children " + timeline.getComponentList());
+          PwObject parentObject = timeline.getParent();
+          if (parentObject != null) {
+            addObjectNavNode( parentObject);
+            areNodesChanged = true;
           }
-          addObjectNavNode( objectNavNode);
-          areNodesChanged = true;
-          break foundObject;
+          Iterator childObjectItr = timeline.getComponentList().iterator();
+          while (childObjectItr.hasNext()) {
+            PwObject childObject = (PwObject) childObjectItr.next();
+            addObjectNavNode( childObject);
+            areNodesChanged = true;
+          }
         }
       }
     }
     return areNodesChanged;
   } // end addObjectNavNodes
 
-  private void addObjectNavNode( ModelClassNavNode objectNavNode) {
+  private void addObjectNavNode( PwObject object) {
+    boolean isDraggable = true;
+    ModelClassNavNode objectNavNode =
+      (ModelClassNavNode) objectNavNodeMap.get( object.getId());
+    if (objectNavNode == null) {
+      objectNavNode =
+        new ModelClassNavNode( object, 
+                               new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
+                                          ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
+                               ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
+                               isDraggable, this);
+      objectNavNodeMap.put( object.getId(), objectNavNode);
+      jGoDocument.addObjectAtTail( objectNavNode);
+    }
     if (isDebugPrint) {
       System.err.println( "add objectNavNode " +
                           objectNavNode.getObject().getId());
@@ -914,23 +922,35 @@ public class NavigatorView extends PartialPlanView {
    */
   public boolean removeObjectNavNodes( TimelineNavNode timelineNavNode) {
     boolean areNodesChanged = false;
-    ModelClassNavNode objectNavNode =
+    ModelClassNavNode parentNavNode =
       (ModelClassNavNode) objectNavNodeMap.get( timelineNavNode.getTimeline().getParentId());
-    if ((objectNavNode != null) && objectNavNode.inLayout() &&
-        (objectNavNode.getTimelineLinkCount() == 0)) {
-      removeObjectNavNode( objectNavNode);
+    if ((parentNavNode != null) && removeObjectNavNode( parentNavNode)) {
       areNodesChanged = true;
+    }
+    Iterator childObjectItr = timelineNavNode.getTimeline().getComponentList().iterator();
+    while (childObjectItr.hasNext()) {
+      PwObject childObject = (PwObject) childObjectItr.next();
+      ModelClassNavNode childNavNode =
+        (ModelClassNavNode) objectNavNodeMap.get( childObject.getId());
+      if (removeObjectNavNode( childNavNode)) {
+         areNodesChanged = true;
+      }
     }
     return areNodesChanged;
   }
 
-  private void removeObjectNavNode( ModelClassNavNode objectNavNode) {
-    if (isDebugPrint) {
-      System.err.println( "remove objectNavNode " +
-                          objectNavNode.getObject().getId());
+  private boolean removeObjectNavNode( ModelClassNavNode objectNavNode) {
+    boolean areNodesChanged = false;
+    if ((objectNavNode != null) && objectNavNode.inLayout() &&
+        (objectNavNode.getTimelineLinkCount() == 0)) {
+      areNodesChanged = true;
+      if (isDebugPrint) {
+        System.err.println( "remove objectNavNode " + objectNavNode.getObject().getId());
+      }
+      objectNavNode.setInLayout( false);
+      objectNavNode.resetNode( isDebugPrint);
     }
-    objectNavNode.setInLayout( false);
-    objectNavNode.resetNode( isDebugPrint);
+    return areNodesChanged;
   } // end removeObjectNavNode
 
   /**

@@ -327,7 +327,7 @@ CREATE TABLE Variable (
   IntDomainUpperBound varchar(255),
   VariableType varchar(255) NOT NULL,
   PRIMARY KEY  (PartialPlanId,VariableId),
-  INDEX (VariableId), INDEX (VariableType), INDEX (TokenId), INDEX (DomainType), 
+  INDEX (VariableId), INDEX (VariableType), INDEX (ParentId), INDEX (DomainType), 
   INDEX (ParameterName)
 ) TYPE=MyISAM;
 
