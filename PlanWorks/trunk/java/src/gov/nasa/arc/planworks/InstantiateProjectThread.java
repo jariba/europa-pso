@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.10 2004-03-09 21:11:46 miatauro Exp $
+// $Id: InstantiateProjectThread.java,v 1.11 2004-03-26 22:07:17 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -69,16 +69,16 @@ public class InstantiateProjectThread extends Thread {
       System.exit( -1);
     }
     if (instantiatedProject != null) {
+      // clear the old project's views
+      if (PlanWorks.getPlanWorks().viewManager != null) {
+        PlanWorks.getPlanWorks().viewManager.clearViewSets();
+      }
       PlanWorks.getPlanWorks().currentProject = instantiatedProject;
       int numProjects = PwProject.listProjects().size();
       planSeqMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
       PlanWorks.getPlanWorks().addPlanSeqViewMenu( instantiatedProject, planSeqMenu);
       if (PlanWorks.getPlanWorks().currentProject.listPlanningSequences().size() == 0) {
         dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-      }
-      // clear the old project's views
-      if (PlanWorks.getPlanWorks().viewManager != null) {
-        PlanWorks.getPlanWorks().viewManager.clearViewSets();
       }
       PlanWorks.getPlanWorks().viewManager = new ViewManager( PlanWorks.getPlanWorks());
     }
