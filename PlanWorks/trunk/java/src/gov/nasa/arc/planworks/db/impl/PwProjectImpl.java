@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.29 2003-08-19 00:24:29 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.30 2003-08-28 20:45:23 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -244,6 +244,18 @@ public class PwProjectImpl extends PwProject {
     }
     planningSequences.add(retval = new PwPlanningSequenceImpl(url, this, new PwModelImpl()));
     return retval;
+  }
+
+  public void deletePlanningSequence(String seqName) throws ResourceNotFoundException {
+    ListIterator seqIterator = planningSequences.listIterator();
+    while(seqIterator.hasNext()) {
+      PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();
+      if(planSeq.getUrl().equals(seqName)) {
+        seqIterator.remove();
+        return;
+      }
+    }
+    throw new ResourceNotFoundException("Sequence " + seqName + " not in projet.");
   }
 
   /**

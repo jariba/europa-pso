@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.27 2003-08-26 19:38:07 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.28 2003-08-28 20:45:23 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -275,5 +275,9 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
       return partialPlan;
     }
     throw new ResourceNotFoundException("Failed to find plan " + partialPlanName + " in sequence " + name);
+  }
+
+  public void delete() throws ResourceNotFoundException {
+    MySQLDB.deletePlanningSequence(id);
   }
 }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.16 2003-08-19 00:23:58 miatauro Exp $
+// $Id: PwProject.java,v 1.17 2003-08-28 20:45:06 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -116,6 +116,8 @@ public abstract class PwProject {
    * @exception ResourceNotFoundException if an error occurs
    */
   public abstract void delete() throws Exception, ResourceNotFoundException;
+
+  public abstract void deletePlanningSequence(String seqName) throws ResourceNotFoundException;
 
   public abstract PwPlanningSequence addPlanningSequence(String url) 
     throws DuplicateNameException, ResourceNotFoundException, SQLException;
