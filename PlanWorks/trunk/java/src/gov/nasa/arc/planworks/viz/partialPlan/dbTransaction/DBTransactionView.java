@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.7 2004-05-21 21:39:06 taylor Exp $
+// $Id: DBTransactionView.java,v 1.8 2004-06-03 17:33:36 taylor Exp $
 //
 // PlanWorks
 //
@@ -23,6 +23,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
+// PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoView;
+import com.nwoods.jgo.JGoPen;
+import com.nwoods.jgo.JGoStroke;
+
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -34,6 +39,7 @@ import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.util.DBTransactionComparatorAscending;
 import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
 import gov.nasa.arc.planworks.viz.util.DBTransactionTableModel;
@@ -61,6 +67,9 @@ public class DBTransactionView extends PartialPlanView {
   private JScrollPane contentScrollPane;
   private JTable dbTransactionTable;
   private int objectKeyColumnIndx;
+  private JGoView stepJGoView;
+  private FixedHeightPanel stepsPanel;
+  private boolean isStepButtonView;
 
   /**
    * <code>DBTransactionView</code> - constructor 
@@ -71,7 +80,19 @@ public class DBTransactionView extends PartialPlanView {
   public DBTransactionView( final ViewableObject partialPlan,  final ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.viewSet = (PartialPlanViewSet) viewSet;
+    isStepButtonView = false;
     dBTransactionViewInit( partialPlan);
+
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
+  public DBTransactionView( final ViewableObject partialPlan,  final ViewSet viewSet,
+                            final PartialPlanViewState s) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    isStepButtonView = true;
+    dBTransactionViewInit( partialPlan);
+    setState(s);
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -87,6 +108,7 @@ public class DBTransactionView extends PartialPlanView {
                             final ViewListener viewListener) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.viewSet = (PartialPlanViewSet) viewSet;
+    isStepButtonView = false;
     dBTransactionViewInit( partialPlan);
     if (viewListener != null) {
       addViewListener( viewListener);
@@ -108,9 +130,17 @@ public class DBTransactionView extends PartialPlanView {
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
+    viewName = ViewConstants.DB_TRANSACTION_VIEW;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
   } // end DBTransactionInit
+
+  public void setState( PartialPlanViewState s) {
+    super.setState( s);
+    if(s == null) {
+      return;
+    }
+  } // end setState
 
   Runnable runInit = new Runnable() {
       public final void run() {
@@ -181,10 +211,41 @@ public class DBTransactionView extends PartialPlanView {
     sorter.setTableHeader( dbTransactionTable.getTableHeader());
     contentScrollPane = new JScrollPane( dbTransactionTable);
     add( contentScrollPane, BorderLayout.NORTH);
+
+    stepJGoView = new JGoView();
+    stepJGoView.setHorizontalScrollBar( null);
+    stepJGoView.setVerticalScrollBar( null);
+    stepJGoView.validate();
+    stepJGoView.setVisible( true);
+
+    stepsPanel = new FixedHeightPanel( stepJGoView, this);
+    stepsPanel.setLayout( new BoxLayout( stepsPanel, BoxLayout.Y_AXIS));
+
+    // force step icon to be in ~center of fixed height panel
+    JGoStroke fixedHeightLine = new JGoStroke();
+    fixedHeightLine.addPoint( ViewConstants.TIMELINE_VIEW_X_INIT,
+                              ViewConstants.TIMELINE_VIEW_Y_INIT);
+    fixedHeightLine.addPoint( (ViewConstants.TIMELINE_VIEW_X_INIT * 4),
+                              (ViewConstants.TIMELINE_VIEW_Y_INIT * 3));
+    fixedHeightLine.setPen( new JGoPen( JGoPen.SOLID, 1, ViewConstants.VIEW_BACKGROUND_COLOR));
+    // fixedHeightLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "black")));
+    stepJGoView.getDocument().addObjectAtTail( fixedHeightLine);
+
+    stepJGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
+    stepsPanel.add( stepJGoView, BorderLayout.NORTH);
+
+    add( stepsPanel, BorderLayout.NORTH);
+
     this.setVisible( true);
 
     expandViewFrame( viewFrame, dbTransactionTable.getColumnModel().getTotalColumnWidth(),
-                     dbTransactionTable.getRowCount() * dbTransactionTable.getRowHeight());
+                     (int) (((dbTransactionTable.getRowCount() + 1) *
+                             dbTransactionTable.getRowHeight()) +
+                            headerJGoView.getDocumentSize().getHeight() +
+                            stepJGoView.getDocumentSize().getHeight() +
+                            contentScrollPane.getHorizontalScrollBar().getSize().getHeight()));
+
+    addStepButtons( stepJGoView);
 
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.DB_TRANSACTION_VIEW + " elapsed time: " +

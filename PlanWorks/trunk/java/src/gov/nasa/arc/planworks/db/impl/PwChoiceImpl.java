@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwChoiceImpl.java,v 1.2 2004-05-28 20:21:15 taylor Exp $
+// $Id: PwChoiceImpl.java,v 1.3 2004-06-03 17:33:35 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
@@ -81,7 +81,7 @@ public class PwChoiceImpl implements PwChoice {
         return ((PwIntervalDomainImpl) dom).toString();
       }
     case DbConstants.C_CLOSE:
-      return "close";
+      return "Close";
     }
     return "<not-found>";
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.52 2004-05-28 20:21:22 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.53 2004-06-03 17:33:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -138,6 +138,7 @@ public class TokenNetworkView extends PartialPlanView {
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
+    viewName = ViewConstants.TOKEN_NETWORK_VIEW;
 
     mouseOverLink = null;
   }

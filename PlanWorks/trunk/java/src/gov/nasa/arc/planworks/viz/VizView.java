@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.25 2004-05-28 20:21:17 taylor Exp $
+// $Id: VizView.java,v 1.26 2004-06-03 17:33:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -361,9 +361,11 @@ public class VizView extends JPanel {
             PartialPlanViewSet partialPlanViewSet =
               (PartialPlanViewSet) viewSet.getViewManager().getViewSet( partialPlanIfLoaded);
             String navigatorWindowName = ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "");
-            List windowKeyList = new ArrayList( partialPlanViewSet.getViews().keySet());
-            CollectionUtils.lMap(new NavViewDeIcon(partialPlanViewSet, navigatorWindowName),
-                                 windowKeyList);
+            if (partialPlanViewSet.getViews() != null) {
+              List windowKeyList = new ArrayList( partialPlanViewSet.getViews().keySet());
+              CollectionUtils.lMap(new NavViewDeIcon(partialPlanViewSet, navigatorWindowName),
+                                   windowKeyList);
+            }
           }
         }
       });

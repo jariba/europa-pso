@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.56 2004-05-28 20:21:22 taylor Exp $
+// $Id: TimelineView.java,v 1.57 2004-06-03 17:33:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -145,6 +145,7 @@ public class TimelineView extends PartialPlanView {
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
+    viewName = ViewConstants.TIMELINE_VIEW;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
@@ -251,7 +252,7 @@ public class TimelineView extends PartialPlanView {
 
     public void run() {
       handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
-      System.err.println( "Redrawing Constraint Network View ...");
+      System.err.println( "Redrawing Timeline View ...");
       if (startTimeMSecs == 0L) {
         startTimeMSecs = System.currentTimeMillis();
       }
