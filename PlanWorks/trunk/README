@@ -4,10 +4,10 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.139 2004-12-08 17:41:34 pdaley Exp $
+# $Id: README,v 1.140 2004-12-08 21:36:46 pdaley Exp $
 #
 
-NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
+NOTE: Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
 construct the PlanWorks database.  Do not use this version of MySQL.
 The current known-good MySQL versions are:
 4.0.13
@@ -15,20 +15,24 @@ The current known-good MySQL versions are:
 4.1.1
 4.1.7
 
-SUMMARY (PW_M_18)
+SUMMARY (PW_M_19)
 =================
-o Ant target 'createJNI' has been added to create the shared library 
-  "libPlannerControlJNI.so" which PlanWorks loads when it processes
-  "Project->New Sequence".  "Project->Configure" and "Project->New Sequence" 
-  both have a settable parameter named "planner path", which is the planner's
-  shared library loaded when processing "Project->New Sequence".
 
+o Removed check for a valid path when configuring the model output 
+  destination directory in the Configure Project and the Configure 
+  New Sequence dialogs. It is not a requirement for this directory 
+  to exist ahead of time. If it does not exist, it will be created 
+  by the planner.
 
 o GNATS PRs and CRs completed:
-  #2541: Sequence Query Results tables, when sorted, do not find object key entry.
-  #2544: Token Network View's redraws do not do layout.
-  #2593: Move rule delimiter chars into configuration.
-
+  #2686: model not unloaded when planner exception occurs.
+  #2687: model is not terminated and unloaded if user closes Planner 
+         Control window.
+  #2688: waits forever when planner returns with "search exhausted" code.
+  #2689: final plan status not displayed after planner completes.
+  #2690: Planner Control window does not display planner "running" status.
+  #2691: setting "write step" or "write next" past last step handled
+         poorly. Model is not unloaded, plan status not displayed.
 
 CVS CHECKOUT
 ============
@@ -36,7 +40,7 @@ Latest development state:
   > cvs co PlanWorks  or
   > cvs update PlanWorks
 Latest tagged milestone: (see Summary above)
-  > cvs co -r PW_M_18 PlanWorks
+  > cvs co -r PW_M_19 PlanWorks
 
 
 PLATFORM REQUIREMENTS
@@ -77,9 +81,10 @@ Set environment varibles:
 
 OPTIONAL CONFIGURATION
 ======================
-o The default value for the maximum memory required by the Java Virtual Machine
-  is 200 mega-bytes.  It is posible to set it to a much higher value, but only
-  to this one particular value (Ant is reponsible for this restriction):
+o The default value for the maximum memory required by the Java Virtual 
+  Machine is 200 mega-bytes.  It is posible to set it to a much higher 
+  value, but only to this one particular value (Ant is reponsible for 
+  this restriction):
 
   > setenv JVM_GC_MAX 975
 
@@ -166,6 +171,20 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+14october04: Milestone 18
+=================
+o Ant target 'createJNI' has been added to create the shared library 
+  "libPlannerControlJNI.so" which PlanWorks loads when it processes
+  "Project->New Sequence".  "Project->Configure" and "Project->New Sequence" 
+  both have a settable parameter named "planner path", which is the planner's
+  shared library loaded when processing "Project->New Sequence".
+
+
+o GNATS PRs and CRs completed:
+  #2541: Sequence Query Results tables, when sorted, do not find object key entry.
+  #2544: Token Network View's redraws do not do layout.
+  #2593: Move rule delimiter chars into configuration.
 
 22september04: Milestone 17
 ===========================
