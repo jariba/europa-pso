@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.19 2003-10-01 23:53:56 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.20 2003-10-04 01:15:57 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -64,6 +64,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenLink;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.GroupBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.LogicComboBox;
@@ -125,28 +126,32 @@ public class PlanWorksTest extends JFCTestCase{
     PlanWorks.setPlanWorks( planWorks);
 
     planWorks.setCurrentProjectName( "");
-    sequenceName = "seq0";
     partialPlanName = "step0";
     // set proper test filesi
     if ((testType.equals( "create")) || (testType.equals("contentSpec"))) {
       // System.getProperty( "default.project.name")
       // System.getProperty( "default.sequence.dir")
       projectName = "monkey";
+      sequenceName = "monkey1056670250263";
       System.setProperty( "default.project.name", projectName);
       System.setProperty( "default.sequence.dir",
                           System.getProperty( "planworks.test.data.dir") +
                           System.getProperty( "file.separator") + sequenceName);
     } else if (testType.equals( "freeTokens")) {
       projectName = "freeTokens";
+      sequenceName = "freeTokens1058400064103";
       System.setProperty( "default.project.name", projectName);
       System.setProperty( "default.sequence.dir",
                           System.getProperty( "planworks.test.data.dir") +
                           System.getProperty( "file.separator") + projectName +
                           System.getProperty("file.separator")/* + sequenceName*/);
-      System.err.println("Set default.project.name: " + System.getProperty("default.project.name"));
-      System.err.println("Set default.sequence.dir: " + System.getProperty("default.sequence.dir"));
+      System.err.println("Set default.project.name: " +
+                         System.getProperty("default.project.name"));
+      System.err.println("Set default.sequence.dir: " +
+                         System.getProperty("default.sequence.dir"));
     } else if (testType.equals( "emptySlots")) {
       projectName = "emptySlots";
+      sequenceName = "emptySlots1058460320111";
       System.setProperty( "default.project.name", projectName);
       System.setProperty( "default.sequence.dir",
                           System.getProperty( "planworks.test.data.dir") +
@@ -159,7 +164,7 @@ public class PlanWorksTest extends JFCTestCase{
       ( new File( System.getProperty( "default.sequence.dir")));
     File [] temp = new File [1];
     temp[0] = new File(System.getProperty("default.sequence.dir") +
-                       System.getProperty("file.separator") + "seq0");
+                       System.getProperty("file.separator") + sequenceName);
     planWorks.getSequenceDirChooser().setSelectedFiles(temp);
     // Give a little extra time for the painting/construction
     Thread.currentThread().sleep(500);
@@ -276,21 +281,30 @@ public class PlanWorksTest extends JFCTestCase{
     String menuPartialPlanName = null;
     found:
     for (int i = 0; i < partialPlanMenu.getItemCount(); i++) {
-      System.err.println( "partialPlanMenu.getItem(i) " + i + " '" +
-                          partialPlanMenu.getItem(i).getText() + "' sequenceName '" +
-                          sequenceName + "'");
+//       System.err.println( "partialPlanMenu.getItem(i) " + i + " '" +
+//                           partialPlanMenu.getItem(i).getText() + "' sequenceName '" +
+//                           sequenceName + "'");
       if (partialPlanMenu.getItem(i).getText().equals( sequenceName)) {
         sequenceMenu = (JMenu) partialPlanMenu.getItem(i);
         helper.enterClickAndLeave(new MouseEventData(this, sequenceMenu));
         Thread.sleep( 1000);
         menuSequenceName = partialPlanMenu.getItem(i).getText();
         for (int j = 0; j < sequenceMenu.getItemCount(); j++) {
+          if (sequenceMenu.getItem(j) == null) {
+            continue; // separator line
+          }
+//           System.err.println( "sequenceMenu.getItem(j) " + j + " '" +
+//                               sequenceMenu.getItem(j).getText() + "' partialPlanName '" +
+//                               partialPlanName + "'");
           if (sequenceMenu.getItem(j).getText().equals( partialPlanName)) {
             partialPlanSubMenu = (JMenu) sequenceMenu.getItem(j);
             helper.enterClickAndLeave(new MouseEventData(this, partialPlanSubMenu));
             Thread.sleep( 1000);
             menuPartialPlanName = sequenceMenu.getItem(j).getText();
             for (int k = 0; k < partialPlanSubMenu.getItemCount(); k++) {
+//               System.err.println( "partialPlanSubMenu.getItem(k) " + k + " '" +
+//                                   partialPlanSubMenu.getItem(k).getText() +
+//                                   "' viewName '" + viewName + "'");
               if (partialPlanSubMenu.getItem(k).getText().equals( viewName)) {
                 viewItem =
                   (PlanWorks.SeqPartPlanViewMenuItem) partialPlanSubMenu.getItem(k);
@@ -353,16 +367,17 @@ public class PlanWorksTest extends JFCTestCase{
     assertNotNull( "Select Sequence Directory Dialog not found:", fileChooser);
     Container projectSeqDialog = (Container) fileChooser;
     JButton okButton = null;
-    okButton = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog, 4);
-    // this does not work
-//     for (int i = 0, n = 10; i < n; i++) {
-//       button = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog, i);
-//       System.err.println( "projectSeqDialog button " + button.getText());
-//       if (button.getText().equals( "OK")) {
-//         okButton = button;
-//         break;
-//       }
-//     }
+    int okButtonIndex = 0;
+    for (int i = 0, n = 10; i < n; i++) {
+      button = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog, i);
+      // System.err.println( "projectSeqDialog button i " + i + " " + button.getText());
+      if ((button.getText() != null) && button.getText().equals( "OK")) {
+        okButtonIndex = i;
+        break;
+      }
+    }
+    okButton = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog,
+                                                  okButtonIndex);
     System.err.println( "projectSeqDialog " + okButton.getText());
     assertNotNull("Could not find \"OK\" button", okButton);
     helper.enterClickAndLeave(new MouseEventData(this, okButton));
@@ -429,11 +444,12 @@ public class PlanWorksTest extends JFCTestCase{
 
     MDIInternalFrame viewFrame = null;
     TimelineView timelineView = null;
+    // ensure that the Planning Sequence menu click has finished
     Thread.sleep( 3000);
     viewFrame =
-      viewManager.openView( partialPlan,
-                            (String) PlanWorks.viewClassNameMap.
-                            get( PlanWorks.TIMELINE_VIEW));
+      planWorks.getViewManager().openView( partialPlan,
+                                           (String) PlanWorks.viewClassNameMap.
+                                           get( PlanWorks.TIMELINE_VIEW));
     assertNotNull("Failed to get timeline view MDI internal frame.", viewFrame);
 
     Container contentPane = viewFrame.getContentPane();
@@ -559,7 +575,15 @@ public class PlanWorksTest extends JFCTestCase{
   } // end getConstraintNetworkView
 
   private void validateMonkeyTimelines( TimelineView timelineView) {
-    List timelineNodes = timelineView.getTimelineNodeList();
+    List timelineNodes = null;
+    while (timelineNodes == null) {
+      // System.err.println( "wait for create dialog");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      timelineNodes = timelineView.getTimelineNodeList();
+    }
     ListIterator timelineNodeIterator = timelineNodes.listIterator();
     while(timelineNodeIterator.hasNext()){
       TimelineNode timelineNode = (TimelineNode) timelineNodeIterator.next();
@@ -603,7 +627,15 @@ public class PlanWorksTest extends JFCTestCase{
   } // end validateMonkeyTimelines
 
   private void validateFreeTokensTimelines( TimelineView timelineView) {
-    List freeTokenNodeList = timelineView.getFreeTokenNodeList();
+    List freeTokenNodeList = null;
+    while (freeTokenNodeList == null) {
+      // System.err.println( "wait for create dialog");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      freeTokenNodeList = timelineView.getFreeTokenNodeList();
+    }
     ListIterator freeTokenNodeIterator = freeTokenNodeList.listIterator();
     while(freeTokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) freeTokenNodeIterator.next();
@@ -613,7 +645,7 @@ public class PlanWorksTest extends JFCTestCase{
                  predicateName.equals("Predicate 0") || predicateName.equals("Predicate 1") ||
                  predicateName.equals("Predicate 6"));
     }
-  } // end validateFreeTokensimelines
+  } // end validateFreeTokensTimelines
 
   private void validateFreeTokensNetwork(TokenNetworkView tokenNetworkView) {
     List tokenNodeList = null;
@@ -647,8 +679,17 @@ public class PlanWorksTest extends JFCTestCase{
     }
   }
 
-  private void validateFreeTokensTemporalExtent( TemporalExtentView temporalExtentView) {
-    List temporalNodeList = temporalExtentView.getTemporalNodeList();
+  private void validateFreeTokensTemporalExtent( TemporalExtentView temporalExtentView)
+    throws Exception {
+    List temporalNodeList = null;
+    while (temporalNodeList == null) {
+      // System.err.println( "wait for create dialog");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      temporalNodeList = temporalExtentView.getTemporalNodeList();
+    }
     ListIterator temporalNodeIterator = temporalNodeList.listIterator();
     int numTemporalNodes = 0;
     while(temporalNodeIterator.hasNext()) {
@@ -659,12 +700,25 @@ public class PlanWorksTest extends JFCTestCase{
                numTemporalNodes == 19);
   } // end validateFreeTokensTemporalExtent
 
-  private void validateEmptySlotsTimelines(TimelineView timelineView) {
-    ListIterator timelineNodeIterator = timelineView.getTimelineNodeList().listIterator();
-    timelineNodeIterator.next();
-    timelineNodeIterator.next();
+  private void validateEmptySlotsTimelines(TimelineView timelineView) throws Exception {
+    List timelineNodeList = null;
+    while (timelineNodeList == null) {
+      // System.err.println( "wait for create dialog");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      timelineNodeList = timelineView.getTimelineNodeList();
+    }
+    Thread.sleep( 3000);
+    ListIterator timelineNodeIterator = timelineNodeList.listIterator();
+    List slotNodeList = ((TimelineNode) timelineNodeIterator.next()).getSlotNodeList();
+    System.err.println( "1st timeline: num slots " + slotNodeList.size());
+    slotNodeList = ((TimelineNode) timelineNodeIterator.next()).getSlotNodeList();
+    System.err.println( "2nd timeline: num slots " + slotNodeList.size());
     TimelineNode thirdTimeline = (TimelineNode) timelineNodeIterator.next();
-    List slotNodeList = thirdTimeline.getSlotNodeList();
+    slotNodeList = thirdTimeline.getSlotNodeList();
+    System.err.println( "3rd timeline: num slots " + slotNodeList.size());
     SlotNode fourthNode = (SlotNode) slotNodeList.get(3);
     SlotNode seventhNode = (SlotNode) slotNodeList.get(6);
     assertTrue("Incorrectly displayed fourth node as empty slot.  Displayed '" +
@@ -677,7 +731,15 @@ public class PlanWorksTest extends JFCTestCase{
 
   private void validateMonkeyConstraintsOpen( ConstraintNetworkView constraintNetworkView)
     throws Exception {
-    List tokenNodeList = constraintNetworkView.getTokenNodeList();
+    List tokenNodeList = null;
+    while (tokenNodeList == null) {
+      // System.err.println( "wait for create dialog");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      tokenNodeList = constraintNetworkView.getTokenNodeList();
+    }
     List variableNodeList = constraintNetworkView.getVariableNodeList();
     List constraintNodeList = constraintNetworkView.getConstraintNodeList();
     TokenNode t19 = null;
@@ -1251,15 +1313,15 @@ public class PlanWorksTest extends JFCTestCase{
 
 
   private void addAndDeleteSequences()  throws Exception {
-    addSequence( "emptySlots", "seq0");
-    Thread.sleep( 1000);
-    sequenceName = "seq0 (1)";
+    addSequence( "emptySlots", "emptySlots1058460320111");  
+    Thread.sleep( 3000);
+    sequenceName = "emptySlots1058460320111";
     String [] seqAndPlanNames = selectView( "Timeline");
     TimelineView timelineView = getTimelineView( seqAndPlanNames);
     Thread.sleep( 1000);
 
-    addSequence( "freeTokens", "seq0");
-    sequenceName = "seq0 (2)";
+    addSequence( "freeTokens", "freeTokens1058400064103");
+    sequenceName = "freeTokens1058400064103";
     seqAndPlanNames = selectView( "Timeline");
     timelineView = getTimelineView( seqAndPlanNames);
     Thread.sleep( 1000);
@@ -1267,12 +1329,12 @@ public class PlanWorksTest extends JFCTestCase{
     tileTheViews();
     Thread.sleep( 2000);
 
-    deleteSequence( "emptySlots", "seq0");
+    deleteSequence( "emptySlots", "emptySlots1058460320111");
     Thread.sleep( 1000);
-    deleteSequence( "freeTokens", "seq0");
+    deleteSequence( "freeTokens", "freeTokens1058400064103");
 
     // return to monkey sequence name
-    sequenceName = "seq0";
+    sequenceName = "monkey1056670250263";
   } // end addAndDeleteSequences
 
 
@@ -1319,9 +1381,21 @@ public class PlanWorksTest extends JFCTestCase{
     seqDir.append( System.getProperty( "file.separator")).append( "data");
     seqDir.append( System.getProperty( "file.separator")).append( seqParentName);
     fileChooser.setCurrentDirectory( new File( seqDir.toString()));
-    fileChooser.setSelectedFile( new File( seqName));
+    File [] selectedFiles = new File [1];
+    selectedFiles[0] = new File( seqName);
+    fileChooser.setSelectedFiles( selectedFiles);
     JButton okButton = null;
-    okButton = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog, 4);
+    int okButtonIndex = 0;
+    for (int i = 0, n = 10; i < n; i++) {
+      JButton button = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog, i);
+      // System.err.println( "projectSeqDialog button i " + i + " " + button.getText());
+      if ((button.getText() != null) && button.getText().equals( "OK")) {
+        okButtonIndex = i;
+        break;
+      }
+    }
+    okButton = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog,
+                                                  okButtonIndex);
     System.err.println( "projectSeqDialog " + okButton.getText());
     assertNotNull("Could not find \"OK\" button", okButton);
     helper.enterClickAndLeave(new MouseEventData(this, okButton));
@@ -1469,7 +1543,7 @@ public class PlanWorksTest extends JFCTestCase{
     testSuite.addTest( new PlanWorksTest( "testOpenAndContentSpec", "contentSpec"));
     testSuite.addTest( new PlanWorksTest( "testFreeTokens", "freeTokens"));
     testSuite.addTest( new PlanWorksTest( "testEmptySlots", "emptySlots"));
-    return testSuite;
+   return testSuite;
   }
 
   /**

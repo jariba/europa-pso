@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.17 2003-10-01 23:53:57 taylor Exp $
+// $Id: ViewManager.java,v 1.18 2003-10-04 01:16:12 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -37,8 +37,6 @@ public class ViewManager implements ViewSetRemover {
   private MDIDesktopFrame desktopFrame;
   private HashMap viewSets;
   private Object [] constructorArgs;
-  private boolean partialPlanSeen;
-  private boolean planSequenceSeen;
   private int contentSpecWindowCnt;
 
   /**
@@ -48,29 +46,21 @@ public class ViewManager implements ViewSetRemover {
     viewSets = new HashMap();
     this.desktopFrame = desktopFrame;
     this.contentSpecWindowCnt = 0;
-    this.partialPlanSeen = false;
-    this.planSequenceSeen = false;
   }
 
   public MDIInternalFrame openView(ViewableObject viewable, String viewClassName) {
-    if(!viewSets.containsKey(viewable)) {
-	if(viewable instanceof PwPartialPlan) {
+    if (!viewSets.containsKey(viewable)) {
+	if (viewable instanceof PwPartialPlan) {
 	    viewSets.put(viewable,
                          new PartialPlanViewSet(desktopFrame,
                                                 (PwPartialPlan) viewable, this));
-            if (! partialPlanSeen) {
-              contentSpecWindowCnt++;
-              partialPlanSeen = true;
-            }
+            contentSpecWindowCnt++;
 	}
-	else if(viewable instanceof PwPlanningSequence) {
+	else if (viewable instanceof PwPlanningSequence) {
 	    viewSets.put(viewable,
                          new SequenceViewSet(desktopFrame,
                                              (PwPlanningSequence) viewable, this));
-            if (! planSequenceSeen) {
-              contentSpecWindowCnt++;
-              planSequenceSeen = true;
-            }
+            contentSpecWindowCnt++;
 	}
 	else {
 	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.3 2003-10-02 23:24:22 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.4 2003-10-04 01:16:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -50,8 +50,9 @@ public class SequenceViewSet extends ViewSet {
 
     this.contentSpecWindow.setSize( 300, 100); // until contentSpec created
 
-    this.contentSpecWindow.setLocation( ((ViewManager) remover).getContentSpecWindowCnt() *
-                                        ViewConstants.INTERNAL_FRAME_X_DELTA, 0);
+    int delta = ((ViewManager) remover).getContentSpecWindowCnt() *
+      ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4;
+    this.contentSpecWindow.setLocation( delta, delta);
     this.contentSpecWindow.setVisible(true);
   }
 
