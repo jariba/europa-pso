@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.54 2004-03-23 20:05:57 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.55 2004-04-01 22:51:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -161,6 +161,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     constraintLinkMap = new HashMap();
     variableLinkMap = new HashMap();
     containerNodeMap = new HashMap();
+    viewFrame = viewSet.openView( this.getClass().getName());
     //isDebugPrint = true;
     isDebugPrint = false;
 
@@ -249,7 +250,6 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public void init() {
     handleEvent(EVT_BEGUN_DRAWING);
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for ConstraintNetworkView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -290,7 +290,6 @@ public class ConstraintNetworkView extends PartialPlanView {
 
     newLayout.performLayout();
 
-    viewFrame = viewSet.openView( this.getClass().getName());
     // this constricts, unduly, the width of the frame, for small numbers of tokens
 //     Rectangle documentBounds = jGoView.getDocument().computeBounds();
 //     jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
@@ -311,7 +310,6 @@ public class ConstraintNetworkView extends PartialPlanView {
     isLayoutNeeded = false;
     focusNode = null;
 
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
     handleEvent(EVT_ENDED_DRAWING);
   } // end init
 
@@ -332,14 +330,15 @@ public class ConstraintNetworkView extends PartialPlanView {
     }  // end constructor
 
     public void run() {
+      ViewGenerics.setRedrawCursor( viewFrame);
       redrawView();
+      ViewGenerics.resetRedrawCursor( viewFrame);
     } //end run
 
   } // end class RedrawViewThread
 
   private void redrawView() {
     handleEvent(EVT_BEGUN_DRAWING);
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // prevent user from seeing intermediate layouts
     this.setVisible( false);
     System.err.println( "Redrawing Constraint Network View ...");
@@ -370,7 +369,6 @@ public class ConstraintNetworkView extends PartialPlanView {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     startTimeMSecs = 0L;
     this.setVisible( true);
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
     handleEvent(EVT_ENDED_DRAWING);
   } // end redrawView
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.10 2004-03-30 22:01:01 taylor Exp $
+// $Id: ViewGenerics.java,v 1.11 2004-04-01 22:51:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,7 +13,9 @@
 package gov.nasa.arc.planworks.viz;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
@@ -214,7 +216,12 @@ public class ViewGenerics {
     return overview;
   } // end openOverviewFrameCommon
 
-  private static void raiseFrame( MDIInternalFrame frame) {
+  /**
+   * <code>raiseFrame</code>
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   */
+  public static void raiseFrame( MDIInternalFrame frame) {
     // make window appear & bring to the front
     try {
       // in case view existed and was iconified
@@ -227,6 +234,26 @@ public class ViewGenerics {
     }
   } // end raiseFrame
 
+  /**
+   * <code>setRedrawCursor</code>
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   */
+  public static void setRedrawCursor( MDIInternalFrame frame) {
+    ((Component) frame.getRootPane()).setCursor
+      ( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR));
+  } // end setRedrawCursor
+
+  /**
+   * <code>resetRedrawCursor</code>
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   */
+  public static void resetRedrawCursor( MDIInternalFrame frame) {
+    ((Component) frame.getRootPane()).setCursor
+      ( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR));
+  } // end resetRedrawCursor
 
   /**
    * <code>openRuleViewFrame</code>

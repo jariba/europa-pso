@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.21 2004-03-30 22:01:03 taylor Exp $
+// $Id: NavigatorView.java,v 1.22 2004-04-01 22:51:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -393,7 +393,6 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public final void init() {
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for NavigatorView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -442,8 +441,6 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
-
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
 
@@ -465,13 +462,14 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     }  // end constructor
 
     public final void run() {
+      ViewGenerics.setRedrawCursor( navigatorFrame);
       redrawView();
+      ViewGenerics.resetRedrawCursor( navigatorFrame);
     } //end run
 
   } // end class RedrawViewThread
 
   private void redrawView() {
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     System.err.println( "Redrawing Navigator View ...");
     if (startTimeMSecs == 0L) {
       startTimeMSecs = System.currentTimeMillis();
@@ -498,7 +496,6 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     }
     startTimeMSecs = 0L;
     this.setVisible( true);
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end createTemporalExtentView
 
   /**

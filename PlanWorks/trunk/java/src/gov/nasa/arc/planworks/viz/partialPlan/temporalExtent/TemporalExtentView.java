@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.40 2004-03-23 20:05:58 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.41 2004-04-01 22:51:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -140,7 +140,8 @@ public class TemporalExtentView extends PartialPlanView  {
     timeScaleMark = null;
     isShowLabels = true;
     temporalDisplayMode = SHOW_INTERVALS;
-    
+    viewFrame = viewSet.openView( this.getClass().getName());
+   
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     
     jGoExtentView = new ExtentView();
@@ -206,7 +207,6 @@ public class TemporalExtentView extends PartialPlanView  {
    *    JGoExtentView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
-    jGoExtentView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for TemporalExtentView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -228,7 +228,6 @@ public class TemporalExtentView extends PartialPlanView  {
     boolean isRedraw = false;
     renderTemporalExtent( isRedraw);
 
-    viewFrame = viewSet.openView( this.getClass().getName());
     if (! isStepButtonView) {
       expandViewFrame( viewFrame,
                        (int) Math.max( jGoExtentView.getDocumentSize().getWidth(),
@@ -248,8 +247,6 @@ public class TemporalExtentView extends PartialPlanView  {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    
-    jGoExtentView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
   /**
@@ -274,6 +271,7 @@ public class TemporalExtentView extends PartialPlanView  {
     }  // end constructor
 
     public void run() {
+      ViewGenerics.setRedrawCursor( viewFrame);
       // redraw jGoRulerView, in case zoomFactor changed
       jGoRulerView.computeTimeScaleMetrics( TemporalExtentView.this.getZoomFactor(),
                                             TemporalExtentView.this);
@@ -286,6 +284,7 @@ public class TemporalExtentView extends PartialPlanView  {
 //       if (! isStepButtonView) {
 //         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
 //       }
+      ViewGenerics.resetRedrawCursor( viewFrame);
     } //end run
 
   } // end class RedrawViewThread
