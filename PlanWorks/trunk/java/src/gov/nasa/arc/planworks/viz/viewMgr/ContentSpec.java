@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.6 2003-06-12 18:16:59 miatauro Exp $
+// $Id: ContentSpec.java,v 1.7 2003-06-12 23:52:39 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -19,7 +19,8 @@ import gov.nasa.arc.planworks.db.util.ParsedDomNode;
 //import org.w3c.dom.Node;
 
 public class ContentSpec {
-  private static final String EQ = "=";
+  //private static final String EQ = "=";
+  private static final String EQ = "&=";
   private static final String NE = "!=";
   private static final String OR = " | ";
   private static final String TIMELINE = "/Timeline";
@@ -45,8 +46,11 @@ public class ContentSpec {
   
   private BitSet currentSpec;
   private String collectionName;
-  public ContentSpec(String collectionName) {
+  private RedrawNotifier redrawNotifier;
+
+  public ContentSpec(String collectionName, RedrawNotifier redrawNotifier) {
     this.collectionName = collectionName;
+    this.redrawNotifier = redrawNotifier;
 
     int highestIndex = 0;
     //there may be a better way to do this
@@ -69,6 +73,7 @@ public class ContentSpec {
   }
   public void resetSpec() {
     currentSpec.set(0, currentSpec.size()-1, true);
+    redrawNotifier.notifyRedraw();
   }
   public boolean isInContentSpec(String key) {
     int index;
@@ -108,6 +113,11 @@ public class ContentSpec {
       }
       for(int i = 1; i < timeline.size(); i += 2) {
         System.err.println("timeline spec for key " + (String)timeline.get(i));
+        int topIndex = keyToIndex((String)timeline.get(i));
+        if(topIndex > 0) {
+          partialSpec.set(topIndex);
+        }
+        long startTime = (new Date()).getTime();
         //build query strings
         StringBuffer timelineQuery = new StringBuffer();
         //quick path to timeline.  doing it with shortcuts may be faster.
@@ -123,10 +133,16 @@ public class ContentSpec {
         timelineQuery.append(pathToTimeline).append(SLOT).append("/").append(KEY).append(OR);
         // //Timeline[@key="Key"]//Token/@*
         timelineQuery.append(pathToToken).append("@*");
+        timelineQuery.append(OR).append("/PartialPlan/*/Timeline/parent::Object/@key");
         System.err.println("Timeline query: " + timelineQuery.toString());
         //query
+        long queryTime1 = (new Date()).getTime();
         List nodeList = XmlDBeXist.queryCollection(collectionName, timelineQuery.toString());
+        queryTime1 = (new Date()).getTime() - queryTime1;
         System.out.println("Got " + nodeList.size() + " nodes.");
+        if(nodeList.size() == 0){
+          return;
+        }
         ListIterator nodeListIterator = nodeList.listIterator();
         ArrayList varKeys = new ArrayList();
         //iterate through resultant nodes
@@ -138,7 +154,10 @@ public class ContentSpec {
             StringTokenizer strTok = new StringTokenizer(node.getNodeValue(), " ", false);
             while(strTok.hasMoreTokens()) {
               String key = strTok.nextToken();
-              partialSpec.set(keyToIndex(key));
+              int index = keyToIndex(key);
+              if(index > 0) {
+                partialSpec.set(index);
+              }
               //if it's a parameter value, save it for later
               if(nodeName.equals("paramVarIds")) {
                 varKeys.add(key);
@@ -148,7 +167,10 @@ public class ContentSpec {
           }
           //set key in partialSpec to true
           else if(nodeName.equals("key") || nodeName.indexOf("Id") != -1) {
-            partialSpec.set(keyToIndex(node.getNodeValue()));
+            int index = keyToIndex(node.getNodeValue());
+            if(index > 0) {
+              partialSpec.set(index);
+            }
             //save variable ids for getting constraints and parameters
             if(nodeName.indexOf("Var") != -1) {
               varKeys.add(node.getNodeValue());
@@ -158,36 +180,62 @@ public class ContentSpec {
         //get the constraints of the variables
         StringBuffer constraintQuery = new StringBuffer("/");
         constraintQuery.append(CONSTRAINT).append("[");
+        //for(int j = 0; j < varKeys.size()-2; j++) {
+          //constraintQuery.append("contains(").append(VARIDS).append(", \"");
+          //constraintQuery.append((String)varKeys.get(j)).append("\") or ");
+          //}
+        //constraintQuery.append("contains(").append(VARIDS).append(", \"");
+        //constraintQuery.append((String)varKeys.get(varKeys.size()-1)).append("\")]/").append(KEY);
+        constraintQuery.append(VARIDS).append("|=\"");
+
+        StringBuffer varQuery = new StringBuffer("/");
+        varQuery.append(VARIABLE).append("[@key|=\"");
         for(int j = 0; j < varKeys.size()-2; j++) {
-          constraintQuery.append("contains(").append(VARIDS).append(", \"");
-          constraintQuery.append((String)varKeys.get(j)).append("\") or ");
+          constraintQuery.append((String)varKeys.get(j)).append(" ");
+          varQuery.append((String)varKeys.get(j)).append(" ");
         }
-        constraintQuery.append("contains(").append(VARIDS).append(", \"");
-        constraintQuery.append((String)varKeys.get(varKeys.size()-1)).append("\")]/").append(KEY);
+        constraintQuery.append((String)varKeys.get(varKeys.size()-1)).append("\"]/").append(KEY);
+        varQuery.append((String)varKeys.get(varKeys.size()-1)).append("\"]/").append(PARAMID);
+        long queryTime2 = (new Date()).getTime();
         nodeList = XmlDBeXist.queryCollection(collectionName, constraintQuery.toString());
+        queryTime2 = (new Date()).getTime() - queryTime2;
         nodeListIterator = nodeList.listIterator();
         while(nodeListIterator.hasNext()) {
           ParsedDomNode node = (ParsedDomNode) nodeListIterator.next();
           if(node.getNodeName().equals("key")) { //this check may be superfluous
-            partialSpec.set(keyToIndex(node.getNodeValue()));
+            int index = keyToIndex(node.getNodeValue());
+            if(index > 0) {
+              partialSpec.set(index);
+            }
           }
         }
         //get the parameter ids
-        StringBuffer varQuery = new StringBuffer("/");
-        varQuery.append(VARIABLE).append("[");
-        for(int j = 0; j < varKeys.size()-2; j++) {
-          varQuery.append("@key=\"").append((String)varKeys.get(j)).append("\" or ");
-        }
-        varQuery.append("@key=\"").append((String)varKeys.get(varKeys.size()-1)).append("\"]/");
-        varQuery.append(PARAMID);
-        nodeList = XmlDBeXist.queryCollection(collectionName, constraintQuery.toString());
+        /*        StringBuffer varQuery = new StringBuffer("/");
+                  varQuery.append(VARIABLE).append("[@key|=\"");
+        //for(int j = 0; j < varKeys.size()-2; j++) {
+          //varQuery.append("@key=\"").append((String)varKeys.get(j)).append("\" or ");
+        //varQuery.append("@key&=\"").append((String)varKeys.get(j)).append("\" or ");
+        //}
+        //varQuery.append("@key=\"").append((String)varKeys.get(varKeys.size()-1)).append("\"]/");
+        //varQuery.append("@key&=\"").append((String)varKeys.get(varKeys.size()-1)).append("\"]/");
+        varQuery.append(PARAMID);*/
+        long queryTime3 = (new Date()).getTime();
+        nodeList = XmlDBeXist.queryCollection(collectionName, varQuery.toString());
+        queryTime3 = (new Date()).getTime() - queryTime3;
         nodeListIterator = nodeList.listIterator();
         while(nodeListIterator.hasNext()) {
           ParsedDomNode node = (ParsedDomNode) nodeListIterator.next();
           if(node.getNodeName().equals("paramId")) {
-            partialSpec.set(keyToIndex(node.getNodeValue()));
+            int index = keyToIndex(node.getNodeValue());
+            if(index > 0) {
+              partialSpec.set(index);
+            }
           }
         }
+        System.err.println("First run query took " + ((new Date()).getTime() - startTime) +
+                           "milliseconds");
+        queryTime1 += queryTime2 + queryTime3;
+        System.err.println("Spent " + queryTime1 + " milliseconds in queries.");
         String connective = (String) timeline.get(i-1);
         if(connective.indexOf("not") != -1) {
           partialSpec.flip(0, partialSpec.size()-1);
@@ -416,5 +464,6 @@ public class ContentSpec {
         partialSpec.clear();
       }
     }
+    redrawNotifier.notifyRedraw();
   }
 }

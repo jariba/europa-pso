@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.7 2003-06-12 18:17:08 miatauro Exp $
+// $Id: ViewSet.java,v 1.8 2003-06-12 23:52:48 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -37,7 +37,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
     this.planName = planName;
     this.remover = remover;
     this.desktopFrame = desktopFrame;
-    this.contentSpec = new ContentSpec(partialPlan.getCollectionName());
+    this.contentSpec = new ContentSpec(partialPlan.getCollectionName(), this);
     //change the arguments to something more sensible
     this.contentSpecWindow = desktopFrame.createFrame(planName, true, true, true, true);
     Container contentPane = this.contentSpecWindow.getContentPane();
