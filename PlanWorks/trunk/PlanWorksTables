@@ -238,7 +238,7 @@ CREATE TABLE Sequence (
   SequenceOrdering int(11) NOT NULL auto_increment,
   PRIMARY KEY  (SequenceId),
   KEY(SequenceURL),
-  KEY(SequenceOrdering),
+  KEY(SequenceOrdering)
 ) TYPE=MyISAM;
 
 --
