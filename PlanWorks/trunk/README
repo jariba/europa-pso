@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.51 2003-11-06 22:40:57 miatauro Exp $
+# $Id: README,v 1.52 2003-11-06 22:45:18 miatauro Exp $
 #
 
 SUMMARY
@@ -58,6 +58,10 @@ will find token nodes; for the Timeline view, entered keys will find
 token and slot nodes; and for the Constraint Network view, entered keys
 will find find token, variable, and constraint nodes -- opening
 appropriate connecting nodes, if needed.
+
+The Constraint Network View now uses a new layout algorithm that is many
+times faster than the previous algorithm.  Layout now generally takes 
+< 300ms.
 
 Almost all loading of data into the database is deferred until absolutely
 necessary.  This adds slight overhead to the first time a Partial Plan is
