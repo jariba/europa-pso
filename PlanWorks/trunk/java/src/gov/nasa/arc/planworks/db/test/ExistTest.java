@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ExistTest.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
+// $Id: ExistTest.java,v 1.3 2003-05-16 18:33:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -239,7 +239,7 @@ public class ExistTest {
     xmlFilesDirectory = "";
     String pathname = "";
     for (int argc = 0; argc < args.length; argc++) {
-      // System.err.println( "argc " + argc + " " + args[argc]);
+      System.err.println( "argc " + argc + " " + args[argc]);
       if (argc == 0) {
         // linux | solaris | darwin (MacOSX)
         osType = args[argc];
