@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.5 2003-06-19 19:54:55 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.6 2003-06-30 21:47:12 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -147,7 +148,12 @@ public class ContentSpecWindow extends JPanel {
         this.testWindow = testWindow;
       }
       public void actionPerformed(ActionEvent ae) {
-        testWindow.contentSpec.executeQuery(testWindow.queryText.getText().trim());
+        try {
+          testWindow.contentSpec.executeQuery(testWindow.queryText.getText().trim());
+        }
+        catch(SQLException sqle) {
+          System.err.println(sqle);
+        }
       }
     }
   }
