@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.89 2004-05-25 23:12:46 taylor Exp $
+# $Id: README,v 1.90 2004-05-27 18:01:05 miatauro Exp $
 #
 
 SUMMARY
@@ -22,7 +22,14 @@ o The partial plan DBTransaction View and the Sequence Query result views for
   Mouse-Right, where appropriate, on the panel between the window title and the
   table header.  Mouse-Right on "Step" column cells offers to open partial plan
   views for that step.
-
+o The PLASMA PartialPlanWriter now uses a configuration file and one environment
+  variable rather than a set of environment vars.  Set the PPW_CONFIG environment
+  variable to the path of the config file you want.  A sample configuration file is
+  available at McGann/PlanDatabase/sample-ppw-config.  The GeneralConfigSection is
+  for things like allowing the PPW to write automatically, how often it should write,
+  where it should write, and how many choices should be written per decision.  The
+  TransactionConfigSection is a list of all of the transactions that should be logged.
+  A '#' as the first character on a line causes the PPW to ignore the entire line.
 o  GNATS PRs and CRs completed:
    #2332: Need resizable column width in DB transaction view.
    #2385: Crash while trying to sort transactions by name in the DBTransaction window.
