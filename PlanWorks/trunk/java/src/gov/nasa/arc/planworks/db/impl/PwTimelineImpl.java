@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.14 2003-08-19 00:24:30 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.15 2004-01-05 17:17:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -97,5 +97,9 @@ public class PwTimelineImpl implements PwTimeline {
     return slot;
   } // end addSlot
 
-
+  public void createEmptySlot(Integer sId, int slotIndex) {
+    PwSlotImpl slot = new PwSlotImpl(sId, partialPlan);
+    slotIdList.add(slotIndex, sId);
+    partialPlan.addSlot(sId, slot);
+  }
 } // end class PwTimelineImpl

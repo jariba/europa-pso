@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.24 2004-01-02 18:58:59 taylor Exp $
+// $Id: TimelineView.java,v 1.25 2004-01-05 17:18:18 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -421,11 +421,6 @@ public class TimelineView extends PartialPlanView {
         slotLabelMinLength = endTimeIntervalDomain.toString().length() +
           ViewConstants.TIME_INTERVAL_STRINGS_OVERLAP_OFFSET;
       }
-//       System.err.println( "computeTimeIntervalLabelSize: start " +
-//                           startTimeIntervalDomain.toString() + " earliestStartTime " +
-//                           earliestStartTime );
-//       System.err.println( "computeTimeIntervalLabelSize: end " +
-//                           endTimeIntervalDomain.toString());
       if (startTimeIntervalDomain != null) {
         if (startTimeIntervalDomain.getLowerBoundInt() >= earliestStartTime) {
           earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
