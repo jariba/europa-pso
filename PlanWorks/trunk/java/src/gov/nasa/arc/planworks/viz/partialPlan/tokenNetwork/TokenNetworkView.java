@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.74 2004-09-24 22:40:01 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.75 2004-09-28 01:40:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -246,30 +246,36 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     boolean isSetState = true;
     zoomView( jGoView, isSetState, this);
     int penWidth = getOpenJGoPenWidth( zoomFactor);
-
+    
     TokenNetworkViewState state = (TokenNetworkViewState) s;
 
     ListIterator idIterator = state.getModTokens().listIterator();
     while (idIterator.hasNext()) {
       TokenNetworkViewState.ModNode modNode = (TokenNetworkViewState.ModNode) idIterator.next();
-      TokenNetworkTokenNode node =
-        addTokenTokNetNode( partialPlan.getToken( modNode.getId()));
-      node.setInLayout( true);
-      node.setAreNeighborsShown( modNode.getAreNeighborsShown());
-      if (modNode.getAreNeighborsShown()) {
-        node.setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
+      PwToken token = partialPlan.getToken( modNode.getId());
+      if (token != null) {
+        TokenNetworkTokenNode node = addTokenTokNetNode( token);
+        node.setInLayout( true);
+        node.addTokenObjects( node);
+        node.setAreNeighborsShown( modNode.getAreNeighborsShown());
+        if (modNode.getAreNeighborsShown()) {
+          node.setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
+        }
       }
     }
 
     idIterator = state.getModRuleInstances().listIterator();
     while (idIterator.hasNext()) {
       TokenNetworkViewState.ModNode modNode = (TokenNetworkViewState.ModNode) idIterator.next();
-      TokenNetworkRuleInstanceNode node =
-        addRuleInstanceTokNetNode( partialPlan.getRuleInstance( modNode.getId()));
-      node.setInLayout( true);
-      node.setAreNeighborsShown( modNode.getAreNeighborsShown());
-      if (modNode.getAreNeighborsShown()) {
-        node.setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
+      PwRuleInstance ruleInstance = partialPlan.getRuleInstance( modNode.getId());
+      if (ruleInstance != null) {
+        TokenNetworkRuleInstanceNode node = addRuleInstanceTokNetNode( ruleInstance);
+        node.setInLayout( true);
+        node.addRuleInstanceObjects( node);
+        node.setAreNeighborsShown( modNode.getAreNeighborsShown());
+        if (modNode.getAreNeighborsShown()) {
+          node.setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
+        }
       }
     }
 
@@ -284,23 +290,25 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
       TokenNetworkViewState.ModNode modNode = (TokenNetworkViewState.ModNode) idIterator.next();
       TokenNetworkTokenNode node =
 	(TokenNetworkTokenNode) entityTokNetNodeMap.get( modNode.getId());
-      node.setLinkCount( modNode.getLinkCount());
+      if (node != null) {
+        node.setLinkCount( modNode.getLinkCount());
+      }
     }
     idIterator = state.getModRuleInstances().listIterator();
     while (idIterator.hasNext()) {
       TokenNetworkViewState.ModNode modNode = (TokenNetworkViewState.ModNode) idIterator.next();
       TokenNetworkRuleInstanceNode node =
 	(TokenNetworkRuleInstanceNode) entityTokNetNodeMap.get( modNode.getId());
-       node.setLinkCount( modNode.getLinkCount());
+       if (node != null) {
+         node.setLinkCount( modNode.getLinkCount());
+       }
     }     
     ListIterator linkIterator = state.getModLinks().listIterator();
     while (linkIterator.hasNext()) {
       TokenNetworkViewState.ModLink modLink =
 	(TokenNetworkViewState.ModLink) linkIterator.next();
       BasicNodeLink link = (BasicNodeLink) tokNetLinkMap.get( modLink.getLinkName());
-      if (link == null) {
-	System.err.println( "setState: linkName " + modLink.getLinkName() + " not found");
-      } else {
+      if (link != null) {
 	link.setLinkCount( modLink.getLinkCount());
       }
     }
