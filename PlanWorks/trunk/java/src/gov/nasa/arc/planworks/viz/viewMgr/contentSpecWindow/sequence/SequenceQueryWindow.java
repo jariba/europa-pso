@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.15 2003-12-20 01:54:52 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.16 2003-12-30 00:40:05 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -41,6 +41,7 @@ import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -714,6 +715,11 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       } catch (IllegalArgumentException e) {
         return null;
       }
+      catch(ResourceNotFoundException rnfe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(), "ResourceNotFound",
+                                      JOptionPane.ERROR_MESSAGE);
+        return null;
+      }
       return freeTokenList;
     } // end getFreeTokensAtStep
 
@@ -732,6 +738,11 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         unboundVariableList = ((PwPlanningSequence) queryWindow.viewable).
           getUnboundVariablesAtStep( step);
       } catch (IllegalArgumentException e) {
+        return null;
+      }
+      catch(ResourceNotFoundException rnfe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(), "ResourceNotFound",
+                                      JOptionPane.ERROR_MESSAGE);
         return null;
       }
       return unboundVariableList;

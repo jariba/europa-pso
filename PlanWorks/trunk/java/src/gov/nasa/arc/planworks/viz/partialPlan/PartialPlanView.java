@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.10 2003-12-20 00:46:04 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.11 2003-12-30 00:38:34 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -16,8 +16,11 @@ package gov.nasa.arc.planworks.viz.partialPlan;
 import java.awt.Point;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
@@ -42,11 +45,13 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 // import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
+import gov.nasa.arc.planworks.viz.util.JGoButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 
@@ -219,7 +224,176 @@ public class PartialPlanView extends VizView {
       return false;
     }
   } // end isTokenInContentSpec
+
+  protected void addStepButtons(JGoView view) {
+    Rectangle viewRect = view.getViewRect();
+    Point backwardButtonPt = new Point((int)viewRect.getX(), 
+                                       (int)(viewRect.getY() + viewRect.getHeight()));
+    JGoButton backwardButton = new JGoButton(backwardButtonPt, ColorMap.getColor("khaki2"), "<",
+                                             "Step backward.");
+    backwardButton.setLocation((int)(viewRect.getX() + backwardButton.getSize().getWidth()),
+                               (int)(viewRect.getY() + viewRect.getHeight() - 
+                                     backwardButton.getSize().getHeight()));
+
+    Point forwardButtonPt = new Point((int)(viewRect.getX() + 
+                                       backwardButton.getSize().getWidth() + 10),
+                                      (int)(viewRect.getY() + viewRect.getHeight()));
+    JGoButton forwardButton = new JGoButton(forwardButtonPt, ColorMap.getColor("khaki2"), ">", 
+                                            "Step forward.");
+    forwardButton.setLocation((int)(backwardButton.getLocation().getX() + 
+                                    backwardButton.getWidth()),
+                              (int)(backwardButton.getLocation().getY()));
+    view.getDocument().addObjectAtTail(backwardButton);
+    view.getDocument().addObjectAtTail(forwardButton);
+    //view.addObjectAtTail(backwardButton);
+    //view.addObjectAtTail(forwardButton);
+
+    view.getHorizontalScrollBar().
+      addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
+    view.getVerticalScrollBar().
+      addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
+
+    backwardButton.addActionListener(new StepButtonListener(-1, view, this));
+    forwardButton.addActionListener(new StepButtonListener(1, view, this));
+  }
   
+  class StepButtonListener implements ActionListener {
+    private int dir;
+    private JGoView view;
+    private PartialPlanView pView;
+    public StepButtonListener(int dir, JGoView view, PartialPlanView pView) {
+      this.dir = dir;
+      this.view = view;
+      this.pView = pView;
+    }
+    public void actionPerformed(ActionEvent e) {
+      view.getSelection().clearSelection();
+      ViewSet viewSet = pView.getViewSet();
+      MDIInternalFrame viewFrame = viewSet.getViewByClass(pView.getClass());
+      ViewManager viewManager = viewSet.getViewManager();
+      int currStepNumber = getPartialPlan().getStepNumber();
+      PwPartialPlan nextStep = null;
+      try {
+        if(dir == 1) {
+          nextStep = PlanWorks.planWorks.getCurrentProject().
+            getPlanningSequence(getPartialPlan().getSequenceUrl()).
+            getNextPartialPlan(currStepNumber);
+        }
+        else if(dir == -1) {
+          nextStep = PlanWorks.planWorks.getCurrentProject().
+            getPlanningSequence(getPartialPlan().getSequenceUrl()).
+            getPrevPartialPlan(currStepNumber);
+        }
+      }
+      catch(IndexOutOfBoundsException ibe) {
+        String message = "This is a bug";
+        if(dir == 1) {
+          message = "Attempted to step beyond last step.";
+        }
+        else if(dir == -1) {
+          message = "Attempted to step beyond first step.";
+        }
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, message, "Step Exception", 
+                                      JOptionPane.ERROR_MESSAGE);
+        ibe.printStackTrace();
+        return;
+      }
+      catch(ResourceNotFoundException rnfe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(),
+                                      "ResourceNotFoundException", JOptionPane.ERROR_MESSAGE);
+
+        rnfe.printStackTrace();
+        return;
+      }
+      if(nextStep.getName() == null) {
+        String [] title = viewFrame.getTitle().split("\\s+");
+        String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
+        nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" + (currStepNumber + dir));
+      }
+      MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName());
+      try {
+        nextViewFrame.setBounds(viewFrame.getBounds());
+        nextViewFrame.setNormalBounds(viewFrame.getNormalBounds());
+        nextViewFrame.setSelected(true);
+        VizViewOverview overview = null;
+        VizView vView = null;
+        Container contentPane = viewFrame.getContentPane();
+        for(int i = 0; i < contentPane.getComponentCount(); i++) {
+          if(contentPane.getComponent(i) instanceof VizView) {
+            vView = (VizView) contentPane.getComponent(i);
+            overview = vView.getOverview();
+            break;
+          }
+        }
+        if(overview != null) {
+          VizView nextView = null;
+          JGoView nextJGoView = null;
+          JGoView temp = null;
+          contentPane = nextViewFrame.getContentPane();
+          for(int i = 0; i < contentPane.getComponentCount(); i++) {
+            if(contentPane.getComponent(i) instanceof VizView) {
+              nextView = (VizView) contentPane.getComponent(i);
+              //Container subPane = nextView.getContentPane();
+              for(int j = 0; j < nextView.getComponentCount(); j++) {
+                if(nextView.getComponent(i) instanceof JGoView) {
+                  nextJGoView = (JGoView) nextView.getComponent(i);
+                  break;
+                }
+              }
+              break;
+            }
+          }
+          MDIInternalFrame overviewFrame = null;
+          Container parent = overview.getParent();
+          while(!(parent instanceof MDIInternalFrame)) {
+            parent = parent.getParent();
+          }
+          overviewFrame = (MDIInternalFrame) parent;
+          
+          VizViewOverview nextOverview = 
+            ViewGenerics.openOverviewFrame("Temporary View", nextStep, nextView, 
+                                           viewManager.getViewSet(nextStep), nextJGoView, 
+                                           overviewFrame.getLocation());
+          nextView.setOverview(nextOverview);
+         
+          MDIInternalFrame nextOverviewFrame = null;
+          
+          parent = nextOverview.getParent();
+          while(!(parent instanceof MDIInternalFrame)) {
+            parent = parent.getParent();
+          }
+          nextOverviewFrame = (MDIInternalFrame) parent;
+
+          nextOverviewFrame.setBounds(overviewFrame.getBounds());
+          nextOverviewFrame.setNormalBounds(overviewFrame.getBounds());
+          
+        }
+        viewSet.removeViewFrame(viewFrame);
+        viewFrame.setClosed(true);
+      }
+      catch(Exception ack){ack.printStackTrace();}
+    }
+  }
+
+  class ButtonAdjustmentListener implements AdjustmentListener {
+    private JGoView view;
+    private JGoButton back;
+    private JGoButton forward;
+    public ButtonAdjustmentListener(JGoView view, JGoButton back, JGoButton forward) {
+      this.view = view;
+      this.back = back;
+      this.forward = forward;
+    }
+    public void adjustmentValueChanged(AdjustmentEvent e) {
+      Rectangle viewRect = view.getViewRect();
+      view.getSelection().clearSelection();
+      back.setLocation((int)(viewRect.getX() + back.getSize().getWidth()),
+                       (int)(viewRect.getY() + viewRect.getHeight() -
+                             back.getSize().getHeight()));
+      forward.setLocation((int)(back.getLocation().getX() + back.getWidth()),
+                          (int)(back.getLocation().getY()));
+    }
+  }
   /**
    * <code>createOpenViewItems</code> - partial plan background Mouse-Right item
    *
@@ -267,146 +441,7 @@ public class PartialPlanView extends VizView {
         }
       });
   } // end createRaiseContentSpecItem
-
-  public void createSteppingItems(JPopupMenu mouseRightPopup) {
-    JMenuItem nextItem = new JMenuItem("Step forward");
-    JMenuItem prevItem = new JMenuItem("Step backward");
-
-    nextItem.addActionListener(new StepForwardListener(this));
-    prevItem.addActionListener(new StepBackwardListener(this));
-    mouseRightPopup.add(nextItem);
-    mouseRightPopup.add(prevItem);
-  }
-  class StepForwardListener implements ActionListener {
-    private PartialPlanView view;
-    public StepForwardListener(PartialPlanView view) {
-      this.view = view;
-    }
-    public void actionPerformed(ActionEvent e) {
-      ViewSet viewSet = view.getViewSet();
-      MDIInternalFrame viewFrame = viewSet.getViewByClass(view.getClass());
-      ViewManager viewManager = viewSet.getViewManager();
-      int prevStepNumber = getPartialPlan().getStepNumber();
-      PwPartialPlan nextStep;
-      try {
-        nextStep = PlanWorks.planWorks.getCurrentProject().
-          getPlanningSequence(getPartialPlan().getSequenceUrl()).
-          getNextPartialPlan(prevStepNumber);
-      }
-      catch(IndexOutOfBoundsException ibe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, "Attempted to step beyond last step.",
-                                      "Step Exception", JOptionPane.ERROR_MESSAGE);
-        ibe.printStackTrace();
-        return;
-      }
-      catch(ResourceNotFoundException rnfe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(),
-                                      "ResourceNotFoundException", JOptionPane.ERROR_MESSAGE);
-
-        rnfe.printStackTrace();
-        return;
-      }
-      if(nextStep.getName() == null) {
-        String [] title = viewFrame.getTitle().split("\\s+");
-        String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
-        nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" + (prevStepNumber + 1));
-      }
-      MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, view.getClass().getName());
-      try {
-        nextViewFrame.setBounds(viewFrame.getBounds());
-        nextViewFrame.setNormalBounds(viewFrame.getNormalBounds());
-        nextViewFrame.setSelected(true);
-        VizViewOverview overview = null;
-        VizView view = null;
-        Container contentPane = viewFrame.getContentPane();
-        for(int i = 0; i < contentPane.getComponentCount(); i++) {
-          if(contentPane.getComponent(i) instanceof VizView) {
-            view = (VizView) contentPane.getComponent(i);
-            overview = view.getOverview();
-            break;
-          }
-        }
-        if(overview != null) {
-          VizView nextView = null;
-          JGoView nextJGoView = null;
-          JGoView temp = null;
-          contentPane = nextViewFrame.getContentPane();
-          for(int i = 0; i < contentPane.getComponentCount(); i++) {
-            if(contentPane.getComponent(i) instanceof VizView) {
-              nextView = (VizView) contentPane.getComponent(i);
-              //Container subPane = nextView.getContentPane();
-              for(int j = 0; j < nextView.getComponentCount(); j++) {
-                if(nextView.getComponent(i) instanceof JGoView) {
-                  nextJGoView = (JGoView) nextView.getComponent(i);
-                  break;
-                }
-              }
-              break;
-            }
-          }
-          VizViewOverview nextOverview = 
-            ViewGenerics.openOverviewFrame("Temporary View", nextStep, nextView, 
-                                           viewManager.getViewSet(nextStep), nextJGoView, 
-                                           new Point(30, 30));
-          nextView.setOverview(nextOverview);
-        }
-        viewSet.removeViewFrame(viewFrame);
-        viewFrame.setClosed(true);
-      }
-      catch(Exception ack){ack.printStackTrace();}
-    }
-  }
-  class StepBackwardListener implements ActionListener {
-    private PartialPlanView view;
-    public StepBackwardListener(PartialPlanView view) {
-      this.view = view;
-    }
-    public void actionPerformed(ActionEvent e) {
-      ViewSet viewSet = view.getViewSet();
-      MDIInternalFrame viewFrame = viewSet.getViewByClass(view.getClass());
-      ViewManager viewManager = viewSet.getViewManager();
-      int nextStepNumber = getPartialPlan().getStepNumber();
-      PwPartialPlan prevStep;
-      try {
-        prevStep = PlanWorks.planWorks.getCurrentProject().
-          getPlanningSequence(getPartialPlan().getSequenceUrl()).
-          getPrevPartialPlan(nextStepNumber);
-      }
-      catch(IndexOutOfBoundsException ibe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, "Attempted to step beyond first step.",
-                                      "Step Exception", JOptionPane.ERROR_MESSAGE);
-
-        ibe.printStackTrace();
-        return;
-      }
-      catch(ResourceNotFoundException rnfe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(),
-                                      "ResourceNotFoundException", JOptionPane.ERROR_MESSAGE);
-        rnfe.printStackTrace();
-        return;
-      }
-      if(prevStep.getName() == null) {
-        String [] title = viewFrame.getTitle().split("\\s+");
-        String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
-        prevStep.setName(seqName[0] + System.getProperty("file.separator") + "step" + (nextStepNumber - 1));
-      }
-      MDIInternalFrame prevView = viewManager.openView(prevStep, view.getClass().getName());
-      try {
-        if(viewFrame.isMaximum()) {
-          prevView.setNormalBounds(viewFrame.getNormalBounds());
-          //prevView.setMaximum(true);
-        }
-        else {
-          prevView.setBounds(viewFrame.getBounds());
-          //prevView.setMaximum(false);
-        }
-        prevView.setIcon(viewFrame.isIcon());
-        prevView.setSelected(true);
-        viewSet.removeViewFrame(viewFrame);
-        viewFrame.setClosed(true);
-      }
-      catch(Exception ack){ack.printStackTrace();}
-    }
+  public void createSteppingItems(JPopupMenu menu) {
   }
 } // end class PartialPlanView
 
