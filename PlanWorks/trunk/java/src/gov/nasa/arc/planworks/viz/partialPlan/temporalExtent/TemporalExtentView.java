@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.44 2004-05-04 01:27:19 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.45 2004-05-07 19:54:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -232,13 +232,10 @@ public class TemporalExtentView extends PartialPlanView  {
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TemporalExtentView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep(50);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "timelineView displayable " + this.isDisplayable());
-    }
+		if(!displayableWait()) {
+			return;
+		}
+
     this.computeFontMetrics( this);
 
     boolean doFreeTokens = true;
