@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.19 2003-12-10 21:54:05 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.20 2003-12-18 21:19:32 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -118,7 +118,7 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
 
   char *spw = getenv(envStepsPerWrite);
   if(spw == NULL) {
-    stepsPerWrite = 1;
+    stepsPerWrite = 0;
   }
   else {
     stepsPerWrite = (int) strtol(spw, (char **) NULL, 10);
@@ -295,9 +295,9 @@ void PartialPlanWriter::write(void) {
     }*/
   //List<TokenId> allTokens = tnet->getAllTokens();
 
-  //Nobody's EUROPA has the getFreeValueTokensWithoutCompatUpdate method. ~MJI
-  List<TokenId> freeTokenList = tnet->getFreeValueTokens();
-  //List<TokenId> freeTokenList = tnet->getFreeValueTokensWithoutCompatUpdate();
+  //Nobody else's EUROPA has the getFreeValueTokensWithoutCompatUpdate method. ~MJI
+  //List<TokenId> freeTokenList = tnet->getFreeValueTokens();
+  List<TokenId> freeTokenList = tnet->getFreeValueTokensWithoutCompatUpdate();
   //numTokens = allTokens.getSize();
 
   ListIterator<TokenId> freeTokenIterator = ListIterator<TokenId>(freeTokenList);
