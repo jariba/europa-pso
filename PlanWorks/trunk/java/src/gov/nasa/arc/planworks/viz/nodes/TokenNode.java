@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.1 2003-06-25 17:04:05 taylor Exp $
+// $Id: TokenNode.java,v 1.2 2003-06-25 17:42:55 taylor Exp $
 //
 // PlanWorks
 //
@@ -75,13 +75,13 @@ public class TokenNode extends TextNode {
    */
   public TokenNode( PwToken token, Point tokenLocation, int objectCnt,
                     TokenNetworkView view) {
-    super( token.getPredicate().getName() + " " + token.getKey());
+    super( token.getPredicate().getName() + " " + token.getKey().toString());
     this.token = token;
     this.objectCnt = objectCnt;
     this.view = view;
     this.predicateName = token.getPredicate().getName();
     System.err.println( "TokenNode: predicateName " + predicateName + 
-                        " key: " + token.getKey());
+                        " key: " + token.getKey().toString());
     configure( tokenLocation);
   } // end constructor
 

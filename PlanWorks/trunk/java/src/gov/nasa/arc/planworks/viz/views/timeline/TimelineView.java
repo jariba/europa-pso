@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.10 2003-06-25 17:04:05 taylor Exp $
+// $Id: TimelineView.java,v 1.11 2003-06-25 17:42:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -236,7 +236,7 @@ public class TimelineView extends VizView {
           TimelineNode timelineNode = null;
           if (viewSet.isInContentSpec( timeline.getKey())) {
             String timelineName = timeline.getName();
-            String timelineKey = timeline.getKey();
+            Integer timelineKey = timeline.getKey();
             String timelineNodeName = objectName + " : " + timelineName;
             timelineNode =
               new TimelineNode( timelineNodeName, timeline, new Point( x, y),
