@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.8 2004-02-03 20:44:04 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.9 2004-02-11 01:09:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -227,14 +227,17 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
       if(((String)predicates.get(0)).indexOf("not") != -1) {
         firstPredicate.getNegationBox().setSelected(true);
       }
-      firstPredicate.setSelectedComboItem((Integer)predicates.get(1));
+      firstPredicate.setSelectedComboItem(predicates.get(1));
       for(int i = 2; i < predicates.size(); i += 2) {
         String connective = (String)predicates.get(i);
-        Integer predicate = (Integer)predicates.get(i+1);
+        Object predicate = (Object)predicates.get(i+1);
         predicateBoxes = predicateGroup.getElements();
         ListIterator predicateBoxIterator = predicateBoxes.listIterator();
         while(predicateBoxIterator.hasNext()) {
-          PredicateBox box = (PredicateBox) predicateBoxIterator.next();
+          //SpecBox temp = (SpecBox) predicateBoxIterator.next();
+          //System.err.println("=====>" + temp.getName() + " : " + temp.getClass().getName());
+          //PredicateBox box = (PredicateBox) temp;//(PredicateBox) predicateBoxIterator.next();
+          SpecBox box = (SpecBox) predicateBoxIterator.next();
           if(box.getLogicBox().isEnabled() && !box.getComboBox().isEnabled()) {
             if(connective.indexOf("and") != -1) {
               box.getLogicBox().setSelectedItem("AND");
@@ -268,7 +271,8 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
         timelineBoxes = timelineGroup.getElements();
         ListIterator timelineBoxIterator = timelineBoxes.listIterator();
         while(timelineBoxIterator.hasNext()) {
-          TimelineBox box = (TimelineBox) timelineBoxIterator.next();
+          //TimelineBox box = (TimelineBox) timelineBoxIterator.next();
+          SpecBox box = (SpecBox) timelineBoxIterator.next();
           if(box.getLogicBox().isEnabled() && !box.getComboBox().isEnabled()) {
             if(connective.indexOf("and") != -1) {
               box.getLogicBox().setSelectedItem("AND");
