@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.1 2003-09-25 23:52:45 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.2 2003-09-26 22:47:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -63,7 +63,8 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
-
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 /**
  * <code>TemporalExtentView</code> - render the temporal extents of a
@@ -113,13 +114,12 @@ public class TemporalExtentView extends PartialPlanView  {
    * @param startTimeMSecs - <code>long</code> - 
    * @param viewSet - <code>PartialPlanViewSet</code> - 
    */
-  public TemporalExtentView( PwPartialPlan partialPlan, long startTimeMSecs,
-                             PartialPlanViewSet viewSet) {
-    super( partialPlan, viewSet);
-    this.partialPlan = partialPlan;
-    this.startTimeMSecs = startTimeMSecs;
-    this.viewSet = viewSet;
-    viewName = "temporalExtentView";
+  public TemporalExtentView( ViewableObject partialPlan, ViewSet viewSet) {
+    super( (PwPartialPlan)partialPlan, (PartialPlanViewSet)viewSet);
+    this.partialPlan = (PwPartialPlan) partialPlan;
+    this.startTimeMSecs = System.currentTimeMillis();
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    viewName = (String) PlanWorks.viewNameMap.get(PlanWorks.TEMPORAL_EXTENT_VIEW);
 
     startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;

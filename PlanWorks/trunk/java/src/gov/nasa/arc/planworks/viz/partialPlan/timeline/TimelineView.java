@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.1 2003-09-25 23:52:46 taylor Exp $
+// $Id: TimelineView.java,v 1.2 2003-09-26 22:47:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -58,6 +58,8 @@ import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 /**
  * <code>TimelineView</code> - render a partial plan's timelines and slots
@@ -92,14 +94,14 @@ public class TimelineView extends PartialPlanView {
    * @param startTimeMSecs - <code>long</code> - 
    * @param viewSet - <code>PartialPlanViewSet</code> - 
    */
-  public TimelineView( PwPartialPlan partialPlan, long startTimeMSecs,
-                       PartialPlanViewSet viewSet) {
-    super( partialPlan, viewSet);
+  public TimelineView( ViewableObject partialPlan,  ViewSet viewSet) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
 
-    this.partialPlan = partialPlan;
-    this.startTimeMSecs = startTimeMSecs;
-    this.viewSet = viewSet;
-    viewName = "timelineView";
+    this.partialPlan = (PwPartialPlan) partialPlan;
+    this.startTimeMSecs = System.currentTimeMillis();
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    //viewName = "timelineView";
+    viewName = (String) PlanWorks.viewNameMap.get(PlanWorks.TIMELINE_VIEW);
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;

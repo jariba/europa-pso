@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.22 2003-09-25 23:52:44 taylor Exp $
+// $Id: TokenNode.java,v 1.23 2003-09-26 22:47:07 miatauro Exp $
 //
 // PlanWorks
 //
@@ -72,6 +72,7 @@ public class TokenNode extends BasicNode {
   private boolean areNeighborsShown;
   private int variableLinkCount;
 
+
   /**
    * <code>TokenNode</code> - constructor 
    *
@@ -102,7 +103,6 @@ public class TokenNode extends BasicNode {
     variableNodeList = new ArrayList();
     areNeighborsShown = false;
     variableLinkCount = 0;
-    
     configure( tokenLocation, backgroundColor, isDraggable);
   } // end constructor
 

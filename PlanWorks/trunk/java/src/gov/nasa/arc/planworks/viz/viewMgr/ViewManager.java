@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.14 2003-09-25 21:29:10 miatauro Exp $
+// $Id: ViewManager.java,v 1.15 2003-09-26 22:47:07 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -13,9 +13,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 //import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 /**
  * <code>ViewManager</code> -
@@ -26,11 +28,15 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
  */
 
 public class ViewManager implements ViewSetRemover {
-  public static final String CNET_VIEW = "constraintNetworkView";
-  public static final String TEMPEXT_VIEW = "temporalExtentView";
-  public static final String TEMPNET_VIEW = "temporalNetworkView";
-  public static final String TIMELINE_VIEW = "timelineView";
-  public static final String TNET_VIEW = "tokenNetworkView";
+    public static final String CNET_VIEW = //"constraintNetworkView";
+	"gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView";
+    public static final String TEMPEXT_VIEW = //"temporalExtentView";
+	"gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView";
+    public static final String TEMPNET_VIEW = "";//"temporalNetworkView";
+    public static final String TIMELINE_VIEW = //"timelineView";
+	"gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView";
+    public static final String TNET_VIEW = //"tokenNetworkView";
+	"gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView";
   private MDIDesktopFrame desktopFrame;
   private HashMap viewSets;
 
@@ -44,7 +50,12 @@ public class ViewManager implements ViewSetRemover {
 
   public MDIInternalFrame openView(ViewableObject viewable, String viewName) {
     if(!viewSets.containsKey(viewable)) {
-      viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
+	if(viewable instanceof PwPartialPlan) {
+	    viewSets.put(viewable, new PartialPlanViewSet(desktopFrame, (PwPartialPlan) viewable, this));
+	}
+	else {
+	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
+	}
     }
     return ((ViewSet)viewSets.get(viewable)).openView(viewName);
   }
