@@ -7,8 +7,8 @@ import java.util.Map;
 public class ColorStream {
 
   private Map hashMap;
-  private static final int COLOR_INC = 57/*51*/;
-  private static final float MIN_BRIGHTNESS = 0.40f;
+  private static final int COLOR_INC = 65/*51*/;
+  private static final float MIN_BRIGHTNESS = 0.45f;
   private int r, g, b;
 
   public ColorStream() {
