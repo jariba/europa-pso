@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.112 2004-07-16 22:54:45 taylor Exp $
+// $Id: MySQLDB.java,v 1.113 2004-07-19 22:28:23 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -132,13 +132,18 @@ public class MySQLDB {
    * Establish a connection to the database
    */
 
-  synchronized public static void registerDatabase() throws IOException {
+  synchronized public static void registerDatabase() {
     if(dbIsConnected)
       return;
-
-    if(!dbIsStarted) {
-      startDatabase();
+    try {
+      if(!dbIsStarted) {
+        startDatabase();
+      }
+    } catch (Exception excp) {
+      System.err.println(excp);
+      System.exit(-1);
     }
+      
     try {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
       for(int triedConnections = 0; triedConnections <= 10 && !dbIsConnected; triedConnections++) {
@@ -204,10 +209,6 @@ public class MySQLDB {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    catch(IOException ioe) {
-      ioe.printStackTrace();
-      System.exit(-1);
-    }
     return result;
   }
 
@@ -233,10 +234,6 @@ public class MySQLDB {
       sqle.printStackTrace();
       return -1;
     }
-    catch(IOException ioe) {
-      ioe.printStackTrace();
-      System.exit(-1);
-    }
     return result;
   }
   synchronized public static void analyzeDatabase() {
@@ -253,9 +250,6 @@ public class MySQLDB {
     catch(SQLException sqle) {
       System.err.println(sqle);
       sqle.printStackTrace();
-    }
-    catch(IOException ioe) {
-      ioe.printStackTrace();
     }
   }
 
@@ -855,14 +849,19 @@ public class MySQLDB {
     boolean printTime = true;
     // boolean printTime = false;
     try {
+      if (dbIsConnected) {
+        unregisterDatabase();
+      }
+      registerDatabase();
       long t1 = 0L, t2 = 0L, t3 = 0L, t4 = 0L, t5 = 0L;
       if (printTime) {
         t1 = System.currentTimeMillis();
       }
-      StringBuffer queryStr = new StringBuffer("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, Token.ParentId, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=");
-      queryStr.append(seqId.toString()).append(" WHERE Token.PartialPlanId=").append(partialPlan.getId().toString());
+      StringBuffer queryStr = new StringBuffer("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, Token.ParentId, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON " );
+      queryStr.append("RuleInstance.PartialPlanId=Token.PartialPlanId");
+      queryStr.append(" && FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0");
+      queryStr.append(" WHERE Token.PartialPlanId=").append(partialPlan.getId().toString());
       queryStr.append(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId");
-
       ResultSet tokens = queryDatabase(queryStr.toString());
       if (printTime) {
         t2 = System.currentTimeMillis();
@@ -928,7 +927,9 @@ public class MySQLDB {
         t3 = System.currentTimeMillis();
         System.err.println( "   ... create slotted tokens elapsed time: " + (t3 - t2) + " msecs.");
       }
-      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.IsFreeToken=1 && Token.PartialPlanId=").concat(partialPlan.getId().toString()));
+      unregisterDatabase();
+      registerDatabase();
+      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON RuleInstance.PartialPlanId=Token.PartialPlanId && FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
       if (printTime) {
         t4 = System.currentTimeMillis();
         System.err.println( "   ... queryDatabase free tokens elapsed time: " +
@@ -995,6 +996,7 @@ public class MySQLDB {
       System.err.println(sqle);
       sqle.printStackTrace();
     }
+    unregisterDatabase();
   }
 
   /**
