@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.22 2003-12-23 01:04:34 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.23 2003-12-29 19:20:15 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
+#include <sys/param.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -693,7 +694,7 @@ void PartialPlanWriter::notifyOfNewToken(TokenId tokenId) {
     numTransactions++;
   }
 }
-void PartialPlanWriter::notifyTokenIsInserted(TokenId tokenId) { //signals plan step
+void PartialPlanWriter::notifyTokenIsInserted(TokenId tokenId) {
   if(stepsPerWrite) {
     String info;
     info = (tokenId->getTokenClass() == valueTokenClass ? tokenId->getPredicate()->getName() :
@@ -769,7 +770,7 @@ void PartialPlanWriter::notifyOfNewVariable(VarId varId) {
     numTransactions++;
   }
 }
-void PartialPlanWriter::notifySpecifiedDomainChanged(VarId varId) { //signals plan step
+void PartialPlanWriter::notifySpecifiedDomainChanged(VarId varId) {
   if(stepsPerWrite) {
     if(varId->getParentToken().isNoId()) {
       return;
@@ -886,8 +887,9 @@ String PartialPlanWriter::getVarInfo(const VarId &varId) {
   }
 
   String retval = type + COMMA;
-  if(parentToken->getTokenClass() == valueTokenClass) {
-    retval += parentToken->getPredicate().getName();
+  if(Id<ValueToken>::convertable(parentToken)) {
+    Id<ValueToken> vtokId(parentToken);
+    retval += vtokId->getPredicate().getName();
   }
   else {
     retval += CONSTRAINT_TOKEN;
@@ -918,8 +920,8 @@ String PartialPlanWriter::getVarInfo(const VarId &varId) {
   return retval;
 }
 
-void Transaction::write(ofstream &out, long long int partialPlanId) {
-  if(transactionType == -1) {
+void Transaction::write(ostream &out, long long int partialPlanId) {
+  if (transactionType == -1) {
     FatalError("Attempted to write invalid transaction.");
   }
   out << transactionTypeNames[transactionType] << TAB << objectKey << TAB 

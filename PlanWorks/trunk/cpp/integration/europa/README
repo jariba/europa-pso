@@ -1,5 +1,9 @@
 First off, check out the latest version of Europa and build it.
 
+NOTE: The PartialPlanWriter is now integrated with EUROPA.  The planners that are in the EUROPA 
+tree are now built with it, with the caveat that you now must set PPW_WRITE_NSTEPS to a non-zero
+value to make it write.  
+
 For the moment, there is no makefile to build the PartialPlanWriter
 class.  This is in my TODO, but not really important at the moment.
 To build the PartialPlanWriter, you must have checked out and built a
