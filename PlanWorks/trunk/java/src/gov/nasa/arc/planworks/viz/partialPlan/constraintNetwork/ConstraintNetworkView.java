@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.39 2004-02-17 17:09:55 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.40 2004-02-17 19:01:46 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -1544,7 +1544,6 @@ public class ConstraintNetworkView extends PartialPlanView {
         }
         Integer tokenId = variableToFind.getParent().getId();
         Iterator tokenIterator = constraintNetworkView.getTokenNodeList().iterator();
-      varNodeFind:
         while(tokenIterator.hasNext()) {
           ConstraintNetworkTokenNode parent = (ConstraintNetworkTokenNode) tokenIterator.next();
           if(parent.getToken().getId().equals(tokenId)) {
@@ -1562,7 +1561,6 @@ public class ConstraintNetworkView extends PartialPlanView {
           }
         }
       }
-      System.err.println("AAAAAAAAAACK!");
       String message = "Variable " + variableToFind.getDomain().toString() +
         " (key=" + variableToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,

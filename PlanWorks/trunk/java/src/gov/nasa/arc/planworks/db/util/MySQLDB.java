@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.83 2004-02-13 22:29:44 miatauro Exp $
+// $Id: MySQLDB.java,v 1.84 2004-02-17 19:01:28 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -628,7 +628,7 @@ public class MySQLDB {
   synchronized public static void createObjects(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet objects = 
-        queryDatabase("SELECT ObjectId, ObjectType, ParentId, ObjectName, ChildObjectIds, EmptySlotInfo FROM Object WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
+        queryDatabase("SELECT ObjectId, ObjectType, ParentId, ObjectName, ChildObjectIds, VariableIds, EmptySlotInfo FROM Object WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
       while(objects.next()) {
         Integer objectId = new Integer(objects.getInt("ObjectId"));
         int type = objects.getInt("ObjectType");
@@ -639,6 +639,11 @@ public class MySQLDB {
         if(!objects.wasNull()) {
           childObjectIds = new String(blob.getBytes(1, (int) blob.length()));
         }
+        String variableIds = null;
+        blob = objects.getBlob("VariableIds");
+        if(!objects.wasNull()) {
+          variableIds = new String(blob.getBytes(1, (int) blob.length()));
+        }
         if(type == DbConstants.O_TIMELINE) {
           String emptySlots = null;
           blob = objects.getBlob("EmptySlotInfo");
@@ -647,14 +652,15 @@ public class MySQLDB {
           }
           partialPlan.addTimeline(objectId, 
                                   new PwTimelineImpl(objectId, type, parentId, name, 
-                                                     childObjectIds, emptySlots, partialPlan));
+                                                     childObjectIds, emptySlots, variableIds,
+                                                     partialPlan));
         }
         else if(type == DbConstants.O_RESOURCE) {
         }
         else {
           partialPlan.addObject(objectId, 
                                 new PwObjectImpl(objectId, type, parentId, name, childObjectIds,
-                                                 partialPlan));
+                                                 variableIds, partialPlan));
         }
       }
     }
