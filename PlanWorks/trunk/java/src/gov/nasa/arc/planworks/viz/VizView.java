@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.33 2004-07-29 01:36:38 taylor Exp $
+// $Id: VizView.java,v 1.34 2004-07-29 18:05:43 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -555,7 +555,7 @@ public class VizView extends JPanel {
   }
 
   protected void progressMonitorThread( String title, int minValue, int maxValue,
-                                        Thread monitoredThread, VizView view) {
+                                        Thread monitoredThread, JPanel view) {
     Thread thread = new ProgressMonitorThread( title, minValue, maxValue, monitoredThread,
                                                 view);
     thread.setPriority(Thread.MAX_PRIORITY);
@@ -568,10 +568,10 @@ public class VizView extends JPanel {
     private int minValue;
     private int maxValue;
     private Thread monitoredThread;
-    private VizView view;
+    private JPanel view;
 
     public ProgressMonitorThread( String title, int minValue, int maxValue,
-                                  Thread monitoredThread, VizView view) {
+                                  Thread monitoredThread, JPanel view) {
       isProgressMonitorCancel = false;
       this.title = title;
       this.minValue = minValue * ViewConstants.MONITOR_MIN_MAX_SCALING;

@@ -8,7 +8,7 @@
 // modified by Will Taylor starting 26july04
 // monitoredThread passed in and stopped when cancel is received
 
-// $Id: PWProgressMonitor.java,v 1.2 2004-07-29 01:36:41 taylor Exp $
+// $Id: PWProgressMonitor.java,v 1.3 2004-07-29 18:05:44 taylor Exp $
 
 
 package gov.nasa.arc.planworks.viz.util;
@@ -27,14 +27,13 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 // import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
-// import javax.swing.JPanel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.ProgressMonitor;
 import javax.swing.UIManager;
 
-import gov.nasa.arc.planworks.util.ViewRenderingException;
 import gov.nasa.arc.planworks.viz.VizView;
-
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
 /** A class to monitor the progress of some operation. If it looks
  * like the operation will take a while, a progress dialog will be popped up.
@@ -83,7 +82,7 @@ public class PWProgressMonitor extends Object
     private int             reportDelta;
 
   private Thread monitoredThread;
-  private VizView view;
+  private JPanel view;
 
 
     /**
@@ -115,7 +114,7 @@ public class PWProgressMonitor extends Object
                            int min,
                            int max,
                              Thread monitoredThread,
-                             VizView view) {
+                             JPanel view) {
         this(parentComponent, message, note, min, max, null, monitoredThread, view);
     }
 
@@ -127,7 +126,7 @@ public class PWProgressMonitor extends Object
                             int max,
                             ProgressMonitor group,
                               Thread monitoredThread,
-                              VizView view) {
+                              JPanel view) {
         this.min = min;
         this.max = max;
         this.parentComponent = parentComponent;
@@ -210,16 +209,27 @@ public class PWProgressMonitor extends Object
                         dialog.dispose();
 
                         if (monitoredThread != null) { // added will taylor
-                          System.err.print( "PWProgressMonitor stopped thread");
+                          System.err.print( "PWProgressMonitor stopped thread for '");
                           if (view != null) {
-                            System.err.println( " for '" + view.getName() + "'");
-                            view.closeView( view);
-                          } else {
-                            System.err.println( ".");
+                            if (view instanceof VizView) {
+                              VizView vizView = (VizView) view;
+                              vizView.closeView( vizView);
+                              System.err.println( vizView.getName() + "'");
+                            } else if (view instanceof SequenceQueryWindow) {
+                              SequenceQueryWindow seqQueryWindow =
+                                (SequenceQueryWindow) view;
+                              seqQueryWindow.getProgressMonitor().close();
+                              seqQueryWindow.setProgressMonitor( null);
+                              System.err.println( "Sequence Query View'");
+                            } else {
+                              System.err.println( "PWProgressMonitor: " +
+                                                  view.getClass().getName() + " not handled");
+                            }
                           }
                           // monitoredThread.interrupt(); // does not stop JGo.performLyout
                           monitoredThread.stop(); // deprecated, but stops JGo.performLyout
                         }
+
                     }
                 }
             });

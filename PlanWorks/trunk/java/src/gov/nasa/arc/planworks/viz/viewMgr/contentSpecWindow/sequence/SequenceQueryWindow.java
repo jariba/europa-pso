@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.30 2004-07-29 01:36:42 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.31 2004-07-29 18:05:44 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -341,6 +341,24 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   }
 
   /**
+   * <code>getProgressMonitor</code>
+   *
+   * @return - <code>PWProgressMonitor</code> - 
+   */
+  public final PWProgressMonitor getProgressMonitor() {
+    return progressMonitor;
+  }
+
+  /**
+   * <code>setProgressMonitor</code>
+   *
+   * @param monitor - <code>PWProgressMonitor</code> - 
+   */
+  public final void setProgressMonitor( PWProgressMonitor monitor) {
+    progressMonitor = monitor;
+  }
+
+  /**
    * <code>QueryListener</code> -
    *                       ActionListener->QueryListener
    * The listener that provides the query functionality for the button.
@@ -374,7 +392,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         long startTimeMSecs = System.currentTimeMillis();
         System.err.println( "Querying and Rendering Sequence Query View ...");
         progressMonitorThread( "Querying/Rendering Sequence Query View ...", 0, 6,
-                               Thread.currentThread(), null);
+                               Thread.currentThread(), SequenceQueryWindow.this);
         if (! progressMonitorWait()) {
           return;
         }
@@ -1224,7 +1242,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   } // end mouseReleased
 
   protected void progressMonitorThread( String title, int minValue, int maxValue,
-                                        Thread monitoredThread, VizView view) {
+                                        Thread monitoredThread, JPanel view) {
     Thread thread = new ProgressMonitorThread( title, minValue, maxValue, monitoredThread,
                                                 view);
     thread.setPriority(Thread.MAX_PRIORITY);
@@ -1237,10 +1255,10 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     private int minValue;
     private int maxValue;
     private Thread monitoredThread;
-    private VizView view;
+    private JPanel view;
 
     public ProgressMonitorThread( String title, int minValue, int maxValue,
-                                  Thread monitoredThread, VizView view) {
+                                  Thread monitoredThread, JPanel view) {
       isProgressMonitorCancel = false;
       this.title = title;
       this.minValue = minValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
