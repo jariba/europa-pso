@@ -3,11 +3,11 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.2 2003-10-18 01:27:54 taylor Exp $
+// $Id: StepHeaderView.java,v 1.1 2003-10-18 01:27:54 taylor Exp $
 //
 // PlanWorks
 //
-// Will Taylor -- started 13oct03
+// Will Taylor -- started 17oct03
 //
 
 package gov.nasa.arc.planworks.viz;
@@ -31,13 +31,13 @@ import gov.nasa.arc.planworks.util.ColorMap;
 
 
 /**
- * <code>TransactionHeaderView</code> - render field names of transaction as column headers
+ * <code>StepHeaderView</code> - render field names of step object as column headers
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *           NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TransactionHeaderView extends JGoView {
+public class StepHeaderView extends JGoView {
 
   // top left bottom right
   private static final Insets NODE_INSETS =
@@ -62,12 +62,12 @@ public class TransactionHeaderView extends JGoView {
   private TextNode stepNumNode;
 
   /**
-   * <code>TransactionHeaderView</code> - constructor 
+   * <code>StepHeaderView</code> - constructor 
    *
    * @param vizView - <code>VizView</code> - 
    * @param query - <code>String</code> - 
    */
-  public TransactionHeaderView( VizView vizView, String query) {
+  public StepHeaderView( VizView vizView, String query) {
     super();
     this.vizView= vizView;
 
@@ -75,12 +75,12 @@ public class TransactionHeaderView extends JGoView {
 
     jGoDocument = this.getDocument();
 
-    renderTransactionHeader( query);
+    renderStepHeader( query);
 
   } // end constructor
 
 
-  private void renderTransactionHeader( String query) {
+  private void renderStepHeader( String query) {
     Color bgColor = ViewConstants.VIEW_BACKGROUND_COLOR;
     int x = 0, y = 3;
     if (query != null) {
@@ -89,31 +89,11 @@ public class TransactionHeaderView extends JGoView {
       jGoDocument.addObjectAtTail( queryNode);
       y += (int) queryNode.getSize().getHeight() + 2;
     }
-    keyNode = new TextNode( KEY_HEADER);
-    configureTextNode( keyNode, new Point( x, y), bgColor);
-    jGoDocument.addObjectAtTail( keyNode);
-    x += keyNode.getSize().getWidth();
-
-    typeNode = new TextNode( TYPE_HEADER);
-    configureTextNode( typeNode, new Point( x, y), bgColor);
-    jGoDocument.addObjectAtTail( typeNode);
-    x += typeNode.getSize().getWidth();
-
-    sourceNode = new TextNode( SOURCE_HEADER);
-    configureTextNode( sourceNode, new Point( x, y), bgColor);
-    jGoDocument.addObjectAtTail( sourceNode);
-    x += sourceNode.getSize().getWidth();
-
-    objectKeyNode = new TextNode( OBJECT_KEY_HEADER);
-    configureTextNode( objectKeyNode, new Point( x, y), bgColor);
-    jGoDocument.addObjectAtTail( objectKeyNode);
-    x += objectKeyNode.getSize().getWidth();
-
     stepNumNode = new TextNode( STEP_NUM_HEADER);
     configureTextNode( stepNumNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( stepNumNode);
     x += stepNumNode.getSize().getWidth();
-  } // end renderTransactionHeader
+  } // end renderStepHeader
 
 
   private void configureTextNode( TextNode node, Point location, Color bgColor) {
@@ -133,42 +113,6 @@ public class TransactionHeaderView extends JGoView {
   } // end configureTextNode
 
   /**
-   * Gets the value of keyNode
-   *
-   * @return the value of keyNode
-   */
-  public TextNode getKeyNode() {
-    return this.keyNode;
-  }
-
-  /**
-   * Gets the value of typeNode
-   *
-   * @return the value of typeNode
-   */
-  public TextNode getTypeNode()  {
-    return this.typeNode;
-  }
-
-  /**
-   * Gets the value of sourceNode
-   *
-   * @return the value of sourceNode
-   */
-  public TextNode getSourceNode()  {
-    return this.sourceNode;
-  }
-
-  /**
-   * Gets the value of objectKeyNode
-   *
-   * @return the value of objectKeyNode
-   */
-  public TextNode getObjectKeyNode()  {
-    return this.objectKeyNode;
-  }
-
-  /**
    * Gets the value of stepNumNode
    *
    * @return the value of stepNumNode
@@ -179,4 +123,4 @@ public class TransactionHeaderView extends JGoView {
 
 
 
-} // end class TransactionHeaderView
+} // end class StepHeaderView

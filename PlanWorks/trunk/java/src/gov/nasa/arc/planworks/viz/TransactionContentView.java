@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.1 2003-10-16 21:40:40 taylor Exp $
+// $Id: TransactionContentView.java,v 1.2 2003-10-18 01:27:54 taylor Exp $
 //
 // PlanWorks
 //
@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
@@ -45,6 +44,14 @@ public class TransactionContentView extends JGoView {
   private JGoDocument jGoDocument;
   private List transactionFieldList; // element TransactionField;
 
+  /**
+   * <code>TransactionContentView</code> - constructor 
+   *
+   * @param transactionList - <code>List</code> - 
+   * @param headerJGoView - <code>TransactionHeaderView</code> - 
+   * @param viewableObject - <code>ViewableObject</code> - 
+   * @param vizView - <code>VizView</code> - 
+   */
   public TransactionContentView( List transactionList, TransactionHeaderView headerJGoView,
                                  ViewableObject viewableObject, VizView vizView) {
     super();
@@ -68,14 +75,14 @@ public class TransactionContentView extends JGoView {
     while (transItr.hasNext()) {
       x = 0;
       PwTransaction transaction = (PwTransaction) transItr.next();
-      TransactionField idField =
+      TransactionField keyField =
         new TransactionField( transaction.getId().toString(), new Point( x, y),
                               JGoText.ALIGN_RIGHT, bgColor, viewableObject);
-      jGoDocument.addObjectAtTail( idField);
-      idField.setSize( (int) headerJGoView.getIdNode().getSize().getWidth(),
-                       (int) idField.getSize().getHeight());
-      x += headerJGoView.getIdNode().getSize().getWidth();
-      transactionFieldList.add( idField);
+      jGoDocument.addObjectAtTail( keyField);
+      keyField.setSize( (int) headerJGoView.getKeyNode().getSize().getWidth(),
+                       (int) keyField.getSize().getHeight());
+      x += headerJGoView.getKeyNode().getSize().getWidth();
+      transactionFieldList.add( keyField);
 
       TransactionField typeField =
         new TransactionField( transaction.getType(), new Point( x, y),
@@ -95,14 +102,14 @@ public class TransactionContentView extends JGoView {
       x += headerJGoView.getSourceNode().getSize().getWidth();
       transactionFieldList.add( sourceField);
 
-      TransactionField objectIdField =
+      TransactionField objectKeyField =
         new TransactionField( transaction.getObjectId().toString(), new Point( x, y),
                               JGoText.ALIGN_RIGHT, bgColor, viewableObject);
-      jGoDocument.addObjectAtTail( objectIdField);
-      objectIdField.setSize( (int) headerJGoView.getObjectIdNode().getSize().getWidth(),
-                             (int) objectIdField.getSize().getHeight());
-      x += headerJGoView.getObjectIdNode().getSize().getWidth();
-      transactionFieldList.add( objectIdField);
+      jGoDocument.addObjectAtTail( objectKeyField);
+      objectKeyField.setSize( (int) headerJGoView.getObjectKeyNode().getSize().getWidth(),
+                             (int) objectKeyField.getSize().getHeight());
+      x += headerJGoView.getObjectKeyNode().getSize().getWidth();
+      transactionFieldList.add( objectKeyField);
 
       String stepNumString = transaction.getStepNumber().toString();
       TransactionField stepNumField =
@@ -114,8 +121,8 @@ public class TransactionContentView extends JGoView {
       x += headerJGoView.getStepNumNode().getSize().getWidth();
       transactionFieldList.add( stepNumField);
 
-      y += idField.getSize().getHeight();
-      i ++;
+      y += keyField.getSize().getHeight();
+      i++;
     }
   } // end renderTransactions
 

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.38 2003-10-16 21:40:38 taylor Exp $
+# $Id: build-tags-file.csh,v 1.39 2003-10-18 01:27:54 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -91,12 +91,15 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/UniqueSet.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
+    src/gov/nasa/arc/planworks/viz/StepContentView.java \
+    src/gov/nasa/arc/planworks/viz/StepHeaderView.java \
     src/gov/nasa/arc/planworks/viz/TransactionContentView.java \
     src/gov/nasa/arc/planworks/viz/TransactionHeaderView.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
     src/gov/nasa/arc/planworks/viz/VizView.java \
     src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
+    src/gov/nasa/arc/planworks/viz/nodes/StepField.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TransactionField.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java \
@@ -152,7 +155,10 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java \
-    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java \
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/StepQueryView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TransactionQueryView.java \
+    src/gov/nasa/arc/planworks/viz/util/TransactionIdComparator.java
 
 
 echo "Writing `pwd`/planWorks.TAGS"

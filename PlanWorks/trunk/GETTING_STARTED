@@ -4,12 +4,11 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.9 2003-10-13 20:28:04 taylor Exp $
+# $Id: GETTING_STARTED,v 1.10 2003-10-18 01:27:53 taylor Exp $
 #
 
 Projects and Plan Sequences
 ===========================
-
 "Project->Create ..." brings up the "Create Project" dialog requesting
 a project name.  The default is "monkey", which is an embedded test plan.
 
@@ -37,18 +36,21 @@ base.
 "Project->Delete Sequence" prompts the user, via a list dialog, to remove
 the selected sequence from the current project, and the MySQL data base.
 
+
 Plan Sequence Views
 ===================
+The "Planning Sequence" menu expands into the available sequence names.  
+Selecting a sequence name brings up two windows.  The first,
+"SequenceQuery ...", allows the user to make data base queries over the 
+sequence (see below).  The second, "SequenceStepsView", is a histogram 
+of the partial plan data base size for each step of the sequence.  
 
-Each sequence in the "Planning Sequence" cascading menu cascades into
-sequence views -- the only one now functional is the "Sequence Steps" view,
-which is a histogram of the partial plan data base size for each step of
-the sequence.  Partial plan views for each step are available by clicking 
-Mouse-Right on the desired step in the histogram ("SequenceStepsView").  
-The histogram steps have a "mouse over" pop-up showing the step number, 
-the data base size, and the number of transactions.  The key values for 
-tokens, constraints, variables, timelines, and slots appear in the 
-appropriate node labels.  There are four active views:
+Partial plan views for each step are available by clicking Mouse-Right on 
+the desired step in the histogram ("SequenceStepsView").  The histogram 
+steps have a "mouse over" pop-up showing the step number, the data base 
+size, and the number of transactions.  The key values for tokens, 
+constraints, variables, timelines, and slots appear in the appropriate node 
+labels.  There are four active views:
 
 Constraint Network View
 -----------------------
@@ -118,7 +120,6 @@ have the view scroll to that token's location.
 
 Content Specification
 =====================
-
 The information displayed in the partial plan views may be filtered by
 predicate, by timeline, by time interval, and by token keys using the
 partial plan's Content Specification dialog.  It is also possible to 
@@ -143,9 +144,19 @@ result, internally, in a set of valid tokens, which are used by the
 views to filter their displays.
 
 
+Querying Sequences
+==================
+In the "SequenceQuery for <sequence-name>" dialog, select the type of
+return values from the left "combo box" -- either "Steps" or 
+"Transactions".  From the right "combo box", select the type of query.
+This selection may create further data entry and/or "combo boxes",
+which will be used to qualify the query.  "Apply Query" will cause the
+query to be performed and a window to be created to display the query
+results.
+
+
 Screen Management
 =================
-
 The "Window" pull-down menu offers the user the ability to rearrange the
 partial plan content spec and view internal windows by "tiling", 
 or "cascading".  This menu also provides for the selection of all active

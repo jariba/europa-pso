@@ -3,11 +3,11 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionField.java,v 1.2 2003-10-18 01:27:54 taylor Exp $
+// $Id: StepField.java,v 1.1 2003-10-18 01:27:54 taylor Exp $
 //
 // PlanWorks
 //
-// Will Taylor -- started 14oct03
+// Will Taylor -- started 17oct03
 //
 
 package gov.nasa.arc.planworks.viz.nodes;
@@ -31,13 +31,13 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
 /**
- * <code>TransactionField</code> - JGo widget to render an field of a transaction entry
+ * <code>StepField</code> - JGo widget to render an field of a step entry
 
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TransactionField extends TextNode {
+public class StepField extends TextNode {
 
   // top left bottom right
   private static final Insets NODE_INSETS =
@@ -50,7 +50,7 @@ public class TransactionField extends TextNode {
   private ViewableObject viewableObject; // PwPartialPlan or PwPlanningSequence
 
   /**
-   * <code>TransactionField</code> - constructor 
+   * <code>StepField</code> - constructor 
    *
    * @param fieldName - <code>String</code> - 
    * @param location - <code>Point</code> - 
@@ -58,7 +58,7 @@ public class TransactionField extends TextNode {
    * @param bgColor - <code>Color</code> - 
    * @param viewableObject - <code>ViewableObject</code> - 
    */
-  public TransactionField( String fieldName, Point location, int alignment, Color bgColor,
+  public StepField( String fieldName, Point location, int alignment, Color bgColor,
                            ViewableObject viewableObject) {
     super( fieldName);
     this.fieldName = fieldName;
@@ -82,7 +82,7 @@ public class TransactionField extends TextNode {
     getRightPort().setVisible( false);
     setLocation( (int) location.getX(), (int) location.getY());
     // setInsets( NODE_INSETS);
-  } // end configureTransactionField
+  } // end configureStepField
 
 
   /**
@@ -108,7 +108,7 @@ public class TransactionField extends TextNode {
     JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
-    TransactionField transactionField = (TransactionField) obj.getTopLevelObject();
+    StepField stepField = (StepField) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -129,4 +129,4 @@ public class TransactionField extends TextNode {
   } // end mouseRightPopupMenu
 
 
-} // end class TransactionField
+} // end class StepField
