@@ -169,7 +169,8 @@ CREATE TABLE ConstraintVarMap (
 -- Table structure for table 'Object'
 --
 
---EmptySlotInfo format is SlotId,SlotIndex:SlotId,SlotIndex
+--EmptySlotInfo format is SlotId,SlotIndex:SlotId,SlotIndex for timelines
+--and HorizonStart,HorizonEnd,LimitMin,LimitMax for resources
 --ChildObjectIds is a CSV
 --ObjectType is currently Object = 0, Timeline = 1, Resource = 2
 CREATE TABLE Object (
@@ -179,6 +180,7 @@ CREATE TABLE Object (
   PartialPlanId bigint(20) NOT NULL default '0',
   ObjectName varchar(255) NOT NULL default 'ErrorObject',
   ChildObjectIds blob default NULL,
+  VariableIds blob default NULL,
   EmptySlotInfo blob default NULL,
   PRIMARY KEY  (PartialPlanId,ObjectId),
   INDEX (ObjectId)
