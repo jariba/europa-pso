@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.8 2004-03-03 02:14:22 taylor Exp $
+// $Id: TimeScaleView.java,v 1.9 2004-03-10 02:21:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -382,7 +382,7 @@ public class TimeScaleView extends JGoView  {
    * @return - <code>int</code> - 
    */
   public final int  scaleXLoc( final int xLoc) {
-    return (int) ((xLoc - xOrigin) / timeScale);
+    return (int) Math.round( (xLoc - xOrigin) / timeScale);
   }
 
 

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.7 2004-01-20 19:45:12 taylor Exp $
+# $Id: README.release,v 1.8 2004-03-10 02:21:19 taylor Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
@@ -46,6 +46,6 @@ o Test the Release
     > ant
 
 o Email Release Announcment
-  - Send to pw-users@postdoc  (includes eurpoa-users@postdoc)
+  - Send to pw-users@postdoc  (includes europa-users@postdoc)
   - Include PlanWorks/README
 

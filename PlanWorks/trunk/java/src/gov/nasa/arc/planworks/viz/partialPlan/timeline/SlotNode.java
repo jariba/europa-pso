@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.13 2004-03-09 01:48:30 taylor Exp $
+// $Id: SlotNode.java,v 1.14 2004-03-10 02:21:21 taylor Exp $
 //
 // PlanWorks
 //
@@ -428,15 +428,17 @@ public class SlotNode extends TextNode {
            (! ((SlotNode) currentMouseOverNode).getSlot().getId().equals
             ( slotNode.getSlot().getId())))))) {
       timelineView.setMouseOverNode( slotNode);
-      String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
-      if (timelineView.isAutoSnapEnabled() &&
-          timelineView.getViewSet().viewExists( className)) {
-        TemporalExtentView temporalExtentView =
-          ViewGenerics.getTemporalExtentView( timelineView.getViewSet().openView( className));
-        boolean isByKey = false;
-        temporalExtentView.findAndSelectToken( token, slot, isByKey);
-      } else {
-        timelineView.setMouseOverNode( null);
+      if (! slotNode.getSlot().isEmpty()) { // no empty slots in TemporalExtentView
+        String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
+        if (timelineView.isAutoSnapEnabled() &&
+            timelineView.getViewSet().viewExists( className)) {
+          TemporalExtentView temporalExtentView =
+            ViewGenerics.getTemporalExtentView( timelineView.getViewSet().openView( className));
+          boolean isByKey = false;
+          temporalExtentView.findAndSelectToken( token, slot, isByKey);
+        } else {
+          timelineView.setMouseOverNode( null);
+        }
       }
       return true;
     } else {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.16 2004-03-04 20:51:16 miatauro Exp $
+// $Id: PartialPlanViewSet.java,v 1.17 2004-03-10 02:21:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -243,6 +243,15 @@ public class PartialPlanViewSet extends ViewSet {
    */
   public void incrNavigatorFrameCnt() {
     navigatorFrameCnt++;
+  }
+
+  /**
+   * <code>setNavigatorFrameCnt</code>
+   *
+   * @param cnt - <code>int</code> - 
+   */
+  public void setNavigatorFrameCnt( int cnt) {
+    navigatorFrameCnt = cnt;
   }
 
   /**
