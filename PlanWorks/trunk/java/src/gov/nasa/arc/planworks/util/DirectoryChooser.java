@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DirectoryChooser.java,v 1.2 2003-09-10 00:23:09 taylor Exp $
+// $Id: DirectoryChooser.java,v 1.3 2003-12-11 22:01:28 miatauro Exp $
 //
 //
 // Will Taylor -- started 26mar03
@@ -60,6 +60,14 @@ public class DirectoryChooser extends JFileChooser {
         }
       });
   } // end constructor
+
+  public DirectoryChooser(int mode) throws IllegalArgumentException {
+    this();
+    if(mode != JFileChooser.DIRECTORIES_ONLY && mode != JFileChooser.FILES_ONLY && 
+       mode != JFileChooser.FILES_AND_DIRECTORIES) {
+      throw new IllegalArgumentException();
+    }
+  }
 
     /**
      * <code>getOkButton</code>
