@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.16 2003-07-07 17:30:23 taylor Exp $
+# $Id: build-tags-file.csh,v 1.17 2003-07-08 22:57:32 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -58,6 +58,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/mdi/MDIMenu.java \
     src/gov/nasa/arc/planworks/mdi/MDIWindowBar.java \
     src/gov/nasa/arc/planworks/mdi/MDIWindowButtonBar.java \
+    src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/DirectoryChooser.java \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
@@ -96,7 +97,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/VariableTypeBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/VariableTypeGroupBox.java \
     src/gov/nasa/arc/planworks/viz/views/VizView.java \
-    src/gov/nasa/arc/planworks/viz/views/test/TimelineViewTest.java \
     src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java \
     src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.13 2003-07-07 17:30:24 taylor Exp $
+// $Id: SlotNode.java,v 1.14 2003-07-08 22:57:33 taylor Exp $
 //
 // PlanWorks
 //
@@ -20,7 +20,9 @@ import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
+import com.nwoods.jgo.JGoListPosition;
 import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
@@ -123,10 +125,9 @@ public class SlotNode extends TextNode {
     getRightPort().setVisible( false);
     setLocation( (int) slotLocation.getX(), (int) slotLocation.getY());
     setInsets( NODE_INSETS);
+    setSelectable( true);
 
     renderTimeIntervals();
-
-    // retrieveTokenNameAndParams();
 
   } // end configure
 
@@ -294,13 +295,24 @@ public class SlotNode extends TextNode {
   public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
     JGoObject obj = view.pickDocObject( dc, false);
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      System.err.println( "doMouseClick obj class " +
-                          obj.getTopLevelObject().getClass().getName());
-      SlotNode slotNode = (SlotNode) obj.getTopLevelObject();
-      System.err.println( "doMouseClick: slot predicate " + slotNode.getText());
+//       System.err.println( "doMouseClick obj class " +
+//                           obj.getTopLevelObject().getClass().getName());
+//       SlotNode slotNode = (SlotNode) obj.getTopLevelObject();
+//       System.err.println( "doMouseClick: slot predicate " + slotNode.getText());
 
-      // to select other objects: selectObject( obj);
-
+//       JGoSelection jGoSelection = view.getSelection();
+//       jGoSelection.clearSelection();
+//       System.err.println( "doMouseClick num: " + jGoSelection.getNumObjects());
+//       JGoListPosition position = jGoSelection.getFirstObjectPos();
+//       while (position != null) {
+//         JGoObject object = jGoSelection.getObjectAtPos( position);
+//         System.err.println( "doMouseClick selection obj class " +
+//                           object.getClass().getName());
+//         jGoSelection.toggleSelection( object);
+//         // position = jGoSelection.getNextObjectPosAtTop( position);
+//         // position = jGoSelection.getNextObjectPos( position);
+//         position = jGoSelection.getFirstObjectPos();
+//       }
       return true;
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {

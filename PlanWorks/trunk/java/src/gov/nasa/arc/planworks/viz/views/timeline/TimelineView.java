@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.15 2003-07-03 23:44:14 taylor Exp $
+// $Id: TimelineView.java,v 1.16 2003-07-08 22:57:33 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -28,6 +28,7 @@ import javax.swing.SwingUtilities;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoListPosition;
+import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
@@ -59,6 +60,7 @@ public class TimelineView extends VizView {
   private ViewSet viewSet;
   private JGoView jGoView;
   private JGoDocument jGoDocument;
+  private JGoSelection jGoSelection;
   // timelineNodeList & tmpTimelineNodeList used by JFCUnit test case
   private List timelineNodeList; // element TimelineNode
   private List tmpTimelineNodeList; // element TimelineNode
@@ -86,6 +88,7 @@ public class TimelineView extends VizView {
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
 
     jGoView = new JGoView();
+    jGoSelection = new JGoSelection( jGoView);
     jGoView.setBackground( ColorMap.getColor( "lightGray"));
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -329,6 +332,14 @@ public class TimelineView extends VizView {
         Iterator timeLabelIterator = slotNode.getTimeIntervalLabels().iterator();
         if (viewSet.isInContentSpec( slotNode.getSlot().getKey())) {
           slotNode.setVisible( true);
+
+//           System.err.println( "views " + slotNode.getView() + " and " + jGoView);
+//           System.err.println( "docs " + slotNode.getDocument() + " and " + jGoView.getDocument());
+//           System.err.println( "redirect " + slotNode.redirectSelection());
+//           JGoObject object = jGoSelection.extendSelection( slotNode);
+//           System.err.println( "setNodesVisible: object " + slotNode);
+//           jGoSelection.showHandles( slotNode);
+
           while (timeLabelIterator.hasNext()) {
             ((JGoText) timeLabelIterator.next()).setVisible( true);
           }

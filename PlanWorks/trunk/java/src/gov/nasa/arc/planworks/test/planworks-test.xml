@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<!-- $Id: timeline-view-test.xml,v 1.9 2003-07-07 17:30:24 taylor Exp $ -->
-<project name="timeline-view-test" default="test" basedir=".">
+<!-- $Id: planworks-test.xml,v 1.1 2003-07-08 22:57:32 taylor Exp $ -->
+<project name="planworks-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
@@ -14,13 +14,14 @@
 		<pathelement location="${planworks.root}/java/lib/JGo/JGoLayout.jar"/>
 		<pathelement location="${planworks.root}/java/lib/JGo/Classier.jar"/>
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
                 <pathelement location="${jfcunit.home}/junit.jar"/>
                 <pathelement location="${jfcunit.home}/jfcunit.jar"/>
                 <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
-                classname="gov.nasa.arc.planworks.viz.views.test.TimelineViewTest" fork="true">
+                classname="gov.nasa.arc.planworks.test.PlanWorksTest" fork="true">
             <classpath refid="planworks.jars"/>
             <!-- jvmarg value="-verbose:gc"/ -->
             <jvmarg value="-Xms${arg_gcInit}m"/>
