@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.47 2004-06-04 23:08:59 taylor Exp $
+# $Id: GETTING_STARTED,v 1.48 2004-06-10 01:35:55 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -89,21 +89,24 @@ partial plan not on disk.
 
 Partial Plan Views
 ==================
-The partial plan views are Constraint Network, Temporal Extent, Timeline,
-Token Network, and Transaction.  The key values for tokens, constraints, 
-variables, timelines, and slots appear in the appropriate node labels of 
-the partial plan views. 
+The partial plan views are Constraint Network, DB Transaction, Decision,
+Resource Profile, Resource Transaction, Temporal Extent, Timeline, and
+Token Network.  The key values for interval tokens, resource transactions,
+constraints, variables, timelines, resources, objects, rule instances,
+and slots appear in the appropriate node labels of the partial plan views. 
 
 All partial plan views' Mouse-Right pop-ups offer the user selections
  ("Open <view-name> View") for the other partial plan views, which will 
-create them as needed.  All views, except for Transaction View,
+create them as needed.  All views, except for DB Transaction View, the
+Decision View, the Resource Profile View, and Resource Transaction View,
 also offer "Raise Content Filter", which will set focus on the appropriate
 partial plan Content Filter window.  In addition, all partial plan view's  
 Mouse-Right pop-ups offer the user "Close All Views", "Hide All Views", 
 "Open All Views", and "Show All Views".
 
 Applying a Content Filter specification will cause the views to be redrawn 
-with only the filtered predicates and their dependencies.
+with only the filtered predicates, timelines, time intervals, and their
+dependencies.
 
 Every view has two buttons in the lower left corner which, when clicked,
 will cause the view to display either the next or previous step.  The
@@ -141,15 +144,6 @@ on the second line.  Clicking Mouse-Left on a node link will make visible two
 small hollow squares, one at the "root" of the link, and the other at the tip 
 of the arrow.
 
-Decision View
--------------
-Lists the current plan decision and pending decisions in a "tree" format.  Decisions
-with choices are "openable".  Objects, resources, timelines, interval tokens,
-resource transactions, and variables can be viewed in other appropriate views by
-choosing from Mouse-Right clicks on decsion and choice entity key values.  A Mouse-
-Right click on the background offers the user "Find Decision by Key" and opening other
-views, as choices.
-
 DB Transaction View
 ----------------
 Lists the transactions for this partial plan step.  Each entry includes the
@@ -169,6 +163,15 @@ sortDescending, & noSort - while clearing other column sorts; Control-Mouse-Left
 clicks cycle through sortAscending, sortDescending, & noSort - while not clearing 
 other column sorts.  The table column widths can be resized by dragging the column 
 header boundaries.
+
+Decision View
+-------------
+Lists the current plan decision and pending decisions in a "tree" format.  Decisions
+with choices are "openable".  Objects, resources, timelines, interval tokens,
+resource transactions, and variables can be viewed in other appropriate views by
+choosing from Mouse-Right clicks on decsion and choice entity key values.  A Mouse-
+Right click on the background offers the user "Find Decision by Key" and opening other
+views, as choices.
 
 Resource Profile View
 ---------------------
@@ -252,17 +255,25 @@ and free tokens.
 
 Token Network View
 ------------------
-Lays out the plan's token relations in directed graphs whose root nodes are the 
-"supreme" master tokens.  The Token Network View is freshly layed out after 
-a  Content Filter specification is applied.  Mouse cursor over token nodes displays 
-"predicateName( parameterValues)", and the second line displays its slot key.
-Clicking Mouse-Left on a node link will make visible two small hollow squares,
-one at the "root" of the link, and the other at the tip of the arrow.
+Lays out the plan's token relations and rule instances in directed graphs whose
+root nodes are the "supreme" master tokens.  The Token Network View is freshly 
+layed out after a  Content Filter specification is applied.  The token nodes,
+are rendered as rectangles with a label containing the token's predicate name
+and its key value.  The rule instance nodes, are rendered as ovals, with the 
+instance key and the rule key values in the label.
 
-Mouse-Right selection "Rule Window" brings up a window, such that when it exists, 
-moving the mouse over the view's token node links will present in the "Rule View 
-for <sequence-name>/step<nn>" window, the "from" and "to" token predicates and 
-parameter lists, their keys, and the model rule which is responsible.
+Mouse cursor over token nodes displays "predicateName( parameterValues)", and 
+the second line displays its slot key.  Clicking Mouse-Left on a node link will 
+make visible two small hollow squares, one at the "root" of the link, and the 
+other at the tip of the arrow.
+
+Mouse-Right on the rule instance nodes brings up the selection "Open Rule
+Instance View".  Selecting it creates an internal frame titled "RuleInstanceView
+of <plan-name>/stepnn - n", which displays the "from" token, and "to" token key 
+values and predicates, followed by the text of the rule.  A "RuleInstanceView ..." 
+internal frame may be created for every rule instance node in the Token Network 
+View.  Mouse-Right: "Close Rule Instance Views" on the view background can be
+used to remove all "Rule Instance Views".
 
 
 Node Focus in Views
