@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.22 2004-08-14 01:39:14 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.23 2004-09-14 22:59:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -73,6 +74,7 @@ public class PartialPlanViewSet extends ViewSet {
   private PwResource activeResource; // in resource extent view
   private int navigatorFrameCnt;
   private int ruleFrameCnt;
+  private Map unaryResourceFrameCnt;
   private MDIDesktopFrame desktopFrame;
   private PartialPlanViewState state;
 
@@ -161,6 +163,7 @@ public class PartialPlanViewSet extends ViewSet {
 
       navigatorFrameCnt = 0;
       ruleFrameCnt = 0;
+      unaryResourceFrameCnt = new HashMap();
     }
   } // end commonConstructor
 
@@ -297,6 +300,36 @@ public class PartialPlanViewSet extends ViewSet {
   public void setRuleFrameCnt( int cnt) {
     ruleFrameCnt = cnt;
   }
+
+  /**
+   * <code>getUnaryResourceFrameCnt</code>
+   *
+   * @param name - <code>String</code> - 
+   * @return - <code>int</code> - 
+   */
+  public int getUnaryResourceFrameCnt( String name) {
+    return ((Integer) unaryResourceFrameCnt.get( name)).intValue();
+  }
+
+  public void incrUnaryResourceFrameCnt( String name) {
+    if (unaryResourceFrameCnt.get( name) == null) {
+      unaryResourceFrameCnt.put( name, new Integer( 1));
+    } else {
+      Integer cnt = (Integer) unaryResourceFrameCnt.get( name);
+      setUnaryResourceFrameCnt( name, cnt.intValue() + 1);
+    }
+  }
+
+  /**
+   * <code>setUnaryResourceFrameCnt</code>
+   *
+   * @param name - <code>String</code> - 
+   * @param value - <code>int</code> - 
+   */
+  public void setUnaryResourceFrameCnt( String name, int value) {
+    unaryResourceFrameCnt.put( name, new Integer( value));
+  }
+
 
   /**
    * <code>getPartialPlanViews</code>

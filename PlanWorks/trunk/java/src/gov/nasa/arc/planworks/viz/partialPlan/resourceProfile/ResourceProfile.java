@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.17 2004-08-25 18:41:03 taylor Exp $
+// $Id: ResourceProfile.java,v 1.18 2004-09-14 22:59:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -87,25 +87,17 @@ public class ResourceProfile extends BasicNode {
   private double levelLimitMin; // level limits - can be exceeded
   private double levelLimitMax;
 
-  /**
-   * <code>ResourceProfile</code> - constructor 
-   *
-   * @param resource - <code>PwResource</code> - 
-   * @param resourceHorizonEnd - <code>int</code> - 
-   * @param backgroundColor - <code>Color</code> - 
-   * @param levelScaleFontMetrics - <code>FontMetrics</code> - 
-   * @param resourceProfileView - <code>ResourceProfileView</code> - 
-   */
-  public ResourceProfile( final PwResource resource, final int resourceHorizonEnd,
-                          final Color backgroundColor,
+  public ResourceProfile( final PwResource resource, final int resourceHorizonStart,
+                          final int resourceHorizonEnd, final double levelMin,
+                          final double levelMax, final Color backgroundColor,
                           final FontMetrics levelScaleFontMetrics,
                           final ResourceProfileView resourceProfileView) {
     super();
     this.resource = resource;
-    earliestStartTime = resource.getHorizonStart();
-    // latestEndTime = resource.getHorizonEnd();
-    // latestEndTime may be PLUS_INFINITY in planner model
+    earliestStartTime = resourceHorizonStart;
     latestEndTime = resourceHorizonEnd;
+    this.levelMin = levelMin;
+    this.levelMax = levelMax;
     resourceId = resource.getId().toString();
 //     System.err.println( "Resource Node: " + resourceId + " eS " +
 //                         earliestStartTime + " lE " + latestEndTime +
@@ -153,7 +145,8 @@ public class ResourceProfile extends BasicNode {
 //                         " minMax[1] " + minMax[1] + " tickDelta " + tickDelta);
     double level = minMax[0];
     while (level < minMax[1]) {
-      String tickLabel = new Double( level).toString();
+      // String tickLabel = new Double( level).toString();
+      String tickLabel = new Float( level).toString();
       int labelWidth = SwingUtilities.computeStringWidth( levelScaleFontMetrics, tickLabel);
 //       System.err.println( "getTickLabelMaxWidth: level " + level + " labelWidth " +
 //                           labelWidth);
@@ -165,7 +158,13 @@ public class ResourceProfile extends BasicNode {
     return maxLabelWidth + LEVEL_SCALE_TICK_WIDTH + ViewConstants.TIMELINE_VIEW_INSET_SIZE;
   } // end getTickLabelMaxWidth
 
-  private static double[] getResourceMinMax( PwResource resource) {
+  /**
+   * <code>getResourceMinMax</code>
+   *
+   * @param resource - <code>PwResource</code> - 
+   * @return - <code>double[]</code> - 
+   */
+  protected static double[] getResourceMinMax( PwResource resource) {
     double minMax[] = new double[] { resource.getLevelLimitMin(), resource.getLevelLimitMax() };
     List instantList = resource.getInstantList();
     Iterator instantItr = instantList.iterator();
@@ -221,9 +220,6 @@ public class ResourceProfile extends BasicNode {
     levelLimitMax = resource.getLevelLimitMax();
     // System.err.println( "resourceProfile: levelLimitMin " + levelLimitMin +
     //                     " levelLimitMax " + levelLimitMax);
-    double minMax[] = ResourceProfile.getResourceMinMax( resource);
-    levelMin = minMax[0];
-    levelMax = minMax[1];
     levelScaleScaling = (extentYBottom - extentYTop) / (levelMax - levelMin);
 //     System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
 //     System.err.println( " levelMin " + levelMin + " levelMax " +
@@ -308,7 +304,8 @@ public class ResourceProfile extends BasicNode {
     // labels
     level = levelMin;
     while (level <= levelMax) {
-      String label = new Double( level).toString();
+      // String label = new Double( level).toString();
+      String label = new Float( level).toString();
       int xTop = levelScaleWidth / 2;
       Point labelLoc =
         new Point( levelScaleWidth - LEVEL_SCALE_TICK_WIDTH - 2 -
@@ -366,24 +363,26 @@ public class ResourceProfile extends BasicNode {
     while (instantItr.hasNext()) {
       PwResourceInstant instant = (PwResourceInstant) instantItr.next();
       int time = instant.getTime();
-      xRight = resourceProfileView.getJGoRulerView().scaleTimeNoZoom( time);
-      yRightMaxLine =  scaleResourceLevel( lastLevelMax);
-      yRightMinLine =  scaleResourceLevel( lastLevelMin);
-      addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, lastLevelMax, "max");
-      addLineSegment( xLeft, yLeftMinLine, xRight, yRightMinLine, lastLevelMin, "min");
+      if ((time >= earliestStartTime) && (time <= latestEndTime)) {
+        xRight = resourceProfileView.getJGoRulerView().scaleTimeNoZoom( time);
+        yRightMaxLine =  scaleResourceLevel( lastLevelMax);
+        yRightMinLine =  scaleResourceLevel( lastLevelMin);
+        addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, lastLevelMax, "max");
+        addLineSegment( xLeft, yLeftMinLine, xRight, yRightMinLine, lastLevelMin, "min");
 
-      yLeftMaxLine = yRightMaxLine; yLeftMinLine = yRightMinLine; xLeft = xRight;
-      double currentLevelMax = instant.getLevelMax();
-      double currentLevelMin = instant.getLevelMin();
-//       System.err.println( "renderLevels time " + time + " currentLevelMax " +
-//                           currentLevelMax + " currentLevelMin " + currentLevelMin);
-      yRightMaxLine =  scaleResourceLevel( currentLevelMax);
-      yRightMinLine =  scaleResourceLevel( currentLevelMin);
-      addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, currentLevelMax, "max");
-      addLineSegment( xLeft, yLeftMinLine, xRight, yRightMinLine, currentLevelMin, "min");
+        yLeftMaxLine = yRightMaxLine; yLeftMinLine = yRightMinLine; xLeft = xRight;
+        double currentLevelMax = instant.getLevelMax();
+        double currentLevelMin = instant.getLevelMin();
+        //       System.err.println( "renderLevels time " + time + " currentLevelMax " +
+        //                           currentLevelMax + " currentLevelMin " + currentLevelMin);
+        yRightMaxLine =  scaleResourceLevel( currentLevelMax);
+        yRightMinLine =  scaleResourceLevel( currentLevelMin);
+        addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, currentLevelMax, "max");
+        addLineSegment( xLeft, yLeftMinLine, xRight, yRightMinLine, currentLevelMin, "min");
  
-      yLeftMaxLine = yRightMaxLine; yLeftMinLine = yRightMinLine; xLeft = xRight;
-      lastLevelMax = currentLevelMax; lastLevelMin = currentLevelMin; 
+        yLeftMaxLine = yRightMaxLine; yLeftMinLine = yRightMinLine; xLeft = xRight;
+        lastLevelMax = currentLevelMax; lastLevelMin = currentLevelMin;
+      }
     }
     
     xRight = resourceProfileView.getJGoRulerView().scaleTimeNoZoom( latestEndTime);

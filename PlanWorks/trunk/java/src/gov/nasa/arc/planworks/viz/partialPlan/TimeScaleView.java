@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.12 2004-05-04 01:27:17 taylor Exp $
+// $Id: TimeScaleView.java,v 1.13 2004-09-14 22:59:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -99,12 +99,30 @@ public class TimeScaleView extends JGoView  {
   }
 
   /**
+   * <code>setTimeScaleStart</code>
+   *
+   * @param startTime - <code>int</code> - 
+   */
+  public final void setTimeScaleStart( int startTime) {
+    timeScaleStart = startTime;
+  }
+
+  /**
    * <code>getTimeScaleEnd</code>
    *
    * @return - <code>int</code> - 
    */
   public final int getTimeScaleEnd() {
     return timeScaleEnd;
+  }
+
+  /**
+   * <code>setTimeScaleEnd</code>
+   *
+   * @param endTime - <code>int</code> - 
+   */
+  public final void setTimeScaleEnd( int endTime) {
+    timeScaleEnd = endTime;
   }
 
   /**
@@ -305,11 +323,12 @@ public class TimeScaleView extends JGoView  {
       } else {
         timeDelta *= 2;
       }
-      // System.err.println( "range " + timeScaleRange + " maxSlots " +
-      //                     maxSlots + " timeDelta " + timeDelta);
+//       System.err.println( "range " + timeScaleRange + " maxSlots " +
+//                           maxSlots + " timeDelta " + timeDelta);
       iterationCnt++;
       if (iterationCnt > maxIterationCnt) {
         iterationCntError( timeScaleRange, partPlanView);
+        return;
       }
     }
     tickTime = 0;
@@ -324,10 +343,17 @@ public class TimeScaleView extends JGoView  {
 //       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
 //                           " xOrigin " + xOrigin);
     }
+    while (scaleStart > tickTime) {
+      tickTime += timeDelta;
+      xOrigin -= (int) (timeScale * timeDelta);
+//       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
+//                           " xOrigin " + xOrigin);
+    }
     if (zoomFactor == 1) {
       xOriginNoZoom = xOrigin;
     }
     xOriginWithZoom = xOrigin;
+
 //     System.err.println( "zoomFactor " + zoomFactor + " xOriginNoZoom " + xOriginNoZoom +
 //                         " xOriginWithZoom " + xOriginWithZoom);
   } // end computeTimeScaleMetrics
@@ -449,6 +475,9 @@ public class TimeScaleView extends JGoView  {
    * @return - <code>int</code> - 
    */
   public final int scaleTimeWithZoom( final double time) {
+//     System.err.println( "scaleTimeWithZoom: time " + time + " timeScaleWithZoom " +
+//                         timeScaleWithZoom + "  return " +
+//                         (xOriginWithZoom + (int) (timeScaleWithZoom * time)));
     return xOriginWithZoom + (int) (timeScaleWithZoom * time);
   }
 

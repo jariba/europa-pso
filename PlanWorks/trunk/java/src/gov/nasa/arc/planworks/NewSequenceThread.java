@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.9 2004-09-10 20:12:11 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.10 2004-09-14 22:59:38 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -15,8 +15,6 @@ import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
-import gov.nasa.arc.planworks.PlannerControlJNI;
-import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;

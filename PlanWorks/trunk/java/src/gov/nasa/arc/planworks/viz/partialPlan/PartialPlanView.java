@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.53 2004-09-09 22:45:05 taylor Exp $
+// $Id: PartialPlanView.java,v 1.54 2004-09-14 22:59:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -904,6 +904,40 @@ public class PartialPlanView extends VizView {
       });
   } // end createCloseRuleWindowsItem
 
+  /**
+   * <code>getUnaryResourceProfileViewSetKey</code>
+   *
+   * @param resourceName - <code>String</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getUnaryResourceProfileViewSetKey( String resourceName) {
+    ((PartialPlanViewSet) viewSet).incrUnaryResourceFrameCnt( resourceName);
+    return new String(  ViewConstants.RESOURCE_PROFILE_VIEW.replaceAll( " ", "") +
+                        "-" + resourceName + "-" +
+                        ((PartialPlanViewSet) viewSet).getUnaryResourceFrameCnt( resourceName));
+  } // end getUnaryResourceProfileViewSetKey
+
+  /**
+   * <code>openUnaryResourceProfileViewFrame</code>
+   *
+   * @param viewSetKey - <code>String</code> - 
+   * @return - <code>MDIInternalFrame</code> - 
+   */
+  public MDIInternalFrame openUnaryResourceProfileViewFrame( String viewSetKey) {
+    String rootUnaryResourceProfileViewName =
+      ViewConstants.RESOURCE_PROFILE_VIEW.replaceAll( " ", "") + " of " +
+      partialPlan.getName();
+    int indx = viewSetKey.indexOf( "-") + 1;
+    String unaryResourceProfileViewName =
+      rootUnaryResourceProfileViewName.concat(" - ").
+      concat( viewSetKey.substring( indx).replaceAll( "-", " - "));
+    MDIInternalFrame unaryResourceProfileFrame = 
+      ((MDIDesktopFrame) PlanWorks.getPlanWorks()).createFrame( unaryResourceProfileViewName,
+                                                                viewSet, true, true,
+                                                                true, true);
+    viewSet.getViews().put( viewSetKey, unaryResourceProfileFrame);
+    return unaryResourceProfileFrame;
+  } // end openUnaryResourceProfileViewFrame
 
   /**
    * <code>getTimelineColor</code>

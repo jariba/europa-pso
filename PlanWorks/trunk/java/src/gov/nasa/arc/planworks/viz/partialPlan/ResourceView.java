@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.18 2004-07-29 01:36:38 taylor Exp $
+// $Id: ResourceView.java,v 1.19 2004-09-14 22:59:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -39,6 +39,7 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.SwingWorker;
@@ -134,6 +135,8 @@ public abstract class ResourceView extends PartialPlanView  {
    */
   protected List resourceNameNodeList;  
 
+  protected double initialTimeScaleEnd;
+
   private long startTimeMSecs;
   private JGoView jGoLevelScaleView;
   private Component horizontalStrut;
@@ -148,6 +151,7 @@ public abstract class ResourceView extends PartialPlanView  {
   private JGoStroke maxLevelViewHeightPoint;
   private Font levelScaleFont;
   private boolean isStepButtonView;
+  private boolean isUnaryResource;
 
   /**
    * <code>ResourceView</code> - constructor 
@@ -166,6 +170,36 @@ public abstract class ResourceView extends PartialPlanView  {
     isStepButtonView = false;
 
     // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
+  } // end constructor
+
+
+  /**
+   * <code>ResourceView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param vSet - <code>ViewSet</code> - 
+   * @param viewName - <code>String</code> - 
+   * @param unaryResourceProfileFrame - <code>MDIInternalFrame</code> - 
+   * @param resource - <code>PwResource</code> - 
+   */
+  public ResourceView( final ViewableObject partialPlan, final ViewSet vSet,
+                       final String viewName,
+                       final MDIInternalFrame unaryResourceProfileFrame,
+                       final PwResource resource) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
+    this.viewName = viewName;
+    resourceViewInit( vSet, unaryResourceProfileFrame);
+    isStepButtonView = false;
+    System.err.println( "Rendering Unary Resource Profile: " + resource.getName() + " ...");
+    startTimeMSecs = System.currentTimeMillis();
+      // SwingUtilities.invokeLater( runInit);
     final SwingWorker worker = new SwingWorker() {
         public Object construct() {
           init();
@@ -229,9 +263,22 @@ public abstract class ResourceView extends PartialPlanView  {
     worker.start();  
   } // end constructor
 
+  private void resourceViewInit( final ViewSet vSet,
+                                 final MDIInternalFrame unaryResourceProfileFrame) {
+    isUnaryResource = true;
+    viewFrame = unaryResourceProfileFrame;
+    resourceViewInitCommon( vSet);
+  }
+
   private void resourceViewInit( final ViewSet vSet) {
+    isUnaryResource = false;
+    ViewListener viewListener = null;
+    viewFrame = vSet.openView( this.getClass().getName(), viewListener);
+    resourceViewInitCommon( vSet);
+  }
+
+  private void resourceViewInitCommon( final ViewSet vSet) {
     this.viewSet = (PartialPlanViewSet) vSet;
-    
     // startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startXLoc = 1;
     // startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
@@ -242,8 +289,6 @@ public abstract class ResourceView extends PartialPlanView  {
     maxLevelViewHeightPoint = null;
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
     resourceNameNodeList = new ArrayList();
-    ViewListener viewListener = null;
-    viewFrame = vSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
     // create panels/views after fontMetrics available
@@ -347,9 +392,11 @@ public abstract class ResourceView extends PartialPlanView  {
    
     this.setVisible( true);
 
-    boolean doFreeTokens = false;
-      jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
-      jGoRulerView.createTimeScale();
+//     boolean doFreeTokens = false;
+//     jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+//     jGoRulerView.createTimeScale();
+
+    createTimeScaleView();
 
     boolean isRedraw = false, isScrollBarAdjustment = false;
     renderResourceExtent();
@@ -384,10 +431,12 @@ public abstract class ResourceView extends PartialPlanView  {
     equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
 
     long stopTimeMSecs = System.currentTimeMillis();
+    long startTime = startTimeMSecs;
+    if (! isUnaryResource) {
+      startTime = PlanWorks.getPlanWorks().getViewRenderingStartTime( viewName);
+    }
     System.err.println( "   ... " + viewName + " elapsed time: " +
-                        (stopTimeMSecs -
-                         PlanWorks.getPlanWorks().getViewRenderingStartTime( viewName)) +
-                        " msecs.");
+                        (stopTimeMSecs - startTime) + " msecs.");
     startTimeMSecs = 0L;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
@@ -578,6 +627,12 @@ public abstract class ResourceView extends PartialPlanView  {
   public final void addResourceNameNode( ResourceNameNode node) {
     resourceNameNodeList.add( node);
   }
+
+  /**
+   * <code>createTimeScaleView</code> - abstract
+   *
+   */
+  protected abstract void createTimeScaleView();
 
   /**
    * <code>computeMaxResourceLabelWidth</code> - abstract

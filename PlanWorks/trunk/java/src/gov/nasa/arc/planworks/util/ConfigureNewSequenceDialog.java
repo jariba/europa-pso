@@ -4,13 +4,12 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.3 2004-09-10 20:02:32 taylor Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.4 2004-09-14 22:59:38 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
