@@ -68,7 +68,7 @@ public class MySQLDB {
     }
     try {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
-      conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=root&password=root");
+      conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=PlanWorksUser&password=PlanWorksUser");
     }
     catch(Exception e) {
       System.err.println(e);
