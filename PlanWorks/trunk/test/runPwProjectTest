@@ -1,0 +1,194 @@
+#!/bin/tcsh -f
+# -f Fast start. do not read the  .cshrc  file
+
+# $Id: runPwProjectTest,v 1.1 2003-05-10 01:00:34 taylor Exp $
+
+set validOption = 1
+set arg_gcInit_seen = no
+# set arg_gcInit = "32"
+set arg_gcInit = "192"
+set arg_gcMax_seen = no
+# set arg_gcMax = "192"
+set arg_gcMax = "975"
+set arg_log = false
+# see ${EXIST_HOME}/
+set eXist_conf_file = "conf-nolog.xml"
+set arg_dev = false
+
+set xml_files_dir = "xml/test"
+
+set options = "OPTIONS:\n  -log # log XPath eXist actions \n\n  -gcinit <nn>\n  -gcmax <nn>\n  -help\n  -dev # run from sources, not jar\n"
+
+foreach arg ($*)
+  if ("$arg" == "-gcinit") then
+    set arg_gcInit_seen = yes
+  else if ("$arg_gcInit_seen" == "yes") then
+    set arg_gcInit_seen = no
+    set arg_gcInit = $arg
+  else if ("$arg" == "-gcmax") then
+    set arg_gcMax_seen = yes
+  else if ("$arg_gcMax_seen" == "yes") then
+    set arg_gcMax_seen = no
+    set arg_gcMax = $arg
+  else if ("$arg" == "-log") then
+    set arg_log = true
+    set eXist_conf_file = "conf-log.xml"
+  else if ("$arg" == "-dev") then
+    set arg_dev = true
+  else if ("$arg" == "-help") then
+    echo $options 
+    echo "default -gcinit is ${arg_gcInit}mb"
+    echo "default -gcmax is ${arg_gcMax}mb"
+    set validOption = 0
+  else
+    echo -n "$arg is an invalid argument! -- \n"
+    echo $options 
+    set validOption = 0
+  endif
+end
+if ($validOption == 0) then
+  exit
+endif
+
+if (! -f runExistTest) then
+  # needed for relative directory usage
+  echo "current directory is not <root>/PlanWorks/test"
+  exit
+endif
+
+# set root environment variable
+set base = `pwd`
+set up1 = `dirname $base`
+setenv PLANWORKS_ROOT $up1
+echo planViz: PLANWORKS_ROOT set to $PLANWORKS_ROOT 
+
+# set release classpath
+setenv CLASSPATH ${PLANWORKS_ROOT}/java/jars/planWorks.jar
+if ("$arg_dev" == "true")  then 
+  ### development classpath
+  # compiled by Ant or XEmacs (see ${PLANWORKS_ROOT}/java/README)
+  # modified eXist-0.9.1 class files get into classes via `ant compile`
+  setenv CLASSPATH ${PLANWORKS_ROOT}/java/classes/
+endif
+
+echo planViz: CLASSPATH set to $CLASSPATH
+
+# 3rd party libs JGo4.1
+setenv CLASSPATH ${CLASSPATH}:${PLANWORKS_ROOT}/java/lib/JGo/JGo.jar:${PLANWORKS_ROOT}/java/lib/JGo/JGoLayout.jar:${PLANWORKS_ROOT}/java/lib/JGo/Classier.jar
+
+# 3rd party libs eXist-0.9.1 XML XPath
+if (! ${?EXIST_HOME}) then
+  # use cvs checked in version
+  setenv EXIST_HOME ${PLANWORKS_ROOT}/java/lib/eXist
+else
+  echo " "
+  echo planViz: EXIST_HOME is set -- not using cvs checked-in version
+  echo " "
+endif
+if (${?EXIST_HOME}) then
+  setenv CLASSPATH ${CLASSPATH}:${JAVA_HOME}/lib/tools.jar
+  setenv CLASSPATH ${CLASSPATH}:${EXIST_HOME}/exist.jar:${EXIST_HOME}/start.jar
+  ### foreach jar ( `ls -1 $EXIST_HOME/lib/core/*.jar $EXIST_HOME/lib/optional/*.jar` )
+  foreach jar ( `ls -1 $EXIST_HOME/lib/core/*.jar` )
+    setenv CLASSPATH ${CLASSPATH}:${jar}
+  end
+  # weird errors occur when this abbreviated list is used
+  ### setenv CLASSPATH ${CLASSPATH}:${EXIST_HOME}/lib/core/xmldb.jar:${EXIST_HOME}/lib/core/xmlrpc-1.1.jar:${EXIST_HOME}/lib/core/log4j.jar:${EXIST_HOME}/lib/core/resolver-20020130.jar:${EXIST_HOME}/lib/core/jakarta-oro-2.0.6.jar:${EXIST_HOME}/lib/core/antlr.jar:${EXIST_HOME}/lib/core/fastutil-2.52.jar
+endif
+
+# echo planViz: FULL CLASSPATH set to $CLASSPATH
+
+cd ${PLANWORKS_ROOT}/java/src
+
+# ensure that $JAVA_HOME is set properly
+if (${?JAVA_HOME}) then
+  rm -f config.jv
+  # must be done in sh, since java is an sh script
+  if ("$OSTYPE" == "darwin") then # MacOSX
+    sh -c "$JAVA_HOME/Commands/java -version 2> config.jv"
+  else
+    sh -c "$JAVA_HOME/bin/java -version 2> config.jv"
+  endif
+  set java_version = `cat config.jv`
+  # echo java_version $java_version
+  set version_2 = `echo $java_version | awk -F\" '{print $2}'`
+  # echo version_2 $version_2
+  if ("$OSTYPE" == "darwin") then # MacOSX
+    set jdk_gt_eq_1_4 = true
+    # note the expr -- : --
+    set match_test = `expr $version_2 : '.*1\.4\.*'`
+    if ( $match_test == 0 ) then
+      echo "$JAVA_HOME not jdk1.4.*"
+      # note the expr -- : --
+      set match_test = `expr $version_2 : '.*1\.3\.*'`
+      set jdk_gt_eq_1_4 = false
+    endif
+  else # Linux & Solaris
+    set jdk_gt_eq_1_4 = true
+    # note the expr match -- --
+    set match_test = `expr match $version_2 '.*1\.4\.*'`
+  endif
+  # echo match_test $match_test 
+  if ( $match_test == 0 ) then
+    if ("$OSTYPE" == "darwin") then # MacOSX
+      echo "$JAVA_HOME not jdk1.3.*"
+    else
+      echo "$JAVA_HOME not jdk1.4.*"
+    endif
+    exit 1
+  endif
+else
+  echo "JAVA_HOME not set"
+  exit 1
+endif
+if ("$OSTYPE" == "darwin") then # MacOSX
+  setenv JAVA_BIN $JAVA_HOME/Commands
+else # Linux & Solaris
+  setenv JAVA_BIN $JAVA_HOME/bin
+endif
+setenv THREADS_FLAG native
+
+# ensure that LD_LIBRARY_PATH exists
+if (! $?LD_LIBRARY_PATH) then
+  setenv LD_LIBRARY_PATH /usr/lib
+endif
+#absolute pathnames required
+# relative to skunkworks/planViz/java/src
+set base = `pwd`
+set up1 = `dirname $base`
+set up2 = `dirname $up1`
+set up3 = `dirname $up2`
+set up4 = `dirname $up3`
+# locate libeuropa.so
+### setenv LD_LIBRARY_PATH $up4/NewPlan:${LD_LIBRARY_PATH}
+# locate libeuropajni.so
+### setenv LD_LIBRARY_PATH $up2/cpp/lib:${LD_LIBRARY_PATH}
+
+# locate eXist-0.9/lib/core/lib/libJavaReadline.so
+setenv LD_LIBRARY_PATH $EXIST_HOME/lib/core:${LD_LIBRARY_PATH}
+
+# echo "LD_LIBRARY_PATH ${LD_LIBRARY_PATH}"
+
+# -verbose:gc show user what GC is doing
+# -Xms -- initial GC space => 30mb (JVM default 2mb)
+# -Xmx -- max GC space => 192mb    (JVM default 64mb)
+# java.lang.OutOfMemoryError thrown if max GC space exceeded
+
+echo " "
+
+echo " "
+echo "REMOVE XPATH DATA BASE"
+echo " "
+/bin/rm -f ${PLANWORKS_ROOT}/xml/db/data/*.dbx
+/bin/rm -f ${PLANWORKS_ROOT}/xml/db/logs/*.log
+/bin/rm -f ${PLANWORKS_ROOT}/xml/db/logs/*.log.*
+
+
+
+${JAVA_BIN}/java -verbose:gc -Xms${arg_gcInit}m -Xmx${arg_gcMax}m \
+     -Dplanworks.root=$PLANWORKS_ROOT -Duser=$USER \
+     -Dexist.initdb=true -Dexist.home=$EXIST_HOME \
+     -Dexist.conf.xml=$eXist_conf_file \
+     gov.nasa.arc.planworks.proj.test.PwProjectTest $OSTYPE $jdk_gt_eq_1_4 \
+     ${PLANWORKS_ROOT}/$xml_files_dir
+
