@@ -102,7 +102,7 @@ CREATE TABLE Parameter (
   PredicateId int(11) default NULL,
   PartialPlanId bigint(20) NOT NULL default '0',
   ParameterName varchar(255) default NULL,
-  PRIMARY KEY  (PartialPlanId,ParameterId),
+  PRIMARY KEY  (PartialPlanId,ParameterId,PredicateId),
   INDEX (ParameterId), INDEX (PredicateId)
 ) TYPE=MyISAM;
 
