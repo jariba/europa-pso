@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.17 2003-09-18 20:48:47 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.18 2003-09-23 16:10:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +34,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoView;
 
@@ -101,7 +101,9 @@ public class ConstraintNetworkView extends VizView {
   private List constraintLinkList; // element BasicNodeLink
   private List variableLinkList; // element BasicNodeLink
   private boolean isDebugPrint;
+  private boolean isDebugTraverse;
   private boolean isLayoutNeeded;
+  private JGoArea focusNode; // TokenNode/ConstraintNode/VariableNode
 
 
   /**
@@ -130,6 +132,9 @@ public class ConstraintNetworkView extends VizView {
 
     // isDebugPrint = true;
     isDebugPrint = false;
+
+    // isDebugTraverse = true;
+    isDebugTraverse = false;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -198,10 +203,8 @@ public class ConstraintNetworkView extends VizView {
                      PlanWorks.INTERNAL_FRAME_HEIGHT);
 
     isLayoutNeeded = false;
+    focusNode = null;
 
-    long stopTimeMSecs = (new Date()).getTime();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
@@ -236,6 +239,7 @@ public class ConstraintNetworkView extends VizView {
     long startTimeMSecs = (new Date()).getTime();
     // setVisible(true | false) depending on keys
     setNodesLinksVisible();
+
     // content spec apply/reset do not change layout, only tokenNode/
     // variableNode/constraintNode opening/closing
     if (isLayoutNeeded) {
@@ -246,6 +250,9 @@ public class ConstraintNetworkView extends VizView {
       ConstraintNetworkLayout layout =
         new ConstraintNetworkLayout( document, network, startTimeMSecs);
       layout.performLayout();
+      if (focusNode != null) {
+        NodeGenerics.focusViewOnNode( focusNode, jGoView);
+      }
       isLayoutNeeded = false;
     }
     this.setVisible( true);
@@ -322,6 +329,15 @@ public class ConstraintNetworkView extends VizView {
    */
   public List getVariableNodeList() {
     return variableNodeList;
+  }
+
+  /**
+   * <code>setFocusNode</code>
+   *
+   * @param node - <code>JGoArea</code> - 
+   */
+  public void setFocusNode( JGoArea node) {
+    this.focusNode = node;
   }
 
   private void createTokenNodes() {
@@ -1061,29 +1077,51 @@ public class ConstraintNetworkView extends VizView {
   } // end removeConstraintToVariableLinks( ConstraintNode constraintNode) {
 
 
-  private void traverseVariableNode( VariableNode variableNode, int action) {
+  private boolean traverseVariableNode( VariableNode variableNode, TokenNode tokenNode,
+                                        int action) {
+    boolean isVariableLinkedToToken = false;
     if (variableNode.inLayout()) {
-      if (action == SET_VISIBLE) {
+      if (isDebugTraverse) {
+        System.err.println( "traverse to variable " + variableNode.getVariable().getId() +
+                            " from token1 " + tokenNode.getToken().getId());
+      }
+      Iterator varTokLinkItr = variableNode.getVariableTokenLinkList().iterator();
+      while (varTokLinkItr.hasNext()) {
+        BasicNodeLink link = (BasicNodeLink) varTokLinkItr.next();
+//         System.err.println( "  linkName " + link.getLinkName());
+        if (link.inLayout() &&
+            ((VariableNode) link.getFromNode()).equals( variableNode) &&
+            ((TokenNode) link.getToNode()).equals( tokenNode)) {
+          isVariableLinkedToToken = true;
+          break;
+        }
+      }
+      if (isVariableLinkedToToken && (action == SET_VISIBLE)) {
         variableNode.setVisible( true);
       }
     }
+    return isVariableLinkedToToken;
   } // end traverseVariableNode
 
   private void traverseTokenSubtree( VariableNode variableNode, BasicNode fromNode,
                                      int action) {
     ConstraintNode fromConstraintNode = null;
     TokenNode fromTokenNode = null;
+    if (isDebugTraverse) {
+      System.err.print( "traverse to variable " + variableNode.getVariable().getId());
+    }
     if (fromNode instanceof ConstraintNode) {
       fromConstraintNode = (ConstraintNode) fromNode;
-//       System.err.println( "traverseTokenSubtree1: to variableNode " +
-//                           variableNode.getVariable().getId() + " from constraintNode " +
-//                           fromConstraintNode.getConstraint().getId());
-    } 
-    if (fromNode instanceof TokenNode) {
+      if (isDebugTraverse) {
+        System.err.println( " from constraint " +
+                            fromConstraintNode.getConstraint().getId());
+      }
+    } else if (fromNode instanceof TokenNode) {
       fromTokenNode = (TokenNode) fromNode;
-//       System.err.println( "traverseTokenSubtree1: to variableNode " +
-//                           variableNode.getVariable().getId() + " from tokenNode " +
-//                           fromTokenNode.getToken().getId());
+      if (isDebugTraverse) {
+        System.err.println( " from token2 " +
+                            fromTokenNode.getToken().getId());
+      }
     }
     Iterator varConItr = variableNode.getConstraintNodeList().iterator();
     while (varConItr.hasNext()) {
@@ -1104,9 +1142,11 @@ public class ConstraintNetworkView extends VizView {
 
   private void traverseTokenSubtree( ConstraintNode constraintNode,
                                      VariableNode fromVariableNode, int action) {
-//     System.err.println( "traverseTokenSubtree2: to constraintNode " +
-//                         constraintNode.getConstraint().getId() +
-//                         " from variableNode " + fromVariableNode.getVariable().getId());
+    if (isDebugTraverse) {
+      System.err.println( "traverse to constraint " +
+                          constraintNode.getConstraint().getId() +
+                          " from variable " + fromVariableNode.getVariable().getId());
+    }
     Iterator conVarItr = constraintNode.getVariableNodeList().iterator();
     while (conVarItr.hasNext()) {
       VariableNode conVariableNode = (VariableNode) conVarItr.next();
@@ -1149,10 +1189,11 @@ public class ConstraintNetworkView extends VizView {
         Iterator variablesItr = tokenNode.getVariableNodeList().iterator();
         while (variablesItr.hasNext()) {
           VariableNode variableNode = (VariableNode) variablesItr.next();
-          String linkName =  variableNode.getVariable().getId().toString() + "->" +
-            tokenNode.getToken().getId().toString();
-            traverseVariableNode( variableNode, SET_VISIBLE);
+          boolean isVariableLinkedToToken =
+            traverseVariableNode( variableNode, tokenNode, SET_VISIBLE);
+          if (isVariableLinkedToToken) {
             traverseTokenSubtree( variableNode, tokenNode, SET_VISIBLE);
+          }
         }
       } else {
         tokenNode.setVisible( false);
@@ -1260,23 +1301,18 @@ public class ConstraintNetworkView extends VizView {
                   (tokenNode.getToken().getId().equals( activeToken.getId()))) {
                 System.err.println( "ConstraintNetworkView snapToActiveToken: " +
                                     activeToken.getPredicate().getName());
-                // System.err.println( "loc " + tokenNode.getLocation().getX() +
-                //                     " extent " + jGoView.getExtentSize().getWidth());
-                jGoView.getHorizontalScrollBar().
-                  setValue( Math.max( 0,
-                                      (int) (tokenNode.getLocation().getX() -
-                                             (jGoView.getExtentSize().getWidth() / 2))));
-                jGoView.getVerticalScrollBar().
-                  setValue( Math.max( 0,
-                                      (int) (tokenNode.getLocation().getY() -
-                                             (jGoView.getExtentSize().getHeight() / 2))));
-                jGoView.getSelection().clearSelection();
-                jGoView.getSelection().extendSelection( tokenNode);
+                NodeGenerics.focusViewOnNode( tokenNode, jGoView);
                 isTokenFound = true;
                 break;
               }
             }
-            if (! isTokenFound) {
+            if (isTokenFound) {
+              NodeGenerics.selectSecondaryNodes
+                ( NodeGenerics.mapTokensToTokenNodes
+                  (ConstraintNetworkView.this.getViewSet().getSecondaryTokens(),
+                   tokenNodeList),
+                  jGoView);
+            } else {
               String message = "active token '" + activeToken.getPredicate().getName() +
                 "' not found in ConstraintNetworkView";
               JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
@@ -1289,6 +1325,7 @@ public class ConstraintNetworkView extends VizView {
         }
       });
   } // end createActiveTokenItem
+
 
 } // end class ConstraintNetworkView
 

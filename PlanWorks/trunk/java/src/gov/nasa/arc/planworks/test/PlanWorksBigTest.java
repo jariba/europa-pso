@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksBigTest.java,v 1.5 2003-09-18 20:48:42 taylor Exp $
+// $Id: PlanWorksBigTest.java,v 1.6 2003-09-23 16:10:39 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -447,10 +447,13 @@ public class PlanWorksBigTest extends JFCTestCase {
 
   public static void main(String [] args) {
     PlanWorks.name = "";
+    String maxScreenValue = "false";
     for (int argc = 0; argc < args.length; argc++) {
       // System.err.println( "argc " + argc + " " + args[argc]);
       if (argc == 0) {
         PlanWorks.name = args[argc];
+      } else if (argc == 1) {
+        maxScreenValue = args[argc];
       } else {
         System.err.println( "argument '" + args[argc] + "' not handled");
         System.exit(-1);
@@ -458,6 +461,10 @@ public class PlanWorksBigTest extends JFCTestCase {
     }
     PlanWorks.osType = System.getProperty("os.type");
     PlanWorks.planWorksRoot = System.getProperty( "planworks.root");
+    PlanWorks.isMaxScreen = false;
+    if (maxScreenValue.equals( "true")) {
+      PlanWorks.isMaxScreen = true;
+    }
 
     TestRunner.run( suite());
   }

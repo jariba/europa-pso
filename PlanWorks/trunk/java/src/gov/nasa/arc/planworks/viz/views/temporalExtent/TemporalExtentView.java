@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.20 2003-09-19 01:47:32 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.21 2003-09-23 16:10:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -953,29 +953,31 @@ public class TemporalExtentView extends VizView  {
           boolean isTokenFound = false;
           if (activeToken != null) {
             Iterator temporalNodeListItr = temporalNodeList.iterator();
+            foundMatch:
             while (temporalNodeListItr.hasNext()) {
               TemporalNode temporalNode = (TemporalNode) temporalNodeListItr.next();
-              if ((temporalNode.getToken() != null) &&
-                  (temporalNode.getToken().getId().equals( activeToken.getId()))) {
-                System.err.println( "TemporalExtentView snapToActiveToken: " +
-                                    activeToken.getPredicate().getName());
-//                 System.err.println( "loc " + temporalNode.getLocation().getX() +
-//                                     " extent " + jGoExtentView.getExtentSize().getWidth());
-                jGoExtentView.getHorizontalScrollBar().
-                  setValue( Math.max( 0,
-                                      (int) (temporalNode.getLocation().getX() -
-                                             (jGoExtentView.getExtentSize().getWidth() / 2))));
-                jGoExtentView.getVerticalScrollBar().
-                  setValue( Math.max( 0,
-                                      (int) (temporalNode.getLocation().getY() -
-                                             (jGoExtentView.getExtentSize().getHeight() / 2))));
-                jGoExtentView.getSelection().clearSelection();
-                jGoExtentView.getSelection().extendSelection( temporalNode);
-                isTokenFound = true;
-                break;
+              if (temporalNode.getToken() != null) {
+                // check overloaded tokens, since only base tokens are rendered
+                Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
+                while (tokenListItr.hasNext()) {
+                  if (((PwToken) tokenListItr.next()).getId().equals( activeToken.getId())) {
+                    System.err.println( "TemporalExtentView snapToActiveToken: " +
+                                        activeToken.getPredicate().getName());
+                    NodeGenerics.focusViewOnNode( temporalNode, jGoExtentView);
+                    isTokenFound = true;
+                    break foundMatch;
+                  }
+                }
               }
             }
-            if (! isTokenFound) {
+            if (isTokenFound) {
+                // only base tokens are rendered
+//               NodeGenerics.selectSecondaryNodes
+//                 ( NodeGenerics.mapTokensToTokenNodes
+//                   (TemporalExtentView.this.getViewSet().getSecondaryTokens(),
+//                    temporalNodeList),
+//                   jGoExtentView);
+            } else {
               String message = "active token '" + activeToken.getPredicate().getName() +
                 "' not found in TemporalExtentView";
               JOptionPane.showMessageDialog( PlanWorks.planWorks, message,

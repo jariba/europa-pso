@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.27 2003-09-18 20:48:41 taylor Exp $
+# $Id: build-tags-file.csh,v 1.28 2003-09-23 16:10:38 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -93,6 +93,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/GroupBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/KeyEntryBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/LogicComboBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/MergeBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/NegationCheckBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/PredicateBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/PredicateGroupBox.java \
@@ -101,6 +102,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimeIntervalGroupBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineGroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TokenTypeBox.java \
     src/gov/nasa/arc/planworks/viz/views/VizView.java \
     src/gov/nasa/arc/planworks/viz/views/constraintNetwork/BasicNodeLink.java \
     src/gov/nasa/arc/planworks/viz/views/constraintNetwork/BasicNodePortWDiamond.java \

@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.13 2003-08-19 00:22:09 miatauro Exp $ -->
+<!-- $Id: planWorks.xml,v 1.14 2003-09-23 16:10:38 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 <target name="launch" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
 	<property name="name.application" value="PlanWorks Plan Visualization"/>
+	<property name="boolean.isMaxScreen" value="false"/>
 	<property environment="env"/>
 
 	<path id="planworks.jars">
@@ -37,7 +38,8 @@
             <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
             <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
 	    <jvmarg value="-Dsplash.image=${splash.image}"/>
-           <arg value="${name.application}"/>
+            <arg value="${name.application}"/>
+            <arg value="${boolean.isMaxScreen}"/>
 	</java>
 
 </target>
@@ -48,6 +50,7 @@
 	<property name="arg_gcMax" value="975"/>
 	<property environment="env"/>
 	<property name="name.application" value="PlanWorks -- Plan Visualization"/>
+	<property name="boolean.isMaxScreen" value="false"/>
 	<property environment="env"/>
 
 	<path id="planworks.jars">
@@ -83,6 +86,7 @@ value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.t
             <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
             <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
             <arg value="${name.application}"/>
+            <arg value="${boolean.isMaxScreen}"/>
 	</java>
 </target>
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.19 2003-09-18 20:48:45 taylor Exp $
+// $Id: TokenNode.java,v 1.20 2003-09-23 16:10:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -268,6 +268,7 @@ public class TokenNode extends BasicNode {
           removeTokenNodeVariables( this);
           areNeighborsShown = false;
         }
+        ((ConstraintNetworkView) vizView).setFocusNode( tokenNode);
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -307,6 +308,7 @@ public class TokenNode extends BasicNode {
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           vizView.getViewSet().setActiveToken( TokenNode.this.getToken());
+          vizView.getViewSet().setSecondaryTokens( null);
           System.err.println( "TokenNode setActiveToken: " +
                               TokenNode.this.getToken().getPredicate().getName());
         }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.25 2003-09-18 20:48:50 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.26 2003-09-23 16:10:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -583,23 +583,17 @@ public class TokenNetworkView extends VizView {
                   (tokenNode.getToken().getId().equals( activeToken.getId()))) {
                 System.err.println( "TokenNetworkView snapToActiveToken: " +
                                     activeToken.getPredicate().getName());
-//                 System.err.println( "loc " + tokenNode.getLocation().getX() +
-//                                     " extent " + jGoExtentView.getExtentSize().getWidth());
-                jGoView.getHorizontalScrollBar().
-                  setValue( Math.max( 0,
-                                      (int) (tokenNode.getLocation().getX() -
-                                             (jGoView.getExtentSize().getWidth() / 2))));
-                jGoView.getVerticalScrollBar().
-                  setValue( Math.max( 0,
-                                      (int) (tokenNode.getLocation().getY() -
-                                             (jGoView.getExtentSize().getHeight() / 2))));
-                jGoView.getSelection().clearSelection();
-                jGoView.getSelection().extendSelection( tokenNode);
+                NodeGenerics.focusViewOnNode( tokenNode, jGoView);
                 isTokenFound = true;
                 break;
               }
             }
-            if (! isTokenFound) {
+            if (isTokenFound) {
+              NodeGenerics.selectSecondaryNodes
+                ( NodeGenerics.mapTokensToTokenNodes
+                  (TokenNetworkView.this.getViewSet().getSecondaryTokens(), nodeList),
+                  jGoView);
+            } else {
               String message = "active token '" + activeToken.getPredicate().getName() +
                 "' not found in TokenNetworkView";
               JOptionPane.showMessageDialog( PlanWorks.planWorks, message,

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.29 2003-09-18 20:48:46 taylor Exp $
+// $Id: ViewSet.java,v 1.30 2003-09-23 16:10:39 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -50,7 +50,8 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   private String planName;
   private MDIInternalFrame contentSpecWindow;
   private ColorStream colorStream;
-  private PwToken activeToken;
+  private PwToken activeToken; // in timeline view, the base token
+  private List secondaryTokens; // in timeline view, the overloaded tokens
 
   /**
    * Creates the ViewSet object, creates a new ContentSpec, and creates storage for the new views.
@@ -244,23 +245,42 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     return colorStream;
   }
 
-  /**
-   * <code>getActiveToken</code>
+  /** 
+   * <code>getActiveToken</code> - user selected view focus
    *
-   * @return - <code>PwToken</code> - user selected view focus
+   * @return - <code>PwToken</code>
    */
   public PwToken getActiveToken() {
     return activeToken;
   }
 
   /**
-   * <code>setActiveToken</code>
+   * <code>setActiveToken</code> - make this token the view focus
    *
-   * @param token - <code>PwToken</code> - make this token the view focus
+   * @param token - <code>PwToken</code>
    */
   public void setActiveToken( PwToken token) {
     activeToken = token;
   }
 
+  /**
+   * <code>getSecondaryTokens</code> - in timeline view, the overloaded tokens
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getSecondaryTokens() {
+    return secondaryTokens;
+  }
+
+  /**
+   * <code>setSecondaryTokens</code> - in timeline view, the overloaded tokens
+   *
+   * @param tokenList - <code>List</code> 
+   */
+  public void setSecondaryTokens( List tokenList) {
+    secondaryTokens = tokenList;
+  }
+
 
 }
+

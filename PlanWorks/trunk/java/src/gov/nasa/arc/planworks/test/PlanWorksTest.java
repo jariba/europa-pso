@@ -4,10 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.15 2003-09-19 01:47:32 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.16 2003-09-23 16:10:39 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -21,17 +22,23 @@ import java.util.ListIterator;
 import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.JTextField;
 import javax.swing.MenuElement;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.basic.BasicOptionPaneUI;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.JFCTestHelper;
@@ -221,6 +228,9 @@ public class PlanWorksTest extends JFCTestCase{
 
     if (testType.equals( "create")) {
       validateMonkeyTimelines( timelineView);
+
+      addAndDeleteSequences();
+
     } else if (testType.equals( "freeTokens")) {
       validateFreeTokensTimelines( timelineView);
     } else if (testType.equals("emptySlots")) {
@@ -253,17 +263,23 @@ public class PlanWorksTest extends JFCTestCase{
   private String [] selectView( String viewName) throws Exception {
     // clicking enter on CreateProject or OpenProject dialog creates Partial Plan menu
     awtSleep();
+    Thread.sleep( 1000);
     JMenu partialPlanMenu = null;
     partialPlanMenu = getPartialPlanMenu();
     assertNotNull( "Failed to get partialPlanMenu", partialPlanMenu);
     helper.enterClickAndLeave(new MouseEventData(this, partialPlanMenu));
     Thread.sleep( 1000);
+    
     JMenu sequenceMenu = null;
     JMenu partialPlanSubMenu = null;
     PlanWorks.SeqPartPlanViewMenuItem viewItem = null;
     String menuSequenceName = null;
     String menuPartialPlanName = null;
-    found: for (int i = 0; i < partialPlanMenu.getItemCount(); i++) {
+    found:
+    for (int i = 0; i < partialPlanMenu.getItemCount(); i++) {
+      System.err.println( "partialPlanMenu.getItem(i) " + i + " '" +
+                          partialPlanMenu.getItem(i).getText() + "' sequenceName '" +
+                          sequenceName + "'");
       if (partialPlanMenu.getItem(i).getText().equals( sequenceName)) {
         sequenceMenu = (JMenu) partialPlanMenu.getItem(i);
         helper.enterClickAndLeave(new MouseEventData(this, sequenceMenu));
@@ -288,7 +304,7 @@ public class PlanWorksTest extends JFCTestCase{
         }
       }
     }
-    assertNotNull( "Failed to get sequence \"" + sequenceName + "\"", menuSequenceName);
+    assertNotNull( "Failed to get sequence \"" + sequenceName + "\"", menuSequenceName); 
     assertNotNull( "Failed to get partialPlan \"" + partialPlanName + "\"",
                    menuPartialPlanName);
     assertNotNull( "Failed to get view \"" + viewName + "\"", viewItem);
@@ -941,16 +957,13 @@ public class PlanWorksTest extends JFCTestCase{
     }
     assertNotNull("Failed to get timeline field.", keyBox);
     assertNotNull("Failed to get negation check box.", negationBox);
+    // apply timeline = Location ==> timelines: Location
     keyBox.setSelectedIndex(3);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     Thread.sleep(2000);
-    int timelineNodeCnt = 0;
+
     List timelineNodes = timelineView.getTimelineNodeList();
-    for (int i = 0; i < timelineNodes.size(); i++) {
-      if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
-        timelineNodeCnt++;
-      }
-    }
+    int timelineNodeCnt = timelineNodes.size();
 
     assertTrue("Content spec not specing correctly: Too many timeline nodes.",
                timelineNodeCnt == 1);
@@ -963,24 +976,19 @@ public class PlanWorksTest extends JFCTestCase{
       SlotNode slotNode = (SlotNode) slotNodeIterator.next();
       String slotName = slotNode.getPredicateName();
       if(slotName.indexOf("At") == -1 && slotName.indexOf("Going") == -1) {
-        assertTrue("Invalid slot name for LOCATION_SV timeline.", false);
+        assertTrue("Invalid slot name for LOCATION_SV timeline: ".concat(slotName), false);
       }
     }
+    // not timeline = Location ==> timelines: altitude & banana
     negationBox.setSelected(true);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     Thread.sleep(2000);
-    timelineNodeCnt = 0;
+
     timelineNodes = timelineView.getTimelineNodeList();
-    List visibleTimelines = new ArrayList();
-    for (int i = 0; i < timelineNodes.size(); i++) {
-      if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
-        visibleTimelines.add( (TimelineNode) timelineNodes.get( i));
-        timelineNodeCnt++;
-      }
-    }
+    timelineNodeCnt = timelineNodes.size();
     assertTrue("Content spec not specing correctly: incorrect number of timelines: " +
                timelineNodeCnt, timelineNodeCnt == 2);
-    Object [] temp = visibleTimelines.toArray();
+    Object [] temp = timelineNodes.toArray();
     TimelineNode [] timelines = new TimelineNode[temp.length];
     System.arraycopy(temp, 0, timelines, 0, temp.length);
     for(int i = 0; i < timelines.length; i++) {
@@ -1003,17 +1011,20 @@ public class PlanWorksTest extends JFCTestCase{
           if(slotName.indexOf("NOT_HAVE_BANANA") == -1 && 
              slotName.indexOf("GRABBING_BANANA") == -1 && 
              slotName.indexOf("HAVE_BANANA") == -1) {
-            assertTrue("Invalid slot name for BANANA_SV", false);
+            assertTrue("Invalid slot name for BANANA_SV: ".concat(slotName), false);
           }
         }
       }
     }
+    // reset
     helper.enterClickAndLeave(new MouseEventData(this, resetSpecButton));
-    Thread.sleep(2000);
+    Thread.sleep(2000); 
+
     validateMonkeyTimelines(timelineView);
     assertTrue("Reset spec didn't reset text box", keyBox.getSelectedIndex() == 0);
     assertTrue("Reset spec didn't reset check box", !negationBox.isSelected());
 
+    // appply predicate At  ==> timelines: Location
     keyBox = null;
     negationBox = null;
     for(int i = 0; i < predicateGroup.getComponentCount(); i++) {
@@ -1042,14 +1053,12 @@ public class PlanWorksTest extends JFCTestCase{
     keyBox.setSelectedIndex(1);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     Thread.sleep(2000);
-    timelineNodeCnt = 0;
+
     timelineNodes = timelineView.getTimelineNodeList();
+    timelineNodeCnt = timelineNodes.size();
     for(int i = 0; i < timelineNodes.size(); i++) {
-      if(((TimelineNode)timelineNodes.get(i)).isVisible()) {
-        System.err.println("TIMELINE " + ((TimelineNode)timelineNodes.get(i)).getTimelineName() +
-                           " is visible!");
-        timelineNodeCnt++;
-      }
+      System.err.println("TIMELINE " + ((TimelineNode)timelineNodes.get(i)).getTimelineName() +
+                         " is visible!");
     }
     assertTrue("Content spec not specing correctly.  Incorrect number of timeline nodes: " +
                timelineNodeCnt, timelineNodeCnt == 1);
@@ -1062,17 +1071,14 @@ public class PlanWorksTest extends JFCTestCase{
       SlotNode slot = (SlotNode) slotNodeIterator.next();
       assertTrue("Improperly specified slot.", (slot.isVisible() && slot.getPredicateName().indexOf("At") != -1) || (!slot.isVisible() && slot.getPredicateName().indexOf("At") == -1));
     }
+    // apply predicate At, negation = true  ==> all timelines
     negationBox.setSelected(true);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     Thread.sleep(2000);
-    timelineNodeCnt = 0;
+
     timelineNodes = timelineView.getTimelineNodeList();
-    for(int i = 0; i < timelineNodes.size(); i++) {
-      if(((TimelineNode) timelineNodes.get(i)).isVisible()) {
-        timelineNodeCnt++;
-      }
-    }
-    assertTrue("Content spec not speccing correctly.  Incorrect number of timeline nodes: " +
+    timelineNodeCnt = timelineNodes.size();
+    assertTrue("Content spec not specing correctly.  Incorrect number of timeline nodes: " +
                timelineNodeCnt, timelineNodeCnt == 3);
     for(int i = 0; i < timelineNodes.size(); i++) {
       slotNodeIterator = ((TimelineNode)timelineNodes.get(i)).getSlotNodeList().listIterator();
@@ -1081,12 +1087,13 @@ public class PlanWorksTest extends JFCTestCase{
         assertTrue("Improperly specified slot.", (slot.isVisible() && slot.getPredicateName().indexOf("At") == -1) || (!slot.isVisible() && slot.getPredicateName().indexOf("At") != -1));
       }
     }
+    // reset
     helper.enterClickAndLeave(new MouseEventData(this, resetSpecButton));
     Thread.sleep(2000);
+    // apply start interval = 1, end interval = 4 ==> all timelines
     validateMonkeyTimelines(timelineView);
     assertTrue("Reset spec didn't reset text box", keyBox.getSelectedIndex() == 0);
     assertTrue("Reset spec didn't reset check box", !negationBox.isSelected());
-
     JTextField start = null;
     JTextField end = null;
     negationBox = null;
@@ -1126,15 +1133,11 @@ public class PlanWorksTest extends JFCTestCase{
     end.setText("4");
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     Thread.sleep(2000);
-    timelineNodeCnt = 0;
     timelineNodes = timelineView.getTimelineNodeList();
-    for (int i = 0; i < timelineNodes.size(); i++) {
-      if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
-        timelineNodeCnt++;
-      }
-    }
+    timelineNodeCnt = timelineNodes.size();
     assertTrue("Content spec not specing correctly: Too many timeline nodes.",
                timelineNodeCnt == 3);
+    // reset
     helper.enterClickAndLeave(new MouseEventData(this, resetSpecButton));
     Thread.sleep(2000);
     validateMonkeyTimelines(timelineView);
@@ -1186,6 +1189,8 @@ public class PlanWorksTest extends JFCTestCase{
     seqAndPlanNames = selectView( "Constraint Network");
     ConstraintNetworkView constraintNetworkView = getConstraintNetworkView( seqAndPlanNames);
     Thread.sleep( 1000);
+    tileTheViews();
+    Thread.sleep( 1000);
     validateMonkeyConstraintsOpen( constraintNetworkView);
 
     Container contentPane = frame.getContentPane();
@@ -1220,6 +1225,223 @@ public class PlanWorksTest extends JFCTestCase{
     confirmTimelineSpec(contentSpecWindow, timelineView);
     exitPlanWorks( menuBar);
   } // end testOpenAndContentSpec
+
+  private void tileTheViews() throws Exception {
+    JMenuBar menuBar = frame.getJMenuBar();
+    assertNotNull("Failed to get menu bar from frame", menuBar);
+    JMenu windowMenu = null;
+    MenuElement [] elements = menuBar.getSubElements();
+    for(int i = 0; i < elements.length; i++) {
+      if(((JMenu)elements[i]).getText().equals("Window")) {
+        windowMenu = (JMenu) elements[i];
+      }
+    }
+    assertNotNull("Failed to get \"Window\" menu", windowMenu);
+    assertTrue("Failed to get \"Window\" menu.", windowMenu.getText().equals("Window"));
+    JMenuItem tileWindowsItem = null;
+    for(int i = 0; i < windowMenu.getItemCount(); i++) {
+      if ((windowMenu.getItem( i) != null) &&
+          (windowMenu.getItem(i).getText().equals("Tile Windows"))) {
+        tileWindowsItem = windowMenu.getItem(i);
+        break;
+      }
+    }
+    assertNotNull("Failed to get \"Tile Windows\" item.", tileWindowsItem);
+    assertTrue("Failed to get \"Tile Windows\" item.",
+               tileWindowsItem.getText().equals("Tile Windows"));
+    assertTrue("\"Tile Windows\" item not enabled", tileWindowsItem.isEnabled());
+    helper.enterClickAndLeave(new MouseEventData(this, windowMenu));
+    helper.enterClickAndLeave(new MouseEventData(this, tileWindowsItem));
+  } // end tileTheViews
+
+
+  private void addAndDeleteSequences()  throws Exception {
+    addSequence( "emptySlots", "seq0");
+    Thread.sleep( 1000);
+    sequenceName = "seq0 (1)";
+    String [] seqAndPlanNames = selectView( "Timeline");
+    TimelineView timelineView = getTimelineView( seqAndPlanNames);
+    Thread.sleep( 1000);
+
+    addSequence( "freeTokens", "seq0");
+    sequenceName = "seq0 (2)";
+    seqAndPlanNames = selectView( "Timeline");
+    timelineView = getTimelineView( seqAndPlanNames);
+    Thread.sleep( 1000);
+ 
+    tileTheViews();
+    Thread.sleep( 2000);
+
+    deleteSequence( "emptySlots", "seq0");
+    Thread.sleep( 1000);
+    deleteSequence( "freeTokens", "seq0");
+
+    // return to monkey sequence name
+    sequenceName = "seq0";
+  } // end addAndDeleteSequences
+
+
+  private void addSequence( String seqParentName, String seqName) throws Exception {
+    JMenuBar menuBar = frame.getJMenuBar();
+    assertNotNull("Failed to get menu bar from frame", menuBar);
+    JMenu projectMenu = null;
+    MenuElement [] elements = menuBar.getSubElements();
+    for(int i = 0; i < elements.length; i++) {
+      if(((JMenu)elements[i]).getText().equals("Project")) {
+        projectMenu = (JMenu) elements[i];
+      }
+    }
+    assertNotNull("Failed to get \"Project\" menu", projectMenu);
+    assertTrue("Failed to get \"Project\" menu.", projectMenu.getText().equals("Project"));
+    JMenuItem addSequenceItem = null;
+    for(int i = 0; i < projectMenu.getItemCount(); i++) {
+      if ((projectMenu.getItem( i) != null) &&
+          (projectMenu.getItem(i).getText().equals("Add Sequence ..."))) {
+        addSequenceItem = projectMenu.getItem(i);
+        break;
+      }
+    }
+    assertNotNull("Failed to get \"Add Sequence ...\" item.", addSequenceItem);
+    assertTrue("Failed to get \"Add Sequence ...\" item.",
+               addSequenceItem.getText().equals("Add Sequence ..."));
+    assertTrue("\"Add Sequence ...\" item not enabled", addSequenceItem.isEnabled());
+    helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
+    helper.enterClickAndLeave(new MouseEventData(this, addSequenceItem));
+
+    // seq dir chooser 
+    JFileChooser fileChooser = null;
+    fileChooser = helper.getShowingJFileChooser( planWorks);
+    assertNotNull( "Select Sequence Directory Dialog not found:", fileChooser);
+    Container projectSeqDialog = (Container) fileChooser;
+    StringBuffer seqDir = new StringBuffer( PlanWorks.planWorksRoot);
+    seqDir.append( System.getProperty( "file.separator")).append( "java");
+    seqDir.append( System.getProperty( "file.separator")).append( "src");
+    seqDir.append( System.getProperty( "file.separator")).append( "gov");
+    seqDir.append( System.getProperty( "file.separator")).append( "nasa");
+    seqDir.append( System.getProperty( "file.separator")).append( "arc");
+    seqDir.append( System.getProperty( "file.separator")).append( "planworks");
+    seqDir.append( System.getProperty( "file.separator")).append( "test");
+    seqDir.append( System.getProperty( "file.separator")).append( "data");
+    seqDir.append( System.getProperty( "file.separator")).append( seqParentName);
+    fileChooser.setCurrentDirectory( new File( seqDir.toString()));
+    fileChooser.setSelectedFile( new File( seqName));
+    JButton okButton = null;
+    okButton = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog, 4);
+    System.err.println( "projectSeqDialog " + okButton.getText());
+    assertNotNull("Could not find \"OK\" button", okButton);
+    helper.enterClickAndLeave(new MouseEventData(this, okButton));
+  } // end addSequence
+
+
+  private void deleteSequence( String seqParentName, String seqName) throws Exception {
+    JMenuBar menuBar = frame.getJMenuBar();
+    assertNotNull("Failed to get menu bar from frame", menuBar);
+    JMenu projectMenu = null;
+    MenuElement [] elements = menuBar.getSubElements();
+    for(int i = 0; i < elements.length; i++) {
+      if(((JMenu)elements[i]).getText().equals("Project")) {
+        projectMenu = (JMenu) elements[i];
+      }
+    }
+    assertNotNull("Failed to get \"Project\" menu", projectMenu);
+    assertTrue("Failed to get \"Project\" menu.", projectMenu.getText().equals("Project"));
+    JMenuItem deleteSequenceItem = null;
+    for(int i = 0; i < projectMenu.getItemCount(); i++) {
+      if ((projectMenu.getItem( i) != null) &&
+          (projectMenu.getItem(i).getText().equals("Delete Sequence ..."))) {
+        deleteSequenceItem = projectMenu.getItem(i);
+        break;
+      }
+    }
+    assertNotNull("Failed to get \"Delete Sequence ...\" item.", deleteSequenceItem);
+    assertTrue("Failed to get \"Delete Sequence ...\" item.",
+               deleteSequenceItem.getText().equals("Delete Sequence ..."));
+    assertTrue("\"Delete Sequence ...\" item not enabled", deleteSequenceItem.isEnabled());
+    helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
+    helper.enterClickAndLeave(new MouseEventData(this, deleteSequenceItem));
+    Thread.sleep( 1000);
+
+    // delete sequence dialog
+    List dialogs = null;
+    dialogs = helper.getShowingDialogs( planWorks);
+    assertNotNull( "Delete Sequence Directory Dialog not found:", dialogs);
+    Container sequenceDeleteDialog = (Container) dialogs.get(0);
+    String seqDir = seqParentName + System.getProperty( "file.separator") + seqName;
+    JButton okButton = null;
+    JComboBox comboBox = null;
+    String deleteSequence = null;
+    for (int i = 0; i < sequenceDeleteDialog.getComponentCount(); i++) {
+      JRootPane rootPane = (JRootPane) sequenceDeleteDialog.getComponent(i);
+      // System.err.println( "component i " + i + " " + sequenceDeleteDialog.getComponent( i));
+      for (int j = 0; j < rootPane.getComponentCount(); j++) {
+        // System.err.println( "component j " + j + " " + rootPane.getComponent( j));
+        if (rootPane.getComponent( j) instanceof JLayeredPane) {
+          JLayeredPane layeredPane = (JLayeredPane) rootPane.getComponent( j);
+          for (int jl = 0; jl < layeredPane.getComponentCount(); jl++) {
+            // System.err.println( "layeredPane jl " + jl + " " + layeredPane.getComponent( jl));
+            if (layeredPane.getComponent( jl) instanceof JPanel) {
+              JPanel panel = (JPanel) layeredPane.getComponent( jl);
+              for (int jlp = 0; jlp < panel.getComponentCount(); jlp++) {
+                // System.err.println( "panel jlp " + jlp + " " +
+                //                     panel.getComponent( jlp));
+                if (panel.getComponent( jlp) instanceof JOptionPane) {
+                  JOptionPane optionPane = (JOptionPane) panel.getComponent( jlp);
+                  for (int jlpo = 0; jlpo < optionPane.getComponentCount(); jlpo++) {
+                    // System.err.println( "optionPane jlpo " + jlpo + " " +
+                    //                     optionPane.getComponent( jlpo));
+                    if (jlpo == 0) {
+                      JPanel panel0 = (JPanel) optionPane.getComponent( 0);
+                      itemFound:
+                      for (int jlpo0 = 0; jlpo0 < panel0.getComponentCount(); jlpo0++) {
+                        // System.err.println( "optionPanePanel0 jlpo0 " + jlpo0 + " " +
+                        //                 panel0.getComponent( jlpo0));
+                        JComponent options = (JComponent) panel0.getComponent( 0);
+                        for (int jlpo0o = 0; jlpo0o < options.getComponentCount(); jlpo0o++) {
+                          // System.err.println( "options jlpo0o " + jlpo0o + " " +
+                          //                     options.getComponent( jlpo0o));
+                          JComponent options0 = (JComponent) options.getComponent( jlpo0o);
+                          for (int jlpo0o0 = 0; jlpo0o0 < options0.getComponentCount();
+                               jlpo0o0++) {
+                            // System.err.println( "options0 jlpo0o0 " + jlpo0o0 + " " +
+                            //                     options0.getComponent( jlpo0o0));
+                            comboBox = (JComboBox) options0.getComponent( jlpo0o0);
+                            for (int itemCnt = 0; itemCnt < comboBox.getItemCount(); itemCnt++) {
+                              // System.err.println( "item " + itemCnt + " " +
+                              //                     comboBox.getItemAt( itemCnt));
+                              String itemString = (String) comboBox.getItemAt( itemCnt);
+                              if (itemString.indexOf( seqDir) >= 0) {
+                                deleteSequence = itemString;
+                                comboBox.setSelectedItem( itemString);
+                                break itemFound;
+                              }
+                            }
+                          }
+                        }
+                      }
+                    } else if (jlpo == 1) {
+                      JPanel panel1 = (JPanel) optionPane.getComponent( 1);
+                      for (int jlpo1 = 0; jlpo1 < panel1.getComponentCount(); jlpo1++) {
+                        // System.err.println( "optionPanePanel1 jlpo1 " + jlpo1 + " " +
+                        //                 panel1.getComponent( jlpo1));
+                        okButton = (JButton) panel1.getComponent( 0);
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    assertNotNull( "Could not find comboBox ", comboBox);
+    assertNotNull( "Could not find \"seqDir\" item", deleteSequence);
+    System.err.println( "sequenceDeleteDialog " + okButton.getText());
+    assertNotNull("Could not find \"OK\" button", okButton);
+    helper.enterClickAndLeave( new MouseEventData( this, okButton));
+  } // end deleteSequence
+
 
   /**
    * <code>testFreeTokens</code>
@@ -1262,10 +1484,13 @@ public class PlanWorksTest extends JFCTestCase{
    */
   public static void main( String[] args) {
     PlanWorks.name = "";
+    String maxScreenValue = "false";
     for (int argc = 0; argc < args.length; argc++) {
       // System.err.println( "argc " + argc + " " + args[argc]);
       if (argc == 0) {
         PlanWorks.name = args[argc];
+      } else if (argc == 1) {
+        maxScreenValue = args[argc];
       } else {
         System.err.println( "argument '" + args[argc] + "' not handled");
         System.exit(-1);
@@ -1273,6 +1498,10 @@ public class PlanWorksTest extends JFCTestCase{
     }
     PlanWorks.osType = System.getProperty("os.type");
     PlanWorks.planWorksRoot = System.getProperty( "planworks.root");
+    PlanWorks.isMaxScreen = false;
+    if (maxScreenValue.equals( "true")) {
+      PlanWorks.isMaxScreen = true;
+    }
 
     TestRunner.run( suite());
   } // end main
@@ -1280,3 +1509,16 @@ public class PlanWorksTest extends JFCTestCase{
 } // end class PlanWorksTest
  
     
+
+
+
+
+
+
+
+
+
+
+
+
+

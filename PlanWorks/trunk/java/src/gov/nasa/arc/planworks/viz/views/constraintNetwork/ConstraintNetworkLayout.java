@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkLayout.java,v 1.5 2003-09-18 20:48:47 taylor Exp $
+// $Id: ConstraintNetworkLayout.java,v 1.6 2003-09-23 16:10:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -91,8 +91,6 @@ public class ConstraintNetworkLayout extends JGoLayeredDigraphAutoLayout {
       long stopTimeMSecs = (new Date()).getTime();
       System.err.println( "   ... elapsed time: " +
                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
-      PlanWorks.planWorks.getGlassPane().setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
-
     }
   } // end progressUpdate
 

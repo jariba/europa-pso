@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.1 2003-09-18 20:48:47 taylor Exp $
+// $Id: ConstraintNode.java,v 1.2 2003-09-23 16:10:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -446,6 +446,7 @@ public class ConstraintNode extends BasicNode {
           removeConstraintNodeVariables( this);
           setNodeClosed();
         }
+        ((ConstraintNetworkView) vizView).setFocusNode( constraintNode);
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
