@@ -1,0 +1,50 @@
+/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/bin/mysqld --basedir=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql --skip-bdb --bind-address=127.0.0.1 --datadir=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/data --log=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/log/mysql.log --log-error=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/log/mysql.error.log --skip-symlink --socket=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/mysql.sock --tmpdir=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/tmp
+
+# shutdown mysql
+/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/bin/mysqladmin --user=root --socket=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/mysql.sock shutdown
+
+
+# mysql cmd line
+/home/wtaylor/pub/mysql-max-4.0.13-pc-linux-i686/bin/mysql --user=root --socket=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/mysql.sock
+
+connect PlanWorks;
+show tables;
+show columns from <name>;
+alter table <table-name> modify <column-name> int
+alter table <table-name> modify <column-name> bigint
+alter table <table-name> drop <varaible-name>;
+# show table values
+select * from <table-name>;
+
+input file
+---------
+value <tab> value <tab> .... <lf>
+
+
+
+
+grant all on PlanWorks.* to 'PlanWorksUser' identified by 'PlanWorksUser';
+grant alter , delete , drop , file , index , insert , select , shutdown , update on *.* to 'PlanWorksUser';
+
+select * from user;
+
+# clean sql db
+/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/bin/mysql --user=root --socket=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/mysql.sock < /home/wtaylor/PlanWorksProject/PlanWorks/cleandb
+
+
+## before installing mysql db: ant planWorksDbInstall
+cd lib/mysql/data; /bin/rm -r PlanWorks; cd mysql; /bin/rm *.frm *.MYI *.MYD; cd ../../../..
+
+## at cmd line prompt -- look at projects and sequences
+select * from Project;
+select * from Sequence;
+
+
+UPDATE PLANWORKS TABLES
+-----------------------
+cd lib/mysql/data/mysql
+/bin/rm *
+cd ..
+/bin/rm -rf PlanWorks
+cd ../../..
+ant planWorksDbInstall
