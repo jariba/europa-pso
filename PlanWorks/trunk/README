@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.21 2003-09-05 22:19:42 miatauro Exp $
+# $Id: README,v 1.22 2003-09-09 16:31:26 miatauro Exp $
 #
 
 SUMMARY
@@ -27,8 +27,8 @@ the size of the enclosing PlanWorks frame.
 The Content Specification processor now filters time intervals, as 
 well as tokens and predicates.  
 
-Massive performance improvements have been made on database end, often on
-the order of 400%.
+Massive performance improvements have been made on database end, often by 
+a factor of 4.
 
 The first stage in Europa integration, the PartialPlanWriter is
 included.  Instructions for its use are in
