@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.47 2003-10-23 17:56:23 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.48 2003-10-23 18:20:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -217,6 +217,32 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     //planToTransactionMap = (Map) info.get(1);
   }
   
+  public void cleanTransactions(PwPartialPlanImpl pp) {
+    ListIterator transactionNameIterator = (new ArrayList(transactions.keySet())).listIterator();
+    String ppIdStr = pp.getId().toString();
+    while(transactionNameIterator.hasNext()) {
+      String transactionName = (String) transactionNameIterator.next();
+      if(transactionName.indexOf(ppIdStr) == 0) {
+        PwTransactionImpl transaction = (PwTransactionImpl) transactions.get(transactionName);
+        if(transaction.getType().indexOf("TOKEN") != -1) {
+          if(!pp.tokenExists(transaction.getObjectId())) {
+            transactions.remove(transactionName);
+          }
+        }
+        else if(transaction.getType().indexOf("VARIABLE") != -1) {
+          if(pp.getVariable(transaction.getObjectId()) == null) {
+            transactions.remove(transactionName);
+          }
+        }
+        else if(transaction.getType().indexOf("CONSTRAINT") != -1) {
+          if(pp.getConstraint(transaction.getObjectId()) == null) {
+            transactions.remove(transactionName);
+          }
+        }
+      }
+    }
+  }
+
   // IMPLEMENT INTERFACE 
 
 
@@ -407,7 +433,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       }
       throw new ResourceNotFoundException("Failed to find plan " + partialPlanName + " in sequence " + name);*/
     if(partialPlans.containsKey(partialPlanName)) {
-      PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, id);
+      PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, this);
       partialPlans.put(partialPlanName, partialPlan);
       return partialPlan;
     }
