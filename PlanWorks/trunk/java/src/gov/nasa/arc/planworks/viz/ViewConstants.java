@@ -397,8 +397,8 @@ public abstract class ViewConstants {
   public static final String OBJECT_TO_OBJECT_LINK_TYPE = "OtoO";
   public static final String OBJECT_TO_RESOURCE_LINK_TYPE = "OtoR";
   public static final String OBJECT_TO_TIMELINE_LINK_TYPE = "OtoTi";
-  public static final String OBJECT_TO_VARIABLE_LINK_TYPE = "OtoV";
   public static final String OBJECT_TO_TOKEN_LINK_TYPE = "OtoT";
+  public static final String OBJECT_TO_VARIABLE_LINK_TYPE = "OtoV";
   public static final String RESOURCE_TO_TOKEN_LINK_TYPE = "RtoT";
   public static final String RESOURCE_TO_VARIABLE_LINK_TYPE = "RtoV";
   public static final String RULE_INST_TO_TOKEN_LINK_TYPE = "RutoT";
@@ -417,9 +417,10 @@ public abstract class ViewConstants {
   public static List ALL_LINK_TYPES;
 
   static {
-    ALL_LINK_TYPES = new ArrayList(20);
+    ALL_LINK_TYPES = new ArrayList(19);
     ALL_LINK_TYPES.add(OBJECT_TO_OBJECT_LINK_TYPE);
     ALL_LINK_TYPES.add(OBJECT_TO_RESOURCE_LINK_TYPE);
+    ALL_LINK_TYPES.add(OBJECT_TO_TOKEN_LINK_TYPE);
     ALL_LINK_TYPES.add(OBJECT_TO_TIMELINE_LINK_TYPE);
     ALL_LINK_TYPES.add(OBJECT_TO_VARIABLE_LINK_TYPE);
     ALL_LINK_TYPES.add(RESOURCE_TO_TOKEN_LINK_TYPE);

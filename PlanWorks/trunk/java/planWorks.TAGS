@@ -149,22 +149,23 @@ public class AddSequenceThread AddSequenceThread37,1016
   public void run(AddSequenceThread.run59,1531
   private void addSequence(AddSequenceThread.addSequence73,2125
 
-src/gov/nasa/arc/planworks/ConfigureAndPlugins.java,1383
+src/gov/nasa/arc/planworks/ConfigureAndPlugins.java,1496
 public class ConfigureAndPlugins ConfigureAndPlugins45,1135
-  private ConfigureAndPlugins(ConfigureAndPlugins.ConfigureAndPlugins93,3307
-  public static void processPlanWorksConfigFile(ConfigureAndPlugins.processPlanWorksConfigFile96,3346
-  private static void processPlanWorksConfigFileDoit(ConfigureAndPlugins.processPlanWorksConfigFileDoit115,4191
-  private static Object [] collectQuotedNameParts(ConfigureAndPlugins.collectQuotedNameParts198,8335
-  public static void mapPlugIn(ConfigureAndPlugins.mapPlugIn228,9414
-  public static void mapViewClass(ConfigureAndPlugins.mapViewClass264,10901
-  public static void mapRightClickForView(ConfigureAndPlugins.mapRightClickForView278,11450
-  public static void invokeLoadPlugin(ConfigureAndPlugins.invokeLoadPlugin293,12127
-  public static void processProjectsConfigFile(ConfigureAndPlugins.processProjectsConfigFile332,13629
-  public static boolean isProjectInConfigMap(ConfigureAndPlugins.isProjectInConfigMap401,16398
-  public static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue412,16732
-  private static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue434,17914
-  public static void updateProjectConfigMap(ConfigureAndPlugins.updateProjectConfigMap460,18732
-  public static void writeProjectConfigMap(ConfigureAndPlugins.writeProjectConfigMap480,19412
+  private ConfigureAndPlugins(ConfigureAndPlugins.ConfigureAndPlugins97,3594
+  public static void processPlanWorksConfigFile(ConfigureAndPlugins.processPlanWorksConfigFile100,3633
+  private static void processPlanWorksConfigFileDoit(ConfigureAndPlugins.processPlanWorksConfigFileDoit119,4478
+  private static Object [] collectQuotedNameParts(ConfigureAndPlugins.collectQuotedNameParts202,8622
+  public static void mapPlugIn(ConfigureAndPlugins.mapPlugIn232,9701
+  public static void mapViewClass(ConfigureAndPlugins.mapViewClass268,11188
+  public static void mapRightClickForView(ConfigureAndPlugins.mapRightClickForView282,11737
+  public static void invokeLoadPlugin(ConfigureAndPlugins.invokeLoadPlugin297,12414
+  public static void processProjectsConfigFile(ConfigureAndPlugins.processProjectsConfigFile336,13916
+  private static Map processProjectsConfigFileImpl(ConfigureAndPlugins.processProjectsConfigFileImpl346,14278
+  public static boolean isProjectInConfigMap(ConfigureAndPlugins.isProjectInConfigMap412,16901
+  public static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue423,17235
+  private static String getProjectConfigValue(ConfigureAndPlugins.getProjectConfigValue465,19319
+  public static void updateProjectConfigMap(ConfigureAndPlugins.updateProjectConfigMap491,20137
+  public static void writeProjectConfigMap(ConfigureAndPlugins.writeProjectConfigMap511,20817
 
 src/gov/nasa/arc/planworks/CreateSequenceViewThread.java,308
 public class CreateSequenceViewThread CreateSequenceViewThread37,1135
@@ -204,16 +205,17 @@ public class InstantiateProjectThread InstantiateProjectThread41,1225
   private PwProject createProject(InstantiateProjectThread.createProject115,3783
   private PwProject openProject(InstantiateProjectThread.openProject210,8405
 
-src/gov/nasa/arc/planworks/NewSequenceThread.java,706
-public class NewSequenceThread NewSequenceThread33,1148
-  public NewSequenceThread(NewSequenceThread.NewSequenceThread44,1472
-  public void run(NewSequenceThread.run50,1640
-  private String getNewSequenceUrl(NewSequenceThread.getNewSequenceUrl70,2442
-  private void newSequence(NewSequenceThread.newSequence112,4068
-  private ViewSet getViewSetWithWait(NewSequenceThread.getViewSetWithWait164,6898
-  private MDIInternalFrame getSequenceStepsFrameWithWait(NewSequenceThread.getSequenceStepsFrameWithWait177,7415
-  private boolean getConfigureParameters(NewSequenceThread.getConfigureParameters206,8645
-  private void setConfigureParameters(NewSequenceThread.setConfigureParameters224,9436
+src/gov/nasa/arc/planworks/NewSequenceThread.java,801
+public class NewSequenceThread NewSequenceThread41,1407
+  public NewSequenceThread(NewSequenceThread.NewSequenceThread59,1902
+  public void run(NewSequenceThread.run70,2145
+  private String getNewSequenceUrl(NewSequenceThread.getNewSequenceUrl90,2947
+  private void newSequence(NewSequenceThread.newSequence134,4606
+  private ViewSet getViewSetWithWait(NewSequenceThread.getViewSetWithWait188,7482
+  private MDIInternalFrame getSequenceStepsFrameWithWait(NewSequenceThread.getSequenceStepsFrameWithWait201,7999
+  private boolean getConfigureParameters(NewSequenceThread.getConfigureParameters230,9229
+  private void setConfigureParameters(NewSequenceThread.setConfigureParameters262,10732
+  private void getTransactionTypeStates(NewSequenceThread.getTransactionTypeStates279,11612
 
 src/gov/nasa/arc/planworks/PlannerControlJNI.java,57
 public class PlannerControlJNI PlannerControlJNI22,570
@@ -256,31 +258,31 @@ public class PlanWorks PlanWorks79,2767
   private void addSequenceThread(PlanWorks.addSequenceThread695,23387
   private void deleteSequenceThread(PlanWorks.deleteSequenceThread701,23565
   private void configureProject(PlanWorks.configureProject707,23752
-  public final PwPlanningSequence getPlanSequence(PlanWorks.getPlanSequence736,25095
-  public final void addPlanSeqViewMenu(PlanWorks.addPlanSeqViewMenu763,26107
-  protected final JMenu buildPlanSeqViewMenu(PlanWorks.buildPlanSeqViewMenu783,26799
-  protected void createSequenceViewThread(PlanWorks.createSequenceViewThread814,28177
-  public final DirectoryChooser createSequenceDirChooser(PlanWorks.createSequenceDirChooser827,28658
-  public final DirectoryChooser createDirectoryChooser(PlanWorks.createDirectoryChooser843,29360
-  class SequenceDirectoryFilter PlanWorks.SequenceDirectoryFilter852,29751
-    public SequenceDirectoryFilter(PlanWorks.SequenceDirectoryFilter.SequenceDirectoryFilter854,29805
-    public final boolean accept(PlanWorks.SequenceDirectoryFilter.accept865,30099
-    public final String getDescription(PlanWorks.SequenceDirectoryFilter.getDescription892,31027
-  protected List askSequenceDirectory(PlanWorks.askSequenceDirectory904,31358
-  protected boolean addPlanningSequences(PlanWorks.addPlanningSequences958,34014
-  private void runTestWindow(PlanWorks.runTestWindow985,35162
-  class BrowseButtonListener PlanWorks.BrowseButtonListener1066,37676
-    public BrowseButtonListener(PlanWorks.BrowseButtonListener.BrowseButtonListener1068,37763
-    public void actionPerformed(PlanWorks.BrowseButtonListener.actionPerformed1071,37847
-  class TestButtonListener PlanWorks.TestButtonListener1081,38256
-    public TestButtonListener(PlanWorks.TestButtonListener.TestButtonListener1086,38449
-    public void actionPerformed(PlanWorks.TestButtonListener.actionPerformed1093,38733
-  public static boolean isMacOSX(PlanWorks.isMacOSX1121,39617
-  public static void main PlanWorks.main1130,39804
-  private class SeqNameComparator PlanWorks.SeqNameComparator1181,41742
-    public SeqNameComparator(PlanWorks.SeqNameComparator.SeqNameComparator1182,41800
-    public final int compare(PlanWorks.SeqNameComparator.compare1184,41839
-    public final boolean equals(PlanWorks.SeqNameComparator.equals1189,42048
+  public final PwPlanningSequence getPlanSequence(PlanWorks.getPlanSequence739,25237
+  public final void addPlanSeqViewMenu(PlanWorks.addPlanSeqViewMenu766,26249
+  protected final JMenu buildPlanSeqViewMenu(PlanWorks.buildPlanSeqViewMenu786,26941
+  protected void createSequenceViewThread(PlanWorks.createSequenceViewThread817,28319
+  public final DirectoryChooser createSequenceDirChooser(PlanWorks.createSequenceDirChooser830,28800
+  public final DirectoryChooser createDirectoryChooser(PlanWorks.createDirectoryChooser847,29562
+  class SequenceDirectoryFilter PlanWorks.SequenceDirectoryFilter858,30040
+    public SequenceDirectoryFilter(PlanWorks.SequenceDirectoryFilter.SequenceDirectoryFilter860,30094
+    public final boolean accept(PlanWorks.SequenceDirectoryFilter.accept871,30388
+    public final String getDescription(PlanWorks.SequenceDirectoryFilter.getDescription898,31316
+  protected List askSequenceDirectory(PlanWorks.askSequenceDirectory910,31647
+  protected boolean addPlanningSequences(PlanWorks.addPlanningSequences964,34303
+  private void runTestWindow(PlanWorks.runTestWindow991,35451
+  class BrowseButtonListener PlanWorks.BrowseButtonListener1072,37965
+    public BrowseButtonListener(PlanWorks.BrowseButtonListener.BrowseButtonListener1074,38052
+    public void actionPerformed(PlanWorks.BrowseButtonListener.actionPerformed1077,38136
+  class TestButtonListener PlanWorks.TestButtonListener1087,38545
+    public TestButtonListener(PlanWorks.TestButtonListener.TestButtonListener1092,38738
+    public void actionPerformed(PlanWorks.TestButtonListener.actionPerformed1099,39022
+  public static boolean isMacOSX(PlanWorks.isMacOSX1127,39906
+  public static void main PlanWorks.main1136,40093
+  private class SeqNameComparator PlanWorks.SeqNameComparator1187,42031
+    public SeqNameComparator(PlanWorks.SeqNameComparator.SeqNameComparator1188,42089
+    public final int compare(PlanWorks.SeqNameComparator.compare1190,42128
+    public final boolean equals(PlanWorks.SeqNameComparator.equals1195,42337
 
 src/gov/nasa/arc/planworks/PlanWorksPlugin.java,129
 public abstract class PlanWorksPlugin PlanWorksPlugin24,550
@@ -644,94 +646,94 @@ public class PwPartialPlanImpl PwPartialPlanImpl71,2421
   private boolean getPathRecurse(PwPartialPlanImpl.getPathRecurse1645,58207
 
 src/gov/nasa/arc/planworks/db/impl/PwPlanningSequenceImpl.java,7994
-public class PwPlanningSequenceImpl PwPlanningSequenceImpl64,2068
-  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl90,3133
-  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl125,4447
-  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl154,5540
-  private void urlsDontMatchDialog(PwPlanningSequenceImpl.urlsDontMatchDialog210,7623
-  private void loadTransactionFile(PwPlanningSequenceImpl.loadTransactionFile221,8216
-  private void loadTransactionFile(PwPlanningSequenceImpl.loadTransactionFile228,8348
-  private void loadTransactionFileDoit(PwPlanningSequenceImpl.loadTransactionFileDoit235,8519
-  private void loadStatsFile(PwPlanningSequenceImpl.loadStatsFile249,9135
-  private void loadRulesFile(PwPlanningSequenceImpl.loadRulesFile256,9454
-  public String getUrl(PwPlanningSequenceImpl.getUrl287,10479
-  public Long getId(PwPlanningSequenceImpl.getId291,10527
-  public PwModel getModel(PwPlanningSequenceImpl.getModel301,10732
-  public boolean doesPartialPlanExist(PwPlanningSequenceImpl.doesPartialPlanExist314,10990
-  public boolean hasLoadedTransactionFile(PwPlanningSequenceImpl.hasLoadedTransactionFile324,11309
-  public boolean hasLoadedTransactionFile(PwPlanningSequenceImpl.hasLoadedTransactionFile350,12185
-  public boolean hasLoadedTransactionFile(PwPlanningSequenceImpl.hasLoadedTransactionFile363,12736
-  public boolean isTransactionFileOnDisk(PwPlanningSequenceImpl.isTransactionFileOnDisk377,13275
-  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList388,13586
-  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList393,13783
-  public List getPartialPlansList(PwPlanningSequenceImpl.getPartialPlansList403,14095
-  public List getPartialPlanNamesList(PwPlanningSequenceImpl.getPartialPlanNamesList413,14347
-  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan426,14808
-  public synchronized PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan442,15437
-  public synchronized PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan462,16208
-  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan481,16901
-  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan495,17422
-  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan509,17982
-  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan523,18503
-  public void addPartialPlan(PwPlanningSequenceImpl.addPartialPlan528,18739
-  public void addPartialPlan(PwPlanningSequenceImpl.addPartialPlan534,18938
-  private PwPartialPlan addPartialPlan(PwPlanningSequenceImpl.addPartialPlan539,19151
-  private PwPartialPlan addPartialPlan(PwPlanningSequenceImpl.addPartialPlan565,20125
-  public PwPartialPlan getPartialPlanIfLoaded(PwPlanningSequenceImpl.getPartialPlanIfLoaded588,20995
-  public boolean isPartialPlanLoaded(PwPlanningSequenceImpl.isPartialPlanLoaded597,21365
-  public boolean isPartialPlanInDb(PwPlanningSequenceImpl.isPartialPlanInDb600,21476
-  public boolean isPartialPlanInFilesystem(PwPlanningSequenceImpl.isPartialPlanInFilesystem603,21583
-  public void delete(PwPlanningSequenceImpl.delete608,21801
-  public void setContentSpec(PwPlanningSequenceImpl.setContentSpec617,22099
-  public List getContentSpec(PwPlanningSequenceImpl.getContentSpec622,22209
-  public void setName(PwPlanningSequenceImpl.setName632,22445
-  public String getName(PwPlanningSequenceImpl.getName641,22611
-  public List getOpenDecisionsForStep(PwPlanningSequenceImpl.getOpenDecisionsForStep647,22696
-  public Integer getCurrentDecisionIdForStep(PwPlanningSequenceImpl.getCurrentDecisionIdForStep654,23036
-  public List getTransactionsForConstraint(PwPlanningSequenceImpl.getTransactionsForConstraint661,23364
-  public List getTransactionsForToken(PwPlanningSequenceImpl.getTransactionsForToken666,23523
-  public List getTransactionsForVariable(PwPlanningSequenceImpl.getTransactionsForVariable671,23673
-  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange676,23830
-  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange696,24274
-  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted700,24429
-  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted706,24650
-  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted712,24878
-  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted718,25110
-  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted723,25304
-  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted729,25510
-  public List getStepsWithRestrictions(PwPlanningSequenceImpl.getStepsWithRestrictions735,25720
-  public List getStepsWithRelaxations(PwPlanningSequenceImpl.getStepsWithRelaxations740,25846
-  public List getStepsWithUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithUnitVariableBindingDecisions745,25970
-  public List getStepsWithNonUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithNonUnitVariableBindingDecisions750,26115
-  public List getFreeTokensAtStep(PwPlanningSequenceImpl.getFreeTokensAtStep761,26399
-  private List getTokensById(PwPlanningSequenceImpl.getTokensById768,26687
-  public List getUnboundVariablesAtStep(PwPlanningSequenceImpl.getUnboundVariablesAtStep789,27622
-  private void loadPartialPlanFiles(PwPlanningSequenceImpl.loadPartialPlanFiles796,27955
-  private List getVariablesById(PwPlanningSequenceImpl.getVariablesById802,28211
-  public List getPartialPlanNameList(PwPlanningSequenceImpl.getPartialPlanNameList817,29011
-  public int [] getPlanDBSize(PwPlanningSequenceImpl.getPlanDBSize821,29104
-  public List getPlanDBSizeList(PwPlanningSequenceImpl.getPlanDBSizeList825,29230
-  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId829,29317
-  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId834,29500
-  public void refresh(PwPlanningSequenceImpl.refresh838,29615
-  private void fakeRules(PwPlanningSequenceImpl.fakeRules864,30703
-  private void instantiateRules(PwPlanningSequenceImpl.instantiateRules873,30929
-  public PwRule getRule(PwPlanningSequenceImpl.getRule877,31008
-  public List getRuleList(PwPlanningSequenceImpl.getRuleList881,31090
-  public void addTransaction(PwPlanningSequenceImpl.addTransaction885,31170
-  public String [] toOutputString(PwPlanningSequenceImpl.toOutputString890,31339
-  private class PartialPlanNameComparator PwPlanningSequenceImpl.PartialPlanNameComparator916,32735
-    public PartialPlanNameComparator(PwPlanningSequenceImpl.PartialPlanNameComparator.PartialPlanNameComparator917,32801
-    public int compare(PwPlanningSequenceImpl.PartialPlanNameComparator.compare920,32877
-    public boolean equals(PwPlanningSequenceImpl.PartialPlanNameComparator.equals925,33085
-  private String validateSequenceDirectory(PwPlanningSequenceImpl.validateSequenceDirectory931,33297
-  class StepDirectoryFilter PwPlanningSequenceImpl.StepDirectoryFilter948,33910
-    public StepDirectoryFilter(PwPlanningSequenceImpl.StepDirectoryFilter.StepDirectoryFilter949,33966
-    public boolean accept(PwPlanningSequenceImpl.StepDirectoryFilter.accept950,34001
-  class StepDirectoryComparator PwPlanningSequenceImpl.StepDirectoryComparator956,34136
-    public StepDirectoryComparator(PwPlanningSequenceImpl.StepDirectoryComparator.StepDirectoryComparator957,34192
-    public int compare(PwPlanningSequenceImpl.StepDirectoryComparator.compare959,34237
-    public boolean equals(PwPlanningSequenceImpl.StepDirectoryComparator.equals976,34756
+public class PwPlanningSequenceImpl PwPlanningSequenceImpl65,2120
+  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl91,3182
+  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl126,4534
+  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl155,5627
+  private void urlsDontMatchDialog(PwPlanningSequenceImpl.urlsDontMatchDialog211,7728
+  private void loadTransactionFile(PwPlanningSequenceImpl.loadTransactionFile222,8321
+  private void loadTransactionFile(PwPlanningSequenceImpl.loadTransactionFile229,8453
+  private void loadTransactionFileDoit(PwPlanningSequenceImpl.loadTransactionFileDoit236,8624
+  private void loadStatsFile(PwPlanningSequenceImpl.loadStatsFile250,9240
+  private void loadRulesFile(PwPlanningSequenceImpl.loadRulesFile257,9559
+  public String getUrl(PwPlanningSequenceImpl.getUrl288,10584
+  public Long getId(PwPlanningSequenceImpl.getId292,10632
+  public PwModel getModel(PwPlanningSequenceImpl.getModel302,10837
+  public boolean doesPartialPlanExist(PwPlanningSequenceImpl.doesPartialPlanExist315,11095
+  public boolean hasLoadedTransactionFile(PwPlanningSequenceImpl.hasLoadedTransactionFile325,11414
+  public boolean hasLoadedTransactionFile(PwPlanningSequenceImpl.hasLoadedTransactionFile351,12290
+  public boolean hasLoadedTransactionFile(PwPlanningSequenceImpl.hasLoadedTransactionFile364,12841
+  public boolean isTransactionFileOnDisk(PwPlanningSequenceImpl.isTransactionFileOnDisk378,13380
+  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList389,13691
+  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList394,13888
+  public List getPartialPlansList(PwPlanningSequenceImpl.getPartialPlansList404,14200
+  public List getPartialPlanNamesList(PwPlanningSequenceImpl.getPartialPlanNamesList414,14452
+  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan427,14913
+  public synchronized PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan443,15542
+  public synchronized PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan463,16313
+  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan482,17006
+  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan496,17527
+  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan510,18087
+  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan524,18608
+  public void addPartialPlan(PwPlanningSequenceImpl.addPartialPlan529,18844
+  public void addPartialPlan(PwPlanningSequenceImpl.addPartialPlan535,19043
+  private PwPartialPlan addPartialPlan(PwPlanningSequenceImpl.addPartialPlan540,19256
+  private PwPartialPlan addPartialPlan(PwPlanningSequenceImpl.addPartialPlan566,20230
+  public PwPartialPlan getPartialPlanIfLoaded(PwPlanningSequenceImpl.getPartialPlanIfLoaded589,21100
+  public boolean isPartialPlanLoaded(PwPlanningSequenceImpl.isPartialPlanLoaded598,21470
+  public boolean isPartialPlanInDb(PwPlanningSequenceImpl.isPartialPlanInDb601,21581
+  public boolean isPartialPlanInFilesystem(PwPlanningSequenceImpl.isPartialPlanInFilesystem604,21688
+  public void delete(PwPlanningSequenceImpl.delete609,21906
+  public void setContentSpec(PwPlanningSequenceImpl.setContentSpec618,22204
+  public List getContentSpec(PwPlanningSequenceImpl.getContentSpec623,22314
+  public void setName(PwPlanningSequenceImpl.setName633,22550
+  public String getName(PwPlanningSequenceImpl.getName642,22716
+  public List getOpenDecisionsForStep(PwPlanningSequenceImpl.getOpenDecisionsForStep648,22801
+  public Integer getCurrentDecisionIdForStep(PwPlanningSequenceImpl.getCurrentDecisionIdForStep655,23141
+  public List getTransactionsForConstraint(PwPlanningSequenceImpl.getTransactionsForConstraint662,23469
+  public List getTransactionsForToken(PwPlanningSequenceImpl.getTransactionsForToken667,23628
+  public List getTransactionsForVariable(PwPlanningSequenceImpl.getTransactionsForVariable672,23778
+  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange677,23935
+  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange697,24379
+  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted701,24534
+  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted707,24755
+  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted713,24983
+  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted719,25215
+  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted724,25409
+  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted730,25615
+  public List getStepsWithRestrictions(PwPlanningSequenceImpl.getStepsWithRestrictions736,25825
+  public List getStepsWithRelaxations(PwPlanningSequenceImpl.getStepsWithRelaxations741,25951
+  public List getStepsWithUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithUnitVariableBindingDecisions746,26075
+  public List getStepsWithNonUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithNonUnitVariableBindingDecisions751,26220
+  public List getFreeTokensAtStep(PwPlanningSequenceImpl.getFreeTokensAtStep762,26504
+  private List getTokensById(PwPlanningSequenceImpl.getTokensById769,26792
+  public List getUnboundVariablesAtStep(PwPlanningSequenceImpl.getUnboundVariablesAtStep790,27727
+  private void loadPartialPlanFiles(PwPlanningSequenceImpl.loadPartialPlanFiles797,28060
+  private List getVariablesById(PwPlanningSequenceImpl.getVariablesById803,28316
+  public List getPartialPlanNameList(PwPlanningSequenceImpl.getPartialPlanNameList818,29116
+  public int [] getPlanDBSize(PwPlanningSequenceImpl.getPlanDBSize822,29209
+  public List getPlanDBSizeList(PwPlanningSequenceImpl.getPlanDBSizeList826,29335
+  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId830,29422
+  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId835,29605
+  public void refresh(PwPlanningSequenceImpl.refresh839,29720
+  private void fakeRules(PwPlanningSequenceImpl.fakeRules865,30808
+  private void instantiateRules(PwPlanningSequenceImpl.instantiateRules874,31034
+  public PwRule getRule(PwPlanningSequenceImpl.getRule882,31399
+  public List getRuleList(PwPlanningSequenceImpl.getRuleList886,31481
+  public void addTransaction(PwPlanningSequenceImpl.addTransaction890,31561
+  public String [] toOutputString(PwPlanningSequenceImpl.toOutputString895,31730
+  private class PartialPlanNameComparator PwPlanningSequenceImpl.PartialPlanNameComparator921,33126
+    public PartialPlanNameComparator(PwPlanningSequenceImpl.PartialPlanNameComparator.PartialPlanNameComparator922,33192
+    public int compare(PwPlanningSequenceImpl.PartialPlanNameComparator.compare925,33268
+    public boolean equals(PwPlanningSequenceImpl.PartialPlanNameComparator.equals930,33476
+  private String validateSequenceDirectory(PwPlanningSequenceImpl.validateSequenceDirectory936,33688
+  class StepDirectoryFilter PwPlanningSequenceImpl.StepDirectoryFilter953,34301
+    public StepDirectoryFilter(PwPlanningSequenceImpl.StepDirectoryFilter.StepDirectoryFilter954,34357
+    public boolean accept(PwPlanningSequenceImpl.StepDirectoryFilter.accept955,34392
+  class StepDirectoryComparator PwPlanningSequenceImpl.StepDirectoryComparator961,34527
+    public StepDirectoryComparator(PwPlanningSequenceImpl.StepDirectoryComparator.StepDirectoryComparator962,34583
+    public int compare(PwPlanningSequenceImpl.StepDirectoryComparator.compare964,34628
+    public boolean equals(PwPlanningSequenceImpl.StepDirectoryComparator.equals981,35147
 
 src/gov/nasa/arc/planworks/db/impl/PwPredicateImpl.java,303
 public class PwPredicateImpl PwPredicateImpl36,838
@@ -740,7 +742,7 @@ public class PwPredicateImpl PwPredicateImpl36,838
   public Integer getId(PwPredicateImpl.getId71,1647
   public List getParameterList(PwPredicateImpl.getParameterList80,1797
 
-src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java,2541
+src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java,2542
 public class PwProjectImpl PwProjectImpl44,1313
   public synchronized static void initProjects(PwProjectImpl.initProjects52,1483
   public static PwProject createProject(PwProjectImpl.createProject102,4173
@@ -750,29 +752,29 @@ public class PwProjectImpl PwProjectImpl44,1313
   public PwProjectImpl(PwProjectImpl.PwProjectImpl171,6639
   public PwProjectImpl(PwProjectImpl.PwProjectImpl187,7168
   public PwProjectImpl(PwProjectImpl.PwProjectImpl219,8621
-  private void invalidSequenceDialog(PwProjectImpl.invalidSequenceDialog255,9999
-  public Integer getId(PwProjectImpl.getId275,10817
-  protected void setId(PwProjectImpl.setId279,10866
-  public String getName(PwProjectImpl.getName288,11029
-  public List listPlanningSequences(PwProjectImpl.listPlanningSequences352,12290
-  class PlanningSequenceNameEquals PwProjectImpl.PlanningSequenceNameEquals356,12417
-    public PlanningSequenceNameEquals(PwProjectImpl.PlanningSequenceNameEquals.PlanningSequenceNameEquals358,12505
-    public final boolean func(PwProjectImpl.PlanningSequenceNameEquals.func359,12575
-  class PlanningSequenceIdEquals PwProjectImpl.PlanningSequenceIdEquals362,12675
-    public PlanningSequenceIdEquals(PwProjectImpl.PlanningSequenceIdEquals.PlanningSequenceIdEquals364,12757
-    public final boolean func(PwProjectImpl.PlanningSequenceIdEquals.func365,12817
-  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence374,13060
-  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence389,13771
-  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence403,14417
-  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence415,14909
-  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence421,15099
-  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence428,15340
-  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence435,15575
-  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence453,16316
-  public void delete(PwProjectImpl.delete476,17198
-  public String toOutputString(PwProjectImpl.toOutputString483,17468
-  public boolean getJNIAdapterLoaded(PwProjectImpl.getJNIAdapterLoaded497,18029
-  public void setJNIAdapterLoaded(PwProjectImpl.setJNIAdapterLoaded501,18104
+  private void invalidSequenceDialog(PwProjectImpl.invalidSequenceDialog255,10005
+  public Integer getId(PwProjectImpl.getId275,10823
+  protected void setId(PwProjectImpl.setId279,10872
+  public String getName(PwProjectImpl.getName288,11035
+  public List listPlanningSequences(PwProjectImpl.listPlanningSequences352,12296
+  class PlanningSequenceNameEquals PwProjectImpl.PlanningSequenceNameEquals356,12423
+    public PlanningSequenceNameEquals(PwProjectImpl.PlanningSequenceNameEquals.PlanningSequenceNameEquals358,12511
+    public final boolean func(PwProjectImpl.PlanningSequenceNameEquals.func359,12581
+  class PlanningSequenceIdEquals PwProjectImpl.PlanningSequenceIdEquals362,12681
+    public PlanningSequenceIdEquals(PwProjectImpl.PlanningSequenceIdEquals.PlanningSequenceIdEquals364,12763
+    public final boolean func(PwProjectImpl.PlanningSequenceIdEquals.func365,12823
+  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence374,13066
+  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence389,13777
+  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence403,14423
+  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence415,14915
+  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence421,15105
+  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence428,15346
+  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence435,15581
+  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence453,16322
+  public void delete(PwProjectImpl.delete476,17204
+  public String toOutputString(PwProjectImpl.toOutputString483,17474
+  public boolean getJNIAdapterLoaded(PwProjectImpl.getJNIAdapterLoaded497,18035
+  public void setJNIAdapterLoaded(PwProjectImpl.setJNIAdapterLoaded501,18110
 
 src/gov/nasa/arc/planworks/db/impl/PwResourceImpl.java,886
 public class PwResourceImpl PwResourceImpl39,1036
@@ -952,98 +954,98 @@ public abstract class FileUtils FileUtils32,759
   public static boolean deleteDir(FileUtils.deleteDir210,7725
 
 src/gov/nasa/arc/planworks/db/util/MySQLDB.java,8711
-public class MySQLDB MySQLDB63,2398
-  private MySQLDB(MySQLDB.MySQLDB71,2630
-  synchronized public static void startDatabase(MySQLDB.startDatabase81,2870
-  synchronized public static void stopDatabase(MySQLDB.stopDatabase124,4842
-  synchronized public static void registerDatabase(MySQLDB.registerDatabase140,5391
-  synchronized public static void unregisterDatabase(MySQLDB.unregisterDatabase180,6452
-  synchronized public static ResultSet queryDatabase(MySQLDB.queryDatabase200,6799
-  synchronized public static int updateDatabase(MySQLDB.updateDatabase225,7437
-  synchronized public static void analyzeDatabase(MySQLDB.analyzeDatabase244,7969
-  synchronized public static void loadFile(MySQLDB.loadFile268,8600
-  synchronized public static void loadFile(MySQLDB.loadFile272,8797
-  synchronized public static String queryPartialPlanModelById(MySQLDB.queryPartialPlanModelById285,9410
-  synchronized public static List getProjectNames(MySQLDB.getProjectNames305,9942
-  synchronized public static boolean projectExists(MySQLDB.projectExists325,10401
-  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists344,10860
-  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists355,11170
-  synchronized public static String getSequenceUrl(MySQLDB.getSequenceUrl366,11473
-	synchronized public static Long getSequenceId(MySQLDB.getSequenceId378,11827
-  synchronized public static void setSequenceUrl(MySQLDB.setSequenceUrl391,12189
-  synchronized public static boolean partialPlanExists(MySQLDB.partialPlanExists403,12558
-  synchronized public static boolean transactionsInDatabase(MySQLDB.transactionsInDatabase414,12964
-  synchronized public static List queryPlanNamesInDatabase(MySQLDB.queryPlanNamesInDatabase427,13365
-  synchronized public static List queryPlanIdsInDatabase(MySQLDB.queryPlanIdsInDatabase440,13770
-  synchronized public static void addProject(MySQLDB.addProject460,14309
-  synchronized public static Integer latestProjectId(MySQLDB.latestProjectId470,14560
-  synchronized public static Long addSequence(MySQLDB.addSequence489,15055
-  synchronized public static Long latestSequenceId(MySQLDB.latestSequenceId504,15704
-  synchronized public static Integer getProjectIdByName(MySQLDB.getProjectIdByName524,16142
-  synchronized public static Map getSequences(MySQLDB.getSequences546,16709
-  synchronized public static void deleteProject(MySQLDB.deleteProject567,17304
-  synchronized public static void deletePlanningSequence(MySQLDB.deletePlanningSequence581,17832
-  synchronized public static List getPlanNamesInSequence(MySQLDB.getPlanNamesInSequence626,19960
-  synchronized public static Long getNewPartialPlanId(MySQLDB.getNewPartialPlanId648,20540
-  synchronized public static Long getPartialPlanIdByName(MySQLDB.getPartialPlanIdByName661,21021
-  synchronized public static Long getPartialPlanIdByStepNum(MySQLDB.getPartialPlanIdByStepNum680,21649
-  synchronized public static String getPartialPlanNameById(MySQLDB.getPartialPlanNameById699,22298
-  synchronized public static List queryPartialPlanNames(MySQLDB.queryPartialPlanNames713,22832
-  synchronized public static void createObjects(MySQLDB.createObjects733,23472
-  synchronized public static int countTransactions(MySQLDB.countTransactions789,26080
-  synchronized private static PwDBTransactionImpl instantiateTransaction(MySQLDB.instantiateTransaction802,26467
-  synchronized public static Map queryTransactions(MySQLDB.queryTransactions833,27705
-  synchronized public static void createSlotTokenNodesStructure(MySQLDB.createSlotTokenNodesStructure854,28664
-  synchronized public static void queryConstraints(MySQLDB.queryConstraints1005,37686
-  synchronized public static void queryVariables(MySQLDB.queryVariables1037,39347
-  synchronized public static void queryRuleInstances(MySQLDB.queryRuleInstances1085,41879
-  synchronized public static void queryResourceInstants(MySQLDB.queryResourceInstants1107,43074
-  synchronized public static Map queryRules(MySQLDB.queryRules1135,44436
-  synchronized public static List queryOpenDecisionsForStep(MySQLDB.queryOpenDecisionsForStep1200,47298
-  synchronized public static Integer queryCurrentDecisionIdForStep(MySQLDB.queryCurrentDecisionIdForStep1225,48466
-  synchronized public static List queryTransactionsForStep(MySQLDB.queryTransactionsForStep1239,49016
-  synchronized public static List queryTransactionsForConstraint(MySQLDB.queryTransactionsForConstraint1251,49656
-  synchronized public static List queryTransactionsForToken(MySQLDB.queryTransactionsForToken1266,50432
-  synchronized public static List queryTransactionsForVariable(MySQLDB.queryTransactionsForVariable1281,51184
-  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1296,51941
-  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1314,52893
-  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1332,53850
-  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1350,54827
-  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1367,55640
-  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1384,56459
-  synchronized public static List queryStepsWithRestrictions(MySQLDB.queryStepsWithRestrictions1401,57282
-  synchronized public static List queryStepsWithRelaxations(MySQLDB.queryStepsWithRelaxations1416,58015
-  synchronized public static List queryStepsWithUnitDecisions(MySQLDB.queryStepsWithUnitDecisions1433,58820
-  synchronized public static List queryStepsWithNonUnitDecisions(MySQLDB.queryStepsWithNonUnitDecisions1453,59813
-  synchronized public static List queryFreeTokensAtStep(MySQLDB.queryFreeTokensAtStep1469,60569
-  synchronized public static List queryUnboundVariablesAtStep(MySQLDB.queryUnboundVariablesAtStep1495,61819
-  synchronized private static boolean varDerivedDomainIsSingleton(MySQLDB.varDerivedDomainIsSingleton1533,63503
-  synchronized private static boolean varSpecDomainIsSingleton(MySQLDB.varSpecDomainIsSingleton1548,63992
-  synchronized private static boolean varDomainIsSingleton(MySQLDB.varDomainIsSingleton1568,64683
-  synchronized public static List queryPartialPlanSizes(MySQLDB.queryPartialPlanSizes1580,65082
-  synchronized public static int [] queryPartialPlanSize(MySQLDB.queryPartialPlanSize1599,65729
-  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1614,66260
-  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1625,66711
-  synchronized public static Map queryAllIdsForPartialPlan(MySQLDB.queryAllIdsForPartialPlan1637,67159
-  synchronized public static List queryRuleIdsForSequence(MySQLDB.queryRuleIdsForSequence1671,68749
-  synchronized public static List queryResourceIdsForObject(MySQLDB.queryResourceIdsForObject1686,69146
-  synchronized public static List queryTimelineIdsForObject(MySQLDB.queryTimelineIdsForObject1701,69754
-  synchronized public static List querySlotIdsForTimeline(MySQLDB.querySlotIdsForTimeline1716,70362
-  synchronized public static Map queryAllChildRuleInstanceIds(MySQLDB.queryAllChildRuleInstanceIds1745,71556
-  synchronized public static List queryTransactionIdsForPartialPlan(MySQLDB.queryTransactionIdsForPartialPlan1779,72907
-	synchronized public static List queryTransactionNameList(MySQLDB.queryTransactionNameList1793,73465
-	synchronized public static void queryTransactionNames(MySQLDB.queryTransactionNames1807,73823
-  synchronized public static List queryPartialPlanIds(MySQLDB.queryPartialPlanIds1853,75263
-  synchronized public static List queryPartialPlanIds(MySQLDB.queryPartialPlanIds1868,75708
-  synchronized public static Map queryStepNumPartialPlanIds(MySQLDB.queryStepNumPartialPlanIds1883,76205
-  synchronized public static boolean statsInDb(MySQLDB.statsInDb1899,76843
-  synchronized public static boolean rulesInDb(MySQLDB.rulesInDb1912,77236
-  synchronized public static boolean transactionsInDatabaseForStep(MySQLDB.transactionsInDatabaseForStep1925,77618
-  synchronized public static int maxStepForTransactionsInDb(MySQLDB.maxStepForTransactionsInDb1938,78045
-class EntityIdComparator EntityIdComparator1959,78747
-  public EntityIdComparator(EntityIdComparator.EntityIdComparator1960,78796
-  public boolean equals(EntityIdComparator.equals1962,78832
-  public int compare(EntityIdComparator.compare1965,78890
+public class MySQLDB MySQLDB63,2396
+  private MySQLDB(MySQLDB.MySQLDB71,2628
+  synchronized public static void startDatabase(MySQLDB.startDatabase81,2868
+  synchronized public static void stopDatabase(MySQLDB.stopDatabase124,4840
+  synchronized public static void registerDatabase(MySQLDB.registerDatabase140,5389
+  synchronized public static void unregisterDatabase(MySQLDB.unregisterDatabase180,6450
+  synchronized public static ResultSet queryDatabase(MySQLDB.queryDatabase200,6797
+  synchronized public static int updateDatabase(MySQLDB.updateDatabase225,7435
+  synchronized public static void analyzeDatabase(MySQLDB.analyzeDatabase244,7967
+  synchronized public static void loadFile(MySQLDB.loadFile268,8598
+  synchronized public static void loadFile(MySQLDB.loadFile272,8795
+  synchronized public static String queryPartialPlanModelById(MySQLDB.queryPartialPlanModelById285,9408
+  synchronized public static List getProjectNames(MySQLDB.getProjectNames305,9940
+  synchronized public static boolean projectExists(MySQLDB.projectExists325,10399
+  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists344,10858
+  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists355,11168
+  synchronized public static String getSequenceUrl(MySQLDB.getSequenceUrl366,11471
+	synchronized public static Long getSequenceId(MySQLDB.getSequenceId378,11825
+  synchronized public static void setSequenceUrl(MySQLDB.setSequenceUrl391,12187
+  synchronized public static boolean partialPlanExists(MySQLDB.partialPlanExists403,12556
+  synchronized public static boolean transactionsInDatabase(MySQLDB.transactionsInDatabase414,12962
+  synchronized public static List queryPlanNamesInDatabase(MySQLDB.queryPlanNamesInDatabase427,13363
+  synchronized public static List queryPlanIdsInDatabase(MySQLDB.queryPlanIdsInDatabase440,13768
+  synchronized public static void addProject(MySQLDB.addProject460,14307
+  synchronized public static Integer latestProjectId(MySQLDB.latestProjectId470,14558
+  synchronized public static Long addSequence(MySQLDB.addSequence489,15053
+  synchronized public static Long latestSequenceId(MySQLDB.latestSequenceId504,15702
+  synchronized public static Integer getProjectIdByName(MySQLDB.getProjectIdByName524,16140
+  synchronized public static Map getSequences(MySQLDB.getSequences546,16707
+  synchronized public static void deleteProject(MySQLDB.deleteProject567,17302
+  synchronized public static void deletePlanningSequence(MySQLDB.deletePlanningSequence581,17830
+  synchronized public static List getPlanNamesInSequence(MySQLDB.getPlanNamesInSequence626,19958
+  synchronized public static Long getNewPartialPlanId(MySQLDB.getNewPartialPlanId648,20538
+  synchronized public static Long getPartialPlanIdByName(MySQLDB.getPartialPlanIdByName661,21019
+  synchronized public static Long getPartialPlanIdByStepNum(MySQLDB.getPartialPlanIdByStepNum680,21647
+  synchronized public static String getPartialPlanNameById(MySQLDB.getPartialPlanNameById699,22296
+  synchronized public static List queryPartialPlanNames(MySQLDB.queryPartialPlanNames713,22830
+  synchronized public static void createObjects(MySQLDB.createObjects733,23470
+  synchronized public static int countTransactions(MySQLDB.countTransactions789,26078
+  synchronized private static PwDBTransactionImpl instantiateTransaction(MySQLDB.instantiateTransaction802,26465
+  synchronized public static Map queryTransactions(MySQLDB.queryTransactions833,27703
+  synchronized public static void createSlotTokenNodesStructure(MySQLDB.createSlotTokenNodesStructure854,28662
+  synchronized public static void queryConstraints(MySQLDB.queryConstraints1005,37684
+  synchronized public static void queryVariables(MySQLDB.queryVariables1037,39345
+  synchronized public static void queryRuleInstances(MySQLDB.queryRuleInstances1085,41877
+  synchronized public static void queryResourceInstants(MySQLDB.queryResourceInstants1107,43072
+  synchronized public static Map queryRules(MySQLDB.queryRules1135,44434
+  synchronized public static List queryOpenDecisionsForStep(MySQLDB.queryOpenDecisionsForStep1203,47488
+  synchronized public static Integer queryCurrentDecisionIdForStep(MySQLDB.queryCurrentDecisionIdForStep1228,48656
+  synchronized public static List queryTransactionsForStep(MySQLDB.queryTransactionsForStep1242,49206
+  synchronized public static List queryTransactionsForConstraint(MySQLDB.queryTransactionsForConstraint1254,49846
+  synchronized public static List queryTransactionsForToken(MySQLDB.queryTransactionsForToken1269,50622
+  synchronized public static List queryTransactionsForVariable(MySQLDB.queryTransactionsForVariable1284,51374
+  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1299,52131
+  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1317,53083
+  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1335,54040
+  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1353,55017
+  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1370,55830
+  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1387,56649
+  synchronized public static List queryStepsWithRestrictions(MySQLDB.queryStepsWithRestrictions1404,57472
+  synchronized public static List queryStepsWithRelaxations(MySQLDB.queryStepsWithRelaxations1419,58205
+  synchronized public static List queryStepsWithUnitDecisions(MySQLDB.queryStepsWithUnitDecisions1436,59010
+  synchronized public static List queryStepsWithNonUnitDecisions(MySQLDB.queryStepsWithNonUnitDecisions1456,60003
+  synchronized public static List queryFreeTokensAtStep(MySQLDB.queryFreeTokensAtStep1472,60759
+  synchronized public static List queryUnboundVariablesAtStep(MySQLDB.queryUnboundVariablesAtStep1498,62009
+  synchronized private static boolean varDerivedDomainIsSingleton(MySQLDB.varDerivedDomainIsSingleton1536,63693
+  synchronized private static boolean varSpecDomainIsSingleton(MySQLDB.varSpecDomainIsSingleton1551,64182
+  synchronized private static boolean varDomainIsSingleton(MySQLDB.varDomainIsSingleton1571,64873
+  synchronized public static List queryPartialPlanSizes(MySQLDB.queryPartialPlanSizes1583,65272
+  synchronized public static int [] queryPartialPlanSize(MySQLDB.queryPartialPlanSize1602,65919
+  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1617,66450
+  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1628,66901
+  synchronized public static Map queryAllIdsForPartialPlan(MySQLDB.queryAllIdsForPartialPlan1640,67349
+  synchronized public static List queryRuleIdsForSequence(MySQLDB.queryRuleIdsForSequence1674,68939
+  synchronized public static List queryResourceIdsForObject(MySQLDB.queryResourceIdsForObject1689,69336
+  synchronized public static List queryTimelineIdsForObject(MySQLDB.queryTimelineIdsForObject1704,69944
+  synchronized public static List querySlotIdsForTimeline(MySQLDB.querySlotIdsForTimeline1719,70552
+  synchronized public static Map queryAllChildRuleInstanceIds(MySQLDB.queryAllChildRuleInstanceIds1748,71746
+  synchronized public static List queryTransactionIdsForPartialPlan(MySQLDB.queryTransactionIdsForPartialPlan1782,73097
+	synchronized public static List queryTransactionNameList(MySQLDB.queryTransactionNameList1796,73655
+	synchronized public static void queryTransactionNames(MySQLDB.queryTransactionNames1810,74013
+  synchronized public static List queryPartialPlanIds(MySQLDB.queryPartialPlanIds1856,75453
+  synchronized public static List queryPartialPlanIds(MySQLDB.queryPartialPlanIds1871,75898
+  synchronized public static Map queryStepNumPartialPlanIds(MySQLDB.queryStepNumPartialPlanIds1886,76395
+  synchronized public static boolean statsInDb(MySQLDB.statsInDb1902,77033
+  synchronized public static boolean rulesInDb(MySQLDB.rulesInDb1915,77426
+  synchronized public static boolean transactionsInDatabaseForStep(MySQLDB.transactionsInDatabaseForStep1928,77808
+  synchronized public static int maxStepForTransactionsInDb(MySQLDB.maxStepForTransactionsInDb1941,78235
+class EntityIdComparator EntityIdComparator1962,78937
+  public EntityIdComparator(EntityIdComparator.EntityIdComparator1963,78986
+  public boolean equals(EntityIdComparator.equals1965,79022
+  public int compare(EntityIdComparator.compare1968,79080
 
 src/gov/nasa/arc/planworks/db/util/PartialPlanContentSpec.java,1267
 public class PartialPlanContentSpec PartialPlanContentSpec37,1276
@@ -1333,26 +1335,26 @@ public class PluginEvent PluginEvent21,507
 src/gov/nasa/arc/planworks/plugin/PluginListener.java,55
 public interface PluginListener PluginListener21,542
 
-src/gov/nasa/arc/planworks/test/BackendTest.java,1299
-public class BackendTest BackendTest14,300
-    class IdSourceImpl BackendTest.IdSourceImpl30,987
-      public int incEntityIdInt(BackendTest.IdSourceImpl.incEntityIdInt33,1092
-      public void resetEntityIdInt(BackendTest.IdSourceImpl.resetEntityIdInt36,1166
-  public static void main(BackendTest.main71,2665
-  protected void setUp(BackendTest.setUp74,2755
-  protected void tearDown(BackendTest.tearDown77,2809
-  synchronized private void setTestRunning(BackendTest.setTestRunning86,3068
-  synchronized private void incTestsRun(BackendTest.incTestsRun89,3160
-  public BackendTest(BackendTest.BackendTest92,3224
-  public static TestSuite suite(BackendTest.suite95,3289
-  public void testPlanLoad(BackendTest.testPlanLoad103,3566
-  public void testDataConsistency(BackendTest.testDataConsistency121,4069
-  public void testTransactionQueries(BackendTest.testTransactionQueries436,19217
-  private void testQueriesForConstraint(BackendTest.testQueriesForConstraint473,20891
-  private void testQueriesForToken(BackendTest.testQueriesForToken492,22176
-  private void testQueriesForVariable(BackendTest.testQueriesForVariable511,23361
-  public int incEntityIdInt(BackendTest.incEntityIdInt532,24632
-  public void resetEntityIdInt(BackendTest.resetEntityIdInt537,24720
+src/gov/nasa/arc/planworks/test/BackendTest.java,1304
+public class BackendTest BackendTest24,613
+    class IdSourceImpl BackendTest.IdSourceImpl40,1300
+      public int incEntityIdInt(BackendTest.IdSourceImpl.incEntityIdInt43,1405
+      public void resetEntityIdInt(BackendTest.IdSourceImpl.resetEntityIdInt46,1479
+  public static void main(BackendTest.main85,3262
+  protected void setUp(BackendTest.setUp88,3352
+  protected void tearDown(BackendTest.tearDown91,3406
+  synchronized private void setTestRunning(BackendTest.setTestRunning100,3665
+  synchronized private void incTestsRun(BackendTest.incTestsRun103,3757
+  public BackendTest(BackendTest.BackendTest106,3821
+  public static TestSuite suite(BackendTest.suite109,3886
+  public void testPlanLoad(BackendTest.testPlanLoad117,4163
+  public void testDataConsistency(BackendTest.testDataConsistency135,4666
+  public void testTransactionQueries(BackendTest.testTransactionQueries450,19814
+  private void testQueriesForConstraint(BackendTest.testQueriesForConstraint487,21488
+  private void testQueriesForToken(BackendTest.testQueriesForToken506,22773
+  private void testQueriesForVariable(BackendTest.testQueriesForVariable525,23958
+  public int incEntityIdInt(BackendTest.incEntityIdInt546,25229
+  public void resetEntityIdInt(BackendTest.resetEntityIdInt551,25317
 
 src/gov/nasa/arc/planworks/test/IdSource.java,43
 public interface IdSource IdSource11,275
@@ -1379,122 +1381,156 @@ public class MySQLDBTest MySQLDBTest12,239
   private void checkRuleInstanceLoad(MySQLDBTest.checkRuleInstanceLoad301,11255
   private void checkDecisionLoad(MySQLDBTest.checkDecisionLoad321,12070
 
-src/gov/nasa/arc/planworks/test/PlanWorksGUITest.java,9643
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest.java,7491
 public class PlanWorksGUITest PlanWorksGUITest167,8663
-  public PlanWorksGUITest(PlanWorksGUITest.PlanWorksGUITest199,9769
-  public int incEntityIdInt(PlanWorksGUITest.incEntityIdInt204,9857
-  public void resetEntityIdInt(PlanWorksGUITest.resetEntityIdInt209,9947
-  public boolean getViewListenerWait01(PlanWorksGUITest.getViewListenerWait01213,10008
-  public void setViewListenerWait01(PlanWorksGUITest.setViewListenerWait01217,10087
-  public boolean getViewListenerWait02(PlanWorksGUITest.getViewListenerWait02221,10178
-  public void setViewListenerWait02(PlanWorksGUITest.setViewListenerWait02225,10257
-  public boolean getViewListenerWait03(PlanWorksGUITest.getViewListenerWait03229,10348
-  public void setViewListenerWait03(PlanWorksGUITest.setViewListenerWait03233,10427
-  public boolean getViewListenerWait04(PlanWorksGUITest.getViewListenerWait04237,10518
-  public void setViewListenerWait04(PlanWorksGUITest.setViewListenerWait04241,10597
-  public boolean getViewListenerWait05(PlanWorksGUITest.getViewListenerWait05245,10688
-  public void setViewListenerWait05(PlanWorksGUITest.setViewListenerWait05249,10767
-  public boolean getViewListenerWait06(PlanWorksGUITest.getViewListenerWait06253,10858
-  public void setViewListenerWait06(PlanWorksGUITest.setViewListenerWait06257,10937
-  public boolean getViewListenerWait07(PlanWorksGUITest.getViewListenerWait07261,11028
-  public void setViewListenerWait07(PlanWorksGUITest.setViewListenerWait07265,11107
-  public boolean getViewListenerWait08(PlanWorksGUITest.getViewListenerWait08269,11198
-  public void setViewListenerWait08(PlanWorksGUITest.setViewListenerWait08273,11277
-  public boolean getThreadListenerWait01(PlanWorksGUITest.getThreadListenerWait01277,11368
-  public void setThreadListenerWait01(PlanWorksGUITest.setThreadListenerWait01281,11451
-  public void setUp(PlanWorksGUITest.setUp286,11547
-  public void tearDown(PlanWorksGUITest.tearDown348,14334
-  public void planVizTests(PlanWorksGUITest.planVizTests355,14531
-  public void planViz01(PlanWorksGUITest.planViz01377,15208
-  public void planViz02(PlanWorksGUITest.planViz02402,16350
-  public void planViz03(PlanWorksGUITest.planViz03503,21577
-  public void planViz04(PlanWorksGUITest.planViz04536,23381
-  public void planViz05(PlanWorksGUITest.planViz05555,24300
-  public void planViz06(PlanWorksGUITest.planViz06592,26405
-  public void planViz07(PlanWorksGUITest.planViz07639,28946
-  public void planViz08(PlanWorksGUITest.planViz08737,34620
-  class FrameXAscending PlanWorksGUITest.FrameXAscending846,41049
-    public FrameXAscending(PlanWorksGUITest.FrameXAscending.FrameXAscending847,41097
-    public int compare(PlanWorksGUITest.FrameXAscending.compare849,41134
-    public boolean equals(PlanWorksGUITest.FrameXAscending.equals855,41375
-  public void planViz09(PlanWorksGUITest.planViz09862,41649
-  public void planViz10(PlanWorksGUITest.planViz10995,49624
-  public void planViz10CNet(PlanWorksGUITest.planViz10CNet1132,56975
-  public void planViz10TempExt(PlanWorksGUITest.planViz10TempExt1596,85288
-  public void planViz10Timeline(PlanWorksGUITest.planViz10Timeline1762,94662
-  private void planViz10TokNet(PlanWorksGUITest.planViz10TokNet1906,103155
-  private void planViz10DBTrans(PlanWorksGUITest.planViz10DBTrans2112,115421
-  class PwDBTransactionFunctor PlanWorksGUITest.PwDBTransactionFunctor2265,125011
-    public PwDBTransactionFunctor(PlanWorksGUITest.PwDBTransactionFunctor.PwDBTransactionFunctor2267,125099
-    public boolean func(PlanWorksGUITest.PwDBTransactionFunctor.func2268,125177
-  public void planViz11(PlanWorksGUITest.planViz112272,125272
-  private void invokeAllViewsSelections(PlanWorksGUITest.invokeAllViewsSelections2925,163492
-  private void waitForAllViews(PlanWorksGUITest.waitForAllViews2983,166779
-  private void createOverviewWindow(PlanWorksGUITest.createOverviewWindow3043,171009
-  public void planViz12(PlanWorksGUITest.planViz123056,171712
-  private void confirmSpecForViews(PlanWorksGUITest.confirmSpecForViews3203,179516
-  private Object[] getPredicateGroupBoxes(PlanWorksGUITest.getPredicateGroupBoxes3645,202771
-  private Object[] getTimelineGroupBoxes(PlanWorksGUITest.getTimelineGroupBoxes3678,204363
-  private Object[] getTimeIntervalGroupBoxes(PlanWorksGUITest.getTimeIntervalGroupBoxes3712,206028
-  private Object[] getUniqueKeyGroupBoxes(PlanWorksGUITest.getUniqueKeyGroupBoxes3754,208042
-  private void validateTimelineViewPredicate(PlanWorksGUITest.validateTimelineViewPredicate3778,209104
-  private void validateTimelineViewTimeline(PlanWorksGUITest.validateTimelineViewTimeline3832,211781
-  private void validateTimelineViewTimeInterval(PlanWorksGUITest.validateTimelineViewTimeInterval3861,213209
-  private List getTimelineViewSlottedTokenList(PlanWorksGUITest.getTimelineViewSlottedTokenList3882,214371
-  private List getTimelineViewFreeTokenList(PlanWorksGUITest.getTimelineViewFreeTokenList3913,215723
-  public void assertTrueVerbose(PlanWorksGUITest.assertTrueVerbose3926,216177
-  public void assertFalseVerbose(PlanWorksGUITest.assertFalseVerbose3935,216508
-  public void assertNotNullVerbose(PlanWorksGUITest.assertNotNullVerbose3944,216844
-  public void assertNullVerbose(PlanWorksGUITest.assertNullVerbose3954,217182
-  public class ViewListenerWait01 PlanWorksGUITest.ViewListenerWait013964,217514
-    public ViewListenerWait01(PlanWorksGUITest.ViewListenerWait01.ViewListenerWait013966,217609
-    public void reset(PlanWorksGUITest.ViewListenerWait01.reset3971,217765
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait01.initDrawingEnded3974,217842
-    public void viewWait(PlanWorksGUITest.ViewListenerWait01.viewWait3980,218113
-  public class ViewListenerWait02 PlanWorksGUITest.ViewListenerWait023992,218454
-    public ViewListenerWait02(PlanWorksGUITest.ViewListenerWait02.ViewListenerWait023994,218549
-    public void reset(PlanWorksGUITest.ViewListenerWait02.reset3999,218704
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait02.initDrawingEnded4002,218781
-    public void viewWait(PlanWorksGUITest.ViewListenerWait02.viewWait4008,219052
-  public class ViewListenerWait03 PlanWorksGUITest.ViewListenerWait034020,219393
-    public ViewListenerWait03(PlanWorksGUITest.ViewListenerWait03.ViewListenerWait034022,219488
-    public void reset(PlanWorksGUITest.ViewListenerWait03.reset4027,219643
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait03.initDrawingEnded4030,219720
-    public void viewWait(PlanWorksGUITest.ViewListenerWait03.viewWait4036,219991
-  public class ViewListenerWait04 PlanWorksGUITest.ViewListenerWait044048,220332
-    public ViewListenerWait04(PlanWorksGUITest.ViewListenerWait04.ViewListenerWait044050,220427
-    public void reset(PlanWorksGUITest.ViewListenerWait04.reset4055,220582
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait04.initDrawingEnded4058,220659
-    public void viewWait(PlanWorksGUITest.ViewListenerWait04.viewWait4064,220930
-  public class ViewListenerWait05 PlanWorksGUITest.ViewListenerWait054076,221271
-    public ViewListenerWait05(PlanWorksGUITest.ViewListenerWait05.ViewListenerWait054078,221366
-    public void reset(PlanWorksGUITest.ViewListenerWait05.reset4083,221521
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait05.initDrawingEnded4086,221598
-    public void viewWait(PlanWorksGUITest.ViewListenerWait05.viewWait4092,221869
-  public class ViewListenerWait06 PlanWorksGUITest.ViewListenerWait064104,222210
-    public ViewListenerWait06(PlanWorksGUITest.ViewListenerWait06.ViewListenerWait064106,222305
-    public void reset(PlanWorksGUITest.ViewListenerWait06.reset4111,222460
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait06.initDrawingEnded4114,222537
-    public void viewWait(PlanWorksGUITest.ViewListenerWait06.viewWait4120,222808
-  public class ViewListenerWait07 PlanWorksGUITest.ViewListenerWait074132,223149
-    public ViewListenerWait07(PlanWorksGUITest.ViewListenerWait07.ViewListenerWait074134,223244
-    public void reset(PlanWorksGUITest.ViewListenerWait07.reset4139,223399
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait07.initDrawingEnded4142,223476
-    public void viewWait(PlanWorksGUITest.ViewListenerWait07.viewWait4148,223747
-  public class ViewListenerWait08 PlanWorksGUITest.ViewListenerWait084160,224088
-    public ViewListenerWait08(PlanWorksGUITest.ViewListenerWait08.ViewListenerWait084162,224183
-    public void reset(PlanWorksGUITest.ViewListenerWait08.reset4167,224338
-    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait08.initDrawingEnded4170,224415
-    public void viewWait(PlanWorksGUITest.ViewListenerWait08.viewWait4176,224686
-  private List createViewListenerList(PlanWorksGUITest.createViewListenerList4189,225095
-  private void viewListenerListWait(PlanWorksGUITest.viewListenerListWait4207,225962
-  private void viewListenerListReset(PlanWorksGUITest.viewListenerListReset4232,227419
-  public class ThreadListenerWait01 PlanWorksGUITest.ThreadListenerWait014256,228854
-    public ThreadListenerWait01(PlanWorksGUITest.ThreadListenerWait01.ThreadListenerWait014258,228953
-    public void reset(PlanWorksGUITest.ThreadListenerWait01.reset4263,229112
-    public void threadEnded(PlanWorksGUITest.ThreadListenerWait01.threadEnded4266,229191
-    public void threadWait(PlanWorksGUITest.ThreadListenerWait01.threadWait4272,229459
-  public static TestSuite suite(PlanWorksGUITest.suite4284,229808
+  public PlanWorksGUITest(PlanWorksGUITest.PlanWorksGUITest201,9837
+  public int incEntityIdInt(PlanWorksGUITest.incEntityIdInt207,9947
+  public void resetEntityIdInt(PlanWorksGUITest.resetEntityIdInt212,10037
+  public boolean getViewListenerWait01(PlanWorksGUITest.getViewListenerWait01216,10098
+  public void setViewListenerWait01(PlanWorksGUITest.setViewListenerWait01220,10177
+  public boolean getViewListenerWait02(PlanWorksGUITest.getViewListenerWait02224,10268
+  public void setViewListenerWait02(PlanWorksGUITest.setViewListenerWait02228,10347
+  public boolean getViewListenerWait03(PlanWorksGUITest.getViewListenerWait03232,10438
+  public void setViewListenerWait03(PlanWorksGUITest.setViewListenerWait03236,10517
+  public boolean getViewListenerWait04(PlanWorksGUITest.getViewListenerWait04240,10608
+  public void setViewListenerWait04(PlanWorksGUITest.setViewListenerWait04244,10687
+  public boolean getViewListenerWait05(PlanWorksGUITest.getViewListenerWait05248,10778
+  public void setViewListenerWait05(PlanWorksGUITest.setViewListenerWait05252,10857
+  public boolean getViewListenerWait06(PlanWorksGUITest.getViewListenerWait06256,10948
+  public void setViewListenerWait06(PlanWorksGUITest.setViewListenerWait06260,11027
+  public boolean getViewListenerWait07(PlanWorksGUITest.getViewListenerWait07264,11118
+  public void setViewListenerWait07(PlanWorksGUITest.setViewListenerWait07268,11197
+  public boolean getViewListenerWait08(PlanWorksGUITest.getViewListenerWait08272,11288
+  public void setViewListenerWait08(PlanWorksGUITest.setViewListenerWait08276,11367
+  public boolean getThreadListenerWait01(PlanWorksGUITest.getThreadListenerWait01280,11458
+  public void setThreadListenerWait01(PlanWorksGUITest.setThreadListenerWait01284,11541
+  public void setUp(PlanWorksGUITest.setUp289,11637
+  public void tearDown(PlanWorksGUITest.tearDown351,14424
+  public void planVizTests(PlanWorksGUITest.planVizTests358,14621
+  public class FrameXAscending PlanWorksGUITest.FrameXAscending383,15782
+    public FrameXAscending(PlanWorksGUITest.FrameXAscending.FrameXAscending384,15837
+    public int compare(PlanWorksGUITest.FrameXAscending.compare386,15874
+    public boolean equals(PlanWorksGUITest.FrameXAscending.equals392,16115
+  public static class PwDBTransactionFunctor PlanWorksGUITest.PwDBTransactionFunctor400,16390
+    public PwDBTransactionFunctor(PlanWorksGUITest.PwDBTransactionFunctor.PwDBTransactionFunctor402,16492
+    public boolean func(PlanWorksGUITest.PwDBTransactionFunctor.func403,16570
+  protected void invokeAllViewsSelections(PlanWorksGUITest.invokeAllViewsSelections408,16666
+  protected void waitForAllViews(PlanWorksGUITest.waitForAllViews466,19963
+  protected void createOverviewWindow(PlanWorksGUITest.createOverviewWindow526,24195
+  public void assertTrueVerbose(PlanWorksGUITest.assertTrueVerbose544,24907
+  public void assertFalseVerbose(PlanWorksGUITest.assertFalseVerbose553,25238
+  public void assertNotNullVerbose(PlanWorksGUITest.assertNotNullVerbose562,25574
+  public void assertNullVerbose(PlanWorksGUITest.assertNullVerbose572,25915
+  protected List createViewListenerList(PlanWorksGUITest.createViewListenerList584,26316
+  protected void viewListenerListWait(PlanWorksGUITest.viewListenerListWait602,27185
+  protected void viewListenerListReset(PlanWorksGUITest.viewListenerListReset627,28644
+  public static TestSuite suite(PlanWorksGUITest.suite652,30082
+  public static class ViewListenerWait01 PlanWorksGUITest.ViewListenerWait01667,30472
+    public ViewListenerWait01(PlanWorksGUITest.ViewListenerWait01.ViewListenerWait01669,30574
+    public void reset(PlanWorksGUITest.ViewListenerWait01.reset674,30730
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait01.initDrawingEnded677,30807
+    public void viewWait(PlanWorksGUITest.ViewListenerWait01.viewWait683,31078
+  public static class ViewListenerWait02 PlanWorksGUITest.ViewListenerWait02695,31435
+    public ViewListenerWait02(PlanWorksGUITest.ViewListenerWait02.ViewListenerWait02697,31537
+    public void reset(PlanWorksGUITest.ViewListenerWait02.reset702,31692
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait02.initDrawingEnded705,31769
+    public void viewWait(PlanWorksGUITest.ViewListenerWait02.viewWait711,32040
+  public static class ViewListenerWait03 PlanWorksGUITest.ViewListenerWait03723,32397
+    public ViewListenerWait03(PlanWorksGUITest.ViewListenerWait03.ViewListenerWait03725,32499
+    public void reset(PlanWorksGUITest.ViewListenerWait03.reset730,32654
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait03.initDrawingEnded733,32731
+    public void viewWait(PlanWorksGUITest.ViewListenerWait03.viewWait739,33002
+  public static class ViewListenerWait04 PlanWorksGUITest.ViewListenerWait04751,33359
+    public ViewListenerWait04(PlanWorksGUITest.ViewListenerWait04.ViewListenerWait04753,33461
+    public void reset(PlanWorksGUITest.ViewListenerWait04.reset758,33616
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait04.initDrawingEnded761,33693
+    public void viewWait(PlanWorksGUITest.ViewListenerWait04.viewWait767,33964
+  public static class ViewListenerWait05 PlanWorksGUITest.ViewListenerWait05779,34321
+    public ViewListenerWait05(PlanWorksGUITest.ViewListenerWait05.ViewListenerWait05781,34423
+    public void reset(PlanWorksGUITest.ViewListenerWait05.reset786,34578
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait05.initDrawingEnded789,34655
+    public void viewWait(PlanWorksGUITest.ViewListenerWait05.viewWait795,34926
+  public static class ViewListenerWait06 PlanWorksGUITest.ViewListenerWait06807,35283
+    public ViewListenerWait06(PlanWorksGUITest.ViewListenerWait06.ViewListenerWait06809,35385
+    public void reset(PlanWorksGUITest.ViewListenerWait06.reset814,35540
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait06.initDrawingEnded817,35617
+    public void viewWait(PlanWorksGUITest.ViewListenerWait06.viewWait823,35888
+  public static class ViewListenerWait07 PlanWorksGUITest.ViewListenerWait07835,36245
+    public ViewListenerWait07(PlanWorksGUITest.ViewListenerWait07.ViewListenerWait07837,36347
+    public void reset(PlanWorksGUITest.ViewListenerWait07.reset842,36502
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait07.initDrawingEnded845,36579
+    public void viewWait(PlanWorksGUITest.ViewListenerWait07.viewWait851,36850
+  public static class ViewListenerWait08 PlanWorksGUITest.ViewListenerWait08863,37207
+    public ViewListenerWait08(PlanWorksGUITest.ViewListenerWait08.ViewListenerWait08865,37309
+    public void reset(PlanWorksGUITest.ViewListenerWait08.reset870,37464
+    public void initDrawingEnded(PlanWorksGUITest.ViewListenerWait08.initDrawingEnded873,37541
+    public void viewWait(PlanWorksGUITest.ViewListenerWait08.viewWait879,37812
+  public static class ThreadListenerWait01 PlanWorksGUITest.ThreadListenerWait01891,38169
+    public ThreadListenerWait01(PlanWorksGUITest.ThreadListenerWait01.ThreadListenerWait01893,38275
+    public void reset(PlanWorksGUITest.ThreadListenerWait01.reset898,38434
+    public void threadEnded(PlanWorksGUITest.ThreadListenerWait01.threadEnded901,38513
+    public void threadWait(PlanWorksGUITest.ThreadListenerWait01.threadWait907,38781
+
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest01.java,202
+public class PlanWorksGUITest01 PlanWorksGUITest0119,365
+  private PlanWorksGUITest01(PlanWorksGUITest01.PlanWorksGUITest0121,400
+  public static void planViz01(PlanWorksGUITest01.planViz0124,438
+
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest02.java,202
+public class PlanWorksGUITest02 PlanWorksGUITest0227,809
+  private PlanWorksGUITest02(PlanWorksGUITest02.PlanWorksGUITest0229,844
+  public static void planViz02(PlanWorksGUITest02.planViz0232,882
+
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest0304.java,359
+public class PlanWorksGUITest0304 PlanWorksGUITest030422,488
+  private PlanWorksGUITest0304(PlanWorksGUITest0304.PlanWorksGUITest030424,525
+  public static void planViz0304(PlanWorksGUITest0304.planViz030427,565
+  public static void planViz03(PlanWorksGUITest0304.planViz0337,893
+  public static void planViz04(PlanWorksGUITest0304.planViz0474,2947
+
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest05.java,202
+public class PlanWorksGUITest05 PlanWorksGUITest0519,365
+  private PlanWorksGUITest05(PlanWorksGUITest05.PlanWorksGUITest0521,400
+  public static void planViz05(PlanWorksGUITest05.planViz0524,438
+
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest06to09.java,534
+public class PlanWorksGUITest06to09 PlanWorksGUITest06to0943,1522
+  private PlanWorksGUITest06to09(PlanWorksGUITest06to09.PlanWorksGUITest06to0945,1561
+  public static void planViz06to09(PlanWorksGUITest06to09.planViz06to0948,1603
+  public static void planViz06(PlanWorksGUITest06to09.planViz0659,2187
+  public static void planViz07(PlanWorksGUITest06to09.planViz07107,4898
+  public static void planViz08(PlanWorksGUITest06to09.planViz08209,11024
+  public static void planViz09(PlanWorksGUITest06to09.planViz09321,17860
+
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest10.java,628
+public class PlanWorksGUITest10 PlanWorksGUITest1075,3637
+  private PlanWorksGUITest10(PlanWorksGUITest10.PlanWorksGUITest1077,3672
+  public static void planViz10(PlanWorksGUITest10.planViz1080,3710
+  public static void planViz10CNet(PlanWorksGUITest10.planViz10CNet226,11798
+  public static void planViz10TempExt(PlanWorksGUITest10.planViz10TempExt692,41146
+  public static void planViz10Timeline(PlanWorksGUITest10.planViz10Timeline860,50825
+  private static void planViz10TokNet(PlanWorksGUITest10.planViz10TokNet1006,59625
+  private static void planViz10DBTrans(PlanWorksGUITest10.planViz10DBTrans1214,72244
+
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest11.java,205
+public class PlanWorksGUITest11 PlanWorksGUITest1162,2899
+  private PlanWorksGUITest11(PlanWorksGUITest11.PlanWorksGUITest1164,2934
+  public static void planViz11(PlanWorksGUITest11.planViz1167,2972
+
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest12.java,1275
+public class PlanWorksGUITest12 PlanWorksGUITest1284,4420
+  private PlanWorksGUITest12(PlanWorksGUITest12.PlanWorksGUITest1286,4455
+  public static void planViz12(PlanWorksGUITest12.planViz1289,4493
+  private static void confirmSpecForViews(PlanWorksGUITest12.confirmSpecForViews241,12923
+  private static Object[] getPredicateGroupBoxes(PlanWorksGUITest12.getPredicateGroupBoxes707,38383
+  private static Object[] getTimelineGroupBoxes(PlanWorksGUITest12.getTimelineGroupBoxes741,40032
+  private static Object[] getTimeIntervalGroupBoxes(PlanWorksGUITest12.getTimeIntervalGroupBoxes776,41753
+  private static Object[] getUniqueKeyGroupBoxes(PlanWorksGUITest12.getUniqueKeyGroupBoxes818,43781
+  private static void validateTimelineViewPredicate(PlanWorksGUITest12.validateTimelineViewPredicate843,44900
+  private static void validateTimelineViewTimeline(PlanWorksGUITest12.validateTimelineViewTimeline900,47835
+  private static void validateTimelineViewTimeInterval(PlanWorksGUITest12.validateTimelineViewTimeInterval932,49523
+  private static List getTimelineViewSlottedTokenList(PlanWorksGUITest12.getTimelineViewSlottedTokenList957,50948
+  private static List getTimelineViewFreeTokenList(PlanWorksGUITest12.getTimelineViewFreeTokenList992,52603
 
 src/gov/nasa/arc/planworks/test/PlanWorksTest.java,236
 public class PlanWorksTest PlanWorksTest23,616
@@ -1632,13 +1668,13 @@ src/gov/nasa/arc/planworks/util/BooleanFunctor.java,55
 public interface BooleanFunctor BooleanFunctor11,283
 
 src/gov/nasa/arc/planworks/util/BrowseButton.java,514
-public class BrowseButton BrowseButton21,516
-  public BrowseButton(BrowseButton.BrowseButton23,589
-  public BrowseButton(BrowseButton.BrowseButton28,736
-  class BrowseButtonListener BrowseButton.BrowseButtonListener35,1066
-    public BrowseButtonListener(BrowseButton.BrowseButtonListener.BrowseButtonListener40,1227
-    public BrowseButtonListener(BrowseButton.BrowseButtonListener.BrowseButtonListener45,1404
-    public void actionPerformed(BrowseButton.BrowseButtonListener.actionPerformed52,1717
+public class BrowseButton BrowseButton21,566
+  public BrowseButton(BrowseButton.BrowseButton23,639
+  public BrowseButton(BrowseButton.BrowseButton28,786
+  class BrowseButtonListener BrowseButton.BrowseButtonListener35,1116
+    public BrowseButtonListener(BrowseButton.BrowseButtonListener.BrowseButtonListener40,1277
+    public BrowseButtonListener(BrowseButton.BrowseButtonListener.BrowseButtonListener45,1454
+    public void actionPerformed(BrowseButton.BrowseButtonListener.actionPerformed52,1767
 
 src/gov/nasa/arc/planworks/util/CollectionUtils.java,2136
 public class CollectionUtils CollectionUtils22,550
@@ -1687,67 +1723,65 @@ public class ColorStream ColorStream11,220
   private Color nextColor(ColorStream.nextColor50,1181
   public Color getColor(ColorStream.getColor71,1670
 
-src/gov/nasa/arc/planworks/util/ConfigureNewSequenceDialog.java,2166
-public class ConfigureNewSequenceDialog ConfigureNewSequenceDialog48,1489
-  public ConfigureNewSequenceDialog ConfigureNewSequenceDialog.ConfigureNewSequenceDialog74,2273
-  class ModelPathButtonListener ConfigureNewSequenceDialog.ModelPathButtonListener237,9023
-    public ModelPathButtonListener(ConfigureNewSequenceDialog.ModelPathButtonListener.ModelPathButtonListener238,9083
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelPathButtonListener.actionPerformed240,9128
-  class ModelOutputDestDirButtonListener ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener253,9752
-    public ModelOutputDestDirButtonListener(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener254,9821
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.actionPerformed256,9875
-  class ModelInitStatePathButtonListener ConfigureNewSequenceDialog.ModelInitStatePathButtonListener267,10300
-    public ModelInitStatePathButtonListener(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener268,10369
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.actionPerformed270,10423
-  class TransactionTypesButtonListener ConfigureNewSequenceDialog.TransactionTypesButtonListener283,11075
-    public TransactionTypesButtonListener(ConfigureNewSequenceDialog.TransactionTypesButtonListener.TransactionTypesButtonListener284,11142
-    public void actionPerformed(ConfigureNewSequenceDialog.TransactionTypesButtonListener.actionPerformed286,11194
-  private void addInputListener(ConfigureNewSequenceDialog.addInputListener302,11719
-  private boolean handleTextFieldValues(ConfigureNewSequenceDialog.handleTextFieldValues341,13179
-  private boolean doesPathExist(ConfigureNewSequenceDialog.doesPathExist375,14235
-  public String getModelPath(ConfigureNewSequenceDialog.getModelPath400,14836
-  public String getModelOutputDestDir(ConfigureNewSequenceDialog.getModelOutputDestDir409,14991
-  public String getModelInitStatePath(ConfigureNewSequenceDialog.getModelInitStatePath418,15164
+src/gov/nasa/arc/planworks/util/ConfigureNewSequenceDialog.java,1795
+public class ConfigureNewSequenceDialog ConfigureNewSequenceDialog41,1279
+  public ConfigureNewSequenceDialog ConfigureNewSequenceDialog.ConfigureNewSequenceDialog65,1957
+  class ModelPathButtonListener ConfigureNewSequenceDialog.ModelPathButtonListener195,7154
+    public ModelPathButtonListener(ConfigureNewSequenceDialog.ModelPathButtonListener.ModelPathButtonListener196,7214
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelPathButtonListener.actionPerformed198,7259
+  class ModelInitStatePathButtonListener ConfigureNewSequenceDialog.ModelInitStatePathButtonListener208,7632
+    public ModelInitStatePathButtonListener(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener209,7701
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.actionPerformed211,7755
+  class ModelOutputDestDirButtonListener ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener222,8207
+    public ModelOutputDestDirButtonListener(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener223,8276
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.actionPerformed225,8330
+  private void addInputListener(ConfigureNewSequenceDialog.addInputListener238,8762
+  private boolean handleTextFieldValues(ConfigureNewSequenceDialog.handleTextFieldValues275,10139
+  private boolean doesPathExist(ConfigureNewSequenceDialog.doesPathExist309,11195
+  public String getModelPath(ConfigureNewSequenceDialog.getModelPath334,11796
+  public String getModelOutputDestDir(ConfigureNewSequenceDialog.getModelOutputDestDir343,11951
+  public String getModelInitStatePath(ConfigureNewSequenceDialog.getModelInitStatePath352,12124
 
-src/gov/nasa/arc/planworks/util/ConfigureProjectDialog.java,2604
-public class ConfigureProjectDialog ConfigureProjectDialog41,1250
-  public ConfigureProjectDialog ConfigureProjectDialog.ConfigureProjectDialog71,2125
-  class WorkingDirButtonListener ConfigureProjectDialog.WorkingDirButtonListener246,9535
-    public WorkingDirButtonListener(ConfigureProjectDialog.WorkingDirButtonListener.WorkingDirButtonListener247,9596
-    public void actionPerformed(ConfigureProjectDialog.WorkingDirButtonListener.actionPerformed249,9642
-  class PlannerPathButtonListener ConfigureProjectDialog.PlannerPathButtonListener261,10067
-    public PlannerPathButtonListener(ConfigureProjectDialog.PlannerPathButtonListener.PlannerPathButtonListener262,10129
-    public void actionPerformed(ConfigureProjectDialog.PlannerPathButtonListener.actionPerformed264,10176
-  class ModelPathButtonListener ConfigureProjectDialog.ModelPathButtonListener277,10806
-    public ModelPathButtonListener(ConfigureProjectDialog.ModelPathButtonListener.ModelPathButtonListener278,10866
-    public void actionPerformed(ConfigureProjectDialog.ModelPathButtonListener.actionPerformed280,10911
-  class ModelOutputDestDirButtonListener ConfigureProjectDialog.ModelOutputDestDirButtonListener293,11535
-    public ModelOutputDestDirButtonListener(ConfigureProjectDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener294,11604
-    public void actionPerformed(ConfigureProjectDialog.ModelOutputDestDirButtonListener.actionPerformed296,11658
-  class ModelInitStatePathButtonListener ConfigureProjectDialog.ModelInitStatePathButtonListener307,12083
-    public ModelInitStatePathButtonListener(ConfigureProjectDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener308,12152
-    public void actionPerformed(ConfigureProjectDialog.ModelInitStatePathButtonListener.actionPerformed310,12206
-  private void addInputListener(ConfigureProjectDialog.addInputListener324,12858
-  private boolean handleTextFieldValues(ConfigureProjectDialog.handleTextFieldValues360,14293
-  private boolean doesPathExist(ConfigureProjectDialog.doesPathExist419,16259
-  public String getProjectName(ConfigureProjectDialog.getProjectName435,16708
-  public String getPlannerPath(ConfigureProjectDialog.getPlannerPath444,16860
-  public String getWorkingDir(ConfigureProjectDialog.getWorkingDir448,16924
-  public String getModelPath(ConfigureProjectDialog.getModelPath466,17227
-  public String getModelOutputDestDir(ConfigureProjectDialog.getModelOutputDestDir475,17382
-  public String getModelInitStatePath(ConfigureProjectDialog.getModelInitStatePath484,17555
+src/gov/nasa/arc/planworks/util/ConfigureProjectDialog.java,2703
+public class ConfigureProjectDialog ConfigureProjectDialog40,1217
+  public ConfigureProjectDialog ConfigureProjectDialog.ConfigureProjectDialog73,2228
+  class WorkingDirButtonListener ConfigureProjectDialog.WorkingDirButtonListener261,10261
+    public WorkingDirButtonListener(ConfigureProjectDialog.WorkingDirButtonListener.WorkingDirButtonListener262,10322
+    public void actionPerformed(ConfigureProjectDialog.WorkingDirButtonListener.actionPerformed264,10368
+  class PlannerPathButtonListener ConfigureProjectDialog.PlannerPathButtonListener276,10798
+    public PlannerPathButtonListener(ConfigureProjectDialog.PlannerPathButtonListener.PlannerPathButtonListener277,10860
+    public void actionPerformed(ConfigureProjectDialog.PlannerPathButtonListener.actionPerformed279,10907
+  class ModelPathButtonListener ConfigureProjectDialog.ModelPathButtonListener289,11286
+    public ModelPathButtonListener(ConfigureProjectDialog.ModelPathButtonListener.ModelPathButtonListener290,11346
+    public void actionPerformed(ConfigureProjectDialog.ModelPathButtonListener.actionPerformed292,11391
+  class ModelInitStatePathButtonListener ConfigureProjectDialog.ModelInitStatePathButtonListener302,11764
+    public ModelInitStatePathButtonListener(ConfigureProjectDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener303,11833
+    public void actionPerformed(ConfigureProjectDialog.ModelInitStatePathButtonListener.actionPerformed305,11887
+  class ModelOutputDestDirButtonListener ConfigureProjectDialog.ModelOutputDestDirButtonListener316,12288
+    public ModelOutputDestDirButtonListener(ConfigureProjectDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener317,12357
+    public void actionPerformed(ConfigureProjectDialog.ModelOutputDestDirButtonListener.actionPerformed319,12411
+  private void addInputListener(ConfigureProjectDialog.addInputListener331,12842
+  private boolean handleTextFieldValues(ConfigureProjectDialog.handleTextFieldValues367,14305
+  private boolean doesPathExist(ConfigureProjectDialog.doesPathExist438,16751
+  public String getProjectName(ConfigureProjectDialog.getProjectName454,17200
+  public String getPlannerPath(ConfigureProjectDialog.getPlannerPath463,17352
+  public String getWorkingDir(ConfigureProjectDialog.getWorkingDir467,17416
+  public String getModelPath(ConfigureProjectDialog.getModelPath485,17719
+  public String getModelOutputDestDir(ConfigureProjectDialog.getModelOutputDestDir494,17874
+  public String getModelInitStatePath(ConfigureProjectDialog.getModelInitStatePath503,18047
+  public String getModelRuleDelimiters(ConfigureProjectDialog.getModelRuleDelimiters507,18125
 
 src/gov/nasa/arc/planworks/util/CreatePartialPlanException.java,275
 public class CreatePartialPlanException CreatePartialPlanException17,358
     public CreatePartialPlanException(CreatePartialPlanException.CreatePartialPlanException23,558
     public CreatePartialPlanException(CreatePartialPlanException.CreatePartialPlanException32,785
 
-src/gov/nasa/arc/planworks/util/DirectoryChooser.java,354
+src/gov/nasa/arc/planworks/util/DirectoryChooser.java,363
 public class DirectoryChooser DirectoryChooser30,752
-  public DirectoryChooser(DirectoryChooser.DirectoryChooser40,1012
-  public DirectoryChooser(DirectoryChooser.DirectoryChooser53,1424
-  private void commonConstructor(DirectoryChooser.commonConstructor60,1687
-  public String getSelectedDirectory(DirectoryChooser.getSelectedDirectory72,2081
+  public DirectoryChooser(DirectoryChooser.DirectoryChooser38,978
+  public DirectoryChooser(DirectoryChooser.DirectoryChooser43,1132
+  private void commonConstructor(DirectoryChooser.commonConstructor52,1480
+  public String getValidSelectedDirectory(DirectoryChooser.getValidSelectedDirectory64,1879
 
 src/gov/nasa/arc/planworks/util/DuplicateNameException.java,243
 public class DuplicateNameException DuplicateNameException17,353
@@ -1757,12 +1791,12 @@ public class DuplicateNameException DuplicateNameException17,353
 src/gov/nasa/arc/planworks/util/Extent.java,38
 public interface ExtentExtent16,340
 
-src/gov/nasa/arc/planworks/util/FileChooser.java,293
-public class FileChooser FileChooser30,694
-  public FileChooser(FileChooser.FileChooser39,882
-  public FileChooser(FileChooser.FileChooser51,1164
-  private void commonConstructor(FileChooser.commonConstructor57,1337
-  public String getSelectedFile(FileChooser.getSelectedFile70,1696
+src/gov/nasa/arc/planworks/util/FileChooser.java,303
+public class FileChooser FileChooser30,743
+  public FileChooser(FileChooser.FileChooser39,931
+  public FileChooser(FileChooser.FileChooser51,1213
+  private void commonConstructor(FileChooser.commonConstructor57,1386
+  public String getValidSelectedFile(FileChooser.getValidSelectedFile70,1750
 
 src/gov/nasa/arc/planworks/util/FileCopy.java,189
 public class FileCopy FileCopy22,787
@@ -1838,24 +1872,24 @@ public class OneToManyMap OneToManyMap23,573
   public String toString(OneToManyMap.toString82,2086
 
 src/gov/nasa/arc/planworks/util/PlannerCommandLineDialog.java,1708
-public class PlannerCommandLineDialog PlannerCommandLineDialog40,1151
-  public PlannerCommandLineDialog(PlannerCommandLineDialog.PlannerCommandLineDialog46,1378
-  public String getCommandLine(PlannerCommandLineDialog.getCommandLine146,4437
-  public String getWriteDest(PlannerCommandLineDialog.getWriteDest150,4520
-  public String getPlannerPath(PlannerCommandLineDialog.getPlannerPath154,4599
-  public String getStepsPerWrite(PlannerCommandLineDialog.getStepsPerWrite158,4680
-  public String getWaitSecs(PlannerCommandLineDialog.getWaitSecs162,4765
-  class ExecuteButtonListener PlannerCommandLineDialog.ExecuteButtonListener165,4843
-    public ExecuteButtonListener(PlannerCommandLineDialog.ExecuteButtonListener.ExecuteButtonListener167,4938
-    public void actionPerformed(PlannerCommandLineDialog.ExecuteButtonListener.actionPerformed170,5040
-    private String getModelName(PlannerCommandLineDialog.ExecuteButtonListener.getModelName263,9189
-    private String getNewSequenceUrl(PlannerCommandLineDialog.ExecuteButtonListener.getNewSequenceUrl269,9555
-      class InternalFilter PlannerCommandLineDialog.ExecuteButtonListener.InternalFilter273,9723
-        public InternalFilter(PlannerCommandLineDialog.ExecuteButtonListener.InternalFilter.InternalFilter275,9807
-        public boolean accept(PlannerCommandLineDialog.ExecuteButtonListener.InternalFilter.accept278,9890
-  class CancelButtonListener PlannerCommandLineDialog.CancelButtonListener297,10622
-    public CancelButtonListener(PlannerCommandLineDialog.CancelButtonListener.CancelButtonListener299,10716
-    public void actionPerformed(PlannerCommandLineDialog.CancelButtonListener.actionPerformed302,10817
+public class PlannerCommandLineDialog PlannerCommandLineDialog40,1213
+  public PlannerCommandLineDialog(PlannerCommandLineDialog.PlannerCommandLineDialog46,1440
+  public String getCommandLine(PlannerCommandLineDialog.getCommandLine146,4499
+  public String getWriteDest(PlannerCommandLineDialog.getWriteDest150,4582
+  public String getPlannerPath(PlannerCommandLineDialog.getPlannerPath154,4661
+  public String getStepsPerWrite(PlannerCommandLineDialog.getStepsPerWrite158,4742
+  public String getWaitSecs(PlannerCommandLineDialog.getWaitSecs162,4827
+  class ExecuteButtonListener PlannerCommandLineDialog.ExecuteButtonListener165,4905
+    public ExecuteButtonListener(PlannerCommandLineDialog.ExecuteButtonListener.ExecuteButtonListener167,5000
+    public void actionPerformed(PlannerCommandLineDialog.ExecuteButtonListener.actionPerformed170,5102
+    private String getModelName(PlannerCommandLineDialog.ExecuteButtonListener.getModelName263,9251
+    private String getNewSequenceUrl(PlannerCommandLineDialog.ExecuteButtonListener.getNewSequenceUrl269,9617
+      class InternalFilter PlannerCommandLineDialog.ExecuteButtonListener.InternalFilter273,9785
+        public InternalFilter(PlannerCommandLineDialog.ExecuteButtonListener.InternalFilter.InternalFilter275,9869
+        public boolean accept(PlannerCommandLineDialog.ExecuteButtonListener.InternalFilter.accept278,9952
+  class CancelButtonListener PlannerCommandLineDialog.CancelButtonListener297,10684
+    public CancelButtonListener(PlannerCommandLineDialog.CancelButtonListener.CancelButtonListener299,10778
+    public void actionPerformed(PlannerCommandLineDialog.CancelButtonListener.actionPerformed302,10879
 
 src/gov/nasa/arc/planworks/util/PlannerController.java,2424
 public class PlannerController PlannerController49,1480
@@ -1894,9 +1928,9 @@ public class ProgressMonitorException ProgressMonitorException17,356
 src/gov/nasa/arc/planworks/util/ProjectNameDialog.java,365
 public class ProjectNameDialog ProjectNameDialog41,1247
   public ProjectNameDialog ProjectNameDialog.ProjectNameDialog60,1753
-  private void addInputListener(ProjectNameDialog.addInputListener162,5330
-  public final String getProjectName(ProjectNameDialog.getProjectName223,7815
-  public final String getWorkingDir(ProjectNameDialog.getWorkingDir232,7972
+  private void addInputListener(ProjectNameDialog.addInputListener162,5335
+  public final String getProjectName(ProjectNameDialog.getProjectName223,7820
+  public final String getWorkingDir(ProjectNameDialog.getWorkingDir232,7977
 
 src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java,267
 public class ResourceNotFoundException ResourceNotFoundException17,356
@@ -1924,10 +1958,10 @@ public abstract class SwingWorker SwingWorker19,582
     public void start(SwingWorker.start127,3426
 
 src/gov/nasa/arc/planworks/util/TransactionTypesDialog.java,335
-public class TransactionTypesDialog TransactionTypesDialog49,1517
-  public TransactionTypesDialog(TransactionTypesDialog.TransactionTypesDialog64,1970
-  private void addInputListener(TransactionTypesDialog.addInputListener118,3934
-  public int[] getTransactionTypeStates(TransactionTypesDialog.getTransactionTypeStates156,5401
+public class TransactionTypesDialog TransactionTypesDialog39,1122
+  public TransactionTypesDialog(TransactionTypesDialog.TransactionTypesDialog57,1671
+  private void addInputListener(TransactionTypesDialog.addInputListener114,3783
+  public int[] getTransactionTypeStates(TransactionTypesDialog.getTransactionTypeStates157,5347
 
 src/gov/nasa/arc/planworks/util/UnaryFunctor.java,51
 public interface UnaryFunctor UnaryFunctor11,281
@@ -1976,11 +2010,11 @@ src/gov/nasa/arc/planworks/viz/StringViewSetKey.java,59
 public interface StringViewSetKey StringViewSetKey22,553
 
 src/gov/nasa/arc/planworks/viz/TransactionHeaderView.java,423
-public class TransactionHeaderView TransactionHeaderView43,1104
-  public TransactionHeaderView(TransactionHeaderView.TransactionHeaderView53,1333
-  private void renderTransactionHeader(TransactionHeaderView.renderTransactionHeader66,1585
-  private void configureTextNode(TransactionHeaderView.configureTextNode80,2095
-  protected final void createTransByKeyItem(TransactionHeaderView.createTransByKeyItem106,3155
+public class TransactionHeaderView TransactionHeaderView46,1270
+  public TransactionHeaderView(TransactionHeaderView.TransactionHeaderView56,1499
+  private void renderTransactionHeader(TransactionHeaderView.renderTransactionHeader69,1751
+  private void configureTextNode(TransactionHeaderView.configureTextNode83,2261
+  protected final void createTransByKeyItem(TransactionHeaderView.createTransByKeyItem108,3270
 
 src/gov/nasa/arc/planworks/viz/ViewConstants.java,59
 public abstract class ViewConstants ViewConstants42,1091
@@ -2114,21 +2148,22 @@ public class VizViewOverview VizViewOverview32,763
   public final void removeNotifyFromViewSet(VizViewOverview.removeNotifyFromViewSet101,2753
   public final String getToolTipText(VizViewOverview.getToolTipText126,3750
 
-src/gov/nasa/arc/planworks/viz/nodes/BasicNodeLink.java,848
-public class BasicNodeLink BasicNodeLink33,906
-  public BasicNodeLink(BasicNodeLink.BasicNodeLink49,1331
-  public BasicNode getFromNode(BasicNodeLink.getFromNode70,1899
-  public BasicNode getToNode(BasicNodeLink.getToNode79,2051
-  public boolean inLayout(BasicNodeLink.inLayout88,2196
-  public void setInLayout(BasicNodeLink.setInLayout97,2343
-  public String toString(BasicNodeLink.toString106,2496
-  public boolean equals(BasicNodeLink.equals116,2681
-  public void incrLinkCount(BasicNodeLink.incrLinkCount124,2838
-  public void decLinkCount(BasicNodeLink.decLinkCount135,3027
-  public String getLinkName(BasicNodeLink.getLinkName147,3252
-  public int getLinkCount(BasicNodeLink.getLinkCount156,3393
-  public void setLinkCount(BasicNodeLink.setLinkCount165,3536
-  public void resetLink(BasicNodeLink.resetLink174,3731
+src/gov/nasa/arc/planworks/viz/nodes/BasicNodeLink.java,913
+public class BasicNodeLink BasicNodeLink33,907
+  public BasicNodeLink(BasicNodeLink.BasicNodeLink51,1405
+  public BasicNode getFromNode(BasicNodeLink.getFromNode76,2184
+  public BasicNode getToNode(BasicNodeLink.getToNode85,2336
+  public String getLinkType(BasicNodeLink.getLinkType94,2483
+  public boolean inLayout(BasicNodeLink.inLayout103,2629
+  public void setInLayout(BasicNodeLink.setInLayout112,2776
+  public String toString(BasicNodeLink.toString121,2929
+  public boolean equals(BasicNodeLink.equals131,3114
+  public void incrLinkCount(BasicNodeLink.incrLinkCount139,3271
+  public void decLinkCount(BasicNodeLink.decLinkCount150,3460
+  public String getLinkName(BasicNodeLink.getLinkName162,3685
+  public int getLinkCount(BasicNodeLink.getLinkCount171,3826
+  public void setLinkCount(BasicNodeLink.setLinkCount180,3969
+  public void resetLink(BasicNodeLink.resetLink189,4164
 
 src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNodePort.java,240
 public class ExtendedBasicNodePort ExtendedBasicNodePort59,2259
@@ -2610,7 +2645,7 @@ public final class ConstraintNetworkUtils ConstraintNetworkUtils43,1526
   protected static void mouseRightPopupMenu(ConstraintNetworkUtils.mouseRightPopupMenu105,4241
   protected static boolean containerDoMouseClick(ConstraintNetworkUtils.containerDoMouseClick158,6955
 
-src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java,7915
+src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java,7997
 public class ConstraintNetworkView ConstraintNetworkView105,4228
   public ConstraintNetworkView(ConstraintNetworkView.ConstraintNetworkView156,6138
   public ConstraintNetworkView(ConstraintNetworkView.ConstraintNetworkView178,6837
@@ -2642,60 +2677,61 @@ public class ConstraintNetworkView ConstraintNetworkView105,4228
   private void createVerticalScrollBarMaintainer(ConstraintNetworkView.createVerticalScrollBarMaintainer628,21339
   private void createContainerNodes(ConstraintNetworkView.createContainerNodes646,22178
   private void createVarsAndLinksForContainer(ConstraintNetworkView.createVarsAndLinksForContainer721,25552
-  private void createConstrsAndLinksForVar(ConstraintNetworkView.createConstrsAndLinksForVar755,26931
-  private void createVarNodesAndLinksForConstr(ConstraintNetworkView.createVarNodesAndLinksForConstr788,28321
-  private VariableContainerNode getContainerNode(ConstraintNetworkView.getContainerNode837,30482
-  private VariableNode getVariableNode(ConstraintNetworkView.getVariableNode841,30619
-  private ConstraintNode getConstraintNode(ConstraintNetworkView.getConstraintNode845,30760
-  private BasicNodeLink getConstraintLink(ConstraintNetworkView.getConstraintLink849,30912
-  private BasicNodeLink getVariableLink(ConstraintNetworkView.getVariableLink853,31064
-  public boolean addVariableNodes(ConstraintNetworkView.addVariableNodes863,31364
-  public boolean addConstraintNodes(ConstraintNetworkView.addConstraintNodes893,32512
-  public boolean addVariableNodes(ConstraintNetworkView.addVariableNodes924,33704
-  public boolean addVariableToContainerLinks(ConstraintNetworkView.addVariableToContainerLinks950,34686
-  public boolean addContainerAndConstraintToVariableLinks(ConstraintNetworkView.addContainerAndConstraintToVariableLinks971,35572
-  public boolean addConstraintToVariableLinks(ConstraintNetworkView.addConstraintToVariableLinks1006,37039
-  private boolean addConstraintLink(ConstraintNetworkView.addConstraintLink1019,37625
-  private BasicNodeLink addConstraintToVariableLink(ConstraintNetworkView.addConstraintToVariableLink1054,38805
-  private void incrVariableToContainerLink(ConstraintNetworkView.incrVariableToContainerLink1085,40209
-  private BasicNodeLink addVariableToContainerLink(ConstraintNetworkView.addVariableToContainerLink1100,40826
-  private void removeVariableNode(ConstraintNetworkView.removeVariableNode1132,42315
-  private void removeConstraintNode(ConstraintNetworkView.removeConstraintNode1143,42731
-  public boolean removeVariableNodes(ConstraintNetworkView.removeVariableNodes1161,43430
-  public boolean removeConstraintNodes(ConstraintNetworkView.removeConstraintNodes1182,44278
-  public boolean removeVariableNodes(ConstraintNetworkView.removeVariableNodes1205,45101
-  private boolean removeVariableToContainerLink(ConstraintNetworkView.removeVariableToContainerLink1222,45790
-  private boolean removeConstraintToVariableLink(ConstraintNetworkView.removeConstraintToVariableLink1245,46684
-  public boolean removeVariableToContainerLinks(ConstraintNetworkView.removeVariableToContainerLinks1276,47881
-  public boolean removeContainerToVariableLinks(ConstraintNetworkView.removeContainerToVariableLinks1303,48988
-  private boolean removeConstraintToVariableLinks(ConstraintNetworkView.removeConstraintToVariableLinks1325,49920
-  public boolean removeConstraintToVariableLinks(ConstraintNetworkView.removeConstraintToVariableLinks1352,51093
-  private boolean traverseVariableNode(ConstraintNetworkView.traverseVariableNode1372,51900
-  private void traverseContainerSubtree(ConstraintNetworkView.traverseContainerSubtree1399,53135
-  private void traverseContainerSubtree(ConstraintNetworkView.traverseContainerSubtree1436,54741
-  private void setNodesLinksVisible(ConstraintNetworkView.setNodesLinksVisible1459,55699
-  private void setLinksVisible(ConstraintNetworkView.setLinksVisible1507,57980
-  public class ConstraintJGoView ConstraintNetworkView.ConstraintJGoView1553,59775
-    public ConstraintJGoView(ConstraintNetworkView.ConstraintJGoView.ConstraintJGoView1564,60077
-    public void resetOpenNodes(ConstraintNetworkView.ConstraintJGoView.resetOpenNodes1575,60475
-    public void doBackgroundClick(ConstraintNetworkView.ConstraintJGoView.doBackgroundClick1612,62123
-    private void mouseRightPopupMenu(ConstraintNetworkView.ConstraintJGoView.mouseRightPopupMenu1621,62600
-    private void createOverviewWindowItem(ConstraintNetworkView.ConstraintJGoView.createOverviewWindowItem1689,65720
-  private void createActiveTokenItem(ConstraintNetworkView.createActiveTokenItem1709,66685
-  private void createNodeByKeyItem(ConstraintNetworkView.createNodeByKeyItem1722,67138
-  public void findAndSelectNodeKey(ConstraintNetworkView.findAndSelectNodeKey1744,67914
-  private void createChangeLayoutItem(ConstraintNetworkView.createChangeLayoutItem1781,69105
-  private void createFindEntityPathItem(ConstraintNetworkView.createFindEntityPathItem1798,69622
-  public void invokeFindEntityPathClasses(ConstraintNetworkView.invokeFindEntityPathClasses1824,70835
-  public List renderEntityPathNodes(ConstraintNetworkView.renderEntityPathNodes1860,72481
-  private BasicNodeLink getLinkFromNodes(ConstraintNetworkView.getLinkFromNodes1927,75459
-  private String getNodeIdAsString(ConstraintNetworkView.getNodeIdAsString1949,76340
-  private void createHighlightPathItem(ConstraintNetworkView.createHighlightPathItem1963,76950
-  private void findAndSelectContainer(ConstraintNetworkView.findAndSelectContainer1974,77460
-  private boolean findAndSelectVariable(ConstraintNetworkView.findAndSelectVariable2010,79131
-  private boolean findAndSelectConstraint(ConstraintNetworkView.findAndSelectConstraint2085,82696
-  private VariableContainerNode getOpenContainerNode(ConstraintNetworkView.getOpenContainerNode2158,86093
-  private VariableNode getVariableNodeInLayout(ConstraintNetworkView.getVariableNodeInLayout2169,86496
+  private void createConstrsAndLinksForVar(ConstraintNetworkView.createConstrsAndLinksForVar756,27013
+  private void createVarNodesAndLinksForConstr(ConstraintNetworkView.createVarNodesAndLinksForConstr790,28473
+  private VariableContainerNode getContainerNode(ConstraintNetworkView.getContainerNode841,30788
+  private VariableNode getVariableNode(ConstraintNetworkView.getVariableNode845,30925
+  private ConstraintNode getConstraintNode(ConstraintNetworkView.getConstraintNode849,31066
+  private BasicNodeLink getConstraintLink(ConstraintNetworkView.getConstraintLink853,31218
+  private BasicNodeLink getVariableLink(ConstraintNetworkView.getVariableLink857,31370
+  public boolean addVariableNodes(ConstraintNetworkView.addVariableNodes867,31670
+  public boolean addConstraintNodes(ConstraintNetworkView.addConstraintNodes897,32818
+  public boolean addVariableNodes(ConstraintNetworkView.addVariableNodes928,34010
+  public boolean addVariableToContainerLinks(ConstraintNetworkView.addVariableToContainerLinks954,34992
+  public boolean addContainerAndConstraintToVariableLinks(ConstraintNetworkView.addContainerAndConstraintToVariableLinks975,35878
+  public boolean addConstraintToVariableLinks(ConstraintNetworkView.addConstraintToVariableLinks1010,37345
+  private boolean addConstraintLink(ConstraintNetworkView.addConstraintLink1023,37931
+  private BasicNodeLink addConstraintToVariableLink(ConstraintNetworkView.addConstraintToVariableLink1058,39111
+  private void incrVariableToContainerLink(ConstraintNetworkView.incrVariableToContainerLink1089,40515
+  private BasicNodeLink addVariableToContainerLink(ConstraintNetworkView.addVariableToContainerLink1104,41132
+  private void removeVariableNode(ConstraintNetworkView.removeVariableNode1136,42621
+  private void removeConstraintNode(ConstraintNetworkView.removeConstraintNode1147,43037
+  public boolean removeVariableNodes(ConstraintNetworkView.removeVariableNodes1165,43736
+  public boolean removeConstraintNodes(ConstraintNetworkView.removeConstraintNodes1186,44584
+  public boolean removeVariableNodes(ConstraintNetworkView.removeVariableNodes1209,45407
+  private boolean removeVariableToContainerLink(ConstraintNetworkView.removeVariableToContainerLink1226,46096
+  private boolean removeConstraintToVariableLink(ConstraintNetworkView.removeConstraintToVariableLink1249,46990
+  public boolean removeVariableToContainerLinks(ConstraintNetworkView.removeVariableToContainerLinks1280,48187
+  public boolean removeContainerToVariableLinks(ConstraintNetworkView.removeContainerToVariableLinks1307,49294
+  private boolean removeConstraintToVariableLinks(ConstraintNetworkView.removeConstraintToVariableLinks1329,50226
+  public boolean removeConstraintToVariableLinks(ConstraintNetworkView.removeConstraintToVariableLinks1356,51399
+  private boolean traverseVariableNode(ConstraintNetworkView.traverseVariableNode1376,52206
+  private void traverseContainerSubtree(ConstraintNetworkView.traverseContainerSubtree1403,53441
+  private void traverseContainerSubtree(ConstraintNetworkView.traverseContainerSubtree1440,55047
+  private void setNodesLinksVisible(ConstraintNetworkView.setNodesLinksVisible1463,56005
+  private void setLinksVisible(ConstraintNetworkView.setLinksVisible1511,58286
+  public class ConstraintJGoView ConstraintNetworkView.ConstraintJGoView1557,60081
+    public ConstraintJGoView(ConstraintNetworkView.ConstraintJGoView.ConstraintJGoView1568,60383
+    public void resetOpenNodes(ConstraintNetworkView.ConstraintJGoView.resetOpenNodes1579,60781
+    public void doBackgroundClick(ConstraintNetworkView.ConstraintJGoView.doBackgroundClick1616,62429
+    private void mouseRightPopupMenu(ConstraintNetworkView.ConstraintJGoView.mouseRightPopupMenu1625,62906
+    private void createOverviewWindowItem(ConstraintNetworkView.ConstraintJGoView.createOverviewWindowItem1693,66026
+  private void createActiveTokenItem(ConstraintNetworkView.createActiveTokenItem1713,66991
+  private void createNodeByKeyItem(ConstraintNetworkView.createNodeByKeyItem1726,67444
+  public void findAndSelectNodeKey(ConstraintNetworkView.findAndSelectNodeKey1748,68220
+  private void createChangeLayoutItem(ConstraintNetworkView.createChangeLayoutItem1785,69411
+  private void createFindEntityPathItem(ConstraintNetworkView.createFindEntityPathItem1802,69928
+  public void invokeFindEntityPathClasses(ConstraintNetworkView.invokeFindEntityPathClasses1828,71141
+  public List renderEntityPathNodes(ConstraintNetworkView.renderEntityPathNodes1864,72787
+  private BasicNodeLink getLinkFromNodes(ConstraintNetworkView.getLinkFromNodes1934,75853
+  private String getNodeIdAsString(ConstraintNetworkView.getNodeIdAsString1956,76734
+  private void createHighlightPathItem(ConstraintNetworkView.createHighlightPathItem1970,77344
+  private void findAndSelectContainer(ConstraintNetworkView.findAndSelectContainer1981,77854
+  private boolean findAndSelectVariable(ConstraintNetworkView.findAndSelectVariable2017,79525
+  private boolean findAndSelectConstraint(ConstraintNetworkView.findAndSelectConstraint2092,83090
+  private VariableContainerNode getOpenContainerNode(ConstraintNetworkView.getOpenContainerNode2165,86487
+  private VariableNode getVariableNodeInLayout(ConstraintNetworkView.getVariableNodeInLayout2176,86890
+  private static String getLinkType(ConstraintNetworkView.getLinkType2187,87287
 
 src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkViewState.java,512
 public class ConstraintNetworkViewState ConstraintNetworkViewState19,599
@@ -2959,28 +2995,28 @@ public class NavigatorView NavigatorView83,3336
   private void createFindEntityPathItem(NavigatorView.createFindEntityPathItem875,33419
   public void invokeFindEntityPathClasses(NavigatorView.invokeFindEntityPathClasses901,34629
   public List renderEntityPathNodes(NavigatorView.renderEntityPathNodes937,36267
-  private void createHighlightPathItem(NavigatorView.createHighlightPathItem1093,42278
+  private void createHighlightPathItem(NavigatorView.createHighlightPathItem1096,42329
 
 src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorViewLayout.java,139
 public class NavigatorViewLayout NavigatorViewLayout31,764
   public NavigatorViewLayout(NavigatorViewLayout.NavigatorViewLayout41,1046
 
-src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavNodeGenerics.java,1263
+src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavNodeGenerics.java,1264
 public final class NavNodeGenerics NavNodeGenerics43,1373
-  private NavNodeGenerics(NavNodeGenerics.NavNodeGenerics64,2647
-  public static boolean addEntityNavNodes(NavNodeGenerics.addEntityNavNodes75,2937
-  public static boolean removeEntityNavNodes(NavNodeGenerics.removeEntityNavNodes109,4468
-  public static IncrementalNode getNavNode(NavNodeGenerics.getNavNode161,6591
-  public static void removeNavNode(NavNodeGenerics.removeNavNode172,6963
-  public static boolean addParentToEntityNavLinks(NavNodeGenerics.addParentToEntityNavLinks191,7609
-  public static boolean addEntityToChildNavLinks(NavNodeGenerics.addEntityToChildNavLinks220,8845
-  public static boolean addNavLink(NavNodeGenerics.addNavLink248,10057
-  public static boolean removeParentToEntityNavLinks(NavNodeGenerics.removeParentToEntityNavLinks291,11890
-  public static boolean removeEntityToChildNavLinks(NavNodeGenerics.removeEntityToChildNavLinks324,13367
-  public static boolean removeNavLink(NavNodeGenerics.removeNavLink359,14867
-  public static String getLinkType(NavNodeGenerics.getLinkType391,16037
-  public static Color getVariableColor(NavNodeGenerics.getVariableColor461,19421
-  public static Color getTokenColor(NavNodeGenerics.getTokenColor494,20805
+  private NavNodeGenerics(NavNodeGenerics.NavNodeGenerics45,1411
+  public static boolean addEntityNavNodes(NavNodeGenerics.addEntityNavNodes56,1701
+  public static boolean removeEntityNavNodes(NavNodeGenerics.removeEntityNavNodes90,3232
+  public static IncrementalNode getNavNode(NavNodeGenerics.getNavNode142,5355
+  public static void removeNavNode(NavNodeGenerics.removeNavNode153,5727
+  public static boolean addParentToEntityNavLinks(NavNodeGenerics.addParentToEntityNavLinks172,6373
+  public static boolean addEntityToChildNavLinks(NavNodeGenerics.addEntityToChildNavLinks201,7609
+  public static boolean addNavLink(NavNodeGenerics.addNavLink229,8821
+  public static boolean removeParentToEntityNavLinks(NavNodeGenerics.removeParentToEntityNavLinks273,10724
+  public static boolean removeEntityToChildNavLinks(NavNodeGenerics.removeEntityToChildNavLinks306,12201
+  public static boolean removeNavLink(NavNodeGenerics.removeNavLink341,13701
+  protected static String getLinkType(NavNodeGenerics.getLinkType373,14871
+  public static Color getVariableColor(NavNodeGenerics.getVariableColor443,18513
+  public static Color getTokenColor(NavNodeGenerics.getTokenColor476,19897
 
 src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ResourceNavNode.java,1252
 public class ResourceNavNode ResourceNavNode46,1413
@@ -3466,22 +3502,22 @@ public class TimelineViewTimelineNode TimelineViewTimelineNode60,1978
   public boolean doMouseClick(TimelineViewTimelineNode.doMouseClick238,7390
   private void mouseRightPopupMenu(TimelineViewTimelineNode.mouseRightPopupMenu251,7945
 
-src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkGenerics.java,1411
+src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkGenerics.java,1414
 public final class TokenNetworkGenerics TokenNetworkGenerics43,1393
-  private TokenNetworkGenerics(TokenNetworkGenerics.TokenNetworkGenerics49,1640
-  public static boolean addEntityTokNetNodes(TokenNetworkGenerics.addEntityTokNetNodes60,1947
-  public static boolean removeEntityTokNetNodes(TokenNetworkGenerics.removeEntityTokNetNodes90,3367
-  public static IncrementalNode getTokNetNode(TokenNetworkGenerics.getTokNetNode142,5661
-  public static void removeTokNetNode(TokenNetworkGenerics.removeTokNetNode153,6054
-  public static boolean addParentToEntityTokNetLinks(TokenNetworkGenerics.addParentToEntityTokNetLinks176,7031
-  public static boolean addEntityToChildTokNetLinks(TokenNetworkGenerics.addEntityToChildTokNetLinks205,8333
-  public static boolean addTokNetLink(TokenNetworkGenerics.addTokNetLink233,9605
-  public static boolean removeParentToEntityTokNetLinks(TokenNetworkGenerics.removeParentToEntityTokNetLinks276,11519
-  public static boolean removeEntityToChildTokNetLinks(TokenNetworkGenerics.removeEntityToChildTokNetLinks309,13068
-  public static boolean removeTokNetLink(TokenNetworkGenerics.removeTokNetLink344,14637
-  public static String getLinkType(TokenNetworkGenerics.getLinkType376,15837
-  public static Color getVariableColor(TokenNetworkGenerics.getVariableColor401,16926
-  public static Color getTokenColor(TokenNetworkGenerics.getTokenColor434,18338
+  private TokenNetworkGenerics(TokenNetworkGenerics.TokenNetworkGenerics45,1436
+  public static boolean addEntityTokNetNodes(TokenNetworkGenerics.addEntityTokNetNodes56,1743
+  public static boolean removeEntityTokNetNodes(TokenNetworkGenerics.removeEntityTokNetNodes86,3197
+  public static IncrementalNode getTokNetNode(TokenNetworkGenerics.getTokNetNode138,5491
+  public static void removeTokNetNode(TokenNetworkGenerics.removeTokNetNode149,5884
+  public static boolean addParentToEntityTokNetLinks(TokenNetworkGenerics.addParentToEntityTokNetLinks172,6861
+  public static boolean addEntityToChildTokNetLinks(TokenNetworkGenerics.addEntityToChildTokNetLinks201,8163
+  public static boolean addTokNetLink(TokenNetworkGenerics.addTokNetLink229,9435
+  public static boolean removeParentToEntityTokNetLinks(TokenNetworkGenerics.removeParentToEntityTokNetLinks272,11359
+  public static boolean removeEntityToChildTokNetLinks(TokenNetworkGenerics.removeEntityToChildTokNetLinks305,12908
+  public static boolean removeTokNetLink(TokenNetworkGenerics.removeTokNetLink340,14477
+  protected static String getLinkType(TokenNetworkGenerics.getLinkType372,15689
+  public static Color getVariableColor(TokenNetworkGenerics.getVariableColor397,16826
+  public static Color getTokenColor(TokenNetworkGenerics.getTokenColor430,18238
 
 src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java,401
 public class TokenNetworkLayout TokenNetworkLayout38,972
@@ -3535,7 +3571,7 @@ public class TokenNetworkTokenNode TokenNetworkTokenNode64,2245
   protected boolean removeTokenObjects(TokenNetworkTokenNode.removeTokenObjects419,13786
   public void mouseRightPopupMenu(TokenNetworkTokenNode.mouseRightPopupMenu437,14741
 
-src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java,4359
+src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java,4361
 public class TokenNetworkView TokenNetworkView84,3090
   public TokenNetworkView(TokenNetworkView.TokenNetworkView133,4601
   public TokenNetworkView(TokenNetworkView.TokenNetworkView158,5361
@@ -3543,50 +3579,50 @@ public class TokenNetworkView TokenNetworkView84,3090
   private void tokenNetworkViewInit(TokenNetworkView.tokenNetworkViewInit204,6804
   public PartialPlanViewState getState(TokenNetworkView.getState231,7741
   public void setState(TokenNetworkView.setState240,7931
-  public final void init(TokenNetworkView.init328,11558
-  public final void redraw(TokenNetworkView.redraw390,13897
-  protected final void redraw(TokenNetworkView.redraw398,14118
-  private  final void createRedrawViewThread(TokenNetworkView.createRedrawViewThread403,14273
-  class RedrawViewThread TokenNetworkView.RedrawViewThread410,14486
-    public RedrawViewThread(TokenNetworkView.RedrawViewThread.RedrawViewThread414,14571
-    public final void run(TokenNetworkView.RedrawViewThread.run418,14712
-  private void redrawView(TokenNetworkView.redrawView430,14978
-  protected final void setStartTimeMSecs(TokenNetworkView.setStartTimeMSecs496,17832
-  public final void setLayoutNeeded(TokenNetworkView.setLayoutNeeded504,17978
-  public final boolean isLayoutNeeded(TokenNetworkView.isLayoutNeeded513,18143
-  public final void setFocusNode(TokenNetworkView.setFocusNode522,18318
-  public final JGoView getJGoView(TokenNetworkView.getJGoView531,18504
-  public final JGoDocument getJGoDocument(TokenNetworkView.getJGoDocument540,18661
-  public final List getTokenNodeKeyList(TokenNetworkView.getTokenNodeKeyList549,18833
-  public final List getRuleInstanceNodeKeyList(TokenNetworkView.getRuleInstanceNodeKeyList558,19030
-  public final TokenNetworkTokenNode getTokenNode(TokenNetworkView.getTokenNode568,19285
-  public final RuleInstanceNode getRuleInstanceNode(TokenNetworkView.getRuleInstanceNode578,19563
-  public final Integer getFocusNodeId(TokenNetworkView.getFocusNodeId587,19790
-  public final List getHighlightPathNodesList(TokenNetworkView.getHighlightPathNodesList596,19958
-  public final void setDisableEntityKeyPathDialog(TokenNetworkView.setDisableEntityKeyPathDialog604,20136
-  public List getRootTokens(TokenNetworkView.getRootTokens613,20319
-  private void renderRootTokens(TokenNetworkView.renderRootTokens638,21266
-  protected final ExtendedBasicNode addEntityTokNetNode(TokenNetworkView.addEntityTokNetNode661,22257
-  protected final TokenNetworkTokenNode addTokenTokNetNode(TokenNetworkView.addTokenTokNetNode691,23366
-  protected final TokenNetworkRuleInstanceNode addRuleInstanceTokNetNodeTokenNetworkView.addRuleInstanceTokNetNode714,24406
-  protected final boolean addTokenNetworkLinkNew(TokenNetworkView.addTokenNetworkLinkNew741,25637
-  private void setNodesLinksVisible(TokenNetworkView.setNodesLinksVisible763,26551
-  public class TokenNetworkJGoView TokenNetworkView.TokenNetworkJGoView839,29563
-    public TokenNetworkJGoView(TokenNetworkView.TokenNetworkJGoView.TokenNetworkJGoView847,29743
-    public final void resetOpenNodes(TokenNetworkView.TokenNetworkJGoView.resetOpenNodes857,30064
-    public final void doBackgroundClick(TokenNetworkView.TokenNetworkJGoView.doBackgroundClick879,31107
-  private void mouseRightPopupMenu(TokenNetworkView.mouseRightPopupMenu892,31678
-  private void createActiveTokenItem(TokenNetworkView.createActiveTokenItem954,34437
-  private void createNodeByKeyItem(TokenNetworkView.createNodeByKeyItem967,34962
-  public void findAndSelectNode(TokenNetworkView.findAndSelectNode990,35844
-  private boolean waitForFindAndSelectNode(TokenNetworkView.waitForFindAndSelectNode1050,38566
-  private void createFindEntityPathItem(TokenNetworkView.createFindEntityPathItem1083,39812
-  public void invokeFindEntityPathClasses(TokenNetworkView.invokeFindEntityPathClasses1110,41066
-  public List renderEntityPathNodes(TokenNetworkView.renderEntityPathNodes1146,42734
-  private void createHighlightPathItem(TokenNetworkView.createHighlightPathItem1194,44764
-  public final boolean findAndSelectToken(TokenNetworkView.findAndSelectToken1212,45453
-  public final boolean findAndSelectRuleInstance(TokenNetworkView.findAndSelectRuleInstance1256,47399
-  private void createOverviewWindowItem(TokenNetworkView.createOverviewWindowItem1288,49126
+  public final void init(TokenNetworkView.init336,11782
+  public final void redraw(TokenNetworkView.redraw398,14121
+  protected final void redraw(TokenNetworkView.redraw406,14342
+  private  final void createRedrawViewThread(TokenNetworkView.createRedrawViewThread411,14497
+  class RedrawViewThread TokenNetworkView.RedrawViewThread418,14710
+    public RedrawViewThread(TokenNetworkView.RedrawViewThread.RedrawViewThread422,14795
+    public final void run(TokenNetworkView.RedrawViewThread.run426,14936
+  private void redrawView(TokenNetworkView.redrawView438,15202
+  protected final void setStartTimeMSecs(TokenNetworkView.setStartTimeMSecs504,18056
+  public final void setLayoutNeeded(TokenNetworkView.setLayoutNeeded512,18202
+  public final boolean isLayoutNeeded(TokenNetworkView.isLayoutNeeded521,18367
+  public final void setFocusNode(TokenNetworkView.setFocusNode530,18542
+  public final JGoView getJGoView(TokenNetworkView.getJGoView539,18728
+  public final JGoDocument getJGoDocument(TokenNetworkView.getJGoDocument548,18885
+  public final List getTokenNodeKeyList(TokenNetworkView.getTokenNodeKeyList557,19057
+  public final List getRuleInstanceNodeKeyList(TokenNetworkView.getRuleInstanceNodeKeyList566,19254
+  public final TokenNetworkTokenNode getTokenNode(TokenNetworkView.getTokenNode576,19509
+  public final RuleInstanceNode getRuleInstanceNode(TokenNetworkView.getRuleInstanceNode586,19787
+  public final Integer getFocusNodeId(TokenNetworkView.getFocusNodeId595,20014
+  public final List getHighlightPathNodesList(TokenNetworkView.getHighlightPathNodesList604,20182
+  public final void setDisableEntityKeyPathDialog(TokenNetworkView.setDisableEntityKeyPathDialog612,20360
+  public List getRootTokens(TokenNetworkView.getRootTokens621,20543
+  private void renderRootTokens(TokenNetworkView.renderRootTokens646,21490
+  protected final ExtendedBasicNode addEntityTokNetNode(TokenNetworkView.addEntityTokNetNode669,22481
+  protected final TokenNetworkTokenNode addTokenTokNetNode(TokenNetworkView.addTokenTokNetNode699,23590
+  protected final TokenNetworkRuleInstanceNode addRuleInstanceTokNetNodeTokenNetworkView.addRuleInstanceTokNetNode722,24630
+  protected final boolean addTokenNetworkLinkNew(TokenNetworkView.addTokenNetworkLinkNew749,25861
+  private void setNodesLinksVisible(TokenNetworkView.setNodesLinksVisible771,26775
+  public class TokenNetworkJGoView TokenNetworkView.TokenNetworkJGoView873,31129
+    public TokenNetworkJGoView(TokenNetworkView.TokenNetworkJGoView.TokenNetworkJGoView881,31309
+    public final void resetOpenNodes(TokenNetworkView.TokenNetworkJGoView.resetOpenNodes891,31630
+    public final void doBackgroundClick(TokenNetworkView.TokenNetworkJGoView.doBackgroundClick913,32673
+  private void mouseRightPopupMenu(TokenNetworkView.mouseRightPopupMenu926,33244
+  private void createActiveTokenItem(TokenNetworkView.createActiveTokenItem988,36003
+  private void createNodeByKeyItem(TokenNetworkView.createNodeByKeyItem1001,36528
+  public void findAndSelectNode(TokenNetworkView.findAndSelectNode1024,37410
+  private boolean waitForFindAndSelectNode(TokenNetworkView.waitForFindAndSelectNode1084,40132
+  private void createFindEntityPathItem(TokenNetworkView.createFindEntityPathItem1117,41378
+  public void invokeFindEntityPathClasses(TokenNetworkView.invokeFindEntityPathClasses1144,42632
+  public List renderEntityPathNodes(TokenNetworkView.renderEntityPathNodes1180,44300
+  private void createHighlightPathItem(TokenNetworkView.createHighlightPathItem1231,46387
+  public final boolean findAndSelectToken(TokenNetworkView.findAndSelectToken1249,47076
+  public final boolean findAndSelectRuleInstance(TokenNetworkView.findAndSelectRuleInstance1293,49022
+  private void createOverviewWindowItem(TokenNetworkView.createOverviewWindowItem1325,50749
 
 src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkViewState.java,1074
 public class TokenNetworkViewState TokenNetworkViewState19,553
@@ -3668,14 +3704,14 @@ public class StepElement StepElement66,2195
   public boolean doMouseClick(StepElement.doMouseClick189,6101
 
 src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/DBTransactionQueryView.java,705
-public class DBTransactionQueryView DBTransactionQueryView57,2106
-  public DBTransactionQueryView(DBTransactionQueryView.DBTransactionQueryView84,3058
-  public final void init(DBTransactionQueryView.init135,5136
-  private TableSorter createTableModelAndSorter(DBTransactionQueryView.createTableModelAndSorter191,8259
-  class QueryHeaderView DBTransactionQueryView.QueryHeaderView310,14853
-    public QueryHeaderView(DBTransactionQueryView.QueryHeaderView.QueryHeaderView312,14910
-  public final void doBackgroundClick(DBTransactionQueryView.QueryHeaderView.doBackgroundClick323,15206
-    private void mouseRightPopupMenu(DBTransactionQueryView.QueryHeaderView.mouseRightPopupMenu335,15698
+public class DBTransactionQueryView DBTransactionQueryView57,2107
+  public DBTransactionQueryView(DBTransactionQueryView.DBTransactionQueryView84,3059
+  public final void init(DBTransactionQueryView.init135,5137
+  private TableSorter createTableModelAndSorter(DBTransactionQueryView.createTableModelAndSorter191,8260
+  class QueryHeaderView DBTransactionQueryView.QueryHeaderView310,14854
+    public QueryHeaderView(DBTransactionQueryView.QueryHeaderView.QueryHeaderView312,14911
+  public final void doBackgroundClick(DBTransactionQueryView.QueryHeaderView.doBackgroundClick323,15207
+    private void mouseRightPopupMenu(DBTransactionQueryView.QueryHeaderView.mouseRightPopupMenu335,15699
 
 src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/StepQueryView.java,606
 public class StepQueryView StepQueryView56,2021
@@ -3714,12 +3750,12 @@ public class AskNodeByKey AskNodeByKey52,1966
   private int isNodeKeyValid(AskNodeByKey.isNodeKeyValid202,7170
 
 src/gov/nasa/arc/planworks/viz/util/AskQueryEntityKey.java,449
-public class AskQueryEntityKey AskQueryEntityKey51,1768
-  public AskQueryEntityKey(AskQueryEntityKey.AskQueryEntityKey73,2385
-  public final Integer getEntityKey(AskQueryEntityKey.getEntityKey138,4505
-  public final int getEntityListIndex(AskQueryEntityKey.getEntityListIndex147,4661
-  private void addInputListener(AskQueryEntityKey.addInputListener151,4736
-  private boolean isValidEntityKey(AskQueryEntityKey.isValidEntityKey205,7076
+public class AskQueryEntityKey AskQueryEntityKey52,1811
+  public AskQueryEntityKey(AskQueryEntityKey.AskQueryEntityKey74,2446
+  public final Integer getEntityKey(AskQueryEntityKey.getEntityKey139,4578
+  public final int getEntityListIndex(AskQueryEntityKey.getEntityListIndex148,4734
+  private void addInputListener(AskQueryEntityKey.addInputListener152,4812
+  private boolean isValidEntityKey(AskQueryEntityKey.isValidEntityKey206,7158
 
 src/gov/nasa/arc/planworks/viz/util/AskQueryTwoEntityKeys.java,481
 public class AskQueryTwoEntityKeys AskQueryTwoEntityKeys41,1183
@@ -3771,7 +3807,7 @@ public class DBTransactionComparatorDescending DBTransactionComparatorDescendin
   public int compare(DBTransactionComparatorDescending.compare29,679
   public boolean equals(DBTransactionComparatorDescending.equals70,2834
 
-src/gov/nasa/arc/planworks/viz/util/DBTransactionTable.java,2724
+src/gov/nasa/arc/planworks/viz/util/DBTransactionTable.java,2821
 public class DBTransactionTable DBTransactionTable57,1768
   public DBTransactionTable(DBTransactionTable.DBTransactionTable89,2796
   public final TableSorter getTableSorter(DBTransactionTable.getTableSorter150,5221
@@ -3783,24 +3819,25 @@ public class DBTransactionTable DBTransactionTable57,1768
   public final VizView getVizView(DBTransactionTable.getVizView204,6185
   public final Font getHeaderFont(DBTransactionTable.getHeaderFont213,6333
   protected final JTableHeader createDefaultTableHeader(DBTransactionTable.createDefaultTableHeader222,6539
-  public final String getToolTipText DBTransactionTable.getToolTipText242,7202
-  class DBTransTableRowListener DBTransactionTable.DBTransTableRowListener257,7689
-    public DBTransTableRowListener(DBTransactionTable.DBTransTableRowListener.DBTransTableRowListener261,7796
-    public final void valueChanged(DBTransactionTable.DBTransTableRowListener.valueChanged266,7914
-  class DBTransTableColListener DBTransactionTable.DBTransTableColListener293,8947
-    public DBTransTableColListener(DBTransactionTable.DBTransTableColListener.DBTransTableColListener297,9054
-      public final void valueChanged(DBTransactionTable.DBTransTableColListener.valueChanged302,9172
-  private void popupMenuForStepNumberColumn(DBTransactionTable.popupMenuForStepNumberColumn328,10186
-  class TransactionHeaderRenderer DBTransactionTable.TransactionHeaderRenderer350,11150
-    public TransactionHeaderRenderer(DBTransactionTable.TransactionHeaderRenderer.TransactionHeaderRenderer354,11250
-    protected final void setValue(DBTransactionTable.TransactionHeaderRenderer.setValue370,11882
-    public final Component getTableCellRendererComponent(DBTransactionTable.TransactionHeaderRenderer.getTableCellRendererComponent385,12392
-  class TransactionCellRenderer DBTransactionTable.TransactionCellRenderer397,12905
-    public TransactionCellRenderer(DBTransactionTable.TransactionCellRenderer.TransactionCellRenderer401,13003
-    protected final void setValue(DBTransactionTable.TransactionCellRenderer.setValue417,13643
-    public final Component getTableCellRendererComponent(DBTransactionTable.TransactionCellRenderer.getTableCellRendererComponent432,14153
-  class TableMouseAdapter DBTransactionTable.TableMouseAdapter450,14979
-    public final void mouseClicked(DBTransactionTable.TableMouseAdapter.mouseClicked452,15029
+  public final List getCurrentEntityKeyList(DBTransactionTable.getCurrentEntityKeyList242,7224
+  public final String getToolTipText DBTransactionTable.getToolTipText258,7744
+  class DBTransTableRowListener DBTransactionTable.DBTransTableRowListener273,8231
+    public DBTransTableRowListener(DBTransactionTable.DBTransTableRowListener.DBTransTableRowListener277,8338
+    public final void valueChanged(DBTransactionTable.DBTransTableRowListener.valueChanged282,8456
+  class DBTransTableColListener DBTransactionTable.DBTransTableColListener309,9489
+    public DBTransTableColListener(DBTransactionTable.DBTransTableColListener.DBTransTableColListener313,9596
+      public final void valueChanged(DBTransactionTable.DBTransTableColListener.valueChanged318,9714
+  private void popupMenuForStepNumberColumn(DBTransactionTable.popupMenuForStepNumberColumn344,10728
+  class TransactionHeaderRenderer DBTransactionTable.TransactionHeaderRenderer366,11692
+    public TransactionHeaderRenderer(DBTransactionTable.TransactionHeaderRenderer.TransactionHeaderRenderer370,11792
+    protected final void setValue(DBTransactionTable.TransactionHeaderRenderer.setValue386,12424
+    public final Component getTableCellRendererComponent(DBTransactionTable.TransactionHeaderRenderer.getTableCellRendererComponent401,12934
+  class TransactionCellRenderer DBTransactionTable.TransactionCellRenderer413,13447
+    public TransactionCellRenderer(DBTransactionTable.TransactionCellRenderer.TransactionCellRenderer417,13545
+    protected final void setValue(DBTransactionTable.TransactionCellRenderer.setValue433,14185
+    public final Component getTableCellRendererComponent(DBTransactionTable.TransactionCellRenderer.getTableCellRendererComponent448,14695
+  class TableMouseAdapter DBTransactionTable.TableMouseAdapter466,15521
+    public final void mouseClicked(DBTransactionTable.TableMouseAdapter.mouseClicked468,15571
 
 src/gov/nasa/arc/planworks/viz/util/DBTransactionTableModel.java,477
 public class DBTransactionTableModel DBTransactionTableModel26,622

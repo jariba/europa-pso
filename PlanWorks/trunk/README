@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.134 2004-09-29 23:52:18 taylor Exp $
+# $Id: README,v 1.135 2004-10-01 20:04:28 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -127,6 +127,7 @@ MySQL.
  cleanCls           -- delete the 'java/classes' directory tree
  cleanDb            -- delete loaded projects from data base, unless -Dno.clean.db=yes
  compile            -- compile 'java/src' tree into 'java/classes' tree
+ createJNI          -- create the JNI interface to Planners (compile dependency)
  createJars         -- create PlanWorksDB.jar and PlanWorksPlugin.jar in ./java/jars
  planWorks          -- run PlanWorks application (compile dependency)
  planWorksDbInstall -- create all necessary databases and tables
@@ -138,10 +139,13 @@ Default target: planWorks
 
 THE JNI INTERFACE TO INTEGRATED PLANNERS
 ========================================
-The ant "compile" and "planWorks" targets create
+The ant "createJNI" target creates
 ${PLANWORKS_HOME}/cpp/integration/PlannerControlJNI.h
-and compile it with PlannerControlJNI.cc to generate
+and compiles it with
+${PLANWORKS_HOME}/cpp/integration/PlannerControlJNI.cc
+to generate
 ${PLANWORKS_HOME}/cpp/integration/libPlannerControl_JNI_adapter.so
+which is loaded by "Project->New Sequence".
 
 
 USER DOCUMENTATION
