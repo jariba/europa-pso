@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlannerController.java,v 1.2 2004-09-08 20:59:50 taylor Exp $
+// $Id: PlannerController.java,v 1.3 2004-09-08 23:38:42 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -61,6 +61,7 @@ public class PlannerController extends JPanel {
   private int writeStepStep;
   private JTextField writeNextStepsField;
   private int writeNextSteps;
+  private JLabel currentStepLabel;
 
   public PlannerController( final PwPlanningSequence planSequence,
                             final MDIInternalFrame plannerControllerFrame,
@@ -72,6 +73,9 @@ public class PlannerController extends JPanel {
     this.sequenceStepsView = sequenceStepsView;
 
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
+
+    currentStepLabel = new JLabel( "current step is " +
+                                   (planSequence.getPlanDBSizeList().size() - 1));
 
     final JLabel writeStepLabel1 = new JLabel( "write step");
     writeStepField = new JTextField( STEP_FIELD_WIDTH);
@@ -108,6 +112,12 @@ public class PlannerController extends JPanel {
 
     c.gridx = 0;
     c.gridy++;
+    c.gridwidth = GridBagConstraints.REMAINDER;
+    gridBag.setConstraints( currentStepLabel, c);
+    add( currentStepLabel);
+
+    c.gridy++;
+    c.gridwidth = 1;
     gridBag.setConstraints( writeStepLabel1, c);
     add( writeStepLabel1);
     c.gridx++;
@@ -205,7 +215,9 @@ public class PlannerController extends JPanel {
       final SwingWorker worker = new SwingWorker() {
           public Object construct() {
             System.err.println( "WriteStepJNIThread( " + writeStepStep + " ) started");
-            PlannerControlJNI.writeStep( writeStepStep); 
+            PlannerControlJNI.writeStep( writeStepStep);
+            writeStepField.setText( "");
+            currentStepLabel.setText( "current step is " + writeStepStep);
             sequenceStepsView.refreshView();
             return null;
           }
@@ -259,7 +271,9 @@ public class PlannerController extends JPanel {
       final SwingWorker worker = new SwingWorker() {
           public Object construct() {
             System.err.println( "WriteNextStepsJNIThread( " + writeNextSteps + " ) started");
+            int currentStepNum = planSequence.getPlanDBSizeList().size() - 1;
             PlannerControlJNI.writeNext( writeNextSteps);
+            currentStepLabel.setText( "current step is " + (currentStepNum + writeNextSteps));
             sequenceStepsView.refreshView();
             return null;
           }
