@@ -4,13 +4,13 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.1 2003-05-20 18:25:33 taylor Exp $
+# $Id: README,v 1.2 2003-05-23 22:20:19 taylor Exp $
 #
 
 PREREQUISITES
 =============
 Set environment varibles:
-  o JAVA_HOME - location of J2SDK >= 1.4.*
+  o JAVA_HOME - location of J2SDK >= 1.4.1
     e.g. setenv JAVA_HOME /home/wtaylor/pub/j2sdk1.4.1_02
   o ANT_HOME - location of Apache Ant >= 1.5.1
     e.g. setenv ANT_HOME /home/wtaylor/pub/jakarta-ant-1.5.1
@@ -20,12 +20,18 @@ Set environment varibles:
     should be set by user's standard environment
 
 
-RUNNING PLANWORKS
-=================
+BUILDING & RUNNING PLANWORKS
+============================
 > ant # default is to run the current general test case with
       # compilation of all PlanWorks Java source as a dependency.
 
 > ant -projecthelp # lists available targets
+
+ clean             -- delete the 'java/classes' directory tree
+ compile           -- compile 'java/src' tree into 'java/classes' tree
+ existTest         -- prototyping test (compile dependency)
+ projectTest       -- prototyping test (compile dependency)
+ timelineViewTest  -- JFCunit test (compile dependency)
 
 
 DEVELOPING PLANWORKS

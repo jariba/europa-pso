@@ -1,24 +1,32 @@
 <?xml version="1.0"?>
-
-<project name="PlanWorks" default="ProjectTest" basedir=".">
+<!-- $Id: build.xml,v 1.6 2003-05-23 22:20:19 taylor Exp $ -->
+<project name="PlanWorks" default="projectTest" basedir=".">
   <description>
-    PlanWorks Build File
+    PlanWorks Build and Run Targets
   </description>
 
-  <property name="PLANWORKS_ROOT" value="${basedir}"/>
+  <property name="planworks.root" value="${basedir}"/>
 
-  <target name="ExistTest" description=" ">
+  <target name="existTest" description="-- prototyping test (compile dependency)">
     <ant dir="./test" antfile="exist-test.xml"/>
   </target>
 
-  <target name="ProjectTest" description=" ">
+  <target name="projectTest" description="-- prototyping test (compile dependency)">
     <ant dir="./test" antfile="project-test.xml"/>
   </target>
 
-  <target name="TimelineViewTest" 
-      description="requires JUNIT_HOME, JFCUNIT_HOME, and JAKARTA_REGEXP_HOME">
+  <target name="timelineViewTest" 
+      description="-- JFCunit test (compile dependency)">
     <ant dir="./java/src/gov/nasa/arc/planworks/viz/views/test" 
        antfile="timeline-view-test.xml"/>
+  </target>
+
+  <target name="clean" description="-- delete the 'java/classes' directory tree">
+    <ant dir="./java" antfile="build.xml" target="clean"/>
+  </target>
+
+  <target name="compile" description="-- compile 'java/src' tree into 'java/classes' tree">
+    <ant dir="./java" antfile="build.xml" target="compile"/>
   </target>
 
 </project>
