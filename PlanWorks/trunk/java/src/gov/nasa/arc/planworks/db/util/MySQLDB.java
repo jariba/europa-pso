@@ -290,7 +290,7 @@ public class MySQLDB {
           tokenPredicateId = currTokenPredicateId;
           tokenStartVarId = currTokenStartVarId;
           tokenEndVarId = currTokenEndVarId;
-          tokenDurationVarId = currTokenEndVarId;
+          tokenDurationVarId = currTokenDurationVarId;
           tokenObjectId = currTokenObjectId;
           tokenRejectVarId = currTokenRejectVarId;
           tokenObjectVarId = currTokenObjectVarId;
@@ -583,10 +583,11 @@ public class MySQLDB {
         queryDatabase("SELECT TokenRelationId, TokenAId, TokenBId, RelationType FROM TokenRelation WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
       while(tokenRelations.next()) {
         Integer key = new Integer(tokenRelations.getInt("TokenRelationId"));
-        partialPlan.addTokenRelation(key, new PwTokenRelationImpl(key,
-                                                                  new Integer(tokenRelations.getInt("TokenAId")),
-                                                                  new Integer(tokenRelations.getInt("TokenBId")),
-                                                                  tokenRelations.getString("RelationType"), partialPlan));
+        partialPlan.addTokenRelation(key, 
+                                     new PwTokenRelationImpl(key,
+                                                             new Integer(tokenRelations.getInt("TokenAId")),
+                                                             new Integer(tokenRelations.getInt("TokenBId")),
+                                                             tokenRelations.getString("RelationType"), partialPlan));
       }
     }
     catch(SQLException sqle) {
