@@ -65,7 +65,8 @@ public class VariableBoundingBox {
             visibleConstraints++;
           }
         }
-        retval = Math.max(varNode.getSize().getHeight(), (topConstraint - bottomConstraint) + 
+        retval = Math.max(varNode.getSize().getHeight() + ConstraintNetworkView.NODE_SPACING,
+                          (topConstraint - bottomConstraint) + 
                           (ConstraintNetworkView.NODE_SPACING * (visibleConstraints - 1)));
       }
     }
@@ -85,8 +86,8 @@ public class VariableBoundingBox {
             visibleConstraints++;
           }
         }
-        retval = Math.max(varNode.getSize().getWidth(), constraintsWidth + 
-                          (ConstraintNetworkView.NODE_SPACING * (visibleConstraints - 1)));
+        retval = Math.max(varNode.getSize().getWidth() + ConstraintNetworkView.NODE_SPACING,
+                          constraintsWidth + ConstraintNetworkView.NODE_SPACING);
       }
     }
     else {
@@ -142,7 +143,17 @@ public class VariableBoundingBox {
     //                              ConstraintNetworkView.HORIZONTAL_VARIABLE_BAND_Y));
     varNode.setLocation((int) (boxX - (boxWidth / 2)),
                         (int) ConstraintNetworkView.HORIZONTAL_VARIABLE_BAND_Y);
-    int visibleConstraints = 0;
+    ListIterator constraintIterator = constraintNodes.listIterator();
+    double lastConstraintWidth = 0;
+    while(constraintIterator.hasNext()) {
+      ConstraintNode node = (ConstraintNode) constraintIterator.next();
+      if(node.isVisible()) {
+        node.setLocation((int) (boxX - lastConstraintWidth - (node.getSize().getWidth() / 2)),
+                         (int) ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y);
+        lastConstraintWidth += node.getSize().getWidth() + ConstraintNetworkView.NODE_SPACING;
+      }
+    }
+    /*int visibleConstraints = 0;
     ListIterator constraintIterator = constraintNodes.listIterator();
     while(constraintIterator.hasNext()) {
       ConstraintNode node = (ConstraintNode) constraintIterator.next();
@@ -161,7 +172,7 @@ public class VariableBoundingBox {
         node.setLocation((int) (boxX - (constraintXInc * multiplier)),
                          (int) ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y);
       }
-    }
+      }*/
   }
   public void setVisited() {
     visited = true;

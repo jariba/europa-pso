@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.9 2003-10-25 00:58:18 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.10 2003-10-29 01:53:55 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -85,8 +85,8 @@ public class ConstraintNetworkView extends PartialPlanView {
   private static final int VIEW_HEIGHT = 250;
 
   public static final double HORIZONTAL_CONSTRAINT_BAND_Y = 50.;
-  public static final double HORIZONTAL_VARIABLE_BAND_Y = 100.;
-  public static final double HORIZONTAL_TOKEN_BAND_Y = 150.;
+  public static final double HORIZONTAL_VARIABLE_BAND_Y = 150.;
+  public static final double HORIZONTAL_TOKEN_BAND_Y = 250.;
   
   public static final double VERTICAL_CONSTRAINT_BAND_X = 0.;
   public static final double VERTICAL_VARIABLE_BAND_X = 0.;
@@ -99,7 +99,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   private ViewSet viewSet;
   private ConstraintJGoView jGoView;
   private JGoDocument document;
-  private ConstraintNetwork network;
+  //private ConstraintNetwork network;
   // tokenNodeList & tmpTokenNodeList used by JFCUnit test case
   private List tokenNodeList; // element ConstraintNetworkTokenNode
   private List tmpTokenNodeList; // element ConstraintNetworkTokenNode
@@ -111,7 +111,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   private boolean isDebugTraverse;
   private boolean isLayoutNeeded;
   private JGoArea focusNode; // ConstraintNetworkTokenNode/ConstraintNode/VariableNode
-
+  private NewConstraintNetworkLayout newLayout;
 
   /**
    * <code>ConstraintNetworkView</code> - constructor -
@@ -183,7 +183,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     this.computeFontMetrics( this);
 
     document = jGoView.getDocument();
-    network = new ConstraintNetwork();
+    //network = new ConstraintNetwork();
     createTokenNodes();
     // setVisible( true | false) depending on ContentSpec
     setNodesLinksVisible();
@@ -193,12 +193,13 @@ public class ConstraintNetworkView extends PartialPlanView {
       ((ConstraintNetworkTokenNode)tokenIterator.next()).discoverLinkage();
     }
 
-    NewConstraintNetworkLayout newLayout = 
-      new NewConstraintNetworkLayout(tokenNodeList, variableNodeList, constraintNodeList);
+    //NewConstraintNetworkLayout newLayout = 
+    newLayout = new NewConstraintNetworkLayout(tokenNodeList, variableNodeList, constraintNodeList);
 
-    ConstraintNetworkLayout layout =
-      new ConstraintNetworkLayout( document, network, startTimeMSecs);
-    layout.performLayout();
+    //ConstraintNetworkLayout layout =
+    //  new ConstraintNetworkLayout( document, network, startTimeMSecs);
+    //layout.performLayout();
+    newLayout.performLayout();
     expandViewFrame( this.getClass().getName(),
                      (int) jGoView.getDocumentSize().getWidth(), VIEW_HEIGHT);
 
@@ -245,11 +246,12 @@ public class ConstraintNetworkView extends PartialPlanView {
     if (isLayoutNeeded) {
       System.err.println( "Redrawing Constraint Network View ...");
       if (isDebugPrint) {
-        network.validateConstraintNetwork();
+        //network.validateConstraintNetwork();
       }
-      ConstraintNetworkLayout layout =
-        new ConstraintNetworkLayout( document, network, startTimeMSecs);
-      layout.performLayout();
+      //ConstraintNetworkLayout layout =
+      //  new ConstraintNetworkLayout( document, network, startTimeMSecs);
+      //layout.performLayout();
+      newLayout.performLayout();
       if (focusNode != null) {
         NodeGenerics.focusViewOnNode( focusNode, jGoView);
       }
@@ -372,7 +374,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       tmpTokenNodeList.add( freeTokenNode);
       // nodes are always in front of any links
       document.addObjectAtTail( freeTokenNode);
-      network.addConstraintNode( freeTokenNode);
+      //network.addConstraintNode( freeTokenNode);
 
       createVariableAndConstraintNodes( freeTokenNode, backgroundColor, isFreeToken);
       createTokenVariableConstraintLinks( freeTokenNode);
@@ -402,7 +404,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         tmpTokenNodeList.add( tokenNode);
         // nodes are always in front of any links
         document.addObjectAtTail( tokenNode);
-        network.addConstraintNode( tokenNode);
+        //network.addConstraintNode( tokenNode);
           
         createVariableAndConstraintNodes( tokenNode, backgroundColor, isFreeToken);
         createTokenVariableConstraintLinks( tokenNode);
@@ -578,7 +580,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         variableNode.setInLayout( true);
         // nodes are always in front of any links
         document.addObjectAtTail( variableNode);
-        network.addConstraintNode( variableNode);
+        //network.addConstraintNode( variableNode);
         areNodesChanged = true;
       }
     }
@@ -604,7 +606,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         constraintNode.setInLayout( true);
         // nodes are always in front of any links
         document.addObjectAtTail( constraintNode);
-        network.addConstraintNode( constraintNode);
+        //network.addConstraintNode( constraintNode);
         areNodesChanged = true;
       }
     }
@@ -629,7 +631,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         variableNode.setInLayout( true);
         // nodes are always in front of any links
         document.addObjectAtTail( variableNode);
-        network.addConstraintNode( variableNode);
+        //network.addConstraintNode( variableNode);
         areNodesChanged = true;
       }
     }
@@ -732,7 +734,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     if (link != null) {
       // links are always behind any nodes
       document.addObjectAtHead( link);
-      network.addConstraintLink( link, fromNode, toNode);
+      //network.addConstraintLink( link, fromNode, toNode);
       link.setInLayout( true);
       link.incrLinkCount();
       if (isDebugPrint) {
@@ -828,7 +830,7 @@ public class ConstraintNetworkView extends PartialPlanView {
                           variableNode.getVariable().getId());
     }
     // document.removeObject( variableNode);
-    network.removeConstraintNode( variableNode);
+    //network.removeConstraintNode( variableNode);
     variableNode.setInLayout( false);
     variableNode.resetNode( isDebugPrint);
   } // end removeVariableNode
@@ -839,7 +841,7 @@ public class ConstraintNetworkView extends PartialPlanView {
                           constraintNode.getConstraint().getId());
     }
     // document.removeObject( constraintNode);
-    network.removeConstraintNode( constraintNode);
+    //network.removeConstraintNode( constraintNode);
     constraintNode.setInLayout( false);
     constraintNode.resetNode( isDebugPrint);
   } // end removeConstraintNode
@@ -925,7 +927,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       if (isDebugPrint) {
         System.err.println( "removeVariableToTokenLink: " + link.toString());
       }
-      network.removeConstraintLink( link);
+      //network.removeConstraintLink( link);
       // document.removeObject( link);
       link.setInLayout( false);
       variableNode.decTokenLinkCount();
@@ -948,7 +950,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       if (isDebugPrint) {
         System.err.println( "removeConstraintToVariableLink: " + link.toString());
       }
-      network.removeConstraintLink( link);
+      //network.removeConstraintLink( link);
       // document.removeObject( link);
       link.setInLayout( false);
       constraintNode.decVariableLinkCount();
