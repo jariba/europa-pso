@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.8 2003-09-23 19:58:42 taylor Exp $
+# $Id: GETTING_STARTED,v 1.9 2003-10-13 20:28:04 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -17,12 +17,11 @@ Clicking "OK" on the "Create Project" dialog brings up the "Select Sequence
 Directory of Partial Plan Directory(ies)" chooser.  The sequence directory 
 chooser (also invoked by "Project->Add Sequence") supports multiple 
 selection of sequence directories, by using Ctrl-Mouse-Left for the second 
-and subsequent selections.  Mouse-left is used for the first selection and 
+and subsequent selections.  Mouse-left is used for the fir selection and 
 Mouse-Left-Double is used to open directories.  When selection is complete,
 click on "OK".  The selected sequence(s) are then loaded into the MySQL
 data base.  Pull-down menu "Planning Sequence" will be created, which is a 
-cascading menu of "sequence names", then "partial plan names", and then 
-"partial plan views".
+cascading menu of "sequence names".
 
 "Project->Open ..." will bring up pre-loaded plan sequences for a pre-
 defined project, and allow them the be viewed using the "Planning
@@ -41,10 +40,15 @@ the selected sequence from the current project, and the MySQL data base.
 Plan Sequence Views
 ===================
 
-The "Planning Sequence" cascading menu allows the user to select the 
-sequence, the partial plan, and the plan view to be displayed.  The key
-values for tokens, constraints, variables, timelines, and slots appear
-in the appropriate node labels.  There are four active views:
+Each sequence in the "Planning Sequence" cascading menu cascades into
+sequence views -- the only one now functional is the "Sequence Steps" view,
+which is a histogram of the partial plan data base size for each step of
+the sequence.  Partial plan views for each step are available by clicking 
+Mouse-Right on the desired step in the histogram ("SequenceStepsView").  
+The histogram steps have a "mouse over" pop-up showing the step number, 
+the data base size, and the number of transactions.  The key values for 
+tokens, constraints, variables, timelines, and slots appear in the 
+appropriate node labels.  There are four active views:
 
 Constraint Network View
 -----------------------
@@ -85,8 +89,9 @@ the previous slot, to prevent overlap.
 
 Token Network View
 ------------------
-Lays out the plan's token relations in directed graphs whose root nodes
-are the "supreme" master tokens.
+Lays out the plan's token relations in directed graphs whose root nodes are the 
+"supreme" master tokens.  The Token Network View now is freshly layed out after 
+a  Content Spec filter is applied.
 
 
 Token Focus in Views
@@ -106,15 +111,34 @@ Token Network View, these secondary tokens will be given secondary
 highlighting (turquoise).  The basic token will have the primary highlighting
 color (light green).
 
+In all the partial plan views, Mouse-Right on the background offers
+"Find Token by Key" which allows the user to enter a token's key and
+have the view scroll to that token's location.
+
 
 Content Specification
 =====================
 
 The information displayed in the partial plan views may be filtered by
-predicate, by timeline, and by time interval using the partial plan's
-Content Specification dialog.  It is also possible to limit the
-set of valid tokens to only free or slotted tokens, as well as the first 
-token on a slot ("Merge tokens").  Selections applied from this dialog 
+predicate, by timeline, by time interval, and by token keys using the
+partial plan's Content Specification dialog.  It is also possible to 
+limit the set of valid tokens to only free or slotted tokens, as well 
+as the first token on a slot ("Merge tokens").  
+
+Applying single predicate, timeline, and time interval filters results
+in only the tokens which match that filter being displayed.  To filter
+"in" more than one of the types, use the "OR" combo box selection; to
+filter "out" more than one of the types, use the "NOT" check box for
+each object type, and the "AND" combo box selection
+
+The token keys filter works thusly: click on either the "require" or 
+"exclude" radio button, and then enter the key value in the input slot.  
+To include more keys, click on "Add"; to remove keys from a previous 
+"Apply Spec" set, click on "Remove".  The "require" or "exclude" 
+selections override the "Predicate", "Timeline", and "Time Interval" 
+selections, with applied together.
+
+Selections applied from this dialog 
 result, internally, in a set of valid tokens, which are used by the 
 views to filter their displays.
 
