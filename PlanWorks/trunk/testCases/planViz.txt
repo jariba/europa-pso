@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.54 2004-08-10 21:17:13 taylor Exp $
+// $Id: planViz.txt,v 1.55 2004-08-16 18:40:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -838,7 +838,7 @@ Pre-conditions:
   2. A project containing a sequence is open.
   3. The "Sequence Steps View" for the sequence is open.
   4. For any sequence step, select Mouse-Right "Open All Views".
-  5. Delete the "DBTransactionView" window.
+  5. Delete the "DBTransactionView" and "DecisionView" window.
 
 Method:
   1. In the Timeline View, Mouse-Right "Open Navigator View" on a
@@ -855,17 +855,25 @@ Method:
      a rule instance node.  Further expand the relationships of the selected nodes.
   6. In the Constraint Network View, Mouse-Right "Open Navigator View" on
      a interval token node, a free token node,  resource transaction node,
-     a timeline node, a resource node, and a rule instance node.  Further expand 
-     the relationships of the nodes.
+     a timeline node, a resource node, an object node, and a rule instance node.
+     Further expand the relationships of the nodes.
   7. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
      variable node.  Further expand the relationships of the variable node.
   8. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
      constraint node.  Further expand the relationships of the constraint node.
-
+  9. On the background of any of the Navigator Views, click Mouse-Right and select
+     "Open <view-name> View", "Overview Window" , "Zoom View", and the "Open|Close|
+     Show|Hide All Views".
+ 10. On the background of any of the Navigator Views, click Mouse-Right and select
+     "Find Entity Path", entering in turn all the permutations of token, variable,
+     constraint, rule instance, slot, object, resource, and timeline keys
 
 Post-conditions:
-  1. Use the other views to verify the relationships
-     rendered on the Navigator Views.
+  1. Methods: 1-8 - Use the other views to verify the relationships rendered on 
+     the Navigator Views.
+  2. Method: 9 - Verify that the selected operations are completed.
+  3. Method: 10 - Verify that the proper node path is found and rendered, and the
+     path nodes are highlighted.
 
 Requirements: N/A
 
@@ -1120,4 +1128,53 @@ Post-conditions:
      highlighted nodes for the choice key value to be viewed.
 
 Requirements: N/A
+
+
+PLANVIZ-25
+------------------------
+Exercise data base transaction handling for missing partial plan steps.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. The "test1" project is open.
+  3. In another xterm, run gdb on test-seq-1 which will generate at least 75 steps.
+     Have "StepsPerWrite=1", "AutoWrite=0", and "WriteFinalStep=1" specified in
+     the PartialPlanWriter configuration file.
+
+Method:
+  1. Enter into gdb "write step 30", and use "Project->Add Sequence" to add the
+     sequence, and "Planning Sequence->test-seq-1" to select the sequence.
+  2. Click Mouse-Right over the step 10 item of the SequenceStepsView, and select
+     "Open DBTransaction View".
+  3. Click Mouse-Right over the step 30 item of the SequenceStepsView, and select
+     "Open All Views".
+  4. Enter into gdb "write step 60", and use Mouse-Right "Refresh" on the 
+     SequenceStepsView background to render the additional plan steps.
+  5. Use "File->Exit" to quit PlanWorks.  Delete all the disk files for test-sequence-1.
+     Restart PlaWorks, select "No" from the dialog asking whether to delete
+     test-sequence-1 from the data base, and select test-sequence-1 from 
+     "Planning Sequence".
+  6. Click Mouse-Right over the step 10 item of the SequenceStepsView, and select
+     "Open DBTransaction View".
+  7. Click Mouse-Right over the step 30 item of the SequenceStepsView, and select
+     "Open All Views".
+  8. Click Mouse-Right over the step 50 and 60 items of the SequenceStepsView.
+
+Post-conditions:
+  1. Method:1 - The SequenceStepsView of test-seq-1 appears, with steps 0-29 having
+     red dots above each step item, and a yellow dot above the step 30 item.
+  2. Method:2 - The only selection available from the popup menu is "Open
+     DBTransaction View', and when selected, the view of rendered transactions appears.
+  3. Method:3 - In addition to "Open All Views", selections for each individual view
+     are available.  All views are rendered.  The yellow dot over step 30 becomes
+     green.
+  4. Method:4 - The SequenceStepsView will show steps 31-59 with red dots and step
+     60 with a yellow dot.
+  5. Method:5 - The SequenceStepsView will show steps 0-29 and 31-60 with red dots and
+     step 30 with a green dot.
+  6. Method:6 - The only selection available from the popup menu is "Open
+     DBTransaction View', and when selected, the view of rendered transactions appears.
+  7. Method:7 - In addition to "Open All Views", selections for each individual view
+     are available.  All views are rendered. 
+  8. Method:8 - In both cases, the dialog "No Views Available" will appear.
 

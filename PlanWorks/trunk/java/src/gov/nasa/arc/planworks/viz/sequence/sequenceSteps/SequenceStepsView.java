@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.38 2004-08-14 01:39:20 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.39 2004-08-16 18:40:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -457,13 +457,14 @@ public class SequenceStepsView extends SequenceView {
       if (dbSize > maxDbSize) {
         maxDbSize = dbSize;
       }
-      if ((initPMThread != null) && initPMThread.getProgressMonitor().isCanceled()) {
+      if ((initPMThread != null) && (initPMThread.getProgressMonitor() != null) &&
+          initPMThread.getProgressMonitor().isCanceled()) {
         String msg = "User Canceled Sequence Steps View Rendering";
         System.err.println( msg);
 	initPMThread.setProgressMonitorCancel();
         return -1.0f;
       }
-      if (initPMThread != null) {
+      if ((initPMThread != null) && (initPMThread.getProgressMonitor() != null)) {
         numOperations++;
         initPMThread.getProgressMonitor().setProgress
 	  ( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);

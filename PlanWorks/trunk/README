@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.119 2004-08-14 01:39:06 taylor Exp $
+# $Id: README,v 1.120 2004-08-16 18:40:12 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -118,6 +118,7 @@ o The Navigator View has two new background Mouse-Right selection options:
 o GNATS PRs and CRs completed:
   #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.
   #2452: Right mouse click popup menu not supported by any nodes in Navigator View.
+  #2473: Deleted sequences shouldn't kill PlanWorks.
   #2474: Extra empty node in DecisionView.
   #2514: Comments not being correctly parsed in the PlanWorks config file
 
