@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.42 2004-04-22 19:26:19 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.43 2004-04-30 21:49:39 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -27,6 +27,7 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwPredicate;
+import gov.nasa.arc.planworks.db.PwRule;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.util.UniqueSet;
@@ -113,7 +114,9 @@ public class PwTokenImpl implements PwToken {
       slot.addToken(this);
     }
 
-    ruleId = new Integer(rand.nextInt(20));
+    //ruleId = new Integer(rand.nextInt(20));
+    //ruleId = new Integer(19);
+    ruleId = null;
     partialPlan.addToken(id, this);
   }
 
@@ -359,8 +362,11 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>String</code> - 
    */
   public String getModelRule() {
-    // System.err.println( "tokenId " + id + " ruleId " + ruleId);
-    return partialPlan.getRule( ruleId).getText();
+    PwRule rule = partialPlan.getRule(ruleId);
+    if(rule == null) {
+      return "No rule text";
+    }
+    return rule.getText();
   }
 
   /**
@@ -368,8 +374,8 @@ public class PwTokenImpl implements PwToken {
    *
    * @param id - <code>Integer</code> - 
    */
-  public void setRuleId( Integer id) {
-    ruleId = id;
+  public void setRuleId( Integer ruleId) {
+    this.ruleId = ruleId;
   }
 
   /**
