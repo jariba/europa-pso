@@ -22,7 +22,7 @@ import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
-public class TimelineNode extends ExtendedBasicNode implements VariableContainerNode {
+public class TimelineNode extends ExtendedBasicNode {
   
   protected PwTimeline timeline;
   protected PartialPlanView partialPlanView;
@@ -73,25 +73,6 @@ public class TimelineNode extends ExtendedBasicNode implements VariableContainer
     return timeline.getId().toString();
   }
 
-  public PwVariableContainer getContainer() {
-    return timeline;
-  }
-
-  public List getVariableNodes() {
-    return new ArrayList();
-  }
-
-  public int getContainerLinkCount(){return 0;}
-  public int getContainerLinkCount(VariableContainerNode other){return 0;}
-  public List getConnectedContainerNodes(){return new ArrayList();}
-  public boolean areNeighborsShown(){return false;}
-  public void setAreNeighborsShown(boolean v){}
-  public void discoverLinkage(){}
-  public void connectNodes(Map m){}
   public Color getColor(){return backgroundColor;}
-  public void addVariableNode(Object v){}
-  public void incrVariableLinkCount(){}
-  public void decVariableLinkCount(){}
-  public void addContainerNodeVariables(Object p, Object v){}
 
 }

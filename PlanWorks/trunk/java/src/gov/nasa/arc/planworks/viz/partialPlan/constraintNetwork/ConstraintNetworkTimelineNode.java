@@ -45,7 +45,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 
-public class ConstraintNetworkTimelineNode extends TimelineNode {
+public class ConstraintNetworkTimelineNode extends TimelineNode implements VariableContainerNode{
 
   private Map connectedContainerMap;
   private List variableNodeList;
@@ -188,6 +188,10 @@ public class ConstraintNetworkTimelineNode extends TimelineNode {
     }
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
   } // end adremoveTokenNodeVariables
+
+  public PwVariableContainer getContainer() {
+    return timeline;
+  } 
 
   public void discoverLinkage() {
     ListIterator varIterator = timeline.getVariables().listIterator();

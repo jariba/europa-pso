@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.42 2004-02-19 21:57:51 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.43 2004-02-20 18:16:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -160,11 +160,11 @@ public class ConstraintNetworkView extends PartialPlanView {
     variableLinkMap = new HashMap();
     containerNodeMap = new HashMap();
 
-    isDebugPrint = true;
-    //isDebugPrint = false;
+    //isDebugPrint = true;
+    isDebugPrint = false;
 
-     isDebugTraverse = true;
-    //isDebugTraverse = false;
+    //isDebugTraverse = true;
+    isDebugTraverse = false;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -850,7 +850,6 @@ public class ConstraintNetworkView extends PartialPlanView {
     if (link != null) {
       // links are always behind any nodes
       //document.removeObject(link);
-      System.err.println("Adding link " + link + " to document");
       document.addObjectAtHead( link);
       //network.addConstraintLink( link, fromNode, toNode);
       link.setInLayout( true);
@@ -1317,14 +1316,11 @@ public class ConstraintNetworkView extends PartialPlanView {
     Iterator variableLinkItr = variableLinkMap.values().iterator();
     while (variableLinkItr.hasNext()) {
       BasicNodeLink link = (BasicNodeLink) variableLinkItr.next();
-      System.err.println("Considering link " + link);
       VariableContainerNode parentNode = (VariableContainerNode) link.getToNode();
       VariableNode variableNode = (VariableNode) link.getFromNode();
-      System.err.println("From " + variableNode + " to " + parentNode);
       if (link.inLayout() &&
           variableNode.inLayout() && variableNode.isVisible() &&
           parentNode.isVisible()) {
-        System.err.println("Setting link visible");
         link.setVisible( true);
         if (isDebugPrint && (link.getMidLabel() != null)) {
           link.getMidLabel().setVisible( true);
