@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.27 2003-08-01 22:28:11 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.28 2003-08-06 00:22:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -116,8 +116,8 @@ public class PwPartialPlanImpl implements PwPartialPlan {
         loadTime += System.currentTimeMillis() - time1;
       }
       MySQLDB.updatePartialPlanSequenceId(sequenceKey);
-      key = MySQLDB.getNewPartialPlanKey(sequenceKey, name);
     }
+    key = MySQLDB.getNewPartialPlanKey(sequenceKey, name);
     System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
     MySQLDB.createObjects(this);
     model = MySQLDB.INSTANCE.queryPartialPlanModelByKey(key);
