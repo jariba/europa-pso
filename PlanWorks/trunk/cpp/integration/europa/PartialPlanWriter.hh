@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.12 2003-11-13 15:34:54 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.13 2003-11-18 22:14:44 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H
@@ -80,6 +80,10 @@ private:
   void outputPredicate(PredicateId &, const long long int partialPlanId, 
                        FILE *, FILE *);
   void outputConstraint(const ConstraintId &, const long long int, FILE *, FILE *);
+  void outputIntervalDomain(const Domain &, const long long int, FILE *);
+  void outputEnumDomain(const Domain &, const long long int, FILE *);
+  String getBoundString(const Domain &, const Value &);
+  String getEnumString(const Domain &);
   const String getNameForConstraint(const ConstraintId &);
   const String getTemporalityForConstraint(const ConstraintId &);
   String PartialPlanWriter::getVarInfo(const VarId &);

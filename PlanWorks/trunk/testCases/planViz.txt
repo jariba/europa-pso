@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.11 2003-11-13 23:21:18 taylor Exp $
+// $Id: planViz.txt,v 1.12 2003-11-18 22:16:03 miatauro Exp $
 //
 // PlanWorks
 //
@@ -519,4 +519,30 @@ Post-conditions:
  10. Method:10 - The selected partial plan view(s) will be opened.
 
 Requirements: 4.3.1.a-g, 4.3.2.b-e
+
+
+PLANVIZ-14
+--------------------
+Exercise handling of multiple sequences in a project.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. A project is open, which has a multi-step sequence.
+
+Method:
+  1. Add a second multi-step sequence to the current project.
+  2. Delete the first sequence from the project.
+  3. Re-add the original sequence to the project.
+  4. Select the first sequence from the "Planning Sequence" menu.
+  5. Select the second sequence from the "Planning Sequence" menu.
+
+Post-conditions:
+  1. Method:1 - Both planning sequences are visible in the "Planning Sequence" menu.
+  2. Method:2 - Only the second sequence is visible in the "Planning Sequence" menu.
+  3. Method:3 - Both planning sequence are visible in the "Planning Sequence" menu.
+  4. Method:4 - The "Sequence Steps View" for the first project is visible.
+  5. Method:5 - The "Sequence Steps View" for the second project is visible.  The two 
+  "Sequence Steps View"s are visually distinct and represent two different sequences.
+
+Requirements: N/A
 
