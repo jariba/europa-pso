@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.43 2004-05-13 20:24:02 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.44 2004-05-21 21:38:53 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
   </description>
 
   <property environment="env"/>
-  <property name="name.application" value="PlanWorks (PW_M_14): Plan Visualization"/>
+  <property name="name.application" value="PlanWorks (pre-PW_M_15): Plan Visualization"/>
   <property name="boolean.isMaxScreen" value="false"/>
   <property name="planworks.root" value="${basedir}"/>
   <property name="mysql.basedir" value="${planworks.root}/lib/mysql"/>
@@ -37,7 +37,7 @@
   <property name="default.sequence.dir" value=""/>
   <property name="model.rule.delimiter" value="{}"/>
 
-  <target name="planWorksDbInstall" depends="chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+  <target name="planWorksDbInstall" depends="chk_ostype_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
     description="-- create all necessary databases and tables">
       <exec executable="${basedir}/dbInstall.sh" failonerror="true" failifexecutionfails="true">
         <arg value="${mysql.bindir}"/>
@@ -50,17 +50,17 @@
       </exec>
   </target>
 
-  <target name="planWorks"  depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+  <target name="planWorks"  depends="chk_ostype_2,chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
     description="-- launch application (compile dependency)">
     <ant dir="./" antfile="planWorks.xml"/>
   </target>
 
-  <target name="planWorksProf" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+  <target name="planWorksProf" depends="chk_ostype_2,chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
     description="-- launch application with profiling info">
     <ant dir="./" antfile="planWorks.xml" target="planWorksProf"/>
   </target>
 
-  <target name="planWorksOpt" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+  <target name="planWorksOpt" depends="chk_ostype_2,chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
     description="-- launch application (compile_optimized dependency)">
     <ant dir="./" antfile="planWorks.xml" target="planWorksOpt"/>
   </target>
@@ -75,7 +75,7 @@
     <ant dir="./java" antfile="build.xml" target="compile"/>
   </target>
 
-  <target name="cleanDb" depends="chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+  <target name="cleanDb" depends="chk_ostype_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
       description="-- delete loaded projects from data base">
       <exec executable="${basedir}/cleanDb.sh" failonerror="true" failifexecutionfails="true">
         <arg value="${mysql.bindir}"/>
@@ -86,6 +86,17 @@
         <arg value="${mysql.sock}"/>
         <arg value="${mysql.tmpdir}"/>
       </exec>
+  </target>
+
+  <target name="chk_ostype_1">
+    <condition property="os.null.type">
+      <equals arg1="${env.OSTYPE}" arg2=""/>
+    </condition>
+    <!-- echo message="os.null.type ${os.null.type}"/ -->
+  </target>
+
+  <target name="chk_ostype_2" depends="chk_ostype_1" if="os.null.type">
+    <fail message="Environment variable OSTYPE not set."/>
   </target>
 
   <target name="chk_solaris_1">

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.54 2004-05-13 20:24:13 taylor Exp $
+// $Id: TimelineView.java,v 1.55 2004-05-21 21:39:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -189,9 +189,9 @@ public class TimelineView extends PartialPlanView {
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
-		if(!displayableWait()) {
-			return;
-		}
+    if(!displayableWait()) {
+      return;
+    }
 
     this.computeFontMetrics( this);
 
@@ -401,7 +401,7 @@ public class TimelineView extends PartialPlanView {
     Iterator tokenIterator = tokenList.iterator();
     boolean isFreeToken = true, isDraggable = false;
     PwSlot slot = null;
-    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+    Color backgroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
     while (tokenIterator.hasNext()) {
       PwToken token = (PwToken) tokenIterator.next();
       if (token.isSlotted()) {
@@ -760,7 +760,7 @@ public class TimelineView extends PartialPlanView {
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
   private void createEnableAutoSnapItem( JMenuItem enableAutoSnapItem) {

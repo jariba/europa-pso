@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.10 2004-04-30 21:51:29 miatauro Exp $
+// $Id: Utilities.java,v 1.11 2004-05-21 21:38:57 taylor Exp $
 //
 // PlanWorks
 //
@@ -112,19 +112,31 @@ public class Utilities {
 
 
   /**
-   * <code>setPopUpLocation</code> - place opop up window in center of frame
+   * <code>getPopupLocation</code> - center of frame
+   *
+   * @param frame - <code>JFrame</code> - 
+   * @return - <code>Point</code> -
+   */
+  public static Point getPopupLocation( final JFrame frame) {
+    return new Point( (int) (frame.getLocation().getX() + (frame.getSize().getWidth() / 2)),
+                      (int) (frame.getLocation().getY() + (frame.getSize().getHeight() / 2)));
+  } // end getPopupLocation
+
+
+  /**
+   * <code>setPopupLocation</code> - place pop up window in center of frame
    *
    * @param popUp - <code>Window</code> - 
    * @param frame - <code>JFrame</code> - 
    */
-  public static void setPopUpLocation( final Window popUp, final JFrame frame) {
+  public static void setPopupLocation( final Window popUp, final JFrame frame) {
     popUp.setLocation( (int) (frame.getLocation().getX() +
                               (frame.getSize().getWidth() / 2) -
                               (popUp.getSize().getWidth() / 2)),
                        (int) (frame.getLocation().getY() +
                               (frame.getSize().getHeight() / 2) -
                               (popUp.getSize().getHeight() / 2)));
-  } // end setPopUpLocation
+  } // end setPopupLocation
 
 
   /**

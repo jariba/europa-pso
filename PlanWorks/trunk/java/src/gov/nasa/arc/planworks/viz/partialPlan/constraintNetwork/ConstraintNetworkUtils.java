@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ConstraintNetworkUtils.java,v 1.2 2004-03-30 22:01:03 taylor Exp $
+// $Id: ConstraintNetworkUtils.java,v 1.3 2004-05-21 21:39:05 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -32,6 +32,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -133,7 +134,7 @@ public final class ConstraintNetworkUtils {
         }
       });
     menu.add(navItem);
-    NodeGenerics.showPopupMenu(menu, view, viewCoords);
+    ViewGenerics.showPopupMenu(menu, view, viewCoords);
   }
 
   protected static boolean containerDoMouseClick(int modifiers, Point docCoords, Point viewCoords, 

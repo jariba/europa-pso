@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ThickDurationBridge.java,v 1.4 2004-03-30 22:01:04 taylor Exp $
+// $Id: ThickDurationBridge.java,v 1.5 2004-05-21 21:39:08 taylor Exp $
 //
 // PlanWorks
 //
@@ -34,6 +34,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
@@ -158,7 +159,7 @@ public class ThickDurationBridge extends JGoRectangle {
       });
     mouseRightPopup.add( navigatorItem);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, temporalExtentView, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, temporalExtentView, viewCoords);
   } // end mouseRightPopupMenu
 
 } // end class ThickDurationBridge

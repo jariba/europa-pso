@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryView.java,v 1.6 2004-05-04 01:27:22 taylor Exp $
+// $Id: TokenQueryView.java,v 1.7 2004-05-21 21:39:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,32 +13,36 @@
 package gov.nasa.arc.planworks.viz.sequence.sequenceQuery;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
+import java.awt.Point;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.BoxLayout;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
-
-// PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoDocument;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.db.PwTokenQuery;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.viz.TokenQueryContentView;
-import gov.nasa.arc.planworks.viz.TokenQueryHeaderView;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.TransactionHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
+import gov.nasa.arc.planworks.viz.util.TokenQueryComparatorAscending;
+import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
+import gov.nasa.arc.planworks.viz.util.DBTransactionTableModel;
+import gov.nasa.arc.planworks.viz.util.FixedHeightPanel;
+import gov.nasa.arc.planworks.viz.util.TableSorter;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
-import gov.nasa.arc.planworks.viz.util.TokenQueryComparatorAscending;
 
 
 /**
@@ -57,10 +61,10 @@ public class TokenQueryView extends SequenceView {
 
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private TokenQueryHeaderView headerJGoView;
-  private TokenQueryHeaderPanel freeTokenHeaderPanel;
-  private TokenQueryContentView contentJGoView;
-  private JGoDocument jGoDocument;
+  private JScrollPane contentScrollPane;
+  private JTable freeTokenTable;
+  private int objectKeyColumnIndx;
+  private int stepNumberColumnIndx;
 
 
   /**
@@ -75,10 +79,11 @@ public class TokenQueryView extends SequenceView {
    * @param startTimeMSecs - <code>long</code> - 
    * @param viewListener - <code>ViewListener</code> - 
    */
-  public TokenQueryView( List freeTokenList, String query, ViewableObject planSequence,
-                         ViewSet viewSet, JPanel sequenceQueryWindow,
-                         MDIInternalFrame freeTokenQueryFrame, long startTimeMSecs,
-                         ViewListener viewListener) {
+  public TokenQueryView( final List freeTokenList, final String query,
+                         final ViewableObject planSequence, final ViewSet viewSet,
+                         final JPanel sequenceQueryWindow,
+                         final MDIInternalFrame freeTokenQueryFrame, final long startTimeMSecs,
+                         final ViewListener viewListener) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.freeTokenList = freeTokenList;
     Collections.sort( freeTokenList,
@@ -103,7 +108,7 @@ public class TokenQueryView extends SequenceView {
 
  
   Runnable runInit = new Runnable() {
-      public void run() {
+      public final void run() {
         init();
       }
     };
@@ -118,160 +123,113 @@ public class TokenQueryView extends SequenceView {
    *    called by componentShown method on the JFrame
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
-  public void init() {
+  public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
-        Thread.currentThread().sleep(50);
+        Thread.currentThread().sleep( 50);
       } catch (InterruptedException excp) {
       }
       // System.err.println( "timelineView displayable " + this.isDisplayable());
     }
     this.computeFontMetrics( this);
 
-    freeTokenHeaderPanel = new TokenQueryHeaderPanel();
-    freeTokenHeaderPanel.setLayout( new BoxLayout( freeTokenHeaderPanel, BoxLayout.Y_AXIS));
-    headerJGoView = new TokenQueryHeaderView( freeTokenList, query, this);
-    headerJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
+    QueryHeaderView headerJGoView = new QueryHeaderView( query);
     headerJGoView.validate();
     headerJGoView.setVisible( true);
+
+    FixedHeightPanel freeTokenHeaderPanel = new FixedHeightPanel( headerJGoView, this);
+    freeTokenHeaderPanel.setLayout( new BoxLayout( freeTokenHeaderPanel, BoxLayout.Y_AXIS));
     freeTokenHeaderPanel.add( headerJGoView, BorderLayout.NORTH);
     add( freeTokenHeaderPanel, BorderLayout.NORTH);
 
-    contentJGoView = new TokenQueryContentView( freeTokenList, query, headerJGoView,
-                                                 planSequence, this);
-    contentJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
-    add( contentJGoView, BorderLayout.SOUTH);
-    contentJGoView.validate();
-    contentJGoView.setVisible( true);
+    String[] columnNames = { ViewConstants.QUERY_TOKEN_STEP_NUM_HEADER,
+                             ViewConstants.QUERY_TOKEN_KEY_HEADER,
+                             ViewConstants.QUERY_TOKEN_PREDICATE_HEADER,
+                             // empty last column to allow user adjusting of column widths
+                             "" };
+      Object[][] data = new Object [freeTokenList.size()] [columnNames.length];
+      for (int row = 0, nRows = freeTokenList.size(); row < nRows; row++) {
+        PwTokenQuery freeToken = (PwTokenQuery) freeTokenList.get( row);
+        data[row][0] = freeToken.getStepNumber().toString();
+        data[row][1] = freeToken.getId().toString();
+        data[row][2] = freeToken.getPredicateName();
+      }
+      objectKeyColumnIndx = 1;
+      stepNumberColumnIndx = 0;
+      TableSorter sorter = new TableSorter( new DBTransactionTableModel( columnNames, data));
+      freeTokenTable = new DBTransactionTable( sorter, stepNumberColumnIndx, this);
+      sorter.setTableHeader( freeTokenTable.getTableHeader());
+      contentScrollPane = new JScrollPane( freeTokenTable);
+      add( contentScrollPane, BorderLayout.SOUTH);
 
-    this.setVisible( true);
+      this.setVisible( true);
 
-    int maxViewWidth = (int) headerJGoView.getDocumentSize().getWidth();
-    int maxViewHeight = (int) ( headerJGoView.getDocumentSize().getHeight() +
-                                // contentJGoView.getDocumentSize().getHeight());
-                                // keep contentJGoView small
-                                (ViewConstants.INTERNAL_FRAME_X_DELTA));
-    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
-                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
-    int maxQueryFrameY =
-      (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
-             sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
-    int delta = Math.min( ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4 *
-                          sequenceQueryWindow.getQueryResultFrameCnt(),
-                          (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
-                                 maxQueryFrameY -
-                                 (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
-    viewFrame.setLocation( ViewConstants.INTERNAL_FRAME_X_DELTA + delta,
-                           maxQueryFrameY + delta);
-    // prevent right edge from going outside the MDI frame
-    expandViewFrame( viewFrame,
-                     (int) headerJGoView.getDocumentSize().getWidth(),
-                     (int) (headerJGoView.getDocumentSize().getHeight() +
-                            contentJGoView.getDocumentSize().getHeight()));
-    long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
-  } // end init
+      int maxViewWidth = (int) headerJGoView.getDocumentSize().getWidth();
+      int maxViewHeight = (int) ( headerJGoView.getDocumentSize().getHeight() +
+                                  // contentJGoView.getDocumentSize().getHeight());
+                                  // keep contentJGoView small
+                                  (ViewConstants.INTERNAL_FRAME_X_DELTA));
+      viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
+                         maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
+      int maxQueryFrameY =
+        (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
+               sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
+      int delta = Math.min( ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4 *
+                            sequenceQueryWindow.getQueryResultFrameCnt(),
+                            (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
+                                   maxQueryFrameY -
+                                   (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
+      viewFrame.setLocation( ViewConstants.INTERNAL_FRAME_X_DELTA + delta,
+                             maxQueryFrameY + delta);
+      // prevent right edge from going outside the MDI frame
+      expandViewFrame( viewFrame,
+                       Math.max( (int) headerJGoView.getDocumentSize().getWidth(),
+                                 freeTokenTable.getColumnModel().getTotalColumnWidth()),
+                       (int) (headerJGoView.getDocumentSize().getHeight() +
+                              freeTokenTable.getRowCount() *
+                              freeTokenTable.getRowHeight()));
+      long stopTimeMSecs = System.currentTimeMillis();
+      System.err.println( "   ... '" + this.getName() + "' elapsed time: " +
+                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
+      handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
+    } // end init
 
+  class QueryHeaderView extends TransactionHeaderView {
+
+    public QueryHeaderView( final String query) {
+      super( query);
+    }
 
   /**
-   * <code>getTokenQueryContentView</code>
+   * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
    *
-   * @return - <code>TokenQueryContentView</code> - 
+   * @param modifiers - <code>int</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
    */
-  public TokenQueryContentView getTokenQueryContentView() {
-    return contentJGoView;
-  }
-
-  /**
-   * <code>ScrollBarListener</code> - keep both headerJGoView & contentJGoView aligned,
-   *                                  when user moves one scroll bar
-   *
-   */
-  class ScrollBarListener implements AdjustmentListener {
-
-    /**
-     * <code>adjustmentValueChanged</code> - keep headerJGoView &
-     *                                  contentJGoView aligned, when user moves one 
-     *                                  scroll bar
-     *
-     * @param event - <code>AdjustmentEvent</code> - 
-     */
-    public void adjustmentValueChanged( AdjustmentEvent event) {
-      JScrollBar source = (JScrollBar) event.getSource();
-      // to get immediate incremental adjustment, rather than waiting for
-      // final position, comment out next check
-      // if (! source.getValueIsAdjusting()) {
-//         System.err.println( "adjustmentValueChanged " + source.getValue());
-//         System.err.println( "headerJGoView " +
-//                             headerJGoView.getHorizontalScrollBar().getValue());
-//         System.err.println( "contentJGoView " +
-//                             contentJGoView.getHorizontalScrollBar().getValue());
-        int newPostion = source.getValue();
-        if (newPostion != headerJGoView.getHorizontalScrollBar().getValue()) {
-          headerJGoView.getHorizontalScrollBar().setValue( newPostion);
-        } else if (newPostion != contentJGoView.getHorizontalScrollBar().getValue()) {
-          contentJGoView.getHorizontalScrollBar().setValue( newPostion);
-        }
-        // }
-    } // end adjustmentValueChanged 
-
-  } // end class ScrollBarListener 
-
-
-  /**
-   * <code>TokenQueryHeaderPanel</code> - require freeToken header view panel
-   *                                       to be of fixed height
-   *
-   */
-  class TokenQueryHeaderPanel extends JPanel {
-
-    /**
-     * <code>TokenQueryHeaderPanel</code> - constructor 
-     *
-     */
-    public TokenQueryHeaderPanel() {
-      super();
+  public final void doBackgroundClick( final int modifiers, final Point docCoords,
+                                       final Point viewCoords) {
+    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      // do nothing
+    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( viewCoords);
     }
+  } // end doBackgroundClick 
 
-    /**
-     * <code>getMinimumSize</code> - keep size during resizing
-     *
-     * @return - <code>Dimension</code> - 
-     */
-    public Dimension getMinimumSize() {
-     return new Dimension( (int) TokenQueryView.this.getSize().getWidth(),
-                           (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
-    }
+    private void mouseRightPopupMenu( final Point viewCoords) {
+      JPopupMenu mouseRightPopup = new JPopupMenu();
+      JMenuItem transByKeyItem = new JMenuItem( "Find Token by " +
+                                                ViewConstants.QUERY_TOKEN_KEY_HEADER);
+      createTransByKeyItem( transByKeyItem, freeTokenList, contentScrollPane,
+                            freeTokenTable, objectKeyColumnIndx, TokenQueryView.this);
+      mouseRightPopup.add( transByKeyItem);
 
-    /**
-     * <code>getMaximumSize</code> - keep size during resizing
-     *
-     * @return - <code>Dimension</code> - 
-     */
-    public Dimension getMaximumSize() {
-      return new Dimension( (int) TokenQueryView.this.getSize().getWidth(),
-                            (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
-    }
+      ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    } // end mouseRightPopupMenu
 
-    /**
-     * <code>getPreferredSize</code> - determine initial size
-     *
-     * @return - <code>Dimension</code> - 
-     */
-    public Dimension getPreferredSize() {
-      return new Dimension( (int) TokenQueryView.this.getSize().getWidth(),
-                            (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
-    }
-  } // end class TokenQueryHeaderPanel
-
-
+  } // end class QueryHeaderView
 
 
 } // end class TokenQueryView

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.102 2004-05-14 17:46:40 miatauro Exp $
+// $Id: MySQLDB.java,v 1.103 2004-05-21 21:38:56 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1359,7 +1359,7 @@ public class MySQLDB {
     try {
       Long partialPlanId = getPartialPlanIdByStepNum(seq.getId(), stepNum);
       ResultSet vars = 
-        queryDatabase("SELECT VariableId, VariableType, DomainType, EnumDomain, IntDomainType, IntDomainUpperBound, IntDomainLowerBound FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()).concat(" && VariableType IN('OBJECT_VAR', 'PARAMETER_VAR')"));
+        queryDatabase("SELECT VariableId, VariableType, DomainType, EnumDomain, IntDomainType, IntDomainUpperBound, IntDomainLowerBound, ParentId FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()).concat(" && VariableType IN('OBJECT_VAR', 'PARAMETER_VAR')"));
       boolean instantiateVar;
       while(vars.next()) {
         instantiateVar = false;
@@ -1375,7 +1375,9 @@ public class MySQLDB {
         }
         if(instantiateVar) {
           retval.add(new PwVariableQueryImpl(new Integer(vars.getInt("VariableId")),
-                                             vars.getString("VariableType"), new Integer(stepNum),
+                                             vars.getString("VariableType"),
+                                             new Integer(vars.getInt("ParentId")),
+                                             new Integer(stepNum),
                                              seq.getId(), partialPlanId, true));
         }
       }
@@ -1672,8 +1674,8 @@ public class MySQLDB {
 // 	}
 }
 
-class ObjectIdComparator implements Comparator {
-  public ObjectIdComparator() {
+class EntityIdComparator implements Comparator {
+  public EntityIdComparator() {
   }
   public boolean equals(Object o) {
     return false;
@@ -1683,7 +1685,7 @@ class ObjectIdComparator implements Comparator {
     PwDBTransactionImpl t2 = (PwDBTransactionImpl) o2;
     int cmp1 = t1.getPartialPlanId().compareTo(t2.getPartialPlanId());
     if(cmp1 == 0) {
-      return t1.getObjectId().compareTo(t2.getObjectId());
+      return t1.getEntityId().compareTo(t2.getEntityId());
     }
     return t1.getPartialPlanId().compareTo(t2.getPartialPlanId());
   }

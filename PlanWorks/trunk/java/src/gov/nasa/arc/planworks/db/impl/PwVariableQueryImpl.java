@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableQueryImpl.java,v 1.1 2003-12-20 01:54:48 taylor Exp $
+// $Id: PwVariableQueryImpl.java,v 1.2 2004-05-21 21:38:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,7 +26,8 @@ import gov.nasa.arc.planworks.db.PwVariableQuery;
 public class PwVariableQueryImpl implements PwVariableQuery {
 
   private Integer id;
-  private String variableName;
+  private String variableType;
+  private Integer parentId;
   private Integer stepNumber;
   private Long sequenceId;
   private Long partialPlanId;
@@ -36,14 +37,19 @@ public class PwVariableQueryImpl implements PwVariableQuery {
    * <code>PwVariableQueryImpl</code> - constructor 
    *
    * @param id - <code>Integer</code> - 
+   * @param variableType - <code>String</code> - 
+   * @param parentId - <code>Integer</code> - 
    * @param stepNumber - <code>Integer</code> - 
    * @param sequenceId - <code>Long</code> - 
    * @param partialPlanId - <code>Long</code> - 
+   * @param isUnbound - <code>boolean</code> - 
    */
-  public PwVariableQueryImpl( Integer id, String variableName, Integer stepNumber,
-                                Long sequenceId, Long partialPlanId, boolean isUnbound) {
+  public PwVariableQueryImpl( Integer id, String variableType, Integer parentId,
+                              Integer stepNumber, Long sequenceId, Long partialPlanId,
+                              boolean isUnbound) {
     this.id = id;
-    this.variableName = variableName;
+    this.variableType = variableType;
+    this.parentId = parentId;
     this.stepNumber = stepNumber;
     this.sequenceId = sequenceId;
     this.partialPlanId = partialPlanId;
@@ -60,12 +66,21 @@ public class PwVariableQueryImpl implements PwVariableQuery {
   }
 
   /**
-   * <code>getName</code>
+   * <code>getType</code>
    *
-   * @return - <code>String</code> - variable name
+   * @return - <code>String</code> - variable type
    */
-  public String getName() {
-    return variableName;
+  public String getType() {
+    return variableType;
+  }
+
+  /**
+   * <code>getParentId</code>
+   *
+   * @return - <code>Integer</code> - parent id
+   */
+  public Integer getParentId() {
+    return parentId;
   }
 
   /**

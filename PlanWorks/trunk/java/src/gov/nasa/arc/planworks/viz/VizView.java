@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.23 2004-05-08 01:44:13 taylor Exp $
+// $Id: VizView.java,v 1.24 2004-05-21 21:39:03 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -98,9 +98,9 @@ public class VizView extends JPanel {
     super();
     this.viewSet = viewSet;
 
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+    font = new Font( ViewConstants.VIEW_FONT_NAME,
+                     ViewConstants.VIEW_FONT_PLAIN_STYLE,
+                     ViewConstants.VIEW_FONT_SIZE);
     fontMetrics = null;  // see computeFontMetrics
     overview = null;
     ruleView = null;
@@ -108,7 +108,7 @@ public class VizView extends JPanel {
     viewFrame = null;
 
     JGoText.setDefaultFontFaceName( "Monospaced");
-    JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+    JGoText.setDefaultFontSize( ViewConstants.VIEW_FONT_SIZE);
     listenerList = new LinkedList();
     // Utilities.printFontNames();
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.28 2004-05-13 20:24:14 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.29 2004-05-21 21:39:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -246,15 +246,8 @@ public class SequenceStepsView extends SequenceView {
       }
       // System.err.println( "constraintNetworkView displayable " + this.isDisplayable());
     }
-    graphics = this.getGraphics();
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-    // does nothing
-    // jGoView.setFont( font);
-    fontMetrics = graphics.getFontMetrics( font);
 
-    // graphics.dispose();
+    this.computeFontMetrics( this);
 
     document = jGoView.getDocument();
 
@@ -573,7 +566,7 @@ public class SequenceStepsView extends SequenceView {
 
     createCloseHideShowViewItems( mouseRightPopup);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
 

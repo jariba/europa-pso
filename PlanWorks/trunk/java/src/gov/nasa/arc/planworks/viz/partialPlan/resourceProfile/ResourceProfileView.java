@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.18 2004-05-08 01:44:15 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.19 2004-05-21 21:39:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -209,7 +209,7 @@ public class ResourceProfileView extends ResourceView  {
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
       ResourceProfile resourceProfile =
-        new ResourceProfile( resource, ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR),
+        new ResourceProfile( resource, ViewConstants.FREE_TOKEN_BG_COLOR,
                              levelScaleFontMetrics, this);
       // System.err.println( "resourceProfile " + resourceProfile);
       this.getJGoExtentDocument().addObjectAtTail( resourceProfile);
@@ -295,7 +295,7 @@ public class ResourceProfileView extends ResourceView  {
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.9 2004-05-04 01:27:22 taylor Exp $
+// $Id: StepQueryView.java,v 1.10 2004-05-21 21:39:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,32 +13,36 @@
 package gov.nasa.arc.planworks.viz.sequence.sequenceQuery;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
+import java.awt.Point;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.BoxLayout;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
-// PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoDocument;
-
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.viz.StepContentView;
-import gov.nasa.arc.planworks.viz.StepHeaderView;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.TransactionHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
+import gov.nasa.arc.planworks.viz.util.DBTransactionComparatorAscending;
+import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
+import gov.nasa.arc.planworks.viz.util.DBTransactionTableModel;
+import gov.nasa.arc.planworks.viz.util.FixedHeightPanel;
+import gov.nasa.arc.planworks.viz.util.TableSorter;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
-import gov.nasa.arc.planworks.viz.util.DBTransactionComparatorAscending;
 
 
 /**
@@ -58,11 +62,10 @@ public class StepQueryView extends SequenceView {
 
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private StepHeaderView headerJGoView;
-  private StepHeaderPanel stepHeaderPanel;
-  private StepContentView contentJGoView;
-  private JGoDocument jGoDocument;
-  private ViewListener viewListener;
+  private JScrollPane contentScrollPane;
+  private JTable stepTable;
+  private int objectKeyColumnIndx;
+  private int stepNumberColumnIndx;
 
 
   /**
@@ -78,10 +81,11 @@ public class StepQueryView extends SequenceView {
    * @param startTimeMSecs - <code>long</code> - 
    * @param viewListener - <code>ViewListener</code> - 
    */
-  public StepQueryView( List stepList, String key, String query, ViewableObject planSequence,
-                        ViewSet viewSet, JPanel sequenceQueryWindow,
-                        MDIInternalFrame stepQueryFrame, long startTimeMSecs,
-                        ViewListener viewListener) {
+  public StepQueryView( final List stepList, final String key, final String query,
+                        final ViewableObject planSequence, final ViewSet viewSet,
+                        final JPanel sequenceQueryWindow,
+                        final MDIInternalFrame stepQueryFrame, final long startTimeMSecs,
+                        final ViewListener viewListener) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.stepList = stepList;
     this.key = key;
@@ -99,7 +103,6 @@ public class StepQueryView extends SequenceView {
     if (viewListener != null) {
       addViewListener( viewListener);
     }
-    this.viewListener = viewListener;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -108,7 +111,7 @@ public class StepQueryView extends SequenceView {
 
  
   Runnable runInit = new Runnable() {
-      public void run() {
+      public final void run() {
         init();
       }
     };
@@ -123,7 +126,7 @@ public class StepQueryView extends SequenceView {
    *    called by componentShown method on the JFrame
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
-  public void init() {
+  public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
@@ -135,21 +138,20 @@ public class StepQueryView extends SequenceView {
     }
     this.computeFontMetrics( this);
 
-    stepHeaderPanel = new StepHeaderPanel();
-    stepHeaderPanel.setLayout( new BoxLayout( stepHeaderPanel, BoxLayout.Y_AXIS));
-    headerJGoView = new StepHeaderView( stepList, key, query, this);
-    headerJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
+    QueryHeaderView  headerJGoView = new QueryHeaderView( query);
     headerJGoView.validate();
     headerJGoView.setVisible( true);
+
+    FixedHeightPanel stepHeaderPanel = new FixedHeightPanel( headerJGoView, this);
+    stepHeaderPanel.setLayout( new BoxLayout( stepHeaderPanel, BoxLayout.Y_AXIS));
     stepHeaderPanel.add( headerJGoView, BorderLayout.NORTH);
     add( stepHeaderPanel, BorderLayout.NORTH);
 
-    contentJGoView = new StepContentView( stepList, key, query, headerJGoView,
-                                                 planSequence, this);
-    contentJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
-    add( contentJGoView, BorderLayout.SOUTH);
-    contentJGoView.validate();
-    contentJGoView.setVisible( true);
+    TableSorter sorter = createTableModelAndSorter();
+    stepTable = new DBTransactionTable( sorter, stepNumberColumnIndx, this);
+    sorter.setTableHeader( stepTable.getTableHeader());
+    contentScrollPane = new JScrollPane( stepTable);
+    add( contentScrollPane, BorderLayout.NORTH);
 
     this.setVisible( true);
 
@@ -172,111 +174,199 @@ public class StepQueryView extends SequenceView {
                            maxQueryFrameY + delta);
     // prevent right edge from going outside the MDI frame
     expandViewFrame( viewFrame,
-                     (int) headerJGoView.getDocumentSize().getWidth(),
+                     Math.max( (int) headerJGoView.getDocumentSize().getWidth(),
+                               stepTable.getColumnModel().getTotalColumnWidth()),
                      (int) (headerJGoView.getDocumentSize().getHeight() +
-                            contentJGoView.getDocumentSize().getHeight()));
+                            stepTable.getRowCount() *
+                            stepTable.getRowHeight()));
 
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
+    System.err.println( "   ... '" + this.getName() + "'elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 
-  /**
-   * <code>getStepContentView</code>
-   *
-   * @return - <code>StepContentView</code> - 
-   */
-  public StepContentView getStepContentView() {
-    return contentJGoView;
+  private TableSorter createTableModelAndSorter() {
+    // " With " queries & non " With " queries with null key show ENTITY_KEY in table,
+    // the others do not since the query specifies the key
+    String[] columnNames = null;
+    Object[][] data = null;
+    if ((query.indexOf( " With ") >= 0) ||
+        ((query.indexOf( " With ") == -1) && key.equals( "") &&
+         (query.indexOf( "Variable") >= 0))) {
+      // only variable transactions
+      objectKeyColumnIndx = 3;
+      stepNumberColumnIndx = 0;
+      columnNames = new String[] { ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
+                                   ViewConstants.DB_TRANSACTION_KEY_HEADER,
+                                   ViewGenerics.computeTransactionNameHeader(),
+                                   ViewConstants.QUERY_VARIABLE_KEY_HEADER,
+                                   ViewConstants.QUERY_VARIABLE_TYPE_HEADER,
+                                   ViewConstants.DB_TRANSACTION_PARENT_HEADER,
+                                   ViewConstants.DB_TRANSACTION_PARAMETER_HEADER,
+                                   // empty last column to allow user adjusting of column widths
+                                   "" };
+      data = new Object [stepList.size()] [columnNames.length];
+      for (int row = 0, nRows = stepList.size(); row < nRows; row++) {
+        PwDBTransaction transaction = (PwDBTransaction) stepList.get( row);
+        data[row][0] = transaction.getStepNumber().toString();
+        data[row][1] = transaction.getId().toString();
+        data[row][2] = transaction.getName();
+        data[row][3] = transaction.getEntityId().toString();
+        data[row][4] = transaction.getInfo()[0];
+        data[row][5] = transaction.getInfo()[1];
+        data[row][6] = transaction.getInfo()[2];
+      }
+    } else if ((query.indexOf( " With ") == -1) && key.equals( "")) {
+      // all constraints, or tokens, for sequence
+      objectKeyColumnIndx = 3;
+      stepNumberColumnIndx = 0;
+     if (query.indexOf( "Constraint") >= 0) {
+        columnNames = new String[] { ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
+                                     ViewConstants.DB_TRANSACTION_KEY_HEADER,
+                                     ViewGenerics.computeTransactionNameHeader(),
+                                     ViewConstants.QUERY_CONSTRAINT_KEY_HEADER,
+                                     ViewConstants.QUERY_CONSTRAINT_TYPE_HEADER,
+                                     // empty last column to allow user adjusting of column widths
+                                     "" };
+        data = new Object [stepList.size()] [columnNames.length];
+        for (int row = 0, nRows = stepList.size(); row < nRows; row++) {
+          PwDBTransaction transaction = (PwDBTransaction) stepList.get( row);
+          data[row][0] = transaction.getStepNumber().toString();
+          data[row][1] = transaction.getId().toString();
+          data[row][2] = transaction.getName();
+          data[row][3] = transaction.getEntityId().toString();
+          data[row][4] = transaction.getInfo()[0];
+        }
+      } else if (query.indexOf( "Token") >= 0) {
+        columnNames = new String[] { ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
+                                     ViewConstants.DB_TRANSACTION_KEY_HEADER,
+                                     ViewGenerics.computeTransactionNameHeader(),
+                                     ViewConstants.QUERY_TOKEN_KEY_HEADER,
+                                     ViewConstants.QUERY_TOKEN_PREDICATE_HEADER,
+                                     // empty last column to allow user adjusting of column widths
+                                     "" };
+        data = new Object [stepList.size()] [columnNames.length];
+        for (int row = 0, nRows = stepList.size(); row < nRows; row++) {
+          PwDBTransaction transaction = (PwDBTransaction) stepList.get( row);
+          data[row][0] = transaction.getStepNumber().toString();
+          data[row][1] = transaction.getId().toString();
+          data[row][2] = transaction.getName();
+          data[row][3] = transaction.getEntityId().toString();
+          data[row][4] = transaction.getInfo()[0];
+        }
+      }
+    } else {
+      // specific constraint, token, or variable for sequence
+      objectKeyColumnIndx = -1;
+      stepNumberColumnIndx = 0;
+      if (query.indexOf( "Constraint") >= 0) {
+        columnNames = new String[] { ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
+                                     ViewConstants.DB_TRANSACTION_KEY_HEADER,
+                                     ViewGenerics.computeTransactionNameHeader(),
+                                     // ViewConstants.QUERY_CONSTRAINT_KEY_HEADER,
+                                     ViewConstants.QUERY_CONSTRAINT_TYPE_HEADER,
+                                     // empty last column to allow user adjusting of column widths
+                                     "" };
+        data = new Object [stepList.size()] [columnNames.length];
+        for (int row = 0, nRows = stepList.size(); row < nRows; row++) {
+          PwDBTransaction transaction = (PwDBTransaction) stepList.get( row);
+          data[row][0] = transaction.getStepNumber().toString();
+          data[row][1] = transaction.getId().toString();
+          data[row][2] = transaction.getName();
+          // data[row][3] = transaction.getEntityId().toString();
+          data[row][3] = transaction.getInfo()[0];
+        }
+      } else if (query.indexOf( "Token") >= 0) {
+        columnNames = new String[] { ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
+                                     ViewConstants.DB_TRANSACTION_KEY_HEADER,
+                                     ViewGenerics.computeTransactionNameHeader(),
+                                     // ViewConstants.QUERY_TOKEN_KEY_HEADER,
+                                     ViewConstants.QUERY_TOKEN_PREDICATE_HEADER,
+                                     // empty last column to allow user adjusting of column widths
+                                     "" };
+        data = new Object [stepList.size()] [columnNames.length];
+        for (int row = 0, nRows = stepList.size(); row < nRows; row++) {
+          PwDBTransaction transaction = (PwDBTransaction) stepList.get( row);
+          data[row][0] = transaction.getStepNumber().toString();
+          data[row][1] = transaction.getId().toString();
+          data[row][2] = transaction.getName();
+          // data[row][3] = transaction.getEntityId().toString();
+          data[row][3] = transaction.getInfo()[0];
+        }
+      } else if (query.indexOf( "Variable") >= 0) {
+        columnNames = new String[] { ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
+                                     ViewConstants.DB_TRANSACTION_KEY_HEADER,
+                                     ViewGenerics.computeTransactionNameHeader(),
+                                     // ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER,
+                                     ViewConstants.QUERY_VARIABLE_TYPE_HEADER,
+                                     ViewConstants.DB_TRANSACTION_PARENT_HEADER,
+                                     ViewConstants.DB_TRANSACTION_PARAMETER_HEADER,
+                                     // empty last column to allow user adjusting of column widths
+                                     "" };
+        data = new Object [stepList.size()] [columnNames.length];
+        for (int row = 0, nRows = stepList.size(); row < nRows; row++) {
+          PwDBTransaction transaction = (PwDBTransaction) stepList.get( row);
+          data[row][0] = transaction.getStepNumber().toString();
+          data[row][1] = transaction.getId().toString();
+          data[row][2] = transaction.getName();
+          // data[row][3] = transaction.getEntityId().toString();
+          data[row][3] = transaction.getInfo()[0];
+          data[row][4] = transaction.getInfo()[1];
+          data[row][5] = transaction.getInfo()[2];
+        }
+      }
+    }
+
+    return new TableSorter( new DBTransactionTableModel( columnNames, data));
   }
 
-  /**
-   * <code>ScrollBarListener</code> - keep both headerJGoView & contentJGoView aligned,
-   *                                  when user moves one scroll bar
-   *
-   */
-  class ScrollBarListener implements AdjustmentListener {
 
-    /**
-     * <code>adjustmentValueChanged</code> - keep headerJGoView &
-     *                                  contentJGoView aligned, when user moves one 
-     *                                  scroll bar
-     *
-     * @param event - <code>AdjustmentEvent</code> - 
-     */
-    public void adjustmentValueChanged( AdjustmentEvent event) {
-      JScrollBar source = (JScrollBar) event.getSource();
-      // to get immediate incremental adjustment, rather than waiting for
-      // final position, comment out next check
-      // if (! source.getValueIsAdjusting()) {
-//         System.err.println( "adjustmentValueChanged " + source.getValue());
-//         System.err.println( "headerJGoView " +
-//                             headerJGoView.getHorizontalScrollBar().getValue());
-//         System.err.println( "contentJGoView " +
-//                             contentJGoView.getHorizontalScrollBar().getValue());
-        int newPostion = source.getValue();
-        if (newPostion != headerJGoView.getHorizontalScrollBar().getValue()) {
-          headerJGoView.getHorizontalScrollBar().setValue( newPostion);
-        } else if (newPostion != contentJGoView.getHorizontalScrollBar().getValue()) {
-          contentJGoView.getHorizontalScrollBar().setValue( newPostion);
-        }
-        // }
-    } // end adjustmentValueChanged 
+  class QueryHeaderView extends TransactionHeaderView {
 
-  } // end class ScrollBarListener 
-
+    public QueryHeaderView( final String query) {
+      super( query);
+    }
 
   /**
-   * <code>StepHeaderPanel</code> - require step header view panel
-   *                                       to be of fixed height
+   * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
    *
+   * @param modifiers - <code>int</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
    */
-  class StepHeaderPanel extends JPanel {
-
-    /**
-     * <code>StepHeaderPanel</code> - constructor 
-     *
-     */
-    public StepHeaderPanel() {
-      super();
+  public final void doBackgroundClick( final int modifiers, final Point docCoords,
+                                       final Point viewCoords) {
+    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      // do nothing
+    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      if ((query.indexOf( " With ") >= 0) ||
+          ((query.indexOf( " With ") == -1) && key.equals( ""))) {
+        mouseRightPopupMenu( viewCoords);
+      }
     }
+  } // end doBackgroundClick 
 
-    /**
-     * <code>getMinimumSize</code> - keep size during resizing
-     *
-     * @return - <code>Dimension</code> - 
-     */
-    public Dimension getMinimumSize() {
-     return new Dimension( (int) StepQueryView.this.getSize().getWidth(),
-                           (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
-    }
+    private void mouseRightPopupMenu( final Point viewCoords) {
+      JPopupMenu mouseRightPopup = new JPopupMenu();
+      String keyString = "";
+      if (query.indexOf( "Constraint") >= 0) {
+        keyString = ViewConstants.QUERY_CONSTRAINT_KEY_HEADER;
+      } else if (query.indexOf( "Token") >= 0) {
+        keyString = ViewConstants.QUERY_TOKEN_KEY_HEADER;
+      } else if (query.indexOf( "Variable") >= 0) {
+        keyString = ViewConstants.QUERY_VARIABLE_KEY_HEADER;
+      }
+      JMenuItem transByKeyItem = new JMenuItem( "Find Transaction by " + keyString);
+      createTransByKeyItem( transByKeyItem, stepList, contentScrollPane,
+                            stepTable, objectKeyColumnIndx, StepQueryView.this);
+      mouseRightPopup.add( transByKeyItem);
 
-    /**
-     * <code>getMaximumSize</code> - keep size during resizing
-     *
-     * @return - <code>Dimension</code> - 
-     */
-    public Dimension getMaximumSize() {
-      return new Dimension( (int) StepQueryView.this.getSize().getWidth(),
-                            (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
-    }
+      ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    } // end mouseRightPopupMenu
 
-    /**
-     * <code>getPreferredSize</code> - determine initial size
-     *
-     * @return - <code>Dimension</code> - 
-     */
-    public Dimension getPreferredSize() {
-      return new Dimension( (int) StepQueryView.this.getSize().getWidth(),
-                            (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
-    }
-  } // end class StepHeaderPanel
-
+  } // end class QueryHeaderView
 
 
 

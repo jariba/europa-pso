@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.47 2004-05-13 20:24:12 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.48 2004-05-21 21:39:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -434,7 +434,7 @@ public class TemporalExtentView extends PartialPlanView  {
         backgroundColor = getTimelineColor( token.getParentId());
       } else { // free tokens
         isFreeToken = true;
-        backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+        backgroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
       }
       if (isTokenInContentSpec( token)) {
         PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
@@ -756,7 +756,7 @@ public class TemporalExtentView extends PartialPlanView  {
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
 

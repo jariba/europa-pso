@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceView.java,v 1.3 2004-02-12 01:26:50 taylor Exp $
+// $Id: SequenceView.java,v 1.4 2004-05-21 21:39:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -60,7 +60,20 @@ public class SequenceView extends VizView {
     // Utilities.printFontNames();
   }
 
+  /**
+   * <code>getPlanSequence</code>
+   *
+   * @return - <code>PwPlanningSequence</code> - 
+   */
+  public final PwPlanningSequence getPlanSequence() {
+    return planSequence;
+  }
 
+  /**
+   * <code>createCloseHideShowViewItems</code>
+   *
+   * @param mouseRightPopup - <code>JPopupMenu</code> - 
+   */
   public void createCloseHideShowViewItems( JPopupMenu mouseRightPopup) {
     List loadedPartialPlans = planSequence.getPartialPlansList();
     Iterator partialPlanItr = loadedPartialPlans.iterator();

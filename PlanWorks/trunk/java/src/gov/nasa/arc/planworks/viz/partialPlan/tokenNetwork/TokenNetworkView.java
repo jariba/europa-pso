@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.50 2004-05-13 20:24:13 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.51 2004-05-21 21:39:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -359,7 +359,7 @@ public class TokenNetworkView extends PartialPlanView {
         backgroundColor = getTimelineColor( token.getParentId());
       } else { // free tokens
         isFreeToken = true;
-        backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+        backgroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
       }
       if (isTokenInContentSpec( token)) {
         TokenNode tokenNode =
@@ -503,7 +503,7 @@ public class TokenNetworkView extends PartialPlanView {
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
   private void createActiveTokenItem( final JMenuItem activeTokenItem) {

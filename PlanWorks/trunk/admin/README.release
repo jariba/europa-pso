@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.10 2004-05-13 20:24:03 taylor Exp $
+# $Id: README.release,v 1.11 2004-05-21 21:38:54 taylor Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
@@ -17,8 +17,6 @@ o Update PlanWorks/build.xml (property name="name.application" with new value)
 o Update PlanWorks/GETTING_STARTED
 
 o Update PlanWorks/testCases/planViz.txt
-
-o Update PlanWorks/cpp/integration/europa/README
 
 o Run "ant test" to execute the BackendTest, the MySQLDBTest,
   the PlanWorksUtilsTest, and the PlanWorksGUITest (1-10 of 23 planViz.txt tests)

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.20 2004-05-08 01:44:15 taylor Exp $
+// $Id: TemporalNode.java,v 1.21 2004-05-21 21:39:07 taylor Exp $
 //
 // PlanWorks
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.Extent;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
@@ -732,7 +733,7 @@ public class TemporalNode extends BasicNode implements Extent {
         });
       mouseRightPopup.add( activeTokenItem);
 
-      NodeGenerics.showPopupMenu( mouseRightPopup, temporalExtentView, viewCoords);
+      ViewGenerics.showPopupMenu( mouseRightPopup, temporalExtentView, viewCoords);
     }
   } // end mouseRightPopupMenu
 

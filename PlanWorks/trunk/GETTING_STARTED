@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.41 2004-04-09 23:11:22 taylor Exp $
+# $Id: GETTING_STARTED,v 1.42 2004-05-21 21:38:53 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -239,18 +239,22 @@ parameter lists, their keys, and the model rule which is responsible.
 DB Transaction View
 ----------------
 Lists the transactions for this partial plan step.  Each entry includes the
-transaction key (TX_KEY), the TRANSACTION_TYPE, the transaction source
-(SOURCE), the object key (OBJ_KEY), the step number (STEP), and the object name
-(OBJ_NAME).  Entries with TRANSACTION_TYPEs of VARIABLE_* and TOKEN_* have 
-values for PREDICATE_NAME.  Entries with TRANSACTION_TYPEs of VARIABLE_* and 
-OBJ_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
+transaction key (TX_KEY), the TRANSACTION_NAME, the transaction source
+(SOURCE), the entity key (ENTITY_KEY), the step number (STEP), and the entity name
+(ENTITY_NAME).  Entries with TRANSACTION_NAMEs of VARIABLE_* have values for 
+PREDICATE_NAME.  Entries with TRANSACTION_NAMEs of VARIABLE_* and 
+ENTITY_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
 
-Mouse-Right click on the background of the "header" portion of the view, 
-offers "Find Transaction By Obj_Key".  Entering an OBJ_KEY value will cause
-the lower portion of the Transaction view to scroll up to show the transaction 
-entry with the selected OBJ_KEY value.  The OBJ_KEY value will be highlighted.
-Mouse-Left click on the column header nodes offer sorting of that columns's 
-values, alternately in ascending order and desending order.
+Mouse-Right click on the background, between the window title and the table
+column headers, offers "Find Transaction By Obj_Key".  Entering an ENTITY_KEY 
+value will cause the lower portion of the Transaction view to scroll up to show 
+the transaction entry with the selected ENTITY_KEY value.  The ENTITY_KEY value 
+will be highlighted.  Mouse-Left clicks on the column header nodes offer sorting 
+based on that columns's values: Mouse-Left clicks cycle through sortAscending, 
+sortDescending, & noSort - while clearing other column sorts; Control-Mouse-Left 
+clicks cycle through sortAscending, sortDescending, & noSort - while not clearing 
+other column sorts.  The table column widths can be resized by dragging the column 
+header boundaries.
 
 
 Node Focus in Views
@@ -309,7 +313,7 @@ Applying single predicate, timeline, and time interval filters results
 in only the tokens which match that filter being displayed.  To filter
 "in" more than one of the types, use the "OR" combo box selection; to
 filter "out" more than one of the types, use the "NOT" check box for
-each object type, and the "AND" combo box selection
+each entity type, and the "AND" combo box selection
 
 The token keys filter works thusly: click on either the "require" or 
 "exclude" radio button, and then enter the key value in the input slot.  
@@ -353,29 +357,34 @@ the background of the "SequenceQuery for ..." dialog, and selecting
 "Discard Query Results Windows".
 
 Each entry of the "Query Results for ..." windows for "Transactions" queries 
-includes the transaction key (TX_KEY), the TRANSACTION_TYPE, the transaction 
-source (SOURCE), the step number (STEP), and the object name (OBJ_NAME).  
-Entries with TRANSACTION_TYPEs of VARIABLE_* and TOKEN_* have values for 
-PREDICATE_NAME.  Entries with TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = 
-PARAMETER_VAR have values for PARAMETER_NAME.  The "In Range ..." queries, 
-also include the object key (OBJ_KEY).
+includes the transaction key (TX_KEY), the TRANSACTION_NAME, the transaction 
+source (SOURCE), the step number (STEP), and the entity name (ENTITY_NAME).  
+Entries with TRANSACTION_NAMEs of VARIABLE_* have values for PREDICATE_NAME.  
+Entries with TRANSACTION_NAMEs of VARIABLE_* and ENTITY_NAME = PARAMETER_VAR 
+have values for PARAMETER_NAME.  The "In Range ..." queries, 
+also include the entity key (ENTITY_KEY).
 
 Each entry of the "Query Results for ..." windows for "Steps" queries 
 includes the step number (STEP), the transaction key (TX_KEY), the 
-TRANSACTION_TYPE, and the object name (OBJ_NAME).  Entries with 
-TRANSACTION_TYPEs of VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  
-Entries with TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = PARAMETER_VAR 
+TRANSACTION_NAME, and the entity name (ENTITY_NAME).  Entries with 
+TRANSACTION_NAMEs of VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  
+Entries with TRANSACTION_NAMEs of VARIABLE_* and ENTITY_NAME = PARAMETER_VAR 
 have values for PARAMETER_NAME.  The "With ..." queries, and the "Where ..."
-queries with blank "Key" fields, also include the object key (OBJ_KEY).
+queries with blank "Key" fields, also include the entity key (ENTITY_KEY).
 
-The "Query Results for ..." windows which have a (OBJ_KEY) column offer the 
-user a pop-up dialog entitled "Find Transaction by Obj_Key".  Mouse-Right on 
-the background of the header section of the window brings up this dialog.
+The "Query Results for ..." windows which have a (ENTITY_KEY) column offer the 
+user a pop-up dialog entitled "Find Transaction/Token/Variable by Entity_Key".  
+Mouse-Right on the background of the panel between the window title and the
+table column headers of the window, brings up this dialog.
 
 The column header nodes of the "Query Results for ..." windows, offer sorting 
-of that columns's values, alternately in ascending order and desending order.
+based on that columns's values: Mouse-Left clicks cycle through sortAscending, 
+sortDescending, & noSort - while clearing other column sorts; Control-Mouse-Left 
+clicks cycle through sortAscending, sortDescending, & noSort - while not clearing 
+other column sorts.  The table column widths can be resized by dragging the column 
+header boundaries.
 
-The "Step" column values of Query Results windows offer a Mouse-Right popup 
+The "Step" column values of Query Results windows offer a Mouse-Left popup 
 with actions on the partial plan views for that step.
 
 

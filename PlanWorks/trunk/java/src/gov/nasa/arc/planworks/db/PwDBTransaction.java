@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransaction.java,v 1.3 2004-05-08 01:44:09 taylor Exp $
+// $Id: PwDBTransaction.java,v 1.4 2004-05-21 21:38:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,11 +45,11 @@ public interface PwDBTransaction extends PwEntity {
   public abstract String getSource();
 
   /**
-   * <code>getObjectId</code> - id of object acted on by this transaction
+   * <code>getEntityId</code> - id of entity acted on by this transaction
    *
    * @return - <code>Integer</code> - 
    */
-  public abstract Integer getObjectId();
+  public abstract Integer getEntityId();
 
   /**
    * <code>getStepNumber</code> - step number of sequence in which transaction occurred
@@ -59,7 +59,7 @@ public interface PwDBTransaction extends PwEntity {
   public abstract Integer getStepNumber();
 
   /**
-   * <code>getSequenceId</code> - id of sequence of object acted on by this transaction
+   * <code>getSequenceId</code> - id of sequence of entity acted on by this transaction
    *
    * @return - <code>Long</code> - 
    */
@@ -68,7 +68,7 @@ public interface PwDBTransaction extends PwEntity {
   /**
    * <code>getPartialPlanId</code>
    *
-   * @return - <code>Long</code> - id of partial plan of object acted on by this transaction
+   * @return - <code>Long</code> - id of partial plan of entity acted on by this transaction
    */
   public abstract Long getPartialPlanId();
 

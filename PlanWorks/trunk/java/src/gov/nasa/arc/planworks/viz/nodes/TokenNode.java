@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.39 2004-03-30 22:01:02 taylor Exp $
+// $Id: TokenNode.java,v 1.40 2004-05-21 21:39:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -44,6 +44,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
@@ -273,7 +274,7 @@ public class TokenNode extends BasicNode {
       });
     mouseRightPopup.add( activeTokenItem);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
   } // end mouseRightPopupMenu
 
 

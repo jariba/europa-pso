@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.8 2004-05-13 20:24:06 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.9 2004-05-21 21:38:56 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -33,7 +33,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.table.TableModel;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoStroke;
@@ -58,7 +60,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
-import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPartialPlan;    
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwSlot;
@@ -72,14 +74,12 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.Utilities;
-import gov.nasa.arc.planworks.viz.DBTransactionContentView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.QueryResultField;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -106,6 +106,8 @@ import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
+import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
+import gov.nasa.arc.planworks.viz.util.DBTransactionTableModel;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
@@ -1930,126 +1932,125 @@ public class PlanWorksGUITest extends JFCTestCase {
     // try{Thread.sleep(6000);}catch(Exception e){}
     List transactionList = planSeq.getTransactionsList( partialPlan.getId());
     int numTransactions = transactionList.size();
-    DBTransactionContentView contentView = dbTransactionView.getDBTransactionContentView();
-    int numTransactionEntries = contentView.getTransactionEntryList().size();
+    int numTransactionEntries = dbTransactionView.getDBTransactionList().size();
     assertTrueVerbose
       ( "Number of partial plan step " + stepNumber + " db transactions (" + numTransactions +
         ") not equal to number of DBTransactionView entries (" +
         numTransactionEntries + ")", (numTransactions == numTransactionEntries), "not ");
     List transactionNameList = MySQLDB.queryTransactionNameList();
-    List transEntryList = contentView.getTransactionEntryList();
+    TableModel tableModel = ((DBTransactionTable) dbTransactionView.getDBTransactionTable()).
+      getTableSorter().getTableModel();
     String transName = null, fieldObjName = null;
     String variableNamePrefix = DbConstants.VARIABLE_ALL_TYPES.substring
       ( 0, DbConstants.VARIABLE_ALL_TYPES.length() - 1);
-    for (int entryIdx = 0; entryIdx < numTransactionEntries; entryIdx++) {
-      List transEntry = (List) transEntryList.get( entryIdx);
-      for (int fieldIdx = 0, n = transEntry.size(); fieldIdx < n; fieldIdx++) {
-        QueryResultField transField = (QueryResultField) transEntry.get( fieldIdx);
-        if (transField.getFieldName().equals
-            ( ViewConstants.DB_TRANSACTION_KEY_HEADER)) {
-          Integer fieldTransId =
-            new Integer( Integer.parseInt( transField.getFieldText().replaceAll( " ", "")));
+    int columnCnt = tableModel.getColumnCount() - 1; // last column is empty
+    for (int rowIndx = 0; rowIndx < tableModel.getRowCount(); rowIndx++) {
+      for (int colIndx = 0; colIndx < columnCnt; colIndx++) {
+        String columnName = tableModel.getColumnName( colIndx);
+//         System.err.println( "rowIndx " + rowIndx + " colIndx " + colIndx + " columnName " +
+//                            columnName + " tableModel " + tableModel);
+        String transField =
+          ((String) tableModel.getValueAt( rowIndx, colIndx)).replaceAll( " ", "");
+        if (columnName.equals( ViewConstants.DB_TRANSACTION_KEY_HEADER)) {
+          Integer fieldTransId = new Integer( Integer.parseInt( transField));
           PwDBTransaction ppTrans =
             (PwDBTransaction) CollectionUtils.findFirst
             ( new PwDBTransactionFunctor( fieldTransId), transactionList);
-//           assertNotNullVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-//                                 transField.getFieldName() + "' " + fieldTransId +
+//           assertNotNullVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+//                                 ViewConstants.DB_TRANSACTION_KEY_HEADER + "' " + fieldTransId +
 //                                 " not found", ppTrans, " not");
-          assertNotNull( "Transaction entry " + (entryIdx + 1) + " '" +
-                         transField.getFieldName() + "' " + fieldTransId +
+          assertNotNull( "Transaction entry " + (rowIndx + 1) + " '" +
+                         ViewConstants.DB_TRANSACTION_KEY_HEADER + "' " + fieldTransId +
                          " not found", ppTrans);
-        } else if (transField.getFieldName().equals
+        } else if (columnName.replaceAll( " ", "").equals
                    ( ViewConstants.DB_TRANSACTION_NAME_HEADER)) {
-          transName = transField.getFieldText().replaceAll( " ", "");
+          transName = transField;
           boolean isValidName = transactionNameList.contains( transName);
-//           assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-//                              transField.getFieldName() + "' '" +
+//           assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+//                              ViewConstants.DB_TRANSACTION_NAME_HEADER + "' '" +
 //                              transName + "' not found", isValidName, " not");
-          assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
-                      transField.getFieldName() + "' '" +
+          assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+                      ViewConstants.DB_TRANSACTION_NAME_HEADER + "' '" +
                       transName + "' not found", isValidName);
-        } else if (transField.getFieldName().equals
-                   ( ViewConstants.DB_TRANSACTION_SOURCE_HEADER)) {
-          String transSource = transField.getFieldText().replaceAll( " ", "");
+        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_SOURCE_HEADER)) {
           boolean isValidSource =
-            DbConstants.SOURCE_USER.equals( transSource) ||
-            DbConstants.SOURCE_SYSTEM.equals( transSource) ||
-            DbConstants.SOURCE_UNKNOWN.equals( transSource);
-//           assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-//                              transField.getFieldName() + "' '" +
-//                              transSource + "' not found", isValidSource, " not");
-          assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
-                      transField.getFieldName() + "' '" +
-                      transSource + "' not found", isValidSource);
-        } else if (transField.getFieldName().equals
-                   ( ViewConstants.DB_TRANSACTION_OBJECT_KEY_HEADER)) {
-          Integer objectId =
-            new Integer( Integer.parseInt( transField.getFieldText().replaceAll( " ", "")));
+            DbConstants.SOURCE_USER.equals( transField) ||
+            DbConstants.SOURCE_SYSTEM.equals( transField) ||
+            DbConstants.SOURCE_UNKNOWN.equals( transField);
+//           assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+//                              ViewConstants.DB_TRANSACTION_SOURCE_HEADER + "' '" +
+//                              transField + "' not found", isValidSource, " not");
+          assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+                      ViewConstants.DB_TRANSACTION_SOURCE_HEADER + "' '" +
+                      transField + "' not found", isValidSource);
+        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER)) {
+          Integer objectId = new Integer( Integer.parseInt( transField));
           PwToken tokenObject = partialPlan.getToken( objectId);
           PwConstraint constraintObject = partialPlan.getConstraint( objectId);
           PwVariable variableObject = partialPlan.getVariable( objectId);
-//           assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-//                              transField.getFieldName() + "' '" + objectId + "' not found",
+//           assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+//                              ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER +
+//                              "' '" + objectId + "' not found",
 //                              ((tokenObject != null) || (constraintObject != null) ||
 //                               (variableObject != null)), " not");
-          assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
-                      transField.getFieldName() + "' '" + objectId + "' not found",
+          assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+                      ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER +
+                      "' '" + objectId + "' not found",
                       ((tokenObject != null) || (constraintObject != null) ||
                        (variableObject != null)));
 
-        } else if (transField.getFieldName().equals
-                   ( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
-          int fieldStepNumber =
-            Integer.parseInt( transField.getFieldText().replaceAll( " ", ""));
-//           assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-//                              transField.getFieldName() + "' '" + fieldStepNumber +
+        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
+          int fieldStepNumber = Integer.parseInt( transField);
+//           assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+//                              ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER
+//                              + "' '" + fieldStepNumber +
 //                              "' not found", (fieldStepNumber == stepNumber), " not");
-          assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
-                      transField.getFieldName() + "' '" + fieldStepNumber +
+          assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+                      ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER + "' '" + fieldStepNumber +
                       "' not found", (fieldStepNumber == stepNumber));
-        } else if (transField.getFieldName().equals
-                   ( ViewConstants.DB_TRANSACTION_PREDICATE_HEADER)) {
-          String fieldPredicate = transField.getFieldText().replaceAll( " ", "");
+        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_PARENT_HEADER)) {
           if (transName.indexOf( variableNamePrefix) >= 0) {
-//             assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-//                                transField.getFieldName() + "' '" + fieldPredicate +
-//                                "' not non-empty", (! fieldPredicate.equals( "")), " not");
-            assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
-                        transField.getFieldName() + "' '" + fieldPredicate +
-                        "' not non-empty", (! fieldPredicate.equals( "")));
+//             assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+//                                ViewConstants.DB_TRANSACTION_PARENT_HEADER +
+//                                "' '" + transField +
+//                                "' not non-empty", (! transField.equals( "")), " not");
+            assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+                        ViewConstants.DB_TRANSACTION_PARENT_HEADER + "' '" + transField +
+                        "' not non-empty", (! transField.equals( "")));
           } else {
-//             assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-//                                transField.getFieldName() + "' '" + fieldPredicate +
-//                                "' not empty", fieldPredicate.equals( ""), " not");
-            assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
-                        transField.getFieldName() + "' '" + fieldPredicate +
-                        "' not empty", fieldPredicate.equals( ""));
+//             assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+//                                ViewConstants.DB_TRANSACTION_PARENT_HEADER +
+//                                "' '" + transField +
+//                                "' not empty", transField.equals( ""), " not");
+            assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+                        ViewConstants.DB_TRANSACTION_PARENT_HEADER + "' '" + transField +
+                        "' not empty", transField.equals( ""));
           }
-        } else if (transField.getFieldName().equals
-                   ( ViewConstants.DB_TRANSACTION_OBJ_NAME_HEADER)) {
-          fieldObjName = transField.getFieldText().replaceAll( " ", "");
-        } else if (transField.getFieldName().equals
-                   ( ViewConstants.DB_TRANSACTION_PARAMETER_HEADER)) {
-          String fieldParamName = transField.getFieldText().replaceAll( " ", "");
+        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_ENTITY_NAME_HEADER)) {
+          fieldObjName = transField;
+        } else if (columnName.equals( ViewConstants.DB_TRANSACTION_PARAMETER_HEADER)) {
+          String fieldParamName = transField;
           if ((transName.indexOf( variableNamePrefix) >= 0) &&
               fieldObjName.equals( DbConstants.PARAMETER_VAR)) {
-//             assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-//                                transField.getFieldName() + "' '" + fieldParamName +
+//             assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+//                                ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + 
+//                                "' '" + fieldParamName +
 //                                "' not non-empty", (! fieldParamName.equals( "")), " not");
-            assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
-                        transField.getFieldName() + "' '" + fieldParamName +
-                        "' not non-empty", (! fieldParamName.equals( "")));
+            assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+                        ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + "' '" +
+                        fieldParamName + "' not non-empty", (! fieldParamName.equals( "")));
           } else {
-//             assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-//                                transField.getFieldName() + "' '" + fieldParamName +
+//             assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+//                                ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + 
+//                                "' '" + fieldParamName +
 //                                "' not empty", fieldParamName.equals( ""), " not");
-            assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
-                        transField.getFieldName() + "' '" + fieldParamName +
-                        "' not empty", fieldParamName.equals( ""));
+            assertTrue( "Transaction entry " + (rowIndx + 1) + " '" +
+                        ViewConstants.DB_TRANSACTION_PARAMETER_HEADER + "' '" +
+                        fieldParamName + "' not empty", fieldParamName.equals( ""));
           }
         } else {
-          assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
-                             transField.getFieldName() + "' not handled", false, " not");
+          assertTrueVerbose( "Transaction entry " + (rowIndx + 1) + " '" +
+                             columnName + "' not handled", false, " not");
         }
       }
     }

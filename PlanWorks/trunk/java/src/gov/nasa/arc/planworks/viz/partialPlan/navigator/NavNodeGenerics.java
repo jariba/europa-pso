@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.5 2004-04-22 19:26:24 taylor Exp $
+// $Id: NavNodeGenerics.java,v 1.6 2004-05-21 21:39:06 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -452,7 +452,7 @@ public final class NavNodeGenerics {
     } else if (token.getParentId() != null && !token.getParentId().equals(DbConstants.NO_ID)) {
       tokenColor = navigatorView.getTimelineColor( token.getParentId());
     } else {
-      tokenColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+      tokenColor = ViewConstants.FREE_TOKEN_BG_COLOR;
     }
     return tokenColor;
   } // end getTokenColor

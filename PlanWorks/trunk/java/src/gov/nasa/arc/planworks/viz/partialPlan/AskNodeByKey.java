@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.4 2004-03-09 01:48:28 taylor Exp $
+// $Id: AskNodeByKey.java,v 1.5 2004-05-21 21:39:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -105,7 +105,7 @@ public class AskNodeByKey extends JDialog {
     // size dialog appropriately
     pack();
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-    Utilities.setPopUpLocation( this, PlanWorks.getPlanWorks());
+    Utilities.setPopupLocation( this, PlanWorks.getPlanWorks());
     setVisible( true);
   } // end constructor
 

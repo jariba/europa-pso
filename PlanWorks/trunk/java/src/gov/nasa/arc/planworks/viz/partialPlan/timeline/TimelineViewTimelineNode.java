@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineViewTimelineNode.java,v 1.3 2004-03-30 22:01:04 taylor Exp $
+// $Id: TimelineViewTimelineNode.java,v 1.4 2004-05-21 21:39:08 taylor Exp $
 //
 // PlanWorks
 //
@@ -40,6 +40,7 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
@@ -262,7 +263,7 @@ public class TimelineViewTimelineNode extends TextNode {
       });
     mouseRightPopup.add( navigatorItem);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, timelineView, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, timelineView, viewCoords);
   } // end mouseRightPopupMenu
 
 
