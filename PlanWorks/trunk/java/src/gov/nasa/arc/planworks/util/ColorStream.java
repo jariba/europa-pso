@@ -40,7 +40,6 @@ public class ColorStream {
     else {
       retval = Color.getHSBColor(h, SAT, b);
     }
-    System.err.println("<" + h + ", " + b + ">");
     h += H_DIFF;
     if(h >= 1.0f) {
       h = 0.014f * multiplier;
