@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.3 2004-03-04 21:48:12 miatauro Exp $
+// $Id: AskNodeByKey.java,v 1.4 2004-03-09 01:48:28 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -28,6 +28,8 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
@@ -177,16 +179,25 @@ public class AskNodeByKey extends JDialog {
       if (partialPlan.getToken( nodeKey) != null) {
         return true;
       }
-    } else if ((partialPlanView instanceof TimelineView)) {
+    } else if (partialPlanView instanceof TimelineView) {
       if ((partialPlan.getToken( nodeKey) != null) ||
           (partialPlan.getSlot( nodeKey) != null)) {
          return true;
       }
-    } else if ((partialPlanView instanceof ConstraintNetworkView)) {
+    } else if (partialPlanView instanceof ConstraintNetworkView) {
       if ((partialPlan.getToken( nodeKey) != null) ||
           (partialPlan.getVariable( nodeKey) != null) ||
           (partialPlan.getConstraint( nodeKey) != null) ||
           (partialPlan.getObject(nodeKey) != null)) {
+        return true;
+      }
+    } else if (partialPlanView instanceof ResourceProfileView) {
+      if (partialPlan.getResource( nodeKey) != null) {
+        return true;
+      }
+    } else if (partialPlanView instanceof ResourceTransactionView) {
+      if ((partialPlan.getResource( nodeKey) != null) ||
+          (partialPlan.getResourceTransaction( nodeKey) != null)) {
         return true;
       }
     } else {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.76 2004-03-02 02:34:11 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.77 2004-03-09 01:48:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -379,7 +379,23 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   } // end getVariable
 
 
-  public PwResourceTransaction getTransaction(final Integer id) {
+  /**
+   * <code>getResource</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @return - <code>PwResource</code> - 
+   */
+  public PwResource getResource(final Integer id) {
+    return (PwResource) resourceMap.get(id);
+  }
+
+  /**
+   * <code>getResourceTransaction</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @return - <code>PwResourceTransaction</code> - 
+   */
+  public PwResourceTransaction getResourceTransaction(final Integer id) {
     return (PwResourceTransaction) resTransactionMap.get(id);
   }
 

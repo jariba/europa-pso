@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.9 2004-03-08 19:30:16 taylor Exp $
+// $Id: ResourceProfile.java,v 1.10 2004-03-09 01:48:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -304,7 +304,7 @@ public class ResourceProfile extends BasicNode {
   } // end renderLevelScaleLinesAndTicks
 
   private void renderLimits() {
-    JGoStroke levelLimitMaxLine = new JGoStroke();
+    JGoStroke levelLimitMaxLine = new ProfileLine( levelLimitMax);
     levelLimitMaxLine.addPoint( resourceProfileView.getJGoRulerView().
                                 scaleTime( earliestStartTime),
                                 scaleResourceLevel( levelLimitMax));
@@ -317,7 +317,7 @@ public class ResourceProfile extends BasicNode {
     levelLimitMaxLine.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "red")));
     resourceProfileView.getJGoExtentDocument().addObjectAtTail( levelLimitMaxLine);
 
-    JGoStroke levelLimitMinLine = new JGoStroke();
+    JGoStroke levelLimitMinLine = new ProfileLine( levelLimitMin);
     levelLimitMinLine.addPoint( resourceProfileView.getJGoRulerView().
                                 scaleTime( earliestStartTime),
                                 scaleResourceLevel( levelLimitMin));
@@ -335,45 +335,74 @@ public class ResourceProfile extends BasicNode {
     double initialCapacity = resource.getInitialCapacity();
     List instantList = resource.getInstantList();
     Iterator instantItr = instantList.iterator();
-    ProfileLine levelMaxLine = new ProfileLine();
-    ProfileLine levelMinLine = new ProfileLine();
     double lastLevelMax = initialCapacity;
     double lastLevelMin = initialCapacity;
-    levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
-                           scaleResourceLevel( lastLevelMax));
-    levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
-                           scaleResourceLevel( lastLevelMin));
+    int xLeft = resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime);
+    int yLeftMaxLine = scaleResourceLevel( lastLevelMax);
+    int yLeftMinLine = scaleResourceLevel( lastLevelMin);
+    int xRight, yRightMaxLine, yRightMinLine;
     while (instantItr.hasNext()) {
       PwResourceInstant instant = (PwResourceInstant) instantItr.next();
       int time = instant.getTime();
+      xRight = resourceProfileView.getJGoRulerView().scaleTime( time);
+      yRightMaxLine =  scaleResourceLevel( lastLevelMax);
+      yRightMinLine =  scaleResourceLevel( lastLevelMin);
+      addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, lastLevelMax, "max");
+      addLineSegment( xLeft, yLeftMinLine, xRight, yRightMinLine, lastLevelMin, "min");
+
+      yLeftMaxLine = yRightMaxLine; yLeftMinLine = yRightMinLine; xLeft = xRight;
       double currentLevelMax = instant.getLevelMax();
       double currentLevelMin = instant.getLevelMin();
       System.err.println( "renderLevels time " + time + " currentLevelMax " +
                           currentLevelMax + " currentLevelMin " + currentLevelMin);
-      levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
-                             scaleResourceLevel( lastLevelMax));
-      levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
-                             scaleResourceLevel( currentLevelMax ));
-      levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
-                             scaleResourceLevel( lastLevelMin));
-      levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
-                             scaleResourceLevel( currentLevelMin));
-      lastLevelMax = currentLevelMax; lastLevelMin = currentLevelMin;
+      yRightMaxLine =  scaleResourceLevel( currentLevelMax);
+      yRightMinLine =  scaleResourceLevel( currentLevelMin);
+      addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, currentLevelMax, "max");
+      addLineSegment( xLeft, yLeftMinLine, xRight, yRightMinLine, currentLevelMin, "min");
+ 
+      yLeftMaxLine = yRightMaxLine; yLeftMinLine = yRightMinLine; xLeft = xRight;
+      lastLevelMax = currentLevelMax; lastLevelMin = currentLevelMin; 
     }
-    levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( latestEndTime),
-                           scaleResourceLevel( lastLevelMax));
-    levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( latestEndTime),
-                           scaleResourceLevel( lastLevelMin));
-    levelMaxLine.setDraggable( false); levelMaxLine.setResizable( false);
-    levelMaxLine.setSelectable( false);
-    levelMaxLine.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "magenta")));
-    levelMinLine.setDraggable( false); levelMinLine.setResizable( false);
-    levelMinLine.setSelectable( false);
-    levelMinLine.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "blue")));
-    resourceProfileView.getJGoExtentDocument().addObjectAtTail( levelMinLine);
-    resourceProfileView.getJGoExtentDocument().addObjectAtTail( levelMaxLine);
+    
+    xRight = resourceProfileView.getJGoRulerView().scaleTime( latestEndTime);
+    yRightMaxLine =  scaleResourceLevel( lastLevelMax);
+    yRightMinLine =  scaleResourceLevel( lastLevelMin);
+    addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, lastLevelMax, "max");
+    addLineSegment( xLeft, yLeftMinLine, xRight, yRightMinLine, lastLevelMin, "min");
   } // end renderLevels
 
+  private void addLineSegment( int xLeft, int yLeft, int xRight, int yRight,
+                               double level, String type) {
+    JGoStroke lineSegment = null;
+    if (yLeft == yRight) { // horizontal segment
+      lineSegment = new ProfileLine( level);
+      lineSegment.addPoint( xLeft, yLeft);
+      lineSegment.addPoint( xRight, yRight);
+    } else { // vertical segment
+      lineSegment = new JGoStroke();
+      lineSegment.addPoint( xLeft, yLeft);
+      lineSegment.addPoint( xRight, yRight);
+    }
+    if (type.equals( "max")) {
+      addMaxLineSegment( lineSegment);
+    } else if (type.equals( "min")) {
+      addMinLineSegment( lineSegment);
+    }
+  } // end addLineSegment
+
+  private void addMaxLineSegment( JGoStroke maxLineSegment) {
+    maxLineSegment.setDraggable( false); maxLineSegment.setResizable( false);
+    maxLineSegment.setSelectable( false);
+    maxLineSegment.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "magenta")));
+    resourceProfileView.getJGoExtentDocument().addObjectAtTail( maxLineSegment);
+  } // end  addMaxLineSegment 
+
+  private void addMinLineSegment( JGoStroke minLineSegment) {
+    minLineSegment.setDraggable( false); minLineSegment.setResizable( false);
+    minLineSegment.setSelectable( false);
+    minLineSegment.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "blue")));
+    resourceProfileView.getJGoExtentDocument().addObjectAtTail( minLineSegment);
+  } // end  addMinLineSegment 
 
   private int scaleResourceLevel( final double level) {
     return (extentYBottom - (int) ((level - levelMin) * levelScaleScaling));
@@ -382,17 +411,20 @@ public class ResourceProfile extends BasicNode {
 
 
   /**
-   * <code>ProfileLine</code> - render profile as a line
+   * <code>ProfileLine</code> - render profile segment as a line
    *
    */
   public class ProfileLine extends JGoStroke {
+
+    private double quantity;
 
     /**
      * <code>ProfileLine</code> - constructor 
      *
      */
-    public ProfileLine() {
+    public ProfileLine( double quantity) {
       super();
+      this.quantity = quantity;
     }
 
     /**
@@ -401,7 +433,9 @@ public class ResourceProfile extends BasicNode {
      * @return - <code>String</code> - 
      */
     public final String getToolTipText() {
-      return null;
+      StringBuffer toolTip = new StringBuffer( "quantitiy = ");
+      toolTip.append( new Double( quantity).toString());
+      return toolTip.toString();
     } // end getToolTipText
 
     /**

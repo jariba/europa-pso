@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstantImpl.java,v 1.3 2004-03-04 20:50:26 miatauro Exp $
+// $Id: PwResourceInstantImpl.java,v 1.4 2004-03-09 01:48:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -99,7 +99,8 @@ public class PwResourceInstantImpl implements PwResourceInstant {
     List retval = new ArrayList(transactionIds.size());
     ListIterator idIterator = transactionIds.listIterator();
     while(idIterator.hasNext()) {
-      PwResourceTransaction trans = partialPlan.getTransaction((Integer)idIterator.next());
+      PwResourceTransaction trans =
+        partialPlan.getResourceTransaction((Integer)idIterator.next());
       if(trans != null) {
         retval.add(trans);
       }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.12 2004-03-07 01:49:28 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.13 2004-03-09 01:48:28 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
+import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
@@ -312,9 +313,9 @@ public class ResourceProfileView extends ResourceView  {
     PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
-//     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
-//     createNodeByKeyItem( nodeByKeyItem);
-//     mouseRightPopup.add( nodeByKeyItem);
+    JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
+    createNodeByKeyItem( nodeByKeyItem);
+    mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
                          PlanWorks.RESOURCE_PROFILE_VIEW);
@@ -410,24 +411,23 @@ public class ResourceProfileView extends ResourceView  {
       });
   } // end createActiveResourceItem
 
-//   private void createNodeByKeyItem( final JMenuItem nodeByKeyItem) {
-//     nodeByKeyItem.addActionListener( new ActionListener() {
-//         public final void actionPerformed( final ActionEvent evt) {
-//           AskNodeByKey nodeByKeyDialog =
-//             new AskNodeByKey( "Find by Key", "key (int)", ResourceProfileView.this);
-//           Integer nodeKey = nodeByKeyDialog.getNodeKey();
-//           if (nodeKey != null) {
-//             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
-
-//             PwResource resourceToFind = null;
-//             // PwResource resourceToFind = partialPlan.getResource( nodeKey);
-            
-//             boolean isByKey = true;
-//             findAndSelectResource( resourceToFind, isByKey);
-//           }
-//         }
-//       });
-//   } // end createNodeByKeyItem
+  private void createNodeByKeyItem( final JMenuItem nodeByKeyItem) {
+    nodeByKeyItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          AskNodeByKey nodeByKeyDialog =
+            new AskNodeByKey( "Find by Key", "key (int)", ResourceProfileView.this);
+          Integer nodeKey = nodeByKeyDialog.getNodeKey();
+          if (nodeKey != null) {
+            // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
+            PwResource resourceToFind = partialPlan.getResource( nodeKey);
+            if (resourceToFind != null) {
+              int xLoc = 0;
+              findAndSelectResource( resourceToFind, xLoc);
+            }
+          }
+        }
+      });
+  } // end createNodeByKeyItem
 
 
   /**
