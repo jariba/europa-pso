@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.52 2003-10-28 22:56:18 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.53 2003-10-28 23:11:47 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -105,7 +105,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       stepCount++;
     }
     loadTransactions();
-    cleanTransactions();
+    //cleanTransactions();
     //List planNames = MySQLDB.getPlanNamesInSequence(id);
     //partialPlanNames.addAll(MySQLDB.getPlanNamesInSequence(id));
     //stepCount = partialPlanNames.size();
@@ -178,7 +178,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     timeSpentAnalyzingDatabase += System.currentTimeMillis() - t1;
     System.err.println("Spent " + timeSpentAnalyzingDatabase + "ms analyzing the database");
     loadTransactions();
-    cleanTransactions();
+    //cleanTransactions();
     //partialPlanNames.addAll(temp.keySet());
     //this.partialPlans = new ArrayList(partialPlanNames.size());
     //ListIterator partialPlanIterator = partialPlanNames.listIterator();
