@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.5 2003-10-09 00:29:39 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.6 2003-10-09 22:07:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -232,29 +232,11 @@ public class SequenceStepsView extends SequenceView {
     Iterator stepItr = planSequence.getPartialPlanNamesList().iterator();
     while (stepItr.hasNext()) {
       String partialPlanName = (String) stepItr.next();
-      int stepNumber = Integer.parseInt( partialPlanName.substring( 4)); // discard prefix "step"
-      PwPartialPlan partialPlan = null;
-      List transactionList = null;
-      try {
-        partialPlan = planSequence.getPartialPlan( partialPlanName);
-        transactionList = planSequence.getTransactionsList( stepNumber);
-        // System.err.println( "stepNum " + stepNumber);
-        // if (transactionList != null) {
-        //   System.err.println( "transactionList size " + transactionList.size());
-        // }
-      } catch (ResourceNotFoundException rnfExcep) {
-        int index = rnfExcep.getMessage().indexOf( ":");
-        JOptionPane.showMessageDialog
-          (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
-           "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-        System.err.println( rnfExcep);
-        rnfExcep.printStackTrace();
-        System.exit( -1);
-      }
-      StepElement stepElement = new StepElement( x, y, partialPlan.getPlanDBSize(),
-                                                 partialPlanName, partialPlan,
-                                                 transactionList, this);
+      int planDBSize =
+        planSequence.getPlanDBSize( Integer.parseInt( partialPlanName.substring( 4)));
 
+      StepElement stepElement = new StepElement( x, y, planDBSize, partialPlanName,
+                                                 planSequence, this);
       document.addObjectAtTail( stepElement);
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
       tmpStepList.add( stepElement);

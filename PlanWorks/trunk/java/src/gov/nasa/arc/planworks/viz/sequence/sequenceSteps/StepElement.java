@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.3 2003-10-09 00:29:39 taylor Exp $
+// $Id: StepElement.java,v 1.4 2003-10-09 22:07:46 taylor Exp $
 //
 // PlanWorks
 //
@@ -35,6 +35,7 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTransaction;
@@ -45,6 +46,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.HistogramElement;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.ViewTransactionsFrame;
 
@@ -66,6 +68,7 @@ public class StepElement extends HistogramElement {
   private static final Color STEP_BG_COLOR = ViewConstants.VIEW_BACKGROUND_COLOR;
 
   private String partialPlanName;
+  private PwPlanningSequence planSequence;
   private PwPartialPlan partialPlan;
   private List transactionList;
   private SequenceView sequenceView;
@@ -82,33 +85,31 @@ public class StepElement extends HistogramElement {
    * @param y - <code>int</code> - 
    * @param planDBSize - <code>int</code> - 
    * @param partialPlanName - <code>String</code> - 
-   * @param partialPlan - <code>PwPartialPlan</code> - 
-   * @param transactionList - <code>List</code> - 
+   * @param planSequence - <code>PwPlanningSequence</code> - 
    * @param sequenceView - <code>SequenceView</code> - 
    */
-  public StepElement( int x, int y, int planDBSize, String partialPlanName,
-                      PwPartialPlan partialPlan, List transactionList,
-                      SequenceView sequenceView) {
+  public StepElement( int x, int y, int planDBSize, String partialPlanName, 
+                      PwPlanningSequence planSequence, SequenceView sequenceView) {
     super( x, y, STEP_WIDTH, planDBSize / ViewConstants.STEP_VIEW_DB_SIZE_SCALING,
            STEP_LINE_WIDTH, STEP_LINE_TYPE, STEP_LINE_COLOR, STEP_BG_COLOR);
     this.planDBSize = planDBSize;
     this.height = planDBSize / ViewConstants.STEP_VIEW_DB_SIZE_SCALING;
     this.partialPlanName = partialPlanName;
     this.stepNumber = Integer.parseInt( partialPlanName.substring( 4)); // discard prefix "step"
-    this.partialPlan = partialPlan;
-    this.transactionList = transactionList;
+    this.planSequence = planSequence;
     this.sequenceView = sequenceView;
 
+    transactionList = planSequence.getTransactionsList( stepNumber);
     numTransactions = 0;
     if (transactionList != null) {
       numTransactions = transactionList.size();
-      Iterator transItr = transactionList.iterator();
-      System.err.println( "\n\nStep " + this.stepNumber);
-      while (transItr.hasNext()) {
-        PwTransaction transaction = (PwTransaction) transItr.next();
-        System.err.println( "   type " + transaction.getType() + " objectId " +
-                            transaction.getObjectId());
-      }
+//       Iterator transItr = transactionList.iterator();
+//       System.err.println( "\n\nStep " + this.stepNumber);
+//       while (transItr.hasNext()) {
+//         PwTransaction transaction = (PwTransaction) transItr.next();
+//         System.err.println( "   type " + transaction.getType() + " objectId " +
+//                             transaction.getObjectId());
+//       }
     }
   } // end constructor
 
@@ -119,13 +120,13 @@ public class StepElement extends HistogramElement {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-    StringBuffer tip = new StringBuffer( "<html>Step #");
+    StringBuffer tip = new StringBuffer( "<html> step");
     tip.append( String.valueOf( stepNumber));
-    tip.append( " planDBSize: ");
+    tip.append( "<br> planDBSize: ");
     tip.append( String.valueOf( planDBSize));
-    tip.append( "<br>numTransactions: ");
+    tip.append( "<br> numTransactions: ");
     tip.append( String.valueOf( numTransactions));
-    tip.append( "</html>");
+    tip.append( " </html>");
     return tip.toString();
   } // end getToolTipText
 
@@ -155,11 +156,17 @@ public class StepElement extends HistogramElement {
 
 
   private void mouseRightPopupMenu( Point viewCoords) {
-    JPopupMenu mouseRightPopup = new JPopupMenu();
-    JMenuItem viewTransactionsItem =
-      new JMenuItem( "View Step# " + stepNumber + " Transactions");
-    createViewTransactionsItem( viewTransactionsItem);
-    mouseRightPopup.add( viewTransactionsItem);
+    PartialPlanViewMenu mouseRightPopup = new PartialPlanViewMenu();
+    JMenuItem header = new JMenuItem( "step" + stepNumber);
+    mouseRightPopup.add( header);
+    mouseRightPopup.addSeparator();
+
+    mouseRightPopup.buildPartialPlanViewMenu( partialPlanName, planSequence);
+
+//     JMenuItem viewTransactionsItem =
+//       new JMenuItem( "View Step# " + stepNumber + " Transactions");
+//     createViewTransactionsItem( viewTransactionsItem);
+//     mouseRightPopup.add( viewTransactionsItem);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
   } // end mouseRightPopupMenu

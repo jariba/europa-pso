@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.36 2003-10-09 00:29:38 taylor Exp $
+# $Id: build-tags-file.csh,v 1.37 2003-10-09 22:07:41 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -13,13 +13,13 @@ endif
 
 etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/AddSequenceThread.java \
-    src/gov/nasa/arc/planworks/CreatePartialPlanViewThread.java \
     src/gov/nasa/arc/planworks/CreateSequenceViewThread.java \
     src/gov/nasa/arc/planworks/CreateViewThread.java \
     src/gov/nasa/arc/planworks/DeleteProjectThread.java \
     src/gov/nasa/arc/planworks/DeleteSequenceThread.java \
     src/gov/nasa/arc/planworks/InstantiateProjectThread.java \
     src/gov/nasa/arc/planworks/PlanWorks.java \
+     src/gov/nasa/arc/planworks/SequenceViewMenuItem.java \
     src/gov/nasa/arc/planworks/db/DbConstants.java \
     src/gov/nasa/arc/planworks/db/PwConstraint.java \
     src/gov/nasa/arc/planworks/db/PwDomain.java \
@@ -73,7 +73,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/mdi/SplashWindow.java \
     src/gov/nasa/arc/planworks/mdi/TileCascader.java \
     src/gov/nasa/arc/planworks/test/PlanWorksBigTest.java \
-    src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
     src/gov/nasa/arc/planworks/util/Algorithms.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/ColorStream.java \
@@ -120,7 +119,10 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/UniqueKeyGroupBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/sequence/ContentSpecWindow.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/AskTokenByKey.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenu.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenuItem.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodeLink.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodePortWDiamond.java \

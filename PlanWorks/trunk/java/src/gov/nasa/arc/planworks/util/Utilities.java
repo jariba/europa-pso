@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.5 2003-10-09 00:29:39 taylor Exp $
+// $Id: Utilities.java,v 1.6 2003-10-09 22:07:45 taylor Exp $
 //
 // PlanWorks
 //
@@ -123,6 +123,17 @@ public class Utilities {
                               (frame.getSize().getHeight() / 2) -
                               (popUp.getSize().getHeight() / 2)));
   } // end setPopUpLocation
+
+
+  /**
+   * <code>trimView</code> - return view name string with "View" suffix removed
+   *
+   * @param viewName - <code>String</code> - 
+   * @return - <code>String</code> - 
+   */
+  public static String trimView( String viewName) {
+    return viewName.substring( 0, viewName.indexOf( " View"));
+  }
 
 
 } // end class Utilities

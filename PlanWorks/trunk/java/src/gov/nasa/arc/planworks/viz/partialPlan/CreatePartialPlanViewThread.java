@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.2 2003-10-01 23:53:54 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.1 2003-10-09 22:07:45 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -11,11 +11,13 @@
 // Will Taylor -- split off from PlanWorks.java 30sep03
 //
 
-package gov.nasa.arc.planworks;
+package gov.nasa.arc.planworks.viz.partialPlan;
 
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
+import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.CreateViewThread;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
@@ -41,7 +43,7 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
    * @param menuItem - <code>PlanWorks.SeqPartPlanViewMenuItem</code> - 
    */
   public CreatePartialPlanViewThread( String viewName,
-                                      PlanWorks.SeqPartPlanViewMenuItem menuItem) {
+                                      PartialPlanViewMenuItem menuItem) {
     super( viewName);
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();

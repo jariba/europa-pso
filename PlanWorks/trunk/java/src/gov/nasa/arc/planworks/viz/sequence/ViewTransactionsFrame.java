@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewTransactionsFrame.java,v 1.1 2003-10-09 00:29:39 taylor Exp $
+// $Id: ViewTransactionsFrame.java,v 1.2 2003-10-09 22:07:45 taylor Exp $
 //
 // PlanWorks
 //
@@ -28,6 +28,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -44,6 +46,7 @@ import javax.swing.SwingUtilities;
 import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
@@ -76,6 +79,8 @@ public class ViewTransactionsFrame extends JFrame {
   private JGoDocument jGoDocument;
   private Font font;
   private FontMetrics fontMetrics;
+  private List transactionJGoTextList; // element JGoText
+
 
   public ViewTransactionsFrame( String title, PwPartialPlan partialPlan,
                                 List transactionList, int stepNumber,
@@ -88,35 +93,10 @@ public class ViewTransactionsFrame extends JFrame {
 
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
 
-    // buildMenu();
-
-//     gridBagLayout = new GridBagLayout();
-//     gridBagConstraints = new GridBagConstraints();
-//     getContentPane().setLayout( gridBagLayout);
-//     itemButtonFont = planViz.getFontCourierNewPlain12();
-//     itemButtonFontMetrics = planViz.getMetricsCourierNewPlain12();
-//     if (this.planViz.getIsMacOSX()) {
-//       // Plain does not show up with white on dark colors JDK 1.3.1
-//       itemButtonFont = planViz.getFontCourierNewBold12();
-//       itemButtonFontMetrics = planViz.getMetricsCourierNewBold12();
-//     }
-
-    // constructButtonPanel();
-
     setSize( FRAME_WIDTH, FRAME_HEIGHT);
     Utilities.setPopUpLocation( this, PlanWorks.planWorks);
     setVisible( true);
 
-//     Dimension panelDimension = buttonListPanel.getSize();
-//     int buttonPanelHeight = (int) panelDimension.getHeight();
-// //     System.err.println( "panelHeight " + buttonPanelHeight);
-// //     System.err.println( "font12 height " + itemButtonFontMetrics.getHeight());
-//     int fontHeight = itemButtonFontMetrics.getHeight();
-//     if ((matchedSteps.size() * fontHeight) < buttonPanelHeight) {
-//       setSize( MATCHED_STEPS_FRAME_WIDTH,
-//                (MATCHED_STEPS_FRAME_HEIGHT - buttonPanelHeight) +
-//                matchedSteps.size() * fontHeight);
-//     }
     jGoView = new TransactionsJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     getContentPane().add( jGoView, BorderLayout.NORTH);
@@ -166,10 +146,22 @@ public class ViewTransactionsFrame extends JFrame {
 
     jGoDocument = jGoView.getDocument();
 
-    // renderTransactions();
+    renderTransactions();
 
      jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
+
+
+  private void renderTransactions() {
+    String headerText = "   ID   TYPE   SOURCE   OBJECT_ID   STEP_NUM";
+    
+    List transactionJGoTextList = new ArrayList();
+    Iterator transItr = transactionList.iterator();
+    while (transItr.hasNext()) {
+      PwTransaction transaction = (PwTransaction) transItr.next();
+      StringBuffer transText = new StringBuffer();
+    }
+  } // end renderTransactions
 
 
   /**

@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.1 2003-10-01 23:53:54 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.2 2003-10-09 22:07:42 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -35,7 +35,7 @@ public class CreateSequenceViewThread extends CreateViewThread {
    * @param menuItem - <code>JMenuItem</code> - 
    */
   public CreateSequenceViewThread( String viewName,
-                                   PlanWorks.SequenceViewMenuItem menuItem) {
+                                   SequenceViewMenuItem menuItem) {
     super( viewName);
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.2 2003-10-01 23:53:55 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.3 2003-10-09 22:07:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -70,8 +70,8 @@ public class InstantiateProjectThread extends Thread {
     if (instantiatedProject != null) {
       PlanWorks.planWorks.currentProject = instantiatedProject;
       int numProjects = PwProject.listProjects().size();
-      JMenu partialPlanMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
-      PlanWorks.planWorks.addSeqPartialPlanViewMenu( instantiatedProject, partialPlanMenu);
+      planSeqMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
+      PlanWorks.planWorks.addPlanSeqViewMenu( instantiatedProject, planSeqMenu);
       if (PlanWorks.planWorks.currentProject.listPlanningSequences().size() == 0) {
         dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
       }

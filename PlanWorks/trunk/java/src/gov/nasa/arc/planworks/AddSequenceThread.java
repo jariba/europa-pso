@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.2 2003-10-01 23:53:54 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.3 2003-10-09 22:07:41 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -120,9 +120,9 @@ public class AddSequenceThread extends Thread {
       }
       MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
       int numProjects = PwProject.listProjects().size();
-      JMenu partialPlanMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
-      PlanWorks.planWorks.addSeqPartialPlanViewMenu
-        ( PlanWorks.planWorks.currentProject, partialPlanMenu);
+      JMenu planSeqMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
+      PlanWorks.planWorks.addPlanSeqViewMenu
+        ( PlanWorks.planWorks.currentProject, planSeqMenu);
     }
   } // end addSequence
 
