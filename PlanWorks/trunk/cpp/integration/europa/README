@@ -3,7 +3,7 @@ First off, check out the latest version of Europa and build it.
 For the moment, there is no makefile to build the PartialPlanWriter
 class.  This is in my TODO, but not really important at the moment.
 To build the PartialPlanWriter, you must have checked out and built a
-reasonably recent version of Europa (cvs co NewPlan; make).  
+reasonably recent version of Europa (cvs co NewPlan; cd NewPlan; make).  
 Execute the following commands (it helps to have put the path to Europa in
 the $EUROPA_HOME environment variable and the path to PlanWorks in the
 $PLANWORKS_HOME environment variable, unless you don't mind typing the
@@ -14,7 +14,7 @@ g++ -c PartialPlanWriter.cc -I$EUROPA_HOME/Includes -I$EUROPA_HOME/ConstraintNet
 
 The following modifications must be made to your planner's source to
 utilize the PartialPlanWriter:
-1) include PartialPlanWriter.hh
+1) #include "PartialPlanWriter.hh"
 2) construct the PartialPlanWriter.  It requires two arguments--a pointer
 to the TokenNetwork (so do this after the TokenNetwork is constructed) and
 a String containing the destination for output.  My construction line
@@ -23,8 +23,7 @@ String dest("./");
 PartialPlanWriter *planWriter = new PartialPlanWriter(&tokNet, dest); 
 3) Register the PartialPlanWriter as a subscriber.  i.e.:
 
-Europa::IdManager<Subscriber> subscriberMgr;
-SubscriberId subId = subscriberMgr.newId(&planWriter);
+SubscriberId subId(planWriter);
 tokNet.getSubscriptionManager().registerSubscriber(subId);
 
 Currently the PartialPlanWriter writes automatically whenever
