@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.4 2003-10-25 00:58:19 taylor Exp $
+// $Id: planViz.txt,v 1.5 2003-10-28 18:01:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -432,14 +432,20 @@ Method:
      Transacted", which expand into a "Key" field and a type "combo box".
      Use the keys from Method:2 for the object types, and then permute the
      transaction types for each object type.  Click on "Apply Query".
-  4. Using the "SequenceQuery" dialog, select "Steps" and then select in
+  4. In each of the "QueryResults" windows created by Method:3, Mouse-Right 
+     click on the background of the "header" portion of the view, and select 
+     "Find Transaction By Obj_Key".  Enter an OBJ_KEY value.
+  5. Using the "SequenceQuery" dialog, select "Steps" and then select in
      turn the qualified "Steps" queries: With Non-unit Decisions/Restrictions/
      Unit Decisions.  These queries do not expand.  Click on "Apply Query".
-  5. Using the "SequenceQuery" dialog, select "Transactions" and then select in
-     turn the qualified "Transasctions" queries: "For Constraint/Token/Variable",
+  6. Using the "SequenceQuery" dialog, select "Transactions" and then select in
+     turn the qualified "Transactions" queries: "For Constraint/Token/Variable",
      which expand into a "Key" field; and "In Range", which expands into
      "startStep" and "endStep" fields.  Enter appropriate values for the
      fields, and click on "Apply Query".
+  7. In each of the "QueryResults" windows created by Method:5, Mouse-Right 
+     click on the background of the "header" portion of the view, and select 
+     "Find Transaction By Obj_Key".  Enter an OBJ_KEY value.
 
 Post-conditions:
   1. Method:1 - the Sequence Query and Sequence Steps View
@@ -448,10 +454,14 @@ Post-conditions:
   3. Method:3 - Use "TransactionView" windows for appropriate steps of the
      Sequence Steps View to verify the results in the "QueryResults"
      windows.
-  4. Method:4 - Verify these queries using knowledge from the plan sequence.
-  5. Method:5 - Use "TransactionView" windows for appropriate steps of the
+  4. Method:4 - The lower portion of the "QueryResults" window will scroll up 
+     to show the transaction entry with the selected OBJ_KEY value.
+  5. Method:5 - Verify these queries using knowledge from the plan sequence.
+  6. Method:6 - Use "TransactionView" windows for appropriate steps of the
      Sequence Steps View to verify the results in the "QueryResults"
      windows.
+  7. Method:7 - The lower portion of the "QueryResults" window will scroll up 
+     to show the transaction entry with the selected OBJ_KEY value.
 
 Requirements: 4.3.1.a-g, 4.3.2.b-e
 

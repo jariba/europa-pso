@@ -282,4 +282,13 @@ public interface ViewConstants {
 
   public static final int STEP_VIEW_DB_SIZE_SCALING = 10;
 
+  public static final String TRANSACTION_KEY_HEADER =        "TX_KEY "; 
+  public static final String TRANSACTION_TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
+  public static final String TRANSACTION_SOURCE_HEADER =     " SOURCE  ";   
+  public static final String TRANSACTION_OBJECT_KEY_HEADER = "OBJ_KEY";
+  public static final String TRANSACTION_STEP_NUM_HEADER =   "  STEP  ";
+  public static final String TRANSACTION_OBJ_NAME_HEADER =   "     OBJ_NAME     ";
+  public static final String TRANSACTION_PREDICATE_HEADER =  "  PREDICATE_NAME  ";
+  public static final String TRANSACTION_PARAMETER_HEADER =  "  PARAMETER_NAME  ";
+
 } // end ViewConstants

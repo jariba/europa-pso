@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.44 2003-10-25 00:58:08 taylor Exp $
+# $Id: README,v 1.45 2003-10-28 18:01:23 taylor Exp $
 #
 
 SUMMARY
@@ -16,6 +16,24 @@ queries over the sequence.  The second, the "SequenceStepsView",
 is a histogram of the partial plan data base size for each step.  
 Partial plan views for each step are available by clicking Mouse-
 Right on the desired step in the histogram.
+
+The "SequenceQuery ..." dialog provides the user with queries which
+are in two groups, based on the primary kind of information returned.  
+"Steps": "Where Constraint/Token/Variable Transacted ..." which asks 
+for a key value and the transaction type; "With Non-unit Variable 
+Decisions", "With Restrictions", and "With Unit Variable Decisions".  
+"Transactions": "For Constraint/Token/Variable ..." which asks for a key 
+value; and "In Range ...", which asks for "StartStep" and "EndStep" values.
+The query results are displayed in windows entitled "Query Results for ...".
+
+For each plan sequence step, there is now an additional partial plan
+view: "Transaction View".  It displays the transactions for the step.
+
+Both the partial plan "Transaction View" windows , and the sequence query
+"Query Results for ..." windows for "Transactions" queries, and the
+"With ..." "Steps" queries offer the user a pop-up dialog entitled 
+"Find Transaction by Obj_Key".  Mouse-Right on the background of the 
+header section of the window brings up this dialog.
 
 
 o  GNATS PRs and CRs completed:

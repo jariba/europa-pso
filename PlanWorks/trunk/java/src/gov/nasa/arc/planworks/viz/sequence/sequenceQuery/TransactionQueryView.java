@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionQueryView.java,v 1.3 2003-10-25 00:58:19 taylor Exp $
+// $Id: TransactionQueryView.java,v 1.4 2003-10-28 18:01:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -37,7 +37,7 @@ import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
-import gov.nasa.arc.planworks.viz.util.TransactionIdComparator;
+import gov.nasa.arc.planworks.viz.util.TransactionComparatorAscending;
 
 
 /**
@@ -82,7 +82,9 @@ public class TransactionQueryView extends SequenceView {
                                long startTimeMSecs) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.transactionList = transactionList;
-    Collections.sort( transactionList, new TransactionIdComparator());
+    Collections.sort( transactionList,
+                      new TransactionComparatorAscending
+                      ( ViewConstants.TRANSACTION_KEY_HEADER));
     this.query = query;
     this.planSequence = (PwPlanningSequence) planSequence;
     this.viewSet = (SequenceViewSet) viewSet;

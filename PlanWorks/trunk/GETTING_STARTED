@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.12 2003-10-25 00:58:08 taylor Exp $
+# $Id: GETTING_STARTED,v 1.13 2003-10-28 18:01:23 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -109,11 +109,11 @@ a  Content Spec filter is applied.  Mouse cursor over token nodes displays
 Transaction View
 ----------------
 Lists the transactions for this partial plan step.  Each entry includes the
-transaction key, the transaction type, the transaction source, the object key,
-the step number, and the object name.  Entries with TRANSACTION_TYPEs of
-VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  Entries with 
-TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = PARAMETER_VAR have values 
-for PARAMETER_NAME.
+transaction key (TX_KEY), the TRANSACTION_TYPE, the transaction source
+(SOURCE), the object key (OBJ_KEY), the step number (STEP), and the object name
+(OBJ_NAME).  Entries with TRANSACTION_TYPEs of VARIABLE_* and TOKEN_* have 
+values for PREDICATE_NAME.  Entries with TRANSACTION_TYPEs of VARIABLE_* and 
+OBJ_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
 
 Mouse-Right click on the background of the "header" portion of the view, 
 offers "Find Transaction By Obj_Key".  Entering an OBJ_KEY value will cause
@@ -163,20 +163,41 @@ To include more keys, click on "Add"; to remove keys from a previous
 selections override the "Predicate", "Timeline", and "Time Interval" 
 selections, with applied together.
 
-Selections applied from this dialog 
-result, internally, in a set of valid tokens, which are used by the 
-views to filter their displays.
+Selections applied from this dialog result, internally, in a set of 
+valid tokens, which are used by the views to filter their displays.
 
 
 Querying Sequences
 ==================
-In the "SequenceQuery for <sequence-name>" dialog, select the type of
-return values from the left "combo box" -- either "Steps" or 
-"Transactions".  From the right "combo box", select the type of query.
-This selection may create further data entry and/or "combo boxes",
-which will be used to qualify the query.  "Apply Query" will cause the
-query to be performed and a window to be created to display the query
-results.
+The "SequenceQuery for <sequence-name>" dialog, provides the user with 
+queries which are in two groups, based on the primary kind of information 
+returned.  "Steps": "Where Constraint/Token/Variable Transacted ..." which 
+asks for a key value and the transaction type; "With Non-unit Variable 
+Decisions", "With Restrictions", and "With Unit Variable Decisions".  
+"Transactions": "For Constraint/Token/Variable ..." which asks for a key 
+value; and "In Range ...", which asks for "StartStep" and "EndStep" values.
+"Apply Query" will cause the query to be performed and a window "Query 
+Results for ..." to be created to display the query results.  
+
+Each entry of the "Query Results for ..." windows for "Transactions" queries 
+includes the transaction key (TX_KEY), the TRANSACTION_TYPE, the transaction 
+source (SOURCE), the object key (OBJ_KEY), the step number (STEP), and the 
+object name (OBJ_NAME).  Entries with TRANSACTION_TYPEs of VARIABLE_* and 
+TOKEN_* have values for PREDICATE_NAME.  Entries with TRANSACTION_TYPEs of 
+VARIABLE_* and OBJ_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
+
+Each entry of the "Query Results for ..." windows for "Steps" queries 
+includes the step number (STEP), the transaction key (TX_KEY), the 
+TRANSACTION_TYPE, and the object name (OBJ_NAME).  Entries with 
+TRANSACTION_TYPEs of VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  
+Entries with TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = PARAMETER_VAR 
+have values for PARAMETER_NAME.  The "With ..." queries also include the
+object key (OBJ_KEY).
+
+The "Query Results for ..." windows for "Transactions" queries and the 
+"With ..." "Steps" queries offer the user a pop-up dialog entitled "Find 
+Transaction by Obj_Key".  Mouse-Right on the background of the header section 
+of the window brings up this dialog.
 
 
 Screen Management
