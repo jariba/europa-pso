@@ -361,9 +361,12 @@ class PlanGenXMLParser extends DefaultHandler {
       if(!((Integer)state.peek()).equals(IN_SLOT) && !((Integer)state.peek()).equals(IN_PARTIALPLAN)) {
         throw new SAXException("Unexpected Token element.");
       }
+      byte isFreeToken = 0;
+      if(state.peek().equals(IN_PARTIALPLAN)) {
+        isFreeToken = 1;
+      }
       state.push(IN_TOKEN);
       Integer id = null;
-      byte isFreeToken = 0;
       byte isValueToken = 0;
       Integer startVar = null;
       Integer endVar = null;
@@ -372,9 +375,6 @@ class PlanGenXMLParser extends DefaultHandler {
       Integer predicate = null;
       Integer objectVar = null;
       
-      if(state.peek().equals(IN_PARTIALPLAN)) {
-        isFreeToken = 1;
-      }
       for(int i = 0; i < attributes.getLength(); i++) {
         if(attributes.getQName(i).indexOf("key") != -1) {
           id = new Integer(attributes.getValue(i).substring(1));
