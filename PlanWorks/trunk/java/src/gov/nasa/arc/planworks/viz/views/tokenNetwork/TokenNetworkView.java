@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.9 2003-07-15 00:33:52 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.10 2003-07-15 16:12:30 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -382,15 +382,17 @@ public class TokenNetworkView extends VizView {
       Integer tokenKey = tokenNode.getToken().getKey();
       TokenRelations tokenRelations =
         (TokenRelations) relationships.get( tokenKey);
-      Iterator masterTokenItr = tokenRelations.getMasterTokenIds().iterator();
-      while (masterTokenItr.hasNext()) {
-        Integer masterTokenId = (Integer) masterTokenItr.next();
-        createTokenLink( getTokenNode( masterTokenId), tokenNode, "master");
-      }
-      Iterator slaveTokenItr = tokenRelations.getSlaveTokenIds().iterator();
-      while (slaveTokenItr.hasNext()) {
-        Integer slaveTokenId = (Integer) slaveTokenItr.next();
-        createTokenLink( tokenNode, getTokenNode( slaveTokenId), "slave");
+      if(tokenRelations != null) {
+        Iterator masterTokenItr = tokenRelations.getMasterTokenIds().iterator();
+        while (masterTokenItr.hasNext()) {
+          Integer masterTokenId = (Integer) masterTokenItr.next();
+          createTokenLink( getTokenNode( masterTokenId), tokenNode, "master");
+        }
+        Iterator slaveTokenItr = tokenRelations.getSlaveTokenIds().iterator();
+        while (slaveTokenItr.hasNext()) {
+          Integer slaveTokenId = (Integer) slaveTokenItr.next();
+          createTokenLink( tokenNode, getTokenNode( slaveTokenId), "slave");
+        }
       }
     }
   } // end createTokenParentChildRelationships
