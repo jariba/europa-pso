@@ -180,7 +180,25 @@ echo "Creating PlanWorks tables..."
 eval "$1/mysql --user=root --password=root --database=PlanWorks --socket=$6 < PlanWorksTables"
 sleep 1
 echo "Creating PlanWorksUser..."
-eval "$1/mysql --user=root --password=root --socket=$6 --database=mysql --execute=\"INSERT INTO user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Shutdown_priv, File_priv, Create_tmp_table_priv, Lock_tables_priv) VALUES ('localhost', 'PlanWorksUser', PASSWORD('PlanWorksUser'), 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y')\""
+if test $OSTYPE = "linux-gnu"
+then
+echo "Executing linux command..."
+eval "$1/mysql --user=root --password=root --socket=$6 --database=mysql --execute=\"grant all on PlanWorks.* to 'PlanWorksUser' identified by 'PlanWorksUser';\""
+sleep 1
+eval "$1/mysql --user=root --password=root --socket=$6 --database=mysql --execute=\"grant alter , delete , drop , file , index , insert , select , shutdown , update on *.* to 'PlanWorksUser';\""
+elif test $OSTYPE = "linux"
+then
+echo "Executing linux command..."
+eval "$1/mysql --user=root --password=root --socket=$6 --database=mysql --execute=\"grant all on PlanWorks.* to 'PlanWorksUser' identified by 'PlanWorksUser';\""
+sleep 1
+eval "$1/mysql --user=root --password=root --socket=$6 --database=mysql --execute=\"grant alter , delete , drop , file , index , insert , select , shutdown , update on *.* to 'PlanWorksUser';\""
+elif test $OSTYPE = "solaris"
+then
+echo "Executing solaris command..."
+eval "$1/mysql --user=root --password=root --socket=$6 --database=mysql --execute=\"INSERT INTO user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Shutdown_priv, File_priv, Create_tmp_table_priv, Lock_tables_priv) VALUES ('localhost', 'PlanWorksUser', PASSWORD('PlanWorksUser'), 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y');\""
+else
+echo "Unknown OS type: $OSTYPE"
+fi
 sleep 1
 eval "$1/mysqladmin --user=root --password=root --socket=$6 reload"
 echo "Shutting down database..."
