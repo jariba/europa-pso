@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.64 2004-01-02 18:58:57 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.65 2004-01-02 19:05:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -119,7 +119,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     MySQLDB.createObjects(this);
     model = MySQLDB.queryPartialPlanModelById(id);
     MySQLDB.createTimelineSlotTokenNodesStructure(this);
-    System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
+
     long start2TimeMSecs = System.currentTimeMillis();
     fillElementMaps();
     long stop2TimeMSecs = System.currentTimeMillis();
@@ -130,7 +130,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     cleanConstraints();
     //cleanTransactions();
-    checkPlan();
+    //checkPlan();
   } // end createPartialPlan
 
   //  private void loadFiles(File planDir) throws ResourceNotFoundException {
@@ -162,15 +162,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    */
 
   private final void fillElementMaps() {
-
-    
     MySQLDB.queryConstraints( this);
-    
-    // parameters are inside predicates
+
     MySQLDB.queryPredicates( this);
-
     MySQLDB.queryTokenRelations( this);
-
     MySQLDB.queryVariables( this);
 
     System.err.println( "Partial Plan: " + url);
@@ -518,7 +513,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    */
 
   public boolean checkPlan() {
-    return checkRelations() && checkConstraints() && checkTokens() && checkVariables();
+    System.err.println("Checking plan internal consistency.");
+    boolean retval = checkRelations() && checkConstraints() && checkTokens() && checkVariables();
+    System.err.println("Done checking plan.");
+    return retval;
   }
 
   private boolean checkVariables() {
@@ -804,7 +802,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         retval = false;
         continue;
       }
-      if(!tokenRelation.getTokenAId().equals(token.getId()) && 
+      if(// !tokenRelation.getTokenAId().equals(token.getId()) && 
          !tokenRelation.getTokenBId().equals(token.getId())) {
         System.err.println("Token " + token.getId() + " has relation " + tokenRelation.getId() + 
                            " but isn't in it.");
@@ -822,8 +820,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     Iterator tokenRelationIterator = tokenRelationMap.values().iterator();
     while(tokenRelationIterator.hasNext()) {
       PwTokenRelationImpl tokenRelation = (PwTokenRelationImpl) tokenRelationIterator.next();
-      if((tokenRelation.getTokenAId().equals(token.getId()) || 
-          tokenRelation.getTokenBId().equals(token.getId())) && !relations.contains(tokenRelation.getId())) {
+      if(// (tokenRelation.getTokenAId().equals(token.getId()) || 
+          tokenRelation.getTokenBId().equals(token.getId()) && !relations.contains(tokenRelation.getId())) {
         System.err.println("Token " + token.getId() + " is in relation " + tokenRelation.getId() +
                            " but doesn't have it.");
         retval = false;

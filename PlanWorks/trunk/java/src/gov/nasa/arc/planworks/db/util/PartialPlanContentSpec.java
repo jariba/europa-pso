@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.7 2003-11-11 02:44:51 taylor Exp $
+// $Id: PartialPlanContentSpec.java,v 1.8 2004-01-02 19:05:19 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -59,7 +59,7 @@ public class PartialPlanContentSpec implements ContentSpec {
   private static final String TIMELINEID = "Timeline.TimelineId";
   private static final String TIMELINENAME = "Timeline.TimelineName";
   private static final String TIMELINENAME_QUERY =
-    "SELECT Object.ObjectName, Timeline.TimelineName, Timeline.TimelineId FROM Object RIGHT JOIN Timeline ON Timeline.ObjectId=Object.ObjectId && Timeline.PartialPlanId=Object.PartialPlanId WHERE Object.PartialPlanId=";
+    "SELECT DISTINCT Object.ObjectName, Token.TimelineName, Token.TimelineId FROM Object RIGHT JOIN Token ON Token.ObjectId=Object.ObjectId && Token.PartialPlanId=Object.PartialPlanId WHERE Object.PartialPlanId=";
   private static final String TOKENID = "TokenId";
   private static final String TOKENID_QUERY = "SELECT TokenId FROM Token WHERE PartialPlanId=";
   public static final int FREE_ONLY = -1;
@@ -420,6 +420,7 @@ public class PartialPlanContentSpec implements ContentSpec {
 
   public Map getTimelineNames() {
     HashMap timelines = new HashMap();
+    long t1 = System.currentTimeMillis();
     System.err.println("Getting timeline names...");
     try {
       ResultSet timelineNames =
