@@ -169,8 +169,11 @@ public class MySQLDB {
     PwTokenImpl token = null;
 
     try {
+      long t1 = System.currentTimeMillis();
       ResultSet timelineSlotTokens = 
         queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.ObjectId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, Token.TimelineId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline LEFT JOIN Slot ON Slot.TimelineId=Timeline.TimelineId && Slot.PartialPlanId=Timeline.PartialPlanId LEFT JOIN Token ON Token.PartialPlanId=Slot.PartialPlanId && Token.SlotId=Slot.SlotId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Token.PartialPlanId && ParamVarTokenMap.TokenId=Token.TokenId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Timeline.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" ORDER BY Timeline.TimelineId, Slot.SlotId, Token.TokenId, ParamVarTokenMap.ParameterId"));
+      System.err.println("Time spent in token query: " + (System.currentTimeMillis() - t1));
+      t1 = System.currentTimeMillis();
       Integer timelineId = new Integer(-1);
       String timelineName = "";
       Integer objectId = new Integer(-1);
@@ -191,6 +194,7 @@ public class MySQLDB {
       ArrayList tokenRelations = new ArrayList();
       ArrayList paramVars = new ArrayList();
       ArrayList slots = new ArrayList();
+      boolean isSlotEmpty = false;
       while(timelineSlotTokens.next()) {
         Integer currTimelineId = new Integer(timelineSlotTokens.getInt("Timeline.TimelineId"));
         String currTimelineName = timelineSlotTokens.getString("Timeline.TimelineName");
@@ -226,7 +230,7 @@ public class MySQLDB {
           tokenRelationId = currTokenRelationId;
         }
         if(!objectId.equals(currObjectId) && !currObjectId.equals(NULL)) {
-          if(!objectId.equals(M1) && !tokenId.equals(M1)) {
+          if(!objectId.equals(M1) && !tokenId.equals(M1) && !isSlotEmpty) {
             token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
                           tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
                           tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
@@ -240,7 +244,7 @@ public class MySQLDB {
           object = partialPlan.getObjectImpl(objectId);
         }
         if(!timelineId.equals(currTimelineId) && !currTimelineId.equals(NULL)) {
-          if(!timelineId.equals(M1) && !tokenId.equals(M1)) {
+          if(!timelineId.equals(M1) && !tokenId.equals(M1) && !isSlotEmpty) {
             token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
                           tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
                           tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
@@ -254,7 +258,7 @@ public class MySQLDB {
           timeline = object.addTimeline(currTimelineName, timelineId);
         }
         if(!slotId.equals(currSlotId) && !currSlotId.equals(NULL)) {
-          if(!slotId.equals(M1) && !tokenId.equals(M1)) {
+          if(!slotId.equals(M1) && !tokenId.equals(M1) && !isSlotEmpty) {
             token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
                           tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
                           tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
@@ -265,8 +269,8 @@ public class MySQLDB {
             paramVars.clear();
           }
           slotId = currSlotId;
-          System.err.println("Creating slot " + slotId);
           slot = timeline.addSlot(slotId);
+          isSlotEmpty = currTokenId.equals(NULL);
           slots.add(slot);
         }
         if(!tokenId.equals(currTokenId) && !currTokenId.equals(NULL)) {
@@ -305,7 +309,13 @@ public class MySQLDB {
                     paramVars);
       paramVars.clear();
       tokenRelations.clear();
+      System.err.println("Time spent creating timeline/slot/token structure: " + 
+                         (System.currentTimeMillis() - t1));
+      t1 = System.currentTimeMillis();
       ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.RejectVarId, Token.PredicateId, ParamVarTokenMap.VariableId, ParamVarTokenMap.ParameterId, TokenRelation.TokenRelationId FROM Token LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.TokenId=Token.TokenId && ParamVarTokenMap.PartialPlanId=Token.PartialPlanId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getKey().toString()));
+      System.err.println("Time spent in free token query: " + 
+                         (System.currentTimeMillis() - t1));
+      t1 = System.currentTimeMillis();
       while(freeTokens.next()) {
         Integer currTokenId = new Integer(freeTokens.getInt("Token.TokenId"));
         boolean currTokenIsValueToken = freeTokens.getBoolean("Token.IsValueToken");
@@ -367,6 +377,8 @@ public class MySQLDB {
                               tokenObjectVarId, (Integer)null, tokenRelations,
                               paramVars, partialPlan);
       partialPlan.addToken(tokenId, token);
+      System.err.println("Time spent creating free tokens: " + 
+                         (System.currentTimeMillis() - t1));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -375,8 +387,12 @@ public class MySQLDB {
   }
   public static void queryConstraints(PwPartialPlanImpl partialPlan) {
     try {
+      long t1 = System.currentTimeMillis();
       ResultSet constraints = 
         queryDatabase("SELECT VConstraint.ConstraintId, VConstraint.ConstraintName, VConstraint.ConstraintType, ConstraintVarMap.VariableId FROM VConstraint LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=VConstraint.PartialPlanId && ConstraintVarMap.ConstraintId=VConstraint.ConstraintId WHERE VConstraint.PartialPlanId=".concat(partialPlan.getKey().toString()));
+      System.err.println("Time spent in constraint query: " + 
+                         (System.currentTimeMillis() - t1));
+      t1 = System.currentTimeMillis();
       Integer constraintId = new Integer(-1);
       Integer variableId = new Integer(-1);
       String constraintName = new String("");
@@ -409,6 +425,8 @@ public class MySQLDB {
       partialPlan.addConstraint(constraintId, new PwConstraintImpl(constraintName, constraintId,
                                                                    constraintType, 
                                                                    constrainedVarIds,partialPlan));
+      System.err.println("Time spent creating constraints: " + 
+                         (System.currentTimeMillis() - t1));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -444,9 +462,12 @@ public class MySQLDB {
     PwDomainImpl domainImpl = null;
     try {
       System.err.println("Executing variable query...");
+      long t1 = System.currentTimeMillis();
       ResultSet variables =
-        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" ORDER BY Variable.VariableId"));
-
+        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" ORDER BY Variable.VariableId, ConstraintVarMap.ConstraintId"));
+      System.err.println("Time spent in variable query: " +
+                         (System.currentTimeMillis() - t1));
+      t1 = System.currentTimeMillis();
       Integer variableId = new Integer(-1);
       String domainType = "";
       String variableType = "";
@@ -471,12 +492,6 @@ public class MySQLDB {
         Integer currConstraintId = new Integer(variables.getInt("ConstraintVarMap.ConstraintId"));
         Integer currParameterId = new Integer(variables.getInt("ParamVarTokenMap.ParameterId"));
         Integer currTokenId = new Integer(variables.getInt("ParamVarTokenMap.TokenId"));
-        if(!constraintId.equals(currConstraintId) && !currConstraintId.equals(NULL)) {
-          if(!constraintId.equals(M1) && !constraintIdList.contains(currConstraintId)) {
-            constraintIdList.add(currConstraintId);
-          }
-          constraintId = currConstraintId;
-        }
         if(!parameterId.equals(currParameterId) && !currParameterId.equals(NULL)) {
           if(!parameterId.equals(M1) && !parameterIdList.contains(currParameterId)) {
             parameterIdList.add(currParameterId);
@@ -516,6 +531,10 @@ public class MySQLDB {
         }
         if(!variableId.equals(currVariableId) && !currVariableId.equals(NULL)) {
           if(!variableId.equals(M1)) {
+            if(!constraintIdList.contains(constraintId) && !constraintId.equals(M1) && 
+               !constraintId.equals(NULL) && !currConstraintId.equals(NULL)) {
+              constraintIdList.add(constraintId);
+            }
             partialPlan.addVariable(variableId, new PwVariableImpl(variableId, variableType,
                                                                    constraintIdList,
                                                                    parameterIdList, tokenIdList,
@@ -540,11 +559,18 @@ public class MySQLDB {
           enumDomain = new String(blob.getBytes(1, (int) blob.length()));
           domainImpl = new PwEnumeratedDomainImpl(enumDomain);
         }
+        if(!constraintId.equals(M1) && !constraintIdList.contains(currConstraintId) &&
+           !currConstraintId.equals(NULL)) {
+          constraintIdList.add(currConstraintId);
+        }
+        constraintId = currConstraintId;
       }
       partialPlan.addVariable(variableId, new PwVariableImpl(variableId, variableType,
                                                              constraintIdList,
                                                              parameterIdList, tokenIdList,
                                                              domainImpl, partialPlan));
+      System.err.println("Time spent creating variables: " +
+                         (System.currentTimeMillis() - t1));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
