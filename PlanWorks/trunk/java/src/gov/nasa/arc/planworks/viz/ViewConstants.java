@@ -45,6 +45,12 @@ public abstract class ViewConstants {
   public static final Color FREE_TOKEN_BG_COLOR = ColorMap.getColor( "lightGray");
 
   /**
+   * constant <code>RULE_INSTANCE_BG_COLOR</code>
+   *
+   */
+  public static final Color RULE_INSTANCE_BG_COLOR = ColorMap.getColor( "gray60");
+
+  /**
    * constant <code>PRIMARY_SELECTION_COLOR</code> -
    *                   same as jGoView.getDefaultPrimarySelectionColor()
    *

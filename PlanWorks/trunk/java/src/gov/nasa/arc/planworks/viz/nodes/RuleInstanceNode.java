@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNode.java,v 1.1 2004-06-10 01:36:07 taylor Exp $
+// $Id: RuleInstanceNode.java,v 1.1 2004-06-10 19:11:06 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 07jun04
 //
 
-package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
+package gov.nasa.arc.planworks.viz.nodes;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -38,8 +38,6 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
-import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -61,12 +59,12 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
   private static final boolean IS_TEXT_MULTILINE = false;
   private static final boolean IS_TEXT_EDITABLE = false;
 
-  private PwRuleInstance ruleInstance;
+  protected PwRuleInstance ruleInstance;
+
   private TokenNode fromTokenNode;
-  private List toTokenNodeList;
+  private List toTokenNodeList; // element TokenNode
   private PartialPlanView partialPlanView;
   private String nodeLabel;
-  private List tokenNodeList; // element TokenNode
   private Color backgroundColor;
 
   /**
@@ -89,7 +87,6 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
     this.fromTokenNode = fromTokenNode;
     this.toTokenNodeList = toTokenNodeList;
     this.partialPlanView = partialPlanView;
-    tokenNodeList = new ArrayList();
 
     this.backgroundColor = backgroundColor;
 
@@ -138,7 +135,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    *
    * @return - <code>String</code> - 
    */
-  public final String getToolTipText() {
+  public String getToolTipText() {
     if (partialPlanView.getZoomFactor() > 1) {
       StringBuffer tip = new StringBuffer( "<html> ");
       tip.append( "rule key=");
@@ -157,7 +154,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
-  public final String getToolTipText( final boolean isOverview) {
+  public String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html> ");
     tip.append( "rule key=");
     tip.append( ruleInstance.getRuleId().toString());
@@ -217,7 +214,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public final boolean doMouseClick( final int modifiers, final Point docCoords,
+  public boolean doMouseClick( final int modifiers, final Point docCoords,
                                      final Point viewCoords, final JGoView view) {
     JGoObject obj = view.pickDocObject( docCoords, false);
 //     System.err.println( "RuleInstanceNode: doMouseClick obj class " +

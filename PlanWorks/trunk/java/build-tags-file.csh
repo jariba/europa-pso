@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.69 2004-06-10 01:35:56 taylor Exp $
+# $Id: build-tags-file.csh,v 1.70 2004-06-10 19:11:04 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -101,6 +101,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/mdi/SplashWindow.java \
     src/gov/nasa/arc/planworks/mdi/TileCascader.java \
     src/gov/nasa/arc/planworks/test/BackendTest.java \
+    src/gov/nasa/arc/planworks/test/IdSource.java \
     src/gov/nasa/arc/planworks/test/MySQLDBTest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksGUITest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
@@ -145,6 +146,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/ObjectNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/ResourceNameNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/ResourceNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/RuleInstanceNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/VariableContainerNode.java \
@@ -161,6 +163,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkObjectNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkResourceNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkRuleInstanceNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTimelineNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkUtils.java \
@@ -202,7 +205,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineViewTimelineNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/RuleInstanceNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenLink.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \

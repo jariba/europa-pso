@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.54 2004-06-10 01:36:08 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.55 2004-06-10 19:11:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -48,6 +48,7 @@ import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -389,7 +390,7 @@ public class TokenNetworkView extends PartialPlanView {
               ruleInstanceNode =
                 new RuleInstanceNode( partialPlan.getRuleInstance( ruleInstanceId),
                                       masterTokenNode, toTokenNodeList, new Point( x, y),
-                                      ColorMap.getColor( "gray60"), isDraggable, this);
+                                      ViewConstants.RULE_INSTANCE_BG_COLOR, isDraggable, this);
               ruleInstanceNodeMap.put( ruleInstanceId, ruleInstanceNode);
               jGoDocument.addObjectAtTail( ruleInstanceNode);
             } else {
