@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.35 2004-03-30 22:01:03 taylor Exp $
+// $Id: PartialPlanView.java,v 1.36 2004-04-01 22:51:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -643,16 +643,7 @@ public class PartialPlanView extends VizView {
     raiseContentSpecItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           MDIInternalFrame contentSpecWindow = viewSet.getContentSpecWindow();
-          // bring window to the front
-          try {
-            // in case content spec window was iconified
-            if (contentSpecWindow.isIcon()) {
-              contentSpecWindow.setIcon( false);
-            }
-            contentSpecWindow.setSelected( false);
-            contentSpecWindow.setSelected( true);
-          } catch (PropertyVetoException excp) {
-          }
+          ViewGenerics.raiseFrame( contentSpecWindow);
         }
       });
   } // end createRaiseContentSpecItem

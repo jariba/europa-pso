@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.43 2004-03-31 22:27:05 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.44 2004-04-01 22:51:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -121,6 +121,7 @@ public class TokenNetworkView extends PartialPlanView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
+    viewFrame = viewSet.openView( this.getClass().getName());
 
     mouseOverLink = null;
   }
@@ -142,7 +143,6 @@ public class TokenNetworkView extends PartialPlanView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public final void init() {
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -156,7 +156,6 @@ public class TokenNetworkView extends PartialPlanView {
     boolean isRedraw = false;
     renderTokenNetwork( isRedraw);
 
-    viewFrame = viewSet.openView( this.getClass().getName());
     Rectangle documentBounds = jGoView.getDocument().computeBounds();
     jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
                                            (ViewConstants.TIMELINE_VIEW_X_INIT * 4),
@@ -174,7 +173,6 @@ public class TokenNetworkView extends PartialPlanView {
     if (! isStepButtonView) {
       expandViewFrameForStepButtons( viewFrame, jGoView);
     }
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
 
@@ -209,6 +207,7 @@ public class TokenNetworkView extends PartialPlanView {
     }  // end constructor
 
     public final void run() {
+      ViewGenerics.setRedrawCursor( viewFrame);
       boolean isRedraw = true;
       renderTokenNetwork( isRedraw);
       addStepButtons( jGoView);
@@ -216,13 +215,13 @@ public class TokenNetworkView extends PartialPlanView {
 //       if (! isStepButtonView) {
 //         expandViewFrameForStepButtons( viewFrame, jGoView);
 //       }
+      ViewGenerics.resetRedrawCursor( viewFrame);
     } //end run
 
   } // end class RedrawViewThread
 
   private void renderTokenNetwork( final boolean isRedraw) {
     if (isRedraw) {
-      jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
       System.err.println( "Redrawing Token Network View ...");
       startTimeMSecs = System.currentTimeMillis();
       this.setVisible( false);
@@ -257,7 +256,6 @@ public class TokenNetworkView extends PartialPlanView {
 
     if (isRedraw) {
       this.setVisible( true);
-      jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
     }
   } // end renderTokenNetwork
 

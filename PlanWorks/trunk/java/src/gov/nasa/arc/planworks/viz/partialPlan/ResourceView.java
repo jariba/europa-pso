@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.5 2004-03-20 01:00:38 taylor Exp $
+// $Id: ResourceView.java,v 1.6 2004-04-01 22:51:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -44,6 +44,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -196,6 +197,7 @@ public abstract class ResourceView extends PartialPlanView  {
     maxLevelViewHeightPoint = null;
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
     resourceNameNodeList = new ArrayList();
+    viewFrame = vSet.openView( this.getClass().getName());
     // create panels/views after fontMetrics available
    } // end resourceProfileViewInit
 
@@ -272,7 +274,6 @@ public abstract class ResourceView extends PartialPlanView  {
    *    JGoExtentView.setVisible( true) must be completed -- use runInit in constructor
    */
   public final void init() {
-    // jGoExtentView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for ResourceView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -310,8 +311,6 @@ public abstract class ResourceView extends PartialPlanView  {
     boolean isRedraw = false, isScrollBarAdjustment = false;
     renderResourceExtent();
 
-    viewFrame = viewSet.openView( this.getClass().getName());
-
     if (! isStepButtonView) {
 //       Rectangle documentBounds = jGoExtentView.getDocument().computeBounds();
 //       jGoExtentView.getDocument().setDocumentSize( (int) documentBounds.getWidth(),
@@ -345,7 +344,6 @@ public abstract class ResourceView extends PartialPlanView  {
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     
-    // jGoExtentView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
 
@@ -371,6 +369,7 @@ public abstract class ResourceView extends PartialPlanView  {
     }  // end constructor
 
     public final void run() {
+      ViewGenerics.setRedrawCursor( viewFrame);
       boolean isRedraw = true, isScrollBarAdjustment = false;
       renderResourceExtent();
       int maxStepButtonY = addStepButtons( jGoExtentView);
@@ -381,6 +380,7 @@ public abstract class ResourceView extends PartialPlanView  {
       // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
       // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
       equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
+      ViewGenerics.resetRedrawCursor( viewFrame);
     } // end run
 
   } // end class RedrawViewThread

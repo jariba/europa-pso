@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.47 2004-03-23 20:05:58 taylor Exp $
+// $Id: TimelineView.java,v 1.48 2004-04-01 22:51:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -15,16 +15,19 @@ package gov.nasa.arc.planworks.viz.partialPlan.timeline;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import javax.swing.BoxLayout;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -116,7 +119,8 @@ public class TimelineView extends PartialPlanView {
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    
+    viewFrame = viewSet.openView( this.getClass().getName());
+
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
     mouseOverNode = null;
@@ -157,7 +161,6 @@ public class TimelineView extends PartialPlanView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -166,6 +169,7 @@ public class TimelineView extends PartialPlanView {
       }
       // System.err.println( "timelineView displayable " + this.isDisplayable());
     }
+
     this.computeFontMetrics( this);
 
     jGoDocument = jGoView.getDocument();
@@ -173,7 +177,6 @@ public class TimelineView extends PartialPlanView {
     // create all nodes
     boolean isValid = renderTimelineAndSlotNodes();
     if (isValid) {
-      viewFrame = viewSet.openView( this.getClass().getName());
       if (! isStepButtonView) {
         expandViewFrame( viewFrame, (int) jGoView.getDocumentSize().getWidth(),
                          (int) jGoView.getDocumentSize().getHeight());
@@ -190,7 +193,6 @@ public class TimelineView extends PartialPlanView {
       long stopTimeMSecs = System.currentTimeMillis();
       System.err.println( "   ... elapsed time: " +
                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
-      jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
     } else {
       try {
         viewSet.openView( this.getClass().getName()).setClosed( true);
@@ -218,12 +220,16 @@ public class TimelineView extends PartialPlanView {
     }  // end constructor
 
     public void run() {
+      ViewGenerics.setRedrawCursor( viewFrame);
+
       renderTimelineAndSlotNodes();
       addStepButtons( jGoView);
       // causes bottom view edge to creep off screen
 //       if (! isStepButtonView) {
 //         expandViewFrameForStepButtons( viewFrame, jGoView);
 //       }
+
+      ViewGenerics.resetRedrawCursor( viewFrame);
     } //end run
 
   } // end class RedrawViewThread

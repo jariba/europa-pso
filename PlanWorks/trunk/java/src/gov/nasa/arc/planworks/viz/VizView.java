@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.18 2004-03-30 22:01:01 taylor Exp $
+// $Id: VizView.java,v 1.19 2004-04-01 22:51:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -46,6 +46,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.CreatePartialPlanViewThread;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -323,13 +324,7 @@ public class VizView extends JPanel {
     public final Object func(Object o) {
       if(o instanceof String && ((String) o).indexOf(navName) >= 0) {
         MDIInternalFrame viewFrame = (MDIInternalFrame) viewSet.getView(o);
-        try {
-          viewFrame.setIcon( false);
-          viewFrame.setSelected( false);
-          viewFrame.setSelected( true);
-        } 
-        catch ( PropertyVetoException pve){
-        }
+        ViewGenerics.raiseFrame( viewFrame);
       }
       return o;
     }
