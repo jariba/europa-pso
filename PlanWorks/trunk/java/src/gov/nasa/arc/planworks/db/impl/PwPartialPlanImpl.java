@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.17 2003-07-02 00:08:53 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.18 2003-07-02 22:37:14 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -123,7 +123,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
         System.err.println("Loading " + fileNames[i] + " into " + tableName);
         MySQLDB.updateDatabase("LOAD DATA INFILE '".concat(url).concat(System.getProperty("file.separator")).concat(fileNames[i]).concat("' IGNORE INTO TABLE ").concat(tableName));
       }
-      MySQLDB.updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceKey.toString()).concat(" WHERE PlanName='").concat(name).concat("'"));
+      MySQLDB.updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceKey.toString()).concat(" WHERE SequenceId=-1"));
       existingPartialPlan =
         MySQLDB.queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
     }

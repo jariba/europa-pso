@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.17 2003-07-02 21:10:07 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.18 2003-07-02 22:37:16 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -64,7 +64,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   //from new PwProject(blah, true);
   public PwPlanningSequenceImpl( String url, Integer key, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException, SQLException {
-    System.err.println("In PwPlanningSequenceImpl");
+    System.err.println("In PwPlanningSequenceImpl(String, Integer, PwProjectImpl, PwModelImpl");
     this.url = url;
     this.key = key;
     this.projectName = project.getName();
@@ -109,6 +109,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   //from addPlanningSequence(url)
   public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException, SQLException {
+    System.err.println("In PwPlanningSequenceImpl(String, PwProjectImpl, PwModelImpl)");
     this.url = url;
     this.projectName = project.getName();
     this.model = model;
