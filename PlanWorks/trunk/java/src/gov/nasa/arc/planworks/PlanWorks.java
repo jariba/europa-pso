@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.22 2003-07-02 21:10:48 miatauro Exp $
+// $Id: PlanWorks.java,v 1.23 2003-07-02 22:49:57 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -322,26 +322,31 @@ public class PlanWorks extends MDIDesktopFrame {
     boolean isProjectCreated = false;
     PwProject project = null;
     while (! isProjectCreated) {
-
       ProjectNameDialog projectNameDialog = new ProjectNameDialog( this);
-
       String inputName = projectNameDialog.getTypedText();
       if ((inputName == null) || (inputName.equals( ""))) {
         return null;
       }
       try {
         // check for duplicate project name
-        project = PwProject.createProject( inputName);
-        // ask user for a single sequence directory of partialPlan directories
-        // or use dialog to do multiple selection of sequence dirs of pp dirs
-        int returnVal = sequenceDirChooser.showDialog( this, "");
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-          if (! validateSequenceDirectory( sequenceDirectory)) {
-            continue;
-          }
-        } else {
-          return null;
+        if (PwProject.listProjects().indexOf( inputName) >= 0) {
+          throw new ResourceNotFoundException( "A project named '" + inputName +
+                                               "' already exists.");
         }
+        while (true) {
+          // ask user for a single sequence directory of partialPlan directories
+          int returnVal = sequenceDirChooser.showDialog( this, "");
+          if (returnVal == JFileChooser.APPROVE_OPTION) {
+            if (! validateSequenceDirectory( sequenceDirectory)) {
+              continue;
+            } else {
+              break;
+            }
+          } else {
+            return null;
+          }
+        }
+        project = PwProject.createProject( inputName);
         project.addPlanningSequence( sequenceDirectory);
         isProjectCreated = true;
         currentProjectName = inputName;
@@ -402,8 +407,8 @@ public class PlanWorks extends MDIDesktopFrame {
       if ((! fileName.equals( "CVS")) &&
           (new File( sequenceDirectory + System.getProperty( "file.separator") +
                      fileName)).isDirectory()) {
-        System.err.println( "Sequence " + sequenceDirectory +
-                            " => partialPlanDirName: " + fileName);
+        // System.err.println( "Sequence " + sequenceDirectory +
+        //                     " => partialPlanDirName: " + fileName);
         partialPlanDirs.add( fileName);
       }
     }
@@ -911,7 +916,7 @@ public class PlanWorks extends MDIDesktopFrame {
     planWorksRoot = System.getProperty( "planworks.root");
     defaultProjectName = "";
     defaultSequenceDirectory = "";
-    //defaultProjectName = System.getProperty( "default.project.name");
+    defaultProjectName = System.getProperty( "default.project.name");
     defaultSequenceDirectory = System.getProperty( "default.sequence.dir");
 
     try {
