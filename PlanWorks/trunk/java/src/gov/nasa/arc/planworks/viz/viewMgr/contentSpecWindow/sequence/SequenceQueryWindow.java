@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.11 2003-11-18 23:54:16 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.12 2003-12-03 02:29:51 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -60,8 +60,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
 
   private static final String QUERY_RESULT_FRAME = "QueryResultFrame";
   private static final String QUERY_VERB = "Get";
-  private static final String QUERY_FOR_STEPS = "Steps";
-  private static final String QUERY_FOR_TRANSACTIONS = "Transactions";
+  private static final String QUERY_FOR_STEPS = "Steps ...";
+  private static final String QUERY_FOR_TRANSACTIONS = "Transactions ...";
   private static final String STEPS_WHERE_CONSTRAINT_TRANSACTED =
     "Where Constraint Transacted ...";
   private static final String STEPS_WHERE_TOKEN_TRANSACTED = "Where Token Transacted ...";

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.20 2003-10-10 23:59:52 taylor Exp $
+// $Id: PwProject.java,v 1.21 2003-12-03 02:29:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,7 +14,6 @@
 package gov.nasa.arc.planworks.db;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import gov.nasa.arc.planworks.db.impl.PwProjectImpl;
@@ -104,8 +103,42 @@ public abstract class PwProject {
   public abstract PwPlanningSequence getPlanningSequence( String seqName)
     throws ResourceNotFoundException;
 
+  /**
+   * <code>getPlanningSequence</code>
+   *
+   * @param seqId - <code>Long</code> - 
+   * @return - <code>PwPlanningSequence</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   */
   public abstract PwPlanningSequence getPlanningSequence(Long seqId)
     throws ResourceNotFoundException;
+
+  /**
+   * <code>addPlanningSequence</code>
+   *
+   * @param url - <code>String</code> - 
+   * @return - <code>PwPlanningSequence</code> - 
+   * @exception DuplicateNameException if an error occurs
+   * @exception ResourceNotFoundException if an error occurs
+   */
+  public abstract PwPlanningSequence addPlanningSequence(String url) 
+    throws DuplicateNameException, ResourceNotFoundException;
+
+  /**
+   * <code>deletePlanningSequence</code>
+   *
+   * @param seqName - <code>String</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   */
+  public abstract void deletePlanningSequence(String seqName) throws ResourceNotFoundException;
+
+  /**
+   * <code>deletePlanningSequence</code>
+   *
+   * @param seqId - <code>Long</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   */
+  public abstract void deletePlanningSequence(Long seqId) throws ResourceNotFoundException;
 
   /**
    * <code>close</code> - 
@@ -115,10 +148,5 @@ public abstract class PwProject {
    */
   public abstract void delete() throws Exception, ResourceNotFoundException;
 
-  public abstract void deletePlanningSequence(String seqName) throws ResourceNotFoundException;
 
-  public abstract void deletePlanningSequence(Long seqId) throws ResourceNotFoundException;
-
-  public abstract PwPlanningSequence addPlanningSequence(String url) 
-    throws DuplicateNameException, ResourceNotFoundException;
 } // end class PwProject

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.62 2003-12-03 01:49:04 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.63 2003-12-03 02:29:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -74,14 +74,13 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @param url - <code>String</code> - pathname of planning sequence
    * @param id - <code>Integer</code> - id of sequence
    * @param project - <code>PwProjectImpl</code> - the project to which the sequence will be added
-   * @param model - <code>PwModelImpl</code> - not currently used
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPlanningSequenceImpl( String url, Long id, PwModelImpl model)
+  public PwPlanningSequenceImpl( String url, Long id)
     throws ResourceNotFoundException {
     this.url = url;
     this.id = id;
-    this.model = model;
+    this.model = null;
     stepCount = 0;
     
     String error = null;;
@@ -115,14 +114,12 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    *
    * @param url - <code>String</code> - pathname of planning sequence
    * @param project - <code>PwProjectImpl</code> - project to which the sequence will be added
-   * @param model - <code>PwModelImpl</code> - not currently used
    * @exception ResourceNotFoundException if an error occurs
    */ 
-  public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
+  public PwPlanningSequenceImpl( String url, PwProjectImpl project)
     throws ResourceNotFoundException {
     this.url = url;
-    this.model = model;
-    
+    this.model = null;
     partialPlans = new HashMap();
     
     int index = url.lastIndexOf( System.getProperty( "file.separator"));
@@ -227,11 +224,14 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   }
 
   /**
-   * <code>getModel</code>
+   * <code>getModel</code> - lazy construction of model done here
    *
    * @return - <code>PwModel</code> - 
    */
   public PwModel getModel() {
+    if (model == null) {
+      model = new PwModelImpl();
+    }
     return model;
   }
 
@@ -586,14 +586,14 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     if(files.length == DbConstants.NUMBER_OF_SEQ_FILES) {
       return "No step directories.";
     }
-    Arrays.sort(files, new StepDirectoryComparator());
-    for(int i = 0; i < files.length; i++) {
-      if(files[i].isDirectory()) {
-        if(!files[i].getName().equals("step" + i)) {
-          return "Skipped step " + i;
-        }
-      }
-    }
+//     Arrays.sort(files, new StepDirectoryComparator());
+//     for(int i = 0; i < files.length; i++) {
+//       if(files[i].isDirectory()) {
+//         if(!files[i].getName().equals("step" + i)) {
+//           return "Skipped step " + i;
+//         }
+//       }
+//     }
     return null;
   }
   private static final Pattern stepPattern = Pattern.compile("step(\\d+)");

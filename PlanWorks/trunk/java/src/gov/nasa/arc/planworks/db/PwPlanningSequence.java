@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.24 2003-11-11 02:44:51 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.25 2003-12-03 02:29:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -46,7 +46,7 @@ public interface PwPlanningSequence extends ViewableObject {
   public abstract Long getId();
 
   /**
-   * <code>getModel</code>
+   * <code>getModel</code> - lazy construction of model done here
    *
    * @return - <code>PwModel</code> - 
    */
@@ -61,6 +61,12 @@ public interface PwPlanningSequence extends ViewableObject {
    */
   public abstract List getTransactionsList( int step) throws IndexOutOfBoundsException;
 
+  /**
+   * <code>getTransactionsList</code>
+   *
+   * @param ppId - <code>Long</code> - 
+   * @return - <code>List</code> - 
+   */
   public abstract List getTransactionsList(Long ppId);
 
   /**
@@ -147,38 +153,147 @@ public interface PwPlanningSequence extends ViewableObject {
   
   // end extend ViewableObject
 
+  /**
+   * <code>getTransactionsForConstraint</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @return - <code>List</code> - 
+   */
   public List getTransactionsForConstraint(Integer id);
 
+  /**
+   * <code>getTransactionsForToken</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @return - <code>List</code> - 
+   */
   public List getTransactionsForToken(Integer id);
  
+  /**
+   * <code>getTransactionsForVariable</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @return - <code>List</code> - 
+   */
   public List getTransactionsForVariable(Integer id);
   
+  /**
+   * <code>getTransactionsInRange</code>
+   *
+   * @param start - <code>int</code> - 
+   * @param end - <code>int</code> - 
+   * @return - <code>List</code> - 
+   */
   public List getTransactionsInRange(int start, int end);
 
+  /**
+   * <code>getTransactionsInRange</code>
+   *
+   * @param start - <code>Integer</code> - 
+   * @param end - <code>Integer</code> - 
+   * @return - <code>List</code> - 
+   */
   public List getTransactionsInRange(Integer start, Integer end);
   
+  /**
+   * <code>getStepsWhereTokenTransacted</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @param type - <code>String</code> - 
+   * @return - <code>List</code> - 
+   * @exception IllegalArgumentException if an error occurs
+   */
   public List getStepsWhereTokenTransacted(Integer id, String type) throws IllegalArgumentException;
 
+  /**
+   * <code>getStepsWhereVariableTransacted</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @param type - <code>String</code> - 
+   * @return - <code>List</code> - 
+   * @exception IllegalArgumentException if an error occurs
+   */
   public List getStepsWhereVariableTransacted(Integer id, String type) throws IllegalArgumentException;
 
+  /**
+   * <code>getStepsWhereConstraintTransacted</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @param type - <code>String</code> - 
+   * @return - <code>List</code> - 
+   * @exception IllegalArgumentException if an error occurs
+   */
   public List getStepsWhereConstraintTransacted(Integer id, String type) throws IllegalArgumentException;
 
+  /**
+   * <code>getStepsWhereTokenTransacted</code>
+   *
+   * @param type - <code>String</code> - 
+   * @return - <code>List</code> - 
+   * @exception IllegalArgumentException if an error occurs
+   */
   public List getStepsWhereTokenTransacted(String type) throws IllegalArgumentException;
 
+  /**
+   * <code>getStepsWhereVariableTransacted</code>
+   *
+   * @param type - <code>String</code> - 
+   * @return - <code>List</code> - 
+   * @exception IllegalArgumentException if an error occurs
+   */
   public List getStepsWhereVariableTransacted(String type) throws IllegalArgumentException;
 
+  /**
+   * <code>getStepsWhereConstraintTransacted</code>
+   *
+   * @param type - <code>String</code> - 
+   * @return - <code>List</code> - 
+   * @exception IllegalArgumentException if an error occurs
+   */
   public List getStepsWhereConstraintTransacted(String type) throws IllegalArgumentException;
 
+  /**
+   * <code>getStepsWithRestrictions</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public List getStepsWithRestrictions();
 
+  /**
+   * <code>getStepsWithRelaxations</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public List getStepsWithRelaxations();
 
+  /**
+   * <code>getStepsWithUnitVariableBindingDecisions</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public List getStepsWithUnitVariableBindingDecisions();
 
+  /**
+   * <code>getStepsWithNonUnitVariableBindingDecisions</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public List getStepsWithNonUnitVariableBindingDecisions();
 
+  /**
+   * <code>getPlanDBSize</code>
+   *
+   * @param stepNum - <code>int</code> - 
+   * @return - <code>int[]</code> - 
+   * @exception IndexOutOfBoundsException if an error occurs
+   */
   public int [] getPlanDBSize(int stepNum) throws IndexOutOfBoundsException;
   
+  /**
+   * <code>getPlanDBSizeList</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public List getPlanDBSizeList();
 
 } // end interface PwPlanningSequence

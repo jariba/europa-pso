@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.74 2003-12-03 01:48:39 miatauro Exp $
+// $Id: PlanWorks.java,v 1.75 2003-12-03 02:29:49 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -96,6 +96,7 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final List PARTIAL_PLAN_VIEW_LIST;
 
   public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
+  public static final String MODEL_RULES_VIEW     = "Model Rules View";
   public static final List SEQUENCE_VIEW_LIST;
 
   static {
@@ -132,6 +133,9 @@ public class PlanWorks extends MDIDesktopFrame {
     viewClassNameMap.put
       ( SEQUENCE_STEPS_VIEW,
         "gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView");
+    viewClassNameMap.put
+      ( MODEL_RULES_VIEW,
+        "gov.nasa.arc.planworks.viz.sequence.modelRules.ModelRulesView");
 
     PARTIAL_PLAN_VIEW_LIST = new ArrayList();
     PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
@@ -142,6 +146,7 @@ public class PlanWorks extends MDIDesktopFrame {
 
     SEQUENCE_VIEW_LIST = new ArrayList();
     SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);
+    SEQUENCE_VIEW_LIST.add( MODEL_RULES_VIEW);
   }
 
   /**

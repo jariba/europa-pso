@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwModelImpl.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
+// $Id: PwModelImpl.java,v 1.3 2003-12-03 02:29:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.nasa.arc.planworks.db.PwModel;
+import gov.nasa.arc.planworks.db.PwRule;
+
+
 /**
  * <code>PwModelImpl</code> - 
  *
@@ -29,13 +32,40 @@ public class PwModelImpl implements PwModel {
   private List predicateList;
   private List classList;
   private List parameterList;
+  private List ruleList;
 
 
+  /**
+   * <code>PwModelImpl</code> - constructor 
+   *
+   */
   public PwModelImpl() {
     predicateList = new ArrayList();
     classList = new ArrayList();
     parameterList = new ArrayList();
+    ruleList = new ArrayList();
+
+    loadModel();
+
   } // end constructor
+
+  private void loadModel() {
+
+    // dummy data
+    predicateList.add( "CameraNotCalibrated");
+    predicateList.add( "CloseShutters");
+    predicateList.add( "MeasureDarkCurrent");
+    predicateList.add( "OpenShutters");
+
+    ruleList.add( (PwRule) (new PwRuleImpl( "CameraNotCalibrated", "CloseShutters", "met-by")));
+    ruleList.add( (PwRule) (new PwRuleImpl( "CameraNotCalibrated", "CloseShutters", "meets")));
+    ruleList.add( (PwRule) (new PwRuleImpl( "CloseShutters", "MeasureDarkCurrent", "met-by")));
+    ruleList.add( (PwRule) (new PwRuleImpl( "CloseShutters", "MeasureDarkCurrent", "meets")));
+    ruleList.add( (PwRule) (new PwRuleImpl( "MeasureDarkCurrent", "OpenShutters", "met-by")));
+    ruleList.add( (PwRule) (new PwRuleImpl( "MeasureDarkCurrent", "OpenShutters", "meets")));
+
+
+  } // end loadModel
 
   /**
    * <code>listPredicates</code>
@@ -64,6 +94,17 @@ public class PwModelImpl implements PwModel {
     return parameterList;
   }
 
+  /**
+   * <code>listRules</code>
+   *
+   * @return - <code>List</code> - List of PwRule
+   */
+  public List listRules() {
+    return ruleList;
+  }
+
 
 
 } // end class PwModelImpl
+
+

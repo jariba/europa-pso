@@ -46,7 +46,7 @@ public class BackendTest extends TestCase {
         MySQLDB.loadFile(p5.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
                          DbConstants.PW_DB_TABLES[i]);
       }
-      sequence = new PwPlanningSequenceImpl(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName), MySQLDB.latestSequenceId(), new PwModelImpl());
+      sequence = new PwPlanningSequenceImpl(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName), MySQLDB.latestSequenceId());
       plan1 = (PwPartialPlanImpl) sequence.getPartialPlan(step1);
       plan2 = (PwPartialPlanImpl) sequence.getPartialPlan(step2);
       plan3 = (PwPartialPlanImpl) sequence.getPartialPlan(step3);

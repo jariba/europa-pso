@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.10 2003-11-20 19:11:25 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.11 2003-12-03 02:29:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -48,6 +48,8 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.CreateSequenceViewThread;
+import gov.nasa.arc.planworks.SequenceViewMenuItem;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -346,6 +348,10 @@ public class SequenceStepsView extends SequenceView {
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
+    JMenuItem modelRulesViewItem = new JMenuItem( "Open Model Rules View");
+    createModelRulesViewItem( modelRulesViewItem, this, viewCoords);
+    mouseRightPopup.add( modelRulesViewItem);
+
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
     mouseRightPopup.add( overviewWindowItem);
@@ -368,6 +374,21 @@ public class SequenceStepsView extends SequenceView {
         }
       });
   } // end createOverviewWindowItem
+
+
+  private void createModelRulesViewItem( JMenuItem modelRulesViewItem,
+                                         final SequenceStepsView sequenceStepsView,
+                                         final Point viewCoords) {
+    modelRulesViewItem.addActionListener( new ActionListener() { 
+        public void actionPerformed( ActionEvent evt) {
+          String seqName = planSequence.getName();
+          SequenceViewMenuItem modelRulesItem =
+            new SequenceViewMenuItem( seqName, planSequence.getUrl(), seqName);
+          new CreateSequenceViewThread( PlanWorks.MODEL_RULES_VIEW,
+                                        modelRulesItem).start();
+        }
+      });
+  } // end createModelRulesViewItem
 
 
 } // end class SequenceStepsView
