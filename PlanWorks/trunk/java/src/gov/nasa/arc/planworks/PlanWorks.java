@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.19 2003-07-02 00:08:24 miatauro Exp $
+// $Id: PlanWorks.java,v 1.20 2003-07-02 18:29:39 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -777,6 +777,7 @@ public class PlanWorks extends MDIDesktopFrame {
         viewFrame = viewManager.openTokenNetworkView( partialPlan, sequenceName +
                                                       System.getProperty( "file.separator") +
                                                       partialPlanName);        
+        System.err.println("Finish view rendering..");
         finishViewRendering( viewFrame, viewExists, startTimeMSecs);
       } else if (viewName.equals( "temporalExtentView")) {
         JOptionPane.showMessageDialog
