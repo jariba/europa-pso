@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.8 2003-07-09 16:51:36 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.9 2003-07-30 00:15:30 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -55,9 +55,9 @@ public class PwVariableImpl implements PwVariable {
                          List tokenIds, PwDomainImpl domain, PwPartialPlanImpl partialPlan) {
     this.key = key;
     this.type = type;
-    this.constraintIdList = constraintIds;
-    this.parameterIdList = parameterIds;
-    this.tokenIdList = tokenIds;
+    this.constraintIdList = new ArrayList(constraintIds);
+    this.parameterIdList = new ArrayList(parameterIds);
+    this.tokenIdList = new ArrayList(tokenIds);
     this.domain = domain;
     this.partialPlan = partialPlan;
   } // end constructor
