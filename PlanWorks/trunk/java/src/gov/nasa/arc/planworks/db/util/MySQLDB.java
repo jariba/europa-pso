@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.49 2003-10-16 16:40:33 miatauro Exp $
+// $Id: MySQLDB.java,v 1.50 2003-10-16 19:43:56 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -921,10 +921,10 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionId PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" ORDER BY TransactionId"));
+        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" ORDER BY TransactionId"));
       while(transactions.next()) {
         //retval.add(new Integer(transactions.getInt("TransactionId")));
-        retval.add(Long.toString(transactions.getLong("TransactionId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
+        retval.add(Long.toString(transactions.getLong("PartialPlanId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
       }
     }
     catch(SQLException sqle) {
@@ -939,7 +939,7 @@ public class MySQLDB {
         queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" ORDER BY TransactionId"));
       while(transactions.next()) {
         //retval.add(new Integer(transactions.getInt("TransactionId")));
-        retval.add(Long.toString(transactions.getLong("TransactionId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
+        retval.add(Long.toString(transactions.getLong("PartialPlanId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
       }
     }
     catch(SQLException sqle) {
@@ -1131,6 +1131,19 @@ public class MySQLDB {
         queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()).concat(" && (TokenAId=").concat(tId.toString()).concat(" || TokenBId=").concat(tId.toString()).concat(")"));
       while(ids.next()) {
         retval.add(new Integer(ids.getInt("TokenRelationId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryTransactionIdsForPartialPlan(Long seqId, Long ppId) {
+    List retval = new ArrayList();
+    try {
+      ResultSet ids = queryDatabase("SELECT TransactionId FROM Transaction WHERE SequenceId=".concat(seqId.toString()).concat(" && PartialPlanId=").concat(ppId.toString()));
+      while(ids.next()) {
+        retval.add(new Integer(ids.getInt("TransactionId")));
       }
     }
     catch(SQLException sqle) {

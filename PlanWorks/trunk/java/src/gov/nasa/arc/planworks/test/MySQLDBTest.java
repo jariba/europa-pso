@@ -13,6 +13,9 @@ public class MySQLDBTest extends TestCase {
     junit.textui.TestRunner.run(suite());
   }
   protected void setUp() {
+    //while(PlanWorksTest.TEST_RUNNING != 0) {
+    //  try{Thread.sleep(50);}catch(Exception e){}
+    // }
     try {
       MySQLDB.startDatabase();
       MySQLDB.registerDatabase();
@@ -21,6 +24,10 @@ public class MySQLDBTest extends TestCase {
       e.printStackTrace();
       System.exit(-1);
     }
+    PlanWorksTest.TEST_RUNNING = 2;
+  }
+  protected void tearDown() {
+    PlanWorksTest.TEST_RUNNING = 0;
   }
   public static TestSuite suite() {
     return new TestSuite(MySQLDBTest.class);
