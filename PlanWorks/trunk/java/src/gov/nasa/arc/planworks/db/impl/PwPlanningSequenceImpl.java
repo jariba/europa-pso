@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.59 2003-11-11 02:44:51 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.60 2003-11-25 17:25:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -164,19 +164,21 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       String transactionName = (String) transactionNameIterator.next();
       if(transactionName.indexOf(ppIdStr) == 0) {
         PwTransactionImpl transaction = (PwTransactionImpl) transactions.get(transactionName);
-        if(transaction.getType().indexOf("TOKEN") != -1) {
-          if(!pp.tokenExists(transaction.getObjectId())) {
-            transactions.remove(transactionName);
+        if(transaction.getType().indexOf("DELETED") == -1) {
+          if(transaction.getType().indexOf("TOKEN") != -1) {
+            if(!pp.tokenExists(transaction.getObjectId())) {
+              transactions.remove(transactionName);
+            }
           }
-        }
-        else if(transaction.getType().indexOf("VARIABLE") != -1) {
-          if(pp.getVariable(transaction.getObjectId()) == null) {
-            transactions.remove(transactionName);
+          else if(transaction.getType().indexOf("VARIABLE") != -1) {
+            if(pp.getVariable(transaction.getObjectId()) == null) {
+              transactions.remove(transactionName);
+            }
           }
-        }
-        else if(transaction.getType().indexOf("CONSTRAINT") != -1) {
-          if(pp.getConstraint(transaction.getObjectId()) == null) {
-            transactions.remove(transactionName);
+          else if(transaction.getType().indexOf("CONSTRAINT") != -1) {
+            if(pp.getConstraint(transaction.getObjectId()) == null) {
+              transactions.remove(transactionName);
+            }
           }
         }
       }
