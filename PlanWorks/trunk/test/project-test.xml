@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: project-test.xml,v 1.4 2003-05-27 21:24:48 taylor Exp $ -->
+<!-- $Id: project-test.xml,v 1.5 2003-06-02 17:50:01 taylor Exp $ -->
 <project name="project-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
         <!-- planworks.root is an inherited property from PlanWorks/build.xml -->
@@ -20,14 +20,9 @@
                 <pathelement location="${exist.home}/exist.jar"/>
                 <fileset dir="${exist.home}/lib/core" includes="*.jar"/>
 	</path>
-	<delete>
-		<fileset dir="${planworks.root}/xml/db/data" includes="*.dbx"/>
-		<fileset dir="${planworks.root}/xml/db/logs" includes="*.log"/>
-		<fileset dir="${planworks.root}/xml/db/logs" includes="*.log*"/>
-	</delete>
 
 	<java dir="${planworks.root}/java/src" 
-                classname="gov.nasa.arc.planworks.proj.test.PwProjectTest" fork="true">
+                classname="gov.nasa.arc.planworks.db.test.PwProjectTest" fork="true">
             <classpath refid="planworks.jars"/>
             <jvmarg value="-verbose:gc"/>
             <jvmarg value="-Xms${arg_gcInit}m"/>

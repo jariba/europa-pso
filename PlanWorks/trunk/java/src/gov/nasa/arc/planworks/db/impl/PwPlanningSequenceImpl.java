@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.4 2003-05-18 00:02:26 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.5 2003-06-02 17:49:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -50,8 +50,10 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * @param url - <code>String</code> - pathname of planning sequence
    * @param projectName - <code>String</code> - 
    * @param model - <code>PwModel</code> - 
+   * @param isInDb - <code>boolean</code> - 
    */
-  public PwPlanningSequenceImpl( String url, String projectName, PwModel model)
+  public PwPlanningSequenceImpl( String url, String projectName, PwModel model,
+                                 boolean isInDb)
     throws ResourceNotFoundException {
     this.url = url;
     this.projectName = projectName;
@@ -73,7 +75,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
       String xmlFileName = xmlFileNames[i];
       System.err.println( "PwPlanningSequenceImpl xmlFileName: " + xmlFileName);
       partialPlans.add( new PwPartialPlanImpl( url + "/" + xmlFileName, projectName,
-                                               sequenceName));
+                                               sequenceName, isInDb));
       stepCount++;
     }
     if (xmlFileNames.length == 0) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicateImpl.java,v 1.5 2003-05-20 18:25:34 taylor Exp $
+// $Id: PwPredicateImpl.java,v 1.6 2003-06-02 17:49:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,7 +33,6 @@ public class PwPredicateImpl implements PwPredicate {
   private String key;
   private List parameterIdList; // element String
   private PwPartialPlanImpl partialPlan;
-  private String collectionName;
 
   /**
    * <code>PwPredicateImpl</code> - constructor 
@@ -41,15 +40,12 @@ public class PwPredicateImpl implements PwPredicate {
    * @param name - <code>String</code> - 
    * @param key - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
-   * @param collectionName - <code>String</code> - 
    */
-  public PwPredicateImpl( String name, String key, PwPartialPlanImpl partialPlan,
-                          String collectionName) {
+  public PwPredicateImpl( String name, String key, PwPartialPlanImpl partialPlan) {
     this.name = name;
     this.key = key;
     this.parameterIdList = new ArrayList();
     this.partialPlan = partialPlan;
-    this.collectionName = collectionName;
   } // end constructor
 
   /**
@@ -78,8 +74,7 @@ public class PwPredicateImpl implements PwPredicate {
   public List getParameterList() {
     List retval = new ArrayList( parameterIdList.size());
     for (int i = 0; i < parameterIdList.size(); i++) {
-      retval.add( partialPlan.getParameter( (String) parameterIdList.get( i),
-                                            collectionName));
+      retval.add( partialPlan.getParameter( (String) parameterIdList.get( i)));
     }
     return retval;
   }

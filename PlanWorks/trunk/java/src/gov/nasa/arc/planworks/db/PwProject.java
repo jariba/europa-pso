@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.3 2003-05-27 19:00:07 taylor Exp $
+// $Id: PwProject.java,v 1.4 2003-06-02 17:49:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -16,6 +16,7 @@ package gov.nasa.arc.planworks.db;
 import java.util.List;
 
 import gov.nasa.arc.planworks.db.impl.PwProjectImpl;
+import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
 /**
@@ -29,24 +30,44 @@ public abstract class PwProject {
 
 
   /**
-   * <code>createInstance</code>
+   * <code>initProjects</code> - register loaded XML files data base (eXist)
+   *                             restore loaded projects configuration info
+   *
+   */
+  public static void initProjects() throws ResourceNotFoundException {
+    PwProjectImpl.initProjects();
+  }
+
+  /**
+   * <code>createProject</code>
    *
    * @param url - <code>String</code> - 
    * @return - <code>PwProject</code> - 
    */
-  public static PwProject createInstance( String url) throws ResourceNotFoundException {
+  public static PwProject createProject( String url)
+    throws DuplicateNameException, ResourceNotFoundException {
     return (new PwProjectImpl( url));
   }
 
   /**
-   * <code>createInstance</code>
+   * <code>openProject</code>
    *
    * @param url - <code>String</code> - 
    * @return - <code>PwProject</code> - 
    */
-  public static PwProject createInstance( String url, boolean isInDb)
+  public static PwProject openProject( String url)
     throws ResourceNotFoundException {
+    boolean isInDb = true;
     return (new PwProjectImpl( url, isInDb));
+  }
+
+  /**
+   * <code>listProjects</code>
+   *
+   * @return - <code>List</code> - of String (url)
+   */
+  public static List listProjects() {
+    return PwProjectImpl.listProjects();
   }
 
   /**
@@ -55,6 +76,14 @@ public abstract class PwProject {
    * @return - <code>String</code> - 
    */
   public abstract String getUrl();
+
+  /**
+   * <code>getProjectName</code> - project name (directory containing
+   *                               planning sequences
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getProjectName();
 
   /**
    * <code>listPlanningSequences</code>
@@ -75,11 +104,12 @@ public abstract class PwProject {
     throws ResourceNotFoundException;
 
   /**
-   * <code>close</code>
+   * <code>close</code> - remove project from /xml/proj/projects.xml, and
+   *                      remove /xml/proj/<projectName>.xml
    *
    * @exception Exception if an error occurs
    */
-  public abstract void close() throws Exception;
+  public abstract void close() throws Exception, ResourceNotFoundException;
 
   /**
    * <code>requiresSaving</code>
@@ -89,18 +119,13 @@ public abstract class PwProject {
   public abstract boolean requiresSaving();
 
   /**
-   * <code>save</code>
+   * <code>save</code> - save project names & urls in /xml/proj/projects.xml
+   *            save project url, name, & seqDirNames in /xml/proj/<projectName>.xml
    *
    * @exception Exception if an error occurs
    */
   public abstract void save() throws Exception;
 
-  /**
-   * <code>restore</code>
-   *
-   * @exception Exception if an error occurs
-   */
-  public abstract void restore() throws Exception;
 
 
 

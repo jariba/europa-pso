@@ -15,7 +15,7 @@ import junit.extensions.jfcunit.eventdata.EventDataConstants;
 import junit.extensions.jfcunit.eventdata.MouseEventData;
 import junit.framework.*;
 import junit.textui.TestRunner;
-import gov.nasa.arc.planworks.proj.test.PwProjectTest;
+import gov.nasa.arc.planworks.db.test.PwProjectTest;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;

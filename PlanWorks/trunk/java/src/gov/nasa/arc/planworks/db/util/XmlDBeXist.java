@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.6 2003-05-21 23:48:35 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.7 2003-06-02 17:49:59 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Stack;
 
 // PlanWorks/java/lib/eXist/exist.jar
+import org.exist.security.Permission;
 import org.exist.xmldb.LocalXMLResource;
 
 //  PlanWorks/java/lib/eXist/lib/core/xmldb.jar
@@ -233,6 +234,8 @@ public class XmlDBeXist {
 
   }
 
+  private static Collection currentCollection;
+  private static String currentCollectionName;
   private static List nodeContentList;
   private static Stack elementNameStack;
 
@@ -250,7 +253,6 @@ public class XmlDBeXist {
    */
   public static void registerDataBase() {
     String xmlDbExcepStr = "XML:DB Exception in registerDataBase";
-    Collection collection = null;
     try {
       Class driverClass = Class.forName( DRIVER_NAME);
       Database database = (Database) driverClass.newInstance();
@@ -267,11 +269,12 @@ public class XmlDBeXist {
       DatabaseManager.registerDatabase( database);
       database.setProperty( "create-database", "true");
         
-//       collection =
-//         DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME, USER, PASSWORD);
-//       collection.setProperty( "pretty", "true");
-//       // collection.setProperty( "encoding", "ISO-8859-1");
-//       collection.setProperty( "encoding", "UTF-8");
+      currentCollection =
+        DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME, USER, PASSWORD);
+      currentCollectionName = ROOT_COLLECTION_NAME;
+      currentCollection.setProperty( "pretty", "true");
+      // collection.setProperty( "encoding", "ISO-8859-1");
+      currentCollection.setProperty( "encoding", "UTF-8");
 
     } catch (XMLDBException e1) {
       System.err.println( xmlDbExcepStr + "(e1): " + e1.errorCode + " " +
@@ -293,15 +296,6 @@ public class XmlDBeXist {
                          e4);
       e4.printStackTrace(); 
       System.exit( 1);
-    } finally {
-      try {
-        if (collection != null) { collection.close(); }
-      } catch (XMLDBException e5) {
-        System.err.println( xmlDbExcepStr + "(e5): " + e5.errorCode + " " +
-                            e5.getMessage());
-      e5.printStackTrace();
-      System.exit( 1);
-      }
     }
   } // end registerDataBase
 
@@ -313,59 +307,97 @@ public class XmlDBeXist {
    * @return collection - <code>Collection</code> -
    */
   public static Collection createCollection( String collectionName) {
+    Collection collection = currentCollection;
+    // is a new collection needed
+    if (! currentCollectionName.equals( collectionName)) {
+      try {
+        currentCollection.close();
+      } catch (XMLDBException ex) {
+        System.err.println( "createCollection: closing currentCollection" +
+                            ex.errorCode + " " + ex.getMessage());
+        ex.printStackTrace();
+        return null;
+      }
+      try {
+        collection = 
+          DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME + collectionName,
+                                         USER, PASSWORD);
+        // System.err.println("createCollection: getCollection1 " + collection);
+        if (collection == null) {
+          // collection does not exist: get root collection and create it
+          Collection root = DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME,
+                                                           USER, PASSWORD);
+          // System.err.println("createCollection: root " + root);
+          CollectionManagementService mgtService = 
+            (CollectionManagementService)
+            root.getService( "CollectionManagementService", "1.0");
+          try {
+            // this what http://exist-db.org/devguide.html says to do =>
+            // XML:DB Exception occurred: 300 collection not found
+            // System.err.println( "create collection " + collectionName);
+            // collection = mgtService.createCollection( collectionName);
+            // this works
+            // collection = mgtService.createCollection( ROOT_COLLECTION_NAME + collectionName);
+            String printStr = "Created Collection " + ROOT_COLLECTION_NAME + collectionName;
+            System.err.println( printStr);
+            collection = mgtService.createCollection( ROOT_COLLECTION_NAME + collectionName);
+          } catch (XMLDBException e0) {
+            // ignore 300: collection not found exception, and then do getCollection again
+            if (e0.errorCode != 300) {
+              System.err.println("XML:DB Exception in createCollection0: " +
+                                 e0.errorCode + " " + e0.getMessage());
+              e0.printStackTrace();
+              System.exit( 1);
+            }
+          }
+          collection = 
+            DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME + collectionName,
+                                           USER, PASSWORD);
+          // System.err.println("createCollection: getCollection2 " + collection);
+        }
+      } catch (XMLDBException e1) {
+        System.err.println("XML:DB Exception in createCollection1: " +
+                           e1.errorCode + " " + e1.getMessage());
+        e1.printStackTrace();
+        System.exit( 1);
+      }
+      // System.err.println("createCollection: collectionName " + collectionName +
+      //                    " collection " + collection);
+    }
+    return collection;
+  } // end createCollection
+
+  /**
+   * <code>removeCollection</code>
+   *
+   * @param collectionName - <code>String</code> - 
+   */
+  public static void removeCollection( String collectionName) {
     if (collectionName.startsWith( ROOT_COLLECTION_NAME)) {
       // remove /db if specified
       collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
     }
-    Collection collection = null;
-    // try to get collection
     try {
-      collection = 
-        DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME + collectionName,
+      Collection root = DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME,
+                                                       USER, PASSWORD);
+      CollectionManagementService mgtService = 
+        (CollectionManagementService)
+        root.getService( "CollectionManagementService", "1.0");
+      String printStr = "Removed Collection " + ROOT_COLLECTION_NAME + collectionName;
+      System.err.println( printStr);
+//       mgtService.removeCollection( ROOT_COLLECTION_NAME + collectionName);
+      mgtService.removeCollection( collectionName);
+      // reset current collection
+      currentCollection =
+        DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME,
                                        USER, PASSWORD);
-      // System.err.println("createCollection: getCollection1 " + collection);
-      if (collection == null) {
-        // collection does not exist: get root collection and create it
-        Collection root = DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME,
-                                                         USER, PASSWORD);
-        // System.err.println("createCollection: root " + root);
-        CollectionManagementService mgtService = 
-          (CollectionManagementService)
-          root.getService( "CollectionManagementService", "1.0");
-        try {
-          // this what http://exist-db.org/devguide.html says to do =>
-          // XML:DB Exception occurred: 300 collection not found
-          // System.err.println( "create collection " + collectionName);
-          // collection = mgtService.createCollection( collectionName);
-          // this works
-          // collection = mgtService.createCollection( ROOT_COLLECTION_NAME + collectionName);
-          String printStr = "Created Collection " + ROOT_COLLECTION_NAME + collectionName;
-          System.err.println( printStr);
-          collection = mgtService.createCollection( ROOT_COLLECTION_NAME + collectionName);
-        } catch (XMLDBException e0) {
-          // ignore 300: collection not found exception, and then do getCollection again
-          if (e0.errorCode != 300) {
-            System.err.println("XML:DB Exception in createCollection0: " +
-                               e0.errorCode + " " + e0.getMessage());
-            e0.printStackTrace();
-            System.exit( 1);
-          }
-        }
-        collection = 
-          DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME + collectionName,
-                                         USER, PASSWORD);
-      // System.err.println("createCollection: getCollection2 " + collection);
-      }
-    } catch (XMLDBException e1) {
-      System.err.println("XML:DB Exception in createCollection1: " +
-                         e1.errorCode + " " + e1.getMessage());
-      e1.printStackTrace();
+    } catch (XMLDBException excp) {
+      System.err.println("XML:DB Exception in removeCollection: " +
+                         excp.errorCode + " " + excp.getMessage());
+      excp.printStackTrace();
       System.exit( 1);
     }
-    // System.err.println("createCollection: collectionName " + collectionName +
-    //                    " collection " + collection);
-    return collection;
-  } // end createCollection
+  } // end removeCollection
 
   /**
    * <code>addXMLFileToCollection</code>
@@ -378,34 +410,31 @@ public class XmlDBeXist {
     // System.err.println("addXMLFileToCollection: collectionName " +
     //                    collectionName + " filePathname " + filePathname);
     // create collection, if needed
-    Collection collection = createCollection( collectionName); 
+    if (collectionName.startsWith( ROOT_COLLECTION_NAME)) {
+      // remove /db if specified
+      collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
+    }
+    currentCollection = createCollection( collectionName);
+    currentCollectionName = collectionName;
     try {
       // create new XMLResource; an id will be assigned to the new resource
       XMLResource document =
-        (XMLResource) collection.createResource( null, "XMLResource");
+        (XMLResource) currentCollection.createResource( null, "XMLResource");
       File file = new File( filePathname);
       if (! file.canRead()) {
         System.err.println( "addXMLFileToCollection: can't read file " + filePathname);
         return;
       }
       document.setContent( file);
-      String printStr2 = "   ... storing in collection " + ROOT_COLLECTION_NAME +
+      String printStr2 = "   ... storing in currentCollection " + ROOT_COLLECTION_NAME +
         collectionName;
       System.err.print( printStr2 + " ...");
-      collection.storeResource( document);
+      currentCollection.storeResource( document);
       System.err.println( "ok.");
     } catch (XMLDBException e1) {
       System.err.println("XML:DB Exception in addXMLFileToCollection: " +
                          e1.errorCode + " " + e1.getMessage());
       System.exit( 1);
-    } finally {
-      try {
-        if (collection != null) { collection.close(); }
-      } catch (XMLDBException ex) {
-        System.err.println( "addXMLFileToCollection: " + ex.errorCode +
-                            " " + ex.getMessage());
-        ex.printStackTrace();
-      }
     }
   } // end addXMLFileToCollection
 
@@ -422,19 +451,29 @@ public class XmlDBeXist {
       // remove /db if specified
       collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
     }
-    Collection collection = null;
     try {
-      collection = 
-        DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME + collectionName,
-                                       USER, PASSWORD);
-      if (collection == null) {
-        System.err.println( "queryCollection: collection " + URI +
-                            ROOT_COLLECTION_NAME + collectionName + " not found");
-        return (new ArrayList());
+      if (! currentCollectionName.equals( collectionName)) {
+        try {
+          currentCollection.close();
+        } catch (XMLDBException ex) {
+          System.err.println( "queryCollection: closing currentCollection" +
+                              ex.errorCode + " " + ex.getMessage());
+          ex.printStackTrace();
+          return null;
+        }
+        currentCollection = 
+          DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME + collectionName,
+                                         USER, PASSWORD);
+        currentCollectionName = collectionName;
+        if (currentCollection == null) {
+          System.err.println( "queryCollection: collection " + URI +
+                              ROOT_COLLECTION_NAME + collectionName + " not found");
+          return (new ArrayList());
+        }
       }
       // System.err.println( "Query: " + query);
       XPathQueryService queryService =
-        (XPathQueryService) collection.getService( "XPathQueryService", "1.0");
+        (XPathQueryService) currentCollection.getService( "XPathQueryService", "1.0");
       queryService.setProperty( "pretty", "true");
       // queryService.setProperty( "encoding", "ISO-8859-1");
       queryService.setProperty( "encoding", "UTF-8");
@@ -449,12 +488,12 @@ public class XmlDBeXist {
         org.w3c.dom.Node domNode = ((LocalXMLResource) resource).getContentAsDOM();
         // create ordered triplet list of element/attribute type, name & value
         parseDomNode( domNode);
-//         System.err.println( (String) resource.getContent());
+        //         System.err.println( (String) resource.getContent());
       }
       while (elementNameStack.empty() != true) {
         nodeContentList.add(  new ParsedDomNode
-                                 ( new Short ( END_ELEMENT_NODE),
-                                   (String) elementNameStack.pop(), ""));
+                              ( new Short ( END_ELEMENT_NODE),
+                                (String) elementNameStack.pop(), ""));
       }
     } catch (XMLDBException e1) {
       System.err.println( "XML:DB Exception in queryCollection 1: " +
@@ -463,14 +502,6 @@ public class XmlDBeXist {
       if (e1.errorCode != 1) {  // skip parse errors
         e1.printStackTrace();
         System.exit( 1);
-      }
-    } finally {
-      try {
-        if (collection != null) { collection.close(); }
-      } catch (XMLDBException e2) {
-        System.err.println( "XML:DB Exception in queryCollection 2: " +
-                            e2.errorCode + " " + e2.getMessage());
-        e2.printStackTrace();
       }
     }
     return nodeContentList;
@@ -855,7 +886,7 @@ public class XmlDBeXist {
       domain = new PwEnumeratedDomainImpl( enumeration);
     }
     variable = new PwVariableImpl( key, varType, constraintIds, paramId, domain,
-                                   partialPlan, collectionName);
+                                   partialPlan);
     return variable;
   } // end queryVariableByKey
 
@@ -891,7 +922,7 @@ public class XmlDBeXist {
       } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
         if (currentNodeName.equals( PREDICATE_ELEMENT)) {
           if (nodeName.equals( PREDICATE_NAME_ATTRIBUTE)) {
-            predicate = new PwPredicateImpl( nodeValue, key, partialPlan, collectionName);
+            predicate = new PwPredicateImpl( nodeValue, key, partialPlan);
           }
         } else if (currentNodeName.equals( PARAMETER_ELEMENT)) {
           if (nodeName.equals( PARAMETER_KEY_ATTRIBUTE)) {
@@ -940,7 +971,7 @@ public class XmlDBeXist {
             name = nodeValue;
           }  else if (nodeName.equals( CONSTRAINT_VARIABLE_IDS_ATTRIBUTE)) {
             constraint = new PwConstraintImpl( name, key, type, nodeValue,
-                                               partialPlan, collectionName);
+                                               partialPlan);
           }
         }
       }
@@ -980,7 +1011,7 @@ public class XmlDBeXist {
             master = nodeValue;
           }  else if (nodeName.equals( TOKEN_RELATION_SLAVE_TOKEN_ATTRIBUTE)) {
             tokenRelation = new PwTokenRelationImpl( key, master, nodeValue,
-                                                     partialPlan, collectionName);
+                                                     partialPlan);
           }
         }
       }

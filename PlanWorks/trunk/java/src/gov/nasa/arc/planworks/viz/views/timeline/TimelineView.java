@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.3 2003-05-27 21:24:48 taylor Exp $
+// $Id: TimelineView.java,v 1.4 2003-06-02 17:50:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -111,8 +111,9 @@ public class TimelineView extends VizView {
 
     createTimelineAndSlotNodes();
 
-    // iterateOverJGoDoc();
-    iterateOverNodes();
+    // print out info for created nodes
+    // iterateOverJGoDoc(); // slower - many more nodes to go thru
+    // iterateOverNodes();
 
   } // end init
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.6 2003-05-20 18:25:35 taylor Exp $
+// $Id: PwTimelineImpl.java,v 1.7 2003-06-02 17:49:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,19 +33,17 @@ public class PwTimelineImpl implements PwTimeline {
   private String key;
   private List slotIdList;
   private PwPartialPlanImpl partialPlan;
-  private String collectionName;
   /**
    * <code>Timeline</code> - constructor 
    *
    * @param name - <code>String</code> - 
    * @param key - <code>String</code> - 
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwTimelineImpl( String name, String key, PwPartialPlanImpl partialPlan,
-                         String collectionName) {
+  public PwTimelineImpl( String name, String key, PwPartialPlanImpl partialPlan) {
     this.name = name;
     this.key = key;
     this.partialPlan = partialPlan;
-    this.collectionName = collectionName;
     slotIdList = new ArrayList();
   } // end constructor
 
@@ -75,8 +73,7 @@ public class PwTimelineImpl implements PwTimeline {
   public List getSlotList() {
     List retval = new ArrayList( slotIdList.size());
     for (int i = 0; i < slotIdList.size(); i++) {
-      retval.add( partialPlan.getSlot( (String) slotIdList.get(i),
-                                       collectionName));
+      retval.add( partialPlan.getSlot( (String) slotIdList.get(i)));
     }
     return retval;
   }
@@ -88,7 +85,7 @@ public class PwTimelineImpl implements PwTimeline {
    * @return slot - <code>PwSlotImpl</code> - 
    */
   public PwSlotImpl addSlot( String key) {
-    PwSlotImpl slot = new PwSlotImpl( key, partialPlan, collectionName);
+    PwSlotImpl slot = new PwSlotImpl( key, partialPlan);
     slotIdList.add( key);
     partialPlan.getSlotMap().put( key, slot);
     return slot;
