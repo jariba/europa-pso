@@ -3,16 +3,17 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.14 2004-08-05 00:24:29 taylor Exp $
+// $Id: TokenNetworkTokenNode.java,v 1.1 2004-08-05 00:24:31 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 12jan04
 //
 
-package gov.nasa.arc.planworks.viz.partialPlan.navigator;
+package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,6 +38,7 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.UniqueSet;
@@ -48,31 +50,32 @@ import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
- * <code>TokenNavNode</code> - JGo widget to render a plan token and its neighbors
- *                                   for the navigator view
+ * <code>TokenNetworkTokenNode</code> - JGo widget to render a plan token and its neighbors
+ *                                   for the token network view
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, OverviewToolTip {
+public class TokenNetworkTokenNode extends ExtendedBasicNode
+  implements IncrementalNode, OverviewToolTip {
 
   private PwToken token;
-  private PwSlot slot;
   private PartialPlanView partialPlanView;
-  private PwObject object;
   private PwPartialPlan partialPlan;
-  private NavigatorView navigatorView;
+  private TokenNetworkView tokenNetworkView;
   private String nodeLabel;
   private boolean isDebug;
   private int linkCount;
   private boolean inLayout;
+  private boolean hasZeroRuleChildren;
 
   /**
-   * <code>TokenNavNode</code> - constructor 
+   * <code>TokenNetworkTokenNode</code> - constructor 
    *
    * @param token - <code>PwToken</code> - 
    * @param tokenLocation - <code>Point</code> - 
@@ -80,36 +83,37 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public TokenNavNode( final PwToken token, final Point tokenLocation,
+  public TokenNetworkTokenNode( final PwToken token, final Point tokenLocation,
                        final Color backgroundColor, final boolean isDraggable,
                        final PartialPlanView partialPlanView) { 
     super( ViewConstants.RECTANGLE);
     this.token = token;
     this.partialPlanView = partialPlanView;
     partialPlan = partialPlanView.getPartialPlan();
-    slot = null; object = null;
-    if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.NO_ID)) {
-      slot = (PwSlot) partialPlan.getSlot( token.getSlotId());
-    }
-    if (token.getParentId() != null && !token.getParentId().equals(DbConstants.NO_ID)) {
-      object = partialPlan.getObject( token.getParentId());
-    }
-//     if ((token.getSlotId() == null) &&
-//         (token.getTimelineId() == null)) {
-//       // free token
-//     }
 
-    navigatorView = (NavigatorView) partialPlanView;
+    tokenNetworkView = (TokenNetworkView) partialPlanView;
 
+    hasZeroRuleChildren = false;
+    int numValidRulInstances = 0;
+    Iterator slaveIdItr = partialPlan.getSlaveTokenIds( token.getId()).iterator();
+    while (slaveIdItr.hasNext()) {
+      Integer ruleInstanceId =
+        partialPlan.getToken( (Integer) slaveIdItr.next()).getRuleInstanceId();
+      if ((ruleInstanceId != null) && (ruleInstanceId.intValue() > 0)) {
+        numValidRulInstances++;
+      }
+    }
+    if (numValidRulInstances == 0) {
+      hasZeroRuleChildren = true;
+    }
     isDebug = false;
     // isDebug = true;
     StringBuffer labelBuf = new StringBuffer( token.getPredicateName());
     labelBuf.append( "\nkey=").append( token.getId().toString());
     nodeLabel = labelBuf.toString();
-    // System.err.println( "TokenNavNode: " + nodeLabel);
+    // System.err.println( "TokenNetworkTokenNode: " + nodeLabel);
 
     inLayout = false;
-    setAreNeighborsShown( false);
     linkCount = 0;
 
     configure( tokenLocation, backgroundColor, isDraggable);
@@ -125,6 +129,12 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     // do not allow user links
     getPort().setVisible( false);
     getLabel().setMultiline( true);
+    setAreNeighborsShown( false);
+    if (hasZeroRuleChildren) {
+      setAreNeighborsShown( true);
+      int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+      setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
+    }
   } // end configure
 
   /**
@@ -171,6 +181,15 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
   }
 
   /**
+   * <code>setLinkCount</code>
+   *
+   * @param cnt - <code>int</code> - 
+   */
+  public final void setLinkCount( int cnt) {
+    linkCount = cnt;
+  }
+
+  /**
    * <code>inLayout</code> - implements IncrementalNode
    *
    * @return - <code>boolean</code> - 
@@ -189,6 +208,10 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     inLayout = value;
     if (value == false) {
       setAreNeighborsShown( false);
+    }
+    if (hasZeroRuleChildren) {
+      setAreNeighborsShown( true);
+      width = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     }
     setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
@@ -214,13 +237,6 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
    */
   public final List getParentEntityList() {
     List returnList = new ArrayList();
-    if (slot != null) {
-      returnList.add( slot);
-    } else if (object != null) {
-      returnList.add( object);
-    } else {
-      // free token
-    }
     Integer ruleInstanceId = token.getRuleInstanceId();
     if ((ruleInstanceId != null) && (ruleInstanceId.intValue() > 0)) {
 //       System.err.println( "getParentEntityList ruleInstanceId " + ruleInstanceId +
@@ -237,7 +253,6 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
    */
   public final List getComponentEntityList() {
     List returnList = new UniqueSet();
-    returnList.addAll( ((PwVariableContainer) token).getVariables());
     Iterator slaveIdItr = partialPlan.getSlaveTokenIds( token.getId()).iterator();
     while (slaveIdItr.hasNext()) {
       Integer ruleInstanceId =
@@ -254,10 +269,10 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
   /**
    * <code>equals</code>
    *
-   * @param node - <code>TokenNavNode</code> - 
+   * @param node - <code>TokenNetworkTokenNode</code> - 
    * @return - <code>boolean</code> - 
    */
-  public final boolean equals( final TokenNavNode node) {
+  public final boolean equals( final TokenNetworkTokenNode node) {
     return (this.getToken().getId().equals( node.getToken().getId()));
   }
 
@@ -306,7 +321,9 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
     }
-    tip.append( "<br> Mouse-L: ").append( operation);
+    if (! hasZeroRuleChildren) {
+      tip.append( "<br> Mouse-L: ").append( operation);
+    }
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
@@ -341,38 +358,44 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
-    TokenNavNode tokenNavNode = (TokenNavNode) obj.getTopLevelObject();
+    TokenNetworkTokenNode tokenNetworkTokenNode =
+      (TokenNetworkTokenNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      navigatorView.setStartTimeMSecs( System.currentTimeMillis());
-      boolean areObjectsChanged = false;
-      if (! areNeighborsShown()) {
-        areObjectsChanged = addTokenObjects( this);
-        setAreNeighborsShown( true);
-      } else {
-        areObjectsChanged = removeTokenObjects( this);
-        setAreNeighborsShown( false);
+      if (! hasZeroRuleChildren) {
+        tokenNetworkView.setStartTimeMSecs( System.currentTimeMillis());
+        boolean areObjectsChanged = false;
+        if (! areNeighborsShown()) {
+          areObjectsChanged = addTokenObjects( this);
+          setAreNeighborsShown( true);
+        } else {
+          areObjectsChanged = removeTokenObjects( this);
+          setAreNeighborsShown( false);
+        }
+        if (areObjectsChanged) {
+          tokenNetworkView.setLayoutNeeded();
+          tokenNetworkView.setFocusNode( this);
+          tokenNetworkView.redraw();
+        }
+        return true;
       }
-      if (areObjectsChanged) {
-        navigatorView.setLayoutNeeded();
-        navigatorView.setFocusNode( this);
-        navigatorView.redraw();
-      }
-      return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      mouseRightPopupMenu( viewCoords);
+      mouseRightPopupMenu( tokenNetworkTokenNode, viewCoords);
       return true;
     }
     return false;
   } // end doMouseClick   
 
-  private boolean addTokenObjects( final TokenNavNode tokenNavNode) {
+  private boolean addTokenObjects( final TokenNetworkTokenNode tokenNetworkTokenNode) {
     boolean areNodesChanged =
-      NavNodeGenerics.addEntityNavNodes( tokenNavNode, navigatorView, isDebug);
+      TokenNetworkGenerics.addEntityTokNetNodes( tokenNetworkTokenNode, tokenNetworkView,
+                                         isDebug);
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      NavNodeGenerics.addParentToEntityNavLinks( tokenNavNode, navigatorView, isDebug);
+      TokenNetworkGenerics.addParentToEntityTokNetLinks( tokenNetworkTokenNode,
+                                                 tokenNetworkView, isDebug);
      boolean areChildLinksChanged =
-       NavNodeGenerics.addEntityToChildNavLinks( tokenNavNode, navigatorView, isDebug);
+       TokenNetworkGenerics.addEntityToChildTokNetLinks( tokenNetworkTokenNode,
+                                                 tokenNetworkView, isDebug);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
@@ -381,28 +404,46 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     return (areNodesChanged || areLinksChanged);
   } // end addTokenObjects
 
-  private boolean removeTokenObjects( final TokenNavNode tokenNavNode) {
+  private boolean removeTokenObjects( final TokenNetworkTokenNode tokenNetworkTokenNode) {
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      NavNodeGenerics.removeParentToEntityNavLinks( tokenNavNode, navigatorView, isDebug);
+      TokenNetworkGenerics.removeParentToEntityTokNetLinks( tokenNetworkTokenNode,
+                                                    tokenNetworkView, isDebug);
     boolean areChildLinksChanged =
-      NavNodeGenerics.removeEntityToChildNavLinks( tokenNavNode, navigatorView, isDebug);
+      TokenNetworkGenerics.removeEntityToChildTokNetLinks( tokenNetworkTokenNode,
+                                                   tokenNetworkView, isDebug);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
     boolean areNodesChanged =
-      NavNodeGenerics.removeEntityNavNodes( tokenNavNode, navigatorView, isDebug);
+      TokenNetworkGenerics.removeEntityTokNetNodes( tokenNetworkTokenNode, tokenNetworkView,
+                                                    isDebug);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
   } // end removeTokenObjects
 
-  public void mouseRightPopupMenu( Point viewCoords) {
+  public void mouseRightPopupMenu( final TokenNetworkTokenNode tokenNetworkTokenNode,
+                                   final Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          String viewSetKey = partialPlanView.getNavigatorViewSetKey();
+          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame( viewSetKey);
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+          contentPane.add( new NavigatorView( tokenNetworkTokenNode.getToken(),
+                                              partialPlan, partialPlanView.getViewSet(),
+                                              viewSetKey, navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
 
     JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          PwToken activeToken = TokenNavNode.this.getToken();
+          PwToken activeToken = TokenNetworkTokenNode.this.getToken();
           ((PartialPlanViewSet) partialPlanView.getViewSet()).setActiveToken( activeToken);
           ((PartialPlanViewSet) partialPlanView.getViewSet()).setSecondaryTokens( null);
           System.err.println( "TokenNode setActiveToken: " +
@@ -415,5 +456,5 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     ViewGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
   } // end mouseRightPopupMenu
 
-} // end class TokenNavNode
+} // end class TokenNetworkTokenNode
 

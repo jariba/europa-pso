@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.114 2004-08-02 18:55:28 taylor Exp $
+# $Id: README,v 1.115 2004-08-05 00:24:19 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -66,9 +66,30 @@ o "Progress monitors" have been added for functions which can be cpu intensive, 
 o Added new Ant target 'createJars' which creates PlanWorksDB.jar and PlanWorksPlugin.jar
   in PlanWorks/java/jars.  (These jar files are checked in to CVS).
 
+o The PLASMA PartialPlanWriter configuration file now resides at
+  PLASMA/CBPlanner/component/sample-ppw-config.  Your PPW_CONFIG environment variable
+  should reflect this change.
+
+o The PLASMA PartialPlanWriter (PPW) can now output a plan with complete transaction 
+  and statistics files, but with only the last step's partial plan files.  Put the
+  following lines are in your PPW configuration file:
+    AutoWrite=0
+    StepsPerWrite=1
+    WriteFinalStep=1 
+
+o PLASMA can now be run with interactive control over which step's partial plan files
+  are output.  This is done using gdb.  See PLASMA/CBPlanner/component/ppw-gdb-commands.
+
+  NOTE: There is a naming issue with the these commands.  gdb 6.1.1 requires full
+  namespace qualifications (Prototype:: and Prototype::PlanWriter::).  gdb 5.2.1-4 does
+  not work for any combination of qualifications.  gdb 5.0 requires no namespace 
+  qualification of any sort (it seems to completely ignore namespaces).
+
+
 o GNATS PRs and CRs completed:
   #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.
   #2452: Right mouse click popup menu not supported by any nodes in Navigator View.
+  #2474: Extra empty node in DecisionView.
   #2514: Comments not being correctly parsed in the PlanWorks config file
 
 

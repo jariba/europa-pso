@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.8 2004-07-08 21:33:25 taylor Exp $
+// $Id: NavNodeGenerics.java,v 1.9 2004-08-05 00:24:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -30,6 +30,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 
 
 /**
@@ -66,12 +67,12 @@ public final class NavNodeGenerics {
   /**
    * <code>addEntityNavNodes</code>
    *
-   * @param navNode - <code>NavNode</code> - 
+   * @param navNode - <code>IncrementalNode</code> - 
    * @param navigatorView - <code>NavigatorView</code> - 
    * @param isDebugPrint - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean addEntityNavNodes( final NavNode navNode,
+  public static boolean addEntityNavNodes( final IncrementalNode navNode,
                                            final NavigatorView navigatorView,
                                            final boolean isDebugPrint) {
     boolean areNodesChanged = false;
@@ -96,19 +97,24 @@ public final class NavNodeGenerics {
   /**
    * <code>removeEntityNavNodes</code>
    *
-   * @param navNode - <code>NavNode</code> - 
+   * @param navNode - <code>IncrementalNode</code> - 
    * @param navigatorView - <code>NavigatorView</code> - 
    * @param isDebugPrint - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean removeEntityNavNodes( final NavNode navNode,
+  public static boolean removeEntityNavNodes( final IncrementalNode navNode,
                                               final NavigatorView navigatorView,
                                               final boolean isDebugPrint) {
     boolean areNodesChanged = false;
     Iterator parentEntityItr = navNode.getParentEntityList().iterator();
     while (parentEntityItr.hasNext()) {
       PwEntity parentEntity = (PwEntity) parentEntityItr.next();
-      NavNode parentNavNode = getNavNode( parentEntity.getId(), navigatorView);
+      IncrementalNode parentNavNode = getNavNode( parentEntity.getId(), navigatorView);
+      if (isDebugPrint) {
+	System.err.println( "removeEntityNavNodes: parent id = " +
+			    parentNavNode.getId() + " linkCount " +
+			    parentNavNode.getLinkCount());
+      }
       if ((parentNavNode != null) && parentNavNode.inLayout() &&
           (parentNavNode.getLinkCount() == 0)) {
         removeNavNode( parentNavNode, isDebugPrint);
@@ -118,12 +124,25 @@ public final class NavNodeGenerics {
     Iterator childEntityItr = navNode.getComponentEntityList().iterator();
     while (childEntityItr.hasNext()) {
       PwEntity childEntity = (PwEntity) childEntityItr.next();
-      NavNode childNavNode = getNavNode( childEntity.getId(), navigatorView);
+      IncrementalNode childNavNode = getNavNode( childEntity.getId(), navigatorView);
+      if (isDebugPrint) {
+	System.err.println( "removeEntityNavNodes: child id = " +
+			    childNavNode.getId() + " linkCount " +
+			    childNavNode.getLinkCount());
+      }
       if ((childNavNode != null) && childNavNode.inLayout() &&
           (childNavNode.getLinkCount() == 0)) {
         removeNavNode( childNavNode, isDebugPrint);
         areNodesChanged = true;
       }
+    }
+    if (isDebugPrint) {
+      System.err.println( "removeEntityNavNodes: id = " + navNode.getId() +
+			  " linkCount " + navNode.getLinkCount());
+    }
+    if (navNode.inLayout() && (navNode.getLinkCount() == 0)) {
+      removeNavNode( navNode, isDebugPrint);
+      areNodesChanged = true;
     }
     return areNodesChanged;
   } // removeEntityNavNodes
@@ -133,21 +152,24 @@ public final class NavNodeGenerics {
    *
    * @param id - <code>Integer</code> - 
    * @param navigatorView - <code>NavigatorView</code> - 
-   * @return - <code>NavNode</code> - 
+   * @return - <code>IncrementalNode</code> - 
    */
-  public static NavNode getNavNode( final Integer id, final NavigatorView navigatorView) {
-    return (NavNode) navigatorView.entityNavNodeMap.get( id);
+  public static IncrementalNode getNavNode( final Integer id,
+                                            final NavigatorView navigatorView) {
+    return (IncrementalNode) navigatorView.entityNavNodeMap.get( id);
   }
 
   /**
    * <code>removeNavNode</code>
    *
-   * @param navNode - <code>NavNode</code> - 
+   * @param navNode - <code>IncrementalNode</code> - 
    * @param isDebugPrint - <code>boolean</code> - 
    */
-  public static void removeNavNode( final NavNode navNode, final boolean isDebugPrint) {
+  public static void removeNavNode( final IncrementalNode navNode,
+                                    final boolean isDebugPrint) {
     if (isDebugPrint) {
-      System.err.println( "remove " + navNode.getTypeName() + " NavNode = " + navNode.getId());
+      System.err.println( "remove " + navNode.getTypeName() + " NavNode = " +
+                          navNode.getId());
     }
     navNode.setInLayout( false);
     navNode.resetNode( isDebugPrint);
@@ -157,20 +179,20 @@ public final class NavNodeGenerics {
   /**
    * <code>addParentToEntityNavLinks</code>
    *
-   * @param navNode - <code>NavNode</code> - 
+   * @param navNode - <code>IncrementalNode</code> - 
    * @param navigatorView - <code>NavigatorView</code> - 
    * @param isDebugPrint - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean addParentToEntityNavLinks( final NavNode navNode,
+  public static boolean addParentToEntityNavLinks( final IncrementalNode navNode,
                                                    final NavigatorView navigatorView,
                                                    final boolean isDebugPrint) {
     boolean areLinksChanged = false;
     Iterator parentEntityItr = navNode.getParentEntityList().iterator();
     while (parentEntityItr.hasNext()) {
       PwEntity parentEntity = (PwEntity) parentEntityItr.next();
-      NavNode parentNavNode =
-        (NavNode) navigatorView.entityNavNodeMap.get( parentEntity.getId());
+      IncrementalNode parentNavNode =
+        (IncrementalNode) navigatorView.entityNavNodeMap.get( parentEntity.getId());
       if (parentNavNode != null) { 
         String linkType = getLinkType( parentNavNode, navNode);
         if (parentNavNode.inLayout() &&
@@ -186,20 +208,20 @@ public final class NavNodeGenerics {
   /**
    * <code>addEntityToChildNavLinks</code>
    *
-   * @param navNode - <code>NavNode</code> - 
+   * @param navNode - <code>IncrementalNode</code> - 
    * @param navigatorView - <code>NavigatorView</code> - 
    * @param isDebugPrint - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean addEntityToChildNavLinks( final NavNode navNode,
+  public static boolean addEntityToChildNavLinks( final IncrementalNode navNode,
                                                   final NavigatorView navigatorView,
                                                   final boolean isDebugPrint) {
     boolean areLinksChanged = false;
     Iterator childEntityItr = navNode.getComponentEntityList().iterator();
     while (childEntityItr.hasNext()) {
       PwEntity childEntity = (PwEntity) childEntityItr.next();
-      NavNode childNavNode =
-        (NavNode) navigatorView.entityNavNodeMap.get( childEntity.getId());
+      IncrementalNode childNavNode =
+        (IncrementalNode) navigatorView.entityNavNodeMap.get( childEntity.getId());
       String linkType = getLinkType( navNode, childNavNode);
       if (childNavNode.inLayout() &&
           addNavLink( navNode, childNavNode, linkType, navNode, navigatorView,
@@ -213,14 +235,15 @@ public final class NavNodeGenerics {
   /**
    * <code>addNavLink</code>
    *
-   * @param fromNavNode - <code>NavNode</code> - 
-   * @param toNavNode - <code>NavNode</code> - 
+   * @param fromNavNode - <code>IncrementalNode</code> - 
+   * @param toNavNode - <code>IncrementalNode</code> - 
    * @param linkType - <code>String</code> - 
    * @param sourceNode - <code>ExtendedBasicNode</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean addNavLink( final NavNode fromNavNode, final NavNode toNavNode,
-                                    final String linkType, final NavNode sourceNode,
+  public static boolean addNavLink( final IncrementalNode fromNavNode,
+                                    final IncrementalNode toNavNode,
+                                    final String linkType, final IncrementalNode sourceNode,
                                     final NavigatorView navigatorView,
                                     final boolean isDebugPrint) {
     BasicNodeLink returnLink = null;
@@ -256,20 +279,20 @@ public final class NavNodeGenerics {
   /**
    * <code>removeParentToEntityNavLinks</code>
    *
-   * @param navNode - <code>NavNode</code> - 
+   * @param navNode - <code>IncrementalNode</code> - 
    * @param navigatorView - <code>NavigatorView</code> - 
    * @param isDebugPrint - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean removeParentToEntityNavLinks( final NavNode navNode,
+  public static boolean removeParentToEntityNavLinks( final IncrementalNode navNode,
                                                       final NavigatorView navigatorView,
                                                       final boolean isDebugPrint) { 
     boolean areLinksChanged = false;
     Iterator parentEntityItr = navNode.getParentEntityList().iterator();
     while (parentEntityItr.hasNext()) {
       PwEntity parentEntity = (PwEntity) parentEntityItr.next();
-      NavNode parentNavNode =
-        (NavNode) navigatorView.entityNavNodeMap.get( parentEntity.getId());
+      IncrementalNode parentNavNode =
+        (IncrementalNode) navigatorView.entityNavNodeMap.get( parentEntity.getId());
       if (parentNavNode != null) { 
         if (parentNavNode.inLayout()) {
           String linkName = parentNavNode.getId().toString() + "->" +
@@ -289,20 +312,20 @@ public final class NavNodeGenerics {
   /**
    * <code>removeEntityToChildNavLinks</code>
    *
-   * @param navNode - <code>NavNode</code> - 
+   * @param navNode - <code>IncrementalNode</code> - 
    * @param navigatorView - <code>NavigatorView</code> - 
    * @param isDebugPrint - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean removeEntityToChildNavLinks( final NavNode navNode,
+  public static boolean removeEntityToChildNavLinks( final IncrementalNode navNode,
                                                      final NavigatorView navigatorView,
                                                      final boolean isDebugPrint) {
     boolean areLinksChanged = false;
     Iterator childEntityItr = navNode.getComponentEntityList().iterator();
     while (childEntityItr.hasNext()) {
       PwEntity childEntity = (PwEntity) childEntityItr.next();
-      NavNode childNavNode =
-        (NavNode) navigatorView.entityNavNodeMap.get( childEntity.getId());
+      IncrementalNode childNavNode =
+        (IncrementalNode) navigatorView.entityNavNodeMap.get( childEntity.getId());
       if (childNavNode != null) { 
         if (childNavNode.inLayout()) {
           String linkName = navNode.getId().toString() + "->" +
@@ -324,13 +347,15 @@ public final class NavNodeGenerics {
    * <code>removeNavLink</code>
    *
    * @param link - <code>BasicNodeLink</code> - 
-   * @param fromNavNode - <code>NavNode</code> - 
-   * @param toNavNode - <code>NavNode</code> - 
+   * @param fromNavNode - <code>IncrementalNode</code> - 
+   * @param toNavNode - <code>IncrementalNode</code> - 
    * @param linkType - <code>String</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean removeNavLink( final BasicNodeLink link, final NavNode fromNavNode,
-                                       final NavNode toNavNode, final String linkType,
+  public static boolean removeNavLink( final BasicNodeLink link,
+                                       final IncrementalNode fromNavNode,
+                                       final IncrementalNode toNavNode,
+                                       final String linkType,
                                        final boolean isDebugPrint) {
     boolean areLinksChanged = false;
     link.decLinkCount();
@@ -355,11 +380,12 @@ public final class NavNodeGenerics {
   /**
    * <code>getLinkType</code>
    *
-   * @param fromNavNode - <code>NavNode</code> - 
-   * @param toNavNode - <code>NavNode</code> - 
+   * @param fromNavNode - <code>IncrementalNode</code> - 
+   * @param toNavNode - <code>IncrementalNode</code> - 
    * @return - <code>String</code> - 
    */
-  public static String getLinkType( final NavNode fromNavNode, final NavNode toNavNode) {
+  public static String getLinkType( final IncrementalNode fromNavNode,
+                                    final IncrementalNode toNavNode) {
     if ((fromNavNode instanceof ModelClassNavNode) &&
         (toNavNode instanceof ModelClassNavNode)) {
       return OBJECT_TO_OBJECT_LINK_TYPE;

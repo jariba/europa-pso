@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.32 2004-07-27 21:58:12 taylor Exp $
+// $Id: NavigatorView.java,v 1.33 2004-08-05 00:24:28 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -54,6 +54,7 @@ import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
@@ -304,18 +305,13 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
       layout.performLayout();
 
       // do not highlight node, if it has been removed
-      //       boolean isHighlightNode = ((focusNode instanceof ConstraintNetworkTokenNode) ||
-      //                                  ((focusNode instanceof VariableNode) &&
-      //                                   (((VariableNode) focusNode).inLayout())) ||
-      //                                  ((focusNode instanceof ConstraintNode) &&
-      //                                   (((ConstraintNode) focusNode).inLayout())));
-      boolean isHighlightNode = true;
-      NodeGenerics.focusViewOnNode( focusNode, isHighlightNode, jGoView);
+      NodeGenerics.focusViewOnNode( focusNode, ((IncrementalNode) focusNode).inLayout(),
+				    jGoView);
       isLayoutNeeded = false;
     }
     startTimeMSecs = 0L;
     this.setVisible( true);
-  } // end createTemporalExtentView
+  } // end redrawView
 
   /**
    * <code>getJGoDocument</code>
@@ -381,7 +377,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
 
   private void renderInitialNode() {
     ExtendedBasicNode node = addEntityNavNode( initialEntity, isDebugPrint);
-    NavNode navNode = (NavNode) node;
+    IncrementalNode navNode = (IncrementalNode) node;
     NavNodeGenerics.addEntityNavNodes( navNode, this, isDebugPrint);
     NavNodeGenerics.addParentToEntityNavLinks( navNode, this, isDebugPrint);
     NavNodeGenerics.addEntityToChildNavLinks( navNode, this, isDebugPrint);
@@ -424,7 +420,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
         throw new Exception();
       } catch (Exception e) { e.printStackTrace(); }
     }
-    NavNode navNode = (NavNode) node;
+    IncrementalNode navNode = (IncrementalNode) node;
     if (isDebugPrint) {
       System.err.println( "add " + navNode.getTypeName() + "NavNode " + navNode.getId());
     }
@@ -668,7 +664,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     while (objectNodeKeyItr.hasNext()) {
       ExtendedBasicNode objectNavNode =
         (ExtendedBasicNode) entityNavNodeMap.get( (Integer) objectNodeKeyItr.next());
-      if (((NavNode) objectNavNode).inLayout()) {
+      if (((IncrementalNode) objectNavNode).inLayout()) {
         objectNavNode.setVisible( true);
       } else {
         objectNavNode.setVisible( false);

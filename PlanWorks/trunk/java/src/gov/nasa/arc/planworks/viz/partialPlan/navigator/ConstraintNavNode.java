@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.10 2004-06-10 01:36:03 taylor Exp $
+// $Id: ConstraintNavNode.java,v 1.11 2004-08-05 00:24:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -30,6 +30,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
@@ -41,7 +42,8 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, OverviewToolTip {
+public class ConstraintNavNode extends ExtendedBasicNode
+  implements IncrementalNode, OverviewToolTip {
 
   private PwConstraint constraint;
   private NavigatorView navigatorView;
@@ -103,7 +105,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   } // end configure
 
   /**
-   * <code>getId</code> - implements NavNode
+   * <code>getId</code> - implements IncrementalNode
    *
    * @return - <code>Integer</code> - 
    */
@@ -112,7 +114,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   }
 
   /**
-   * <code>getTypeName</code> - implements NavNode
+   * <code>getTypeName</code> - implements IncrementalNode
    *
    * @return - <code>String</code> - 
    */
@@ -121,7 +123,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   }
 
   /**
-   * <code>incrLinkCount</code> - implements NavNode
+   * <code>incrLinkCount</code> - implements IncrementalNode
    *
    */
   public final void incrLinkCount() {
@@ -129,7 +131,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   }
 
   /**
-   * <code>decLinkCount</code> - implements NavNode
+   * <code>decLinkCount</code> - implements IncrementalNode
    *
    */
   public final void decLinkCount() {
@@ -137,7 +139,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   }
 
   /**
-   * <code>getLinkCount</code> - implements NavNode
+   * <code>getLinkCount</code> - implements IncrementalNode
    *
    * @return - <code>int</code> - 
    */
@@ -146,7 +148,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   }
 
   /**
-   * <code>inLayout</code> - implements NavNode
+   * <code>inLayout</code> - implements IncrementalNode
    *
    * @return - <code>boolean</code> - 
    */
@@ -155,7 +157,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   }
 
   /**
-   * <code>setInLayout</code> - implements NavNode
+   * <code>setInLayout</code> - implements IncrementalNode
    *
    * @param value - <code>boolean</code> - 
    */
@@ -173,7 +175,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   }
 
   /**
-   * <code>resetNode</code> - implements NavNode
+   * <code>resetNode</code> - implements IncrementalNode
    *
    * @param isDebug - <code>boolean</code> - 
    */
@@ -187,7 +189,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   } // end resetNode
 
   /**
-   * <code>getParentEntityList</code> - implements NavNode
+   * <code>getParentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity
    */
@@ -198,7 +200,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, Ove
   }
 
   /**
-   * <code>getComponentEntityList</code> - implements NavNode
+   * <code>getComponentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity
    */

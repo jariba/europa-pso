@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.48 2004-05-08 01:44:10 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.49 2004-08-05 00:24:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,13 +14,7 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.awt.Frame;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -29,8 +23,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import javax.swing.JOptionPane;
 
-import gov.nasa.arc.planworks.db.DbConstants;
-import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
@@ -55,7 +47,7 @@ public class PwProjectImpl extends PwProject {
    * <code>initProjects</code> - initialize projects in the database
    *
    */
-  synchronized public static void initProjects() 
+  public synchronized static void initProjects() 
     throws ResourceNotFoundException, IOException {
     projects = new HashMap();
     connectToDataBase();
@@ -66,6 +58,7 @@ public class PwProjectImpl extends PwProject {
       projects.put(name, new PwProjectImpl(name, true));
     }
   } // end initProjects
+    
 
   /**
    * <code>createProject</code> - create named project not in database
@@ -360,9 +353,9 @@ public class PwProjectImpl extends PwProject {
   /**
    * <code>delete</code> - remove this project from list of projects and database
    *
-   * @exception Exception if an error occurs
+   * @exception ResourceNotFoundException if an error occurs
    */
-  public void delete() throws Exception, ResourceNotFoundException {
+  public void delete() throws ResourceNotFoundException {
     long t1 = System.currentTimeMillis();
     projects.remove(name);
     MySQLDB.deleteProject(id);

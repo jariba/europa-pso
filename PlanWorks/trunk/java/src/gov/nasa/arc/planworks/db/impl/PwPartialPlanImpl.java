@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.98 2004-07-29 20:31:43 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.99 2004-08-05 00:24:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -258,7 +258,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       System.err.println( "   ... cleanConstraints elapsed time: " +
                           (t5 - stop2TimeMSecs) + " msecs.");
     }
-    //checkPlan();  //for checkPlan debug only -- normally runs from Backend Test
+    // checkPlan();  //for checkPlan debug only -- normally runs from Backend Test
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... Create PartialPlan elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
@@ -930,7 +930,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       int type = decision.getType();
       Integer entityId = decision.getEntityId();
       if (type == DbConstants.D_OBJECT) {
-        if (getObject(entityId) == null) {
+        if (getToken(entityId) == null) {
           System.err.println("Decision " + decision.getId() + " has nonexistant object " +
                              "for EntityId " + entityId);
           retval = false;

@@ -4,26 +4,26 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNode.java,v 1.2 2004-03-16 02:24:11 taylor Exp $
+// $Id: IncrementalNode.java,v 1.1 2004-08-05 00:24:25 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 20feb04
 //
 
-package gov.nasa.arc.planworks.viz.partialPlan.navigator;
+package gov.nasa.arc.planworks.viz.nodes;
 
 import java.util.List;
 
 
 /**
- * Describe interface <code>NavNode</code> here.
+ * Describe interface <code>IncrementalNode</code> here.
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *              NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface NavNode {
+public interface IncrementalNode {
 
   /**
    * <code>getId</code>
@@ -94,4 +94,4 @@ public interface NavNode {
   public List getComponentEntityList();
 
 
-} // end interface NavNode
+} // end interface IncrementalNode

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.12 2004-06-15 19:26:48 taylor Exp $
+// $Id: VariableNavNode.java,v 1.13 2004-08-05 00:24:29 taylor Exp $
 //
 // PlanWorks
 //
@@ -34,6 +34,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
@@ -46,7 +47,8 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class VariableNavNode extends ExtendedBasicNode implements NavNode, OverviewToolTip {
+public class VariableNavNode extends ExtendedBasicNode
+  implements IncrementalNode, OverviewToolTip {
 
   private PwVariable variable;
   private NavigatorView navigatorView;
@@ -109,7 +111,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   } // end configure
 
   /**
-   * <code>getId</code> - implements NavNode
+   * <code>getId</code> - implements IncrementalNode
    *
    * @return - <code>Integer</code> - 
    */
@@ -118,7 +120,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   }
 
   /**
-   * <code>getTypeName</code> - implements NavNode
+   * <code>getTypeName</code> - implements IncrementalNode
    *
    * @return - <code>String</code> - 
    */
@@ -127,7 +129,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   }
 
   /**
-   * <code>incrLinkCount</code> - implements NavNode
+   * <code>incrLinkCount</code> - implements IncrementalNode
    *
    */
   public final void incrLinkCount() {
@@ -135,7 +137,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   }
 
   /**
-   * <code>decLinkCount</code> - implements NavNode
+   * <code>decLinkCount</code> - implements IncrementalNode
    *
    */
   public final void decLinkCount() {
@@ -143,7 +145,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   }
 
   /**
-   * <code>getLinkCount</code> - implements NavNode
+   * <code>getLinkCount</code> - implements IncrementalNode
    *
    * @return - <code>int</code> - 
    */
@@ -152,7 +154,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   }
 
   /**
-   * <code>inLayout</code> - implements NavNode
+   * <code>inLayout</code> - implements IncrementalNode
    *
    * @return - <code>boolean</code> - 
    */
@@ -161,7 +163,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   }
 
   /**
-   * <code>setInLayout</code> - implements NavNode
+   * <code>setInLayout</code> - implements IncrementalNode
    *
    * @param value - <code>boolean</code> - 
    */
@@ -179,7 +181,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   }
 
   /**
-   * <code>resetNode</code> - implements NavNode
+   * <code>resetNode</code> - implements IncrementalNode
    *
    * @param isDebug - <code>boolean</code> - 
    */
@@ -193,7 +195,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   } // end resetNode
 
   /**
-   * <code>getParentEntityList</code> - implements NavNode
+   * <code>getParentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity
    */
@@ -211,7 +213,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode, Overv
   }
 
   /**
-   * <code>getComponentEntityList</code> - implements NavNode
+   * <code>getComponentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity
    */

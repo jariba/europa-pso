@@ -3,20 +3,25 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceNavNode.java,v 1.4 2004-08-05 00:24:28 taylor Exp $
+// $Id: TokenNetworkRuleInstanceNode.java,v 1.1 2004-08-05 00:24:30 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 26feb04
 //
 
-package gov.nasa.arc.planworks.viz.partialPlan.navigator;
+package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoObject;
@@ -24,49 +29,58 @@ import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
-import gov.nasa.arc.planworks.viz.nodes.ResourceNode;
+import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
- * <code>ResourceNavNode</code> - JGo widget to render a plan resource and its neighbors
- *                                   for the navigator view
+ * <code>TokenNetworkRuleInstanceNode</code> - JGo widget to render a plan ruleInstance
+ *                       and its neighbors for the token network view
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ResourceNavNode extends ResourceNode implements IncrementalNode, OverviewToolTip {
+public class TokenNetworkRuleInstanceNode extends RuleInstanceNode
+  implements IncrementalNode, OverviewToolTip {
 
-  private PwResource resource;
-  private NavigatorView navigatorView;
+  private PwRuleInstance ruleInstance;
+  private TokenNetworkView tokenNetworkView;
 
   private int linkCount;
   private boolean inLayout;
   private boolean isDebugPrint;
 
   /**
-   * <code>ResourceNavNode</code> - constructor 
+   * <code>TokenNetworkRuleInstanceNode</code> - constructor 
    *
-   * @param resource - <code>PwResource</code> - 
-   * @param resourceLocation - <code>Point</code> - 
+   * @param ruleInstance - <code>PwRuleInstance</code> - 
+   * @param ruleInstanceLocation - <code>Point</code> - 
    * @param backgroundColor - <code>Color</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public ResourceNavNode( final PwResource resource, final Point resourceLocation, 
-                          final Color backgroundColor, final boolean isDraggable, 
-                          final PartialPlanView partialPlanView) { 
-    super(resource, resourceLocation, backgroundColor, isDraggable, partialPlanView);
-    this.resource = resource;
-    navigatorView = (NavigatorView) partialPlanView;
+  public TokenNetworkRuleInstanceNode( final PwRuleInstance ruleInstance,
+                              final Point ruleInstanceLocation, 
+                              final Color backgroundColor, final boolean isDraggable, 
+                              final PartialPlanView partialPlanView) { 
+    super( ruleInstance, null, null, ruleInstanceLocation, backgroundColor,
+          isDraggable, partialPlanView);
+    this.ruleInstance = ruleInstance;
+    tokenNetworkView = (TokenNetworkView) partialPlanView;
     isDebugPrint = false;
     // isDebugPrint = true;
 
@@ -81,7 +95,7 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
    * @return - <code>Integer</code> - 
    */
   public final Integer getId() {
-    return resource.getId();
+    return ruleInstance.getId();
   }
 
   /**
@@ -90,7 +104,7 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
    * @return - <code>String</code> - 
    */
   public final String getTypeName() {
-    return "resource";
+    return "ruleInstance";
   }
 
   /**
@@ -116,6 +130,15 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
    */
   public final int getLinkCount() {
     return linkCount;
+  }
+
+  /**
+   * <code>setLinkCount</code>
+   *
+   * @param cnt - <code>int</code> - 
+   */
+  public final void setLinkCount( int cnt) {
+    linkCount = cnt;
   }
 
   /**
@@ -149,7 +172,7 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
   public final void resetNode( final boolean isDebug) {
     setAreNeighborsShown( false);
     if (isDebug && (linkCount != 0)) {
-      System.err.println( "reset resource node: " + resource.getId() +
+      System.err.println( "reset ruleInstance node: " + ruleInstance.getId() +
                           "; linkCount != 0: " + linkCount);
     }
     linkCount = 0;
@@ -162,8 +185,8 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
    */
   public final List getParentEntityList() {
     List returnList = new ArrayList();
-    if (resource.getParent() != null) {
-      returnList.add( resource.getParent());
+    if (ruleInstance.getMasterId() != null) {
+      returnList.add( partialPlanView.getPartialPlan().getToken( ruleInstance.getMasterId()));
     }
     return returnList;
   }
@@ -175,10 +198,11 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
    */
   public final List getComponentEntityList() {
     List returnList = new ArrayList();
-    returnList.addAll( resource.getComponentList());
-    // PwResourceTransaction list
-    returnList.addAll( resource.getTransactionSet());
-    returnList.addAll( ((PwVariableContainer) resource).getVariables());
+    PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+    Iterator slaveIdItr = ruleInstance.getSlaveIdsList().iterator();
+    while (slaveIdItr.hasNext()) {
+      returnList.add( partialPlan.getToken( (Integer) slaveIdItr.next()));
+    }
     return returnList;
   }
 
@@ -194,15 +218,16 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
     } else {
       operation = "open";
     }
-    // StringBuffer tip = new StringBuffer( "<html>resource<br>");
+    // StringBuffer tip = new StringBuffer( "<html>ruleInstance<br>");
     StringBuffer tip = new StringBuffer( "<html>");
-    tip.append( resource.getName());
     if (partialPlanView.getZoomFactor() > 1) {
+      tip.append( "rule ");
+      tip.append( ruleInstance.getRuleId().toString());
       tip.append( "<br>key=");
-      tip.append( resource.getId().toString());
+      tip.append( ruleInstance.getId().toString());
       tip.append( "<br>");
     }
-    if (isDebug) {
+    if (isDebugPrint) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
       tip.append( "<br>");
     }
@@ -212,16 +237,17 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
   } // end getToolTipText
 
   /**
-   * <code>getToolTipText</code> - when over 1/8 scale overview resource node
+   * <code>getToolTipText</code> - when over 1/8 scale overview ruleInstance node
    *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
   public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html>");
-    tip.append( resource.getName());
+    tip.append( "rule ");
+    tip.append( ruleInstance.getRuleId().toString());
     tip.append( "<br>key=");
-    tip.append( resource.getId().toString());
+    tip.append( ruleInstance.getId().toString());
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
@@ -229,74 +255,106 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
 
   /**
    * <code>doMouseClick</code> - For Model Network View, Mouse-left opens/closes
-   *            constarintNode to show variableNodes 
+   *            constraintNode to show variableNodes 
    *
    * @param modifiers - <code>int</code> - 
-   * @param dc - <code>Point</code> - 
-   * @param vc - <code>Point</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public final boolean doMouseClick( final int modifiers, final Point dc, final Point vc,
+  public final boolean doMouseClick( final int modifiers, final Point docCoords,
+                                     final Point viewCoords,
                                      final JGoView view) {
-    JGoObject obj = view.pickDocObject( dc, false);
+    JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
-    ResourceNavNode resourceNode = (ResourceNavNode) obj.getTopLevelObject();
+    RuleInstanceNode ruleInstanceNode = (RuleInstanceNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      NavigatorView navigatorView = (NavigatorView) partialPlanView;
-      navigatorView.setStartTimeMSecs( System.currentTimeMillis());
+      TokenNetworkView tokenNetworkView = (TokenNetworkView) partialPlanView;
+      tokenNetworkView.setStartTimeMSecs( System.currentTimeMillis());
       boolean areObjectsChanged = false;
       if (! areNeighborsShown()) {
-        areObjectsChanged = addResourceObjects( this);
+        areObjectsChanged = addRuleInstanceObjects( this);
         setAreNeighborsShown( true);
       } else {
-        areObjectsChanged = removeResourceObjects( this);
+        areObjectsChanged = removeRuleInstanceObjects( this);
         setAreNeighborsShown( false);
       }
       if (areObjectsChanged) {
-        navigatorView.setLayoutNeeded();
-        navigatorView.setFocusNode( this);
-        navigatorView.redraw();
+        tokenNetworkView.setLayoutNeeded();
+        tokenNetworkView.setFocusNode( this);
+        tokenNetworkView.redraw();
       }
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( ruleInstanceNode, viewCoords);
+      return true;
     }
     return false;
   } // end doMouseClick   
 
-  private boolean addResourceObjects( final ResourceNavNode resourceNavNode) {
+  private boolean addRuleInstanceObjects( final TokenNetworkRuleInstanceNode ruleInstanceNode) {
     boolean areNodesChanged =
-      NavNodeGenerics.addEntityNavNodes( resourceNavNode, navigatorView, isDebugPrint);
+      TokenNetworkGenerics.addEntityTokNetNodes( ruleInstanceNode, tokenNetworkView,
+                                                 isDebugPrint);
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      NavNodeGenerics.addParentToEntityNavLinks( resourceNavNode, navigatorView, isDebugPrint);
+      TokenNetworkGenerics.addParentToEntityTokNetLinks( ruleInstanceNode, tokenNetworkView,
+                                                      isDebugPrint);
      boolean areChildLinksChanged =
-       NavNodeGenerics.addEntityToChildNavLinks( resourceNavNode, navigatorView, isDebugPrint);
+       TokenNetworkGenerics.addEntityToChildTokNetLinks( ruleInstanceNode, tokenNetworkView,
+                                                      isDebugPrint);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
     int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end addResourceObjects
+  } // end addRuleInstanceObjects
 
-  private boolean removeResourceObjects( final ResourceNavNode resourceNavNode) {
+  private boolean removeRuleInstanceObjects( final TokenNetworkRuleInstanceNode ruleInstanceNode) {
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      NavNodeGenerics.removeParentToEntityNavLinks( resourceNavNode, navigatorView,
+      TokenNetworkGenerics.removeParentToEntityTokNetLinks( ruleInstanceNode, tokenNetworkView,
                                                     isDebugPrint);
     boolean areChildLinksChanged =
-      NavNodeGenerics.removeEntityToChildNavLinks( resourceNavNode, navigatorView,
+      TokenNetworkGenerics.removeEntityToChildTokNetLinks( ruleInstanceNode, tokenNetworkView,
                                                    isDebugPrint);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
     boolean areNodesChanged =
-      NavNodeGenerics.removeEntityNavNodes( resourceNavNode, navigatorView, isDebugPrint);
+      TokenNetworkGenerics.removeEntityTokNetNodes( ruleInstanceNode, tokenNetworkView,
+                                                    isDebugPrint);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end removeResourceObjects
+  } // end removeRuleInstanceObjects
+
+  public final void mouseRightPopupMenu( final RuleInstanceNode ruleInstanceNode,
+                                         final Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          String viewSetKey = partialPlanView.getNavigatorViewSetKey();
+          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame( viewSetKey);
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+          contentPane.add( new NavigatorView( ruleInstanceNode.getRuleInstance(),
+                                              partialPlan, partialPlanView.getViewSet(),
+                                              viewSetKey, navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
+
+    ViewListener viewListener = null;
+    mouseRightPopup.add( ViewGenerics.createRuleInstanceViewItem
+                         ( (RuleInstanceNode) ruleInstanceNode, partialPlanView, viewListener));
+
+    ViewGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
+  } // end mouseRightPopupMenu
 
 
-} // end class ResourceNavNode
+} // end class TokenNetworkRuleInstanceNode

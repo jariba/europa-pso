@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.28 2004-06-16 22:09:09 taylor Exp $
+// $Id: NodeGenerics.java,v 1.29 2004-08-05 00:24:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkTokenNode;
 
 
 /**
@@ -245,6 +246,8 @@ public class NodeGenerics {
           token = ((TemporalNode) basicNode).getToken();
         } else if (basicNode instanceof TokenNode) {
           token = ((TokenNode) basicNode).getToken();
+        } else if (basicNode instanceof TokenNetworkTokenNode) {
+          token = ((TokenNetworkTokenNode) basicNode).getToken();
         } else {
           continue; // not a token node
         }

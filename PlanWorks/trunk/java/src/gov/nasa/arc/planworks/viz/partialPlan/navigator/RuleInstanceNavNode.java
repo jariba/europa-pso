@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNavNode.java,v 1.3 2004-07-08 21:33:25 taylor Exp $
+// $Id: RuleInstanceNavNode.java,v 1.4 2004-08-05 00:24:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -34,6 +34,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
+import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -47,7 +48,8 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, OverviewToolTip {
+public class RuleInstanceNavNode extends RuleInstanceNode
+  implements IncrementalNode, OverviewToolTip {
 
   private PwRuleInstance ruleInstance;
   private NavigatorView navigatorView;
@@ -82,7 +84,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   } // end constructor
 
   /**
-   * <code>getId</code> - implements NavNode
+   * <code>getId</code> - implements IncrementalNode
    *
    * @return - <code>Integer</code> - 
    */
@@ -91,7 +93,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   }
 
   /**
-   * <code>getTypeName</code> - implements NavNode
+   * <code>getTypeName</code> - implements IncrementalNode
    *
    * @return - <code>String</code> - 
    */
@@ -100,7 +102,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   }
 
   /**
-   * <code>incrLinkCount</code> - implements NavNode
+   * <code>incrLinkCount</code> - implements IncrementalNode
    *
    */
   public final void incrLinkCount() {
@@ -108,7 +110,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   }
 
   /**
-   * <code>decLinkCount</code> - implements NavNode
+   * <code>decLinkCount</code> - implements IncrementalNode
    *
    */
   public final void decLinkCount() {
@@ -116,7 +118,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   }
 
   /**
-   * <code>getLinkCount</code> - implements NavNode
+   * <code>getLinkCount</code> - implements IncrementalNode
    *
    * @return - <code>int</code> - 
    */
@@ -125,7 +127,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   }
 
   /**
-   * <code>inLayout</code> - implements NavNode
+   * <code>inLayout</code> - implements IncrementalNode
    *
    * @return - <code>boolean</code> - 
    */
@@ -134,7 +136,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   }
 
   /**
-   * <code>setInLayout</code> - implements NavNode
+   * <code>setInLayout</code> - implements IncrementalNode
    *
    * @param value - <code>boolean</code> - 
    */
@@ -148,7 +150,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   }
 
   /**
-   * <code>resetNode</code> - implements NavNode
+   * <code>resetNode</code> - implements IncrementalNode
    *
    * @param isDebug - <code>boolean</code> - 
    */
@@ -162,7 +164,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   } // end resetNode
 
   /**
-   * <code>getParentEntityList</code> - implements NavNode
+   * <code>getParentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity
    */
@@ -175,7 +177,7 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
   }
 
   /**
-   * <code>getComponentEntityList</code> - implements NavNode
+   * <code>getComponentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity 
    */

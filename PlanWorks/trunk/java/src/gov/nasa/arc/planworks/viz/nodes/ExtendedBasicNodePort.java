@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNodePort.java,v 1.8 2004-06-10 19:11:05 taylor Exp $
+// $Id: ExtendedBasicNodePort.java,v 1.9 2004-08-05 00:24:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.ResourceNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.VariableNavNode;
 
 
@@ -96,7 +97,7 @@ public class ExtendedBasicNodePort extends BasicNodePort {
     // if (x,y) is inside the object, just return it instead of finding the edge intersection
     //if (! obj.isPointInObj(p)) {
     if (node.isRectangular() || (node instanceof TokenNavNode) ||
-        (node instanceof TokenNode)) {
+        (node instanceof TokenNode) || (node instanceof TokenNetworkTokenNode)) {
         JGoRectangle.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                   rect.height, x, y, cx, cy, p);
       } else if (node instanceof ConstraintNode) {

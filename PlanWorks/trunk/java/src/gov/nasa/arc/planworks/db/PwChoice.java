@@ -4,13 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwChoice.java,v 1.2 2004-05-28 20:21:15 taylor Exp $
+// $Id: PwChoice.java,v 1.3 2004-08-05 00:24:22 taylor Exp $
 //
 package gov.nasa.arc.planworks.db;
 
 public interface PwChoice extends PwEntity {
   public int getType();
-  public Integer getTokenId();
+  public Integer getEntityId();
   public double getValue();
   public PwDomain getDomain();
   public String toString();

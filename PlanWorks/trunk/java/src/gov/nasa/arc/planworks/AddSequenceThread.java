@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.11 2004-07-29 20:31:43 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.12 2004-08-05 00:24:21 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -14,18 +14,16 @@
 
 package gov.nasa.arc.planworks;
 
-import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
 import gov.nasa.arc.planworks.db.PwProject;
-import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 
 
 /**
@@ -74,8 +72,10 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
         List selectedSequenceUrls = (List) selectedAndInvalidUrls.get( 0);
         List invalidSequenceUrls = (List) selectedAndInvalidUrls.get( 1);
 
+        ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
+
         if (doProgMonitor) {
-          progressMonitorThread( "Adding sequence ...", 0, 6);
+          progressMonitorThread( "Adding sequence(s) ...", 0, 6);
           if (! progressMonitorWait()) {
             return;
           }
@@ -86,12 +86,12 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
         PlanWorks.getPlanWorks().addPlanningSequences( project, selectedSequenceUrls,
                                                        invalidSequenceUrls);
         //System.err.println( "Adding sequence " + sequenceDirectory);
+        PwProject currentProject = PlanWorks.getPlanWorks().currentProject;
         MDIDynamicMenuBar dynamicMenuBar =
           (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
         int numProjects = PwProject.listProjects().size();
         JMenu planSeqMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
-        PlanWorks.getPlanWorks().addPlanSeqViewMenu
-          ( PlanWorks.getPlanWorks().currentProject, planSeqMenu);
+        PlanWorks.getPlanWorks().addPlanSeqViewMenu( currentProject, planSeqMenu);
 
         if (doProgMonitor) {
           isProgressMonitorCancel = true;
@@ -104,10 +104,7 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( dupExcep);
         // dupExcep.printStackTrace();
-        if (doProgMonitor) {
-          isProgressMonitorCancel = true;
-        }
-        isSequenceAdded = false;
+        isSequenceAdded = false;        
       } 
       catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
@@ -116,20 +113,19 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
         rnfExcep.printStackTrace();
-        if (doProgMonitor) {
-          isProgressMonitorCancel = true;
-        }
-        isSequenceAdded = false;
+        isSequenceAdded = false;        
       }
       catch (Exception e) {
         JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), e.getMessage(),
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
         e.printStackTrace();
+        isSequenceAdded = false;        
+      } finally {
+        ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
         if (doProgMonitor) {
           isProgressMonitorCancel = true;
         }
-        isSequenceAdded = false;
       }
     }
   } // end addSequence

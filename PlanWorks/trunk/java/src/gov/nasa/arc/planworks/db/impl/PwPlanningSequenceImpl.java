@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.94 2004-07-29 01:36:37 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.95 2004-08-05 00:24:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -191,8 +191,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       String planName = (String) ppNameIterator.next();
       if((new File(url + System.getProperty("file.separator") + planName)).exists()) {
         planNamesInFilesystem.add(planName);
+        partialPlans.put(planName, null);
       }
-      partialPlans.put(planName, null);
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
     instantiateRules();

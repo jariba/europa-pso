@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.9 2004-06-10 01:36:04 taylor Exp $
+// $Id: TimelineNavNode.java,v 1.10 2004-08-05 00:24:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -30,6 +30,7 @@ import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
+import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
@@ -42,7 +43,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TimelineNavNode extends TimelineNode implements NavNode, OverviewToolTip {
+public class TimelineNavNode extends TimelineNode implements IncrementalNode, OverviewToolTip {
 
   private PwTimeline timeline;
   private NavigatorView navigatorView;
@@ -75,7 +76,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   } // end constructor
 
   /**
-   * <code>getId</code> - implements NavNode
+   * <code>getId</code> - implements IncrementalNode
    *
    * @return - <code>Integer</code> - 
    */
@@ -84,7 +85,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   }
 
   /**
-   * <code>getTypeName</code> - implements NavNode
+   * <code>getTypeName</code> - implements IncrementalNode
    *
    * @return - <code>String</code> - 
    */
@@ -93,7 +94,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   }
 
   /**
-   * <code>incrLinkCount</code> - implements NavNode
+   * <code>incrLinkCount</code> - implements IncrementalNode
    *
    */
   public final void incrLinkCount() {
@@ -101,7 +102,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   }
 
   /**
-   * <code>decLinkCount</code> - implements NavNode
+   * <code>decLinkCount</code> - implements IncrementalNode
    *
    */
   public final void decLinkCount() {
@@ -109,7 +110,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   }
 
   /**
-   * <code>getLinkCount</code> - implements NavNode
+   * <code>getLinkCount</code> - implements IncrementalNode
    *
    * @return - <code>int</code> - 
    */
@@ -118,7 +119,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   }
 
   /**
-   * <code>inLayout</code> - implements NavNode
+   * <code>inLayout</code> - implements IncrementalNode
    *
    * @return - <code>boolean</code> - 
    */
@@ -127,7 +128,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   }
 
   /**
-   * <code>setInLayout</code> - implements NavNode
+   * <code>setInLayout</code> - implements IncrementalNode
    *
    * @param value - <code>boolean</code> - 
    */
@@ -141,7 +142,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   }
 
   /**
-   * <code>resetNode</code> - implements NavNode
+   * <code>resetNode</code> - implements IncrementalNode
    *
    * @param isDebug - <code>boolean</code> - 
    */
@@ -155,7 +156,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   } // end resetNode
 
   /**
-   * <code>getParentEntityList</code> - implements NavNode
+   * <code>getParentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity
    */
@@ -168,7 +169,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode, OverviewTo
   }
 
   /**
-   * <code>getComponentEntityList</code> - implements NavNode
+   * <code>getComponentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity (PwObject & PwSlot)
    */
