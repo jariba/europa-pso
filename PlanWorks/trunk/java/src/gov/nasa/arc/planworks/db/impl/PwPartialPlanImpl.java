@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.69 2004-01-16 19:05:34 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.70 2004-02-03 19:22:16 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -78,7 +78,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param - <code>sequenceId</code> - the Id of the sequence to which this plan is attached.
    * @exception ResourceNotFoundException if the plan data is invalid
    */
-  public PwPartialPlanImpl(String url, String planName, PwPlanningSequenceImpl sequence) 
+  public PwPartialPlanImpl(final String url, final String planName, 
+                           final PwPlanningSequenceImpl sequence) 
     throws ResourceNotFoundException {
     this.sequence = sequence;
     //System.err.println("In PwPartialPlanImpl");
@@ -135,7 +136,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   } // end createPartialPlan
 
   //  private void loadFiles(File planDir) throws ResourceNotFoundException {
-  public static void loadFiles(File planDir) throws ResourceNotFoundException {
+  public static void loadFiles(final File planDir) throws ResourceNotFoundException {
     if(planDir == null) {
       throw new ResourceNotFoundException("Failed to find sequence directory.");
     }
@@ -165,7 +166,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   private final void fillElementMaps() {
     MySQLDB.queryConstraints( this);
 
-    //MySQLDB.queryPredicates( this);
     MySQLDB.queryTokenRelations( this);
     MySQLDB.queryVariables( this);
     Iterator objIterator = objectMap.values().iterator();
@@ -183,7 +183,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     System.err.println( "  slots          " + slotMap.keySet().size());
     System.err.println( "  tokens         " + tokenMap.keySet().size());
     System.err.println( "  constraints    " + constraintMap.keySet().size());
-    //System.err.println( "  predicates     " + predicateMap.keySet().size());
     System.err.println( "  tokenRelations " + tokenRelationMap.keySet().size());
     System.err.println( "  variables      " + variableMap.keySet().size());
 
@@ -205,7 +204,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - the Id of the desired PwObjectImpl
    * @return - <code>PwObjectImpl</code> - 
    */
-  public PwObjectImpl getObjectImpl( Integer id) {
+  public PwObjectImpl getObjectImpl( final Integer id) {
     return (PwObjectImpl) objectMap.get( id);
   }
 
@@ -283,7 +282,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwObject</code> - 
    */
-  public PwObject getObject( Integer id) {
+  public PwObject getObject( final Integer id) {
     return (PwObject)objectMap.get(id);
   } // end getObject
 
@@ -294,7 +293,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwTimeline</code> - 
    */
-  public PwTimeline getTimeline( Integer id) {
+  public PwTimeline getTimeline( final Integer id) {
     return (PwTimeline)timelineMap.get(id);
   } // end getTimeline
 
@@ -305,7 +304,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwSlot</code> - 
    */
-  public PwSlot getSlot( Integer id) {
+  public PwSlot getSlot( final Integer id) {
     return (PwSlot)slotMap.get(id);
   } // end getSlot
 
@@ -316,7 +315,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwToken</code> - 
    */
-  public PwToken getToken( Integer id) {
+  public PwToken getToken( final Integer id) {
     return (PwToken) tokenMap.get(id);
   } // end getToken
 
@@ -327,36 +326,9 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwConstraint</code> - 
    */
-  public PwConstraint getConstraint( Integer id) {
+  public PwConstraint getConstraint( final Integer id) {
     return (PwConstraint) constraintMap.get(id);
   } // end getConstraint
-
-
-  /**
-   * <code>getParameter</code> - get parameter by id
-   *
-   * @param id - <code>Id</code> - 
-   * @return - <code>PwParameter</code> - 
-   */
-//   public PwParameter getParameter( Integer predId, Integer paramId) {
-//     PwPredicate pred = (PwPredicate) predicateMap.get(predId);
-//     if(pred == null) {
-//       return null;
-//     }
-//     return pred.getParameter(paramId);
-//   } // end getParameter
-
-
-  /**
-   * <code>getPredicate</code> - get predicate by id
-   *
-   * @param id - <code>Integer</code> - 
-   * @return - <code>PwPredicate</code> - 
-   */
-//   public PwPredicate getPredicate( Integer id) {
-//     return (PwPredicate) predicateMap.get(id);
-//   } // end getPredicate
-
 
   /**
    * <code>getTokenRelation</code> - get token relation by id
@@ -364,7 +336,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwTokenRelation</code> - 
    */
-  public PwTokenRelation getTokenRelation( Integer id) {
+  public PwTokenRelation getTokenRelation( final Integer id) {
     return (PwTokenRelation) tokenRelationMap.get(id);
   } // end getTokenRelation
 
@@ -375,7 +347,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getVariable( Integer id) {
+  public PwVariable getVariable( final Integer id) {
     return (PwVariable) variableMap.get(id);
   } // end getVariable
 
@@ -389,7 +361,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @return - <code>boolean</code> - return value of tokenMap.containsKey()
    */
 
-  public boolean tokenExists(Integer id) {
+  public boolean tokenExists(final Integer id) {
     return tokenMap.containsKey(id);
   }
 
@@ -400,7 +372,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param object - <code>PwObjectImpl</code>
    */
 
-  public void addObject(Integer id, PwObjectImpl object) {
+  public void addObject(final Integer id, final PwObjectImpl object) {
     if(objectMap.containsKey(id)) {
       return;
     }
@@ -413,7 +385,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @param constraint - <code>PwConstraintImpl</code> - 
    */
-  public void addConstraint( Integer id, PwConstraintImpl constraint) {
+  public void addConstraint( final Integer id, final PwConstraintImpl constraint) {
     if(constraintMap.containsKey(id)) {
       return;
     }
@@ -421,25 +393,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   }
 
   /**
-   * <code>addPredicate</code>
-   *
-   * @param id - <code>Integer</code> - 
-   * @param predicate - <code>PwPredicateImpl</code> - 
-   */
-//   public void addPredicate( Integer id, PwPredicateImpl predicate) {
-//     if(predicateMap.containsKey(id)) {
-//       return;
-//     }
-//     predicateMap.put( id, predicate);
-//   }
-
-  /**
    * <code>addSlot</code>
    *
    * @param id - <code>Integer</code> - 
    * @param slot - <code>PwSlotImpl</code> - 
    */
-  public void addSlot( Integer id, PwSlotImpl slot) {
+  public void addSlot( final Integer id, final PwSlotImpl slot) {
     if(slotMap.containsKey(id)) {
       return;
     }
@@ -452,7 +411,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @param timeline - <code>PwTimelineImpl</code> - 
    */
-  public void addTimeline( Integer id, PwTimelineImpl timeline) {
+  public void addTimeline( final Integer id, final PwTimelineImpl timeline) {
     if(timelineMap.containsKey(id)) {
       return;
     }
@@ -465,7 +424,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @param token - <code>PwTokenImpl</code> - 
    */
-  public void addToken( Integer id, PwTokenImpl token) {
+  public void addToken( final Integer id, final PwTokenImpl token) {
     if(tokenMap.containsKey(id)) {
       return;
     }
@@ -477,7 +436,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @param tokenRelation - <code>PwTokenRelationImpl</code> - 
    */
-  public void addTokenRelation( Integer id, PwTokenRelationImpl tokenRelation) {
+  public void addTokenRelation( final Integer id, final PwTokenRelationImpl tokenRelation) {
     if(tokenRelationMap.containsKey(id)) {
       return;
     }
@@ -490,7 +449,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Integer</code> - 
    * @param variable - <code>PwVariableImpl</code> - 
    */
-  public void addVariable( Integer id, PwVariableImpl variable) {
+  public void addVariable( final Integer id, final PwVariableImpl variable) {
     if(variableMap.containsKey(id)) {
       return;
     }
@@ -681,7 +640,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   /**
    * <code>checkTokenVars</code> - verify that all variables exist and are of the proper type
    */
-  private boolean checkTokenVars(PwTokenImpl token) {
+  private boolean checkTokenVars(final PwTokenImpl token) {
     PwVariableImpl startVar = (PwVariableImpl) token.getStartVariable();
     PwVariableImpl endVar = (PwVariableImpl) token.getEndVariable();
     PwVariableImpl durationVar = (PwVariableImpl) token.getDurationVariable();
@@ -762,7 +721,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * <code>checkTokenParamVars</code> - verify that the token has the correct number of parameter 
    *                                    variables
    */
-  private boolean checkTokenParamVars(PwTokenImpl token) {
+  private boolean checkTokenParamVars(final PwTokenImpl token) {
     List paramVarList = token.getParamVarsList();
     int paramVarSize = paramVarList.size();
     boolean retval = true;
@@ -789,7 +748,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * <code>checkTokenRelations</code> - ensure that all tokens related exist, are in the relations they
    *                                    have, and are in only the relations they have.
    */
-  private boolean checkTokenRelations(PwTokenImpl token) {
+  private boolean checkTokenRelations(final PwTokenImpl token) {
     List relations = token.getTokenRelationIdsList();
     boolean retval = true;
     if(relations.size() == 0) {
@@ -851,7 +810,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * <code>checkVariable</code> - verify that a variable is of a valid type, has constraints that exist,
    *                              is in the constraints that is has, and is only in those constraints
    */
-  private boolean checkVariable(PwVariableImpl var) {
+  private boolean checkVariable(final PwVariableImpl var) {
     boolean retval = true;
     if(var.getDomain() == null) {
       System.err.println("Variable " + var.getId() + " has no domain.");
@@ -904,7 +863,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * <code>checkObjectVariable</code> - check validity of object variable, as well as that there is only
    *                                  - one object in the domain if the token is slotted
    */
-  private boolean checkObjectVariable(PwVariableImpl objectVar, boolean isFreeToken) {
+  private boolean checkObjectVariable(final PwVariableImpl objectVar, final boolean isFreeToken) {
     boolean retval = true && checkVariable(objectVar);
     //checkVariable(objectVar);
     PwEnumeratedDomainImpl domain = (PwEnumeratedDomainImpl) objectVar.getDomain();
@@ -920,7 +879,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
   // implement ViewableObject
 
-  public void setContentSpec(List spec) {
+  public void setContentSpec(final List spec) {
     contentSpec.clear();
     contentSpec.addAll(spec);
   }
@@ -935,7 +894,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    *
    * @param name - <code>String</code> - 
    */
-  public void setName( String name) {
+  public void setName( final String name) {
     this.seqName = name;
   }
 
@@ -994,7 +953,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return url.substring( 0, url.lastIndexOf( System.getProperty( "file.separator")));
   }
   
-  public Integer getObjectIdByName(String name) {
+  public Integer getObjectIdByName(final String name) {
     Iterator objectIterator = objectMap.values().iterator();
     while(objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
@@ -1012,7 +971,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     private Integer masterTokenId; 
     private List slaveTokenIds; // element Integer
 
-    public TokenRelations( PwToken token) {
+    public TokenRelations( final PwToken token) {
       this.token = token;
       masterTokenId = null;
       slaveTokenIds = new ArrayList();
@@ -1022,7 +981,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       return masterTokenId;
     }
 
-    public void setMasterTokenId( Integer id) {
+    public void setMasterTokenId(final  Integer id) {
       if (masterTokenId != null) {
         System.err.println( "PwPartialPlanImpl.setMasterTokenId conflict: oldValue " +
                             masterTokenId.toString() + " newValue " + id.toString());
@@ -1035,7 +994,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       return slaveTokenIds;
     }
 
-    public void addSlaveTokenId( Integer id) {
+    public void addSlaveTokenId( final Integer id) {
       slaveTokenIds.add( id);
     }
 
@@ -1116,7 +1075,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param tokenId - <code>Integer</code> - 
    * @return - <code>Integer</code> - 
    */
-  public Integer getMasterTokenId( Integer tokenId) {
+  public Integer getMasterTokenId( final Integer tokenId) {
     return ((TokenRelations) tokenMasterSlaveMap.get( tokenId)).getMasterTokenId();
   }
 
@@ -1126,7 +1085,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param tokenId - <code>Integer</code> - 
    * @return - <code>List</code> - of Integer
    */
-  public List getSlaveTokenIds( Integer tokenId) {
+  public List getSlaveTokenIds( final Integer tokenId) {
     return ((TokenRelations) tokenMasterSlaveMap.get( tokenId)).getSlaveTokenIds();
   }
 

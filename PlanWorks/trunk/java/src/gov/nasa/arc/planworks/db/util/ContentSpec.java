@@ -12,5 +12,5 @@ public interface ContentSpec {
   public List getValidIds();
   public List getCurrentSpec();
   public void resetSpec();
-  public void applySpec(List spec);
+  public void applySpec(final List spec);
 }

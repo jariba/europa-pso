@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.30 2004-01-17 01:22:54 taylor Exp $
+// $Id: TimelineView.java,v 1.31 2004-02-03 19:24:52 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -308,6 +308,7 @@ public class TimelineView extends PartialPlanView {
                                   "\ntimeline key=" + timeline.getId().toString();
           Color timelineColor =
             ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
+          System.err.println(timeline.getId() + "=>" + timelineColor);
           TimelineNode timelineNode =
             new TimelineNode( timelineLabel, timeline, object, new Point( x, y),
                               timelineColor, this);
@@ -445,7 +446,13 @@ public class TimelineView extends PartialPlanView {
                                          "Timeline View Exception",
                                          JOptionPane.ERROR_MESSAGE);
           System.err.println( message);
-          System.exit( 1);
+          System.err.println("EST: " + earliestStartTime + " STB: " + 
+                             startTimeIntervalDomain.getLowerBoundInt());
+          System.err.println("CurrSlotId: " + slot.getId());
+          System.err.println("CurrTokenId: " + slot.getBaseToken().getId());
+          System.err.println("PrevSlotId: " + previousSlot.getId());
+          System.err.println("PrevTokenId " + previousSlot.getBaseToken().getId());
+          //System.exit( 1);
         }
       }
       previousSlot = slot;

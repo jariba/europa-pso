@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.9 2003-12-12 01:23:03 taylor Exp $
+// $Id: CreateViewThread.java,v 1.10 2004-02-03 19:21:26 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -43,11 +43,12 @@ public class CreateViewThread extends Thread {
    *
    * @param viewName - <code>String</code> - 
    */
-  public CreateViewThread( String viewName) {
+  public CreateViewThread( final String viewName) {
     this.viewName = viewName;
   }
 
-  protected MDIInternalFrame renderView( String fullSequenceName, ViewableObject viewable) {
+  protected MDIInternalFrame renderView( final String fullSequenceName, 
+                                         final ViewableObject viewable) {
     ViewSet viewSet = PlanWorks.planWorks.viewManager.getViewSet( viewable);
     MDIInternalFrame viewFrame = null;
     boolean viewExists = false;
@@ -78,9 +79,9 @@ public class CreateViewThread extends Thread {
     return viewFrame;
   } // end renderPartialPlanView
 
-  protected void finishViewRendering( MDIInternalFrame viewFrame, ViewManager viewManager,
-                                      boolean viewExists, String viewName,
-                                      ViewableObject viewable) {
+  protected void finishViewRendering( final MDIInternalFrame viewFrame, 
+                                      final ViewManager viewManager, final boolean viewExists, 
+                                      final String viewName, final ViewableObject viewable) {
     ViewSet viewSet = null;
     while (viewSet == null) {
       // System.err.println( "wait for ViewSet");
@@ -159,7 +160,7 @@ public class CreateViewThread extends Thread {
     }
   } // end finishViewRendering
 
-  private boolean isContentSpecView( MDIInternalFrame window) {
+  private boolean isContentSpecView( final MDIInternalFrame window) {
     Container contentPane = window.getContentPane();
     for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
       // System.err.println( "i " + i + " " +

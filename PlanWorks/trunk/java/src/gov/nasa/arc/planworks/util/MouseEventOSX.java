@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: MouseEventOSX.java,v 1.1 2003-07-07 17:30:24 taylor Exp $
+// $Id: MouseEventOSX.java,v 1.2 2004-02-03 19:23:56 miatauro Exp $
 //
 // Will Taylor -- started 12sept02 - in PlanViz
 //
@@ -45,7 +45,7 @@ public class MouseEventOSX {
    * @param isMacOSX - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean isMouseLeftClick( MouseEvent mouseEvent, boolean isMacOSX) {
+  public static boolean isMouseLeftClick( final MouseEvent mouseEvent, final boolean isMacOSX) {
     if ((! isMacOSX) &&
         (mouseEvent.getModifiers() & mouseEvent.BUTTON1_MASK) > 0) {
       return true;
@@ -68,7 +68,7 @@ public class MouseEventOSX {
    * @param isMacOSX - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean isMouseLeftClick( int modifiers, boolean isMacOSX) {
+  public static boolean isMouseLeftClick( final int modifiers, final boolean isMacOSX) {
     if ((! isMacOSX) && (modifiers & MouseEvent.BUTTON1_MASK) > 0) {
       return true;
     } else if (isMacOSX &&
@@ -90,7 +90,7 @@ public class MouseEventOSX {
    * @param isMacOSX - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean isMouseMiddleClick( MouseEvent mouseEvent, boolean isMacOSX) {
+  public static boolean isMouseMiddleClick( final MouseEvent mouseEvent, final boolean isMacOSX) {
     if ((! isMacOSX) &&
         (mouseEvent.getModifiers() & mouseEvent.BUTTON2_MASK) > 0) {
       return true;
@@ -113,7 +113,7 @@ public class MouseEventOSX {
    * @param isMacOSX - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean isMouseMiddleClick( int modifiers, boolean isMacOSX) {
+  public static boolean isMouseMiddleClick( final int modifiers, final boolean isMacOSX) {
     if ((! isMacOSX) && (modifiers & MouseEvent.BUTTON2_MASK) > 0) {
       return true;
     } else if (isMacOSX &&
@@ -135,7 +135,7 @@ public class MouseEventOSX {
    * @param isMacOSX - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean isMouseRightClick( MouseEvent mouseEvent, boolean isMacOSX) {
+  public static boolean isMouseRightClick( final MouseEvent mouseEvent, final boolean isMacOSX) {
     if ((! isMacOSX) &&
         (mouseEvent.getModifiers() & mouseEvent.BUTTON3_MASK) > 0) {
       return true;
@@ -159,7 +159,7 @@ public class MouseEventOSX {
    * @param isMacOSX - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public static boolean isMouseRightClick( int modifiers, boolean isMacOSX) {
+  public static boolean isMouseRightClick( final int modifiers, final boolean isMacOSX) {
     if ((! isMacOSX) && (modifiers & MouseEvent.BUTTON3_MASK) > 0) {
       return true;
     } else if (isMacOSX &&

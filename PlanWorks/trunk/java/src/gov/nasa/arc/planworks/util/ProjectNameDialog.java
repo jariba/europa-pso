@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ProjectNameDialog.java,v 1.3 2003-07-12 01:36:33 taylor Exp $
+// $Id: ProjectNameDialog.java,v 1.4 2004-02-03 19:23:58 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -42,7 +42,7 @@ public class ProjectNameDialog extends JDialog {
    *
    * @param planWorks - <code>PlanWorks</code> - 
    */
-  public ProjectNameDialog ( PlanWorks planWorks) {
+  public ProjectNameDialog ( final PlanWorks planWorks) {
     // modal dialog - blocks other activity
     super( planWorks, true);
     setTitle( "Create Project");

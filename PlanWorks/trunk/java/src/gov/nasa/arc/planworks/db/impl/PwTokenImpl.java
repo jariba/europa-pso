@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.27 2004-01-14 21:22:37 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.28 2004-02-03 19:22:19 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -56,11 +56,12 @@ public class PwTokenImpl implements PwToken {
   private PwPartialPlanImpl partialPlan;
 
 
-  public PwTokenImpl(Integer id, boolean isValueToken, Integer slotId, String predicateName,
-                     Integer startVarId, Integer endVarId, Integer durationVarId, 
-                     Integer objectId, Integer rejectVarId, Integer objectVarId,
-                     Integer timelineId, List tokenRelationIds, List paramVarIds, 
-                     PwPartialPlanImpl partialPlan)
+  public PwTokenImpl(final Integer id, final boolean isValueToken, final Integer slotId, 
+                     final String predicateName, final Integer startVarId, final Integer endVarId, 
+                     final Integer durationVarId, final Integer objectId, final Integer rejectVarId,
+                     final Integer objectVarId, final Integer timelineId, 
+                     final List tokenRelationIds, final List paramVarIds, 
+                     final PwPartialPlanImpl partialPlan)
   {
     this.id = id;
     this.isValueToken = isValueToken;
@@ -79,10 +80,11 @@ public class PwTokenImpl implements PwToken {
     this.timelineId = timelineId;
   }
 
-  public PwTokenImpl(Integer id, boolean isValueToken, Integer slotId, String predicateName,
-                     Integer startVarId, Integer endVarId, Integer durationVarId,
-                     Integer objectId, Integer rejectVarId, Integer objectVarId,
-                     Integer timelineId, PwPartialPlanImpl partialPlan) {
+  public PwTokenImpl(final Integer id, final boolean isValueToken, final Integer slotId, 
+                     final String predicateName, final Integer startVarId, final Integer endVarId, 
+                     final Integer durationVarId, final Integer objectId, final Integer rejectVarId,
+                     final Integer objectVarId, final Integer timelineId, 
+                     final PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.isValueToken = isValueToken;
     this.slotId = slotId;
@@ -316,7 +318,7 @@ public class PwTokenImpl implements PwToken {
    *
    * @param paramVarId - <code>Integer</code> - 
    */
-  public void addParamVar(Integer paramVarId) {
+  public void addParamVar(final Integer paramVarId) {
     paramVarIds.add(paramVarId);
   }
   
@@ -325,7 +327,7 @@ public class PwTokenImpl implements PwToken {
    *
    * @param tokenRelationId - <code>Integer</code> - 
    */
-  public void addTokenRelation(Integer tokenRelationId) {
+  public void addTokenRelation(final Integer tokenRelationId) {
     tokenRelationIds.add(tokenRelationId);
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SplashWindow.java,v 1.2 2003-09-05 16:52:01 miatauro Exp $
+// $Id: SplashWindow.java,v 1.3 2004-02-03 19:23:24 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -27,7 +27,7 @@ public class SplashWindow extends Window {
   private Image image;    
   private boolean paintCalled = false;
   
-  public SplashWindow(Frame owner, Image image) {
+  public SplashWindow(final Frame owner, final Image image) {
     super(owner);
     this.image = image;
     MediaTracker mt = new MediaTracker(this);
@@ -66,7 +66,7 @@ public class SplashWindow extends Window {
       synchronized (this) { notifyAll(); }
     }
   }
-  public static Frame splash(Image image) {        
+  public static Frame splash(final Image image) {        
     Frame f = new Frame();        
     SplashWindow w = new SplashWindow(f, image);
     w.toFront();        

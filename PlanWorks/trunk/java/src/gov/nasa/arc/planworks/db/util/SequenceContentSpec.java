@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceContentSpec.java,v 1.1 2003-10-01 23:53:55 taylor Exp $
+// $Id: SequenceContentSpec.java,v 1.2 2004-02-03 19:22:41 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -47,7 +47,8 @@ public class SequenceContentSpec implements ContentSpec {
    * @param <code>redrawNotifier</code> an interface to inform views that they need to re-draw
    */
 
-  public SequenceContentSpec( ViewableObject planSequence, RedrawNotifier redrawNotifier)  {
+  public SequenceContentSpec( final ViewableObject planSequence, 
+                              final RedrawNotifier redrawNotifier)  {
     this.planSequence = (PwPlanningSequence) planSequence;
     this.redrawNotifier = redrawNotifier;
     this.validTokenIds = new UniqueSet();
@@ -110,7 +111,7 @@ public class SequenceContentSpec implements ContentSpec {
    * specification of valid ids through a database query, then informs the windows
    * goverend by this spec that they need to redraw themselves to the new specification.
    */
-  public void applySpec(List spec) throws NumberFormatException {
+  public void applySpec(final List spec) throws NumberFormatException {
 
 
     redrawNotifier.notifyRedraw();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.12 2003-12-20 01:54:48 taylor Exp $
+// $Id: MDIDesktopFrame.java,v 1.13 2004-02-03 19:23:19 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -38,7 +38,7 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
    * and an MDIDesktopPane.
    * @param name The displayed name of the frame.
    */
-  public MDIDesktopFrame(String name) {
+  public MDIDesktopFrame(final String name) {
     super(name);
     Container contentPane = getContentPane();
     menuBar = new MDIDynamicMenuBar(this);
@@ -60,19 +60,15 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
    * @param constantMenus An array of JMenus that remain visible regardless of the selected
    *                      MDIInternalFrame.
    */
-  public MDIDesktopFrame(String name, JMenu [] constantMenus) {
+  public MDIDesktopFrame(final String name, final JMenu [] constantMenus) {
     super(name);
     Container contentPane = getContentPane();
     menuBar = new MDIDynamicMenuBar(constantMenus, true, this);
-//     windowBar = new MDIWindowButtonBar(30, 80);
     desktopPane = new MDIDesktopPane();
-    // contentPane.add(menuBar, BorderLayout.NORTH);
     contentPane.add(desktopPane, BorderLayout.CENTER);
-//     contentPane.add(windowBar, BorderLayout.SOUTH);
     setJMenuBar(menuBar);
     desktopPane.setVisible(true);
     menuBar.setVisible(true);
-//     windowBar.setVisible(true);
     this.setVisible(true);
   }
   /**
@@ -90,7 +86,7 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
    * Creates a new MDIInternalFrame with the given title.
    * @param title The displayed title of the MDIInternalFrame
    */
-  public MDIInternalFrame createFrame(String title) {
+  public MDIInternalFrame createFrame(final String title) {
     MDIInternalFrame newFrame = new MDIInternalFrame(title, menuBar, windowBar);
     desktopPane.add(newFrame);
     newFrame.setVisible(true);
@@ -101,7 +97,7 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
    * @param title The displayed title of the MDIInternalFrame
    * @param resizable The boolean value of the resizable attribute of the frame.
    */
-  public MDIInternalFrame createFrame(String title, boolean resizable) {
+  public MDIInternalFrame createFrame(final String title, final boolean resizable) {
     MDIInternalFrame newFrame = new MDIInternalFrame(title, menuBar, windowBar, resizable);
     desktopPane.add(newFrame);
     newFrame.setVisible(true);
@@ -113,7 +109,8 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
    * @param resizable The boolean value of the resizable attribute of the frame.
    * @param closable The boolean value of the closable attribute of the frame.
    */
-  public MDIInternalFrame createFrame(String title, boolean resizable, boolean closable) {
+  public MDIInternalFrame createFrame(final String title, final boolean resizable, 
+                                      final boolean closable) {
     MDIInternalFrame newFrame = new MDIInternalFrame(title, menuBar, windowBar, resizable,
                                                      closable);
     desktopPane.add(newFrame);
@@ -127,8 +124,8 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
    * @param closable The boolean value of the closable attribute of the frame.
    * @param maximizable The boolean value of the maximizable attribute of the frame.
    */
-  public MDIInternalFrame createFrame(String title, boolean resizable, boolean closable,
-                                      boolean maximizable) {
+  public MDIInternalFrame createFrame(final String title, final boolean resizable, 
+                                      final boolean closable, final boolean maximizable) {
     MDIInternalFrame newFrame = new MDIInternalFrame(title, menuBar, windowBar, resizable,
                                                      closable, maximizable);
     desktopPane.add(newFrame);
@@ -144,8 +141,9 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
    * @param maximizable The boolean value of the maximizable attribute of the frame.
    * @param iconifiable The boolean value of the iconifiable attribute of the frame.
    */
-  public MDIInternalFrame createFrame(String title, boolean resizable, boolean closable, 
-                                      boolean maximizable, boolean iconifiable) {
+  public MDIInternalFrame createFrame(final String title, final boolean resizable, 
+                                      final boolean closable, final boolean maximizable, 
+                                      final boolean iconifiable) {
     MDIInternalFrame newFrame = new MDIInternalFrame(title, menuBar, windowBar, resizable,
                                                      closable, maximizable, iconifiable);
     desktopPane.add(newFrame);
@@ -161,8 +159,9 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
    * @param maximizable The boolean value of the maximizable attribute of the frame.
    * @param iconifiable The boolean value of the iconifiable attribute of the frame.
    */
-  public MDIInternalFrame createFrame(String title, MDIWindowBar viewSet, boolean resizable,
-                                      boolean closable, boolean maximizable, boolean iconifiable) {
+  public MDIInternalFrame createFrame(final String title, final MDIWindowBar viewSet, 
+                                      final boolean resizable, final boolean closable, 
+                                      final boolean maximizable, final boolean iconifiable) {
     MDIInternalFrame newFrame = new MDIInternalFrame(title, menuBar, windowBar, viewSet, resizable,
                                                      closable, maximizable, iconifiable);
     desktopPane.add(newFrame);

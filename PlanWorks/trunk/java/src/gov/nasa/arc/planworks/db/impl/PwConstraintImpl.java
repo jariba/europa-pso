@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.10 2003-08-22 21:39:49 miatauro Exp $
+// $Id: PwConstraintImpl.java,v 1.11 2004-02-03 19:22:15 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -46,8 +46,8 @@ public class PwConstraintImpl implements PwConstraint {
    * @param variableIds - <code>List of Integer</code> -
    * @param partialPlan - <code>PwPartialPlan</code> - 
    */
-  public PwConstraintImpl( String name, Integer id, String type, List variableIds,
-                           PwPartialPlanImpl partialPlan) {
+  public PwConstraintImpl( final String name, final Integer id, final String type, 
+                           final List variableIds, final PwPartialPlanImpl partialPlan) {
     this.name = name;
     this.id = id;
     this.type = type;
@@ -55,7 +55,8 @@ public class PwConstraintImpl implements PwConstraint {
     this.partialPlan = partialPlan;
   } // end constructor
 
-  public PwConstraintImpl(String name, Integer id, String type, PwPartialPlanImpl partialPlan) {
+  public PwConstraintImpl(final String name, final Integer id, final String type, 
+                          final PwPartialPlanImpl partialPlan) {
     this.name = name;
     this.id = id;
     this.type = type;
@@ -112,7 +113,7 @@ public class PwConstraintImpl implements PwConstraint {
     return new ArrayList(variableIds);
   }
 
-  public void addVariable(Integer variableId) {
+  public void addVariable(final Integer variableId) {
     variableIds.add(variableId);
   }
 } // end class PwConstraintImpl

@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.4 2003-11-13 23:21:16 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.5 2004-02-03 19:21:26 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -38,8 +38,8 @@ public class CreateSequenceViewThread extends CreateViewThread {
    * @param viewName - <code>String</code> - 
    * @param menuItem - <code>JMenuItem</code> - 
    */
-  public CreateSequenceViewThread( String viewName,
-                                   SequenceViewMenuItem menuItem) {
+  public CreateSequenceViewThread( final String viewName,
+                                   final SequenceViewMenuItem menuItem) {
     super( viewName);
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();
@@ -52,9 +52,9 @@ public class CreateSequenceViewThread extends CreateViewThread {
    * @param viewName - <code>String</code> - 
    * @param menuItem - <code>JMenuItem</code> - 
    */
-  public CreateSequenceViewThread( String viewName,
-                                   SequenceViewMenuItem menuItem,
-                                   boolean isInvokeAndWait) {
+  public CreateSequenceViewThread( final String viewName,
+                                   final SequenceViewMenuItem menuItem,
+                                   final boolean isInvokeAndWait) {
     super( viewName);
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();

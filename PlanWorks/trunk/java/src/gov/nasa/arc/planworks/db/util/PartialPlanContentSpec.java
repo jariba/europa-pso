@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.13 2004-01-14 21:22:58 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.14 2004-02-03 19:22:41 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -75,7 +75,8 @@ public class PartialPlanContentSpec implements ContentSpec {
    * @param <code>redrawNotifier</code> an interface to inform views that they need to re-draw
    */
 
-  public PartialPlanContentSpec(ViewableObject partialPlan, RedrawNotifier redrawNotifier)  {
+  public PartialPlanContentSpec(final ViewableObject partialPlan, 
+                                final RedrawNotifier redrawNotifier)  {
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.partialPlanId = this.partialPlan.getId();
     this.redrawNotifier = redrawNotifier;
@@ -151,7 +152,7 @@ public class PartialPlanContentSpec implements ContentSpec {
     printSpecLists(currentSpec);
   }
 
-  private void printSpecLists(List list) {
+  private void printSpecLists(final List list) {
     List timeline = (List) list.get(0);
     List predicate = (List) list.get(1);
     List timeInterval = (List) list.get(2);
@@ -212,7 +213,7 @@ public class PartialPlanContentSpec implements ContentSpec {
    * @param mergeTokens the result of getValue() in MergeBox.
    * @param tokenTypes the result of getValue() in TokenTypeBox.
    */
-  public void applySpec(List spec) throws NumberFormatException {
+  public void applySpec(final List spec) throws NumberFormatException {
     if(!specChanged(spec)) {
       return;
     }
@@ -378,8 +379,9 @@ public class PartialPlanContentSpec implements ContentSpec {
    * @param latestEnd The latest end time of the token
    */
 
-  private boolean evaluateTimeInterval(String connective, Integer start, Integer end, 
-                                       Integer earliestStart, Integer latestEnd) {
+  private boolean evaluateTimeInterval(final String connective, final Integer start,
+                                       final Integer end, final Integer earliestStart,
+                                       final Integer latestEnd) {
     boolean negation = (connective.indexOf(NOT) > -1);
     if(earliestStart.compareTo(start) >= 0 && earliestStart.compareTo(end) <= 0) {
       return true ^ negation;
@@ -443,7 +445,7 @@ public class PartialPlanContentSpec implements ContentSpec {
     return new ArrayList(currentSpec);
   }
 
-  private boolean specChanged(List newSpec) {
+  private boolean specChanged(final List newSpec) {
     if(currentSpec.size() != newSpec.size()) {
       return true;
     }

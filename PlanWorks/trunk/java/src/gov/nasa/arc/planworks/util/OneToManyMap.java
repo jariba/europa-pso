@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: OneToManyMap.java,v 1.4 2003-09-05 16:52:22 miatauro Exp $
+// $Id: OneToManyMap.java,v 1.5 2004-02-03 19:23:57 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -33,7 +33,7 @@ public class OneToManyMap extends HashMap {
   public OneToManyMap(Map m) {
     super(m);
   }
-  public boolean containsValue(Object value) {
+  public boolean containsValue(final Object value) {
     Iterator valueIterator = values().iterator();
     while(valueIterator.hasNext()) {
       if(((List)valueIterator.next()).contains(value)) {
@@ -42,14 +42,14 @@ public class OneToManyMap extends HashMap {
     }
     return false;
   }
-  public Object getItemAtIndex(Object key, int index) {
+  public Object getItemAtIndex(final Object key, final int index) {
     if(!super.containsKey(key)) {
       return null;
     }
     List valueList = (List) super.get(key);
     return valueList.get(index);
   }
-  public List put(Object key, List values) {
+  public List put(final Object key, final List values) {
     List valueList = null;
     if(!super.containsKey(key)) {
       valueList = new ArrayList();
@@ -61,7 +61,7 @@ public class OneToManyMap extends HashMap {
     valueList.addAll(values);
     return values;
   }
-  public Object put(Object key, Object value) {
+  public Object put(final Object key, final Object value) {
     List valueList = null;
     if(!super.containsKey(key)) {
       valueList = new ArrayList();
@@ -73,7 +73,7 @@ public class OneToManyMap extends HashMap {
     valueList.add(value);
     return value;
   }
-  public List getList(Object key) {
+  public List getList(final Object key) {
     if(!super.containsKey(key)) {
       return null;
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.9 2003-09-25 23:52:43 taylor Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.10 2004-02-03 19:23:21 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -38,7 +38,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
      * creates a new MDIDynamicMenuBar and registers itself with the MDIDesktop
      * @param desktop the MDIDesktop to which the MDIDynamicMenuBar is added.
      */
-  public MDIDynamicMenuBar(TileCascader tileCascader) {
+  public MDIDynamicMenuBar(final TileCascader tileCascader) {
     super();
     for(int i = 0; i < getMenuCount(); i++) {
       constantMenus.add(getMenu(i));
@@ -52,7 +52,8 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    * @param initialMenus An array of JMenus to display initially.
    * @param constant Determines whether or not the initialMenus are considered constant.
    */
-  public MDIDynamicMenuBar(JMenu [] initialMenus, boolean constant, TileCascader tileCascader) {
+  public MDIDynamicMenuBar(final JMenu [] initialMenus, final boolean constant, 
+                           final TileCascader tileCascader) {
     super();
     for(int i = 0; i < initialMenus.length; i++) {
       if(constant) {
@@ -70,7 +71,8 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    * @param constantMenus An array of JMenus to be treated as constant.
    * @param initialMenus An array of JMenus to be treated as volatile.
    */
-  public MDIDynamicMenuBar(JMenu [] constantMenus, JMenu [] initialMenus, TileCascader tileCascader) {
+  public MDIDynamicMenuBar(final JMenu [] constantMenus, final JMenu [] initialMenus, 
+                           final TileCascader tileCascader) {
     super();
     this.constantMenus = new ArrayList(constantMenus.length);
     for(int i = 0; i < constantMenus.length; i++) {
@@ -91,7 +93,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    * frame's associated menues.  Called when an MDIInternalFrame is selected.
    * @param frame the MDIFrame that was just selected.
    */
-  public void notifyActivated(MDIFrame frame) {
+  public void notifyActivated(final MDIFrame frame) {
     removeAll();
     if(constantMenus != null) {
       for(int i = 0; i < constantMenus.size(); i++) {
@@ -112,7 +114,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    * Adds a JMenu to the list of constant menus.
    * @param constantMenu The menu to be added.
    */
-  public void addConstantMenu(JMenu constantMenu) {
+  public void addConstantMenu(final JMenu constantMenu) {
     if(constantMenus == null) {
       constantMenus = new ArrayList(3);
     }
@@ -123,7 +125,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    * Adds an array of JMenus to the list of constant menus.
    * @param constantMenus The array of menus to be added.
    */
-  public void addConstantMenus(JMenu [] constantMenus) {
+  public void addConstantMenus(final JMenu [] constantMenus) {
     if(this.constantMenus == null) {
       this.constantMenus = new ArrayList(constantMenus.length);
     }
@@ -135,19 +137,19 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    * Adds a JMenu to the MDIDynamicMenuBar as a volatile menu.
    * @param menu The menu to be added.
    */
-  public void addMenu(JMenu menu) {
+  public void addMenu(final JMenu menu) {
     this.add(menu);
   }
   /**
    * Adds an array of JMenus to the menu bar as volatile menus.
    * @param menus The menus to be added.
    */
-  public void addMenus(JMenu [] menus) {
+  public void addMenus(final JMenu [] menus) {
     for(int i = 0; i < menus.length; i++) {
       this.add(menus[i]);
     }
   }
-  public void remove(Component c) {
+  public void remove(final Component c) {
     if(c == null) {
       return;
     }
@@ -156,7 +158,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
       constantMenus.remove(constantMenus.indexOf(c));
     }
   }
-  public void addWindow(MDIInternalFrame frame) {
+  public void addWindow(final MDIInternalFrame frame) {
     windows.add(frame);
     buildWindowMenu();
   }
@@ -192,12 +194,12 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     windowMenu.validate();
     validate();
   }
-  public void notifyDeleted(MDIFrame frame) {
+  public void notifyDeleted(final MDIFrame frame) {
     windows.remove(frame);
     buildWindowMenu();
   }
-  public void add(JButton button){}
-  public JMenu add(JMenu menu) {
+  public void add(final JButton button){}
+  public JMenu add(final JMenu menu) {
     remove(windowMenu);
     super.add(menu);
     if(windowMenu != null) {
@@ -213,7 +215,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    * @param menuName - <code>String</code> - 
    * @return - <code>JMenu</code> - 
    */
-  public JMenu clearMenu( String menuName, int numProjects) {
+  public JMenu clearMenu( final String menuName, final int numProjects) {
     // clear out previous project's menu contents and return menu root
     for (int i = 0, n = getMenuCount(); i < n; i++) {
       if (((JMenu) getMenu( i)).getText().equals( menuName)) {
@@ -239,7 +241,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    * @param menuName - <code>String</code> - 
    * @return - <code>JMenu</code> - 
    */
-  public JMenu disableMenu( String menuName) {
+  public JMenu disableMenu( final String menuName) {
     JMenu menu = null;
     for (int i = 0; i < getMenuCount(); i++) {
       if (getMenu(i) != null &&
@@ -259,7 +261,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    *
    * @param menu - <code>JMenu</code> - 
    */
-  public void enableMenu( JMenu menu) {
+  public void enableMenu( final JMenu menu) {
     if (menu != null && menu.getItemCount() != 0) {
       menu.setEnabled(true);
     }
