@@ -4,12 +4,12 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.4 2003-06-16 18:50:12 miatauro Exp $
+# $Id: README,v 1.5 2003-06-19 20:49:19 taylor Exp $
 #
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_1 PlanWorks
+> cvs co -r PW_M_2 PlanWorks
 
 
 PREREQUISITES
@@ -38,14 +38,13 @@ BUILDING & RUNNING PLANWORKS
 
 > ant -projecthelp # lists available targets
 
- clean             -- delete the 'java/classes' directory tree
+ cleanCls          -- delete the 'java/classes' directory tree
+ cleanDb           -- delete loaded projects from data base, unless -Dno.clean.db=yes
  compile           -- compile 'java/src' tree into 'java/classes' tree
- existTest         -- prototyping test (compile dependency)
+ existTest         -- prototyping test (compile, cleanDb dependencies)
  planWorks         -- run PlanWorks application (compile dependency)
- projectTest       -- prototyping test (compile dependency)
- timelineViewTest  -- JFCunit test (compile dependency)
- planWorksProf     -- run PlanWorks with profiling output (compile
-                      dependency)
+ planWorksProf     -- run PlanWorks with profiling info
+ timelineViewTest  -- JFCunit test (compile, cleanDb dependencies)
 
 Default target: planWorks
 
