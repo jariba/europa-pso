@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.13 2003-08-19 00:24:24 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.14 2004-01-05 17:17:43 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,8 @@ package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwObject;
 
@@ -30,8 +32,10 @@ public class PwObjectImpl implements PwObject {
 
   private Integer id;
   private String name;
+  private String emptySlotInfo;
   private List timelineIdList; // element Integer
   private PwPartialPlanImpl partialPlan;
+  private static boolean haveCreatedSlots;
 
   /**
    * <code>PwObjectImpl</code> - constructor 
@@ -40,11 +44,13 @@ public class PwObjectImpl implements PwObject {
    * @param name - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwObjectImpl( Integer id, String name, PwPartialPlanImpl partialPlan) {
+  public PwObjectImpl( Integer id, String name, PwPartialPlanImpl partialPlan, String info) {
     this.id = id;
     this.name = name;
     this.partialPlan = partialPlan;
+    this.emptySlotInfo = info;
     timelineIdList = new ArrayList();
+    haveCreatedSlots = false;
   } // end constructor
 
 
@@ -93,6 +99,20 @@ public class PwObjectImpl implements PwObject {
     }
     return retval;
   }
-	 
+  
+  public void createEmptySlots() {
+    if(emptySlotInfo == null || haveCreatedSlots) {
+      return;
+    }
+    StringTokenizer slotTok = new StringTokenizer(emptySlotInfo, ":");
+    while(slotTok.hasMoreTokens()) {
+      StringTokenizer infoTok = new StringTokenizer(slotTok.nextToken(), ",");
+      Integer tId = new Integer(infoTok.nextToken());
+      Integer sId = new Integer(infoTok.nextToken());
+      int index = Integer.parseInt(infoTok.nextToken());
+      ((PwTimelineImpl)partialPlan.getTimeline(tId)).createEmptySlot(sId, index);
+    }
+    haveCreatedSlots = true;
+  }
 
 } // end class PwObjectImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.65 2004-01-02 19:05:02 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.66 2004-01-05 17:17:43 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -167,7 +167,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     MySQLDB.queryPredicates( this);
     MySQLDB.queryTokenRelations( this);
     MySQLDB.queryVariables( this);
-
+    Iterator objIterator = objectMap.values().iterator();
+    while(objIterator.hasNext()) {
+      ((PwObjectImpl)objIterator.next()).createEmptySlots();
+    }
     System.err.println( "Partial Plan: " + url);
     System.err.println( "Ids:");
     System.err.println( "  objects        " + objectMap.keySet().size());
