@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.30 2003-07-11 00:02:30 taylor Exp $
+// $Id: PlanWorks.java,v 1.31 2003-07-11 01:22:19 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -147,6 +147,7 @@ public class PlanWorks extends MDIDesktopFrame {
     this.setVisible( true);
     
     setProjectMenuEnabled( "Create ...", true);
+    setProjectMenuEnabled( "Add Sequence ...", false);
     if ((PwProject.listProjects() != null) && (PwProject.listProjects().size() > 0)) {
       setProjectMenuEnabled( "Open ...", true);
       setProjectMenuEnabled( "Delete ...", true);
@@ -154,7 +155,7 @@ public class PlanWorks extends MDIDesktopFrame {
       setProjectMenuEnabled( "Open ...", false);
       setProjectMenuEnabled( "Delete ...", false);
     }
-  } //end constructor 
+  } // end constructor 
 
 
   /**
@@ -218,7 +219,8 @@ public class PlanWorks extends MDIDesktopFrame {
 
   private static void setProjectMenuEnabled( String textName, boolean isEnabled) {
     for (int i = 0, n = projectMenu.getItemCount(); i < n; i++) {
-      if (projectMenu.getItem( i).getText().equals( textName)) {
+      if ((projectMenu.getItem( i) != null) &&
+          (projectMenu.getItem( i).getText().equals( textName))) {
         projectMenu.getItem( i).setEnabled( isEnabled);
         break;
       }
@@ -245,6 +247,7 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenuItem createProjectItem = new JMenuItem( "Create ...");
     JMenuItem openProjectItem = new JMenuItem( "Open ...");
     JMenuItem deleteProjectItem = new JMenuItem( "Delete ...");
+    JMenuItem addSequenceItem = new JMenuItem( "Add Sequence ...");
     createProjectItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent e) {
           PlanWorks.planWorks.instantiateProjectThread( "create");
@@ -260,6 +263,12 @@ public class PlanWorks extends MDIDesktopFrame {
           PlanWorks.planWorks.deleteProjectThread();
         }});
     projectMenu.add( deleteProjectItem);
+    projectMenu.addSeparator();
+    addSequenceItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent e) {
+          PlanWorks.planWorks.addSequenceThread();
+        }});
+    projectMenu.add( addSequenceItem);
 
     jMenuArray[0] = fileMenu;
     jMenuArray[1] = projectMenu;
@@ -338,6 +347,7 @@ public class PlanWorks extends MDIDesktopFrame {
         System.err.println( "Create Project: " + currentProjectName);
         this.setTitle( name + "  --  project: " + currentProjectName);
         setProjectMenuEnabled( "Delete ...", true);
+        setProjectMenuEnabled( "Add Sequence ...", true);
         if (PwProject.listProjects().size() > 1) {
           setProjectMenuEnabled( "Open ...", true);
         }
@@ -500,6 +510,7 @@ public class PlanWorks extends MDIDesktopFrame {
             if (getProjectsLessCurrent().size() == 0) {
               setProjectMenuEnabled( "Open ...", false);
             }
+            setProjectMenuEnabled( "Add Sequence ...", true);
           } catch (ResourceNotFoundException rnfExcep) {
             // System.err.println( "Project " + projectName + " not found: " + rnfExcep1);
             int index = rnfExcep.getMessage().indexOf( ":");
@@ -560,6 +571,7 @@ public class PlanWorks extends MDIDesktopFrame {
             if (PwProject.listProjects().size() == 0) {
               setProjectMenuEnabled( "Delete ...", false);
               setProjectMenuEnabled( "Open ...", false);
+              setProjectMenuEnabled( "Add Sequence ...", false);
             } else if (getProjectsLessCurrent().size() == 0) {
               setProjectMenuEnabled( "Open ...", false);
             } else {
@@ -586,6 +598,75 @@ public class PlanWorks extends MDIDesktopFrame {
     }
     // JOptionPane.showInputDialog returns null if user selected "cancel"
   } // end deleteProject
+
+
+  private void addSequenceThread() {
+    new AddSequenceThread().start();
+  }
+
+  class AddSequenceThread extends Thread {
+
+    public AddSequenceThread() {
+    }  // end constructor
+
+    public void run() {
+      addSequence();
+    } //end run
+
+  } // end class AddSequenceThread
+
+
+  private void addSequence() {
+    boolean isSequenceAdded = false;
+    while (! isSequenceAdded) {
+      while (true) {
+        // ask user for a single sequence directory of partialPlan directories
+        int returnVal = sequenceDirChooser.showDialog( this, "");
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          if (! validateSequenceDirectory( sequenceDirectory)) {
+            continue;
+          } else {
+            break;
+          }
+        } else {
+          return;
+        }
+      }
+      try {
+        currentProject.addPlanningSequence( sequenceDirectory);
+        isSequenceAdded = true;
+        System.err.println( "Adding sequence " + sequenceDirectory);
+      } catch (DuplicateNameException dupExcep) {
+        int index = dupExcep.getMessage().indexOf( ":");
+        JOptionPane.showMessageDialog
+          (PlanWorks.this, dupExcep.getMessage().substring( index + 1),
+           "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
+        System.err.println( dupExcep);
+      } catch (ResourceNotFoundException rnfExcep) {
+        int index = rnfExcep.getMessage().indexOf( ":");
+        JOptionPane.showMessageDialog
+          (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
+           "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+        System.err.println( rnfExcep);
+      } catch (SQLException sqlExcep) {
+        StringBuffer errorOutput =
+          new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
+                                                           indexOf(":") + 1));
+        StackTraceElement [] stackTrace = sqlExcep.getStackTrace();
+        for(int i = 0; i < stackTrace.length; i++) {
+          errorOutput.append(stackTrace[i].getFileName()).append(":");
+          errorOutput.append(stackTrace[i].getLineNumber()).append(" ");
+          errorOutput.append(stackTrace[i].getClassName()).append(".");
+          errorOutput.append(stackTrace[i].getMethodName()).append("\n");
+        }
+        JOptionPane.showMessageDialog
+          (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
+      }
+      currentSequenceDirectory = sequenceDirectory;
+      JMenu partialPlanMenu = clearSeqPartialPlanViewMenu();
+      addSeqPartialPlanViewMenu( currentProject, partialPlanMenu);
+    }
+  } // end addSequence
 
 
   private void addSeqPartialPlanViewMenu( PwProject project, JMenu partialPlanMenu) {
