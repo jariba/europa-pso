@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.14 2003-06-30 22:21:24 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.15 2003-06-30 22:22:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
