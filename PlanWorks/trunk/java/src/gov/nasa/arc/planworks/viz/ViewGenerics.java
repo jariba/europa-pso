@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.2 2003-11-20 19:11:23 taylor Exp $
+// $Id: ViewGenerics.java,v 1.3 2003-11-21 00:41:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -115,7 +115,6 @@ public class ViewGenerics {
    * @param viewCoords - <code>Point</code> - 
    * @return - <code>VizViewOverview</code> - 
    */
-  // click on MDI button -- content vanishes
   public static VizViewOverview openOverviewFrame( String viewName, ViewableObject viewable,
                                                    VizView vizView, ViewSet viewSet,
                                                    JGoView jGoView, Point viewCoords) {
@@ -144,12 +143,41 @@ public class ViewGenerics {
       overviewFrame.setLocation( viewCoords);
       Dimension overviewDocSize = new Dimension( overview.getDocumentSize());
       overview.convertDocToView( overviewDocSize);
+//       vizView.expandViewFrame( overviewFrame,
+//                                (int) (overviewDocSize.getWidth() +
+//                                       (ViewConstants.MDI_FRAME_DECORATION_WIDTH * 0.8)),
+//                                (int) (overviewDocSize.getHeight() +
+//                                       (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 0.6)));
       vizView.expandViewFrame( overviewFrame,
-                               (int) (overviewDocSize.getWidth() +
-                                      (ViewConstants.MDI_FRAME_DECORATION_WIDTH * 0.8)),
-                               (int) (overviewDocSize.getHeight() +
-                                      (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 0.6)));
+                               (int) overviewDocSize.getWidth(),
+                               (int) overviewDocSize.getHeight());
     }
+
+    raiseOverviewFrame( overviewFrame);
+    
+    return overview;
+  } // end openOverviewFrame
+
+
+  /**
+   * <code>openExistingOverviewFrame</code>
+   *
+   * @param viewName - <code>String</code> - 
+   * @param viewable - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   */
+  public static void openExistingOverviewFrame( String viewName, ViewableObject viewable,
+                                                ViewSet viewSet) {
+    String overviewTitle = Utilities.trimView( viewName).replaceAll( " ", "") +
+      OVERVIEW_TITLE + viewable.getName();
+    MDIInternalFrame overviewFrame = (MDIInternalFrame) viewSet.getViews().get( overviewTitle);
+    // System.err.println( "openOverviewFrame " + overviewFrame);
+    if (overviewFrame != null) {
+      raiseOverviewFrame( overviewFrame);
+    }
+  } // end openExistingOverviewFrame
+
+  private static void raiseOverviewFrame( MDIInternalFrame overviewFrame) {
     // make window appear & bring to the front
     try {
       // in case view existed and was iconified
@@ -160,8 +188,7 @@ public class ViewGenerics {
       overviewFrame.setSelected( true);
     } catch (PropertyVetoException excp) {
     }
-    return overview;
-  } // end openOverviewFrame
+  } // end raiseOverviewFrame
 
 
 } // end class ViewGenerics 

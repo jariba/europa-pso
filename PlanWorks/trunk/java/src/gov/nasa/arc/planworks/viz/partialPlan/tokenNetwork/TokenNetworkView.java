@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.12 2003-11-20 19:11:25 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.13 2003-11-21 00:41:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -668,13 +668,13 @@ public class TokenNetworkView extends PartialPlanView {
           jGoView);
     }
     if (! isTokenFound) {
+      // Content Spec filtering may cause this to happen
       String message = "Token " + tokenToFind.getPredicate().getName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Token Not Found in TokenNetworkView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
-      System.exit( 1);
     }
   } // end findAndSelectToken
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.16 2003-11-20 19:11:24 taylor Exp $
+// $Id: TimelineView.java,v 1.17 2003-11-21 00:41:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -727,13 +727,13 @@ public class TimelineView extends PartialPlanView {
       }
     }
     if (! isTokenFound) {
+      // Content Spec filtering may cause this to happen
       String message = "Token " + tokenToFind.getPredicate().getName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Token Not Found in TimelineView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
-      System.exit( 1);
     }
   } // end findAndSelectToken
 
@@ -760,12 +760,12 @@ public class TimelineView extends PartialPlanView {
       }
     }
     if (! isSlotFound) {
+      // Content Spec filtering may cause this to happen
       String message = "Slot (key=" + slotToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Slot Not Found in TimelineView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
-      System.exit( 1);
     }
   } // end findAndSelectSlot
 

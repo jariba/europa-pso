@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.16 2003-11-20 19:11:24 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.17 2003-11-21 00:41:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -28,6 +28,8 @@ import javax.swing.SwingUtilities;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
+import com.nwoods.jgo.JGoPen;
+import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
@@ -174,6 +176,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 
     document = jGoView.getDocument();
     //network = new ConstraintNetwork();
+    createVerticalScrollBarMaintainer();
     createTokenNodes();
     // setVisible( true | false) depending on ContentSpec
     setNodesLinksVisible();
@@ -370,6 +373,20 @@ public class ConstraintNetworkView extends PartialPlanView {
   protected void setStartTimeMSecs( long msecs) {
     startTimeMSecs = msecs;
   }
+
+  private void createVerticalScrollBarMaintainer() {
+    // jGoView initially consists of a row of token nodes at a large y value,
+    // empty space above it -- if the window is resized to cover up the token
+    // nodes, the vertical scroll bar goes away, and the tokens are lost
+    int x = ViewConstants.TIMELINE_VIEW_X_INIT;
+    int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
+    JGoStroke hiddenLine = new JGoStroke();
+    hiddenLine.addPoint( x, y);
+    hiddenLine.addPoint( x, y + (int) HORIZONTAL_TOKEN_BAND_Y);
+    // make mark invisible
+    hiddenLine.setPen( new JGoPen( JGoPen.SOLID, 1, ViewConstants.VIEW_BACKGROUND_COLOR));
+    document.addObjectAtTail( hiddenLine);
+  } // end createVerticalScrollBarMaintainer
 
   private void createTokenNodes() {
     boolean isDraggable = true;

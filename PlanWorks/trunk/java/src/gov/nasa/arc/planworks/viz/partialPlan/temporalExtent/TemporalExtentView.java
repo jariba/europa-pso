@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.14 2003-11-20 19:11:24 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.15 2003-11-21 00:41:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1054,13 +1054,13 @@ public class TemporalExtentView extends PartialPlanView  {
         //     jGoView);
       }
     } else {
+      // Content Spec filtering may cause this to happen
       String message = "Token " + tokenToFind.getPredicate().getName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Token Not Found in TemporalExtentView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
-      System.exit( 1);
     }
   } // end findAndSelectToken
 
