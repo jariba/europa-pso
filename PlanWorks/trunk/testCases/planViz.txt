@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.60 2004-08-26 20:51:28 taylor Exp $
+// $Id: planViz.txt,v 1.61 2004-09-14 22:59:42 taylor Exp $
 //
 // PlanWorks
 //
@@ -960,6 +960,9 @@ Method:
      resource.
  12. On the Resource Transaction View, click Mouse-Right on the background and 
      select "Find by Key".  Enter the id of a resource transaction.
+ 13. On the Resource Profile View, click Mouse-Right on the background, over a 
+     resource profile and select "Rescale '<resource-name>' Profile".  Enter new
+     x, y minumum and maximum values and click "OK".
 
 Post-conditions:
   1. Method:1 - The SequenceStepsView of test-seq-1 appears.
@@ -988,7 +991,9 @@ Post-conditions:
      node with its parent and children nodes, as appropriate.
  11. Method:11 - In both cases, the resource name node with the entered id will be 
      highlighted.
- 12. Method:11 - The resource transaction node with the entered id will be highlighted.
+ 12. Method:12 - The resource transaction node with the entered id will be highlighted.
+ 13. Method:13 - A new resource profile view for the selected resource will appear with
+     the specified x and y min/max values.
 
 
 PLANVIZ-22

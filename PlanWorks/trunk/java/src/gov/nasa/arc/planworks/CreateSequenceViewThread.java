@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.14 2004-07-29 20:31:43 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.15 2004-09-14 22:59:38 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -90,21 +90,21 @@ public class CreateSequenceViewThread extends CreateViewThread {
 
   private void createSequenceView() {
     synchronized( staticObject) {
-      if (doProgMonitor) {
-        progressMonitorThread( "Get Planning Sequence ...", 0, 6);
-        if (! progressMonitorWait()) {
-          return;
-        }
-        progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
-      }
-      PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), viewName);
-      ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
-      MDIDynamicMenuBar dynamicMenuBar =
-        (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
-      JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-      PlanWorks.getPlanWorks().projectMenu.setEnabled( false);
-
       try {
+        if (doProgMonitor) {
+          progressMonitorThread( "Get Planning Sequence ...", 0, 6);
+          if (! progressMonitorWait()) {
+            return;
+          }
+          progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+        }
+        PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), viewName);
+        ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
+        MDIDynamicMenuBar dynamicMenuBar =
+          (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
+        JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
+        PlanWorks.getPlanWorks().projectMenu.setEnabled( false);
+
         planSequence = PlanWorks.getPlanWorks().currentProject.getPlanningSequence( seqUrl);
 
         if (doProgMonitor) {
@@ -117,6 +117,9 @@ public class CreateSequenceViewThread extends CreateViewThread {
           PlanWorks.getPlanWorks().setSequenceStepsViewFrame( seqUrl, viewFrame);
         }
 
+        PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
+        dynamicMenuBar.enableMenu( planSeqMenu);
+
       } catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog
@@ -125,10 +128,13 @@ public class CreateSequenceViewThread extends CreateViewThread {
         System.err.println( rnfExcep);
         rnfExcep.printStackTrace();
         ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+      } finally {
+        ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+        if (doProgMonitor) {
+          isProgressMonitorCancel = true;
+        }
       }
 
-      PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
-      dynamicMenuBar.enableMenu( planSeqMenu);
     }
   } // end createSequenceView
 

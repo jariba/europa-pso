@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.126 2004-09-09 22:45:03 taylor Exp $
+# $Id: README,v 1.127 2004-09-14 22:59:35 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -18,13 +18,20 @@ SUMMARY
 =======
 o "Project->Configure" and "Project->New Sequence" have been added to support
   integration with PLASMA.  The "Planner Controller" window allows the user
-  to run plans in PLASMA and view the results in PlanWorks.
+  to run plans with PLASMA and view the results in PlanWorks.
 
 o Background Mouse-Right "Find Entity Path" in the Token Network, Constraint
   Network, and Navigator views, now highlights the appropriate links, as well
   as the nodes.
 
+o In the Resource Profile View, Mouse-Right "Rescale '<resource-name>' Profile" over
+  a resource profile will allow the user to enter new x, y minumum and maximum
+  values and create a new view of the selected resource.  It is also possible to
+  "Reset" the created "unary" resource view to its original scaling.
+
+
 o GNATS PRs and CRs completed:
+  #2556: Scale for resource view.
 
 
 CVS CHECKOUT

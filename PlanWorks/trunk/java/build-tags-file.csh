@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.84 2004-09-09 22:45:03 taylor Exp $
+# $Id: build-tags-file.csh,v 1.85 2004-09-14 22:59:36 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -68,6 +68,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/impl/PwDBTransactionImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwDecisionImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwDomainImpl.java \
+    src/gov/nasa/arc/planworks/db/impl/PwEntityImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwEnumeratedDomainImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwIntervalDomainImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwModelImpl.java \
@@ -210,9 +211,11 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/TimelineNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/TokenNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/VariableNavNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/RescaleProfileDialog.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfile.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfileView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfileViewState.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/UnaryResourceProfileView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionSet.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionView.java \

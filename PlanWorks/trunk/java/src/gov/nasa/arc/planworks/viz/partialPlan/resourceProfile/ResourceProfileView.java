@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.27 2004-08-23 22:07:40 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.28 2004-09-14 22:59:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -20,7 +20,9 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;    
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -51,6 +53,7 @@ import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
+import gov.nasa.arc.planworks.viz.partialPlan.TimeScaleView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
@@ -67,8 +70,10 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class ResourceProfileView extends ResourceView  {
 
-  private List resourceProfileList; // element ResourceProfile
-  private ProgressMonitorThread progressMonThread;
+  protected List resourceProfileList; // element ResourceProfile
+  protected ProgressMonitorThread progressMonThread;
+  protected List profileScalingList;
+  protected PwResource unaryResource;
 
   /**
    * <code>ResourceProfileView</code> - constructor 
@@ -79,8 +84,29 @@ public class ResourceProfileView extends ResourceView  {
   public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet,
            ViewConstants.RESOURCE_PROFILE_VIEW);
+    profileScalingList = null;
+    unaryResource = null;
   } // end constructor
 
+  /**
+   * <code>ResourceProfileView</code> - constructor - unary resource profile
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param vSet - <code>ViewSet</code> - 
+   * @param unaryResourceProfileFrame - <code>MDIInternalFrame</code> - 
+   * @param resource - <code>PwResource</code> - 
+   * @param scalingList - <code>List</code> - 
+   */
+  public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet,
+                              final MDIInternalFrame unaryResourceProfileFrame,
+                              final PwResource resource, final List scalingList) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, 
+           ViewConstants.RESOURCE_PROFILE_VIEW, unaryResourceProfileFrame, resource);
+    profileScalingList = scalingList;
+    unaryResource = resource;
+    // System.err.println( "ResourceProfileView: unaryResource " + unaryResource);
+    // System.err.println( "ResourceProfileView: profileScalingList " + profileScalingList);
+  } // end constructor
 
   /**
    * <code>ResourceProfileView</code> - constructor 
@@ -93,6 +119,8 @@ public class ResourceProfileView extends ResourceView  {
                               final PartialPlanViewState state) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, state,
            ViewConstants.RESOURCE_PROFILE_VIEW);
+    profileScalingList = null;
+    unaryResource = null;
   } // end constructor
 
   /**
@@ -106,6 +134,8 @@ public class ResourceProfileView extends ResourceView  {
                               ViewListener viewListener) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, viewListener,
            ViewConstants.RESOURCE_PROFILE_VIEW);
+    profileScalingList = null;
+    unaryResource = null;
   } // end constructor
 
   /**
@@ -160,6 +190,29 @@ public class ResourceProfileView extends ResourceView  {
   }
 
   /**
+   * <code>createTimeScaleView</code>
+   *
+   */
+  protected final void createTimeScaleView() {
+    boolean doFreeTokens = false;
+    TimeScaleView timeScaleView = this.getJGoRulerView();
+    timeScaleView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+    initialTimeScaleEnd = getTimeScaleEnd();
+    if (unaryResource != null) {
+//       System.err.println( " createTimeScaleView: initialTimeScaleEnd " + initialTimeScaleEnd);
+      timeScaleView.setTimeScaleStart( ((Double) profileScalingList.get( 3)).intValue());
+      timeScaleView.setTimeScaleEnd( ((Double) profileScalingList.get( 2)).intValue());
+//       System.err.println( " createTimeScaleView: setTimeScaleStart " +
+//                           timeScaleView.getTimeScaleStart());
+//       System.err.println( " createTimeScaleView: setTimeScaleEnd " +
+//                           timeScaleView.getTimeScaleEnd());
+       int zoomFactor = 1;
+      timeScaleView.computeTimeScaleMetrics( zoomFactor, this);
+    }
+    timeScaleView.createTimeScale();
+  } // end createTimeScaleView
+
+  /**
    * <code>computeMaxResourceLabelWidth</code>
    *
    * @return - <code>int</code> - 
@@ -190,6 +243,8 @@ public class ResourceProfileView extends ResourceView  {
    */
   protected final void renderResourceExtent() {
     this.getJGoExtentDocument().deleteContents();
+    this.getJGoLevelScaleDocument().deleteContents();
+
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     if (resourceProfileList != null) {
@@ -205,7 +260,13 @@ public class ResourceProfileView extends ResourceView  {
   private void createResourceProfiles() {
     boolean isNamesOnly = false;
     currentYLoc = 0;
-    List resourceList = partialPlan.getResourceList();
+    List resourceList = new ArrayList();
+    if (unaryResource == null) {
+      resourceList.addAll( partialPlan.getResourceList());
+    } else {
+      resourceList.add( unaryResource);
+    }
+
     progressMonThread =
       createProgressMonitorThread( "Rendering Resource Profile View ...", 0, resourceList.size(),
 			     Thread.currentThread(), this);
@@ -213,13 +274,25 @@ public class ResourceProfileView extends ResourceView  {
       closeView( this);
       return;
     }
-    int horizonEnd = getTimeScaleEnd();
+    // latestEndTime = resource.getHorizonEnd();
+    // latestEndTime may be PLUS_INFINITY in planner model
     int numResources = 0;
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
+      int horizonStart = resource.getHorizonStart();
+      int horizonEnd = getTimeScaleEnd();
+      double minMax[] = ResourceProfile.getResourceMinMax( resource);
+      double levelMin = minMax[0]; double levelMax = minMax[1];
+      if (profileScalingList != null) {
+        levelMax = ((Double) profileScalingList.get( 0)).doubleValue();
+        levelMin = ((Double) profileScalingList.get( 1)).doubleValue();
+        horizonEnd = ((Double) profileScalingList.get( 2)).intValue();
+        horizonStart = ((Double) profileScalingList.get( 3)).intValue();
+      }
       ResourceProfile resourceProfile =
-        new ResourceProfile( resource, horizonEnd, ViewConstants.VIEW_BACKGROUND_COLOR,
+        new ResourceProfile( resource, horizonStart, horizonEnd, levelMin, levelMax,
+                             ViewConstants.VIEW_BACKGROUND_COLOR,
                              levelScaleFontMetrics, this);
       // System.err.println( "resourceProfile " + resourceProfile);
       this.getJGoExtentDocument().addObjectAtTail( resourceProfile);
@@ -286,6 +359,11 @@ public class ResourceProfileView extends ResourceView  {
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
 
+    JMenuItem rescaleProfileItem =  new JMenuItem( "Rescale '" + resource.getName() +
+                                                   "' Profile");
+    createRescaleProfileItem( rescaleProfileItem, resource, this);
+    mouseRightPopup.add( rescaleProfileItem);
+    
     String timeMarkTitle = "Set Time Scale Line";
     if (viewSet.doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
       timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Transactions");
@@ -526,7 +604,72 @@ public class ResourceProfileView extends ResourceView  {
     this.getJGoExtentDocument().addObjectAtTail( timeScaleMark);
   } // end createTimeMark
 
-    
+  private void createRescaleProfileItem( final JMenuItem rescaleProfileItem,
+                                         final PwResource resource,
+                                         final ResourceProfileView resourceProfileView) {
+    rescaleProfileItem.addActionListener( new ActionListener() { 
+        public final void actionPerformed( final ActionEvent evt) {
+//           System.err.println( " createRescaleProfileItem: initialTimeScaleEnd " +
+//                               initialTimeScaleEnd);
+          RescaleProfileDialog rescaleDialog =
+            new RescaleProfileDialog( PlanWorks.getPlanWorks(), resource, resourceProfileView,
+                                      initialTimeScaleEnd, unaryResource);
+          if (rescaleDialog.getMaxY().doubleValue() == -1.0d) {
+            // user chose cancel
+            return;
+          }
+          Double maxY = rescaleDialog.getMaxY();
+          Double minY = rescaleDialog.getMinY();
+          Double maxX = rescaleDialog.getMaxX();
+          Double minX = rescaleDialog.getMinX();
+//           System.err.println( "maxY " + maxY + " minY " + minY + " maxX  " + maxX +
+//                               " minX " + minX);
+          List scalingList = new ArrayList();
+          scalingList.add( maxY);
+          scalingList.add( minY);
+          scalingList.add( maxX);
+          scalingList.add( minX);
+
+          ResourceProfileView profileView = resourceProfileView;
+          TimeScaleView timeScaleView = null;
+          if (unaryResource == null) {
+            String viewSetKey =
+              resourceProfileView.getUnaryResourceProfileViewSetKey( resource.getName());
+            MDIInternalFrame unaryResourceProfileFrame =
+              resourceProfileView.openUnaryResourceProfileViewFrame( viewSetKey);
+            Container contentPane = unaryResourceProfileFrame.getContentPane();
+            PwPartialPlan partialPlan = resourceProfileView.getPartialPlan();
+            UnaryResourceProfileView unaryResourceProfileView =
+              new UnaryResourceProfileView( partialPlan, resourceProfileView.getViewSet(),
+                                            resource, viewSetKey, unaryResourceProfileFrame,
+                                            scalingList);
+            contentPane.add( unaryResourceProfileView);
+
+            while ((timeScaleView = unaryResourceProfileView.getJGoRulerView()) == null) {
+              try {
+                Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
+              }
+              catch (InterruptedException ie) {}
+              // System.err.println( "createRescaleProfileItem: wait for timeScaleView != null");
+            }
+            unaryResourceProfileFrame.setLocation
+              ( (int) (PlanWorks.getPlanWorks().getSize().getWidth() / 2),
+                (int) (PlanWorks.getPlanWorks().getSize().getHeight() / 2));
+          } else {
+            // existing unary resource profile
+            timeScaleView = resourceProfileView.getJGoRulerView();
+            timeScaleView.setTimeScaleStart( minX.intValue());
+            timeScaleView.setTimeScaleEnd( maxX.intValue());
+            int zoomFactor = 1;
+            timeScaleView.computeTimeScaleMetrics( zoomFactor, profileView);
+            timeScaleView.createTimeScale();
+            profileScalingList = scalingList;
+            profileView.redraw();
+          }
+        }
+      });
+  } // end createRescaleProfileItem
+  
 
 } // end class ResourceProfileView
  

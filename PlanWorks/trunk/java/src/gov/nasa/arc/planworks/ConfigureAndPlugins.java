@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.6 2004-09-08 20:59:50 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.7 2004-09-14 22:59:37 taylor Exp $
 //
 // PlanWorks
 //
@@ -15,31 +15,24 @@ package gov.nasa.arc.planworks;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.jar.Attributes;
-import java.util.jar.JarException;
 import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
-import java.util.jar.Manifest;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JMenu;
 
 import gov.nasa.arc.planworks.util.JarClassLoader;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 
 
 /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.25 2004-08-21 00:31:56 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.26 2004-09-14 22:59:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -137,6 +137,17 @@ public class ResourceTransactionView extends ResourceView  {
   }
 
   /**
+   * <code>createTimeScaleView</code>
+   *
+   */
+  protected final void createTimeScaleView() {
+    boolean doFreeTokens = false;
+    this.getJGoRulerView().collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+    initialTimeScaleEnd = getTimeScaleEnd();
+    this.getJGoRulerView().createTimeScale();
+  } // end createTimeScaleView
+
+  /**
    * <code>computeMaxResourceLabelWidth</code>
    *
    * @return - <code>int</code> - 
@@ -163,6 +174,7 @@ public class ResourceTransactionView extends ResourceView  {
    */
   protected final void renderResourceExtent() {
     this.getJGoExtentDocument().deleteContents();
+    this.getJGoLevelScaleDocument().deleteContents();
 
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();

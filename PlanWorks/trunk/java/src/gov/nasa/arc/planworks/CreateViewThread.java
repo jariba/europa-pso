@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.20 2004-09-03 00:35:31 taylor Exp $
+// $Id: CreateViewThread.java,v 1.21 2004-09-14 22:59:38 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -134,6 +134,7 @@ public class CreateViewThread extends ThreadWithProgressMonitor {
         viewList = ViewConstants.SEQUENCE_VIEW_LIST;
         // deltaCnt--;
       }
+      // System.err.println( "finishViewRendering: viewName " + viewName);
       Iterator viewItr = viewList.iterator();
       int viewIndex = 0;
       while (viewItr.hasNext()) {
