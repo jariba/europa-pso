@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.6 2004-02-05 23:25:20 miatauro Exp $
+// $Id: NavigatorView.java,v 1.7 2004-02-13 00:26:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -427,15 +427,17 @@ public class NavigatorView extends PartialPlanView {
     PwTimeline timeline = ((TimelineNode) initialNode).getTimeline();
     PwObject object = partialPlan.getObject( timeline.getParentId());
     boolean isDraggable = true;
-    ModelClassNavNode objectNavNode =
-      new ModelClassNavNode( object, new Point( ViewConstants.TIMELINE_VIEW_X_INIT,
-                                                ViewConstants.TIMELINE_VIEW_Y_INIT),
-                             ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
-                             isDraggable, this);
-    objectNavNode.setInLayout( true);
-    objectNavNodeMap.put( object.getId(), objectNavNode);
-    jGoDocument.addObjectAtTail( objectNavNode);
-
+    ModelClassNavNode objectNavNode = null;
+    if(object != null) {
+      objectNavNode = 
+        new ModelClassNavNode( object, new Point( ViewConstants.TIMELINE_VIEW_X_INIT,
+                                                  ViewConstants.TIMELINE_VIEW_Y_INIT),
+                               ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
+                               isDraggable, this);
+      objectNavNode.setInLayout( true);
+      objectNavNodeMap.put( object.getId(), objectNavNode);
+      jGoDocument.addObjectAtTail( objectNavNode);
+    }
     TimelineNavNode timelineNavNode =
       new TimelineNavNode( timeline, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                                 ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
@@ -445,7 +447,9 @@ public class NavigatorView extends PartialPlanView {
     timelineNavNodeMap.put( timeline.getId(), timelineNavNode);
     jGoDocument.addObjectAtTail( timelineNavNode);
 
-    addNavigatorLink( objectNavNode, timelineNavNode, timelineNavNode);
+    if(objectNavNode != null) {
+      addNavigatorLink( objectNavNode, timelineNavNode, timelineNavNode);
+    }
 
     addSlotNavNodes( timelineNavNode);
     addTimelineToSlotNavLinks( timelineNavNode);
@@ -541,6 +545,7 @@ public class NavigatorView extends PartialPlanView {
     // ConstraintNetwork.VariableNode
     boolean isDraggable = true;
     PwVariable variable = ((VariableNode) initialNode).getVariable();
+    //THIS NEEDS TO CHANGE
     PwToken token = (PwToken) variable.getTokenList().get( 0);
     Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     if (! token.isFreeToken()) {
@@ -577,6 +582,7 @@ public class NavigatorView extends PartialPlanView {
     boolean isDraggable = true;
     PwConstraint constraint = ((ConstraintNode) initialNode).getConstraint();
     PwVariable variable = (PwVariable) constraint.getVariablesList().get( 0);
+    //THIS NEEDS TO CHANGE
     PwToken token = (PwToken) variable.getTokenList().get( 0);
     Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     if (! token.isFreeToken()) {

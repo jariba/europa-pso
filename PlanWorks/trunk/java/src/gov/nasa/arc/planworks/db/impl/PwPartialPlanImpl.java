@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.72 2004-02-05 23:23:54 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.73 2004-02-13 00:25:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -513,8 +513,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     boolean retval = true;
     while(variableIterator.hasNext()) {
       PwVariableImpl variable = (PwVariableImpl) variableIterator.next();
-      if(variable.getTokenList().size() != 1) {
-        System.err.println("Variable " + variable.getId() + " has no tokens.");
+      if(variable.getParent() == null) {
+        System.err.println("Variable " + variable.getId() + " has no parent.");
         retval = false;
       }
       if(variable.getDomain() == null) {

@@ -318,7 +318,7 @@ CREATE TABLE VConstraint (
 CREATE TABLE Variable (
   VariableId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
-  TokenId int(10) NOT NULL default '0',
+  ParentId int(10) NOT NULL default '0',
   ParameterName varchar(255) default 'ErrorParam',
   DomainType enum('EnumeratedDomain','IntervalDomain') NOT NULL default 'IntervalDomain',
   EnumDomain blob,

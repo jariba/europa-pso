@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.18 2004-02-03 19:22:20 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.19 2004-02-13 00:25:18 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -38,10 +38,10 @@ import gov.nasa.arc.planworks.util.UniqueSet;
 public class PwVariableImpl implements PwVariable {
 
   private Integer id;
+  private Integer parentId;
   private String type;
   private UniqueSet constraintIdList; // element String
   private UniqueSet parameterNameList;
-  private UniqueSet tokenIdList;
   private PwDomainImpl domain; // PwEnumeratedDomainImpl || PwIntervalDomainImpl
   private PwPartialPlanImpl partialPlan;
 
@@ -57,24 +57,24 @@ public class PwVariableImpl implements PwVariable {
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
   public PwVariableImpl( final Integer id, final String type, final List constraintIds, 
-                         final List parameterNames, final List tokenIds, final PwDomainImpl domain,
-                         final PwPartialPlanImpl partialPlan) {
+                         final List parameterNames, final Integer parentId, 
+                         final PwDomainImpl domain, final PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.type = type;
     this.constraintIdList = new UniqueSet(constraintIds);
     this.parameterNameList = new UniqueSet(parameterNames);
-    this.tokenIdList = new UniqueSet(tokenIds);
+    this.parentId = parentId;
     this.domain = domain;
     this.partialPlan = partialPlan;
   } // end constructor
 
-  public PwVariableImpl( final Integer id, final String type, final PwDomainImpl domain,
-                         final PwPartialPlanImpl partialPlan) {
+  public PwVariableImpl( final Integer id, final String type, final Integer parentId,
+                         final PwDomainImpl domain, final PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.type = type;
     this.constraintIdList = new UniqueSet();
     this.parameterNameList = new UniqueSet();
-    this.tokenIdList = new UniqueSet();
+    this.parentId = parentId;
     this.domain = domain;
     this.partialPlan = partialPlan;
   } // end constructor
@@ -124,15 +124,10 @@ public class PwVariableImpl implements PwVariable {
     return retval;
   }
 
-  /**
-   * <code>getTokenList</code>
-   *
-   * @return - <code>List</code> - of PwToken
-   */
-  public List getTokenList() {
-    List retval = new ArrayList(tokenIdList.size());
-    for(int i = 0; i < tokenIdList.size(); i++) {
-      retval.add(partialPlan.getToken((Integer) tokenIdList.get(i)));
+  public Object getParent() {
+    Object retval = partialPlan.getToken(parentId);
+    if(retval == null) {
+      retval = partialPlan.getObject(parentId);
     }
     return retval;
   }
@@ -149,8 +144,8 @@ public class PwVariableImpl implements PwVariable {
     parameterNameList.add(paramName);
   }
 
-  public void addToken(final Integer tokenId) {
-    tokenIdList.add(tokenId);
+  public void setParent(final Integer parentId) {
+    this.parentId = parentId;
   }
 
 } // end class PwVariableImpl

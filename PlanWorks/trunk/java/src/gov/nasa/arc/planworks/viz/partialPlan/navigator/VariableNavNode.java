@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.2 2004-02-05 23:25:21 miatauro Exp $
+// $Id: VariableNavNode.java,v 1.3 2004-02-13 00:26:27 miatauro Exp $
 //
 // PlanWorks
 //
@@ -71,6 +71,7 @@ public class VariableNavNode extends ExtendedBasicNode {
                        boolean isDraggable, PartialPlanView partialPlanView) { 
     super( ViewConstants.ELLIPSE);
     this.variable = variable;
+    //THIS NEEDS TO CHANGE
     tokenList =  variable.getTokenList();
     token = (PwToken) tokenList.get( 0);
     navigatorView = (NavigatorView) partialPlanView;

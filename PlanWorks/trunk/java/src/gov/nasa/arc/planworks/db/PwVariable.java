@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariable.java,v 1.9 2004-01-14 21:22:11 miatauro Exp $
+// $Id: PwVariable.java,v 1.10 2004-02-13 00:24:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -62,11 +62,6 @@ public interface PwVariable {
    */
   public abstract List getConstraintList();
 
-  /**
-   * <code>getTokenList</code>
-   *
-   * @return - <code>List</code> - 
-   */
-  public abstract List getTokenList();
+  public abstract Object getParent();
 
 } // end interface PwVariable
