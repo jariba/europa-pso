@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.14 2003-06-26 18:19:49 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.15 2003-06-30 18:03:43 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -96,7 +96,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     System.err.println( "Creating PwPartialPlan  ...");
     long startTimeMSecs = System.currentTimeMillis();
     ResultSet existingPartialPlan =
-      MySQLDB.queryDatabase("SELECT (PartialPlanId) FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" AND PlanName=").concat(name));
+      MySQLDB.queryDatabase("SELECT (PartialPlanId) FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" AND PlanName='").concat(name).concat("'"));
     if(existingPartialPlan.getFetchSize() < 1) {
       String [] fileNames = new File(url).list(new FilenameFilter () {
           public boolean accept(File dir, String name) {
