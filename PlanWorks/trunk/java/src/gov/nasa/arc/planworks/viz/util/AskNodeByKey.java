@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.1 2004-08-07 01:18:30 taylor Exp $
+// $Id: AskNodeByKey.java,v 1.2 2004-08-16 22:01:02 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,6 +33,7 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
@@ -232,6 +233,9 @@ public class AskNodeByKey extends JDialog {
           return true;
         }
       }
+    } else if (partialPlanView instanceof NavigatorView) {
+      return ((partialPlan.getEntity( nodeKey) != null) &&
+	      (partialPlan.getResourceTransaction( nodeKey) == null));
     } else {
       System.err.println( "AskNodeByKey.isNodeKeyValid: " + partialPlanView +
                           " not handled");

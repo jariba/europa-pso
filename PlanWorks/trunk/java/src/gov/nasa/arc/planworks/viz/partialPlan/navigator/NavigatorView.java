@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.34 2004-08-14 01:39:16 taylor Exp $
+// $Id: NavigatorView.java,v 1.35 2004-08-16 22:01:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -67,6 +67,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkRuleInstanceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
+import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeys;
 import gov.nasa.arc.planworks.viz.util.MessageDialog;
 import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
@@ -276,6 +277,9 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
 
     expandViewFrame( navigatorFrame, maxViewWidth, maxViewHeight);
 
+    long stopTimeMSecs = System.currentTimeMillis();
+    System.err.println( "   ... " + ViewConstants.NAVIGATOR_VIEW + " elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
     startTimeMSecs = 0L;
     isLayoutNeeded = false;
     focusNode = null;
@@ -348,6 +352,9 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
 				    jGoView);
     }
 
+    long stopTimeMSecs = System.currentTimeMillis();
+    System.err.println( "   ... " + ViewConstants.NAVIGATOR_VIEW + " elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
     startTimeMSecs = 0L;
     this.setVisible( true);
     redrawPMThread.setProgressMonitorCancel();
@@ -827,6 +834,10 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
+    JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
+    createNodeByKeyItem( nodeByKeyItem);
+    mouseRightPopup.add( nodeByKeyItem);
+
     JMenuItem findEntityPathItem = new JMenuItem( "Find Entity Path");
     createFindEntityPathItem( findEntityPathItem);
     mouseRightPopup.add( findEntityPathItem);
@@ -851,6 +862,26 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
+
+  private void createNodeByKeyItem( JMenuItem nodeByKeyItem) {
+    nodeByKeyItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          AskNodeByKey nodeByKeyDialog =
+            new AskNodeByKey( "Find by Key", "key (int)", NavigatorView.this);
+          Integer nodeKey = nodeByKeyDialog.getNodeKey();
+          if (nodeKey != null) {
+            // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
+            boolean isFindEntityPath = true;
+            FindEntityPath findEntityPath =
+              new FindEntityPath( partialPlan, viewSet, isFindEntityPath);
+            List entityKeyList = new ArrayList();
+            entityKeyList.add( nodeKey);
+            findEntityPath.setEntityKeyList( entityKeyList);
+           renderEntityPathNodes( findEntityPath);
+          }
+        }
+      });
+  } // end createNodeByKeyItem
 
   private void createOverviewWindowItem( final JMenuItem overviewWindowItem,
                                          final NavigatorView navigatorView,
