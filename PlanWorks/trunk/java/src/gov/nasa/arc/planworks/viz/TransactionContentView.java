@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.2 2003-10-18 01:27:54 taylor Exp $
+// $Id: TransactionContentView.java,v 1.3 2003-10-23 18:28:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -17,13 +17,19 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
+import gov.nasa.arc.planworks.db.PwConstraint;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTransaction;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.viz.nodes.TransactionField;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
@@ -39,7 +45,7 @@ public class TransactionContentView extends JGoView {
 
   private List transactionList; // element PwTransaction
   private TransactionHeaderView headerJGoView;
-  private ViewableObject viewableObject; // PwPartialPlan or PwPlanning Sequence
+  private ViewableObject viewableObject; // PwPartialPlan or PwPlanningSequence
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
   private List transactionFieldList; // element TransactionField;
@@ -111,7 +117,6 @@ public class TransactionContentView extends JGoView {
       x += headerJGoView.getObjectKeyNode().getSize().getWidth();
       transactionFieldList.add( objectKeyField);
 
-      String stepNumString = transaction.getStepNumber().toString();
       TransactionField stepNumField =
         new TransactionField( transaction.getStepNumber().toString(), new Point( x, y),
                               JGoText.ALIGN_RIGHT, bgColor, viewableObject);
@@ -121,10 +126,75 @@ public class TransactionContentView extends JGoView {
       x += headerJGoView.getStepNumNode().getSize().getWidth();
       transactionFieldList.add( stepNumField);
 
+      TransactionField objectNameField =
+        new TransactionField( getObjectName( transaction.getObjectId()),
+                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+      jGoDocument.addObjectAtTail(objectNameField );
+      objectNameField.setSize( (int) headerJGoView.getObjectNameNode().getSize().getWidth(),
+                           (int) objectNameField.getSize().getHeight());
+      x += headerJGoView.getObjectNameNode().getSize().getWidth();
+      transactionFieldList.add( objectNameField);
+
+      TransactionField predicateField =
+        new TransactionField( "",
+                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+      jGoDocument.addObjectAtTail( predicateField);
+      predicateField.setSize( (int) headerJGoView.getPredicateNode().getSize().getWidth(),
+                           (int) predicateField.getSize().getHeight());
+      x += headerJGoView.getPredicateNode().getSize().getWidth();
+      transactionFieldList.add( predicateField);
+
       y += keyField.getSize().getHeight();
       i++;
     }
   } // end renderTransactions
 
+  private String getObjectName( Integer objectId) {
+    String objectName = "";
+    boolean isNameFound = false;
+    // System.err.println( "\ngetObjectName: objectId " + objectId.toString());
+    if (viewableObject instanceof PwPartialPlan) {
+      PwConstraint constraint = ((PwPartialPlan) viewableObject).getConstraint( objectId);
+      if (constraint != null) {
+        objectName = constraint.getName();
+        isNameFound = true;
+        // System.err.println( "  isConstraint");
+      }
+      if (! isNameFound) {
+        PwToken token = ((PwPartialPlan) viewableObject).getToken( objectId);
+        if (token != null) {
+          objectName = token.getPredicate().getName();
+          isNameFound = true;
+          // System.err.println( "  isToken");
+        }
+        if (! isNameFound) {
+          PwVariable variable = ((PwPartialPlan) viewableObject).getVariable( objectId);
+          if (variable != null) {
+            objectName = variable.getType();
+            // System.err.println( "  isVariable");
+            isNameFound = true;
+          }
+        }
+      }
+    } else if (viewableObject instanceof PwPlanningSequence) {
+      // accessing a step of a planSequence will cause Java data structures to be built
+    }
+    if (isNameFound) {
+      // check name is less than column width
+      int columnWidth = (int) headerJGoView.getObjectNameNode().getSize().getWidth();
+      int objectNameWidth =
+        SwingUtilities.computeStringWidth( vizView.getFontMetrics(), objectName);
+      if (objectNameWidth > columnWidth) {
+        objectName =
+          objectName.substring( 0, TransactionHeaderView.OBJ_NAME_HEADER_LENGTH - 2).
+          concat( "..");
+      }
+    }
+    return objectName;
+  } // end getObjectName 
+
 
 } // end class TransactionContentView
+
+
+

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.2 2003-10-18 01:27:54 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.3 2003-10-23 18:28:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,11 +46,15 @@ public class TransactionHeaderView extends JGoView {
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE);
 
-  private static final String KEY_HEADER =        "  KEY  "; 
-  private static final String TYPE_HEADER =      "           TYPE            "; 
-  private static final String SOURCE_HEADER =    " SOURCE  ";   
+  private static final String KEY_HEADER =        "TX_KEY "; 
+  private static final String TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
+  private static final String SOURCE_HEADER =     " SOURCE  ";   
   private static final String OBJECT_KEY_HEADER = "OBJ_KEY";
-  private static final String STEP_NUM_HEADER =  "STEP_NUM";
+  private static final String STEP_NUM_HEADER =   "  STEP  ";
+  private static final String OBJ_NAME_HEADER =   "     OBJ_NAME     ";
+  private static final String PREDICATE_HEADER =  "  PREDICATE  ";
+
+  public static final int OBJ_NAME_HEADER_LENGTH = 18; 
 
 
   private VizView vizView; // PartialPlanView  or SequenceView
@@ -60,6 +64,8 @@ public class TransactionHeaderView extends JGoView {
   private TextNode sourceNode;
   private TextNode objectKeyNode;
   private TextNode stepNumNode;
+  private TextNode objectNameNode;
+  private TextNode predicateNode;
 
   /**
    * <code>TransactionHeaderView</code> - constructor 
@@ -113,6 +119,16 @@ public class TransactionHeaderView extends JGoView {
     configureTextNode( stepNumNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( stepNumNode);
     x += stepNumNode.getSize().getWidth();
+
+    objectNameNode = new TextNode( OBJ_NAME_HEADER);
+    configureTextNode( objectNameNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( objectNameNode);
+    x += objectNameNode.getSize().getWidth();
+
+    predicateNode = new TextNode( PREDICATE_HEADER);
+    configureTextNode( predicateNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( predicateNode);
+    x += predicateNode.getSize().getWidth();
   } // end renderTransactionHeader
 
 
@@ -175,6 +191,24 @@ public class TransactionHeaderView extends JGoView {
    */
   public TextNode getStepNumNode()  {
     return this.stepNumNode;
+  }
+
+  /**
+   * Gets the value of objectNameNode
+   *
+   * @return the value of objectNameNode
+   */
+  public TextNode getObjectNameNode()  {
+    return this.objectNameNode;
+  }
+
+  /**
+   * Gets the value of predicateNode
+   *
+   * @return the value of predicateNode
+   */
+  public TextNode getPredicateNode()  {
+    return this.predicateNode;
   }
 
 
