@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.14 2003-07-30 00:38:42 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.15 2003-08-06 01:20:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,7 +19,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
@@ -30,9 +29,7 @@ import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoLayer;
 import com.nwoods.jgo.JGoView;
-import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwObject;
@@ -41,7 +38,6 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTokenRelation;
-import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.TokenLink;
@@ -161,8 +157,7 @@ public class TokenNetworkView extends VizView {
     // setVisible( true | false) depending on ContentSpec
     setNodesVisible();
 
-    LayeredDigraphAutoLayout layout =
-      new LayeredDigraphAutoLayout( jGoDocument, startTimeMSecs);
+    TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
     computeExpandedViewFrame();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
@@ -207,10 +202,20 @@ public class TokenNetworkView extends VizView {
     return this.jGoDocument;
   }
 
+  /**
+   * <code>getNodeList</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public List getNodeList() {
     return nodeList;
   }
 
+  /**
+   * <code>getLinkList</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public List getLinkList() {
     return linkList;
   }
@@ -363,13 +368,15 @@ public class TokenNetworkView extends VizView {
     // free tokens
     List freeTokenList = partialPlan.getFreeTokenList();
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
+    objectCnt = -1;
     // System.err.println( "token network view freeTokenList " + freeTokenList);
     Iterator freeTokenItr = freeTokenList.iterator();
-    boolean isFreeToken = true; objectCnt = -1;
+    boolean isFreeToken = true, isDraggable = false;
     while (freeTokenItr.hasNext()) {
       TokenNode freeTokenNode = new TokenNode( (PwToken) freeTokenItr.next(),
                                                new Point( x, y), objectCnt,
-                                               isFreeToken, this);
+                                               isFreeToken, isDraggable,
+                                               viewName, this);
       if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
         x += freeTokenNode.getSize().getWidth() * 0.5;
         freeTokenNode.setLocation( x, y);
@@ -384,7 +391,7 @@ public class TokenNetworkView extends VizView {
 
   private void createTokenNodesOfTimeline( PwTimeline timeline, int x, int y,
                                            int objectCnt) {
-    boolean isFreeToken = false;
+    boolean isFreeToken = false, isDraggable = false;
     Iterator slotIterator = timeline.getSlotList().iterator();
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
@@ -392,7 +399,8 @@ public class TokenNetworkView extends VizView {
       while (tokenIterator.hasNext()) {
         PwToken token = (PwToken) tokenIterator.next();
         TokenNode tokenNode =
-          new TokenNode( token, new Point( x, y), objectCnt, isFreeToken, this);
+          new TokenNode( token, new Point( x, y), objectCnt, isFreeToken,
+                         isDraggable, viewName, this);
         if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
           x += tokenNode.getSize().getWidth() * 0.5;
           tokenNode.setLocation( x, y);
@@ -411,7 +419,7 @@ public class TokenNetworkView extends VizView {
       Integer tokenKey = tokenNode.getToken().getKey();
       TokenRelations tokenRelations =
         (TokenRelations) relationships.get( tokenKey);
-      if(tokenRelations != null) {
+      if (tokenRelations != null) {
         Iterator masterTokenItr = tokenRelations.getMasterTokenIds().iterator();
         while (masterTokenItr.hasNext()) {
           Integer masterTokenId = (Integer) masterTokenItr.next();

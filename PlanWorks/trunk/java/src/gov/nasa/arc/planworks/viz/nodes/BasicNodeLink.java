@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodeLink.java,v 1.1 2003-07-30 00:43:19 taylor Exp $
+// $Id: BasicNodeLink.java,v 1.2 2003-08-06 01:20:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,8 +12,13 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
+import java.awt.Point;
+
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoLabeledLink;
+import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoPort;
+import com.nwoods.jgo.JGoStroke;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
@@ -35,6 +40,7 @@ public class BasicNodeLink extends JGoLabeledLink {
 
   private BasicNode fromNode;
   private BasicNode toNode;
+  private String linkName;
 
   /**
    * <code>BasicNodeLink</code> - constructor 
@@ -42,10 +48,11 @@ public class BasicNodeLink extends JGoLabeledLink {
    * @param fromVariableNode - <code>TokenNode</code> - 
    * @param toTokenNode - <code>TokenNode</code> - 
    */
-  public BasicNodeLink( BasicNode fromNode, BasicNode toNode) {
+  public BasicNodeLink( BasicNode fromNode, BasicNode toNode, String linkName) {
     super( fromNode.getPort(), toNode.getPort());
     this.fromNode = fromNode;
     this.toNode = toNode;
+    this.linkName = linkName;
     this.setArrowHeads( false, true); // fromArrowHead toArrowHead
   } // end constructor
 
@@ -66,6 +73,35 @@ public class BasicNodeLink extends JGoLabeledLink {
   public BasicNode getToNode() {
     return this.toNode;
   }
+
+  /**
+   * <code>getLinkName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getLinkName() {
+    return linkName;
+  }
+
+  /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String toString() {
+    return linkName;
+  }
+
+  /**
+   * <code>equals</code>
+   *
+   * @param node - <code>Object</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean equals( BasicNodeLink link) {
+    return (this.linkName.equals( link.getLinkName()));
+  }
+
 
 
 } // end class BasicNodeLink

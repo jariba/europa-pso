@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: LayeredDigraphAutoLayout.java,v 1.1 2003-07-16 01:15:43 taylor Exp $
+// $Id: TokenNetworkLayout.java,v 1.1 2003-08-06 01:20:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,30 +17,34 @@ import java.util.Date;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoLayer;
-import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
 
 /**
- * <code>LayeredDigraphAutoLayout</code> - 
+ * <code>TokenNetworkLayout</code> - 
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class LayeredDigraphAutoLayout extends JGoLayeredDigraphAutoLayout {
+public class TokenNetworkLayout extends JGoLayeredDigraphAutoLayout {
 
   private long startTimeMSecs;
 
 
-  public LayeredDigraphAutoLayout( JGoDocument jGoDocument, long startTimeMSecs) {
+  /**
+   * <code>TokenNetworkLayout</code> - constructor 
+   *
+   * @param jGoDocument - <code>JGoDocument</code> - 
+   * @param startTimeMSecs - <code>long</code> - 
+   */
+  public TokenNetworkLayout( JGoDocument jGoDocument, long startTimeMSecs) {
     super( jGoDocument);
     this.startTimeMSecs = startTimeMSecs;
     setDirectionOption( JGoLayeredDigraphAutoLayout.LD_DIRECTION_DOWN);
     setColumnSpacing( getColumnSpacing() / 4);
     setLayerSpacing( getLayerSpacing() / 4);
-    setCycleRemoveOption( JGoLayeredDigraphAutoLayout.LD_CYCLEREMOVE_GREEDY);
+    setCycleRemoveOption( JGoLayeredDigraphAutoLayout.LD_CYCLEREMOVE_DFS);
     setInitializeOption( JGoLayeredDigraphAutoLayout.LD_INITIALIZE_NAIVE);
 
     // int NlayerSpacing, int NcolumnSpacing, int NdirectionOption, int NcycleremoveOption, int NlayeringOption, int NinitializeOption, int Niterations, int NaggressiveOption) 
@@ -48,8 +52,13 @@ public class LayeredDigraphAutoLayout extends JGoLayeredDigraphAutoLayout {
   } // end constructor
 
 
+  /**
+   * <code>progressUpdate</code>
+   *
+   * @param progress - <code>double</code> - 
+   */
   public void progressUpdate( double progress) {
-    System.err.println( "LayeredDigraphAutoLayout progress: " + progress);
+    System.err.println( "TokenNetworkLayout progress: " + progress);
     if (progress == 1.0) {
       long stopTimeMSecs = (new Date()).getTime();
       System.err.println( "   ... elapsed time: " +
@@ -57,4 +66,4 @@ public class LayeredDigraphAutoLayout extends JGoLayeredDigraphAutoLayout {
     }
   } // end progressUpdate
 
-} // end class LayeredDigraphAutoLayout
+} // end class TokenNetworkLayout

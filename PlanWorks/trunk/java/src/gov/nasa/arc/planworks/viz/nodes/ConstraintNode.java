@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.3 2003-07-30 23:56:00 taylor Exp $
+// $Id: ConstraintNode.java,v 1.4 2003-08-06 01:20:14 taylor Exp $
 //
 // PlanWorks
 //
@@ -21,7 +21,7 @@ import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDrawable;
 import com.nwoods.jgo.JGoEllipse;
 import com.nwoods.jgo.JGoObject;
-import com.nwoods.jgo.JGoPolygon;
+import com.nwoods.jgo.JGoPort;
 import com.nwoods.jgo.JGoRectangle;
 import com.nwoods.jgo.JGoText;
 
@@ -32,8 +32,6 @@ import com.nwoods.jgo.examples.Diamond;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.db.PwConstraint;
-import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.views.VizView;
@@ -64,9 +62,21 @@ public class ConstraintNode extends BasicNode {
   private String nodeLabel;
   private List variableNodeList;
   private boolean isDiamond = true;
+  private List constraintVariableLinkList;
 
+  /**
+   * <code>ConstraintNode</code> - constructor 
+   *
+   * @param constraint - <code>PwConstraint</code> - 
+   * @param variableNode - <code>VariableNode</code> - 
+   * @param constraintLocation - <code>Point</code> - 
+   * @param objectCnt - <code>int</code> - 
+   * @param isDraggable - <code>boolean</code> - 
+   * @param view - <code>VizView</code> - 
+   */
   public ConstraintNode( PwConstraint constraint, VariableNode variableNode,
-                         Point constraintLocation, int objectCnt, VizView view) { 
+                         Point constraintLocation, int objectCnt, boolean isDraggable,
+                         VizView view) { 
     super();
     this.constraint = constraint;
     this.variableNode = variableNode;
@@ -74,25 +84,27 @@ public class ConstraintNode extends BasicNode {
     this.view = view;
     variableNodeList = new ArrayList();
     variableNodeList.add( variableNode);
+    constraintVariableLinkList = new ArrayList();
     // debug
     // nodeLabel = constraint.getType().substring( 0, 1) + "_" +
     //   constraint.getKey().toString();
     nodeLabel = constraint.getName();
     // System.err.println( "ConstraintNode: " + nodeLabel);
 
-    configure( constraintLocation);
+    configure( constraintLocation, isDraggable);
   } // end constructor
 
-  private final void configure( Point constraintLocation) {
+  private final void configure( Point constraintLocation, boolean isDraggable) {
     setLabelSpot( JGoObject.Center);
     initialize( constraintLocation, nodeLabel);
+    // 
     String backGroundColor = null;
     backGroundColor = ((objectCnt % 2) == 0) ?
       ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
       ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
-    setDraggable( false);
+    setDraggable( isDraggable);
     // do not allow user links
     getPort().setVisible( false);
   } // end configure
@@ -100,20 +112,76 @@ public class ConstraintNode extends BasicNode {
 
   // extend BasicNode to use Diamond
 
+  /**
+   * <code>initialize</code> - modified from BasicNode to handle Diamond node shape
+   *
+   * @param loc - <code>Point</code> - 
+   * @param labeltext - <code>String</code> - 
+   */
+  public void initialize(Point loc, String labeltext) {
+    // the area as a whole is not directly selectable using a mouse,
+    // but the area can be selected by trying to select any of its
+    // children, all of whom are currently !isSelectable().
+    setSelectable(false);
+    setGrabChildSelection(true);
+    // the user can move this node around
+    setDraggable(true);
+    // the user cannot resize this node
+    setResizable(false);
+
+    // create the circle/ellipse around and behind the port
+    myDrawable = createDrawable();
+    // can't setLocation until myDrawable exists
+    setLocation(loc);
+
+    // if there is a string, create a label with a transparent
+    // background that is centered
+    if (labeltext != null) {
+      myLabel = createLabel(labeltext);
+    }
+
+    // create a Port, which knows how to make sure
+    // connected JGoLinks have a reasonable end point
+    // myPort = new BasicNodePort();
+    myPort = new BasicNodePortWDiamond();
+    myPort.setSize(7, 7);
+    if (getLabelSpot() == Center) {
+      getPort().setStyle(JGoPort.StyleHidden);
+    } else {
+      getPort().setStyle(JGoPort.StyleEllipse);
+    }
+
+    // add all the children to the area
+    addObjectAtHead(myDrawable);
+    addObjectAtTail(myPort);
+    if (myLabel != null) {
+      addObjectAtTail(myLabel);
+    }
+  }
+
+
+  /**
+   * <code>createDrawable</code> - modified from BasicNode to handle Diamond node shape
+   *
+   * @return - <code>JGoDrawable</code> - 
+   */
   public JGoDrawable createDrawable() {
     JGoDrawable d;
-    if (isRectangular())
+    if (isRectangular()) {
       d = new JGoRectangle();
-    else if (isDiamond)
+    } else if (isDiamond) {
       d = new Diamond();
-    else
+    } else {
       d = new JGoEllipse();
+    }
     d.setSelectable(false);
     d.setDraggable(false);
     d.setSize(20, 20);
     return d;
   } // end createDrawable
-  
+
+  // end extending BasicNode 
+
 
   /**
    * <code>equals</code>
@@ -160,6 +228,26 @@ public class ConstraintNode extends BasicNode {
   public void addVariableNode( VariableNode variableNode) {
     if (variableNodeList.indexOf( variableNode) == -1) {
       variableNodeList.add( variableNode);
+    }
+  }
+
+  /**
+   * <code>getConstraintVariableLinkList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getConstraintVariableLinkList() {
+    return constraintVariableLinkList;
+  }
+
+  /**
+   * <code>addLink</code>
+   *
+   * @param link - <code>BasicNodeLink</code> - 
+   */
+  public void addLink( BasicNodeLink link) {
+    if (constraintVariableLinkList.indexOf( link) == -1) {
+      constraintVariableLinkList.add( link);
     }
   }
 
