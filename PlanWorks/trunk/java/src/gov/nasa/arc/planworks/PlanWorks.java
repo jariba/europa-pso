@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.7 2003-06-13 19:04:55 taylor Exp $
+// $Id: PlanWorks.java,v 1.8 2003-06-13 21:18:06 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -151,6 +151,9 @@ public class PlanWorks extends MDIDesktopFrame {
     if (PwProject.listProjects().size() > 0) {
       setProjectMenuEnabled( "Open ...", true);
       setProjectMenuEnabled( "Delete ...", true);
+    } else {
+      setProjectMenuEnabled( "Open ...", false);
+      setProjectMenuEnabled( "Delete ...", false);
     }
   } //end constructor 
 
@@ -166,7 +169,7 @@ public class PlanWorks extends MDIDesktopFrame {
       }
     }
     return urlsLessCurrent;
-  }
+  } // end getUrlsLessCurrent
 
 
   private static void setProjectMenuEnabled( String textName, boolean isEnabled) {
@@ -599,8 +602,7 @@ public class PlanWorks extends MDIDesktopFrame {
           startTimeMSecs = (new Date()).getTime();
         }
         MDIInternalFrame viewFrame =
-          viewManager.openTimelineView( partialPlan,
-                                        "Timeline View of " + sequenceName +
+          viewManager.openTimelineView( partialPlan, sequenceName +
                                         System.getProperty( "file.separator") +
                                         partialPlanName);
         if (! viewExists) {
