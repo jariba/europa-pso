@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.3 2004-03-07 01:49:27 taylor Exp $
+// $Id: ResourceView.java,v 1.4 2004-03-10 02:21:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -898,6 +898,7 @@ public abstract class ResourceView extends PartialPlanView  {
       this.xLoc = xLocation;
       setDraggable( false);
       setResizable( false);
+      setSelectable( false);
       setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "red")));
     }
 
@@ -907,7 +908,7 @@ public abstract class ResourceView extends PartialPlanView  {
      * @return - <code>String</code> - 
      */
     public final String getToolTipText() {
-      return String.valueOf( jGoRulerView.scaleXLoc( xLoc) + 1);
+      return String.valueOf( jGoRulerView.scaleXLoc( xLoc));
     }
 
   } // end class TimeScaleMark

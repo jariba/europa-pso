@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.30 2004-03-04 21:30:26 taylor Exp $
+// $Id: PartialPlanView.java,v 1.31 2004-03-10 02:21:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -680,6 +680,7 @@ public class PartialPlanView extends VizView {
               }
             }
           }
+          ((PartialPlanViewSet) viewSet).setNavigatorFrameCnt( 0);
         }
       });
   } // end createCloseNavigatorWindowsItem

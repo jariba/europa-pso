@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.21 2004-03-04 20:53:09 miatauro Exp $
+// $Id: SequenceQueryWindow.java,v 1.22 2004-03-10 02:21:22 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -116,7 +116,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     DB_TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_TOKEN);
     DB_TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_VARIABLE);
     DB_TRANSACTION_QUERIES.add( TRANSACTIONS_IN_RANGE);
-    DB_TRANSACTION_QUERIES.add(TRANSACTIONS_OF_TYPE);
+    // DB_TRANSACTION_QUERIES.add(TRANSACTIONS_OF_TYPE);
     CONSTRAINT_TRANSACTION_TYPES = MySQLDB.queryConstraintTransactionNames();
 //     CONSTRAINT_TRANSACTION_TYPES = new ArrayList();
 //     CONSTRAINT_TRANSACTION_TYPES.add( DbConstants.CONSTRAINT_CREATED);
@@ -293,6 +293,15 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
    */
   public int getQueryResultFrameCnt() {
     return queryResultFrameCnt;
+  }
+
+  /**
+   * <code>setQueryResultFrameCnt</code>
+   *
+   * @param cnt - <code>int</code> - 
+   */
+  public void setQueryResultFrameCnt( int cnt) {
+    queryResultFrameCnt = cnt;
   }
 
   /**
@@ -1112,6 +1121,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
               }
             }
           }
+          // force query window x,y coords back to near top of MDI frame
+          SequenceQueryWindow.this.setQueryResultFrameCnt( 0);
         }
       });
   } // end createCloseWindowsItem

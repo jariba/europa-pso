@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.6 2004-02-03 20:44:00 taylor Exp $
+// $Id: StepQueryView.java,v 1.7 2004-03-10 02:21:21 taylor Exp $
 //
 // PlanWorks
 //
@@ -161,6 +161,12 @@ public class StepQueryView extends SequenceView {
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
     stepQueryFrame.setLocation
       ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta, maxQueryFrameY + delta);
+    // prevent right edge from going outside the MDI frame
+    expandViewFrame( stepQueryFrame,
+                     (int) headerJGoView.getDocumentSize().getWidth(),
+                     (int) (headerJGoView.getDocumentSize().getHeight() +
+                            contentJGoView.getDocumentSize().getHeight()));
+
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.31 2004-03-09 22:10:14 miatauro Exp $
+// $Id: planViz.txt,v 1.32 2004-03-10 02:21:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -123,8 +123,9 @@ Method:
   2. Open first test project with menu-bar selection "Project->Open ...".
 
 Post-conditions:
-  1. PlanWorks frame title is suffixed with "=> <test-project-2>".
-  2. Menu-bar item "Project->Open ..." is enabled.
+  1. Method:1 - PlanWorks frame title is suffixed with "=> <test-project-2>".
+  2. Method:1 - Menu-bar item "Project->Open ..." is enabled.
+  3. Method:2 - PlanWorks frame title is suffixed with "=> <test-project-1>".
 
 Requirements: 3.2.c
 
@@ -163,27 +164,29 @@ Pre-conditions:
 
 Method:
   1. Display "test1" Sequence Steps View using menu-bar selection
-     "Planning Sequence->monkey.....".
-  2. Display "test-seq-1" Timeline View by clicking Mouse-Right on the "step0"
+     "Planning Sequence->test-seq-1".
+  2. Display "test-seq-1" Timeline View by clicking Mouse-Right on the "step<n>"
      element of the "SequenceStepsView of test-seq-1", and selecting 
      "Timeline View".
   3. Display "test-seq-2" Sequence Steps View using menu-bar selection
      "Planning Sequence->test-seq-2".
-  4. Display "test-seq-2" Timeline View by clicking Mouse-Right on the "step0"
+  4. Display "test-seq-2" Timeline View by clicking Mouse-Right on the "step<n>"
      element of the "SequenceStepsView of test-seq-2", and selecting
      "Timeline View"".
   5. Display "test-seq-3" Sequence Steps View using menu-bar selection
      "Planning Sequence->test-seq-3".
-  6. Display "test-seq-3" Timeline View by clicking Mouse-Right on the "step0"
+  6. Display "test-seq-3" Timeline View by clicking Mouse-Right on the "step<n>"
      element of the "SequenceStepsView of test-seq-3", and selecting
      "Timeline View"".
-  7. Display "test-seq-1" Timeline View by clicking Mouse-Right on the "step0"
-     element of the "SequenceStepsView of test-seq-1", and selecting 
+  7. Display "test-seq-1" Timeline View by selecting "SequenceStepsView of
+     "test-seq-1", to bring it to the front, and then clicking Mouse-Right on 
+     the "step<n>" element of the "SequenceStepsView of test-seq-1", and selecting 
      "Timeline View"".
 
 Post-conditions:
-  1. Three ContentFilter windows exist, three TimelineView windows exist, and
-     the TimelineView of "test-seq-1" was brought to the front by method step 7.
+  1. Using the contents of the menu-bar pull-down item "Window", verify that there
+     are three ContentFilter windows, and three TimelineView windows.
+  2. The TimelineView of "test-seq-1" was brought to the front by method step 7.
 
 Requirements: 4.0.2, 4.0.3, 4.2.1, 4.2.2
 
@@ -228,7 +231,7 @@ Pre-conditions:
   1. PlanWorks is running.
   2. "test-seq-2", and "test-seq-3" have been added to the "test1" project
      as sequences, in addtion to "test-seq-1"
-  3. Each sequence has its SequenceQuery, and Sequence Steps View windows 
+  3. Each sequence has its SequenceQueryView, and SequenceStepsView windows 
      displayed.  For one step in each sequence, open a Timeline View window, 
      which opens a ContentFilter window, as well, by selecting "Open Timeline View"
      from the Mouse-Right popup menu over a particular step of the Sequence 
@@ -358,7 +361,9 @@ Exercise popup menu facilities of partial plan views.
 Pre-conditions:
   1. PlanWorks is running.
   2. The "test1" project is open, and all partial plan views are being
-     displayed for step<nn> of sequence "test1-sequence1".
+     displayed for step<nn> of sequence "test1-sequence1", by using
+     Mouse-Right "Open All Views" on step<nn> of "SequenceStepsView of
+     test1-sequence1".
 
 Method:
   1. Using either the Constraint Network, Temporal Extent, Timeline, or
@@ -375,28 +380,28 @@ Method:
      key values in "Find by Key".
   4. Arbitrarily, pick a slotted token node in one of the views, and Mouse-
      Right click on the node, selecting "Set Active Token".
-  5. In each of the other views, except for the Transaction view, Mouse-
+  5. In each of the other views, except for the DBTransaction view, Mouse-
      Right click on the background, and select "Snap to Active Token".
   6. Arbitrarily, pick a free token node in one of the views, and Mouse-
      Right click on the node, selecting "Set Active Token".
-  7. In each of the other views, except for the Transaction view, Mouse-
+  7. In each of the other views, except for the DBTransaction view, Mouse-
      Right click on the background, and select "Snap to Active Token".
   8. In the Temporal Extent view, Mouse-Right click on the background, and
      select "Set Time Scale Line".  Also select "Hide/Show Node Labels"
      from the Mouse-Right pop-up menu, as well as "Show Earliest" and 
      "Show Latest", which are options to "Show Intervals".
-  9. In the Transaction view, Mouse-Right click on the background of the 
+  9. In the DBTransaction view, Mouse-Right click on the background of the 
      "header" portion of the view, and select "Find Transaction by Obj_Key".
      Enter an OBJ_KEY value.
- 10. In the Transaction view, move the mouse over any of the column header
+ 10. In the DBTransaction view, move the mouse over any of the column header
      nodes to see whether that column is sortable, in either ascending or
      descending order.  Mouse-left click to initiate the sort.  Sort all
      the columns.
  11. In each partial plan view, use Mouse-Right "Open <view-name> View" to
-     navigate to the other views.  Iconify the ContentFilterwindow, by clicking
-     on the "minimize" icon of its title bar.  In all views, except Transaction view,
-     use Mouse-Right "Raise Content Filter" to set focus on the ContentFilter
-     window.
+     navigate to the other views.  Iconify the ContentFilter window, by clicking
+     on the "minimize" icon of its title bar.  In all views, except DBTransaction
+     view, use Mouse-Right "Raise Content Filter" to set focus on the 
+     ContentFilter window.
  12. For a selected plan sequence step, open only one partial plan view, and
      choose Mouse-Right "Hide All Views", then "Show All Views", then
      "Open All Views", and finally "Close All Views".  Do this for each of 
@@ -405,16 +410,16 @@ Method:
      1/8th scale overview of the entire "observed" view.  Drag the scoping
      rectangle to cause the "observed" view to scroll.  Use Mouse-Left clicks
      on areas outside the rectangle to cause the "observed" view to jump to
-     a new location.  Do this for all partial plan views, except Transaction.
+     a new location.  Do this for all partial plan views, except DBTransaction.
  14. In the Timeline View, Mouse-Right click on the background and select
-     "Enable Auto Snap". Then move the mouse cursor over slotted tokens, free
-     tokens, and empty slots.
+     "Enable Auto Snap". Then move the mouse cursor over slots, and free tokens.
+     (empty slots are not recognized)
 
 Post-conditions:
   1. Method:2 - In turn, each of the views should re-oriented itself to
      display the selected slotted token node with a green highlight around it.
   2. Method:3 - In turn, each of the views should re-oriented itself to
-     display the selected frre token node key with a green highlight around it.
+     display the selected free token node key with a green highlight around it.
      The same behavior should be observed for the Timeline view with the slot 
      key value; and the Constraint Network view with the variable and constraint
      key values.
@@ -432,7 +437,7 @@ Post-conditions:
      The node labels will disappear/appear with selections of "Hide/Show Node Labels".
      "Show Earliest", "Show Latest", and "Show Intervals" will redraw the nodes
      based on earliest/latest/interval for their start, end, and duration times.
-  8. Method:9 - The lower portion of the Transaction view will scroll up to 
+  8. Method:9 - The lower portion of the DBTransaction view will scroll up to 
      show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
      value will be highlighted.
   9. Method:10 - The values in the columns which are sorted will be redisplayed
@@ -444,7 +449,8 @@ Post-conditions:
  12. Method:13 - The "observed" views should respond properly to operatins on
      the overview windows.
  13. Method:14 - The Temporal Extent View's focus with green highlight will
-     follow the movement of the mouse cursor over the Timeline View's nodes.
+     follow the movement of the mouse cursor over the Timeline View's non-
+     empty slots and free tokens.
 
 Requirements: TBD
 
@@ -541,7 +547,7 @@ Pre-conditions:
 
 Method:
   1. Select the sequence from the "Planning Sequence" menu.
-  2. Select a Transaction View from one of the sequence steps, using the
+  2. Select a DBTransaction View from one of the sequence steps, using the
      Mouse-Right popup menu.  Pick constraint, token, and variable key
      values to use for appropriate queries.
   3. Using the "SequenceQuery" dialog, select "Steps" and then select in
@@ -565,56 +571,59 @@ Method:
   7. In the "In Range" "QueryResults" window created by Method:6, Mouse-Right 
      click on the background of the "header" portion of the view, and select 
      "Find Transaction by Obj_Key".  Enter an OBJ_KEY value.
-  8. Using the "SequenceQuery" dialog, select "Free Tokens At Step", enter
-     a step number, and click on "Apply Query".
+  8. Using the "SequenceQuery" dialog, select "Free Tokens ... At Step ...",
+     enter a step number, and click on "Apply Query".
   9. In the "Free Tokens" "QueryResults" window created by Method:8, Mouse-Right 
      click on the background of the "header" portion of the view, and select 
      "Find Token by Tok_Key".  Enter an TOK_KEY value.
- 10. Using the "SequenceQuery" dialog, select "Unbound Variables At Step", enter
-     a step number, and click on "Apply Query".
+ 10. Using the "SequenceQuery" dialog, select "Unbound Variables ... At Step ...", 
+     enter a step number, and click on "Apply Query".
  11. In the "Unbound Variables" "QueryResults" window created by Method:10,
      Mouse-Right click on the background of the "header" portion of the view, 
-     and select "Find Token by Tok_Key".  Enter an TOK_KEY value.
- 12. In each of the "QueryResults" windows, move the mouse over any of the 
+     and select "Find Token by Var_Key".  Enter an VAR_KEY value.
+ 12. Using the "SequenceQuery" dialog, select "All Decisions ... At Step ...",
+     enter a step number, and click on "Apply Query".
+ 13. In each of the "QueryResults" windows, move the mouse over any of the 
      column header nodes to see whether that column is sortable, in either 
      ascending or descending order.  Mouse-left click to initiate the sort.  
      Sort all the columns.
- 13. On the background of the "SequenceQuery ..." dialog, click Mouse-Right
-     and select "Discard Query Results Windows".
  14. On "Step" column values of "Steps", "Transactions", "Free Tokens", and
      "Unbound Variables" QueryResults windows, click Mouse-Right to popup a 
      menu of individual and group partial plan view operations.  Select one 
      of the options.
+ 15. On the background of the "SequenceQuery ..." dialog, click Mouse-Right
+     and select "CloseQuery Results Windows".
 
 Post-conditions:
   1. Method:1 - the Sequence Query and Sequence Steps View windows appear.
-  2. Method:2 - "TransactionView" window appears.
-  3. Method:3 - Use "TransactionView" windows for appropriate steps of the
+  2. Method:2 - "DBTransactionView" window appears.
+  3. Method:3 - Use "DBTransactionView" windows for appropriate steps of the
      Sequence Steps View to verify the results in the "QueryResults" windows.
   4. Method:4 - The lower portion of the "QueryResults" window will scroll up 
      to show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
      value will be highlighted.
   5. Method:5 - Verify these queries using knowledge from the plan sequence.
-  6. Method:6 - Use "TransactionView" windows for appropriate steps of the
+  6. Method:6 - Use "DBTransactionView" windows for appropriate steps of the
      Sequence Steps View to verify the results in the "QueryResults" windows.
   7. Method:7 - The lower portion of the "QueryResults" window will scroll up 
      to show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
      value will be highlighted.
-  8. Method:8 - Use "TransactionView" windows for appropriate steps of the
+  8. Method:8 - Use "DBTransactionView" windows for appropriate steps of the
      Sequence Steps View to verify the results in the "QueryResults" windows.
   9. Method:9 - The lower portion of the "QueryResults" window will scroll up 
      to show the free token entry with the selected TOK_KEY value.  The TOK_KEY
      value will be highlighted.
- 10. Method:10 - Use "TransactionView" windows for appropriate steps of the
+ 10. Method:10 - Use "DBTransactionView" windows for appropriate steps of the
      Sequence Steps View to verify the results in the "QueryResults" windows.
  11. Method:11 - The lower portion of the "QueryResults" window will scroll up 
      to show the transaction entry with the selected VAR_KEY value.  The VAR_KEY
      value will be highlighted.
- 12. Method:12 - The values in the columns which are sorted will be redisplayed
+ 12. Method:12 - Two results windows appear: Free Tokens and Unbound Variables.
+ 13. Method:13 - The values in the columns which are sorted will be redisplayed
      in the proper order.
- 13. Method:13 - All "QueryResults" windows created from the "SequenceQuery ..." 
-     dialog, will be deleted.
  14. Method:14 - The selected partial plan view(s) will be opened.
+ 15. Method:15 - All "QueryResults" windows created from the "SequenceQuery ..." 
+     dialog, will be deleted.
 
 Requirements: 4.3.1.a-g, 4.3.2.b-e
 
@@ -660,6 +669,7 @@ Method:
   4. Right-click periodically in the background of the "Sequence Steps View" and select the 
   "Refresh" item.
   5. Open arbitrary views for arbitrary steps.
+
 Post-conditions:
   1. Method:1 - The "Select Sequence Directory of Partial Plan Directorie(s)" dialog is visible.
   2. Method:2 - The "Planning Sequence" menu is enabled and the sequence exists as an item in that
@@ -797,15 +807,16 @@ Method:
      non-empty slot node.  Further expand the relationships of the slot node.
   3. In the Timeline View, Mouse-Right "Open Navigator View" on a
      free token node.  Further expand the relationships of the free token node.
-  4. In the Temporal Extent View, Mouse-Right "Open Navigator View" on both
-     a token node and a free token node.  Further expand the relationships
-     of the token nodes.
-  5. In the Token Network View, Mouse-Right "Open Navigator View" on both
-     a token node and a free token node.  Further expand the relationships
-     of the token nodes.
-  6. In the Constraint Network View, Mouse-Right "Open Navigator View" on both
-     a token node and a free token node.  Further expand the relationships
-     of the token nodes.
+  4. In the Temporal Extent View, Mouse-Right "Open Navigator View" on
+     a interval token node, a free token node, and a resource transaction node.  
+     Further expand the relationships of the token nodes.
+  5. In the Token Network View, Mouse-Right "Open Navigator View" on
+     a interval token node, a free token node, and a resource transaction node.
+     Further expand the relationships of the token nodes.
+  6. In the Constraint Network View, Mouse-Right "Open Navigator View" on
+     a interval token node, a free token node,  resource transaction node,
+     a timeline node, and a resource node.  Further expand the relationships
+     of the nodes.
   7. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
      variable node.  Further expand the relationships of the variable node.
   8. In the Constraint Network View, Mouse-Right "Open Navigator View" on a

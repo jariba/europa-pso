@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.25 2004-03-02 22:29:27 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.26 2004-03-10 02:21:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -103,7 +103,9 @@ public class PwSlotImpl implements PwSlot {
     return token;
   }
 
-  public boolean isEmpty() {return tokenIdList.isEmpty();}
+  public boolean isEmpty() {
+    return tokenIdList.isEmpty();
+  }
 
   public void calcTimes(PwSlot prev, PwSlot next) {
     if(hasSetTimes) {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryView.java,v 1.3 2004-02-03 20:44:00 taylor Exp $
+// $Id: TokenQueryView.java,v 1.4 2004-03-10 02:21:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -158,6 +158,11 @@ public class TokenQueryView extends SequenceView {
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
     freeTokenQueryFrame.setLocation
       ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta, maxQueryFrameY + delta);
+    // prevent right edge from going outside the MDI frame
+    expandViewFrame( freeTokenQueryFrame,
+                     (int) headerJGoView.getDocumentSize().getWidth(),
+                     (int) (headerJGoView.getDocumentSize().getHeight() +
+                            contentJGoView.getDocumentSize().getHeight()));
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.91 2004-03-09 20:25:18 miatauro Exp $
+// $Id: MySQLDB.java,v 1.92 2004-03-10 02:21:20 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1238,8 +1238,8 @@ public class MySQLDB {
     catch(SQLException sqle) {return false;}
     StringTokenizer strTok = new StringTokenizer(temp, ",");
     if (strTok.countTokens() != 7) {
-      System.err.println( "MySQLDB.varSpecDomainIsSingleton temp '" + temp + "'");
-      System.err.println( "   ... returning false");
+//       System.err.println( "MySQLDB.varSpecDomainIsSingleton temp '" + temp + "'");
+//       System.err.println( "   ... returning false");
       return false;
     }
     while(strTok.countTokens() != 2) {
