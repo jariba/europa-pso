@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.8 2003-09-18 19:01:48 miatauro Exp $
+// $Id: ContentSpec.java,v 1.9 2003-09-18 23:35:25 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -210,9 +210,6 @@ public class ContentSpec {
         while(mergeTokenIdIterator.hasNext()) {
           Integer id = (Integer) mergeTokenIdIterator.next();
           if(partialPlan.getSlot(partialPlan.getToken(id).getSlotId()) != null) {
-            System.err.println("Token " + id + " on slot " + partialPlan.getToken(id).getSlotId() +
-                               " with base token " + 
-                               partialPlan.getSlot(partialPlan.getToken(id).getSlotId()).getBaseToken().getId());
             tempValidIds.add(partialPlan.getSlot(partialPlan.getToken(id).getSlotId()).getBaseToken().getId());
           }
           else if(partialPlan.getToken(id).isFreeToken()) {

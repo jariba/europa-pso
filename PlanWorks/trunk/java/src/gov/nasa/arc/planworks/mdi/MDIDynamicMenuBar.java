@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.7 2003-09-18 19:02:05 miatauro Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.8 2003-09-18 23:35:04 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -104,7 +104,6 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
         add(temp[i]);
       }
     }
-    buildWindowMenu();
     add(windowMenu);
     //repaint(getVisibleRect());
     validate();
@@ -149,6 +148,9 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     }
   }
   public void remove(Component c) {
+    if(c == null) {
+      return;
+    }
     super.remove(c);
     if(constantMenus.contains(c)) {
       constantMenus.remove(constantMenus.indexOf(c));
@@ -156,9 +158,17 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   }
   public void addWindow(MDIInternalFrame frame) {
     windows.add(frame);
+    buildWindowMenu();
   }
   
   private void buildWindowMenu() {
+    if(windowMenu != null) {
+      windowMenu.removeAll();
+      remove(windowMenu);
+    }
+    else {
+      windowMenu = new JMenu("Window");
+    }
     JMenuItem tileItem = new JMenuItem("Tile Windows");
     JMenuItem cascadeItem = new JMenuItem("Cascade");
     tileItem.addActionListener(new TileActionListener(tileCascader));
@@ -167,6 +177,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     windowMenu.add(tileItem);
     windowMenu.add(cascadeItem);
     windowMenu.addSeparator();
+    windowMenu.validate();
     ListIterator windowIterator = windows.listIterator();
     while(windowIterator.hasNext()) {
       MDIInternalFrame frame = (MDIInternalFrame) windowIterator.next();
@@ -174,12 +185,27 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
       temp.addActionListener(new SelectedActionListener(frame));
       windowMenu.add(temp);
     }
+    if(windows.size() == 0) {
+      windowMenu.setEnabled(false);
+    }
+    super.add(windowMenu);
+    windowMenu.validate();
+    validate();
   }
   public void notifyDeleted(MDIFrame frame) {
     windows.remove(frame);
     buildWindowMenu();
   }
   public void add(JButton button){}
+  public JMenu add(JMenu menu) {
+    remove(windowMenu);
+    super.add(menu);
+    if(windowMenu != null) {
+      super.add(windowMenu);
+    }
+    validate();
+    return menu;
+  }
 }
 
 class SelectedActionListener implements ActionListener {
