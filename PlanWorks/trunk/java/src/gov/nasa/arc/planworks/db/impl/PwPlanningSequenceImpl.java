@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.39 2003-10-07 22:37:26 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.40 2003-10-09 20:42:38 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -491,6 +491,19 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     return new ArrayList();
   }
 
+  public int getPlanDBSize(int stepNum) throws IndexOutOfBoundsException {
+    if(stepNum < 0 || stepNum > stepCount) {
+      throw new IndexOutOfBoundsException();
+    }
+    List ids = new ArrayList(planToTransactionMap.keySet());
+    Collections.sort(ids);
+    return MySQLDB.queryPartialPlanSize((Long)ids.get(stepNum));
+  }
+  
+  public List getPlanDBSizeList() {
+    return MySQLDB.queryPartialPlanSizes(id);
+  }
+
   private class PartialPlanNameComparator implements Comparator {
     public PartialPlanNameComparator() {
     }
@@ -506,5 +519,4 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
       return s1.equals(s2);
     }
   }
-
 }

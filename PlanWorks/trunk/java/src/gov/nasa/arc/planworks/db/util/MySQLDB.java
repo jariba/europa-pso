@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.46 2003-10-07 22:19:19 miatauro Exp $
+// $Id: MySQLDB.java,v 1.47 2003-10-09 20:42:28 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1005,10 +1005,45 @@ public class MySQLDB {
   synchronized public static List queryStepsWithRelaxations(Long sequenceId) {
     List retval = new UniqueSet();
     try {
-      ResultSet steps = queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RELAXED).concat("'"));
+      ResultSet steps = 
+        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RELAXED).concat("'"));
       while(steps.next()) {
         retval.add(new Integer(steps.getInt("StepNumber")));
       }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryPartialPlanSizes(Long sequenceId) {
+    List retval = new ArrayList();
+    try {
+      ResultSet steps = 
+        queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
+      while(steps.next()) {
+        Long stepId = new Long(steps.getLong("PartialPlanId"));
+        retval.add(new Integer(queryPartialPlanSize(stepId)));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static int queryPartialPlanSize(Long partialPlanId) {
+    int retval = 0;
+    try {
+      ResultSet tokens = 
+        queryDatabase("SELECT COUNT(*) as Size FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
+      ResultSet variables =
+        queryDatabase("SELECT COUNT(*) as Size FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()));
+      ResultSet constraints =
+        queryDatabase("SELECT COUNT(*) as Size FROM VConstraint WHERE PartialPlanId=".concat(partialPlanId.toString())); 
+      tokens.last();
+      variables.last();
+      constraints.last();
+      retval = tokens.getInt("Size") + variables.getInt("Size") + constraints.getInt("Size");
     }
     catch(SQLException sqle) {
     }
