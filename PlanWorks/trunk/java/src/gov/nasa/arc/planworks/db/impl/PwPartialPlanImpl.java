@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.24 2003-07-16 23:25:24 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.25 2003-07-29 00:11:55 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -426,6 +426,9 @@ return object;*/
    * @param constraint - <code>PwConstraintImpl</code> - 
    */
   public void addConstraint( Integer key, PwConstraintImpl constraint) {
+    if(constraintMap.containsKey(key)) {
+      return;
+    }
     constraintMap.put( key, constraint);
   }
 
@@ -436,6 +439,9 @@ return object;*/
    * @param parameter - <code>PwParameterImpl</code> - 
    */
   public void addParameter( Integer key, PwParameterImpl parameter) {
+    if(parameterMap.containsKey(key)) {
+      return;
+    }
     parameterMap.put( key, parameter);
   }
 
@@ -446,6 +452,9 @@ return object;*/
    * @param predicate - <code>PwPredicateImpl</code> - 
    */
   public void addPredicate( Integer key, PwPredicateImpl predicate) {
+    if(predicateMap.containsKey(key)) {
+      return;
+    }
     predicateMap.put( key, predicate);
   }
 
@@ -456,6 +465,9 @@ return object;*/
    * @param slot - <code>PwSlotImpl</code> - 
    */
   public void addSlot( Integer key, PwSlotImpl slot) {
+    if(slotMap.containsKey(key)) {
+      return;
+    }
     slotMap.put( key, slot);
   }
 
@@ -466,6 +478,9 @@ return object;*/
    * @param timeline - <code>PwTimelineImpl</code> - 
    */
   public void addTimeline( Integer key, PwTimelineImpl timeline) {
+    if(timelineMap.containsKey(key)) {
+      return;
+    }
     timelineMap.put( key, timeline);
   }
 
@@ -476,6 +491,9 @@ return object;*/
    * @param token - <code>PwTokenImpl</code> - 
    */
   public void addToken( Integer key, PwTokenImpl token) {
+    if(tokenMap.containsKey(key)) {
+      return;
+    }
     tokenMap.put( key, token);
   }
   /**
@@ -485,6 +503,9 @@ return object;*/
    * @param tokenRelation - <code>PwTokenRelationImpl</code> - 
    */
   public void addTokenRelation( Integer key, PwTokenRelationImpl tokenRelation) {
+    if(tokenRelationMap.containsKey(key)) {
+      return;
+    }
     tokenRelationMap.put( key, tokenRelation);
   }
 
@@ -495,6 +516,9 @@ return object;*/
    * @param variable - <code>PwVariableImpl</code> - 
    */
   public void addVariable( Integer key, PwVariableImpl variable) {
+    if(variableMap.containsKey(key)) {
+      return;
+    }
     variableMap.put( key, variable);
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.15 2003-07-15 00:21:51 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.16 2003-07-29 00:11:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -70,8 +70,8 @@ public class PwTokenImpl implements PwToken {
     this.objectVarId = objectVarId;
     this.objectId = objectId;
     this.rejectVarId = rejectVarId;
-    this.tokenRelationIds = tokenRelationIds;
-    this.paramVarIds = paramVarIds;
+    this.tokenRelationIds = new ArrayList(tokenRelationIds);
+    this.paramVarIds = new ArrayList(paramVarIds);
     this.partialPlan = partialPlan;
     this.timelineId = timelineId;
   }
