@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.15 2003-07-08 20:44:18 miatauro Exp $
+// $Id: ContentSpec.java,v 1.16 2003-07-08 22:24:16 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -14,8 +14,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
@@ -35,11 +33,9 @@ import gov.nasa.arc.planworks.db.util.MySQLDB;
  */
 
 public class ContentSpec {
-  
-  private BitSet currentSpec;
+  private ArrayList validTokenIds;
   private Long partialPlanKey;
   private RedrawNotifier redrawNotifier;
-  private int offset;
   /**
    * Creates the ContentSpec object, then makes a query to determine the size of the
    * <code>BitSet</code> that represents the current specification, and sets all of the bits
@@ -50,41 +46,42 @@ public class ContentSpec {
    *                       changed, and they need to redraw themselves.
    */
 
-  public ContentSpec(PwPartialPlan partialPlan, RedrawNotifier redrawNotifier) {
+  public ContentSpec(PwPartialPlan partialPlan, RedrawNotifier redrawNotifier) 
+    throws SQLException {
     this.partialPlanKey = partialPlan.getKey();
     this.redrawNotifier = redrawNotifier;
-    offset = partialPlan.getMinKey();
-    currentSpec = new BitSet(partialPlan.getMaxKey() - partialPlan.getMinKey() + 1);
-    currentSpec.set(0, partialPlan.getMaxKey()-partialPlan.getMinKey(), true);
+    this.validTokenIds = new ArrayList();
+    ResultSet validTokens = MySQLDB.queryDatabase("SELECT TokenId FROM Token WHERE PartialPlanId=".concat(partialPlanKey.toString()));
+    while(validTokens.next()) {
+      validTokenIds.add(new Integer(validTokens.getInt("TokenId")));
+    }
   }
   /**
    * Sets all of the bits to true, then informs the views governed by the spec that they need to
    * redraw.
    */
-  public void resetSpec() {
-    currentSpec.set(0, currentSpec.size()-1, true);
+  public void resetSpec() throws SQLException {
+    validTokenIds.clear();
+    ResultSet validTokens = MySQLDB.queryDatabase("SELECT TokenId FROM Token WHERE PartialPlanId=".concat(partialPlanKey.toString()));
+    while(validTokens.next()) {
+      validTokenIds.add(new Integer(validTokens.getInt("TokenId")));
+    }
     redrawNotifier.notifyRedraw();
   }
+  public List getValidTokenIds(){return validTokenIds;}
   /**
    * Given a key, returns true or false depending on whether or not the key is in the current
    * spec.
    * @param key the key being tested.
    */
   public boolean isInContentSpec(Integer key) {
-    int index = keyToIndex(key);
-    if(index > currentSpec.length()) {
-      currentSpec.clear(index);
-    }
-    if(index < 0)
-      return false;
-    return currentSpec.get(index);
+    return true;
   }
   public void printSpec() {
-    System.err.println("Allowable keys: ");
-    for(int i = 0; i < currentSpec.size(); i++) {
-      if(currentSpec.get(i)) {
-        System.err.println("K" + i);
-      }
+    System.err.println("Allowable tokens: ");
+    ListIterator tokenIdIterator = validTokenIds.listIterator();
+    while(tokenIdIterator.hasNext()) {
+      System.err.println(((Integer)tokenIdIterator.next()).toString());
     }
   }
   /**
@@ -92,7 +89,7 @@ public class ContentSpec {
    * @param key the key being converted.
    */
   private int keyToIndex(Integer key) throws NumberFormatException {
-    return key.intValue() - offset;
+    return 0;
   }
   /**
    * Given the parametes specified by the user in the ContentSpecWindow, constructs the entire
@@ -102,9 +99,64 @@ public class ContentSpec {
    * @param predicate the result of getValues() in PredicateGroupBox.
    * @param timeInterval the result of getValues() in TimeIntervalGroupBox.
    */
-  //REALLY INEFFICIENT INITIAL RUN.  some of this should probably be refactored
   public void applySpec(List timeline, List predicate, List timeInterval) 
-    throws NumberFormatException {
+    throws NumberFormatException, SQLException {
+    StringBuffer tokenQuery = new StringBuffer("SELECT TokenId FROM Token WHERE PartialPlanId=");
+    tokenQuery.append(partialPlanKey.toString()).append(" ");
+    if(timeline != null) {
+      tokenQuery.append("&& (TimelineId");
+      if(((String)timeline.get(0)).indexOf("not") != -1) {
+        tokenQuery.append("!");
+      }
+      tokenQuery.append("=");
+      tokenQuery.append(((Integer)timeline.get(1)).toString()).append(" ");
+      for(int i = 2; i < timeline.size(); i++) {
+        String connective = (String) timeline.get(i);
+        if(connective.indexOf("and") != -1) {
+          tokenQuery.append("&& TimelineId");
+        }
+        else {
+          tokenQuery.append("|| TimelineId");
+        }
+        if(connective.indexOf("not") != -1) {
+          tokenQuery.append("!");
+        }
+        i++;
+        tokenQuery.append("=").append(((Integer)timeline.get(i)).toString()).append(" ");
+      }
+      tokenQuery.append(") ");
+    }
+    if(predicate != null) {
+      tokenQuery.append("&& (PredicateId");
+      if(((String)predicate.get(0)).indexOf("not") != -1) {
+        tokenQuery.append("!");
+      }
+      tokenQuery.append("=");
+      tokenQuery.append(((Integer)predicate.get(1)).toString()).append(" ");
+      for(int i = 2; i < predicate.size(); i++) {
+        String connective = (String) predicate.get(i);
+        if(connective.indexOf("and") != -1) {
+          tokenQuery.append("&& PredicateId");
+        }
+        else {
+          tokenQuery.append("|| PredicateId");
+        }
+        if(connective.indexOf("not") != -1) {
+          tokenQuery.append("!");
+        }
+        i++;
+        tokenQuery.append("=").append(((Integer)predicate.get(i)).toString()).append(" ");
+      }
+      tokenQuery.append(") ");
+    }
+    tokenQuery.append(";");
+    ResultSet tokenIds = MySQLDB.queryDatabase(tokenQuery.toString());
+    validTokenIds.clear();
+    while(tokenIds.next()) {
+      validTokenIds.add(new Integer(tokenIds.getInt("TokenId")));
+    }
+    printSpec();
+    redrawNotifier.notifyRedraw();
   }
   public void executeQuery(String query) throws SQLException {
     System.err.println("Test: executing query " + query);
@@ -125,14 +177,18 @@ public class ContentSpec {
         case Types.BLOB:
           output.append(new String(queryResult.getBlob(i).getBytes(0, (int)queryResult.getBlob(i).length())));
           break;
-        case Types.BOOLEAN:
+          /*case Types.BOOLEAN:
           output.append(Boolean.toString(queryResult.getBoolean(i)));
-          break;
+          break;*/
         case Types.INTEGER:
           output.append(Integer.toString(queryResult.getInt(i)));
           break;
         case Types.VARCHAR:
           output.append(queryResult.getString(i));
+          break;
+        default:
+          output.append((new Boolean(queryResult.getBoolean(i))).toString());
+          break;
         }
         System.err.println(output.toString());
       }
