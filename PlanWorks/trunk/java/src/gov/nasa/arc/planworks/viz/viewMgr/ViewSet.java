@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.34 2003-09-26 22:47:08 miatauro Exp $
+// $Id: ViewSet.java,v 1.35 2003-09-28 00:19:31 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -33,7 +33,6 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 
 /**
@@ -47,16 +46,14 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   private MDIDesktopFrame desktopFrame;
   private HashMap views;
   //private List views;
-  private ContentSpec contentSpec;
   //private PwPartialPlan partialPlan;
   private ViewableObject viewable;
   private ViewSetRemover remover;
   //private String planName;
-  private MDIInternalFrame contentSpecWindow;
   private Object [] constructorArgs;
-  //private ColorStream colorStream;
-  //private PwToken activeToken; // in timeline view, the base token
-  //private List secondaryTokens; // in timeline view, the overloaded tokens
+
+  protected ContentSpec contentSpec;
+  protected MDIInternalFrame contentSpecWindow;
 
   /**
    * Creates the ViewSet object, creates a new ContentSpec, and creates storage for the new views.
@@ -91,26 +88,31 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     //this.activeToken = null;
   }
 
-  public MDIInternalFrame openView(String viewName) {
+  public MDIInternalFrame openView(String viewClassName) {
     Class viewClass = null;
+    // System.err.println( "ViewSet.openView viewClassName " + viewClassName);
     try {
-      viewClass = Class.forName(viewName);
+      viewClass = Class.forName(viewClassName);
     } catch (ClassNotFoundException excp) {
-	excp.printStackTrace();
+      System.err.println( "ViewSet.openView Class.forName failed for viewClassName " +
+                          viewClassName);
+      excp.printStackTrace();
       System.exit(1);
     }
     if(views.containsKey(viewClass)) {
       return getViewByClass(viewClass);
     }
     Constructor [] constructors = viewClass.getDeclaredConstructors();
-    MDIInternalFrame viewFrame = desktopFrame.createFrame(viewName + " view of " +
-                                                          viewable.getName(),
-                                                          this, true, true, true, true);
+    String frameViewName = viewClassName.substring( viewClassName.lastIndexOf( ".") + 1);
+    MDIInternalFrame viewFrame = desktopFrame.createFrame( frameViewName + " of " +
+                                                           viewable.getName(),
+                                                           this, true, true, true, true);
     views.put(viewClass, viewFrame);
     Container contentPane = viewFrame.getContentPane();
     VizView view = null;
     try {
-	System.err.println("Class " + viewName + " has " + constructors.length + " constructors.");
+	System.err.println("Class " + viewClassName + " has " + constructors.length +
+                           " constructor(s).");
 	System.err.println("First constructor has " + constructors[0].getParameterTypes().length +
 			   " arguments.");
 	for(int i = 0; i < constructors[0].getParameterTypes().length; i++) {
@@ -263,12 +265,14 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       }
     }
   }
-  //public List getValidIds() {
-  //  return contentSpec.getValidIds();
-  //}
+
   public List getValidIds() {
-    return new ArrayList();
+   return contentSpec.getValidIds();
   }
+
+//   public List getValidIds() {
+//     return new ArrayList();
+//   }
 
   //public void printSpec() {
   //  contentSpec.printSpec();
@@ -289,15 +293,17 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   }
   /**
    * Determines whether or not a view already exists.
-   * @param viewName the name of the view
+   * @param viewClassName the name of the view
    * @return boolean whether or not the view exists.
    */
-  public boolean viewExists(String viewName) {
-    //return views.containsKey(viewName);
+  public boolean viewExists(String viewClassName) {
+    //return views.containsKey(viewClassName);
     try {
-      return views.containsKey(Class.forName(viewName));
+      return views.containsKey(Class.forName(viewClassName));
     } catch (ClassNotFoundException excp) {
-	excp.printStackTrace();
+      System.err.println( "ViewSet.openView Class.forName failed for viewClassName " +
+                          viewClassName);
+      excp.printStackTrace();
       System.exit(1);
     }
     return false;
@@ -309,6 +315,9 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   public void add(JButton button) {
   }
 
+  public MDIInternalFrame getContentSpecWindow() {
+    return contentSpecWindow;
+  }
 
 }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.2 2003-09-26 22:47:07 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.3 2003-09-28 00:19:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -86,8 +86,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
-  private PartialPlanViewSet viewSet;
-  private String viewName;
+  private ViewSet viewSet;
   private ConstraintJGoView jGoView;
   private JGoDocument document;
   private ConstraintNetwork network;
@@ -111,16 +110,14 @@ public class ConstraintNetworkView extends PartialPlanView {
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
-   * @param partialPlan - <code>PwPartialPlan</code> -
-   * @param startTimeMSecs - <code>long</code> - 
-   * @param viewSet - <code>PartialPlanViewSet</code> - 
+   * @param partialPlan - <code>ViewableObject</code> -
+   * @param viewSet - <code>ViewSet</code> - 
    */
   public ConstraintNetworkView( ViewableObject partialPlan, ViewSet viewSet) {
     super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    viewName = (String) PlanWorks.viewNameMap.get(PlanWorks.CONSTRAINT_NETWORK_VIEW);
     tokenNodeList = null;
     tmpTokenNodeList = new ArrayList();
     variableNodeList = new ArrayList();
@@ -194,7 +191,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     ConstraintNetworkLayout layout =
       new ConstraintNetworkLayout( document, network, startTimeMSecs);
     layout.performLayout();
-    expandViewFrame( viewName,
+    expandViewFrame( this.getClass().getName(),
                      (int) jGoView.getDocumentSize().getWidth(), VIEW_HEIGHT);
 
     isLayoutNeeded = false;
@@ -348,7 +345,8 @@ public class ConstraintNetworkView extends PartialPlanView {
       while (timelineIterator.hasNext()) {
         int x = ViewConstants.TIMELINE_VIEW_X_INIT;
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
+        Color timelineColor =
+          ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
 
         createTokenNodesOfTimeline( timeline, x, y, timelineColor);
 
@@ -1196,7 +1194,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     }
     setLinksVisible();
     boolean showDialog = true;
-    isContentSpecRendered( "Constraint Network View", showDialog);
+    isContentSpecRendered( PlanWorks.CONSTRAINT_NETWORK_VIEW, showDialog);
   } // end setNodesLinksVisible
 
   private void setLinksVisible() {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.1 2003-09-25 21:28:29 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.2 2003-09-28 00:19:30 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -79,14 +79,22 @@ public class PartialPlanContentSpec implements ContentSpec {
     this.redrawNotifier = redrawNotifier;
     this.validTokenIds = new UniqueSet();
     queryValidTokens();
-    //currentSpec = partialPlan.getContentSpec();
-    //if(currentSpec.size() != 0) {
-    //  applySpec((List)currentSpec.get(0), (List)currentSpec.get(1), (List)currentSpec.get(2),
-    //           ((Boolean)currentSpec.get(3)).booleanValue(),
-    //           ((Integer)currentSpec.get(4)).intValue());
-    //}
+    currentSpec = partialPlan.getContentSpec();
+
+    currentSpec.add( null);
+    currentSpec.add( null);
+    currentSpec.add( null);
+    currentSpec.add( new Boolean( false));
+    currentSpec.add( new Integer( 0));
+
+//     if (currentSpec.size() != 0) {
+//       applySpec((List)currentSpec.get(0), (List)currentSpec.get(1), (List)currentSpec.get(2),
+//                 ((Boolean)currentSpec.get(3)).booleanValue(),
+//                 ((Integer)currentSpec.get(4)).intValue());
+//     }
     applySpec(currentSpec);
   }
+
   /**
    * Sets all tokens valid
    */
@@ -100,7 +108,6 @@ public class PartialPlanContentSpec implements ContentSpec {
   /**
    * Get all token ids
    */
-
   private void queryValidTokens() {
     try {
       ResultSet validTokens = MySQLDB.queryDatabase(TOKENID_QUERY.concat(partialPlanId.toString()));

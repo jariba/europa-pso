@@ -4,10 +4,12 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.15 2003-09-26 22:47:07 miatauro Exp $
+// $Id: ViewManager.java,v 1.16 2003-09-28 00:19:31 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -16,7 +18,6 @@ import java.util.Iterator;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 /**
@@ -28,17 +29,18 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
  */
 
 public class ViewManager implements ViewSetRemover {
-    public static final String CNET_VIEW = //"constraintNetworkView";
-	"gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView";
-    public static final String TEMPEXT_VIEW = //"temporalExtentView";
-	"gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView";
-    public static final String TEMPNET_VIEW = "";//"temporalNetworkView";
-    public static final String TIMELINE_VIEW = //"timelineView";
-	"gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView";
-    public static final String TNET_VIEW = //"tokenNetworkView";
-	"gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView";
+//   public static final String CNET_VIEW = //"constraintNetworkView";
+//     "gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView";
+//   public static final String TEMPEXT_VIEW = //"temporalExtentView";
+//     "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView";
+//   public static final String TEMPNET_VIEW = "";//"temporalNetworkView";
+//   public static final String TIMELINE_VIEW = //"timelineView";
+//     "gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView";
+//   public static final String TNET_VIEW = //"tokenNetworkView";
+//     "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView";
   private MDIDesktopFrame desktopFrame;
   private HashMap viewSets;
+  private Object [] constructorArgs;
 
   /**
    * Creates the ViewManager object and prepares it for adding views.
@@ -48,16 +50,17 @@ public class ViewManager implements ViewSetRemover {
     this.desktopFrame = desktopFrame;
   }
 
-  public MDIInternalFrame openView(ViewableObject viewable, String viewName) {
+  public MDIInternalFrame openView(ViewableObject viewable, String viewClassName) {
     if(!viewSets.containsKey(viewable)) {
 	if(viewable instanceof PwPartialPlan) {
-	    viewSets.put(viewable, new PartialPlanViewSet(desktopFrame, (PwPartialPlan) viewable, this));
+	    viewSets.put(viewable,
+                         new PartialPlanViewSet(desktopFrame, (PwPartialPlan) viewable, this));
 	}
 	else {
 	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
 	}
     }
-    return ((ViewSet)viewSets.get(viewable)).openView(viewName);
+    return ((ViewSet)viewSets.get(viewable)).openView(viewClassName);
   }
 
 //   /**

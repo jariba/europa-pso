@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.44 2003-09-25 23:52:43 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.45 2003-09-28 00:19:29 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -92,7 +92,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     predicateMap = new HashMap();
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
-    this.seqName = url.substring(url.lastIndexOf(System.getProperty("file.separator"))).concat("/").concat(planName);
+    this.seqName = url.substring(url.lastIndexOf(System.getProperty("file.separator")) + 1).
+      concat(System.getProperty("file.separator")).concat(planName);
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
     contentSpec = new ArrayList();
     this.name = planName;

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.29 2003-09-25 23:52:42 taylor Exp $
+# $Id: build-tags-file.csh,v 1.30 2003-09-28 00:19:29 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -51,6 +51,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/util/ContentSpec.java \
     src/gov/nasa/arc/planworks/db/util/FileUtils.java \
     src/gov/nasa/arc/planworks/db/util/MySQLDB.java \
+    src/gov/nasa/arc/planworks/db/util/PartialPlanContentSpec.java \
     src/gov/nasa/arc/planworks/db/util/PwSQLFilenameFilter.java \
     src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopFrame.java \
@@ -86,6 +87,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/RedrawNotifier.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/ViewableObject.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewManager.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewSet.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewSetRemover.java \
