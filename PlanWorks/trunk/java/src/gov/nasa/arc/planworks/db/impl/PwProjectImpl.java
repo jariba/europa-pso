@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.43 2004-03-06 02:22:34 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.44 2004-03-09 22:00:38 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -292,31 +292,45 @@ public class PwProjectImpl extends PwProject {
   }
 
   public void deletePlanningSequence(final String seqName) throws ResourceNotFoundException {
+    PwPlanningSequence seq = null;
+    if((seq = closePlanningSequence(seqName)) != null) {
+      sequenceIdUrlMap.remove(seq.getId());
+    }
+  }
+
+  public void deletePlanningSequence(final Long seqId) throws ResourceNotFoundException {
+    PwPlanningSequence seq = null;
+    if((seq = closePlanningSequence(seqId)) != null) {
+      sequenceIdUrlMap.remove(seq.getId());
+    }
+  }
+
+  public PwPlanningSequence closePlanningSequence(final String seqName) {
     ListIterator seqIterator = planningSequences.listIterator();
     while(seqIterator.hasNext()) {
       PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();
       if(planSeq.getUrl().equals(seqName)) {
         seqIterator.remove();
-        sequenceIdUrlMap.remove( planSeq.getId());
         System.gc();
-        return;
+        return planSeq;
       }
     }
-    //throw new ResourceNotFoundException("Sequence " + seqName + " not in projet.");
+    return null;
   }
 
-  public void deletePlanningSequence(final Long seqId) throws ResourceNotFoundException {
+  public PwPlanningSequence closePlanningSequence(final Long seqId) {
     ListIterator seqIterator = planningSequences.listIterator();
     while(seqIterator.hasNext()) {
       PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();
       if(planSeq.getId().equals(seqId)) {
         seqIterator.remove();
-        sequenceIdUrlMap.remove( planSeq.getId());
         System.gc();
-        return;
+        return planSeq;
       }
     }
+    return null;
   }
+
   /**
    * <code>delete</code> - remove this project from list of projects and database
    *
