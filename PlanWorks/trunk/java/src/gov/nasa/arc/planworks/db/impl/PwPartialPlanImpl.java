@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.38 2003-09-02 21:49:16 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.39 2003-09-05 16:51:10 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -79,7 +79,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
   public PwPartialPlanImpl(String url, String planName, Integer sequenceId)  
     throws ResourceNotFoundException, SQLException {
-    System.err.println("In PwPartialPlanImpl");
+    //System.err.println("In PwPartialPlanImpl");
     objectMap = new HashMap();
     timelineMap = new HashMap();
     slotMap = new HashMap();
@@ -102,7 +102,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    */
 
   private void createPartialPlan(Integer sequenceId) throws ResourceNotFoundException, SQLException  {
-    System.err.println( "Creating PwPartialPlan  ..." + url);
+    //System.err.println( "Creating PwPartialPlan  ..." + url);
     long startTimeMSecs = System.currentTimeMillis();
     long loadTime = 0L;
     HashMap existingPartialPlan = null;
@@ -125,12 +125,12 @@ public class PwPartialPlanImpl implements PwPartialPlan {
       MySQLDB.analyzeDatabase();
     }
     id = MySQLDB.getNewPartialPlanId(sequenceId, name);
-    System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
+    //System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
     MySQLDB.createObjects(this);
     model = MySQLDB.queryPartialPlanModelById(id);
-    System.err.println("Creating Timeline/Slot/Token structure");
+    //System.err.println("Creating Timeline/Slot/Token structure");
     MySQLDB.createTimelineSlotTokenNodesStructure(this);
-    System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
+    //System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
     long start2TimeMSecs = (new Date()).getTime();
     fillElementMaps();
     long stop2TimeMSecs = (new Date()).getTime();
@@ -161,15 +161,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     MySQLDB.queryVariables( this);
 
     System.err.println( "Partial Plan ids:");
-    System.err.println( "  objectMap        " + objectMap.keySet().size());
-    System.err.println( "  timelineMap      " + timelineMap.keySet().size());
-    System.err.println( "  slotMap          " + slotMap.keySet().size());
-    System.err.println( "  tokenMap         " + tokenMap.keySet().size());
-    System.err.println( "  constraintMap    " + constraintMap.keySet().size());
-    System.err.println( "  predicateMap     " + predicateMap.keySet().size());
-    System.err.println( "  parameterMap     " + parameterMap.keySet().size());
-    System.err.println( "  tokenRelationMap " + tokenRelationMap.keySet().size());
-    System.err.println( "  variableMap      " + variableMap.keySet().size());
+    System.err.println( "  objects        " + objectMap.keySet().size());
+    System.err.println( "  timelines      " + timelineMap.keySet().size());
+    System.err.println( "  slots          " + slotMap.keySet().size());
+    System.err.println( "  tokens         " + tokenMap.keySet().size());
+    System.err.println( "  constraints    " + constraintMap.keySet().size());
+    System.err.println( "  predicates     " + predicateMap.keySet().size());
+    System.err.println( "  parameters     " + parameterMap.keySet().size());
+    System.err.println( "  tokenRelations " + tokenRelationMap.keySet().size());
+    System.err.println( "  variables      " + variableMap.keySet().size());
 
   } // end fillElementMaps
 

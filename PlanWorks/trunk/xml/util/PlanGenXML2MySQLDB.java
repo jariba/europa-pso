@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: PlanGenXML2MySQLDB.java,v 1.6 2003-09-05 16:54:14 miatauro Exp $
+//
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: PartialPlanWriter.cc,v 1.3 2003-09-05 16:50:18 miatauro Exp $
+//
 #include <cstring>
 #include <errno.h>
 #include <iostream>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.8 2003-08-29 22:08:58 taylor Exp $
+// $Id: ConstraintNode.java,v 1.9 2003-09-05 16:52:40 miatauro Exp $
 //
 // PlanWorks
 //
@@ -456,13 +456,13 @@ public class ConstraintNode extends BasicNode {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       if ((! isUnaryConstraint) && (vizView instanceof ConstraintNetworkView)) {
         if (! areNeighborsShown) {
-          System.err.println( "doMouseClick: Mouse-L show variable nodes of constraint id " +
-                              constraintNode.getConstraint().getId());
+          //System.err.println( "doMouseClick: Mouse-L show variable nodes of constraint id " +
+          //                    constraintNode.getConstraint().getId());
           addConstraintNodeVariables( this);
           setNodeOpen();
         } else {
-          System.err.println( "doMouseClick: Mouse-L hide variable nodes of constraint id " +
-                              constraintNode.getConstraint().getId());
+          //System.err.println( "doMouseClick: Mouse-L hide variable nodes of constraint id " +
+          //                    constraintNode.getConstraint().getId());
           removeConstraintNodeVariables( this);
           setNodeClosed();
         }

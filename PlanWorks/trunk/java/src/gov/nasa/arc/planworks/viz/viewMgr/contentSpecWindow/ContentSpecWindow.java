@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.14 2003-08-19 00:26:54 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.15 2003-09-05 16:53:05 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -66,8 +66,8 @@ public class ContentSpecWindow extends JPanel {
     Map predicateNames = contentSpec.getPredicateNames();
     Map timelineNames = contentSpec.getTimelineNames();
 
-    System.err.println("Pred: " + predicateNames);
-    System.err.println("Time: " + timelineNames);
+    //System.err.println("Pred: " + predicateNames);
+    //System.err.println("Time: " + timelineNames);
     GridBagLayout gridBag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
     setLayout(gridBag);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.35 2003-09-04 00:27:36 taylor Exp $
+// $Id: TimelineView.java,v 1.36 2003-09-05 16:53:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -548,22 +548,22 @@ public class TimelineView extends VizView {
 
   private void iterateOverNodes() {
     int numTimelineNodes = timelineNodeList.size();
-    System.err.println( "iterateOverNodes: numTimelineNodes " + numTimelineNodes);
+    //System.err.println( "iterateOverNodes: numTimelineNodes " + numTimelineNodes);
     Iterator timelineIterator = timelineNodeList.iterator();
     while (timelineIterator.hasNext()) {
       TimelineNode timelineNode = (TimelineNode) timelineIterator.next();
-      System.err.println( "name '" + timelineNode.getTimelineName() + "' location " +
-                          timelineNode.getLocation());
+      //System.err.println( "name '" + timelineNode.getTimelineName() + "' location " +
+      //                    timelineNode.getLocation());
       int numSlotNodes = timelineNode.getSlotNodeList().size();
-      System.err.println( "numSlotNodes " + numSlotNodes); 
+      //System.err.println( "numSlotNodes " + numSlotNodes); 
       Iterator slotIterator = timelineNode.getSlotNodeList().iterator();
       while (slotIterator.hasNext()) {
         SlotNode slotNode = (SlotNode) slotIterator.next();
-        System.err.println( "name '" + slotNode.getPredicateName() + "' location " +
-                            slotNode.getLocation());
-        System.err.println( "startInterval " + slotNode.getStartTimeIntervalString());
+        //System.err.println( "name '" + slotNode.getPredicateName() + "' location " +
+        //                    slotNode.getLocation());
+        //System.err.println( "startInterval " + slotNode.getStartTimeIntervalString());
         if (! slotIterator.hasNext()) {
-          System.err.println( "endInterval " + slotNode.getEndTimeIntervalString());
+          //System.err.println( "endInterval " + slotNode.getEndTimeIntervalString());
         }
       }
     }
@@ -576,8 +576,8 @@ public class TimelineView extends VizView {
     while (position != null) {
       JGoObject object = jGoDocument.getObjectAtPos( position);
       position = jGoDocument.getNextObjectPosAtTop( position);
-      System.err.println( "iterateOverJGoDoc: position " + position +
-                          " className " + object.getClass().getName());
+      //System.err.println( "iterateOverJGoDoc: position " + position +
+      //                    " className " + object.getClass().getName());
       if (object instanceof SlotNode) {
         SlotNode slotNode = (SlotNode) object;
 
@@ -587,7 +587,7 @@ public class TimelineView extends VizView {
 //         break;
 //       }
     }
-    System.err.println( "iterateOverJGoDoc: cnt " + cnt);
+    //System.err.println( "iterateOverJGoDoc: cnt " + cnt);
   } // end iterateOverJGoDocument
 
 

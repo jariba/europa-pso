@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.30 2003-08-28 20:45:23 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.31 2003-09-05 16:51:11 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -64,7 +64,7 @@ public class PwProjectImpl extends PwProject {
     ListIterator dbProjectNameIterator = MySQLDB.getProjectNames().listIterator();
     while(dbProjectNameIterator.hasNext()) {
       String name = (String) dbProjectNameIterator.next();
-      System.err.println("Got project " + name);
+      //System.err.println("Got project " + name);
       projects.put(name, new PwProjectImpl(name, true));
     }
   } // end initProjects

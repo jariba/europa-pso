@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: PwSQLFilenameFilter.java,v 1.3 2003-09-05 16:51:43 miatauro Exp $
+//
 package gov.nasa.arc.planworks.db.util;
 
 import java.io.File;

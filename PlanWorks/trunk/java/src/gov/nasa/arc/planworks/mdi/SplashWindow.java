@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: SplashWindow.java,v 1.2 2003-09-05 16:52:01 miatauro Exp $
+//
 package gov.nasa.arc.planworks.mdi;
 
 import java.awt.Dimension;

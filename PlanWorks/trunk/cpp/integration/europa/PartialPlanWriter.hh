@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: PartialPlanWriter.hh,v 1.4 2003-09-05 16:50:19 miatauro Exp $
+//
 #include "TokenNetwork.hh"
 #include "ConstraintNetwork.hh"
 #include "String.hh"

@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: MySQLDB.java,v 1.40 2003-09-05 16:51:42 miatauro Exp $
+//
 package gov.nasa.arc.planworks.db.util;
 
 import java.io.IOException;
@@ -61,7 +69,7 @@ public class MySQLDB {
     dbStartString.append("--socket=").append(System.getProperty("mysql.sock"));
     dbStartString.append(" --tmpdir=").append(System.getProperty("mysql.tmpdir"));
     dbStartString.append(" --key_buffer_size=64M --join_buffer_size=16M --query_cache_size=16M");
-    System.err.println("Starting db with: " + dbStartString.toString());
+    //System.err.println("Starting db with: " + dbStartString.toString());
     Runtime.getRuntime().exec(dbStartString.toString());
     //    try{Thread.sleep(100000);}catch(Exception e){}
     dbIsStarted = true;
@@ -69,8 +77,8 @@ public class MySQLDB {
       { 
         public void start() throws IllegalThreadStateException {
           if(MySQLDB.dbIsStarted) {
-            System.err.println("Shutting down database.");
-            System.err.println("Total time spent in queries: " + queryTime + "ms");
+            //System.err.println("Shutting down database.");
+            //System.err.println("Total time spent in queries: " + queryTime + "ms");
             try{MySQLDB.stopDatabase();}
             catch(Exception e){System.err.println("FAILED TO STOP DATABASE: " + e);}
           }
@@ -219,7 +227,7 @@ public class MySQLDB {
       stmt.execute("ANALYZE TABLE Parameter");
       stmt.execute("ANALYZE TABLE ParamVarTokenMap");
       stmt.execute("ANALYZE TABLE TokenRelation");
-      System.err.println((System.currentTimeMillis() - t1) + "ms in database analysis.");
+      //System.err.println((System.currentTimeMillis() - t1) + "ms in database analysis.");
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -580,7 +588,7 @@ public class MySQLDB {
       long t1 = System.currentTimeMillis();
       ResultSet timelineSlotTokens = 
         queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline LEFT JOIN Slot ON Slot.TimelineId=Timeline.TimelineId && Slot.PartialPlanId=Timeline.PartialPlanId LEFT JOIN Token ON Token.PartialPlanId=Slot.PartialPlanId && Token.SlotId=Slot.SlotId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Token.PartialPlanId && ParamVarTokenMap.TokenId=Token.TokenId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Timeline.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" ORDER BY Timeline.ObjectId, Timeline.TimelineId, Slot.SlotIndex, Token.TokenId, ParamVarTokenMap.ParameterId"));
-      System.err.println("Time spent in token query: " + (System.currentTimeMillis() - t1));
+      //System.err.println("Time spent in token query: " + (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
       PwObjectImpl object = null;
       PwTimelineImpl timeline = null;
@@ -600,13 +608,13 @@ public class MySQLDB {
         }
         if(timeline == null || !timeline.getId().equals(timelineId)) {
           if(object == null) {
-            System.err.println("object " + objectId + " is null...?");
+            //System.err.println("object " + objectId + " is null...?");
           }
           if(timelineSlotTokens.getString("Timeline.TimelineName") == null) {
-            System.err.println("name for timeline " + timelineId + " is null");
+            //System.err.println("name for timeline " + timelineId + " is null");
           }
           if(timelineId == null) {
-            System.err.println("timelineId is null");
+            //System.err.println("timelineId is null");
           }
           timeline = object.addTimeline(timelineSlotTokens.getString("Timeline.TimelineName"),
                                         timelineId);
@@ -643,8 +651,8 @@ public class MySQLDB {
       }
       t1 = System.currentTimeMillis();
       ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.RejectVarId, Token.PredicateId, ParamVarTokenMap.VariableId, ParamVarTokenMap.ParameterId, TokenRelation.TokenRelationId FROM Token LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.TokenId=Token.TokenId && ParamVarTokenMap.PartialPlanId=Token.PartialPlanId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
-      System.err.println("Time spent in free token query: " + 
-                         (System.currentTimeMillis() - t1));
+      //System.err.println("Time spent in free token query: " + 
+      //                   (System.currentTimeMillis() - t1));
       token = null;
       t1 = System.currentTimeMillis();
       while(freeTokens.next()) {
@@ -671,8 +679,8 @@ public class MySQLDB {
           token.addTokenRelation(tokenRelationId);
         }
       }
-      System.err.println("Time spent creating free tokens: " + 
-                         (System.currentTimeMillis() - t1));
+      //System.err.println("Time spent creating free tokens: " + 
+      //                   (System.currentTimeMillis() - t1));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -691,8 +699,8 @@ public class MySQLDB {
       long t1 = System.currentTimeMillis();
       ResultSet constraints = 
         queryDatabase("SELECT VConstraint.ConstraintId, VConstraint.ConstraintName, VConstraint.ConstraintType, ConstraintVarMap.VariableId FROM VConstraint LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=VConstraint.PartialPlanId && ConstraintVarMap.ConstraintId=VConstraint.ConstraintId WHERE VConstraint.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" ORDER BY VConstraint.ConstraintId"));
-      System.err.println("Time spent in constraint query: " + 
-                         (System.currentTimeMillis() - t1));
+      //System.err.println("Time spent in constraint query: " + 
+      //                  (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
       /*Integer constraintId = new Integer(-1);
       Integer variableId = new Integer(-1);
@@ -715,8 +723,8 @@ public class MySQLDB {
           constraint.addVariable(variableId);
         }
       }
-      System.err.println("Time spent creating constraints: " + 
-                         (System.currentTimeMillis() - t1));
+      //System.err.println("Time spent creating constraints: " + 
+      //                   (System.currentTimeMillis() - t1));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -764,12 +772,12 @@ public class MySQLDB {
   synchronized public static void queryVariables(PwPartialPlanImpl partialPlan) {
     //PwDomainImpl domainImpl = null;
     try {
-      System.err.println("Executing variable query...");
+      //System.err.println("Executing variable query...");
       long t1 = System.currentTimeMillis();
       ResultSet variables =
         queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getId().toString()));
-      System.err.println("Time spent in variable query: " +
-                         (System.currentTimeMillis() - t1));
+      //System.err.println("Time spent in variable query: " +
+      //                   (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
       PwVariableImpl variable = null;
       while(variables.next()) {
@@ -804,8 +812,8 @@ public class MySQLDB {
           variable.addToken(tokenId);
         }
       }
-      System.err.println("Time spent creating variables: " +
-                         (System.currentTimeMillis() - t1));
+      //System.err.println("Time spent creating variables: " +
+      //                   (System.currentTimeMillis() - t1));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
