@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.8 2004-01-16 19:05:39 taylor Exp $
+// $Id: SlotNode.java,v 1.9 2004-02-03 20:43:58 taylor Exp $
 //
 // PlanWorks
 //
@@ -219,8 +219,7 @@ public class SlotNode extends TextNode {
       previousSlot = previousSlotNode.getSlot();
     }
     PwDomain[] intervalArray =
-      NodeGenerics.getStartEndIntervals( timelineView, slot, previousSlot, isLastSlot,
-                                         alwaysReturnEnd);
+      NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot, alwaysReturnEnd);
     startTimeIntervalDomain = intervalArray[0];
     endTimeIntervalDomain = intervalArray[1];
     boolean isStartLoc = true;
@@ -432,8 +431,7 @@ public class SlotNode extends TextNode {
            (! ((SlotNode) currentMouseOverNode).getSlot().getId().equals
             ( slotNode.getSlot().getId())))))) {
       timelineView.setMouseOverNode( slotNode);
-      String className =
-        (String) PlanWorks.viewClassNameMap.get( PlanWorks.TEMPORAL_EXTENT_VIEW);
+      String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
       if (timelineView.isAutoSnapEnabled() &&
           timelineView.getViewSet().viewExists( className)) {
         TemporalExtentView temporalExtentView =

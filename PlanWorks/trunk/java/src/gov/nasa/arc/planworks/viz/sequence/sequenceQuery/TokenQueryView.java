@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryView.java,v 1.2 2004-01-12 19:46:35 taylor Exp $
+// $Id: TokenQueryView.java,v 1.3 2004-02-03 20:44:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -153,7 +153,7 @@ public class TokenQueryView extends SequenceView {
              sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
     int delta = Math.min( ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4 *
                           sequenceQueryWindow.getQueryResultFrameCnt(),
-                          (int) (PlanWorks.planWorks.getSize().getHeight() -
+                          (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
                                  maxQueryFrameY -
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
     freeTokenQueryFrame.setLocation

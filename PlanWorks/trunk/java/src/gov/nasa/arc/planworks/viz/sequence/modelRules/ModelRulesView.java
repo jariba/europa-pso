@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ModelRulesView.java,v 1.2 2003-12-12 01:23:06 taylor Exp $
+// $Id: ModelRulesView.java,v 1.3 2004-02-03 20:44:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -479,7 +479,7 @@ public class ModelRulesView extends SequenceView {
             options[i] = (String) predicateNameList.get( i);
           }
           Object response = JOptionPane.showInputDialog
-            ( PlanWorks.planWorks, "", "Find by Predicate Name",
+            ( PlanWorks.getPlanWorks(), "", "Find by Predicate Name",
               JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
           if (response instanceof String) {
             PredicateNode predicateNode = getPredicateNode( (String) response);

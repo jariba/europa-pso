@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.5 2004-02-03 19:21:26 miatauro Exp $
+// $Id: CreateSequenceViewThread.java,v 1.6 2004-02-03 20:43:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -87,28 +87,29 @@ public class CreateSequenceViewThread extends CreateViewThread {
   } // run
 
   private void createSequenceView() {
-    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+    MDIDynamicMenuBar dynamicMenuBar =
+      (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-    PlanWorks.planWorks.projectMenu.setEnabled( false);
+    PlanWorks.getPlanWorks().projectMenu.setEnabled( false);
 
     try {
-      planSequence = PlanWorks.planWorks.currentProject.getPlanningSequence( seqUrl);
+      planSequence = PlanWorks.getPlanWorks().currentProject.getPlanningSequence( seqUrl);
 
       MDIInternalFrame viewFrame = renderView( sequenceName, planSequence);
       if (viewName.equals( PlanWorks.SEQUENCE_STEPS_VIEW)) {
-        PlanWorks.planWorks.sequenceStepsViewMap.put( seqUrl, viewFrame);
+        PlanWorks.getPlanWorks().setSequenceStepsViewFrame( seqUrl, viewFrame);
       }
 
     } catch (ResourceNotFoundException rnfExcep) {
       int index = rnfExcep.getMessage().indexOf( ":");
       JOptionPane.showMessageDialog
-        (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
+        (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
       System.err.println( rnfExcep);
       rnfExcep.printStackTrace();
     }
 
-    PlanWorks.planWorks.projectMenu.setEnabled( true);
+    PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
   } // end createSequenceView
 

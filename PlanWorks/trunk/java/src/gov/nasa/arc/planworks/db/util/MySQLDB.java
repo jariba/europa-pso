@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.79 2004-02-03 19:22:40 miatauro Exp $
+// $Id: MySQLDB.java,v 1.80 2004-02-03 20:43:48 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -39,7 +39,7 @@ import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
-import gov.nasa.arc.planworks.db.impl.PwTransactionImpl;
+import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableQueryImpl;
 import gov.nasa.arc.planworks.util.OneToManyMap;
@@ -655,8 +655,8 @@ public class MySQLDB {
         info[0] = info[1] = info[2] = "";
         Long partialPlanId = new Long(transactions.getLong("PartialPlanId"));
         Integer transactionId = new Integer(transactions.getInt("TransactionId"));
-        PwTransactionImpl transaction = 
-          new PwTransactionImpl(transactions.getString("TransactionType"), 
+        PwDBTransactionImpl transaction = 
+          new PwDBTransactionImpl(transactions.getString("TransactionType"), 
                                 transactionId,
                                 transactions.getString("Source"),
                                 new Integer(transactions.getInt("ObjectId")),
@@ -1397,8 +1397,8 @@ class ObjectIdComparator implements Comparator {
     return false;
   }
   public int compare(Object o1, Object o2) {
-    PwTransactionImpl t1 = (PwTransactionImpl) o1;
-    PwTransactionImpl t2 = (PwTransactionImpl) o2;
+    PwDBTransactionImpl t1 = (PwDBTransactionImpl) o1;
+    PwDBTransactionImpl t2 = (PwDBTransactionImpl) o2;
     int cmp1 = t1.getPartialPlanId().compareTo(t2.getPartialPlanId());
     if(cmp1 == 0) {
       return t1.getObjectId().compareTo(t2.getObjectId());

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.54 2004-01-17 01:22:55 taylor Exp $
+// $Id: ViewSet.java,v 1.55 2004-02-03 20:44:03 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -232,7 +232,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       close();
       getViewManager().removeViewSet(viewable);
 //       try {
-//         PlanWorks.planWorks.currentProject.
+//         PlanWorks.getPlanWorks().currentProject.
 //           removePlanningSequence(((PwPlanningSequence)viewable).getId());
 //         System.gc();
 //       }

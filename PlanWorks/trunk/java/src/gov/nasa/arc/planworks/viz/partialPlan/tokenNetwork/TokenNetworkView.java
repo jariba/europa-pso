@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.25 2004-01-17 01:22:55 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.26 2004-02-03 20:43:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -403,7 +403,7 @@ public class TokenNetworkView extends PartialPlanView {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     String partialPlanName = partialPlan.getPartialPlanName();
-    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
+    PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
@@ -493,7 +493,7 @@ public class TokenNetworkView extends PartialPlanView {
       // Content Spec filtering may cause this to happen
       String message = "Token " + tokenToFind.getPredicateName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
-      JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
                                      "Token Not Found in TokenNetworkView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);

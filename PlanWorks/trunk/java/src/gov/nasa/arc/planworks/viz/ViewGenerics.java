@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.6 2003-12-31 01:02:20 taylor Exp $
+// $Id: ViewGenerics.java,v 1.7 2004-02-03 20:43:52 taylor Exp $
 //
 // PlanWorks
 //
@@ -93,7 +93,7 @@ public class ViewGenerics {
     } catch (ResourceNotFoundException rnfExcep) {
       int index = rnfExcep.getMessage().indexOf( ":");
       JOptionPane.showMessageDialog
-        (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
+        (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
       System.err.println( rnfExcep);
       rnfExcep.printStackTrace();

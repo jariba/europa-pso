@@ -1,4 +1,4 @@
-;;; $Id: prj.el,v 1.6 2003-11-25 01:40:37 taylor Exp $
+;;; $Id: prj.el,v 1.7 2004-02-03 20:43:42 taylor Exp $
 ;;;
 ;;; JAVA_HOME ANT_HOME JDE_HOME & PLANWORKS_HOME must be set properly
 ;;;
@@ -15,13 +15,17 @@
  '(jde-bug-jdk-directory (getenv "JAVA_HOME"))
  '(jde-bug-jpda-directory (getenv "JAVA_HOME"))
  '(jde-bug-vm-includes-jpda-p t)
- '(jde-checkstyle-classpath (list (concat (getenv "JDE_HOME") "/java/lib")))
- '(jde-checkstyle-option-allow-paren-padding t)
- '(jde-checkstyle-option-allow-protected t)
- '(jde-checkstyle-option-ignore-imports nil)
- '(jde-checkstyle-option-javadoc-scope (quote ("public")))
- '(jde-checkstyle-option-maxlinelen 100)
- '(jde-checkstyle-option-wrap-operator nil)
+
+
+; '(jde-checkstyle-classpath (list (concat (getenv "JDE_HOME") "/java/lib")))
+; '(jde-checkstyle-option-allow-paren-padding t)
+; '(jde-checkstyle-option-allow-protected t)
+; '(jde-checkstyle-option-ignore-imports nil)
+; '(jde-checkstyle-option-javadoc-scope (quote ("public")))
+; '(jde-checkstyle-option-maxlinelen 100)
+; '(jde-checkstyle-option-wrap-operator nil)
+
+
  '(jde-compile-option-classpath
    (list (concat (getenv "JAVA_HOME") "/jre/lib/rt.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/classes/")

@@ -47,7 +47,7 @@ public class BrowseButton extends JButton {
       chooser.setMultiSelectionEnabled(multiSelect);
       chooser.setFileSelectionMode(chooserMode);
       chooser.getOkButton().addActionListener(new ChooseButtonListener(chooser, button));
-      chooser.showOpenDialog(PlanWorks.planWorks);
+      chooser.showOpenDialog(PlanWorks.getPlanWorks());
     }
   }
   class ChooseButtonListener implements ActionListener {

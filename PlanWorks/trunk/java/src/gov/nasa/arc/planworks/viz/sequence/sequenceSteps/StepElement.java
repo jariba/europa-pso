@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.9 2003-11-18 23:54:15 taylor Exp $
+// $Id: StepElement.java,v 1.10 2004-02-03 20:44:01 taylor Exp $
 //
 // PlanWorks
 //
@@ -39,7 +39,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwTransaction;
+import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.Extent;
@@ -113,7 +113,7 @@ public class StepElement extends HistogramElement {
 //       Iterator transItr = transactionList.iterator();
 //       System.err.println( "\n\nStep " + this.stepNumber);
 //       while (transItr.hasNext()) {
-//         PwTransaction transaction = (PwTransaction) transItr.next();
+//         PwDBTransaction transaction = (PwDBTransaction) transItr.next();
 //         System.err.println( "   type " + transaction.getType() + " objectId " +
 //                             transaction.getObjectId());
 //       }

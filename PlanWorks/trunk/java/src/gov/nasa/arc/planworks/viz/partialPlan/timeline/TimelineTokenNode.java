@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineTokenNode.java,v 1.1 2003-12-31 01:02:23 taylor Exp $
+// $Id: TimelineTokenNode.java,v 1.2 2004-02-03 20:43:58 taylor Exp $
 //
 // PlanWorks
 //
@@ -80,8 +80,7 @@ public class TimelineTokenNode extends TokenNode {
            (! ((TokenNode) currentMouseOverNode).getToken().getId().equals
             ( tokenNode.getToken().getId())))))) {
       timelineView.setMouseOverNode( tokenNode);
-      String className =
-        (String) PlanWorks.viewClassNameMap.get( PlanWorks.TEMPORAL_EXTENT_VIEW);
+      String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
       if (timelineView.isAutoSnapEnabled() &&
           timelineView.getViewSet().viewExists( className)) {
         TemporalExtentView temporalExtentView =

@@ -9,16 +9,17 @@ public class NewSequenceThread extends Thread {
   }
 
   public void run() {
-    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+    MDIDynamicMenuBar dynamicMenuBar =
+      (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu(PlanWorks.PLANSEQ_MENU);
     PlanWorks.projectMenu.setEnabled(false);
     newSequence();
-    PlanWorks.planWorks.projectMenu.setEnabled(true);
-    PlanWorks.planWorks.setProjectMenuEnabled(PlanWorks.DELSEQ_MENU_ITEM, true);
+    PlanWorks.getPlanWorks().projectMenu.setEnabled(true);
+    PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.DELSEQ_MENU_ITEM, true);
     dynamicMenuBar.enableMenu(planSeqMenu);
   }
 
   private void newSequence() {
-    PlanWorks.planWorks.executeDialog.show();
+    PlanWorks.getPlanWorks().executeDialog.show();
   }
 }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.8 2004-02-03 19:21:27 miatauro Exp $
+// $Id: InstantiateProjectThread.java,v 1.9 2004-02-03 20:43:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -54,7 +54,8 @@ public class InstantiateProjectThread extends Thread {
    *
    */
   public void run() {      
-    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+    MDIDynamicMenuBar dynamicMenuBar =
+      (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
     PlanWorks.projectMenu.setEnabled( false);
 
@@ -68,21 +69,21 @@ public class InstantiateProjectThread extends Thread {
       System.exit( -1);
     }
     if (instantiatedProject != null) {
-      PlanWorks.planWorks.currentProject = instantiatedProject;
+      PlanWorks.getPlanWorks().currentProject = instantiatedProject;
       int numProjects = PwProject.listProjects().size();
       planSeqMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
-      PlanWorks.planWorks.addPlanSeqViewMenu( instantiatedProject, planSeqMenu);
-      if (PlanWorks.planWorks.currentProject.listPlanningSequences().size() == 0) {
+      PlanWorks.getPlanWorks().addPlanSeqViewMenu( instantiatedProject, planSeqMenu);
+      if (PlanWorks.getPlanWorks().currentProject.listPlanningSequences().size() == 0) {
         dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
       }
       // clear the old project's views
-      if (PlanWorks.planWorks.viewManager != null) {
-        PlanWorks.planWorks.viewManager.clearViewSets();
+      if (PlanWorks.getPlanWorks().viewManager != null) {
+        PlanWorks.getPlanWorks().viewManager.clearViewSets();
       }
-      PlanWorks.planWorks.viewManager = new ViewManager( PlanWorks.planWorks);
+      PlanWorks.getPlanWorks().viewManager = new ViewManager( PlanWorks.getPlanWorks());
     }
 
-    PlanWorks.planWorks.projectMenu.setEnabled( true);
+    PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
   } //end run
 
@@ -93,7 +94,7 @@ public class InstantiateProjectThread extends Thread {
     boolean isProjectCreated = false;
     PwProject project = null;
     while (! isProjectCreated) {
-      ProjectNameDialog projectNameDialog = new ProjectNameDialog( PlanWorks.planWorks);
+      ProjectNameDialog projectNameDialog = new ProjectNameDialog( PlanWorks.getPlanWorks());
       String inputName = projectNameDialog.getTypedText();
       if ((inputName == null) || (inputName.equals( ""))) {
         return null;
@@ -108,21 +109,22 @@ public class InstantiateProjectThread extends Thread {
           invalidSequenceDirs = new ArrayList();
           // ask user for a single sequence directory of partialPlan directories
           int returnVal =
-            PlanWorks.planWorks.sequenceDirChooser.showDialog( PlanWorks.planWorks, "");
+            PlanWorks.getPlanWorks().sequenceDirChooser.showDialog( PlanWorks.getPlanWorks(), "");
           if (returnVal == JFileChooser.APPROVE_OPTION) {
-            for (int i = 0, n = PlanWorks.planWorks.sequenceDirectories.length; i < n; i++) {
-              String sequenceDirectory = PlanWorks.planWorks.sequenceParentDirectory +
+            for (int i = 0, n = PlanWorks.getPlanWorks().sequenceDirectories.length; i < n; i++) {
+              String sequenceDirectory = PlanWorks.getPlanWorks().sequenceParentDirectory +
                 System.getProperty( "file.separator") +
-                PlanWorks.planWorks.sequenceDirectories[i].getName();
+                PlanWorks.getPlanWorks().sequenceDirectories[i].getName();
               String validateMsg = FileUtils.validateSequenceDirectory( sequenceDirectory);
               if (validateMsg != null) {
                 JOptionPane.showMessageDialog
-                  (PlanWorks.planWorks, validateMsg, "Invalid Sequence Directory",
+                  (PlanWorks.getPlanWorks(), validateMsg, "Invalid Sequence Directory",
                    JOptionPane.ERROR_MESSAGE);
                 invalidSequenceDirs.add( sequenceDirectory);
               }
             }
-            if (invalidSequenceDirs.size() == PlanWorks.planWorks.sequenceDirectories.length) {
+            if (invalidSequenceDirs.size() ==
+                PlanWorks.getPlanWorks().sequenceDirectories.length) {
               continue; // user must reselect
             } else {
               break; // some sequences are valid
@@ -133,23 +135,23 @@ public class InstantiateProjectThread extends Thread {
           }
         } // end while
         project = PwProject.createProject( inputName);
-        PlanWorks.planWorks.currentProjectName = inputName;
+        PlanWorks.getPlanWorks().currentProjectName = inputName;
         isProjectCreated = true;
         //System.err.println( "Create Project: " + currentProjectName);
-        PlanWorks.planWorks.setTitle( PlanWorks.planWorks.name + " of Project =>  " +
-                                      PlanWorks.planWorks.currentProjectName);
-        PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, true);
-        PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
-        PlanWorks.planWorks.setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, true);
+        PlanWorks.getPlanWorks().setTitle( PlanWorks.getPlanWorksTitle() + " of Project =>  " +
+                                      PlanWorks.getPlanWorks().currentProjectName);
+        PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, true);
+        PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
+        PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, true);
         if (PwProject.listProjects().size() > 1) {
-          PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
-          PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
+          PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
+          PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         }
-        if (PlanWorks.planWorks.sequenceDirectories != null) {
-          for (int i = 0, n = PlanWorks.planWorks.sequenceDirectories.length; i < n; i++) {
-            String sequenceDirectory = PlanWorks.planWorks.sequenceParentDirectory +
+        if (PlanWorks.getPlanWorks().sequenceDirectories != null) {
+          for (int i = 0, n = PlanWorks.getPlanWorks().sequenceDirectories.length; i < n; i++) {
+            String sequenceDirectory = PlanWorks.getPlanWorks().sequenceParentDirectory +
               System.getProperty( "file.separator") +
-              PlanWorks.planWorks.sequenceDirectories[i].getName();
+              PlanWorks.getPlanWorks().sequenceDirectories[i].getName();
             if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
               System.err.println( "project.addPlanningSequence " + sequenceDirectory);
               project.addPlanningSequence( sequenceDirectory);
@@ -160,7 +162,7 @@ public class InstantiateProjectThread extends Thread {
       } catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog
-          (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
+          (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
         // rnfExcep.printStackTrace();
@@ -169,13 +171,13 @@ public class InstantiateProjectThread extends Thread {
         // duplicate project name or duplicate sequence
         int index = dupExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog
-          (PlanWorks.planWorks, dupExcep.getMessage().substring( index + 1),
+          (PlanWorks.getPlanWorks(), dupExcep.getMessage().substring( index + 1),
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
           System.err.println( dupExcep);
           // dupExcep.printStackTrace();
           isProjectCreated = false; 
       } catch (Exception e) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, e.getMessage(),
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), e.getMessage(),
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
         e.printStackTrace();
@@ -189,14 +191,14 @@ public class InstantiateProjectThread extends Thread {
     PwProject project = null;
     List projectUrls = PwProject.listProjects();
     // System.err.println( "projectUrls " + projectUrls);
-    List namesLessCurrent = PlanWorks.planWorks.getProjectsLessCurrent();
+    List namesLessCurrent = PlanWorks.getPlanWorks().getProjectsLessCurrent();
     // System.err.println( "namesLessCurrent " + namesLessCurrent);
     Object[] options = new Object[namesLessCurrent.size()];
     for (int i = 0, n = namesLessCurrent.size(); i < n; i++) {
         options[i] = (String) namesLessCurrent.get( i);
     }
     Object response = JOptionPane.showInputDialog
-      ( PlanWorks.planWorks, "", "Open Project", JOptionPane.QUESTION_MESSAGE, null,
+      ( PlanWorks.getPlanWorks(), "", "Open Project", JOptionPane.QUESTION_MESSAGE, null,
         options, options[0]);
     // System.err.println( "response " + response);
     if (response instanceof String) {
@@ -205,21 +207,22 @@ public class InstantiateProjectThread extends Thread {
           String projectName = (String) namesLessCurrent.get( i);
           try {
             project = PwProject.getProject( projectName);
-            PlanWorks.planWorks.currentProjectName = projectName;
+            PlanWorks.getPlanWorks().currentProjectName = projectName;
             //System.err.println( "Open Project: " + currentProjectName);
-            PlanWorks.planWorks.setTitle( PlanWorks.planWorks.name + " of Project =>  " +
-                                          PlanWorks.planWorks.currentProjectName);
-            if (PlanWorks.planWorks.getProjectsLessCurrent().size() == 0) {
-              PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
+            PlanWorks.getPlanWorks().setTitle( PlanWorks.getPlanWorksTitle() +
+                                               " of Project =>  " +
+                                               PlanWorks.getPlanWorks().currentProjectName);
+            if (PlanWorks.getPlanWorks().getProjectsLessCurrent().size() == 0) {
+              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
             }
-            PlanWorks.planWorks.setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, true);
-            PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
-            PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
+            PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, true);
+            PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
+            PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
           } catch (ResourceNotFoundException rnfExcep) {
             // System.err.println( "Project " + projectName + " not found: " + rnfExcep1);
             int index = rnfExcep.getMessage().indexOf( ":");
             JOptionPane.showMessageDialog
-              (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
+              (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
                "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
             System.err.println( rnfExcep);
             rnfExcep.printStackTrace();

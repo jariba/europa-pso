@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.21 2004-02-03 19:24:22 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.22 2004-02-03 20:43:54 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -39,8 +39,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollBar;
 import javax.swing.KeyStroke;
-
+import javax.swing.SwingConstants;
+    
 import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.JGoViewEvent;
 import com.nwoods.jgo.JGoViewListener;
@@ -60,6 +62,7 @@ import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.util.JGoButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
@@ -164,7 +167,7 @@ public class PartialPlanView extends VizView {
     }
     if (error) {
       if (showDialog) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, message.toString(),
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), message.toString(),
                                       "View Rendering Exception", JOptionPane.ERROR_MESSAGE);
       }
       return false;
@@ -254,7 +257,7 @@ public class PartialPlanView extends VizView {
     }
   } // end isTokenInContentSpec
 
-  protected void addStepButtons(JGoView view) {
+  protected int addStepButtons(JGoView view) {
     Rectangle viewRect = view.getViewRect();
     Point backwardButtonPt = new Point((int)viewRect.getX(), 
                                        (int)(viewRect.getY() + viewRect.getHeight()));
@@ -285,6 +288,7 @@ public class PartialPlanView extends VizView {
     view.addViewListener(new ButtonViewListener(view, backwardButton, forwardButton));
     backwardButton.addActionListener(new StepButtonListener(-1, view, this));
     forwardButton.addActionListener(new StepButtonListener(1, view, this));
+    return (int) (viewRect.getY() + viewRect.getHeight());
   }
   
   class StepButtonListener implements ActionListener {
@@ -305,12 +309,12 @@ public class PartialPlanView extends VizView {
       PwPartialPlan nextStep = null;
       try {
         if(dir == 1) {
-          nextStep = PlanWorks.planWorks.getCurrentProject().
+          nextStep = PlanWorks.getPlanWorks().getCurrentProject().
             getPlanningSequence(getPartialPlan().getSequenceUrl()).
             getNextPartialPlan(currStepNumber);
         }
         else if(dir == -1) {
-          nextStep = PlanWorks.planWorks.getCurrentProject().
+          nextStep = PlanWorks.getPlanWorks().getCurrentProject().
             getPlanningSequence(getPartialPlan().getSequenceUrl()).
             getPrevPartialPlan(currStepNumber);
         }
@@ -323,13 +327,13 @@ public class PartialPlanView extends VizView {
         else if(dir == -1) {
           message = "Attempted to step beyond first step.";
         }
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, message, "Step Exception", 
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), message, "Step Exception", 
                                       JOptionPane.ERROR_MESSAGE);
         // ibe.printStackTrace();
         return;
       }
       catch(ResourceNotFoundException rnfe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(),
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), rnfe.getMessage(),
                                       "ResourceNotFoundException", JOptionPane.ERROR_MESSAGE);
 
         rnfe.printStackTrace();
@@ -338,7 +342,8 @@ public class PartialPlanView extends VizView {
       if(nextStep.getName() == null) {
         String [] title = viewFrame.getTitle().split("\\s+", 3);
         String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
-        nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" + (currStepNumber + dir));
+        nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" +
+                         (currStepNumber + dir));
       }
       MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),
                                                             pView.getState());
@@ -415,7 +420,7 @@ public class PartialPlanView extends VizView {
       this.back = back;
       this.forward = forward;
     }
-    public void adjustmentValueChanged(AdjustmentEvent e) {
+    public void adjustmentValueChanged(AdjustmentEvent evt) {
       Rectangle viewRect = view.getViewRect();
       view.getSelection().clearSelection();
       back.setLocation((int)(viewRect.getX() + back.getSize().getWidth()),
@@ -423,8 +428,20 @@ public class PartialPlanView extends VizView {
                              back.getSize().getHeight()));
       forward.setLocation((int)(back.getLocation().getX() + back.getWidth()),
                           (int)(back.getLocation().getY()));
+//       System.err.println( "adjustmentValueChanged " +
+//                           ((JScrollBar) evt.getSource()).getOrientation());
+      if ((((JScrollBar) evt.getSource()).getOrientation() == SwingConstants.VERTICAL) &&
+          (! ((JScrollBar) evt.getSource()).getValueIsAdjusting()) &&
+          (PartialPlanView.this instanceof ResourceProfileView)) {
+//         System.err.println( "adjustmentValueChanged  call equalize");
+        // ResourceProfileView has two vertical scroll bars to keep at equal length
+        boolean isRedraw = false, isScrollBarAdjustment = true;
+        ((ResourceProfileView) PartialPlanView.this).equalizeViewWidthsAndHeights
+          ( (int) (viewRect.getY() + viewRect.getHeight()), isRedraw, isScrollBarAdjustment);
+      }
     }
   }
+
   class ButtonViewListener implements JGoViewListener {
     private JGoView view;
     private JGoButton back;
@@ -460,7 +477,7 @@ public class PartialPlanView extends VizView {
                                    final PwPlanningSequence planSequence,
                                    JPopupMenu mouseRightPopup, String currentViewName) {
     PartialPlanViewMenu viewMenu = new PartialPlanViewMenu();
-    Iterator viewNamesItr = PlanWorks.planWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
+    Iterator viewNamesItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
       if (! viewName.equals( currentViewName)) {
@@ -503,9 +520,10 @@ public class PartialPlanView extends VizView {
     ((PartialPlanViewSet) viewSet).incrNavigatorFrameCnt();
     String viewName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
     MDIInternalFrame navigatorFrame =
-      ((MDIDesktopFrame) PlanWorks.planWorks).createFrame( viewName + " for " +
-                                                           partialPlan.getName(),
-                                                           viewSet, true, true, true, true);
+      ((MDIDesktopFrame) PlanWorks.getPlanWorks()).createFrame( viewName + " for " +
+                                                                partialPlan.getName(),
+                                                                viewSet, true, true,
+                                                                true, true);
     viewSet.getViews().put( new String( viewName +
                                         ((PartialPlanViewSet) viewSet).getNavigatorFrameCnt()),
                             navigatorFrame);

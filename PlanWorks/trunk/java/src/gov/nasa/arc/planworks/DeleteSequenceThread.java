@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteSequenceThread.java,v 1.6 2003-12-29 23:22:04 taylor Exp $
+// $Id: DeleteSequenceThread.java,v 1.7 2004-02-03 20:43:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -46,25 +46,26 @@ public class DeleteSequenceThread extends Thread {
    *
    */
   public void run() {
-    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+    MDIDynamicMenuBar dynamicMenuBar =
+      (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-    PlanWorks.planWorks.projectMenu.setEnabled(false);
+    PlanWorks.getPlanWorks().projectMenu.setEnabled(false);
 
     deleteSequence();
 
-    PlanWorks.planWorks.projectMenu.setEnabled(true);
+    PlanWorks.getPlanWorks().projectMenu.setEnabled(true);
     dynamicMenuBar.enableMenu( planSeqMenu);
   }
 
   private void deleteSequence() {
-    List sequenceNames = PlanWorks.planWorks.currentProject.listPlanningSequences();
+    List sequenceNames = PlanWorks.getPlanWorks().currentProject.listPlanningSequences();
     Object[] options = new Object[sequenceNames.size()];
     for (int i = 0, n = sequenceNames.size(); i < n; i++) {
       options[i] = (String) sequenceNames.get( i);
     }
     Object response = JOptionPane.showInputDialog
-      ( PlanWorks.planWorks, "", "Delete Sequence", JOptionPane.QUESTION_MESSAGE, null,
-        options, options[0]);
+      ( PlanWorks.getPlanWorks(), "", "Delete Sequence", JOptionPane.QUESTION_MESSAGE,
+        null, options, options[0]);
     if (response instanceof String) {
       for (int i = 0, n = options.length; i < n; i++) {
         if (((String) options[i]).equals( response)) {
@@ -73,23 +74,23 @@ public class DeleteSequenceThread extends Thread {
           long startTimeMSecs = System.currentTimeMillis();
           try {
             PwPlanningSequence seq =
-              PlanWorks.planWorks.currentProject.getPlanningSequence( sequenceName);
-            if (PlanWorks.planWorks.viewManager.getViewSet( seq) != null) {
-              PlanWorks.planWorks.viewManager.getViewSet( seq).close();
-              PlanWorks.planWorks.viewManager.removeViewSet( seq);
+              PlanWorks.getPlanWorks().currentProject.getPlanningSequence( sequenceName);
+            if (PlanWorks.getPlanWorks().viewManager.getViewSet( seq) != null) {
+              PlanWorks.getPlanWorks().viewManager.getViewSet( seq).close();
+              PlanWorks.getPlanWorks().viewManager.removeViewSet( seq);
             }
-            PlanWorks.planWorks.currentProject.deletePlanningSequence( sequenceName);
+            PlanWorks.getPlanWorks().currentProject.deletePlanningSequence( sequenceName);
             ListIterator partialPlanIterator = seq.getPartialPlansList().listIterator();
             while (partialPlanIterator.hasNext()) {
               PwPartialPlan plan = (PwPartialPlan) partialPlanIterator.next();
-              if (PlanWorks.planWorks.viewManager.getViewSet(plan) != null) {
-                PlanWorks.planWorks.viewManager.getViewSet(plan).close();
-                PlanWorks.planWorks.viewManager.removeViewSet(plan);
+              if (PlanWorks.getPlanWorks().viewManager.getViewSet(plan) != null) {
+                PlanWorks.getPlanWorks().viewManager.getViewSet(plan).close();
+                PlanWorks.getPlanWorks().viewManager.removeViewSet(plan);
               }
             }
             seq.delete();
             MDIDynamicMenuBar dynamicMenuBar =
-              (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+              (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
             JMenu sequenceMenu = null;
             for (int j = 0; j < dynamicMenuBar.getMenuCount(); j++) {
               if (dynamicMenuBar.getMenu(j).getText().equals( PlanWorks.PLANSEQ_MENU)) {
@@ -99,7 +100,8 @@ public class DeleteSequenceThread extends Thread {
             if(sequenceMenu == null) {
               throw new Exception("Failed to find Planning Sequence menu when deleting sequence.");
             }
-            String menuName = (String) PlanWorks.planWorks.sequenceNameMap.get(sequenceName);
+            String menuName =
+              (String) PlanWorks.getPlanWorks().getSequenceMenuName( sequenceName);
             for (int j = 0; j < sequenceMenu.getItemCount(); j++) {
               if (sequenceMenu.getItem(j).getText().equals(menuName)) {
                 sequenceMenu.remove(j);
@@ -108,7 +110,7 @@ public class DeleteSequenceThread extends Thread {
             }
             if (sequenceMenu.getItemCount() == 0) {
               dynamicMenuBar.remove(sequenceMenu);
-              PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
+              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
             }
             long stopTimeMSecs = System.currentTimeMillis();
             System.err.println( "   ... elapsed time: " +
@@ -116,7 +118,7 @@ public class DeleteSequenceThread extends Thread {
           } catch (ResourceNotFoundException rnfExcep) {
             int index = rnfExcep.getMessage().indexOf( ":");
             JOptionPane.showMessageDialog
-              (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
+              (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
                "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
             System.err.println( rnfExcep);
             rnfExcep.printStackTrace();
@@ -126,7 +128,7 @@ public class DeleteSequenceThread extends Thread {
             System.err.println( " delete: excep " + excep);
             int index = excep.getMessage().indexOf( ":");
             JOptionPane.showMessageDialog
-              (PlanWorks.planWorks, excep.getMessage().substring( index + 1),
+              (PlanWorks.getPlanWorks(), excep.getMessage().substring( index + 1),
                "Exception", JOptionPane.ERROR_MESSAGE);
             System.err.println( excep);
             excep.printStackTrace();

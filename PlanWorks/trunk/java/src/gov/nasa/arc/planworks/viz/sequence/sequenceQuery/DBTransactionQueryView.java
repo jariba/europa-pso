@@ -3,89 +3,94 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionView.java,v 1.8 2003-11-20 19:11:25 taylor Exp $
+// $Id: DBTransactionQueryView.java,v 1.1 2004-02-03 20:44:00 taylor Exp $
 //
 // PlanWorks
 //
-// Will Taylor -- started 10oct03
+// Will Taylor -- started 16oct03
 //
 
-package gov.nasa.arc.planworks.viz.partialPlan.transaction;
+package gov.nasa.arc.planworks.viz.sequence.sequenceQuery;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.BoxLayout;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.db.PwTransaction;
-import gov.nasa.arc.planworks.viz.TransactionContentView;
-import gov.nasa.arc.planworks.viz.TransactionHeaderView;
-import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.viz.DBTransactionContentView;
+import gov.nasa.arc.planworks.viz.DBTransactionHeaderView;
+import gov.nasa.arc.planworks.viz.ViewConstants    ;
+import gov.nasa.arc.planworks.viz.sequence.SequenceView;
+import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-import gov.nasa.arc.planworks.viz.util.TransactionComparatorAscending;
-import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
+import gov.nasa.arc.planworks.viz.util.DBTransactionComparatorAscending;
 
 
 /**
- * <code>TransactionView</code> - render a planning sequence step's transactions
+ * <code>DBTransactionQueryView</code> - render the transaction results of a plan db
+ *                                       transaction sequence query
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *           NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TransactionView extends PartialPlanView {
+public class DBTransactionQueryView extends SequenceView {
 
   private PwPlanningSequence planSequence;
-  private List transactionList; // element PwTransaction
-  private int stepNumber;
+  private List transactionList; // element PwDBTransaction
+  private String query;
+  private SequenceQueryWindow sequenceQueryWindow;
+  private MDIInternalFrame transactionQueryFrame;
 
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private TransactionHeaderView headerJGoView;
+  private DBTransactionHeaderView headerJGoView;
   private TransactionHeaderPanel transactionHeaderPanel;
-  private TransactionContentView contentJGoView;
+  private DBTransactionContentView contentJGoView;
   private JGoDocument jGoDocument;
-  private List transactionJGoTextList; // element JGoText
 
 
   /**
-   * <code>TransactionView</code> - constructor 
+   * <code>DBTransactionQueryView</code> - constructor 
    *
-   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param transactionList - <code>List</code> - 
+   * @param query - <code>String</code> - 
+   * @param planSequence - <code>ViewableObject</code> - 
    * @param viewSet - <code>ViewSet</code> - 
+   * @param sequenceQueryWindow - <code>JPanel</code> - 
+   * @param transactionQueryFrame - <code>MDIInternalFrame</code> - 
+   * @param startTimeMSecs - <code>long</code> - 
    */
-  public TransactionView( ViewableObject partialPlan,  ViewSet viewSet) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.startTimeMSecs = System.currentTimeMillis();
-    this.viewSet = (PartialPlanViewSet) viewSet;
-
-    planSequence = PlanWorks.planWorks.getPlanSequence( this.partialPlan);
-
-    transactionList = planSequence.getTransactionsList( this.partialPlan.getId());
+  public DBTransactionQueryView( List transactionList, String query,
+                               ViewableObject planSequence,  ViewSet viewSet,
+                               JPanel sequenceQueryWindow,
+                               MDIInternalFrame transactionQueryFrame,
+                               long startTimeMSecs) {
+    super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
+    this.transactionList = transactionList;
     Collections.sort( transactionList,
-                      new TransactionComparatorAscending
-                      ( ViewConstants.TRANSACTION_KEY_HEADER));
-
-    stepNumber = this.partialPlan.getStepNumber();
+                      new DBTransactionComparatorAscending
+                      ( ViewConstants.DB_TRANSACTION_KEY_HEADER));
+    this.query = query;
+    this.planSequence = (PwPlanningSequence) planSequence;
+    this.viewSet = (SequenceViewSet) viewSet;
+    this.sequenceQueryWindow = (SequenceQueryWindow) sequenceQueryWindow;
+    this.transactionQueryFrame = transactionQueryFrame;
+    this.startTimeMSecs = startTimeMSecs;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -122,30 +127,40 @@ public class TransactionView extends PartialPlanView {
 
     transactionHeaderPanel = new TransactionHeaderPanel();
     transactionHeaderPanel.setLayout( new BoxLayout( transactionHeaderPanel, BoxLayout.Y_AXIS));
-
-    String query = null;
-    headerJGoView = new TransactionHeaderView( transactionList, query, this);
+    headerJGoView = new DBTransactionHeaderView( transactionList, query, this);
     headerJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     headerJGoView.validate();
     headerJGoView.setVisible( true);
-
     transactionHeaderPanel.add( headerJGoView, BorderLayout.NORTH);
     add( transactionHeaderPanel, BorderLayout.NORTH);
 
-    contentJGoView = new TransactionContentView( transactionList, headerJGoView,
-                                                 partialPlan, this);
+    contentJGoView = new DBTransactionContentView( transactionList, headerJGoView,
+                                                 planSequence, this);
     contentJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
-    add( contentJGoView, BorderLayout.NORTH);
+    add( contentJGoView, BorderLayout.SOUTH);
     contentJGoView.validate();
     contentJGoView.setVisible( true);
 
     this.setVisible( true);
 
-    expandViewFrame( viewSet.openView( this.getClass().getName()),
-                     (int) headerJGoView.getDocumentSize().getWidth(),
-                     (int) (headerJGoView.getDocumentSize().getHeight() +
-                            contentJGoView.getDocumentSize().getHeight()));
-
+    int maxViewWidth = (int) headerJGoView.getDocumentSize().getWidth();
+    int maxViewHeight = (int) ( headerJGoView.getDocumentSize().getHeight() +
+                                // contentJGoView.getDocumentSize().getHeight());
+                                // keep contentJGoView small
+                                (ViewConstants.INTERNAL_FRAME_X_DELTA));
+    transactionQueryFrame.setSize
+      ( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
+        maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
+    int maxQueryFrameY =
+      (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
+             sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
+    int delta = Math.min( ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4 *
+                          sequenceQueryWindow.getQueryResultFrameCnt(),
+                          (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
+                                 maxQueryFrameY -
+                                 (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
+    transactionQueryFrame.setLocation
+      ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta, maxQueryFrameY + delta);
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
@@ -153,12 +168,21 @@ public class TransactionView extends PartialPlanView {
 
 
   /**
-   * <code>getTransactionContentView</code>
+   * <code>getDBTransactionContentView</code>
    *
-   * @return - <code>TransactionContentView</code> - 
+   * @return - <code>DBTransactionContentView</code> - 
    */
-  public TransactionContentView getTransactionContentView() {
+  public DBTransactionContentView getDBTransactionContentView() {
     return contentJGoView;
+  }
+
+  /**
+   * <code>getQuery</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getQuery() {
+    return query;
   }
 
   /**
@@ -169,8 +193,9 @@ public class TransactionView extends PartialPlanView {
   class ScrollBarListener implements AdjustmentListener {
 
     /**
-     * <code>adjustmentValueChanged</code> - keep both headerJGoView & contentJGoView aligned,
-     *                                  when user moves one scroll bar
+     * <code>adjustmentValueChanged</code> - keep headerJGoView &
+     *                                  contentJGoView aligned, when user moves one 
+     *                                  scroll bar
      *
      * @param event - <code>AdjustmentEvent</code> - 
      */
@@ -212,27 +237,25 @@ public class TransactionView extends PartialPlanView {
     }
 
     /**
+     * <code>getMinimumSize</code> - keep size during resizing
      *
-     * <code>getMinimumSize</code>
      * @return - <code>Dimension</code> - 
      */
     public Dimension getMinimumSize() {
-      return new Dimension( (int) TransactionView.this.getSize().getWidth(),
-                            (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight() +
-                            ViewConstants.TIMELINE_VIEW_Y_INIT);
+     return new Dimension( (int) DBTransactionQueryView.this.getSize().getWidth(),
+                           (int) headerJGoView.getDocumentSize().getHeight() +
+                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
     }
 
     /**
-     * <code>getMaximumSize</code>
+     * <code>getMaximumSize</code> - keep size during resizing
      *
      * @return - <code>Dimension</code> - 
      */
     public Dimension getMaximumSize() {
-      return new Dimension( (int) TransactionView.this.getSize().getWidth(),
+      return new Dimension( (int) DBTransactionQueryView.this.getSize().getWidth(),
                             (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight() +
-                            ViewConstants.TIMELINE_VIEW_Y_INIT);
+                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
     }
 
     /**
@@ -241,14 +264,14 @@ public class TransactionView extends PartialPlanView {
      * @return - <code>Dimension</code> - 
      */
     public Dimension getPreferredSize() {
-      return new Dimension( (int) TransactionView.this.getSize().getWidth(),
+      return new Dimension( (int) DBTransactionQueryView.this.getSize().getWidth(),
                             (int) headerJGoView.getDocumentSize().getHeight() +
-                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight() +
-                            ViewConstants.TIMELINE_VIEW_Y_INIT);
+                            (int) headerJGoView.getHorizontalScrollBar().getSize().getHeight());
     }
   } // end class TransactionHeaderPanel
 
 
 
-} // end class TransactionView
+
+} // end class DBTransactionQueryView
 

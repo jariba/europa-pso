@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.9 2004-01-17 01:22:52 taylor Exp $
+// $Id: VizView.java,v 1.10 2004-02-03 20:43:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -138,22 +138,22 @@ public class VizView extends JPanel {
   protected void expandViewFrame( MDIInternalFrame viewFrame, int maxViewWidth,
                                   int maxViewHeight) {
     maxViewWidth = Math.min( maxViewWidth, 
-                             (int) PlanWorks.planWorks.getSize().getWidth() -
+                             (int) PlanWorks.getPlanWorks().getSize().getWidth() -
                              (int) viewFrame.getLocation().getX() -
                              ViewConstants.MDI_FRAME_DECORATION_WIDTH -
                              ViewConstants.FRAME_DECORATION_WIDTH); 
     maxViewHeight = Math.min( maxViewHeight, 
-                              (int) PlanWorks.planWorks.getSize().getHeight() -
+                              (int) PlanWorks.getPlanWorks().getSize().getHeight() -
                               (int) viewFrame.getLocation().getY() -
                               ViewConstants.MDI_FRAME_DECORATION_HEIGHT -
                               ViewConstants.FRAME_DECORATION_HEIGHT); 
 //     maxViewWidth = Math.min( Math.max( maxViewWidth, PlanWorks.INTERNAL_FRAME_WIDTH),
-//                              (int) PlanWorks.planWorks.getSize().getWidth() -
+//                              (int) PlanWorks.getPlanWorks().getSize().getWidth() -
 //                              (int) viewFrame.getLocation().getX() -
 //                              ViewConstants.MDI_FRAME_DECORATION_WIDTH -
 //                              ViewConstants.FRAME_DECORATION_WIDTH); 
 //     maxViewHeight = Math.min( Math.max( maxViewHeight, PlanWorks.INTERNAL_FRAME_HEIGHT),
-//                               (int) PlanWorks.planWorks.getSize().getHeight() -
+//                               (int) PlanWorks.getPlanWorks().getSize().getHeight() -
 //                               (int) viewFrame.getLocation().getY() -
 //                               ViewConstants.MDI_FRAME_DECORATION_HEIGHT -
 //                               ViewConstants.FRAME_DECORATION_HEIGHT); 

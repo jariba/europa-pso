@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.13 2003-12-20 01:54:49 taylor Exp $
+// $Id: DBTransactionContentView.java,v 1.1 2004-02-03 20:43:49 taylor Exp $
 //
 // PlanWorks
 //
@@ -23,25 +23,26 @@ import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
-import gov.nasa.arc.planworks.db.PwTransaction;
+import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.QueryResultField;
-import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
-import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
+import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
 /**
- * <code>TransactionContentView</code> - render values of transaction object as QueryResultField's
+ * <code>DBTransactionContentView</code> - render values of plan db transaction
+ *                                         object as QueryResultField's
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TransactionContentView extends JGoView {
+public class DBTransactionContentView extends JGoView {
 
-  private List transactionList; // element PwTransaction
-  private TransactionHeaderView headerJGoView;
+  private List transactionList; // element PwDBTransaction
+  private DBTransactionHeaderView headerJGoView;
   private ViewableObject viewableObject; // PwPartialPlan or PwPlanningSequence
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
@@ -50,14 +51,14 @@ public class TransactionContentView extends JGoView {
 
 
   /**
-   * <code>TransactionContentView</code> - constructor 
+   * <code>DBTransactionContentView</code> - constructor 
    *
    * @param transactionList - <code>List</code> - 
-   * @param headerJGoView - <code>TransactionHeaderView</code> - 
+   * @param headerJGoView - <code>DBTransactionHeaderView</code> - 
    * @param viewableObject - <code>ViewableObject</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public TransactionContentView( List transactionList, TransactionHeaderView headerJGoView,
+  public DBTransactionContentView( List transactionList, DBTransactionHeaderView headerJGoView,
                                  ViewableObject viewableObject, VizView vizView) {
     super();
     this.transactionList = transactionList;
@@ -108,14 +109,14 @@ public class TransactionContentView extends JGoView {
     int x = 0, y = 5;
     Iterator transItr = transactionList.iterator();
     int i = 1;
-    boolean isTransactionQueryView = (vizView instanceof TransactionQueryView);
+    boolean isDBTransactionQueryView = (vizView instanceof DBTransactionQueryView);
     boolean isObjectKeyField =
-      ((isTransactionQueryView && // "In Range" only
-        (((TransactionQueryView) vizView).getQuery().indexOf( "For ") == -1)) ||
-       (vizView instanceof TransactionView));
+      ((isDBTransactionQueryView && // "In Range" only
+        (((DBTransactionQueryView) vizView).getQuery().indexOf( "For ") == -1)) ||
+       (vizView instanceof DBTransactionView));
     while (transItr.hasNext()) {
       x = 0;
-      PwTransaction transaction = (PwTransaction) transItr.next();
+      PwDBTransaction transaction = (PwDBTransaction) transItr.next();
       keyField =
         new QueryResultField( transaction.getId().toString(), new Point( x, y),
                               JGoText.ALIGN_RIGHT, bgColor, viewableObject);
@@ -151,7 +152,7 @@ public class TransactionContentView extends JGoView {
         x += headerJGoView.getObjectKeyNode().getSize().getWidth();
       }
 
-      if (isTransactionQueryView) {
+      if (isDBTransactionQueryView) {
         QueryResultField stepNumField =
           new QueryResultField( transaction.getStepNumber().toString(), new Point( x, y),
                                 JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
@@ -380,7 +381,7 @@ public class TransactionContentView extends JGoView {
 
 
 
-} // end class TransactionContentView
+} // end class DBTransactionContentView
 
 
 

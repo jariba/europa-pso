@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.1 2003-11-06 00:02:18 taylor Exp $
+// $Id: AskNodeByKey.java,v 1.2 2004-02-03 20:43:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -62,7 +62,7 @@ public class AskNodeByKey extends JDialog {
   public AskNodeByKey( String dialogTitle, String textFieldLabel,
                        PartialPlanView partialPlanView) {
     // modal dialog - blocks other activity
-    super( PlanWorks.planWorks, true);
+    super( PlanWorks.getPlanWorks(), true);
     this.partialPlanView = partialPlanView;
 
     setTitle( dialogTitle);
@@ -103,7 +103,7 @@ public class AskNodeByKey extends JDialog {
     // size dialog appropriately
     pack();
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-    Utilities.setPopUpLocation( this, PlanWorks.planWorks);
+    Utilities.setPopUpLocation( this, PlanWorks.getPlanWorks());
     setVisible( true);
   } // end constructor
 
@@ -143,7 +143,7 @@ public class AskNodeByKey extends JDialog {
                 // System.err.println( "AskNodeByKey key " + typedText);
                 if (! isNodeKeyValid( nodeKey)) {
                   JOptionPane.showMessageDialog
-                    (PlanWorks.planWorks,
+                    (PlanWorks.getPlanWorks(),
                      "Sorry, \"" + nodeKey.toString() + "\" " + "is not a valid key.",
                      "Invalid Key", JOptionPane.ERROR_MESSAGE);
                 } else {
@@ -154,7 +154,7 @@ public class AskNodeByKey extends JDialog {
                 // text was invalid
                 textField.selectAll();
                 JOptionPane.showMessageDialog
-                  (PlanWorks.planWorks,
+                  (PlanWorks.getPlanWorks(),
                    "Sorry, \"" + typedText + "\" " + "isn't a valid response.\n" +
                    "Please enter a intger number",
                    "Invalid value for key", JOptionPane.ERROR_MESSAGE);
