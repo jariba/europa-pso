@@ -1,4 +1,10 @@
-// $Id: PwProjectImpl.java,v 1.1 2003-05-10 01:00:32 taylor Exp $
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: PwProjectImpl.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -7,12 +13,15 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+
 
 /**
  * <code>PwProjectImpl</code> - 
@@ -21,35 +30,65 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-class PwProjectImpl extends PwProject {
+public class PwProjectImpl extends PwProject {
 
 
-  private String url;
-  private List planningSeqNames; // element String
-  private List planningSeqObjects; // element PwPlanningSequence
+  private String url; // project pathname
+  private String projectName;
+  private List planningSequences; // element PwPlanningSequence
+  private String [] seqDirNames;
 
 
-  public PwProjectImpl( String url) {
-    this.url = url;
-    planningSeqNames = new ArrayList();
-    planningSeqObjects = new ArrayList();
+  /**
+   * <code>PwProjectImpl</code> - constructor 
+   *                  called from ProjectMgmt.createProject
+   *
+   * @param url - <code>String</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   */
+  public PwProjectImpl( String url)  throws ResourceNotFoundException {
+    this.url = url; // project pathname
+    planningSequences = new ArrayList();
+    int index = url.lastIndexOf( "/");
+    if (index == -1) {
+      throw new ResourceNotFoundException( "project url '" + url +
+                                           "' cannot be parsed for '/'");
+    } 
+    projectName = url.substring( index + 1);
 
-    if (url.indexOf( "/xml/test") >= 0) {
-      // TESTING -- assumes constructor called with this url value
-      // url = System.getProperty( "planworks.root") + "/xml/test";
-      planningSeqNames.add( "monkey");
-      List transactionList = new ArrayList();
-      transactionList.add( new ArrayList());
-      planningSeqObjects.add( new PwPlanningSequenceImpl( url + "/monkey",
-                                                          new PwPartialPlanImpl(),
-                                                          new PwModelImpl(),
-                                                          transactionList));
-
-      // END TESTING
+    // determine project's sequences
+    seqDirNames = new File( url).list();
+    for (int i = 0; i < seqDirNames.length; i++) {
+      String seqDirName = seqDirNames[i];
+      if (! seqDirName.equals( "CVS")) {
+        System.err.println( "PwProjectImpl seqDirName: " + seqDirName);
+        planningSequences.add
+          ( new PwPlanningSequenceImpl(  url + "/" + seqDirName, projectName, 
+                                         new PwModelImpl()));
+      }
     }
+    if (planningSequences.size() == 0) {
+      throw new ResourceNotFoundException( "project url '" + url +
+                                           "' does not have any sequence directories");
+    }
+  } // end  constructor String
 
 
-  } // end  constructor
+  /**
+   * <code>PwProjectImpl</code> - constructor 
+   *                  called from ProjectMgmt.openProject
+   *
+   * @param url - <code>String</code> - 
+   * @param isInDb - <code>boolean</code> - 
+   * @exception DuplicateNameExceptionif an error occurs
+   */
+  public PwProjectImpl( String url, boolean isInDb)  throws ResourceNotFoundException {
+    this.url = url; // project pathname
+    planningSequences = new ArrayList();
+
+
+  } // end  constructor String String
+
 
   /**
    * <code>getUrl</code> - project pathname for planning sequences. e.g.
@@ -62,14 +101,29 @@ class PwProjectImpl extends PwProject {
   } // end getUrl
 
   /**
+   * <code>getProjectName</code> - project name (directory containing
+   *                               planning sequences
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getProjectName() {
+    return projectName;
+  } // end getProjectName
+
+  /**
    * <code>listPlanningSequences</code>
    *
-   * @return - <code>List</code> -  List of String (name of sequence)
+   * @return - <code>List</code> -  List of Strings (urls of sequences)
    *                                each sequence is set of partial plans
    *                                e.g. monkey (PlanWorks/xml/test/monkey)
    */
   public List listPlanningSequences() {
-    return planningSeqNames;
+    List urlList = new ArrayList();
+    Iterator planningSeqIterator = planningSequences.iterator();
+    while (planningSeqIterator.hasNext()) {
+      urlList.add( ((PwPlanningSequence) planningSeqIterator.next()).getUrl());
+    }
+    return urlList;
   } // end listPlanningSequences
 
   /**
@@ -78,16 +132,17 @@ class PwProjectImpl extends PwProject {
    * @param sequenceName - <code>String</code> - 
    * @return - <code>PwPlanningSequence</code> - 
    */
-  public PwPlanningSequence getPlanningSequence( String sequenceName)
+  public PwPlanningSequence getPlanningSequence( String url)
     throws ResourceNotFoundException {
-    for (int i = 0, n = planningSeqNames.size(); i < n; i++) {
-      String seqName = (String) planningSeqNames.get( i);
-      if (seqName.equals( sequenceName)) {
-        return (PwPlanningSequence) planningSeqObjects.get( i);
+    Iterator planningSeqIterator = planningSequences.iterator();
+    while (planningSeqIterator.hasNext()) {
+      PwPlanningSequence pwPlanningSequence =
+        (PwPlanningSequence) planningSeqIterator.next();
+      if (pwPlanningSequence.getUrl().equals( url)) {
+        return pwPlanningSequence;
       }
     }
-    throw new ResourceNotFoundException( "getPlanningSequence could not find " +
-                                         sequenceName);
+    throw new ResourceNotFoundException( "getPlanningSequence could not find " + url);
   } // end getPlanningSequence
 
   /**

@@ -1,4 +1,10 @@
-// $Id: PwModelImpl.java,v 1.1 2003-05-10 01:00:32 taylor Exp $
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: PwModelImpl.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,7 +24,7 @@ import gov.nasa.arc.planworks.db.PwModel;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class PwModelImpl extends PwModel {
+public class PwModelImpl implements PwModel {
 
   private List predicateList;
   private List classList;

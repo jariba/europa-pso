@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.1 2003-05-10 01:00:30 taylor Exp $
+# $Id: build-tags-file.csh,v 1.2 2003-05-15 18:38:44 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -13,19 +13,19 @@ endif
 
 etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/PwModel.java \
+    src/gov/nasa/arc/planworks/db/PwObject.java \
     src/gov/nasa/arc/planworks/db/PwPartialPlan.java \
     src/gov/nasa/arc/planworks/db/PwPlanningSequence.java \
     src/gov/nasa/arc/planworks/db/PwProject.java \
     src/gov/nasa/arc/planworks/db/PwTransaction.java \
-    src/gov/nasa/arc/planworks/db/impl/Factory.java \
     src/gov/nasa/arc/planworks/db/impl/PwModelImpl.java \
+    src/gov/nasa/arc/planworks/db/impl/PwObjectImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwPartialPlanImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwPlanningSequenceImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTransactionImpl.java \
     src/gov/nasa/arc/planworks/db/test/ExistTest.java \
     src/gov/nasa/arc/planworks/db/util/FileUtils.java \
-    src/gov/nasa/arc/planworks/db/util/XmlDBAccess.java \
     src/gov/nasa/arc/planworks/db/util/XmlDBeXist.java \
     src/gov/nasa/arc/planworks/db/util/XmlFileFilter.java \
     src/gov/nasa/arc/planworks/db/util/XmlFilenameFilter.java \

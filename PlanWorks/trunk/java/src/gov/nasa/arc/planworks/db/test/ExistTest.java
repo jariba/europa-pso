@@ -1,4 +1,10 @@
-// $Id: ExistTest.java,v 1.1 2003-05-10 01:00:32 taylor Exp $
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: ExistTest.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -77,7 +83,7 @@ public class ExistTest {
   private static String xmlFilesDirectory;
   private static String [] xmlFileNames;
   private static String userCollectionName; // e.g. /wtaylor
-  private static String collectionName; // e.g. /wtaylor/test (xml files directory)
+  private static String collectionName; // e.g. /wtaylor/test/monkey (xml files directory)
 
 
   /**
@@ -118,6 +124,7 @@ public class ExistTest {
                           xmlFilesDirectory.toString());
       return "";
     }
+    index = xmlFilesDirectory.toString().substring( 0, index - 1).lastIndexOf( "/");
     String collectionName = userCollectionName + xmlFilesDirectory.substring( index);
     System.err.println( "xmlFiles ");
     int count = 0;

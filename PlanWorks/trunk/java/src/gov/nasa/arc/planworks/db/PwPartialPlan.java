@@ -1,4 +1,10 @@
-// $Id: PwPartialPlan.java,v 1.1 2003-05-10 01:00:31 taylor Exp $
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: PwPartialPlan.java,v 1.2 2003-05-15 18:38:44 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,11 +23,11 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public abstract class PwPartialPlan {
+public interface PwPartialPlan {
 
 
   // constructor retrieves partial plan from XML:DB and
   // builds Java data structure
 
 
-} // end class PwPartialPlan
+} // end interface PwPartialPlan
