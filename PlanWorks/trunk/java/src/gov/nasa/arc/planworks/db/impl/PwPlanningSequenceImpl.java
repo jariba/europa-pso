@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.76 2004-04-02 00:24:42 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.77 2004-04-02 00:37:48 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -668,7 +668,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   }
 
   //.partialPlanStats,.sequence,.transactions
-  public String [] toOutputString(Integer projId) {
+  public String [] toOutputString() {
     StringBuffer pps = new StringBuffer();
     for(Iterator it = partialPlans.values().iterator(); it.hasNext();) {
       PwPartialPlanImpl partialPlan = (PwPartialPlanImpl) it.next();
@@ -679,7 +679,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       pps.append(partialPlan.getConstraintList().size()).append("\t0\n");
     }
     StringBuffer seq = new StringBuffer(url);
-    seq.append("\t").append(id.toString()).append("\t").append(projId.toString()).append("\n");
+    seq.append("\t").append(id.toString()).append("\t-1\n");
     StringBuffer trans = new StringBuffer();
     for(Iterator it = transactions.values().iterator(); it.hasNext();) {
       PwDBTransaction t = (PwDBTransaction) it.next();
