@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.3 2003-09-05 16:50:18 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.4 2003-09-19 20:57:23 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -50,12 +50,20 @@ void PartialPlanWriter::write(void) {
     seqname = (char *) modelName.chars();
     char *extStart = rindex(seqname, '.');
     *extStart = '\0';
+    if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+      cerr << "Failed to make directory " << dest << endl;
+      handleError(generalUnknownError, strerror(errno), fatalError,);
+    }
     dest += seqname;
     if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+      cerr << "Failed to make directory " << dest << endl;
       handleError(generalUnknownError, strerror(errno), fatalError,);
     }
   }
   String stepnum = String("step") + String(nstep);
+  if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   String partialPlanDest = dest + String("/") + stepnum;
   if(mkdir(partialPlanDest.chars(), 0777) && errno != EEXIST) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
