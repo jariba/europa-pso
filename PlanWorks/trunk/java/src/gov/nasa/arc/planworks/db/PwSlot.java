@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlot.java,v 1.6 2003-08-29 01:21:39 taylor Exp $
+// $Id: PwSlot.java,v 1.7 2004-01-16 19:05:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,6 +32,13 @@ public interface PwSlot {
    */
   public abstract Integer getId();
 	
+  /**
+   * <code>getTimelineId</code>
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public abstract Integer getTimelineId();
+
   /**
    * <code>getTokenList</code>
    *

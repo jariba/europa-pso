@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.18 2004-01-14 21:22:38 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.19 2004-01-16 19:05:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -31,6 +31,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 public class PwSlotImpl implements PwSlot {
 
   private Integer id;
+  private Integer timelineId;
   private List tokenIdList; // element String
   private PwPartialPlanImpl partialPlan;
 
@@ -40,8 +41,9 @@ public class PwSlotImpl implements PwSlot {
    * @param id - <code>Integer</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwSlotImpl( Integer id, PwPartialPlanImpl partialPlan) {
+  public PwSlotImpl( Integer id, Integer timelineId, PwPartialPlanImpl partialPlan) {
     this.id = id;
+    this.timelineId = timelineId;
     this.partialPlan = partialPlan;
     tokenIdList = new ArrayList();
   } // end constructor
@@ -56,6 +58,15 @@ public class PwSlotImpl implements PwSlot {
     return id;
   }
 	
+  /**
+   * <code>getTimelineId</code>
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public Integer getTimelineId() {
+    return timelineId;
+  }
+
   /**
    * <code>getTokenList</code>
    *

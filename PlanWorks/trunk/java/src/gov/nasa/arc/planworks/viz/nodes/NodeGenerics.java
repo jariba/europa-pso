@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.12 2003-11-18 23:54:15 taylor Exp $
+// $Id: NodeGenerics.java,v 1.13 2004-01-16 19:05:35 taylor Exp $
 //
 // PlanWorks
 //
@@ -16,6 +16,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -31,11 +32,13 @@ import com.nwoods.jgo.examples.TextNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
+import gov.nasa.arc.planworks.db.PwEnumeratedDomain;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 
 
@@ -330,6 +333,72 @@ public class NodeGenerics {
     return name;
   } // end trimName
 
+  /**
+   * <code>getSlotNodeToolTipText</code>
+   *
+   * @param slot - <code>PwSlot</code> - 
+   * @param tip - <code>StringBuffer</code> - 
+   */
+  public static void getSlotNodeToolTipText( PwSlot slot, StringBuffer tip) {
+    List tokenList = slot.getTokenList();
+    tip.append( ((PwToken) tokenList.get( 0)).toString());
+    tip.append( "<br>token key");
+    if (tokenList.size() > 1) {
+      tip.append( "s");
+    }
+    tip.append( "=");
+    Iterator tokenItr = slot.getTokenList().iterator();
+    while (tokenItr.hasNext()) {
+      tip.append( ((PwToken) tokenItr.next()).getId().toString());
+      if (tokenItr.hasNext()) {
+        tip.append( ", ");
+      }
+    }
+  } // end getSlotNodeToolTipText
+
+  /**
+   * <code>getVariableNodeToolTipText</code>
+   *
+   * @param variable - <code>PwVariable</code> - 
+   * @param tip - <code>StringBuffer</code> - 
+   */
+  public static void getVariableNodeToolTipText( PwVariable variable,
+                                                 PartialPlanView partialPlanView,
+                                                 StringBuffer tip) {
+    String typeName = variable.getType();
+    tip.append( typeName);
+    if (typeName.equals( DbConstants.OBJECT_VAR)) {
+      //String objectName = "_not_found_";
+      //Integer objectId =
+      //  Integer.valueOf( ((PwEnumeratedDomain) variable.getDomain()).getLowerBound());
+      //Iterator objectIterator = partialPlanView.getPartialPlan().getObjectList().iterator();
+      //while (objectIterator.hasNext()) {
+      //  PwObject object = (PwObject) objectIterator.next();
+      //  if (object.getId().equals( objectId)) {
+      //    objectName = object.getName();
+      //    break;
+      //  }
+      //}
+      //tip.append ( ": ");
+      //tip.append( objectName);
+      tip.append("<br>");
+      ListIterator objectNameIterator = 
+        ((PwEnumeratedDomain) variable.getDomain()).getEnumeration().listIterator();;
+      while(objectNameIterator.hasNext()) {
+        String name = (String) objectNameIterator.next();
+        tip.append( name).append( ": ");
+        tip.append( partialPlanView.getPartialPlan().getObjectIdByName( name));
+        if (objectNameIterator.hasNext()) {
+          tip.append("<br>");
+        }
+      }
+    } else if (typeName.equals( DbConstants.PARAMETER_VAR)) {
+      tip.append ( ": ");
+//       System.err.println( "key " + variable.getId().toString() + 
+//                           " paramName " + variable.getParameterNameList().get( 0));
+      tip.append( variable.getParameterNameList().get( 0));
+    }
+  } // end getVariableNodeToolTipText
 
 
 } // end class NodeGenerics

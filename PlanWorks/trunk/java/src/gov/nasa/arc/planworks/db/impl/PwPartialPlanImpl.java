@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.68 2004-01-14 21:22:38 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.69 2004-01-16 19:05:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -68,6 +68,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   private Map tokenRelationMap; // key = attribute id, value = PwTokenRelationImpl instance
   private Map variableMap; // key = attribute id, value = PwVariableImpl instance
   private List contentSpec;
+  private Map tokenMasterSlaveMap; // key = tokenId, value TokenRelations instance
 
   /**
    * <code>PwPartialPlanImpl</code> - initialize storage structures then call createPartialPlan()
@@ -77,7 +78,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param - <code>sequenceId</code> - the Id of the sequence to which this plan is attached.
    * @exception ResourceNotFoundException if the plan data is invalid
    */
-  
   public PwPartialPlanImpl(String url, String planName, PwPlanningSequenceImpl sequence) 
     throws ResourceNotFoundException {
     this.sequence = sequence;
@@ -90,6 +90,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     //predicateMap = new HashMap();
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
+    tokenMasterSlaveMap = new HashMap();
 
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
     contentSpec = new ArrayList();
@@ -171,6 +172,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     while(objIterator.hasNext()) {
       ((PwObjectImpl)objIterator.next()).createEmptySlots();
     }
+    initTokenRelationships();
+    buildTokenRelationships();
+    // printTokenRelationships();
+
     System.err.println( "Partial Plan: " + url);
     System.err.println( "Ids:");
     System.err.println( "  objects        " + objectMap.keySet().size());
@@ -999,4 +1004,131 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     return null;
   }
+
+
+  class TokenRelations {
+
+    private PwToken token;
+    private Integer masterTokenId; 
+    private List slaveTokenIds; // element Integer
+
+    public TokenRelations( PwToken token) {
+      this.token = token;
+      masterTokenId = null;
+      slaveTokenIds = new ArrayList();
+    } // end constructor
+
+    public Integer getMasterTokenId () {
+      return masterTokenId;
+    }
+
+    public void setMasterTokenId( Integer id) {
+      if (masterTokenId != null) {
+        System.err.println( "PwPartialPlanImpl.setMasterTokenId conflict: oldValue " +
+                            masterTokenId.toString() + " newValue " + id.toString());
+        System.exit( -1);
+      }
+      masterTokenId = id;
+    }
+
+    public List getSlaveTokenIds () {
+      return slaveTokenIds;
+    }
+
+    public void addSlaveTokenId( Integer id) {
+      slaveTokenIds.add( id);
+    }
+
+    public String toString() {
+      StringBuffer buffer = new StringBuffer( "tokenId: " +
+                                              String.valueOf( token.getId()));
+      buffer.append( "\n  masterTokenId: " + masterTokenId);
+      buffer.append( "\n  slaveTokenIds: " + slaveTokenIds);
+      return buffer.toString();
+    }
+
+  } // end class TokenRelations
+
+  private void initTokenRelationships() {
+    List tokenKeyList = new ArrayList( tokenMap.keySet());
+    Iterator tokenKeyItr = tokenKeyList.iterator();
+    while (tokenKeyItr.hasNext()) {
+      PwToken token = (PwToken) tokenMap.get( tokenKeyItr.next());
+      tokenMasterSlaveMap.put( token.getId(), new TokenRelations( token));
+    }
+  } // end initTokenRelationships
+
+  private void buildTokenRelationships() {
+    // process each token relation only once
+    List tokenKeyList = new ArrayList( tokenMap.keySet());
+    Iterator tokenKeyItr = tokenKeyList.iterator();
+    while (tokenKeyItr.hasNext()) {
+      PwToken token = (PwToken) tokenMap.get( tokenKeyItr.next());
+      // System.err.println( "\nTOKENID " + token.getId());
+      if (token.getTokenRelationIdsList().size() != 0) {
+        Integer tokenId = token.getId();
+        TokenRelations tokenRelations =
+          (TokenRelations) tokenMasterSlaveMap.get( tokenId);
+        Iterator tokenRelationIdIterator = token.getTokenRelationIdsList().iterator();
+        while (tokenRelationIdIterator.hasNext()) {
+          PwTokenRelation tokenRelation =
+            getTokenRelation( (Integer) tokenRelationIdIterator.next());
+          if (tokenRelation != null) {
+            // buildTokenParentChildRelationships printout is complete with
+            // this commented out -- same links are drawn
+            //                 Integer id = tokenRelation.getId();
+            //                 if (tokenRelationIds.indexOf( id) == -1) {
+            //                   tokenRelationIds.add( id);
+            Integer masterTokenId = tokenRelation.getTokenAId();
+            Integer slaveTokenId = tokenRelation.getTokenBId();
+            // System.err.println( "tokenId " + tokenId + " masterTokenId " + masterTokenId +
+            //                     " slaveTokenId " + slaveTokenId);
+            // masterTokenIds do not have tokenRelations - this does nothing
+            if (masterTokenId.equals( tokenId)) {
+              tokenRelations.addSlaveTokenId( slaveTokenId);
+            }
+            if (slaveTokenId.equals( tokenId)) {
+              tokenRelations.setMasterTokenId( masterTokenId);
+              TokenRelations masterTokenRelations =
+                (TokenRelations) tokenMasterSlaveMap.get( masterTokenId);
+              masterTokenRelations.addSlaveTokenId( slaveTokenId);
+              tokenMasterSlaveMap.put( masterTokenId, masterTokenRelations);
+            }
+            //                 }
+          }
+        }
+        tokenMasterSlaveMap.put( tokenId, tokenRelations);
+      }
+    }
+  } // end buildTokenRelationships
+
+  private void printTokenRelationships() {
+    Iterator relationsItr = tokenMasterSlaveMap.values().iterator();
+    while (relationsItr.hasNext()) {
+      TokenRelations relation = (TokenRelations) relationsItr.next();
+      System.err.println( relation.toString());
+    }
+  } // end printTokenRelationships
+
+  /**
+   * <code>getMasterTokenId</code>
+   *
+   * @param tokenId - <code>Integer</code> - 
+   * @return - <code>Integer</code> - 
+   */
+  public Integer getMasterTokenId( Integer tokenId) {
+    return ((TokenRelations) tokenMasterSlaveMap.get( tokenId)).getMasterTokenId();
+  }
+
+  /**
+   * <code>getSlaveTokenIds</code>
+   *
+   * @param tokenId - <code>Integer</code> - 
+   * @return - <code>List</code> - of Integer
+   */
+  public List getSlaveTokenIds( Integer tokenId) {
+    return ((TokenRelations) tokenMasterSlaveMap.get( tokenId)).getSlaveTokenIds();
+  }
+
+
 } // end class PwPartialPlanImpl

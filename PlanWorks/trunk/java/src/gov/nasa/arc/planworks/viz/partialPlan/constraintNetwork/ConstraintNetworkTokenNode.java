@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.8 2004-01-07 23:02:18 miatauro Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.9 2004-01-16 19:05:36 taylor Exp $
 //
 // PlanWorks
 //
@@ -151,7 +151,7 @@ public class ConstraintNetworkTokenNode extends TokenNode {
       tip.append( "slot key=");
       tip.append( slot.getId().toString());
     }
-    tip.append( "<br> Mouse-L: ").append( operation).append( " nearest variables</html>");
+    tip.append( "<br> Mouse-L: ").append( operation).append( "</html>");
     return tip.toString();
   } // end getToolTipText
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.2 2004-01-12 19:46:33 taylor Exp $
+// $Id: TimelineNode.java,v 1.3 2004-01-16 19:05:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -17,8 +17,8 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -201,14 +201,14 @@ public class TimelineNode extends TextNode {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
-    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View for " + timeline.getName());
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
     navigatorItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           MDIInternalFrame navigatorFrame = timelineView.openNavigatorViewFrame();
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = timelineView.getPartialPlan();
-          contentPane.add( new NavigatorView( TimelineNode.this,
-                                              partialPlan, timelineView.getViewSet(),
+          contentPane.add( new NavigatorView( TimelineNode.this, partialPlan,
+                                              timelineView.getViewSet(),
                                               navigatorFrame));
         }
       });

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.25 2004-01-02 18:58:56 taylor Exp $
+# $Id: GETTING_STARTED,v 1.26 2004-01-16 19:05:33 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -197,6 +197,14 @@ Token Network views, entered keys will find token nodes; for the Timeline
 view, entered keys will find token and slot nodes; and for the Constraint 
 Network view, entered keys will find find token, variable, and constraint 
 nodes -- opening appropriate connecting nodes, if needed.
+
+
+Token/Variable/Constraint/Slot/Timeline/ModelClass Relationships
+================================================================
+For all nodes, except empty slots, in the Constraint Network, the Temporal
+Extent, the Timeline, and the Token Network views, there is a 
+Mouse-Right selection "Open Navigator View" which allows navigation
+through all relationships in the partial plan data base.
 
 
 Content Filtering
