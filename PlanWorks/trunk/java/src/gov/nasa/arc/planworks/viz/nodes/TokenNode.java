@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.2 2003-06-25 17:42:55 taylor Exp $
+// $Id: TokenNode.java,v 1.3 2003-07-02 17:42:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,22 +12,16 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
-import java.awt.FontMetrics;
-import java.awt.Insets;
 import java.awt.Point;
-import java.util.Iterator;
-import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
-import com.nwoods.jgo.JGoPort;
+import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoText;
 
 // PlanWorks/java/lib/JGo/Classier.jar
-import com.nwoods.jgo.examples.TextNode;
+import com.nwoods.jgo.examples.BasicNode;
 
-import gov.nasa.arc.planworks.db.DbConstants;
-import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -43,14 +37,7 @@ import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TokenNode extends TextNode {
-
-  // top left bottom right
-  private static final Insets NODE_INSETS =
-    new Insets( ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
-                ViewConstants.TIMELINE_VIEW_INSET_SIZE,
-                ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
-                ViewConstants.TIMELINE_VIEW_INSET_SIZE);
+public class TokenNode extends BasicNode {
 
   private static final boolean IS_FONT_BOLD = false;
   private static final boolean IS_FONT_UNDERLINED = false;
@@ -68,14 +55,13 @@ public class TokenNode extends TextNode {
    * <code>TokenNode</code> - constructor 
    *
    * @param token - <code>PwToken</code> -
-   * @param type - <code>String</code> -
    * @param tokenLocation - <code>Point</code> - 
    * @param objectCnt - <code>int</code> - 
    * @param view - <code>TokenNetworkView</code> - 
    */
   public TokenNode( PwToken token, Point tokenLocation, int objectCnt,
                     TokenNetworkView view) {
-    super( token.getPredicate().getName() + " " + token.getKey().toString());
+    super();
     this.token = token;
     this.objectCnt = objectCnt;
     this.view = view;
@@ -86,33 +72,17 @@ public class TokenNode extends TextNode {
   } // end constructor
 
   private final void configure( Point tokenLocation) {
+    boolean isRectangular = true;
+    setLabelSpot( JGoObject.Center);
+    initialize( tokenLocation,
+                token.getPredicate().getName() + " " + token.getKey().toString(),
+                isRectangular);
     String backGroundColor = ((objectCnt % 2) == 0) ?
       ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
       ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
     setDraggable( false);
-    // allow links
-    getTopPort().setVisible( true);
-    getTopPort().setStyle( JGoPort.StyleHidden);
-    getLeftPort().setVisible( true);
-    getLeftPort().setStyle( JGoPort.StyleHidden);
-    getBottomPort().setVisible( true);
-    getBottomPort().setStyle( JGoPort.StyleHidden);
-    getRightPort().setVisible( true);
-    getRightPort().setStyle( JGoPort.StyleHidden);
-    // but not user links
-    getTopPort().setValidSource( false);
-    getTopPort().setValidDestination( false);
-    getLeftPort().setValidSource( false);
-    getLeftPort().setValidDestination( false);
-    getBottomPort().setValidSource( false);
-    getBottomPort().setValidDestination( false);
-    getRightPort().setValidSource( false);
-    getRightPort().setValidDestination( false);
-
-    setLocation( (int) tokenLocation.getX(), (int) tokenLocation.getY());
-    setInsets( NODE_INSETS);
   } // end configure
 
 

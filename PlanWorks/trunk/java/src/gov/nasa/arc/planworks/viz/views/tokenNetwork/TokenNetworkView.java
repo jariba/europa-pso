@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.3 2003-06-30 21:52:47 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.4 2003-07-02 17:42:48 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -29,10 +29,7 @@ import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoLabeledLink;
-import com.nwoods.jgo.JGoListPosition;
-import com.nwoods.jgo.JGoPort;
-import com.nwoods.jgo.JGoText;
+import com.nwoods.jgo.JGoLayer;
 import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.layout.JGoForceDirectedAutoLayout;
 
@@ -44,6 +41,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTokenRelation;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.nodes.TokenLink;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
@@ -63,13 +61,15 @@ public class TokenNetworkView extends VizView {
   private ViewSet viewSet;
   private JGoView jGoView;
   private JGoDocument jGoDocument;
+  private JGoLayer hiddenLayer;
   private Font font;
   private FontMetrics fontMetrics;
   // nodeList & tmpNodeList used by JFCUnit test case
   private List nodeList; // element TokenNode
   private List tmpNodeList; // element TokenNode
+  private List linkList; // element TokenLink
   private Map relationships; // master, slave, self relationships
-  private List links; // element String
+  private List linkNameList; // element String
 
   /**
    * <code>TokenNetworkView</code> - constructor - called by ViewSet.openTokenNetworkView.
@@ -85,7 +85,10 @@ public class TokenNetworkView extends VizView {
     this.viewSet = viewSet;
     this.nodeList = null;
     this.tmpNodeList = new ArrayList();
+    this.linkList = new ArrayList();
     this.relationships = new HashMap();
+    this.linkNameList = new ArrayList();
+
     buildTokenParentChildRelationships();
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
@@ -137,8 +140,12 @@ public class TokenNetworkView extends VizView {
     graphics.dispose();
 
     jGoDocument = jGoView.getDocument();
+    hiddenLayer = jGoDocument.addLayerBefore( jGoDocument.getDefaultLayer());
 
+    // create all nodes
     createTokenNodes();
+    // setVisible( true | false) depending on ContentSpec
+    setNodesVisible();
 
     JGoForceDirectedAutoLayout layout = new JGoForceDirectedAutoLayout( jGoDocument);
     layout.performLayout();
@@ -157,12 +164,11 @@ public class TokenNetworkView extends VizView {
    *
    */
   public void redraw() {
-    this.nodeList = null;
-    this.tmpNodeList = new ArrayList();
-    // remove old objects from jGoDocument
-    jGoDocument.deleteContents();
-   
-    createTokenNodes();
+    // setVisible(true | false) depending on keys
+    setNodesVisible();
+
+    // move disabled nodes/links into hide layer
+    // and pass default layer (with enabled links) to auto layout
 
     JGoForceDirectedAutoLayout layout = new JGoForceDirectedAutoLayout( jGoDocument);
     layout.performLayout();
@@ -325,16 +331,12 @@ public class TokenNetworkView extends VizView {
     int objectCnt = 0;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
-      if (viewSet.isInContentSpec( object.getKey())) {
-        Iterator timelineIterator = object.getTimelineList().iterator();
-        while (timelineIterator.hasNext()) {
-          x = ViewConstants.TIMELINE_VIEW_X_INIT;
-          PwTimeline timeline = (PwTimeline) timelineIterator.next();
-          if (viewSet.isInContentSpec( timeline.getKey())) {
-            createTokenNodesOfTimeline( timeline, x, y, objectCnt);
-          }
-          y += 2 * ViewConstants.TIMELINE_VIEW_Y_DELTA;
-        }
+      Iterator timelineIterator = object.getTimelineList().iterator();
+      while (timelineIterator.hasNext()) {
+        x = ViewConstants.TIMELINE_VIEW_X_INIT;
+        PwTimeline timeline = (PwTimeline) timelineIterator.next();
+        createTokenNodesOfTimeline( timeline, x, y, objectCnt);
+        y += 2 * ViewConstants.TIMELINE_VIEW_Y_DELTA;
       }
       objectCnt += 1;
     }
@@ -347,26 +349,21 @@ public class TokenNetworkView extends VizView {
     Iterator slotIterator = timeline.getSlotList().iterator();
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
-      if (viewSet.isInContentSpec( slot.getKey())) {
-        Iterator tokenIterator = slot.getTokenList().iterator();
-        while (tokenIterator.hasNext()) { 
-          PwToken token = (PwToken) tokenIterator.next();
-          if (token != null) { // empty slot
-            if (viewSet.isInContentSpec( token.getKey())) {
-              TokenNode tokenNode =
-                new TokenNode( token, new Point( x, y), objectCnt, this);
-              tmpNodeList.add( tokenNode);
-              jGoDocument.addObjectAtTail( tokenNode);
-              x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
-            }
-          }
+      Iterator tokenIterator = slot.getTokenList().iterator();
+      while (tokenIterator.hasNext()) { 
+        PwToken token = (PwToken) tokenIterator.next();
+        if (token != null) { // empty slot
+          TokenNode tokenNode =
+            new TokenNode( token, new Point( x, y), objectCnt, this);
+          tmpNodeList.add( tokenNode);
+          jGoDocument.addObjectAtTail( tokenNode);
+          x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
         }
       }
     }
   } // end createTokenNodes
 
   private void createTokenParentChildRelationships() {
-    links = new ArrayList();
     Iterator tokenNodeIterator = tmpNodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
@@ -376,18 +373,12 @@ public class TokenNetworkView extends VizView {
       Iterator masterTokenItr = tokenRelations.getMasterTokenIds().iterator();
       while (masterTokenItr.hasNext()) {
         Integer masterTokenId = (Integer) masterTokenItr.next();
-        if (viewSet.isInContentSpec( tokenKey) &&
-            viewSet.isInContentSpec( masterTokenId)) {
-          createTokenLink( getTokenNode( masterTokenId), tokenNode, "master");
-        }
+        createTokenLink( getTokenNode( masterTokenId), tokenNode, "master");
       }
       Iterator slaveTokenItr = tokenRelations.getSlaveTokenIds().iterator();
       while (slaveTokenItr.hasNext()) {
         Integer slaveTokenId = (Integer) slaveTokenItr.next();
-        if (viewSet.isInContentSpec( tokenKey) &&
-            viewSet.isInContentSpec( slaveTokenId)) {
-          createTokenLink( tokenNode, getTokenNode( slaveTokenId), "slave");
-        }
+        createTokenLink( tokenNode, getTokenNode( slaveTokenId), "slave");
       }
     }
   } // end createTokenParentChildRelationships
@@ -409,15 +400,15 @@ public class TokenNetworkView extends VizView {
                                 String type) {
     String linkName = fromTokenNode.getToken().getKey().toString() + "->" +
       toTokenNode.getToken().getKey().toString();
-    Iterator linkItr = links.iterator();
+    Iterator linkItr = linkNameList.iterator();
     while (linkItr.hasNext()) {
       if (linkName.equals( (String) linkItr.next())) {
         // System.err.println( "discard " + linkName + " type " + type);
         return;
       }
     }
-    JGoLabeledLink link =
-      new JGoLabeledLink( fromTokenNode.getBottomPort(), toTokenNode.getTopPort());
+    TokenLink link = new TokenLink( fromTokenNode, toTokenNode);
+    linkList.add( link);
     // master/slave & meets/met-by are on the same link ???
 //     if (type.equals( "master")) {
 //       link.setMidLabel( new JGoText( "meets"));
@@ -431,11 +422,33 @@ public class TokenNetworkView extends VizView {
                         fromTokenNode.getToken().getKey().toString() + " => " +
                         toTokenNode.getPredicateName() + " " +
                         toTokenNode.getToken().getKey().toString() + " " + type);
-    link.setArrowHeads( false, true); // fromArrowHead toArrowHead
     jGoDocument.addObjectAtTail( link);
-    links.add( linkName);
+    linkNameList.add( linkName);
   } // end createTokenLink
 
+
+  private void setNodesVisible() {
+    int numNodes = nodeList.size();
+    Iterator tokenNodeIterator = nodeList.iterator();
+    while (tokenNodeIterator.hasNext()) {
+      TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
+      if (viewSet.isInContentSpec( tokenNode.getToken().getKey())) {
+        tokenNode.setVisible( true);
+      } else {
+        tokenNode.setVisible( false);
+      }
+    }
+    Iterator tokenLinkIterator = linkList.iterator();
+    while (tokenLinkIterator.hasNext()) {
+      TokenLink tokenLink = (TokenLink) tokenLinkIterator.next();
+      if (viewSet.isInContentSpec( tokenLink.getFromToken().getKey()) &&
+          viewSet.isInContentSpec( tokenLink.getToToken().getKey())) {
+        tokenLink.setVisible( true);
+      } else {
+        tokenLink.setVisible( false);
+      }
+    }
+  } // end setNodesVisible
 
 
 
