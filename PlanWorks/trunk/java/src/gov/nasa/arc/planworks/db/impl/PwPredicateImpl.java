@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicateImpl.java,v 1.10 2003-12-16 23:18:29 miatauro Exp $
+// $Id: PwPredicateImpl.java,v 1.11 2004-04-02 00:58:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwPredicate;
 
 
@@ -89,23 +88,5 @@ public class PwPredicateImpl implements PwPredicate {
     }
     return retval;
   }
-
-  public PwParameter getParameter(Integer id) {
-    return (PwParameter) params.get(id);
-  }
-
-  /**
-   * <code>addParameter</code>
-   *
-   * @param id - <code>Integer</code> - 
-   * @param name - <code>String</code> - 
-   * @return - <code>PwParameterImpl</code> - 
-   */
-  public PwParameterImpl addParameter( Integer id, String name) {
-    PwParameterImpl parameter = new PwParameterImpl(id, name);
-    params.put(id, parameter);
-    return parameter;
-  } // end addParameter
-
 
 } // end class PwPredicateImpl

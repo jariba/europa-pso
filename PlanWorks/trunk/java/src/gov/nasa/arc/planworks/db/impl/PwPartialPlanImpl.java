@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.81 2004-04-02 00:24:42 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.82 2004-04-02 00:58:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,7 +30,6 @@ import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
-import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceInstant;
