@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.19 2003-09-18 19:02:24 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.20 2003-09-23 21:54:35 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -23,8 +23,10 @@ import java.util.ListIterator;
 import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
@@ -139,6 +141,148 @@ public class ContentSpecWindow extends JPanel {
     c.gridy++;
     gridBag.setConstraints(buttonPanel, c);
     add(buttonPanel);
+    buildFromSpec();
+  }
+
+  private void buildFromSpec() {
+    List currentSpec = contentSpec.getCurrentSpec();
+    if(currentSpec.size() == 0) {
+      return;
+    }
+    List timelines = (List) currentSpec.get(0);
+    List predicates = (List) currentSpec.get(1);
+    List timeIntervals = (List) currentSpec.get(2);
+    boolean mergeTokens = ((Boolean)currentSpec.get(3)).booleanValue();
+    int tokenTypes = ((Integer)currentSpec.get(4)).intValue();
+
+    for(int i = 0; i < mergeBox.getComponentCount(); i++) {
+      if(mergeBox.getComponent(i) instanceof JCheckBox) {
+        ((JCheckBox)mergeBox.getComponent(i)).setSelected(mergeTokens);
+        break;
+      }
+    }
+    for(int i = 0; i < tokenTypeBox.getComponentCount(); i++) {
+      if(tokenTypeBox.getComponent(i) instanceof JRadioButton) {
+        JRadioButton button = (JRadioButton) tokenTypeBox.getComponent(i);
+        if(button.getText().equals("all") && tokenTypes == ContentSpec.ALL) {
+          button.setSelected(true);
+          break;
+        }
+        else if(button.getText().equals("slotted") && tokenTypes == ContentSpec.SLOTTED_ONLY) {
+          button.setSelected(true);
+          break;
+        }
+        else if(button.getText().equals("free") && tokenTypes == ContentSpec.FREE_ONLY) {
+          button.setSelected(true);
+          break;
+        }
+      }
+    }
+    if(predicates != null && predicates.size() != 0) {
+      List predicateBoxes = predicateGroup.getElements();
+      PredicateBox firstPredicate = (PredicateBox) predicateBoxes.get(0);
+      if(((String)predicates.get(0)).indexOf("not") != -1) {
+        firstPredicate.getNegationBox().setSelected(true);
+      }
+      firstPredicate.setSelectedComboItem((Integer)predicates.get(1));
+      for(int i = 2; i < predicates.size(); i += 2) {
+        String connective = (String)predicates.get(i);
+        Integer predicate = (Integer)predicates.get(i+1);
+        predicateBoxes = predicateGroup.getElements();
+        ListIterator predicateBoxIterator = predicateBoxes.listIterator();
+        while(predicateBoxIterator.hasNext()) {
+          PredicateBox box = (PredicateBox) predicateBoxIterator.next();
+          if(box.getLogicBox().isEnabled() && !box.getComboBox().isEnabled()) {
+            if(connective.indexOf("and") != -1) {
+              box.getLogicBox().setSelectedItem("AND");
+            }
+            else if(connective.indexOf("or") != -1) {
+              box.getLogicBox().setSelectedItem("OR");
+            }
+            else {
+              System.err.println("Logical connective without 'and' or 'or'!");
+              System.exit(-1);
+            }
+            if(connective.indexOf("not") != -1) {
+              box.getNegationBox().setSelected(true);
+            }
+            box.setSelectedComboItem(predicate);
+            break;
+          }
+        }
+      }
+    }
+    if(timelines != null && timelines.size() != 0) {
+      List timelineBoxes = timelineGroup.getElements();
+      TimelineBox firstTimeline = (TimelineBox) timelineBoxes.get(0);
+      if(((String)timelines.get(0)).indexOf("not") != -1) {
+        firstTimeline.getNegationBox().setSelected(true);
+      }
+      firstTimeline.setSelectedComboItem((Integer)timelines.get(1));
+      for(int i = 2; i < timelines.size(); i += 2) {
+        String connective = (String)timelines.get(i);
+        Integer timeline = (Integer)timelines.get(i+1);
+        timelineBoxes = timelineGroup.getElements();
+        ListIterator timelineBoxIterator = timelineBoxes.listIterator();
+        while(timelineBoxIterator.hasNext()) {
+          TimelineBox box = (TimelineBox) timelineBoxIterator.next();
+          if(box.getLogicBox().isEnabled() && !box.getComboBox().isEnabled()) {
+            if(connective.indexOf("and") != -1) {
+              box.getLogicBox().setSelectedItem("AND");
+            }
+            else if(connective.indexOf("or") != -1) {
+              box.getLogicBox().setSelectedItem("OR");
+            }
+            else {
+              System.err.println("Logical connective without 'and' or 'or'!");
+              System.exit(-1);
+            }
+            if(connective.indexOf("not") != -1) {
+              box.getNegationBox().setSelected(true);
+            }
+            box.setSelectedComboItem(timeline);
+            break;
+          }
+        }
+      }
+    }
+    if(timeIntervals != null && timeIntervals.size() != 0) {
+      List timeIntervalBoxes = timeIntervalGroup.getElements();
+      TimeIntervalBox firstTimeInterval = (TimeIntervalBox) timeIntervalBoxes.get(0);
+      if(((String) timeIntervals.get(0)).indexOf("not") != -1) {
+        firstTimeInterval.getNegationBox().setSelected(true);
+      }
+      firstTimeInterval.getStartValue().setText(((Integer)timeIntervals.get(1)).toString());
+      firstTimeInterval.getEndValue().setText(((Integer)timeIntervals.get(2)).toString());
+      for(int i = 3; i < timeIntervals.size(); i += 3) {
+        String connective = (String) timeIntervals.get(i);
+        Integer startTime = (Integer) timeIntervals.get(i+1);
+        Integer endTime = (Integer) timeIntervals.get(i+2);
+        timeIntervalBoxes = timeIntervalGroup.getElements();
+        ListIterator timeIntervalIterator = timeIntervalBoxes.listIterator();
+        while(timeIntervalIterator.hasNext()) {
+          TimeIntervalBox box = (TimeIntervalBox) timeIntervalIterator.next();
+          if(box.getLogicBox().isEnabled() && !box.getStartValue().isEnabled()) {
+            if(connective.indexOf("and") != -1) {
+              box.getLogicBox().setSelectedItem("AND");
+            }
+            else if(connective.indexOf("or") != -1) {
+              box.getLogicBox().setSelectedItem("OR");
+            }
+            else {
+              System.err.println("Logical connective without 'and' or 'or'!");
+              System.exit(-1);
+            }
+            if(connective.indexOf("not") != -1) {
+              box.getNegationBox().setSelected(true);
+            }
+            box.getStartValue().setText(startTime.toString());
+            box.getEndValue().setText(endTime.toString());
+            break;
+          }
+        }
+      }
+    }
   }
 
   /**

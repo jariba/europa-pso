@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.9 2003-09-18 23:35:25 miatauro Exp $
+// $Id: ContentSpec.java,v 1.10 2003-09-23 21:54:00 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -12,6 +12,7 @@ import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -33,6 +34,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.RedrawNotifier;
 
 public class ContentSpec {
   private UniqueSet validTokenIds;
+  private List currentSpec;
   private Long partialPlanId;
   private PwPartialPlan partialPlan;
   private RedrawNotifier redrawNotifier;
@@ -59,9 +61,9 @@ public class ContentSpec {
     "SELECT Object.ObjectName, Timeline.TimelineName, Timeline.TimelineId FROM Object RIGHT JOIN Timeline ON Timeline.ObjectId=Object.ObjectId && Timeline.PartialPlanId=Object.PartialPlanId WHERE Object.PartialPlanId=";
   private static final String TOKENID = "TokenId";
   private static final String TOKENID_QUERY = "SELECT TokenId FROM Token WHERE PartialPlanId=";
-  private static final int FREE_ONLY = -1;
-  private static final int SLOTTED_ONLY = 0;
-  private static final int ALL = 1;
+  public static final int FREE_ONLY = -1;
+  public static final int SLOTTED_ONLY = 0;
+  public static final int ALL = 1;
 
   /**
    * Creates the ContentSpec object, then makes a query for all valid tokens
@@ -76,12 +78,19 @@ public class ContentSpec {
     this.redrawNotifier = redrawNotifier;
     this.validTokenIds = new UniqueSet();
     queryValidTokens();
+    currentSpec = partialPlan.getContentSpec();
+    if(currentSpec.size() != 0) {
+      applySpec((List)currentSpec.get(0), (List)currentSpec.get(1), (List)currentSpec.get(2),
+                ((Boolean)currentSpec.get(3)).booleanValue(),
+                ((Integer)currentSpec.get(4)).intValue());
+    }
   }
   /**
    * Sets all tokens valid
    */
   public void resetSpec() {
     validTokenIds.clear();
+    currentSpec.clear();
     queryValidTokens();
     redrawNotifier.notifyRedraw();
   }
@@ -128,10 +137,16 @@ public class ContentSpec {
   public void applySpec(List timeline, List predicate, List timeInterval, boolean mergeTokens,
                         int tokenTypes) 
     throws NumberFormatException {
+    currentSpec.clear();
+    currentSpec.add(timeline);
+    currentSpec.add(predicate);
+    currentSpec.add(timeInterval);
+    currentSpec.add(new Boolean(mergeTokens));
+    currentSpec.add(new Integer(tokenTypes));
     try {
       StringBuffer tokenQuery = new StringBuffer(TOKENID_QUERY);
       tokenQuery.append(partialPlanId.toString()).append(" ");
-      if(timeline != null) {
+      if(timeline != null && timeline.size() != 0) {
         tokenQuery.append(AND_PTIMELINEID);
         if(((String)timeline.get(0)).indexOf(NOT) != -1) {
           tokenQuery.append(NEG);
@@ -154,7 +169,7 @@ public class ContentSpec {
         }
         tokenQuery.append(") ");
       }
-      if(predicate != null) {
+      if(predicate != null && predicate.size() != 0) {
         tokenQuery.append(AND_PPREDICATEID);
         if(((String)predicate.get(0)).indexOf(NOT) != -1) {
           tokenQuery.append(NEG);
@@ -326,5 +341,9 @@ public class ContentSpec {
     }
     catch(SQLException sqle) {}
     return timelines;
+  }
+  
+  public List getCurrentSpec() {
+    return new ArrayList(currentSpec);
   }
 }

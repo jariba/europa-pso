@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SpecBox.java,v 1.8 2003-09-11 23:41:56 miatauro Exp $
+// $Id: SpecBox.java,v 1.9 2003-09-23 21:54:36 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -158,6 +158,27 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     keyField.setSelectedItem("");
     logicBox.setSelectedItem("");
   }
+
+  public LogicComboBox getLogicBox() {
+    return logicBox;
+  }
+  public NegationCheckBox getNegationBox() {
+    return negationBox;
+  }
+  public JComboBox getComboBox() {
+    return keyField;
+  }
+
+  public void setSelectedComboItem(Integer value) {
+    Iterator nameIterator = names.keySet().iterator();
+    while(nameIterator.hasNext()) {
+      String name = (String) nameIterator.next();
+      if(((Integer)names.get(name)).equals(value)) {
+        keyField.setSelectedItem(name);
+      }
+    }
+  }
+
   /**
    * <code>LogicListener</code> -
    *                  ItemListener->LogicListener
