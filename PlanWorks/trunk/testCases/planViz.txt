@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.16 2003-11-25 01:40:40 taylor Exp $
+// $Id: planViz.txt,v 1.17 2003-12-10 20:47:54 miatauro Exp $
 //
 // PlanWorks
 //
@@ -588,6 +588,34 @@ Post-conditions:
   4. Method:4 - The "Sequence Steps View" for the first project is visible.
   5. Method:5 - The "Sequence Steps View" for the second project is visible.  The two 
   "Sequence Steps View"s are visually distinct and represent two different sequences.
+
+Requirements: N/A
+
+PLANVIZ-15
+--------------------
+Exercise loading of sequences at planner runtime.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. A project is open.
+
+Method:
+  1. Select the "New Sequence" item from the "Project" menu.
+  2. Enter "3" into the "Time to wait" entry box.
+  3. Enter "1" into the "Steps per write" entry box.
+  4. Enter a valid destination into the "Write destination" entry box.
+  5. Enter a valid planner command line into the "Command line" entry box.
+  6. After the wait period, select the new sequence from the "Planning Sequence" menu.
+  7. As planning progresses, select the "Refresh" item from the right-click menu in the
+     SequenceSteps View.
+  8. Open arbitrary views from arbitrary steps.
+
+Post-conditions:
+  1. Method:1 - The "Planner Command-line" dialog is visible.
+  2. Method:5 - The planner is executed and PlanWorks blocks for the number of seconds entered.
+  3. Method:6 - The "Sequence Steps View" for the new planning sequence is visible.
+  4. Method:7 - The "Sequence Steps View" is redrawn, with more steps and a possible scale change.
+  5. Method:8 - The selected views are open and correct.
 
 Requirements: N/A
 
