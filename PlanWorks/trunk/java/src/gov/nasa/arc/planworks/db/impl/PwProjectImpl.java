@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.41 2004-02-11 01:08:17 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.42 2004-03-02 23:11:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
+import java.awt.Frame;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -26,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import javax.swing.JOptionPane;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwModel;
@@ -175,8 +177,7 @@ public class PwProjectImpl extends PwProject {
       }
       catch(ResourceNotFoundException rnfe) {
         if(rnfe.getMessage().indexOf("is not a valid sequence directory") != -1) {
-          System.err.println("Warning: ignoring sequence '" + seqUrl + "'");
-          seqIdIterator.remove();
+          invalidSequenceDialog(sequenceId, seqUrl, seqIdIterator);
         }
         else {
           throw rnfe;
@@ -184,6 +185,20 @@ public class PwProjectImpl extends PwProject {
       }
     }
   } // end  constructor PwProjectImpl.openProject
+
+  private void invalidSequenceDialog(final Long seqId, final String seqUrl, final Iterator it) 
+  throws ResourceNotFoundException {
+    Frame f = new Frame();
+    int choice = JOptionPane.showOptionDialog(f, "Sequence " + seqUrl + 
+                                              " is invalid.\nDelete it from the database? (Data that is loaded is still viewable) ", 
+                                              "Invalid Sequence Directory", 
+                                              JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE,
+                                              null, null, null);
+    if(choice == 0) {
+      MySQLDB.deletePlanningSequence(seqId);
+      it.remove();
+    }
+  }
 
   /**
    * <code>getId</code> - get the project's Id.
