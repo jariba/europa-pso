@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.64 2003-12-10 21:29:35 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.65 2003-12-19 18:55:35 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -336,6 +336,24 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return retval;
   } // end getPartialPlan( String)
 
+  public PwPartialPlan getNextPartialPlan(int step) throws ResourceNotFoundException, 
+  IndexOutOfBoundsException {
+    return getPartialPlan(step+1);
+  }
+  public PwPartialPlan getNextPartialPlan(String planName) throws ResourceNotFoundException,
+  IndexOutOfBoundsException {
+    return getPartialPlan(Integer.parseInt(planName.substring(4)) + 1);
+  }
+  
+  public PwPartialPlan getPrevPartialPlan(int step) throws ResourceNotFoundException,
+  IndexOutOfBoundsException {
+    return getPartialPlan(step-1);
+  }
+  public PwPartialPlan getPrevPartialPlan(String planName) throws ResourceNotFoundException, 
+  IndexOutOfBoundsException {
+    return getPartialPlan(Integer.parseInt(planName.substring(4)) - 1);
+  }
+  
   /**
    * <code>addPartialPlan</code> -
    *          maintain PwPartialPlanImpl instance ordering of partialPlanNames

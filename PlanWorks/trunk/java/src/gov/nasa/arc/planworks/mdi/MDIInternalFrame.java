@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIInternalFrame.java,v 1.7 2003-12-16 23:18:31 miatauro Exp $
+// $Id: MDIInternalFrame.java,v 1.8 2003-12-19 18:55:36 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -404,6 +404,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
      * Handles the deletion of the button in the MDIWindowButtonBar.
      */
     public void internalFrameClosed(InternalFrameEvent e){
+      //System.err.println("frame closed");
       windowBar.notifyDeleted(frame);
       menu.notifyDeleted(frame);
       if(viewSet != null) {

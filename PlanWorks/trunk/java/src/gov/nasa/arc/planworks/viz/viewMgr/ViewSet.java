@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.48 2003-12-16 23:18:34 miatauro Exp $
+// $Id: ViewSet.java,v 1.49 2003-12-19 18:55:38 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -114,7 +114,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     return viewFrame;
   }
 
-  private MDIInternalFrame getViewByClass(Class viewClass) {
+  public MDIInternalFrame getViewByClass(Class viewClass) {
     return (MDIInternalFrame) views.get(viewClass);
   }
 
@@ -123,7 +123,9 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
    * @param MDIInternalFrame the frame containing the view.
    */
   public void removeViewFrame(MDIInternalFrame viewFrame) {
+    //System.err.println("in removeViewFrame");
     if(views.containsValue(viewFrame)) {
+      //System.err.println("have frame");
       Container contentPane = viewFrame.getContentPane();
       for(int i = 0; i < contentPane.getComponentCount(); i++) {
         if(contentPane.getComponent(i) instanceof VizView) {
@@ -137,9 +139,12 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
             MDIInternalFrame overviewFrame = (MDIInternalFrame) views.get( overviewTitle);
             if (overviewFrame != null) {
               try {
+                //System.err.println("closing frame");
                 overviewFrame.setClosed( true);
               } catch(PropertyVetoException pve){
+                pve.printStackTrace();
               }
+              //System.err.println("removing frame");
               views.remove( overviewTitle);
             }
           }

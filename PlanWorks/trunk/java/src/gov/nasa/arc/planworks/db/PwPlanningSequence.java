@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.26 2003-12-10 21:29:22 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.27 2003-12-19 18:55:35 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -113,6 +113,16 @@ public interface PwPlanningSequence extends ViewableObject {
    */
   public abstract PwPartialPlan getPartialPlanIfLoaded( String planName)
     throws ResourceNotFoundException;
+
+  public abstract PwPartialPlan getNextPartialPlan(int step) throws ResourceNotFoundException, 
+  IndexOutOfBoundsException;
+  public abstract PwPartialPlan getNextPartialPlan(String planName) 
+    throws ResourceNotFoundException, IndexOutOfBoundsException;
+  
+  public abstract PwPartialPlan getPrevPartialPlan(int step) throws ResourceNotFoundException,
+  IndexOutOfBoundsException;
+  public abstract PwPartialPlan getPrevPartialPlan(String planName)
+    throws ResourceNotFoundException, IndexOutOfBoundsException;
   
   /**
    * <code>delete</code>

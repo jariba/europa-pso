@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.19 2003-12-12 01:23:05 taylor Exp $
+// $Id: TimelineView.java,v 1.20 2003-12-19 18:55:37 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -622,6 +622,8 @@ public class TimelineView extends PartialPlanView {
     String partialPlanName = partialPlan.getPartialPlanName();
     PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    createSteppingItems(mouseRightPopup);
 
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
     createNodeByKeyItem( nodeByKeyItem);
