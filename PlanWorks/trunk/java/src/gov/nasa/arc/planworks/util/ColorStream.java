@@ -7,8 +7,8 @@ import java.util.Map;
 public class ColorStream {
 
   private Map hashMap;
-  private static final int COLOR_INC = 67/*51*/;
-  private static final float MIN_BRIGHTNESS = 0.50f;
+  private static final int COLOR_INC = 69/*51*/;
+  private static final float MIN_BRIGHTNESS = 0.60f;
   private int r, g, b;
 
   public ColorStream() {
@@ -30,6 +30,8 @@ public class ColorStream {
       retval = retval.brighter();
       HSB = Color.RGBtoHSB(retval.getRed(), retval.getGreen(), retval.getBlue(), null);
     }
+    System.err.println("Color <" + r + ", " + g + ", " + b + "> {" + HSB[0] + ", " + HSB[1] + ", " +
+                       HSB[2] + "}");
     r = retval.getRed();
     g = retval.getGreen();
     b = retval.getBlue();
