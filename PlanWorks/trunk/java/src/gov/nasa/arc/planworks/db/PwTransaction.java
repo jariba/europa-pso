@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTransaction.java,v 1.3 2003-10-02 23:24:21 taylor Exp $
+// $Id: PwTransaction.java,v 1.4 2003-10-28 22:13:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -72,5 +72,5 @@ public interface PwTransaction {
    */
   public abstract Long getPartialPlanId();
 
-
+  public abstract String [] getInfo();
 } // end interface PwTransaction

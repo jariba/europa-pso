@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.50 2003-10-25 00:58:09 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.51 2003-10-28 22:13:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -211,7 +211,9 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   }
 
   private void loadTransactions() {
+    long t1 = System.currentTimeMillis();
     transactions = MySQLDB.queryTransactions(id);
+    System.err.println("Loading transactions took " + (System.currentTimeMillis() - t1) + "ms");
     //List info = MySQLDB.queryTransactions(id);
     //transactions = (List) info.get(0);
     //planToTransactionMap = (Map) info.get(1);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.9 2003-10-21 22:51:34 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.10 2003-10-28 22:13:04 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H
@@ -73,8 +73,8 @@ private:
   TokenNetwork *tnet;
   Value izero, rzero;
   List<Transaction> *transactionList;
-  void outputVariable(const VarId &, const char *, const long long int, FILE *, FILE *, 
-                      FILE *);
+  void outputVariable(const VarId &, const char *, const long long int, const TokenId &, FILE *,
+                      FILE *, FILE *);
   void outputToken(const TokenId &, const bool, const long long int, const ModelId *, const ObjectId *, 
                    const int,  const SlotId *, FILE *, FILE *, FILE *, FILE *, FILE *, FILE *);
   void outputPredicate(PredicateId &, const ModelId &, const long long int partialPlanId, 
