@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.58 2004-08-21 00:31:49 taylor Exp $
+# $Id: GETTING_STARTED,v 1.59 2004-08-26 20:51:24 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -369,11 +369,12 @@ locations, and then on the background select Mouse-Right: "Highlight Current Pat
 
 Content Filtering
 =====================
-The information displayed in the partial plan views may be filtered by
+The tokens displayed in the partial plan views may be filtered by
 predicate, by timeline, by time interval, and/or by token keys using the
 partial plan's Content Filter dialog.  It is also possible to 
-limit the set of valid tokens to only free or slotted tokens, as well 
-as the first token on a slot ("Merge tokens").  
+limit the set of valid tokens to only free tokens ("View free tokens"), to only
+slotted tokens ("View slotted tokens"), to only base tokens ("Merge tokens" and
+"View slotted tokens"), or to free and base tokens ("Merge tokens").
 
 Applying single predicate, timeline, and time interval filters results
 in only the tokens which match that filter being displayed.  To filter

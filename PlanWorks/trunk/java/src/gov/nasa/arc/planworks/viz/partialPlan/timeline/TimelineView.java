@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.65 2004-08-21 00:31:57 taylor Exp $
+// $Id: TimelineView.java,v 1.66 2004-08-26 20:51:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -46,6 +46,7 @@ import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -965,12 +966,20 @@ public class TimelineView extends PartialPlanView {
       }
     }
     if (! isTokenFound) {
-      // Content Spec filtering may cause this to happen
-      String message = "Token " + tokenToFind.getPredicateName() +
-        " (key=" + tokenToFind.getId().toString() + ") not found.";
-      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                     "Token Not Found in TimelineView",
-                                     JOptionPane.ERROR_MESSAGE);
+      String message = null;
+      if (tokenToFind instanceof PwResourceTransaction) {
+        message = "Sorry, \"" + tokenToFind.getId().toString() + "\" " +
+          "is a valid key, but is not available in this view.";
+        JOptionPane.showMessageDialog
+          (PlanWorks.getPlanWorks(), message, "Key Not Available", JOptionPane.ERROR_MESSAGE);
+      } else {
+        // Content Spec filtering may cause this to happen
+        message = "Token " + tokenToFind.getPredicateName() + " (key=" +
+          tokenToFind.getId().toString() + ") not found.";
+        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                       "Token Not Currently Found in TimelineView",
+                                       JOptionPane.ERROR_MESSAGE);
+      }
       System.err.println( message);
     }
   } // end findAndSelectToken
@@ -1003,7 +1012,7 @@ public class TimelineView extends PartialPlanView {
       // Content Spec filtering may cause this to happen
       String message = "Slot (key=" + slotToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                     "Slot Not Found in TimelineView",
+                                     "Slot Not Currently Found in TimelineView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
     }
@@ -1036,7 +1045,7 @@ public class TimelineView extends PartialPlanView {
       // Content Spec filtering may cause this to happen
       String message = "Timeline (key=" + timelineToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                     "Timeline Not Found in TimelineView",
+                                     "Timeline Not Currently Found in TimelineView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
     }

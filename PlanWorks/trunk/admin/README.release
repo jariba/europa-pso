@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.14 2004-07-27 21:58:01 taylor Exp $
+# $Id: README.release,v 1.15 2004-08-26 20:51:25 taylor Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
@@ -19,9 +19,9 @@ o Update PlanWorks/GETTING_STARTED
 o Update PlanWorks/testCases/planViz.txt
 
 o Run "ant test" to execute the BackendTest, the MySQLDBTest,
-  the PlanWorksUtilsTest, and the PlanWorksGUITest (1-11 of 24 planViz.txt tests)
+  the PlanWorksUtilsTest, and the PlanWorksGUITest (1-11 of 25 planViz.txt tests)
 
-o Perform test cases outlined in PlanWorks/testCases/planViz.txt (12-24)
+o Perform test cases outlined in PlanWorks/testCases/planViz.txt (12-25)
 
 o Execute 'ant createJars' to update PlanWorks/java/jars
 

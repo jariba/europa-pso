@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceNavNode.java,v 1.5 2004-08-14 01:39:16 taylor Exp $
+// $Id: ResourceNavNode.java,v 1.6 2004-08-26 20:51:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -238,8 +238,8 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
   public final boolean doMouseClick( final int modifiers, final Point dc, final Point vc,
                                      final JGoView view) {
     JGoObject obj = view.pickDocObject( dc, false);
-    //         System.err.println( "doMouseClick obj class " +
-    //                             obj.getTopLevelObject().getClass().getName());
+    // System.err.println( "doMouseClick obj class " +
+    //                    obj.getTopLevelObject().getClass().getName());
     ResourceNavNode resourceNode = (ResourceNavNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       NavigatorView navigatorView = (NavigatorView) partialPlanView;

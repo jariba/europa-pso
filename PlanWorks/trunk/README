@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.123 2004-08-23 22:07:39 taylor Exp $
+# $Id: README,v 1.124 2004-08-26 20:51:24 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -53,7 +53,7 @@ o The first version of the Test Definition Language has been completed. The
   specification is located at PlanWorks/doc/TestLangSpec.txt.  It can be
   accessed through Project->Run Test
 
-o PlanWorksGUITest now supports tests 1-11 of 24, defined in testCases/planViz.txt
+o PlanWorksGUITest now supports tests 1-11 of 25, defined in testCases/planViz.txt
 
 o The sequence directory chooser now supports the selection of a directory,
   whose children are all sequence directories, so that user multiple directory 
@@ -100,7 +100,7 @@ o The Constraint Network View, the Token Network View, and the Navigator View ha
   the selections, drag the nodes to new locations, and then on the background select
   Mouse-Right: "Highlight Current Path".
 
-o The Navigator View has a new background Mouse-Right selection options: "Find by Key",
+o The Navigator View has a new background Mouse-Right selection option: "Find by Key",
   which requests a single entity key and finds that node, opening it and its neighbors,
   if necessary.
 
@@ -119,8 +119,8 @@ CVS CHECKOUT
 Latest development state:
   > cvs co PlanWorks  or
   > cvs update PlanWorks
-Latest tagged milestone: (see Summary below)
-  > cvs co -r PW_M_15 PlanWorks
+Latest tagged milestone: (see Summary above)
+  > cvs co -r PW_M_16 PlanWorks
 
 
 PREREQUISITES

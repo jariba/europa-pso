@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.38 2004-08-21 00:31:54 taylor Exp $
+// $Id: VizView.java,v 1.39 2004-08-26 20:51:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -51,6 +51,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.util.FindEntityPath;
 import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
@@ -485,6 +486,10 @@ public class VizView extends JPanel {
       ((NavigatorView) partialPlanView).setLayoutNeeded();
       isRedraw = true;
       hasStepButtons = false;
+    } else if (jGoView instanceof TokenNetworkView.TokenNetworkJGoView) {
+      ((TokenNetworkView.TokenNetworkJGoView) jGoView).resetOpenNodes();
+      ((TokenNetworkView) partialPlanView).setLayoutNeeded();
+      isRedraw = true;
     } else if (jGoView instanceof SequenceStepsView.SequenceStepsJGoView) {
        hasStepButtons = false;
     }

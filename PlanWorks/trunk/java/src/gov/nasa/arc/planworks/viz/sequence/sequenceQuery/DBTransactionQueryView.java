@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionQueryView.java,v 1.8 2004-08-10 21:17:12 taylor Exp $
+// $Id: DBTransactionQueryView.java,v 1.9 2004-08-26 20:51:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -341,6 +341,8 @@ public class DBTransactionQueryView extends SequenceView {
         keyString = ViewConstants.QUERY_TOKEN_KEY_HEADER;
       } else if (query.indexOf( "Variable") >= 0) {
         keyString = ViewConstants.QUERY_VARIABLE_KEY_HEADER;
+      } else {
+        keyString = ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER;
       }
       JMenuItem transByKeyItem = new JMenuItem( "Find Transaction by " + keyString);
       createTransByKeyItem( transByKeyItem, dbTransactionList, contentScrollPane,
