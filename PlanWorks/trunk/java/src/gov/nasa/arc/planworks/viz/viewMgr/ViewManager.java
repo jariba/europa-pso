@@ -4,11 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.2 2003-06-10 20:34:38 miatauro Exp $
+// $Id: ViewManager.java,v 1.3 2003-06-11 17:20:09 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
@@ -42,6 +44,11 @@ public class ViewManager implements ViewSetRemover {
     viewSets.remove(key);
   }
   public void clearViewSets() {
+    Collection viewSets = viewSets.values();
+    Iterator viewSetIterator = viewSets.iterator();
+    while(viewSetIterator.hasNext()) {
+      ((ViewSet)viewSetIterator.next()).close();
+    }
     viewSets.clear();
   }
 }
