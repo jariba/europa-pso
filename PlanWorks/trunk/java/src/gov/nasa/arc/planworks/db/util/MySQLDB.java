@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.72 2003-12-20 01:54:48 taylor Exp $
+// $Id: MySQLDB.java,v 1.73 2003-12-22 21:41:41 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -41,6 +41,7 @@ import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
 import gov.nasa.arc.planworks.db.impl.PwTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
+import gov.nasa.arc.planworks.db.impl.PwVariableQueryImpl;
 import gov.nasa.arc.planworks.util.OneToManyMap;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UniqueSet;
@@ -591,6 +592,24 @@ public class MySQLDB {
     return retval;
   }
 
+  synchronized public static Long getPartialPlanIdByStepNum(Long sequenceId, int stepNum) {
+    Long retval = null;
+    try {
+      StringBuffer temp =
+        new StringBuffer("SELECT PartialPlanId FROM PartialPlanStats WHERE SequenceId=");
+      temp.append(sequenceId.toString()).append(" && StepNum=").append(stepNum);
+      ResultSet ppId = queryDatabase(temp.toString());
+      ppId.last();
+      retval = new Long(ppId.getLong("PartialPlanId"));
+      if(ppId.wasNull()) {
+        return null;
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
   synchronized public static List queryPartialPlanNames(Long sequenceId) {
     List retval = new ArrayList();
     try {
@@ -603,6 +622,7 @@ public class MySQLDB {
     }
     return retval;
   }
+
   
   /**
    * Instantiate PwObjectImpl objects from data in the database
@@ -1112,28 +1132,16 @@ public class MySQLDB {
     // currently does all steps
     List retval = new ArrayList();
     try {
-      ResultSet partialPlanIds = queryDatabase("SELECT PartialPlanId FROM PartialPlanStats WHERE SequenceId=".concat( seq.getId().toString()));
-      String queryString = "SELECT Token.TokenId, Token.PredicateId, Token.PartialPlanId, Predicate.PredicateName FROM Token LEFT JOIN Predicate ON Predicate.PartialPlanId=Token.PartialPlanId && Predicate.PredicateId=Token.PredicateId WHERE Token.IsFreeToken=1 && Token.PartialPlanId IN (";
-      while (partialPlanIds.next()) {
-        queryString =
-          queryString.concat( Long.toString( partialPlanIds.getLong( "PartialPlanId")));
-        if (! partialPlanIds.isLast()) {
-          queryString = queryString.concat( ", ");
-        }
-      }
-      queryString = queryString.concat( ")");
+      Long partialPlanId = getPartialPlanIdByStepNum(seq.getId(), stepNum);
+      String queryString = "SELECT Token.TokenId, Token.PredicateId, Token.PartialPlanId, Predicate.PredicateName FROM Token LEFT JOIN Predicate ON Predicate.PartialPlanId=Token.PartialPlanId && Predicate.PredicateId=Token.PredicateId WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlanId.toString());
+
       System.err.println( "queryString " + queryString);
       ResultSet queryResults = queryDatabase( queryString);
       while (queryResults.next()) {
         List retvalObject = new ArrayList();
         retvalObject.add( new Integer( queryResults.getInt( "Token.TokenId")));
-        Long partialPlanId = new Long( queryResults.getLong( "Token.PartialPlanId"));
-        retvalObject.add( partialPlanId);
-        // query for stepNum
-        ResultSet stepNumResults = queryDatabase("SELECT StepNum FROM PartialPlanStats WHERE SequenceId=".concat( seq.getId().toString()).concat( " && PartialPlanId=".concat( partialPlanId.toString())));
-        while (stepNumResults.next()) {
-          retvalObject.add( new Integer( stepNumResults.getInt( "StepNum")));
-        }
+        retvalObject.add(new Long( queryResults.getLong( "Token.PartialPlanId")));
+        retvalObject.add(new Integer(stepNum));
         retvalObject.add( queryResults.getString( "Predicate.PredicateName"));
         System.err.println( "retvalObject " + retvalObject);
         retval.add( retvalObject);
@@ -1200,9 +1208,35 @@ public class MySQLDB {
 //     return retval;
 //   }
 
+  //OBJECT_VAR && PARAMETER_VAR
   synchronized public static List queryUnboundVariablesAtStep( int stepNum,
                                                                PwPlanningSequenceImpl seq) {
     List retval = new ArrayList();
+    try {
+      Long partialPlanId = getPartialPlanIdByStepNum(seq.getId(), stepNum);
+      ResultSet vars = queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, EnumeratedDomain.Domain, IntervalDomain.LowerBound, IntervalDomain.UpperBound FROM Variable LEFT JOIN EnumeratedDomain ON EnumeratedDomain.EnumeratedDomainId=Variable.DomainId && EnumeratedDomain.PartialPlanId=Variable.PartialPlanId LEFT JOIN IntervalDomain ON IntervalDomain.IntervalDomainId=Variable.DomainId && IntervalDomain.PartialPlanId=Variable.PartialPlanId WHERE Variable.PartialPlanId=".concat(partialPlanId.toString()).concat(" && Variable.VariableType IN ('OBJECT_VAR', 'PARAMETER_VAR')"));
+      boolean instantiateVar;
+      while(vars.next()) {
+        instantiateVar = false;
+        if(vars.getString("Variable.DomainType").equals("IntervalDomain")) {
+          instantiateVar = !(Long.parseLong(vars.getString("IntervalDomain.LowerBound")) == 
+                            Long.parseLong(vars.getString("IntervalDomain.UpperBound")));
+        }
+        else {
+          Blob domain = vars.getBlob("EnumeratedDomain.Domain");
+          instantiateVar = 
+            !varDomainIsSingleton("E", new String(domain.getBytes(1, (int) domain.length())));
+        }
+        if(instantiateVar) {
+          retval.add(new PwVariableQueryImpl(new Integer(vars.getInt("Variable.VariableId")),
+                                             vars.getString("Variable.VariableType"),
+                                             new Integer(stepNum), seq.getId(), partialPlanId, 
+                                             true));
+        }
+      }
+    }
+    catch(SQLException sqle) {
+    }
     return retval;
   }
 

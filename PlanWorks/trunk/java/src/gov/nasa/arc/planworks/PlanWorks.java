@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.79 2003-12-16 23:18:26 miatauro Exp $
+// $Id: PlanWorks.java,v 1.80 2003-12-22 21:41:07 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -465,7 +465,9 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end buildConstantMenus
 
   private void instantiateProjectThread( String type) {
-    sequenceStepsViewMap = new HashMap();
+    if(sequenceStepsViewMap == null) {
+      sequenceStepsViewMap = new HashMap();
+    }
     Thread thread = new InstantiateProjectThread(type);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
