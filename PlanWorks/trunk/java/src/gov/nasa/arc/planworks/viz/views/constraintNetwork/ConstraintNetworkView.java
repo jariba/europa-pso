@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.18 2003-09-23 16:10:39 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.19 2003-09-23 19:28:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -83,6 +83,7 @@ import gov.nasa.arc.planworks.viz.views.VizView;
 public class ConstraintNetworkView extends VizView {
 
   private static final int SET_VISIBLE = 1;
+  private static final int VIEW_HEIGHT = 250;
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
@@ -197,10 +198,7 @@ public class ConstraintNetworkView extends VizView {
       new ConstraintNetworkLayout( document, network, startTimeMSecs);
     layout.performLayout();
     expandViewFrame( viewName,
-                     (int) jGoView.getDocumentSize().getWidth(),
-                     // JGo Layout computes a very large value for doc height
-                     // (int) jGoView.getDocumentSize().getHeight());
-                     PlanWorks.INTERNAL_FRAME_HEIGHT);
+                     (int) jGoView.getDocumentSize().getWidth(), VIEW_HEIGHT);
 
     isLayoutNeeded = false;
     focusNode = null;

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.2 2003-09-23 16:10:40 taylor Exp $
+// $Id: VariableNode.java,v 1.3 2003-09-23 19:28:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -102,11 +102,9 @@ public class VariableNode extends BasicNode {
 
     isDebug = false;
     // isDebug = true;
-    if (isDebug) {
-      nodeLabel = variable.getType().substring( 0, 1) + "_" + variable.getId().toString();
-    } else {
-      nodeLabel = variable.getDomain().toString();
-    }
+    StringBuffer labelBuf = new StringBuffer( variable.getDomain().toString());
+    labelBuf.append( "\nkey=").append( variable.getId().toString());
+    nodeLabel = labelBuf.toString();
     // System.err.println( "VariableNode: " + nodeLabel);
 
     configure( variableLocation, backgroundColor, isDraggable);
@@ -122,6 +120,7 @@ public class VariableNode extends BasicNode {
     setDraggable( isDraggable);
     // do not allow user links
     getPort().setVisible( false);
+    getLabel().setMultiline( true);
     if (hasZeroConstraints) {
       setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
     }

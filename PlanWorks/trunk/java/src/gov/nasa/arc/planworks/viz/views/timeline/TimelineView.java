@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.44 2003-09-23 16:10:40 taylor Exp $
+// $Id: TimelineView.java,v 1.45 2003-09-23 19:28:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -281,7 +281,8 @@ public class TimelineView extends VizView {
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
         if (isTimelineInContentSpec( timeline)) {
           String timelineName = timeline.getName();
-          String timelineNodeName = objectName + " : " + timelineName;
+          String timelineNodeName = objectName + " : " + timelineName +
+            "\nkey=" + timeline.getId().toString();
           Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
           TimelineNode timelineNode =
             new TimelineNode( timelineNodeName, timeline, new Point( x, y),
@@ -439,8 +440,11 @@ public class TimelineView extends VizView {
       PwTimeline timeline = (PwTimeline) timelineIterator.next();
       String timelineName = timeline.getName();
       String timelineNodeName = objectName + " : " + timelineName;
-      int nodeWidth = SwingUtilities.computeStringWidth( this.getFontMetrics(),
-                                                         timelineNodeName);
+      String timelineKey = "key=" + timeline.getId().toString();
+      int nodeWidth = Math.max( SwingUtilities.computeStringWidth( this.getFontMetrics(),
+                                                                   timelineNodeName),
+                                SwingUtilities.computeStringWidth( this.getFontMetrics(),
+                                                                   timelineKey));
       if (nodeWidth > maxNodeWidth) {
         maxNodeWidth = nodeWidth;
       }
@@ -461,6 +465,7 @@ public class TimelineView extends VizView {
    */
   public String getSlotNodeLabel( PwToken token, PwSlot slot, boolean isFirstSlot) {
     StringBuffer label = null;
+    String keyValue = "\nkey=" + slot.getId().toString();
     if (token == null) { // empty slot
       label = new StringBuffer( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
     } else {
@@ -473,9 +478,10 @@ public class TimelineView extends VizView {
 //     if (isFirstSlot) { // because of left alignment to left edge of slot
 //       labelMinLength *= 1.5;
 //     }
-    if (label.length() < labelMinLength) {
+    int nodeLength = Math.max( label.length(), keyValue.length());
+    if (nodeLength < labelMinLength) {
       boolean prepend = true;
-      for (int i = 0, n = labelMinLength - label.length(); i < n; i++) {
+      for (int i = 0, n = labelMinLength - nodeLength; i < n; i++) {
         if (prepend) {
           label.insert( 0, " ");
         } else {
@@ -484,7 +490,7 @@ public class TimelineView extends VizView {
         prepend = (! prepend);
       }
     }
-    return label.toString();
+    return label.toString() + keyValue;
   } // end getSlotNodeLabel
 
 
