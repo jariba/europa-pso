@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.7 2003-09-19 00:33:59 taylor Exp $
+# $Id: GETTING_STARTED,v 1.8 2003-09-23 19:58:42 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -42,8 +42,9 @@ Plan Sequence Views
 ===================
 
 The "Planning Sequence" cascading menu allows the user to select the 
-sequence, the partial plan, and the plan view to be displayed.  There are 
-four active views:
+sequence, the partial plan, and the plan view to be displayed.  The key
+values for tokens, constraints, variables, timelines, and slots appear
+in the appropriate node labels.  There are four active views:
 
 Constraint Network View
 -----------------------
@@ -55,6 +56,8 @@ neighbors (constraints or tokens).  Similarly, clicking on constraint nodes
 "opens" their nearest neighbors.  Clicking on an "open" node (bold border), 
 "closes" that nodes nearest neighbor nodes/links, provided the link counts
 are 1.  Then the node becomes "closed" and has an unbold border.
+The active node ("opened" or "closed" by Mouse-Left click) is positioned in
+the center of the view after layout.
 
 Temporal Extent View
 --------------------
@@ -78,7 +81,7 @@ will cause the view to be redrawn with only the filtered timelines and slots.
 Adjacent slots whose end and start intervals are equal will be drawn abutting 
 each other.  Those that are not, will be drawn with a fixed space between them,
 and the later slot will have its time interval labels drawn "lower" than
-the previous slot, to prevent overlap.
+the previous slot, to prevent overlap.  
 
 Token Network View
 ------------------
@@ -95,7 +98,13 @@ When the "active token" has been set, the other views have a
 "Snap to Active Token".  Making this selection will cause the view
 to scroll to a position where the "active token" will be shown,
 highlighted, in the approximate center of the view.  A Mouse-Left click
-in any view will erase node selection highlighting.
+in any view will erase node selection highlighting.  In the Timeline View,
+clicking Mouse-Right "Set Active Token" on a slot, will set the overloaded
+tokens as "secondary tokens", such that when Mouse-Right "Snap to Active
+Token" is invoked in the background of the Constraint Network View or the
+Token Network View, these secondary tokens will be given secondary
+highlighting (turquoise).  The basic token will have the primary highlighting
+color (light green).
 
 
 Content Specification
