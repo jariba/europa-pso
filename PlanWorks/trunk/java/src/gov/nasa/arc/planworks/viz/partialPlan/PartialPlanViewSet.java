@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.12 2004-01-09 20:41:46 miatauro Exp $
+// $Id: PartialPlanViewSet.java,v 1.13 2004-01-12 19:46:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -64,8 +64,16 @@ public class PartialPlanViewSet extends ViewSet {
   private ColorStream colorStream;
   private PwToken activeToken; // in timeline view, the base token
   private List secondaryTokens; // in timeline view, the overloaded tokens
+  private int navigatorFrameCnt;
 
 
+  /**
+   * <code>PartialPlanViewSet</code> - constructor 
+   *
+   * @param desktopFrame - <code>MDIDesktopFrame</code> - 
+   * @param viewable - <code>ViewableObject</code> - 
+   * @param remover - <code>ViewSetRemover</code> - 
+   */
   public PartialPlanViewSet( MDIDesktopFrame desktopFrame, ViewableObject viewable,
                              ViewSetRemover remover) {
     super( desktopFrame, viewable, remover);
@@ -79,17 +87,20 @@ public class PartialPlanViewSet extends ViewSet {
     ((PwPartialPlan) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
     contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec, this));
     this.contentSpecWindow.pack();
-    int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
-                                 ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-                          (int) ((PlanWorks.planWorks.getSize().getHeight() -
-                                  ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
     String seqUrl = ((PwPartialPlan) viewable).getSequenceUrl();
     int sequenceStepsViewHeight =
       (int) (((MDIInternalFrame) PlanWorks.planWorks.
               sequenceStepsViewMap.get( seqUrl)).getSize().getHeight() * 0.5);
+    int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
+                                 ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+                          (int) (PlanWorks.planWorks.getSize().getHeight() -
+                                 sequenceStepsViewHeight -
+                                 (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
     this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
     this.contentSpecWindow.setVisible(true);
-  }
+
+    navigatorFrameCnt = 0;
+  } // end constructor
 
   public MDIInternalFrame openView(String viewClassName) {
     MDIInternalFrame retval = super.openView(viewClassName);
@@ -176,6 +187,23 @@ public class PartialPlanViewSet extends ViewSet {
    */
   public void setSecondaryTokens( List tokenList) {
     secondaryTokens = tokenList;
+  }
+
+  /**
+   * <code>getNavigatorFrameCnt</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getNavigatorFrameCnt() {
+    return navigatorFrameCnt;
+  }
+
+  /**
+   * <code>incrNavigatorFrameCnt</code>
+   *
+   */
+  public void incrNavigatorFrameCnt() {
+    navigatorFrameCnt++;
   }
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetwork.java,v 1.1 2003-09-25 23:52:44 taylor Exp $
+// $Id: ConstraintNetwork.java,v 1.2 2004-01-12 19:46:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -24,6 +24,7 @@ import com.nwoods.jgo.layout.JGoNetwork;
 import com.nwoods.jgo.layout.JGoNetworkLink;
 import com.nwoods.jgo.layout.JGoNetworkNode;
 
+import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 
 /**
  * <code>ConstraintNetwork</code> - subclass JGoNetwork

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.8 2004-01-09 20:42:45 miatauro Exp $
+// $Id: ConstraintNode.java,v 1.9 2004-01-12 19:46:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -21,17 +21,10 @@ import java.util.Map;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
-import com.nwoods.jgo.JGoDrawable;
-import com.nwoods.jgo.JGoEllipse;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
-import com.nwoods.jgo.JGoPort;
-import com.nwoods.jgo.JGoRectangle;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
-
-// PlanWorks/java/lib/com/nwoods/jgo/examples/Diamond.class
-import com.nwoods.jgo.examples.Diamond;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
@@ -40,7 +33,9 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.nodes.BasicNodeWDiamond;
+import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
+import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
@@ -53,7 +48,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ConstraintNode extends BasicNodeWDiamond {
+public class ConstraintNode extends ExtendedBasicNode {
 
   private static final boolean IS_FONT_BOLD = false;
   private static final boolean IS_FONT_UNDERLINED = false;
@@ -92,8 +87,9 @@ public class ConstraintNode extends BasicNodeWDiamond {
    */
   public ConstraintNode( PwConstraint constraint, VariableNode variableNode,
                          Point constraintLocation, Color backgroundColor,
-                         boolean isFreeToken, boolean isDraggable, PartialPlanView partialPlanView) { 
-    super();
+                         boolean isFreeToken, boolean isDraggable,
+                         PartialPlanView partialPlanView) { 
+    super( ViewConstants.DIAMOND);
     this.constraint = constraint;
     this.variableNode = variableNode;
     this.isFreeToken = isFreeToken;
@@ -329,6 +325,12 @@ public class ConstraintNode extends BasicNodeWDiamond {
     }
   }
 
+  /**
+   * <code>getLinkToNode</code>
+   *
+   * @param node - <code>BasicNode</code> - 
+   * @return - <code>BasicNodeLink</code> - 
+   */
   public BasicNodeLink getLinkToNode(BasicNode node) {
     return (BasicNodeLink) constraintVariableLinkMap.get(node);
   }

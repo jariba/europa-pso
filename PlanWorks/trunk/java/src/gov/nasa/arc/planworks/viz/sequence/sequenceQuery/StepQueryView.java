@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.4 2003-11-11 02:44:53 taylor Exp $
+// $Id: StepQueryView.java,v 1.5 2004-01-12 19:46:34 taylor Exp $
 //
 // PlanWorks
 //
@@ -151,15 +151,16 @@ public class StepQueryView extends SequenceView {
     stepQueryFrame.setSize
       ( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
         maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
+    int maxQueryFrameY =
+      (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
+             sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
     int delta = Math.min( ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4 *
                           sequenceQueryWindow.getQueryResultFrameCnt(),
-                          (int) ((PlanWorks.planWorks.getSize().getHeight() -
-                                  ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
+                          (int) (PlanWorks.planWorks.getSize().getHeight() -
+                                 maxQueryFrameY -
+                                 (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
     stepQueryFrame.setLocation
-      ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta,
-        (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
-               sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight()) +
-        (delta * 2));
+      ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta, maxQueryFrameY + delta);
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");

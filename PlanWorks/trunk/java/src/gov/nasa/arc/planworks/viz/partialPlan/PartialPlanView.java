@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.17 2004-01-09 23:09:37 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.18 2004-01-12 19:46:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.viz.partialPlan;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -25,12 +26,16 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
@@ -41,15 +46,17 @@ import com.nwoods.jgo.JGoViewEvent;
 import com.nwoods.jgo.JGoViewListener;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-// import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
@@ -486,6 +493,109 @@ public class PartialPlanView extends VizView {
         }
       });
   } // end createRaiseContentSpecItem
+
+  /**
+   * <code>openNavigatorViewFrame</code>
+   *
+   * @return - <code>MDIInternalFrame</code> - 
+   */
+  public MDIInternalFrame openNavigatorViewFrame() {
+    ((PartialPlanViewSet) viewSet).incrNavigatorFrameCnt();
+    String viewName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
+    MDIInternalFrame navigatorFrame =
+      ((MDIDesktopFrame) PlanWorks.planWorks).createFrame( viewName + " for " +
+                                                           partialPlan.getName(),
+                                                           viewSet, true, true, true, true);
+    viewSet.getViews().put( new String( viewName +
+                                        ((PartialPlanViewSet) viewSet).getNavigatorFrameCnt()),
+                            navigatorFrame);
+    return navigatorFrame;
+  } // end openNavigatorViewFrame
+
+  /**
+   * <code>areThereNavigatorWindows</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean areThereNavigatorWindows() {
+    String navigatorWindowName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
+    List windowKeyList = 
+      new ArrayList( viewSet.getViews().keySet());
+    Iterator windowListItr = windowKeyList.iterator();
+    while (windowListItr.hasNext()) {
+      Object windowKey = (Object) windowListItr.next();
+      if ((windowKey instanceof String) &&
+          (((String) windowKey).indexOf( navigatorWindowName) >= 0)) {
+        return true;
+      }
+    }
+    return false;
+  } // end areThereNavigatorWindows
+
+  /**
+   * <code>createDiscardNavigatorWindowsItem</code>
+   *
+   * @param discardWindowsItem - <code>JMenuItem</code> - 
+   */
+  public void createDiscardNavigatorWindowsItem( JMenuItem discardWindowsItem) {
+    discardWindowsItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          String navigatorWindowName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
+          List windowKeyList =
+            new ArrayList( viewSet.getViews().keySet());
+          Iterator windowListItr = windowKeyList.iterator();
+          while (windowListItr.hasNext()) {
+            Object windowKey = (Object) windowListItr.next();
+            if (windowKey instanceof String) {
+              String navigatorWindowKey = (String) windowKey;
+              if (navigatorWindowKey.indexOf( navigatorWindowName) >= 0) {
+                MDIInternalFrame window = 
+                  (MDIInternalFrame) viewSet.getViews().get( navigatorWindowKey);
+                try {
+                  window.setClosed( true);
+                } catch ( PropertyVetoException pve){
+                }
+              }
+            }
+          }
+        }
+      });
+  } // end createDiscardNavigatorWindowsItem
+
+  /**
+   * <code>createTimelineColorMap</code>
+   *
+   * @return - <code>Map</code> - 
+   */
+  public Map createTimelineColorMap() {
+    int timelineCnt = 0;
+    Map timelineIndexMap = new HashMap();
+    ListIterator objectIterator = partialPlan.getObjectList().listIterator();
+    while(objectIterator.hasNext()) {
+      PwObject obj = (PwObject) objectIterator.next();
+      ListIterator timelineIterator = obj.getTimelineList().listIterator();
+      while(timelineIterator.hasNext()) {
+        PwTimeline timeline = (PwTimeline) timelineIterator.next();
+        timelineIndexMap.put(timeline.getId(), new Integer(timelineCnt));
+//         System.err.println(timeline.getId() + "=>" + 
+//                            ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineCnt));
+        timelineCnt++;
+      }
+    }
+    return timelineIndexMap;
+  } // end createTimelineColorMap
+
+  /**
+   * <code>getTimelineColor</code>
+   *
+   * @param timelineId - <code>Integer</code> - 
+   * @param timelineIndexMap - <code>Map</code> - 
+   * @return - <code>Color</code> - 
+   */
+  public Color getTimelineColor( Integer timelineId, Map timelineIndexMap) {
+    return ((PartialPlanViewSet) viewSet).getColorStream().
+      getColor(((Integer)timelineIndexMap.get(timelineId)).intValue());
+  }
 
 
 } // end class PartialPlanView

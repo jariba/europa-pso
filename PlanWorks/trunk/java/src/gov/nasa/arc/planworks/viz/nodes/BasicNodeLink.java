@@ -3,17 +3,18 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodeLink.java,v 1.1 2003-09-25 23:52:44 taylor Exp $
+// $Id: BasicNodeLink.java,v 1.6 2004-01-12 19:46:16 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 28july03
 //
 
-package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
+package gov.nasa.arc.planworks.viz.nodes;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoLabeledLink;
+import com.nwoods.jgo.JGoPort;
 import com.nwoods.jgo.JGoText;
 
 // PlanWorks/java/lib/JGo/Classier.jar
@@ -53,10 +54,10 @@ public class BasicNodeLink extends JGoLabeledLink {
     inLayout = false;
     resetLink( false);
 
-    isDebug = false;
-    // isDebug = true;
-    
-    this.setArrowHeads( false, false); // fromArrowHead toArrowHead
+    // isDebug = false;
+    isDebug = true;
+
+    this.setArrowHeads( true, false); // fromArrowHead toArrowHead
     // do no allow user to select and move links
     this.setRelinkable( false);
   } // end constructor
