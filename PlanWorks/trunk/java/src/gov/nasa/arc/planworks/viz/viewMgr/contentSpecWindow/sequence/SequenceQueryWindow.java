@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.3 2003-10-21 01:29:19 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.4 2003-10-21 21:51:30 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -50,18 +50,19 @@ public class SequenceQueryWindow extends JPanel {
   private static final String QUERY_VERB = "Get";
   private static final String QUERY_FOR_STEPS = "Steps";
   private static final String QUERY_FOR_TRANSACTIONS = "Transactions";
-  private static final String STEPS_WHERE_CONSTRAINT_TRANSACTED = "Where Constraint Transacted";
-  private static final String STEPS_WHERE_TOKEN_TRANSACTED = "Where Token Transacted";
-  private static final String STEPS_WHERE_VARIABLE_TRANSACTED = "Where Variable Transacted";
+  private static final String STEPS_WHERE_CONSTRAINT_TRANSACTED =
+    "Where Constraint Transacted ...";
+  private static final String STEPS_WHERE_TOKEN_TRANSACTED = "Where Token Transacted ...";
+  private static final String STEPS_WHERE_VARIABLE_TRANSACTED = "Where Variable Transacted ...";
   private static final String STEPS_WITH_NON_UNIT_DECISIONS = "With Non-Unit Decisions";
   private static final String STEPS_WITH_RELAXATIONS = "With Relaxations";
   private static final String STEPS_WITH_RESTRICTIONS = "With Restrictions";
   private static final String STEPS_WITH_UNIT_DECISIONS = "With Unit Decisions";
   private static final List STEP_QUERIES;
-  private static final String TRANSACTIONS_FOR_CONSTRAINT = "For Constraint";
-  private static final String TRANSACTIONS_FOR_TOKEN = "For Token";
-  private static final String TRANSACTIONS_FOR_VARIABLE = "For Variable";
-  private static final String TRANSACTIONS_IN_RANGE = "In Range";
+  private static final String TRANSACTIONS_FOR_CONSTRAINT = "For Constraint ...";
+  private static final String TRANSACTIONS_FOR_TOKEN = "For Token ...";
+  private static final String TRANSACTIONS_FOR_VARIABLE = "For Variable ...";
+  private static final String TRANSACTIONS_IN_RANGE = "In Range ...";
   private static final List TRANSACTION_QUERIES;
   private static final List CONSTRAINT_TRANSACTION_TYPES;
   private static final List TOKEN_TRANSACTION_TYPES;
@@ -73,7 +74,7 @@ public class SequenceQueryWindow extends JPanel {
     STEP_QUERIES.add( STEPS_WHERE_TOKEN_TRANSACTED);
     STEP_QUERIES.add( STEPS_WHERE_VARIABLE_TRANSACTED);
     STEP_QUERIES.add( STEPS_WITH_NON_UNIT_DECISIONS); 
-    STEP_QUERIES.add( STEPS_WITH_RELAXATIONS);
+    // STEP_QUERIES.add( STEPS_WITH_RELAXATIONS); // PlanWriter cannot get this from Europa
     STEP_QUERIES.add( STEPS_WITH_RESTRICTIONS);
     STEP_QUERIES.add( STEPS_WITH_UNIT_DECISIONS); 
     TRANSACTION_QUERIES = new ArrayList();
@@ -94,7 +95,7 @@ public class SequenceQueryWindow extends JPanel {
     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DELETED);
     // VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_EMPTIED); // no MySql query yet
     // VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RELAXED); // no MySql query yet
-    // VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESET); // no MySql query yet
+    VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESET); 
     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESTRICTED);
     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_SPECIFIED);
   }
@@ -308,11 +309,15 @@ public class SequenceQueryWindow extends JPanel {
     private void renderStepQueryFrame( String stepsQuery, List stepList,
                                        long startTimeMSecs) {
       MDIInternalFrame stepQueryFrame =
-        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_TITLE +
-                                  "Results for " + viewable.getName(),
+        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
+                                  " for " + viewable.getName(),
                                   viewSet, true, true, false, true);
       Container contentPane = stepQueryFrame.getContentPane();
       StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_STEPS);
+      int ellipsesIndx = stepsQuery.indexOf( " ...");
+      if (ellipsesIndx > 0) {
+        stepsQuery = stepsQuery.substring( 0, ellipsesIndx);
+      }
       queryStringBuf.append( " ").append( stepsQuery);
       if (stepsQuery.indexOf( "Where") >= 0) {
         queryStringBuf.append( " Key ").append( keyString);
@@ -328,11 +333,15 @@ public class SequenceQueryWindow extends JPanel {
     private void renderTransactionQueryFrame( String transactionsQuery,
                                               List transactionList, long startTimeMSecs) {
       MDIInternalFrame transactionQueryFrame =
-        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_TITLE +
-                                  "Results for " + viewable.getName(),
+        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
+                                  " for " + viewable.getName(),
                                   viewSet, true, true, false, true);
       Container contentPane = transactionQueryFrame.getContentPane();
       StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_TRANSACTIONS);
+      int ellipsesIndx = transactionsQuery.indexOf( " ...");
+      if (ellipsesIndx > 0) {
+        transactionsQuery = transactionsQuery.substring( 0, ellipsesIndx);
+      }
       queryStringBuf.append( " ").append( transactionsQuery);
       if (transactionsQuery.equals( TRANSACTIONS_IN_RANGE)) {
         queryStringBuf.append( " StartStep ").append( startStepString);

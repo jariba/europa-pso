@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.12 2003-10-21 01:29:19 taylor Exp $
+// $Id: DbConstants.java,v 1.13 2003-10-21 21:51:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -201,7 +201,7 @@ public interface DbConstants {
    * constant <code>TOKEN_ALL_TYPES</code> - String - transaction type
    *
    */
-  public static final String TOKEN_ALL_TYPES = "%";
+  public static final String TOKEN_ALL_TYPES = "TOKEN_%";
 
   /**
    * constant <code>VARIABLE_CREATED</code> - String - transaction type
@@ -244,12 +244,12 @@ public interface DbConstants {
    *
    */
   public static final String VARIABLE_DOMAIN_SPECIFIED = "VARIABLE_DOMAIN_SPECIFIED";
-
+                                                          
   /**
    * constant <code>VARIABLE_ALL_TYPES</code> - String - transaction type
    *
    */
-  public static final String VARIABLE_ALL_TYPES = "%";
+  public static final String VARIABLE_ALL_TYPES = "VARIABLE_%";
 
   /**
    * constant <code>CONSTRAINT_CREATED</code> - String - transaction type
@@ -267,7 +267,7 @@ public interface DbConstants {
    * constant <code>CONSTRAINT_ALL_TYPES</code> - String - transaction type
    *
    */
-  public static final String CONSTRAINT_ALL_TYPES = "%";
+  public static final String CONSTRAINT_ALL_TYPES = "CONSTRAINT_%";
 
   /**
    * constant <code>PROPOGATION_BEGUN</code> - String - transaction type
@@ -304,5 +304,8 @@ public interface DbConstants {
     TBL_PARTIALPLAN, TBL_OBJECT, TBL_TIMELINE, TBL_SLOT, TBL_TOKEN, TBL_VARIABLE, TBL_PREDICATE,
     TBL_PARAMETER, TBL_ENUMDOMAIN, TBL_INTDOMAIN, TBL_CONSTRAINT, TBL_TOKENREL, TBL_PARAMVARTOKMAP,
     TBL_CONSTVARMAP, TBL_TRANSACTION, TBL_SEQUENCE, TBL_PROJECT};
+
+  // number of numeric characters in a type long value
+  public static final int LONG_INT_LENGTH = 13;
 
 } // end interface DbConstants

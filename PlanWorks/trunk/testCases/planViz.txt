@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.2 2003-10-21 01:29:19 taylor Exp $
+// $Id: planViz.txt,v 1.3 2003-10-21 21:51:31 taylor Exp $
 //
 // PlanWorks
 //
@@ -261,7 +261,7 @@ Post-conditions:
      achievable, because the manually-generated sample partial plan has some
      inconsistencies.
 
-Requirements: 4.2.3.e
+Requirements: 4.2.1, 4.2.2, 4.2.3.d, 4.2.3.e, 4.2.3.f, 4.3.2.a
 
 
 PLANVIZ-11
@@ -345,16 +345,40 @@ Use Sequence Query dialog window to display windows with sequence query informat
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. The "Camera" project is open.
+  2. A project is open, which has a multi-step sequence.
 
 Method:
-  1. Select "Camera....." from "Planning Sequence".
-  2. 
+  1. Select the sequence from the "Planning Sequence" menu.
+  2. Select a Transaction View from one of the sequence steps, using the
+     Mouse-Right popup menu.  Pick constraint, token, and variable key
+     values to use for appropriate queries.
+  3. Using the "SequenceQuery" dialog, select "Steps" and then select in
+     turn the qualified "Steps" queries: "Where Constraint/Token/Variable
+     Transacted", which expand into a "Key" field and a type "combo box".
+     Use the keys from Method:2 for the object types, and then permute the
+     transaction types for each object type.  Click on "Apply Query".
+  4. Using the "SequenceQuery" dialog, select "Steps" and then select in
+     turn the qualified "Steps" queries: With Non-unit Decisions/Restrictions/
+     Unit Decisions.  These queries do not expand.  Click on "Apply Query".
+  5. Using the "SequenceQuery" dialog, select "Transactions" and then select in
+     turn the qualified "Transasctions" queries: "For Constraint/Token/Variable",
+     which expand into a "Key" field; and "In Range", which expands into
+     "startStep" and "endStep" fields.  Enter appropriate values for the
+     fields, and click on "Apply Query".
+
+
 
 Post-conditions:
-  1. Methjod:1 - the "Camera...." Sequence Query and Sequence Steps View
+  1. Method:1 - the Sequence Query and Sequence Steps View
      windows appear.
-  2.
+  2. Method:2 - "TransactionView" window appears.
+  3. Method:3 - Use "TransactionView" windows for appropriate steps of the
+     Sequence Steps View to verify the results in the "QueryResults"
+     windows.
+  4. Method:4 - Verify these queries using knowledge from the plan sequence.
+  5. Method:5 - Use "TransactionView" windows for appropriate steps of the
+     Sequence Steps View to verify the results in the "QueryResults"
+     windows.
 
 Requirements: 4.3.1.a-g, 4.3.2.b-e
 
