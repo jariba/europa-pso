@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.90 2004-03-23 20:05:56 taylor Exp $
+// $Id: PlanWorks.java,v 1.91 2004-03-31 23:46:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileFilter;
 
@@ -43,6 +44,7 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.SplashWindow;
+import gov.nasa.arc.planworks.test.TestHelper;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
@@ -298,7 +300,6 @@ public class PlanWorks extends MDIDesktopFrame {
     //executeDialog = new PlannerCommandLineDialog(this);
     //executeDialog.hide();
   } // end constructor 
-
 
   private PlanWorks getPlanWorksInternal() {
     return planWorks;
@@ -753,7 +754,8 @@ public class PlanWorks extends MDIDesktopFrame {
         planWorksTitle = args[argc];
       } else if (argc == 1) {
          maxScreenValue = args[argc];
-      } else {
+      } 
+      else {
         System.err.println( "argument '" + args[argc] + "' not handled");
         System.exit(-1);
       }
