@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.76 2004-01-05 19:58:42 miatauro Exp $
+// $Id: MySQLDB.java,v 1.77 2004-01-05 23:34:17 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1171,7 +1171,7 @@ public class MySQLDB {
       Long partialPlanId = getPartialPlanIdByStepNum(seq.getId(), stepNum);
       String queryString = "SELECT Token.TokenId, Token.PredicateId, Token.PartialPlanId, Predicate.PredicateName FROM Token LEFT JOIN Predicate ON Predicate.PartialPlanId=Token.PartialPlanId && Predicate.PredicateId=Token.PredicateId WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlanId.toString());
 
-      System.err.println( "queryString " + queryString);
+      // System.err.println( "queryString " + queryString);
       ResultSet queryResults = queryDatabase( queryString);
       while (queryResults.next()) {
         List retvalObject = new ArrayList();
@@ -1179,7 +1179,7 @@ public class MySQLDB {
         retvalObject.add(new Long( queryResults.getLong( "Token.PartialPlanId")));
         retvalObject.add(new Integer(stepNum));
         retvalObject.add( queryResults.getString( "Predicate.PredicateName"));
-        System.err.println( "retvalObject " + retvalObject);
+        // System.err.println( "retvalObject " + retvalObject);
         retval.add( retvalObject);
       }
     }
@@ -1199,14 +1199,18 @@ public class MySQLDB {
       while(vars.next()) {
         instantiateVar = false;
         if(vars.getString("DomainType").equals("IntervalDomain")) {
-          if(vars.getString("IntDomainType").equals("INTEGER_SORT")) {
-            instantiateVar = !(Long.parseLong(vars.getString("IntDomainLowerBound")) == 
-                               Long.parseLong(vars.getString("IntDomainUpperBound")));
-          }
-          else {
-            instantiateVar = !(Double.parseDouble(vars.getString("IntDomainLowerBound")) == 
-                               Double.parseDouble(vars.getString("IntDomainUpperBound")));
-          }
+          // does not handle "Infinity" bounds
+//           if(vars.getString("IntDomainType").equals("INTEGER_SORT")) {
+//             instantiateVar = !(Long.parseLong(vars.getString("IntDomainLowerBound")) == 
+//                                Long.parseLong(vars.getString("IntDomainUpperBound")));
+//           }
+//           else {
+//             instantiateVar = !(Double.parseDouble(vars.getString("IntDomainLowerBound")) == 
+//                                Double.parseDouble(vars.getString("IntDomainUpperBound")));
+//           }
+          instantiateVar =
+            ! vars.getString("IntDomainLowerBound").equals
+            ( vars.getString("IntDomainUpperBound"));
         }
         else {
           Blob domain = vars.getBlob("EnumDomain");
@@ -1221,6 +1225,9 @@ public class MySQLDB {
       }
     }
     catch(SQLException sqle) {
+    }
+    catch (Exception excp) {
+      excp.printStackTrace();
     }
     return retval;
   }

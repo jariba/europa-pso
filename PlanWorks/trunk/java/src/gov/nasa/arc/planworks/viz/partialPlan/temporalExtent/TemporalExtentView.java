@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.22 2004-01-02 18:58:58 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.23 2004-01-05 23:34:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1115,11 +1115,10 @@ public class TemporalExtentView extends PartialPlanView  {
     boolean isHighlightNode = true;
     Iterator temporalNodeListItr = temporalNodeList.iterator();
     TemporalNode temporalNode = null;
+    // System.err.println( "findAndSelectToken: enter");
     foundMatch:
     while (temporalNodeListItr.hasNext()) {
       temporalNode = (TemporalNode) temporalNodeListItr.next();
-      // System.err.println( "token " + temporalNode.getToken() + " slot " +
-      //                    temporalNode.getSlot());
       if (temporalNode.getToken() != null) {
         if (temporalNode.getSlot() != null) {
           // check overloaded tokens, since only base tokens are rendered
