@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.63 2003-12-03 02:29:50 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.64 2003-12-10 21:29:35 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -559,6 +559,26 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   private Long getPartialPlanId(String stepName) {
     return MySQLDB.queryPartialPlanId(id, stepName);
   }
+
+  public void refresh() {
+    System.err.println("Loading transaction file...");
+    loadTransactionFile();
+    System.err.println("Loading stats file...");
+    loadStatsFile();
+    System.err.println("Loading transactions...");
+    loadTransactions();
+    System.err.println("Loading new partial plan info...");
+    ListIterator planNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
+    while(planNameIterator.hasNext()) {
+      String planName = (String) planNameIterator.next();
+      if(!partialPlans.containsKey(planName)) {
+        partialPlans.put(planName, null);
+        stepCount++;
+      }
+    }
+    System.err.println("Planning sequence refresh done.");
+  }
+
   private class PartialPlanNameComparator implements Comparator {
     public PartialPlanNameComparator() {
     }

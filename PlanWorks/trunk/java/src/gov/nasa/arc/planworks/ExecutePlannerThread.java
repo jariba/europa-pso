@@ -27,6 +27,9 @@ public class ExecutePlannerThread extends Thread {
       }
       System.err.println("Done.  Returned value " + planner.exitValue() + ".\nExecution took " + (System.currentTimeMillis() - t1) + "ms");
     }
-    catch(Exception e){}
+    catch(Exception e) {
+      System.err.println(e);
+      System.exit(-1);
+    }
   }
 }
