@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.13 2003-08-12 22:53:32 miatauro Exp $
+// $Id: PwPartialPlan.java,v 1.14 2003-08-19 00:23:55 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -32,9 +32,11 @@ public interface PwPartialPlan {
    */
   public abstract String getUrl();
 
-  public abstract int getMinId();
-
-  public abstract int getMaxId();
+  /**
+   * <code>getId</code>
+   *
+   * @return - <code>Long</code> -
+   */
 
   public abstract Long getId();
 
@@ -45,10 +47,16 @@ public interface PwPartialPlan {
    */
   public abstract List getObjectList();
 
+  /**
+   * <code>getFreeTokenList</code>
+   *
+   * @return - <code>List</code> - of PwToken
+   */
+
   public abstract List getFreeTokenList();
 
   /**
-   * <code>getObject</code> - if not in Map, query
+   * <code>getObject</code> - 
    *
    * @param id - <code>Integer</code> - 
    * @return - <code>PwObject</code> - 
@@ -57,7 +65,7 @@ public interface PwPartialPlan {
 
 
   /**
-   * <code>getTimeline</code> - if not in Map, query
+   * <code>getTimeline</code> - 
    *
    * @param id - <code>Integer</code> - 
    * @return - <code>PwTimeline</code> - 
@@ -66,7 +74,7 @@ public interface PwPartialPlan {
 
 
   /**
-   * <code>getSlot</code> - if not in Map, query
+   * <code>getSlot</code> - 
    *
    * @param id - <code>Integer</code> - 
    * @return - <code>PwSlot</code> - 
@@ -75,7 +83,7 @@ public interface PwPartialPlan {
 
 
   /**
-   * <code>getToken</code> - if not in Map, query
+   * <code>getToken</code> - 
    *
    * @param id - <code>Integer</code> - 
    * @return - <code>PwToken</code> - 
@@ -84,7 +92,7 @@ public interface PwPartialPlan {
 
 
   /**
-   * <code>getConstraint</code> - if not in Map, query
+   * <code>getConstraint</code> - 
    *
    * @param id - <code>Integer</code> - 
    * @return - <code>PwConstraint</code> - 
@@ -93,7 +101,7 @@ public interface PwPartialPlan {
 
 
   /**
-   * <code>getParameter</code> - if not in Map, query
+   * <code>getParameter</code> - 
    *
    * @param id - <code>Integer</code> - 
    * @return - <code>PwParameter</code> - 
@@ -102,7 +110,7 @@ public interface PwPartialPlan {
 
 
   /**
-   * <code>getPredicate</code> - if not in Map, query
+   * <code>getPredicate</code> - 
    *
    * @param id - <code>Integer</code> - 
    * @return - <code>PwPredicate</code> - 
@@ -111,7 +119,7 @@ public interface PwPartialPlan {
 
 
   /**
-   * <code>getTokenRelation</code> - if not in Map, query
+   * <code>getTokenRelation</code> - 
    *
    * @param id - <code>Integer</code> - 
    * @return - <code>PwTokenRelation</code> - 
@@ -120,7 +128,7 @@ public interface PwPartialPlan {
 
 
   /**
-   * <code>getVariable</code> - if not in Map, query
+   * <code>getVariable</code> - 
    *
    * @param id - <code>Integer</code> - 
    * @return - <code>PwVariable</code> - 

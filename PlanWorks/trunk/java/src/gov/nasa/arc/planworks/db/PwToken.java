@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.11 2003-08-12 22:53:34 miatauro Exp $
+// $Id: PwToken.java,v 1.12 2003-08-19 00:24:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -104,12 +104,36 @@ public interface PwToken {
    */
   public abstract Integer getSlotId();
 
+  /**
+   * <code>isFreeToken</code>
+   *
+   * @return - <code>boolean</code> -
+   */
+
   public abstract boolean isFreeToken();
+
+  /**
+   * <code>getTimelineId</code>
+   *
+   * @return - <code>Integer</code> -
+   */
 
   public abstract Integer getTimelineId();
 
+  /**
+   * <code>getEarliestStart</code>
+   *
+   * @return - <code>Integer</code> -
+   */
+
   public abstract Integer getEarliestStart();
   
+  /**
+   * <code>getLatestEnd</code>
+   *
+   * @return - <code>Integer</code> -
+   */
+
   public abstract Integer getLatestEnd();
 
   /**

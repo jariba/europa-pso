@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenRelation.java,v 1.6 2003-08-12 22:53:35 miatauro Exp $
+// $Id: PwTokenRelation.java,v 1.7 2003-08-19 00:24:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -35,14 +35,14 @@ public interface PwTokenRelation {
   /**
    * <code>getTokenAId</code>
    *
-   * @return - <code>int</code> - 
+   * @return - <code>Integer</code> - 
    */
   public abstract Integer getTokenAId();
  
   /**
    * <code>getSlaveTokenId</code>
    *
-   * @return - <code>int</code> - 
+   * @return - <code>Integer</code> - 
    */
   public abstract Integer getTokenBId();
 

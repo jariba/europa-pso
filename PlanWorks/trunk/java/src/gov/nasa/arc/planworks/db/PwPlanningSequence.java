@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.11 2003-08-12 21:32:48 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.12 2003-08-19 00:23:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -66,7 +66,19 @@ public interface PwPlanningSequence {
    */
   public abstract List listTransactions( int step) throws IndexOutOfBoundsException;
 
+  /**
+   * <code>listPartialPlans</code>
+   *
+   * @return - <code>List</code> of PwPartialPlan
+   */
+
   public abstract List listPartialPlans();
+
+  /**
+   * <code>listPartialPlans</code>
+   *
+   * @return - <code>List</code> of String
+   */
 
   public abstract List listPartialPlanNames();
   /**

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.24 2003-07-24 20:57:10 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.25 2003-08-19 00:22:11 miatauro Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -19,6 +19,7 @@
   <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
   <property name="jgo.home"  value="${planworks.root}/java/lib/JGo"/>
   <property name="jgo.layout.home"  value="${planworks.root}/java/lib/JGo"/>
+  <property name="splash.image" value="${planworks.root}/lib/images/monkeybananas.png"/>
   <!-- property name="jgo.layout.home"  value="/home/wtaylor/pub/JGo50"/ -->
 
   <property name="default.project.name" value="monkey"/>

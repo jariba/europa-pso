@@ -5,6 +5,10 @@ import java.io.FilenameFilter;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 
+/**
+ * A class for filtering out files not in the established structure for database import
+ */
+
 public class PwSQLFilenameFilter implements FilenameFilter {
   public PwSQLFilenameFilter() {
   }

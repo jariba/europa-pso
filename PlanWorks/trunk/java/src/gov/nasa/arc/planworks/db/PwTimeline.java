@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimeline.java,v 1.6 2003-08-12 22:53:34 miatauro Exp $
+// $Id: PwTimeline.java,v 1.7 2003-08-19 00:24:00 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -28,14 +28,14 @@ public interface PwTimeline {
   /**
    * <code>getName</code>
    *
-   * @return name - <code>String</code> -
+   * @return <code>String</code> -
    */
   public abstract String getName();
 
   /**
    * <code>getId</code>
    *
-   * @return name - <code>Integer</code> -
+   * @return <code>Integer</code> -
    */
   public abstract Integer getId();
 	
@@ -45,6 +45,12 @@ public interface PwTimeline {
    * @return name - <code>List</code> - of PwSlot
    */
   public abstract List getSlotList();
+
+  /**
+   * <code>getObjectId</code>
+   *
+   * @return <code>Integer</code>
+   */
 
   public abstract Integer getObjectId();
 

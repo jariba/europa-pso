@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomain.java,v 1.2 2003-07-24 20:57:10 taylor Exp $
+// $Id: PwDomain.java,v 1.3 2003-08-19 00:23:53 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -24,6 +24,9 @@ import java.util.List;
  * @version 0.0
  */
 public interface PwDomain {
+
+  public static final String PLUS_INFINITY = "Infinity";
+  public static final String MINUS_INFINITY = "-Infinity";
 
   /**
    * <code>getLowerBound</code>

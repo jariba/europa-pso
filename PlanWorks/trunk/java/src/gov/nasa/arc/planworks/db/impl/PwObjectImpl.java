@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.12 2003-08-12 22:54:00 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.13 2003-08-19 00:24:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -36,7 +36,7 @@ public class PwObjectImpl implements PwObject {
   /**
    * <code>PwObjectImpl</code> - constructor 
    *
-   * @param id - <code>int</code> - 
+   * @param id - <code>Integer</code> - 
    * @param name - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
@@ -52,7 +52,7 @@ public class PwObjectImpl implements PwObject {
    * <code>addTimeline</code>
    *
    * @param name - <code>String</code> - 
-   * @param id - <code>int</code> - 
+   * @param id - <code>Integer</code> - 
    * @return timeline - <code>PwTimelineImpl</code> - 
    */
   public PwTimelineImpl addTimeline( String name, Integer id) {
@@ -65,7 +65,7 @@ public class PwObjectImpl implements PwObject {
   /**
    * <code>getId</code>
    *
-   * @return id - <code>int</code> -
+   * @return id - <code>Integer</code> -
    */
   public Integer getId() {
     return this.id;

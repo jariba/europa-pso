@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.15 2003-08-12 21:32:57 miatauro Exp $
+// $Id: PwProject.java,v 1.16 2003-08-19 00:23:58 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -45,22 +45,10 @@ public abstract class PwProject {
       System.exit( -1);
     }
   }
-  /**
-   * <code>initProjects</code> - register loaded XML files data base (eXist),
-   *                             restore loaded projects configuration info,
-   *                             and inflate projects, by reading XML formatted
-   *                             saved project information.
-   *
-   * @exception ResourceNotFoundException if an error occurs
-   */
-  /*  public static void initProjects() throws ResourceNotFoundException, SQLException, IOException {
-    PwProjectImpl.initProjects();
-    }*/
 
   /**
-   * <code>createProject</code> - using user supplied url, load XML formatted
-   *                              partial plans into XML:DB data base, show user
-   *                              cascading pulldown menu for their selection
+   * <code>createProject</code> - using user supplied url, load formatted
+   *                              partial plans into data base
    *
    * @param url - <code>String</code> - 
    * @return - <code>PwProject</code> - 

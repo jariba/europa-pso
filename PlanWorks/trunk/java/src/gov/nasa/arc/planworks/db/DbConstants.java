@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.3 2003-06-30 21:52:46 taylor Exp $
+// $Id: DbConstants.java,v 1.4 2003-08-19 00:23:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -47,14 +47,14 @@ public interface DbConstants {
    *
    */
   public static final PwDomain PLUS_INFINITY_DOMAIN =
-    (PwDomain) new PwEnumeratedDomainImpl( "_plus_infinity_");
+    (PwDomain) new PwEnumeratedDomainImpl( "Infinity");
 
   /**
    * constant <code>MINUS_INFINITY_DOMAIN</code> - PwEnumeratedDomain
    *
    */
   public static final PwDomain MINUS_INFINITY_DOMAIN =
-    (PwDomain) new PwEnumeratedDomainImpl( "_minus_infinity_");
+    (PwDomain) new PwEnumeratedDomainImpl( "-Infinity");
 
   /**
    * constant <code>PP_PARTIAL_PLAN_EXT</code>
