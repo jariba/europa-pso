@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.54 2003-09-19 22:16:05 miatauro Exp $
+// $Id: PlanWorks.java,v 1.55 2003-09-23 16:10:38 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -14,6 +14,7 @@ import java.awt.DisplayMode;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -104,12 +105,19 @@ public class PlanWorks extends MDIDesktopFrame {
    * constant <code>INTERNAL_FRAME_HEIGHT</code>
    *
    */
-    public static final int INTERNAL_FRAME_HEIGHT;// = 350;
+    public static final int INTERNAL_FRAME_HEIGHT; // = 350;
+
   /**
    * variable <code>name</code> - make it accessible to JFCUnit tests
    *
    */
   public static String name;
+
+  /**
+   * variable <code>isMaxScreen</code> - make it accessible to JFCUnit tests
+   *
+   */
+  public static boolean isMaxScreen;
 
   /**
    * variable <code>osType</code> - make it accessible to JFCUnit tests
@@ -173,8 +181,15 @@ public class PlanWorks extends MDIDesktopFrame {
         public void windowClosing( WindowEvent e) {
           System.exit( 0);
         }});
-    this.setSize( DESKTOP_FRAME_WIDTH, DESKTOP_FRAME_HEIGHT);
-    this.setLocation( FRAME_X_LOCATION, FRAME_Y_LOCATION);
+    if (isMaxScreen) {
+      Rectangle maxRectangle =
+        GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+      this.setSize( (int) maxRectangle.getWidth(), (int) maxRectangle.getHeight());
+      this.setLocation( 0, 0);
+    } else {
+      this.setSize( DESKTOP_FRAME_WIDTH, DESKTOP_FRAME_HEIGHT);
+      this.setLocation( FRAME_X_LOCATION, FRAME_Y_LOCATION);
+    }
     Container contentPane = getContentPane();
     for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
       // System.err.println( "i " + i + " " +
@@ -1221,10 +1236,13 @@ class SequenceDirectoryFilter extends FileFilter {
    */
   public static void main (String[] args) {
     name = "";
+    String maxScreenValue = "false";
     for (int argc = 0; argc < args.length; argc++) {
       // System.err.println( "argc " + argc + " " + args[argc]);
       if (argc == 0) {
         name = args[argc];
+      } else if (argc == 1) {
+         maxScreenValue = args[argc];
       } else {
         System.err.println( "argument '" + args[argc] + "' not handled");
         System.exit(-1);
@@ -1233,6 +1251,10 @@ class SequenceDirectoryFilter extends FileFilter {
     osType = System.getProperty("os.type");
     // System.err.println( "osType " + osType);
     planWorksRoot = System.getProperty( "planworks.root");
+    isMaxScreen = false;
+    if (maxScreenValue.equals( "true")) {
+      isMaxScreen = true;
+    }
 
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice [] gs = ge.getScreenDevices();

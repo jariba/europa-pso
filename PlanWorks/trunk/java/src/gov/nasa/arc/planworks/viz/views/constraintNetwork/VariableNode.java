@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.1 2003-09-18 20:48:47 taylor Exp $
+// $Id: VariableNode.java,v 1.2 2003-09-23 16:10:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -421,6 +421,7 @@ public class VariableNode extends BasicNode {
           removeVariableNodeTokensAndConstraints( this);
           setNodeClosed();
         }
+        ((ConstraintNetworkView) vizView).setFocusNode( variableNode);
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {

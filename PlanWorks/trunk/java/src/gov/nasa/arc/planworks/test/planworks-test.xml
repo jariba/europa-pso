@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<!-- $Id: planworks-test.xml,v 1.5 2003-08-28 20:46:54 miatauro Exp $ -->
+<!-- $Id: planworks-test.xml,v 1.6 2003-09-23 16:10:39 taylor Exp $ -->
 <project name="planworks-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
 	<property name="name.application" value="PlanWorks Plan Visualization"/>
+	<property name="boolean.isMaxScreen" value="true"/>
 	<property environment="env"/>
 
 	<path id="planworks.jars">
@@ -41,6 +42,7 @@
             <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
             <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
             <arg value="${name.application}"/>
+            <arg value="${boolean.isMaxScreen}"/>
 	</java>
 
 </target>
@@ -49,6 +51,7 @@
     	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
 	<property name="name.application" value="PlanWorks Plan Visualization"/>
+	<property name="boolean.isMaxScreen" value="false"/>
 	<property environment="env"/>
 
 	<path id="planworks.jars">
@@ -85,6 +88,7 @@
             <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
             <jvmarg value="-Deuropa.home=${europa.home}"/>
             <arg value="${name.application}"/>
+            <arg value="${boolean.isMaxScreen}"/>
 	</java>
 </target>
 

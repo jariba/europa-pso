@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.1 2003-09-18 20:48:48 taylor Exp $
+// $Id: SlotNode.java,v 1.2 2003-09-23 16:10:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -17,6 +17,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -346,6 +347,12 @@ public class SlotNode extends TextNode {
       activeTokenItem.addActionListener( new ActionListener() {
           public void actionPerformed( ActionEvent evt) {
             timelineView.getViewSet().setActiveToken( SlotNode.this.getSlot().getBaseToken());
+            List secondaryTokens = SlotNode.this.getSlot().getTokenList();
+            secondaryTokens.remove( 0);
+            if (secondaryTokens.size() == 0) {
+              secondaryTokens = null;
+            }
+            timelineView.getViewSet().setSecondaryTokens( secondaryTokens);
             System.err.println( "SlotNode setActiveToken " +
                                 SlotNode.this.getSlot().getBaseToken().getPredicate().getName());
           }

@@ -4,65 +4,32 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.30 2003-09-19 00:33:59 taylor Exp $
+# $Id: README,v 1.31 2003-09-23 16:10:38 taylor Exp $
 #
 
 SUMMARY
 =======
-Milestone 6
-===========
-File "PlanWorks/GETTING_STARTED" has been added to assist new users.
+In the Timeline View, clicking Mouse-Right "Set Active Token" on a slot,
+will now set the overloaded tokens as "secondary tokens", such that when
+Mouse-Right "Snap to Active Token" is invoked in the background of the
+Constraint Network View and the Token Network View, these secondary tokens
+will be given secondary highlighting (turquoise).  The basic token will
+have the primary highlighting color (light green).
 
-The sequence directory chooser invoked by "Project->Create ..." and 
-"Project->Add Sequence" now supports multiple selection of sequence
-directories, by using Ctrl-Mouse-Left for the second and subsequent
-selections.  Mouse-left is used for the first selection and Mouse-
-Left-Double is used to open directories.  When selection is complete,
-click on "OK".
+The active node ("opened" or "closed" by Mouse-Left click) in the Constraint
+Network View, is now positioned to the center of the view after layout.
 
-The Temporal Extent View's time scale is now in a separate pane, so
-that scrolling the token pane does not lose the time scale.  A
-Mouse-Right selection "Set Time Scale Line" has been added.
-
-The Temporal Extent View and  Timeline View are now redrawn after
-Content Spec filtering is applied, so as to use screen space more
-efficiently.
-
-Each timeline now has a unique color, such that its tokens, in all
-views, will have that same color.  In the Constraint Network View,
-the variable and constraint nodes associated with a particular token 
-will have that token's color.
-
-The "Window" pull-down menu offers screen management with "Tile Windows"
-and "Cascade".
-
-Using the Content Specification, it is also possible to limit the set of 
-valid tokens to, only free tokens, or only slotted tokens, as well as 
-the first token on a slot ("Merge tokens").
-
-Token focus in views has been implemented using Mouse-Right selections
-on token or slot nodes to make them "active", and by Mouse-Right selections
-on view backgrounds to "snap" the view to the active token.
-
+Completed several change requests and bug fixes.
 
 o  GNATS PRs and CRs completed:
-   #2044: Need a minimal getting started guide.
-   #2048: In large plans, may lose the time scale with current approach.
-   #2049: Project vertical line on clicks for Temporal Extent View.
-   #2050: Synchronize focus among views.
-   #2051: Need better window management - how about a tiling option?
-   #2052: Need to handle redraw on content spec change to use space better.
-   #2053: Post error message if trying to add sequence from other project.
-   #2055: Bug creating project.
-   #2057: Floating data left over filtering timeline view.
-   #2058: Timeline color coding incorrect.  
-   #2081: Must be able to filter free tokens in the content spec.
-   #2082: Need to be able to filter merged Tokens.
+   #2056: No test data to add more than one sequence to the same project.
+   #2089: Constraint Network View leaves dangling variable node after Content Spec.
+   #2091: Graph-redrawing on CNet gets users lost.
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_6 PlanWorks
+> cvs co -r PW_M_7 PlanWorks
 
 
 PREREQUISITES
@@ -154,6 +121,57 @@ See file "PlanWorks/GETTING_STARTED" for PlanWorks usage.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+18september03: Milestone 6
+==========================
+File "PlanWorks/GETTING_STARTED" has been added to assist new users.
+
+The sequence directory chooser invoked by "Project->Create ..." and 
+"Project->Add Sequence" now supports multiple selection of sequence
+directories, by using Ctrl-Mouse-Left for the second and subsequent
+selections.  Mouse-left is used for the first selection and Mouse-
+Left-Double is used to open directories.  When selection is complete,
+click on "OK".
+
+The Temporal Extent View's time scale is now in a separate pane, so
+that scrolling the token pane does not lose the time scale.  A
+Mouse-Right selection "Set Time Scale Line" has been added.
+
+The Temporal Extent View and  Timeline View are now redrawn after
+Content Spec filtering is applied, so as to use screen space more
+efficiently.
+
+Each timeline now has a unique color, such that its tokens, in all
+views, will have that same color.  In the Constraint Network View,
+the variable and constraint nodes associated with a particular token 
+will have that token's color.
+
+The "Window" pull-down menu offers screen management with "Tile Windows"
+and "Cascade".
+
+Using the Content Specification, it is also possible to limit the set of 
+valid tokens to, only free tokens, or only slotted tokens, as well as 
+the first token on a slot ("Merge tokens").
+
+Token focus in views has been implemented using Mouse-Right selections
+on token or slot nodes to make them "active", and by Mouse-Right selections
+on view backgrounds to "snap" the view to the active token.
+
+
+o  GNATS PRs and CRs completed:
+   #2044: Need a minimal getting started guide.
+   #2048: In large plans, may lose the time scale with current approach.
+   #2049: Project vertical line on clicks for Temporal Extent View.
+   #2050: Synchronize focus among views.
+   #2051: Need better window management - how about a tiling option?
+   #2052: Need to handle redraw on content spec change to use space better.
+   #2053: Post error message if trying to add sequence from other project.
+   #2055: Bug creating project.
+   #2057: Floating data left over filtering timeline view.
+   #2058: Timeline color coding incorrect.  
+   #2081: Must be able to filter free tokens in the content spec.
+   #2082: Need to be able to filter merged Tokens.
+
 
 05september03: Milestone 5
 ==========================

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.43 2003-09-19 01:47:32 taylor Exp $
+// $Id: TimelineView.java,v 1.44 2003-09-23 16:10:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -666,7 +666,10 @@ public class TimelineView extends VizView {
                 while (tokenItr.hasNext()) {
                   PwToken token = (PwToken) tokenItr.next();
                   if (token.getId().equals( activeToken.getId())) {
-                    locateAndSelectNode( activeToken, slotNode);
+                    System.err.println( "TimelineView snapToActiveToken: " +
+                                        activeToken.getPredicate().getName());                   
+                    NodeGenerics.focusViewOnNode( slotNode, jGoView);
+                  // secondary nodes do not apply here
                     isTokenFound = true;
                     break foundIt;
                   }
@@ -678,7 +681,10 @@ public class TimelineView extends VizView {
               while (freeTokenNodeItr.hasNext()) {
                 TokenNode freeTokenNode = (TokenNode) freeTokenNodeItr.next();
                 if (freeTokenNode.getToken().getId().equals( activeToken.getId())) {
-                  locateAndSelectNode( activeToken, freeTokenNode);
+                  System.err.println( "TimelineView snapToActiveToken: " +
+                                      activeToken.getPredicate().getName());                   
+                  NodeGenerics.focusViewOnNode( freeTokenNode, jGoView);
+                  // secondary nodes do not apply here
                   isTokenFound = true;
                   break;
                 }
@@ -698,20 +704,6 @@ public class TimelineView extends VizView {
       });
   } // end createActiveTokenItem
 
-  private void locateAndSelectNode( PwToken activeToken, JGoArea node) {
-    System.err.println( "TimelineView snapToActiveToken: " +
-                        activeToken.getPredicate().getName());
-    jGoView.getHorizontalScrollBar().
-      setValue( Math.max( 0,
-                          (int) (node.getLocation().getX() -
-                                 (jGoView.getExtentSize().getWidth() / 2))));
-    jGoView.getVerticalScrollBar().
-      setValue( Math.max( 0,
-                          (int) (node.getLocation().getY() -
-                                 (jGoView.getExtentSize().getHeight() / 2))));
-    jGoView.getSelection().clearSelection();
-    jGoView.getSelection().extendSelection( node);
-  } // end locateAndSelectNode
 
 
 } // end class TimelineView

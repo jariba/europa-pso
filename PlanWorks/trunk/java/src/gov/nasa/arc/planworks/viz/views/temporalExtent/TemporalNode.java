@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.1 2003-09-18 20:48:48 taylor Exp $
+// $Id: TemporalNode.java,v 1.2 2003-09-23 16:10:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -468,6 +468,7 @@ public class TemporalNode extends BasicNode implements Extent {
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           temporalExtentView.getViewSet().setActiveToken( TemporalNode.this.getToken());
+          temporalExtentView.getViewSet().setSecondaryTokens( null);
           System.err.println( "TemporalNode setActiveToken: " +
                               TemporalNode.this.getToken().getPredicate().getName());
         }
