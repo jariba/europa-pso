@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.21 2004-01-02 18:58:59 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.22 2004-01-09 20:43:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -53,6 +53,7 @@ import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -88,6 +89,21 @@ public class TokenNetworkView extends PartialPlanView {
    */
   public TokenNetworkView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    tokenNetworkViewInit(viewSet);
+    // print content spec
+    // viewSet.printSpec();
+
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
+  public TokenNetworkView(ViewableObject partialPlan, ViewSet viewSet, PartialPlanViewState s) {
+    super((PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    tokenNetworkViewInit(viewSet);
+    setState(s);
+    SwingUtilities.invokeLater(runInit);
+  }
+
+  private void tokenNetworkViewInit(ViewSet viewSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
@@ -97,11 +113,7 @@ public class TokenNetworkView extends PartialPlanView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
-    // print content spec
-    // viewSet.printSpec();
-
-    SwingUtilities.invokeLater( runInit);
-  } // end constructor
+  }
 
   Runnable runInit = new Runnable() {
       public void run() {

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.34 2003-10-25 00:58:08 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.35 2004-01-09 20:40:25 miatauro Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -54,6 +54,11 @@
   <target name="planWorksProf" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2"
     description="-- launch application with profiling info">
     <ant dir="./" antfile="planWorks.xml" target="planWorksProf"/>
+  </target>
+
+  <target name="planWorksOpt" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2"
+    description="-- launch application (compile_optimized dependency)">
+    <ant dir="./" antfile="planWorks.xml" target="planWorksOpt"/>
   </target>
 
   <target name="cleanCls" depends="chk_jvm_2"

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.23 2004-01-05 23:34:20 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.24 2004-01-09 20:43:05 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -56,6 +56,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
@@ -63,6 +64,7 @@ import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -120,28 +122,42 @@ public class TemporalExtentView extends PartialPlanView  {
    */
   public TemporalExtentView( ViewableObject partialPlan, ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    temporalExtentViewInit(viewSet);
+
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
+
+  public TemporalExtentView(ViewableObject partialPlan, ViewSet viewSet, 
+                            PartialPlanViewState s) {
+    super((PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    temporalExtentViewInit(viewSet);
+    setState(s);
+    SwingUtilities.invokeLater(runInit);
+  }
+  private void temporalExtentViewInit(ViewSet viewSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-
+    
     startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
     maxCellRow = 0;
     timeScaleMark = null;
     isShowLabels = true;
     temporalDisplayMode = SHOW_INTERVALS;
-
+    
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
-
+    
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
-
+    
     jGoExtentView = new ExtentView();
     jGoExtentView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoExtentView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
-
+    
     add( jGoExtentView, BorderLayout.NORTH);
     jGoExtentView.validate();
     jGoExtentView.setVisible( true);
-
+    
     rulerPanel = new RulerPanel();
     rulerPanel.setLayout( new BoxLayout( rulerPanel, BoxLayout.Y_AXIS));
 
@@ -150,14 +166,26 @@ public class TemporalExtentView extends PartialPlanView  {
     jGoRulerView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     jGoRulerView.validate();
     jGoRulerView.setVisible( true);
-
+    
     rulerPanel.add( jGoRulerView, BorderLayout.NORTH);
     add( rulerPanel, BorderLayout.SOUTH);
-
+    
     this.setVisible( true);
+    
+  }
+  public PartialPlanViewState getState() {
+    return new TemporalExtentViewState(this);
+  }
 
-    SwingUtilities.invokeLater( runInit);
-  } // end constructor
+  public boolean showLabels(){return isShowLabels;}
+  public int displayMode(){return temporalDisplayMode;}
+
+  public void setState(PartialPlanViewState s) {
+    super.setState(s);
+    TemporalExtentViewState state = (TemporalExtentViewState)s;
+    isShowLabels = state.showingLabels();
+    temporalDisplayMode = state.displayMode();
+  }
 
   Runnable runInit = new Runnable() {
       public void run() {
@@ -247,10 +275,14 @@ public class TemporalExtentView extends PartialPlanView  {
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     temporalNodeList = null;
-    tmpTemporalNodeList = new ArrayList();
+    //tmpTemporalNodeList = new ArrayList();
+    if(tmpTemporalNodeList != null) {
+      tmpTemporalNodeList.clear();
+    }
+    tmpTemporalNodeList = new UniqueSet();
 
     createTemporalNodes();
-
+    System.err.println(tmpTemporalNodeList);
     boolean showDialog = true;
     isContentSpecRendered( PlanWorks.TEMPORAL_EXTENT_VIEW, showDialog);
 
@@ -708,48 +740,6 @@ public class TemporalExtentView extends PartialPlanView  {
       temporalNode.configure();
     }
   } // end layoutTemporalNodes
-
-
-  // are temporal extents in content spec, in terms of their tokens --
-  // set them visible
-//   private void setNodesVisible() {
-//     // print content spec
-//     // System.err.println( "TemporalExtentView - contentSpec");
-//     // viewSet.printSpec();
-//     validTokenIds = viewSet.getValidIds();
-//     displayedTokenIds = new ArrayList();
-//     Iterator temporalNodeIterator = temporalNodeList.iterator();
-//     while (temporalNodeIterator.hasNext()) {
-//       TemporalNode temporalNode = (TemporalNode) temporalNodeIterator.next();
-//       Iterator markBridgeItr = temporalNode.getMarkAndBridgeList().iterator();
-//       if (temporalNode.getToken() != null) { // not an empty slot
-//         if (isTokenInContentSpec( temporalNode.getToken())) {
-//           temporalNode.setVisible( true);
-//           while (markBridgeItr.hasNext()) {
-//             ((JGoStroke) markBridgeItr.next()).setVisible( true);
-//           }
-//         } else {
-//           temporalNode.setVisible( false);
-//           while (markBridgeItr.hasNext()) {
-//             ((JGoStroke) markBridgeItr.next()).setVisible( false);
-//           }
-//         }
-//       }
-//       // overloaded tokens on slot - not displayed, put in list
-//       PwSlot slot = (PwSlot) temporalNode.getSlot();
-//       // check for free tokens (no slots!)
-//       if (slot != null) {
-//         List tokenList = slot.getTokenList();
-//         if (tokenList.size() > 1) {
-//           for (int i = 1, n = tokenList.size(); i < n; i++) {
-//             isTokenInContentSpec( (PwToken) tokenList.get( i));
-//           }
-//         }
-//       }
-//     }
-//     boolean showDialog = true;
-//     isContentSpecRendered( PlanWorks.TEMPORAL_EXTENT_VIEW, showDialog);
-//   } // end setNodesVisible
 
 
   private void iterateOverNodes() {

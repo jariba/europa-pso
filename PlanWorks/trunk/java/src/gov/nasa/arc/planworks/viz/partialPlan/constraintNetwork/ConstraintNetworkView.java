@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.24 2004-01-07 23:02:19 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.25 2004-01-09 20:42:42 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -61,6 +61,7 @@ import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -112,6 +113,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   private boolean isDebugPrint;
   private boolean isDebugTraverse;
   private boolean isLayoutNeeded;
+  private PartialPlanViewState s;
   private JGoArea focusNode; // ConstraintNetworkTokenNode/ConstraintNode/VariableNode
   private NewConstraintNetworkLayout newLayout;
 
@@ -125,6 +127,21 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public ConstraintNetworkView( ViewableObject partialPlan, ViewSet viewSet) {
     super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
+    constraintNetworkViewInit(viewSet);
+    s = null;
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
+  public ConstraintNetworkView(ViewableObject partialPlan, ViewSet viewSet, 
+                               PartialPlanViewState s) {
+    super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
+    constraintNetworkViewInit(viewSet);
+    //setState(s);
+    this.s = s;
+    SwingUtilities.invokeLater( runInit);
+  }
+
+  private void constraintNetworkViewInit(ViewSet viewSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     variableNodeMap = new HashMap();
@@ -147,9 +164,55 @@ public class ConstraintNetworkView extends PartialPlanView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
+  }
 
-    SwingUtilities.invokeLater( runInit);
-  } // end constructor
+  public PartialPlanViewState getState() {
+    return new ConstraintNetworkViewState(this);
+  }
+  public void setState(PartialPlanViewState s) {
+    super.setState(s);
+    if(s == null) {
+      return;
+    }
+    ConstraintNetworkViewState state = (ConstraintNetworkViewState) s;
+    ListIterator idIterator = state.getModTokens().listIterator();
+    while(idIterator.hasNext()) {
+      ConstraintNetworkTokenNode node = 
+        (ConstraintNetworkTokenNode) tokenNodeMap.get((Integer)idIterator.next());
+      if(node != null) {
+        addVariableNodes(node);
+        addVariableToTokenLinks(node);
+        node.setAreNeighborsShown(true);
+        node.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+      }
+    }
+    idIterator = state.getModVariables().listIterator();
+    while(idIterator.hasNext()) {
+      VariableNode node = (VariableNode) variableNodeMap.get((Integer)idIterator.next());
+      if(node != null) {
+        addConstraintNodes(node);
+        addTokenAndConstraintToVariableLinks(node);
+        node.setAreNeighborsShown(true);
+        node.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+      }
+    }
+    idIterator = state.getModConstraints().listIterator();
+    while(idIterator.hasNext()) {
+      ConstraintNode node = (ConstraintNode) constraintNodeMap.get((Integer)idIterator.next());
+      if(node != null) {
+        addVariableNodes(node);
+        addConstraintToVariableLinks(node);
+        node.setAreNeighborsShown(true);
+        node.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+      }
+    }
+    if(state.layoutHorizontal()) {
+      newLayout.setLayoutHorizontal();
+    }
+    else {
+      newLayout.setLayoutVertical();
+    }
+  }
 
   Runnable runInit = new Runnable() {
       public void run() {
@@ -184,6 +247,9 @@ public class ConstraintNetworkView extends PartialPlanView {
 
     long t1 = System.currentTimeMillis();
     createTokenNodes();
+    newLayout = new NewConstraintNetworkLayout(getTokenNodeList());
+    setState(s);
+    s = null;
     System.err.println("createTokenNodes took " + (System.currentTimeMillis() - t1) + "ms");
     // setVisible( true | false) depending on ContentSpec
     setNodesLinksVisible();
@@ -206,7 +272,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     VERTICAL_VARIABLE_BAND_X = VERTICAL_TOKEN_BAND_X + VERTICAL_BAND_DISTANCE;
     VERTICAL_CONSTRAINT_BAND_X = VERTICAL_VARIABLE_BAND_X + VERTICAL_BAND_DISTANCE;
 
-    newLayout = new NewConstraintNetworkLayout(getTokenNodeList());
+
 
     newLayout.performLayout();
 

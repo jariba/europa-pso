@@ -1,8 +1,52 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.20 2004-01-02 18:58:57 taylor Exp $ -->
+<!-- $Id: planWorks.xml,v 1.21 2004-01-09 20:40:25 miatauro Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
+
+<target name="planWorksOpt" depends="optBuild,chk_jvm_gcMax_1,chk_jvm_gcMax_2">
+         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
+	<property name="arg_gcInit" value="192"/>
+	<!-- property name="arg_gcMax" value="975"/ -->
+	<property name="name.application" value="PlanWorks (pre-PW_M_12): Plan Visualization"/>
+	<property name="boolean.isMaxScreen" value="false"/>
+	<property environment="env"/>
+
+        <echo message="JVM arg_gcMax ${arg_gcMax}"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${jgo.home}/JGo.jar"/>
+		<pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+		<pathelement location="${jgo.home}/Classier.jar"/>
+                <pathelement location="${jgo.home}"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+	</path>
+
+	<java dir="${planworks.root}/java/src" 
+                classname="gov.nasa.arc.planworks.PlanWorks" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dos.type=${env.OSTYPE}"/>
+	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
+	    <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
+	    <jvmarg value="-Dmysql.log=${mysql.log}"/>
+	    <jvmarg value="-Dmysql.log.err=${mysql.log.err}"/>
+	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
+	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
+	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+            <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
+            <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
+	    <jvmarg value="-Dsplash.image=${splash.image}"/>
+            <arg value="${name.application}"/>
+            <arg value="${boolean.isMaxScreen}"/>
+	</java>
+</target>       
 
 <target name="launch" depends="totalbuild,chk_jvm_gcMax_1,chk_jvm_gcMax_2">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
@@ -99,6 +143,13 @@ value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.t
 	<ant dir="./java"/>
 </target>
 
+<target name="optBuild" depends="cleanCls" description="compile class files with optimizations">
+        <ant dir="./java" target="optCompile"/>
+</target>
+
+<target name="cleanCls">
+        <ant dir="./" target="cleanCls"/>
+</target>
   <target name="chk_jvm_gcMax">
     <!-- not able to check for arbitrary integer, so for now, require 975 
          to be the only overrride value -->

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.9 2004-01-02 18:58:58 taylor Exp $
+// $Id: TemporalNode.java,v 1.10 2004-01-09 20:43:07 miatauro Exp $
 //
 // PlanWorks
 //
@@ -207,6 +207,12 @@ public class TemporalNode extends BasicNode implements Extent {
    */
   public static int getNodeLabelWidth( String [] labelLines,
                                        TemporalExtentView temporalExtentView) {
+    System.err.println(temporalExtentView.getFontMetrics());
+    System.err.println(labelLines[0]);
+    System.err.println(labelLines[1]);
+    while(temporalExtentView.getFontMetrics() == null) {
+      Thread.yield();
+    }
     return Math.max( SwingUtilities.computeStringWidth( temporalExtentView.getFontMetrics(),
                                                         labelLines[0]),
                      SwingUtilities.computeStringWidth( temporalExtentView.getFontMetrics(),
@@ -492,6 +498,17 @@ public class TemporalNode extends BasicNode implements Extent {
    */
   public void setRow( int row) {
     cellRow = row;
+  }
+
+  public String toString() {
+    if(token == null) {
+      return "-empty-";
+    }
+    return token.getId().toString();
+  }
+
+  public boolean equals(TemporalNode other) {
+    return token.getId().equals(other.getToken().getId());
   }
 
   private int scaleY() {

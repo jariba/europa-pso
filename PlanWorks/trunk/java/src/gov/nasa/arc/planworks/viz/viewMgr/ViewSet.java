@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.52 2004-01-02 19:06:28 miatauro Exp $
+// $Id: ViewSet.java,v 1.53 2004-01-09 20:44:07 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -36,6 +36,7 @@ import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
@@ -105,6 +106,46 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     VizView view = null;
     try {
       view = (VizView) constructors[0].newInstance(constructorArgs);
+    } 
+    catch (InvocationTargetException ite) {
+	ite.getCause().printStackTrace();
+	System.exit(-1);
+    }
+    catch (Exception excp) {
+	excp.printStackTrace();
+	System.exit(1);
+    }
+    contentPane.add(view);
+    return viewFrame;
+  }
+
+  public MDIInternalFrame openView(String viewClassName, PartialPlanViewState viewState) {
+    Class viewClass = null;
+    // System.err.println( "ViewSet.openView viewClassName " + viewClassName);
+    try {
+      viewClass = Class.forName(viewClassName);
+    } catch (ClassNotFoundException excp) {
+      excp.printStackTrace();
+      System.exit(1);
+    }
+    if(views.containsKey(viewClass)) {
+      return getViewByClass(viewClass);
+    }
+    Constructor [] constructors = viewClass.getDeclaredConstructors();
+    String frameViewName = viewClassName.substring( viewClassName.lastIndexOf( ".") + 1);
+    MDIInternalFrame viewFrame = desktopFrame.createFrame( frameViewName + " of " +
+                                                           viewable.getName(),
+                                                           this, true, true, true, true);
+    viewFrame.setIconifiable( true);
+    views.put(viewClass, viewFrame);
+    Container contentPane = viewFrame.getContentPane();
+    VizView view = null;
+    Object [] stateConstructorArgs = new Object[3];
+    stateConstructorArgs[0] = viewable;
+    stateConstructorArgs[1] = this;
+    stateConstructorArgs[2] = viewState;
+    try {
+      view = (VizView) constructors[1].newInstance(stateConstructorArgs);
     } 
     catch (InvocationTargetException ite) {
 	ite.getCause().printStackTrace();

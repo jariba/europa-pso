@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.7 2004-01-07 23:02:20 miatauro Exp $
+// $Id: ConstraintNode.java,v 1.8 2004-01-09 20:42:45 miatauro Exp $
 //
 // PlanWorks
 //
@@ -279,6 +279,14 @@ public class ConstraintNode extends BasicNodeWDiamond {
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
+
+
+  public void setAreNeighborsShown(boolean shown) {
+    areNeighborsShown = shown;
+  }
+  public boolean areNeighborsShown() {
+    return areNeighborsShown;
+  }
 
   /**
    * <code>getVariableNodeList</code>

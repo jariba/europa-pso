@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.11 2003-12-16 23:18:33 miatauro Exp $
+// $Id: PartialPlanViewSet.java,v 1.12 2004-01-09 20:41:46 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -40,6 +40,11 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 // import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.util.ColorStream;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -88,13 +93,39 @@ public class PartialPlanViewSet extends ViewSet {
 
   public MDIInternalFrame openView(String viewClassName) {
     MDIInternalFrame retval = super.openView(viewClassName);
-    retval.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK, false),
-                             "foobar");
-    retval.getActionMap().put("foobar", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          System.err.println("foobar");
-        }
-      });
+//     retval.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK, false),
+//                              "foobar");
+//     retval.getActionMap().put("foobar", new AbstractAction() {
+//         public void actionPerformed(ActionEvent e) {
+//           System.err.println("foobar");
+//         }
+//       });
+    return retval;
+  }
+
+  public MDIInternalFrame openView(String viewClassName, PartialPlanViewState state) {
+    MDIInternalFrame retval = super.openView(viewClassName, state);
+    Container contentPane = retval.getContentPane();
+    //dreaded equivalent of Big Switch Statement...
+//     for(int i = 0; i < contentPane.getComponentCount(); i++) {
+//       Component temp = contentPane.getComponent(i);
+//       if(temp instanceof TimelineView) {
+//         ((TimelineView)temp).setState(state);
+//         break;
+//       }
+//       else if(temp instanceof TokenNetworkView) {
+//         ((TokenNetworkView)temp).setState(state); 
+//         break;
+//       }
+//       else if(temp instanceof ConstraintNetworkView) {
+//         ((ConstraintNetworkView)temp).setState(state); 
+//         break;
+//       }
+//       else if(temp instanceof TemporalExtentView) {
+//         ((TemporalExtentView)temp).setState(state); 
+//         break;
+//       }
+//     }
     return retval;
   }
 
@@ -125,6 +156,10 @@ public class PartialPlanViewSet extends ViewSet {
     activeToken = token;
   }
 
+  public List getCurrentSpec() {
+    return contentSpec.getCurrentSpec();
+  }
+  
   /**
    * <code>getSecondaryTokens</code> - in timeline view, the overloaded tokens
    *
