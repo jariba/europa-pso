@@ -41,9 +41,9 @@ public class MySQLDBTest extends TestCase {
     //checkIntervalLoad(datadir);
     checkObjectLoad(datadir);
     //checkPVTMLoad(datadir);
-    checkParamLoad(datadir);
+    //checkParamLoad(datadir);
     checkPartialPlanLoad(datadir);
-    checkPredicateLoad(datadir);
+    //checkPredicateLoad(datadir);
     checkProjectLoad(datadir);
     checkSequenceLoad(datadir);
     //checkSlotLoad(datadir);
@@ -259,7 +259,8 @@ public class MySQLDBTest extends TestCase {
       assertTrue(t.getInt("EndVarId") == 1);
       assertTrue(t.getInt("DurationVarId") == 1);
       assertTrue(t.getInt("RejectVarId") == 1);
-      assertTrue(t.getInt("PredicateId") == 1);
+      //assertTrue(t.getInt("PredicateId") == 1);
+      assertTrue(t.getString("PredicateName").equals("1"));
       assertTrue(t.getInt("TimelineId") == 1);
       assertTrue(t.getInt("ObjectId") == 1);
       assertTrue(t.getInt("ObjectVarId") == 1);

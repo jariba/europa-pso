@@ -374,7 +374,7 @@ public class BackendTest extends TestCase {
     List steps = MySQLDB.queryStepsWithRestrictions(sequence.getId());
     assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 1264", 
                steps.size() == 1744);
-    String check = "10730793146288";
+    String check = "10741111307588";
     assertTrue("Wrong step.  Was " + (String) steps.get(0) + " should be " + check,
                ((String)steps.get(0)).equals(check));
     steps = MySQLDB.queryStepsWithRelaxations(sequence.getId());
