@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.19 2003-12-20 01:54:51 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.20 2003-12-30 00:39:00 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -197,6 +197,8 @@ public class TemporalExtentView extends PartialPlanView  {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    
+    addStepButtons(jGoExtentView);
     jGoExtentView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.21 2003-12-20 01:54:51 taylor Exp $
+// $Id: TimelineView.java,v 1.22 2003-12-30 00:39:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -150,6 +150,7 @@ public class TimelineView extends PartialPlanView {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    addStepButtons(jGoView);
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 

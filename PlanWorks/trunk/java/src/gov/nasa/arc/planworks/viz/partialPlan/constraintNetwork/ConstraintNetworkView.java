@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.20 2003-12-19 18:37:36 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.21 2003-12-30 00:38:47 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -228,10 +228,11 @@ public class ConstraintNetworkView extends PartialPlanView {
     isLayoutNeeded = false;
     focusNode = null;
 
+    addStepButtons(jGoView);
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
-
+    
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 

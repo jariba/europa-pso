@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: JGoButton.java,v 1.1 2003-12-20 00:46:47 miatauro Exp $
+// $Id: JGoButton.java,v 1.2 2003-12-30 00:39:48 miatauro Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 20june03
 //
 
-package gov.nasa.arc.planworks.viz.nodes;
+package gov.nasa.arc.planworks.viz.util;
 
 import java.awt.AWTEvent;
 import java.awt.Color;
@@ -85,6 +85,7 @@ public class JGoButton extends BasicNode {
     initialize( location, nodeLabel, isRectangular);
     setBrush( JGoBrush.makeStockBrush( backgroundColor));  
     getLabel().setEditable( false);
+    setSelectable(false);
     setDraggable( isDraggable);
     // do not allow user links
     getPort().setVisible( false);
