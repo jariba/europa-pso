@@ -1,13 +1,24 @@
 <?xml version="1.0"?>
 
-<project name="PlanWorks" default="projectTest" basedir=".">
+<project name="PlanWorks" default="ProjectTest" basedir=".">
+  <description>
+    PlanWorks Build File
+  </description>
 
-<target name="existTest">
-  <ant dir="./test" antfile="exist-test.xml"/>
-</target>
+  <property name="PLANWORKS_ROOT" value="${basedir}"/>
 
-<target name="projectTest">
-  <ant dir="./test" antfile="project-test.xml"/>
-</target>
+  <target name="ExistTest" description=" ">
+    <ant dir="./test" antfile="exist-test.xml"/>
+  </target>
+
+  <target name="ProjectTest" description=" ">
+    <ant dir="./test" antfile="project-test.xml"/>
+  </target>
+
+  <target name="TimelineViewTest" 
+      description="JUNIT_HOME, JFCUNIT_HOME, and JAKARTA_REGEXP_HOME must be set">
+    <ant dir="./java/src/gov/nasa/arc/planworks/viz/views/test" 
+       antfile="timeline-view-test.xml"/>
+  </target>
 
 </project>
