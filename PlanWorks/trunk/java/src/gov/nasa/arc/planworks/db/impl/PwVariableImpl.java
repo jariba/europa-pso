@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.24 2004-05-04 01:27:13 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.25 2004-06-08 21:48:55 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -124,6 +124,9 @@ public class PwVariableImpl implements PwVariable {
     PwVariableContainer retval = (PwVariableContainer) partialPlan.getToken(parentId);
     if(retval == null) {
       retval = (PwVariableContainer) partialPlan.getObject(parentId);
+      if(retval == null) {
+        retval = (PwVariableContainer) partialPlan.getRuleInstance(parentId);
+      }
     }
     return retval;
   }

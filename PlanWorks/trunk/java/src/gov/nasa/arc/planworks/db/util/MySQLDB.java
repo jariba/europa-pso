@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.107 2004-06-02 19:12:02 miatauro Exp $
+// $Id: MySQLDB.java,v 1.108 2004-06-08 21:48:55 pdaley Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -47,11 +47,11 @@ import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceInstantImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceTransactionImpl;
+import gov.nasa.arc.planworks.db.impl.PwRuleInstanceImpl;
 import gov.nasa.arc.planworks.db.impl.PwRuleImpl;
 import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
-import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableQueryImpl;
 import gov.nasa.arc.planworks.util.OneToManyMap;
@@ -563,7 +563,7 @@ public class MySQLDB {
         updateDatabase("DELETE FROM Token".concat(whereClause.toString()));
         updateDatabase("DELETE FROM Variable".concat(whereClause.toString()));
         updateDatabase("DELETE FROM VConstraint".concat(whereClause.toString()));
-        updateDatabase("DELETE FROM TokenRelation".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM RuleInstance".concat(whereClause.toString()));
         updateDatabase("DELETE FROM ConstraintVarMap".concat(whereClause.toString()));
         updateDatabase("DELETE FROM ResourceInstants".concat(whereClause.toString()));
 				updateDatabase("DELETE FROM Decision".concat(whereClause.toString()));
@@ -802,7 +802,7 @@ public class MySQLDB {
                                                                 final Long seqId) {
     try {
       ResultSet tokens = 
-        queryDatabase("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.ExtraData, Token.ParentId, RuleTokenMap.RuleId FROM Token LEFT JOIN RuleTokenMap ON RuleTokenMap.SlaveId=Token.TokenId && RuleTokenMap.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.PartialPlanId=").concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId"));
+        queryDatabase("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, Token.ParentId, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.PartialPlanId=").concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId"));
       while(tokens.next()) {
         Integer tokenId = new Integer(tokens.getInt("Token.TokenId"));
         boolean isFreeToken = false;
@@ -813,16 +813,12 @@ public class MySQLDB {
         Integer durationVarId = new Integer(tokens.getInt("Token.DurationVarId"));
         Integer objectVarId = new Integer(tokens.getInt("Token.ObjectVarId"));
         Integer parentId = new Integer(tokens.getInt("Token.ParentId"));
+        Integer ruleInstanceId = new Integer(tokens.getInt("RuleInstance.RuleInstanceId"));
         String predName = tokens.getString("Token.PredicateName");
         String paramVarIds = null;
         Blob blob = tokens.getBlob("Token.ParamVarIds");
         if(!tokens.wasNull()) {
           paramVarIds = new String(blob.getBytes(1, (int) blob.length()));
-        }
-        String tokenRelIds = null;
-        blob = tokens.getBlob("Token.TokenRelationIds");
-        if(!tokens.wasNull()) {
-          tokenRelIds = new String(blob.getBytes(1, (int) blob.length()));
         }
         String extraInfo = null;
         blob = tokens.getBlob("Token.ExtraData");
@@ -834,20 +830,20 @@ public class MySQLDB {
         if(tokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
           t = new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
                                             durationVarId, stateVarId, objectVarId, parentId, 
-                                            tokenRelIds, paramVarIds, extraInfo, partialPlan);
+                                            ruleInstanceId, paramVarIds, extraInfo, partialPlan);
         }
         else if(tokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
           t = new PwTokenImpl(tokenId, isValueToken, new Integer(tokens.getInt("Token.SlotId")),
                               predName, startVarId, endVarId, durationVarId, stateVarId, 
-                              objectVarId, parentId, tokenRelIds, paramVarIds, extraInfo, 
+                              objectVarId, parentId, ruleInstanceId, paramVarIds, extraInfo, 
                               partialPlan);
         }
-        int ruleKey = tokens.getInt("RuleTokenMap.RuleId");
+        int ruleKey = tokens.getInt("RuleInstance.RuleId");
         if(!tokens.wasNull()) {
           t.setRuleId(new Integer(ruleKey));
         }
       }
-      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.ExtraData, RuleTokenMap.RuleId FROM Token LEFT JOIN RuleTokenMap ON RuleTokenMap.SlaveId=Token.TokenId && RuleTokenMap.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.IsFreeToken=1 && Token.PartialPlanId=").concat(partialPlan.getId().toString()));
+      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.IsFreeToken=1 && Token.PartialPlanId=").concat(partialPlan.getId().toString()));
       while(freeTokens.next()) {
         Integer tokenId = new Integer(freeTokens.getInt("Token.TokenId"));
         boolean isFreeToken = true;
@@ -857,16 +853,12 @@ public class MySQLDB {
         Integer stateVarId = new Integer(freeTokens.getInt("Token.StateVarId"));
         Integer durationVarId = new Integer(freeTokens.getInt("Token.DurationVarId"));
         Integer objectVarId = new Integer(freeTokens.getInt("Token.ObjectVarId"));
+        Integer ruleInstanceId = new Integer(freeTokens.getInt("RuleInstance.RuleInstanceId"));
         String predName = freeTokens.getString("Token.PredicateName");
         String paramVarIds = null;
         Blob blob = freeTokens.getBlob("Token.ParamVarIds");
         if(!freeTokens.wasNull()) {
           paramVarIds = new String(blob.getBytes(1, (int) blob.length()));
-        }
-        String tokenRelIds = null;
-        blob = freeTokens.getBlob("Token.TokenRelationIds");
-        if(!freeTokens.wasNull()) {
-          tokenRelIds = new String(blob.getBytes(1, (int) blob.length()));
         }
         String extraInfo = null;
         blob = freeTokens.getBlob("Token.ExtraData");
@@ -877,15 +869,15 @@ public class MySQLDB {
         if(freeTokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
           t = new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
                                             durationVarId, stateVarId, objectVarId,
-                                            DbConstants.NO_ID, tokenRelIds, paramVarIds, extraInfo,
+                                            DbConstants.NO_ID, ruleInstanceId, paramVarIds, extraInfo,
                                             partialPlan);
         }
         else if(freeTokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
           t = new PwTokenImpl(tokenId, isValueToken, DbConstants.NO_ID, predName, startVarId, 
                               endVarId, durationVarId, stateVarId, objectVarId, DbConstants.NO_ID,
-                              tokenRelIds, paramVarIds, extraInfo, partialPlan);
+                              ruleInstanceId, paramVarIds, extraInfo, partialPlan);
         }
-        int ruleKey = freeTokens.getInt("RuleTokenMap.RuleId");
+        int ruleKey = freeTokens.getInt("RuleInstance.RuleId");
         if(!freeTokens.wasNull()) {
           t.setRuleId(new Integer(ruleKey));
         }
@@ -978,22 +970,25 @@ public class MySQLDB {
   }
 
   /**
-   * Instantiate PwTokenRelationImpl objects from data in the database.
+   * Instantiate PwRuleInstanceImpl objects from data in the database.
    *
-   * @param partialPlan The partial plan to which the PwTokenRelationImpls should be attached.
+   * @param partialPlan The partial plan to which the PwRuleInstanceImpls should be attached.
    */
 
-  synchronized public static void queryTokenRelations(PwPartialPlanImpl partialPlan) {
+  synchronized public static void queryRuleInstances(PwPartialPlanImpl partialPlan) {
     try {
-      ResultSet tokenRelations = 
-        queryDatabase("SELECT TokenRelationId, TokenAId, TokenBId, RelationType FROM TokenRelation WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
-      while(tokenRelations.next()) {
-        Integer id = new Integer(tokenRelations.getInt("TokenRelationId"));
-        partialPlan.addTokenRelation(id, 
-                                     new PwTokenRelationImpl(id,
-                                                             new Integer(tokenRelations.getInt("TokenAId")),
-                                                             new Integer(tokenRelations.getInt("TokenBId")),
-                                                             tokenRelations.getString("RelationType"), partialPlan));
+      ResultSet ruleInstances = 
+        queryDatabase("SELECT RuleInstanceId, RuleId, MasterTokenId, SlaveTokenIds, RuleVarIds FROM RuleInstance WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
+      while(ruleInstances.next()) {
+        Integer id = new Integer(ruleInstances.getInt("RuleInstanceId"));
+        //System.err.println( "MySQLDB:RuleInstnceId " + id);
+        partialPlan.addRuleInstance(id, 
+                                     new PwRuleInstanceImpl(id,
+                                                            new Integer(ruleInstances.getInt("RuleId")),
+                                                            new Integer(ruleInstances.getInt("MasterTokenId")),
+                                                            ruleInstances.getString("SlaveTokenIds"), 
+                                                            ruleInstances.getString("RuleVarIds"), 
+                                                            partialPlan));
       }
     }
     catch(SQLException sqle) {
@@ -1549,10 +1544,14 @@ public class MySQLDB {
       while(ids.next()) {
         retval.put(DbConstants.TBL_TOKEN, new Integer(ids.getInt("TokenId")));
       }
-      ids = queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()));
-      while(ids.next()) {
-        retval.put(DbConstants.TBL_TOKENREL, new Integer(ids.getInt("TokenRelationId")));
-      }
+
+// TokenRelation Table no longer exists
+//      ids = queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()));
+//      while(ids.next()) {
+//        retval.put(DbConstants.TBL_TOKENREL, new Integer(ids.getInt("TokenRelationId")));
+//      }
+
+
       ids = queryDatabase("SELECT VariableId FROM Variable WHERE PartialPlanId=".concat(ppId.toString()));
       while(ids.next()) {
         retval.put(DbConstants.TBL_VARIABLE, new Integer(ids.getInt("VariableId")));
@@ -1607,21 +1606,40 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryTokenRelationIdsForToken(final Long ppId, 
-                                                                final Integer tId) {
-    List retval = new ArrayList();
-    try {
-      ResultSet ids =
-        queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()).concat(" && TokenBId=").concat(tId.toString()));
 
-      while(ids.next()) {
-        retval.add(new Integer(ids.getInt("TokenRelationId")));
+  synchronized public static Map queryAllChildRuleInstanceIds(PwPartialPlanImpl partialPlan) {
+    OneToManyMap retval = new OneToManyMap();
+    try {
+      ResultSet criIds = 
+        queryDatabase("SELECT RuleInstanceId, MasterTokenId FROM RuleInstance WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
+      while(criIds.next()) {
+        //System.err.println( "MasterTokenId " + criIds.getInt("MasterTokenId"));
+        //System.err.println( "RuleInstanceId " + criIds.getInt("RuleInstanceId"));
+        retval.put(new Integer(criIds.getInt("MasterTokenId")), 
+                   new Integer(criIds.getInt("RuleInstanceId")));
       }
     }
     catch(SQLException sqle) {
     }
     return retval;
   }
+  
+// TokenRelation Table no longer exists
+//  synchronized public static List queryTokenRelationIdsForToken(final Long ppId, 
+//                                                                final Integer tId) {
+//    List retval = new ArrayList();
+//    try {
+//      ResultSet ids =
+//        queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()).concat(" && TokenBId=").concat(tId.toString()));
+//
+//      while(ids.next()) {
+//        retval.add(new Integer(ids.getInt("TokenRelationId")));
+//      }
+//    }
+//    catch(SQLException sqle) {
+//    }
+//    return retval;
+//  }
 
   synchronized public static List queryTransactionIdsForPartialPlan(final Long seqId, 
                                                                     final Long ppId) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceTransactionImpl.java,v 1.6 2004-05-04 01:27:12 taylor Exp $
+// $Id: PwResourceTransactionImpl.java,v 1.7 2004-06-08 21:48:53 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -40,11 +40,11 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
                                    final String predName, final Integer startVarId, 
                                    final Integer endVarId, final Integer durationVarId,
                                    final Integer stateVarId, final Integer objectVarId,
-                                   final Integer parentId, final String tokenRelationIds,
+                                   final Integer parentId, final Integer ruleInstanceId,
                                    final String paramVarIds, final String transInfo, 
                                    final PwPartialPlanImpl partialPlan) {
     super(id, isValueToken, DbConstants.NO_ID, predName, startVarId, endVarId, durationVarId, 
-          stateVarId, objectVarId, parentId, tokenRelationIds, paramVarIds, null, partialPlan);
+          stateVarId, objectVarId, parentId, ruleInstanceId, paramVarIds, null, partialPlan);
     StringTokenizer strTok = new StringTokenizer(transInfo, ",");
     quantityMin = Double.parseDouble(strTok.nextToken());
     quantityMax = Double.parseDouble(strTok.nextToken());
@@ -103,15 +103,7 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
     retval.append(parentId).append("\t");
     retval.append(partialPlan.getObject(parentId).getName()).append("\t");
     retval.append(objectVarId).append("\t");
-    if(!tokenRelationIds.isEmpty()) {
-      for(ListIterator it = tokenRelationIds.listIterator(); it.hasNext();) {
-        retval.append(it.next()).append(":");
-      }
-    }
-    else {
-      retval.append("\\N");
-    }
-    retval.append("\t");
+    retval.append("\\N");
     if(!paramVarIds.isEmpty()) {
       for(ListIterator it = paramVarIds.listIterator(); it.hasNext();) {
         retval.append(it.next()).append(":");

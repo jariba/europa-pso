@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.22 2004-03-27 00:30:45 taylor Exp $
+// $Id: PwToken.java,v 1.23 2004-06-08 21:48:51 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -79,14 +79,6 @@ public interface PwToken extends PwVariableContainer {
   public abstract PwVariable getStateVariable();
 
   /**
-   * <code>getTokenRelationIdsList</code>
-   *
-   * @return - <code>List</code> - of Integer.  Id for token relation establishing this token
-   * as a slave.
-   */
-  public abstract List getTokenRelationIdsList();
-
-  /**
    * <code>getVariablesList</code> - return TokenVars & ParamVars
    *
    * @return - <code>List</code> - of PwVariable
@@ -136,12 +128,20 @@ public interface PwToken extends PwVariableContainer {
   public abstract boolean isBaseToken();
 
   /**
-   * <code>getTimelineId</code>
+   * <code>getParentId</code>
    *
    * @return - <code>Integer</code> -
    */
 
   public abstract Integer getParentId();
+
+  /**
+   * <code>getRuleInstanceId</code>
+   *
+   * @return - <code>Integer</code> -
+   */
+
+  public abstract Integer getRuleInstanceId();
 
   /**
    * <code>getEarliestStart</code>

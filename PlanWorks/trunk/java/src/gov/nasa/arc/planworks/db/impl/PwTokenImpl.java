@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.45 2004-05-08 01:44:10 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.46 2004-06-08 21:48:54 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -62,7 +62,7 @@ public class PwTokenImpl implements PwToken {
   protected Integer objectVarId;
   protected Integer stateVarId;
   protected Integer parentId;
-  protected List tokenRelationIds; // element Integer
+  protected Integer ruleInstanceId;
   protected List paramVarIds; // element Integer
   private Integer slotId;
   private int slotIndex;
@@ -74,7 +74,7 @@ public class PwTokenImpl implements PwToken {
                      final String predicateName, final Integer startVarId, final Integer endVarId, 
                      final Integer durationVarId, final Integer stateVarId, 
                      final Integer objectVarId, final Integer parentId, 
-                     final String tokenRelationIds, final String paramVarIds, 
+                     final Integer ruleInstanceId, final String paramVarIds, 
                      final String tokenInfo, final PwPartialPlanImpl partialPlan)
   {
     this.id = id;
@@ -87,21 +87,15 @@ public class PwTokenImpl implements PwToken {
     this.durationVarId = durationVarId;
     this.objectVarId = objectVarId;
     this.stateVarId = stateVarId;
-    this.tokenRelationIds = new UniqueSet();
     this.paramVarIds = new UniqueSet();
     this.partialPlan = partialPlan;
     this.parentId = parentId;
+    this.ruleInstanceId = ruleInstanceId;
     this.slotIndex = -1;
     if(paramVarIds != null) {
       StringTokenizer strTok = new StringTokenizer(paramVarIds, ":");
       while(strTok.hasMoreTokens()) {
         this.paramVarIds.add(Integer.valueOf(strTok.nextToken()));
-      }
-    }
-    if(tokenRelationIds != null) {
-      StringTokenizer strTok = new StringTokenizer(tokenRelationIds, ":");
-      while(strTok.hasMoreTokens()) {
-        this.tokenRelationIds.add(Integer.valueOf(strTok.nextToken()));
       }
     }
     if(tokenInfo != null) {
@@ -246,13 +240,12 @@ public class PwTokenImpl implements PwToken {
   }
 
   /**
-   * <code>getTokenRelationIdsList</code>
+   * <code>getRuleInstanceId</code>
    *
-   * @return - <code>List</code> - of Integer.  Id for token relation establishing this token as
-   * a slave
+   * @return <code>Integer</code>
    */
-  public List getTokenRelationIdsList() {
-    return new ArrayList(tokenRelationIds);
+  public Integer getRuleInstanceId() {
+    return ruleInstanceId;
   }
 
   public List getVariables() {
@@ -387,14 +380,6 @@ public class PwTokenImpl implements PwToken {
     paramVarIds.add(paramVarId);
   }
   
-  /**
-   * <code>addTokenRelation</code>
-   *
-   * @param tokenRelationId - <code>Integer</code> - 
-   */
-  public void addTokenRelation(final Integer tokenRelationId) {
-    tokenRelationIds.add(tokenRelationId);
-  }
 
   public boolean equals(Object o) {
     return ((PwToken)o).getId().equals(id);
@@ -434,15 +419,7 @@ public class PwTokenImpl implements PwToken {
       retval.append(partialPlan.getObject(parentId).getName()).append("\t");
     }
     retval.append(objectVarId).append("\t");
-    if(!tokenRelationIds.isEmpty()) {
-      for(ListIterator it = tokenRelationIds.listIterator(); it.hasNext();) {
-        retval.append(it.next()).append(":");
-      }
-    }
-    else {
-      retval.append("\\N");
-    }
-    retval.append("\t");
+    retval.append("\\N");
     if(!paramVarIds.isEmpty()) {
       for(ListIterator it = paramVarIds.listIterator(); it.hasNext();) {
         retval.append(it.next()).append(":");
