@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.8 2003-06-25 17:04:05 taylor Exp $
+// $Id: SlotNode.java,v 1.9 2003-07-02 17:42:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,10 +12,10 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
-import java.awt.FontMetrics;
 import java.awt.Insets;
 import java.awt.Point;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -73,6 +73,7 @@ public class SlotNode extends TextNode {
   private PwDomain startTimeIntervalDomain;
   private PwDomain endTimeIntervalDomain;
   private PwPredicate predicate;
+  private List timeIntervalLabels;
 
   /**
    * <code>SlotNode</code> - constructor 
@@ -95,6 +96,7 @@ public class SlotNode extends TextNode {
     this.isLastSlot = isLastSlot;
     this.objectCnt = objectCnt;
     this.view = view;
+    this.timeIntervalLabels = new ArrayList();
     // System.err.println( "SlotNode: predicateName " + predicateName);
     configure( slotLocation);
   } // end constructor
@@ -129,6 +131,24 @@ public class SlotNode extends TextNode {
    */
   public String getPredicateName() {
     return predicateName;
+  }
+
+  /**
+   * <code>getSlot</code>
+   *
+   * @return - <code>PwSlot</code> - 
+   */
+  public PwSlot getSlot() {
+    return slot;
+  }
+
+  /**
+   * <code>getTimeIntervalLabels</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getTimeIntervalLabels() {
+    return timeIntervalLabels;
   }
 
   /**
@@ -183,10 +203,8 @@ public class SlotNode extends TextNode {
 
     if (intervalVariable == null) {
       startTimeIntervalDomain = intervalDomain;
-    } else if (view.getViewSet().isInContentSpec( intervalVariable.getKey())) {
-      startTimeIntervalDomain = intervalVariable.getDomain();
     } else {
-      startTimeIntervalDomain = DbConstants.NULL_DOMAIN;
+      startTimeIntervalDomain = intervalVariable.getDomain();
     }
     // System.err.println( "startTimeIntervalDomain " + startTimeIntervalDomain.toString());
     Point startLoc = new Point( (int) this.getLocation().getX() - this.getXOffset(),
@@ -197,10 +215,8 @@ public class SlotNode extends TextNode {
     if ((lastIntervalVariable != null) || (lastIntervalDomain != null)) {
       if (lastIntervalVariable == null) {
         endTimeIntervalDomain = lastIntervalDomain;
-      } else if (view.getViewSet().isInContentSpec( lastIntervalVariable.getKey())) {
-        endTimeIntervalDomain = lastIntervalVariable.getDomain();
       } else {
-        endTimeIntervalDomain = DbConstants.NULL_DOMAIN;
+        endTimeIntervalDomain = lastIntervalVariable.getDomain();
       }
       // System.err.println( "endTimeIntervalDomain " + endTimeIntervalDomain.toString());
       Point endLoc = new Point( (int) (this.getLocation().getX() +
@@ -233,6 +249,7 @@ public class SlotNode extends TextNode {
     textObject.setEditable( false);
     textObject.setDraggable( false);
     textObject.setBkColor( ColorMap.getColor( "lightGray"));
+    timeIntervalLabels.add( textObject);
     view.getJGoDocument().addObjectAtTail( textObject);
     return textObject;
   } // end renderText

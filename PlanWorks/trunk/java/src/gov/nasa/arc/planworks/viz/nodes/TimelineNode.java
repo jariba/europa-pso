@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.5 2003-06-25 17:04:05 taylor Exp $
+// $Id: TimelineNode.java,v 1.6 2003-07-02 17:42:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -15,7 +15,6 @@ package gov.nasa.arc.planworks.viz.nodes;
 
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,6 +95,15 @@ public class TimelineNode extends TextNode {
     setLocation( (int) timelineLocation.getX(), (int) timelineLocation.getY());
     setInsets( NODE_INSETS);
   } // end configure
+
+  /**
+   * <code>getTimeline</code>
+   *
+   * @return - <code>PwTimeline</code> - 
+   */
+  public PwTimeline getTimeline() {
+    return timeline;
+  }
 
   /**
    * <code>getTimelineName</code>
