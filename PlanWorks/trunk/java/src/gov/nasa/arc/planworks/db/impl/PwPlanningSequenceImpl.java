@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.19 2003-07-02 23:17:59 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.20 2003-07-29 23:24:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -138,16 +138,13 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
         String [] names = planDirs[i].list(new FilenameFilter () 
           {
             public boolean accept(File dir, String name) {
-              return (name.indexOf(".partialPlan") != -1 || name.indexOf(".objects") != -1 ||
-                      name.indexOf(".timelines") != -1 || name.indexOf(".slots") != -1 || 
-                      name.indexOf(".tokens") != -1 || name.indexOf(".variables") != -1 || 
-                      name.indexOf(".predicates") != -1 || name.indexOf(".parameters") != -1 ||
-                      name.indexOf(".enumeratedDomains") != -1 ||
-                      name.indexOf(".intervalDomains") != -1 ||
-                      name.indexOf(".constraints") != -1 || 
-                      name.indexOf(".tokenRelations") != -1 || 
-                      name.indexOf(".paramVarTokenMap") != -1 || 
-                      name.indexOf(".constraintVarMap") != -1);
+              return (name.endsWith(".partialPlan") || name.endsWith(".objects") || 
+                      name.endsWith(".timelines") || name.endsWith(".slots") ||
+                      name.endsWith(".tokens") || name.endsWith(".variables") ||
+                      name.endsWith(".predicates") || name.endsWith(".parameters") ||
+                      name.endsWith(".enumeratedDomains") || name.endsWith(".intervalDomains") ||
+                      name.endsWith(".constraints") || name.endsWith(".tokenRelations") || 
+                      name.endsWith(".paramVarTokenMap") || name.endsWith(".constraintVarMap"));
             }
           });
         if(names.length == 14) {
