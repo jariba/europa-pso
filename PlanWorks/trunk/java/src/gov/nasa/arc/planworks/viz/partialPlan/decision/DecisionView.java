@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.9 2004-07-27 21:58:12 taylor Exp $
+// $Id: DecisionView.java,v 1.10 2004-07-29 01:36:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -299,59 +299,59 @@ public class DecisionView extends PartialPlanView {
    *                       according to the Content Spec enabled ids
    *
    */
-  public void redraw() {
-    Thread thread = new RedrawViewThread();
-    thread.setPriority(Thread.MIN_PRIORITY);
-    thread.start();
-  }
+//   public void redraw() {
+//     Thread thread = new RedrawViewThread();
+//     thread.setPriority(Thread.MIN_PRIORITY);
+//     thread.start();
+//   }
 
-  class RedrawViewThread extends Thread {
+//   class RedrawViewThread extends Thread {
 
-    public RedrawViewThread() {
-    }  // end constructor
+//     public RedrawViewThread() {
+//     }  // end constructor
 
-    public void run() {
-      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
-      System.err.println( "Redrawing Decision View ...");
-      if (startTimeMSecs == 0L) {
-        startTimeMSecs = System.currentTimeMillis();
-      }
-      Integer currenDecisionId = null;
-      try {
-        ViewGenerics.setRedrawCursor( viewFrame);
+//     public void run() {
+//       handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+//       System.err.println( "Redrawing Decision View ...");
+//       if (startTimeMSecs == 0L) {
+//         startTimeMSecs = System.currentTimeMillis();
+//       }
+//       Integer currenDecisionId = null;
+//       try {
+//         ViewGenerics.setRedrawCursor( viewFrame);
 
-        DecisionView.this.getLayout().removeLayoutComponent( scrollPane);
+//         DecisionView.this.getLayout().removeLayoutComponent( scrollPane);
 
-        try {
-          currenDecisionId =
-            planSequence.getCurrentDecisionIdForStep( partialPlan.getStepNumber());
-          decisionTree = new DecisionTree( renderDecisions(), currenDecisionId);
-        } catch ( ResourceNotFoundException rnfExcep) {
-          int index = rnfExcep.getMessage().indexOf( ":");
-          JOptionPane.showMessageDialog
-            (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
-             "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-          System.err.println( rnfExcep);
-          rnfExcep.printStackTrace();
-        }
-        scrollPane = new JScrollPane( decisionTree);
-        DecisionView.this.add( scrollPane, BorderLayout.NORTH);
-        DecisionView.this.repaint();
+//         try {
+//           currenDecisionId =
+//             planSequence.getCurrentDecisionIdForStep( partialPlan.getStepNumber());
+//           decisionTree = new DecisionTree( renderDecisions(), currenDecisionId);
+//         } catch ( ResourceNotFoundException rnfExcep) {
+//           int index = rnfExcep.getMessage().indexOf( ":");
+//           JOptionPane.showMessageDialog
+//             (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+//              "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+//           System.err.println( rnfExcep);
+//           rnfExcep.printStackTrace();
+//         }
+//         scrollPane = new JScrollPane( decisionTree);
+//         DecisionView.this.add( scrollPane, BorderLayout.NORTH);
+//         DecisionView.this.repaint();
 
-      } finally {
-        ViewGenerics.resetRedrawCursor( viewFrame);
-      }
+//       } finally {
+//         ViewGenerics.resetRedrawCursor( viewFrame);
+//       }
 
-      findAndSelectDecisionId( currenDecisionId);
+//       findAndSelectDecisionId( currenDecisionId);
 
-      long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... " + ViewConstants.DECISION_VIEW + " elapsed time: " +
-                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
-      startTimeMSecs = 0L;
-      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
-    } //end run
+//       long stopTimeMSecs = System.currentTimeMillis();
+//       System.err.println( "   ... " + ViewConstants.DECISION_VIEW + " elapsed time: " +
+//                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
+//       startTimeMSecs = 0L;
+//       handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
+//     } //end run
 
-  } // end class RedrawViewThread
+//   } // end class RedrawViewThread
 
 
   /**
@@ -503,7 +503,7 @@ public class DecisionView extends PartialPlanView {
     // prevents last node from being clipped off by bottom of scroll pane
     DefaultMutableTreeNode dummyNode = new DefaultMutableTreeNode();
     top.add( dummyNode);
-    progressMonitor.close();
+    isProgressMonitorCancel = true;
     return top;
   } // end renderDecisions
 

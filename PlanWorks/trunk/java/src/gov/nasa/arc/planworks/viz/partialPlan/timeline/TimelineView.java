@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.61 2004-07-27 21:58:15 taylor Exp $
+// $Id: TimelineView.java,v 1.62 2004-07-29 01:36:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -227,7 +227,8 @@ public class TimelineView extends PartialPlanView {
     jGoDocument.addDocumentListener( createDocListener());
 
     // create all nodes
-    boolean isValid = renderTimelineAndSlotNodes();
+    boolean isRedraw = false;
+    boolean isValid = renderTimelineAndSlotNodes( isRedraw);
     if (isValid) {
       if (! isStepButtonView) {
         expandViewFrame( viewFrame, (int) jGoView.getDocumentSize().getWidth(),
@@ -282,7 +283,8 @@ public class TimelineView extends PartialPlanView {
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
 
-        renderTimelineAndSlotNodes();
+        boolean isRedraw = true;
+        renderTimelineAndSlotNodes( isRedraw);
         addStepButtons( jGoView);
         // causes bottom view edge to creep off screen
         //       if (! isStepButtonView) {
@@ -300,7 +302,7 @@ public class TimelineView extends PartialPlanView {
 
   } // end class RedrawViewThread
 
-  private boolean renderTimelineAndSlotNodes() {
+  private boolean renderTimelineAndSlotNodes( boolean isRedraw) {
     jGoView.getDocument().deleteContents();
 
     validTokenIds = viewSet.getValidIds();
@@ -308,7 +310,7 @@ public class TimelineView extends PartialPlanView {
     timelineNodeList = new ArrayList();
     freeTokenNodeList = new ArrayList();
 
-    boolean isValid = createTimelineAndSlotNodes();
+    boolean isValid = createTimelineAndSlotNodes( isRedraw);
     if (isValid) {
       boolean showDialog = true;
       isContentSpecRendered( ViewConstants.TIMELINE_VIEW, showDialog);
@@ -388,7 +390,7 @@ public class TimelineView extends PartialPlanView {
     return focusNodeId;
   }
 
-  private boolean createTimelineAndSlotNodes() {
+  private boolean createTimelineAndSlotNodes( boolean isRedraw) {
     int numTimelines = 0;
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
@@ -399,7 +401,11 @@ public class TimelineView extends PartialPlanView {
       }
     }
     numTimelines++; // for free tokens
-    progressMonitorThread( "Rendering Timeline View ...", 0, numTimelines,
+    String title = "Rendering";
+    if (isRedraw) {
+      title = "Redrawing";
+    }
+    progressMonitorThread( title + " Timeline View ...", 0, numTimelines,
                            Thread.currentThread(), this);
     if (! progressMonitorWait( this)) {
       return false;
@@ -553,6 +559,7 @@ public class TimelineView extends PartialPlanView {
     PwSlot previousSlot = null;
     SlotNode slotNode = null;
     boolean foundEmptySlot = false;
+    boolean foundNonMonotonicError = false;
     int earliestStartTime = DbConstants.MINUS_INFINITY_INT;
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
@@ -587,8 +594,13 @@ public class TimelineView extends PartialPlanView {
           earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
         } else {
           PwToken previousToken = previousSlot.getBaseToken();
-          outputNonMonotonicError( slot, previousSlot, token, previousToken, timeline);
-          return false;
+          boolean continueRendering =
+            outputNonMonotonicError( slot, previousSlot, token, previousToken, timeline,
+                                     foundNonMonotonicError);
+          foundNonMonotonicError = true;
+          if (! continueRendering) {
+            return false;
+          }
         }
       }
       previousSlot = slot;
@@ -596,8 +608,10 @@ public class TimelineView extends PartialPlanView {
     return true;
   } // end computeTimeIntervalLabelSize
 
-  private void outputNonMonotonicError( PwSlot slot, PwSlot previousSlot, PwToken token,
-                                        PwToken previousToken, PwTimeline timeline) {
+  private boolean outputNonMonotonicError( PwSlot slot, PwSlot previousSlot, PwToken token,
+                                           PwToken previousToken, PwTimeline timeline,
+                                           boolean foundNonMonotonicError) {
+    boolean continueRendering = false;
     String previousTokenIdString = "", tokenIdString = "";
     String previousPredicateName = "-empty-", predicateName = "-empty-";
     // check for empty slots
@@ -617,10 +631,22 @@ public class TimelineView extends PartialPlanView {
       "\npredicate = '" + predicateName + "', slotId = " + slot.getId() +
       ", tokenId = " + tokenIdString + ", start = " + slot.getStartTime() + ", end = " + 
       slot.getEndTime();
-    JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                   "Timeline View Exception",
-                                   JOptionPane.ERROR_MESSAGE);
-    System.err.println( message);
+    System.err.println( "\n" + message);
+
+//     JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+//                                    "Timeline View Exception",
+//                                    JOptionPane.ERROR_MESSAGE);
+    if (! foundNonMonotonicError) {
+      int response  = JOptionPane.showConfirmDialog( PlanWorks.getPlanWorks(), message,
+                                                     "Timeline View Exception -- Continue ?",
+                                                     JOptionPane.YES_NO_OPTION);
+      if (response == JOptionPane.YES_OPTION) {
+        continueRendering = true;
+      }
+    } else {
+      continueRendering = true;
+    }
+    return continueRendering;
   } // end outputNonMonotonicError
 
   // make all timeline nodes the same width

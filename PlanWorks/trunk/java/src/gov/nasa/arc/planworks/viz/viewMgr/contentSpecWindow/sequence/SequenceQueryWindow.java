@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.29 2004-05-21 21:39:13 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.30 2004-07-29 01:36:42 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -45,9 +45,11 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -57,6 +59,7 @@ import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TokenQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.VariableQueryView;
+import gov.nasa.arc.planworks.viz.util.PWProgressMonitor;
 
 /**
  * <code>SequenceQueryWindow</code> -
@@ -185,7 +188,9 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   protected VariableTransComboBox variableTransComboBox;
   protected int queryResultFrameCnt;
   protected ViewListener viewListener;
-
+  protected PWProgressMonitor progressMonitor;
+  protected boolean isProgressMonitorCancel;
+  protected JButton queryButton;
 
   /**
    * <code>SequenceQueryWindow</code> - constructor 
@@ -243,7 +248,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     buttonConstraints.gridx = 0;
     buttonConstraints.gridy = 0;
 
-    JButton queryButton = new JButton(APPLY_QUERY_BUTTON);
+    queryButton = new JButton(APPLY_QUERY_BUTTON);
     queryButton.addActionListener(new QueryListener(this));
     buttonGridBag.setConstraints(queryButton, buttonConstraints);
     buttonPanel.add(queryButton);
@@ -348,11 +353,32 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       this.queryWindow = queryWindow;
     }
 
-    public void actionPerformed(ActionEvent ae) {
+    public void actionPerformed( final ActionEvent ae) {
+      final SwingWorker worker = new SwingWorker() {
+          public Object construct() {
+            try {
+              queryButton.setEnabled( false);
+              queryAndRenderView( ae);
+            } finally {
+              queryButton.setEnabled( true);
+            }
+            return null;
+          }
+        };
+      worker.start();  
+    } 
+
+    private void queryAndRenderView( ActionEvent ae) {
       String stepsQuery = "", transactionsQuery = "";
       if (ae.getActionCommand().equals( APPLY_QUERY_BUTTON)) {
         long startTimeMSecs = System.currentTimeMillis();
         System.err.println( "Querying and Rendering Sequence Query View ...");
+        progressMonitorThread( "Querying/Rendering Sequence Query View ...", 0, 6,
+                               Thread.currentThread(), null);
+        if (! progressMonitorWait()) {
+          return;
+        }
+        progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
         if (((String) queryWindow.majorTypeBox.getSelectedItem()).
             equals( QUERY_FOR_STEPS)) {
           List stepList = null;
@@ -383,6 +409,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
               ensureSequenceStepsViewExists();
               renderStepQueryFrame( stepsQuery, stepList, startTimeMSecs);
             }
+
           }
         } else if (((String) queryWindow.majorTypeBox.getSelectedItem()).
                    equals( QUERY_FOR_TRANSACTIONS)) {
@@ -461,8 +488,10 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
 //           SequenceQueryWindow.this.extendQueryForStepsWhereConstraintTransacted();
 //         }
 //         queryWindow.refresh();
+        // close monitor if queries return null
+        isProgressMonitorCancel = true;
       }
-    } // end actionPerformed
+    } // end queryAndRenderView
 
     private void ensureSequenceStepsViewExists() {
       // since SequenceStepsView is closable by user, we must recreate it prior to
@@ -515,6 +544,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
                          viewSet, SequenceQueryWindow.this, stepQueryFrame,
                          startTimeMSecs, viewListener));
       queryResultFrameCnt++;
+      isProgressMonitorCancel = true;
     } // end renderStepQueryFrame
 
     private void renderTransactionQueryFrame( String transactionsQuery,
@@ -539,6 +569,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
                          viewSet, SequenceQueryWindow.this, transactionQueryFrame,
                          startTimeMSecs, viewListener));
       queryResultFrameCnt++;
+      isProgressMonitorCancel = true;
     } // end renderTransactionQueryFrame
 
     private void renderFreeTokenQueryFrame( String tokenQuery, List tokenList,
@@ -558,6 +589,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
                          viewSet, SequenceQueryWindow.this, tokenQueryFrame,
                          startTimeMSecs, viewListener));
       queryResultFrameCnt++;
+      isProgressMonitorCancel = true;
     } // end renderTokenQueryFrame
 
     private void renderUnboundVariableQueryFrame( String variableQuery, List variableList,
@@ -577,24 +609,26 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
                          viewSet, SequenceQueryWindow.this, variablesQueryFrame,
                          startTimeMSecs, viewListener));
       queryResultFrameCnt++;
+      isProgressMonitorCancel = true;
     } // end renderVariableQueryFrame
 
-    private void renderDecisionQueryFrame(String decisionQuery, List decisionList, 
-                                          long startTimeMSecs) {
-      String frameTitle = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE + " for " +
-        viewable.getName() + " - " + String.valueOf( queryResultFrameCnt);
-      MDIInternalFrame decisionsQueryFrame = 
-        desktopFrame.createFrame( frameTitle, viewSet, true, true, true, true);
-      viewSet.getViews().put(new String(QUERY_RESULT_FRAME + queryResultFrameCnt), 
-                             decisionsQueryFrame);
-      Container contentPane = decisionsQueryFrame.getContentPane();
-      StringBuffer queryStringBuf = getQueryStringBuf(QUERY_FOR_ALL_DECISIONS, decisionQuery);
-      queryStringBuf.append(" Step ").append(stepString);
-// contentPane.add(new DecisionQueryView(decisionList, queryStringBuf.toString(), viewable,
-//                                       viewSet, SequenceQueryWindow.this, 
-//                                       decisionsQueryFrame, startTimeMSecs, viewListener));
-      queryResultFrameCnt++;
-    }
+//     private void renderDecisionQueryFrame(String decisionQuery, List decisionList, 
+//                                           long startTimeMSecs) {
+//       String frameTitle = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE + " for " +
+//         viewable.getName() + " - " + String.valueOf( queryResultFrameCnt);
+//       MDIInternalFrame decisionsQueryFrame = 
+//         desktopFrame.createFrame( frameTitle, viewSet, true, true, true, true);
+//       viewSet.getViews().put(new String(QUERY_RESULT_FRAME + queryResultFrameCnt), 
+//                              decisionsQueryFrame);
+//       Container contentPane = decisionsQueryFrame.getContentPane();
+//       StringBuffer queryStringBuf = getQueryStringBuf(QUERY_FOR_ALL_DECISIONS, decisionQuery);
+//       queryStringBuf.append(" Step ").append(stepString);
+//       contentPane.add(new DecisionQueryView(decisionList, queryStringBuf.toString(), viewable,
+//                                             viewSet, SequenceQueryWindow.this, 
+//                                             decisionsQueryFrame, startTimeMSecs, viewListener));
+//       queryResultFrameCnt++;
+//       isProgressMonitorCancel = true;
+//     }
 
     private StringBuffer getQueryStringBuf( String majorQuery, String minorQuery) {
       String majorQueryShort = majorQuery;
@@ -781,13 +815,14 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     } // end getTransactionsInRange
 
     private boolean isStepNumberValid( int stepNumber) {
-      int stepCount = ((PwPlanningSequence) queryWindow.viewable).getStepCount();
-      if (stepNumber >= 0 && stepNumber < stepCount) {
+      List partialPlanNameList =
+        ((PwPlanningSequence) queryWindow.viewable).getPartialPlanNamesList();
+      String partialPlanName = "step" + String.valueOf( stepNumber);
+      if (partialPlanNameList.contains( partialPlanName)) {
         return true;
       } else {
         JOptionPane.showMessageDialog
-          (PlanWorks.getPlanWorks(),
-           stepNumber + " is not >= 0 and < " + stepCount,
+          (PlanWorks.getPlanWorks(), partialPlanName + " is not a partial plan",
            "Invalid Step Number", JOptionPane.ERROR_MESSAGE);
         return false;
       }
@@ -1188,6 +1223,75 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     // System.err.println( "mouseReleased " + mouseEvent.getPoint());
   } // end mouseReleased
 
+  protected void progressMonitorThread( String title, int minValue, int maxValue,
+                                        Thread monitoredThread, VizView view) {
+    Thread thread = new ProgressMonitorThread( title, minValue, maxValue, monitoredThread,
+                                                view);
+    thread.setPriority(Thread.MAX_PRIORITY);
+    thread.start();
+  }
+
+  public class ProgressMonitorThread extends Thread {
+
+    private String title;
+    private int minValue;
+    private int maxValue;
+    private Thread monitoredThread;
+    private VizView view;
+
+    public ProgressMonitorThread( String title, int minValue, int maxValue,
+                                  Thread monitoredThread, VizView view) {
+      isProgressMonitorCancel = false;
+      this.title = title;
+      this.minValue = minValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
+      this.maxValue = maxValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
+      this.monitoredThread = monitoredThread;
+      this.view = view;
+    }  // end constructor
+
+    public void run() {
+      progressMonitor = new PWProgressMonitor( PlanWorks.getPlanWorks(), title, "",
+                                              minValue, maxValue, monitoredThread, view);
+      progressMonitor.setMillisToDecideToPopup( 0);
+      progressMonitor.setMillisToPopup( 0);
+      // these two must be set to 0 before calling setProgress, which puts up the dialog
+      progressMonitor.setProgress( 0);
+
+      while (! isProgressMonitorCancel) {
+        try {
+          Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL * 2);
+        }
+        catch (InterruptedException ie) {}
+        // System.err.println( "ProgressMonitorThread wait for isProgressMonitorCancel = true");
+      }
+      progressMonitor.close();
+      progressMonitor = null;
+    } // end run
+
+  } // end class ProgressMonitorThread
+
+  private boolean progressMonitorWait() {
+    int maxCycles = ViewConstants.WAIT_NUM_CYCLES;
+    int numCycles = maxCycles;
+    while ((progressMonitor == null) && numCycles != 0) {
+      try {
+        Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
+      }
+      catch (InterruptedException ie) {}
+      numCycles--;
+      // System.err.println( "progressMonitorWait numCycles " + numCycles);
+    }
+    if (numCycles == 0) {
+      System.err.println( "progressMonitorWait failed after " +
+                          (ViewConstants.WAIT_INTERVAL * maxCycles) + " msec for " +
+                          "Querying/Rendering Sequence Query View");
+      try {
+        throw new Exception();
+      } catch (Exception e) { e.printStackTrace(); }
+    }
+    // System.err.println( "progressMonitorWait took " + (maxCycles - numCycles) + " numCycles");
+    return numCycles != 0;
+  } // end progressMonitorWait
 
 } // end class SequenceQueryWindow
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.22 2004-07-27 21:58:13 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.23 2004-07-29 01:36:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -213,12 +213,13 @@ public class ResourceProfileView extends ResourceView  {
       closeView( this);
       return;
     }
+    int horizonEnd = getTimeScaleEnd();
     int numResources = 0;
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
       ResourceProfile resourceProfile =
-        new ResourceProfile( resource, ViewConstants.FREE_TOKEN_BG_COLOR,
+        new ResourceProfile( resource, horizonEnd, ViewConstants.VIEW_BACKGROUND_COLOR,
                              levelScaleFontMetrics, this);
       // System.err.println( "resourceProfile " + resourceProfile);
       this.getJGoExtentDocument().addObjectAtTail( resourceProfile);
@@ -233,7 +234,7 @@ public class ResourceProfileView extends ResourceView  {
       numResources++;
       progressMonitor.setProgress( numResources * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-    progressMonitor.close();
+    isProgressMonitorCancel = true;
   } // end createResourceProfiles
 
   /**

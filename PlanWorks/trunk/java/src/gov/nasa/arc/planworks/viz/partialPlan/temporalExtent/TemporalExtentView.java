@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.54 2004-07-27 21:58:14 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.55 2004-07-29 01:36:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -352,7 +352,7 @@ public class TemporalExtentView extends PartialPlanView  {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
       long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... elapsed time: " +
+      System.err.println( "   ... " + ViewConstants.TEMPORAL_EXTENT_VIEW + " elapsed time: " +
                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
       startTimeMSecs = 0L;
       handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
@@ -368,7 +368,11 @@ public class TemporalExtentView extends PartialPlanView  {
     temporalNodeList = new UniqueSet();
     List tokenList = partialPlan.getTokenList();
     numOperations = 4;
-    progressMonitorThread( "Rendering Temporal Extent View:", 0, numOperations,
+    String title = "Rendering";
+    if (isRedraw) {
+      title = "Redrawing";
+    }
+    progressMonitorThread( title + " Temporal Extent View:", 0, numOperations,
                            Thread.currentThread(), this);
     if (! progressMonitorWait( this)) {
       closeView( this);
@@ -398,7 +402,7 @@ public class TemporalExtentView extends PartialPlanView  {
     // equalize view widths so scrollbars are equal
     equalizeViewWidths( isRedraw);
 
-    progressMonitor.close();
+    isProgressMonitorCancel = true;
   } // end createTemporalExtentView
 
   /**

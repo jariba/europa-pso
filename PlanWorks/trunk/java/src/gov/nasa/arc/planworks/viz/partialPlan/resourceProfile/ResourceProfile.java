@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.14 2004-06-10 01:36:05 taylor Exp $
+// $Id: ResourceProfile.java,v 1.15 2004-07-29 01:36:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -36,6 +36,7 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceInstant;
@@ -90,20 +91,25 @@ public class ResourceProfile extends BasicNode {
    * <code>ResourceProfile</code> - constructor 
    *
    * @param resource - <code>PwResource</code> - 
+   * @param resourceHorizonEnd - <code>int</code> - 
    * @param backgroundColor - <code>Color</code> - 
    * @param levelScaleFontMetrics - <code>FontMetrics</code> - 
    * @param resourceProfileView - <code>ResourceProfileView</code> - 
    */
-  public ResourceProfile( final PwResource resource, final Color backgroundColor,
+  public ResourceProfile( final PwResource resource, final int resourceHorizonEnd,
+                          final Color backgroundColor,
                           final FontMetrics levelScaleFontMetrics,
                           final ResourceProfileView resourceProfileView) {
     super();
     this.resource = resource;
     earliestStartTime = resource.getHorizonStart();
-    latestEndTime = resource.getHorizonEnd();
+    // latestEndTime = resource.getHorizonEnd();
+    // latestEndTime may be PLUS_INFINITY in planner model
+    latestEndTime = resourceHorizonEnd;
     resourceId = resource.getId().toString();
 //     System.err.println( "Resource Node: " + resourceId + " eS " +
-//                         earliestStartTime + " lE " + latestEndTime);
+//                         earliestStartTime + " lE " + latestEndTime +
+//                         " PLUS_INFINITY_INT " + DbConstants.PLUS_INFINITY_INT);
 
     this.backgroundColor = backgroundColor;
     this.levelScaleFontMetrics = levelScaleFontMetrics;
@@ -203,6 +209,8 @@ public class ResourceProfile extends BasicNode {
 
     levelLimitMin = resource.getLevelLimitMin();
     levelLimitMax = resource.getLevelLimitMax();
+//     System.err.println( "resourceProfile: levelLimitMin " + levelLimitMin +
+//                         " levelLimitMax " + levelLimitMax);
     double minMax[] = ResourceProfile.getResourceMinMax( resource);
     levelMin = (int) minMax[0];
     levelMax = (int) minMax[1];
@@ -409,6 +417,8 @@ public class ResourceProfile extends BasicNode {
   } // end  addMinLineSegment 
 
   private int scaleResourceLevel( final double level) {
+//     System.err.println( "scaleResourceLevel: level " + level + " scaledLevel " +
+//                         (extentYBottom - (int) ((level - levelMin) * levelScaleScaling)));
     return (extentYBottom - (int) ((level - levelMin) * levelScaleScaling));
   }
 

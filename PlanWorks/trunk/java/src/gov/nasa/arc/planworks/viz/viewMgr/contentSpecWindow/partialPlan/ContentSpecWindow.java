@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.14 2004-07-08 21:33:27 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.15 2004-07-29 01:36:41 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -454,8 +454,12 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
     while (viewsItr.hasNext()) {
       JGoView jGoView = ((PartialPlanView) viewsItr.next()).getJGoView();
       if (jGoView != null) {
-        jGoView.getHorizontalScrollBar().setValue( 0);
-        jGoView.getVerticalScrollBar().setValue( 0);
+        if (jGoView.getHorizontalScrollBar() != null) {
+          jGoView.getHorizontalScrollBar().setValue( 0);
+        }
+        if (jGoView.getVerticalScrollBar() != null) {
+          jGoView.getVerticalScrollBar().setValue( 0);
+        }
       }
     }
   } // end scrollViewsToZeroZero

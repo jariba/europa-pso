@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.96 2004-07-27 21:58:04 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.97 2004-07-29 01:36:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -246,7 +246,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... Create PartialPlan elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    progressMonitor.close();
+    isProgressMonitorCancel = true;
   } // end createPartialPlan
 
   private void checkProgressMonitor() throws CreatePartialPlanException {
@@ -1470,6 +1470,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         catch (InterruptedException ie) {}
       }
       progressMonitor.close();
+      progressMonitor = null;
     } // end run
       
   } // end class ProgressMonitorThread

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.13 2004-07-27 21:58:12 taylor Exp $
+// $Id: DBTransactionView.java,v 1.14 2004-07-29 01:36:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -296,7 +296,7 @@ public class DBTransactionView extends PartialPlanView {
                         (stopTimeMSecs -
                          PlanWorks.getPlanWorks().getViewRenderingStartTime
                          ( ViewConstants.DB_TRANSACTION_VIEW)) + " msecs.");
-    progressMonitor.close();
+    isProgressMonitorCancel = true;
     handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 

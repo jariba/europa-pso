@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ViewRenderingException.java,v 1.1 2003-07-11 00:02:30 taylor Exp $
+// $Id: ViewRenderingException.java,v 1.2 2004-07-29 01:36:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,7 +14,7 @@
 package gov.nasa.arc.planworks.util;
 
 
-public class ViewRenderingException extends Exception {
+public class ViewRenderingException extends ProgressMonitorException {
     
     /**
      * Creates a new instance of <code>ViewRenderingException</code>

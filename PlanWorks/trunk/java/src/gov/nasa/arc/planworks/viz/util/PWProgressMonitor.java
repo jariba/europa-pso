@@ -8,7 +8,7 @@
 // modified by Will Taylor starting 26july04
 // monitoredThread passed in and stopped when cancel is received
 
-// $Id: PWProgressMonitor.java,v 1.1 2004-07-27 21:58:17 taylor Exp $
+// $Id: PWProgressMonitor.java,v 1.2 2004-07-29 01:36:41 taylor Exp $
 
 
 package gov.nasa.arc.planworks.viz.util;
@@ -32,6 +32,7 @@ import javax.swing.JProgressBar;
 import javax.swing.ProgressMonitor;
 import javax.swing.UIManager;
 
+import gov.nasa.arc.planworks.util.ViewRenderingException;
 import gov.nasa.arc.planworks.viz.VizView;
 
 
@@ -209,9 +210,13 @@ public class PWProgressMonitor extends Object
                         dialog.dispose();
 
                         if (monitoredThread != null) { // added will taylor
-                          System.err.println( "PWProgressMonitor stopped thread for '" +
-                                              view.getName() + "'");
-                          view.closeView( view);
+                          System.err.print( "PWProgressMonitor stopped thread");
+                          if (view != null) {
+                            System.err.println( " for '" + view.getName() + "'");
+                            view.closeView( view);
+                          } else {
+                            System.err.println( ".");
+                          }
                           // monitoredThread.interrupt(); // does not stop JGo.performLyout
                           monitoredThread.stop(); // deprecated, but stops JGo.performLyout
                         }

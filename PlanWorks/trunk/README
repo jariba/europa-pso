@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.112 2004-07-27 21:58:00 taylor Exp $
+# $Id: README,v 1.113 2004-07-29 01:36:35 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -64,7 +64,7 @@ o "Progress monitors" have been added for functions which can be cpu intensive, 
   these operations, if desired.
 
 o Added new Ant target 'createJars' which creates PlanWorksDB.jar and PlanWorksPlugin.jar
-  in PlanWorks/java/jars.
+  in PlanWorks/java/jars.  (These jar files are checked in to CVS).
 
 o GNATS PRs and CRs completed:
   #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.

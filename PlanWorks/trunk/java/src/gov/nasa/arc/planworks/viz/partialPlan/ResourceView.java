@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.17 2004-07-27 21:58:11 taylor Exp $
+// $Id: ResourceView.java,v 1.18 2004-07-29 01:36:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -28,7 +28,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
@@ -40,7 +39,6 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResource;
-import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.SwingWorker;
@@ -160,7 +158,8 @@ public abstract class ResourceView extends PartialPlanView  {
    * @param vSet - <code>ViewSet</code> - 
    * @param viewName - <code>String</code> - 
    */
-  public ResourceView( final ViewableObject partialPlan, final ViewSet vSet, final String viewName) {
+  public ResourceView( final ViewableObject partialPlan, final ViewSet vSet,
+                       final String viewName) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
     this.viewName = viewName;
     resourceViewInit( vSet);
@@ -178,7 +177,7 @@ public abstract class ResourceView extends PartialPlanView  {
 
 
   /**
-   * <code>ResourceProfileView</code> - constructor 
+   * <code>ResourceView</code> - constructor 
    *
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param vSet - <code>ViewSet</code> - 
@@ -248,7 +247,7 @@ public abstract class ResourceView extends PartialPlanView  {
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
     // create panels/views after fontMetrics available
-  } // end resourceProfileViewInit
+  } // end resourceViewInit
 
   private void createLevelScaleAndExtentPanel() {
     LevelScalePanel levelScalePanel = new LevelScalePanel();
@@ -987,6 +986,8 @@ public abstract class ResourceView extends PartialPlanView  {
   public final int renderBordersUpper( final PwResource resource, final int xLeft,
                                        final int xRight, final int yLoc,
                                        final JGoDocument jGoDocument) {
+//     System.err.println( "renderBordersUpper: xLeft " + xLeft + " xRight " + xRight +
+//                         " yLoc " + yLoc + " jGoDocument " + jGoDocument);
     JGoStroke divider = new JGoStroke();
     divider.addPoint( xLeft, yLoc);
     divider.addPoint( xRight, yLoc);
@@ -1080,6 +1081,7 @@ public abstract class ResourceView extends PartialPlanView  {
     } // end getToolTipText
 
   } // end class ResourceLine
+
 
 } // end class ResourceView
  

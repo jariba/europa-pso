@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.9 2004-07-27 21:58:02 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.10 2004-07-29 01:36:36 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -95,7 +95,7 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( dupExcep);
         // dupExcep.printStackTrace();
-        progressMonitor.close();
+        isProgressMonitorCancel = true;
         isSequenceAdded = false;
       } 
       catch (ResourceNotFoundException rnfExcep) {
@@ -105,7 +105,7 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
         rnfExcep.printStackTrace();
-        progressMonitor.close();
+        isProgressMonitorCancel = true;
         isSequenceAdded = false;
       }
       catch (Exception e) {
@@ -113,7 +113,7 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
         e.printStackTrace();
-        progressMonitor.close();
+        isProgressMonitorCancel = true;
         isSequenceAdded = false;
       }
     }

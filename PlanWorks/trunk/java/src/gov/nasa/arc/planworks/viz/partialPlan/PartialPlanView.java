@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.48 2004-07-27 21:58:10 taylor Exp $
+// $Id: PartialPlanView.java,v 1.49 2004-07-29 01:36:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -49,7 +49,6 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-import gov.nasa.arc.planworks.util.ViewRenderingException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
@@ -453,14 +452,13 @@ public class PartialPlanView extends VizView {
                                                           pView.getViewName());
       MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),
                                                             partialPlanViewState);
-      try {
-        moveSequenceStepsViewHighlight( nextStep, pView.getViewName());
-      } catch (ViewRenderingException excp) {
-        System.err.println( excp);
-        int index = excp.getMessage().indexOf( ":");
-        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(),
-                                       excp.getMessage().substring( index + 1),
-                                       "Step Exception", JOptionPane.ERROR_MESSAGE);
+      boolean isMoveValid =moveSequenceStepsViewHighlight( nextStep, pView.getViewName());
+      if (! isMoveValid) {
+        String message = "sequence step element index not found";
+        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                       "Move Sequence Step Error",
+                                       JOptionPane.ERROR_MESSAGE);
+        System.err.println( "StepButtonListener: " + message);
       }
       try {
         nextViewFrame.setBounds(viewFrame.getBounds());
@@ -527,8 +525,8 @@ public class PartialPlanView extends VizView {
   } // end  class StepButtonListener 
 
 
-  private void moveSequenceStepsViewHighlight( PwPartialPlan nextStep, String viewName)
-    throws ViewRenderingException {
+  private boolean moveSequenceStepsViewHighlight( PwPartialPlan nextStep, String viewName) {
+    boolean isColorIndxFound = true;
     int currentStepNumber = getPartialPlan().getStepNumber();
     int nextStepNumber = nextStep.getStepNumber();
     System.err.println("Stepping " + viewName + " " + currentStepNumber + " -> " +
@@ -569,8 +567,7 @@ public class PartialPlanView extends VizView {
           stepTypeIndex = 2;
         }
         if (stepTypeIndex == -1) {
-          throw new ViewRenderingException( "moveSequenceStepsViewHighlight - stepElement" +
-                                            " color index not found");
+          return false;
         } 
       }
       List nextElementList =
@@ -579,6 +576,7 @@ public class PartialPlanView extends VizView {
       sequenceStepsView.getJGoView().getSelection().extendSelection( nextElement);
       sequenceStepsView.setSelectedStepElement( nextElement);
     }
+    return isColorIndxFound;
   } // end moveSequenceStepsViewHighlight
 
 

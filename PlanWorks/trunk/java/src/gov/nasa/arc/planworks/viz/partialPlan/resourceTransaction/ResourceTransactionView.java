@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.21 2004-07-27 21:58:14 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.22 2004-07-29 01:36:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -288,12 +288,14 @@ public class ResourceTransactionView extends ResourceView  {
       closeView( this);
       return;
     }
+    int horizonEnd = getTimeScaleEnd();
     int numResources = 0;
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
       ResourceTransactionSet resourceTransactionSet =
-        new ResourceTransactionSet( resource, ViewConstants.RESOURCE_TRANSACTION_BG_COLOR, this);
+        new ResourceTransactionSet( resource, horizonEnd,
+                                    ViewConstants.VIEW_BACKGROUND_COLOR, this);
       // System.err.println( "resourceTransactionSet " + resourceTransactionSet);
       this.getJGoExtentDocument().addObjectAtTail( resourceTransactionSet);
       resourceTransactionSetList.add( resourceTransactionSet);
@@ -307,7 +309,7 @@ public class ResourceTransactionView extends ResourceView  {
       numResources++;
       progressMonitor.setProgress( numResources * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-    progressMonitor.close();
+    isProgressMonitorCancel = true;
   } // end createResourceTransactionSets
 
 
