@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionTable.java,v 1.2 2004-05-25 23:12:47 taylor Exp $
+// $Id: DBTransactionTable.java,v 1.3 2004-05-25 23:42:55 taylor Exp $
 //
 // PlanWorks
 //
@@ -19,7 +19,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -441,9 +440,10 @@ public class DBTransactionTable extends JTable {
   } // end class TransactionCellRenderer
 
 
+  // handle Mouse-Right clicks for Step column cells
   class TableMouseAdapter extends MouseAdapter {
 
-    public void mouseClicked( MouseEvent mouseEvent) {
+    public final void mouseClicked( final MouseEvent mouseEvent) {
       if (MouseEventOSX.isMouseLeftClick( mouseEvent,
                                           PlanWorks.getPlanWorks().isMacOSX())) {
         //System.err.println( "mouseClicked left");
