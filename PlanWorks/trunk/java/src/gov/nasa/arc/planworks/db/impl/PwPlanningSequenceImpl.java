@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.53 2003-10-28 23:11:47 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.54 2003-10-29 00:11:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -478,7 +478,10 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     List retval = new ArrayList();
     ListIterator idIterator = ids.listIterator();
     while(idIterator.hasNext()) {
-      retval.add(transactions.get(idIterator.next()));
+      String id = (String) idIterator.next();
+      if(transactions.containsKey(id)) {
+        retval.add(transactions.get(id));
+      }
     }
     return retval;
   }
