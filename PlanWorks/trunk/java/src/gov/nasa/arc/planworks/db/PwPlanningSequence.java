@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.33 2004-05-21 22:23:25 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.34 2004-05-21 22:30:30 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -166,7 +166,7 @@ public interface PwPlanningSequence extends ViewableObject {
   
   // end extend ViewableObject
 
-	public List getOpenDecisionsForStep(final int stepnum) throws ResourceNotFoundTransaction;
+	public List getOpenDecisionsForStep(final int stepnum) throws ResourceNotFoundException;
 
   /**
    * <code>getTransactionsForConstraint</code>
