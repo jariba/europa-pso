@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.14 2003-09-18 20:48:42 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.15 2003-09-19 01:47:32 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -951,6 +951,7 @@ public class PlanWorksTest extends JFCTestCase{
         timelineNodeCnt++;
       }
     }
+
     assertTrue("Content spec not specing correctly: Too many timeline nodes.",
                timelineNodeCnt == 1);
     TimelineNode timeline = (TimelineNode) timelineNodes.toArray()[0];
@@ -969,6 +970,7 @@ public class PlanWorksTest extends JFCTestCase{
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     Thread.sleep(2000);
     timelineNodeCnt = 0;
+    timelineNodes = timelineView.getTimelineNodeList();
     List visibleTimelines = new ArrayList();
     for (int i = 0; i < timelineNodes.size(); i++) {
       if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
@@ -1041,6 +1043,7 @@ public class PlanWorksTest extends JFCTestCase{
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     Thread.sleep(2000);
     timelineNodeCnt = 0;
+    timelineNodes = timelineView.getTimelineNodeList();
     for(int i = 0; i < timelineNodes.size(); i++) {
       if(((TimelineNode)timelineNodes.get(i)).isVisible()) {
         System.err.println("TIMELINE " + ((TimelineNode)timelineNodes.get(i)).getTimelineName() +
@@ -1048,7 +1051,7 @@ public class PlanWorksTest extends JFCTestCase{
         timelineNodeCnt++;
       }
     }
-    assertTrue("Content spec not speccing correctly.  Incorrect number of timeline nodes: " +
+    assertTrue("Content spec not specing correctly.  Incorrect number of timeline nodes: " +
                timelineNodeCnt, timelineNodeCnt == 1);
     timeline = (TimelineNode) timelineNodes.toArray()[0];
     assertTrue("Content spec specified incorrect timeline.", 
@@ -1063,6 +1066,7 @@ public class PlanWorksTest extends JFCTestCase{
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     Thread.sleep(2000);
     timelineNodeCnt = 0;
+    timelineNodes = timelineView.getTimelineNodeList();
     for(int i = 0; i < timelineNodes.size(); i++) {
       if(((TimelineNode) timelineNodes.get(i)).isVisible()) {
         timelineNodeCnt++;
@@ -1123,6 +1127,7 @@ public class PlanWorksTest extends JFCTestCase{
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     Thread.sleep(2000);
     timelineNodeCnt = 0;
+    timelineNodes = timelineView.getTimelineNodeList();
     for (int i = 0; i < timelineNodes.size(); i++) {
       if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
         timelineNodeCnt++;
@@ -1180,6 +1185,7 @@ public class PlanWorksTest extends JFCTestCase{
     TemporalExtentView temporalExtentView = getTemporalExtentView( seqAndPlanNames);
     seqAndPlanNames = selectView( "Constraint Network");
     ConstraintNetworkView constraintNetworkView = getConstraintNetworkView( seqAndPlanNames);
+    Thread.sleep( 1000);
     validateMonkeyConstraintsOpen( constraintNetworkView);
 
     Container contentPane = frame.getContentPane();

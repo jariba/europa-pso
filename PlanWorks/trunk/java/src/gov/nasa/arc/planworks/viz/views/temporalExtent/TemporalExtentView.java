@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.19 2003-09-18 20:48:48 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.20 2003-09-19 01:47:32 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -245,6 +245,8 @@ public class TemporalExtentView extends VizView  {
 
     validTokenIds = viewSet.getValidTokenIds();
     displayedTokenIds = new ArrayList();
+    temporalNodeList = null;
+    tmpTemporalNodeList = new ArrayList();
 
     createTemporalNodes();
 
@@ -562,8 +564,6 @@ public class TemporalExtentView extends VizView  {
 
 
   private void createTemporalNodes() {
-    temporalNodeList = new ArrayList();
-    tmpTemporalNodeList = new ArrayList();
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
     int timelineCnt = 0;
