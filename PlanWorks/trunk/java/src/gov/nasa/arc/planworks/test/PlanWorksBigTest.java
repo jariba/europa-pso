@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksBigTest.java,v 1.1 2003-08-28 20:46:55 miatauro Exp $
+// $Id: PlanWorksBigTest.java,v 1.2 2003-09-02 21:53:17 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -19,6 +19,7 @@ import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -40,6 +41,7 @@ import junit.textui.TestRunner;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
@@ -149,13 +151,20 @@ public class PlanWorksBigTest extends JFCTestCase {
     boolean first = true;
     JMenuItem addSeqItem = null;
     for(int i = 0; i < projectMenu.getItemCount(); i++) {
-      if(projectMenu.getItem(i) != null && 
-         ((JMenuItem)projectMenu.getItem(i)).getText().equals("Add Sequence ...")) {
+      if(projectMenu.getItem(i) != null && projectMenu.getItem(i).getText().equals("Add Sequence ...")) {
         addSeqItem = (JMenuItem) projectMenu.getItem(i);
       }
     }
     assertNotNull("Failed to get 'Add Sequence' menu item.", addSeqItem);
+    JMenuItem delSeqItem = null;
+    for(int i = 0; i < projectMenu.getItemCount(); i++) {
+      if(projectMenu.getItem(i) != null && projectMenu.getItem(i).getText().equals("Delete Sequence ...")) {
+        delSeqItem = projectMenu.getItem(i);
+      }
+    }
+    assertNotNull("Failed to get 'Delete Sequence' menu item.", delSeqItem);
     while(seqIterator.hasNext()) {
+      String seqUrl = (String) seqIterator.next();
       if(!first) {
         while(!projectMenu.isEnabled()) {
           try {
@@ -183,10 +192,173 @@ public class PlanWorksBigTest extends JFCTestCase {
       while(fileChooser == null);
       JButton okButton = null;
       okButton = (JButton) TestHelper.findComponent(JButton.class, fileChooser, 4);
-      fileChooser.setCurrentDirectory(new File((String) seqIterator.next()));
+      fileChooser.setCurrentDirectory(new File(seqUrl));
       helper.enterClickAndLeave(new MouseEventData(this, okButton));
       first = false;
+      viewTests(seqUrl);
+      do {
+        Thread.sleep(50);
+      }
+      while(!projectMenu.isEnabled());
+      helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
+      while(!delSeqItem.isEnabled()) {
+        try {
+          Thread.sleep(50);
+        }
+        catch(Exception e){}
+      }
+      helper.enterClickAndLeave(new MouseEventData(this, delSeqItem));
+      do {
+        Thread.sleep(50);
+      }
+      while(helper.getShowingDialogs().size() == 0);
+      JDialog delDialog = (JDialog) helper.getShowingDialogs().get(0);
+      okButton = (JButton) TestHelper.findComponent(JButton.class, delDialog, 1);
+      helper.enterClickAndLeave(new MouseEventData(this, okButton));
     }
+  }
+
+  private void viewTests(String url) throws Exception {
+    PwProject proj = null;
+    do {
+      Thread.sleep(50);
+    }
+    while((proj = planWorks.getCurrentProject()) == null || proj.listPlanningSequences().size() != 1);
+    assertNotNull("Odd... project is null", proj);
+    boolean seqIsDone = false;
+    PwPlanningSequence seq = null;
+    while(!seqIsDone && seq == null) {
+      try {
+        seq = proj.getPlanningSequence(url);
+      }
+      catch(Exception e) {
+        Thread.sleep(50);
+      }
+      seqIsDone = true;
+    }
+    assertNotNull("Failed to get planning sequence " + url, seq);
+    ListIterator ppNameIterator = seq.listPartialPlanNames().listIterator();
+    while(ppNameIterator.hasNext()) {
+      PwPartialPlan plan = seq.getPartialPlan((String)ppNameIterator.next());
+      ViewManager viewManager = null;
+      do {
+        Thread.sleep(50);
+      }
+      while((viewManager = planWorks.getViewManager()) == null);
+      assertNotNull("Failed to get view manager.", viewManager);
+      MDIInternalFrame timelineViewFrame = viewManager.openTimelineView(plan, plan.getUrl(), 0);
+      assertNotNull("Failed to open timeline view", timelineViewFrame);
+      MDIInternalFrame temporalExtentViewFrame = viewManager.openTemporalExtentView(plan, plan.getUrl(), 0);
+      assertNotNull("Failed to open temporal extent view", temporalExtentViewFrame);
+      MDIInternalFrame tokenNetworkViewFrame = viewManager.openTokenNetworkView(plan, plan.getUrl(), 0);
+      assertNotNull("Failed to open token network view", tokenNetworkViewFrame);
+      MDIInternalFrame constraintNetworkViewFrame = viewManager.openConstraintNetworkView(plan, 
+                                                                                          plan.getUrl(),
+                                                                                          0);
+      assertNotNull("Failed to open constraint network view", constraintNetworkViewFrame);
+      timelineViewTest(timelineViewFrame);
+      temporalExtentViewTest(temporalExtentViewFrame);
+      tokenNetworkViewTest(tokenNetworkViewFrame);
+      constraintNetworkViewTest(constraintNetworkViewFrame);
+      /*openTemporalNetworkView();
+        temporalNetworkViewTest();*/
+    }
+  }
+
+  private void timelineViewTest(MDIInternalFrame frame) throws Exception {
+    Container contentPane = frame.getContentPane();
+    TimelineView view = null;
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof TimelineView) {
+        view = (TimelineView) contentPane.getComponent(i);
+      }
+    }
+    assertNotNull("Failed to get TimelineView object.", view);
+    do {
+      Thread.sleep(50);
+    }
+    while(view.getTimelineNodeList() == null);
+    assertTrue("Timeline view with no timelines...", view.getTimelineNodeList().size() > 0);
+    ListIterator timelineNodeIterator = view.getTimelineNodeList().listIterator();
+    while(timelineNodeIterator.hasNext()) {
+      TimelineNode timelineNode = (TimelineNode) timelineNodeIterator.next();
+      assertTrue("Timeline with no slots!", timelineNode.getSlotNodeList().size() > 0);
+      boolean lastWasEmpty = false;
+      ListIterator slotNodeIterator = timelineNode.getSlotNodeList().listIterator();
+      while(slotNodeIterator.hasNext()) {
+        SlotNode slotNode = (SlotNode) slotNodeIterator.next();
+        assertTrue("Two consecutive empty slots!", 
+                   !lastWasEmpty || (slotNode.getSlot().getTokenList().size() != 0));
+        lastWasEmpty = slotNode.getSlot().getTokenList().size() == 0;
+      }
+    }
+  }
+
+  private void temporalExtentViewTest(MDIInternalFrame frame) throws Exception {
+    Container contentPane = frame.getContentPane();
+    TemporalExtentView view = null;
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof TemporalExtentView) {
+        view = (TemporalExtentView) contentPane.getComponent(i);
+      }
+    }
+    assertNotNull("Failed to get TemporalExtentView object.", view);
+    do {
+      Thread.sleep(50);
+    }
+    while(view.getTemporalNodeList() == null);
+    int min = view.scaleTime(view.getTimeScaleStart());
+    int max = view.scaleTime(view.getTimeScaleEnd());
+    List temporalNodes = view.getTemporalNodeList();
+    ListIterator temporalNodeIterator = temporalNodes.listIterator();
+    while(temporalNodeIterator.hasNext()) {
+      TemporalNode temporalNode = (TemporalNode) temporalNodeIterator.next();
+      assertTrue("Temporal node off of timescale.", temporalNode.getStart() >= min);
+      assertTrue("Temporal node off of timescale.", temporalNode.getEnd() <= max);
+    }
+    for(int i = 0; i < temporalNodes.size(); i++) {
+      TemporalNode a = (TemporalNode) temporalNodes.get(i);
+      for(int j = i+1; j < temporalNodes.size(); j++) {
+        TemporalNode b = (TemporalNode) temporalNodes.get(j);
+        if(b.getRow() == a.getRow()) {
+          assertTrue("Overlapping temporal nodes.",
+                     (a.getStart() < b.getStart() && a.getEnd() < b.getEnd()) ||
+                     (a.getStart() > b.getStart() && a.getEnd() > b.getEnd()));
+        }
+      }
+    }
+  }
+
+  private void tokenNetworkViewTest(MDIInternalFrame frame) throws Exception {
+    Container contentPane = frame.getContentPane();
+    TokenNetworkView view = null;
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof TokenNetworkView) {
+        view = (TokenNetworkView) contentPane.getComponent(i);
+      }
+    }
+    assertNotNull("Failed to get TokenNetworkView object.", view);
+    do {
+      Thread.sleep(50);
+    }
+    while(view.getNodeList() == null);
+    assertTrue("Token network view with no tokens...", view.getNodeList().size() > 0);
+    ListIterator linkIterator = view.getLinkList().listIterator();
+    while(linkIterator.hasNext()) {
+      TokenLink link = (TokenLink) linkIterator.next();
+      assertTrue("Free token with slaves!", !link.getFromTokenNode().isFreeToken());
+    }
+  }
+
+  private void constraintNetworkViewTest(MDIInternalFrame frame) throws Exception {
+    Container contentPane = frame.getContentPane();
+    ConstraintNetworkView view = null;
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof ConstraintNetworkView) {
+        view = (ConstraintNetworkView) contentPane.getComponent(i);
+      }
+    }
+    assertNotNull("Failed to get ConstraintNetworkView object.", view);
   }
 
   private List findSequenceDirectories(File dir) {
