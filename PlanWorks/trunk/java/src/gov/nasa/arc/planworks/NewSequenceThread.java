@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.11 2004-09-21 01:07:04 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.12 2004-09-28 23:57:40 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -23,6 +23,7 @@ import gov.nasa.arc.planworks.util.ConfigureNewSequenceDialog;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.PlannerController;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.TransactionTypesDialog;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
@@ -104,6 +105,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
          "Planner Initialization Exception", JOptionPane.ERROR_MESSAGE);
       return null;
     }
+
+    getTransactionTypeStates();
 
     String seqUrl = PlannerControlJNI.getDestinationPath();
     return seqUrl;
@@ -238,6 +241,43 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     ConfigureAndPlugins.updateProjectConfigMap( currentProject.getName(), nameValueList);
   } // end setConfigureParameters
 
+  private void getTransactionTypeStates() {
+    String [] transactionTypes;
+    int[] transactionTypeStates; // i = enabled; 0 = disabled
+    try {
+      transactionTypes = PlannerControlJNI.getTransactionTypes();
+//     for (int i = 0, n = transactionTypes.length; i < n; i++) {
+//       String transType = (String) transactionTypes[i];
+//       System.err.println( "transType i=" + i + " " + transType);
+//     }
+      transactionTypeStates = PlannerControlJNI.getTransactionTypeStates();
+//     for (int i = 0, n = transactionTypeStates.length; i < n; i++) {
+//       int transTypeState = (int) transactionTypeStates[i];
+//       System.err.println( "transTypeState i=" + i + " " + transTypeState);
+//     }
+    } catch (UnsatisfiedLinkError ule) {
+      JOptionPane.showMessageDialog
+        (PlanWorks.getPlanWorks(), "JNI method '" + ule.getMessage() + "' has not been loaded",
+         "Planner Loading Error", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    if (transactionTypes.length != transactionTypeStates.length) {
+      System.err.println( "ConfigureNewSequenceDialog: num transactionTypes (" +
+                          transactionTypes.length + ") is != num transactionTypeStates (" +
+                          transactionTypeStates.length + ") from PlannerControlJNI");
+      System.exit( -1);
+    }
+    TransactionTypesDialog transactionTypesDialog =
+      new TransactionTypesDialog( PlanWorks.getPlanWorks(), transactionTypes,
+                                  transactionTypeStates);
+    int[] transStates = transactionTypesDialog.getTransactionTypeStates();
+    if (transStates == null) {
+      // user chose cancel
+      return;
+    } else {
+      PlannerControlJNI.setTransactionTypeStates( transStates);
 
+    }
+  } // end getTransactionTypeStates
 
 } // end class NewSequenceThread
