@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.1 2003-10-01 23:54:01 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.2 2003-10-08 01:30:24 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -51,6 +52,7 @@ public class ContentSpecWindow extends JPanel {
   protected TimelineGroupBox timelineGroup;
   protected MergeBox mergeBox;
   protected TokenTypeBox tokenTypeBox;
+  protected UniqueKeyGroupBox uniqueKeyGroup;
   //protected VariableTypeGroupBox variableTypeGroup;
   //private McLaughlanGroupBox mcLaughlanGroup
 
@@ -113,6 +115,11 @@ public class ContentSpecWindow extends JPanel {
     gridBag.setConstraints(tokenTypeBox, c);
     add(tokenTypeBox);
 
+    uniqueKeyGroup = new UniqueKeyGroupBox(window);
+    c.gridy++;
+    gridBag.setConstraints(uniqueKeyGroup, c);
+    add(uniqueKeyGroup);
+
     /*variableTypeGroup = new VariableTypeGroupBox(window);
     c.gridx++;
     c.gridy++;
@@ -156,6 +163,7 @@ public class ContentSpecWindow extends JPanel {
     List timeIntervals = (List) currentSpec.get(2);
     boolean mergeTokens = ((Boolean)currentSpec.get(3)).booleanValue();
     int tokenTypes = ((Integer)currentSpec.get(4)).intValue();
+    List uniqueKeys = (List) currentSpec.get(5);
 
     for(int i = 0; i < mergeBox.getComponentCount(); i++) {
       if(mergeBox.getComponent(i) instanceof JCheckBox) {
@@ -287,6 +295,35 @@ public class ContentSpecWindow extends JPanel {
         }
       }
     }
+    if(uniqueKeys != null && uniqueKeys.size() != 0) {
+      for(int i = 0; i < uniqueKeys.size(); i += 2) {
+        List uniqueKeyBoxes = uniqueKeyGroup.getElements();
+        String op = (String) uniqueKeys.get(i);
+        Integer key = (Integer) uniqueKeys.get(i+1);
+        ListIterator uniqueKeyIterator = uniqueKeyBoxes.listIterator();
+        while(uniqueKeyIterator.hasNext()) {
+          UniqueKeyBox box = (UniqueKeyBox) uniqueKeyIterator.next();
+          if(!box.getKeyField().isEnabled()) {
+            if(op.equals(PartialPlanContentSpec.REQUIRE)) {
+              box.getRequireButton().setSelected(true);
+            }
+            else if(op.equals(PartialPlanContentSpec.EXCLUDE)) {
+              box.getExcludeButton().setSelected(true);
+            }
+            else {
+              System.err.println("Invalid unique key op: " + op);
+              System.exit(-1);
+            }
+            box.getKeyField().setEnabled(true);
+            box.getKeyField().setText(key.toString());
+            if(i != uniqueKeys.size() - 2) {
+              box.getAddButton().doClick();
+            }
+            //box.getAddButton().fireActionPerformed(new ActionEvent(null, 0, ""));
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -302,7 +339,7 @@ public class ContentSpecWindow extends JPanel {
     public void actionPerformed(ActionEvent ae) {
       if(ae.getActionCommand().equals("Apply Spec")) {
         StringBuffer output = new StringBuffer();
-        List /*constraint, */timeInterval, /*variableType, */predicate, timeline;
+        List /*constraint, */timeInterval, /*variableType, */predicate, timeline, uniqueKeys;
         boolean mergeTokens;
         int tokenType;
         try {
@@ -313,6 +350,7 @@ public class ContentSpecWindow extends JPanel {
           timeline = specWindow.timelineGroup.getValues();
           mergeTokens = specWindow.mergeBox.getValue();
           tokenType = specWindow.tokenTypeBox.getValue();
+          uniqueKeys = specWindow.uniqueKeyGroup.getValues();
         }
         catch(IllegalArgumentException e){return;}
         //if they're all null, put up a dialog
@@ -370,8 +408,15 @@ public class ContentSpecWindow extends JPanel {
             output.append(timelineIterator.next()).append(" ");
           }
         }
-        output.append(" merge ").append(mergeTokens);
-        output.append(" type ").append(tokenType);
+        output.append("\nmerge ").append(mergeTokens);
+        output.append("\ntype ").append(tokenType);
+        output.append("Unique keys: ");
+        if(uniqueKeys == null) {
+          output.append(" null");
+        }
+        else {
+          output.append(uniqueKeys.toString());
+        }
         output.append("\n");
         System.err.println(output.toString());
         //timeline, predicate, constraint, variableType, timeInterval
@@ -383,6 +428,7 @@ public class ContentSpecWindow extends JPanel {
           specList.add( timeInterval);
           specList.add( new Boolean( mergeTokens));
           specList.add( new Integer( tokenType));
+          specList.add(uniqueKeys);
           specWindow.contentSpec.applySpec(specList);
         }
         catch(Exception e){
@@ -402,6 +448,7 @@ public class ContentSpecWindow extends JPanel {
         specWindow.timelineGroup.reset();
         specWindow.mergeBox.reset();
         specWindow.tokenTypeBox.reset();
+        specWindow.uniqueKeyGroup.reset();
       }
     }
   }
