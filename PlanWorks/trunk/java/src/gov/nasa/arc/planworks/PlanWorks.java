@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.12 2003-06-19 00:31:19 taylor Exp $
+// $Id: PlanWorks.java,v 1.13 2003-06-19 17:31:17 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -401,11 +401,15 @@ public class PlanWorks extends MDIDesktopFrame {
     if (response instanceof String) {
       for (int i = 0, n = options.length; i < n; i++) {
         if (((String) options[i]).equals( response)) {
-          currentProjectUrl = (String) urlsLessCurrent.get( i);
-          System.err.println( "Open Project: " + currentProjectUrl);
+          String projectUrl = (String) urlsLessCurrent.get( i);
           try {
-            project = PwProject.getProject( currentProjectUrl);
+            project = PwProject.getProject( projectUrl);
+            currentProjectUrl = projectUrl;
+            System.err.println( "Open Project: " + currentProjectUrl);
             this.setTitle( name + "  --  project: " + currentProjectUrl);
+            if (getUrlsLessCurrent().size() == 0) {
+              setProjectMenuEnabled( "Open ...", false);
+            }
           } catch (ResourceNotFoundException rnfExcep) {
             // System.err.println( "Project " + projectName + " not found: " + rnfExcep1);
             int index = rnfExcep.getMessage().indexOf( ":");
