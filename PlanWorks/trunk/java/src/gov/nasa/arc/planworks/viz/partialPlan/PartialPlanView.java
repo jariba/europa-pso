@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.45 2004-07-08 21:33:23 taylor Exp $
+// $Id: PartialPlanView.java,v 1.46 2004-07-13 23:54:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -586,27 +586,29 @@ public class PartialPlanView extends VizView {
       this.forward = forward;
     }
     public void adjustmentValueChanged(AdjustmentEvent evt) {
-      Rectangle viewRect = view.getViewRect();
-      //view.getSelection().clearSelection();
-      back.setLocation((int)(viewRect.getX() + back.getSize().getWidth()),
-                       (int)(viewRect.getY() + viewRect.getHeight() -
-                             back.getSize().getHeight()));
-      forward.setLocation((int)(back.getLocation().getX() + back.getWidth()),
-                          (int)(back.getLocation().getY()));
-      //       System.err.println( "adjustmentValueChanged " +
-      //                           ((JScrollBar) evt.getSource()).getOrientation());
-      // ResourceProfileView & ResourceTransactionView have two vertical
-      // scroll bars to keep at equal length
-      boolean isRedraw = false, isScrollBarAdjustment = true;
-      if ((((JScrollBar) evt.getSource()).getOrientation() == SwingConstants.VERTICAL) &&
-          (! ((JScrollBar) evt.getSource()).getValueIsAdjusting()) &&
-          (PartialPlanView.this instanceof ResourceView)) {
-        // System.err.println( "adjustmentValueChanged  call equalize");
-        ((ResourceView) PartialPlanView.this).equalizeViewWidthsAndHeights
-          ( (int) (viewRect.getY() + viewRect.getHeight()), isRedraw, isScrollBarAdjustment);
+      if ((back != null) && (forward != null)) {
+        Rectangle viewRect = view.getViewRect();
+        //view.getSelection().clearSelection();
+        back.setLocation((int)(viewRect.getX() + back.getSize().getWidth()),
+                         (int)(viewRect.getY() + viewRect.getHeight() -
+                               back.getSize().getHeight()));
+        forward.setLocation((int)(back.getLocation().getX() + back.getWidth()),
+                            (int)(back.getLocation().getY()));
+        //       System.err.println( "adjustmentValueChanged " +
+        //                           ((JScrollBar) evt.getSource()).getOrientation());
+        // ResourceProfileView & ResourceTransactionView have two vertical
+        // scroll bars to keep at equal length
+        boolean isRedraw = false, isScrollBarAdjustment = true;
+        if ((((JScrollBar) evt.getSource()).getOrientation() == SwingConstants.VERTICAL) &&
+            (! ((JScrollBar) evt.getSource()).getValueIsAdjusting()) &&
+            (PartialPlanView.this instanceof ResourceView)) {
+          // System.err.println( "adjustmentValueChanged  call equalize");
+          ((ResourceView) PartialPlanView.this).equalizeViewWidthsAndHeights
+            ( (int) (viewRect.getY() + viewRect.getHeight()), isRedraw, isScrollBarAdjustment);
+        }
       }
     }
-  }
+  } // class ButtonAdjustmentListener
 
   class ButtonViewListener implements JGoViewListener {
     private JGoView view;

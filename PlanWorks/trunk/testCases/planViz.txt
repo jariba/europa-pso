@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.51 2004-07-08 21:33:27 taylor Exp $
+// $Id: planViz.txt,v 1.52 2004-07-13 23:54:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -486,8 +486,8 @@ partial plan views.
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. The "test1" project is open, and all partial plan views, except
-     DBTransaction View, are being displayed for step<nn> in a "tiled" layout 
+  2. The "test1" project is open, and all partial plan views, except DBTransaction
+     and Decision views, are being displayed for step<nn> in a "tiled" layout 
      arrangement.  Create overview windows for each partial plan view to
      aid to monitoring the effects of Content Filter application.
   3. The Constraint Network View has been expanded for at least two tokens,
@@ -512,8 +512,8 @@ Method:
  12. Check "Merge tokens".  Apply it.
  13. Check "View slotted" or "View free tokens".  Apply it.
  14. Reset the filter.
- 15. Check "NOT" for selected Timeline.  Check "require" and enter a 
-     token key, select "Add" and "require another token key -- assuming
+ 15. Check "NOT" for a selected Timeline.  Check "require" and enter a 
+     token key, select "Add" and "require" another token key -- assuming
      that these keys are in the selected timeline.  Apply it.
  16. Select "Remove" for the second required key, and change "require"
      to "exclude" for the first key.  Uncheck the "NOT" for the

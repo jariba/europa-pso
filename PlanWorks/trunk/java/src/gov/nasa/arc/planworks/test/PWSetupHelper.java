@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.14 2004-07-13 21:33:55 pdaley Exp $
+// $Id: PWSetupHelper.java,v 1.15 2004-07-13 23:54:07 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -74,6 +74,7 @@ public abstract class PWSetupHelper {
   public static final int NUM_VARS_PER_RESOURCE_TRANS = 5;
   public static final int NUM_VARS_PER_RULE_INSTANCE = 2;
   public static final int NUM_CONSTRAINTS_PER_TOKEN = 1;
+  public static final int NUM_CONSTRAINTS_PER_RESOURCE = 0;
   public static final int NUM_INSTANTS_PER_RESOURCE = 1;
 
   private static List decisionsForStep;

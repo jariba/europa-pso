@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MergeBox.java,v 1.1 2003-10-01 23:54:01 taylor Exp $
+// $Id: MergeBox.java,v 1.2 2004-07-13 23:54:09 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -28,10 +28,16 @@ public class MergeBox extends JPanel {
     gridBag.setConstraints(merge, c);
     add(merge);
   }
+
   public boolean getValue() {
     return merge.isSelected();
   }
+
   public void reset() {
     merge.setSelected(false);
+  }
+
+  public JCheckBox getMergeCheckBox() {
+    return merge;
   }
 }
