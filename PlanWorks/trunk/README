@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.11 2003-07-09 23:52:48 taylor Exp $
+# $Id: README,v 1.12 2003-07-11 00:02:30 taylor Exp $
 #
 
 SUMMARY
@@ -50,15 +50,17 @@ CVS.  Just follow the instructions below.  If you're running Linux, you'll
 have to go download the MySQL binary release for your system
 (http://www.mysql.com/downloads/mysql-4.0.html), un[zip|tar] it, and copy
 the "mysql", "mysqld", and "mysqladmin" executables from the
-mysql-bin-install/bin directory into PlanWorks/lib/mysql/bin, then follow
+bin directory into PlanWorks/lib/mysql/bin, then follow
 the instructions below.  If you're on any other system, the above advice
 still holds, but you're on your own beyond that.
+
+> cd PlanWorks
 
 > ant planWorksDbInstall #this sets up the database and must be run before
 			 #anything else
 
-> ant # default is to run the current general test case with
-      # compilation of all PlanWorks Java source as a dependency.
+> ant # default is to run the application with compilation of all PlanWorks
+      # Java source as a dependency.
 
 > ant -projecthelp # lists available targets
 
@@ -74,11 +76,15 @@ Default target: planWorks
 
 PREVIOUS MILESTONES
 ===================
-Milestone 2 integrates the Multiple Document Interface (MDI) for window
+19june03: Milestone 2 integrates the Multiple Document Interface (MDI) for window
 management, project management (creating, saving, opening and deleting),
 the plan generator, and the Content Specification functionality for 
 filtering partial plan rendering in the user selected views, which is 
 currently restricted to the Timeline View.
+
+27may03: Milestone 1 includes basic Timeline View, basic eXist XPATH DB
+implementation, ant build/startup script, and basic JFCUnit test of 
+Timeline View with major deficiencies.
 
 
 DEVELOPING PLANWORKS

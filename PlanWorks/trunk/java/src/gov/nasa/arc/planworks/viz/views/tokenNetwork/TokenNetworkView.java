@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.6 2003-07-09 23:14:38 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.7 2003-07-11 00:02:31 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.viz.nodes.TokenLink;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
+
 
 /**
  * <code>TokenNetworkView</code> - render a partial plan's tokens, their
@@ -421,12 +422,12 @@ public class TokenNetworkView extends VizView {
 
 
   private void setNodesVisible() {
-    List validTokenIds = viewSet.getValidTokenIds();
-    int numNodes = nodeList.size();
+    validTokenIds = viewSet.getValidTokenIds();
+    displayedTokenIds = new ArrayList();
     Iterator tokenNodeIterator = nodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-      if (isTokenInContentSpec( tokenNode.getToken(), validTokenIds)) {
+      if (isTokenInContentSpec( tokenNode.getToken())) {
         tokenNode.setVisible( true);
       } else {
         tokenNode.setVisible( false);
@@ -435,13 +436,15 @@ public class TokenNetworkView extends VizView {
     Iterator tokenLinkIterator = linkList.iterator();
     while (tokenLinkIterator.hasNext()) {
       TokenLink tokenLink = (TokenLink) tokenLinkIterator.next();
-      if (isTokenInContentSpec( tokenLink.getFromToken(), validTokenIds) &&
-          isTokenInContentSpec( tokenLink.getToToken(), validTokenIds)) {
+      if (isTokenInContentSpec( tokenLink.getFromToken()) &&
+          isTokenInContentSpec( tokenLink.getToToken())) {
         tokenLink.setVisible( true);
       } else {
         tokenLink.setVisible( false);
       }
     }
+    boolean showDialog = true;
+    isContentSpecRendered( "Token Network View", showDialog);
   } // end setNodesVisible
 
 
