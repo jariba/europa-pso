@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: ViewManager.java,v 1.2 2003-06-10 20:34:38 miatauro Exp $
+//
 package gov.nasa.arc.planworks.viz.viewMgr;
 
 import java.util.HashMap;
@@ -32,5 +40,8 @@ public class ViewManager implements ViewSetRemover {
   */
   public void removeViewSet(PwPartialPlan key) {
     viewSets.remove(key);
+  }
+  public void clearViewSets() {
+    viewSets.clear();
   }
 }
