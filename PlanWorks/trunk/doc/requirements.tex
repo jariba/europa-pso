@@ -21,15 +21,33 @@ This document outlines the requirements to be addressed in FY2003, the first yea
 
 \section{New Domain Description Language (NDDL)}
 \begin{enumerate}
-\item A domain description language must be provided that is at least functionally equivalent to the current DDL. 
+\item A domain description language must be provided that subsumes the functionality of DDL.
+\item In addition to parity with DDL, it must be possible to:
+\begin{enumerate}
+\item define variables whose values are constant throughout planning. Such variables shall be referred to as Constants.
+\item define Constants outside the scope of a Predicate or Timeline. Such constants are Global.
+\item define Constants at the level of a Timeline/Class.
+\item reference all Constants within the model.
+\item specify initial values for such variables in the model.
+\item specify the initial values for Constants as part of the problem definition. This definition will over-ride any definition provided in the model.
+\item define a class that may or may not have predicates associated with it. A class with predicates is said to be a Timeline.
+\itme define a class which composes 0 or more classes.
+\item define a class which inherits from 0 or 1 other class.
+\item define references to classes within a compatibility. In defining such a reference, the part-of relationships may be traveresed upwards or downwards from the class of fthe compatibility.
+\item reference constants within a compatibility. In defining such a reference, the part-of relation may be used to access constants defined for classes.
+\item define references to variables within a compatibility without reuiring that variable to be defined in the compatibility head.
+\item define references for sub-goals within a compatibility. Such a reference may bu sed in further temporal relations of the compatibility. 
+\item create composite objects during instantiation by explicit use of constructors with arguments.
+\item define references to sub-goals within a compatibility, and pass these references in other temporal relations.
+\end{enumerate}
 \item A translator must be provided to translate DDL to NDDL without changing the semantics of the model.
 \item A parser must be provided to parse and validate models written in NDDL.
 \item A model loader must be provided to ingest NDDL into the EUROPA Model Manager.
-\item The existing EUROPA initial state language must continue to be supported when using onl DDL equivalent functionality of NDDL.
+\item The existing EUROPA initial state language must continue to be supported when using only DDL equivalent functionality of NDDL.
 \item An initial state description langauge must be provided that has the full power of NDDL.
 \item A loader must be provided to ingest problem definitions written in the new problem definition language.
 \item Exisitng initial state descriptions for DDL models must be translated into the new state description language.
-\item A users guide must be provided to explain the feautures of NDDL and the Initial State language. 
+\item A users guide must be provided to explain the feautures of NDDL and the Initial State language.
 \end{enumerate}
 
 \section{Application Framework}
@@ -51,7 +69,7 @@ This document outlines the requirements to be addressed in FY2003, the first yea
 \item The name of the project. 
 \item Any location or connection information for the Repository to be used for the Project.
 \end{enumerate}
-\item The system shall allow storage of an tool specific data required for this project.
+\item The system shall allow storage of any tool specific data required for this project.
 \item The system shall allow visualization of project data.
 \item The system shall allow all Tools to be started and controlled from the Project.
 \item The system shall prohibit use of any Tools unless a Project is open.
@@ -87,6 +105,8 @@ This document outlines the requirements to be addressed in FY2003, the first yea
 \end{enumerate}
 
 \section{Plan Visualization}
+PlanViz is a tool to explore and visualize Partial Plans. This section describes what methods of visualization and exploration are to be supported and how PlanViz integrates to the rest of PlanWorks.
+\subsection{From Projects to Partial plans}
 \begin{enumerate}
 \item A Project shall contain 0 or more named planning sequences.
 \item A Planning Sequence shall contain 1 or more Steps.
@@ -147,7 +167,7 @@ This document outlines the requirements to be addressed in FY2003, the first yea
 \item Token
 \end{enumerate}
 \item No two instances of the same view may be open if they share the same content specification. For now this means we are restricting ourselves to at most one instance of each view at once.
-\item Barring other restrictions alread defined, it msut be possible to open multiple views of the same partial plan at once.
+\item Barring other restrictions alread defined, it must be possible to open multiple views of the same partial plan at once.
 \item The user must be able to open, close, re-size and position all views.
 \item Changes to the Content Specification of a View take affect as soon as they are applied by the user.
 \end{enumerate}
