@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.1 2004-09-03 00:35:38 taylor Exp $
+// $Id: ConfigureProjectDialog.java,v 1.2 2004-09-10 01:33:58 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -101,6 +101,7 @@ public class ConfigureProjectDialog extends JDialog {
     // current values
     try {
       String currentProjectName = planWorks.getCurrentProjectName();
+      projectName = currentProjectName;
       projectNameField.setText( currentProjectName);
       projectNameField.setEnabled( false);
       workingDir = new File( ConfigureAndPlugins.getProjectConfigValue
@@ -252,8 +253,7 @@ public class ConfigureProjectDialog extends JDialog {
       int returnVal = dirChooser.showDialog( PlanWorks.getPlanWorks(), "");
       if (returnVal == JFileChooser.APPROVE_OPTION) {
         String currentSelectedDir = dirChooser.getCurrentDirectory().getAbsolutePath();
-        workingDir = currentSelectedDir;
-        workingDirField.setText( workingDir);
+        workingDirField.setText( currentSelectedDir);
       }
     }
   } // end class WorkingDirButtonListener
@@ -268,9 +268,8 @@ public class ConfigureProjectDialog extends JDialog {
       fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
       int retval = fileChooser.showOpenDialog( PlanWorks.getPlanWorks());
       if (retval == JFileChooser.APPROVE_OPTION) {
-        String currentSelectedDir = fileChooser.getSelectedFile().getAbsolutePath();
-        plannerPath = currentSelectedDir;
-        plannerPathField.setText( plannerPath);
+        String currentSelectedFile = fileChooser.getSelectedFile().getAbsolutePath();
+        plannerPathField.setText( currentSelectedFile);
       }
     }
   } // end class PlannerPathButtonListener
@@ -285,9 +284,8 @@ public class ConfigureProjectDialog extends JDialog {
       fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
       int retval = fileChooser.showOpenDialog( PlanWorks.getPlanWorks());
       if (retval == JFileChooser.APPROVE_OPTION) {
-        String currentSelectedDir = fileChooser.getSelectedFile().getAbsolutePath();
-        modelPath = currentSelectedDir;
-        modelPathField.setText( modelPath);
+        String currentSelectedFile = fileChooser.getSelectedFile().getAbsolutePath();
+        modelPathField.setText( currentSelectedFile);
       }
     }
   } // end class ModelPathButtonListener
@@ -301,8 +299,7 @@ public class ConfigureProjectDialog extends JDialog {
       int returnVal = dirChooser.showDialog( PlanWorks.getPlanWorks(), "");
       if (returnVal == JFileChooser.APPROVE_OPTION) {
         String currentSelectedDir = dirChooser.getCurrentDirectory().getAbsolutePath();
-        modelOutputDestDir = currentSelectedDir;
-        modelOutputDestDirField.setText( modelOutputDestDir);
+        modelOutputDestDirField.setText( currentSelectedDir);
       }
     }
   } // end class ModelOutputDestDirButtonListener
@@ -317,9 +314,8 @@ public class ConfigureProjectDialog extends JDialog {
       fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
       int retval = fileChooser.showOpenDialog( PlanWorks.getPlanWorks());
       if (retval == JFileChooser.APPROVE_OPTION) {
-        String currentSelectedDir = fileChooser.getSelectedFile().getAbsolutePath();
-        modelInitStatePath = currentSelectedDir;
-        modelInitStatePathField.setText( modelInitStatePath);
+        String currentSelectedFile = fileChooser.getSelectedFile().getAbsolutePath();
+        modelInitStatePathField.setText( currentSelectedFile);
       }
     }
   } // end class ModelInitStatePathButtonListener
@@ -344,35 +340,15 @@ public class ConfigureProjectDialog extends JDialog {
             optionPane.setValue( JOptionPane.UNINITIALIZED_VALUE);
 
             if (value.equals( btnString1)) {
-              projectName = projectNameField.getText();
-              workingDir = workingDirField.getText();
-              plannerPath = plannerPathField.getText();
-              modelName = modelNameField.getText();
-              modelPath = modelPathField.getText();
-              modelOutputDestDir = modelOutputDestDirField.getText();
-              modelInitStatePath = modelInitStatePathField.getText();
-              if ((! doesPathExist( workingDir)) || (! doesPathExist( plannerPath)) ||
-                  (! doesPathExist( modelPath)) ||  (! doesPathExist( modelOutputDestDir)) ||
-                  (! doesPathExist( modelInitStatePath))) {
-                return;
-              }
-              if (plannerPath.indexOf( ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH) == -1) {
-                JOptionPane.showMessageDialog
-                  ( PlanWorks.getPlanWorks(),
-                   "Library name does not match 'lib<planner-name>" +
-                    ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH + "'",
-                   "Invalid Planner JNI Library", JOptionPane.ERROR_MESSAGE);
+              if (handleTextFieldValues()) {
                 return;
               }
               // we're done; dismiss the dialog
               setVisible( false);
             } else { // user closed dialog or clicked cancel
-              projectName = null;
-              workingDir = null;
-              plannerPath = null;
-              modelName = null;
-              modelPath = null;
-              modelOutputDestDir = null;
+              projectName = null; workingDir = null;
+              plannerPath = null; modelName = null;
+              modelPath = null; modelOutputDestDir = null;
               modelInitStatePath = null;
               setVisible( false);
             }
@@ -380,6 +356,65 @@ public class ConfigureProjectDialog extends JDialog {
         }
       });
   } // end addInputListener
+
+  private boolean handleTextFieldValues() {
+    boolean haveSeenError = false;
+    String workingDirTemp = workingDirField.getText().trim();
+    if (! workingDir.equals( workingDirTemp)) {
+      if (! doesPathExist( workingDirTemp)) {
+        haveSeenError = true;
+      } else {
+        workingDir = workingDirTemp;
+      }
+    }
+
+    String plannerPathTemp = plannerPathField.getText().trim();
+    if (! plannerPath.equals( plannerPathTemp)) {
+      if (! doesPathExist( plannerPathTemp)) {
+        haveSeenError = true;
+      } else if (plannerPathTemp.indexOf( ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH) == -1) {
+        JOptionPane.showMessageDialog
+          ( PlanWorks.getPlanWorks(),
+            "Library name does not match 'lib<planner-name>" +
+            ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH + "'",
+            "Invalid Planner JNI Library", JOptionPane.ERROR_MESSAGE);
+        haveSeenError = true;
+      } else {
+        plannerPath = plannerPathTemp;
+      }
+    }
+
+    modelName = modelNameField.getText().trim();
+
+    String modelPathTemp = modelPathField.getText().trim();
+    if (! modelPath.equals( modelPathTemp)) {
+      if (! doesPathExist( modelPathTemp)) {
+        haveSeenError = true;
+      } else {
+        modelPath = modelPathTemp;
+      }
+    }
+
+    String modelInitStatePathTemp = modelInitStatePathField.getText().trim();
+    if (! modelInitStatePath.equals( modelInitStatePathTemp)) {
+      if (! doesPathExist( modelInitStatePathTemp)) {
+        haveSeenError = true;
+      } else {
+        modelInitStatePath = modelInitStatePathTemp;
+      }
+    }
+
+    String modelOutputDestDirTemp = modelOutputDestDirField.getText().trim();
+    if (! modelOutputDestDir.equals( modelOutputDestDirTemp)) {
+      if (! doesPathExist( modelOutputDestDirTemp)) {
+        haveSeenError = true;
+      } else {
+        modelOutputDestDir = modelOutputDestDirTemp;
+      }
+    }
+
+    return haveSeenError;
+  } // end handleTextFieldValues
 
   private boolean doesPathExist( String path) {
     boolean doesExist = true;
