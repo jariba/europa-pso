@@ -47,7 +47,6 @@ public class TokenBoundingBox {
     VariableBoundingBox temp = new VariableBoundingBox(variable, layout);
     if(!variableBoundingBoxes.contains(temp)) {
       variableBoundingBoxes.add(temp);
-      System.err.println("Adding bounding box for " + variable + " in " + tokenNode);
     }
   }
   public boolean isVisible() { return tokenNode.isVisible();}
