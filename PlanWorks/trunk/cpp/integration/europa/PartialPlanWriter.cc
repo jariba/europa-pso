@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.17 2003-11-26 01:22:55 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.18 2003-12-10 20:47:38 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -132,7 +132,7 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
   }
 
   char *destBuf = new char[PATH_MAX];
-  if(realpath(dest.chars(), destBuf) == NULL) {
+  if(realpath(dest.chars(), destBuf) == NULL && stepsPerWrite != 0) {
     if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
       cerr << "Failed to make directory " << dest << endl;
       FatalError(strerror(errno));
@@ -163,37 +163,41 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
   char *seqname = (char *) modelName.chars();
   char *extStart = rindex(seqname, '.');
   *extStart = '\0';
-  if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
-    cerr << "Failed to make directory " << dest << endl;
-    FatalError(strerror(errno));
-  }
-  dest += seqname;
-  dest += timestr;
-  if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
-    cerr << "Failed to make directory " << dest << endl;
-    FatalError(strerror(errno));
-  }
-  String ppStats = dest + PARTIAL_PLAN_STATS;
-  String ppTransactions = dest + TRANSACTIONS;
-  String sequenceStr = dest + SEQUENCE;
-  if(!(sequenceOut = fopen(sequenceStr.chars(), "w"))) {
-    cerr << "Failed to open " << sequenceStr << endl;
-    FatalError(strerror(errno));
-  }
-  fprintf(sequenceOut, "%s\t%lld", dest.chars(), sequenceId);
-  fclose(sequenceOut);
-
-  if(!(transactionOut = fopen(ppTransactions.chars(), "w"))) {
-    FatalError(strerror(errno));
-  }
-  if(!(statsOut = fopen(ppStats.chars(), "w"))) {
-    FatalError(strerror(errno));
+  if(stepsPerWrite) {
+    if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+      cerr << "Failed to make directory " << dest << endl;
+      FatalError(strerror(errno));
+    }
+    dest += seqname;
+    dest += timestr;
+    if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+      cerr << "Failed to make directory " << dest << endl;
+      FatalError(strerror(errno));
+    }
+    String ppStats = dest + PARTIAL_PLAN_STATS;
+    String ppTransactions = dest + TRANSACTIONS;
+    String sequenceStr = dest + SEQUENCE;
+    if(!(sequenceOut = fopen(sequenceStr.chars(), "w"))) {
+      cerr << "Failed to open " << sequenceStr << endl;
+      FatalError(strerror(errno));
+    }
+    fprintf(sequenceOut, "%s\t%lld", dest.chars(), sequenceId);
+    fclose(sequenceOut);
+    
+    if(!(transactionOut = fopen(ppTransactions.chars(), "w"))) {
+      FatalError(strerror(errno));
+    }
+    if(!(statsOut = fopen(ppStats.chars(), "w"))) {
+      FatalError(strerror(errno));
+    }
   }
 };
 
 PartialPlanWriter::~PartialPlanWriter(void) {
-  fclose(transactionOut);
-  fclose(statsOut);
+  if(stepsPerWrite) {
+    fclose(transactionOut);
+    fclose(statsOut);
+  }
 }
 
 void PartialPlanWriter::write(void) {
@@ -205,13 +209,16 @@ void PartialPlanWriter::write(void) {
     *tokenRelationOut, *enumDomainOut, *intDomainOut, *constraintOut, *predOut, *paramOut,
     *paramVarTokenMapOut, *constraintVarMapOut;
   
+  if(!stepsPerWrite) {
+    return;
+  }
+
   tokenRelationId = enumeratedDomainId = intervalDomainId = 1;
   if(gettimeofday(&currTime, NULL)) {
     FatalError("Failed to get current time");
   }
   partialPlanId = (((long long int)currTime.tv_sec) * 1000) + (currTime.tv_usec / 1000);
 
-  fprintf(stderr, "Writing step %d\n", nstep);
   String stepnum = STEP + String(nstep);
 
   String partialPlanDest = dest + SLASH + stepnum;
@@ -287,7 +294,8 @@ void PartialPlanWriter::write(void) {
     globalVarIterator.step();
     }*/
   //List<TokenId> allTokens = tnet->getAllTokens();
-  List<TokenId> freeTokenList = tnet->getFreeValueTokens();
+  //List<TokenId> freeTokenList = tnet->getFreeValueTokens();
+  List<TokenId> freeTokenList = tnet->getFreeValueTokensWithoutCompatUpdate();
   //numTokens = allTokens.getSize();
 
   ListIterator<TokenId> freeTokenIterator = ListIterator<TokenId>(freeTokenList);
@@ -391,7 +399,7 @@ void PartialPlanWriter::write(void) {
 
   fprintf(statsOut, "%lld\t%lld\t%d\t%d\t%d\t%d\t%d\n", sequenceId, partialPlanId, nstep, numTokens,
           numVariables, numConstraints, numTransactions);
-
+  fflush(statsOut);
   ListIterator<Transaction> transactionIterator = ListIterator<Transaction>(*transactionList);
   while(!transactionIterator.isDone()) {
     Transaction &transaction = (Transaction &) transactionIterator.item();
