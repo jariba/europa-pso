@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.6 2003-10-25 00:58:19 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.7 2003-11-03 19:02:42 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -315,6 +315,8 @@ public class SequenceQueryWindow extends JPanel {
         desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
                                   " for " + viewable.getName(),
                                   viewSet, true, true, false, true);
+      ((SequenceViewSet) viewSet).getViews().
+        put( new String( "QueryResultFrame" + queryResultFrameCnt), stepQueryFrame);
       Container contentPane = stepQueryFrame.getContentPane();
       StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_STEPS);
       int ellipsesIndx = stepsQuery.indexOf( " ...");
@@ -339,6 +341,8 @@ public class SequenceQueryWindow extends JPanel {
         desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
                                   " for " + viewable.getName(),
                                   viewSet, true, true, false, true);
+      ((SequenceViewSet) viewSet).getViews().
+        put( new String( "QueryResultFrame" + queryResultFrameCnt), transactionQueryFrame);
       Container contentPane = transactionQueryFrame.getContentPane();
       StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_TRANSACTIONS);
       String transactionsQueryShort = transactionsQuery;

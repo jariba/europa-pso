@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.22 2003-10-16 21:40:39 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.23 2003-11-03 19:02:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -182,6 +182,6 @@ public interface PwPartialPlan extends ViewableObject {
    */
   public abstract int getStepNumber();
 
-
+  
 } // end interface PwPartialPlan
 

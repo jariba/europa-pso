@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.41 2003-10-10 23:59:53 taylor Exp $
+// $Id: ViewSet.java,v 1.42 2003-11-03 19:02:42 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -45,7 +45,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentS
 //implements MDIWindowBar for the notifyDeleted method
 public class ViewSet implements RedrawNotifier, MDIWindowBar {
   private MDIDesktopFrame desktopFrame;
-  private HashMap views;
+  protected HashMap views;
   //private List views;
   //private PwPartialPlan partialPlan;
   private ViewableObject viewable;
@@ -103,9 +103,14 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     }
     Constructor [] constructors = viewClass.getDeclaredConstructors();
     String frameViewName = viewClassName.substring( viewClassName.lastIndexOf( ".") + 1);
+    boolean closable = true; // partial plan views
+    if (viewClassName.indexOf( "SequenceStepsView") >= 0) {
+      // force user to do Project->Delete Sequence to dispose of this window
+      closable = false; 
+    }
     MDIInternalFrame viewFrame = desktopFrame.createFrame( frameViewName + " of " +
                                                            viewable.getName(),
-                                                           this, true, true, true, true);
+                                                           this, true, closable, true, true);
     views.put(viewClass, viewFrame);
     Container contentPane = viewFrame.getContentPane();
     VizView view = null;

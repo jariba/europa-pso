@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.12 2003-10-30 22:12:23 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.13 2003-11-03 19:02:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -20,15 +20,12 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
@@ -1295,9 +1292,19 @@ public class ConstraintNetworkView extends PartialPlanView {
     JMenuItem tokenByKeyItem = new JMenuItem( "Find Token by Key");
     createTokenByKeyItem( tokenByKeyItem);
     mouseRightPopup.add( tokenByKeyItem);
+
+    JMenuItem changeViewItem = new JMenuItem( "Get Partial Plan View");
+    createChangeViewItem( changeViewItem, partialPlan, viewCoords);
+    mouseRightPopup.add( changeViewItem);
+    
+    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
+    createRaiseContentSpecItem( raiseContentSpecItem);
+    mouseRightPopup.add( raiseContentSpecItem);
+    
     JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
+
     JMenuItem changeLayoutItem = null;
     if(newLayout.layoutHorizontal()) {
       changeLayoutItem = new JMenuItem("Vertical Layout");

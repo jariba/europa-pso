@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.9 2003-10-25 00:58:19 taylor Exp $
+// $Id: TimelineView.java,v 1.10 2003-11-03 19:02:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,7 +25,6 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
@@ -74,6 +73,7 @@ public class TimelineView extends PartialPlanView {
   private List freeTokenNodeList; // element TokenNode
   private List tmpTimelineNodeList; // element TimelineNode
   private int slotLabelMinLength;
+
 
   /**
    * <code>TimelineView</code> - constructor - 
@@ -618,26 +618,21 @@ public class TimelineView extends PartialPlanView {
     JMenuItem tokenByKeyItem = new JMenuItem( "Find Token by Key");
     createTokenByKeyItem( tokenByKeyItem);
     mouseRightPopup.add( tokenByKeyItem);
+
+    JMenuItem changeViewItem = new JMenuItem( "Get Partial Plan View");
+    createChangeViewItem( changeViewItem, partialPlan, viewCoords);
+    mouseRightPopup.add( changeViewItem);
+    
+    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
+    createRaiseContentSpecItem( raiseContentSpecItem);
+    mouseRightPopup.add( raiseContentSpecItem);
+    
     JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
-
-
-  private void createActiveTokenItem( JMenuItem activeTokenItem) {
-    activeTokenItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          PwToken activeToken =
-            ((PartialPlanViewSet) TimelineView.this.getViewSet()).getActiveToken();
-          if (activeToken != null) {
-            boolean isByKey = false;
-            findAndSelectToken( activeToken, isByKey);
-          }
-        }
-      });
-  } // end createActiveTokenItem
 
 
   private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
@@ -656,6 +651,19 @@ public class TimelineView extends PartialPlanView {
       });
   } // end createTokenByKeyItem
 
+
+  private void createActiveTokenItem( JMenuItem activeTokenItem) {
+    activeTokenItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          PwToken activeToken =
+            ((PartialPlanViewSet) TimelineView.this.getViewSet()).getActiveToken();
+          if (activeToken != null) {
+            boolean isByKey = false;
+            findAndSelectToken( activeToken, isByKey);
+          }
+        }
+      });
+  } // end createActiveTokenItem
 
   private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
     boolean isTokenFound = false;
