@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.4 2003-10-07 02:13:34 taylor Exp $
+// $Id: Utilities.java,v 1.5 2003-10-09 00:29:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -16,11 +16,13 @@ package gov.nasa.arc.planworks.util;
 import java.awt.Container;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Window;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JFrame;
 
 
 /**
@@ -105,6 +107,22 @@ public class Utilities {
     Collections.sort( names, new StringNameComparator());
     return names;
   } // end sortStringKeySet
+
+
+  /**
+   * <code>setPopUpLocation</code> - place opop up window in center of frame
+   *
+   * @param popUp - <code>Window</code> - 
+   * @param frame - <code>JFrame</code> - 
+   */
+  public static void setPopUpLocation( Window popUp, JFrame frame) {
+    popUp.setLocation( (int) (frame.getLocation().getX() +
+                              (frame.getSize().getWidth() / 2) -
+                              (popUp.getSize().getWidth() / 2)),
+                       (int) (frame.getLocation().getY() +
+                              (frame.getSize().getHeight() / 2) -
+                              (popUp.getSize().getHeight() / 2)));
+  } // end setPopUpLocation
 
 
 } // end class Utilities

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.6 2003-10-08 19:10:29 taylor Exp $
+// $Id: TimelineView.java,v 1.7 2003-10-09 00:29:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,15 +33,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoListPosition;
-import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoView;
-
-// PlanWorks/java/lib/JGo/Classier.jar
-import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -77,7 +72,6 @@ public class TimelineView extends PartialPlanView {
   private ViewSet viewSet;
   private TimelineJGoView jGoView;
   private JGoDocument jGoDocument;
-  private JGoSelection jGoSelection;
   // timelineNodeList & tmpTimelineNodeList used by JFCUnit test case
   private List timelineNodeList; // element TimelineNode
   private List freeTokenNodeList; // element TokenNode

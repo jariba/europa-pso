@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskTokenByKey.java,v 1.1 2003-10-08 19:10:28 taylor Exp $
+// $Id: AskTokenByKey.java,v 1.2 2003-10-09 00:29:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
@@ -94,12 +95,7 @@ public class AskTokenByKey extends JDialog {
     // size dialog appropriately
     pack();
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-    setLocation( (int) (PlanWorks.planWorks.getLocation().getX() +
-                        (PlanWorks.planWorks.getSize().getWidth() / 2) -
-                        (this.getSize().getWidth() / 2)),
-                 (int) (PlanWorks.planWorks.getLocation().getY() +
-                        (PlanWorks.planWorks.getSize().getHeight() / 2) -
-                        (this.getSize().getHeight() / 2)));
+    Utilities.setPopUpLocation( this, PlanWorks.planWorks);
     setVisible( true);
   } // end constructor
 
