@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.6 2003-06-11 01:02:13 taylor Exp $
+// $Id: TimelineView.java,v 1.7 2003-06-12 18:32:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -246,9 +246,9 @@ public class TimelineView extends VizView {
             timelineNode.setSize( timelineNodeWidth,
                                   (int) timelineNode.getSize().getHeight());
             x += timelineNode.getSize().getWidth();
-          }
 
-          createSlotNodes( timeline, timelineNode, x, y);
+            createSlotNodes( timeline, timelineNode, x, y);
+          }
 
           y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
         }
