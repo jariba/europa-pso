@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.28 2004-02-03 20:43:57 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.29 2004-02-03 22:44:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -380,11 +380,13 @@ public class TemporalExtentView extends PartialPlanView  {
             // check for embedded empty slots - always show them, unless free standing
             if ((token == null) ||
                 (token != null) && isTokenInContentSpec( token)) {
-              PwDomain[] intervalArray =
-                NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot,
-                                                   alwaysReturnEnd);
-              PwDomain startTimeIntervalDomain = intervalArray[0];
-              PwDomain endTimeIntervalDomain = intervalArray[1];
+//               PwDomain[] intervalArray =
+//                 NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot,
+//                                                    alwaysReturnEnd);
+//               PwDomain startTimeIntervalDomain = intervalArray[0];
+//               PwDomain endTimeIntervalDomain = intervalArray[1];
+              PwDomain startTimeIntervalDomain = slot.getStartTime();
+              PwDomain endTimeIntervalDomain = slot.getEndTime();
               if ((startTimeIntervalDomain != null) && (endTimeIntervalDomain != null)) {
                 String earliestDurationString =
                   NodeGenerics.getShortestDuration( slot, startTimeIntervalDomain,

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlot.java,v 1.7 2004-01-16 19:05:34 taylor Exp $
+// $Id: PwSlot.java,v 1.8 2004-02-03 22:43:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -53,4 +53,8 @@ public interface PwSlot {
    */
   public abstract PwToken getBaseToken();
 
+  public abstract PwDomain getStartTime();
+  public abstract PwDomain getEndTime();
+
+  public boolean isEmpty();
 } // end interface PwSlot

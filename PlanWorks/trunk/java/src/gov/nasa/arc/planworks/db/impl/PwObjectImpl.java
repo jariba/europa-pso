@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.15 2004-02-03 19:22:15 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.16 2004-02-03 22:43:42 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -35,7 +35,8 @@ public class PwObjectImpl implements PwObject {
   private String emptySlotInfo;
   private List timelineIdList; // element Integer
   private PwPartialPlanImpl partialPlan;
-  private static boolean haveCreatedSlots;
+  private boolean haveCreatedSlots;
+  private boolean haveCalculatedSlotTimes;
 
   /**
    * <code>PwObjectImpl</code> - constructor 
@@ -52,6 +53,7 @@ public class PwObjectImpl implements PwObject {
     this.emptySlotInfo = info;
     timelineIdList = new ArrayList();
     haveCreatedSlots = false;
+    haveCalculatedSlotTimes = false;
   } // end constructor
 
 
@@ -116,4 +118,13 @@ public class PwObjectImpl implements PwObject {
     haveCreatedSlots = true;
   }
 
+  public void calculateSlotTimes() {
+    if(haveCalculatedSlotTimes) {
+      return;
+    }
+    ListIterator timelineIterator = getTimelineList().listIterator();
+    while(timelineIterator.hasNext()) {
+      ((PwTimelineImpl)timelineIterator.next()).calculateSlotTimes();
+    }
+  }
 } // end class PwObjectImpl

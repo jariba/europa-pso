@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.17 2004-02-03 19:22:18 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.18 2004-02-03 22:43:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwTimeline;
@@ -101,5 +102,22 @@ public class PwTimelineImpl implements PwTimeline {
     PwSlotImpl slot = new PwSlotImpl(sId, this.id, partialPlan);
     slotIdList.add(slotIndex, sId);
     partialPlan.addSlot(sId, slot);
+  }
+
+  public void calculateSlotTimes() {
+    ListIterator slotIterator = getSlotList().listIterator();
+    PwSlotImpl prev = null;
+    while(slotIterator.hasNext()) {
+      PwSlotImpl next = null;
+      PwSlotImpl slot = (PwSlotImpl) slotIterator.next();
+      if(slotIterator.hasNext()) {
+        next = (PwSlotImpl) slotIterator.next();
+      }
+      slot.calcTimes(prev, next);
+      if(next != null) {
+        slotIterator.previous();
+      }
+      prev = slot;
+    }
   }
 } // end class PwTimelineImpl
