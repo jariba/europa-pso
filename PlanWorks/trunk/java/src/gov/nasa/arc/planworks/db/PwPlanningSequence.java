@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.31 2004-03-23 18:20:04 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.32 2004-03-27 01:04:06 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -335,5 +335,7 @@ public interface PwPlanningSequence extends ViewableObject {
   public void addListener(PwListener l);
   public void removeListener(PwListener l);
   public void handleEvent(String evtName);
+
+  public PwRule getRule(Integer rId);
 
 } // end interface PwPlanningSequence

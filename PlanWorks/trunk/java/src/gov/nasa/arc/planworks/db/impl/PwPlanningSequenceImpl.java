@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.74 2004-03-26 22:09:02 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.75 2004-03-27 01:04:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -33,11 +33,12 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwListenable;
 import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.db.PwDBTransaction;
+import gov.nasa.arc.planworks.db.PwRule;
 import gov.nasa.arc.planworks.db.util.PwSequenceFilenameFilter;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
@@ -71,6 +72,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   private String name;
   private List contentSpec;
   private Map partialPlans; // partialPlanName Map of PwPartialPlan
+  private Map ruleMap;
   private List planNamesInDb;
   private List planNamesInFilesystem;
 
@@ -106,20 +108,17 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     contentSpec = new ArrayList();
    
     partialPlans = new HashMap();
-    //ListIterator planNameIterator = MySQLDB.getPlanNamesInSequence(id).listIterator();
     planNamesInFilesystem = new ArrayList();
-    ListIterator planNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
-    while(planNameIterator.hasNext()) {
-      String planName = (String)planNameIterator.next();
-      if((new File(url + System.getProperty("file.separator") + planName)).exists()) {
-        planNamesInFilesystem.add(planName);
-      }
-      partialPlans.put(planName, null);
-      stepCount++;
+    String [] planNames = (new File(url)).list(new StepDirectoryFilter());
+    stepCount = planNames.length;
+    for(int i = 0; i < planNames.length; i++) {
+      planNamesInFilesystem.add(planNames[i]);
+      partialPlans.put(planNames[i], null);
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
     //loadTransactions();
     transactions = null;
+    fakeRules();
   }
 
 
@@ -174,6 +173,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       stepCount++;
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
+    fakeRules();
   } // end constructor for OpenProject call
   
 
@@ -621,6 +621,19 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     System.err.println("Planning sequence refresh done.");
   }
 
+  private void fakeRules() {
+    ruleMap = new HashMap();
+    for(int i = 0; i < 20; i++) {
+      Integer n = new Integer(i);
+      String text = "fake rule " + i;
+      ruleMap.put(n, new PwRuleImpl(n, text));
+    }
+  }
+
+  public PwRule getRule(Integer rId) {
+    return (PwRule) ruleMap.get(rId);
+  }
+
   private class PartialPlanNameComparator implements Comparator {
     public PartialPlanNameComparator() {
     }
@@ -651,6 +664,14 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     return null;
   }
   private static final Pattern stepPattern = Pattern.compile("step(\\d+)");
+
+  class StepDirectoryFilter implements FilenameFilter {
+    public StepDirectoryFilter(){}
+    public boolean accept(File dir, String name) {
+      Matcher m = stepPattern.matcher(name);
+      return m.matches();
+    }
+  }
   
   class StepDirectoryComparator implements Comparator {
     public StepDirectoryComparator() {
