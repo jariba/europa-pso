@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.18 2004-03-02 02:34:12 taylor Exp $
+// $Id: PartialPlanContentSpec.java,v 1.19 2004-03-02 22:00:23 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -44,21 +44,21 @@ public class PartialPlanContentSpec implements ContentSpec {
   private static final String AND = "and";
   private static final String AND_PPREDICATENAME = "&& (PredicateName";
   private static final String AND_PREDICATENAME = "&& PredicateName";
-  private static final String AND_PTIMELINEID = "&& (TimelineId";
-  private static final String AND_TIMELINEID = "&& TimelineId";
+  private static final String AND_PTIMELINEID = "&& (ParentId";
+  private static final String AND_TIMELINEID = "&& ParentId";
   private static final String EQ = "=";
   private static final String NEG = "!";
   private static final String NOT = "not";
   private static final String OBJECTNAME = "Object.ObjectName";
   private static final String OBJECTID = "Object.ObjectId";
   private static final String OR = "or";
-  private static final String OR_TIMELINEID = "|| TimelineId";
+  private static final String OR_TIMELINEID = "|| ParentId";
   private static final String OR_PREDICATENAME = "|| PredicateName";
   private static final String PREDICATEID = "PredicateId";
   private static final String PREDICATENAME = "PredicateName";
   private static final String PREDICATENAME_QUERY =
     "SELECT DISTINCT PredicateName FROM Token WHERE PartialPlanId=";
-  private static final String TIMELINEID = "Token.TimelineId";
+  private static final String TIMELINEID = "Token.ParentId";
   private static final String TIMELINENAME = "Token.TimelineName";
   private static final String TIMELINENAME_QUERY =
     "SELECT DISTINCT Object.ObjectName, Object.ObjectId FROM Object WHERE Object.ObjectType=" 

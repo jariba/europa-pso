@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.87 2004-03-02 21:45:30 miatauro Exp $
+// $Id: MySQLDB.java,v 1.88 2004-03-02 22:00:22 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1393,7 +1393,7 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet ids =
-        queryDatabase("SELECT DISTINCT SlotId FROM Token WHERE PartialPlanId=".concat(ppId.toString()).concat(" && TimelineId=").concat(tId.toString()));
+        queryDatabase("SELECT DISTINCT SlotId FROM Token WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ParentId=").concat(tId.toString()));
       while(ids.next()) {
         retval.add(new Integer(ids.getInt("SlotId")));
       }
