@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.10 2003-10-16 21:40:40 taylor Exp $
+// $Id: MDIDesktopFrame.java,v 1.11 2003-12-12 01:23:04 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -240,6 +240,8 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     int ymin = 0;
     int contentSpecHeight = 0;
     int numContentSpecWindows = 0;
+    int resetCnt = 0;
+    int delta = 50;
     for(int i = 0; i < frames.length; i++) {
       if((frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) ||
          (frames[i].getTitle().indexOf(ContentSpec.SEQUENCE_QUERY_TITLE) != -1)) {
@@ -266,9 +268,11 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
       }
       frames[i].setLocation(xmin, ymin);
       try{frames[i].setSelected(true);}catch(Exception e){}
-      xmin += 50;
-      ymin += 50;
-      if(frames[i].getX() + frames[i].getHeight() > desktopPane.getHeight()) {
+      xmin += delta;
+      ymin += delta;
+      if(frames[i].getY() + frames[i].getHeight() > desktopPane.getHeight()) {
+        resetCnt++;
+        xmin = resetCnt * delta;
         ymin = contentSpecHeight;
       }
     }

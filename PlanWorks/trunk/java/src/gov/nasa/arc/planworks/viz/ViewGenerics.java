@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.3 2003-11-21 00:41:50 taylor Exp $
+// $Id: ViewGenerics.java,v 1.4 2003-12-12 01:23:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -127,6 +127,7 @@ public class ViewGenerics {
       overviewFrame = viewSet.getDesktopFrame().createFrame( overviewTitle, viewSet,
                                                              true, true, true, true);
       viewSet.getViews().put( overviewTitle, overviewFrame);
+      // System.err.println( "views " + viewSet.getViews());
       Container contentPane = overviewFrame.getContentPane();
 
       overview = new VizViewOverview( overviewTitle, vizView);
@@ -170,6 +171,8 @@ public class ViewGenerics {
                                                 ViewSet viewSet) {
     String overviewTitle = Utilities.trimView( viewName).replaceAll( " ", "") +
       OVERVIEW_TITLE + viewable.getName();
+    // System.err.println( "overviewTitle " + overviewTitle);
+    // System.err.println( "views " + viewSet.getViews());
     MDIInternalFrame overviewFrame = (MDIInternalFrame) viewSet.getViews().get( overviewTitle);
     // System.err.println( "openOverviewFrame " + overviewFrame);
     if (overviewFrame != null) {

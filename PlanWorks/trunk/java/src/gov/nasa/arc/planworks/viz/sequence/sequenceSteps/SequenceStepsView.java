@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.14 2003-12-11 22:26:36 miatauro Exp $
+// $Id: SequenceStepsView.java,v 1.15 2003-12-12 01:23:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -187,7 +187,6 @@ public class SequenceStepsView extends SequenceView {
     Thread thread = new RedrawViewThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new RedrawViewThread().start();
   }
 
   class RedrawViewThread extends Thread {
@@ -354,9 +353,9 @@ public class SequenceStepsView extends SequenceView {
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
-    JMenuItem modelRulesViewItem = new JMenuItem( "Open Model Rules View");
-    createModelRulesViewItem( modelRulesViewItem, this, viewCoords);
-    mouseRightPopup.add( modelRulesViewItem);
+//     JMenuItem modelRulesViewItem = new JMenuItem( "Open Model Rules View");
+//     createModelRulesViewItem( modelRulesViewItem, this, viewCoords);
+//     mouseRightPopup.add( modelRulesViewItem);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -376,10 +375,10 @@ public class SequenceStepsView extends SequenceView {
         public void actionPerformed(ActionEvent evt) {
           System.err.println("Refreshing planning sequence...");
           planSequence.refresh();
-          System.err.println("Redrawing view...");
+          System.err.println("Redrawing sequence steps view...");
           heightScaleFactor = computeHeightScaleFactor();
           redraw();
-          System.err.println("Done.");
+          System.err.println("   ... Done.");
         }
       });
   }
@@ -412,8 +411,6 @@ public class SequenceStepsView extends SequenceView {
                                                        modelRulesItem);
           thread.setPriority(Thread.MIN_PRIORITY);
           thread.start();
-          //new CreateSequenceViewThread( PlanWorks.MODEL_RULES_VIEW,
-          //                              modelRulesItem).start();
         }
       });
   } // end createModelRulesViewItem

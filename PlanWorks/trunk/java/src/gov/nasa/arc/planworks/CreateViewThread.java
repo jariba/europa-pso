@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.8 2003-11-21 00:41:50 taylor Exp $
+// $Id: CreateViewThread.java,v 1.9 2003-12-12 01:23:03 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -9,6 +9,7 @@
 
 package gov.nasa.arc.planworks;
 
+import java.awt.Container;
 import java.beans.PropertyVetoException;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +23,7 @@ import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
 
 /**
  * <code>CreateViewThread</code> - handles PlanWorks render view actions
@@ -91,13 +92,18 @@ public class CreateViewThread extends Thread {
     }
     if (! viewExists) {
       int planWorksFrameHeight = (int) PlanWorks.planWorks.getSize().getHeight();
-      int contentSpecFrameHeight = 0;
-      if (viewSet.getContentSpecWindow() != null) {
-        contentSpecFrameHeight =
-          (int) viewSet.getContentSpecWindow().getSize().getHeight();
+      int contentSpecFrameOffset = 0;
+      MDIInternalFrame contentSpecWindow = viewSet.getContentSpecWindow();
+      if (contentSpecWindow != null) {
+        // SequenceQuery window -- use full height
+        // ContentSpec window (partial plans) -- use 1/4 height
+        contentSpecFrameOffset = (int) viewSet.getContentSpecWindow().getSize().getHeight();
+        if (isContentSpecView( contentSpecWindow)) {
+          contentSpecFrameOffset = (int) (contentSpecFrameOffset / 4);
+        }
       }
       // locate view's upper left corner in top half of space below content spec
-      int yFrameAvailable = (int) (planWorksFrameHeight - contentSpecFrameHeight -
+      int yFrameAvailable = (int) (planWorksFrameHeight - contentSpecFrameOffset -
                                     ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
       int yFrameDelta = 0;
       List viewList = null;
@@ -130,7 +136,7 @@ public class CreateViewThread extends Thread {
       int delta = Math.min( (deltaCnt * ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
                             (yFrameAvailable - (2 * ViewConstants.MDI_FRAME_DECORATION_HEIGHT)));
       viewFrame.setLocation( (ViewConstants.INTERNAL_FRAME_X_DELTA * viewIndex) + delta,
-                             contentSpecFrameHeight + sequenceStepsViewHeight +
+                             contentSpecFrameOffset + sequenceStepsViewHeight +
                              yFrameDelta * viewIndex + delta);
       viewFrame.setVisible( true);
     }
@@ -152,5 +158,17 @@ public class CreateViewThread extends Thread {
     } catch (PropertyVetoException excp) {
     }
   } // end finishViewRendering
+
+  private boolean isContentSpecView( MDIInternalFrame window) {
+    Container contentPane = window.getContentPane();
+    for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
+      // System.err.println( "i " + i + " " +
+      //                    contentPane.getComponent( i).getClass().getName());
+      if (contentPane.getComponent(i) instanceof ContentSpecWindow) {
+        return true;
+      }
+    }
+    return false;
+  } // end isContentSpecWindow
 
 } // end class CreateViewThread

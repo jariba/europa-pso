@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.18 2003-12-11 22:25:37 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.19 2003-12-12 01:23:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -234,7 +234,6 @@ public class ConstraintNetworkView extends PartialPlanView {
     Thread thread = new RedrawViewThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new RedrawViewThread().start();
   }
 
   class RedrawViewThread extends Thread {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.13 2003-12-11 22:27:06 miatauro Exp $
+// $Id: SequenceQueryWindow.java,v 1.14 2003-12-12 01:23:07 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -372,8 +372,6 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
                                                      isInvokeAndWait);
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
-        //new CreateSequenceViewThread( PlanWorks.SEQUENCE_STEPS_VIEW, seqViewItem,
-        //                              isInvokeAndWait).start();
       }
     } // end ensureSequenceStepsViewExists
 
@@ -386,12 +384,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       viewSet.getViews().put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt),
                               stepQueryFrame);
       Container contentPane = stepQueryFrame.getContentPane();
-      StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_STEPS);
-      int ellipsesIndx = stepsQuery.indexOf( " ...");
-      if (ellipsesIndx > 0) {
-        stepsQuery = stepsQuery.substring( 0, ellipsesIndx);
-      }
-      queryStringBuf.append( " ").append( stepsQuery);
+      StringBuffer queryStringBuf =
+        getQueryStringBuf( QUERY_FOR_STEPS, stepsQuery);
       if (stepsQuery.indexOf( "Where") >= 0) {
         queryStringBuf.append( " Key ");
         if (keyString.equals( "")) {
@@ -417,13 +411,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       viewSet.getViews().put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt),
                               transactionQueryFrame);
       Container contentPane = transactionQueryFrame.getContentPane();
-      StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_TRANSACTIONS);
-      String transactionsQueryShort = transactionsQuery;
-      int ellipsesIndx = transactionsQuery.indexOf( " ...");
-      if (ellipsesIndx > 0) {
-        transactionsQueryShort = transactionsQuery.substring( 0, ellipsesIndx);
-      }
-      queryStringBuf.append( " ").append( transactionsQueryShort);
+      StringBuffer queryStringBuf =
+        getQueryStringBuf( QUERY_FOR_TRANSACTIONS, transactionsQuery);
       if (transactionsQuery.equals( TRANSACTIONS_IN_RANGE)) {
         queryStringBuf.append( " StartStep ").append( startStepString);
         queryStringBuf.append( " EndStep ").append( endStepString);
@@ -437,6 +426,21 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       queryResultFrameCnt++;
     } // end renderTransactionQueryFrame
 
+    private StringBuffer getQueryStringBuf( String majorQuery, String minorQuery) {
+      String majorQueryShort = majorQuery;
+      int ellipsesIndx = majorQuery.indexOf( " ...");
+      if (ellipsesIndx > 0) {
+        majorQueryShort = majorQuery.substring( 0, ellipsesIndx);
+      }
+      StringBuffer queryStringBuf = new StringBuffer( majorQueryShort);
+      String minorQueryShort = minorQuery;
+      ellipsesIndx = minorQuery.indexOf( " ...");
+      if (ellipsesIndx > 0) {
+        minorQueryShort = minorQuery.substring( 0, ellipsesIndx);
+      }
+      queryStringBuf.append( " ").append( minorQueryShort);
+      return queryStringBuf;
+    } // end getQueryStringBuf
 
     private String getKeyString( String type) {
       keyString = (String) queryWindow.integerField.getText();

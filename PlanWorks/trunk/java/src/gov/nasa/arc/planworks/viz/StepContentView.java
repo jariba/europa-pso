@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepContentView.java,v 1.9 2003-12-11 22:25:07 miatauro Exp $
+// $Id: StepContentView.java,v 1.10 2003-12-12 01:23:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,6 +46,7 @@ public class StepContentView extends JGoView {
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
   private StepField keyField;
+  private List objectKeyFieldList;  // element StepField
 
   /**
    * <code>StepContentView</code> - constructor 
@@ -67,6 +68,7 @@ public class StepContentView extends JGoView {
     this.viewableObject = viewableObject;
     this.vizView = vizView;
 
+    objectKeyFieldList = new ArrayList();
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoDocument = this.getDocument();
 
@@ -81,7 +83,6 @@ public class StepContentView extends JGoView {
     Thread thread = new RedrawViewThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new RedrawViewThread().start();
   }
 
   class RedrawViewThread extends Thread {
@@ -144,6 +145,7 @@ public class StepContentView extends JGoView {
         StepField objectKeyField =
           new StepField( transaction.getObjectId().toString(),
                          new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+        objectKeyFieldList.add( objectKeyField);
         jGoDocument.addObjectAtTail(objectKeyField );
         objectKeyField.setSize( (int) headerJGoView.getObjectKeyNode().getSize().getWidth(),
                                  (int) objectKeyField.getSize().getHeight());
@@ -187,6 +189,16 @@ public class StepContentView extends JGoView {
       i++;
     }
   } // end renderSteps
+
+  /**
+   * <code>getObjectKeyField</code>
+   *
+   * @param lineIndex - <code>int</code> - 
+   * @return - <code>StepField</code> - 
+   */
+  public StepField getObjectKeyField( int lineIndex) {
+    return (StepField) objectKeyFieldList.get( lineIndex);
+  }
 
   /**
    * <code>scrollEntries</code>

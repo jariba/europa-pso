@@ -216,11 +216,11 @@ public class PlannerCommandLineDialog extends JDialog {
         return;
       }
 
-      ExecutePlannerThread thread = new ExecutePlannerThread(planDir.getAbsolutePath() +
-                                                             System.getProperty("file.separator")+
-                                                             dialog.getCommandLine(), 
-                                                             dialog.getWriteDest(),
-                                                             dialog.getStepsPerWrite());
+      Thread thread = new ExecutePlannerThread(planDir.getAbsolutePath() +
+                                               System.getProperty("file.separator")+
+                                               dialog.getCommandLine(), 
+                                               dialog.getWriteDest(),
+                                               dialog.getStepsPerWrite());
       thread.setPriority(Thread.MIN_PRIORITY);
       thread.start();
       try {Thread.sleep(waitMillis);}

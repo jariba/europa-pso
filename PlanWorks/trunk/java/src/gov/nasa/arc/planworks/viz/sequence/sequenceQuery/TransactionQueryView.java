@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionQueryView.java,v 1.4 2003-10-28 18:01:25 taylor Exp $
+// $Id: TransactionQueryView.java,v 1.5 2003-12-12 01:23:07 taylor Exp $
 //
 // PlanWorks
 //
@@ -173,6 +173,15 @@ public class TransactionQueryView extends SequenceView {
    */
   public TransactionContentView getTransactionContentView() {
     return contentJGoView;
+  }
+
+  /**
+   * <code>getQuery</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getQuery() {
+    return query;
   }
 
   /**

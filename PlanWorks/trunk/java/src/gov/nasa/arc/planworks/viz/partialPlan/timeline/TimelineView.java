@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.18 2003-12-11 22:26:00 miatauro Exp $
+// $Id: TimelineView.java,v 1.19 2003-12-12 01:23:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -164,7 +164,6 @@ public class TimelineView extends PartialPlanView {
     Thread thread = new RedrawViewThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new RedrawViewThread().start();
   }
 
   class RedrawViewThread extends Thread {
