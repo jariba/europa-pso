@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.5 2003-09-10 01:15:44 miatauro Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.6 2003-09-11 18:34:55 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -160,15 +160,12 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   }
   
   private void buildWindowMenu() {
-    JMenuItem tileVItem = new JMenuItem("Tile Vertically");
-    JMenuItem tileHItem = new JMenuItem("Tile Horizontally");
+    JMenuItem tileItem = new JMenuItem("Tile Windows");
     JMenuItem cascadeItem = new JMenuItem("Cascade");
-    tileHItem.addActionListener(new TileActionListener(tileCascader, false));
-    tileVItem.addActionListener(new TileActionListener(tileCascader, true));
+    tileItem.addActionListener(new TileActionListener(tileCascader));
     cascadeItem.addActionListener(new CascadeActionListener(tileCascader));
     windowMenu = new JMenu("Window");
-    windowMenu.add(tileHItem);
-    windowMenu.add(tileVItem);
+    windowMenu.add(tileItem);
     windowMenu.add(cascadeItem);
     windowMenu.addSeparator();
     ListIterator windowIterator = windows.listIterator();
@@ -202,13 +199,11 @@ class SelectedActionListener implements ActionListener {
 
 class TileActionListener implements ActionListener {
   private TileCascader tiler;
-  private boolean isHorizontal;
-  public TileActionListener(TileCascader tiler, boolean isHorizontal) {
+  public TileActionListener(TileCascader tiler) {
     this.tiler = tiler;
-    this.isHorizontal = isHorizontal;
   }
   public void actionPerformed(ActionEvent e) {
-    tiler.tileWindows(isHorizontal);
+    tiler.tileWindows();
   }
 }
 

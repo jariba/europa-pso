@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.6 2003-09-10 01:05:40 miatauro Exp $
+// $Id: MDIDesktopFrame.java,v 1.7 2003-09-11 18:34:54 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -172,48 +172,54 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     return newFrame;
   }
 
-  public void tileWindows(boolean isHorizontal) {
+  //public int getHeight() {
+  //  return super.getHeight() - windowBar.getHeight();
+  //}
+
+  public void tileWindows() {
     JInternalFrame [] frames = desktopPane.getAllFrames();
-    int xmin = 0;
     int ymin = 0;
+    int numNotIcon = 0;
     int numContentSpecWindows = 0;
     for(int i = 0; i < frames.length; i++) {
       if(frames[i].getTitle().indexOf("Content specification") != -1) {
         ymin = frames[i].getHeight();
         numContentSpecWindows++;
       }
+      else if(!frames[i].isIcon()) {
+        numNotIcon++;
+      }
     }
-    int contInc = getWidth() / numContentSpecWindows;
-    for(int i = 0, x = 0; i < frames.length; i++) {
+    int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
+    int contentSpecX = 0;
+    for(int i = 0; i < frames.length; i++) {
       if(frames[i].getTitle().indexOf("Content specification") != -1) {
-        frames[i].setBounds(x, 0, contInc, frames[i].getHeight());
-        System.err.println("Setting values: " + x + " " + 0 + " " + contInc + " " + 
-                           frames[i].getHeight());
-        x += contInc;
+        frames[i].setSize(Math.min(contentSpecWidth, frames[i].getWidth()), frames[i].getHeight());
+        frames[i].setLocation(contentSpecX, 0);
+        contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
       }
     }
-    if(isHorizontal) {
-      int xmax = getX() + getWidth() - 110;
-      int height = getHeight() - ymin - 90;
-      int xinc = (xmax - xmin) / (frames.length - numContentSpecWindows);
-      for(int i = 0; i < frames.length; i++) {
-        if(frames[i].getTitle().indexOf("Content specification") != -1) {
-          continue;
+    int curCol = 0;
+    int curRow = 0;
+    int i = 0;
+    if(numNotIcon > 0) {
+      int numCols = (int) Math.sqrt(numNotIcon);
+      int frameWidth = desktopPane.getWidth() / numCols;
+      for(curCol = 0; curCol < numCols; curCol++) {
+        int numRows = numNotIcon / numCols;
+        int remainder = numNotIcon % numCols;
+        if((numCols - curCol) <= remainder) {
+          numRows++;
         }
-        frames[i].setBounds(xmin, ymin, xinc, height);
-        xmin += xinc;
-      }
-    }
-    else {
-      int ymax = getY() + getHeight() - 190;
-      int width = getWidth() - 15;
-      int yinc = (ymax - ymin) / (frames.length - numContentSpecWindows);
-      for(int i = 0; i < frames.length; i++) {
-        if(frames[i].getTitle().indexOf("Content specification") != -1) {
-          continue;
+        int height = (desktopPane.getHeight() - ymin) / numRows;
+        for(curRow = 0; curRow < numRows; curRow++, i++) {
+          while(frames[i].isIcon() || frames[i].getTitle().indexOf("Content specification") != -1) {
+            i++;
+          }
+          System.err.println("Setting bounds.  (" + (curCol * frameWidth) + ", " +
+                             ((curRow * height) + ymin) + ") <" + frameWidth + ", " + height + ">");
+          frames[i].setBounds(curCol * frameWidth, (curRow * height) + ymin, frameWidth, height);
         }
-        frames[i].setBounds(xmin, ymin, width, yinc);
-        ymin += yinc;
       }
     }
   }
@@ -222,10 +228,20 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     JInternalFrame [] frames = desktopPane.getAllFrames();
     int xmin = 0;
     int ymin = 0;
+    int contentSpecHeight = 0;
+    int numContentSpecWindows = 0;
     for(int i = 0; i < frames.length; i++) {
       if(frames[i].getTitle().indexOf("Content specification") != -1) {
-        frames[i].setLocation(0, 0);
-        ymin = frames[i].getHeight();
+        numContentSpecWindows++;
+        ymin = contentSpecHeight = frames[i].getHeight();
+      }
+    }
+    int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
+    int contentSpecX = 0;
+    for(int i = 0; i < frames.length; i++) {
+      if(frames[i].getTitle().indexOf("Content specification") != -1) {
+        frames[i].setLocation(contentSpecX, 0);
+        contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
       }
     }
     for(int i = 0; i < frames.length; i++) {
@@ -236,6 +252,9 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
       try{frames[i].setSelected(true);}catch(Exception e){}
       xmin += 50;
       ymin += 50;
+      if(frames[i].getX() + frames[i].getHeight() > desktopPane.getHeight()) {
+        ymin = contentSpecHeight;
+      }
     }
   }
 }
