@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.1 2003-05-16 18:33:41 taylor Exp $
+// $Id: PwConstraintImpl.java,v 1.2 2003-05-18 00:02:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,7 +33,9 @@ public class PwConstraintImpl implements PwConstraint {
   private String name;
   private String key;
   private String type;
-  private List variableIds;
+  private List variableIds; // element String
+  private PwPartialPlanImpl partialPlan;
+  private String collectionName;
 
 
   /**
@@ -43,8 +45,11 @@ public class PwConstraintImpl implements PwConstraint {
    * @param key - <code>String</code> - 
    * @param type - <code>String</code> - 
    * @param variableIds - <code>String</code> - 
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param collectionName - <code>String</code> - 
    */
-  public PwConstraintImpl( String name, String key, String type, String variableIds) {
+  public PwConstraintImpl( String name, String key, String type, String variableIds,
+                           PwPartialPlanImpl partialPlan, String collectionName) {
     this.name = name;
     this.key = key;
     this.type = type;
@@ -53,8 +58,50 @@ public class PwConstraintImpl implements PwConstraint {
     while (tokenizer.hasMoreTokens()) {
       this.variableIds.add( tokenizer.nextToken());
     }
+    this.partialPlan = partialPlan;
+    this.collectionName = collectionName;
   } // end constructor
 
 
+  /**
+   * <code>getName</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * <code>getKey</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getKey() {
+    return key;
+  }
+	
+  /**
+   * <code>getType</code>
+   *
+   * @return type - <code>String</code> -
+   */
+  public String getType() {
+    return type;
+  }
+	
+  /**
+   * <code>getVariablesList</code>
+   *
+   * @return - <code>List</code> - of PwVariable
+   */
+  public List getVariablesList() {
+    ArrayList retval = new ArrayList( variableIds.size());
+    for (int i = 0; i < variableIds.size(); i++) {
+      retval.set( i, partialPlan.getVariable( (String) variableIds.get( i),
+                                              collectionName));
+    }
+    return retval;
+  }
 
 } // end class PwConstraintImpl

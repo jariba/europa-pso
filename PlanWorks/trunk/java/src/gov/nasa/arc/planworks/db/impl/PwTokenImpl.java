@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.3 2003-05-16 20:06:21 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.4 2003-05-18 00:02:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwPredicate;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.XmlDBeXist;
 
 
@@ -43,10 +45,18 @@ public class PwTokenImpl implements PwToken {
   private List tokenRelationIds; // element String
   private List paramVarIds; // element String
   private String slotId;
-	//private List paramVarsList;  element String
-	private PwPartialPlanImpl partialPlan;
-		private String collectionName;
+  
+  private PwPartialPlanImpl partialPlan;
+  private String collectionName;
 
+
+  /**
+   * <code>PwTokenImpl</code> - constructor 
+   *
+   * @param attributeList - <code>List</code> - 
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param collectionName - <code>String</code> - 
+   */
   public PwTokenImpl( List attributeList, PwPartialPlanImpl partialPlan,
                       String collectionName) {
     if (attributeList.size() != XmlDBeXist.NUM_TOKEN_ATTRIBUTES) {
@@ -57,8 +67,8 @@ public class PwTokenImpl implements PwToken {
       } catch (Exception e) { e.printStackTrace(); }
       System.exit( 0);
     }
-		this.collectionName = collectionName;
-		this.partialPlan = partialPlan;
+    this.collectionName = collectionName;
+    this.partialPlan = partialPlan;
     for (int i = 0, n = attributeList.size(); i < n; i++) {
       switch ( i) {
       case 0: this.key = (String) attributeList.get( 0); break;
@@ -86,42 +96,107 @@ public class PwTokenImpl implements PwToken {
       case 10: this.slotId = (String) attributeList.get( 10); break;
       }
     }
-
-    //predicate = partialPlan.getPredicate( predicateId, collectionName);
-    //paramVarsList = new ArrayList ();
-    //Iterator paramVarIdsIterator = paramVarIds.iterator();
-    //while (paramVarIdsIterator.hasNext()) {
-	//String paramVarId = (String) paramVarIdsIterator.next();
-	//PwVariableImpl paramVariable =
-	//  partialPlan.getVariable( paramVarId, collectionName);
-	//paramVarsList.add( paramVariable.getDomain().toString());
-		
   } // end constructor
 		
-		public PwPredicate getPredicate()
-		{
-				return partialPlan.getPredicate(predicateId, collectionName);
-				//return predicate;
-		}
+  /**
+   * <code>getKey</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getKey() {
+    return key;
+  }
+	
+  /**
+   * <code>getPredicate</code>
+   *
+   * @return - <code>PwPredicate</code> - 
+   */
+  public PwPredicate getPredicate() {
+    return partialPlan.getPredicate( predicateId, collectionName);
+  }
 
-		public PwVariable getStartVariable()
-		{
-				return partialPlan.getVariable(startVarId, collectionName);
-		}
+  /**
+   * <code>getStartVariable</code>
+   *
+   * @return - <code>PwVariable</code> - 
+   */
+  public PwVariable getStartVariable() {
+    return partialPlan.getVariable( startVarId, collectionName);
+  }
 		
-		public PwVariable getEndVaraible()
-		{
-				return partialPlan.getVariable(endVarId, collectionName);
-		}
+  /**
+   * <code>getEndVariable</code>
+   *
+   * @return - <code>PwVariable</code> - 
+   */
+  public PwVariable getEndVariable() {
+    return partialPlan.getVariable( endVarId, collectionName);
+  }
 
-		public List getParamVarsList()
-		{
-				ArrayList retval = new ArrayList(paramVarIds.size());
-				for(int i = 0; i < paramVarIds.size(); i++) {
-						retval.set(i, partialPlan.getVariable((String)paramVarIds.get(i), collectionName));
-				}
-				return retval;
-		}
+  /**
+   * <code>getDurationVariable</code>
+   *
+   * @return - <code>PwVariable</code> - 
+   */
+  public PwVariable getDurationVariable() {
+    return partialPlan.getVariable( durationVarId, collectionName);
+  }
+
+  /**
+   * <code>getObjectVariable</code>
+   *
+   * @return - <code>PwVariable</code> - 
+   */
+  public PwVariable getObjectVariable() {
+    return partialPlan.getVariable( objectVarId, collectionName);
+  }
+
+  /**
+   * <code>getRejectVariable</code>
+   *
+   * @return - <code>PwVariable</code> - 
+   */
+  public PwVariable getRejectVariable() {
+    return partialPlan.getVariable( rejectVarId, collectionName);
+  }
+
+  /**
+   * <code>getTokenRelationsList</code>
+   *
+   * @return - <code>List</code> - of PwTokenRelation
+   */
+  public List getTokenRelationsList() {
+    ArrayList retval = new ArrayList( tokenRelationIds.size());
+    for (int i = 0; i < tokenRelationIds.size(); i++) {
+      retval.set( i, partialPlan.getTokenRelation( (String) tokenRelationIds.get( i),
+                                                   collectionName));
+    }
+    return retval;
+  }
+
+  /**
+   * <code>getParamVarsList</code>
+   *
+   * @return - <code>List</code> - of PwVariable
+   */
+  public List getParamVarsList() {
+    ArrayList retval = new ArrayList( paramVarIds.size());
+    for (int i = 0; i < paramVarIds.size(); i++) {
+      retval.set( i, partialPlan.getVariable( (String) paramVarIds.get( i),
+                                              collectionName));
+    }
+    return retval;
+  }
+
+  /**
+   * <code>getSlotId</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getSlotId() {
+    return this.slotId;
+  }
 
 } // end class PwTokenImpl
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.4 2003-05-16 21:25:25 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.5 2003-05-18 00:02:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -30,23 +30,46 @@ import gov.nasa.arc.planworks.db.PwSlot;
 public class PwSlotImpl implements PwSlot {
 
   private String key;
-  private List tokenIdList; // element PwTokenImpl
-	private PwPartialPlanImpl partialPlan;
-		private String collectionName;
+  private List tokenIdList; // element String
+  private PwPartialPlanImpl partialPlan;
+  private String collectionName;
 
   /**
-   * <code>Slot</code> - constructor 
+   * <code>PwSlotImpl</code> - constructor 
    *
    * @param key - <code>String</code> - 
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param collectionName - <code>String</code> - 
    */
   public PwSlotImpl( String key, PwPartialPlanImpl partialPlan, String collectionName) {
     this.key = key;
-		this.partialPlan = partialPlan;
-		this.collectionName = collectionName;
+    this.partialPlan = partialPlan;
+    this.collectionName = collectionName;
     tokenIdList = new ArrayList();
-
   } // end constructor
 
+
+  /**
+   * <code>getKey</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getKey() {
+    return key;
+  }
+	
+  /**
+   * <code>getTokenList</code>
+   *
+   * @return - <code>List</code> - of PwToken
+   */
+  public List getTokenList() {
+    ArrayList retval = new ArrayList( tokenIdList.size());
+    for (int i = 0; i < tokenIdList.size(); i++)
+      retval.set( i, partialPlan.getToken( (String)tokenIdList.get( i),
+                                           collectionName));
+    return retval;
+  }
 
   /**
    * <code>addToken</code>
@@ -56,26 +79,11 @@ public class PwSlotImpl implements PwSlot {
    * @param collectionName - <code>String</code> - 
    * @return - <code>PwTokenImpl</code> - 
    */
-	public PwTokenImpl addToken( List attributeList, PwPartialPlanImpl partialPlan,
-															 String collectionName) {
-	  PwTokenImpl token = new PwTokenImpl( attributeList, partialPlan, collectionName);
-	  //tokenList.add( token);
-		tokenIdList.add(attributeList.get(0));
-		return token;
+  public PwTokenImpl addToken( List attributeList) {
+    PwTokenImpl token = new PwTokenImpl( attributeList, partialPlan, collectionName);
+    // add key to tokenIdList
+    tokenIdList.add( attributeList.get( 0));
+    return token;
   } // end addToken
-
-	/**
-	 * <code>getTokenList</code>
-	 *
-	 * @return - <code>List</code> -
-	 */
-
-	public List getTokenList() {
-		ArrayList retval = new ArrayList(tokenList.size());
-		for(int i = 0; i < tokenList.size(); i++)
-			retval.set(i, partialPlan.getToken((String)tokenIdList.get(i), collectionName));
-		return retval;
-		//return tokenList;
-	}
 
 } // end class PwSlotImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwParameterImpl.java,v 1.2 2003-05-16 20:06:20 miatauro Exp $
+// $Id: PwParameterImpl.java,v 1.3 2003-05-18 00:02:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,6 +43,24 @@ public class PwParameterImpl implements PwParameter {
     this.key = key;
   } // end constructor
 
+  /**
+   * <code>getName</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * <code>getKey</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getKey() {
+    return key;
+  }
+	
 
 
 } // end class PwParameterImpl

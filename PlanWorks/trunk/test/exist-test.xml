@@ -1,35 +1,54 @@
 <?xml version="1.0"?>
 <project name="exist-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
-	<property environment="env"/>
 	<property name="validOption" value="1"/>
 	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
 	<property name="arg_log" value="false"/>
 	<property name="eXist_conf_file" value="conf-nolog.xml"/>
+        <!-- MacOS still has JDK 1.3 -->
+        <property name="jdk_gt_eq_1_4" value="true"/>
 	<property name="arg_dev" value="false"/>
 	<property name="xml_files_dir" value="xml/test/monkey"/>
 	<dirname property="up1" file="${basedir}"/>
 	<property name="PLANWORKS_ROOT" value="${up1}"/>
+	<property environment="env"/>
 	<property name="EXIST_HOME" location="${PLANWORKS_ROOT}/java/lib/eXist"/>
-	<path id="exist.test.path">
-			<pathelement path="${PLANWORKS_ROOT}/java/classes"/>
-			<pathelement location="${PLANWORKS_ROOT}/java/lib/JGo/JGo.jar"/>
-			<pathelement location="${PLANWORKS_ROOT}/java/lib/JGo/JGoLayout.jar"/>
-			<pathelement location="${PLANWORKS_ROOT}/java/lib/JGo/Classier.jar"/>
-			<pathelement path="${EXIST_HOME}/lib/core"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${PLANWORKS_ROOT}/java/classes"/>
+		<pathelement location="${PLANWORKS_ROOT}/java/lib/JGo/JGo.jar"/>
+		<pathelement location="${PLANWORKS_ROOT}/java/lib/JGo/JGoLayout.jar"/>
+		<pathelement location="${PLANWORKS_ROOT}/java/lib/JGo/Classier.jar"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+                <pathelement location="${EXIST_HOME}/exist.jar"/>
+                <fileset dir="${EXIST_HOME}/lib/core" includes="*.jar"/>
 	</path>
 	<delete>
 		<fileset dir="${PLANWORKS_ROOT}/xml/db/data" includes="*.dbx"/>
 		<fileset dir="${PLANWORKS_ROOT}/xml/db/logs" includes="*.log"/>
 		<fileset dir="${PLANWORKS_ROOT}/xml/db/logs" includes="*.log*"/>
 	</delete>
-	<java dir="${PLANWORKS_ROOT}/java/src" classname="gov.nasa.arc.planworks.db.test.ExistTest" fork="true" maxmemory="${arg_gcMax}">
-		<classpath refid="exist.test.path"/>
-		<arg line="-cs -verbose:gc -Xms${arg_gcInit}m -Dplanworks.root=${PLANWORKS_ROOT} -Duser=${env.USER} -Dexist.initdb=true -Dexist.home=${EXIST_HOME} -Dexist.conf.xml=${eXist_conf_file} gov.nasa.arc.planworks.db.test.ExistTest ${env.OSTYPE} ${PLANWORKS_ROOT}/${xml_files_dir}"/>
+
+	<java dir="${PLANWORKS_ROOT}/java/src" 
+                classname="gov.nasa.arc.planworks.db.test.ExistTest" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+            <jvmarg value="-Dplanworks.root=${PLANWORKS_ROOT}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dexist.initdb=true"/>
+            <jvmarg value="-Dexist.home=${EXIST_HOME}"/>
+            <jvmarg value="-Dexist.conf.xml=${eXist_conf_file}"/>
+            <arg value="${env.OSTYPE}"/>
+            <arg value="${jdk_gt_eq_1_4}"/>
+            <arg value="${PLANWORKS_ROOT}/${xml_files_dir}"/>
 	</java>
+
 </target>
-<target name="totalbuild">
+
+<target name="totalbuild" description="conditionally build class files">
 	<ant dir="../java"/>
 </target>
 </project>

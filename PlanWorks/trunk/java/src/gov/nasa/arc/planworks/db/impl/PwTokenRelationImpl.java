@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenRelationImpl.java,v 1.1 2003-05-16 18:33:41 taylor Exp $
+// $Id: PwTokenRelationImpl.java,v 1.2 2003-05-18 00:02:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTokenRelation;
 
 
@@ -31,16 +32,48 @@ import gov.nasa.arc.planworks.db.PwTokenRelation;
 public class PwTokenRelationImpl implements PwTokenRelation {
 
   private String key;
-  private String masterToken;
-  private String slaveToken;
+  private String masterTokenId;
+  private String slaveTokenId;
+  
+  private PwPartialPlanImpl partialPlan;
+  private String collectionName;
 
 
-  public PwTokenRelationImpl( String key, String masterToken, String slaveToken) {
+  public PwTokenRelationImpl( String key, String masterTokenId, String slaveTokenId,
+                              PwPartialPlanImpl partialPlan, String collectionName) {
     this.key = key;
-    this.masterToken = masterToken;
-    this.slaveToken = slaveToken;
+    this.masterTokenId = masterTokenId;
+    this.slaveTokenId = slaveTokenId;
+    this.collectionName = collectionName;
+    this.partialPlan = partialPlan;
   } // end constructor
 
-
+  /**
+   * <code>getKey</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getKey() {
+    return key;
+  }
+	
+  /**
+   * <code>getMasterToken</code>
+   *
+   * @return - <code>PwToken</code> - 
+   */
+  public PwToken getMasterToken() {
+    return partialPlan.getToken( masterTokenId, collectionName);
+  }
+ 
+  /**
+   * <code>getSlaveToken</code>
+   *
+   * @return - <code>PwToken</code> - 
+   */
+  public PwToken getSlaveToken() {
+    return partialPlan.getToken( slaveTokenId, collectionName);
+  }
+ 
 
 } // end class PwTokenRelationImpl

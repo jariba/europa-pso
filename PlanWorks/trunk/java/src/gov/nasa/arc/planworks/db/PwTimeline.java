@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimeline.java,v 1.1 2003-05-15 22:16:22 taylor Exp $
+// $Id: PwTimeline.java,v 1.2 2003-05-18 00:02:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,6 +25,26 @@ import java.util.List;
  */
 public interface PwTimeline {
 
+  /**
+   * <code>getName</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getName();
+
+  /**
+   * <code>getKey</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getKey();
+	
+  /**
+   * <code>getSlotList</code>
+   *
+   * @return name - <code>List</code> - of PwSlot
+   */
+  public List getSlotList();
 
 
 

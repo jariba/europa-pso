@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomain.java,v 1.1 2003-05-15 22:16:21 taylor Exp $
+// $Id: PwEnumeratedDomain.java,v 1.2 2003-05-18 00:02:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,6 +25,19 @@ import java.util.List;
  */
 public interface PwEnumeratedDomain {
 
+  /**
+   * <code>getEnumeration</code>
+   *
+   * @return - <code>List</code> - of String
+   */
+  public List getEnumeration();
+
+  /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String toString();
 
 
 } // end interface PwEnumeratedDomain

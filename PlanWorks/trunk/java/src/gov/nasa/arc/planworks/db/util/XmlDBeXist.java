@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.3 2003-05-15 22:16:23 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.4 2003-05-18 00:02:26 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -38,13 +38,16 @@ import org.xmldb.api.modules.CollectionManagementService;
 import org.xmldb.api.modules.XMLResource;
 import org.xmldb.api.modules.XPathQueryService;
 
+import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
 import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwObjectImpl;
 import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
+import gov.nasa.arc.planworks.db.impl.PwParameterImpl;
 import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
 import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
+import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 
@@ -109,6 +112,15 @@ public class XmlDBeXist {
   private static final String PARAMETER_ELEMENT = "Parameter";
   private static final String PARAMETER_KEY_ATTRIBUTE = "key";
   private static final String PARAMETER_NAME_ATTRIBUTE = "name";
+  private static final String CONSTRAINT_ELEMENT = "Constraint";
+  private static final String CONSTRAINT_KEY_ATTRIBUTE = "key";
+  private static final String CONSTRAINT_TYPE_ATTRIBUTE = "type";
+  private static final String CONSTRAINT_NAME_ATTRIBUTE = "name";
+  private static final String CONSTRAINT_VARIABLE_IDS_ATTRIBUTE = "variableIds";
+  private static final String TOKEN_RELATION_ELEMENT = "TokenRelation";
+  private static final String TOKEN_RELATION_KEY_ATTRIBUTE = "key";
+  private static final String TOKEN_RELATION_MASTER_TOKEN_ATTRIBUTE = "masterToken";
+  private static final String TOKEN_RELATION_SLAVE_TOKEN_ATTRIBUTE = "slaveToken";
 
   /**
    * constant <code>NUM_TOKEN_ATTRIBUTES</code>
@@ -120,10 +132,18 @@ public class XmlDBeXist {
   private static final String END_SELECT_VALUE = "\"]";
   private static final String MODEL_KEY_QUERY_PRE;
   private static final String MODEL_KEY_QUERY_POST;
-  private static final String TIMELINE_KEY_QUERY;
-  private static final String VARIABLE_KEY_QUERY;
-  private static final String PREDICATE_KEY_QUERY;
   private static final String PARTIAL_PLAN_OBJECT_QUERY;
+
+  private static final String CONSTRAINT_KEYLIST_QUERY;
+  private static final String PREDICATE_KEYLIST_QUERY;
+  private static final String TOKEN_RELATION_KEYLIST_QUERY;
+  private static final String VARIABLE_KEYLIST_QUERY;
+
+  private static final String CONSTRAINT_KEY_QUERY;
+  private static final String PREDICATE_KEY_QUERY;
+  private static final String TIMELINE_KEY_QUERY;
+  private static final String TOKEN_RELATION_KEY_QUERY;
+  private static final String VARIABLE_KEY_QUERY;
 
   static {
     // /PartialPlan[@key="
@@ -143,6 +163,52 @@ public class XmlDBeXist {
     xmlQuery.append( OBJECT_ELEMENT);
     PARTIAL_PLAN_OBJECT_QUERY = xmlQuery.toString();
 
+    // ----------------------------
+
+    // query => /PartialPlan/Constraint@key
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( CONSTRAINT_ELEMENT).append( "@");
+    xmlQuery.append( CONSTRAINT_KEY_ATTRIBUTE);
+    CONSTRAINT_KEYLIST_QUERY = xmlQuery.toString();
+
+    // query => /PartialPlan/Predicate@key
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( PREDICATE_ELEMENT).append( "@");
+    xmlQuery.append( PREDICATE_KEY_ATTRIBUTE);
+    PREDICATE_KEYLIST_QUERY = xmlQuery.toString();
+
+    // /PartialPlan/TokenRelation@key
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( TOKEN_RELATION_ELEMENT).append( "@");
+    xmlQuery.append( TOKEN_RELATION_KEY_ATTRIBUTE);
+    TOKEN_RELATION_KEYLIST_QUERY = xmlQuery.toString();
+
+    // query => /PartialPlan/Variable@key
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( VARIABLE_ELEMENT).append( "@");
+    xmlQuery.append( VARIABLE_KEY_ATTRIBUTE);
+    VARIABLE_KEYLIST_QUERY = xmlQuery.toString();
+
+    // ------------------------
+
+    // query => /PartialPlan/Constraint[@key="
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( CONSTRAINT_ELEMENT).append( "[@");
+    xmlQuery.append( CONSTRAINT_KEY_ATTRIBUTE).append( "=\"");
+    CONSTRAINT_KEY_QUERY = xmlQuery.toString();
+
+    // query => /PartialPlan/Predicate[@key="
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( PREDICATE_ELEMENT).append( "[@");
+    xmlQuery.append( PREDICATE_KEY_ATTRIBUTE).append( "=\"");
+    PREDICATE_KEY_QUERY = xmlQuery.toString();
+
     // /PartialPlan/Object/Timeline[@key="
     xmlQuery = new StringBuffer( "/");
     xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
@@ -151,6 +217,13 @@ public class XmlDBeXist {
     xmlQuery.append( TIMELINE_KEY_ATTRIBUTE).append( "=\"");
     TIMELINE_KEY_QUERY = xmlQuery.toString();
 
+    // query => /PartialPlan/TokenRelation[@key="
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( TOKEN_RELATION_ELEMENT).append( "[@");
+    xmlQuery.append( TOKEN_RELATION_KEY_ATTRIBUTE).append( "=\"");
+    TOKEN_RELATION_KEY_QUERY = xmlQuery.toString();
+
     // query => /PartialPlan/Variable[@key="
     xmlQuery = new StringBuffer( "/");
     xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
@@ -158,12 +231,6 @@ public class XmlDBeXist {
     xmlQuery.append( VARIABLE_KEY_ATTRIBUTE).append( "=\"");
     VARIABLE_KEY_QUERY = xmlQuery.toString();
 
-    // query => /PartialPlan/Predicate[@key="
-    xmlQuery = new StringBuffer( "/");
-    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
-    xmlQuery.append( PREDICATE_ELEMENT).append( "[@");
-    xmlQuery.append( PREDICATE_KEY_ATTRIBUTE).append( "=\"");
-    PREDICATE_KEY_QUERY = xmlQuery.toString();
   }
 
   private static List nodeContentList;
@@ -547,19 +614,19 @@ public class XmlDBeXist {
 
 
   /**
-   * <code>getPartialPlanKeys</code>
+   * <code>queryPartialPlanKeys</code>
    *
    * @param collectionName - <code>String</code> - 
    * @return partialPlanKeys - <code>List of String</code> - 
    */
-  public static List getPartialPlanKeys( String collectionName) {
+  public static List queryPartialPlanKeys( String collectionName) {
     StringBuffer partialPlanQuery = new StringBuffer( "/");
     partialPlanQuery.append( PARTIAL_PLAN_ELEMENT).append( "/@");
     List partialPlanKeys = 
       queryAttributeValueOfElements( partialPlanQuery + PARTIAL_PLAN_KEY_ATTRIBUTE,
                                      PARTIAL_PLAN_KEY_ATTRIBUTE, collectionName);
     return partialPlanKeys;
-  } // end getPartialPlanKeys
+  } // end queryPartialPlanKeys
 
 
   /**
@@ -616,28 +683,28 @@ public class XmlDBeXist {
 
 
   /**
-   * <code>getPartialPlanModelByKey</code>
+   * <code>queryPartialPlanModelByKey</code>
    *
    * @param partialPlanKey - <code>String</code> - 
    * @param collectionName - <code>String</code> - 
    * @return - <code>String</code> - 
    */
-  public static String getPartialPlanModelByKey( String partialPlanKey,
+  public static String queryPartialPlanModelByKey( String partialPlanKey,
                                                  String collectionName) {
     StringBuffer partialPlanQuery = new StringBuffer( MODEL_KEY_QUERY_PRE);
     partialPlanQuery.append( partialPlanKey).append( MODEL_KEY_QUERY_POST);
     return queryAttributeValue( partialPlanQuery.toString(), collectionName);
-  } // end getPartialPlanModel
+  } // end queryPartialPlanModelByKey
 
 
   /**
-   * <code>getPartialPlanObjectsByKey</code>
+   * <code>queryPartialPlanObjectsByKey</code>
    *
    * @param partialPlanKey - <code>String</code> - 
    * @param collectionName - <code>String</code> - 
    * @return - <code>List of String</code> - name, key, name, key, ...
    */
-  public static List getPartialPlanObjectsByKey( String partialPlanKey,
+  public static List queryPartialPlanObjectsByKey( String partialPlanKey,
                                                  String collectionName) {
     List objectList = new ArrayList();
     StringBuffer objectQuery = new StringBuffer( "/");
@@ -654,10 +721,10 @@ public class XmlDBeXist {
       objectList.add( (String) objectKeyList.get( i));
     }
     return objectList;
-  } // end getPartialPlanObjectsByKey
+  } // end queryPartialPlanObjectsByKey
 
 
-  private static List getTimelinesSlotsTokens( String collectionName) {
+  private static List queryTimelinesSlotsTokens( String collectionName) {
     List nodeContentList = queryCollection( collectionName, PARTIAL_PLAN_OBJECT_QUERY);
 
 //     System.err.println( "\nDOM tree:");
@@ -676,11 +743,12 @@ public class XmlDBeXist {
    */
   public static void createTimelineSlotTokenNodesStructure( PwPartialPlanImpl partialPlan,
                                                             String collectionName) {
-    List nodeContentList = getTimelinesSlotsTokens( collectionName);
+    List nodeContentList = queryTimelinesSlotsTokens( collectionName);
     String timelineName = "", timelineKey = "";
-    int objectIndex = -1; String currentNodeName = ""; PwObjectImpl object = null;
+    String currentNodeName = ""; PwObjectImpl object = null;
     PwTimelineImpl timeline = null; PwSlotImpl slot = null; List tokenAttributeList = null;
-    List objectNodeList = partialPlan.getObjectList();
+    List objectIdList = partialPlan.getObjectIdList();
+    int objectIndex = 0;
     for (int i = 0, n = nodeContentList.size(); i < n; i++) {
       ParsedDomNode domNode = (ParsedDomNode) nodeContentList.get( i);
       short nodeType = domNode.getNodeType().shortValue();
@@ -689,8 +757,8 @@ public class XmlDBeXist {
       // System.err.println( "type " + nodeType + " name " + nodeName + " value " + nodeValue);
       if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
         if (nodeName.equals( OBJECT_ELEMENT)) {
+          object = partialPlan.getObjectImpl( (String) objectIdList.get( objectIndex));
           objectIndex += 1;
-          object = (PwObjectImpl) objectNodeList.get( objectIndex);
           currentNodeName = OBJECT_ELEMENT;
         } else if (nodeName.equals( TIMELINE_ELEMENT)) {
           timelineName = ""; timelineKey = "";
@@ -715,7 +783,7 @@ public class XmlDBeXist {
         } else if (currentNodeName.equals( TOKEN_ELEMENT)) {
           tokenAttributeList.add( nodeValue);
           if (tokenAttributeList.size() == NUM_TOKEN_ATTRIBUTES) {
-            slot.addToken( tokenAttributeList, partialPlan, collectionName);
+            slot.addToken( tokenAttributeList);
           }
         }
       }
@@ -728,13 +796,15 @@ public class XmlDBeXist {
 
 
   /**
-   * <code>queryVariable</code> -- /PartialPlan/Variable[@key="K55"]
+   * <code>queryVariableByKey</code> -- /PartialPlan/Variable[@key="K55"]
    *
    * @param key - <code>String</code> - 
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    * @param collectionName - <code>String</code> - 
    * @return - <code>PwVariableImpl</code> - 
    */
-  public static PwVariableImpl queryVariable( String key, String collectionName) {
+  public static PwVariableImpl queryVariableByKey( String key, PwPartialPlanImpl partialPlan,
+                                                   String collectionName) {
     String varType = "", constraintIds = "", paramId = "";
     String enumeration = "", intDomainType = "", lowerBound = "";
     String upperBound = "", currentNodeName = "";
@@ -784,19 +854,23 @@ public class XmlDBeXist {
     } else {
       domain = new PwEnumeratedDomainImpl( enumeration);
     }
-    variable = new PwVariableImpl( key, varType, constraintIds, paramId, domain);
+    variable = new PwVariableImpl( key, varType, constraintIds, paramId, domain,
+                                   partialPlan, collectionName);
     return variable;
-  } // end queryVariable
+  } // end queryVariableByKey
 
 
   /**
-   * <code>queryPredicate</code> - /PartialPlan/Predicate[@key="K32"]
+   * <code>queryPredicateByKey</code> - /PartialPlan/Predicate[@key="K32"]
    *
    * @param key - <code>String</code> - 
    * @param collectionName - <code>String</code> - 
-   * @return predicate - <code>PwPredicate</code> - 
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @return - <code>PwPredicateImpl</code> - 
    */
-  public static PwPredicateImpl queryPredicate( String key, String collectionName) {
+  public static PwPredicateImpl queryPredicateByKey( String key,
+                                                     PwPartialPlanImpl partialPlan,
+                                                     String collectionName) {
     PwPredicateImpl predicate = null;
     String parameterKey = "", currentNodeName = "";
     StringBuffer query = new StringBuffer( PREDICATE_KEY_QUERY);
@@ -817,19 +891,137 @@ public class XmlDBeXist {
       } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
         if (currentNodeName.equals( PREDICATE_ELEMENT)) {
           if (nodeName.equals( PREDICATE_NAME_ATTRIBUTE)) {
-            predicate = new PwPredicateImpl( nodeValue, key);
+            predicate = new PwPredicateImpl( nodeValue, key, partialPlan, collectionName);
           }
         } else if (currentNodeName.equals( PARAMETER_ELEMENT)) {
           if (nodeName.equals( PARAMETER_KEY_ATTRIBUTE)) {
             parameterKey = nodeValue;
           } else if (nodeName.equals( PARAMETER_NAME_ATTRIBUTE)) {
-            predicate.addParameter( nodeValue, parameterKey);
+            partialPlan.addParameter( parameterKey,
+                                      predicate.addParameter( nodeValue, parameterKey));
           }
         }
       }
     }
     return predicate;
-  } // end queryPredicate
+  } // end queryPredicateByKey
+
+  /**
+   * <code>queryConstraintByKey</code> - /PartialPlan/Constraint[@key="K32"]
+   *
+   * @param key - <code>String</code> - 
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwConstraintImpl</code> - 
+   */
+  public static PwConstraintImpl queryConstraintByKey( String key,
+                                                       PwPartialPlanImpl partialPlan,
+                                                       String collectionName) {
+    PwConstraintImpl constraint = null;
+    String currentNodeName = "", type = "", name = "";
+    StringBuffer query = new StringBuffer( CONSTRAINT_KEY_QUERY);
+    query.append( key).append( END_SELECT_VALUE);
+    List contentList = queryCollection( collectionName, query.toString());
+    for (int i = 0, n = contentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( " type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+        if (nodeName.equals( CONSTRAINT_ELEMENT)) {
+          currentNodeName = CONSTRAINT_ELEMENT;
+        } else { currentNodeName = ""; }
+      } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        if (currentNodeName.equals( CONSTRAINT_ELEMENT)) {
+          if (nodeName.equals( CONSTRAINT_TYPE_ATTRIBUTE)) {
+            type = nodeValue;
+          }  else if (nodeName.equals( CONSTRAINT_NAME_ATTRIBUTE)) {
+            name = nodeValue;
+          }  else if (nodeName.equals( CONSTRAINT_VARIABLE_IDS_ATTRIBUTE)) {
+            constraint = new PwConstraintImpl( name, key, type, nodeValue,
+                                               partialPlan, collectionName);
+          }
+        }
+      }
+    }
+    return constraint;
+  } // end queryConstraintByKey
+
+  /**
+   * <code>queryTokenRelationByKey</code> - /PartialPlan/TokenRelation[@key="K32"]
+   *
+   * @param key - <code>String</code> - 
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwTokenRelationImpl</code> - 
+   */
+  public static PwTokenRelationImpl queryTokenRelationByKey( String key,
+                                                             PwPartialPlanImpl partialPlan,
+                                                             String collectionName) {
+    PwTokenRelationImpl tokenRelation = null;
+    String currentNodeName = "", master = "";
+    StringBuffer query = new StringBuffer( TOKEN_RELATION_KEY_QUERY);
+    query.append( key).append( END_SELECT_VALUE);
+    List contentList = queryCollection( collectionName, query.toString());
+    for (int i = 0, n = contentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( " type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+        if (nodeName.equals( TOKEN_RELATION_ELEMENT)) {
+          currentNodeName = TOKEN_RELATION_ELEMENT;
+        } else { currentNodeName = ""; }
+      } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        if (currentNodeName.equals( TOKEN_RELATION_ELEMENT)) {
+          if (nodeName.equals( TOKEN_RELATION_MASTER_TOKEN_ATTRIBUTE)) {
+            master = nodeValue;
+          }  else if (nodeName.equals( TOKEN_RELATION_SLAVE_TOKEN_ATTRIBUTE)) {
+            tokenRelation = new PwTokenRelationImpl( key, master, nodeValue,
+                                                     partialPlan, collectionName);
+          }
+        }
+      }
+    }
+    return tokenRelation;
+  } // end queryTokenRelationByKey
+
+  /**
+   * <code>queryElementKeysByType</code>
+   *
+   * @param type - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>List</code> - of String
+   */
+  public static List queryElementKeysByType( String type, String collectionName) {
+    List keyList = new ArrayList();
+    if (type.equals( "constraint")) {
+      keyList =
+        queryAttributeValueOfElements( CONSTRAINT_KEYLIST_QUERY,
+                                       CONSTRAINT_KEY_ATTRIBUTE, collectionName);
+    } else if (type.equals( "predicate")) {
+      // parameters are inside predicates
+      keyList =
+        queryAttributeValueOfElements( PREDICATE_KEYLIST_QUERY,
+                                       PREDICATE_KEY_ATTRIBUTE, collectionName);
+    } else if (type.equals( "tokenRelation")) {
+      keyList =
+        queryAttributeValueOfElements( TOKEN_RELATION_KEYLIST_QUERY,
+                                       TOKEN_RELATION_KEY_ATTRIBUTE, collectionName);
+    } else if (type.equals( "variable")) {
+      keyList =
+        queryAttributeValueOfElements( VARIABLE_KEYLIST_QUERY,
+                                       VARIABLE_KEY_ATTRIBUTE, collectionName);
+    } else {
+      System.err.println( "XmlDBeXist.queryElementKeysByType cannot handle type " +
+                          type);
+      System.exit( 1);
+    }
+    return keyList;
+  } // end queryElementKeysByType
+
 
 } // end class XmlDBeXist
 

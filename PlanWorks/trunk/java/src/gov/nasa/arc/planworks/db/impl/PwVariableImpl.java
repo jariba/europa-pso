@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.1 2003-05-15 22:16:23 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.2 2003-05-18 00:02:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.PwDomain;
+import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwVariable;
 
 
@@ -31,9 +33,11 @@ public class PwVariableImpl implements PwVariable {
 
   private String key;
   private String type;
-  private List constraintIds; // element String
+  private List constraintIdList; // element String
   private String paramId;
   private PwDomainImpl domain; // PwEnumeratedDomainImpl || PwIntervalDomainImpl
+  private PwPartialPlanImpl partialPlan;
+  private String collectionName;
 
 
   /**
@@ -41,31 +45,60 @@ public class PwVariableImpl implements PwVariable {
    *
    * @param key - <code>String</code> - 
    * @param type - <code>String</code> - 
-   * @param constraintIds - <code>String</code> - 
+   * @param constraintIdList - <code>String</code> - 
    * @param paramId - <code>String</code> - 
    * @param domain - <code>PwDomainImpl</code> - PwEnumeratedDomainImpl || PwIntervalDomainImpl
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param collectionName - <code>String</code> - 
    */
   public PwVariableImpl( String key, String type, String constraintIds, String paramId,
-                         PwDomainImpl domain) {
+                         PwDomainImpl domain, PwPartialPlanImpl partialPlan,
+                         String collectionName) {
     this.key = key;
     this.type = type;
-    this.constraintIds = new ArrayList();
+    this.constraintIdList = new ArrayList();
     StringTokenizer tokenizer = new StringTokenizer( constraintIds);
     while (tokenizer.hasMoreTokens()) {
-      this.constraintIds.add( tokenizer.nextToken());
+      this.constraintIdList.add( tokenizer.nextToken());
     }
     this.paramId = paramId;
     this.domain = domain;
+    this.partialPlan = partialPlan;
+    this.collectionName = collectionName;
   } // end constructor
 
 
   /**
    * <code>getDomain</code>
    *
-   * @return domain - <code>PwDomainImpl</code> - 
+   * @return - <code>PwDomain</code> - 
    */
-  public PwDomainImpl getDomain()  {
+  public PwDomain getDomain()  {
     return this.domain;
   }
+
+  /**
+   * <code>getParameter</code>
+   *
+   * @return - <code>PwParameter</code> - 
+   */
+  public PwParameter getParameter() {
+    return partialPlan.getParameter( paramId, collectionName);
+  }
+
+  /**
+   * <code>getConstraintList</code>
+   *
+   * @return - <code>List</code> - of PwConstraint
+   */
+  public List getConstraintList() {
+    ArrayList retval = new ArrayList( constraintIdList.size());
+    for (int i = 0; i < constraintIdList.size(); i++) {
+      retval.set( i, partialPlan.getConstraint( (String) constraintIdList.get( i),
+                                                collectionName));
+    }
+    return retval;
+  }
+
 
 } // end class PwVariableImpl

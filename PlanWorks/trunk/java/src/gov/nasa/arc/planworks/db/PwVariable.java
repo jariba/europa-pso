@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariable.java,v 1.1 2003-05-15 22:16:22 taylor Exp $
+// $Id: PwVariable.java,v 1.2 2003-05-18 00:02:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,6 +25,26 @@ import java.util.List;
  */
 public interface PwVariable {
 
+  /**
+   * <code>getDomain</code>
+   *
+   * @return - <code>PwDomain</code> - 
+   */
+  public PwDomain getDomain();
+
+  /**
+   * <code>getParameter</code>
+   *
+   * @return - <code>PwParameter</code> - 
+   */
+  public PwParameter getParameter();
+
+  /**
+   * <code>getConstraintList</code>
+   *
+   * @return - <code>List</code> - of PwConstraint
+   */
+  public List getConstraintList();
 
 
 } // end interface PwVariable
