@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.34 2004-07-29 20:31:42 taylor Exp $ -->
+<!-- $Id: planWorks.xml,v 1.35 2004-08-26 22:57:26 miatauro Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -21,6 +21,8 @@
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
 		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
 		<pathelement location="${antlr.home}/antlr.jar"/>
+		<pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -68,6 +70,8 @@
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
 		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
 		<pathelement location="${antlr.home}/antlr.jar"/>
+		<pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -115,6 +119,8 @@
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
                 <pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
 		<pathelement location="${antlr.home}/antlr.jar"/>
+		<pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 

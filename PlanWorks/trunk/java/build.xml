@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: build.xml,v 1.15 2004-07-27 21:58:01 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.16 2004-08-26 22:58:03 miatauro Exp $ -->
 <project name="PlanWorks" default="compile" basedir=".">
     <description>
         Planworks Build Targets
@@ -34,6 +34,8 @@
           <pathelement location="${jfcunit.home}/jfcunit.jar"/>
           <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
 	  <pathelement location="${antlr.home}/antlr.jar"/>
+	  <pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
        </classpath> 
     </javac>
     <echo message="optimized compile completed"/>
@@ -41,8 +43,6 @@
 
   <target name="compile" depends="init"
         description="compile 'src' tree into 'classes' tree" >
-    <ant dir="./src/gov/nasa/arc/planworks/dbg/testLang"
-       antfile="build.xml" target="generateTestLang"/>
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}" debug="${debug}" deprecation="${deprecation}">
        <classpath>
@@ -54,6 +54,8 @@
           <pathelement location="${jfcunit.home}/jfcunit.jar"/>
           <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
 	  <pathelement location="${antlr.home}/antlr.jar"/>
+	  <pathelement location="${nanoxml.home}/nanoxml.jar"/>
+    <pathelement location="${testLang.home}/testLang.jar"/>
        </classpath>
     </javac>
     <echo message="compile completed"/>
