@@ -4,10 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecChecker.java,v 1.4 2003-06-30 21:31:27 miatauro Exp $
+// $Id: ContentSpecChecker.java,v 1.5 2003-07-08 23:19:54 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
+import java.util.List;
 /**
  * <code>ContentSpecChecker</code> -
  * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
@@ -21,4 +22,5 @@ public interface ContentSpecChecker {
    * @return boolean The truth value of the statement "The key is in the specification."
    */
   public boolean isInContentSpec(Integer key);
+  public List getValidTokenIds();
 }
