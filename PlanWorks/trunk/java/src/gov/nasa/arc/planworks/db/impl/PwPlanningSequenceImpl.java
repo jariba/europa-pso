@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.99 2004-09-03 00:35:34 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.100 2004-09-27 19:18:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 
+import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
@@ -84,10 +85,10 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    *
    * @param url - <code>String</code> - pathname of planning sequence
    * @param id - <code>Integer</code> - id of sequence
-   * @param project - <code>PwProjectImpl</code> - the project to which the sequence will be added
+   * @param projectName - <code>String</code> - the project to which the sequence will be added
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPlanningSequenceImpl( final String url, final Long id)
+  public PwPlanningSequenceImpl( final String url, final Long id, final String projectName)
     throws ResourceNotFoundException {
 		hasLoadedTransactionFile = false;
     this.url = url;
@@ -118,7 +119,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
     //loadTransactions();
     transactions = null;
-    instantiateRules();
+    instantiateRules( projectName);
   }
 
   //for testing only
@@ -203,7 +204,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       partialPlans.put(planName, null);
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
-    instantiateRules();
+    instantiateRules( project.getName());
   } // end constructor for OpenProject call
   
 
@@ -870,8 +871,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     }
   }
 
-  private void instantiateRules() {
-    ruleMap = MySQLDB.queryRules(id);
+  private void instantiateRules( String projectName) {
+    String modelRuleDelimiters =
+      ConfigureAndPlugins.getProjectConfigValue
+      ( ConfigureAndPlugins.PROJECT_MODEL_RULE_DELIMITERS, projectName);
+    // System.err.println( "instantiateRules: modelRuleDelimiters " + modelRuleDelimiters);
+    ruleMap = MySQLDB.queryRules(id, modelRuleDelimiters);
   }
 
   public PwRule getRule(Integer rId) {

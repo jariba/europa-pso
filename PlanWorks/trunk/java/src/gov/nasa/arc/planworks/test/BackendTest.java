@@ -1,5 +1,14 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: BackendTest.java,v 1.17 2004-09-27 19:19:02 taylor Exp $
+//
 package gov.nasa.arc.planworks.test;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.ListIterator;
@@ -7,6 +16,7 @@ import java.util.Map;
 
 import junit.framework.*;
 
+import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.db.*;
 import gov.nasa.arc.planworks.db.impl.*;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
@@ -40,9 +50,12 @@ public class BackendTest extends TestCase implements IdSource {
     IdSourceImpl idSource = new IdSourceImpl();
 
     int numSequences = 1, numSteps = 1;
-    sequenceUrls = PWSetupHelper.buildTestData(numSequences, numSteps, idSource , BACKEND_TEST_DIR);
+    sequenceUrls = PWSetupHelper.buildTestData(numSequences, numSteps, idSource ,
+                                               BACKEND_TEST_DIR);
     sequenceName = (String) sequenceUrls.get( 0);
 
+    File configFile = new File( System.getProperty( "projects.config") + ".template");
+    ConfigureAndPlugins.processProjectsConfigFile( configFile);
     try {
       MySQLDB.startDatabase();
       MySQLDB.registerDatabase();
@@ -60,7 +73,8 @@ public class BackendTest extends TestCase implements IdSource {
         MySQLDB.loadFile(p1.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
                          DbConstants.PW_DB_TABLES[i]);
       }
-      sequence = new PwPlanningSequenceImpl(sequenceName, MySQLDB.latestSequenceId());
+      sequence = new PwPlanningSequenceImpl(sequenceName, MySQLDB.latestSequenceId(),
+                                            ConfigureAndPlugins.DEFAULT_PROJECT_NAME);
       plan = (PwPartialPlanImpl) sequence.getPartialPlan(step0);
     }
     catch(Exception e) {

@@ -40,7 +40,7 @@
           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
           <jvmarg value="-Dname.application=${name.application}"/>
           <jvmarg value="-Dboolean.isMaxTestScreen=${boolean.isMaxScreen}"/>
-	  <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/>
+	  <!-- jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/ -->
 	  <jvmarg value="-Dant.target.test=true"/>
         </java>
 </target>
@@ -83,7 +83,7 @@
           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
           <jvmarg value="-Dname.application=${name.application}"/>
           <jvmarg value="-Dboolean.isMaxTestScreen=${boolean.isMaxScreen}"/>
-	  <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/>
+	  <!-- jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/ -->
 	  <jvmarg value="-Dant.target.test=true"/>
         </java>
 
@@ -122,7 +122,7 @@
 <!--           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/> -->
 <!--           <jvmarg value="-Dname.application=${name.application}"/> -->
 <!--           <jvmarg value="-Dboolean.isMaxTestScreen=${boolean.isMaxScreen}"/> -->
-<!-- 	       <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/> -->
+<!-- 	       <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/ -->
 
 <!--         </junit> -->
 

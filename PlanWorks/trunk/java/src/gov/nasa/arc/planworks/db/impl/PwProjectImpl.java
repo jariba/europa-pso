@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.52 2004-09-10 20:02:32 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.53 2004-09-27 19:19:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -239,7 +239,7 @@ public class PwProjectImpl extends PwProject {
       Long sequenceId = (Long) seqIdIterator.next();
       String seqUrl = (String) sequenceIdUrlMap.get(sequenceId);
       try {
-        planningSequences.add(new PwPlanningSequenceImpl(seqUrl, sequenceId));
+        planningSequences.add(new PwPlanningSequenceImpl(seqUrl, sequenceId, name));
       }
       catch(ResourceNotFoundException rnfe) {
         if(rnfe.getMessage().indexOf("is not a valid sequence directory") != -1) {

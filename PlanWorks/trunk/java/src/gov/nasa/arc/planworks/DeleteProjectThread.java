@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteProjectThread.java,v 1.7 2004-09-03 00:35:31 taylor Exp $
+// $Id: DeleteProjectThread.java,v 1.8 2004-09-27 19:18:57 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -87,18 +87,21 @@ public class DeleteProjectThread extends ThreadWithProgressMonitor {
               PlanWorks.getPlanWorks().setTitle( PlanWorks.getPlanWorksTitle());
               int numProjects = PwProject.listProjects().size();
               dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
+              PlanWorks.PROJECT_CONFIG_MAP.remove( projectName);
+              ConfigureAndPlugins.writeProjectConfigMap();
             }
+            PlanWorks planWorks = PlanWorks.getPlanWorks();
             if (PwProject.listProjects().size() == 0) {
-              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, false);
-              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.CONFIGURE_MENU_ITEM, false);
-              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
-              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, false);
-              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
-              PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, false);
-            } else if (PlanWorks.getPlanWorks().getProjectsLessCurrent().size() == 0) {
-              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
+              planWorks.setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, false);
+              planWorks.setProjectMenuEnabled( PlanWorks.CONFIGURE_MENU_ITEM, false);
+              planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
+              planWorks.setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, false);
+              planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
+              planWorks.setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, false);
+            } else if (planWorks.getProjectsLessCurrent().size() == 0) {
+              planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
             } else {
-              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
+              planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
             }
           } catch (ResourceNotFoundException rnfExcep) {
             int index = rnfExcep.getMessage().indexOf( ":");

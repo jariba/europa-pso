@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.130 2004-09-24 22:39:56 taylor Exp $
+# $Id: README,v 1.131 2004-09-27 19:18:53 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -20,6 +20,7 @@ o
 
 
 o GNATS PRs and CRs completed:
+  #2593: Move rule delimiter chars into configuration.
 
 
 CVS CHECKOUT

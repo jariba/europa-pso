@@ -7,3 +7,4 @@ projectPlannerPath ../../../PLASMA/CBPlanner/component
 projectModelPath ../../../PLASMA/System/test
 projectModelInitStatePath ../../../PLASMA/System/test
 projectModelOutputDestDir ../../../PLASMA/System/test
+projectModelRuleDelimiters {}
