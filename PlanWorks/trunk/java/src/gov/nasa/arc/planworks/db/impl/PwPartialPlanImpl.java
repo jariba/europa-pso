@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.101 2004-08-05 01:03:15 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.102 2004-08-06 00:53:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -19,17 +19,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import javax.swing.ProgressMonitor;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
+import gov.nasa.arc.planworks.db.PwEntity;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
@@ -266,10 +269,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     if (doProgMonitor) {
       isProgressMonitorCancel = true;
     }
-//     for(Iterator it = getVariablePath(new Integer(911), new Integer(3430)).iterator(); it.hasNext();) {
-//       System.err.println(it.next());
-//     }
-
   } // end createPartialPlan
 
   private void checkProgressMonitor() throws CreatePartialPlanException {
@@ -352,6 +351,26 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
   } // end fillElementMaps
 
+  public PwEntity getEntity(final Integer id) {
+    PwEntity retval = (PwEntity) objectMap.get(id);
+    if(retval == null)
+      retval = (PwEntity) timelineMap.get(id);
+    if(retval == null)
+      retval = (PwEntity) resourceMap.get(id);
+    if(retval == null)
+      retval = (PwEntity) slotMap.get(id);
+    if(retval == null)
+      retval = (PwEntity) tokenMap.get(id);
+    if(retval == null)
+      retval = (PwEntity) constraintMap.get(id);
+    if(retval == null)
+      retval = (PwEntity) ruleInstanceMap.get(id);
+    if(retval == null)
+      retval = (PwEntity) variableMap.get(id);
+    if(retval == null)
+      retval = (PwEntity) resTransactionMap.get(id);
+    return retval;
+  }
 
   /**
    * <code>getObjectIdList</code> - get complete list of Ids for PwObject objects
@@ -1517,43 +1536,69 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return numCycles != 0;
   } // end progressMonitorWait
 
-  public List getVariablePath(final Integer sKey, final Integer eKey) {
-    PwVariable start = (PwVariable) variableMap.get(sKey);
-    if(start == null)
-      return null;
-    PwVariable end = (PwVariable) variableMap.get(eKey);
-    if(end == null)
-      return null;
-
-    LinkedList retval = new LinkedList();
-
-    variablePathRecurse(start, end.getId(), retval);
-    return retval;
+  public List getPath(final Integer sKey, final Integer eKey, final List classes) {
+    return getPath(sKey, eKey, classes, Integer.MAX_VALUE);
   }
 
-  private boolean variablePathRecurse(PwVariable current, Integer end, LinkedList path) {
+  public List getPath(final Integer sKey, final Integer eKey, final List classes, 
+                      final int maxLength) {
+    PwEntity start, end;
+    if(sKey == null)
+      throw new IllegalArgumentException("Start key can't be null");
+    if(eKey == null)
+      throw new IllegalArgumentException("End key can't be null");
+    if(classes == null || classes.isEmpty())
+      throw new IllegalArgumentException("Invalid class list.");
+    if(maxLength < 1)
+      throw new IllegalArgumentException("Max length must be >= 1");
+    if((start = getEntity(sKey)) == null)
+      throw new IllegalArgumentException("Start key " + sKey + " isn't a valid entity id.");
+    if((end = getEntity(eKey)) == null)
+      throw new IllegalArgumentException("End key " + eKey + " isn't a valid entity id.");
+    boolean foundClass = false;
+    for(Iterator it = classes.iterator(); it.hasNext();) {
+      Class temp = (Class) it.next();
+      if((foundClass = temp.isInstance(end)))
+        break;
+    }
+    if(!foundClass)
+      throw new IllegalArgumentException("Valid class list must contain end type '" + 
+                                         end.getClass() + "'");
+    LinkedList path = new LinkedList();
+    getPathRecurse(start, eKey, classes, maxLength, path);
+    return path;
+  }
+
+  private boolean getPathRecurse(final PwEntity current, final Integer eKey,
+                                 final List classes, final int maxLength, 
+                                 final LinkedList path) {
     if(path.contains(current.getId()))
       return false;
+    if(path.size() >= maxLength)
+      return false;
     path.addLast(current.getId());
-    if(current.getId().equals(end))
+    System.err.println("current path: " + path);
+    if(current.getId().equals(eKey))
       return true;
-    for(Iterator it = current.getConstraintList().iterator(); it.hasNext();) {
-      if(variablePathRecurse((PwConstraint)it.next(), end, path))
+    for(Iterator it = current.getNeighbors(classes).iterator(); it.hasNext();) {
+      if(getPathRecurse((PwEntity)it.next(), eKey, classes, maxLength, path))
         return true;
     }
     path.removeLast();
     return false;
   }
 
-  private boolean variablePathRecurse(PwConstraint current, Integer end, LinkedList path) {
-    if(path.contains(current.getId()))
-      return false;
-    path.addLast(current.getId());
-    for(Iterator it = current.getVariablesList().iterator(); it.hasNext();) {
-      if(variablePathRecurse((PwVariable)it.next(), end, path))
-        return true;
-    }
-    path.removeLast();
-    return false;
+  public List getVariablePath(final Integer sKey, final Integer eKey) {
+    LinkedList classes = new LinkedList();
+    classes.add(PwVariable.class);
+    classes.add(PwConstraint.class);
+    return getPath(sKey, eKey, classes);
+  }
+  
+  public List getVariablePath(final Integer sKey, final Integer eKey, final int maxLength) {
+    LinkedList classes = new LinkedList();
+    classes.add(PwVariable.class);
+    classes.add(PwConstraint.class);
+    return getPath(sKey, eKey, classes, maxLength);
   }
 } // end class PwPartialPlanImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.13 2004-05-04 01:27:11 taylor Exp $
+// $Id: PwConstraintImpl.java,v 1.14 2004-08-06 00:53:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,9 +15,12 @@ package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import gov.nasa.arc.planworks.db.PwConstraint;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.UniqueSet;
 
 /**
@@ -143,6 +146,26 @@ public class PwConstraintImpl implements PwConstraint {
       retval.append(partialPlan.getId()).append("\t").append("\n");
     }
     return retval.toString();
+  }
+
+  public List getNeighbors() {
+    List classes = new LinkedList();
+    classes.add(Object.class);
+    return getNeighbors(classes);
+  }
+
+  public List getNeighbors(List classes) {
+    for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
+      Class cclass = (Class) classIt.next();
+      if(cclass.equals(PwVariable.class)) {
+        return getVariablesList();
+      }
+    }
+    return new LinkedList();
+  }
+
+  public List getNeighbors(List classes, Set ids) {
+    return PwEntityImpl.getNeighbors(this, classes, ids);
   }
 
 } // end class PwConstraintImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRuleInstanceImpl.java,v 1.4 2004-07-29 20:31:44 taylor Exp $
+// $Id: PwRuleInstanceImpl.java,v 1.5 2004-08-06 00:56:20 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,11 +15,15 @@ package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwRuleInstance;
+import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.UniqueSet;
 
 
@@ -168,5 +172,30 @@ public class PwRuleInstanceImpl implements PwRuleInstance {
     }
     return retval.toString();
   } // end toOutputStringSlaveMap
+
+  public List getNeighbors() {
+    LinkedList classes = new LinkedList();
+    classes.add(PwToken.class);
+    classes.add(PwVariable.class);
+    return getNeighbors(classes);
+  }
+
+  public List getNeighbors(List classes) {
+    LinkedList retval = new LinkedList();
+    for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
+      Class cclass = (Class) classIt.next();
+      if(cclass.equals(PwToken.class)) {
+        retval.addAll(partialPlan.getTokenList(getSlaveIdsList()));
+        retval.add(partialPlan.getToken(getMasterId()));
+      }
+      else if(cclass.equals(PwVariable.class))
+        retval.addAll(partialPlan.getVariableList(getRuleVarIdList()));
+    }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, Set ids) {
+    return PwEntityImpl.getNeighbors(this, classes, ids);
+  }
 
 } // end class PwRuleInstanceImpl

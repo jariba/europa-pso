@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.24 2004-03-23 18:20:45 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.25 2004-08-06 00:53:25 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,8 +14,11 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwObject;
@@ -168,4 +171,31 @@ public class PwObjectImpl implements PwObject {
     return retval.toString();
   }
 
+  public List getNeighbors() {
+    List classes = new LinkedList();
+    classes.add(PwToken.class);
+    classes.add(PwVariable.class);
+    classes.add(PwObject.class);
+    return getNeighbors(classes);
+  }
+
+  public List getNeighbors(List classes) {
+    List retval = new LinkedList();
+    for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
+      Class cclass = (Class) classIt.next();
+      if(cclass.equals(PwToken.class))
+        retval.addAll(getTokens());
+      else if(cclass.equals(PwVariable.class))
+        retval.addAll(getVariables());
+      else if(cclass.equals(PwObject.class)) {
+        retval.add(getParent());
+        retval.addAll(getComponentList());
+      }
+    }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, Set ids) {
+    return PwEntityImpl.getNeighbors(this, classes, ids);
+  }
 } // end class PwObjectImpl

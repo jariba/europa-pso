@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomainImpl.java,v 1.10 2004-07-12 18:13:51 miatauro Exp $
+// $Id: PwEnumeratedDomainImpl.java,v 1.11 2004-08-06 00:53:25 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -16,6 +16,7 @@ package gov.nasa.arc.planworks.db.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -153,6 +154,10 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
     }
     return enumBuf.toString();
   }
+
+  public List getNeighbors(){return null;}
+  public List getNeighbors(List classes){return null;}
+  public List getNeighbors(List classes, Set ids){return null;}
 
 } // end class PwEnumeratedDomainImpl
 

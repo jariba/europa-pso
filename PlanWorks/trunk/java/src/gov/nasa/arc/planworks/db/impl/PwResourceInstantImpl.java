@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstantImpl.java,v 1.7 2004-07-13 21:33:53 pdaley Exp $
+// $Id: PwResourceInstantImpl.java,v 1.8 2004-08-06 00:53:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -16,6 +16,7 @@ package gov.nasa.arc.planworks.db.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwIntervalDomain;
@@ -126,4 +127,8 @@ public class PwResourceInstantImpl implements PwResourceInstant {
     retval.append("\n");
     return retval.toString();
   }
+
+  public List getNeighbors(){return null;}
+  public List getNeighbors(List classes){return null;}
+  public List getNeighbors(List classes, Set ids){return null;}
 } // end class PwResourceInstantImpl
