@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.10 2004-03-07 01:49:29 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.11 2004-03-08 19:30:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -521,24 +521,23 @@ public class ResourceTransactionView extends ResourceView  {
         ResourceTransactionSet resourceTransactionSet =
           (ResourceTransactionSet) resourceSetListItr.next();
         if (resourceTransactionSet.getResource().getId().equals( resourceToFind.getId())) {
-          Iterator transObjectItr =
+          Iterator transNodeItr =
             resourceTransactionSet.getTransactionObjectList().iterator();
-          while (transObjectItr.hasNext()) {
-            ResourceTransactionSet.TransactionObject transObject =
-              (ResourceTransactionSet.TransactionObject) transObjectItr.next();
-            if (transObject.getTransaction().getId().equals( resourceTransToFind.getId())) {
+          while (transNodeItr.hasNext()) {
+            ResourceTransactionNode transNode = (ResourceTransactionNode) transNodeItr.next();
+            if (transNode.getTransaction().getId().equals( resourceTransToFind.getId())) {
               System.err.println( "ResourceTransactionView found resourceTransaction: " +
                                   resourceTransToFind.getName() + 
                                   " (key=" + resourceTransToFind.getId().toString() + ")");
               isResourceTransFound = true;
               this.getJGoExtentViewSelection().clearSelection();
               this.getJGoExtentViewHScrollBar().
-                setValue( Math.max( 0, (int) (transObject.getLocation().getX() -
+                setValue( Math.max( 0, (int) (transNode.getLocation().getX() -
                                               (this.getJGoExtentViewSize().getWidth() / 2))));
               this.getJGoExtentViewVScrollBar().
-                setValue( Math.max( 0, (int) (transObject.getLocation().getY() -
+                setValue( Math.max( 0, (int) (transNode.getLocation().getY() -
                                               (this.getJGoExtentViewSize().getHeight() / 2))));
-              this.getJGoExtentViewSelection().extendSelection( transObject);
+              this.getJGoExtentViewSelection().extendSelection( transNode);
               break foundIt;
             }
           }
