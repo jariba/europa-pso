@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.40 2004-05-13 20:24:10 taylor Exp $
+// $Id: PartialPlanView.java,v 1.41 2004-05-28 20:21:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,7 +14,6 @@
 package gov.nasa.arc.planworks.viz.partialPlan;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Container;
 import java.awt.Rectangle;
@@ -24,7 +23,6 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +44,6 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
@@ -57,7 +54,6 @@ import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
-import gov.nasa.arc.planworks.viz.VizViewRuleView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
 import gov.nasa.arc.planworks.viz.util.StepButton;
@@ -94,7 +90,6 @@ public class PartialPlanView extends VizView {
   private ButtonAdjustmentListener verticalAdjustmentListener;
   private ButtonViewListener buttonViewListener;
 
-  private Map navigatorFrameNameMap;
   private String stringViewSetKey; // key for viewSet hash map - NavigatorView,
                                    // VizViewOverview, & VizViewRuleView
 
@@ -109,7 +104,6 @@ public class PartialPlanView extends VizView {
     this.partialPlan = partialPlan;
     validTokenIds = null;
     displayedTokenIds = null;
-    navigatorFrameNameMap = new HashMap();
     stringViewSetKey = null;
     backwardButton = null;
     forwardButton = null;
@@ -616,6 +610,7 @@ public class PartialPlanView extends VizView {
 
   /**
    * <code>createOpenViewItems</code> - partial plan background Mouse-Right item
+   *                                    all views except current
    *
    * @param partialPlan - <code>PwPartialPlan</code> - 
    * @param partialPlanName - <code>String</code> - 
@@ -626,7 +621,7 @@ public class PartialPlanView extends VizView {
   public void createOpenViewItems( final PwPartialPlan partialPlan,
                                    final String partialPlanName,
                                    final PwPlanningSequence planSequence,
-                                   JPopupMenu mouseRightPopup, String currentViewName) {
+                                   JPopupMenu mouseRightPopup, final String currentViewName) {
     PartialPlanViewMenu viewMenu = new PartialPlanViewMenu();
     Iterator viewNamesItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
     while (viewNamesItr.hasNext()) {
@@ -638,6 +633,19 @@ public class PartialPlanView extends VizView {
         mouseRightPopup.add( openViewItem);
       }
     }
+  } // end createOpenViewItems
+
+  public void createAnOpenViewFindItem( final PwPartialPlan partialPlan,
+                                        final String partialPlanName,
+                                        final PwPlanningSequence planSequence,
+                                        JPopupMenu mouseRightPopup, final String viewName,
+                                        final Integer idToFind) {
+    PartialPlanViewMenu viewMenu = new PartialPlanViewMenu();
+    ViewListener viewListener = null;
+    PartialPlanViewMenuItem openViewItem =
+      viewMenu.createOpenViewFindItem( viewName, partialPlanName, planSequence, viewListener,
+                                       viewSet, idToFind);
+    mouseRightPopup.add( openViewItem);
   } // end createOpenViewItems
 
   /**
@@ -661,7 +669,7 @@ public class PartialPlanView extends VizView {
    */
   public String getNavigatorViewSetKey() {
     ((PartialPlanViewSet) viewSet).incrNavigatorFrameCnt();
-    return new String( ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "") +
+    return new String( ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "") + "-" +
                        ((PartialPlanViewSet) viewSet).getNavigatorFrameCnt());
   }
 
@@ -673,8 +681,10 @@ public class PartialPlanView extends VizView {
   public MDIInternalFrame openNavigatorViewFrame( String viewSetKey) {
     String viewName = ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "");
     String rootNavigatorViewName = viewName + " for " + partialPlan.getName();
-    String navigatorViewName = getNavigatorViewName( rootNavigatorViewName);
-      MDIInternalFrame navigatorFrame = 
+    int indx = viewSetKey.indexOf( "-") + 1;
+    String navigatorViewName =
+      rootNavigatorViewName.concat(" - ").concat( viewSetKey.substring( indx));
+    MDIInternalFrame navigatorFrame = 
       ((MDIDesktopFrame) PlanWorks.getPlanWorks()).createFrame( navigatorViewName,
                                                                 viewSet, true, true,
                                                                 true, true);
@@ -682,46 +692,6 @@ public class PartialPlanView extends VizView {
     return navigatorFrame;
   } // end openNavigatorViewFrame
 
-  private String getNavigatorViewName( final String rootNavigatorViewName) {
-    String navigatorViewName = rootNavigatorViewName;
-    Integer viewNameCnt = (Integer) navigatorFrameNameMap.get( rootNavigatorViewName);
-    if (viewNameCnt == null) {
-      navigatorFrameNameMap.put( rootNavigatorViewName, new Integer( 0));
-    } else {
-      int newCnt = viewNameCnt.intValue() + 1;
-      viewNameCnt = new Integer( newCnt);
-      navigatorFrameNameMap.put( rootNavigatorViewName, viewNameCnt);
-      navigatorViewName =
-        navigatorViewName.concat(" (").concat( viewNameCnt.toString()).concat(")");
-    }
-    // System.err.println( "navigatorViewName " + navigatorViewName);
-    return navigatorViewName;
-  } // end getNavigatorViewName
-
-  /**
-   * <code>doesViewFrameExist</code> - check for String view key or Class view key
-   *
-   * @return - <code>boolean</code> - 
-   */
-  public boolean doesViewFrameExist( String viewName) {
-    String windowName = viewName.replaceAll( " ", "");
-    // System.err.println( "doesViewFrameExist '" + windowName + "'");
-    List windowKeyList =  
-      new ArrayList( viewSet.getViews().keySet());
-    Iterator windowListItr = windowKeyList.iterator();
-    while (windowListItr.hasNext()) {
-      Object windowKey = (Object) windowListItr.next();
-      // System.err.println( "windowKey " + windowKey);
-      if ((windowKey instanceof String) &&
-          (((String) windowKey).indexOf( windowName) >= 0)) {
-        return true;
-      } else if ((windowKey instanceof Class) &&
-          (((Class) windowKey).getName().indexOf( windowName) >= 0)) {
-        return true;
-      }
-    }
-    return false;
-  } // end doesViewFrameExist
 
   class NavViewClose implements UnaryFunctor {
     private PartialPlanViewSet viewSet;
@@ -743,6 +713,7 @@ public class PartialPlanView extends VizView {
       return o;
     }
   }
+
 
   /**
    * <code>createCloseNavigatorWindowsItem</code>

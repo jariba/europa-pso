@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.43 2004-05-25 23:12:46 taylor Exp $
+# $Id: GETTING_STARTED,v 1.44 2004-05-28 20:21:12 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -284,12 +284,12 @@ In all the partial plan views (except the Transaction View), Mouse-Right on
 the background offers "Find by Key" which allows the user to enter a key
 and have the view scroll to that node's location.  For Temporal Extent and 
 Token Network views, entered keys will find interval token and resource
-transaction nodes; for the Timeline view, entered keys will find interval
-token and slot nodes; for the Resource Profile view, entered keys will find 
-resource profiles; for the Resource Transaction view, entered keys will find 
-resources and resource transactions, and for the Constraint Network view, 
-entered keys will find find object, timeline, resource, token, variable, and 
-constraint nodes -- opening appropriate connecting nodes, if needed.
+transaction nodes; for the Timeline view, entered keys will find timeline,
+interval token, and slot nodes; for the Resource Profile view, entered keys 
+will find resource profiles; for the Resource Transaction view, entered keys 
+will find resources and resource transactions, and for the Constraint Network 
+view, entered keys will find find object, timeline, resource, token, variable,
+and constraint nodes -- opening appropriate connecting nodes, if needed.
 
 
 Token/Variable/Constraint/Slot/Object/Timeline/Resource Relationships

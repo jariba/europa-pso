@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.28 2004-05-21 22:20:29 miatauro Exp $
+// $Id: DbConstants.java,v 1.29 2004-05-28 20:21:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -426,13 +426,13 @@ public interface DbConstants {
   public static final int T_INTERVAL = 0;
   public static final int T_TRANSACTION = 1;
 
-	public static final int D_OBJECT = 0;
-	public static final int D_TOKEN = 1;
-	public static final int D_VARIABLE = 2;
-	public static final int C_TOKEN = 0;
-	public static final int C_VALUE = 1;
-	public static final int C_DOMAIN = 2;
-	public static final int C_CLOSE = 3;
+  public static final int D_OBJECT = 0;
+  public static final int D_TOKEN = 1;
+  public static final int D_VARIABLE = 2;
+  public static final int C_TOKEN = 0;
+  public static final int C_VALUE = 1;
+  public static final int C_DOMAIN = 2;
+  public static final int C_CLOSE = 3;
 
   public static final Integer NO_ID = new Integer( -1);
 } // end interface DbConstants

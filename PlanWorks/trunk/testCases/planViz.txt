@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.42 2004-05-13 20:24:14 taylor Exp $
+// $Id: planViz.txt,v 1.43 2004-05-28 20:21:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -378,7 +378,7 @@ Pre-conditions:
 
 Method:
   1. Using either the Constraint Network, Temporal Extent, Timeline, or
-     Token Network view, choose keys for a slotted token, a free token,
+     Token Network view, choose keys for a timeline, a slotted token, a free token,
      a slot, a variable, and a constraint.
   2. Mouse-Right click, in turn, on the Constraint Network , Temporal Extent, 
      Timeline, and Token Network views, selecting "Find by Key",
@@ -387,6 +387,7 @@ Method:
      Timeline, and Token Network views, selecting "Find by Key",
      entering the free token key value, and then selecting "Enter".
      For the Timeline view, enter the slot key value in "Find by Key".
+     For the Timeline view, enter the timeline key value in "Find by Key".
      For the Constraint Network view, enter the variable and constraint
      key values in "Find by Key".
   4. Arbitrarily, pick a slotted token node in one of the views, and Mouse-
@@ -434,8 +435,8 @@ Post-conditions:
   2. Method:3 - In turn, each of the views should re-oriented itself to
      display the selected free token node key with a green highlight around it.
      The same behavior should be observed for the Timeline view with the slot 
-     key value; and the Constraint Network view with the variable and constraint
-     key values.
+     key value, and the timeline key value; and the Constraint Network view with 
+     the variable and constraint key values.
   3. Method:4 - the selected slotted token node will have a green highlight 
      around it.
   4. Method:5 - Each of the other views should re-oriented itself to

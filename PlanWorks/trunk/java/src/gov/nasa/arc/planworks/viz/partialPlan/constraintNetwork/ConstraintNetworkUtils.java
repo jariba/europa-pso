@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ConstraintNetworkUtils.java,v 1.3 2004-05-21 21:39:05 taylor Exp $
+// $Id: ConstraintNetworkUtils.java,v 1.4 2004-05-28 20:21:19 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -113,7 +113,8 @@ public final class ConstraintNetworkUtils {
             Container contentPane = navFrame.getContentPane();
             PwPartialPlan partialPlan = view.getPartialPlan();
             Class [] constructorParams = {
-              node.getClass(), 
+              // node.getClass(), 
+              Class.forName("gov.nasa.arc.planworks.viz.nodes.VariableContainerNode"),
               Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"), 
               Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet"),
               viewSetKey.getClass(),

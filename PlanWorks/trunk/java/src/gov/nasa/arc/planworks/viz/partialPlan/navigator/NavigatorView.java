@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.25 2004-05-21 21:39:06 taylor Exp $
+// $Id: NavigatorView.java,v 1.26 2004-05-28 20:21:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,7 +14,6 @@
 package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 
 import java.awt.BorderLayout;
-import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,7 +29,6 @@ import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
 
@@ -55,20 +53,13 @@ import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkResourceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
-import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionNode;
-import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
-import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
-import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -82,7 +73,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class NavigatorView extends PartialPlanView implements StringViewSetKey {
 
-  private JGoObject initialNode;
+  private PwEntity initialEntity;
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
@@ -115,127 +106,17 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
   /**
    * <code>NavigatorView</code> - constructor 
    *
-   * @param objectNode - <code>ConstraintNetworkObjectNode</code> - 
+   * @param entity - <code>PwEntity</code> - 
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    * @param viewSetKey - <code>String</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
-  public NavigatorView( final ConstraintNetworkObjectNode objectNode,
-                        final ViewableObject partialPlan, final ViewSet viewSet,
-                        final String viewSetKey, final MDIInternalFrame navigatorFrame) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = objectNode;
-    this.partialPlan = (PwPartialPlan) partialPlan;
-    this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewSetKey = viewSetKey;
-    this.navigatorFrame = navigatorFrame;
-
-    commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param timelineNode - <code>TimelineViewTimelineNode</code> - 
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewSetKey - <code>String</code> - 
-   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
-   */
-  public NavigatorView( final TimelineViewTimelineNode timelineNode,
-                        final ViewableObject partialPlan, final ViewSet viewSet,
-                        final String viewSetKey, final MDIInternalFrame navigatorFrame) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = timelineNode;
-    this.partialPlan = (PwPartialPlan) partialPlan;
-    this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewSetKey = viewSetKey;
-    this.navigatorFrame = navigatorFrame;
-
-    commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param timelineNode - <code>ConstraintNetworkTimelineNode</code> - 
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewSetKey - <code>String</code> - 
-   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
-   */
-  public NavigatorView( final ConstraintNetworkTimelineNode timelineNode,
-                        final ViewableObject partialPlan, final ViewSet viewSet,
-                        final String viewSetKey, final MDIInternalFrame navigatorFrame) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = timelineNode;
-    this.partialPlan = (PwPartialPlan) partialPlan;
-    this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewSetKey = viewSetKey;
-    this.navigatorFrame = navigatorFrame;
-
-    commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param resourceNode - <code>ConstraintNetworkResourceNode</code> - 
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewSetKey - <code>String</code> - 
-   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
-   */
-  public NavigatorView( final ConstraintNetworkResourceNode resourceNode,
-                        final ViewableObject partialPlan, final ViewSet viewSet,
-                        final String viewSetKey, final MDIInternalFrame navigatorFrame) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = resourceNode;
-    this.partialPlan = (PwPartialPlan) partialPlan;
-    this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewSetKey = viewSetKey;
-    this.navigatorFrame = navigatorFrame;
-
-    commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param resourceNode - <code>ResourceNameNode</code> - 
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewSetKey - <code>String</code> - 
-   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
-   */
-  public NavigatorView( final ResourceNameNode resourceNode,
-                        final ViewableObject partialPlan, final ViewSet viewSet,
-                        final String viewSetKey, final MDIInternalFrame navigatorFrame) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = resourceNode;
-    this.partialPlan = (PwPartialPlan) partialPlan;
-    this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewSetKey = viewSetKey;
-    this.navigatorFrame = navigatorFrame;
-
-    commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param slotNode - <code>SlotNode</code> - 
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewSetKey - <code>String</code> - 
-   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
-   */
-  public NavigatorView( final SlotNode slotNode, final ViewableObject partialPlan,
+  public NavigatorView( final PwEntity entity, final ViewableObject partialPlan,
                         final ViewSet viewSet, final String viewSetKey,
                         final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = slotNode;
+    this.initialEntity = entity;
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.viewSet = (PartialPlanViewSet) viewSet;
     this.viewSetKey = viewSetKey;
@@ -247,105 +128,30 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
   /**
    * <code>NavigatorView</code> - constructor 
    *
-   * @param tokenNode - <code>TokenNode</code> - 
+   * @param node - <code>VariableContainerNode</code> - 
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    * @param viewSetKey - <code>String</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
-  public NavigatorView( final TokenNode tokenNode, final ViewableObject partialPlan,
+  public NavigatorView( final VariableContainerNode node , final ViewableObject partialPlan,
                         final ViewSet viewSet, final String viewSetKey,
                         final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = tokenNode;
-    this.partialPlan = (PwPartialPlan) partialPlan;
-    this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewSetKey = viewSetKey;
-    this.navigatorFrame = navigatorFrame;
-
-    commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param resourceTransactionNode - <code>ResourceTransactionNode</code> - 
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewSetKey - <code>String</code> - 
-   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
-   */
-  public NavigatorView( final ResourceTransactionNode resourceTransactionNode,
-                        final ViewableObject partialPlan, final ViewSet viewSet,
-                        final String viewSetKey, final MDIInternalFrame navigatorFrame) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = resourceTransactionNode;
-    this.partialPlan = (PwPartialPlan) partialPlan;
-    this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewSetKey = viewSetKey;
-    this.navigatorFrame = navigatorFrame;
-
-    commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param temporalNode - <code>TemporalNode</code> - 
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewSetKey - <code>String</code> - 
-   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
-   */
-  public NavigatorView( final TemporalNode temporalNode, final ViewableObject partialPlan,
-                        final ViewSet viewSet, final String viewSetKey,
-                        final MDIInternalFrame navigatorFrame) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = temporalNode;
-    this.partialPlan = (PwPartialPlan) partialPlan;
-    this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewSetKey = viewSetKey;
-    this.navigatorFrame = navigatorFrame;
-
-    commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param variableNode - <code>VariableNode</code> - 
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewSetKey - <code>String</code> - 
-   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
-   */
-  public NavigatorView( final VariableNode variableNode, final ViewableObject partialPlan,
-                        final ViewSet viewSet, final String viewSetKey,
-                        final MDIInternalFrame navigatorFrame) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = variableNode;
-    this.partialPlan = (PwPartialPlan) partialPlan;
-    this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewSetKey = viewSetKey;
-    this.navigatorFrame = navigatorFrame;
-
-    commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param constraintNode - <code>ConstraintNode</code> - 
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewSetKey - <code>String</code> - 
-   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
-   */
-  public NavigatorView( final ConstraintNode constraintNode, final ViewableObject partialPlan,
-                        final ViewSet viewSet, final String viewSetKey,
-                        final MDIInternalFrame navigatorFrame) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.initialNode = constraintNode;
+    PwEntity entity = null;
+    if (node instanceof ConstraintNetworkObjectNode) {
+      entity = ((ConstraintNetworkObjectNode) node).getObject();
+    } else if (node instanceof ConstraintNetworkResourceNode) {
+      entity = ((ConstraintNetworkResourceNode) node).getResource();
+    } else if (node instanceof ConstraintNetworkTimelineNode) {
+      entity = ((ConstraintNetworkTimelineNode) node).getTimeline();
+    } else if (node instanceof ConstraintNetworkTokenNode) {
+      entity = ((ConstraintNetworkTokenNode) node).getToken();
+    } else {
+      System.err.println( "NavigatorView node " + node.getClass().getName() + " not handled");
+      System.exit( -1);
+    }
+    this.initialEntity = entity;
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.viewSet = (PartialPlanViewSet) viewSet;
     this.viewSetKey = viewSetKey;
@@ -367,7 +173,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
     jGoView = new NavigatorJGoView( this);
-    jGoView.addViewListener(createViewListener());
+    jGoView.addViewListener( createViewListener());
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -404,7 +210,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     this.computeFontMetrics( this);
 
     jGoDocument = jGoView.getDocument();
-    jGoDocument.addDocumentListener(createDocListener());
+    jGoDocument.addDocumentListener( createDocListener());
     renderInitialNode();
 
     NavigatorViewLayout layout = new NavigatorViewLayout( jGoDocument, startTimeMSecs);
@@ -564,55 +370,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
   }
 
   private void renderInitialNode() {
-    ExtendedBasicNode node = null;
-    if (initialNode instanceof ConstraintNetworkObjectNode) {
-      PwObject object = ((ConstraintNetworkObjectNode) initialNode).getObject();
-      node = addEntityNavNode( object, isDebugPrint);
-    } else if ((initialNode instanceof ConstraintNetworkResourceNode) ||
-               (initialNode instanceof ResourceNameNode)) {
-      PwResource resource = null;
-      if (initialNode instanceof ConstraintNetworkResourceNode) {
-        resource = ((ConstraintNetworkResourceNode) initialNode).getResource();
-      } else if (initialNode instanceof ResourceNameNode) {
-        resource = ((ResourceNameNode) initialNode).getResource();
-      }
-      node = addEntityNavNode( resource , isDebugPrint);
-    } else if ((initialNode instanceof TimelineViewTimelineNode) ||
-               (initialNode instanceof ConstraintNetworkTimelineNode)) {
-      PwTimeline timeline = null;
-      if (initialNode instanceof TimelineViewTimelineNode) {
-        timeline = ((TimelineViewTimelineNode) initialNode).getTimeline();
-      } else if (initialNode instanceof ConstraintNetworkTimelineNode) {
-        timeline = ((ConstraintNetworkTimelineNode) initialNode).getTimeline();
-      }
-      node = addEntityNavNode( timeline, isDebugPrint);
-    } else if (initialNode instanceof SlotNode) {
-      // TimelineView.SlotNode
-      PwSlot slot = ((SlotNode) initialNode).getSlot();
-      node = addEntityNavNode( slot, isDebugPrint);
-    } else if ((initialNode instanceof TokenNode) ||
-               (initialNode instanceof TemporalNode) ||
-               (initialNode instanceof ResourceTransactionNode)) {
-      PwToken token = null;
-      if (initialNode instanceof TokenNode) {
-        token = ((TokenNode) initialNode).getToken();
-      } else if (initialNode instanceof TemporalNode) {
-        token = ((TemporalNode) initialNode).getToken();
-      } else if (initialNode instanceof ResourceTransactionNode) {
-        token = ((ResourceTransactionNode) initialNode).getTransaction();
-      }
-      node = addEntityNavNode( token, isDebugPrint);
-    } else if (initialNode instanceof VariableNode) {
-      PwVariable variable = ((VariableNode) initialNode).getVariable();
-      node = addEntityNavNode( variable, isDebugPrint);
-    } else if (initialNode instanceof ConstraintNode) {
-      PwConstraint constraint = ((ConstraintNode) initialNode).getConstraint();
-      node = addEntityNavNode( constraint, isDebugPrint);
-    } else {
-      System.err.println( " NavigatorView.renderInitialNode: " + initialNode +
-                          " not handled");
-      System.exit( 1);
-    }
+    ExtendedBasicNode node = addEntityNavNode( initialEntity, isDebugPrint);
     NavNode navNode = (NavNode) node;
     NavNodeGenerics.addEntityNavNodes( navNode, this, isDebugPrint);
     NavNodeGenerics.addParentToEntityNavLinks( navNode, this, isDebugPrint);
@@ -912,8 +670,9 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     /**
      * <code>NavigatorJGoView</code> - constructor 
      *
+     * @param navigatorView - <code>NavigatorView</code> - 
      */
-    public NavigatorJGoView( NavigatorView navigatorView) {
+    public NavigatorJGoView( final NavigatorView navigatorView) {
       super();
       this.navigatorView = navigatorView;
     }
@@ -923,7 +682,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
      *                               to the current zoom factor
      *
      */
-    public void resetOpenNodes() {
+    public final void resetOpenNodes() {
       int penWidth = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
       Iterator navigatorNodeItr = entityNavNodeMap.values().iterator();
       while (navigatorNodeItr.hasNext()) {

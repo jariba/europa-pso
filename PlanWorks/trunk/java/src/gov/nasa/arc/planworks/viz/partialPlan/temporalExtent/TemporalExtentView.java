@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.48 2004-05-21 21:39:07 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.49 2004-05-28 20:21:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -748,7 +748,7 @@ public class TemporalExtentView extends PartialPlanView  {
 
     this.createZoomItem( jGoExtentView, zoomFactor, mouseRightPopup, this);
 
-    if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
+    if (viewSet.doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.55 2004-05-21 21:39:08 taylor Exp $
+// $Id: TimelineView.java,v 1.56 2004-05-28 20:21:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -752,7 +752,7 @@ public class TimelineView extends PartialPlanView {
 
     this.createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
-    if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
+    if (viewSet.doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -795,6 +795,11 @@ public class TimelineView extends PartialPlanView {
               PwSlot slotToFind = partialPlan.getSlot( nodeKey);
               if (slotToFind != null) {
                 findAndSelectSlot( slotToFind);
+              } else {
+                PwTimeline timelineToFind = partialPlan.getTimeline( nodeKey);
+                if (timelineToFind != null) {
+                  findAndSelectTimeline( timelineToFind);
+                }
               }
             }
           }
@@ -815,7 +820,13 @@ public class TimelineView extends PartialPlanView {
       });
   } // end createActiveTokenItem
 
-  private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
+  /**
+   * <code>findAndSelectToken</code> - public for DecisionView
+   *
+   * @param tokenToFind - <code>PwToken</code> - 
+   * @param isByKey - <code>boolean</code> - 
+   */
+  public void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
     boolean isTokenFound = false, isHighlightNode = true;
     Iterator timelineNodeListItr = timelineNodeList.iterator();
     foundIt:
@@ -900,6 +911,38 @@ public class TimelineView extends PartialPlanView {
       System.err.println( message);
     }
   } // end findAndSelectSlot
+
+
+  /**
+   * <code>findAndSelectTimeline</code> - public for DecisionView
+   *
+   * @param timelineToFind - <code>PwTimeline</code> - 
+   */
+  public void findAndSelectTimeline( PwTimeline timelineToFind) {
+    boolean isTimelineFound = false;
+    boolean isHighlightNode = true;
+    Iterator timelineNodeListItr = timelineNodeList.iterator();
+    while (timelineNodeListItr.hasNext()) {
+      TimelineViewTimelineNode timelineNode =
+        (TimelineViewTimelineNode) timelineNodeListItr.next();
+      if (timelineNode.getTimeline().getId().equals( timelineToFind.getId())) {
+        System.err.println( "TimelineView found timeline: " +
+                            timelineNode.getTimeline().getName() +
+                            " (key=" + timelineToFind.getId().toString() + ")");
+        NodeGenerics.focusViewOnNode( timelineNode, isHighlightNode, jGoView);
+        isTimelineFound = true;
+        break;
+      }
+    }
+    if (! isTimelineFound) {
+      // Content Spec filtering may cause this to happen
+      String message = "Timeline (key=" + timelineToFind.getId().toString() + ") not found.";
+      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                     "Timeline Not Found in TimelineView",
+                                     JOptionPane.ERROR_MESSAGE);
+      System.err.println( message);
+    }
+  } // end findAndSelectTimeline
 
 
   private void createOverviewWindowItem( JMenuItem overviewWindowItem,

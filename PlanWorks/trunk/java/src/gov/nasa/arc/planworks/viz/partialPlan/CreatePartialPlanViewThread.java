@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.8 2004-05-13 20:24:10 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.9 2004-05-28 20:21:18 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -46,8 +46,8 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
    * @param viewName - <code>String</code> - 
    * @param menuItem - <code>PlanWorks.SeqPartPlanViewMenuItem</code> - 
    */
-  public CreatePartialPlanViewThread( String viewName,
-                                      PartialPlanViewMenuItem menuItem) {
+  public CreatePartialPlanViewThread( final String viewName,
+                                      final PartialPlanViewMenuItem menuItem) {
     super( viewName);
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();
@@ -59,10 +59,10 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
    * <code>run</code>
    *
    */
-  public void run() {
+  public final void run() {
     try {
       SwingUtilities.invokeAndWait( new Runnable() {
-          public void run() {
+          public final void run() {
             createPartialPlanView();
           }
         });
@@ -86,15 +86,13 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
       PwPlanningSequence planSequence =
         PlanWorks.getPlanWorks().getCurrentProject().getPlanningSequence( seqUrl);
         
-      PwPartialPlan partialPlan = planSequence.getPartialPlan(partialPlanName);
-        
-      renderView( sequenceName + System.getProperty("file.separator") + partialPlanName,
+      PwPartialPlan partialPlan = planSequence.getPartialPlan( partialPlanName);
+      renderView( sequenceName + System.getProperty( "file.separator") + partialPlanName,
                   partialPlan, viewListener);
-
     } catch (ResourceNotFoundException rnfExcep) {
       int index = rnfExcep.getMessage().indexOf( ":");
       JOptionPane.showMessageDialog
-        (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+        ( PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
       System.err.println( rnfExcep);
       // rnfExcep.printStackTrace();
@@ -103,9 +101,5 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
     PlanWorks.getPlanWorks().getProjectMenu().setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
   } // end createPartialPlanView
-
-
-
-
 
 } // end class CreatePartialPlanViewThread

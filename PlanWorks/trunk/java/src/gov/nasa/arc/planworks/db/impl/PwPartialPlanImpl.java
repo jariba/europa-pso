@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.89 2004-05-21 21:38:56 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.90 2004-05-28 20:21:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -230,7 +230,16 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
     System.err.println( "Partial Plan: " + url);
     System.err.println( "Ids:");
-    System.err.println( "  objects              " + objectMap.keySet().size());
+    // System.err.println( "  objects              " + objectMap.keySet().size());
+    int numObjects = 0;
+    Iterator objItr = objectMap.keySet().iterator();
+    while (objItr.hasNext()) {
+      Integer key = (Integer) objItr.next();
+      if ((resourceMap.get( key) == null) && (timelineMap.get( key) == null)) {
+        numObjects++;
+      }
+    }
+    System.err.println( "  objects              " + numObjects);
     System.err.println( "  resources            " + resourceMap.keySet().size());
     System.err.println( "  timelines            " + timelineMap.keySet().size());
     System.err.println( "  slots                " + slotMap.keySet().size());

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.105 2004-05-27 17:36:14 miatauro Exp $
+// $Id: MySQLDB.java,v 1.106 2004-05-28 20:21:16 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
 import gov.nasa.arc.planworks.db.impl.PwDecisionImpl;
@@ -1091,27 +1092,30 @@ public class MySQLDB {
     return retval;
   }
 
-	synchronized public static List queryOpenDecisionsForStep(final Long ppId) {
-		List retval = new ArrayList();
-		try {
-			ResultSet decs = 
-				queryDatabase("SELECT Decision.DecisionId, Decision.DecisionType, Decision.EntityId, Decision.IsUnit, Decision.Choices FROM Decision WHERE Decision.PartialPlanId=".concat(ppId.toString()));
-			while(decs.next()) {
-				PwDecisionImpl impl = new PwDecisionImpl(ppId, new Integer(decs.getInt("DecisionId")), decs.getInt("DecisionType"),
-																								 new Integer(decs.getInt("EntityId")), decs.getBoolean("IsUnit"));
-				Blob blob = decs.getBlob("Decision.Choices");
-				if(!decs.wasNull()) {
-					impl.makeChoices(new String(blob.getBytes(1, (int) blob.length())));
-				}
-				retval.add(impl);
-				System.err.println(impl.toOutputString());
-			}
-		}
-		catch(SQLException sqle) {
-			sqle.printStackTrace();
-		}
-		return retval;
-	}
+  synchronized public static List queryOpenDecisionsForStep(final Long ppId,
+                                                            final PwPartialPlan partialPlan) {
+    List retval = new ArrayList();
+    try {
+      ResultSet decs = 
+        queryDatabase("SELECT Decision.DecisionId, Decision.DecisionType, Decision.EntityId, Decision.IsUnit, Decision.Choices FROM Decision WHERE Decision.PartialPlanId=".concat(ppId.toString()));
+      while(decs.next()) {
+        PwDecisionImpl impl = new PwDecisionImpl(new Integer(decs.getInt("DecisionId")),
+                                                 decs.getInt("DecisionType"),
+                                                 new Integer(decs.getInt("EntityId")),
+                                                 decs.getBoolean("IsUnit"), partialPlan);
+        Blob blob = decs.getBlob("Decision.Choices");
+        if(!decs.wasNull()) {
+          impl.makeChoices(new String(blob.getBytes(1, (int) blob.length())));
+        }
+        retval.add(impl);
+        // System.err.println(impl.toOutputString());
+      }
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
 
   synchronized public static List queryTransactionsForStep(final Long seqId, final Long ppId) {
     List retval = new ArrayList();
