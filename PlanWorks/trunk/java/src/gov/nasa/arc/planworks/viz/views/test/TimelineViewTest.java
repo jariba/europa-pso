@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.MenuElement;
 import junit.extensions.jfcunit.*;
 import junit.extensions.jfcunit.eventdata.EventDataConstants;
 import junit.extensions.jfcunit.eventdata.MouseEventData;
@@ -45,8 +46,14 @@ public class TimelineViewTest extends JFCTestCase {
     assertNotNull("Failed to get frame from set", frame);
     JMenuBar menuBar = frame.getJMenuBar();
     assertNotNull("Failed to get menu bar from frame", menuBar);
-    JMenu renderMenu = (JMenu) menuBar.getComponent(1);
-    assertNotNull("Failed to get menu.", renderMenu);
+    JMenu renderMenu = null;
+    MenuElement [] elements = menuBar.getSubElements();
+    for(int i = 0; i < elements.length; i++) {
+      if(((JMenu)elements[i]).getText().equals("Render")) {
+        renderMenu = (JMenu) elements[i];
+      }
+    }
+     assertNotNull("Failed to get menu.", renderMenu);
     assertTrue("Failed to get \"Render\" menu.", renderMenu.getText().equals("Render"));
     JMenuItem renderItem = renderMenu.getItem(0);
     assertTrue("Failed to get \"Timeline View\" item.", 
