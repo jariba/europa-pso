@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.4 2003-06-11 00:38:04 miatauro Exp $
+// $Id: ContentSpec.java,v 1.5 2003-06-11 00:46:48 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -49,7 +49,8 @@ public class ContentSpec {
 
     int highestIndex = 0;
     //there may be a better way to do this
-    List nodeList = XmlDBeXist.queryCollection(collectionName, "//@key");
+    System.err.println("contentSpec: querying " + collectionName);
+    List nodeList = XmlDBeXist.queryCollection(collectionName, "/PartialPlan/*/@key");
     System.err.println("contentSpec: got " + nodeList.size() + " keys.");
     ListIterator nodeListIterator = nodeList.listIterator();
     while(nodeListIterator.hasNext()) {
