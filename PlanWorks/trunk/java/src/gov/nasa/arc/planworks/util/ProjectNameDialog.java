@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ProjectNameDialog.java,v 1.1 2003-06-30 21:52:47 taylor Exp $
+// $Id: ProjectNameDialog.java,v 1.2 2003-07-02 19:17:22 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -53,7 +53,11 @@ public class ProjectNameDialog extends JDialog {
     btnString2 = "Cancel";
     Object[] options = {btnString1, btnString2};
     // current value
-    textField.setText( planWorks.getCurrentProjectName());
+    if (planWorks.getCurrentProjectName().equals( "")) {
+      textField.setText( planWorks.getDefaultProjectName());
+    } else {
+      textField.setText( planWorks.getCurrentProjectName());
+    }
     optionPane = new JOptionPane
       ( array, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
         null, options, options[0]);

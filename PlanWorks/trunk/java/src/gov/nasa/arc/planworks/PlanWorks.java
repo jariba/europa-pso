@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.20 2003-07-02 18:29:39 miatauro Exp $
+// $Id: PlanWorks.java,v 1.21 2003-07-02 19:17:21 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -136,8 +136,8 @@ public class PlanWorks extends MDIDesktopFrame {
    */                                
   public PlanWorks( JMenu[] constantMenus) {
     super( name, constantMenus);
-    currentSequenceDirectory = PlanWorks.defaultSequenceDirectory;
-    currentProjectName = PlanWorks.defaultProjectName;
+    currentSequenceDirectory = "";
+    currentProjectName = "";
     currentProject = null;
     viewManager = null;
     sequenceDirChooser = new DirectoryChooser();
@@ -160,7 +160,7 @@ public class PlanWorks extends MDIDesktopFrame {
       }
     }
     this.setVisible( true);
-
+    
     setProjectMenuEnabled( "Create ...", true);
     if ((PwProject.listProjects() != null) && (PwProject.listProjects().size() > 0)) {
       setProjectMenuEnabled( "Open ...", true);
@@ -179,6 +179,15 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public String getCurrentProjectName() {
     return currentProjectName;
+  }
+
+  /**
+   * <code>getDefaultProjectName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getDefaultProjectName() {
+    return defaultProjectName;
   }
 
   /**
@@ -321,6 +330,8 @@ public class PlanWorks extends MDIDesktopFrame {
         return null;
       }
       try {
+        // check for duplicate project name
+        project = PwProject.createProject( inputName);
         // ask user for a single sequence directory of partialPlan directories
         // or use dialog to do multiple selection of sequence dirs of pp dirs
         int returnVal = sequenceDirChooser.showDialog( this, "");
@@ -331,7 +342,6 @@ public class PlanWorks extends MDIDesktopFrame {
         } else {
           return null;
         }
-        project = PwProject.createProject( inputName);
         project.addPlanningSequence( sequenceDirectory);
         isProjectCreated = true;
         currentProjectName = inputName;
@@ -357,7 +367,9 @@ public class PlanWorks extends MDIDesktopFrame {
           System.err.println( dupExcep);
           isProjectCreated = false; 
       } catch (SQLException sqlExcep) {
-        StringBuffer errorOutput = new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().indexOf(":") + 1));
+        StringBuffer errorOutput =
+          new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
+                                                           indexOf(":") + 1));
         StackTraceElement [] stackTrace = sqlExcep.getStackTrace();
         for(int i = 0; i < stackTrace.length; i++) {
           errorOutput.append(stackTrace[i].getFileName()).append(":");
@@ -851,9 +863,9 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end class SeqPartPlanViewMenuItem
 
   private final void createDirectoryChooser() {
-    sequenceDirChooser.setCurrentDirectory( new File( currentSequenceDirectory));
+    sequenceDirChooser.setCurrentDirectory( new File( defaultSequenceDirectory));
     sequenceDirChooser.setDialogTitle
-      ( "Select Sequence Directory of Partial Plan Directorie(s)");
+      ( "Select Sequence Directory of Partial Plan Directory(ies)");
     sequenceDirChooser.getOkButton().addActionListener( new ActionListener()
       {
         public void actionPerformed(ActionEvent e) {
@@ -902,8 +914,6 @@ public class PlanWorks extends MDIDesktopFrame {
     defaultProjectName = System.getProperty( "default.project.name");
     defaultSequenceDirectory = System.getProperty( "default.sequence.dir");
 
-    planWorks = new PlanWorks( buildConstantMenus());
-
     try {
       PwProject.initProjects();
     } catch (IOException excp) {
@@ -916,6 +926,9 @@ public class PlanWorks extends MDIDesktopFrame {
       System.err.println( sqlExcp);
       System.exit( -1);
     }
+
+    planWorks = new PlanWorks( buildConstantMenus());
+
   } // end main
 
 
