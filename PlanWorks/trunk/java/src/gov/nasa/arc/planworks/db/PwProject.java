@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.19 2003-10-02 23:15:32 miatauro Exp $
+// $Id: PwProject.java,v 1.20 2003-10-10 23:59:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -108,8 +108,7 @@ public abstract class PwProject {
     throws ResourceNotFoundException;
 
   /**
-   * <code>close</code> - remove project from /xml/proj/projects.xml, and
-   *                      remove /xml/proj/<projectName>.xml
+   * <code>close</code> - 
    *
    * @exception Exception if an error occurs
    * @exception ResourceNotFoundException if an error occurs

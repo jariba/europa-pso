@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.40 2003-10-08 19:10:29 taylor Exp $
+// $Id: ViewSet.java,v 1.41 2003-10-10 23:59:53 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -79,7 +79,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     constructorArgs[0] = (ViewableObject) viewable;
     constructorArgs[1] = this;
     //this.contentSpecWindow = 
-    //  desktopFrame.createFrame("Content specification for " + viewable.getName(), this, true, false,
+    //  desktopFrame.createFrame(ContentSpec.CONTENT_SPEC_TITLE + " for " + viewable.getName(), this, true, false,
     //                          false, true);
     //Container contentPane = this.contentSpecWindow.getContentPane();
     //contentPane.add(new ContentSpecWindow(this.contentSpecWindow, contentSpec));
@@ -241,12 +241,16 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       }
     }
     if(views.isEmpty()) {
-      try {contentSpecWindow.setClosed(true);}
-      catch(PropertyVetoException pve){}
+      if (contentSpecWindow != null) {
+        try {contentSpecWindow.setClosed(true);}
+        catch(PropertyVetoException pve){}
+      }
       remover.removeViewSet(viewable);
       //System.err.println("Saving content spec...");
       //partialPlan.setContentSpec(contentSpec.getCurrentSpec());
-      viewable.setContentSpec(contentSpec.getCurrentSpec());
+      if (contentSpec != null) {
+        viewable.setContentSpec(contentSpec.getCurrentSpec());
+      }
     }
   }
   /**
@@ -287,7 +291,9 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
         for(int i = 0; i < viewSet.length; i++) {
           ((MDIInternalFrame)viewSet[i]).setClosed(true);
         }
-        contentSpecWindow.setClosed(true);
+        if (contentSpecWindow != null) {
+          contentSpecWindow.setClosed(true);
+        }
       }
     catch(PropertyVetoException pve){}
   }
