@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.14 2004-05-08 01:44:13 taylor Exp $
+// $Id: ViewGenerics.java,v 1.15 2004-05-12 00:14:11 miatauro Exp $
 //
 // PlanWorks
 //
@@ -465,9 +465,10 @@ public class ViewGenerics {
    * @return - <code>String</code> - 
    */
   public static String computeTransactionNameHeader() {
-    List nameList = MySQLDB.queryConstraintTransactionNames();
-    nameList.addAll( MySQLDB.queryTokenTransactionNames());
-    nameList.addAll( MySQLDB.queryVariableTransactionNames());
+    //List nameList = MySQLDB.queryConstraintTransactionNames();
+    //nameList.addAll( MySQLDB.queryTokenTransactionNames());
+    //nameList.addAll( MySQLDB.queryVariableTransactionNames());
+		List nameList = MySQLDB.queryTransactionNameList();
     StringBuffer transactionNameHeader =
       new StringBuffer( ViewConstants.DB_TRANSACTION_NAME_HEADER);
     int minLength = ViewConstants.DB_TRANSACTION_NAME_HEADER.length();
