@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.2 2003-10-09 22:07:42 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.3 2003-10-10 23:59:52 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
 
@@ -53,7 +54,10 @@ public class CreateSequenceViewThread extends CreateViewThread {
     try {
       planSequence = PlanWorks.planWorks.currentProject.getPlanningSequence( seqUrl);
 
-      renderView( sequenceName, planSequence);
+      MDIInternalFrame viewFrame = renderView( sequenceName, planSequence);
+      if (viewName.equals( PlanWorks.SEQUENCE_STEPS_VIEW)) {
+        PlanWorks.planWorks.sequenceStepsViewMap.put( seqUrl, viewFrame);
+      }
 
     } catch (ResourceNotFoundException rnfExcep) {
       int index = rnfExcep.getMessage().indexOf( ":");

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.66 2003-10-09 22:07:43 taylor Exp $
+// $Id: PlanWorks.java,v 1.67 2003-10-10 23:59:52 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -180,6 +180,7 @@ public class PlanWorks extends MDIDesktopFrame {
   public static List supportedViewNames; // List of String
   public static JMenu projectMenu;
   public PwProject currentProject;
+  public Map sequenceStepsViewMap;
 
   protected final DirectoryChooser sequenceDirChooser;
   protected static String sequenceParentDirectory; // pathname
@@ -427,6 +428,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end buildConstantMenus
 
   private void instantiateProjectThread( String type) {
+    sequenceStepsViewMap = new HashMap();
     new InstantiateProjectThread( type).start();
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.8 2003-09-19 00:33:59 taylor Exp $
+// $Id: MDIDesktopFrame.java,v 1.9 2003-10-10 23:59:52 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -17,6 +17,9 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
+
+import gov.nasa.arc.planworks.db.util.ContentSpec;
+
 
 /*
  * <code>MDIDesktopFrame</code> -
@@ -182,7 +185,7 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     int numNotIcon = 0;
     int numContentSpecWindows = 0;
     for(int i = 0; i < frames.length; i++) {
-      if(frames[i].getTitle().indexOf("Content specification") != -1) {
+      if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
         ymin = frames[i].getHeight();
         numContentSpecWindows++;
       }
@@ -190,13 +193,15 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
         numNotIcon++;
       }
     }
-    int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
-    int contentSpecX = 0;
-    for(int i = 0; i < frames.length; i++) {
-      if(frames[i].getTitle().indexOf("Content specification") != -1) {
-        frames[i].setSize(Math.min(contentSpecWidth, frames[i].getWidth()), frames[i].getHeight());
-        frames[i].setLocation(contentSpecX, 0);
-        contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
+    if (numContentSpecWindows > 0) {
+      int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
+      int contentSpecX = 0;
+      for(int i = 0; i < frames.length; i++) {
+        if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
+          frames[i].setSize(Math.min(contentSpecWidth, frames[i].getWidth()), frames[i].getHeight());
+          frames[i].setLocation(contentSpecX, 0);
+          contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
+        }
       }
     }
     int curCol = 0;
@@ -213,7 +218,7 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
         }
         int height = (desktopPane.getHeight() - ymin) / numRows;
         for(curRow = 0; curRow < numRows; curRow++, i++) {
-          while(frames[i].isIcon() || frames[i].getTitle().indexOf("Content specification") != -1) {
+          while(frames[i].isIcon() || frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
             i++;
           }
           // System.err.println("Setting bounds.  (" + (curCol * frameWidth) + ", " +
@@ -231,21 +236,23 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     int contentSpecHeight = 0;
     int numContentSpecWindows = 0;
     for(int i = 0; i < frames.length; i++) {
-      if(frames[i].getTitle().indexOf("Content specification") != -1) {
+      if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
         numContentSpecWindows++;
         ymin = contentSpecHeight = frames[i].getHeight();
       }
     }
-    int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
-    int contentSpecX = 0;
-    for(int i = 0; i < frames.length; i++) {
-      if(frames[i].getTitle().indexOf("Content specification") != -1) {
-        frames[i].setLocation(contentSpecX, 0);
-        contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
+    if (numContentSpecWindows > 0) {
+      int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
+      int contentSpecX = 0;
+      for(int i = 0; i < frames.length; i++) {
+        if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
+          frames[i].setLocation(contentSpecX, 0);
+          contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
+        }
       }
     }
     for(int i = 0; i < frames.length; i++) {
-      if(frames[i].getTitle().indexOf("Content specification") != -1) {
+      if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
         continue;
       }
       frames[i].setLocation(xmin, ymin);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.5 2003-10-08 19:10:28 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.6 2003-10-10 23:59:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,8 +26,10 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.db.util.PartialPlanContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 // import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.util.ColorStream;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -57,8 +59,8 @@ public class PartialPlanViewSet extends ViewSet {
     super( desktopFrame, viewable, remover);
     this.colorStream = new ColorStream();
     this.activeToken = null;
-    this.contentSpecWindow = desktopFrame.createFrame( "Content specification for " +
-                                                       viewable.getName(),
+    this.contentSpecWindow = desktopFrame.createFrame( ContentSpec.CONTENT_SPEC_TITLE +
+                                                       " for " + viewable.getName(),
                                                        this, true, false, false, true);
     Container contentPane = this.contentSpecWindow.getContentPane();
     this.contentSpec = new PartialPlanContentSpec( viewable, this);
@@ -69,7 +71,12 @@ public class PartialPlanViewSet extends ViewSet {
                                  ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
                           (int) ((PlanWorks.planWorks.getSize().getHeight() -
                                   ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
-    this.contentSpecWindow.setLocation( delta, delta);
+    String url = ((PwPartialPlan) viewable).getUrl();
+    String seqUrl = url.substring( 0, url.lastIndexOf( System.getProperty( "file.separator")));
+    int sequenceStepsViewHeight =
+      (int) ((MDIInternalFrame) PlanWorks.planWorks.
+             sequenceStepsViewMap.get( seqUrl)).getSize().getHeight();
+    this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
     this.contentSpecWindow.setVisible(true);
   }
 

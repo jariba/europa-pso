@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.3 2003-10-08 19:10:27 taylor Exp $
+// $Id: CreateViewThread.java,v 1.4 2003-10-10 23:59:52 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -45,7 +45,7 @@ public class CreateViewThread extends Thread {
     this.viewName = viewName;
   }
 
-  protected void renderView( String fullSequenceName, ViewableObject viewable) {
+  protected MDIInternalFrame renderView( String fullSequenceName, ViewableObject viewable) {
     ViewSet viewSet = PlanWorks.planWorks.viewManager.getViewSet( viewable);
     MDIInternalFrame viewFrame = null;
     boolean viewExists = false;
@@ -72,6 +72,7 @@ public class CreateViewThread extends Thread {
         (PlanWorks.planWorks, viewName, "View Not Supported", 
          JOptionPane.INFORMATION_MESSAGE);
     }
+    return viewFrame;
   } // end renderPartialPlanView
 
   protected void finishViewRendering( MDIInternalFrame viewFrame, ViewManager viewManager,
@@ -87,18 +88,30 @@ public class CreateViewThread extends Thread {
         viewSet = PlanWorks.planWorks.viewManager.getViewSet( viewable);
       }
       int planWorksFrameHeight = (int) PlanWorks.planWorks.getSize().getHeight();
-      int contentSpecFrameHeight =
-        (int) viewSet.getContentSpecWindow().getSize().getHeight();
+      int contentSpecFrameHeight = 0;
+      if (viewSet.getContentSpecWindow() != null) {
+        contentSpecFrameHeight =
+          (int) viewSet.getContentSpecWindow().getSize().getHeight();
+      }
       // locate view's upper left corner in top half of space below content spec
-      int yFrameAvailable = (int) ((planWorksFrameHeight - contentSpecFrameHeight -
-                                    ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.50);
+      int yFrameAvailable = (int) (planWorksFrameHeight - contentSpecFrameHeight -
+                                    ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
       int yFrameDelta = 0;
       List viewList = null;
+      int sequenceStepsViewHeight = 0;
+      int deltaCnt = viewManager.getContentSpecWindowCnt();
       if (viewable instanceof PwPartialPlan) {
-        yFrameDelta = (int) (yFrameAvailable / PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
+        // put content spec windows below the sequence steps window
+        sequenceStepsViewHeight =
+          (int) ((MDIInternalFrame) PlanWorks.planWorks.
+                 sequenceStepsViewMap.get( seqUrl)).getSize().getHeight();
+        yFrameAvailable -= sequenceStepsViewHeight;
+        yFrameDelta = (int) ((yFrameAvailable * 0.50) /
+                             PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
         viewList = PlanWorks.PARTIAL_PLAN_VIEW_LIST;
+        deltaCnt--;
       } else if (viewable instanceof PwPlanningSequence) {
-        yFrameDelta = (int) (yFrameAvailable / PlanWorks.SEQUENCE_VIEW_LIST.size());
+        yFrameDelta = (int) ((yFrameAvailable * 0.50)/ PlanWorks.SEQUENCE_VIEW_LIST.size());
         viewList = PlanWorks.SEQUENCE_VIEW_LIST;
       }
       Iterator viewItr = viewList.iterator();
@@ -109,11 +122,12 @@ public class CreateViewThread extends Thread {
         }
         viewIndex++;
       }
-      int delta = Math.min( ((viewManager.getContentSpecWindowCnt() - 1) *
-                             ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-                            (yFrameAvailable - ViewConstants.MDI_FRAME_DECORATION_HEIGHT));
+      // keep views from sliding off desktop
+      int delta = Math.min( (deltaCnt * ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+                            (yFrameAvailable - (2 * ViewConstants.MDI_FRAME_DECORATION_HEIGHT)));
       viewFrame.setLocation( (ViewConstants.INTERNAL_FRAME_X_DELTA * viewIndex) + delta,
-                             contentSpecFrameHeight + yFrameDelta * viewIndex + delta);
+                             contentSpecFrameHeight + sequenceStepsViewHeight +
+                             yFrameDelta * viewIndex + delta);
       viewFrame.setVisible( true);
     }
     // make associated menus appear & bring window to the front

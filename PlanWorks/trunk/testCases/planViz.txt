@@ -1,0 +1,317 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+// $Id: planViz.txt,v 1.1 2003-10-10 23:59:53 taylor Exp $
+//
+// PlanWorks
+//
+// Will Taylor -- started 10oct03
+//
+
+This set of use cases covers the functionality of the PlanWorks Plan
+Visualization (PlanViz) graphical user interface.
+
+
+PLANVIZ-1
+--------------------
+Create a project.
+
+Pre-conditions:
+  1. PlanWorks is not running.
+  2. "monkey" test data contains all files named step0 with required extensions.
+  3. PlanWorks data base is "clean".
+
+Method:
+  1. Start PlanWorks:
+  2. Create "monkey" project with menu-bar selection "Project->Create ...".
+
+Post-conditions:
+  1. PlanWorks frame title is suffixed with "=> monkey".
+  2. "Planning Sequence" menu appears in the menu-bar.
+  3. Menu-bar item "Project->Delete ..." is enabled.
+
+Requirements: 3.2.a, 3.6, 3.7, 3.8
+
+
+PLANVIZ-2
+--------------------
+Exercise error handling for missing partial plan files.
+
+Pre-conditions:
+  1. PlanWorks is not running.
+  2. "monkey" test data contains all files named step0 with required extensions,
+     except for step0.slots.
+  3. PlanWorks data base is "clean".
+
+Method:
+  1. Start PlanWorks:
+  2. Create "monkey" project with menu-bar selection "Project->Create ...".
+
+Post-conditions:
+  1. Error dialog "Invalid Sequence Directory" appears.
+
+Requirements:
+
+
+PLANVIZ-3
+--------------------
+Exercise error handling for duplicate projects
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. "monkey" project has been created.
+
+Method:
+  1. Create "monkey" project with menu-bar selection "Project->Create ...".
+
+Post-conditions:
+  1. Error dialog "Duplicate Name Exception" appears.
+
+Requirements: 3.9
+
+
+PLANVIZ-4
+--------------------
+Delete a project.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. "monkey" project has been created.
+
+Method:
+  1. Delete "monkey" project with menu-bar selection "Project->Delete ...".
+
+Post-conditions:
+  1. PlanWorks frame title suffix "=> monkey" is removed.
+  2. Menu-bar item "Project->Delete ..." is disabled.
+
+Requirements: 3.2.c
+
+
+PLANVIZ-5
+--------------------
+Open a project.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. "monkey" project has been created.
+
+Method:
+  1. Create "emptySlots" project with menu-bar selection "Project->Create ...".
+  2. Open "monkey" project with menu-bar selection "Project->Open ...".
+
+Post-conditions:
+  1. PlanWorks frame title is suffixed with "=> monkey".
+  2. Menu-bar item "Project->Open ..." is enabled.
+
+Requirements: 3.2.c
+
+
+PLANVIZ-6
+--------------------
+Add sequences to a project.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. "monkey" project is the only project in the data base.
+
+Method:
+  1. Add sequence "emptySlots" to "monkey" project with menu-bar selection
+     "Project->Add Sequence ...".
+  2. Add sequence "freeTokens" to "monkey" project with menu-bar selection
+     "Project->Add Sequence ...".
+
+Post-conditions:
+  1. PlanWorks frame title remains suffixed with "=> monkey".
+  2. Menu-bar selection "Planning Sequence" offers user three sequences for
+     viewing: "emptySlots", "freeTokens", and "monkey".
+
+Requirements: 3.10
+
+
+PLANVIZ-7
+--------------------
+Display the Timeline Views of multiple sequence partial plans.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. "emptySlots", and "freeTokens" have been added to the "monkey" project
+     as sequences.
+
+Method:
+  1. Display "monkey" Timeline View using menu-bar selection "Planning Sequence->
+     monkey.....->Sequence Steps" and selecting "Timeline" from the "step0"
+     element of the "SequenceStepsView of monkey....".
+  2. Display "emptySlots" Timeline View using menu-bar selection "Planning Sequence->
+     emptySlots.....->Sequence Steps" and selecting "Timeline" from the "step0"
+     element of the "SequenceStepsView of emptySlots....".
+  3. Display "freeTokens" Timeline View using menu-bar selection "Planning Sequence->
+     freeTokens.....->Sequence Steps" and selecting "Timeline" from the "step0"
+     element of the "SequenceStepsView of freeTokens....".
+  4. Display "monkey" Timeline View using menu-bar selection "Planning Sequence->
+     monkey.....->Sequence Steps" and selecting "Timeline" from the "step0"
+     element of the "SequenceStepsView of monkey....".
+
+Post-conditions:
+  1. Three Content Spec windows exist, three TimelineView windows exist, and
+     the "TimelineView of monkey..." was brought to the front by method step 4.
+
+Requirements: 4.0.2, 4.0.3, 4.2.1, 4.2.2
+
+
+PLANVIZ-8
+--------------------
+Perform "tiling" and cascading layouts of multiple view and content spec windows.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. "emptySlots", and "freeTokens" have been added to the "monkey" project
+     as sequences.
+  3. Each sequence has its Content Spec and Timeline View displayed.
+
+Method:
+  1. Layout the windows using menu-bar selection "Window->Tile Windows".
+
+Post-conditions:
+  1. All nine windows are non-overlapping "tiles", after Method:1.
+  2. The three Content Spec windows are tiled across the top of the frame,
+     and six Sequence Steps Views and Timeline Views are an overlapping
+     cascade from the upper left to the lower right, under the Content Specs.
+
+Requirements: 4.2.3.f
+
+
+PLANVIZ-9
+--------------------
+Delete sequences from a project.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. "emptySlots", and "freeTokens" have been added to the "monkey" project
+     as sequences.
+  3. Each sequence has its Content Spec and Timeline View displayed.
+
+Method:
+  1. Delete "emptySlots" sequence by using menu-bar selection of
+     "Project->Delete Sequence ...".
+  2. Delete "freeTokens" sequence by using menu-bar selection of
+     "Project->Delete Sequence ...".
+
+Post-conditions:
+  1. Three windows remain: the ContentSpec, the TimelineView, and the
+     SequenceStepsView of "monkey".
+
+Requirements: 3.10
+
+
+PLANVIZ-10
+--------------------
+Display all partial plan views for a sequence step.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. The "monkey" project is open.
+  3. No partial plan views are displayed.
+
+Method:
+  1. Display "monkey" Constraint Network View using menu-bar selection
+     "Planning Sequence->monkey.....->Sequence Steps" and selecting
+     "Timeline" from the "step0" element of the "SequenceStepsView of monkey....".
+  2. Display "monkey" Temporal Extent View by selecting "Temporal Extent"
+     from the "step0" element of the "SequenceStepsView of monkey....".
+  3. Display "monkey" Timeline View by selecting "Timeline" from the "step0"
+     element of the "SequenceStepsView of monkey....".
+  4. Display "monkey" Token Network View by selecting "Token Network" from the
+     "step0" element of the "SequenceStepsView of monkey....".
+  5. Open the first two token nodes of the Constraint Network View, and then
+     open the "closed" variable and constraint nodes that result.  Then 
+     close the "opened" variable, constraint, and token nodes to return to the
+     initial state.
+
+Post-conditions:
+  1. Seventeen token nodes appear in the Constraint Network View.
+  2. Thirteen token nodes appear in the Temporal Extent View.
+  3. Three timeline nodes and thirteen slot nodes appear in the Timeline View.
+  4. Seventeen token nodes, with two "master roots" appear in the Token Network View.
+  5. The initial state of the Constraint Network View is not completely
+     achievable, because the manually-generated sample partial plan has some
+     inconsistencies.
+
+Requirements: 4.2.3.e
+
+
+PLANVIZ-11
+--------------------
+Use Content Specification to filter which tokens are displayed on the 
+partial plan views.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. The "monkey" project is open, and the four partial plan views are being
+     displayed for step0 in a "tiled" layout arrangement.
+  3. The Constraint Network View has been expanded for at least two tokens,
+     and all their variable and constraint nodes.
+
+Method:
+  1. Select a "Predicate" from the Content Spec.  Apply it.
+  2. Check "NOT" for the selected predicate.  Apply it.
+  3. Select "AND" from the combo box to the left of the "Predicate", 
+     select another predicate, and check "NOT" for it, as well.  Apply it.
+  4. Change the "AND" to an "OR" and uncheck the "NOT" boxes for the
+     two predicates.  Apply it.
+  5. Reset the spec.
+  6. Select a "Timeline" from the Content Spec.  Apply it.
+  7. Utilize "AND", "OR", and "NOT", as with "Predicate", for variations
+     of Timeline selection.
+  8. Reset the spec.
+  9. Enter Time Interval "Start" and "End" values in the Content Spec.  Apply it.
+ 10. Utilize "AND", "OR", and "NOT", as with "Predicate", for variations
+     of Time Interval selection.
+ 11. Reset the spec.
+ 12. Check "Merge tokens".  Apply it.
+ 13. Check "View slotted" or "View free tokens".  Apply it.
+ 14. Reset the spec.
+ 15. Check "NOT" for selected Timeline.  Check "require" and enter a 
+     token key, select "Add" and "require another token key -- assuming
+     that these keys are in the selected timeline.  Apply it.
+ 16. Select "Remove" for the second required key, and change "require"
+     to "exclude" for the first key.  Uncheck the "NOT" for the
+     selected timeline.  Apply it.
+ 17. Reset the spec.
+
+Post-conditions:
+  1. Method:1 - only tokens of the selected predicate are displayed in
+     the views.
+  2. Method:2 - all tokens, except those of the selected predicate, will
+     be displayed in all views.
+  3. Method:3 - all tokens, except those of the two selected predicates, 
+     will be displayed in all views.
+  4. Method:4 - only tokens of the two selected predicates, will be 
+     displayed in all views.
+  5. Method:5 - all tokens are displayed.
+  6. Method:6 - only that timeline, and tokens in it are displayed.
+  7. Method:7 - variations with Timeline, similar to Predicate.
+  8. Method:8 - all tokens are displayed.
+  9. Method:9 - only those tokens whose start/end variable extents occur
+     within the interval will be displayed.
+ 10. Method:10 - variations with Time Interval, similar to Predicate and
+     Timeline.
+ 11. Method:11 - all tokens are displayed.
+ 12. Method:12 - Tokens which are overloaded on timeline slots are not displayed.
+ 13. Method:13 - If "slotted", no free tokens will be displayed.  If "free
+     tokens", only free tokens will be displayed.
+ 14. Method:14 - all tokens are displayed.
+ 15. Method:15 - the only tokens from the not selected timeline which are
+     displayed are the required tokens
+ 16. Method:16 - Only tokens from the selected timeline are displayed, except
+     for the "exclude" token.
+ 17. Method:17 - all tokens are displayed.
+
+Note: In the Constraint Network View, variable and constraint nodes are
+     associated with their nearest token, and are displayed or not,
+     depending on that token.
+
+Requirements: 4.1.1, 4.1.2.a, 4.1.2.b, 4.1.2.c, 4.1.3, 4.1.4, 4.1.5,
+     4.1.7, 4.1.8, 4.1.9
