@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.4 2003-09-10 00:23:09 taylor Exp $
+// $Id: FileUtils.java,v 1.5 2003-09-11 18:03:40 taylor Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -66,24 +66,30 @@ public class FileUtils {
     return "";
   } // end canonicalPath
 
-  //should this throw an exception?
+  /**
+   * <code>validateSequenceDirectory</code>
+   *
+   * @param sequenceDirectory - <code>String</code> - 
+   * @return - <code>boolean</code> - 
+   */
   public static boolean validateSequenceDirectory( String sequenceDirectory) {
-    // System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
-    //                     sequenceDirectory + "'");
     // determine sequence's partial plan directories
     List partialPlanDirs = new ArrayList();
     String [] fileNames = new File( sequenceDirectory).list();
+    System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
+                        sequenceDirectory + "' numFiles " + fileNames.length);
     for (int i = 0; i < fileNames.length; i++) {
       String fileName = fileNames[i];
       if ((! fileName.equals( "CVS")) &&
           (new File( sequenceDirectory + System.getProperty( "file.separator") +
                      fileName)).isDirectory()) {
-        // System.err.println( "Sequence " + sequenceDirectory +
-        //                     " => partialPlanDirName: " + fileName);
+        System.err.println( "Sequence " + sequenceDirectory +
+                           " => partialPlanDirName: " + fileName);
         partialPlanDirs.add( fileName);
       }
     }
     if (partialPlanDirs.size() == 0) {
+      System.err.println( "partialPlanDirs.size() == 0");
       return false;
     }
     // determine existence of the 14 SQL-input files in partial plan directories (steps)
@@ -91,6 +97,8 @@ public class FileUtils {
       String partialPlanPath = sequenceDirectory + System.getProperty( "file.separator") +
         partialPlanDirs.get( i);
       fileNames = new File(partialPlanPath).list(new PwSQLFilenameFilter());
+      System.err.println( "partialPlanPath " + partialPlanPath + " numFiles " +
+                          fileNames.length);
       if(fileNames.length != DbConstants.NUMBER_OF_PP_FILES) {
         return false;
       }
