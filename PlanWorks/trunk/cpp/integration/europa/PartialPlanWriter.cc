@@ -125,7 +125,7 @@ void PartialPlanWriter::write(void) {
   ListIterator<TokenId> freeTokenIterator = ListIterator<TokenId>(freeTokenList);
   while(!freeTokenIterator.isDone()) {
     TokenId tokenId = freeTokenIterator.item();
-    outputToken(tokenId, true, partialPlanId, &modelId, NULL, NULL, NULL, tokenOut, tokenRelationOut, 
+    outputToken(tokenId, true, partialPlanId, &modelId, NULL, 0, NULL, tokenOut, tokenRelationOut, 
                 variableOut, intDomainOut, enumDomainOut, paramVarTokenMapOut);
     allTokens.deleteIfEqual(tokenId);
     freeTokenIterator.step();
@@ -151,6 +151,7 @@ void PartialPlanWriter::write(void) {
   }
   List<ObjectId> objectList = tnet->getAllObjects();
   ListIterator<ObjectId> objectIterator = ListIterator<ObjectId>(objectList);
+  int timelineId = 0;
   while(!objectIterator.isDone()) {
     ObjectId objectId = objectIterator.item();
     fprintf(objectOut, "%d\t%lld\t%s\n", objectId->getKey(), partialPlanId,
@@ -160,27 +161,39 @@ void PartialPlanWriter::write(void) {
 
     while(!timelineNameIterator.isDone()) {
       AttributeId timelineAttId = timelineNameIterator.item();
-      fprintf(timelineOut, "%d\t%d\t%lld\t%s\n", timelineAttId->getKey(), objectId->getKey(),
+      fprintf(timelineOut, "%d\t%d\t%lld\t%s\n", timelineId, objectId->getKey(),
               partialPlanId, modelId.getAttributeName(timelineAttId).chars());
       List<SlotInfo> slotList = tnet->getAllSlots(objectId, timelineAttId);
       ListIterator<SlotInfo> slotIterator = ListIterator<SlotInfo>(slotList);
       while(!slotIterator.isDone()) {
+        if(!slotIterator.item().getId()->isSlotEmpty()) {
+          break;
+        }
+        slotIterator.step();
+      }
+      int slotIndex = 0;
+      while(!slotIterator.isDone()) {
         SlotId slotId = slotIterator.item().getId();
-        
-        fprintf(slotOut, "%d\t%d\t%lld\t%d\n", slotId->getKey(), timelineAttId->getKey(), 
-                partialPlanId, objectId->getKey());
+        if(slotId->isSlotEmpty() && slotId->getNextSlotId() == SlotId::noId()) {
+          slotIterator.step();
+          continue;
+        }
+        fprintf(slotOut, "%d\t%d\t%lld\t%d\t%d\n", slotId->getKey(), timelineId, 
+                partialPlanId, objectId->getKey(), slotIndex);
         List<TokenId> tokenList = slotId->listValueTokensCoveringSlot();
         ListIterator<TokenId> tokenIterator = ListIterator<TokenId>(tokenList);
         while(!tokenIterator.isDone()) {
           TokenId tokenId = tokenIterator.item();
           allTokens.deleteIfEqual(tokenId);
-          outputToken(tokenId, false, partialPlanId, &modelId, &objectId, &timelineAttId, &slotId,
+          outputToken(tokenId, false, partialPlanId, &modelId, &objectId, timelineId, &slotId,
                       tokenOut, tokenRelationOut, variableOut, intDomainOut, enumDomainOut,
                       paramVarTokenMapOut);
           tokenIterator.step();
         }
+        slotIndex++;
         slotIterator.step();
       }
+      timelineId++;
       timelineNameIterator.step();
     }
     objectIterator.step();
@@ -232,7 +245,7 @@ void PartialPlanWriter::outputPredicate(PredicateId &predicate, const ModelId &m
 
 void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree, 
                                     const long long int partialPlanId, const ModelId *modelId,
-                                    const ObjectId *objectId, const AttributeId *timelineId, 
+                                    const ObjectId *objectId, const int timelineId, 
                                     const SlotId *slotId, FILE *tokenOut, 
                                     FILE *tokenRelationOut, FILE *variableOut, 
                                     FILE *intDomainOut, FILE *enumDomainOut,
@@ -250,7 +263,7 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
             tokenId->getKey(), (*slotId)->getKey(), partialPlanId, 
             tokenId->getStartVariable()->getKey(), tokenId->getEndVariable()->getKey(),
             tokenId->getDurationVariable()->getKey(), tokenId->getRejectVariable()->getKey(),
-            predicateId.getKey(), (*timelineId)->getKey(), (*objectId)->getKey(), 
+            predicateId.getKey(), timelineId, (*objectId)->getKey(), 
             tokenId->getObjectVariable()->getKey());
   }
   if(tokenId->getMasterToken().isValid()) {
@@ -425,33 +438,38 @@ void PartialPlanWriter::outputVariable(const VarId &variable, const char *type,
 void PartialPlanWriter::outputConstraint(const ConstraintId &constraintId, 
                                          const long long int partialPlanId, FILE *constraintOut, 
                                          FILE *constraintVarMapOut) {
-  if(tnet->isTemporalVariableConstraint(constraintId) ||
-     tnet->isTemporalBoundConstraint(constraintId) ||
-     tnet->isTemporalRelationConstraint(constraintId)) {
-    fprintf(constraintOut, "%d\t%lld\teq\tTEMPORAL\n", constraintId->getKey(),
-            partialPlanId);
-    List<VarId> constrainedVars = tnet->getConstraintScope(constraintId);
-    ListIterator<VarId> varIterator = ListIterator<VarId>(constrainedVars);
-    while(!varIterator.isDone()) {
-      fprintf(constraintVarMapOut, "%d\t%d\t%lld\n", constraintId->getKey(),
-              varIterator.item()->getKey(), partialPlanId);
-      varIterator.step();
-    }
+  String temporality, name;
+  if(tnet->isTemporalVariableConstraint(constraintId)) {
+    temporality = String("TEMPORAL");
+    name = String("variableTempConstr");
   }
-  else if(tnet->isArgumentBoundConstraint(constraintId) || tnet->isArgumentEqualsConstraint(constraintId)
-          || tnet->isExpertConstraint(constraintId)) {
-    String name = String("eq");
-    if(tnet->isExpertConstraint(constraintId)) {
-      name = tnet->getExpertConstraintName(constraintId);
-    }
-    fprintf(constraintOut, "%d\t%lld\t%s\tATEMPORAL\n", constraintId->getKey(),
-            partialPlanId, name.chars());
-    List<VarId> constrainedVars = tnet->getConstraintScope(constraintId);
-    ListIterator<VarId> varIterator = ListIterator<VarId>(constrainedVars);
-    while(!varIterator.isDone()) {
-      fprintf(constraintVarMapOut, "%d\t%d\t%lld\n", constraintId->getKey(),
-              varIterator.item()->getKey(), partialPlanId);
-      varIterator.step();
-    }
+  else if(tnet->isTemporalBoundConstraint(constraintId)) {
+    temporality = String("TEMPORAL");
+    name = String("unaryTempConstr");
+  }
+  else if(tnet->isTemporalRelationConstraint(constraintId)) {
+    temporality = String("TEMPORAL");
+    name = String("fixedTempConstr");
+  }
+  else if(tnet->isArgumentBoundConstraint(constraintId)) {
+    temporality = String("ATEMPORAL");
+    name = String("unaryConstr");
+  } 
+  else if(tnet->isArgumentEqualsConstraint(constraintId)) {
+    temporality = String("ATEMPORAL");
+    name = String("equalityConstr");
+  }
+  else if(tnet->isExpertConstraint(constraintId)) {
+    temporality = String("ATEMPORAL");
+    name = tnet->getExpertConstraintName(constraintId);
+  }
+  fprintf(constraintOut, "%d\t%lld\t%s\t%s\n", constraintId->getKey(), partialPlanId,
+          name.chars(), temporality.chars());
+  List<VarId> constrainedVars = tnet->getConstraintScope(constraintId);
+  ListIterator<VarId> varIterator = ListIterator<VarId>(constrainedVars);
+  while(!varIterator.isDone()) {
+    fprintf(constraintVarMapOut, "%d\t%d\t%lld\n", constraintId->getKey(),
+            varIterator.item()->getKey(), partialPlanId);
+    varIterator.step();
   }
 }

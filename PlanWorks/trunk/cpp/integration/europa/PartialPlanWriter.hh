@@ -19,8 +19,8 @@ private:
   Value izero, rzero;
   void outputVariable(const VarId &, const char *, const long long int, FILE *, FILE *, 
                       FILE *);
-  void outputToken(const TokenId &, const bool, const long long int, const ModelId *, const ObjectId *, /*const Timeline *,*/ const AttributeId *timelineId, const SlotId *, FILE *, FILE *, FILE *, FILE *, FILE *, 
-                   FILE *);
+  void outputToken(const TokenId &, const bool, const long long int, const ModelId *, const ObjectId *, 
+                   const int,  const SlotId *, FILE *, FILE *, FILE *, FILE *, FILE *, FILE *);
   void outputPredicate(PredicateId &, const ModelId &, const long long int partialPlanId, 
                        FILE *, FILE *);
   void outputConstraint(const ConstraintId &, const long long int, FILE *, FILE *);
