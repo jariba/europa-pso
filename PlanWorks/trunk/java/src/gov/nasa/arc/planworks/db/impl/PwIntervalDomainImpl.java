@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomainImpl.java,v 1.11 2004-08-06 00:53:25 miatauro Exp $
+// $Id: PwIntervalDomainImpl.java,v 1.12 2004-09-30 22:03:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -149,5 +149,6 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
   public List getNeighbors(){return null;}
   public List getNeighbors(List classes){return null;}
   public List getNeighbors(List classes, Set ids){return null;}
+  public List getNeighbors(List classes, List linkTypes){return null;}
 
 } // end class PwIntervalDomainImpl

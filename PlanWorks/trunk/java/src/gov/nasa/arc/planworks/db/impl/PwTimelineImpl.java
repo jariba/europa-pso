@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.25 2004-08-21 00:31:53 taylor Exp $
+// $Id: PwTimelineImpl.java,v 1.26 2004-09-30 22:03:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -22,11 +22,14 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwEntity;
+import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
+import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
 /**
@@ -189,21 +192,36 @@ public class PwTimelineImpl extends PwObjectImpl implements PwTimeline {
       } else if(PwVariable.class.isAssignableFrom( cclass)) {
         retval.addAll(((PwVariableContainer) this).getVariables());
       } else if(PwTimeline.class.isAssignableFrom( cclass)) {
-	if (getParent() != null) {
-	  retval.add(getParent());
-	}
+        if (getParent() != null) {
+          retval.add(getParent());
+        }
         retval.addAll(getComponentList());
       }
     }
-//     Iterator retvalItr = retval.iterator();
-//     while (retvalItr.hasNext()) {
-//       PwEntity entity = (PwEntity) retvalItr.next();
-//       if (entity == null) {
-// 	System.err.println( "null");
-//       } else {
-// 	System.err.println( "PwTimelineImpl.getNeighbors " + entity.getClass().getName());
-//       }
-//     }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, List linkTypes) {
+    List retval = new LinkedList();
+    for(Iterator it = linkTypes.iterator(); it.hasNext();) {
+      String linkType = (String) it.next();
+      if(linkType.equals(ViewConstants.TIMELINE_TO_SLOT_LINK_TYPE) &&
+         CollectionUtils.findFirst(new AssignableFunctor(PwSlot.class), classes) != null) {
+        retval.addAll(getSlotList());
+      }
+      else if(linkType.equals(ViewConstants.TIMELINE_TO_VARIABLE_LINK_TYPE) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwVariable.class), classes) != null) {
+        retval.addAll(getVariables());
+      }
+      else if((linkType.equals(ViewConstants.TIMELINE_TO_OBJECT_LINK_TYPE) ||
+               linkType.equals(ViewConstants.TIMELINE_TO_RESOURCE_LINK_TYPE) ||
+               linkType.equals(ViewConstants.TIMELINE_TO_TIMELINE_LINK_TYPE)) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwObject.class), classes) != null) {
+        if(getParent() != null)
+          retval.add(getParent());
+        retval.addAll(getComponentList());
+      }
+    }
     return retval;
   }
 

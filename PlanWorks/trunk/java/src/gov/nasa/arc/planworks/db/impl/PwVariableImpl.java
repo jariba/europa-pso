@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.29 2004-08-21 00:31:53 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.30 2004-09-30 22:03:04 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,7 +30,9 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
+import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.UniqueSet;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 /**
  * <code>PwVariableImpl</code> - 
@@ -185,28 +187,52 @@ public class PwVariableImpl implements PwVariable {
         retval.add(getParent());
         addedParent = true;
       }
-      // else if(!addedParent && cclass.equals(PwToken.class) &&
       else if(!addedParent && PwToken.class.isAssignableFrom( cclass) &&
               getParent() instanceof PwToken) {
         retval.add(getParent());
         addedParent = true;
       }
-      // else if(!addedParent && cclass.equals(PwObject.class) &&
       else if(!addedParent && PwObject.class.isAssignableFrom( cclass) &&
               getParent() instanceof PwObject) {
         retval.add(getParent());
         addedParent = true;
       }
-//       else if(!addedParent && cclass.equals(PwRuleInstance.class) &&
-//               getParent() instanceof PwRuleInstance) {
-//         retval.add(getParent());
-//         addedParent = true;
-//       }
-//       else if(!addedParent && cclass.equals(PwTimeline.class) &&
-//               getParent() instanceof PwTimeline) {
-//         retval.add(getParent());
-//         addedParent = true;
-//       }
+    }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, List linkTypes) {
+    List retval = new LinkedList();
+    boolean addedParent = false;
+    for(Iterator it = linkTypes.iterator(); it.hasNext();) {
+      String linkType = (String) it.next();
+      if(linkType.equals(ViewConstants.VARIABLE_TO_CONSTRAINT_LINK_TYPE) &&
+         CollectionUtils.findFirst(new AssignableFunctor(PwConstraint.class), classes) != null) {
+        retval.addAll(getConstraintList());
+      }
+      else if(!addedParent && 
+              linkType.equals(ViewConstants.TOKEN_TO_VARIABLE_LINK_TYPE) &&
+              getParent() instanceof PwToken &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwToken.class), classes) != null) {
+        retval.add(getParent());
+        addedParent = true;
+      }
+      else if(!addedParent &&
+              (linkType.equals(ViewConstants.OBJECT_TO_VARIABLE_LINK_TYPE) ||
+               linkType.equals(ViewConstants.RESOURCE_TO_VARIABLE_LINK_TYPE) ||
+               linkType.equals(ViewConstants.TIMELINE_TO_VARIABLE_LINK_TYPE)) &&
+              PwObject.class.isAssignableFrom(getParent().getClass()) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwObject.class), classes) != null) {
+        retval.add(getParent());
+        addedParent = true;
+      }
+      else if(!addedParent &&
+              linkType.equals(ViewConstants.RULE_INST_TO_VARIABLE_LINK_TYPE) &&
+              getParent() instanceof PwRuleInstance &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwRuleInstance.class), classes) != null) {
+        retval.add(getParent());
+        addedParent = true;
+      }
     }
     return retval;
   }

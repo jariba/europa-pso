@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransactionImpl.java,v 1.8 2004-08-06 00:53:24 miatauro Exp $
+// $Id: PwDBTransactionImpl.java,v 1.9 2004-09-30 22:03:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -195,5 +195,6 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   public List getNeighbors(){return null;}
   public List getNeighbors(List classes){return null;}
   public List getNeighbors(List classes, Set ids){return null;}
+  public List getNeighbors(List classes, List linkTypes){return null;}
 
 } // end class PwDBTransactionImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRuleInstanceImpl.java,v 1.6 2004-08-21 00:31:52 taylor Exp $
+// $Id: PwRuleInstanceImpl.java,v 1.7 2004-09-30 22:03:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -26,6 +26,8 @@ import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.UniqueSet;
+import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
 /**
@@ -192,6 +194,24 @@ public class PwRuleInstanceImpl implements PwRuleInstance {
       }
       else if(PwVariable.class.isAssignableFrom( cclass))
         retval.addAll(partialPlan.getVariableList(getRuleVarIdList()));
+    }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, List linkTypes) {
+    LinkedList retval = new LinkedList();
+    for(Iterator it = linkTypes.iterator(); it.hasNext();) {
+      String linkType = (String) it.next();
+      if((linkType.equals(ViewConstants.TOKEN_TO_RULE_INST_LINK_TYPE) ||
+          linkType.equals(ViewConstants.RULE_INST_TO_TOKEN_LINK_TYPE)) &&
+         CollectionUtils.findFirst(new AssignableFunctor(PwToken.class), classes) != null) {
+        retval.addAll(partialPlan.getTokenList(getSlaveIdsList()));
+        retval.add(partialPlan.getToken(getMasterId()));
+      }
+      else if(linkType.equals(ViewConstants.RULE_INST_TO_VARIABLE_LINK_TYPE) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwVariable.class), classes) != null) {
+        retval.addAll(partialPlan.getVariableList(getRuleVarIdList()));
+      }
     }
     return retval;
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FindEntityPath.java,v 1.3 2004-09-09 22:45:07 taylor Exp $
+// $Id: FindEntityPath.java,v 1.4 2004-09-30 22:05:22 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -192,35 +192,37 @@ public class FindEntityPath {
 
   private void launchFindEntityPath() {
     final SwingWorker worker = new SwingWorker() {
-	public Object construct() {
+        public Object construct() {
           String progressLabel = null;
           if (doPathExists) {
             progressLabel = "Determining Path Existence ...";
           } else {
             progressLabel = "Finding Entity Path ...";
           }
-	  findPathPMThread = partialPlanView.createProgressMonitorThread
+          findPathPMThread = partialPlanView.createProgressMonitorThread
             ( progressLabel, 0, 6, Thread.currentThread(), partialPlanView,
               FindEntityPath.this);
-	  if (! partialPlanView.progressMonitorWait( findPathPMThread, partialPlanView)) {
-	    System.err.println( "FindEntityPath.progressMonitorWait failed");
-	    entityKeyList = new ArrayList();
-	    return null;
-	  }
-	  findPathPMThread.getProgressMonitor().setProgress
-	    ( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+          if (! partialPlanView.progressMonitorWait( findPathPMThread, partialPlanView)) {
+            System.err.println( "FindEntityPath.progressMonitorWait failed");
+            entityKeyList = new ArrayList();
+            return null;
+          }
+          findPathPMThread.getProgressMonitor().setProgress
+            ( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
           if (doPathExists) {
             foundPathExists =
               new Boolean ( partialPlan.pathExists( partialPlan.getEntity( entityKey1),
-                                                    entityKey2, pathClasses));
+                                                    entityKey2, partialPlanView.getDefaultLinkTypes(),
+                                                    pathClasses));
           } else {
             entityKeyList = partialPlan.getPath( entityKey1, entityKey2, pathClasses,
+                                                 partialPlanView.getDefaultLinkTypes(),
                                                  maxPathLength);
           }
-	  findPathPMThread.setProgressMonitorCancel();
-	  return null;
-	}
+          findPathPMThread.setProgressMonitorCancel();
+          return null;
+        }
       };
     worker.start();  
   } // end launchFindEntityPath
@@ -308,7 +310,7 @@ public class FindEntityPath {
     System.err.println( nodeBuffer.toString());
     MessageDialog msgDialog = // non-modal
       new MessageDialog( PlanWorks.getPlanWorks(), "Found Entity Key Path",
-			 nodeBuffer.toString());
+                         nodeBuffer.toString());
   } // end outputEntityPathNodes
 
 } // end class FindEntityPath

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstantImpl.java,v 1.8 2004-08-06 00:53:26 miatauro Exp $
+// $Id: PwResourceInstantImpl.java,v 1.9 2004-09-30 22:03:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -131,4 +131,5 @@ public class PwResourceInstantImpl implements PwResourceInstant {
   public List getNeighbors(){return null;}
   public List getNeighbors(List classes){return null;}
   public List getNeighbors(List classes, Set ids){return null;}
+  public List getNeighbors(List classes, List linkTypes){return null;}
 } // end class PwResourceInstantImpl

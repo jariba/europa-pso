@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.32 2004-08-21 00:31:53 taylor Exp $
+// $Id: PwSlotImpl.java,v 1.33 2004-09-30 22:03:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -25,6 +25,8 @@ import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
 /**
@@ -178,6 +180,22 @@ public class PwSlotImpl implements PwSlot {
         retval.addAll( getTokenList());
       } else if (PwTimeline.class.isAssignableFrom( cclass)) {
 	retval.add( partialPlan.getTimeline( timelineId));
+      }
+    }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, List linkTypes) {
+    List retval = new LinkedList();
+    for(Iterator it = linkTypes.iterator(); it.hasNext();) {
+      String linkType = (String) it.next();
+      if(linkType.equals(ViewConstants.SLOT_TO_TOKEN_LINK_TYPE) &&
+         CollectionUtils.findFirst(new AssignableFunctor(PwToken.class), classes) != null) {
+        retval.addAll(getTokenList());
+      }
+      else if(linkType.equals(ViewConstants.TIMELINE_TO_SLOT_LINK_TYPE) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwTimeline.class), classes) != null) {
+        retval.add(partialPlan.getTimeline(timelineId));
       }
     }
     return retval;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceImpl.java,v 1.6 2004-08-21 00:31:52 taylor Exp $
+// $Id: PwResourceImpl.java,v 1.7 2004-09-30 22:03:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -21,12 +21,15 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceInstant;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
+import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.UniqueSet;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
 /**
@@ -182,6 +185,28 @@ public class PwResourceImpl extends PwObjectImpl implements PwResource {
 	if (getParent() != null) {
 	  retval.add(getParent());
 	}
+        retval.addAll(getComponentList());
+      }
+    }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, List linkTypes) {
+    List retval = new LinkedList();
+    for(Iterator it = linkTypes.iterator(); it.hasNext();) {
+      String linkType = (String) it.next();
+      if(linkType.equals(ViewConstants.RESOURCE_TO_TOKEN_LINK_TYPE) &&
+         CollectionUtils.findFirst(new AssignableFunctor(PwResourceTransaction.class), classes) != null)
+        retval.addAll(getTransactionSet());
+      else if(linkType.equals(ViewConstants.RESOURCE_TO_VARIABLE_LINK_TYPE) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwVariable.class), classes) != null)
+        retval.addAll(getVariables());
+      else if((linkType.equals(ViewConstants.OBJECT_TO_OBJECT_LINK_TYPE) ||
+               linkType.equals(ViewConstants.OBJECT_TO_RESOURCE_LINK_TYPE) ||
+               linkType.equals(ViewConstants.TIMELINE_TO_RESOURCE_LINK_TYPE)) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwObject.class), classes) != null) {
+        if(getParent() != null)
+          retval.add(getParent());
         retval.addAll(getComponentList());
       }
     }

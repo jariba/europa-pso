@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.39 2004-09-28 20:45:08 taylor Exp $
+// $Id: NavigatorView.java,v 1.40 2004-09-30 22:04:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -1105,6 +1105,8 @@ public class NavigatorView extends PartialPlanView
   } // end createHighlightPathItem
 
 
-
+  public List getDefaultLinkTypes() {
+    return ViewConstants.ALL_LINK_TYPES;
+  }
 
 } // end class NavigatorView

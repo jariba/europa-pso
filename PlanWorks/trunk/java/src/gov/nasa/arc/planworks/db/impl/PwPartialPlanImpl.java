@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.107 2004-08-21 00:31:52 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.108 2004-09-30 22:03:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -1567,7 +1567,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return numCycles != 0;
   } // end progressMonitorWait
 
-  // boolean isPathDebug = true;
+  //boolean isPathDebug = true;
   boolean isPathDebug = false;
 
   public List getPath(final Integer sKey, final Integer eKey, final List classes) {
@@ -1576,6 +1576,11 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
   public List getPath(final Integer sKey, final Integer eKey, final List classes, 
                       final int maxLength) {
+    return getPath(sKey, eKey, classes, ViewConstants.ALL_LINK_TYPES, maxLength);
+  }
+
+  public List getPath(final Integer sKey, final Integer eKey, final List classes,
+                      final List linkTypes, final int maxLength) {
     if (isPathDebug) {
       System.err.println( "getPath: sKey " + sKey + " eKey " + eKey);
     }
@@ -1603,28 +1608,33 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       throw new IllegalArgumentException("Valid class list must contain end type '" + 
                                          end.getClass() + "'");
     LinkedList path = new LinkedList();
-    if(pathExists(start, eKey, classes))
+    if(pathExists(start, eKey, classes, linkTypes))
       for(int i = 1; i < maxLength; i++)
-        if(getPathRecurse(start, eKey, classes, path, 0, i))
+        if(getPathRecurse(start, eKey, classes, linkTypes, path, 0, i))
           break;
     System.err.println("Finding path took " + (System.currentTimeMillis() - t1) + " msecs.");
     return path;
   }
 
   public boolean pathExists(final PwEntity start, final Integer end, final List classes) {
+    return pathExists(start, end, classes, ViewConstants.ALL_LINK_TYPES);
+  }
+
+  public boolean pathExists(final PwEntity start, final Integer end, final List classes,
+                            final List linkTypes) {
     long t1 = System.currentTimeMillis();
     if (isPathDebug) {
       System.err.println("pathExists start " + start.getClass().getName());
       System.err.println( "   id " + start.getId());
    }
     LinkedList component = new LinkedList();
-    buildConnectedComponent(start, classes, component);
+    buildConnectedComponent(start, classes, linkTypes, component);
     System.err.println("Determining path existence took " +
                        (System.currentTimeMillis() - t1) + " msecs.");
     return component.contains(end);
   }
 
-  private void buildConnectedComponent(final PwEntity ent, final List classes,
+  private void buildConnectedComponent(final PwEntity ent, final List classes, final List linkTypes,
                                        LinkedList component) {
     if (isPathDebug) {
       System.err.println( "buildConnectedComponent " + ent.getClass().getName());
@@ -1633,17 +1643,17 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     if(component.contains(ent.getId()))
       return;
     component.addLast(ent.getId());
-    for(Iterator it = ent.getNeighbors(classes).iterator(); it.hasNext();) {
+    for(Iterator it = ent.getNeighbors(classes, linkTypes).iterator(); it.hasNext();) {
       PwEntity entity = (PwEntity)it.next();
       if (isPathDebug) {
-	System.err.println( "buildConnectedComponent expand " + entity.getClass().getName());
+        System.err.println( "buildConnectedComponent expand " + entity.getClass().getName());
       }
-      buildConnectedComponent( entity, classes, component);
+      buildConnectedComponent( entity, classes, linkTypes, component);
     }
   }
 
   private boolean getPathRecurse(final PwEntity current, final Integer eKey,
-                                 final List classes, LinkedList path, 
+                                 final List classes, final List linkTypes, LinkedList path, 
                                  int currentDepth, final int finalDepth) {
     if(path.contains(current.getId()))
       return false;
@@ -1653,8 +1663,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     currentDepth++;
     if(current.getId().equals(eKey))
       return true;
-    for(Iterator it = current.getNeighbors(classes).iterator(); it.hasNext();) {
-      if(getPathRecurse((PwEntity)it.next(), eKey, classes, path, currentDepth, finalDepth))
+    for(Iterator it = current.getNeighbors(classes, linkTypes).iterator(); it.hasNext();) {
+      if(getPathRecurse((PwEntity)it.next(), eKey, classes, linkTypes, path, currentDepth, finalDepth))
         return true;
     }
     path.removeLast();
