@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.10 2003-07-30 00:38:40 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.11 2003-08-12 22:54:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -32,7 +32,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
  */
 public class PwVariableImpl implements PwVariable {
 
-  private Integer key;
+  private Integer id;
   private String type;
   private List constraintIdList; // element String
   private List parameterIdList;
@@ -44,16 +44,16 @@ public class PwVariableImpl implements PwVariable {
   /**
    * <code>PwVariableImpl</code> - constructor 
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @param type - <code>String</code> - 
    * @param constraintIdList - <code>List</code> - 
    * @param paramId - <code>Integer</code> - 
    * @param domain - <code>PwDomainImpl</code> - PwEnumeratedDomainImpl || PwIntervalDomainImpl
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwVariableImpl( Integer key, String type, List constraintIds, List parameterIds,
+  public PwVariableImpl( Integer id, String type, List constraintIds, List parameterIds,
                          List tokenIds, PwDomainImpl domain, PwPartialPlanImpl partialPlan) {
-    this.key = key;
+    this.id = id;
     this.type = type;
     this.constraintIdList = new ArrayList(constraintIds);
     this.parameterIdList = new ArrayList(parameterIds);
@@ -64,12 +64,12 @@ public class PwVariableImpl implements PwVariable {
 
 
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
    * @return - <code>Integer</code> - 
    */
-  public Integer getKey()  {
-    return this.key;
+  public Integer getId()  {
+    return this.id;
   }
 
   /**

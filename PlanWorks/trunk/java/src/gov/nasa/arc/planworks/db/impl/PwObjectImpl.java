@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.11 2003-07-09 16:51:34 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.12 2003-08-12 22:54:00 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -28,7 +28,7 @@ import gov.nasa.arc.planworks.db.PwObject;
  */
 public class PwObjectImpl implements PwObject {
 
-  private Integer key;
+  private Integer id;
   private String name;
   private List timelineIdList; // element Integer
   private PwPartialPlanImpl partialPlan;
@@ -36,12 +36,12 @@ public class PwObjectImpl implements PwObject {
   /**
    * <code>PwObjectImpl</code> - constructor 
    *
-   * @param key - <code>int</code> - 
+   * @param id - <code>int</code> - 
    * @param name - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwObjectImpl( Integer key, String name, PwPartialPlanImpl partialPlan) {
-    this.key = key;
+  public PwObjectImpl( Integer id, String name, PwPartialPlanImpl partialPlan) {
+    this.id = id;
     this.name = name;
     this.partialPlan = partialPlan;
     timelineIdList = new ArrayList();
@@ -52,23 +52,23 @@ public class PwObjectImpl implements PwObject {
    * <code>addTimeline</code>
    *
    * @param name - <code>String</code> - 
-   * @param key - <code>int</code> - 
+   * @param id - <code>int</code> - 
    * @return timeline - <code>PwTimelineImpl</code> - 
    */
-  public PwTimelineImpl addTimeline( String name, Integer key) {
-    timelineIdList.add(key);
-    PwTimelineImpl timeline = new PwTimelineImpl( name, key, this.key, partialPlan);
-    partialPlan.addTimeline( key, timeline);
+  public PwTimelineImpl addTimeline( String name, Integer id) {
+    timelineIdList.add(id);
+    PwTimelineImpl timeline = new PwTimelineImpl( name, id, this.id, partialPlan);
+    partialPlan.addTimeline( id, timeline);
     return timeline;
   } // end addTimeline
 
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
-   * @return key - <code>int</code> -
+   * @return id - <code>int</code> -
    */
-  public Integer getKey() {
-    return this.key;
+  public Integer getId() {
+    return this.id;
   }
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraint.java,v 1.5 2003-06-26 18:17:56 miatauro Exp $
+// $Id: PwConstraint.java,v 1.6 2003-08-12 22:53:30 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -35,11 +35,11 @@ public interface PwConstraint {
   public abstract String getName();
 
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
    * @return - <code>Integer</code> - 
    */
-  public abstract Integer getKey();
+  public abstract Integer getId();
 	
   /**
    * <code>getType</code>

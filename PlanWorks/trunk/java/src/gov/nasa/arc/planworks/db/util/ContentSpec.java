@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.4 2003-08-12 21:33:32 miatauro Exp $
+// $Id: ContentSpec.java,v 1.5 2003-08-12 22:54:18 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -30,7 +30,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.RedrawNotifier;
 /*
  * <code>ContentSpec</code> -
  * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
- * The content specification class.  Interfaces directely with the database to determine which keys
+ * The content specification class.  Interfaces directely with the database to determine which ids
  * are/should be in the current specification, and provides a method for exposing that information
  * to other classes (VizView through ViewSet).  It uses <code>BitSet</code>s to determine validity
  * and perform logic functions.
@@ -38,7 +38,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.RedrawNotifier;
 
 public class ContentSpec {
   private ArrayList validTokenIds;
-  private Long partialPlanKey;
+  private Long partialPlanId;
   private PwPartialPlan partialPlan;
   private RedrawNotifier redrawNotifier;
 
@@ -76,7 +76,7 @@ public class ContentSpec {
 
   public ContentSpec(PwPartialPlan partialPlan, RedrawNotifier redrawNotifier) 
     throws SQLException {
-    this.partialPlanKey = partialPlan.getKey();
+    this.partialPlanId = partialPlan.getId();
     this.partialPlan = partialPlan;
     this.redrawNotifier = redrawNotifier;
     this.validTokenIds = new ArrayList();
@@ -92,7 +92,7 @@ public class ContentSpec {
     redrawNotifier.notifyRedraw();
   }
   private void queryValidTokens() throws SQLException {
-    ResultSet validTokens = MySQLDB.queryDatabase(TOKENID_QUERY.concat(partialPlanKey.toString()));
+    ResultSet validTokens = MySQLDB.queryDatabase(TOKENID_QUERY.concat(partialPlanId.toString()));
     while(validTokens.next()) {
       validTokenIds.add(new Integer(validTokens.getInt(TOKENID)));
     }
@@ -107,15 +107,8 @@ public class ContentSpec {
     }
   }
   /**
-   * Given a key, returns the integer part.  Used to index into the BitSet.
-   * @param key the key being converted.
-   */
-  private int keyToIndex(Integer key) throws NumberFormatException {
-    return 0;
-  }
-  /**
    * Given the parametes specified by the user in the ContentSpecWindow, constructs the entire
-   * specification of valid keys through a series of database queries, then informs the windows
+   * specification of valid ids through a series of database queries, then informs the windows
    * goverend by this spec that they need to redraw themselves to the new specification.
    * @param timeline the result of getValues() in TimelineGroupBox.
    * @param predicate the result of getValues() in PredicateGroupBox.
@@ -124,7 +117,7 @@ public class ContentSpec {
   public void applySpec(List timeline, List predicate, List timeInterval) 
     throws NumberFormatException, SQLException {
     StringBuffer tokenQuery = new StringBuffer(TOKENID_QUERY);
-    tokenQuery.append(partialPlanKey.toString()).append(" ");
+    tokenQuery.append(partialPlanId.toString()).append(" ");
     if(timeline != null) {
       tokenQuery.append(AND_PTIMELINEID);
       if(((String)timeline.get(0)).indexOf(NOT) != -1) {
@@ -235,7 +228,7 @@ public class ContentSpec {
     
     System.err.println("Getting predicate names...");
     ResultSet predicateNames = 
-      MySQLDB.queryDatabase(PREDICATENAME_QUERY.concat(partialPlanKey.toString()));
+      MySQLDB.queryDatabase(PREDICATENAME_QUERY.concat(partialPlanId.toString()));
     while(predicateNames.next()) {
       predicates.put(predicateNames.getString(PREDICATENAME), 
                        new Integer(predicateNames.getInt(PREDICATEID)));
@@ -246,7 +239,7 @@ public class ContentSpec {
     HashMap timelines = new HashMap();
     System.err.println("Getting timeline names...");
     ResultSet timelineNames =
-      MySQLDB.queryDatabase(TIMELINENAME_QUERY.concat(partialPlanKey.toString()));
+      MySQLDB.queryDatabase(TIMELINENAME_QUERY.concat(partialPlanId.toString()));
     String objName = null;
     while(timelineNames.next()) {
       objName = (timelineNames.getString(OBJECTNAME) == null ? objName : 

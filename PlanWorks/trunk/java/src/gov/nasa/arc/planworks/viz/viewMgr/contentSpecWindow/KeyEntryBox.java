@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: KeyEntryBox.java,v 1.3 2003-06-16 18:51:09 miatauro Exp $
+// $Id: KeyEntryBox.java,v 1.4 2003-08-12 22:55:22 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -24,6 +24,6 @@ import javax.swing.JTextField;
 public class KeyEntryBox extends JTextField {
   public KeyEntryBox() {
     super(5);
-    add(new JLabel("Key"));
+    //add(new JLabel("Id"));
   }
 }

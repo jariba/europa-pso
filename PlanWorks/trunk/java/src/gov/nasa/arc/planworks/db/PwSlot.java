@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlot.java,v 1.4 2003-06-26 18:18:55 miatauro Exp $
+// $Id: PwSlot.java,v 1.5 2003-08-12 22:53:34 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -26,11 +26,11 @@ import java.util.List;
 public interface PwSlot {
 
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
    * @return name - <code>Integer</code> -
    */
-  public abstract Integer getKey();
+  public abstract Integer getId();
 	
   /**
    * <code>getTokenList</code>

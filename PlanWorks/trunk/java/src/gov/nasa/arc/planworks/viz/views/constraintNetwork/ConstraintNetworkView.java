@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.5 2003-08-06 17:11:28 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.6 2003-08-12 22:57:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -317,7 +317,7 @@ public class ConstraintNetworkView extends VizView {
 //           tokenLinkList.add( link);
           x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
         } else {
-          overloadedTokensIdList.add( token.getKey());
+          overloadedTokensIdList.add( token.getId());
         }
         tokenCnt++;
       }
@@ -341,7 +341,7 @@ public class ConstraintNetworkView extends VizView {
     while (variableItr.hasNext()) {
       PwVariable variable = (PwVariable) variableItr.next();
       if (variable != null) {
-        VariableNode variableNode = getVariableNode( variable.getKey());
+        VariableNode variableNode = getVariableNode( variable.getId());
         if (variableNode == null) {
           variableNode = new VariableNode( variable, tokenNode, new Point( xVar, yVar),
                                            objectCnt, isDraggable, this);
@@ -360,7 +360,7 @@ public class ConstraintNetworkView extends VizView {
         while (constraintItr.hasNext()) {
           PwConstraint constraint = (PwConstraint) constraintItr.next();
           if (constraint != null) {
-            ConstraintNode constraintNode = getConstraintNode( constraint.getKey());
+            ConstraintNode constraintNode = getConstraintNode( constraint.getId());
             if (constraintNode == null) {
               constraintNode =
                 new ConstraintNode( constraint, variableNode, new Point( xCon, yCon),
@@ -488,7 +488,7 @@ public class ConstraintNetworkView extends VizView {
     Iterator tokenNodeItr = tokenNodeList.iterator();
     while (tokenNodeItr.hasNext()) {
       tokenNode = (TokenNode) tokenNodeItr.next();
-      if (nodeId.equals( tokenNode.getToken().getKey())) {
+      if (nodeId.equals( tokenNode.getToken().getId())) {
         return tokenNode;
       }
     }
@@ -500,7 +500,7 @@ public class ConstraintNetworkView extends VizView {
     Iterator variableNodeItr = variableNodeList.iterator();
     while (variableNodeItr.hasNext()) {
       variableNode = (VariableNode) variableNodeItr.next();
-      if (nodeId.equals( variableNode.getVariable().getKey())) {
+      if (nodeId.equals( variableNode.getVariable().getId())) {
         return variableNode;
       }
     }
@@ -512,7 +512,7 @@ public class ConstraintNetworkView extends VizView {
     Iterator constraintNodeItr = constraintNodeList.iterator();
     while (constraintNodeItr.hasNext()) {
       constraintNode = (ConstraintNode) constraintNodeItr.next();
-      if (nodeId.equals( constraintNode.getConstraint().getKey())) {
+      if (nodeId.equals( constraintNode.getConstraint().getId())) {
         return constraintNode;
       }
     }
@@ -524,8 +524,8 @@ public class ConstraintNetworkView extends VizView {
     BasicNodeLink link = null;
     if (fromNode instanceof ConstraintNode) {
       linkName =
-        ((ConstraintNode) fromNode).getConstraint().getKey().toString() + "->" +
-        ((VariableNode) toNode).getVariable().getKey().toString();
+        ((ConstraintNode) fromNode).getConstraint().getId().toString() + "->" +
+        ((VariableNode) toNode).getVariable().getId().toString();
       Iterator linkItr = constraintLinkList.iterator();
       while (linkItr.hasNext()) {
         if (linkName.equals( ((BasicNodeLink) linkItr.next()).getLinkName())) {
@@ -540,8 +540,8 @@ public class ConstraintNetworkView extends VizView {
     }
     if (fromNode instanceof VariableNode) {
       linkName =
-        ((VariableNode) fromNode).getVariable().getKey().toString() + "->" +
-        ((TokenNode) toNode).getToken().getKey().toString();
+        ((VariableNode) fromNode).getVariable().getId().toString() + "->" +
+        ((TokenNode) toNode).getToken().getId().toString();
       Iterator linkItr = variableLinkList.iterator();
       while (linkItr.hasNext()) {
         if (linkName.equals( ((BasicNodeLink) linkItr.next()).getLinkName())) {
@@ -565,9 +565,9 @@ public class ConstraintNetworkView extends VizView {
     displayedTokenIds = new ArrayList();
     Iterator overloadedTokensItr = overloadedTokensIdList.iterator();
     while (overloadedTokensItr.hasNext()) {
-      Integer key = (Integer) overloadedTokensItr.next();
-      if (validTokenIds.indexOf( key) >= 0) {
-        displayedTokenIds.add( key);
+      Integer id = (Integer) overloadedTokensItr.next();
+      if (validTokenIds.indexOf( id) >= 0) {
+        displayedTokenIds.add( id);
       }
     }
     Iterator tokenNodeIterator = tokenNodeList.iterator();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.3 2003-08-06 01:20:15 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.4 2003-08-12 22:57:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -185,11 +185,11 @@ public class TemporalExtentView extends VizView {
   /**
    * <code>redraw</code> - called by Content Spec to apply user's content spec request.
    *                       setVisible(true | false)
-   *                       according to the Content Spec enabled keys
+   *                       according to the Content Spec enabled ids
    *
    */
   public void redraw() {
-    // setVisible(true | false) depending on keys
+    // setVisible(true | false) depending on ids
     setNodesVisible();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
   } // end redraw

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.30 2003-08-12 21:33:16 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.31 2003-08-12 22:54:00 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -57,20 +57,20 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
   private String model;
   private String name;
-  private Long key; // PartialPlan key
-  private Map objectMap; // key = attribute key, value = PwObjectImpl instance
-  private Map timelineMap; // key = attribute key, value = PwTimelineImpl instance
-  private Map slotMap; // key = attribute key, value = PwSlotImpl instance
-  private Map tokenMap; // key = attribute key, value = PwTokenImpl instance
-  private Map constraintMap; // key = attribute key, value = PwConstraintImpl instance
-  private Map parameterMap; // key = attribute key, value = PwParameterImpl instance
-  private Map predicateMap; // key = attribute key, value = PwPredicateImpl instance
-  private Map tokenRelationMap; // key = attribute key, value = PwTokenRelationImpl instance
-  private Map variableMap; // key = attribute key, value = PwVariableImpl instance
+  private Long id; // PartialPlan id
+  private Map objectMap; // key = attribute id, value = PwObjectImpl instance
+  private Map timelineMap; // key = attribute id, value = PwTimelineImpl instance
+  private Map slotMap; // key = attribute id, value = PwSlotImpl instance
+  private Map tokenMap; // key = attribute id, value = PwTokenImpl instance
+  private Map constraintMap; // key = attribute id, value = PwConstraintImpl instance
+  private Map parameterMap; // key = attribute id, value = PwParameterImpl instance
+  private Map predicateMap; // key = attribute id, value = PwPredicateImpl instance
+  private Map tokenRelationMap; // key = attribute id, value = PwTokenRelationImpl instance
+  private Map variableMap; // key = attribute id, value = PwVariableImpl instance
 
-  private int minKey, maxKey;
+  private int minId, maxId;
 
-  public PwPartialPlanImpl(String url, String planName, Integer sequenceKey)  
+  public PwPartialPlanImpl(String url, String planName, Integer sequenceId)  
     throws ResourceNotFoundException, SQLException {
     System.err.println("In PwPartialPlanImpl");
     objectMap = new HashMap();
@@ -84,15 +84,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     variableMap = new HashMap();
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
     this.name = planName;
-    createPartialPlan(sequenceKey);
+    createPartialPlan(sequenceId);
   }
 
-  private void createPartialPlan(Integer sequenceKey) throws ResourceNotFoundException, SQLException  {
+  private void createPartialPlan(Integer sequenceId) throws ResourceNotFoundException, SQLException  {
     System.err.println( "Creating PwPartialPlan  ..." + url);
     long startTimeMSecs = System.currentTimeMillis();
     long loadTime = 0L;
     HashMap existingPartialPlan = null;
-    if(!MySQLDB.partialPlanExists(sequenceKey, name)) {
+    if(!MySQLDB.partialPlanExists(sequenceId, name)) {
       String [] fileNames = new File(url).list(new PwSQLFilenameFilter());
       for(int i = 0; i < fileNames.length; i++) {
         String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".")+1);
@@ -107,13 +107,13 @@ public class PwPartialPlanImpl implements PwPartialPlan {
         MySQLDB.loadFile(url.toString().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
         loadTime += System.currentTimeMillis() - time1;
       }
-      MySQLDB.updatePartialPlanSequenceId(sequenceKey);
+      MySQLDB.updatePartialPlanSequenceId(sequenceId);
       //MySQLDB.analyzeDatabase();
     }
-    key = MySQLDB.getNewPartialPlanKey(sequenceKey, name);
+    id = MySQLDB.getNewPartialPlanId(sequenceId, name);
     System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
     MySQLDB.createObjects(this);
-    model = MySQLDB.queryPartialPlanModelByKey(key);
+    model = MySQLDB.queryPartialPlanModelById(id);
     System.err.println("Creating Timeline/Slot/Token structure");
     MySQLDB.createTimelineSlotTokenNodesStructure(this);
     System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
@@ -140,7 +140,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
     MySQLDB.queryVariables( this);
 
-    System.err.println( "Partial Plan keys:");
+    System.err.println( "Partial Plan ids:");
     System.err.println( "  objectMap        " + objectMap.keySet().size());
     System.err.println( "  timelineMap      " + timelineMap.keySet().size());
     System.err.println( "  slotMap          " + slotMap.keySet().size());
@@ -173,11 +173,11 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>getObjectImpl</code>
    *
-   * @param key - <code>int</code> - 
+   * @param id - <code>int</code> - 
    * @return - <code>PwObjectImpl</code> - 
    */
-  public PwObjectImpl getObjectImpl( Integer key) {
-    return (PwObjectImpl) objectMap.get( key);
+  public PwObjectImpl getObjectImpl( Integer id) {
+    return (PwObjectImpl) objectMap.get( id);
   }
 
 
@@ -194,16 +194,16 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     return url;
   }
 
-  public Long getKey() {
-    return key;
+  public Long getId() {
+    return id;
   }
 
-  public int getMinKey() {
-    return minKey;
+  public int getMinId() {
+    return minId;
   }
 
-  public int getMaxKey() {
-    return maxKey;
+  public int getMaxId() {
+    return maxId;
   }
   /**
    * <code>getObjectList</code> -
@@ -231,217 +231,217 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>getObject</code> - if not in Map, query
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwObject</code> - 
    */
-  public PwObject getObject( Integer key) {
-    return (PwObject)objectMap.get(key);
+  public PwObject getObject( Integer id) {
+    return (PwObject)objectMap.get(id);
   } // end getObject
 
 
   /**
    * <code>getTimeline</code> - if not in Map, query
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwTimeline</code> - 
    */
-  public PwTimeline getTimeline( Integer key) {
-    return (PwTimeline)timelineMap.get(key);
+  public PwTimeline getTimeline( Integer id) {
+    return (PwTimeline)timelineMap.get(id);
   } // end getTimeline
 
 
   /**
    * <code>getSlot</code> - if not in Map, query
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwSlot</code> - 
    */
-  public PwSlot getSlot( Integer key) {
-    return (PwSlot)slotMap.get(key);
+  public PwSlot getSlot( Integer id) {
+    return (PwSlot)slotMap.get(id);
   } // end getSlot
 
 
   /**
    * <code>getToken</code> - if not in Map, query
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwToken</code> - 
    */
-  public PwToken getToken( Integer key) {
-    return (PwToken) tokenMap.get(key);
+  public PwToken getToken( Integer id) {
+    return (PwToken) tokenMap.get(id);
   } // end getToken
 
 
   /**
    * <code>getConstraint</code> - if not in Map, query
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwConstraint</code> - 
    */
-  public PwConstraint getConstraint( Integer key) {
-    return (PwConstraint) constraintMap.get(key);
+  public PwConstraint getConstraint( Integer id) {
+    return (PwConstraint) constraintMap.get(id);
   } // end getConstraint
 
 
   /**
    * <code>getParameter</code> - if not in Map, query
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwParameter</code> - 
    */
-  public PwParameter getParameter( Integer key) {
-    return (PwParameter) parameterMap.get(key);
+  public PwParameter getParameter( Integer id) {
+    return (PwParameter) parameterMap.get(id);
   } // end getParameter
 
 
   /**
    * <code>getPredicate</code> - if not in Map, query
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwPredicate</code> - 
    */
-  public PwPredicate getPredicate( Integer key) {
-    return (PwPredicate) predicateMap.get(key);
+  public PwPredicate getPredicate( Integer id) {
+    return (PwPredicate) predicateMap.get(id);
   } // end getPredicate
 
 
   /**
    * <code>getTokenRelation</code> - if not in Map, query
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwTokenRelation</code> - 
    */
-  public PwTokenRelation getTokenRelation( Integer key) {
-    return (PwTokenRelation) tokenRelationMap.get(key);
+  public PwTokenRelation getTokenRelation( Integer id) {
+    return (PwTokenRelation) tokenRelationMap.get(id);
   } // end getTokenRelation
 
 
   /**
    * <code>getVariable</code> - if not in Map, query
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getVariable( Integer key) {
-    return (PwVariable) variableMap.get(key);
+  public PwVariable getVariable( Integer id) {
+    return (PwVariable) variableMap.get(id);
   } // end getVariable
 
 
   // END IMPLEMENT PwPartialPlan INTERFACE 
     
 
-  public boolean tokenExists(Integer key) {
-    return tokenMap.containsKey(key);
+  public boolean tokenExists(Integer id) {
+    return tokenMap.containsKey(id);
   }
 
-  public void addObject(Integer key, PwObjectImpl object) {
-    if(objectMap.containsKey(key)) {
+  public void addObject(Integer id, PwObjectImpl object) {
+    if(objectMap.containsKey(id)) {
       return;
     }
-    objectMap.put(key, object);
+    objectMap.put(id, object);
   }
 
   /**
    * <code>addConstraint</code>
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @param constraint - <code>PwConstraintImpl</code> - 
    */
-  public void addConstraint( Integer key, PwConstraintImpl constraint) {
-    if(constraintMap.containsKey(key)) {
+  public void addConstraint( Integer id, PwConstraintImpl constraint) {
+    if(constraintMap.containsKey(id)) {
       return;
     }
-    constraintMap.put( key, constraint);
+    constraintMap.put( id, constraint);
   }
 
   /**
    * <code>addParameter</code>
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @param parameter - <code>PwParameterImpl</code> - 
    */
-  public void addParameter( Integer key, PwParameterImpl parameter) {
-    if(parameterMap.containsKey(key)) {
+  public void addParameter( Integer id, PwParameterImpl parameter) {
+    if(parameterMap.containsKey(id)) {
       return;
     }
-    parameterMap.put( key, parameter);
+    parameterMap.put( id, parameter);
   }
 
   /**
    * <code>addPredicate</code>
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @param predicate - <code>PwPredicateImpl</code> - 
    */
-  public void addPredicate( Integer key, PwPredicateImpl predicate) {
-    if(predicateMap.containsKey(key)) {
+  public void addPredicate( Integer id, PwPredicateImpl predicate) {
+    if(predicateMap.containsKey(id)) {
       return;
     }
-    predicateMap.put( key, predicate);
+    predicateMap.put( id, predicate);
   }
 
   /**
    * <code>addSlot</code>
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @param slot - <code>PwSlotImpl</code> - 
    */
-  public void addSlot( Integer key, PwSlotImpl slot) {
-    if(slotMap.containsKey(key)) {
+  public void addSlot( Integer id, PwSlotImpl slot) {
+    if(slotMap.containsKey(id)) {
       return;
     }
-    slotMap.put( key, slot);
+    slotMap.put( id, slot);
   }
 
   /**
    * <code>addTimeline</code>
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @param timeline - <code>PwTimelineImpl</code> - 
    */
-  public void addTimeline( Integer key, PwTimelineImpl timeline) {
-    if(timelineMap.containsKey(key)) {
+  public void addTimeline( Integer id, PwTimelineImpl timeline) {
+    if(timelineMap.containsKey(id)) {
       return;
     }
-    timelineMap.put( key, timeline);
+    timelineMap.put( id, timeline);
   }
 
   /**
    * <code>addToken</code>
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @param token - <code>PwTokenImpl</code> - 
    */
-  public void addToken( Integer key, PwTokenImpl token) {
-    if(tokenMap.containsKey(key)) {
+  public void addToken( Integer id, PwTokenImpl token) {
+    if(tokenMap.containsKey(id)) {
       return;
     }
-    tokenMap.put( key, token);
+    tokenMap.put( id, token);
   }
   /**
    * <code>addTokenRelation</code>
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @param tokenRelation - <code>PwTokenRelationImpl</code> - 
    */
-  public void addTokenRelation( Integer key, PwTokenRelationImpl tokenRelation) {
-    if(tokenRelationMap.containsKey(key)) {
+  public void addTokenRelation( Integer id, PwTokenRelationImpl tokenRelation) {
+    if(tokenRelationMap.containsKey(id)) {
       return;
     }
-    tokenRelationMap.put( key, tokenRelation);
+    tokenRelationMap.put( id, tokenRelation);
   }
 
   /**
    * <code>addVariable</code>
    *
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @param variable - <code>PwVariableImpl</code> - 
    */
-  public void addVariable( Integer key, PwVariableImpl variable) {
-    if(variableMap.containsKey(key)) {
+  public void addVariable( Integer id, PwVariableImpl variable) {
+    if(variableMap.containsKey(id)) {
       return;
     }
-    variableMap.put( key, variable);
+    variableMap.put( id, variable);
   }
 
 

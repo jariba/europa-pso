@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.18 2003-07-31 21:52:29 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.19 2003-08-12 22:54:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -37,7 +37,7 @@ import gov.nasa.arc.planworks.db.util.MySQLDB;
  */
 public class PwTokenImpl implements PwToken {
 
-  private Integer key;
+  private Integer id;
   private boolean isValueToken;
   private Integer predicateId;
   private Integer startVarId;
@@ -54,13 +54,13 @@ public class PwTokenImpl implements PwToken {
   private PwPartialPlanImpl partialPlan;
 
 
-  public PwTokenImpl(Integer key, boolean isValueToken, Integer slotId, Integer predicateId, 
+  public PwTokenImpl(Integer id, boolean isValueToken, Integer slotId, Integer predicateId, 
                      Integer startVarId, Integer endVarId, Integer durationVarId, 
                      Integer objectId, Integer rejectVarId, Integer objectVarId,
                      Integer timelineId, List tokenRelationIds, List paramVarIds, 
                      PwPartialPlanImpl partialPlan)
   {
-    this.key = key;
+    this.id = id;
     this.isValueToken = isValueToken;
     this.slotId = slotId;
     this.predicateId = predicateId;
@@ -77,12 +77,12 @@ public class PwTokenImpl implements PwToken {
   }
 		
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
    * @return name - <code>Integer</code> -
    */
-  public Integer getKey() {
-    return key;
+  public Integer getId() {
+    return id;
   }
 
   public Integer getTimelineId() {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.12 2003-07-14 22:37:13 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.13 2003-08-12 22:54:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,7 +30,7 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 public class PwTimelineImpl implements PwTimeline {
 
   private String name;
-  private Integer key;
+  private Integer id;
   private Integer objectId;
   private List slotIdList;
   private PwPartialPlanImpl partialPlan;
@@ -38,13 +38,13 @@ public class PwTimelineImpl implements PwTimeline {
    * <code>Timeline</code> - constructor 
    *
    * @param name - <code>String</code> - 
-   * @param key - <code>int</code> - 
+   * @param id - <code>int</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwTimelineImpl( String name, Integer key, Integer objectId, 
+  public PwTimelineImpl( String name, Integer id, Integer objectId, 
                          PwPartialPlanImpl partialPlan) {
     this.name = name;
-    this.key = key;
+    this.id = id;
     this.partialPlan = partialPlan;
     this.objectId = objectId;
     slotIdList = new ArrayList();
@@ -60,12 +60,12 @@ public class PwTimelineImpl implements PwTimeline {
   }
 
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
    * @return name - <code>int</code> -
    */
-  public Integer getKey() {
-    return key;
+  public Integer getId() {
+    return id;
   }
   
   public Integer getObjectId() {
@@ -87,13 +87,13 @@ public class PwTimelineImpl implements PwTimeline {
   /**
    * <code>addSlot</code>
    *
-   * @param key - <code>int</code> - 
+   * @param id - <code>int</code> - 
    * @return slot - <code>PwSlotImpl</code> - 
    */
-  public PwSlotImpl addSlot( Integer key) {
-    PwSlotImpl slot = new PwSlotImpl( key, partialPlan);
-    slotIdList.add( key);
-    partialPlan.addSlot( key, slot);
+  public PwSlotImpl addSlot( Integer id) {
+    PwSlotImpl slot = new PwSlotImpl( id, partialPlan);
+    slotIdList.add( id);
+    partialPlan.addSlot( id, slot);
     return slot;
   } // end addSlot
 

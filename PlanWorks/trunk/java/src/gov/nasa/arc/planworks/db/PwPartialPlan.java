@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.12 2003-07-14 22:18:50 miatauro Exp $
+// $Id: PwPartialPlan.java,v 1.13 2003-08-12 22:53:32 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -32,11 +32,11 @@ public interface PwPartialPlan {
    */
   public abstract String getUrl();
 
-  public abstract int getMinKey();
+  public abstract int getMinId();
 
-  public abstract int getMaxKey();
+  public abstract int getMaxId();
 
-  public abstract Long getKey();
+  public abstract Long getId();
 
   /**
    * <code>getObjectList</code>
@@ -50,81 +50,81 @@ public interface PwPartialPlan {
   /**
    * <code>getObject</code> - if not in Map, query
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwObject</code> - 
    */
-  public abstract PwObject getObject( Integer key);
+  public abstract PwObject getObject( Integer id);
 
 
   /**
    * <code>getTimeline</code> - if not in Map, query
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwTimeline</code> - 
    */
-  public abstract PwTimeline getTimeline( Integer key);
+  public abstract PwTimeline getTimeline( Integer id);
 
 
   /**
    * <code>getSlot</code> - if not in Map, query
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwSlot</code> - 
    */
-  public abstract PwSlot getSlot( Integer key);
+  public abstract PwSlot getSlot( Integer id);
 
 
   /**
    * <code>getToken</code> - if not in Map, query
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwToken</code> - 
    */
-  public abstract PwToken getToken( Integer key);
+  public abstract PwToken getToken( Integer id);
 
 
   /**
    * <code>getConstraint</code> - if not in Map, query
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwConstraint</code> - 
    */
-  public abstract PwConstraint getConstraint( Integer key);
+  public abstract PwConstraint getConstraint( Integer id);
 
 
   /**
    * <code>getParameter</code> - if not in Map, query
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwParameter</code> - 
    */
-  public abstract PwParameter getParameter( Integer key);
+  public abstract PwParameter getParameter( Integer id);
 
 
   /**
    * <code>getPredicate</code> - if not in Map, query
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwPredicate</code> - 
    */
-  public abstract PwPredicate getPredicate( Integer key);
+  public abstract PwPredicate getPredicate( Integer id);
 
 
   /**
    * <code>getTokenRelation</code> - if not in Map, query
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwTokenRelation</code> - 
    */
-  public abstract PwTokenRelation getTokenRelation( Integer key);
+  public abstract PwTokenRelation getTokenRelation( Integer id);
 
 
   /**
    * <code>getVariable</code> - if not in Map, query
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwVariable</code> - 
    */
-  public abstract PwVariable getVariable( Integer key);
+  public abstract PwVariable getVariable( Integer id);
 
 } // end interface PwPartialPlan

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.13 2003-07-29 00:11:55 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.14 2003-08-12 22:54:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -29,30 +29,30 @@ import gov.nasa.arc.planworks.db.PwSlot;
  */
 public class PwSlotImpl implements PwSlot {
 
-  private Integer key;
+  private Integer id;
   private List tokenIdList; // element String
   private PwPartialPlanImpl partialPlan;
 
   /**
    * <code>PwSlotImpl</code> - constructor 
    *
-   * @param key - <code>int</code> - 
+   * @param id - <code>int</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwSlotImpl( Integer key, PwPartialPlanImpl partialPlan) {
-    this.key = key;
+  public PwSlotImpl( Integer id, PwPartialPlanImpl partialPlan) {
+    this.id = id;
     this.partialPlan = partialPlan;
     tokenIdList = new ArrayList();
   } // end constructor
 
 
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
    * @return name - <code>int</code> -
    */
-  public Integer getKey() {
-    return key;
+  public Integer getId() {
+    return id;
   }
 	
   /**
@@ -73,19 +73,19 @@ public class PwSlotImpl implements PwSlot {
    * @param attributeList - <code>List</code> - 
    * @return - <code>PwTokenImpl</code> - 
    */
-  public PwTokenImpl addToken(Integer key, boolean isValueToken, Integer slotId, 
+  public PwTokenImpl addToken(Integer id, boolean isValueToken, Integer slotId, 
                               Integer predicateId, Integer startVarId, Integer endVarId, 
                               Integer durationVarId, Integer objectId, Integer rejectVarId,
                               Integer objectVarId, Integer timelineId, List tokenRelationIds, 
                               List paramVarIds) {
-    PwTokenImpl token = new PwTokenImpl(key, isValueToken, slotId, predicateId, startVarId, 
+    PwTokenImpl token = new PwTokenImpl(id, isValueToken, slotId, predicateId, startVarId, 
                                         endVarId, durationVarId, objectId, rejectVarId, 
                                         objectVarId, timelineId, tokenRelationIds, paramVarIds, 
                                         partialPlan);
-    if(!tokenIdList.contains(key)) {
-      tokenIdList.add( key);
+    if(!tokenIdList.contains(id)) {
+      tokenIdList.add( id);
     }
-    partialPlan.addToken( key, token);
+    partialPlan.addToken( id, token);
     return token;
   } // end addToken
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SpecBox.java,v 1.6 2003-07-14 20:52:20 miatauro Exp $
+// $Id: SpecBox.java,v 1.7 2003-08-12 22:55:23 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -81,7 +81,7 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     gridBag.setConstraints(negationBox, c);
     add(negationBox);
 
-    JLabel label1 = new JLabel(name.toString().concat(" Key"));
+    JLabel label1 = new JLabel(name.toString());
     c.gridx = 2;
     gridBag.setConstraints(label1, c);
     add(label1);
