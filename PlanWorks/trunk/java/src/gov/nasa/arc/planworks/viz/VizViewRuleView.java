@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewRuleView.java,v 1.1 2004-03-30 22:01:02 taylor Exp $
+// $Id: VizViewRuleView.java,v 1.2 2004-04-15 18:56:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -145,9 +145,10 @@ public class VizViewRuleView extends JGoView implements StringViewSetKey {
     textObject.setSelectable( false);
     textObject.setAutoResize( true);
     textObject.setMultiline( true);
-    textObject.setWrapping( true);
-    int wrappingWidth = (int) this.getExtentSize().getWidth() - xMargin * 2;
-    textObject.setWrappingWidth( wrappingWidth);
+    textObject.setWrapping( false);
+//     textObject.setWrapping( true);
+//     int wrappingWidth = (int) this.getExtentSize().getWidth() - xMargin * 2;
+//     textObject.setWrappingWidth( wrappingWidth);
     textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
     this.getDocument().addObjectAtTail( textObject);
     int numLines = 1 + (int) Math.ceil( SwingUtilities.computeStringWidth
