@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.138 2004-10-14 00:06:47 taylor Exp $
+# $Id: README,v 1.139 2004-12-08 17:41:34 pdaley Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -13,6 +13,7 @@ The current known-good MySQL versions are:
 4.0.13
 4.0.18
 4.1.1
+4.1.7
 
 SUMMARY (PW_M_18)
 =================
@@ -47,11 +48,11 @@ PREREQUISITES
 =============
 Set environment varibles:
 
-  o JAVA_HOME - location of J2SDK >= 1.4.1
+  o JAVA_HOME - location of J2SDK >= 1.4.1 or higher
     On Solaris (Code IC)
-      setenv JAVA_HOME /usr/local/j2sdk1.4.1
+      setenv JAVA_HOME /usr/local/j2sdk1.4.2_05
     On Linux, e.g.
-      setenv JAVA_HOME /home/wtaylor/pub/j2sdk1.4.1_02
+      setenv JAVA_HOME /home/wtaylor/pub/j2sdk1.4.2_04
     On MacOSX, in terminal window
       setenv JAVA_HOME /System/Library/Frameworks/JavaVM.framework/Home
       or, put this statement in
@@ -90,21 +91,19 @@ The PartialPlanWriter is included in the standard PLASMA build.
 
 BUILDING & RUNNING PLANWORKS
 ============================
-If you're running Solaris 8, everything should work right out of
-CVS.  Just follow the instructions below.  If you're running Linux, you'll
-have to go download the MySQL binary release version 12.20 distrib
-4.0.13 for your system
-(ftp://mirror.aphix.com/pub/mysql/Downloads/MySQL-Max-4.0/mysql-max-4.0.13-sun-solaris2.8-sparc.tar.gz
-for solaris and
-ftp://mirror.aphix.com/pub/mysql/Downloads/MySQL-Max-4.0/mysql-max-4.0.13-pc-linux-i686.tar.gz
-for linux), un[zip|tar] it, and copy the "mysql", "mysqld", and
-"mysqladmin" executables from the bin directory into
-PlanWorks/lib/mysql/bin, then follow the instructions below.  If you
-are, for whatever reason, not going to use MySQL 4.0.13, then you'll
-need to overwrite the files in PlanWorks/lib/mysql/share/mysql/english/
-with the files in /path/to/your/mysql/share/mysql/english/.  If you're
-on any other system, the above advice still holds, but you're on your own
-beyond that.
+If you're running Solaris 8, everything should work right out of CVS.  
+Just follow the instructions below.  
+
+If you're running Linux, you'll have to download the MySQL binary release 
+version 4.0.13 or higher for your system. MySQL is open source. Download from:
+     http://dev.mysql.com/downloads/mysql/4.1.html
+
+Download the version for your specific platform, un[zip|tar] it, and copy 
+the "mysql", "mysqld", and "mysqladmin" executables from the bin directory 
+into PlanWorks/lib/mysql/bin. 
+Also, overwrite the files in PlanWorks/lib/mysql/share/mysql/english/
+with the files in /path/to/your/mysql/share/mysql/english/.  
+
 Alternately, if you have an existing MySQL binary installation and wish to use
 that, you can do so by editing build.xml, setting the property
 "mysql.custom.bindir" to point to the directory containing the binaries,
@@ -115,13 +114,15 @@ after it prints its report.  Also, it is strongly recommended that you run
 'ant cleanDb' after the tests to make sure the test data is purged from
 the database.
 
-Only one instance of PlanWorks may be run concurrently, due to interactions with
-MySQL.
+Only one instance of PlanWorks may be run concurrently, due to interactions 
+with MySQL.
 
 > cd PlanWorks
 
 > ant planWorksDbInstall # this sets up the database and must be run before
 			 # anything else
+
+> ant createJNI # this creates the JNI interface to integrated planners       
 
 > ant # default is to run the application with compilation of all PlanWorks
       # Java source as a dependency.
