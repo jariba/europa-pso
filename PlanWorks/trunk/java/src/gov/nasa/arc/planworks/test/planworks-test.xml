@@ -14,6 +14,7 @@
           <pathelement location="${jfcunit.home}/junit.jar"/>
           <pathelement location="${jfcunit.home}/jfcunit.jar"/>
           <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
+          <pathelement location="${antlr.home}/antlr.jar"/>
           <pathelement path="/home/wtaylor/pub/apache-ant-1.6.1/lib"/>
         </path>
 
