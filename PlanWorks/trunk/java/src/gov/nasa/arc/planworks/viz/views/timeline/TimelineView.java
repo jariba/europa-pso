@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.29 2003-08-20 18:52:38 taylor Exp $
+// $Id: TimelineView.java,v 1.30 2003-08-26 01:37:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -173,10 +173,25 @@ public class TimelineView extends VizView {
    *
    */
   public void redraw() {
+    new RedrawViewThread().start();
+  }
+
+  class RedrawViewThread extends Thread {
+
+    public RedrawViewThread() {
+    }  // end constructor
+
+    public void run() {
+      redrawView();
+    } //end run
+
+  } // end class RedrawViewThread
+
+  private void redrawView() {
     // setVisible(true | false) depending on ids
     setNodesVisible();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
-  } // end redraw
+  } // end redrawView
 
   /**
    * <code>getJGoDocument</code>
@@ -338,9 +353,16 @@ public class TimelineView extends VizView {
   } // end computeTimelineNodesWidth
 
 
-  // pad labels with blanks up to min size -- initally that of "empty" label
-  // then base it on  length of time interval string
-  private String getSlotNodeLabel( PwToken token) {
+  /**
+   * <code>getSlotNodeLabel</code>
+   *
+   * pad labels with blanks up to min size -- initally that of "empty" label
+   * then base it on  length of time interval string
+   *
+   * @param token - <code>PwToken</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getSlotNodeLabel( PwToken token) {
     String predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
     // check for non-empty slot
     if (token != null) {
@@ -358,6 +380,8 @@ public class TimelineView extends VizView {
         prepend = (! prepend);
       }
     }
+    // System.err.println( "getSlotNodeLabel: " + predicateName + " label '" +
+    //                     label.toString() + "'");
     return label.toString();
   } // end getSlotNodeLabel
 

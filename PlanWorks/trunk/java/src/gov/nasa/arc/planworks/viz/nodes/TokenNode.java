@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.14 2003-08-20 18:52:36 taylor Exp $
+// $Id: TokenNode.java,v 1.15 2003-08-26 01:37:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -289,18 +289,25 @@ public class TokenNode extends BasicNode {
   private void addTokenNodeVariables( TokenNode tokenNode) {
     ConstraintNetworkView constraintNetworkView =
       (ConstraintNetworkView) tokenNode.getVizView();
-    constraintNetworkView.addVariableNodes( tokenNode);
-    constraintNetworkView.addVariableToTokenLinks( tokenNode);
-    constraintNetworkView.redraw();
+    boolean areNodesChanged = constraintNetworkView.addVariableNodes( tokenNode);
+    boolean areLinksChanged = constraintNetworkView.addVariableToTokenLinks( tokenNode);
+    if (areNodesChanged || areLinksChanged) {
+      constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.redraw();
+    }
   } // end addTokenNodeVariables
 
   private void removeTokenNodeVariables( TokenNode tokenNode) {
     ConstraintNetworkView constraintNetworkView =
       (ConstraintNetworkView) tokenNode.getVizView();
-    constraintNetworkView.removeVariableToTokenLinks( tokenNode);
-    constraintNetworkView.removeVariableNodes( tokenNode);
-    constraintNetworkView.redraw();
+    boolean areLinksChanged = constraintNetworkView.removeVariableToTokenLinks( tokenNode);
+    boolean areNodesChanged = constraintNetworkView.removeVariableNodes( tokenNode);
+    if (areNodesChanged || areLinksChanged) {
+      constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.redraw();
+    }
   } // end adremoveTokenNodeVariables
+
 
 
 } // end class TokenNode

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomainImpl.java,v 1.3 2003-05-18 00:02:25 taylor Exp $
+// $Id: PwIntervalDomainImpl.java,v 1.4 2003-08-26 01:37:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwIntervalDomain;
 
 
@@ -64,7 +65,33 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
   public String getUpperBound() {
     return upperBound;
   }
-		
+
+  /**
+   * <code>getLowerBoundInt</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getLowerBoundInt() {
+    if (lowerBound.equals( PwDomain.MINUS_INFINITY)) {
+      return PwDomain.MINUS_INFINITY_INT;
+    } else {
+      return Integer.parseInt( lowerBound);
+    }
+  }
+
+  /**
+   * <code>getUpperBoundInt</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getUpperBoundInt() {
+    if (upperBound.equals( PwDomain.PLUS_INFINITY)) {
+      return PwDomain.PLUS_INFINITY_INT;
+    } else {
+      return Integer.parseInt( upperBound);
+    }
+  }
+
   /**
    * <code>toString</code>
    *
@@ -79,5 +106,6 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
     return boundBuf.toString();
   }
 		
+
 
 } // end class PwIntervalDomainImpl

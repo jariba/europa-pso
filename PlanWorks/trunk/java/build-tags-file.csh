@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.23 2003-08-20 18:52:35 taylor Exp $
+# $Id: build-tags-file.csh,v 1.24 2003-08-26 01:37:10 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -61,9 +61,11 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/mdi/MDIWindowBar.java \
     src/gov/nasa/arc/planworks/mdi/MDIWindowButtonBar.java \
     src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
+    src/gov/nasa/arc/planworks/util/Algorithms.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/DirectoryChooser.java \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
+    src/gov/nasa/arc/planworks/util/Extent.java \
     src/gov/nasa/arc/planworks/util/FileCopy.java \
     src/gov/nasa/arc/planworks/util/MouseEventOSX.java \
     src/gov/nasa/arc/planworks/util/OneToManyMap.java \
@@ -78,6 +80,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/ConstraintNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/SlotNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TemporalNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TemporalNodeDurationBridge.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TemporalNodeTimeMark.java \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineBasicNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenLink.java \
@@ -109,7 +113,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/views/temporalExtent/TemporalExtentView.java \
     src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java \
     src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkLayout.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TreeRingLayout.java
+    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkLayout.java
 
 echo "Writing `pwd`/planWorks.TAGS"

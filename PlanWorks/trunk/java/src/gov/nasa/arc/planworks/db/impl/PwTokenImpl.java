@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.21 2003-08-22 21:39:51 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.22 2003-08-26 01:37:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -158,10 +158,10 @@ public class PwTokenImpl implements PwToken {
   public Integer getEarliestStart() {
     String earliestStart = partialPlan.getVariable(startVarId).getDomain().getLowerBound();
     if(earliestStart.equals(PwDomain.PLUS_INFINITY)) {
-      return new Integer(Integer.MAX_VALUE);
+      return new Integer(PwDomain.PLUS_INFINITY_INT);
     }
     else if(earliestStart.equals(PwDomain.MINUS_INFINITY)) {
-      return new Integer(Integer.MIN_VALUE);
+      return new Integer(PwDomain.MINUS_INFINITY_INT);
     }
     return new Integer(earliestStart);
   }
@@ -175,10 +175,10 @@ public class PwTokenImpl implements PwToken {
   public Integer getLatestEnd() {
     String latestEnd = partialPlan.getVariable(endVarId).getDomain().getUpperBound();
     if(latestEnd.equals(PwDomain.PLUS_INFINITY)) {
-      return new Integer(Integer.MAX_VALUE);
+      return new Integer(PwDomain.PLUS_INFINITY_INT);
     }
     else if(latestEnd.equals(PwDomain.MINUS_INFINITY)) {
-      return new Integer(Integer.MIN_VALUE);
+      return new Integer(PwDomain.MINUS_INFINITY_INT);
     }
     return new Integer(latestEnd);
 }
@@ -211,28 +211,38 @@ public class PwTokenImpl implements PwToken {
   }
 
   /**
-   * <code>getTokenRelationsList</code>
+   * <code>getTokenRelationIdsList</code>
    *
-   * @return - <code>List</code> - of PwTokenRelation
+   * @return - <code>List</code> - of Integer
    */
-  public List getTokenRelationsList() {
-    List retval = new ArrayList( tokenRelationIds.size());
-    for (int i = 0; i < tokenRelationIds.size(); i++) {
-      retval.add( partialPlan.getTokenRelation( (Integer) tokenRelationIds.get( i)));
-    }
-    return retval;
-  }
-
   public List getTokenRelationIdsList() {
     return new ArrayList(tokenRelationIds);
   }
 
   /**
-   * <code>getVariablesList</code>
+   * <code>getVariablesList</code> - return TokenVars & ParamVars
    *
    * @return - <code>List</code> - of PwVariable
    */
   public List getVariablesList() {
+    List retval = new ArrayList( 5 + paramVarIds.size());
+    retval.add( getStartVariable());
+    retval.add( getEndVariable());
+    retval.add( getDurationVariable());
+    retval.add( getObjectVariable());
+    retval.add( getRejectVariable());
+    for (int i = 0; i < paramVarIds.size(); i++) {
+      retval.add( partialPlan.getVariable( (Integer) paramVarIds.get( i)));
+    }
+    return retval;
+  }
+
+  /**
+   * <code>getTokenVarsList</code>
+   *
+   * @return - <code>List</code> - of PwVariable
+   */
+  public List getTokenVarsList() {
     List retval = new ArrayList( 5);
     retval.add( getStartVariable());
     retval.add( getEndVariable());
@@ -289,10 +299,20 @@ public class PwTokenImpl implements PwToken {
     return buffer.toString();
   }
 
+  /**
+   * <code>addParamVar</code>
+   *
+   * @param paramVarId - <code>Integer</code> - 
+   */
   public void addParamVar(Integer paramVarId) {
     paramVarIds.add(paramVarId);
   }
   
+  /**
+   * <code>addTokenRelation</code>
+   *
+   * @param tokenRelationId - <code>Integer</code> - 
+   */
   public void addTokenRelation(Integer tokenRelationId) {
     tokenRelationIds.add(tokenRelationId);
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Algorithms.java,v 1.3 2003-07-24 20:57:11 taylor Exp $
+// $Id: Algorithms.java,v 1.4 2003-08-26 01:37:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -66,7 +66,11 @@ public class Algorithms
 
 		// If it is totally outside the horizon - ret rid of it and set row to NO_ROW
 		if(extent.getEnd() < horizonStart || extent.getStart() > horizonEnd){
-		    System.out.println("Removing element " + extent.toString() + " - outside horizon");
+		    System.out.println("Removing element " + extent.toString() +
+                                       " - outside horizon");
+                    System.out.println("  start " + extent.getStart() + " end " +
+                                       extent.getEnd() + " horizonStart " + horizonStart +
+                                       " horizonEnd " + horizonEnd);
 		    extent.setRow(NO_ROW);
 		    it.remove();
 		    continue;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomainImpl.java,v 1.2 2003-07-24 20:57:11 taylor Exp $
+// $Id: PwDomainImpl.java,v 1.3 2003-08-26 01:37:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,24 @@ public class PwDomainImpl implements PwDomain {
    */
   public String getUpperBound() {
     return "";
+  }
+		
+  /**
+   * <code>getLowerBoundInt</code> - 
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getLowerBoundInt() {
+    return -1;
+  }
+
+  /**
+   * <code>getUpperBoundInt</code> - 
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getUpperBoundInt() {
+    return -1;
   }
 		
   /**

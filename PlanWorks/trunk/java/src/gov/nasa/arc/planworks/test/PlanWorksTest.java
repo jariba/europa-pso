@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.9 2003-08-20 23:34:39 miatauro Exp $
+// $Id: PlanWorksTest.java,v 1.10 2003-08-26 01:37:11 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -30,19 +30,20 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.MenuElement;
 
-import junit.extensions.jfcunit.*;
+import junit.extensions.jfcunit.JFCTestCase;
+import junit.extensions.jfcunit.JFCTestHelper;
+import junit.extensions.jfcunit.TestHelper;
 // import junit.extensions.jfcunit.eventdata.EventDataConstants;
 // import junit.extensions.jfcunit.eventdata.KeyEventData;
 import junit.extensions.jfcunit.eventdata.MouseEventData;
-import junit.framework.*; 
+import junit.framework.TestSuite; 
 import junit.textui.TestRunner;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
@@ -52,10 +53,8 @@ import gov.nasa.arc.planworks.viz.nodes.TemporalNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenLink;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.GroupBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.KeyEntryBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.LogicComboBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.NegationCheckBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.PredicateBox;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.12 2003-08-19 00:24:01 miatauro Exp $
+// $Id: PwToken.java,v 1.13 2003-08-26 01:37:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -77,18 +77,25 @@ public interface PwToken {
   public abstract PwVariable getRejectVariable();
 
   /**
-   * <code>getTokenRelationsList</code>
+   * <code>getTokenRelationIdsList</code>
    *
-   * @return - <code>List</code> - of PwTokenRelation
+   * @return - <code>List</code> - of Integer
    */
-  public abstract List getTokenRelationsList();
+  public abstract List getTokenRelationIdsList();
 
   /**
-   * <code>getVariablesList</code>
+   * <code>getVariablesList</code> - return TokenVars & ParamVars
    *
    * @return - <code>List</code> - of PwVariable
    */
   public abstract List getVariablesList();
+
+  /**
+   * <code>getTokenVarsList</code>
+   *
+   * @return - <code>List</code> - of PwVariable
+   */
+  public abstract List getTokenVarsList();
 
   /**
    * <code>getParamVarsList</code>
@@ -143,5 +150,18 @@ public interface PwToken {
    */
   public abstract String toString();
 
+  /**
+   * <code>addParamVar</code>
+   *
+   * @param paramVarId - <code>Integer</code> - 
+   */
+  public abstract void addParamVar(Integer paramVarId);
+  
+  /**
+   * <code>addTokenRelation</code>
+   *
+   * @param tokenRelationId - <code>Integer</code> - 
+   */
+  public abstract void addTokenRelation(Integer tokenRelationId);
 
 } // end interface PwToken

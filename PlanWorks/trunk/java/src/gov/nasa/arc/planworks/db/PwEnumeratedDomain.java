@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomain.java,v 1.4 2003-07-24 20:57:11 taylor Exp $
+// $Id: PwEnumeratedDomain.java,v 1.5 2003-08-26 01:37:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,20 @@ public interface PwEnumeratedDomain {
    * @return - <code>String</code> - 
    */
   public abstract String getUpperBound();
+		
+  /**
+   * <code>getLowerBoundInt</code> - required because PwIntervalDomainImpl needs it
+   *
+   * @return - <code>int</code> - 
+   */
+  public abstract int getLowerBoundInt();
+
+  /**
+   * <code>getUpperBoundInt</code> - required because PwIntervalDomainImpl needs it
+   *
+   * @return - <code>int</code> - 
+   */
+  public abstract int getUpperBoundInt();
 		
   /**
    * <code>toString</code>
