@@ -206,7 +206,7 @@ CREATE TABLE Timeline (
   ObjectId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
   TimelineName varchar(255) NOT NULL default 'ErrorTimeline',
-  PRIMARY KEY  (PartialPlanId,TimelineId),
+  PRIMARY KEY  (PartialPlanId,ObjectId,TimelineId),
   INDEX (TimelineId), INDEX (ObjectId)
 ) TYPE=MyISAM;
 

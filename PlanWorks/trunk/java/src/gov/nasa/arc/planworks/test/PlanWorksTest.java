@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.8 2003-08-12 21:34:02 miatauro Exp $
+// $Id: PlanWorksTest.java,v 1.9 2003-08-20 23:34:39 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -22,6 +22,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -57,9 +58,12 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.GroupBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.KeyEntryBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.LogicComboBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.NegationCheckBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.PredicateBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.PredicateGroupBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimeIntervalBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimeIntervalGroupBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineGroupBox;
-
 
 /**
  * <code>PlanWorksTest</code> - JFCUnit test case for timeline view, along with
@@ -633,26 +637,38 @@ public class PlanWorksTest extends JFCTestCase{
     JButton activateSpecButton = null;
     JButton resetSpecButton = null;
     GroupBox timelineGroup = null;
+    GroupBox predicateGroup = null;
+    GroupBox timeIntervalGroup = null;
     for(int i = 0; i < contentSpecWindow.getComponentCount(); i++) {
-      JPanel panel = (JPanel)contentSpecWindow.getComponent(i);
-      for(int j = 0; j < panel.getComponentCount(); j++) {
-        if(panel.getComponent(j) instanceof JButton) {
-          if(((JButton)panel.getComponent(j)).getText().equals("Apply Spec")) {
-            activateSpecButton = (JButton) panel.getComponent(j);
+      if(contentSpecWindow.getComponent(i) instanceof TimelineGroupBox) {
+        timelineGroup = (GroupBox) contentSpecWindow.getComponent(i);
+      }
+      else if(contentSpecWindow.getComponent(i) instanceof PredicateGroupBox) {
+        predicateGroup = (GroupBox) contentSpecWindow.getComponent(i);
+      }
+      else if(contentSpecWindow.getComponent(i) instanceof TimeIntervalGroupBox) {
+        timeIntervalGroup = (GroupBox) contentSpecWindow.getComponent(i);
+      }
+      else if(contentSpecWindow.getComponent(i) instanceof JPanel) {
+        JPanel panel = (JPanel)contentSpecWindow.getComponent(i);
+        for(int j = 0; j < panel.getComponentCount(); j++) {
+          if(panel.getComponent(j) instanceof JButton) {
+            if(((JButton)panel.getComponent(j)).getText().equals("Apply Spec")) {
+              activateSpecButton = (JButton) panel.getComponent(j);
+            }
+            else if(((JButton)panel.getComponent(j)).getText().equals("Reset Spec")) {
+              System.err.println("found reset spec button");
+              resetSpecButton = (JButton) panel.getComponent(j);
+            }
           }
-          else if(((JButton)panel.getComponent(j)).getText().equals("Reset Spec")) {
-            System.err.println("found reset spec button");
-            resetSpecButton = (JButton) panel.getComponent(j);
-          }
-        }
-        else if(contentSpecWindow.getComponent(i) instanceof TimelineGroupBox) {
-          timelineGroup = (GroupBox) contentSpecWindow.getComponent(i);
         }
       }
     }
     assertNotNull("Failed to get \"Apply Spec\" button.", activateSpecButton);
     assertNotNull("Failed to get \"Reset Spec\" button.", resetSpecButton);
-    assertNotNull("Failed to get Timline GroupBox.", timelineGroup);
+    assertNotNull("Failed to get Timeline GroupBox.", timelineGroup);
+    assertNotNull("Failed to get Predicate GroupBox.", predicateGroup);
+    assertNotNull("Failed to get Time Interval GroupBox.", timeIntervalGroup);
     JComboBox keyBox = null;
     NegationCheckBox negationBox = null;
     for(int i = 0; i < timelineGroup.getComponentCount(); i++) {
@@ -676,7 +692,7 @@ public class PlanWorksTest extends JFCTestCase{
         }
       }
     }
-    assertNotNull("Failed to get key text field.", keyBox);
+    assertNotNull("Failed to get timeline field.", keyBox);
     assertNotNull("Failed to get negation check box.", negationBox);
     keyBox.setSelectedIndex(3);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
@@ -755,6 +771,140 @@ public class PlanWorksTest extends JFCTestCase{
     validateMonkeyTimelines(timelineView);
     assertTrue("Reset spec didn't reset text box", keyBox.getSelectedIndex() == 0);
     assertTrue("Reset spec didn't reset check box", !negationBox.isSelected());
+
+    keyBox = null;
+    negationBox = null;
+    for(int i = 0; i < predicateGroup.getComponentCount(); i++) {
+      if(predicateGroup.getComponent(i) instanceof PredicateBox) {
+        PredicateBox predicateBox = (PredicateBox) predicateGroup.getComponent(i);
+        for(int j = 0; j < predicateBox.getComponentCount(); j++) {
+          if(predicateBox.getComponent(j) instanceof LogicComboBox) {
+            if(!((LogicComboBox)predicateBox.getComponent(j)).isEnabled()) {
+              System.err.println("Found first predicate box!");
+              for(int k = 0; k < predicateBox.getComponentCount(); k++) {
+                System.err.println(predicateBox.getComponentCount() + ":" + k);
+                if(predicateBox.getComponent(k) instanceof NegationCheckBox) {
+                  negationBox = (NegationCheckBox) predicateBox.getComponent(k);
+                }
+                else if(predicateBox.getComponent(k) instanceof JComboBox) {
+                  keyBox = (JComboBox) predicateBox.getComponent(k);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    assertNotNull("Failed to get predicate field.", keyBox);
+    assertNotNull("Failed to get negation check box.", negationBox);
+    keyBox.setSelectedIndex(1);
+    helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
+    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
+      Thread.sleep(50);
+    }
+    timelineNodeCnt = 0;
+    for(int i = 0; i < timelineNodes.size(); i++) {
+      if(((TimelineNode)timelineNodes.get(i)).isVisible()) {
+        timelineNodeCnt++;
+      }
+    }
+    assertTrue("Content spec not speccing correctly.  Incorrect number of timeline nodes.",
+               timelineNodeCnt == 1);
+    timeline = (TimelineNode) timelineNodes.toArray()[0];
+    assertTrue("Content spec specified incorrect timeline.", 
+               timeline.getTimelineName().indexOf("Monkey1 : LOCATION_SV") != -1);
+    slotNodes = timeline.getSlotNodeList();
+    slotNodeIterator = slotNodes.listIterator();
+    while(slotNodeIterator.hasNext()) {
+      SlotNode slot = (SlotNode) slotNodeIterator.next();
+      assertTrue("Improperly specified slot.", (slot.isVisible() && slot.getPredicateName().indexOf("At") != -1) || (!slot.isVisible() && slot.getPredicateName().indexOf("At") == -1));
+    }
+    negationBox.setSelected(true);
+    helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
+    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
+      Thread.sleep(50);
+    }
+    timelineNodeCnt = 0;
+    for(int i = 0; i < timelineNodes.size(); i++) {
+      if(((TimelineNode) timelineNodes.get(i)).isVisible()) {
+        timelineNodeCnt++;
+      }
+    }
+    assertTrue("Content spec not speccing correctly.  Incorrect number of timeline nodes.", 
+               timelineNodeCnt == 3);
+    for(int i = 0; i < timelineNodes.size(); i++) {
+      slotNodeIterator = ((TimelineNode)timelineNodes.get(i)).getSlotNodeList().listIterator();
+      while(slotNodeIterator.hasNext()) {
+        SlotNode slot = (SlotNode) slotNodeIterator.next();
+        assertTrue("Improperly specified slot.", (slot.isVisible() && slot.getPredicateName().indexOf("At") == -1) || (!slot.isVisible() && slot.getPredicateName().indexOf("At") != -1));
+      }
+    }
+    helper.enterClickAndLeave(new MouseEventData(this, resetSpecButton));
+    while(timelineView.getTimelineNodeList() == null) {
+      Thread.sleep(50);
+    }
+    validateMonkeyTimelines(timelineView);
+    assertTrue("Reset spec didn't reset text box", keyBox.getSelectedIndex() == 0);
+    assertTrue("Reset spec didn't reset check box", !negationBox.isSelected());
+
+    JTextField start = null;
+    JTextField end = null;
+    negationBox = null;
+    for(int i = 0; i < timeIntervalGroup.getComponentCount(); i++) {
+      if(timeIntervalGroup.getComponent(i) instanceof TimeIntervalBox) {
+        TimeIntervalBox tiBox = (TimeIntervalBox) timeIntervalGroup.getComponent(i);
+        for(int j = 0; j < tiBox.getComponentCount(); j++) {
+          if(tiBox.getComponent(j) instanceof LogicComboBox) {
+            if(!((LogicComboBox)tiBox.getComponent(j)).isEnabled()) {
+              System.err.println("Found first time interval box!");
+              for(int k = 0; k < tiBox.getComponentCount(); k++) {
+                System.err.println(tiBox.getComponentCount() + ":" + k);
+                if(tiBox.getComponent(k) instanceof NegationCheckBox) {
+                  negationBox = (NegationCheckBox) tiBox.getComponent(k);
+                }
+                else if(tiBox.getComponent(k) instanceof JLabel) {
+                  JLabel tempLabel = (JLabel) tiBox.getComponent(k);
+                  if(tempLabel.getText().trim().equals("Time Interval Start")) {
+                    k++;
+                    start = (JTextField) tiBox.getComponent(k);
+                  }
+                  else if(tempLabel.getText().trim().equals("End")) {
+                    k++;
+                    end = (JTextField) tiBox.getComponent(k);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    assertNotNull("Failed to get time interval negation box.", negationBox);
+    assertNotNull("Failed to get time interval start entry box.", start);
+    assertNotNull("Failed to get time interval end entry box.", end);
+    start.setText("1");
+    end.setText("4");
+    helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
+    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
+      Thread.sleep(50);
+    }
+    //Thread.sleep(2000);
+    timelineNodeCnt = 0;
+    for (int i = 0; i < timelineNodes.size(); i++) {
+      if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
+        timelineNodeCnt++;
+      }
+    }
+    assertTrue("Content spec not specing correctly: Too many timeline nodes.",
+               timelineNodeCnt == 3);
+    helper.enterClickAndLeave(new MouseEventData(this, resetSpecButton));
+       while(timelineView.getTimelineNodeList() == null) {
+      Thread.sleep(50);
+    }
+    validateMonkeyTimelines(timelineView);
+    assertTrue("Reset spec didn't reset start box", start.getText().equals(""));
+    assertTrue("Reset spec didn't reset end box", end.getText().equals(""));
+    assertTrue("Reset spec didn't reset check box", !negationBox.isSelected()); 
   }
 
   public void testOpenAndContentSpec() throws Exception {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.18 2003-08-20 18:52:38 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.19 2003-08-20 23:36:47 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -101,11 +101,8 @@ public class TokenNetworkView extends VizView {
     this.linkNameList = new ArrayList();
     maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
     maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
-
     buildTokenParentChildRelationships();
-
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
-
     jGoView = new JGoView();
     jGoView.setBackground( ColorMap.getColor( "lightGray"));
     add( jGoView, BorderLayout.NORTH);
@@ -116,7 +113,6 @@ public class TokenNetworkView extends VizView {
                      ViewConstants.TIMELINE_VIEW_FONT_SIZE);
     jGoView.setFont( font);
     this.setVisible( true);
-
     // print content spec
     // viewSet.printSpec();
 
@@ -169,7 +165,6 @@ public class TokenNetworkView extends VizView {
     //layout.position(getWidth(), getHeight());
     System.err.println("Ring layout took " + (System.currentTimeMillis() - t1));*/
     computeExpandedViewFrame();
-    System.err.println(maxViewWidth + " " + maxViewHeight);
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
 
     // print out info for created nodes
@@ -340,14 +335,20 @@ public class TokenNetworkView extends VizView {
           Iterator tokenIterator = slot.getTokenList().iterator();
           while (tokenIterator.hasNext()) {
             PwToken token = (PwToken) tokenIterator.next();
-            if (token != null) { // empty slot
+            if (token != null) {
+              if(token.getTokenRelationsList().size() == 0) {
+                continue;
+              }
              Integer tokenId = token.getId();
              TokenRelations tokenRelations =
                 (TokenRelations) relationships.get( tokenId);
-              Iterator tokenRelationIterator = token.getTokenRelationsList().iterator();
+             Iterator tokenRelationIterator = token.getTokenRelationsList().iterator();
               while (tokenRelationIterator.hasNext()) {
                 PwTokenRelation tokenRelation =
                   (PwTokenRelation) tokenRelationIterator.next();
+                if(tokenRelation == null) {
+                  continue;
+                }
                 Integer id = tokenRelation.getId();
                 // buildTokenParentChildRelationships printout is complete with
                 // this commented out -- same links are drawn
@@ -368,7 +369,7 @@ public class TokenNetworkView extends VizView {
           }
         }
       }
-    } 
+    }
   } // end buildRelationships
 
 
