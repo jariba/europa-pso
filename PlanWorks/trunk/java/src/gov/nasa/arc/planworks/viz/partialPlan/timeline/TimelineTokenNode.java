@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineTokenNode.java,v 1.3 2004-03-23 20:05:58 taylor Exp $
+// $Id: TimelineTokenNode.java,v 1.4 2004-04-22 19:26:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,6 +24,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -40,6 +41,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 public class TimelineTokenNode extends TokenNode {
 
   private TimelineView timelineView;
+  private ViewListener viewListener;
 
 
   /**
@@ -59,6 +61,7 @@ public class TimelineTokenNode extends TokenNode {
     super( token, slot, tokenLocation, backgroundColor, isFreeToken, isDraggable,
            partialPlanView);
     this.timelineView = (TimelineView) partialPlanView;
+    this.viewListener = null;
   } // end constructor
 
   /**
@@ -91,7 +94,8 @@ public class TimelineTokenNode extends TokenNode {
         NodeGenerics.setSecondaryTokensForSlot
           ( freeToken, slot, (PartialPlanViewSet) timelineView.getViewSet());
         TemporalExtentView temporalExtentView =
-          ViewGenerics.getTemporalExtentView( timelineView.getViewSet().openView( className));
+          ViewGenerics.getTemporalExtentView( timelineView.getViewSet().
+                                              openView( className, viewListener));
         boolean isByKey = false;
         temporalExtentView.findAndSelectToken( freeToken, slot, isByKey);
       }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.17 2004-03-10 02:21:20 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.18 2004-04-22 19:26:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 // import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.util.ColorStream;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
@@ -150,8 +151,8 @@ public class PartialPlanViewSet extends ViewSet {
     navigatorFrameCnt = 0;
   } // end commonConstructor
 
-  public MDIInternalFrame openView(String viewClassName) {
-    MDIInternalFrame retval = super.openView(viewClassName);
+  public MDIInternalFrame openView(String viewClassName, ViewListener viewListener) {
+    MDIInternalFrame retval = super.openView( viewClassName, viewListener);
     return retval;
   }
 

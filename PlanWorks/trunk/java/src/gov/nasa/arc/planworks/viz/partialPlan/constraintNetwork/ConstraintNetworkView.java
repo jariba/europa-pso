@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.56 2004-04-06 01:31:44 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.57 2004-04-22 19:26:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -126,6 +126,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   private JGoArea focusNode; // ConstraintNetworkTokenNode/ConstraintNode/VariableNode
   private NewConstraintNetworkLayout newLayout;
   private boolean isStepButtonView;
+  private ViewListener viewListener;
 
   /**
    * <code>ConstraintNetworkView</code> - constructor -
@@ -143,6 +144,13 @@ public class ConstraintNetworkView extends PartialPlanView {
     SwingUtilities.invokeLater( runInit);
   } // end constructor
 
+  /**
+   * <code>ConstraintNetworkView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   */
   public ConstraintNetworkView(ViewableObject partialPlan, ViewSet viewSet, 
                                PartialPlanViewState s) {
     super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
@@ -153,6 +161,25 @@ public class ConstraintNetworkView extends PartialPlanView {
     SwingUtilities.invokeLater( runInit);
   }
 
+  /**
+   * <code>ConstraintNetworkView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public ConstraintNetworkView( ViewableObject partialPlan, ViewSet viewSet,
+                                ViewListener viewListener) {
+    super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
+    constraintNetworkViewInit(viewSet);
+    s = null;
+    isStepButtonView = false;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
   private void constraintNetworkViewInit(ViewSet viewSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
@@ -161,7 +188,10 @@ public class ConstraintNetworkView extends PartialPlanView {
     constraintLinkMap = new HashMap();
     variableLinkMap = new HashMap();
     containerNodeMap = new HashMap();
-    viewFrame = viewSet.openView( this.getClass().getName());
+    this.viewListener = null;
+    viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
+    // for PWTestHelper.findComponentByName
+    this.setName( viewFrame.getTitle());
     //isDebugPrint = true;
     isDebugPrint = false;
 
@@ -249,7 +279,7 @@ public class ConstraintNetworkView extends PartialPlanView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
-    handleEvent(EVT_BEGUN_DRAWING);
+    handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for ConstraintNetworkView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -310,7 +340,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     isLayoutNeeded = false;
     focusNode = null;
 
-    handleEvent(EVT_ENDED_DRAWING);
+    handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 
@@ -341,7 +371,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   } // end class RedrawViewThread
 
   private void redrawView() {
-    handleEvent(EVT_BEGUN_DRAWING);
+    handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
     // prevent user from seeing intermediate layouts
     this.setVisible( false);
     System.err.println( "Redrawing Constraint Network View ...");
@@ -372,7 +402,7 @@ public class ConstraintNetworkView extends PartialPlanView {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     startTimeMSecs = 0L;
     this.setVisible( true);
-    handleEvent(EVT_ENDED_DRAWING);
+    handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
   } // end redrawView
 
 

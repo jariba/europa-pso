@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.83 2004-04-06 01:31:41 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.84 2004-04-22 19:26:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -133,7 +133,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     variableMap = new HashMap();
     tokenMasterSlaveMap = new HashMap();
     instantMap = new HashMap();
-    this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
+    this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).
+      append(planName).toString();
     contentSpec = new ArrayList();
     this.name = planName;
 
@@ -228,6 +229,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     System.err.println( "Partial Plan: " + url);
     System.err.println( "Ids:");
     System.err.println( "  objects        " + objectMap.keySet().size());
+    System.err.println( "  resources      " + resourceMap.keySet().size());
     System.err.println( "  timelines      " + timelineMap.keySet().size());
     System.err.println( "  slots          " + slotMap.keySet().size());
     System.err.println( "  tokens         " + tokenMap.keySet().size());
@@ -283,7 +285,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   /**
    * <code>getObjectList</code> -
    *
-   * @return - <code>List</code> - of PwObject
+   * @return - <code>List</code> - of PwObjectImpl
    */
   public List getObjectList() {
     List retval = new ArrayList();
@@ -291,9 +293,25 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return retval;
   }
 
+  /**
+   * <code>getResourceList</code>
+   *
+   * @return - <code>List</code> - of PwResourceImpl
+   */
   public List getResourceList() {
     List retval = new ArrayList();
     retval.addAll(resourceMap.values());
+    return retval;
+  }
+
+  /**
+   * <code>getTimelineList</code>
+   *
+   * @return - <code>List</code> - of PwTimelineImpl
+   */
+  public List getTimelineList() {
+    List retval = new ArrayList();
+    retval.addAll(timelineMap.values());
     return retval;
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.58 2004-03-30 22:01:05 taylor Exp $
+// $Id: ViewSet.java,v 1.59 2004-04-22 19:26:28 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -35,11 +35,13 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.StringViewSetKey;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.VizViewRuleView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
@@ -86,7 +88,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     constructorArgs[1] = this;
   }
 
-  public MDIInternalFrame openView(String viewClassName) {
+  public MDIInternalFrame openView( String viewClassName, ViewListener viewListener) {
     Class viewClass = null;
     // System.err.println( "ViewSet.openView viewClassName " + viewClassName);
     try {
@@ -108,7 +110,24 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     Container contentPane = viewFrame.getContentPane();
     VizView view = null;
     try {
-      view = (VizView) constructors[0].newInstance(constructorArgs);
+      if (viewListener == null) {
+        view = (VizView) constructors[0].newInstance(constructorArgs);
+      } else {
+        Object [] testConstructorArgs = new Object[3];
+        testConstructorArgs[0] = viewable;
+        testConstructorArgs[1] = this;
+        testConstructorArgs[2] = viewListener;
+        if (viewable instanceof DBTransactionView) {
+          view = (VizView) constructors[1].newInstance( testConstructorArgs);
+        } else if (viewable instanceof PwPartialPlan) {
+          view = (VizView) constructors[2].newInstance( testConstructorArgs);
+        } else if (viewable instanceof PwPlanningSequence) {
+          view = (VizView) constructors[1].newInstance( testConstructorArgs);
+        } else {
+          System.err.println( "ViewSet.openView " + viewable + " not handled");
+          System.exit(1);
+        }
+      }
     } 
     catch (InvocationTargetException ite) {
 	ite.getCause().printStackTrace();

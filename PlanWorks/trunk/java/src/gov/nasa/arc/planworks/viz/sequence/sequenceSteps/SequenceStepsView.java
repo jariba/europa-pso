@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.24 2004-04-09 23:11:27 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.25 2004-04-22 19:26:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -49,11 +49,13 @@ import gov.nasa.arc.planworks.SequenceViewMenuItem;
 import gov.nasa.arc.planworks.db.PwListener;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -123,6 +125,7 @@ public class SequenceStepsView extends SequenceView {
   private List stepRepresentedList;
   private List statusIndicatorList;
   private List stepNumberList;
+  private ViewListener viewListener;
 
   /**
    * variable <code>selectedStepElement</code>
@@ -155,6 +158,7 @@ public class SequenceStepsView extends SequenceView {
     public final void fireEvent( final String evtName) {
       if (evtName.equals( PwPlanningSequence.EVT_PP_ADDED) ||
           evtName.equals( PwPlanningSequence.EVT_PP_REMOVED)) {
+        //         System.err.println( "SequenceStepsView.fireEvent  view.redraw()");
         view.redraw();
       }
     }
@@ -170,6 +174,26 @@ public class SequenceStepsView extends SequenceView {
    */
   public SequenceStepsView( final ViewableObject planSequence,  final ViewSet viewSet) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
+    sequenceStepsInit( planSequence, viewSet);
+  }
+
+  /**
+   * <code>SequenceStepsView</code> - constructor 
+   *
+   * @param planSequence - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public SequenceStepsView( final ViewableObject planSequence,  final ViewSet viewSet,
+                            final ViewListener viewListener) {
+    super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
+    sequenceStepsInit( planSequence, viewSet);
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+  }
+
+  private void sequenceStepsInit( final ViewableObject planSequence,  final ViewSet viewSet) {
     this.planSequence = (PwPlanningSequence) planSequence;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (SequenceViewSet) viewSet;
@@ -180,6 +204,7 @@ public class SequenceStepsView extends SequenceView {
 
     stepElementList = new ArrayList();
     selectedStepElement = null;
+    this.viewListener = null;
 
     jGoView = new SequenceStepsJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
@@ -211,6 +236,7 @@ public class SequenceStepsView extends SequenceView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for ConstraintNetworkView instance to become displayable
     while (! this.isDisplayable()) {
@@ -235,13 +261,17 @@ public class SequenceStepsView extends SequenceView {
     heightScaleFactor = computeHeightScaleFactor();
     renderHistogram();
 
-    expandViewFrame( viewSet.openView( this.getClass().getName()),
+    MDIInternalFrame frame = viewSet.openView( this.getClass().getName(), viewListener);
+    // for PWTestHelper.findComponentByName
+    this.setName( frame.getTitle());
+    expandViewFrame( frame,
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
+    handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 
@@ -267,6 +297,7 @@ public class SequenceStepsView extends SequenceView {
   } // end class RedrawViewThread
 
   private void redrawView() {
+    handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     //document.deleteContents();
     for (Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
@@ -279,11 +310,12 @@ public class SequenceStepsView extends SequenceView {
     
     renderHistogram();
 
-    expandViewFrame( viewSet.openView( this.getClass().getName()),
+    expandViewFrame( viewSet.openView( this.getClass().getName(), viewListener),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
 
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
+    handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
   } // end redrawView
 
 
@@ -549,21 +581,21 @@ public class SequenceStepsView extends SequenceView {
   } // end createOverviewWindowItem
 
 
-  private void createModelRulesViewItem( JMenuItem modelRulesViewItem,
-                                         final SequenceStepsView sequenceStepsView,
-                                         final Point viewCoords) {
-    modelRulesViewItem.addActionListener( new ActionListener() { 
-        public final void actionPerformed( ActionEvent evt) {
-          String seqName = planSequence.getName();
-          SequenceViewMenuItem modelRulesItem =
-            new SequenceViewMenuItem( seqName, planSequence.getUrl(), seqName);
-          Thread thread = new CreateSequenceViewThread(PlanWorks.MODEL_RULES_VIEW,
-                                                       modelRulesItem);
-          thread.setPriority( Thread.MIN_PRIORITY);
-          thread.start();
-        }
-      });
-  } // end createModelRulesViewItem
+//   private void createModelRulesViewItem( JMenuItem modelRulesViewItem,
+//                                          final SequenceStepsView sequenceStepsView,
+//                                          final Point viewCoords) {
+//     modelRulesViewItem.addActionListener( new ActionListener() { 
+//         public final void actionPerformed( ActionEvent evt) {
+//           String seqName = planSequence.getName();
+//           SequenceViewMenuItem modelRulesItem =
+//             new SequenceViewMenuItem( seqName, planSequence.getUrl(), seqName, viewListener);
+//           Thread thread = new CreateSequenceViewThread(PlanWorks.MODEL_RULES_VIEW,
+//                                                        modelRulesItem);
+//           thread.setPriority( Thread.MIN_PRIORITY);
+//           thread.start();
+//         }
+//       });
+//   } // end createModelRulesViewItem
 
   private void createRefreshItem( JMenuItem refreshItem, 
                                   final SequenceStepsView sequenceStepsView) {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.2 2004-03-24 02:31:05 taylor Exp $
+// $Id: DBTransactionView.java,v 1.3 2004-04-22 19:26:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -33,9 +33,11 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.DBTransactionContentView;
 import gov.nasa.arc.planworks.viz.DBTransactionHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -65,6 +67,7 @@ public class DBTransactionView extends PartialPlanView {
   private DBTransactionContentView contentJGoView;
   private JGoDocument jGoDocument;
   private List transactionJGoTextList; // element JGoText
+  private ViewListener viewListener;
 
 
   /**
@@ -77,6 +80,33 @@ public class DBTransactionView extends PartialPlanView {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
+    dBTransactionViewInit( partialPlan);
+
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
+  /**
+   * <code>DBTransactionView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public DBTransactionView( ViewableObject partialPlan,  ViewSet viewSet,
+                            ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    this.startTimeMSecs = System.currentTimeMillis();
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    dBTransactionViewInit( partialPlan);
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
+  private void dBTransactionViewInit( ViewableObject partialPlan) {
+    this.viewListener = null;
 
     planSequence = PlanWorks.getPlanWorks().getPlanSequence( this.partialPlan);
 
@@ -88,11 +118,8 @@ public class DBTransactionView extends PartialPlanView {
     stepNumber = this.partialPlan.getStepNumber();
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
+  } // end DBTransactionInit
 
-    SwingUtilities.invokeLater( runInit);
-  } // end constructor
-
- 
   Runnable runInit = new Runnable() {
       public void run() {
         init();
@@ -110,6 +137,7 @@ public class DBTransactionView extends PartialPlanView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -149,7 +177,10 @@ public class DBTransactionView extends PartialPlanView {
 
     this.setVisible( true);
 
-    expandViewFrame( viewSet.openView( this.getClass().getName()),
+    MDIInternalFrame frame = viewSet.openView( this.getClass().getName(), viewListener);
+    // for PWTestHelper.findComponentByName
+    this.setName( frame.getTitle());
+    expandViewFrame( frame,
                      (int) headerJGoView.getDocumentSize().getWidth(),
                      (int) (headerJGoView.getDocumentSize().getHeight() +
                             contentJGoView.getDocumentSize().getHeight()));
@@ -157,6 +188,7 @@ public class DBTransactionView extends PartialPlanView {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 

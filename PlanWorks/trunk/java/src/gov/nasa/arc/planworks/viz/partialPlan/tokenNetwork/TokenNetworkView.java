@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.45 2004-04-06 01:31:45 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.46 2004-04-22 19:26:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.VizViewRuleView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -76,6 +77,7 @@ public class TokenNetworkView extends PartialPlanView {
   private boolean isStepButtonView;
   private TokenLink mouseOverLink;
   private List rootNodes;
+  private ViewListener viewListener;
 
   /**
    * <code>TokenNetworkView</code> - constructor - 
@@ -89,6 +91,7 @@ public class TokenNetworkView extends PartialPlanView {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     tokenNetworkViewInit( viewSet);
     isStepButtonView = false;
+    viewListener = null;
     // print content spec
     // viewSet.printSpec();
 
@@ -111,6 +114,21 @@ public class TokenNetworkView extends PartialPlanView {
     SwingUtilities.invokeLater( runInit);
   }
 
+  public TokenNetworkView( final ViewableObject partialPlan,  final ViewSet viewSet,
+                           ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    tokenNetworkViewInit( viewSet);
+    isStepButtonView = false;
+    viewListener = null;
+    // print content spec
+    // viewSet.printSpec();
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
   private void tokenNetworkViewInit( final ViewSet viewSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
@@ -121,7 +139,9 @@ public class TokenNetworkView extends PartialPlanView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
-    viewFrame = viewSet.openView( this.getClass().getName());
+    viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
+    // for PWTestHelper.findComponentByName
+    this.setName( viewFrame.getTitle());
 
     mouseOverLink = null;
   }
@@ -143,6 +163,7 @@ public class TokenNetworkView extends PartialPlanView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public final void init() {
+    handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -173,6 +194,7 @@ public class TokenNetworkView extends PartialPlanView {
     if (! isStepButtonView) {
       expandViewFrameForStepButtons( viewFrame, jGoView);
     }
+    handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 
@@ -207,6 +229,7 @@ public class TokenNetworkView extends PartialPlanView {
     }  // end constructor
 
     public final void run() {
+      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
         boolean isRedraw = true;
@@ -219,6 +242,7 @@ public class TokenNetworkView extends PartialPlanView {
       } finally {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
+      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } // end run
 
   } // end class RedrawViewThread

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.7 2004-03-10 02:21:21 taylor Exp $
+// $Id: StepQueryView.java,v 1.8 2004-04-22 19:26:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -90,6 +90,8 @@ public class StepQueryView extends SequenceView {
     this.viewSet = (SequenceViewSet) viewSet;
     this.sequenceQueryWindow = (SequenceQueryWindow) sequenceQueryWindow;
     this.stepQueryFrame = stepQueryFrame;
+    // for PWTestHelper.findComponentByName
+    this.setName( stepQueryFrame.getTitle());
     this.startTimeMSecs = startTimeMSecs;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));

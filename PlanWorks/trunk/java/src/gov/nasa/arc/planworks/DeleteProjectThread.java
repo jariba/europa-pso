@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteProjectThread.java,v 1.4 2004-02-03 20:43:43 taylor Exp $
+// $Id: DeleteProjectThread.java,v 1.5 2004-04-22 19:26:17 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -71,7 +71,7 @@ public class DeleteProjectThread extends Thread {
       for (int i = 0, n = options.length; i < n; i++) {
         if (((String) options[i]).equals( response)) {
           String projectName = (String) projectNames.get( i);
-          System.out.println( "Delete Project: " + projectName);
+          System.err.println( "Delete Project: " + projectName);
           try {
 
             PwProject.getProject( projectName).delete();

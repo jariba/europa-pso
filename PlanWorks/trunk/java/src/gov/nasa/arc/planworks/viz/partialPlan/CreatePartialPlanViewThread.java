@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.5 2004-02-03 20:43:53 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.6 2004-04-22 19:26:22 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -24,6 +24,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.ViewListener;
 
 
 /**
@@ -38,6 +39,7 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
   private String partialPlanName;
   private PwPartialPlan partialPlan;
   private boolean isInvokeAndWait;
+  private ViewListener viewListener;
 
   /**
    * <code>CreatePartialPlanViewThread</code> - constructor 
@@ -51,6 +53,7 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();
     this.partialPlanName = menuItem.getPartialPlanName();
+    this.viewListener = menuItem.getViewListener();
     this.isInvokeAndWait = false;
   }  // end constructor
 
@@ -68,6 +71,7 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();
     this.partialPlanName = menuItem.getPartialPlanName();
+    this.viewListener = menuItem.getViewListener();
     this.isInvokeAndWait = isInvokeAndWait;
   }  // end constructor
 
@@ -109,7 +113,7 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
       PwPartialPlan partialPlan = planSequence.getPartialPlan(partialPlanName);
         
       renderView( sequenceName + System.getProperty("file.separator") + partialPlanName,
-                  partialPlan);
+                  partialPlan, viewListener);
 
     } catch (ResourceNotFoundException rnfExcep) {
       int index = rnfExcep.getMessage().indexOf( ":");

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.49 2004-04-06 01:31:45 taylor Exp $
+// $Id: TimelineView.java,v 1.50 2004-04-22 19:26:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -54,6 +54,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
@@ -90,6 +91,7 @@ public class TimelineView extends PartialPlanView {
   private JGoArea mouseOverNode;
   private boolean isAutoSnapEnabled;
   private boolean isStepButtonView;
+  private ViewListener viewListener;
 
   /**
    * <code>TimelineView</code> - constructor - 
@@ -106,20 +108,48 @@ public class TimelineView extends PartialPlanView {
     SwingUtilities.invokeLater( runInit);
   } // end constructor
 
-  public TimelineView(ViewableObject partialPlan, ViewSet viewSet, PartialPlanViewState s) {
+  /**
+   * <code>TimelineView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   */
+  public TimelineView(ViewableObject partialPlan, ViewSet viewSet,
+                      PartialPlanViewState s) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     timelineViewInit( (PwPartialPlan) partialPlan, viewSet);
     isStepButtonView = true;
     setState(s);
     SwingUtilities.invokeLater( runInit);
-    
+  }
+
+  /**
+   * <code>TimelineView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public TimelineView( ViewableObject partialPlan, ViewSet viewSet,
+                       ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    timelineViewInit( (PwPartialPlan) partialPlan, viewSet);
+    isStepButtonView = false;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    SwingUtilities.invokeLater( runInit);
   }
 
   private void timelineViewInit(ViewableObject partialPlan, ViewSet viewSet) {
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    viewFrame = viewSet.openView( this.getClass().getName());
+    this.viewListener = null;
+    viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
+    // for PWTestHelper.findComponentByName
+    this.setName( viewFrame.getTitle());
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
@@ -127,6 +157,7 @@ public class TimelineView extends PartialPlanView {
     isAutoSnapEnabled = false;
 
     jGoView = new TimelineJGoView();
+    jGoView.addViewListener( createViewListener());
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -161,6 +192,7 @@ public class TimelineView extends PartialPlanView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -173,6 +205,7 @@ public class TimelineView extends PartialPlanView {
     this.computeFontMetrics( this);
 
     jGoDocument = jGoView.getDocument();
+    jGoDocument.addDocumentListener( createDocListener());
 
     // create all nodes
     boolean isValid = renderTimelineAndSlotNodes();
@@ -195,10 +228,12 @@ public class TimelineView extends PartialPlanView {
                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
     } else {
       try {
-        viewSet.openView( this.getClass().getName()).setClosed( true);
+        viewSet.openView( this.getClass().getName(), viewListener).setClosed( true);
       } catch (PropertyVetoException excp) {
       }
     }
+
+    handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 
@@ -220,6 +255,7 @@ public class TimelineView extends PartialPlanView {
     }  // end constructor
 
     public void run() {
+      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
 
@@ -232,6 +268,7 @@ public class TimelineView extends PartialPlanView {
       } finally {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
+      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } //end run
 
   } // end class RedrawViewThread
@@ -314,6 +351,15 @@ public class TimelineView extends PartialPlanView {
    */
   public boolean isAutoSnapEnabled() {
     return isAutoSnapEnabled;
+  }
+
+  /**
+   * <code>getViewFrame</code> - for PWTestHelper
+   *
+   * @return - <code>MDIInternalFrame</code> - 
+   */
+  public MDIInternalFrame getViewFrame() {
+    return viewFrame;
   }
 
   private boolean createTimelineAndSlotNodes() {

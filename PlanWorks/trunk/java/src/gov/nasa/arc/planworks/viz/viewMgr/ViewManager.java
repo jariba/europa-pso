@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.24 2004-02-11 02:29:31 taylor Exp $
+// $Id: ViewManager.java,v 1.25 2004-04-22 19:26:28 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -21,6 +21,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
@@ -49,7 +50,8 @@ public class ViewManager implements ViewSetRemover {
     // this.contentSpecWindowCnt = 0;
   }
 
-  public MDIInternalFrame openView(ViewableObject viewable, String viewClassName) {
+  public MDIInternalFrame openView(ViewableObject viewable, String viewClassName,
+                                   ViewListener viewListener) {
     if (!viewSets.containsKey(viewable)) {
 	if (viewable instanceof PwPartialPlan) {
 	    viewSets.put(viewable,
@@ -67,11 +69,13 @@ public class ViewManager implements ViewSetRemover {
 	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
 	}
     }
-    return ((ViewSet)viewSets.get(viewable)).openView(viewClassName);
+    return ((ViewSet)viewSets.get(viewable)).openView(viewClassName, viewListener);
   }
 
   public MDIInternalFrame openView(ViewableObject viewable, String viewClassName, 
                                    PartialPlanViewState state) {
+    // not sure how to handle this
+    ViewListener viewListener = null;
     if (!viewSets.containsKey(viewable)) {
 	if (viewable instanceof PwPartialPlan) {
 	    viewSets.put(viewable,
@@ -92,7 +96,7 @@ public class ViewManager implements ViewSetRemover {
     if(viewable instanceof PwPartialPlan) {
       ((PartialPlanViewSet)viewSets.get(viewable)).openView(viewClassName, state);
     }
-    return ((ViewSet)viewSets.get(viewable)).openView(viewClassName);
+    return ((ViewSet)viewSets.get(viewable)).openView(viewClassName, viewListener);
   }
 
   /**
@@ -122,6 +126,10 @@ public class ViewManager implements ViewSetRemover {
   public ViewSet getViewSet(ViewableObject viewable) {
     return (ViewSet) viewSets.get(viewable);
       //return null;
+  }
+
+  public  Object [] getViewSetKeys() {
+    return viewSets.keySet().toArray();
   }
 
 //   /**

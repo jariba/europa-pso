@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.9 2004-03-16 02:24:12 taylor Exp $
+// $Id: TokenNavNode.java,v 1.10 2004-04-22 19:26:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -79,10 +79,10 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
     this.partialPlanView = partialPlanView;
     partialPlan = partialPlanView.getPartialPlan();
     slot = null; object = null;
-    if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.noId)) {
+    if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.NO_ID)) {
       slot = (PwSlot) partialPlan.getSlot( token.getSlotId());
     }
-    if (token.getParentId() != null && !token.getParentId().equals(DbConstants.noId)) {
+    if (token.getParentId() != null && !token.getParentId().equals(DbConstants.NO_ID)) {
       object = partialPlan.getObject( token.getParentId());
     }
 //     if ((token.getSlotId() == null) &&

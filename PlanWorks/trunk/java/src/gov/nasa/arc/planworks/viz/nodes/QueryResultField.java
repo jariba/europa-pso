@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: QueryResultField.java,v 1.1 2003-12-20 01:54:50 taylor Exp $
+// $Id: QueryResultField.java,v 1.2 2004-04-22 19:26:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -27,6 +27,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
@@ -44,6 +45,7 @@ public class QueryResultField extends TextNode {
   private ViewableObject viewableObject; // PwPlanningSequence
   private VizView vizView;
   private boolean fieldIsStepNumber;
+  private ViewListener viewListener;
 
   /**
    * <code>QueryResultField</code> - constructor 
@@ -61,6 +63,7 @@ public class QueryResultField extends TextNode {
     this.viewableObject = viewableObject;
     fieldIsStepNumber = false;
     this.vizView = null;
+    this.viewListener = null;
 
     configure( location, alignment, bgColor);
   } // end constructor
@@ -137,7 +140,7 @@ public class QueryResultField extends TextNode {
       if (fieldIsStepNumber && (viewableObject instanceof PwPlanningSequence)) {
         ViewGenerics.partialPlanViewsPopupMenu( Integer.parseInt( fieldName),
                                                 (PwPlanningSequence) viewableObject,
-                                                vizView, viewCoords);
+                                                vizView, viewCoords, viewListener);
         return true;
       }
     }

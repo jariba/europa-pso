@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.10 2004-03-12 23:22:34 miatauro Exp $
+// $Id: PartialPlanViewMenu.java,v 1.11 2004-04-22 19:26:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -21,6 +21,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.ViewListener;
 
 
 /**
@@ -45,14 +46,16 @@ public class PartialPlanViewMenu extends JPopupMenu{
    *
    * @param partialPlanName - <code>String</code> - 
    * @param planSequence - <code>PwPlanningSequence</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
    */
   public void buildPartialPlanViewMenu( String partialPlanName,
-                                        PwPlanningSequence planSequence) {
+                                        PwPlanningSequence planSequence,
+                                        ViewListener viewListener) {
     Iterator viewNamesItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
       PartialPlanViewMenuItem viewItem = 
-        createOpenViewItem(viewName, partialPlanName, planSequence);
+        createOpenViewItem(viewName, partialPlanName, planSequence, viewListener);
       this.add(viewItem);
     }
 
@@ -60,12 +63,8 @@ public class PartialPlanViewMenu extends JPopupMenu{
 
 
   /**
-   * <code>createOpenViewItem</code>
+   * <code>CreateOpenViewListener</code> - 
    *
-   * @param viewName - <code>String</code> - 
-   * @param partialPlanName - <code>String</code> - 
-   * @param planSequence - <code>PwPlanningSequence</code> - 
-   * @return - <code>PartialPlanViewMenuItem</code> - 
    */
   class CreateOpenViewListener implements ActionListener {
     private PartialPlanViewMenu menu;
@@ -79,12 +78,23 @@ public class PartialPlanViewMenu extends JPopupMenu{
     }
   }
 
+  /**
+   * <code>createOpenViewItem</code>
+   *
+   * @param viewName - <code>String</code> - 
+   * @param partialPlanName - <code>String</code> - 
+   * @param planSequence - <code>PwPlanningSequence</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   * @return - <code>PartialPlanViewMenuItem</code> - 
+   */
   public PartialPlanViewMenuItem createOpenViewItem( String viewName, String partialPlanName,
-                                                     PwPlanningSequence planSequence) {
+                                                     PwPlanningSequence planSequence,
+                                                     ViewListener viewListener) {
     PartialPlanViewMenuItem viewItem = new PartialPlanViewMenuItem("Open " + viewName,
                                                                    planSequence.getUrl(),
                                                                    planSequence.getName(),
-                                                                   partialPlanName);
+                                                                   partialPlanName,
+                                                                   viewListener);
     viewItem.addActionListener(new CreateOpenViewListener(this, viewName));
     return viewItem;
   } // end createOpenViewItem

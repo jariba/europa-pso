@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.10 2004-03-23 20:06:00 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.11 2004-04-22 19:26:28 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -94,6 +94,8 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
     this.contentSpec = (PartialPlanContentSpec) contentSpec;
     this.partialPlanViewSet = partialPlanViewSet;
     queryTestExists = false;
+    // for PWTestHelper.findComponentByName
+    this.setName( window.getTitle());
 
     Map predicateNames = this.contentSpec.getPredicateNames();
     Map timelineNames = this.contentSpec.getTimelineNames();

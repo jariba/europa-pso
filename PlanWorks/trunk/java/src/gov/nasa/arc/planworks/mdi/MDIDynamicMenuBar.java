@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.10 2004-02-03 19:23:21 miatauro Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.11 2004-04-22 19:26:20 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -20,6 +20,10 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+
+import gov.nasa.arc.planworks.PlanWorks;
+
+
 /**
  * <code>MDIDynamicMenuBar</code> -
  *                      JMenuBar->MDIDynamicMenuBar
@@ -162,20 +166,20 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     windows.add(frame);
     buildWindowMenu();
   }
-  
+
   private void buildWindowMenu() {
     if(windowMenu != null) {
       windowMenu.removeAll();
       remove(windowMenu);
     }
     else {
-      windowMenu = new JMenu("Window");
+      windowMenu = new JMenu( PlanWorks.WINDOW_MENU);
     }
-    JMenuItem tileItem = new JMenuItem("Tile Windows");
-    JMenuItem cascadeItem = new JMenuItem("Cascade");
+    JMenuItem tileItem = new JMenuItem( PlanWorks.TILE_WINDOWS_MENU_ITEM);
+    JMenuItem cascadeItem = new JMenuItem( PlanWorks.CASCADE_MENU_ITEM);
     tileItem.addActionListener(new TileActionListener(tileCascader));
     cascadeItem.addActionListener(new CascadeActionListener(tileCascader));
-    windowMenu = new JMenu("Window");
+    windowMenu = new JMenu( PlanWorks.WINDOW_MENU);
     windowMenu.add(tileItem);
     windowMenu.add(cascadeItem);
     windowMenu.addSeparator();

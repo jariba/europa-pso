@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.14 2004-03-20 01:00:40 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.15 2004-04-22 19:26:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
@@ -91,6 +92,18 @@ public class ResourceTransactionView extends ResourceView  {
                                   final PartialPlanViewState state) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, state);
   }
+
+  /**
+   * <code>ResourceTransactionView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param vSet - <code>ViewSet</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public ResourceTransactionView( final ViewableObject partialPlan, final ViewSet vSet,
+                                  final ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, viewListener);
+  } // end constructor
 
   /**
    * <code>getState</code>
@@ -519,7 +532,7 @@ public class ResourceTransactionView extends ResourceView  {
                                                        resourceTransToFind) {
     boolean isResourceTransFound = false;
     if ((resourceTransToFind.getParentId() != null) &&
-        (! resourceTransToFind.getParentId().equals( DbConstants.noId))) {
+        (! resourceTransToFind.getParentId().equals( DbConstants.NO_ID))) {
       PwResource resourceToFind =
         (PwResource) partialPlan.getObject( resourceTransToFind.getParentId());
 //       System.err.println( "findAndSelectResourceTransaction resourceToFind " +
@@ -579,7 +592,7 @@ public class ResourceTransactionView extends ResourceView  {
           if (doesViewFrameExist( PlanWorks.RESOURCE_PROFILE_VIEW)) {
             MDIInternalFrame resourceProfileFrame =
               viewSet.openView( PlanWorks. getViewClassName
-                                ( PlanWorks.RESOURCE_PROFILE_VIEW));
+                                ( PlanWorks.RESOURCE_PROFILE_VIEW), viewListener);
             ResourceProfileView resourceProfileView = null;
             Container contentPane = resourceProfileFrame.getContentPane();
             for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {

@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.6 2004-02-03 20:43:43 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.7 2004-04-22 19:26:17 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -18,6 +18,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.ViewListener;
 
 
 /**
@@ -31,6 +32,8 @@ public class CreateSequenceViewThread extends CreateViewThread {
 
   private PwPlanningSequence planSequence;
   private boolean isInvokeAndWait;
+  private ViewListener viewListener;
+
 
   /**
    * <code>CreateSequenceViewThread</code> - constructor 
@@ -43,6 +46,7 @@ public class CreateSequenceViewThread extends CreateViewThread {
     super( viewName);
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();
+    this.viewListener = menuItem.getViewListener();
     this.isInvokeAndWait = false;
   }
 
@@ -58,6 +62,7 @@ public class CreateSequenceViewThread extends CreateViewThread {
     super( viewName);
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();
+    this.viewListener = menuItem.getViewListener();
     this.isInvokeAndWait = isInvokeAndWait;
   }
 
@@ -95,7 +100,8 @@ public class CreateSequenceViewThread extends CreateViewThread {
     try {
       planSequence = PlanWorks.getPlanWorks().currentProject.getPlanningSequence( seqUrl);
 
-      MDIInternalFrame viewFrame = renderView( sequenceName, planSequence);
+      MDIInternalFrame viewFrame = renderView( sequenceName, planSequence, viewListener);
+
       if (viewName.equals( PlanWorks.SEQUENCE_STEPS_VIEW)) {
         PlanWorks.getPlanWorks().setSequenceStepsViewFrame( seqUrl, viewFrame);
       }

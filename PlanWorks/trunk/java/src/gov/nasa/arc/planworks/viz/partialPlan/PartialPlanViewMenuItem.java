@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenuItem.java,v 1.2 2003-11-07 00:04:59 taylor Exp $
+// $Id: PartialPlanViewMenuItem.java,v 1.3 2004-04-22 19:26:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,32 +12,47 @@
 
 package gov.nasa.arc.planworks.viz.partialPlan;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
-import javax.swing.JPopupMenu;
-
-import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.SequenceViewMenuItem;
-import gov.nasa.arc.planworks.db.PwPartialPlan;
-import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.ViewListener;
 
 
+/**
+ * <code>PartialPlanViewMenuItem</code> - 
+ *
+ * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
+ *             NASA Ames Research Center - Code IC
+ * @version 0.0
+ */
 public class PartialPlanViewMenuItem extends SequenceViewMenuItem {
 
   private String partialPlanName;
 
-  public PartialPlanViewMenuItem( String viewName, String seqUrl, String seqName,
-                                  String partialPlanName) {
-    super( viewName, seqUrl, seqName);
+  /**
+   * <code>PartialPlanViewMenuItem</code> - constructor 
+   *
+   * @param viewName - <code>String</code> - 
+   * @param seqUrl - <code>String</code> - 
+   * @param seqName - <code>String</code> - 
+   * @param partialPlanName - <code>String</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public PartialPlanViewMenuItem( final String viewName, final String seqUrl,
+                                  final String seqName, final String partialPlanName,
+                                  final ViewListener viewListener) {
+    super( viewName, seqUrl, seqName, viewListener);
     this.partialPlanName = partialPlanName;
   }
 
-  public String getPartialPlanName() {
+  /**
+   * <code>getPartialPlanName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getPartialPlanName() {
     return partialPlanName;
   }
 
+  
 } // end class PartialPlanViewMenuItem
 
 

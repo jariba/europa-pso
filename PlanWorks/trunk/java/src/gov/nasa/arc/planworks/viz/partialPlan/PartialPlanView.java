@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.36 2004-04-01 22:51:17 taylor Exp $
+// $Id: PartialPlanView.java,v 1.37 2004-04-22 19:26:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -53,6 +53,7 @@ import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.ViewRenderingException;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.VizViewRuleView;
@@ -627,8 +628,9 @@ public class PartialPlanView extends VizView {
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
       if (! viewName.equals( currentViewName)) {
+        ViewListener viewListener = null;
         PartialPlanViewMenuItem openViewItem =
-          viewMenu.createOpenViewItem( viewName, partialPlanName, planSequence);
+          viewMenu.createOpenViewItem( viewName, partialPlanName, planSequence, viewListener);
         mouseRightPopup.add( openViewItem);
       }
     }

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.38 2004-04-09 23:11:27 taylor Exp $
+// $Id: planViz.txt,v 1.39 2004-04-22 19:26:29 taylor Exp $
 //
 // PlanWorks
 //
@@ -213,7 +213,7 @@ Pre-conditions:
      using "Planning Sequence-> ....
   3. Each sequence has its SequenceQuery, and Sequence Steps View windows 
      displayed.  For one step in each sequence, open a Timeline View window, 
-     which opens a Content Filterwindow, as well, by selecting "Open Timeline View"
+     which opens a Content Filter window, as well, by selecting "Open Timeline View"
      from the Mouse-Right popup menu over a particular step of the Sequence 
      Steps View.
 
