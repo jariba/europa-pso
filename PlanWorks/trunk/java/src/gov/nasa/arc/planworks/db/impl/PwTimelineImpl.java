@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.1 2003-05-15 22:16:23 taylor Exp $
+// $Id: PwTimelineImpl.java,v 1.2 2003-05-16 18:22:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -59,6 +59,37 @@ public class PwTimelineImpl implements PwTimeline {
     return slot;
   } // end addSlot
 
+	/**
+	 * <code>getName</code>
+	 *
+	 * @return name - <code>String</code> -
+	 */
 
+	public String getName()
+	{
+		return name;
+	}
+
+	/**
+	 * <code>getKey</code>
+	 *
+	 * @return name - <code>String</code> -
+	 */
+
+	public String getKey()
+	{
+		return key;
+	}
+	
+	/**
+	 * <code>getSlotList</code>
+	 *
+	 * @return name - <code>List</code> -
+	 */
+
+	public List getSlotList()
+	{
+		return slotList;
+	}
 
 } // end class PwTimelineImpl

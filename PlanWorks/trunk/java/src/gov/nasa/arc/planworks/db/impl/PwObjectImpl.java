@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.1 2003-05-15 22:16:22 taylor Exp $
+// $Id: PwObjectImpl.java,v 1.2 2003-05-16 18:22:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -53,5 +53,26 @@ public class PwObjectImpl implements PwObject {
     return timeline;
   } // end addTimeline
 
+	/**
+	 * <code>getName</code>
+	 *
+	 * @return name - <code>String</code> -
+	 */
+	public String getName()
+	{
+		return this.name;
+	}
+
+
+	/**
+	 * <code>getTimelineList</code> -
+	 *
+	 * @return timelineList - <code>List</code> -
+	 */
+	public List getTimelineList()
+	{
+		return this.timelineList();
+	}
+	 
 
 } // end class PwObjectImpl
