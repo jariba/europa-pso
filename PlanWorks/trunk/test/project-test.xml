@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
+<!-- $Id: project-test.xml,v 1.3 2003-05-23 22:20:21 taylor Exp $ -->
 <project name="project-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
-        <!-- PLANWORKS_ROOT is an inherited property from PlanWorks/build.xml -->
+        <!-- planworks.root is an inherited property from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
 	<property name="eXist_conf_file" value="conf-nolog.xml"/>
@@ -9,38 +10,38 @@
         <property name="jdk_gt_eq_1_4" value="true"/>
 	<property name="xml_files_dir" value="xml/test/monkey"/>
 	<property environment="env"/>
-	<property name="EXIST_HOME" location="${PLANWORKS_ROOT}/java/lib/eXist"/>
+	<property name="exist.home" location="${planworks.root}/java/lib/eXist"/>
 	<property environment="env"/>
 
 	<path id="planworks.jars">
-		<pathelement path="${PLANWORKS_ROOT}/java/classes"/>
-		<pathelement location="${PLANWORKS_ROOT}/java/lib/JGo/JGo.jar"/>
-		<pathelement location="${PLANWORKS_ROOT}/java/lib/JGo/JGoLayout.jar"/>
-		<pathelement location="${PLANWORKS_ROOT}/java/lib/JGo/Classier.jar"/>
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/JGo.jar"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/JGoLayout.jar"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/Classier.jar"/>
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
-                <pathelement location="${EXIST_HOME}/exist.jar"/>
-                <fileset dir="${EXIST_HOME}/lib/core" includes="*.jar"/>
+                <pathelement location="${exist.home}/exist.jar"/>
+                <fileset dir="${exist.home}/lib/core" includes="*.jar"/>
 	</path>
 	<delete>
-		<fileset dir="${PLANWORKS_ROOT}/xml/db/data" includes="*.dbx"/>
-		<fileset dir="${PLANWORKS_ROOT}/xml/db/logs" includes="*.log"/>
-		<fileset dir="${PLANWORKS_ROOT}/xml/db/logs" includes="*.log*"/>
+		<fileset dir="${planworks.root}/xml/db/data" includes="*.dbx"/>
+		<fileset dir="${planworks.root}/xml/db/logs" includes="*.log"/>
+		<fileset dir="${planworks.root}/xml/db/logs" includes="*.log*"/>
 	</delete>
 
-	<java dir="${PLANWORKS_ROOT}/java/src" 
+	<java dir="${planworks.root}/java/src" 
                 classname="gov.nasa.arc.planworks.proj.test.PwProjectTest" fork="true">
             <classpath refid="planworks.jars"/>
             <jvmarg value="-verbose:gc"/>
             <jvmarg value="-Xms${arg_gcInit}m"/>
             <jvmarg value="-Xmx${arg_gcMax}m"/>
-            <jvmarg value="-Dplanworks.root=${PLANWORKS_ROOT}"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
             <jvmarg value="-Duser=${env.USER}"/>
             <jvmarg value="-Dexist.initdb=true"/>
-            <jvmarg value="-Dexist.home=${EXIST_HOME}"/>
+            <jvmarg value="-Dexist.home=${exist.home}"/>
             <jvmarg value="-Dexist.conf.xml=${eXist_conf_file}"/>
             <arg value="${env.OSTYPE}"/>
             <arg value="${jdk_gt_eq_1_4}"/>
-            <arg value="${PLANWORKS_ROOT}/${xml_files_dir}"/>
+            <arg value="${planworks.root}/${xml_files_dir}"/>
 	</java>
 
 </target>

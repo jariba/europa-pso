@@ -1,4 +1,4 @@
-;;; $Id: prj.el,v 1.1 2003-05-16 22:37:50 taylor Exp $
+;;; $Id: prj.el,v 1.2 2003-05-23 22:20:20 taylor Exp $
 ;;;
 ;;; JAVA_HOME ANT_HOME JDE_HOME & PLANWORKS_ROOT must be set properly
 ;;;
@@ -30,7 +30,11 @@
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/eXist/lib/core/resolver-20020130.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/JGo.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/JGoLayout.jar")
-         (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/Classier.jar")))
+         (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/Classier.jar")
+         (concat (getenv "PLANWORKS_ROOT") "/java/lib/jfcunit/junit.jar")
+         (concat (getenv "PLANWORKS_ROOT") "/java/lib/jfcunit/jfcunit.jar")
+         (concat (getenv "PLANWORKS_ROOT") "/java/lib/jfcunit/jakarta-regexp.jar")
+         ))
  '(jde-compile-option-command-line-args (quote ("-g")))
  '(jde-compile-option-directory (concat (getenv "PLANWORKS_ROOT") "/java/classes"))
  '(jde-compile-option-sourcepath (list (concat (getenv "PLANWORKS_ROOT") "/java/src")
@@ -66,7 +70,11 @@
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/eXist/lib/core/xmldb.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/JGo.jar")
          (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/JGoLayout.jar")
-         (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/Classier.jar")))
+         (concat (getenv "PLANWORKS_ROOT") "/java/lib/JGo/Classier.jar")
+         (concat (getenv "PLANWORKS_ROOT") "/java/lib/jfcunit/junit.jar")
+         (concat (getenv "PLANWORKS_ROOT") "/java/lib/jfcunit/jfcunit.jar")
+         (concat (getenv "PLANWORKS_ROOT") "/java/lib/jfcunit/jakarta-regexp.jar")
+         ))
  ;; Do you prefer to have java.io.* imports or separate import for each 
  ;; used class - now it is set for importing classes separately
  '(jde-import-auto-collapse-imports nil)

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: build.xml,v 1.4 2003-05-23 22:20:19 taylor Exp $ -->
 <project name="PlanWorks" default="compile" basedir=".">
     <description>
-        planWorks build file
+        Planworks Build Targets
     </description>
   <!-- set global properties for this build -->
   <property name="src" value="src"/>
@@ -10,12 +11,11 @@
   <!-- show line numbers in stack trace -->
   <property name="debug"  value="true"/>
   <property name="javahDestdir"  value="../cpp/include/europa"/>
-  <property name="eXistRoot"  value="lib/eXist"/>
-  <property name="jGoRoot"  value="lib/JGo"/>
-  <property environment="env"/>
-  <property name="junit.home" value="lib/junit3.8.1"/>
-  <property name="jfcunit.home" value="lib/jfcunit"/>
-  <property name="jakarta.regexp.home" value="lib/jakarta-regexp-1.2"/>
+  <property name="exist.home"  value="lib/eXist"/>
+  <property name="jgo.home"  value="lib/JGo"/>
+  <!-- property environment="env"/ -->
+  <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
+  <property name="jfcunit.home" value="lib/JFCUnit"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -30,31 +30,31 @@
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}" debug="${debug}">
        <classpath>
-          <pathelement location="${eXistRoot}/exist.jar"/>
-          <pathelement location="${eXistRoot}/lib/core/xmldb.jar"/>
-          <pathelement location="${jGoRoot}/JGo.jar"/>
-          <pathelement location="${jGoRoot}/JGoLayout.jar"/>
-          <pathelement location="${jGoRoot}/Classier.jar"/>
-          <pathelement location="${junit.home}/junit.jar"/>
+          <pathelement location="${exist.home}/exist.jar"/>
+          <pathelement location="${exist.home}/lib/core/xmldb.jar"/>
+          <pathelement location="${jgo.home}/JGo.jar"/>
+          <pathelement location="${jgo.home}/JGoLayout.jar"/>
+          <pathelement location="${jgo.home}/Classier.jar"/>
+          <pathelement location="${jfcunit.home}/junit.jar"/>
           <pathelement location="${jfcunit.home}/jfcunit.jar"/>
-          <pathelement location="${jakarta.regexp.home}/jakarta-regexp-1.2.jar"/>
+          <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
        </classpath>
     </javac>
     <!-- Compile local mods to eXist-0.9.1 (see xpath.README) -->
-    <javac srcdir="${eXistRoot}/src"
+    <javac srcdir="${exist.home}/src"
            destdir="${build}"  debug="${debug}" 
            includes="org/exist/xmldb/DatabaseImpl.java">
        <classpath>
-          <pathelement location="${eXistRoot}/exist.jar"/>
-          <pathelement location="${eXistRoot}/lib/core/xmldb.jar"/>
-          <pathelement location="${eXistRoot}/lib/core/xmlrpc-1.1.jar"/>
+          <pathelement location="${exist.home}/exist.jar"/>
+          <pathelement location="${exist.home}/lib/core/xmldb.jar"/>
+          <pathelement location="${exist.home}/lib/core/xmlrpc-1.1.jar"/>
        </classpath>
     </javac>
     <echo message="compile completed"/>
   </target>
 
   <target name="dist" depends="clean,compile"
-        description="generate a jar file in 'jars' directory" >
+        description="NOT USED: generate a jar file in 'jars' directory" >
     <!-- Put everything in ${build} into the planWorks.jar file -->
     <jar jarfile="${dist}/planWorks.jar" basedir="${build}"/>
   </target>
