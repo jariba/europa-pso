@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.8 2004-02-10 02:35:53 taylor Exp $
+// $Id: VizViewOverview.java,v 1.9 2004-02-26 19:01:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,6 +24,8 @@ import com.nwoods.jgo.examples.Overview;
 
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.ModelClassNavNode;
@@ -149,7 +151,11 @@ public class VizViewOverview extends Overview {
     JGoObject obj = getObserved().pickDocObject(p, false);
 
     while (obj != null) {
-      if (obj instanceof ConstraintNetworkTokenNode) {
+      if (obj instanceof ConstraintNetworkObjectNode) {
+        tip = ((ConstraintNetworkObjectNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ConstraintNetworkTimelineNode) {
+        tip = ((ConstraintNetworkTimelineNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ConstraintNetworkTokenNode) {
         tip = ((ConstraintNetworkTokenNode) obj).getToolTipText( isOverview);
       } else if (obj instanceof ConstraintNode) {
         tip = ((ConstraintNode) obj).getToolTipText( isOverview);
@@ -178,6 +184,7 @@ public class VizViewOverview extends Overview {
         tip = ((VariableNavNode) obj).getToolTipText( isOverview);
       } else if (obj instanceof ConstraintNavNode) {
         tip = ((ConstraintNavNode) obj).getToolTipText( isOverview);
+
       } else if (obj instanceof ResourceProfile.ProfileLine) {
         tip = ((ResourceProfile.ProfileLine) obj).getToolTipText( isOverview);
       } else if (obj instanceof ResourceTransactionSet.TransactionObject) {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.6 2004-02-25 02:30:14 taylor Exp $
+// $Id: ConstraintNavNode.java,v 1.7 2004-02-26 19:02:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -274,7 +274,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
    * @return - <code>String</code> - 
    */
   public final String getToolTipText( final boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html>constraint<br>");
+    StringBuffer tip = new StringBuffer( "<html>");
     tip.append( constraint.getName());
     tip.append( "<br>key=");
     tip.append( constraint.getId().toString());

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.12 2004-02-25 02:30:15 taylor Exp $
+// $Id: NavigatorView.java,v 1.13 2004-02-26 19:02:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -56,6 +56,8 @@ import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
@@ -106,12 +108,52 @@ public class NavigatorView extends PartialPlanView {
   /**
    * <code>NavigatorView</code> - constructor 
    *
+   * @param objectNode - <code>ConstraintNetworkObjectNode</code> - 
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
+   */
+  public NavigatorView( final ConstraintNetworkObjectNode objectNode,
+                        final ViewableObject partialPlan, final ViewSet viewSet,
+                        final MDIInternalFrame navigatorFrame) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    this.initialNode = objectNode;
+    this.partialPlan = (PwPartialPlan) partialPlan;
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    this.navigatorFrame = navigatorFrame;
+
+    commonConstructor();
+  } // end constructor
+
+  /**
+   * <code>NavigatorView</code> - constructor 
+   *
    * @param timelineNode - <code>TimelineViewTimelineNode</code> - 
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
   public NavigatorView( final TimelineViewTimelineNode timelineNode,
+                        final ViewableObject partialPlan, final ViewSet viewSet,
+                        final MDIInternalFrame navigatorFrame) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    this.initialNode = timelineNode;
+    this.partialPlan = (PwPartialPlan) partialPlan;
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    this.navigatorFrame = navigatorFrame;
+
+    commonConstructor();
+  } // end constructor
+
+  /**
+   * <code>NavigatorView</code> - constructor 
+   *
+   * @param timelineNode - <code>ConstraintNetworkTimelineNode</code> - 
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
+   */
+  public NavigatorView( final ConstraintNetworkTimelineNode timelineNode,
                         final ViewableObject partialPlan, final ViewSet viewSet,
                         final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
@@ -420,8 +462,17 @@ public class NavigatorView extends PartialPlanView {
 
   private void renderInitialNode() {
     ExtendedBasicNode node = null;
-    if (initialNode instanceof TimelineViewTimelineNode) {
-      PwTimeline timeline = ((TimelineViewTimelineNode) initialNode).getTimeline();
+    if (initialNode instanceof ConstraintNetworkObjectNode) {
+      PwObject object = ((ConstraintNetworkObjectNode) initialNode).getObject();
+      node = addEntityNavNode( object, isDebugPrint);
+    } else if ((initialNode instanceof TimelineViewTimelineNode) ||
+               (initialNode instanceof ConstraintNetworkTimelineNode)) {
+      PwTimeline timeline = null;
+      if (initialNode instanceof TimelineViewTimelineNode) {
+        timeline = ((TimelineViewTimelineNode) initialNode).getTimeline();
+      } else if (initialNode instanceof ConstraintNetworkTimelineNode) {
+        timeline = ((ConstraintNetworkTimelineNode) initialNode).getTimeline();
+      }
       node = addEntityNavNode( timeline, isDebugPrint);
     } else if (initialNode instanceof SlotNode) {
       // TimelineView.SlotNode

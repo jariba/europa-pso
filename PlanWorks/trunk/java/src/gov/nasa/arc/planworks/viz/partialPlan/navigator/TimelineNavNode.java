@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.6 2004-02-25 02:30:16 taylor Exp $
+// $Id: TimelineNavNode.java,v 1.7 2004-02-26 19:02:01 taylor Exp $
 //
 // PlanWorks
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -24,6 +25,8 @@ import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwTimeline;
+import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
@@ -182,6 +185,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
     List returnList = new ArrayList();
     returnList.addAll( timeline.getComponentList());
     returnList.addAll( timeline.getSlotList());
+    returnList.addAll( ((PwVariableContainer) timeline).getVariables());
     return returnList;
   }
 
@@ -214,7 +218,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
    * @return - <code>String</code> - 
    */
   public final String getToolTipText( final boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html>timeline<br>");
+    StringBuffer tip = new StringBuffer( "<html>");
     tip.append( timeline.getName());
     tip.append( "<br>key=");
     tip.append( timeline.getId().toString());
