@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.19 2004-01-17 01:22:55 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.20 2004-02-03 20:44:04 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -50,7 +50,7 @@ import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 //import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DecisionQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TokenQueryView;
-import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.VariableQueryView;
 
 /**
@@ -85,7 +85,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   private static final String TRANSACTIONS_FOR_TOKEN = "For Token ...";
   private static final String TRANSACTIONS_FOR_VARIABLE = "For Variable ...";
   private static final String TRANSACTIONS_IN_RANGE = "In Range ...";
-  private static final List TRANSACTION_QUERIES;
+  private static final List DB_TRANSACTION_QUERIES;
 
   private static final List CONSTRAINT_TRANSACTION_TYPES;
   private static final List TOKEN_TRANSACTION_TYPES;
@@ -109,11 +109,11 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     // STEP_QUERIES.add( STEPS_WITH_RELAXATIONS); // PlanWriter cannot get this from Europa
     STEP_QUERIES.add( STEPS_WITH_RESTRICTIONS);
     STEP_QUERIES.add( STEPS_WITH_UNIT_VARIABLE_DECISIONS); 
-    TRANSACTION_QUERIES = new ArrayList();
-    TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_CONSTRAINT);
-    TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_TOKEN);
-    TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_VARIABLE);
-    TRANSACTION_QUERIES.add( TRANSACTIONS_IN_RANGE);
+    DB_TRANSACTION_QUERIES = new ArrayList();
+    DB_TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_CONSTRAINT);
+    DB_TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_TOKEN);
+    DB_TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_VARIABLE);
+    DB_TRANSACTION_QUERIES.add( TRANSACTIONS_IN_RANGE);
     CONSTRAINT_TRANSACTION_TYPES = new ArrayList();
     CONSTRAINT_TRANSACTION_TYPES.add( DbConstants.CONSTRAINT_CREATED);
     CONSTRAINT_TRANSACTION_TYPES.add( DbConstants.CONSTRAINT_DELETED);
@@ -428,7 +428,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         Object windowKey = (Object) windowListItr.next();
         if ((windowKey instanceof Class) &&
             ((Class) windowKey).getName().equals
-            ( PlanWorks.planWorks.viewClassNameMap.get( PlanWorks.SEQUENCE_STEPS_VIEW))) {
+            ( PlanWorks.getViewClassName( PlanWorks.SEQUENCE_STEPS_VIEW))) {
           sequenceStepsViewExists = true;
         }
       }
@@ -438,8 +438,9 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         SequenceViewMenuItem seqViewItem =
           new SequenceViewMenuItem( seqName, seqUrl, seqName);
         boolean isInvokeAndWait = true;
-        Thread thread = new CreateSequenceViewThread(PlanWorks.SEQUENCE_STEPS_VIEW, seqViewItem,
-                                                     isInvokeAndWait);
+        Thread thread =
+          new CreateSequenceViewThread( PlanWorks.SEQUENCE_STEPS_VIEW, seqViewItem,
+                                        isInvokeAndWait);
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
       }
@@ -489,7 +490,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       } else {
         queryStringBuf.append( " Key ").append( keyString);
       }
-      contentPane.add( new TransactionQueryView
+      contentPane.add( new DBTransactionQueryView
                        ( transactionList, queryStringBuf.toString(), viewable,
                          viewSet, SequenceQueryWindow.this, transactionQueryFrame,
                          startTimeMSecs));
@@ -571,7 +572,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       if (((String) queryWindow.majorTypeBox.getSelectedItem()).
           equals( QUERY_FOR_TRANSACTIONS) && keyString.equals( "")) {
         JOptionPane.showMessageDialog
-          (PlanWorks.planWorks, type + " key is required",
+          (PlanWorks.getPlanWorks(), type + " key is required",
            "Invalid Query", JOptionPane.ERROR_MESSAGE);
         return "";
       }
@@ -582,7 +583,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       stepString = (String) queryWindow.intStepField.getText();
       if (stepString.equals( "")) {
         JOptionPane.showMessageDialog
-          (PlanWorks.planWorks, "Step is required",
+          (PlanWorks.getPlanWorks(), "Step is required",
            "Invalid Query", JOptionPane.ERROR_MESSAGE);
         return "";
       }
@@ -699,7 +700,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         startStepString = (String) queryWindow.intStartField.getText();
         if (startStepString.equals( "")) {
           JOptionPane.showMessageDialog
-            (PlanWorks.planWorks, " StartStep is required",
+            (PlanWorks.getPlanWorks(), " StartStep is required",
              "Invalid Query", JOptionPane.ERROR_MESSAGE);
           return null;
         }
@@ -710,7 +711,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         endStepString = (String) queryWindow.intEndField.getText();
         if (endStepString.equals( "")) {
           JOptionPane.showMessageDialog
-            (PlanWorks.planWorks, " EndStep is required",
+            (PlanWorks.getPlanWorks(), " EndStep is required",
              "Invalid Query", JOptionPane.ERROR_MESSAGE);
           return null;
         }
@@ -732,7 +733,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         return true;
       } else {
         JOptionPane.showMessageDialog
-          (PlanWorks.planWorks,
+          (PlanWorks.getPlanWorks(),
            stepNumber + " is not >= 0 and < " + stepCount,
            "Invalid Step Number", JOptionPane.ERROR_MESSAGE);
         return false;
@@ -757,7 +758,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         return null;
       }
       catch(ResourceNotFoundException rnfe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(), "ResourceNotFound",
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), rnfe.getMessage(),
+                                      "ResourceNotFound",
                                       JOptionPane.ERROR_MESSAGE);
         return null;
       }
@@ -782,7 +784,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         return null;
       }
       catch(ResourceNotFoundException rnfe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(), "ResourceNotFound",
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), rnfe.getMessage(),
+                                      "ResourceNotFound",
                                       JOptionPane.ERROR_MESSAGE);
         return null;
       }
@@ -807,7 +810,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         return null;
       }
       catch(ResourceNotFoundException rnfe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(), "ResourceNotFound",
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), rnfe.getMessage(),
+                                      "ResourceNotFound",
                                       JOptionPane.ERROR_MESSAGE);
         return null;
       }
@@ -906,7 +910,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
             minorTypeBox.addItem( (String) stepsItr.next());
           }
         } else if (((String) ie.getItem()).equals( QUERY_FOR_TRANSACTIONS)) {
-          Iterator transactionsItr = TRANSACTION_QUERIES.iterator();
+          Iterator transactionsItr = DB_TRANSACTION_QUERIES.iterator();
           while (transactionsItr.hasNext()) {
             minorTypeBox.addItem( (String) transactionsItr.next());
           }

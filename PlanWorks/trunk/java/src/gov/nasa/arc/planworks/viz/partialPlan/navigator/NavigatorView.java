@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.4 2004-01-17 01:22:53 taylor Exp $
+// $Id: NavigatorView.java,v 1.5 2004-02-03 20:43:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -274,7 +274,7 @@ public class NavigatorView extends PartialPlanView {
                                    contentFilterFrame.getSize().getHeight());
     int delta = Math.min( ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4 *
                           ((PartialPlanViewSet) viewSet).getNavigatorFrameCnt(),
-                          (int) (PlanWorks.planWorks.getSize().getHeight() -
+                          (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
                                  contentFilterMaxY -
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
     navigatorFrame.setLocation
@@ -1301,7 +1301,7 @@ public class NavigatorView extends PartialPlanView {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     String partialPlanName = partialPlan.getPartialPlanName();
-    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
+    PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,

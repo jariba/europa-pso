@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepHeaderView.java,v 1.7 2003-12-20 01:54:49 taylor Exp $
+// $Id: StepHeaderView.java,v 1.8 2004-02-03 20:43:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -33,7 +33,7 @@ import com.nwoods.jgo.examples.TextNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.TransactionHeaderNode;
+import gov.nasa.arc.planworks.viz.nodes.DBTransactionHeaderNode;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
 
 /**
@@ -52,18 +52,18 @@ public class StepHeaderView extends JGoView {
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE);
 
-  private List transactionList; // element PwTransaction
+  private List transactionList; // element PwDBTransaction
   private String key;
   private String query;
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
-  private TransactionHeaderNode stepNumNode;
-  private TransactionHeaderNode keyNode;
-  private TransactionHeaderNode typeNode;
-  private TransactionHeaderNode objectKeyNode;
-  private TransactionHeaderNode objectNameNode;
-  private TransactionHeaderNode predicateNode;
-  private TransactionHeaderNode parameterNode;
+  private DBTransactionHeaderNode stepNumNode;
+  private DBTransactionHeaderNode keyNode;
+  private DBTransactionHeaderNode typeNode;
+  private DBTransactionHeaderNode objectKeyNode;
+  private DBTransactionHeaderNode objectNameNode;
+  private DBTransactionHeaderNode predicateNode;
+  private DBTransactionHeaderNode parameterNode;
   
   /**
    * <code>StepHeaderView</code> - constructor 
@@ -98,44 +98,44 @@ public class StepHeaderView extends JGoView {
       jGoDocument.addObjectAtTail( queryNode);
       y += (int) queryNode.getSize().getHeight() + 2;
     }
-    stepNumNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_STEP_NUM_HEADER,
+    stepNumNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
                                              vizView);
     configureTextNode( stepNumNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( stepNumNode);
     x += stepNumNode.getSize().getWidth();
 
-    keyNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_KEY_HEADER, vizView);
+    keyNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_KEY_HEADER, vizView);
     configureTextNode( keyNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( keyNode);
     x += keyNode.getSize().getWidth();
 
-    typeNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_TYPE_HEADER, vizView);
+    typeNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_TYPE_HEADER, vizView);
     configureTextNode( typeNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( typeNode);
     x += typeNode.getSize().getWidth();
 
     if ((query.indexOf( " With ") >= 0) ||
         ((query.indexOf( " With ") == -1) && key.equals( ""))) {
-      objectKeyNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_OBJECT_KEY_HEADER,
+      objectKeyNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_OBJECT_KEY_HEADER,
                                                  vizView);
       configureTextNode( objectKeyNode, new Point( x, y), bgColor);
       jGoDocument.addObjectAtTail( objectKeyNode);
       x += objectKeyNode.getSize().getWidth();
     }
 
-    objectNameNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_OBJ_NAME_HEADER,
+    objectNameNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_OBJ_NAME_HEADER,
                                                 vizView);
     configureTextNode( objectNameNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( objectNameNode);
     x += objectNameNode.getSize().getWidth();
 
-    predicateNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_PREDICATE_HEADER,
+    predicateNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_PREDICATE_HEADER,
                                                vizView);
     configureTextNode( predicateNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( predicateNode);
     x += predicateNode.getSize().getWidth();
 
-    parameterNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_PARAMETER_HEADER,
+    parameterNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_PARAMETER_HEADER,
                                                vizView);
     configureTextNode( parameterNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( parameterNode);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.31 2004-01-17 01:22:52 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.32 2004-02-03 20:43:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1359,7 +1359,8 @@ public class ConstraintNetworkView extends PartialPlanView {
 
     private void mouseRightPopupMenu( Point viewCoords) {
       String partialPlanName = partialPlan.getPartialPlanName();
-      PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
+      PwPlanningSequence planSequence =
+        PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
       JPopupMenu mouseRightPopup = new JPopupMenu();
 
       JMenuItem tokenByKeyItem = new JMenuItem( "Find by Key");
@@ -1489,7 +1490,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         // Content Spec filtering may cause this to happen
         String message = "Token " + tokenToFind.getPredicateName() +
           " (key=" + tokenToFind.getId().toString() + ") not found.";
-        JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
                                        "Token Not Found in ConstraintNetworkView",
                                        JOptionPane.ERROR_MESSAGE);
         System.err.println( message);
@@ -1526,7 +1527,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         // Content Spec filtering may cause this to happen
         String message = "Variable " + variableToFind.getDomain().toString() +
           " (key=" + variableToFind.getId().toString() + ") not found.";
-        JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
                                        "Variable Not Found in ConstraintNetworkView",
                                        JOptionPane.ERROR_MESSAGE);
         System.err.println( message);
@@ -1584,7 +1585,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         // Content Spec filtering may cause this to happen
         String message = "Constraint " + constraintToFind.getName() +
           " (key=" + constraintToFind.getId().toString() + ") not found.";
-        JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
                                        "Constraint Not Found in ConstraintNetworkView",
                                        JOptionPane.ERROR_MESSAGE);
         System.err.println( message);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.7 2003-12-31 01:02:21 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.8 2004-02-03 20:43:54 taylor Exp $
 //
 // PlanWorks
 //
@@ -48,13 +48,18 @@ public class PartialPlanViewMenu extends JPopupMenu{
    */
   public void buildPartialPlanViewMenu( String partialPlanName,
                                         PwPlanningSequence planSequence) {
-    Iterator viewNamesItr = PlanWorks.planWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
+    Iterator viewNamesItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
       if (viewName.equals( PlanWorks.CONSTRAINT_NETWORK_VIEW)) {
         PartialPlanViewMenuItem constraintNetworkViewItem =
           createOpenViewItem( viewName, partialPlanName, planSequence);
         this.add( constraintNetworkViewItem);
+
+      } else if (viewName.equals( PlanWorks.RESOURCE_PROFILE_VIEW)) {
+        PartialPlanViewMenuItem resourceProfileViewItem =
+          createOpenViewItem( viewName, partialPlanName, planSequence);
+        this.add( resourceProfileViewItem);
 
       } else if (viewName.equals( PlanWorks.TEMPORAL_EXTENT_VIEW)) {
         PartialPlanViewMenuItem temporalExtentViewItem =
@@ -77,7 +82,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
           createOpenViewItem( viewName, partialPlanName, planSequence);
         this.add( tokenNetworkViewItem);
 
-      } else if (viewName.equals( PlanWorks.TRANSACTION_VIEW)) {
+      } else if (viewName.equals( PlanWorks.DB_TRANSACTION_VIEW)) {
         PartialPlanViewMenuItem transactionViewItem =
           createOpenViewItem( viewName, partialPlanName, planSequence);
         this.add( transactionViewItem);
@@ -109,6 +114,16 @@ public class PartialPlanViewMenu extends JPopupMenu{
               ( PlanWorks.CONSTRAINT_NETWORK_VIEW, (PartialPlanViewMenuItem) e.getSource());
           }});
       return constraintNetworkViewItem;
+    } else if (viewName.equals( PlanWorks.RESOURCE_PROFILE_VIEW)) {
+      PartialPlanViewMenuItem resourceProfileViewItem =
+        new PartialPlanViewMenuItem( "Open " + PlanWorks.RESOURCE_PROFILE_VIEW,
+                                     seqUrl, seqName, partialPlanName);
+      resourceProfileViewItem.addActionListener( new ActionListener() {
+          public void actionPerformed( ActionEvent e) {
+            PartialPlanViewMenu.this.createPartialPlanViewThread
+              ( PlanWorks.RESOURCE_PROFILE_VIEW, (PartialPlanViewMenuItem) e.getSource());
+          }});
+      return resourceProfileViewItem;
     } else if (viewName.equals( PlanWorks.TEMPORAL_EXTENT_VIEW)) {
       PartialPlanViewMenuItem temporalExtentViewItem =
         new PartialPlanViewMenuItem( "Open " + PlanWorks.TEMPORAL_EXTENT_VIEW,
@@ -150,14 +165,14 @@ public class PartialPlanViewMenu extends JPopupMenu{
               ( PlanWorks.TOKEN_NETWORK_VIEW, (PartialPlanViewMenuItem) e.getSource());
           }});
       return tokenNetworkViewItem;
-    } else if (viewName.equals( PlanWorks.TRANSACTION_VIEW)) {
+    } else if (viewName.equals( PlanWorks.DB_TRANSACTION_VIEW)) {
       PartialPlanViewMenuItem transactionViewItem =
-        new PartialPlanViewMenuItem( "Open " + PlanWorks.TRANSACTION_VIEW,
+        new PartialPlanViewMenuItem( "Open " + PlanWorks.DB_TRANSACTION_VIEW,
                                      seqUrl, seqName, partialPlanName);
       transactionViewItem.addActionListener( new ActionListener() {
           public void actionPerformed( ActionEvent e) {
             PartialPlanViewMenu.this.createPartialPlanViewThread
-              ( PlanWorks.TRANSACTION_VIEW, (PartialPlanViewMenuItem) e.getSource());
+              ( PlanWorks.DB_TRANSACTION_VIEW, (PartialPlanViewMenuItem) e.getSource());
           }});
       return transactionViewItem;
     }

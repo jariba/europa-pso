@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTransaction.java,v 1.4 2003-10-28 22:13:33 miatauro Exp $
+// $Id: PwDBTransaction.java,v 1.1 2004-02-03 20:43:44 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -15,13 +15,13 @@ package gov.nasa.arc.planworks.db;
 
 
 /**
- * <code>PwTransaction</code> - 
+ * <code>PwDBTransaction</code> - plan data base transactions
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwTransaction {
+public interface PwDBTransaction {
 
   /**
    * <code>getType</code>
@@ -73,4 +73,5 @@ public interface PwTransaction {
   public abstract Long getPartialPlanId();
 
   public abstract String [] getInfo();
-} // end interface PwTransaction
+
+} // end interface PwDBTransaction

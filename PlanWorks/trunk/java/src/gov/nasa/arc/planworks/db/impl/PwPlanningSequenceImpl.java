@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.69 2004-02-03 19:22:16 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.70 2004-02-03 20:43:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -34,7 +34,7 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.db.PwTransaction;
+import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.util.PwSequenceFilenameFilter;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
@@ -175,7 +175,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     while(transactionNameIterator.hasNext()) {
       String transactionName = (String) transactionNameIterator.next();
       if(transactionName.indexOf(ppIdStr) == 0) {
-        PwTransactionImpl transaction = (PwTransactionImpl) transactions.get(transactionName);
+        PwDBTransactionImpl transaction = (PwDBTransactionImpl) transactions.get(transactionName);
         if(transaction.getType().indexOf("DELETED") == -1) {
           if(transaction.getType().indexOf("TOKEN") != -1) {
             if(!pp.tokenExists(transaction.getObjectId())) {
@@ -239,7 +239,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * <code>getTransactionsList</code>
    *
    * @param step - <code>int</code> - 
-   * @return - <code>List</code> - of PwTransaction
+   * @return - <code>List</code> - of PwDBTransaction
    */
   public List getTransactionsList( final Long partialPlanId) {
     if(transactions == null) {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.4 2003-11-25 01:40:40 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.5 2004-02-03 20:43:53 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -97,13 +97,14 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
   } // end run
 
   private void createPartialPlanView() { 
-    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+    MDIDynamicMenuBar dynamicMenuBar =
+      (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-    PlanWorks.projectMenu.setEnabled( false);
+    PlanWorks.getProjectMenu().setEnabled( false);
 
     try {
       PwPlanningSequence planSequence =
-        PlanWorks.planWorks.currentProject.getPlanningSequence( seqUrl);
+        PlanWorks.getPlanWorks().getCurrentProject().getPlanningSequence( seqUrl);
         
       PwPartialPlan partialPlan = planSequence.getPartialPlan(partialPlanName);
         
@@ -113,13 +114,13 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
     } catch (ResourceNotFoundException rnfExcep) {
       int index = rnfExcep.getMessage().indexOf( ":");
       JOptionPane.showMessageDialog
-        (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
+        (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
       System.err.println( rnfExcep);
       // rnfExcep.printStackTrace();
     }
 
-    PlanWorks.planWorks.projectMenu.setEnabled( true);
+    PlanWorks.getPlanWorks().getProjectMenu().setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
   } // end createPartialPlanView
 

@@ -4,40 +4,19 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.68 2004-01-20 19:19:20 taylor Exp $
+# $Id: README,v 1.69 2004-02-03 20:43:40 taylor Exp $
 #
 
 SUMMARY
 =======
-o In the Temporal Extent View, Mouse-Right on the background now offers
-  "Show Earliest" and "Show Latest", as options to "Show Intervals".
-
-o A query for "All Decisions ..." at a step has been added to the "SequenceQuery" 
-  window.  It brings up two results windows, one for free tokens and
-  one for unbound variables.
-
-o Speedups in database querying, Constraint Network View rendering, and
-  Token Network View rendering.
-
-o For all nodes, except empty slots, in the Constraint Network, the Temporal
-  Extent, the Timeline, and the Token Network views, there is a 
-  Mouse-Right selection "Open Navigator View" which allows navigation
-  through all relationships in the partial plan data base.
-
-o "Show All Views", the logical inverse of "Hide All Views", is now
-   available in all situations where "Hide All Views" occurs.
-
-o Content Filter specifications are maintained across partial plan view
-  stepping operations.
+o 
 
 o  GNATS PRs and CRs completed:
-   #2192: Snap to Earliest Start/Latest end in Temporal extent view.
-   #2205: Bad behavior when you try to switch to another project.
-   #2206: Need ability to turn off auto outputing writing when using the planwriter.
+   
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_12 PlanWorks
+> cvs co -r PW_M_13 PlanWorks
 
 
 PREREQUISITES
@@ -147,8 +126,37 @@ PREVIOUS MILESTONES
 ===================
 ===================
 
+20January04: Milestone 12
+=========================
+o In the Temporal Extent View, Mouse-Right on the background now offers
+  "Show Earliest" and "Show Latest", as options to "Show Intervals".
+
+o A query for "All Decisions ..." at a step has been added to the "SequenceQuery" 
+  window.  It brings up two results windows, one for free tokens and
+  one for unbound variables.
+
+o Speedups in database querying, Constraint Network View rendering, and
+  Token Network View rendering.
+
+o For all nodes, except empty slots, in the Constraint Network, the Temporal
+  Extent, the Timeline, and the Token Network views, there is a 
+  Mouse-Right selection "Open Navigator View" which allows navigation
+  through all relationships in the partial plan data base.
+
+o "Show All Views", the logical inverse of "Hide All Views", is now
+   available in all situations where "Hide All Views" occurs.
+
+o Content Filter specifications are maintained across partial plan view
+  stepping operations.
+
+o  GNATS PRs and CRs completed:
+   #2192: Snap to Earliest Start/Latest end in Temporal extent view.
+   #2205: Bad behavior when you try to switch to another project.
+   #2206: Need ability to turn off auto outputing writing when using the planwriter.
+
+
 30december03: Milestone 11
-=======
+==========================
 o Improved diagnostics for "Invalid Sequence Directory" error dialog.
 o The "Find Transaction by Obj_Key" Mouse-right popup selection and
   the transaction entry column "OBJ_KEY", have now been properly

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.13 2004-01-13 20:45:40 miatauro Exp $
+// $Id: SequenceViewSet.java,v 1.14 2004-02-03 20:43:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -66,7 +66,7 @@ public class SequenceViewSet extends ViewSet {
 
     int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
                                  ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-                          (int) ((PlanWorks.planWorks.getSize().getHeight() -
+                          (int) ((PlanWorks.getPlanWorks().getSize().getHeight() -
                                   ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
 
     this.contentSpecWindow.setLocation( delta, delta);
@@ -85,7 +85,7 @@ public class SequenceViewSet extends ViewSet {
       }
     }
     try {
-      PlanWorks.planWorks.currentProject.
+      PlanWorks.getPlanWorks().getCurrentProject().
         deletePlanningSequence(((PwPlanningSequence)viewable).getId());
     }
     catch(ResourceNotFoundException rnfe) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteProjectThread.java,v 1.3 2003-12-03 01:48:38 miatauro Exp $
+// $Id: DeleteProjectThread.java,v 1.4 2004-02-03 20:43:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -44,13 +44,14 @@ public class DeleteProjectThread extends Thread {
    *
    */
   public void run() {
-    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+    MDIDynamicMenuBar dynamicMenuBar =
+      (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
     PlanWorks.projectMenu.setEnabled( false);
 
     deleteProject();
 
-    PlanWorks.planWorks.projectMenu.setEnabled( true);
+    PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
   } //end run
 
@@ -58,12 +59,13 @@ public class DeleteProjectThread extends Thread {
   private void deleteProject() {
     List projectNames = PwProject.listProjects();
     Object[] options = new Object[projectNames.size()];
-    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+    MDIDynamicMenuBar dynamicMenuBar =
+      (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     for (int i = 0, n = projectNames.size(); i < n; i++) {
       options[i] = (String) projectNames.get( i);
     }
     Object response = JOptionPane.showInputDialog
-      ( PlanWorks.planWorks, "", "Delete Project", JOptionPane.QUESTION_MESSAGE, null,
+      ( PlanWorks.getPlanWorks(), "", "Delete Project", JOptionPane.QUESTION_MESSAGE, null,
         options, options[0]);
     if (response instanceof String) {
       for (int i = 0, n = options.length; i < n; i++) {
@@ -74,28 +76,28 @@ public class DeleteProjectThread extends Thread {
 
             PwProject.getProject( projectName).delete();
 
-            if ((! PlanWorks.planWorks.currentProjectName.equals( "")) &&
-                PlanWorks.planWorks.currentProjectName.equals( projectName)) {
-              PlanWorks.planWorks.viewManager.clearViewSets();
-              PlanWorks.planWorks.setTitle( PlanWorks.planWorks.name);
+            if ((! PlanWorks.getPlanWorks().currentProjectName.equals( "")) &&
+                PlanWorks.getPlanWorks().currentProjectName.equals( projectName)) {
+              PlanWorks.getPlanWorks().viewManager.clearViewSets();
+              PlanWorks.getPlanWorks().setTitle( PlanWorks.getPlanWorksTitle());
               int numProjects = PwProject.listProjects().size();
               dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
             }
             if (PwProject.listProjects().size() == 0) {
-              PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, false);
-              PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
-              PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, false);
-              PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
-              PlanWorks.planWorks.setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, false);
-            } else if (PlanWorks.planWorks.getProjectsLessCurrent().size() == 0) {
-              PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
+              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, false);
+              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
+              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, false);
+              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
+              PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, false);
+            } else if (PlanWorks.getPlanWorks().getProjectsLessCurrent().size() == 0) {
+              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
             } else {
-              PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
+              PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
             }
           } catch (ResourceNotFoundException rnfExcep) {
             int index = rnfExcep.getMessage().indexOf( ":");
             JOptionPane.showMessageDialog
-              (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
+              (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
                "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
             System.err.println( rnfExcep);
             rnfExcep.printStackTrace();
@@ -104,7 +106,7 @@ public class DeleteProjectThread extends Thread {
             System.err.println( " delete: excep " + excep);
             int index = excep.getMessage().indexOf( ":");
             JOptionPane.showMessageDialog
-              (PlanWorks.planWorks, excep.getMessage().substring( index + 1),
+              (PlanWorks.getPlanWorks(), excep.getMessage().substring( index + 1),
                "Exception", JOptionPane.ERROR_MESSAGE);
             System.err.println( excep);
             excep.printStackTrace();

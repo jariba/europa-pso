@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.5 2004-01-12 19:46:34 taylor Exp $
+// $Id: StepQueryView.java,v 1.6 2004-02-03 20:44:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -37,7 +37,7 @@ import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
-import gov.nasa.arc.planworks.viz.util.TransactionComparatorAscending;
+import gov.nasa.arc.planworks.viz.util.DBTransactionComparatorAscending;
 
 
 /**
@@ -83,8 +83,8 @@ public class StepQueryView extends SequenceView {
     this.stepList = stepList;
     this.key = key;
     Collections.sort( stepList,
-                      new TransactionComparatorAscending
-                      ( ViewConstants.TRANSACTION_STEP_NUM_HEADER));
+                      new DBTransactionComparatorAscending
+                      ( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER));
     this.query = query;
     this.planSequence = (PwPlanningSequence) planSequence;
     this.viewSet = (SequenceViewSet) viewSet;
@@ -156,7 +156,7 @@ public class StepQueryView extends SequenceView {
              sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
     int delta = Math.min( ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4 *
                           sequenceQueryWindow.getQueryResultFrameCnt(),
-                          (int) (PlanWorks.planWorks.getSize().getHeight() -
+                          (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
                                  maxQueryFrameY -
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
     stepQueryFrame.setLocation

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.7 2004-01-09 20:44:21 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.8 2004-02-03 20:44:04 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -468,7 +468,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
     JPopupMenu mouseRightPopup = new JPopupMenu();
     PwPartialPlan partialPlan = contentSpec.getPartialPlan();
     String partialPlanName = partialPlan.getPartialPlanName();
-    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
+    PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     int numToReturn = 1;
     List partialPlanViews = partialPlanViewSet.getPartialPlanViews( numToReturn);
     if (partialPlanViews.size() > 0) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskQueryObjectKey.java,v 1.1 2003-12-20 01:54:49 taylor Exp $
+// $Id: AskQueryObjectKey.java,v 1.2 2004-02-03 20:43:49 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -31,7 +31,7 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwTokenQuery;
 import gov.nasa.arc.planworks.db.PwVariableQuery;
-import gov.nasa.arc.planworks.db.PwTransaction;
+import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 
@@ -62,13 +62,13 @@ public class AskQueryObjectKey extends JDialog {
   public AskQueryObjectKey( List objectList, String dialogTitle, String textFieldLabel,
                             JGoView headerView) {
     // modal dialog - blocks other activity
-    super( PlanWorks.planWorks, true);
+    super( PlanWorks.getPlanWorks(), true);
     this.objectList = objectList;
     this.headerView = headerView;
     objectListIndex = -1;
 
     if ((headerView instanceof StepHeaderView) ||
-        (headerView instanceof TransactionHeaderView)) {
+        (headerView instanceof DBTransactionHeaderView)) {
       keyType = "object";
     } else if (headerView instanceof TokenQueryHeaderView) {
       keyType = "token";
@@ -113,7 +113,7 @@ public class AskQueryObjectKey extends JDialog {
     // size dialog appropriately
     pack();
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-    Utilities.setPopUpLocation( this, PlanWorks.planWorks);
+    Utilities.setPopUpLocation( this, PlanWorks.getPlanWorks());
     setVisible( true);
   } // end constructor
 
@@ -162,7 +162,7 @@ public class AskQueryObjectKey extends JDialog {
                 // System.err.println( "AskQueryObjectKey key " + typedText);
                 if (! isValidObjectKey( objectKey)) {
                   JOptionPane.showMessageDialog
-                    (PlanWorks.planWorks,
+                    (PlanWorks.getPlanWorks(),
                      "Sorry, \"" + objectKey.toString() + "\" " +
                      "is not a valid " + keyType + " key.",
                      "Invalid " + keyType + " key", JOptionPane.ERROR_MESSAGE);
@@ -174,7 +174,7 @@ public class AskQueryObjectKey extends JDialog {
                 // text was invalid
                 textField.selectAll();
                 JOptionPane.showMessageDialog
-                  (PlanWorks.planWorks,
+                  (PlanWorks.getPlanWorks(),
                    "Sorry, \"" + typedText + "\" " + "isn't a valid response.\n" +
                    "Please enter a intger number",
                    "Invalid value for key", JOptionPane.ERROR_MESSAGE);
@@ -195,9 +195,9 @@ public class AskQueryObjectKey extends JDialog {
     int indx = 0;
     Iterator objItr = objectList.iterator();
     if ((headerView instanceof StepHeaderView) ||
-        (headerView instanceof TransactionHeaderView)) {
+        (headerView instanceof DBTransactionHeaderView)) {
       while (objItr.hasNext()) {
-        if (((PwTransaction) objItr.next()).getObjectId().equals( objectKey)) {
+        if (((PwDBTransaction) objItr.next()).getObjectId().equals( objectKey)) {
           objectListIndex = indx;
           return true;
         }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.31 2004-02-03 19:24:52 miatauro Exp $
+// $Id: TimelineView.java,v 1.32 2004-02-03 20:43:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,11 +19,11 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
-import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -47,7 +47,6 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
@@ -93,13 +92,13 @@ public class TimelineView extends PartialPlanView {
    */
   public TimelineView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    timelineViewInit((PwPartialPlan) partialPlan, viewSet);
+    timelineViewInit( (PwPartialPlan) partialPlan, viewSet);
     SwingUtilities.invokeLater( runInit);
   } // end constructor
 
   public TimelineView(ViewableObject partialPlan, ViewSet viewSet, PartialPlanViewState s) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    timelineViewInit((PwPartialPlan) partialPlan, viewSet);
+    timelineViewInit( (PwPartialPlan) partialPlan, viewSet);
     setState(s);
     SwingUtilities.invokeLater( runInit);
     
@@ -154,21 +153,27 @@ public class TimelineView extends PartialPlanView {
     jGoDocument = jGoView.getDocument();
 
     // create all nodes
-    renderTimelineAndSlotNodes();
+    boolean isValid = renderTimelineAndSlotNodes();
+    if (isValid) {
+      expandViewFrame( viewSet.openView( this.getClass().getName()),
+                       (int) jGoView.getDocumentSize().getWidth(),
+                       (int) jGoView.getDocumentSize().getHeight());
 
-    expandViewFrame( viewSet.openView( this.getClass().getName()),
-                     (int) jGoView.getDocumentSize().getWidth(),
-                     (int) jGoView.getDocumentSize().getHeight());
+      // print out info for created nodes
+      // iterateOverJGoDocument(); // slower - many more nodes to go thru
+      // iterateOverNodes();
 
-    // print out info for created nodes
-    // iterateOverJGoDocument(); // slower - many more nodes to go thru
-    // iterateOverNodes();
-
-    long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    addStepButtons(jGoView);
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
+      long stopTimeMSecs = System.currentTimeMillis();
+      System.err.println( "   ... elapsed time: " +
+                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
+      addStepButtons(jGoView);
+      jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
+    } else {
+      try {
+        viewSet.openView( this.getClass().getName()).setClosed( true);
+      } catch (PropertyVetoException excp) {
+      }
+    }
   } // end init
 
 
@@ -196,7 +201,7 @@ public class TimelineView extends PartialPlanView {
 
   } // end class RedrawViewThread
 
-  private void renderTimelineAndSlotNodes() {
+  private boolean renderTimelineAndSlotNodes() {
     jGoView.getDocument().deleteContents();
 
     validTokenIds = viewSet.getValidIds();
@@ -205,10 +210,12 @@ public class TimelineView extends PartialPlanView {
     freeTokenNodeList = new ArrayList();
     tmpTimelineNodeList = new ArrayList();
 
-    createTimelineAndSlotNodes();
-
-    boolean showDialog = true;
-    isContentSpecRendered( PlanWorks.TIMELINE_VIEW, showDialog);
+    boolean isValid = createTimelineAndSlotNodes();
+    if (isValid) {
+      boolean showDialog = true;
+      isContentSpecRendered( PlanWorks.TIMELINE_VIEW, showDialog);
+    }
+    return isValid;
   } // end createTemporalExtentView
 
   /**
@@ -218,28 +225,6 @@ public class TimelineView extends PartialPlanView {
    */
   public JGoDocument getJGoDocument()  {
     return this.jGoDocument;
-  }
-
-  /**
-   * <code>getSlotLabelMinLength</code> - pad labels with blanks up to min size,
-   *                           initially that of "empty" label, then base it on
-   *                           length of time interval string.  This prevents
-   *                           time interval strings of adjacent slots from
-   *                           overlaying each other.
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getSlotLabelMinLength() {
-    return slotLabelMinLength;
-  }
-
-  /**
-   * <code>setSlotLabelMinLength</code>
-   *
-   * @param minLength - <code>int</code> - 
-   */
-  public void setSlotLabelMinLength( int minLength) {
-    this.slotLabelMinLength = minLength;
   }
 
   /**
@@ -287,7 +272,8 @@ public class TimelineView extends PartialPlanView {
     return isAutoSnapEnabled;
   }
 
-  private void createTimelineAndSlotNodes() {
+  private boolean createTimelineAndSlotNodes() {
+    boolean isValid = true;
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
     List objectList = partialPlan.getObjectList();
@@ -319,7 +305,10 @@ public class TimelineView extends PartialPlanView {
             timelineNode.setSize( timelineNodeWidth, (int) timelineNode.getSize().getHeight());
           }
           x += timelineNode.getSize().getWidth(); 
-          createSlotNodes( timeline, timelineNode, x, y, timelineColor);
+          isValid = createSlotNodes( timeline, timelineNode, x, y, timelineColor);
+          if (! isValid) {
+            return isValid;
+          }
           y += ViewConstants.TIMELINE_VIEW_Y_DELTA; 
         }
         timelineCnt += 1;
@@ -346,12 +335,15 @@ public class TimelineView extends PartialPlanView {
       }
     }
     timelineNodeList = tmpTimelineNodeList;
+    return isValid;
   } // end createTimelineAndSlotNodes
 
-  private void createSlotNodes( PwTimeline timeline, TimelineNode timelineNode,
-                                int x, int y, Color backgroundColor) {
-    computeTimeIntervalLabelSize( timeline);
-
+  private boolean createSlotNodes( PwTimeline timeline, TimelineNode timelineNode,
+                                   int x, int y, Color backgroundColor) {
+    boolean isValid = computeTimeIntervalLabelSize( timeline);
+    if (! isValid) {
+      return isValid;
+    }
     List slotList = timeline.getSlotList();
     Iterator slotIterator = slotList.iterator();
     SlotNode previousSlotNode = null;
@@ -390,6 +382,7 @@ public class TimelineView extends PartialPlanView {
         }
       }
     }
+    return isValid;
   } // end createSlotNodes
 
 
@@ -397,7 +390,7 @@ public class TimelineView extends PartialPlanView {
   //   1) two successive empty slots must not occur
   //   2) earliest start times must be monotonically increasing
   // while computing time interval max label size
-  private void computeTimeIntervalLabelSize( PwTimeline timeline) {
+  private boolean computeTimeIntervalLabelSize( PwTimeline timeline) {
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
     List slotList = timeline.getSlotList();
     Iterator slotIterator = slotList.iterator();
@@ -412,11 +405,11 @@ public class TimelineView extends PartialPlanView {
         if (foundEmptySlot) {
           String message = "Two successive empty slots found in timeline '" +
             timeline.getName() + "' (id = " + timeline.getId() + ")";
-          JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+          JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
                                          "Timeline View Exception",
                                          JOptionPane.ERROR_MESSAGE);
           System.err.println( message);
-          System.exit( 1);
+          return false;
         } else {
           foundEmptySlot = true;
         }
@@ -425,8 +418,7 @@ public class TimelineView extends PartialPlanView {
       }
       boolean isLastSlot = (! slotIterator.hasNext());
       PwDomain[] intervalArray =
-        NodeGenerics.getStartEndIntervals( this, slot, previousSlot, isLastSlot,
-                                           alwaysReturnEnd);
+        NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot, alwaysReturnEnd);
       PwDomain startTimeIntervalDomain = intervalArray[0];
       PwDomain endTimeIntervalDomain = intervalArray[1];
       if ((endTimeIntervalDomain != null) &&
@@ -440,25 +432,45 @@ public class TimelineView extends PartialPlanView {
         if (startTimeIntervalDomain.getLowerBoundInt() >= earliestStartTime) {
           earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
         } else {
-          String message = "Earliest start times are not monotonically increasing " +
-            "in timeline '" + timeline.getName() + "' (id = " + timeline.getId() + ")";
-          JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
-                                         "Timeline View Exception",
-                                         JOptionPane.ERROR_MESSAGE);
-          System.err.println( message);
-          System.err.println("EST: " + earliestStartTime + " STB: " + 
-                             startTimeIntervalDomain.getLowerBoundInt());
-          System.err.println("CurrSlotId: " + slot.getId());
-          System.err.println("CurrTokenId: " + slot.getBaseToken().getId());
-          System.err.println("PrevSlotId: " + previousSlot.getId());
-          System.err.println("PrevTokenId " + previousSlot.getBaseToken().getId());
-          //System.exit( 1);
+          PwToken previousToken = previousSlot.getBaseToken();
+          outputNonMonotonicError( slot, previousSlot, token, previousToken, timeline);
+          return false;
         }
+//         if ((token != null) && token.getPredicateName().equals( "CLIMBING_DOWN")) {
+//           PwToken previousToken = previousSlot.getBaseToken();
+//           outputNonMonotonicError( slot, previousSlot, token, previousToken, timeline);
+//           return false;
+//         }
       }
       previousSlot = slot;
     }
+    return true;
   } // end computeTimeIntervalLabelSize
 
+  private void outputNonMonotonicError( PwSlot slot, PwSlot previousSlot, PwToken token,
+                                        PwToken previousToken, PwTimeline timeline) {
+    String previousTokenIdString = "", tokenIdString = "";
+    String previousPredicateName = "-empty-", predicateName = "-empty-";
+    // check for empty slots
+    if (previousToken != null) {
+      previousTokenIdString = previousToken.getId().toString();
+      previousPredicateName = previousToken.getPredicateName();
+    }
+    if (token != null) {
+      tokenIdString = token.getId().toString();
+      predicateName = token.getPredicateName();
+    }
+    String message = "Earliest start times are not monotonically increasing " +
+      "in timeline '" + timeline.getName() + "' (id = " + timeline.getId() + ")" +
+      "\npreviousPredicate = '" + previousPredicateName +
+      "', slotId = " + previousSlot.getId() + " tokenId = " + previousTokenIdString +
+      "\npredicate = '" + predicateName + "', slotId = " + slot.getId() +
+      ", tokenId = " + tokenIdString;
+    JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                   "Timeline View Exception",
+                                   JOptionPane.ERROR_MESSAGE);
+    System.err.println( message);
+  } // end outputNonMonotonicError
 
   // make all timeline nodes the same width
   private int computeTimelineNodesWidth( List timelineList, String objectName) {
@@ -671,11 +683,10 @@ public class TimelineView extends PartialPlanView {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     String partialPlanName = partialPlan.getPartialPlanName();
-    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
+    PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
-    String className =
-        (String) PlanWorks.viewClassNameMap.get( PlanWorks.TEMPORAL_EXTENT_VIEW);
+    String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
     if (viewSet.viewExists( className)) {
       if (! isAutoSnapEnabled) {
         JMenuItem enableAutoSnapItem = new JMenuItem( "Enable Auto Snap");
@@ -818,7 +829,7 @@ public class TimelineView extends PartialPlanView {
       // Content Spec filtering may cause this to happen
       String message = "Token " + tokenToFind.getPredicateName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
-      JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
                                      "Token Not Found in TimelineView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
@@ -850,7 +861,7 @@ public class TimelineView extends PartialPlanView {
     if (! isSlotFound) {
       // Content Spec filtering may cause this to happen
       String message = "Slot (key=" + slotToFind.getId().toString() + ") not found.";
-      JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
                                      "Slot Not Found in TimelineView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);

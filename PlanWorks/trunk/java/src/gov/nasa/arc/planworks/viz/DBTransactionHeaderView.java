@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.13 2003-12-20 01:54:49 taylor Exp $
+// $Id: DBTransactionHeaderView.java,v 1.1 2004-02-03 20:43:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -35,19 +35,20 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.TransactionHeaderNode;
-import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
-import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
+import gov.nasa.arc.planworks.viz.nodes.DBTransactionHeaderNode;
+import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
 
 
 /**
- * <code>TransactionHeaderView</code> - render field names of transaction as column headers
+ * <code>DBTransactionHeaderView</code> - render field names of plan db
+ *                                        transaction as column headers
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *           NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TransactionHeaderView extends JGoView {
+public class DBTransactionHeaderView extends JGoView {
 
   // top left bottom right
   private static final Insets NODE_INSETS =
@@ -56,27 +57,27 @@ public class TransactionHeaderView extends JGoView {
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE);
 
-  private List transactionList; // element PwTransaction
+  private List transactionList; // element PwDBTransaction
   private String query;
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
-  private TransactionHeaderNode keyNode;
-  private TransactionHeaderNode typeNode;
-  private TransactionHeaderNode sourceNode;
-  private TransactionHeaderNode objectKeyNode;
-  private TransactionHeaderNode stepNumNode;
-  private TransactionHeaderNode objectNameNode;
-  private TransactionHeaderNode predicateNode;
-  private TransactionHeaderNode parameterNode;
+  private DBTransactionHeaderNode keyNode;
+  private DBTransactionHeaderNode typeNode;
+  private DBTransactionHeaderNode sourceNode;
+  private DBTransactionHeaderNode objectKeyNode;
+  private DBTransactionHeaderNode stepNumNode;
+  private DBTransactionHeaderNode objectNameNode;
+  private DBTransactionHeaderNode predicateNode;
+  private DBTransactionHeaderNode parameterNode;
 
   /**
-   * <code>TransactionHeaderView</code> - constructor 
+   * <code>DBTransactionHeaderView</code> - constructor 
    *
    * @param transactionList - <code>List</code> - 
    * @param query - <code>String</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public TransactionHeaderView( List transactionList, String query, VizView vizView) {
+  public DBTransactionHeaderView( List transactionList, String query, VizView vizView) {
     super();
     this.transactionList = transactionList;
     this.query = query;
@@ -94,60 +95,62 @@ public class TransactionHeaderView extends JGoView {
   private void renderTransactionHeader( String query) {
     Color bgColor = ViewConstants.VIEW_BACKGROUND_COLOR;
     int x = 0, y = 3;
-    boolean isTransactionQueryView = (vizView instanceof TransactionQueryView);
+    boolean isDBTransactionQueryView = (vizView instanceof DBTransactionQueryView);
     boolean isObjectKeyNode =
-      ((isTransactionQueryView && // "In Range" only
-        (((TransactionQueryView) vizView).getQuery().indexOf( "For ") == -1)) ||
-       (vizView instanceof TransactionView));
+      ((isDBTransactionQueryView && // "In Range" only
+        (((DBTransactionQueryView) vizView).getQuery().indexOf( "For ") == -1)) ||
+       (vizView instanceof DBTransactionView));
     if (query != null) {
       TextNode queryNode = new TextNode( " Query: " + query + " ");
       configureTextNode( queryNode, new Point( x, y), bgColor);
       jGoDocument.addObjectAtTail( queryNode);
       y += (int) queryNode.getSize().getHeight() + 2;
     }
-    keyNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_KEY_HEADER, vizView);
+    keyNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_KEY_HEADER, vizView);
     configureTextNode( keyNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( keyNode);
     x += keyNode.getSize().getWidth();
 
-    typeNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_TYPE_HEADER, vizView);
+    typeNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_TYPE_HEADER, vizView);
     configureTextNode( typeNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( typeNode);
     x += typeNode.getSize().getWidth();
 
-    sourceNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_SOURCE_HEADER, vizView);
+    sourceNode =
+      new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_SOURCE_HEADER, vizView);
     configureTextNode( sourceNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( sourceNode);
     x += sourceNode.getSize().getWidth();
 
     if (isObjectKeyNode) {
-      objectKeyNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_OBJECT_KEY_HEADER,
-                                                 vizView);
+      objectKeyNode =
+        new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_OBJECT_KEY_HEADER, vizView);
       configureTextNode( objectKeyNode, new Point( x, y), bgColor);
       jGoDocument.addObjectAtTail( objectKeyNode);
       x += objectKeyNode.getSize().getWidth();
     }
 
-    if (isTransactionQueryView) {
-      stepNumNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_STEP_NUM_HEADER, vizView);
+    if (isDBTransactionQueryView) {
+      stepNumNode =
+        new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER, vizView);
       configureTextNode( stepNumNode, new Point( x, y), bgColor);
       jGoDocument.addObjectAtTail( stepNumNode);
       x += stepNumNode.getSize().getWidth();
     }
 
-    objectNameNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_OBJ_NAME_HEADER,
+    objectNameNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_OBJ_NAME_HEADER,
                                                 vizView);
     configureTextNode( objectNameNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( objectNameNode);
     x += objectNameNode.getSize().getWidth();
 
-    predicateNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_PREDICATE_HEADER,
+    predicateNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_PREDICATE_HEADER,
                                                vizView);
     configureTextNode( predicateNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( predicateNode);
     x += predicateNode.getSize().getWidth();
 
-    parameterNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_PARAMETER_HEADER,
+    parameterNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_PARAMETER_HEADER,
                                                vizView);
     configureTextNode( parameterNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( parameterNode);
@@ -176,7 +179,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of keyNode
    */
-  protected TransactionHeaderNode getKeyNode() {
+  protected DBTransactionHeaderNode getKeyNode() {
     return this.keyNode;
   }
 
@@ -185,7 +188,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of typeNode
    */
-  protected TransactionHeaderNode getTypeNode()  {
+  protected DBTransactionHeaderNode getTypeNode()  {
     return this.typeNode;
   }
 
@@ -194,7 +197,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of sourceNode
    */
-  protected TransactionHeaderNode getSourceNode()  {
+  protected DBTransactionHeaderNode getSourceNode()  {
     return this.sourceNode;
   }
 
@@ -203,7 +206,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of objectKeyNode
    */
-  protected TransactionHeaderNode getObjectKeyNode()  {
+  protected DBTransactionHeaderNode getObjectKeyNode()  {
     return this.objectKeyNode;
   }
 
@@ -212,7 +215,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of stepNumNode
    */
-  protected TransactionHeaderNode getStepNumNode()  {
+  protected DBTransactionHeaderNode getStepNumNode()  {
     return this.stepNumNode;
   }
 
@@ -221,7 +224,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of objectNameNode
    */
-  protected TransactionHeaderNode getObjectNameNode()  {
+  protected DBTransactionHeaderNode getObjectNameNode()  {
     return this.objectNameNode;
   }
 
@@ -230,7 +233,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of predicateNode
    */
-  protected TransactionHeaderNode getPredicateNode()  {
+  protected DBTransactionHeaderNode getPredicateNode()  {
     return this.predicateNode;
   }
 
@@ -239,7 +242,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of parameterNode
    */
-  protected TransactionHeaderNode getParameterNode()  {
+  protected DBTransactionHeaderNode getParameterNode()  {
     return this.parameterNode;
   }
 
@@ -263,24 +266,24 @@ public class TransactionHeaderView extends JGoView {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
     boolean isFindTransByKey = 
-      (((vizView instanceof TransactionQueryView) && (query.indexOf( "For ") == -1)) ||
-       (vizView instanceof TransactionView));
+      (((vizView instanceof DBTransactionQueryView) && (query.indexOf( "For ") == -1)) ||
+       (vizView instanceof DBTransactionView));
     if (isFindTransByKey) {
       JMenuItem transByKeyItem = new JMenuItem( "Find Transaction by Obj_Key");
       createTransByKeyItem( transByKeyItem);
       mouseRightPopup.add( transByKeyItem);
     }
 
-    if (vizView instanceof TransactionView) {
-      PwPartialPlan partialPlan = ((TransactionView) vizView).getPartialPlan();
+    if (vizView instanceof DBTransactionView) {
+      PwPartialPlan partialPlan = ((DBTransactionView) vizView).getPartialPlan();
       String partialPlanName = partialPlan.getPartialPlanName();
-      PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
+      PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
 
-      ((TransactionView) vizView).createOpenViewItems( partialPlan, partialPlanName,
+      ((DBTransactionView) vizView).createOpenViewItems( partialPlan, partialPlanName,
                                                        planSequence, mouseRightPopup,
-                                                       PlanWorks.TRANSACTION_VIEW);
+                                                       PlanWorks.DB_TRANSACTION_VIEW);
     
-      ((TransactionView) vizView).createAllViewItems( partialPlan, partialPlanName,
+      ((DBTransactionView) vizView).createAllViewItems( partialPlan, partialPlanName,
                                                       planSequence, mouseRightPopup);
     }
 
@@ -293,22 +296,22 @@ public class TransactionHeaderView extends JGoView {
     transByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           AskQueryObjectKey transByKeyDialog =
-            new AskQueryObjectKey( TransactionHeaderView.this.transactionList,
+            new AskQueryObjectKey( DBTransactionHeaderView.this.transactionList,
                                     "Find Transaction by Obj_Key", "key (int)",
-                                    TransactionHeaderView.this);
+                                    DBTransactionHeaderView.this);
           Integer objectKey = transByKeyDialog.getObjectKey();
           if (objectKey != null) {
             System.err.println( "createTransByKeyItem: objectKey " + objectKey.toString());
             int entryIndx = transByKeyDialog.getObjectListIndex();
-            TransactionContentView transactionContentView = null;
-            if (vizView instanceof TransactionView) {
+            DBTransactionContentView transactionContentView = null;
+            if (vizView instanceof DBTransactionView) {
               transactionContentView =
-                ((TransactionView) vizView).getTransactionContentView();
-            } else if (vizView instanceof TransactionQueryView) {
+                ((DBTransactionView) vizView).getDBTransactionContentView();
+            } else if (vizView instanceof DBTransactionQueryView) {
               transactionContentView =
-                ((TransactionQueryView) vizView).getTransactionContentView();
+                ((DBTransactionQueryView) vizView).getDBTransactionContentView();
             } else {
-              System.err.println( "TransactionHeaderView.createTransByKeyItem: " +
+              System.err.println( "DBTransactionHeaderView.createTransByKeyItem: " +
                                   vizView + " not handled");
               System.exit( -1);
             }
@@ -325,4 +328,4 @@ public class TransactionHeaderView extends JGoView {
 
 
 
-} // end class TransactionHeaderView
+} // end class DBTransactionHeaderView

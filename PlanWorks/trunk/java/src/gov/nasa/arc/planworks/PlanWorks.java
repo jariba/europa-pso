@@ -4,12 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.82 2004-02-03 19:21:27 miatauro Exp $
+// $Id: PlanWorks.java,v 1.83 2004-02-03 20:43:44 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
@@ -20,7 +19,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,15 +26,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.Set;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileFilter;
 
@@ -44,7 +37,6 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
-import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
@@ -53,12 +45,10 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.SplashWindow;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.PlannerCommandLineDialog;
-import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
 /**
@@ -74,6 +64,7 @@ public class PlanWorks extends MDIDesktopFrame {
   private static final int DESKTOP_FRAME_HEIGHT;// = 750;
   private static final int FRAME_X_LOCATION;// = 100;
   private static final int FRAME_Y_LOCATION;// = 125;
+  private static final Map VIEW_CLASS_NAME_MAP;
 
   protected static final String PROJECT_MENU = "Project";
   protected static final String CREATE_MENU_ITEM = "Create ...";
@@ -86,18 +77,18 @@ public class PlanWorks extends MDIDesktopFrame {
   protected static final String OPEN = "open";
 
   public static final String PLANSEQ_MENU = "Planning Sequence";
-  public static final Map viewClassNameMap;
   public static final String CONSTRAINT_NETWORK_VIEW = "Constraint Network View";
   public static final String TEMPORAL_EXTENT_VIEW    = "Temporal Extent View";
   public static final String TEMPORAL_NETWORK_VIEW   = "Temporal Network View";
   public static final String TIMELINE_VIEW           = "Timeline View";
   public static final String TOKEN_NETWORK_VIEW      = "Token Network View";
-  public static final String TRANSACTION_VIEW        = "Transaction View";
+  public static final String DB_TRANSACTION_VIEW     = "DB Transaction View";
   public static final String NAVIGATOR_VIEW          = "Navigator View";
+  public static final String RESOURCE_PROFILE_VIEW    = "Resource Profile View";
   public static final List PARTIAL_PLAN_VIEW_LIST;
 
   public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
-  public static final String MODEL_RULES_VIEW     = "Model Rules View";
+  public static final String MODEL_RULES_VIEW        = "Model Rules View";
   public static final List SEQUENCE_VIEW_LIST;
 
   static {
@@ -109,44 +100,49 @@ public class PlanWorks extends MDIDesktopFrame {
     INTERNAL_FRAME_HEIGHT = (int)(DESKTOP_FRAME_HEIGHT * 0.75);
     FRAME_X_LOCATION = (devices[0].getDisplayMode().getWidth() - DESKTOP_FRAME_WIDTH) / 2;
     FRAME_Y_LOCATION = devices[0].getDisplayMode().getHeight() - DESKTOP_FRAME_HEIGHT;
-    System.err.println(FRAME_X_LOCATION + " " + FRAME_Y_LOCATION);
 
-    viewClassNameMap = new HashMap();
-    viewClassNameMap.put
+    // System.err.println( FRAME_X_LOCATION + " " + FRAME_Y_LOCATION);
+
+    VIEW_CLASS_NAME_MAP = new HashMap();
+    VIEW_CLASS_NAME_MAP.put
       ( CONSTRAINT_NETWORK_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView");
-    viewClassNameMap.put
+    VIEW_CLASS_NAME_MAP.put
       ( TEMPORAL_EXTENT_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView");
-//     viewClassNameMap.put
+//     VIEW_CLASS_NAME_MAP.put
 //       ( TEMPORAL_NETWORK_VIEW,
 //         "gov.nasa.arc.planworks.viz.partialPlan.temporalNetwork.TemporalNetworkView");
-    viewClassNameMap.put
+    VIEW_CLASS_NAME_MAP.put
       ( TIMELINE_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView");
-    viewClassNameMap.put
+    VIEW_CLASS_NAME_MAP.put
       ( TOKEN_NETWORK_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView");
-    viewClassNameMap.put
-      ( TRANSACTION_VIEW,
-        "gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView");
-//     viewClassNameMap.put
+    VIEW_CLASS_NAME_MAP.put
+      ( DB_TRANSACTION_VIEW,
+        "gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView");
+    VIEW_CLASS_NAME_MAP.put
+      ( RESOURCE_PROFILE_VIEW,
+        "gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView");
+//     VIEW_CLASS_NAME_MAP.put
 //       ( NAVIGATOR_VIEW,
 //         "gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView");
 
-    viewClassNameMap.put
+    VIEW_CLASS_NAME_MAP.put
       ( SEQUENCE_STEPS_VIEW,
         "gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView");
-    viewClassNameMap.put
+    VIEW_CLASS_NAME_MAP.put
       ( MODEL_RULES_VIEW,
         "gov.nasa.arc.planworks.viz.sequence.modelRules.ModelRulesView");
 
     PARTIAL_PLAN_VIEW_LIST = new ArrayList();
     PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( TRANSACTION_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( DB_TRANSACTION_VIEW);
     // not in list, since it is created from nodes in views, not from other views
     // PARTIAL_PLAN_VIEW_LIST.add( NAVIGATOR_VIEW);
 
@@ -159,47 +155,25 @@ public class PlanWorks extends MDIDesktopFrame {
    * constant <code>INTERNAL_FRAME_WIDTH</code>
    *
    */
-    public static final int INTERNAL_FRAME_WIDTH;// = 400;
+  public static final int INTERNAL_FRAME_WIDTH;// = 400;
 
   /**
    * constant <code>INTERNAL_FRAME_HEIGHT</code>
    *
    */
-    public static final int INTERNAL_FRAME_HEIGHT; // = 350;
+  public static final int INTERNAL_FRAME_HEIGHT; // = 350;
 
-  /**
-   * variable <code>name</code> - make it accessible to JFCUnit tests
-   *
-   */
-  public static String name;
+  private static String planWorksTitle;
+  private static boolean isMaxScreen;
+  private static String osType;
+  private static String planWorksRoot;
+  private static PlanWorks planWorks;
 
-  /**
-   * variable <code>isMaxScreen</code> - make it accessible to JFCUnit tests
-   *
-   */
-  public static boolean isMaxScreen;
+  protected static JMenu projectMenu;
+  protected static List supportedViewNames; // List of String
 
-  /**
-   * variable <code>osType</code> - make it accessible to JFCUnit tests
-   *
-   */
-  public static String osType;
-
-  /**
-   * variable <code>planWorksRoot</code> - make it accessible to JFCUnit tests
-   *
-   */
-  public static String planWorksRoot;
-
-  /**
-   * variable <code>planWorks</code> - make it accessible to JFCUnit tests
-   *
-   */
-  public static PlanWorks planWorks;
-  public static List supportedViewNames; // List of String
-  public static JMenu projectMenu;
-  public PwProject currentProject;
-  public Map sequenceStepsViewMap;
+  private Map sequenceStepsViewMap;
+  private Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
 
   protected final DirectoryChooser sequenceDirChooser;
   protected final PlannerCommandLineDialog executeDialog;
@@ -221,11 +195,16 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   }
   
-  synchronized public static boolean isWindowBuilt() { return windowBuilt;}
+  /**
+   * <code>isWindowBuilt</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public static synchronized boolean isWindowBuilt() { return windowBuilt; }
 
+  protected PwProject currentProject;
   protected String currentProjectName;
   protected ViewManager viewManager;
-  protected Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
 
 
   /**
@@ -234,7 +213,7 @@ public class PlanWorks extends MDIDesktopFrame {
    * @param constantMenus - <code>JMenu[]</code> -
    */                                
   public PlanWorks( final JMenu[] constantMenus) {
-    super( name, constantMenus);
+    super( planWorksTitle, constantMenus);
     projectMenu.setEnabled(false);
     currentProjectName = "";
     currentProject = null;
@@ -243,7 +222,7 @@ public class PlanWorks extends MDIDesktopFrame {
     createDirectoryChooser();
     // Closes from title bar 
     addWindowListener( new WindowAdapter() {
-        public void windowClosing( WindowEvent e) {
+        public final void windowClosing( final WindowEvent e) {
           System.exit( 0);
         }});
     if (isMaxScreen) {
@@ -265,7 +244,7 @@ public class PlanWorks extends MDIDesktopFrame {
         break;
       }
     }
-    supportedViewNames = Utilities.sortStringKeySet( viewClassNameMap);
+    supportedViewNames = Utilities.sortStringKeySet( VIEW_CLASS_NAME_MAP);
     this.setVisible( true);
     if(usingSplash) {
       this.toBack();
@@ -302,61 +281,79 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end constructor 
 
 
+  private PlanWorks getPlanWorksInternal() {
+    return planWorks;
+  }
+
+  /**
+   * <code>getPlanWorks</code> - do not allow access to planWorks static object
+   *
+   * @return - <code>PlanWorks</code> - 
+   */
+  public static PlanWorks getPlanWorks() {
+    return planWorks.getPlanWorksInternal();
+  }
+    
+  /**
+   * <code>getPlanWorksTitle</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public static String getPlanWorksTitle() {
+    return planWorksTitle;
+  }
+
   /**
    * <code>getCurrentProjectName</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getCurrentProjectName() {
+  public final String getCurrentProjectName() {
     return currentProjectName;
   }
 
-  /**
-   * <code>setCurrentProjectName</code> - needed by PlanWorksTest (JFCUnit Test)
-   *
-   * @param name - <code>String</code> - 
-   */
   public void setCurrentProjectName( final String name) {
     currentProjectName = name;
   }
 
   /**
-   * <code>getCurrentProject</code> - needed by PlanWorksTest (JFCUnit Test)
+   * <code>getCurrentProject</code> - 
    *
    * @return - <code>PwProject</code> - 
    */
-  public PwProject getCurrentProject() {
+  public final PwProject getCurrentProject() {
     return currentProject;
   }
 
   /**
-   * <code>getViewManager</code> - needed by PlanWorksTest (JFCUnit Test)
+   * <code>getProjectMenu</code>
    *
-   * @return - <code>ViewManager</code> - 
+   * @return - <code>JMenu</code> - 
    */
-  public ViewManager getViewManager() {
-    return viewManager;
+  public static JMenu getProjectMenu() {
+    return projectMenu;
   }
 
   /**
-   * <code>setPlanWorks</code> - needed by PlanWorksTest (JFCUnit Test)
+   * <code>getViewClassName</code>
    *
-   * @param planWorksInstance - <code>PlanWorks</code> - 
+   * @param viewName - <code>String</code> - 
+   * @return - <code>String</code> - 
    */
+  public static String getViewClassName( final String viewName) {
+    return (String) VIEW_CLASS_NAME_MAP.get( viewName);
+  }
+
   public static void setPlanWorks( final PlanWorks planWorksInstance) {
     planWorks = planWorksInstance;
   }
 
   /**
-   * <code>getSequenceDirChooser</code> - needed by PlanWorksTest (JFCUnit Test)
+   * <code>getProjectsLessCurrent</code>
    *
-   * @return - <code>DirectoryChooser</code> - 
+   * @return - <code>List</code> - 
    */
-  public DirectoryChooser getSequenceDirChooser() {
-    return sequenceDirChooser;
-  }
-
-  protected List getProjectsLessCurrent() {
+  protected final List getProjectsLessCurrent() {
     List projectNames = PwProject.listProjects();
     List projectsLessCurrent = new ArrayList();
     for (int i = 0, n = projectNames.size(); i < n; i++) {
@@ -370,6 +367,43 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end getProjectsLessCurrent
 
 
+  /**
+   * <code>getSequenceStepsViewFrame</code>
+   *
+   * @param seqUrl - <code>MDIInternalFrame</code> - 
+   * @return - <code>String</code> - 
+   */
+  public final MDIInternalFrame getSequenceStepsViewFrame( final String seqUrl) {
+    return (MDIInternalFrame) sequenceStepsViewMap.get( seqUrl);
+  }
+  
+  /**
+   * <code>setSequenceStepsViewFrame</code>
+   *
+   * @param seqUrl - <code>String</code> - 
+   * @param frame - <code>MDIInternalFrame</code> - 
+   */
+  protected final void setSequenceStepsViewFrame( final String seqUrl,
+                                                  final MDIInternalFrame frame) {
+    sequenceStepsViewMap.put( seqUrl, frame);
+  }
+
+  /**
+   * <code>getSequenceMenuName</code>
+   *
+   * @param seqUrl - <code>String</code> - 
+   * @return - <code>String</code> - 
+   */
+  public final String getSequenceMenuName( final String seqUrl) {
+    return (String) sequenceNameMap.get( seqUrl);
+  }
+
+  /**
+   * <code>setProjectMenuEnabled</code>
+   *
+   * @param textName - <code>String</code> - 
+   * @param isEnabled - <code>boolean</code> - 
+   */
   protected static void setProjectMenuEnabled( final String textName, final boolean isEnabled) {
     for (int i = 0, n = projectMenu.getItemCount(); i < n; i++) {
       if ((projectMenu.getItem( i) != null) &&
@@ -380,7 +414,8 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end setProjectMenuEnabled
 
-  private String getSequenceMenuItemName( final String seqName, final JMenu planSequenceViewMenu) {
+  private String getSequenceMenuItemName( final String seqName,
+                                          final JMenu planSequenceViewMenu) {
     int nameCount = 0;
     // System.err.println( "getSequenceMenuItemName: seqName " + seqName);
     // check for e.g. monkey1066690986042
@@ -413,7 +448,7 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenu fileMenu = new JMenu( "File");
     JMenuItem exitItem = new JMenuItem( "Exit");
     exitItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent e) {
+        public final void actionPerformed( final ActionEvent e) {
           System.exit(0);
         } });
     fileMenu.add( exitItem);
@@ -426,7 +461,7 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenuItem addSequenceItem = new JMenuItem( ADDSEQ_MENU_ITEM);
     JMenuItem deleteSequenceItem = new JMenuItem(DELSEQ_MENU_ITEM);
     createProjectItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent e) {
+        public final void actionPerformed( final ActionEvent e) {
           while(PlanWorks.planWorks == null) {
             Thread.yield();
           }
@@ -434,7 +469,7 @@ public class PlanWorks extends MDIDesktopFrame {
         }});
     projectMenu.add( createProjectItem);
     openProjectItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent e) {
+        public final void actionPerformed( final ActionEvent e) {
           while(PlanWorks.planWorks == null) {
             Thread.yield();
           }
@@ -442,7 +477,7 @@ public class PlanWorks extends MDIDesktopFrame {
         }});
     projectMenu.add( openProjectItem);
     deleteProjectItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent e) {
+        public final void actionPerformed( final ActionEvent e) {
           PlanWorks.planWorks.deleteProjectThread();
           Thread.yield();
         }});
@@ -454,12 +489,12 @@ public class PlanWorks extends MDIDesktopFrame {
 //         }});
 //     projectMenu.add(newSequenceItem);
     addSequenceItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent e) {
+        public final void actionPerformed( final ActionEvent e) {
           PlanWorks.planWorks.addSequenceThread();
         }});
     projectMenu.add( addSequenceItem);
     deleteSequenceItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+        public final void actionPerformed( final ActionEvent e) {
           PlanWorks.planWorks.deleteSequenceThread();
         }
       });
@@ -506,9 +541,10 @@ public class PlanWorks extends MDIDesktopFrame {
   /**
    * <code>getPlanSequence</code>
    *
+   * @param partialPlan - <code>PwPartialPlan</code> - 
    * @return - <code>PwPlanningSequence</code> - 
    */
-  public PwPlanningSequence getPlanSequence( final PwPartialPlan partialPlan) {
+  public final PwPlanningSequence getPlanSequence( final PwPartialPlan partialPlan) {
     PwPlanningSequence planSequence = null;
     String partialPlanUrl = partialPlan.getUrl();
     String seqUrl =
@@ -529,7 +565,13 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end getPlanSequence
 
 
-  public void addPlanSeqViewMenu( final PwProject project, final JMenu planSeqMenu) {
+  /**
+   * <code>addPlanSeqViewMenu</code>
+   *
+   * @param project - <code>PwProject</code> - 
+   * @param planSeqMenu - <code>JMenu</code> - 
+   */
+  public final void addPlanSeqViewMenu( final PwProject project, final JMenu planSeqMenu) {
     // Create Dynamic Cascading Seq/PartialPlan/View Menu
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
     if (planSeqMenu == null) {
@@ -542,7 +584,15 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end addSeqPartialPlanMenu
 
 
-  protected JMenu buildPlanSeqViewMenu( final PwProject project, JMenu planSeqViewMenu) {
+  /**
+   * <code>buildPlanSeqViewMenu</code>
+   *
+   * @param project - <code>PwProject</code> - 
+   * @param planSeqViewMenu - <code>JMenu</code> - 
+   * @return - <code>JMenu</code> - 
+   */
+  protected final JMenu buildPlanSeqViewMenu( final PwProject project,
+                                              JMenu planSeqViewMenu) {
     if (planSeqViewMenu == null) {
       planSeqViewMenu = new JMenu( PLANSEQ_MENU);
     }
@@ -561,7 +611,7 @@ public class PlanWorks extends MDIDesktopFrame {
       SequenceViewMenuItem planDbSizeItem =
         new SequenceViewMenuItem( seqName, seqUrl, seqName);
       planDbSizeItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent evt) {
+          public final void actionPerformed( final ActionEvent evt) {
             PlanWorks.planWorks.createSequenceViewThread
               ( SEQUENCE_STEPS_VIEW, (SequenceViewMenuItem) evt.getSource());
           }
@@ -588,7 +638,7 @@ public class PlanWorks extends MDIDesktopFrame {
       ( "Select Sequence Directory of Partial Plan Directory(ies)");
     sequenceDirChooser.setMultiSelectionEnabled( true);
     sequenceDirChooser.getOkButton().addActionListener( new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+        public final void actionPerformed( final ActionEvent e) {
           String dirChoice = sequenceDirChooser.getCurrentDirectory().getAbsolutePath();
           File [] seqDirs = sequenceDirChooser.getSelectedFiles();
 //           System.err.println( "PlanWorks sequence parent directory" + dirChoice);
@@ -632,7 +682,7 @@ public class PlanWorks extends MDIDesktopFrame {
      * @param file - a directory or file name
      * @return true, if a directory is valid
      */
-    public boolean accept( File file) {
+    public final boolean accept( final File file) {
       boolean isValid = true;
       if (! file.isDirectory()) {
         // accept all files
@@ -655,7 +705,7 @@ public class PlanWorks extends MDIDesktopFrame {
      *
      * @return string to describe this filter
      */
-    public String getDescription() { 
+    public final String getDescription() { 
       return "Sequence Directories";
     }
   } // end class SequenceDirectoryFilter
@@ -675,13 +725,13 @@ public class PlanWorks extends MDIDesktopFrame {
    *
    * @param args - <code>String[]</code> - 
    */
-  public static void main (String[] args) {
-    name = "";
+  public static void main ( final String[] args) {
+    planWorksTitle = "";
     String maxScreenValue = "false";
     for (int argc = 0; argc < args.length; argc++) {
       // System.err.println( "argc " + argc + " " + args[argc]);
       if (argc == 0) {
-        name = args[argc];
+        planWorksTitle = args[argc];
       } else if (argc == 1) {
          maxScreenValue = args[argc];
       } else {
@@ -700,8 +750,8 @@ public class PlanWorks extends MDIDesktopFrame {
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice [] gs = ge.getScreenDevices();
     for(int i = 0; i < gs.length; i++) {
-	DisplayMode dm = gs[i].getDisplayMode();
-	System.err.println(dm.getWidth() + " " + dm.getHeight());
+      DisplayMode dm = gs[i].getDisplayMode();
+      System.err.println(dm.getWidth() + " " + dm.getHeight());
     }
     
     planWorks = new PlanWorks( buildConstantMenus());
@@ -710,12 +760,12 @@ public class PlanWorks extends MDIDesktopFrame {
   private class SeqNameComparator implements Comparator {
     public SeqNameComparator() {
     }
-    public int compare(Object o1, Object o2) {
+    public final int compare( final Object o1, final Object o2) {
       String s1 = Utilities.getUrlLeaf((String) o1);
       String s2 = Utilities.getUrlLeaf((String) o2);
       return s1.compareTo(s2);
     }
-    public boolean equals(Object o1, Object o2) {
+    public final boolean equals( final Object o1, final Object o2) {
       String s1 = Utilities.getUrlLeaf((String)o1);
       String s2 = Utilities.getUrlLeaf((String)o2);
       return s1.equals(s2);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.13 2004-01-16 19:05:35 taylor Exp $
+// $Id: NodeGenerics.java,v 1.14 2004-02-03 20:43:53 taylor Exp $
 //
 // PlanWorks
 //
@@ -66,7 +66,7 @@ public class NodeGenerics {
     boolean isLocationAbsolute = false;
     Point popupPoint = Utilities.computeNestedLocation( viewCoords, component,
                                                         isLocationAbsolute);
-    popupMenu.show( PlanWorks.planWorks, (int) popupPoint.getX(),
+    popupMenu.show( PlanWorks.getPlanWorks(), (int) popupPoint.getX(),
                     (int) popupPoint.getY());
   } // end showPopupMenu
 
@@ -77,15 +77,13 @@ public class NodeGenerics {
    * if a slot is empty, and has no tokens, use the endVariable from
    * the previous slot node
    *
-   * @param view - <code>VizView</code> - 
    * @param slot - <code>PwSlot</code> - 
    * @param previousSlot - <code>PwSlot</code> - 
    * @param isLastSlot - <code>boolean</code> - 
    * @param alwaysReturnEnd - <code>boolean</code> - 
    * @return - <code>PwDomain[]</code> - 
    */
-  public static PwDomain[] getStartEndIntervals( VizView view, PwSlot slot,
-                                                 PwSlot previousSlot,
+  public static PwDomain[] getStartEndIntervals( PwSlot slot, PwSlot previousSlot,
                                                  boolean isLastSlot,
                                                  boolean alwaysReturnEnd) {
     PwDomain[] intervalArray = new PwDomain[2];

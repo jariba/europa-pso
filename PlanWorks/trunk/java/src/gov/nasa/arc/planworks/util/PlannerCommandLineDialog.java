@@ -78,8 +78,9 @@ public class PlannerCommandLineDialog extends JDialog {
     gridBag.setConstraints(writeDest, c);
     contentPane.add(writeDest);
 
-    BrowseButton destButton = new BrowseButton(writeDest, false, JFileChooser.DIRECTORIES_ONLY,
-                                               "Choose write destination ");
+    BrowseButton destButton =
+      new BrowseButton(writeDest, false, JFileChooser.DIRECTORIES_ONLY,
+                       "Choose write destination ");
     c.gridx++;
     gridBag.setConstraints(destButton, c);
     contentPane.add(destButton);
@@ -95,8 +96,9 @@ public class PlannerCommandLineDialog extends JDialog {
     gridBag.setConstraints(plannerPath, c);
     contentPane.add(plannerPath);
 
-    BrowseButton pathButton = new BrowseButton(plannerPath, false, JFileChooser.DIRECTORIES_ONLY,
-                                               "Choose planner path ");
+    BrowseButton pathButton =
+      new BrowseButton(plannerPath, false, JFileChooser.DIRECTORIES_ONLY,
+                       "Choose planner path ");
     c.gridx++;
     gridBag.setConstraints(pathButton, c);
     contentPane.add(pathButton);
@@ -164,7 +166,8 @@ public class PlannerCommandLineDialog extends JDialog {
         nsteps = Integer.parseInt(dialog.getStepsPerWrite());
       }
       catch(NumberFormatException nfe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, "'Steps per write' is not a number",
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(),
+                                      "'Steps per write' is not a number",
                                       "NumberFormatException", JOptionPane.ERROR_MESSAGE);
         return;
       }
@@ -172,27 +175,28 @@ public class PlannerCommandLineDialog extends JDialog {
         waitMillis = Long.parseLong(dialog.getWaitSecs()) * 1000;
       }
       catch(NumberFormatException nfe) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, "'Seconds to wait' is not a number",
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(),
+                                      "'Seconds to wait' is not a number",
                                       "NumberFormatException", JOptionPane.ERROR_MESSAGE);
         return;
       }
 
       File writeDir = new File(dialog.getWriteDest());
       if(!writeDir.exists()) {
-        int option = JOptionPane.showConfirmDialog(PlanWorks.planWorks,
+        int option = JOptionPane.showConfirmDialog(PlanWorks.getPlanWorks(),
                                                    "'" + writeDir.getAbsolutePath() + 
                                                    "' doesn't exist.  Create?");
         if(option == JOptionPane.YES_OPTION) {
           try {
             if(!writeDir.mkdir()) {
-              JOptionPane.showMessageDialog(PlanWorks.planWorks, 
+              JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), 
                                             "Failed to create " + writeDir.getAbsolutePath(),
                                             "Error", JOptionPane.ERROR_MESSAGE);
               return;
             }
           }
           catch(SecurityException se) {
-            JOptionPane.showMessageDialog(PlanWorks.planWorks,
+            JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(),
                                           "Failed to create " + writeDir.getAbsolutePath() + 
                                           ": " + se.getMessage(), "SecurityException", 
                                           JOptionPane.ERROR_MESSAGE);
@@ -203,7 +207,7 @@ public class PlannerCommandLineDialog extends JDialog {
         }
       }
       if(!writeDir.canWrite()) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, 
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), 
                                       "Permission denied: can't write to " + 
                                       writeDir.getAbsolutePath(),
                                       "Error", JOptionPane.ERROR_MESSAGE);
@@ -212,8 +216,9 @@ public class PlannerCommandLineDialog extends JDialog {
 
       File planDir = new File(dialog.getPlannerPath());
       if(!planDir.exists()) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, 
-                                      "Error: " + writeDir.getAbsolutePath() + " does not exist",
+        JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), 
+                                      "Error: " + writeDir.getAbsolutePath() +
+                                      " does not exist",
                                       "Error", JOptionPane.ERROR_MESSAGE);
         return;
       }
@@ -232,11 +237,13 @@ public class PlannerCommandLineDialog extends JDialog {
         String url = getNewSequenceUrl(dialog.getWriteDest(),
                                        getModelName(dialog.getCommandLine()));
         System.err.println("Got " + url);
-        PlanWorks.planWorks.currentProject.addPlanningSequence(url);
-        MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+        PlanWorks.getPlanWorks().getCurrentProject().addPlanningSequence(url);
+        MDIDynamicMenuBar dynamicMenuBar =
+          (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
         int numProjects = PwProject.listProjects().size();
         JMenu planSeqMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
-        PlanWorks.planWorks.addPlanSeqViewMenu(PlanWorks.planWorks.currentProject, planSeqMenu);
+        PlanWorks.getPlanWorks().addPlanSeqViewMenu
+          ( PlanWorks.getPlanWorks().getCurrentProject(), planSeqMenu);
       }
       catch(Exception ex) {
         System.err.println("Odd.  Bailing out: " + ex);

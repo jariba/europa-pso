@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepContentView.java,v 1.11 2003-12-20 01:54:49 taylor Exp $
+// $Id: StepContentView.java,v 1.12 2004-02-03 20:43:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -23,7 +23,7 @@ import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
-import gov.nasa.arc.planworks.db.PwTransaction;
+import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.QueryResultField;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -38,7 +38,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
  */
 public class StepContentView extends JGoView {
 
-  private List transactionList; // element PwTransaction
+  private List transactionList; // element PwDBTransaction
   private String key;
   private String query;
   private StepHeaderView headerJGoView;
@@ -116,7 +116,7 @@ public class StepContentView extends JGoView {
     // System.err.println( "renderStepContent: transactionList " + transactionList);
     while (transItr.hasNext()) {
       x = 0;
-      PwTransaction transaction = (PwTransaction) transItr.next();
+      PwDBTransaction transaction = (PwDBTransaction) transItr.next();
       QueryResultField stepNumField =
         new QueryResultField( transaction.getStepNumber().toString(), new Point( x, y),
                               JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);

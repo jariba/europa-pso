@@ -302,14 +302,14 @@ public class BackendTest extends TestCase {
     List plan2TransactionIds = MySQLDB.queryTransactionIdsForPartialPlan(sequence.getId(),
                                                                          plan2.getId());
     while(plan1TransactionIterator.hasNext()) {
-      PwTransaction transaction = (PwTransaction) plan1TransactionIterator.next();
+      PwDBTransaction transaction = (PwDBTransaction) plan1TransactionIterator.next();
       if(plan1TransactionIds.contains(transaction.getId())) {
         plan1TransactionIds.remove(transaction.getId());
         plan1TransactionIterator.remove();
       }
     }
     while(plan2TransactionIterator.hasNext()) {
-      PwTransaction transaction = (PwTransaction) plan2TransactionIterator.next();
+      PwDBTransaction transaction = (PwDBTransaction) plan2TransactionIterator.next();
       if(plan2TransactionIds.contains(transaction.getId())) {
         plan2TransactionIds.remove(transaction.getId());
         plan2TransactionIterator.remove();

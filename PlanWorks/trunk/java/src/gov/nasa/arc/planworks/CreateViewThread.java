@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.10 2004-02-03 19:21:26 miatauro Exp $
+// $Id: CreateViewThread.java,v 1.11 2004-02-03 20:43:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -49,14 +49,14 @@ public class CreateViewThread extends Thread {
 
   protected MDIInternalFrame renderView( final String fullSequenceName, 
                                          final ViewableObject viewable) {
-    ViewSet viewSet = PlanWorks.planWorks.viewManager.getViewSet( viewable);
+    ViewSet viewSet = PlanWorks.getPlanWorks().viewManager.getViewSet( viewable);
     MDIInternalFrame viewFrame = null;
     boolean viewExists = false;
-    String viewClassName = (String) PlanWorks.planWorks.viewClassNameMap.get( viewName);
+    String viewClassName = (String) PlanWorks.getPlanWorks().getViewClassName( viewName);
     if ((viewSet != null) && viewSet.viewExists( viewClassName)) {
       viewExists = true;
     }
-    if (PlanWorks.planWorks.supportedViewNames.contains( viewName)) {
+    if (PlanWorks.supportedViewNames.contains( viewName)) {
       if (! viewExists) {
         if (viewable instanceof PwPartialPlan) {
           ((PwPartialPlan) viewable).setName( fullSequenceName);
@@ -66,14 +66,14 @@ public class CreateViewThread extends Thread {
         System.err.println( "Rendering " + viewName + " ...");
       }
 
-      viewFrame = PlanWorks.planWorks.viewManager.openView( viewable, viewClassName);
+      viewFrame = PlanWorks.getPlanWorks().viewManager.openView( viewable, viewClassName);
 
-      finishViewRendering( viewFrame, PlanWorks.planWorks.viewManager, viewExists,
+      finishViewRendering( viewFrame, PlanWorks.getPlanWorks().viewManager, viewExists,
                            viewName, viewable);
 
     } else {
       JOptionPane.showMessageDialog
-        (PlanWorks.planWorks, viewName, "View Not Supported", 
+        (PlanWorks.getPlanWorks(), viewName, "View Not Supported", 
          JOptionPane.INFORMATION_MESSAGE);
     }
     return viewFrame;
@@ -89,10 +89,10 @@ public class CreateViewThread extends Thread {
         Thread.currentThread().sleep(50);
       } catch (InterruptedException excp) {
       }
-      viewSet = PlanWorks.planWorks.viewManager.getViewSet( viewable);
+      viewSet = PlanWorks.getPlanWorks().viewManager.getViewSet( viewable);
     }
     if (! viewExists) {
-      int planWorksFrameHeight = (int) PlanWorks.planWorks.getSize().getHeight();
+      int planWorksFrameHeight = (int) PlanWorks.getPlanWorks().getSize().getHeight();
       int contentSpecFrameOffset = 0;
       MDIInternalFrame contentSpecWindow = viewSet.getContentSpecWindow();
       if (contentSpecWindow != null) {
@@ -113,8 +113,8 @@ public class CreateViewThread extends Thread {
       if (viewable instanceof PwPartialPlan) {
         // put content spec windows below the sequence steps window
         sequenceStepsViewHeight =
-          (int) (((MDIInternalFrame) PlanWorks.planWorks.
-                  sequenceStepsViewMap.get( seqUrl)).getSize().getHeight() * 0.5);
+          (int) (PlanWorks.getPlanWorks().
+                  getSequenceStepsViewFrame( seqUrl).getSize().getHeight() * 0.5);
         yFrameAvailable -= sequenceStepsViewHeight;
         yFrameDelta = (int) ((yFrameAvailable * 0.50) /
                              PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());

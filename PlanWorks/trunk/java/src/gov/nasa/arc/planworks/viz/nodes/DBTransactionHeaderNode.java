@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderNode.java,v 1.2 2003-12-20 01:54:51 taylor Exp $
+// $Id: DBTransactionHeaderNode.java,v 1.1 2004-02-03 20:43:52 taylor Exp $
 //
 // PlanWorks
 //
@@ -26,47 +26,47 @@ import com.nwoods.jgo.examples.TextNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.StepContentView;
-import gov.nasa.arc.planworks.viz.TransactionContentView;
-import gov.nasa.arc.planworks.viz.TransactionHeaderView;
+import gov.nasa.arc.planworks.viz.DBTransactionContentView;
+import gov.nasa.arc.planworks.viz.DBTransactionHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.VizView;
-import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
+import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
-import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
-import gov.nasa.arc.planworks.viz.util.TransactionComparatorAscending;
-import gov.nasa.arc.planworks.viz.util.TransactionComparatorDescending;
+import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
+import gov.nasa.arc.planworks.viz.util.DBTransactionComparatorAscending;
+import gov.nasa.arc.planworks.viz.util.DBTransactionComparatorDescending;
 
 
 /**
- * <code>TransactionHeaderNode</code> - 
+ * <code>DBTransactionHeaderNode</code> - plan db transaction result column header
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a> 
  *                    NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TransactionHeaderNode extends TextNode {
+public class DBTransactionHeaderNode extends TextNode {
 
   private String headerLabel;
   private VizView vizView;
-  private boolean  isAscending;
+  private boolean isAscending;
 
 
   /**
-   * <code>TransactionHeaderNode</code> - constructor 
+   * <code>DBTransactionHeaderNode</code> - constructor 
    *
    * @param headerLabel - <code>String</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public TransactionHeaderNode( String headerLabel, VizView vizView) {
+  public DBTransactionHeaderNode( String headerLabel, VizView vizView) {
     super( headerLabel);
     this.headerLabel = headerLabel;
     this.vizView = vizView;
 
-    if ((((vizView instanceof TransactionView) ||
-          (vizView instanceof TransactionQueryView)) &&
-         headerLabel.equals( ViewConstants.TRANSACTION_KEY_HEADER)) ||
+    if ((((vizView instanceof DBTransactionView) ||
+          (vizView instanceof DBTransactionQueryView)) &&
+         headerLabel.equals( ViewConstants.DB_TRANSACTION_KEY_HEADER)) ||
         ((vizView instanceof StepQueryView) &&
-         headerLabel.equals( ViewConstants.TRANSACTION_STEP_NUM_HEADER))) {
+         headerLabel.equals( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER))) {
       isAscending = false;
     } else {
       isAscending = true;
@@ -102,7 +102,7 @@ public class TransactionHeaderNode extends TextNode {
     JGoObject obj = view.pickDocObject( docCoords, false);
     // System.err.println( "TokenNode: doMouseClick obj class " +
     //                     obj.getTopLevelObject().getClass().getName());
-    TransactionHeaderNode tokenNode = (TransactionHeaderNode) obj.getTopLevelObject();
+    DBTransactionHeaderNode tokenNode = (DBTransactionHeaderNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       sortTransactionList();
       isAscending = ! isAscending;
@@ -115,29 +115,29 @@ public class TransactionHeaderNode extends TextNode {
 
 
   private void sortTransactionList() {
-    TransactionContentView transactionContentView = null;
+    DBTransactionContentView transactionContentView = null;
     StepContentView stepContentView = null;
     List transactionList = null;
-    if (vizView instanceof TransactionView) {
-      transactionContentView = ((TransactionView) vizView).getTransactionContentView();
+    if (vizView instanceof DBTransactionView) {
+      transactionContentView = ((DBTransactionView) vizView).getDBTransactionContentView();
       transactionList = transactionContentView.getTransactionList();
-    } else if (vizView instanceof TransactionQueryView) {
-      transactionContentView = ((TransactionQueryView) vizView).getTransactionContentView();
+    } else if (vizView instanceof DBTransactionQueryView) {
+      transactionContentView = ((DBTransactionQueryView) vizView).getDBTransactionContentView();
       transactionList = transactionContentView.getTransactionList();
     } else if (vizView instanceof StepQueryView) {
       stepContentView = ((StepQueryView) vizView).getStepContentView();
       transactionList = stepContentView.getTransactionList();
     } else {
-      System.err.println( "TransactionHeaderNode.sortTransactionList: vizView " +
+      System.err.println( "DBTransactionHeaderNode.sortTransactionList: vizView " +
                           vizView + " not handled");
       System.exit( -1);
     }
     if (isAscending) {
       Collections.sort( transactionList,
-                        new TransactionComparatorAscending( headerLabel));
+                        new DBTransactionComparatorAscending( headerLabel));
     } else {
       Collections.sort( transactionList,
-                        new TransactionComparatorDescending( headerLabel));
+                        new DBTransactionComparatorDescending( headerLabel));
     }
     if (transactionContentView != null) {
       transactionContentView.redraw();
@@ -148,6 +148,6 @@ public class TransactionHeaderNode extends TextNode {
   } // end sortTransactionList
 
 
-} // end class TransactionHeaderNode
+} // end class DBTransactionHeaderNode
 
   

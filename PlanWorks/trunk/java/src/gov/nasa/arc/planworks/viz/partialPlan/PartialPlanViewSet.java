@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.13 2004-01-12 19:46:21 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.14 2004-02-03 20:43:54 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -30,6 +30,7 @@ import javax.swing.KeyStroke;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -64,6 +65,7 @@ public class PartialPlanViewSet extends ViewSet {
   private ColorStream colorStream;
   private PwToken activeToken; // in timeline view, the base token
   private List secondaryTokens; // in timeline view, the overloaded tokens
+  private PwResource activeResource; // in resource extent view
   private int navigatorFrameCnt;
 
 
@@ -78,7 +80,7 @@ public class PartialPlanViewSet extends ViewSet {
                              ViewSetRemover remover) {
     super( desktopFrame, viewable, remover);
     this.colorStream = new ColorStream();
-    this.activeToken = null;
+    this.activeResource = null;
     this.contentSpecWindow = desktopFrame.createFrame( ContentSpec.CONTENT_SPEC_TITLE +
                                                        " for " + viewable.getName(),
                                                        this, true, false, false, true);
@@ -89,11 +91,11 @@ public class PartialPlanViewSet extends ViewSet {
     this.contentSpecWindow.pack();
     String seqUrl = ((PwPartialPlan) viewable).getSequenceUrl();
     int sequenceStepsViewHeight =
-      (int) (((MDIInternalFrame) PlanWorks.planWorks.
-              sequenceStepsViewMap.get( seqUrl)).getSize().getHeight() * 0.5);
+      (int) (PlanWorks.getPlanWorks().
+              getSequenceStepsViewFrame( seqUrl).getSize().getHeight() * 0.5);
     int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
                                  ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-                          (int) (PlanWorks.planWorks.getSize().getHeight() -
+                          (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
                                  sequenceStepsViewHeight -
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
     this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
@@ -165,6 +167,24 @@ public class PartialPlanViewSet extends ViewSet {
    */
   public void setActiveToken( PwToken token) {
     activeToken = token;
+  }
+
+ /** 
+   * <code>getActiveResource</code> - user selected view focus
+   *
+   * @return - <code>PwResource</code>
+   */
+  public PwResource getActiveResource() {
+    return activeResource;
+  }
+
+  /**
+   * <code>setActiveResource</code> - make this resource the view focus
+   *
+   * @param resource - <code>PwResource</code>
+   */
+  public void setActiveResource( PwResource resource) {
+    activeResource = resource;
   }
 
   public List getCurrentSpec() {
