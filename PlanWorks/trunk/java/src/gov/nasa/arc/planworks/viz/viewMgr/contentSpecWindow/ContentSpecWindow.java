@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.11 2003-07-14 22:17:53 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.12 2003-08-01 18:21:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -29,7 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.viz.viewMgr.ContentSpec;
+import gov.nasa.arc.planworks.db.util.ContentSpec;
 
 /**
  * <code>ContentSpecWindow</code> -
