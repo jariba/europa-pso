@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.28 2004-06-15 19:26:47 taylor Exp $
+// $Id: NavigatorView.java,v 1.29 2004-06-16 22:09:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -205,12 +205,8 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
    */
   public final void init() {
     // wait for NavigatorView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep( 50);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "navigatorView displayable " + this.isDisplayable());
+    if (! ViewGenerics.displayableWait( NavigatorView.this)) {
+      return;
     }
     this.computeFontMetrics( this);
 

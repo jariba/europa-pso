@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.23 2004-06-10 01:36:07 taylor Exp $
+// $Id: SlotNode.java,v 1.24 2004-06-16 22:09:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -97,6 +97,19 @@ public class SlotNode extends TextNode implements OverviewToolTip {
   private ViewListener viewListener;
 
 
+  /**
+   * <code>SlotNode</code> - constructor 
+   *
+   * @param nodeLabel - <code>String</code> - 
+   * @param slot - <code>PwSlot</code> - 
+   * @param timeline - <code>PwTimeline</code> - 
+   * @param slotLocation - <code>Point</code> - 
+   * @param previousSlotNode - <code>SlotNode</code> - 
+   * @param isFirstSlot - <code>boolean</code> - 
+   * @param isLastSlot - <code>boolean</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   * @param timelineView - <code>TimelineView</code> - 
+   */
   public SlotNode( String nodeLabel, PwSlot slot, PwTimeline timeline, Point slotLocation,
                    SlotNode previousSlotNode, boolean isFirstSlot, boolean isLastSlot,
                    Color backgroundColor, TimelineView timelineView) {
@@ -118,6 +131,23 @@ public class SlotNode extends TextNode implements OverviewToolTip {
     this.endTimeIntervalObject = null;
     this.viewListener = null;
     // System.err.println( "SlotNode: predicateName " + predicateName);
+    configure( nodeLabel, slotLocation, backgroundColor);
+
+    renderTimeIntervals();
+  } // end constructor
+
+
+  /**
+   * <code>SlotNode</code> - constructor - for NodeShapes
+   *
+   * @param nodeLabel - <code>String</code> - 
+   * @param slotLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   */
+  public SlotNode( String nodeLabel, Point slotLocation, Color backgroundColor) {
+    super( nodeLabel);
+    this.slot = null;
+    // node label now contains \nkey=nnn
     configure( nodeLabel, slotLocation, backgroundColor);
   } // end constructor
 
@@ -144,9 +174,6 @@ public class SlotNode extends TextNode implements OverviewToolTip {
     setLocation( (int) slotLocation.getX(), (int) slotLocation.getY());
     setInsets( NODE_INSETS);
     setSelectable( true);
-
-    renderTimeIntervals();
-
   } // end configure
 
   /**
@@ -299,6 +326,9 @@ public class SlotNode extends TextNode implements OverviewToolTip {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
+    if (slot == null) {
+      return null;
+    }
     int numTokens = slot.getTokenList().size();
     StringBuffer tip = new StringBuffer( "<html> ");
     if (numTokens > 0) {
@@ -351,26 +381,12 @@ public class SlotNode extends TextNode implements OverviewToolTip {
    */
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
                                JGoView view) {
+    if (slot == null) {
+      return false;
+    }
     JGoObject obj = view.pickDocObject( docCoords, false);
     SlotNode slotNode = (SlotNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-//       System.err.println( "doMouseClick obj class " +
-//                           obj.getTopLevelObject().getClass().getName());
-//       System.err.println( "doMouseClick: slot predicate " + slotNode.getText());
-
-//       JGoSelection jGoSelection = view.getSelection();
-//       jGoSelection.clearSelection();
-//       System.err.println( "doMouseClick num: " + jGoSelection.getNumObjects());
-//       JGoListPosition position = jGoSelection.getFirstObjectPos();
-//       while (position != null) {
-//         JGoObject object = jGoSelection.getObjectAtPos( position);
-//         System.err.println( "doMouseClick selection obj class " +
-//                           object.getClass().getName());
-//         jGoSelection.toggleSelection( object);
-//         // position = jGoSelection.getNextObjectPosAtTop( position);
-//         // position = jGoSelection.getNextObjectPos( position);
-//         position = jGoSelection.getFirstObjectPos();
-//       }
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       mouseRightPopupMenu( viewCoords);
@@ -428,6 +444,9 @@ public class SlotNode extends TextNode implements OverviewToolTip {
    */
   public boolean doUncapturedMouseMove( int modifiers, Point docCoords, Point viewCoords,
                                JGoView view) {
+    if (slot == null) {
+      return false;
+    }
     JGoObject obj = view.pickDocObject( docCoords, false);
     SlotNode slotNode = (SlotNode) obj.getTopLevelObject();
     JGoArea currentMouseOverNode = timelineView.getMouseOverNode();

@@ -28,6 +28,15 @@ public class ObjectNode extends ExtendedBasicNode {
   protected boolean isDebug;
   protected Color backgroundColor;
 
+  /**
+   * <code>ObjectNode</code> - constructor 
+   *
+   * @param object - <code>PwObject</code> - 
+   * @param objectLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   * @param isDraggable - <code>boolean</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   */
   public ObjectNode( final PwObject object, final Point objectLocation,
                      final Color backgroundColor, final boolean isDraggable,
                      final PartialPlanView partialPlanView) { 
@@ -40,6 +49,32 @@ public class ObjectNode extends ExtendedBasicNode {
     // isDebug = true;
     StringBuffer labelBuf = new StringBuffer( object.getName());
     labelBuf.append( "\nkey=").append( object.getId().toString());
+    nodeLabel = labelBuf.toString();
+
+    configure( objectLocation, backgroundColor, isDraggable);
+
+  } // end constructor
+
+  /**
+   * <code>ObjectNode</code> - constructor - for NodeShapes
+   *
+   * @param name - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
+   * @param objectLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   */
+  public ObjectNode( final String name, Integer id, final Point objectLocation,
+                     final Color backgroundColor) { 
+    super( ViewConstants.LEFT_TRAPEZOID);
+    this.object = null;
+    this.backgroundColor = backgroundColor;
+    this.partialPlanView = null;
+    boolean isDraggable = false;
+
+    isDebug = false;
+    // isDebug = true;
+    StringBuffer labelBuf = new StringBuffer( name);
+    labelBuf.append( "\nkey=").append( id.toString());
     nodeLabel = labelBuf.toString();
 
     configure( objectLocation, backgroundColor, isDraggable);

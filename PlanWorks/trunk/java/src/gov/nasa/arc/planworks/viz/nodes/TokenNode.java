@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.42 2004-06-10 01:36:00 taylor Exp $
+// $Id: TokenNode.java,v 1.43 2004-06-16 22:09:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -105,6 +105,32 @@ public class TokenNode extends BasicNode implements OverviewToolTip {
     configure( tokenLocation, backgroundColor, isDraggable);
   } // end constructor
 
+  /**
+   * <code>TokenNode</code> - constructor - for NodeShapes frame
+   *
+   * @param predicateName - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
+   * @param tokenLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   */
+  public TokenNode( String predicateName, Integer id, Point tokenLocation,
+                    Color backgroundColor) {
+    super();
+    this.backgroundColor = backgroundColor;
+    this.token = null;
+    this.slot = null;
+    this.tokenLocation = tokenLocation;
+    this.partialPlanView = null;
+    this.predicateName = predicateName;
+    boolean isDraggable = false;
+    StringBuffer labelBuf = new StringBuffer( predicateName);
+    labelBuf.append( "\nkey=").append( id.toString());
+    nodeLabel = labelBuf.toString();
+    
+    // System.err.println( "TokenNode: " + nodeLabel);
+    configure( tokenLocation, backgroundColor, isDraggable);
+  } // end constructor
+
   private final void configure( Point tokenLocation, Color backgroundColor,
                                 boolean isDraggable) {
     boolean isRectangular = true;
@@ -181,15 +207,14 @@ public class TokenNode extends BasicNode implements OverviewToolTip {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
+    if (token == null) {
+      return null;
+    }
     StringBuffer tip = new StringBuffer( "<html> ");
-    if (token != null) {
-      tip.append( token.toString());
-      if (partialPlanView.getZoomFactor() > 1) {
-        tip.append( "<br>key=");
-        tip.append( token.getId().toString());
-      }
-    } else {
-      tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
+    tip.append( token.toString());
+    if (partialPlanView.getZoomFactor() > 1) {
+      tip.append( "<br>key=");
+      tip.append( token.getId().toString());
     }
     // check for free token
     if (slot != null) {
@@ -232,6 +257,9 @@ public class TokenNode extends BasicNode implements OverviewToolTip {
    */
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
                                JGoView view) {
+    if (token == null) {
+      return false;
+    }
     JGoObject obj = view.pickDocObject( docCoords, false);
     // System.err.println( "TokenNode: doMouseClick obj class " +
     //                     obj.getTopLevelObject().getClass().getName());

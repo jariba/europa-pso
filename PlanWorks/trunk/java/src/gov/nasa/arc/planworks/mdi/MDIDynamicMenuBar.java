@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.13 2004-06-04 23:09:00 taylor Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.14 2004-06-16 22:09:07 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -28,6 +28,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 
 
 /**
@@ -47,6 +48,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   private ArrayList windows = new ArrayList();
   private TileCascader tileCascader;
   private JMenu windowMenu;
+  private JMenu helpMenu;
     /**
      * creates a new MDIDynamicMenuBar and registers itself with the MDIDesktop
      * @param desktop the MDIDesktop to which the MDIDynamicMenuBar is added.
@@ -58,6 +60,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     }
     this.tileCascader = tileCascader;
     buildWindowMenu();
+    buildHelpMenu();
     this.setVisible(true);
   }
   /**
@@ -76,6 +79,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     }
     this.tileCascader = tileCascader;
     buildWindowMenu();
+    buildHelpMenu();
     this.setVisible(true);
   }
   /**
@@ -99,6 +103,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     }
     this.tileCascader = tileCascader;
     buildWindowMenu();
+    buildHelpMenu();
     this.setVisible(true);
   }
   /**
@@ -120,6 +125,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
       }
     }
     add(windowMenu);
+    add( helpMenu);
     //repaint(getVisibleRect());
     validate();
   }
@@ -129,7 +135,8 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    */
   public void addConstantMenu(final JMenu constantMenu) {
     if(constantMenus == null) {
-      constantMenus = new ArrayList(3);
+      // constantMenus = new ArrayList(3);
+      constantMenus = new ArrayList(4);
     }
     constantMenus.add(constantMenu);
     this.add(constantMenu);
@@ -174,6 +181,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   public void addWindow(final MDIInternalFrame frame) {
     windows.add(frame);
     buildWindowMenu();
+    buildHelpMenu();
   }
 
   private void buildWindowMenu() {
@@ -212,7 +220,22 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     super.add(windowMenu);
     windowMenu.validate();
     validate();
-  }
+  } // end buildWindowMenu
+
+  private void buildHelpMenu() {
+    if(helpMenu != null) {
+      helpMenu.removeAll();
+      remove( helpMenu);
+    }
+    JMenuItem shapesItem = new JMenuItem( PlanWorks.NODE_SHAPES_MENU_ITEM);
+    shapesItem.addActionListener( new NodeShapesActionListener( shapesItem));
+    helpMenu = new JMenu( PlanWorks.HELP_MENU);
+    helpMenu.add( shapesItem);
+    helpMenu.validate();
+    super.add (helpMenu);
+    helpMenu.validate();
+    validate();
+  } // end buildHelpMenu
 
   private List sortWindows( List  windows) {
     if (windows.size() == 0) { return windows; }
@@ -443,6 +466,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   public void notifyDeleted(final MDIFrame frame) {
     windows.remove(frame);
     buildWindowMenu();
+    buildHelpMenu();
   }
 
   public void add(final JButton button){
@@ -450,9 +474,13 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
 
   public JMenu add(final JMenu menu) {
     remove(windowMenu);
+    remove(helpMenu);
     super.add(menu);
     if(windowMenu != null) {
       super.add(windowMenu);
+    }
+    if(helpMenu != null) {
+      super.add(helpMenu);
     }
     validate();
     return menu;
@@ -553,8 +581,19 @@ class CascadeActionListener implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     cascader.cascadeWindows();
   }
-
 } // end class CascadeActionListener
+
+class NodeShapesActionListener implements ActionListener {
+  private JMenuItem menuItem;
+  public NodeShapesActionListener( JMenuItem menuItem) {
+    this.menuItem = menuItem;
+  }
+  public void actionPerformed( ActionEvent evt) {
+    menuItem.setEnabled( false);
+    ViewGenerics.openNodeShapesView( menuItem);
+  }
+} // end NodeShapesActionListener
+
 
 
 

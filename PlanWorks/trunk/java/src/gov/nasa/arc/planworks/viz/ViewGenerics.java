@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.19 2004-06-10 01:35:59 taylor Exp $
+// $Id: ViewGenerics.java,v 1.20 2004-06-16 22:09:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -26,6 +26,7 @@ import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -51,6 +52,7 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.Utilities;
@@ -58,6 +60,7 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
@@ -82,6 +85,9 @@ public class ViewGenerics {
 
   private static final int RULE_VIEW_WIDTH = 400;
   private static final int RULE_VIEW_HEIGHT = 100;
+  private static final int DISP_WAIT_INTERVAL = 50; //in milliseconds
+  private static final int DISP_WAIT_NUM_CYCLES = 10; 
+
   private static final ViewGenerics generics = new ViewGenerics();
 
   private ViewGenerics() {
@@ -244,6 +250,31 @@ public class ViewGenerics {
     
     return overview;
   } // end openOverviewFrameCommon
+
+  /**
+   * <code>openNodeShapesView</code>
+   *
+   * @param menuItem - <code>JMenuItem</code> - 
+   */
+  public static void openNodeShapesView( JMenuItem menuItem) {
+    JFrame nodeShapesFrame = PlanWorks.getPlanWorks().getNodeShapesFrame();
+    if (nodeShapesFrame == null) {
+      nodeShapesFrame = new JFrame( ViewConstants.NODE_SHAPES_FRAME);
+      Container contentPane = nodeShapesFrame.getContentPane();
+      NodeShapes nodeShapesView = new NodeShapes( nodeShapesFrame, menuItem);
+      contentPane.add( nodeShapesView);
+      
+      nodeShapesFrame.setSize( ViewConstants.NODE_SHAPES_FRAME_WIDTH,
+                               ViewConstants.NODE_SHAPES_FRAME_HEIGHT);
+      nodeShapesFrame.setVisible( true);
+      Point popupLocation = Utilities.getPopupLocation( PlanWorks.getPlanWorks());
+      nodeShapesFrame.setLocation( ((int) popupLocation.getX()) -
+                                   (ViewConstants.NODE_SHAPES_FRAME_WIDTH / 2),
+                                   ((int) popupLocation.getY()) -
+                                   (ViewConstants.NODE_SHAPES_FRAME_HEIGHT / 2));
+      PlanWorks.getPlanWorks().setNodeShapesFrame( nodeShapesFrame);
+    }
+  } // end openNodesShapesView
 
   /**
    * <code>raiseFrame</code>
@@ -506,7 +537,23 @@ public class ViewGenerics {
     return transactionNameHeader.toString();
   } // end computeTransactionNameHeader
 
-
+  /**
+   * <code>displayableWait</code>
+   *
+   * @param component - <code>Component</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public static boolean displayableWait( Component component) {
+    int numCycles = DISP_WAIT_NUM_CYCLES;
+    while (! component.isDisplayable() && numCycles != 0) {
+      try {
+        Thread.currentThread().sleep( DISP_WAIT_INTERVAL);
+      }
+      catch (InterruptedException ie) {}
+      numCycles--;
+    }
+    return numCycles != 0;
+  }
 
 } // end class ViewGenerics 
 

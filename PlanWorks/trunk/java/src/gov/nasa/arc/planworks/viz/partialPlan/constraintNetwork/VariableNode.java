@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.19 2004-06-15 19:26:46 taylor Exp $
+// $Id: VariableNode.java,v 1.20 2004-06-16 22:09:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -102,7 +102,6 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
                        final Point variableLocation, final Color backgroundColor, 
                        final boolean isDraggable, final PartialPlanView partialPlanView) { 
     super( ViewConstants.PINCHED_RECTANGLE);
-    // super( ViewConstants.ELLIPSE);
     this.variable = variable;
     this.partialPlanView = partialPlanView;
     containerNodeList = new ArrayList();
@@ -122,6 +121,35 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
     // isDebug = true;
     StringBuffer labelBuf = new StringBuffer( variable.getDomain().toString());
     labelBuf.append( "\nkey=").append( variable.getId().toString());
+    nodeLabel = labelBuf.toString();
+    // System.err.println( "VariableNode: " + nodeLabel);
+
+    configure( variableLocation, backgroundColor, isDraggable);
+  } // end constructor
+
+  /**
+   * <code>VariableNode</code> - constructor - for NodeShapes
+   *
+   * @param name - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
+   * @param variableLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   * @param isDraggable - <code>boolean</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   */
+  public VariableNode( final String name, final Integer id, final Point variableLocation,
+                       final Color backgroundColor) {
+    super( ViewConstants.PINCHED_RECTANGLE);
+    this.variable = null;
+    this.partialPlanView = null;
+    this.backgroundColor = backgroundColor;
+
+    boolean isDraggable = false;
+    inLayout = false;
+    isDebug = false;
+    // isDebug = true;
+    StringBuffer labelBuf = new StringBuffer( name);
+    labelBuf.append( "\nkey=").append( id.toString());
     nodeLabel = labelBuf.toString();
     // System.err.println( "VariableNode: " + nodeLabel);
 
@@ -173,6 +201,9 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
+    if (variable == null) {
+      return null;
+    }
     String operation = null;
     if (areNeighborsShown()) {
       operation = "close";
@@ -411,6 +442,9 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
    * @return - <code>boolean</code> - 
    */
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords, JGoView view) {
+    if (variable == null) {
+      return false;
+    }
     JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());

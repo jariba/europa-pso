@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.10 2004-05-21 21:39:10 taylor Exp $
+// $Id: StepQueryView.java,v 1.11 2004-06-16 22:09:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -128,13 +128,9 @@ public class StepQueryView extends SequenceView {
    */
   public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
-    // wait for TimelineView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep(50);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "timelineView displayable " + this.isDisplayable());
+    // wait for StepQueryView instance to become displayable
+    if (! ViewGenerics.displayableWait( StepQueryView.this)) {
+      return;
     }
     this.computeFontMetrics( this);
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.15 2004-06-10 01:36:03 taylor Exp $
+// $Id: ConstraintNode.java,v 1.16 2004-06-16 22:09:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -126,6 +126,34 @@ public class ConstraintNode extends ExtendedBasicNode implements OverviewToolTip
     // isDebug = true;
     StringBuffer labelBuf = new StringBuffer( constraint.getName());
     labelBuf.append( "\nkey=").append( constraint.getId().toString());
+    nodeLabel = labelBuf.toString();
+    // System.err.println( "ConstraintNode: " + nodeLabel);
+
+    hasBeenVisited = false;
+    configure( constraintLocation, backgroundColor, isDraggable);
+  } // end constructor
+
+  /**
+   * <code>ConstraintNode</code> - constructor - for NodeShapes
+   *
+   * @param name - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
+   * @param constraintLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   */
+  public ConstraintNode( String name, Integer id, Point constraintLocation,
+                         Color backgroundColor) { 
+    super( ViewConstants.DIAMOND);
+    this.constraint = null;
+    this.variableNode = null;
+    this.partialPlanView = null;
+    this.backgroundColor = backgroundColor;
+
+    boolean isDraggable = false;
+    isDebug = false;
+    // isDebug = true;
+    StringBuffer labelBuf = new StringBuffer( name);
+    labelBuf.append( "\nkey=").append( id.toString());
     nodeLabel = labelBuf.toString();
     // System.err.println( "ConstraintNode: " + nodeLabel);
 
@@ -260,12 +288,15 @@ public class ConstraintNode extends ExtendedBasicNode implements OverviewToolTip
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-      String operation = null;
-      if (areNeighborsShown()) {
-        operation = "close";
-      } else {
-        operation = "open";
-      }
+    if (constraint == null) {
+      return null;
+    }
+    String operation = null;
+    if (areNeighborsShown()) {
+      operation = "close";
+    } else {
+      operation = "open";
+    }
     if ((! isUnaryConstraint)  && (partialPlanView instanceof ConstraintNetworkView)) {
       StringBuffer tip = new StringBuffer( "<html> ");
       tip.append( constraint.getType());
@@ -377,6 +408,9 @@ public class ConstraintNode extends ExtendedBasicNode implements OverviewToolTip
    * @return - <code>boolean</code> - 
    */
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords, JGoView view) {
+    if (constraint == null) {
+      return false;
+    }
     JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());

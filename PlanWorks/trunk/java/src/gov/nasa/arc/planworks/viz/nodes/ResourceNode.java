@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceNode.java,v 1.2 2004-05-28 20:21:17 taylor Exp $
+// $Id: ResourceNode.java,v 1.3 2004-06-16 22:09:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -28,6 +28,15 @@ public class ResourceNode extends ExtendedBasicNode {
   protected boolean isDebug;
   protected Color backgroundColor;
 
+  /**
+   * <code>ResourceNode</code> - constructor 
+   *
+   * @param resource - <code>PwResource</code> - 
+   * @param resourceLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   * @param isDraggable - <code>boolean</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   */
   public ResourceNode( PwResource resource, Point resourceLocation, Color backgroundColor,
                        boolean isDraggable, PartialPlanView partialPlanView) { 
     super( ViewConstants.PINCHED_HEXAGON);
@@ -38,6 +47,30 @@ public class ResourceNode extends ExtendedBasicNode {
     // isDebug = true;
     StringBuffer labelBuf = new StringBuffer( resource.getName());
     labelBuf.append( "\nkey=").append( resource.getId().toString());
+    nodeLabel = labelBuf.toString();
+    // System.err.println( "ResourceNavNode: " + nodeLabel);
+
+    configure( resourceLocation, backgroundColor, isDraggable);
+  } // end constructor
+
+  /**
+   * <code>ResourceNode</code> - constructor - for NodeShapes
+   *
+   * @param name - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
+   * @param resourceLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   */
+  public ResourceNode( String name, Integer id, Point resourceLocation, Color backgroundColor) { 
+    super( ViewConstants.PINCHED_HEXAGON);
+    this.resource = null;
+    this.partialPlanView = null;
+    this.backgroundColor = backgroundColor;
+    boolean isDraggable = false;
+    isDebug = false;
+    // isDebug = true;
+    StringBuffer labelBuf = new StringBuffer( name);
+    labelBuf.append( "\nkey=").append( id.toString());
     nodeLabel = labelBuf.toString();
     // System.err.println( "ResourceNavNode: " + nodeLabel);
 

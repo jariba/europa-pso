@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.9 2004-06-04 23:09:00 taylor Exp $
+// $Id: DBTransactionView.java,v 1.10 2004-06-16 22:09:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -161,12 +161,8 @@ public class DBTransactionView extends PartialPlanView {
   public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep( 50);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "timelineView displayable " + this.isDisplayable());
+    if (! ViewGenerics.displayableWait( DBTransactionView.this)) {
+      return;
     }
     this.computeFontMetrics( this);
 
