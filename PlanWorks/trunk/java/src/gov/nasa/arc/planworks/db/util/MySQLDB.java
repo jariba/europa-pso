@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.52 2003-10-18 00:01:08 miatauro Exp $
+// $Id: MySQLDB.java,v 1.53 2003-10-21 21:45:44 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
@@ -908,7 +909,7 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" ORDER BY TransactionId"));
+        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionType LIKE 'CONSTRAINT_%'ORDER BY TransactionId"));
       while(transactions.next()) {
         retval.add(Long.toString(transactions.getLong("PartialPlanId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
       }
@@ -922,7 +923,7 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" ORDER BY TransactionId"));
+        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionType LIKE 'TOKEN_%' ORDER BY TransactionId"));
       while(transactions.next()) {
         //retval.add(new Integer(transactions.getInt("TransactionId")));
         retval.add(Long.toString(transactions.getLong("PartialPlanId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
@@ -937,7 +938,7 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" ORDER BY TransactionId"));
+        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionType LIKE 'VARIABLE_%' ORDER BY TransactionId"));
       while(transactions.next()) {
         //retval.add(new Integer(transactions.getInt("TransactionId")));
         retval.add(Long.toString(transactions.getLong("PartialPlanId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
@@ -1027,14 +1028,17 @@ public class MySQLDB {
       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
       while(transactedSteps.next()) {
 	int stepNum = transactedSteps.getInt("StepNumber");
-	Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
-	try {
-	  if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() && 
-	     seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
+	//Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
+        int varId = transactedSteps.getInt("ObjectId");
+	//try {
+	  //if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() && 
+	  //   seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
+          if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
+             varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
 	    retval.add(new Integer(stepNum));
 	  }
-	}
-	catch(ResourceNotFoundException rnfe){}
+          //}
+	//catch(ResourceNotFoundException rnfe){}
       }
     }
     catch(SQLException sqle) {
@@ -1048,14 +1052,81 @@ public class MySQLDB {
       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
       while(transactedSteps.next()) {
 	int stepNum = transactedSteps.getInt("StepNumber");
-	Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
-	try {
-	  if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() &&
-	     !seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
-	    retval.add(new Integer(stepNum));
-	  }
-	}
-	catch(ResourceNotFoundException rnfe) {}
+	//Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
+        int varId = transactedSteps.getInt("StepNumber");
+	//try {
+        //if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() &&
+        //!seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
+        if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
+           !varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
+          retval.add(new Integer(stepNum));
+        }
+	//}
+	//catch(ResourceNotFoundException rnfe) {}
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized private static boolean varDomainIsSingleton(Long seqId, int stepNum, int varId) {
+    boolean retval = false;
+    try {
+      if(stepNum < 0) {
+        return false;
+      }
+      long ppId = 
+        queryPartialPlanId(seqId, "step".concat(Integer.toString(stepNum))).longValue();
+      ResultSet varInfo = queryDatabase("SELECT DomainId, DomainType FROM Variable WHERE PartialPlanId=" + ppId + " && VariableId=" + varId);
+      varInfo.last();
+      int domainId = varInfo.getInt("DomainId");
+      String domainType = varInfo.getString("DomainType");
+      if(domainType == null) {
+        return false;
+      }
+      if(domainType.equals("EnumeratedDomain")) {
+        ResultSet domainInfo = queryDatabase("SELECT Domain FROM EnumeratedDomain WHERE PartialPlanId=" + ppId + " && EnumeratedDomainId=" + domainId);
+        domainInfo.last();
+        Blob blob = domainInfo.getBlob("Domain");
+        String domain = new String(blob.getBytes(1, (int) blob.length()));
+        StringTokenizer strTok = new StringTokenizer(domain);
+        if(strTok.countTokens() == 1) {
+          return true;
+        }
+      }
+      else if(domainType.equals("IntervalDomain")) {
+        ResultSet domainInfo = queryDatabase("SELECT IntervalDomainType, LowerBound, UpperBound FROM IntervalDomain WHERE PartialPlanId=" + ppId + " && IntervalDomainId=" + domainId);
+        domainInfo.last();
+        String lb = domainInfo.getString("LowerBound");
+        String ub = domainInfo.getString("UpperBound");
+        if(domainInfo.getString("IntervalDomainType").equals("INTEGER_SORT")) {
+          int lowerBound, upperBound;
+          if(lb.equals(DbConstants.PLUS_INFINITY)) {
+            lowerBound = DbConstants.PLUS_INFINITY_INT;
+          }
+          else if(lb.equals(DbConstants.MINUS_INFINITY)) {
+            lowerBound = DbConstants.MINUS_INFINITY_INT;
+          }
+          else {
+            lowerBound = Integer.parseInt(lb);
+          }
+          if(ub.equals(DbConstants.PLUS_INFINITY)) {
+            upperBound = DbConstants.PLUS_INFINITY_INT;
+          }
+          else if(ub.equals(DbConstants.MINUS_INFINITY)) {
+            upperBound = DbConstants.MINUS_INFINITY_INT;
+          }
+          else {
+            upperBound = Integer.parseInt(ub);
+          }
+          return lowerBound == upperBound;
+        }
+        else {
+          double lowerBound = Double.parseDouble(lb);
+          double upperBound = Double.parseDouble(ub);
+          return lowerBound == upperBound;
+        }
       }
     }
     catch(SQLException sqle) {
