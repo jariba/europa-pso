@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.18 2003-09-09 20:39:45 miatauro Exp $
+// $Id: PwProject.java,v 1.19 2003-10-02 23:15:32 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -29,7 +29,6 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  * @version 0.0
  */
 public abstract class PwProject {
-
   static {
     try {
       Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
@@ -105,6 +104,9 @@ public abstract class PwProject {
   public abstract PwPlanningSequence getPlanningSequence( String seqName)
     throws ResourceNotFoundException;
 
+  public abstract PwPlanningSequence getPlanningSequence(Long seqId)
+    throws ResourceNotFoundException;
+
   /**
    * <code>close</code> - remove project from /xml/proj/projects.xml, and
    *                      remove /xml/proj/<projectName>.xml
@@ -115,6 +117,8 @@ public abstract class PwProject {
   public abstract void delete() throws Exception, ResourceNotFoundException;
 
   public abstract void deletePlanningSequence(String seqName) throws ResourceNotFoundException;
+
+  public abstract void deletePlanningSequence(Long seqId) throws ResourceNotFoundException;
 
   public abstract PwPlanningSequence addPlanningSequence(String url) 
     throws DuplicateNameException, ResourceNotFoundException;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.47 2003-09-30 19:18:55 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.48 2003-10-02 23:16:35 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -53,7 +53,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
   private String url; 
   private Integer projectId;
-  private Integer sequenceId;
+  private Long sequenceId;
 
   private String model;
   private String name;
@@ -78,9 +78,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param - <code>sequenceId</code> - the Id of the sequence to which this plan is attached.
    * @exception ResourceNotFoundException if the plan data is invalid
    */
-
-  public PwPartialPlanImpl(String url, String planName, Integer sequenceId)  
+  
+  public PwPartialPlanImpl(String url, String planName, Long psequenceId) 
     throws ResourceNotFoundException {
+    this.sequenceId = psequenceId;
     //System.err.println("In PwPartialPlanImpl");
     objectMap = new HashMap();
     timelineMap = new HashMap();
@@ -97,7 +98,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
     contentSpec = new ArrayList();
     this.name = planName;
-    createPartialPlan(sequenceId);
+    System.err.println("QUUX: " + this.sequenceId);
+    createPartialPlan(this.sequenceId);
   }
 
   /**
@@ -107,12 +109,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @exception ResourceNotFoundException if the plan data is invalid
    */
 
-  private void createPartialPlan(Integer sequenceId) throws ResourceNotFoundException {
+  private void createPartialPlan(Long sequenceId) throws ResourceNotFoundException {
     //System.err.println( "Creating PwPartialPlan  ..." + url);
     long startTimeMSecs = System.currentTimeMillis();
     long loadTime = 0L;
     HashMap existingPartialPlan = null;
-    if(!MySQLDB.partialPlanExists(sequenceId, name)) {
+    /*if(!MySQLDB.partialPlanExists(sequenceId, name)) {
       String [] fileNames = new File(url).list(new PwSQLFilenameFilter());
       for(int i = 0; i < fileNames.length; i++) {
         String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".")+1);
@@ -127,10 +129,11 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         MySQLDB.loadFile(url.toString().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
         loadTime += System.currentTimeMillis() - time1;
       }
-      MySQLDB.updatePartialPlanSequenceId(sequenceId);
+      //MySQLDB.updatePartialPlanSequenceId(sequenceId);
       MySQLDB.analyzeDatabase();
-    }
-    id = MySQLDB.getNewPartialPlanId(sequenceId, name);
+      }*/
+    //id = MySQLDB.getNewPartialPlanId(sequenceId, name);
+    id = MySQLDB.getPartialPlanIdByName(sequenceId, name);
     //System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
     MySQLDB.createObjects(this);
     model = MySQLDB.queryPartialPlanModelById(id);

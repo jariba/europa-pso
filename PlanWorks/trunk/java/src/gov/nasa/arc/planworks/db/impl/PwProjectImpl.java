@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.33 2003-09-30 19:18:55 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.34 2003-10-02 23:16:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -170,7 +170,8 @@ public class PwProjectImpl extends PwProject {
     Map sequences = MySQLDB.getSequences(id);
     Iterator seqIdIterator = sequences.keySet().iterator();
     while(seqIdIterator.hasNext()) {
-      Integer sequenceId = (Integer) seqIdIterator.next();
+      Long sequenceId = (Long) seqIdIterator.next();
+      System.err.println(sequenceId + " : " + ((String)sequences.get(sequenceId)));
       planningSequences.add(new PwPlanningSequenceImpl((String) sequences.get(sequenceId), 
                                                        sequenceId, this, new PwModelImpl()));
     }
@@ -235,6 +236,17 @@ public class PwProjectImpl extends PwProject {
     throw new ResourceNotFoundException( "getPlanningSequence could not find " + url);
   } // end getPlanningSequence
 
+  public PwPlanningSequence getPlanningSequence(Long seqId) throws ResourceNotFoundException {
+    Iterator planningSeqIterator = planningSequences.iterator();
+    while(planningSeqIterator.hasNext()) {
+      PwPlanningSequence pwPlanningSequence = (PwPlanningSequence) planningSeqIterator.next();
+      if(pwPlanningSequence.getId().equals(seqId)) {
+        return pwPlanningSequence;
+      }
+    }
+    throw new ResourceNotFoundException("getPlanning sequence could not find " + id);
+  }
+
   public PwPlanningSequence addPlanningSequence(String url) 
     throws DuplicateNameException, ResourceNotFoundException {
     PwPlanningSequenceImpl retval = null;
@@ -257,6 +269,17 @@ public class PwProjectImpl extends PwProject {
     throw new ResourceNotFoundException("Sequence " + seqName + " not in projet.");
   }
 
+  public void deletePlanningSequence(Long seqId) throws ResourceNotFoundException {
+    ListIterator seqIterator = planningSequences.listIterator();
+    while(seqIterator.hasNext()) {
+      PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();
+      if(planSeq.getId().equals(seqId)) {
+        seqIterator.remove();
+        return;
+      }
+    }
+    throw new ResourceNotFoundException("Sequence " + seqId + " not in project.");
+  }
   /**
    * <code>delete</code> - remove this project from list of projects and database
    *

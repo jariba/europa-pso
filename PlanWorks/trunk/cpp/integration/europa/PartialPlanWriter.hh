@@ -4,18 +4,58 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.5 2003-09-30 17:12:38 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.6 2003-10-02 23:14:54 miatauro Exp $
 //
-#include "TokenNetwork.hh"
+#ifndef PARTIALPLANWRITER_H
+#define PARTIALPLANWRITER_H
+
 #include "ConstraintNetwork.hh"
+#include "List.hh"
 #include "String.hh"
+#include "Subscriber.hh"
+#include "TokenNetwork.hh"
 #include <stdio.h>
 
 using namespace Europa;
 
-class PartialPlanWriter {
+class Transaction {
 public:
-  PartialPlanWriter(TokenNetwork *ptnet, String &pdest)  { this->tnet = ptnet; this->dest = pdest; this->nstep = 0; this->izero = Value(0); this->rzero = Value(0.); this->sequenceId = 0ll;};
+  //Transaction(enum transactionTypes type, int key, enum sourceTypes source, int id,
+  //            long long int seqid) 
+  Transaction(int type, int key, int source, int id, long long int seqid)
+  {transactionType = type; objectKey = key; this->source = source; this->id = id;
+  sequenceId = seqid;}
+  Transaction() {transactionType = -1; objectKey = -1; source = -1; id = -1; sequenceId = -1;}
+  Transaction(Transaction &other) {
+    transactionType = other.transactionType;
+    objectKey = other.objectKey;
+    source = other.source;
+    id = other.id;
+    sequenceId = other.sequenceId;
+  }
+  void write(FILE *, long long int);
+private:
+  int transactionType;
+  int objectKey;
+  int source;
+  int id;
+  long long int sequenceId;
+};
+
+class PartialPlanWriter : public Subscriber {
+public:
+  PartialPlanWriter(TokenNetwork *, String &);//  { this->tnet = ptnet; this->dest = pdest; this->nstep = 0; this->izero = Value(0); this->rzero = Value(0.); this->sequenceId = 0ll;};
+  void notifyOfNewToken(TokenId);
+  void notifyTokenIsInserted(TokenId); //signals plan step
+  void notifyTokenIsNotInserted(TokenId);
+  void notifyAfterTokenIsNotInserted(TokenId);
+  void notifyOfDeletedToken(TokenId);
+  void notifyOfNewVariable(VarId);
+  void notifySpecifiedDomainChanged(VarId); //signals plan step
+  void notifyDerivedDomainChanged(VarId);
+  void notifyOfDeletedVariable(VarId);
+  void notifyConstraintInserted(ConstraintId&);
+  void notifyConstraintRemoved(ConstraintId&);
   void write();
 private:
   int nstep;
@@ -23,9 +63,11 @@ private:
   int tokenRelationId;
   int enumeratedDomainId;
   int intervalDomainId;
+  int transactionId;
   String dest;
   TokenNetwork *tnet;
   Value izero, rzero;
+  List<Transaction> *transactionList;
   void outputVariable(const VarId &, const char *, const long long int, FILE *, FILE *, 
                       FILE *);
   void outputToken(const TokenId &, const bool, const long long int, const ModelId *, const ObjectId *, 
@@ -34,3 +76,5 @@ private:
                        FILE *, FILE *);
   void outputConstraint(const ConstraintId &, const long long int, FILE *, FILE *);
 };
+
+#endif PARTIALPLANWRITER_H

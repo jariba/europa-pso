@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.7 2003-09-11 18:19:10 taylor Exp $
+// $Id: DbConstants.java,v 1.8 2003-10-02 23:15:31 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -112,6 +112,8 @@ public interface DbConstants {
    */
   public static final String PP_CONSTRAINT_VAR_MAP_EXT = "constraintVarMap";
 
+  public static final String PP_TRANSACTIONS_EXT = "transactions";
+
   /**
    * constant <code>PARTIAL_PLAN_FILE_EXTS</code> - List of Strings
    *
@@ -124,7 +126,7 @@ public interface DbConstants {
         PP_PREDICATES_EXT, PP_PARAMETERS_EXT,
         PP_ENUMERATED_DOMAINS_EXT, PP_INTERVAL_DOMAINS_EXT,
         PP_CONSTRAINTS_EXT, PP_TOKEN_RELATIONS_EXT,
-        PP_PARAM_VAR_TOKEN_MAP_EXT, PP_CONSTRAINT_VAR_MAP_EXT };
+        PP_PARAM_VAR_TOKEN_MAP_EXT, PP_CONSTRAINT_VAR_MAP_EXT, PP_TRANSACTIONS_EXT };
 
   /**
    * constant <code>NUMBER_OF_PP_FILES</code>
