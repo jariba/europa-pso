@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNavNode.java,v 1.5 2004-02-05 23:25:20 miatauro Exp $
+// $Id: SlotNavNode.java,v 1.6 2004-02-13 18:56:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -259,7 +259,7 @@ public class SlotNavNode extends ExtendedBasicNode {
     } else {
       operation = "open";
     }
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>slot<br>");
     if (! isEmptySlot) {
       NodeGenerics.getSlotNodeToolTipText( slot, tip);
     }
@@ -281,7 +281,7 @@ public class SlotNavNode extends ExtendedBasicNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText( boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>slot<br>");
     tip.append( predicateName);
     tip.append( "<br>key=");
     tip.append( slot.getId().toString());

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.4 2004-02-13 00:50:15 miatauro Exp $
+// $Id: VariableNavNode.java,v 1.5 2004-02-13 18:56:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -244,7 +244,7 @@ public class VariableNavNode extends ExtendedBasicNode {
     } else {
       operation = "open";
     }
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>");
     NodeGenerics.getVariableNodeToolTipText( variable, navigatorView, tip);
     if (isDebug) {
       tip.append( " linkCntToken ").append( String.valueOf( tokenLinkCount));
@@ -262,7 +262,7 @@ public class VariableNavNode extends ExtendedBasicNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText( boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>");
     tip.append( variable.getDomain().toString());
     tip.append( "<br>key=");
     tip.append( variable.getId().toString());

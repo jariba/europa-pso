@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.4 2004-02-13 00:50:12 miatauro Exp $
+// $Id: ConstraintNavNode.java,v 1.5 2004-02-13 18:56:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -223,7 +223,7 @@ public class ConstraintNavNode extends ExtendedBasicNode {
       operation = "open";
     }
     if (! isUnaryConstraint) {
-      StringBuffer tip = new StringBuffer( "<html> ");
+      StringBuffer tip = new StringBuffer( "<html>constraint<br>");
       tip.append( constraint.getType());
       if (isDebug) {
         tip.append( " linkCntVariable ").append( String.valueOf( variableLinkCount));
@@ -243,7 +243,7 @@ public class ConstraintNavNode extends ExtendedBasicNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText( boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>constraint<br>");
     tip.append( constraint.getName());
     tip.append( "<br>key=");
     tip.append( constraint.getId().toString());

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.9 2004-02-13 02:37:07 taylor Exp $
+// $Id: NavigatorView.java,v 1.10 2004-02-13 18:56:48 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -425,19 +425,19 @@ public class NavigatorView extends PartialPlanView {
   private void renderTimelineNode() {
     // TimelineView.TimelineNode
     PwTimeline timeline = ((TimelineNode) initialNode).getTimeline();
-    PwObject object = partialPlan.getObject( timeline.getParentId());
     boolean isDraggable = true;
-    ModelClassNavNode objectNavNode = null;
-    if(object != null) {
-      objectNavNode = 
-        new ModelClassNavNode( object, new Point( ViewConstants.TIMELINE_VIEW_X_INIT,
-                                                  ViewConstants.TIMELINE_VIEW_Y_INIT),
-                               ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
-                               isDraggable, this);
-      objectNavNode.setInLayout( true);
-      objectNavNodeMap.put( object.getId(), objectNavNode);
-      jGoDocument.addObjectAtTail( objectNavNode);
-    }
+//     PwObject object = partialPlan.getObject( timeline.getParentId());
+//     ModelClassNavNode objectNavNode = null;
+//     if(object != null) {
+//       objectNavNode = 
+//         new ModelClassNavNode( object, new Point( ViewConstants.TIMELINE_VIEW_X_INIT,
+//                                                   ViewConstants.TIMELINE_VIEW_Y_INIT),
+//                                ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
+//                                isDraggable, this);
+//       objectNavNode.setInLayout( true);
+//       objectNavNodeMap.put( object.getId(), objectNavNode);
+//       jGoDocument.addObjectAtTail( objectNavNode);
+//     }
     TimelineNavNode timelineNavNode =
       new TimelineNavNode( timeline, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                                 ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
@@ -447,9 +447,13 @@ public class NavigatorView extends PartialPlanView {
     timelineNavNodeMap.put( timeline.getId(), timelineNavNode);
     jGoDocument.addObjectAtTail( timelineNavNode);
 
-    if(objectNavNode != null) {
-      addNavigatorLink( objectNavNode, timelineNavNode, timelineNavNode);
-    }
+//     if(objectNavNode != null) {
+//       addNavigatorLink( objectNavNode, timelineNavNode, timelineNavNode);
+//     }
+
+    addObjectNavNodes( timelineNavNode);
+    addObjectToTimelineNavLinks( timelineNavNode);
+    addTimelineToObjectNavLinks( timelineNavNode);
 
     addSlotNavNodes( timelineNavNode);
     addTimelineToSlotNavLinks( timelineNavNode);
@@ -709,6 +713,12 @@ public class NavigatorView extends PartialPlanView {
                                          (TimelineNavNode) toNode, sourceNode);
       linkType = "OtoTi";
 
+    } else if ((fromNode instanceof TimelineNavNode) &&
+               (toNode instanceof ModelClassNavNode)) {
+      link = addTimelineToObjectNavLink( (TimelineNavNode) fromNode,
+                                         (ModelClassNavNode) toNode, sourceNode);
+      linkType = "TitoO";
+
     } else if (fromNode instanceof TimelineNavNode) {
       link = addTimelineToSlotNavLink( (TimelineNavNode) fromNode,
                                        (SlotNavNode) toNode, sourceNode);
@@ -854,6 +864,27 @@ public class NavigatorView extends PartialPlanView {
     return areLinksChanged;
   } // end removeObjectToTimelineNavLink
 
+  private boolean removeTimelineToObjectNavLink( BasicNodeLink link,
+                                                 TimelineNavNode timelineNavNode,
+                                                 ModelClassNavNode objectNavNode) {
+    boolean areLinksChanged = false;
+    link.decLinkCount();
+    objectNavNode.decTimelineLinkCount();
+    timelineNavNode.decObjectLinkCount();
+    if (isDebugPrint) {
+      System.err.println( "TitoO dec link: " + link.toString() + " to " +
+                          link.getLinkCount());
+    }
+    if (link.getLinkCount() == 0) {
+      if (isDebugPrint) {
+        System.err.println( "removeTimelineToObjectNavLink: " + link.toString());
+      }
+      link.setInLayout( false);
+      areLinksChanged = true;
+    }
+    return areLinksChanged;
+  } // end removeTimelineToObjectNavLink
+
   // *********************************************** objectNavNodes
 
   /**
@@ -973,6 +1004,60 @@ public class NavigatorView extends PartialPlanView {
 
 
   /**
+   * <code>addTimelineToObjectNavLinks</code>
+   *
+   * @param timelineNavNode - <code>TimelineNavNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean addTimelineToObjectNavLinks( TimelineNavNode timelineNavNode) {
+    boolean areLinksChanged = false;
+    Iterator childObjectItr = timelineNavNode.getTimeline().getComponentList().iterator();
+    while (childObjectItr.hasNext()) {
+      PwObject childObject = (PwObject) childObjectItr.next();
+      ModelClassNavNode childNavNode =
+        (ModelClassNavNode) objectNavNodeMap.get( childObject.getId());
+      if ((childNavNode != null) && childNavNode.inLayout()) {
+        if (addNavigatorLink( timelineNavNode, childNavNode, timelineNavNode)) {
+          areLinksChanged = true;
+        }
+      }
+    }
+    return areLinksChanged;
+  } // end addTimelineToObjectNavLinks
+
+  private BasicNodeLink addTimelineToObjectNavLink( TimelineNavNode timelineNavNode,
+                                                    ModelClassNavNode objectNavNode,
+                                                    ExtendedBasicNode sourceNode) {
+    BasicNodeLink returnLink = null;
+    String linkName = timelineNavNode.getTimeline().getId().toString() + "->" +
+      objectNavNode.getObject().getId().toString();
+    BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
+    if (link == null) {
+      link = new BasicNodeLink( timelineNavNode, objectNavNode, linkName);
+      link.setArrowHeads(false, true);
+      objectNavNode.incrTimelineLinkCount();
+      timelineNavNode.incrObjectLinkCount();
+      returnLink = link;
+      navLinkMap.put( linkName, link);
+      if (isDebugPrint) {
+        System.err.println( "add timeline=>object link " + linkName);
+      }
+    } else {
+      if (! link.inLayout()) {
+        link.setInLayout( true);
+      }
+      link.incrLinkCount();
+      objectNavNode.incrTimelineLinkCount();
+      timelineNavNode.incrObjectLinkCount();
+      if (isDebugPrint) {
+        System.err.println( "TitoO1 incr link: " + link.toString() + " to " +
+                            link.getLinkCount());
+      }
+    }
+    return returnLink;
+  } // end addTimelineToObjectNavLink
+
+  /**
    * <code>removeObjectToTimelineNavLinks</code>
    *
    * @param timelineNavNode - <code>TimelineNavNode</code> - 
@@ -993,6 +1078,33 @@ public class NavigatorView extends PartialPlanView {
     }
     return areLinksChanged;
   } // end removeObjectToTimelineNavLinks
+
+
+  /**
+   * <code>removeTimelineToObjectNavLinks</code>
+   *
+   * @param timelineNavNode - <code>TimelineNavNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean removeTimelineToObjectNavLinks( TimelineNavNode timelineNavNode) {
+    boolean areLinksChanged = false;
+    Iterator childObjectItr = timelineNavNode.getTimeline().getComponentList().iterator();
+    while (childObjectItr.hasNext()) {
+      PwObject childObject = (PwObject) childObjectItr.next();
+      ModelClassNavNode childNavNode =
+        (ModelClassNavNode) objectNavNodeMap.get( childObject.getId());
+      if ((childNavNode != null) && childNavNode.inLayout()) {
+        String linkName = timelineNavNode.getTimeline().getId().toString() + "->" +
+          childNavNode.getObject().getId().toString();
+        BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
+        if ((link != null) && link.inLayout() &&
+            removeTimelineToObjectNavLink( link, timelineNavNode, childNavNode)) {
+          areLinksChanged = true;
+        }
+      }
+    }
+    return areLinksChanged;
+  } // end removeTimelineToObjectNavLinks
 
 
   // ***********************************************slotNavNode

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.3 2004-02-13 02:37:07 taylor Exp $
+// $Id: TokenNavNode.java,v 1.4 2004-02-13 18:56:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -310,7 +310,7 @@ public class TokenNavNode extends ExtendedBasicNode {
     } else {
       operation = "open";
     }
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>token<br>");
     tip.append( token.toString());
     if (isDebug) {
       tip.append( " linkCntSlot ").append( String.valueOf( slotLinkCount));
@@ -328,7 +328,7 @@ public class TokenNavNode extends ExtendedBasicNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText( boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>token<br>");
     tip.append( token.getPredicateName());
     tip.append( "<br>key=");
     tip.append( token.getId().toString());

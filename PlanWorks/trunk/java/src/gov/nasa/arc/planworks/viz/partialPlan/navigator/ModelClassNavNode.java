@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.5 2004-02-05 23:25:19 miatauro Exp $
+// $Id: ModelClassNavNode.java,v 1.6 2004-02-13 18:56:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -223,7 +223,7 @@ public class ModelClassNavNode extends ExtendedBasicNode {
     } else {
       operation = "open";
     }
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>object<br>");
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( timelineLinkCount));
       tip.append( "<br>");
@@ -241,7 +241,7 @@ public class ModelClassNavNode extends ExtendedBasicNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText( boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html> ");
+    StringBuffer tip = new StringBuffer( "<html>object<br>");
     tip.append( object.getName());
     tip.append( "<br>key=");
     tip.append( object.getId().toString());
