@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.13 2003-11-20 19:11:25 taylor Exp $
+// $Id: planViz.txt,v 1.14 2003-11-20 19:30:40 miatauro Exp $
 //
 // PlanWorks
 //
@@ -49,10 +49,12 @@ Method:
   1. Start PlanWorks:
   2. Create a project with menu-bar selection "Project->Create ...",
      adding the test sequence.
-
+  3. Add a valid sequence to the project.
+  4. Delete a step in the sequence.
+  5. Open a view on the deleted step.
 Post-conditions:
   1. Error dialog "Invalid Sequence Directory" appears.
-
+  2. Error dialog "Failed to get file listing" appears.
 Requirements:
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.56 2003-11-06 21:52:36 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.57 2003-11-20 19:31:05 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -135,8 +135,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     //checkPlan();
   } // end createPartialPlan
 
-  private void loadFiles(File planDir) {
+  private void loadFiles(File planDir) throws ResourceNotFoundException {
+    if(planDir == null) {
+      throw new ResourceNotFoundException("Failed to find sequence directory.");
+    }
     String [] fileNames = planDir.list(new PwSQLFilenameFilter());
+    if(fileNames == null) {
+      throw new ResourceNotFoundException("Failed to get file listing.");
+    }
     for(int i = 0; i < fileNames.length; i++) {
       String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".") + 1);
       tableName = tableName.substring(0,1).toUpperCase().concat(tableName.substring(1));
