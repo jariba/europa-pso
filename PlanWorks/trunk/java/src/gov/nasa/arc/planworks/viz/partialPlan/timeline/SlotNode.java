@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.12 2004-03-03 02:14:25 taylor Exp $
+// $Id: SlotNode.java,v 1.13 2004-03-09 01:48:30 taylor Exp $
 //
 // PlanWorks
 //
@@ -390,7 +390,7 @@ public class SlotNode extends TextNode {
             PwToken activeToken = SlotNode.this.getSlot().getBaseToken();
             ((PartialPlanViewSet) timelineView.getViewSet()).setActiveToken( activeToken);
             List secondaryTokens = SlotNode.this.getSlot().getTokenList();
-            secondaryTokens.remove( 0);
+            secondaryTokens.remove( activeToken);
             if (secondaryTokens.size() == 0) {
               secondaryTokens = null;
             }

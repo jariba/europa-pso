@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.20 2004-03-03 02:14:21 taylor Exp $
+// $Id: NodeGenerics.java,v 1.21 2004-03-09 01:48:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -228,6 +228,8 @@ public class NodeGenerics {
           token = ((TemporalNode) basicNode).getToken();
         } else if (basicNode instanceof TokenNode) {
           token = ((TokenNode) basicNode).getToken();
+        } else {
+          continue; // not a token node
         }
         Iterator tokenItr = tokenList.iterator();
         while (tokenItr.hasNext()) {

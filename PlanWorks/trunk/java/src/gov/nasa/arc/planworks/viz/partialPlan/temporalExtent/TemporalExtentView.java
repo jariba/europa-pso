@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.36 2004-03-07 01:49:30 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.37 2004-03-09 01:48:29 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -827,7 +827,6 @@ public class TemporalExtentView extends PartialPlanView  {
           isTokenFound = true;
           break;          
         }
-
 //         if (temporalNode.getSlot() != null) {
 //           // check overloaded tokens, since only base tokens are rendered
 //           Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
@@ -844,8 +843,6 @@ public class TemporalExtentView extends PartialPlanView  {
 //           isTokenFound = true;
 //           break;          
 //         }
-
-
       } else if ((slotToFind != null) &&
                  temporalNode.getSlot().getId().equals( slotToFind.getId()))  {
         // empty slot
@@ -861,12 +858,10 @@ public class TemporalExtentView extends PartialPlanView  {
       }
       NodeGenerics.focusViewOnNode( temporalNode, isHighlightNode, jGoExtentView);
       if (! isByKey) {
-        // only base tokens are rendered in this view
-        // NodeGenerics.selectSecondaryNodes
-        //   ( NodeGenerics.mapTokensToTokenNodes
-        //     (((PartialPlanViewSet) TemporalExtentView.this.getViewSet()).
-        //      getSecondaryTokens(), nodeList),
-        //     jGoView);
+        NodeGenerics.selectSecondaryNodes
+          ( NodeGenerics.mapTokensToTokenNodes
+            (((PartialPlanViewSet) TemporalExtentView.this.getViewSet()).
+             getSecondaryTokens(), temporalNodeList), jGoExtentView);
       }
     } else {
       // Content Spec filtering may cause this to happen

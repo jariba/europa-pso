@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.9 2004-03-08 19:30:17 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.10 2004-03-09 01:48:29 taylor Exp $
 //
 // PlanWorks
 //
@@ -69,7 +69,7 @@ public class ResourceTransactionSet extends BasicNode {
   private String resourceId;
   private int transactionSetYOrigin;
   private int levelScaleWidth;
-  private List transactionObjectList;
+  private List transactionNodeList;
 
   /**
    * <code>ResourceTransactionSet</code> - constructor 
@@ -94,7 +94,7 @@ public class ResourceTransactionSet extends BasicNode {
     nodeLabel = resource.getName();
     nodeLabelWidth =
       ResourceTransactionSet.getNodeLabelWidth( nodeLabel, resourceTransactionView);
-    transactionObjectList = new ArrayList();
+    transactionNodeList = new ArrayList();
 
     configure();
   } // end constructor
@@ -178,12 +178,12 @@ public class ResourceTransactionSet extends BasicNode {
   }
 
   /**
-   * <code>getTransactionObjectList</code>
+   * <code>getTransactionNodeList</code>
    *
    * @return - <code>List</code> - 
    */
-  public final List getTransactionObjectList() {
-    return transactionObjectList;
+  public final List getTransactionNodeList() {
+    return transactionNodeList;
   }
 
   /**
@@ -201,7 +201,7 @@ public class ResourceTransactionSet extends BasicNode {
     Iterator transSetItr = transactionSet.iterator();
     while (transSetItr.hasNext()) {
       Object t = transSetItr.next();
-      if(!(t instanceof PwResourceTransaction)) {
+      if (! (t instanceof PwResourceTransaction)) {
         continue;
       }
       PwResourceTransaction transaction = (PwResourceTransaction) t;//transSetItr.next();
@@ -218,17 +218,17 @@ public class ResourceTransactionSet extends BasicNode {
 //                           " transEndX " + transEndX);
       int yDelta = ViewConstants.RESOURCE_TRANSACTION_HEIGHT;
       // force min width to 2, so that toolTip will show up
-      ResourceTransactionNode transactionObject =
+      ResourceTransactionNode transactionNode =
         new ResourceTransactionNode( transaction,
                                      new Point( transStartX, currentYLoc),
                                      new Dimension( Math.max( transEndX - transStartX, 2),
                                                     yDelta), resourceTransactionView);
-      transactionObject.setResizable( false); transactionObject.setDraggable( false);
+      transactionNode.setResizable( false); transactionNode.setDraggable( false);
       // allow Mouse-Right menu
-      // transactionObject.setSelectable( false);
-      resourceTransactionView.getJGoExtentDocument().addObjectAtTail( transactionObject);
+      // transactionNode.setSelectable( false);
+      resourceTransactionView.getJGoExtentDocument().addObjectAtTail( transactionNode);
       currentYLoc += yDelta;
-      transactionObjectList.add( transactionObject);
+      transactionNodeList.add( transactionNode);
     }
     currentYLoc += 2;
     return currentYLoc;

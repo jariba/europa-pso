@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.32 2004-03-08 19:30:16 taylor Exp $
+# $Id: GETTING_STARTED,v 1.33 2004-03-09 01:48:26 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -217,10 +217,16 @@ Mouse-Left click on the column header nodes offer sorting of that columns's
 values, alternately in ascending order and desending order.
 
 
-Token/Variable/Constraint/Slot Node Focus in Views
+Node Focus in Views
 ==================================================
-Token nodes (slot nodes in the Timeline View) in all views (except the
-Transaction View), have a Mouse-Right pop-up menu with the possible selection: 
+Nodes which can have focus set:
+o Interval token nodes in the Constraint Network, Temporal Extent, Timeline
+  (slot nodes), and Token Network views;
+o Resource transactions in the Resource Transaction, Temporal Extent, and 
+  Token Network views;
+o Resource nodes in the Resource Profile, and Resource Transaction views.
+
+These nodes have a Mouse-Right pop-up menu with the possible selection of
 "Set Active Token".  When the "active token" has been set, the other views 
 have a "background" Mouse-Right pop-up menu with the possible selection of
 "Snap to Active Token".  Making this selection will cause the view
@@ -229,21 +235,21 @@ highlighted, in the approximate center of the view.  A Mouse-Left click
 in any view will erase node selection highlighting.  In the Timeline View,
 clicking Mouse-Right "Set Active Token" on a slot, will set the overloaded
 tokens as "secondary tokens", such that when Mouse-Right "Snap to Active
-Token" is invoked in the background of the Constraint Network View or the
-Token Network View, these secondary tokens will be given secondary
-highlighting (turquoise).  The basic token will have the primary highlighting
-color (light green).
+Token" is invoked in the background of the Constraint Network View, the
+Temporal Extent View, or the Token Network View, these secondary tokens will 
+be given secondary highlighting (turquoise).  The base token will have the 
+primary highlighting color (light green).
 
 In all the partial plan views (except the Transaction View), Mouse-Right on 
 the background offers "Find by Key" which allows the user to enter a key
 and have the view scroll to that node's location.  For Temporal Extent and 
-Token Network views, entered keys will find token nodes; for the Timeline 
-view, entered keys will find token and slot nodes; for the Resource Profile
-view, entered keys will find resource profiles; for the Resource Transaction
-view, entered keys will find resources and resource transactions and for the 
-Constraint Network view, entered keys will find find object, timeline, 
-resource, token, variable, and constraint nodes -- opening appropriate 
-connecting nodes, if needed.
+Token Network views, entered keys will find interval token and resource
+transaction nodes; for the Timeline view, entered keys will find interval
+token and slot nodes; for the Resource Profile view, entered keys will find 
+resource profiles; for the Resource Transaction view, entered keys will find 
+resources and resource transactions, and for the Constraint Network view, 
+entered keys will find find object, timeline, resource, token, variable, and 
+constraint nodes -- opening appropriate connecting nodes, if needed.
 
 
 Token/Variable/Constraint/Slot/Object/Timeline/Resource Relationships
