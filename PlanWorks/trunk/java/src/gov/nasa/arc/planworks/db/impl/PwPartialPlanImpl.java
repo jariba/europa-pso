@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.22 2003-07-14 22:19:09 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.23 2003-07-15 23:14:19 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -179,6 +179,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     System.err.println( "  parameterMap     " + parameterMap.keySet().size());
     System.err.println( "  tokenRelationMap " + tokenRelationMap.keySet().size());
     System.err.println( "  variableMap      " + variableMap.keySet().size());
+
   } // end fillElementMaps
 
 
