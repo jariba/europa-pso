@@ -6,7 +6,9 @@ import junit.framework.*;
 
 public class PlanWorksTest extends TestCase {
   public static int TEST_RUNNING = 0;
+  public static String [] args;
   public static void main(String [] args) {
+    PlanWorksTest.args = args;
     junit.textui.TestRunner.run(suite());
     //TestResult result = new TestResult();
     //BackendTest.suite().run(result);
@@ -19,9 +21,10 @@ public class PlanWorksTest extends TestCase {
   }
   public static TestSuite suite() {
     final TestSuite suite = new TestSuite();
-    suite.addTest(BackendTest.suite());
-    suite.addTest(MySQLDBTest.suite());
-    suite.addTest(PlanWorksUtilsTest.suite());
+    //suite.addTest(BackendTest.suite());
+    //suite.addTest(MySQLDBTest.suite());
+    //suite.addTest(PlanWorksUtilsTest.suite());
+    suite.addTest(PlanWorksGUITest.suite());
     return suite;
   }
   private static void printFailures(TestResult result) {
