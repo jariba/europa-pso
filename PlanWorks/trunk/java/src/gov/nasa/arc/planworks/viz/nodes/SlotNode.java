@@ -126,6 +126,42 @@ public class SlotNode extends TextNode implements ViewConstants {
   } // end configure
 
 
+  /**
+   * <code>getPredicateName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getPredicateName() {
+    return predicateName;
+  }
+
+  /**
+   * <code>getSlotLocation</code>
+   *
+   * @return - <code>Point</code> - 
+   */
+  public Point getSlotLocation() {
+    return slotLocation;
+  }
+
+  /**
+   * <code>getStartTimeIntervalString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getStartTimeIntervalString() {
+    return startTimeIntervalDomain.toString();
+  }
+
+  /**
+   * <code>getEndTimeIntervalString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getEndTimeIntervalString() {
+    return endTimeIntervalDomain.toString();
+  }
+
   // use startVariable for every token + the endVariable for the last one
   // if a slot is empty, and has no tokens, use the endVariable from
   // the previous slot
