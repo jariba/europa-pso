@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.42 2003-10-14 18:20:14 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.43 2003-10-16 16:39:40 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -49,7 +49,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
+public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
 
   private Long id;
   private String projectName;
@@ -74,12 +74,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
    * @param model - <code>PwModelImpl</code> - not currently used
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPlanningSequenceImpl( String url, Long id, PwProjectImpl project, PwModelImpl model)
+  public PwPlanningSequenceImpl( String url, Long id, PwModelImpl model)
     throws ResourceNotFoundException {
     //System.err.println("In PwPlanningSequenceImpl(String, Integer, PwProjectImpl, PwModelImpl");
     this.url = url;
     this.id = id;
-    this.projectName = project.getName();
     this.model = model;
     stepCount = 0;
     //partialPlanNames = new ArrayList();
@@ -127,7 +126,6 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     throws ResourceNotFoundException {
     //System.err.println("In PwPlanningSequenceImpl(String, PwProjectImpl, PwModelImpl)");
     this.url = url;
-    this.projectName = project.getName();
     this.model = model;
     //partialPlanNames = new ArrayList();
     //transactions = new ArrayList();

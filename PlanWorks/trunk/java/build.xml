@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: build.xml,v 1.8 2003-09-28 00:19:29 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.9 2003-10-16 16:38:22 miatauro Exp $ -->
 <project name="PlanWorks" default="compile" basedir=".">
     <description>
         Planworks Build Targets
@@ -65,5 +65,4 @@
     <copy file="${src}/gov/nasa/arc/planworks/europa/EuropaJNI.h" todir="${javahDestdir}"/>
     <echo message="generation/copy of EuropaJNI.h completed"/>
   </target>
-
 </project>
