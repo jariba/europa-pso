@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.3 2003-05-27 19:00:04 taylor Exp $
+# $Id: README,v 1.4 2003-06-16 18:50:12 miatauro Exp $
 #
 
 CVS CHECKOUT
@@ -41,10 +41,13 @@ BUILDING & RUNNING PLANWORKS
  clean             -- delete the 'java/classes' directory tree
  compile           -- compile 'java/src' tree into 'java/classes' tree
  existTest         -- prototyping test (compile dependency)
+ planWorks         -- run PlanWorks application (compile dependency)
  projectTest       -- prototyping test (compile dependency)
  timelineViewTest  -- JFCunit test (compile dependency)
+ planWorksProf     -- run PlanWorks with profiling output (compile
+                      dependency)
 
-Default target: projectTest
+Default target: planWorks
 
 
 DEVELOPING PLANWORKS

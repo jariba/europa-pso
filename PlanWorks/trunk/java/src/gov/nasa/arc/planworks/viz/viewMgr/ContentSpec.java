@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.8 2003-06-13 18:35:15 miatauro Exp $
+// $Id: ContentSpec.java,v 1.9 2003-06-16 18:50:38 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -17,6 +17,15 @@ import java.util.StringTokenizer;
 import gov.nasa.arc.planworks.db.util.XmlDBeXist;
 import gov.nasa.arc.planworks.db.util.ParsedDomNode;
 //import org.w3c.dom.Node;
+
+/*
+ * <code>ContentSpec</code> -
+ * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
+ * The content specification class.  Interfaces directely with the database to determine which keys
+ * are/should be in the current specification, and provides a method for exposing that information
+ * to other classes (VizView through ViewSet).  It uses <code>BitSet</code>s to determine validity
+ * and perform logic functions.
+ */
 
 public class ContentSpec {
   //private static final String EQ = "=";
@@ -48,6 +57,16 @@ public class ContentSpec {
   private String collectionName;
   private RedrawNotifier redrawNotifier;
 
+  /**
+   * Creates the ContentSpec object, then makes a query to determine the size of the
+   * <code>BitSet</code> that represents the current specification, and sets all of the bits
+   * to <code>true</code>: everything is in the spec initially.
+   * @param collectionName the name of the collection in eXist which contains the plan step with
+   *                       which this ContentSpec is associated
+   * @param redrawNotifier is used to notify the views governed by the spec that the spec has
+   *                       changed, and they need to redraw themselves.
+   */
+
   public ContentSpec(String collectionName, RedrawNotifier redrawNotifier) {
     this.collectionName = collectionName;
     this.redrawNotifier = redrawNotifier;
@@ -71,10 +90,19 @@ public class ContentSpec {
     currentSpec = new BitSet(highestIndex + 1);
     currentSpec.set(0, highestIndex, true);
   }
+  /**
+   * Sets all of the bits to true, then informs the views governed by the spec that they need to
+   * redraw.
+   */
   public void resetSpec() {
     currentSpec.set(0, currentSpec.size()-1, true);
     redrawNotifier.notifyRedraw();
   }
+  /**
+   * Given a key, returns true or false depending on whether or not the key is in the current
+   * spec.
+   * @param key the key being tested.
+   */
   public boolean isInContentSpec(String key) {
     int index;
     try{index = keyToIndex(key);}
@@ -94,9 +122,23 @@ public class ContentSpec {
       }
     }
   }
+  /**
+   * Given a key, returns the integer part.  Used to index into the BitSet.
+   * @param key the key being converted.
+   */
   private int keyToIndex(String key) throws NumberFormatException {
     return Integer.parseInt(key.substring(1)); //i hope the key format never changes
   }
+  /**
+   * Given the parametes specified by the user in the ContentSpecWindow, constructs the entire
+   * specification of valid keys through a series of database queries, then informs the windows
+   * goverend by this spec that they need to redraw themselves to the new specification.
+   * @param timeline the result of getValues() in TimelineGroupBox.
+   * @param predicate the result of getValues() in PredicateGroupBox.
+   * @param constraint the result of getValues() in ConstraintGroupBox.
+   * @param variableType the result of getValues() in VariableTypeGroupBox.
+   * @param timeInterval the result of getValues() in TimeIntervalGroupBox.
+   */
   //REALLY INEFFICIENT INITIAL RUN.  some of this should probably be refactored
   public void applySpec(List timeline, List predicate, List constraint, List variableType, 
                         List timeInterval) throws NumberFormatException {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: GroupBox.java,v 1.3 2003-06-16 16:28:07 miatauro Exp $
+// $Id: GroupBox.java,v 1.4 2003-06-16 18:51:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -23,15 +23,36 @@ import java.awt.Container;
 
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 
+/**
+ * <code>GroupBox</code> -
+ *                      JPanel->GroupBox
+ *                      ContentSpecGroup->GroupBox
+ * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
+ * The <code>JPanel</code> which contains a logical grouping of <code>ContentSpecElements</code>.  
+ * Each <code>GroupBox</code> holds a group of elements by type: timeline, constraint, predicate,
+ * time interval, and variable type.
+ */
+
 public class GroupBox extends JPanel implements ContentSpecGroup {
   protected ArrayList elements;
   protected MDIInternalFrame window;
+
+  /**
+   * <code>GroupBox</code>
+   * Creates the GroupBox object, a list of associated elements, and a <code>GridBagLayout</code>,
+   * @param window The MDIInternalFrame into which the GroupBox is being packed.  Used for the
+   *               <code>pack()</code> method.
+   */
   public GroupBox(MDIInternalFrame window) {
     this.window = window;
     elements = new ArrayList();
     GridBagLayout gridBag = new GridBagLayout();
     setLayout(gridBag);
   }
+  /**
+   * Adds a <code>ContentSpecElement</code> to the list and to the panel, then redraws the window.
+   * @param element The <code>ContentSpecElement</code> to be added.
+   */
   public void add(ContentSpecElement element) {
     super.add((Component)element);
     elements.add(element);
@@ -40,14 +61,23 @@ public class GroupBox extends JPanel implements ContentSpecGroup {
     repaint();
     window.pack();
   }
-  public void remove(SpecBox element) {
-    super.remove(element);
+  /**
+   * Removes a <code>ContentSpecElement</code> from the panel and list, then redraws the window.
+   * @param element The <code>ContentSpecElement</code> to be removed.
+   */
+  public void remove(ContentSpecElement element) {
+    super.remove((Component)element);
     elements.remove(elements.indexOf(element));
     invalidate();
     validate();
     repaint();
     window.pack();
   }
+  /**
+   * Returns the aggregation of the values of the contained ContentSpecElements.
+   * @return List a <code>List</code> of <code>String</code>s that constitute the type
+   *         specification for this group.
+   */
   public List getValues() throws NullPointerException, IllegalArgumentException {
     if(elements.size() == 0) {
       return null;
@@ -65,6 +95,9 @@ public class GroupBox extends JPanel implements ContentSpecGroup {
     }
     return retval;
   }
+  /**
+   * Clears the values of the contained elements.
+   */
   public void reset() {
     for(int i = 0; i < elements.size(); i++) {
       ((ContentSpecElement)elements.get(i)).reset();

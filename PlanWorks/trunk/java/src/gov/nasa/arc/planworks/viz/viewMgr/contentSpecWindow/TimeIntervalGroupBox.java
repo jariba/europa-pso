@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimeIntervalGroupBox.java,v 1.2 2003-06-16 16:28:08 miatauro Exp $
+// $Id: TimeIntervalGroupBox.java,v 1.3 2003-06-16 18:51:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -13,6 +13,15 @@ import java.awt.GridBagLayout;
 import java.awt.Window;
 
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+
+/**
+ * <code>TimeIntervalGroupBox</code> -
+ *            JPanel->TimeIntervalGroupBox
+ *            ContentSpecElement->TimeIntervalBox
+ * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
+ * See the documentation for the GroupBox class.  This is one of those for TimeIntervalBoxen.
+ */
+
 
 public class TimeIntervalGroupBox extends GroupBox {
   public TimeIntervalGroupBox(MDIInternalFrame window) {
