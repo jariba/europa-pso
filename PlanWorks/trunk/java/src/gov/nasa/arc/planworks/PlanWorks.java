@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.55 2003-09-23 16:10:38 taylor Exp $
+// $Id: PlanWorks.java,v 1.56 2003-09-23 16:43:01 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -68,10 +68,10 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class PlanWorks extends MDIDesktopFrame {
 
-    private static final int DESKTOP_FRAME_WIDTH;// = 900;
-    private static final int DESKTOP_FRAME_HEIGHT;// = 750;
-  private static final int FRAME_X_LOCATION = 100;
-  private static final int FRAME_Y_LOCATION = 125;
+  private static final int DESKTOP_FRAME_WIDTH;// = 900;
+  private static final int DESKTOP_FRAME_HEIGHT;// = 750;
+  private static final int FRAME_X_LOCATION;// = 100;
+  private static final int FRAME_Y_LOCATION;// = 125;
   private static final int INTERNAL_FRAME_X_DELTA = 100;
   private static final int INTERNAL_FRAME_Y_DELTA = 75;
   private static final String PLANSEQ_MENU = "Planning Sequence";
@@ -83,17 +83,18 @@ public class PlanWorks extends MDIDesktopFrame {
   private static final String PROJECT_MENU = "Project";
   private static final String CREATE = "create";
   private static final String OPEN = "open";
-
-    static {
-      GraphicsDevice [] devices = 
-	  GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-      DESKTOP_FRAME_WIDTH = 
-	  devices[0].getDisplayMode().getWidth() - 100;
-      DESKTOP_FRAME_HEIGHT =
-	  devices[0].getDisplayMode().getHeight() - 50;
-      INTERNAL_FRAME_WIDTH = (int)(DESKTOP_FRAME_WIDTH * 0.75);
-      INTERNAL_FRAME_HEIGHT = (int)(DESKTOP_FRAME_HEIGHT * 0.75);
-    }
+  
+  static {
+    GraphicsDevice [] devices = 
+      GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+    DESKTOP_FRAME_WIDTH = (int)(devices[0].getDisplayMode().getWidth() * (5./6.));
+    DESKTOP_FRAME_HEIGHT = (int)(devices[0].getDisplayMode().getHeight() * 0.9);
+    INTERNAL_FRAME_WIDTH = (int)(DESKTOP_FRAME_WIDTH * 0.75);
+    INTERNAL_FRAME_HEIGHT = (int)(DESKTOP_FRAME_HEIGHT * 0.75);
+    FRAME_X_LOCATION = (devices[0].getDisplayMode().getWidth() - DESKTOP_FRAME_WIDTH) / 2;
+    FRAME_Y_LOCATION = devices[0].getDisplayMode().getHeight() - DESKTOP_FRAME_HEIGHT;
+    System.err.println(FRAME_X_LOCATION + " " + FRAME_Y_LOCATION);
+  }
 
   /**
    * constant <code>INTERNAL_FRAME_WIDTH</code>
