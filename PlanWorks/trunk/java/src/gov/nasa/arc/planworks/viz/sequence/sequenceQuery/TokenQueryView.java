@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryView.java,v 1.4 2004-03-10 02:21:22 taylor Exp $
+// $Id: TokenQueryView.java,v 1.5 2004-04-22 19:26:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -87,6 +87,8 @@ public class TokenQueryView extends SequenceView {
     this.viewSet = (SequenceViewSet) viewSet;
     this.sequenceQueryWindow = (SequenceQueryWindow) sequenceQueryWindow;
     this.freeTokenQueryFrame = freeTokenQueryFrame;
+    // for PWTestHelper.findComponentByName
+    this.setName( freeTokenQueryFrame.getTitle());
     this.startTimeMSecs = startTimeMSecs;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));

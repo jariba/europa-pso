@@ -322,4 +322,9 @@ public interface ViewConstants {
    */
   public static final int RESOURCE_TRANSACTION_HEIGHT = 10;
 
+
+
+
+
+
 } // end ViewConstants

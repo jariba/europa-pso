@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.22 2004-02-27 18:04:12 miatauro Exp $
+// $Id: DbConstants.java,v 1.23 2004-04-22 19:26:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -287,7 +287,8 @@ public interface DbConstants {
   public static final String MEMBER_VAR = "MEMBER_VAR";
 
   public static final String [] DB_VARIABLE_TYPES = new String [] {
-    START_VAR, END_VAR, DURATION_VAR, OBJECT_VAR, PARAMETER_VAR, STATE_VAR, GLOBAL_VAR, MEMBER_VAR};
+    START_VAR, END_VAR, DURATION_VAR, OBJECT_VAR, PARAMETER_VAR, STATE_VAR, GLOBAL_VAR,
+    MEMBER_VAR};
 
   //object types
   public static final int O_OBJECT = 0;
@@ -296,8 +297,6 @@ public interface DbConstants {
 
   public static final int T_INTERVAL = 0;
   public static final int T_TRANSACTION = 1;
-
-  public static final Integer noId = new Integer(-1);
 
   public static final Integer NO_ID = new Integer( -1);
 } // end interface DbConstants

@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.14 2004-03-30 22:01:00 taylor Exp $
+// $Id: CreateViewThread.java,v 1.15 2004-04-22 19:26:17 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -20,6 +20,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -47,8 +48,17 @@ public class CreateViewThread extends Thread {
     this.viewName = viewName;
   }
 
+  /**
+   * <code>renderView</code>
+   *
+   * @param fullSequenceName - <code>String</code> - 
+   * @param viewable - <code>ViewableObject</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   * @return - <code>MDIInternalFrame</code> - 
+   */
   protected MDIInternalFrame renderView( final String fullSequenceName, 
-                                         final ViewableObject viewable) {
+                                         final ViewableObject viewable,
+                                         final ViewListener viewListener) {
     ViewSet viewSet = PlanWorks.getPlanWorks().viewManager.getViewSet( viewable);
     MDIInternalFrame viewFrame = null;
     boolean viewExists = false;
@@ -64,7 +74,8 @@ public class CreateViewThread extends Thread {
         System.err.println( "Rendering " + viewName + " ...");
       }
 
-      viewFrame = PlanWorks.getPlanWorks().viewManager.openView( viewable, viewClassName);
+      viewFrame =
+        PlanWorks.getPlanWorks().viewManager.openView( viewable, viewClassName, viewListener);
 
       finishViewRendering( viewFrame, PlanWorks.getPlanWorks().viewManager, viewExists,
                            viewName, viewable);
@@ -75,11 +86,11 @@ public class CreateViewThread extends Thread {
          JOptionPane.INFORMATION_MESSAGE);
     }
     return viewFrame;
-  } // end renderPartialPlanView
+  } // end renderView
 
-  protected void finishViewRendering( final MDIInternalFrame viewFrame, 
-                                      final ViewManager viewManager, final boolean viewExists, 
-                                      final String viewName, final ViewableObject viewable) {
+  private void finishViewRendering( final MDIInternalFrame viewFrame, 
+                                    final ViewManager viewManager, final boolean viewExists, 
+                                    final String viewName, final ViewableObject viewable) {
     ViewSet viewSet = null;
     while (viewSet == null) {
       // System.err.println( "wait for ViewSet");

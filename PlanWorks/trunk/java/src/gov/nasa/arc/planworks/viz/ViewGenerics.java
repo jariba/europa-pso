@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.12 2004-04-09 23:11:25 taylor Exp $
+// $Id: ViewGenerics.java,v 1.13 2004-04-22 19:26:21 taylor Exp $
 //
 // PlanWorks
 //
@@ -54,10 +54,17 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -84,14 +91,19 @@ public class ViewGenerics {
   }
 
   /**
-   * <code>partialPlanViewsPopupMenu</code> - open/hide/close views or open a particular one
+   * <code>partialPlanViewsPopupMenu</code> - open/hide/close all views or
+   *                                          open a particular one
    *
    * @param stepNumber - <code>int</code> - 
    * @param planSequence - <code>PwPlanningSequence</code> - 
+   * @param vizView - <code>VizView</code> - 
    * @param viewCoords - <code>Point</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
    */
-  public static void partialPlanViewsPopupMenu( int stepNumber, PwPlanningSequence planSequence,
-                                                VizView vizView, Point viewCoords) {
+  public static void partialPlanViewsPopupMenu( int stepNumber,
+                                                PwPlanningSequence planSequence,
+                                                VizView vizView, Point viewCoords,
+                                                ViewListener viewListener) {
     JPopupMenu mouseRightPopup = new PartialPlanViewMenu();
     String partialPlanName = "step" + String.valueOf( stepNumber);
     JMenuItem header = new JMenuItem( partialPlanName);
@@ -99,7 +111,7 @@ public class ViewGenerics {
     mouseRightPopup.addSeparator();
 
     ((PartialPlanViewMenu) mouseRightPopup).
-      buildPartialPlanViewMenu( partialPlanName, planSequence);
+      buildPartialPlanViewMenu( partialPlanName, planSequence, viewListener);
     PwPartialPlan partialPlanIfLoaded = null;
     try {
       partialPlanIfLoaded = planSequence.getPartialPlanIfLoaded( partialPlanName);
@@ -301,6 +313,25 @@ public class ViewGenerics {
 
 
 
+  class ConstraintNetworkViewFinder implements BooleanFunctor {
+    public ConstraintNetworkViewFinder(){}
+    public final boolean func(Object o){return (o instanceof ConstraintNetworkView);}
+  }
+
+  /**
+   * <code>getConstraintNetworkView</code> - cannot be generalized (jdk1.4)
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @return - <code>ConstraintNetworkView</code> - 
+   */
+  public static ConstraintNetworkView getConstraintNetworkView( MDIInternalFrame frame) {
+    return generics._getConstraintNetworkView(frame);
+  } // end getConstraintNetworkView
+
+  private final ConstraintNetworkView _getConstraintNetworkView(MDIInternalFrame frame) {
+    return (ConstraintNetworkView) CollectionUtils.findFirst
+      ( new ConstraintNetworkViewFinder(), frame.getContentPane().getComponents());
+  }
 
   class TemporalExtentViewFinder implements BooleanFunctor {
     public TemporalExtentViewFinder(){}
@@ -318,9 +349,116 @@ public class ViewGenerics {
   } // end getTemporalExtentView
 
   private final TemporalExtentView _getTemporalExtentView(MDIInternalFrame frame) {
-    return (TemporalExtentView) CollectionUtils.findFirst(new TemporalExtentViewFinder(),
-                                                          frame.getContentPane().getComponents());
+    return (TemporalExtentView) CollectionUtils.findFirst
+      ( new TemporalExtentViewFinder(), frame.getContentPane().getComponents());
   }
 
+  class TimelineViewFinder implements BooleanFunctor {
+    public TimelineViewFinder(){}
+    public final boolean func(Object o){return (o instanceof TimelineView);}
+  }
+
+  /**
+   * <code>getTimelineView</code> - cannot be generalized (jdk1.4)
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @return - <code>TimelineView</code> - 
+   */
+  public static TimelineView getTimelineView( MDIInternalFrame frame) {
+    return generics._getTimelineView(frame);
+  } // end getTimelineView
+
+  private final TimelineView _getTimelineView(MDIInternalFrame frame) {
+    Component [] components = frame.getContentPane().getComponents();
+    System.err.println( "getComponentCount " + frame.getContentPane().getComponentCount());
+    for (int i = 0, n = frame.getContentPane().getComponentCount(); i < n; i++) {
+      System.err.println( "components i " + i + " " + components[i]);
+    }
+    return (TimelineView) CollectionUtils.findFirst
+      ( new TimelineViewFinder(), frame.getContentPane().getComponents());
+  }
+
+  class TokenNetworkViewFinder implements BooleanFunctor {
+    public TokenNetworkViewFinder(){}
+    public final boolean func(Object o){return (o instanceof TokenNetworkView);}
+  }
+
+  /**
+   * <code>getTokenNetworkView</code> - cannot be generalized (jdk1.4)
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @return - <code>TokenNetworkView</code> - 
+   */
+  public static TokenNetworkView getTokenNetworkView( MDIInternalFrame frame) {
+    return generics._getTokenNetworkView(frame);
+  } // end getTokenNetworkView
+
+  private final TokenNetworkView _getTokenNetworkView(MDIInternalFrame frame) {
+    return (TokenNetworkView) CollectionUtils.findFirst
+      ( new TokenNetworkViewFinder(), frame.getContentPane().getComponents());
+  }
+
+  class DBTransactionViewFinder implements BooleanFunctor {
+    public DBTransactionViewFinder(){}
+    public final boolean func(Object o){return (o instanceof DBTransactionView);}
+  }
+
+  /**
+   * <code>getDBTransactionView</code> - cannot be generalized (jdk1.4)
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @return - <code>DBTransactionView</code> - 
+   */
+  public static DBTransactionView getDBTransactionView( MDIInternalFrame frame) {
+    return generics._getDBTransactionView(frame);
+  } // end getDBTransactionView
+
+  private final DBTransactionView _getDBTransactionView(MDIInternalFrame frame) {
+    return (DBTransactionView) CollectionUtils.findFirst
+      ( new DBTransactionViewFinder(), frame.getContentPane().getComponents());
+  }
+
+  class ResourceProfileViewFinder implements BooleanFunctor {
+    public ResourceProfileViewFinder(){}
+    public final boolean func(Object o){return (o instanceof ResourceProfileView);}
+  }
+
+  /**
+   * <code>getResourceProfileView</code> - cannot be generalized (jdk1.4)
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @return - <code>ResourceProfileView</code> - 
+   */
+  public static ResourceProfileView getResourceProfileView( MDIInternalFrame frame) {
+    return generics._getResourceProfileView(frame);
+  } // end getResourceProfileView
+
+  private final ResourceProfileView _getResourceProfileView(MDIInternalFrame frame) {
+    return (ResourceProfileView) CollectionUtils.findFirst
+      ( new ResourceProfileViewFinder(), frame.getContentPane().getComponents());
+  }
+
+  class ResourceTransactionViewFinder implements BooleanFunctor {
+    public ResourceTransactionViewFinder(){}
+    public final boolean func(Object o){return (o instanceof ResourceTransactionView);}
+  }
+
+  /**
+   * <code>getResourceTransactionView</code> - cannot be generalized (jdk1.4)
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @return - <code>ResourceTransactionView</code> - 
+   */
+  public static ResourceTransactionView getResourceTransactionView( MDIInternalFrame frame) {
+    return generics._getResourceTransactionView(frame);
+  } // end getResourceTransactionView
+
+  private final ResourceTransactionView _getResourceTransactionView(MDIInternalFrame frame) {
+    return (ResourceTransactionView) CollectionUtils.findFirst
+      ( new ResourceTransactionViewFinder(), frame.getContentPane().getComponents());
+  }
+
+
+      
 } // end class ViewGenerics 
 

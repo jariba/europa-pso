@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.40 2004-04-06 01:31:39 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.41 2004-04-22 19:26:11 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -162,9 +162,11 @@
     <fail message="Wrong JVM version: ${ant.java.version} => require jdk1.4.*"/>
   </target>
 
+  <!-- do cleanDb before and after test -->
   <target name="test" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2,compile,cleanDb"
     description="-- All PlanWorks tests, including JFCUnit test (compile, cleandb dependencies)">
           <ant dir="./java/src/gov/nasa/arc/planworks/test" antfile="planworks-test.xml"/>
+          <ant target="cleanDb"/>
   </target>
 
 </project>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.42 2004-04-06 01:31:45 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.43 2004-04-22 19:26:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -59,6 +59,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
@@ -103,6 +104,7 @@ public class TemporalExtentView extends PartialPlanView  {
   private boolean isShowLabels;
   private int temporalDisplayMode;
   private boolean isStepButtonView;
+  private ViewListener viewListener;
 
 
   /**
@@ -121,7 +123,13 @@ public class TemporalExtentView extends PartialPlanView  {
     SwingUtilities.invokeLater( runInit);
   } // end constructor
 
-
+  /**
+   * <code>TemporalExtentView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   */
   public TemporalExtentView(ViewableObject partialPlan, ViewSet viewSet, 
                             PartialPlanViewState s) {
     super((PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
@@ -130,17 +138,33 @@ public class TemporalExtentView extends PartialPlanView  {
     setState(s);
     SwingUtilities.invokeLater(runInit);
   }
+
+  public TemporalExtentView( ViewableObject partialPlan, ViewSet viewSet,
+                             ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    temporalExtentViewInit(viewSet);
+    isStepButtonView = false;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
   private void temporalExtentViewInit(ViewSet viewSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    
+    this.viewListener = null;
+
     startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
     maxCellRow = 0;
     timeScaleMark = null;
     isShowLabels = true;
     temporalDisplayMode = SHOW_INTERVALS;
-    viewFrame = viewSet.openView( this.getClass().getName());
+    viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
+    // for PWTestHelper.findComponentByName
+    this.setName( viewFrame.getTitle());
    
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     
@@ -207,6 +231,7 @@ public class TemporalExtentView extends PartialPlanView  {
    *    JGoExtentView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TemporalExtentView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -247,6 +272,7 @@ public class TemporalExtentView extends PartialPlanView  {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
   /**
@@ -271,6 +297,7 @@ public class TemporalExtentView extends PartialPlanView  {
     }  // end constructor
 
     public void run() {
+      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
         // redraw jGoRulerView, in case zoomFactor changed
@@ -288,6 +315,7 @@ public class TemporalExtentView extends PartialPlanView  {
       } finally {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
+    handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } //end run
 
   } // end class RedrawViewThread

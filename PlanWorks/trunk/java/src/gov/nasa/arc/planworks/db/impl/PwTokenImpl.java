@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.41 2004-03-30 22:01:00 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.42 2004-04-22 19:26:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -52,7 +52,7 @@ public class PwTokenImpl implements PwToken {
 
 
   protected Integer id;
-  protected boolean isValueToken;
+  protected boolean isValueToken; // true, unless a Europa constraint token
   //private Integer predicateId;
   protected String predicateName;
   protected Integer startVarId;
@@ -306,7 +306,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>boolean</code> - 
    */
   public boolean isFree() {
-    return ((parentId == null) || parentId.equals( DbConstants.noId));
+    return ((parentId == null) || parentId.equals( DbConstants.NO_ID));
   }
 
   /**
@@ -315,7 +315,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>boolean</code> - 
    */
   public boolean isSlotted() {
-    return ((! isFree()) && (this.slotId != null) && (! slotId.equals( DbConstants.noId)));
+    return ((! isFree()) && (this.slotId != null) && (! slotId.equals( DbConstants.NO_ID))); 
   }
 
   /**
@@ -403,6 +403,7 @@ public class PwTokenImpl implements PwToken {
     else {
       retval.append("\\N").append("\t").append("\\N").append("\t");
     }
+    retval.append( partialPlan.getId()).append("\t");
     if(isFree()) {
       retval.append("1").append("\t");
     }
@@ -415,7 +416,9 @@ public class PwTokenImpl implements PwToken {
     else {
       retval.append("0").append("\t");
     }
-    retval.append(startVarId).append("\t").append(endVarId).append("\t").append(durationVarId);
+    retval.append(startVarId).append("\t");
+    retval.append(endVarId).append("\t");
+    retval.append(durationVarId).append("\t");
     retval.append(stateVarId).append("\t").append(predicateName).append("\t").append(parentId);
     retval.append("\t").append(partialPlan.getObject(parentId).getName()).append("\t");
     retval.append(objectVarId).append("\t");
@@ -439,7 +442,7 @@ public class PwTokenImpl implements PwToken {
     retval.append("\t");
     
     if(isSlotted()) {
-      retval.append(partialPlan.getSlot(slotId).getTokenList().indexOf(this));
+      retval.append(partialPlan.getSlot(slotId).getTokenList().indexOf(this)); 
     }
     else {
       retval.append("-1");

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.22 2004-03-10 02:21:22 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.23 2004-04-22 19:26:28 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -44,6 +44,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -180,6 +181,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   public SequenceQueryWindow( MDIInternalFrame sequenceQueryFrame, MDIDesktopFrame desktopFrame,
                               ViewableObject viewable, ViewSet viewSet) {
     this.sequenceQueryFrame = sequenceQueryFrame;
+    // for PWTestHelper.findComponentByName
+    this.setName( sequenceQueryFrame.getTitle());
     this.desktopFrame = desktopFrame;
     this.viewable = viewable;
     this.viewSet = (SequenceViewSet) viewSet;
@@ -450,6 +453,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       if (! sequenceStepsViewExists) {
         String seqName = ((PwPlanningSequence) viewable).getName();
         String seqUrl = ((PwPlanningSequence) viewable).getUrl();
+        ViewListener viewListener = null;
         SequenceViewMenuItem seqViewItem =
           new SequenceViewMenuItem( seqName, seqUrl, seqName);
         boolean isInvokeAndWait = true;

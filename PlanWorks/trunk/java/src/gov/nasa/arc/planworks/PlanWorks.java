@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.93 2004-04-09 23:11:23 taylor Exp $
+// $Id: PlanWorks.java,v 1.94 2004-04-22 19:26:17 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -100,6 +100,10 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String OBJECT_TREE_VIEW        = "Object Tree View";
   public static final String MODEL_RULES_VIEW        = "Model Rules View";
   public static final List SEQUENCE_VIEW_LIST;
+
+  public static final String WINDOW_MENU = "Window";
+  public static final String TILE_WINDOWS_MENU_ITEM = "Tile Windows";
+  public static final String CASCADE_MENU_ITEM = "Cascade";
 
   static {
     GraphicsDevice [] devices = 
@@ -198,7 +202,8 @@ public class PlanWorks extends MDIDesktopFrame {
   private Map sequenceStepsViewMap;
   private Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
 
-  protected final DirectoryChooser sequenceDirChooser; 
+  private DirectoryChooser sequenceDirChooser; // not final, since PlanWorksGUITest
+                                               // creates multiple instances
   //protected final PlannerCommandLineDialog executeDialog;
 
   private static boolean windowBuilt = false;
@@ -235,7 +240,6 @@ public class PlanWorks extends MDIDesktopFrame {
    */                                
   public PlanWorks( final JMenu[] constantMenus) {
     super( planWorksTitle, constantMenus);
-    sequenceDirChooser = new DirectoryChooser();
     planWorksCommon();
   }
 
@@ -257,7 +261,6 @@ public class PlanWorks extends MDIDesktopFrame {
     }
     this.osType = osType;
     this.planWorksRoot = planWorksRoot;
-    sequenceDirChooser = new DirectoryChooser();
     planWorksCommon();
   }
 
@@ -689,7 +692,12 @@ public class PlanWorks extends MDIDesktopFrame {
     thread.start();
   } // end createSequenceViewThread
 
-  private final void createDirectoryChooser() {
+  /**
+   * <code>createDirectoryChooser</code> - public for PWTestHelper
+   *
+   */
+  public final void createDirectoryChooser() {
+    sequenceDirChooser = new DirectoryChooser();
     if (! System.getProperty( "default.sequence.dir").equals( "")) {
       sequenceDirChooser.setCurrentDirectory
         ( new File( System.getProperty( "default.sequence.dir")));
@@ -701,11 +709,11 @@ public class PlanWorks extends MDIDesktopFrame {
         public final void actionPerformed( final ActionEvent e) {
           String dirChoice = sequenceDirChooser.getCurrentDirectory().getAbsolutePath();
           File [] seqDirs = sequenceDirChooser.getSelectedFiles();
-//           System.err.println( "PlanWorks sequence parent directory" + dirChoice);
-//           System.err.println( "sequenceDirectories");
-//           for (int i = 0, n = seqDirs.length; i < n; i++) {
-//             System.err.println( "  " + seqDirs[i].getName());
-//           }
+          // System.err.println( "PlanWorks sequence parent directory" + dirChoice);
+          // System.err.println( "sequenceDirectories");
+          // for (int i = 0, n = seqDirs.length; i < n; i++) {
+          //   System.err.println( "i " + i + " " + seqDirs[i].getName());
+          // }
           if ((dirChoice != null) && (dirChoice.length() > 0) &&
               (new File( dirChoice)).isDirectory() &&
               (seqDirs.length != 0)) {

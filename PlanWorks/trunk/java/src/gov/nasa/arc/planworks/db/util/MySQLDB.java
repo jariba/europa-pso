@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.95 2004-04-02 00:58:42 miatauro Exp $
+// $Id: MySQLDB.java,v 1.96 2004-04-22 19:26:19 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -840,7 +840,7 @@ public class MySQLDB {
             transInfo = new String(blob.getBytes(1, (int) blob.length()));
           }
           new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
-                                        durationVarId, stateVarId, objectVarId, DbConstants.noId,
+                                        durationVarId, stateVarId, objectVarId, DbConstants.NO_ID,
                                         tokenRelIds, paramVarIds, transInfo, partialPlan);
         }
         else if(freeTokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
@@ -849,8 +849,8 @@ public class MySQLDB {
           if(!freeTokens.wasNull()) {
             tokenInfo = new String(blob.getBytes(1, (int) blob.length()));
           }
-          new PwTokenImpl(tokenId, isValueToken, DbConstants.noId, predName, startVarId, endVarId,
-                          durationVarId, stateVarId, objectVarId, DbConstants.noId, tokenRelIds,
+          new PwTokenImpl(tokenId, isValueToken, DbConstants.NO_ID, predName, startVarId, endVarId,
+                          durationVarId, stateVarId, objectVarId, DbConstants.NO_ID, tokenRelIds,
                           paramVarIds, tokenInfo, partialPlan);
         }
       }

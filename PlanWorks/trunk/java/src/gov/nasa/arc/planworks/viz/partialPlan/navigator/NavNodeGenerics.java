@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.4 2004-03-03 02:14:23 taylor Exp $
+// $Id: NavNodeGenerics.java,v 1.5 2004-04-22 19:26:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -446,10 +446,10 @@ public final class NavNodeGenerics {
     PwPartialPlan partialPlan = navigatorView.getPartialPlan();
     // System.err.println( "getTokenColor getSlotId " + token.getSlotId());
     // System.err.println( "getTokenColor getTimelineId() " + token.getTimelineId());
-    if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.noId)) {
+    if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.NO_ID)) {
       PwSlot slot = partialPlan.getSlot( token.getSlotId());
       tokenColor = navigatorView.getTimelineColor( slot.getTimelineId());
-    } else if (token.getParentId() != null && !token.getParentId().equals(DbConstants.noId)) {
+    } else if (token.getParentId() != null && !token.getParentId().equals(DbConstants.NO_ID)) {
       tokenColor = navigatorView.getTimelineColor( token.getParentId());
     } else {
       tokenColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);

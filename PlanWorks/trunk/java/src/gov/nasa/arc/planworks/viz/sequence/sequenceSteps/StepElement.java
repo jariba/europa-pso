@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.13 2004-04-09 23:11:27 taylor Exp $
+// $Id: StepElement.java,v 1.14 2004-04-22 19:26:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -48,6 +48,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.HistogramElement;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
@@ -80,6 +81,8 @@ public class StepElement extends HistogramElement {
   private int stepNumber;
   private int height;
   private int numTransactions;
+  private ViewListener viewListener;
+
 
   /**
    * <code>StepElement</code> - constructor 
@@ -107,6 +110,7 @@ public class StepElement extends HistogramElement {
     stepNumber = Utilities.getStepNumber( partialPlanName);
     this.planSequence = planSequence;
     this.sequenceView = sequenceView;
+    this.viewListener = null;
   } // end constructor
 
 
@@ -153,6 +157,23 @@ public class StepElement extends HistogramElement {
     return tip.toString();
   } // end getToolTipText
 
+  
+  /**
+   * <code>doMouseClickWithListener</code> - called from PlanWorksGUITest
+   *
+   * @param modifiers - <code>int</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   * @param view - <code>JGoView</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public void doMouseClickWithListener( int modifiers, Point docCoords,
+                                        Point viewCoords, JGoView view,
+                                        ViewListener viewListener) {
+    this.viewListener = viewListener;
+    doMouseClick( modifiers, docCoords, viewCoords, view);
+  } // end doMouseClickWithListener
+
   /**
    * <code>doMouseClick</code> - 
    *
@@ -172,7 +193,7 @@ public class StepElement extends HistogramElement {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       ViewGenerics.partialPlanViewsPopupMenu( stepNumber, planSequence, sequenceView,
-                                              viewCoords);
+                                              viewCoords, viewListener);
       return true;
     }
     return false;

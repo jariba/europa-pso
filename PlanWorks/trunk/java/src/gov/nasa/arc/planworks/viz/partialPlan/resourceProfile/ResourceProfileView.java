@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.15 2004-03-23 18:23:41 miatauro Exp $
+// $Id: ResourceProfileView.java,v 1.16 2004-04-22 19:26:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,6 +42,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
@@ -86,7 +87,19 @@ public class ResourceProfileView extends ResourceView  {
   public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet, 
                               final PartialPlanViewState state) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, state);
-  }
+  } // end constructor
+
+  /**
+   * <code>ResourceProfileView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param vSet - <code>ViewSet</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet,
+                              ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, viewListener);
+  } // end constructor
 
   /**
    * <code>getState</code>
@@ -427,7 +440,7 @@ public class ResourceProfileView extends ResourceView  {
           if (doesViewFrameExist( PlanWorks.RESOURCE_TRANSACTION_VIEW)) {
             MDIInternalFrame resourceTransFrame =
               viewSet.openView( PlanWorks.getViewClassName
-                                ( PlanWorks.RESOURCE_TRANSACTION_VIEW));
+                                ( PlanWorks.RESOURCE_TRANSACTION_VIEW), viewListener);
             ResourceTransactionView resourceTransactionView = null;
             Container contentPane = resourceTransFrame.getContentPane();
             for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {

@@ -1,3 +1,11 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: NewSequenceThread.java,v 1.4 2004-04-22 19:26:17 taylor Exp $
+//
 package gov.nasa.arc.planworks;
 
 import javax.swing.JMenu;

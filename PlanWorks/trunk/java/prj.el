@@ -1,4 +1,4 @@
-;;; $Id: prj.el,v 1.9 2004-03-31 22:27:05 taylor Exp $
+;;; $Id: prj.el,v 1.10 2004-04-22 19:26:13 taylor Exp $
 ;;;
 ;;; JAVA_HOME ANT_HOME JDE_HOME & PLANWORKS_HOME must be set properly
 ;;;
@@ -6,7 +6,7 @@
 ;;;
 (jde-project-file-version "1.0")
 (jde-set-variables
- '(jde-ant-args (concat "-emacs -Djavac=" (getenv "JAVA_HOME")
+ '(jde-ant-args (concat "-emacs -Ddeprecation -Djavac=" (getenv "JAVA_HOME")
                         "/bin/javac -Djar=" (getenv "JAVA_HOME") "/bin/jar compile"))
  '(jde-ant-buildfile (concat (getenv "PLANWORKS_HOME") "/build.xml"))
  '(jde-ant-complete-target nil)

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.7 2004-04-06 01:31:44 taylor Exp $
+// $Id: ResourceView.java,v 1.8 2004-04-22 19:26:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -133,6 +134,12 @@ public abstract class ResourceView extends PartialPlanView  {
    */
   protected List resourceNameNodeList;  
 
+  /**
+   * variable <code>viewListener</code>
+   *
+   */
+  protected ViewListener viewListener;
+
   private long startTimeMSecs;
   private MDIInternalFrame viewFrame;
   private JGoView jGoLevelScaleView;
@@ -183,9 +190,29 @@ public abstract class ResourceView extends PartialPlanView  {
     SwingUtilities.invokeLater( runInit);
   }
 
+  /**
+   * <code>ResourceView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param vSet - <code>ViewSet</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public ResourceView( final ViewableObject partialPlan, final ViewSet vSet,
+                       final ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
+    resourceViewInit( vSet);
+    isStepButtonView = false;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
   private void resourceViewInit( final ViewSet vSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) vSet;
+    this.viewListener = null;
     
     // startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startXLoc = 1;
@@ -197,7 +224,9 @@ public abstract class ResourceView extends PartialPlanView  {
     maxLevelViewHeightPoint = null;
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
     resourceNameNodeList = new ArrayList();
-    viewFrame = vSet.openView( this.getClass().getName());
+    viewFrame = vSet.openView( this.getClass().getName(), viewListener);
+    // for PWTestHelper.findComponentByName
+    this.setName( viewFrame.getTitle());
     // create panels/views after fontMetrics available
    } // end resourceProfileViewInit
 
@@ -274,6 +303,7 @@ public abstract class ResourceView extends PartialPlanView  {
    *    JGoExtentView.setVisible( true) must be completed -- use runInit in constructor
    */
   public final void init() {
+    handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for ResourceView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -343,7 +373,7 @@ public abstract class ResourceView extends PartialPlanView  {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    
+    handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 
@@ -369,6 +399,7 @@ public abstract class ResourceView extends PartialPlanView  {
     }  // end constructor
 
     public final void run() {
+      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
         boolean isRedraw = true, isScrollBarAdjustment = false;
@@ -384,6 +415,7 @@ public abstract class ResourceView extends PartialPlanView  {
       } finally {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
+      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } // end run
 
   } // end class RedrawViewThread

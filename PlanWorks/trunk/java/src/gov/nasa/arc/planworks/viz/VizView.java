@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.20 2004-04-09 23:11:26 taylor Exp $
+// $Id: VizView.java,v 1.21 2004-04-22 19:26:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -47,6 +47,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.partialPlan.CreatePartialPlanViewThread;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -67,11 +68,6 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class VizView extends JPanel {
 
-  public static final String EVT_BEGUN_DRAWING = "drawingBegun";
-  public static final String EVT_ENDED_DRAWING = "drawingEnded";
-  public static final String EVT_JGO_VIEW_CHANGED = "jGoViewChanged";
-  public static final String EVT_JGO_DOCUMENT_CHANGED = "jGoDocumentChanged";
-
   /**
    * constant <code>ZOOM_FACTORS</code>
    *
@@ -89,7 +85,7 @@ public class VizView extends JPanel {
   protected VizViewOverview overview;
   protected VizViewRuleView ruleView;
   protected int zoomFactor;
-  private List listenerList;
+  private  List listenerList;
 
   /**
    * <code>VizView</code> - constructor 
@@ -116,6 +112,7 @@ public class VizView extends JPanel {
   }
 
   public void addViewListener(ViewListener l) {
+    // System.err.println( "VizView.addViewListener " + l);
     listenerList.add(l);
   }
 
@@ -340,10 +337,12 @@ public class VizView extends JPanel {
           String seqName = planSequence.getName();
           boolean isInvokeAndWait = true;
           Iterator viewListItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
+          ViewListener viewListener = null;
           while (viewListItr.hasNext()) {
             final String viewName = (String) viewListItr.next();
             final PartialPlanViewMenuItem viewItem =
-              new PartialPlanViewMenuItem( viewName, seqUrl, seqName, partialPlanName);
+              new PartialPlanViewMenuItem( viewName, seqUrl, seqName, partialPlanName,
+                                           viewListener);
             Thread thread = new CreatePartialPlanViewThread( viewName, viewItem, isInvokeAndWait);
             thread.setPriority(Thread.MIN_PRIORITY);
             thread.start();
@@ -480,8 +479,8 @@ public class VizView extends JPanel {
     for(Iterator it = listenerList.iterator(); it.hasNext();) {
       ViewListener l = (ViewListener) it.next();
       try {
-        //System.err.println("Accessing method " + l.getClass().getName() + "." + eventName + "("
-        //                   + paramTypes + ")");
+        // System.err.println("Accessing method " + l.getClass().getName() + "." + eventName + "("
+        //                    + paramTypes + ")");
         l.getClass().getMethod(eventName, paramTypes).invoke(l, params);
         
       }
@@ -503,11 +502,11 @@ public class VizView extends JPanel {
     }
     public void documentChanged(JGoDocumentEvent e) {
       Object [] params = {e};
-      view.handleEvent(EVT_JGO_VIEW_CHANGED, params);
+      view.handleEvent(ViewListener.EVT_JGO_VIEW_CHANGED, params);
     }
     public void viewChanged(JGoViewEvent e) {
       Object [] params = {e};
-      view.handleEvent(EVT_JGO_DOCUMENT_CHANGED, params);
+      view.handleEvent(ViewListener.EVT_JGO_DOCUMENT_CHANGED, params);
     }
   }
 

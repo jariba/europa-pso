@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ModelRulesView.java,v 1.4 2004-03-27 00:30:46 taylor Exp $
+// $Id: ModelRulesView.java,v 1.5 2004-04-22 19:26:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -52,6 +52,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.StringNameComparator;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
@@ -106,6 +107,7 @@ public class ModelRulesView extends SequenceView {
   private List predicateNameList; // element String
   private List linkList; // element RuleLink
   private List linkNameList; // element String
+  private ViewListener viewListener;
 
   /**
    * <code>ModelRulesView</code> - constructor 
@@ -121,6 +123,7 @@ public class ModelRulesView extends SequenceView {
     this.startTimeMSecs = System.currentTimeMillis();
     // build model structure from MySQL db
     model = this.planSequence.getModel();
+    this.viewListener = null;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -186,7 +189,7 @@ public class ModelRulesView extends SequenceView {
     boolean isRedraw = false;
     renderModelRules( isRedraw);
 
-    expandViewFrame( viewSet.openView( this.getClass().getName()),
+    expandViewFrame( viewSet.openView( this.getClass().getName(), viewListener),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));

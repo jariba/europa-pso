@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceTransactionImpl.java,v 1.4 2004-03-23 18:20:49 miatauro Exp $
+// $Id: PwResourceTransactionImpl.java,v 1.5 2004-04-22 19:26:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,7 +43,7 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
                                    final Integer parentId, final String tokenRelationIds,
                                    final String paramVarIds, final String transInfo, 
                                    final PwPartialPlanImpl partialPlan) {
-    super(id, isValueToken, DbConstants.noId, predName, startVarId, endVarId, durationVarId, 
+    super(id, isValueToken, DbConstants.NO_ID, predName, startVarId, endVarId, durationVarId, 
           stateVarId, objectVarId, parentId, tokenRelationIds, paramVarIds, null, partialPlan);
     StringTokenizer strTok = new StringTokenizer(transInfo, ",");
     quantityMin = Double.parseDouble(strTok.nextToken());

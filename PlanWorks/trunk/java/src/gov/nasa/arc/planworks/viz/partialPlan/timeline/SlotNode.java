@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.17 2004-03-30 22:01:04 taylor Exp $
+// $Id: SlotNode.java,v 1.18 2004-04-22 19:26:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -44,6 +44,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
@@ -92,6 +93,7 @@ public class SlotNode extends TextNode {
   private JGoText endTimeIntervalObject;
   private boolean isTimeLabelYLocLevel1;
   private PwToken token;
+  private ViewListener viewListener;
 
 
   public SlotNode( String nodeLabel, PwSlot slot, PwTimeline timeline, Point slotLocation,
@@ -113,6 +115,7 @@ public class SlotNode extends TextNode {
     this.timelineView = timelineView;
     this.startTimeIntervalObject = null;
     this.endTimeIntervalObject = null;
+    this.viewListener = null;
     // System.err.println( "SlotNode: predicateName " + predicateName);
     configure( nodeLabel, slotLocation, backgroundColor);
   } // end constructor
@@ -445,7 +448,8 @@ public class SlotNode extends TextNode {
           NodeGenerics.setSecondaryTokensForSlot
             ( token, slot, (PartialPlanViewSet) timelineView.getViewSet());
           TemporalExtentView temporalExtentView =
-            ViewGenerics.getTemporalExtentView( timelineView.getViewSet().openView( className));
+            ViewGenerics.getTemporalExtentView( timelineView.getViewSet().
+                                                openView( className, viewListener));
           boolean isByKey = false;
           temporalExtentView.findAndSelectToken( token, slot, isByKey);
         } else {
