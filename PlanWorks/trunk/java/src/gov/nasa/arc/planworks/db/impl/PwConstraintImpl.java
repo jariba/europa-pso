@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.9 2003-08-19 00:24:23 miatauro Exp $
+// $Id: PwConstraintImpl.java,v 1.10 2003-08-22 21:39:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import gov.nasa.arc.planworks.db.PwConstraint;
-
+import gov.nasa.arc.planworks.util.UniqueSet;
 
 /**
  * <code>PwConstraintImpl</code> - 
@@ -32,7 +32,8 @@ public class PwConstraintImpl implements PwConstraint {
   private String name;
   private Integer id;
   private String type;
-  private List variableIds; // element Integer
+  //private List variableIds; // element Integer
+  private UniqueSet variableIds;
   private PwPartialPlanImpl partialPlan;
 
 
@@ -50,10 +51,17 @@ public class PwConstraintImpl implements PwConstraint {
     this.name = name;
     this.id = id;
     this.type = type;
-    this.variableIds = new ArrayList(variableIds);
+    this.variableIds = new UniqueSet(variableIds);
     this.partialPlan = partialPlan;
   } // end constructor
 
+  public PwConstraintImpl(String name, Integer id, String type, PwPartialPlanImpl partialPlan) {
+    this.name = name;
+    this.id = id;
+    this.type = type;
+    this.variableIds = new UniqueSet();
+    this.partialPlan = partialPlan;
+  }
 
   /**
    * <code>getName</code>
@@ -102,5 +110,9 @@ public class PwConstraintImpl implements PwConstraint {
    */
   public List getVariableIdList() {
     return new ArrayList(variableIds);
+  }
+
+  public void addVariable(Integer variableId) {
+    variableIds.add(variableId);
   }
 } // end class PwConstraintImpl

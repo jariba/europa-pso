@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.25 2003-08-21 18:38:27 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.26 2003-08-22 21:39:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -32,7 +32,7 @@ import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.FileCopy;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-
+import gov.nasa.arc.planworks.util.UniqueSet;
 
 /**
  * <code>PwPlanningSequenceImpl</code> - 
@@ -268,7 +268,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     int index = -1;
     if((index = partialPlanNames.indexOf(partialPlanName)) != -1) {
       PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, id);
-      //partialPlan.checkPlan();
+      partialPlan.checkPlan();
       partialPlans.set(index, partialPlan);
       return partialPlan;
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.12 2003-08-20 23:34:17 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.13 2003-08-22 21:39:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -21,7 +21,7 @@ import java.util.StringTokenizer;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwVariable;
-
+import gov.nasa.arc.planworks.util.UniqueSet;
 
 /**
  * <code>PwVariableImpl</code> - 
@@ -34,9 +34,9 @@ public class PwVariableImpl implements PwVariable {
 
   private Integer id;
   private String type;
-  private List constraintIdList; // element String
-  private List parameterIdList;
-  private List tokenIdList;
+  private UniqueSet constraintIdList; // element String
+  private UniqueSet parameterIdList;
+  private UniqueSet tokenIdList;
   private PwDomainImpl domain; // PwEnumeratedDomainImpl || PwIntervalDomainImpl
   private PwPartialPlanImpl partialPlan;
 
@@ -55,13 +55,23 @@ public class PwVariableImpl implements PwVariable {
                          List tokenIds, PwDomainImpl domain, PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.type = type;
-    this.constraintIdList = new ArrayList(constraintIds);
-    this.parameterIdList = new ArrayList(parameterIds);
-    this.tokenIdList = new ArrayList(tokenIds);
+    this.constraintIdList = new UniqueSet(constraintIds);
+    this.parameterIdList = new UniqueSet(parameterIds);
+    this.tokenIdList = new UniqueSet(tokenIds);
     this.domain = domain;
     this.partialPlan = partialPlan;
   } // end constructor
 
+  public PwVariableImpl( Integer id, String type, PwDomainImpl domain,
+                         PwPartialPlanImpl partialPlan) {
+    this.id = id;
+    this.type = type;
+    this.constraintIdList = new UniqueSet();
+    this.parameterIdList = new UniqueSet();
+    this.tokenIdList = new UniqueSet();
+    this.domain = domain;
+    this.partialPlan = partialPlan;
+  } // end constructor
 
   /**
    * <code>getId</code>
@@ -132,6 +142,18 @@ public class PwVariableImpl implements PwVariable {
 
   public void removeConstraint(Integer constraintId) {
     constraintIdList.remove(constraintId);
+  }
+
+  public void addConstraint(Integer constraintId) {
+    constraintIdList.add(constraintId);
+  }
+
+  public void addParameter(Integer parameterId) {
+    parameterIdList.add(parameterId);
+  }
+
+  public void addToken(Integer tokenId) {
+    tokenIdList.add(tokenId);
   }
 
 } // end class PwVariableImpl

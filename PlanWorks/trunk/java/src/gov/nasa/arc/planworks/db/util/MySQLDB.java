@@ -197,41 +197,27 @@ public class MySQLDB {
       ioe.printStackTrace();
       System.exit(-1);
     }
+    //analyzeDatabase();
     return result;
   }
-  /* this may prove useful later, but just slows things down right now
-  public static void analyzeDatabase() {
+  synchronized public static void analyzeDatabase() {
     Statement stmt = null;
     try {
       stmt = conn.createStatement();
       long t1 = System.currentTimeMillis();
-      System.err.println("Analyzing PartialPlan...");
       stmt.execute("ANALYZE TABLE PartialPlan");
-      System.err.println("Analyzing Object...");
       stmt.execute("ANALYZE TABLE Object");
-      System.err.println("Analyzing Timeline...");
       stmt.execute("ANALYZE TABLE Timeline");
-      System.err.println("Analyzing Slot...");
       stmt.execute("ANALYZE TABLE Slot");
-      System.err.println("Analyzing Token...");
       stmt.execute("ANALYZE TABLE Token");
-      System.err.println("Analyzing Variable...");
       stmt.execute("ANALYZE TABLE Variable");
-      System.err.println("Analyzing EnumeratedDomain...");
       stmt.execute("ANALYZE TABLE EnumeratedDomain");
-      System.err.println("Analyzing IntervalDomain...");
       stmt.execute("ANALYZE TABLE IntervalDomain");
-      System.err.println("Analyzing VConstraint...");
       stmt.execute("ANALYZE TABLE VConstraint");
-      System.err.println("Analyzing ConstraintVarMap...");
       stmt.execute("ANALYZE TABLE ConstraintVarMap");
-      System.err.println("Analyzing Predicate...");
       stmt.execute("ANALYZE TABLE Predicate");
-      System.err.println("Analyzing Parameter...");
       stmt.execute("ANALYZE TABLE Parameter");
-      System.err.println("Analyzing ParamVarTokenMap...");
       stmt.execute("ANALYZE TABLE ParamVarTokenMap");
-      System.err.println("Analyzing TokenRelation...");
       stmt.execute("ANALYZE TABLE TokenRelation");
       System.err.println((System.currentTimeMillis() - t1) + "ms in database analysis.");
     }
@@ -240,7 +226,6 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
-  */
 
   /**
    * Load a file into the database
@@ -251,6 +236,7 @@ public class MySQLDB {
 
   synchronized public static void loadFile(String file, String tableName) {
     updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
+    //analyzeDatabase();
   }
 
   /**
@@ -478,6 +464,7 @@ public class MySQLDB {
           updateDatabase("DELETE FROM Predicate WHERE PartialPlanId=".concat(partialPlanId.toString()));
           updateDatabase("DELETE FROM Parameter WHERE PartialPlanId=".concat(partialPlanId.toString()));
         }
+        updateDatabase("DELETE FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
         updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
       }
       updateDatabase("DELETE FROM Project WHERE ProjectId=".concat(id.toString()));
@@ -567,223 +554,102 @@ public class MySQLDB {
   synchronized public static void createTimelineSlotTokenNodesStructure(PwPartialPlanImpl partialPlan) {
     List objectIdList = partialPlan.getObjectIdList();
     ListIterator objectIdIterator = objectIdList.listIterator();
-    PwObjectImpl object = null;
-    PwTimelineImpl timeline = null;
-    PwSlotImpl slot = null;
-    PwTokenImpl token = null;
 
     try {
       long t1 = System.currentTimeMillis();
       ResultSet timelineSlotTokens = 
-        queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.ObjectId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, Token.TimelineId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline LEFT JOIN Slot ON Slot.TimelineId=Timeline.TimelineId && Slot.PartialPlanId=Timeline.PartialPlanId LEFT JOIN Token ON Token.PartialPlanId=Slot.PartialPlanId && Token.SlotId=Slot.SlotId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Token.PartialPlanId && ParamVarTokenMap.TokenId=Token.TokenId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Timeline.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" ORDER BY Timeline.TimelineId, Slot.SlotId, Token.TokenId, ParamVarTokenMap.ParameterId"));
+        queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline LEFT JOIN Slot ON Slot.TimelineId=Timeline.TimelineId && Slot.PartialPlanId=Timeline.PartialPlanId LEFT JOIN Token ON Token.PartialPlanId=Slot.PartialPlanId && Token.SlotId=Slot.SlotId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Token.PartialPlanId && ParamVarTokenMap.TokenId=Token.TokenId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Timeline.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" ORDER BY Timeline.TimelineId, Slot.SlotId, Token.TokenId, ParamVarTokenMap.ParameterId"));
       System.err.println("Time spent in token query: " + (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
-      Integer timelineId = new Integer(-1);
-      String timelineName = "";
-      Integer objectId = new Integer(-1);
-      Integer slotId = new Integer(-1);
-      Integer tokenId = new Integer(-1);
-      boolean tokenIsValueToken = false;
-      Integer tokenStartVarId = new Integer(-1);
-      Integer tokenEndVarId = new Integer(-1);
-      Integer tokenObjectId = new Integer(-1);
-      Integer tokenRejectVarId = new Integer(-1);
-      Integer tokenObjectVarId = new Integer(-1);
-      Integer tokenPredicateId = new Integer(-1);
-      Integer paramVarId = new Integer(-1);
-      Integer tokenRelationId = new Integer(-1);
-      Integer tokenSlotId = new Integer(-1);
-      Integer tokenDurationVarId = new Integer(-1);
-      Integer tokenTimelineId = new Integer(-1);
-      ArrayList tokenRelations = new ArrayList();
-      ArrayList paramVars = new ArrayList();
-      ArrayList slots = new ArrayList();
-      boolean isSlotEmpty = false;
+      PwObjectImpl object = null;
+      PwTimelineImpl timeline = null;
+      PwSlotImpl slot = null;
+      PwTokenImpl token = null;
       while(timelineSlotTokens.next()) {
-        Integer currTimelineId = new Integer(timelineSlotTokens.getInt("Timeline.TimelineId"));
-        String currTimelineName = timelineSlotTokens.getString("Timeline.TimelineName");
-        Integer currObjectId = new Integer(timelineSlotTokens.getInt("Timeline.ObjectId"));
-        Integer currSlotId = new Integer(timelineSlotTokens.getInt("Slot.SlotId"));
-        Integer currTokenId = new Integer(timelineSlotTokens.getInt("Token.TokenId"));
-        boolean currTokenIsValueToken = timelineSlotTokens.getBoolean("Token.IsValueToken");
-        Integer currTokenStartVarId = new Integer(timelineSlotTokens.getInt("Token.StartVarId"));
-        Integer currTokenEndVarId = new Integer(timelineSlotTokens.getInt("Token.EndVarId"));
-        Integer currTokenObjectId = new Integer(timelineSlotTokens.getInt("Token.ObjectId"));
-        Integer currTokenRejectVarId = new Integer(timelineSlotTokens.getInt("Token.RejectVarId"));
-        Integer currTokenObjectVarId = new Integer(timelineSlotTokens.getInt("Token.ObjectVarId"));
-        Integer currTokenPredicateId = new Integer(timelineSlotTokens.getInt("Token.PredicateId"));
-        Integer currParamVarId = 
-          new Integer(timelineSlotTokens.getInt("ParamVarTokenMap.VariableId"));
-        Integer currTokenRelationId =
-          new Integer(timelineSlotTokens.getInt("TokenRelation.TokenRelationId"));
-        //Integer currTokenSlotId = new Integer(timelineSlotTokens.getInt("Token.SlotId"));
-        Integer currTokenDurationVarId = 
-          new Integer(timelineSlotTokens.getInt("Token.DurationVarId"));
-        Integer currTokenTimelineId = new Integer(timelineSlotTokens.getInt("Token.TimelineId"));
+        Integer objectId = new Integer(timelineSlotTokens.getInt("Timeline.ObjectId"));
+        Integer timelineId = new Integer(timelineSlotTokens.getInt("Timeline.TimelineId"));
+        Integer slotId = new Integer(timelineSlotTokens.getInt("Slot.SlotId"));
+        Integer tokenId = new Integer(timelineSlotTokens.getInt("Token.TokenId"));
+        if(timelineSlotTokens.wasNull()) {
+          tokenId = null;
+        }
 
-        if(!currParamVarId.equals(NULL)) {
-          if(!paramVarId.equals(M1) && !paramVars.contains(paramVarId)) {
-            paramVars.add(paramVarId);
-          }
-          paramVarId = currParamVarId;
-        }
-        if(!currTokenRelationId.equals(NULL)) {
-          if(!tokenRelationId.equals(M1) && !tokenRelations.contains(tokenRelationId)) {
-            tokenRelations.add(tokenRelationId);
-          }
-          tokenRelationId = currTokenRelationId;
-        }
-        if(!objectId.equals(currObjectId) && !currObjectId.equals(NULL)) {
-          if(!objectId.equals(M1) && !tokenId.equals(M1) && !isSlotEmpty) {
-            token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
-                          tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
-                          tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
-                          paramVars);
-            paramVarId = M1;
-            tokenRelationId = M1;
-            tokenRelations.clear();
-            paramVars.clear();
-          }
-          objectId = currObjectId;
+        if(object == null || !object.getId().equals(objectId)) {
           object = partialPlan.getObjectImpl(objectId);
         }
-        if(!timelineId.equals(currTimelineId) && !currTimelineId.equals(NULL)) {
-          if(!timelineId.equals(M1) && !tokenId.equals(M1) && !isSlotEmpty) {
-            token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
-                          tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
-                          tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
-                          paramVars);
-            paramVarId = M1;
-            tokenRelationId = M1;
-            tokenRelations.clear();
-            paramVars.clear();
+        if(timeline == null || !timeline.getId().equals(timelineId)) {
+          if(object == null) {
+            System.err.println("object " + objectId + " is null...?");
           }
-          timelineId = currTimelineId;
-          timeline = object.addTimeline(currTimelineName, timelineId);
+          if(timelineSlotTokens.getString("Timeline.TimelineName") == null) {
+            System.err.println("name for timeline " + timelineId + " is null");
+          }
+          if(timelineId == null) {
+            System.err.println("timelineId is null");
+          }
+          timeline = object.addTimeline(timelineSlotTokens.getString("Timeline.TimelineName"),
+                                        timelineId);
         }
-        if(!slotId.equals(currSlotId) && !currSlotId.equals(NULL)) {
-          if(!slotId.equals(M1) && !tokenId.equals(M1) && !isSlotEmpty) {
-            token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
-                          tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
-                          tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
-                          paramVars);
-            paramVarId = M1;
-            tokenRelationId = M1;
-            tokenRelations.clear();
-            paramVars.clear();
-          }
-          slotId = currSlotId;
+        if(slot == null || !slot.getId().equals(slotId)) {
           slot = timeline.addSlot(slotId);
-          isSlotEmpty = currTokenId.equals(NULL);
-          slots.add(slot);
         }
-        if(!tokenId.equals(currTokenId) && !currTokenId.equals(NULL)) {
-          if(!tokenId.equals(M1) && !partialPlan.tokenExists(tokenId)) {
-            token = slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
-                          tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
-                          tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
-                          paramVars);
-            paramVarId = M1;
-            tokenRelationId = M1;
-            tokenRelations.clear();
-            paramVars.clear();
-          }
-          tokenId = currTokenId;
-          tokenIsValueToken = currTokenIsValueToken;
-          tokenSlotId = currSlotId;
-          tokenPredicateId = currTokenPredicateId;
-          tokenStartVarId = currTokenStartVarId;
-          tokenEndVarId = currTokenEndVarId;
-          tokenDurationVarId = currTokenDurationVarId;
-          tokenObjectId = currTokenObjectId;
-          tokenRejectVarId = currTokenRejectVarId;
-          tokenObjectVarId = currTokenObjectVarId;
-          tokenTimelineId = currTokenTimelineId;
-          if(!currTokenRelationId.equals(NULL) && !tokenRelations.contains(currTokenRelationId)) {
-            tokenRelations.add(currTokenRelationId);
-          }
-          if(!currParamVarId.equals(NULL) && !paramVars.contains(currParamVarId)) {
-            paramVars.add(currParamVarId);
-          }
-          tokenRelationId = currTokenRelationId;
-          paramVarId = currParamVarId;
+        if(tokenId == null) {
+          token = null;
+          continue;
+        }
+        if(token == null || !token.getId().equals(tokenId)) {
+          token = new PwTokenImpl(tokenId, timelineSlotTokens.getBoolean("Token.IsValueToken"),
+                                  slot.getId(), 
+                                  new Integer(timelineSlotTokens.getInt("Token.PredicateId")),
+                                  new Integer(timelineSlotTokens.getInt("Token.StartVarId")),
+                                  new Integer(timelineSlotTokens.getInt("Token.EndVarId")),
+                                  new Integer(timelineSlotTokens.getInt("Token.DurationVarId")),
+                                  object.getId(), 
+                                  new Integer(timelineSlotTokens.getInt("Token.RejectVarId")),
+                                  new Integer(timelineSlotTokens.getInt("Token.ObjectVarId")),
+                                  timeline.getId(), partialPlan);
+          slot.addToken(token);
+        }
+        Integer paramVarId = new Integer(timelineSlotTokens.getInt("ParamVarTokenMap.VariableId"));
+        if(!timelineSlotTokens.wasNull()) {
+          token.addParamVar(paramVarId);
+        }
+        Integer tokenRelationId = 
+          new Integer(timelineSlotTokens.getInt("TokenRelation.TokenRelationId"));
+        if(!timelineSlotTokens.wasNull()) {
+          token.addTokenRelation(tokenRelationId);
         }
       }
-      if(!tokenRelations.contains(tokenRelationId) && !tokenRelationId.equals(NULL) &&
-         !tokenRelationId.equals(M1)) {
-        tokenRelations.add(tokenRelationId);
-      }
-      if(!paramVars.contains(paramVarId) && !paramVarId.equals(NULL) && !paramVarId.equals(M1)) {
-        paramVars.add(paramVarId);
-      }
-      slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
-                    tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
-                    tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
-                    paramVars);
-      paramVars.clear();
-      tokenRelations.clear();
-      System.err.println("Time spent creating timeline/slot/token structure: " + 
-                         (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
       ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.RejectVarId, Token.PredicateId, ParamVarTokenMap.VariableId, ParamVarTokenMap.ParameterId, TokenRelation.TokenRelationId FROM Token LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.TokenId=Token.TokenId && ParamVarTokenMap.PartialPlanId=Token.PartialPlanId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
       System.err.println("Time spent in free token query: " + 
                          (System.currentTimeMillis() - t1));
+      token = null;
       t1 = System.currentTimeMillis();
       while(freeTokens.next()) {
-        Integer currTokenId = new Integer(freeTokens.getInt("Token.TokenId"));
-        boolean currTokenIsValueToken = freeTokens.getBoolean("Token.IsValueToken");
-        Integer currTokenStartVarId = new Integer(freeTokens.getInt("Token.StartVarId"));
-        Integer currTokenEndVarId = new Integer(freeTokens.getInt("Token.EndVarId"));
-        Integer currTokenRejectVarId = new Integer(freeTokens.getInt("Token.RejectVarId"));
-        Integer currTokenObjectVarId = new Integer(freeTokens.getInt("Token.ObjectVarId"));
-        Integer currTokenPredicateId = new Integer(freeTokens.getInt("Token.PredicateId"));
-        Integer currParamVarId = 
-          new Integer(freeTokens.getInt("ParamVarTokenMap.VariableId"));
-        Integer currTokenRelationId =
-          new Integer(freeTokens.getInt("TokenRelation.TokenRelationId"));
-        Integer currTokenDurationVarId = 
-          new Integer(freeTokens.getInt("Token.DurationVarId"));
-        if(!paramVarId.equals(currParamVarId) && !currParamVarId.equals(NULL)) {
-          if(!paramVars.contains(currParamVarId)) {
-            paramVars.add(currParamVarId);
-          }
-          paramVarId = currParamVarId;
+        Integer tokenId = new Integer(freeTokens.getInt("Token.TokenId"));
+        if(token == null || !token.getId().equals(tokenId)) {
+          token = new PwTokenImpl(tokenId, freeTokens.getBoolean("Token.IsValueToken"),
+                                  (Integer) null, 
+                                  new Integer(freeTokens.getInt("Token.PredicateId")),
+                                  new Integer(freeTokens.getInt("Token.StartVarId")),
+                                  new Integer(freeTokens.getInt("Token.EndVarId")),
+                                  new Integer(freeTokens.getInt("Token.DurationVarId")),
+                                  (Integer) null, 
+                                  new Integer(freeTokens.getInt("Token.RejectVarId")),
+                                  new Integer(freeTokens.getInt("Token.ObjectVarId")),
+                                  (Integer) null, partialPlan);
+          partialPlan.addToken(tokenId, token);
         }
-        if(!tokenRelationId.equals(currTokenRelationId) && !currTokenRelationId.equals(NULL)) {
-          if(!tokenRelations.contains(currTokenRelationId)) {
-            tokenRelations.add(currTokenRelationId);
-          }
-          tokenRelationId = currTokenRelationId;
+        Integer paramVarId = new Integer(freeTokens.getInt("ParamVarTokenMap.VariableId"));
+        if(!freeTokens.wasNull()) {
+          token.addParamVar(paramVarId);
         }
-        if(!tokenId.equals(currTokenId) && !currTokenId.equals(NULL)) {
-          if(!tokenId.equals(M1) && !partialPlan.tokenExists(tokenId)) {
-            token = new PwTokenImpl(tokenId, tokenIsValueToken, (Integer) null,
-                                    tokenPredicateId, tokenStartVarId, tokenEndVarId,
-                                    tokenDurationVarId, (Integer)null,tokenRejectVarId,
-                                    tokenObjectVarId, (Integer)null, tokenRelations, 
-                                    paramVars, partialPlan);
-            partialPlan.addToken(tokenId, token);
-            paramVarId = M1;
-            tokenRelationId = M1;
-            tokenRelations.clear();
-            paramVars.clear();
-          }
-          tokenId = currTokenId;
-          tokenIsValueToken = currTokenIsValueToken;
-          tokenPredicateId = currTokenPredicateId;
-          tokenStartVarId = currTokenStartVarId;
-          tokenEndVarId = currTokenEndVarId;
-          tokenDurationVarId = currTokenEndVarId;
-          tokenRejectVarId = currTokenRejectVarId;
-          tokenObjectVarId = currTokenObjectVarId;
+        Integer tokenRelationId = new Integer(freeTokens.getInt("TokenRelation.TokenRelationId"));
+        if(!freeTokens.wasNull()) {
+          token.addTokenRelation(tokenRelationId);
         }
       }
-      token = new PwTokenImpl(tokenId, tokenIsValueToken, (Integer) null,
-                              tokenPredicateId, tokenStartVarId, tokenEndVarId,
-                              tokenDurationVarId, (Integer)null, tokenRejectVarId,
-                              tokenObjectVarId, (Integer)null, tokenRelations,
-                              paramVars, partialPlan);
-      partialPlan.addToken(tokenId, token);
       System.err.println("Time spent creating free tokens: " + 
                          (System.currentTimeMillis() - t1));
     }
@@ -807,46 +673,27 @@ public class MySQLDB {
       System.err.println("Time spent in constraint query: " + 
                          (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
-      Integer constraintId = new Integer(-1);
+      /*Integer constraintId = new Integer(-1);
       Integer variableId = new Integer(-1);
       String constraintName = new String("");
       String constraintType = new String("");
-      ArrayList constrainedVarIds = new ArrayList();
+      ArrayList constrainedVarIds = new ArrayList();*/
+      PwConstraintImpl constraint = null;
       while(constraints.next()) {
-        Integer currConstraintId = new Integer(constraints.getInt("VConstraint.ConstraintId"));
-        String currConstraintName = constraints.getString("VConstraint.ConstraintName");
-        String currConstraintType = constraints.getString("VConstraint.ConstraintType");
-        Integer currVariableId = new Integer(constraints.getInt("ConstraintVarMap.VariableId"));
-        //if(!variableId.equals(currVariableId) && !currVariableId.equals(NULL)) {
-        //  if(!constrainedVarIds.contains(currVariableId) && !variableId.equals(M1)) {
-        //    constrainedVarIds.add(variableId);
-        //  }
-        //  variableId = currVariableId;
-        //}
-        if(!currVariableId.equals(NULL)) {
-          if(!variableId.equals(M1) && !constrainedVarIds.contains(variableId)) {
-            constrainedVarIds.add(variableId);
-          }
-          variableId = currVariableId;
+        Integer constraintId = new Integer(constraints.getInt("VConstraint.ConstraintId"));
+        
+        if(constraint == null || !constraint.getId().equals(constraintId)) {
+          constraint = new PwConstraintImpl(constraints.getString("VConstraint.ConstraintName"),
+                                            constraintId,
+                                            constraints.getString("VConstraint.ConstraintType"),
+                                            partialPlan);
+          partialPlan.addConstraint(constraintId, constraint);
         }
-        if(!constraintId.equals(currConstraintId) && !currConstraintId.equals(NULL)) {
-          if(!constraintId.equals(M1)) {
-            //System.err.println("Creating constraint on vars " + constrainedVarIds);
-            partialPlan.addConstraint(constraintId,
-                                      new PwConstraintImpl(constraintName, constraintId,
-                                                           constraintType, constrainedVarIds,
-                                                           partialPlan));
-            constrainedVarIds.clear();
-          }
-          constraintId = currConstraintId;
-          constraintName = currConstraintName;
-          constraintType = currConstraintType;
+        Integer variableId = new Integer(constraints.getInt("ConstraintVarMap.VariableId"));
+        if(!constraints.wasNull()) {
+          constraint.addVariable(variableId);
         }
       }
-      constrainedVarIds.add(variableId);
-      partialPlan.addConstraint(constraintId, new PwConstraintImpl(constraintName, constraintId,
-                                                                   constraintType, 
-                                                                   constrainedVarIds,partialPlan));
       System.err.println("Time spent creating constraints: " + 
                          (System.currentTimeMillis() - t1));
     }
@@ -894,118 +741,48 @@ public class MySQLDB {
    * @param partialPlan The partial plan to which the PwVariableImpls should be attached
    */
   synchronized public static void queryVariables(PwPartialPlanImpl partialPlan) {
-    //abandon all hope, ye who enter here...
-    PwDomainImpl domainImpl = null;
+    //PwDomainImpl domainImpl = null;
     try {
       System.err.println("Executing variable query...");
       long t1 = System.currentTimeMillis();
       ResultSet variables =
-        //        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" ORDER BY Variable.VariableId, ConstraintVarMap.ConstraintId"));
         queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getId().toString()));
       System.err.println("Time spent in variable query: " +
                          (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
-      Integer variableId = new Integer(-1);
-      String domainType = "";
-      String variableType = "";
-      String intDomainType = "";
-      String intDomainLB = "";
-      String intDomainUB = "";
-      String enumDomain = "";
-      Integer constraintId = new Integer(-1);
-      Integer parameterId = new Integer(-1);
-      Integer tokenId = new Integer(-1);
-      ArrayList constraintIdList = new ArrayList();
-      ArrayList parameterIdList = new ArrayList();
-      ArrayList tokenIdList = new ArrayList();
+      PwVariableImpl variable = null;
       while(variables.next()) {
-        Integer currVariableId = new Integer(variables.getInt("Variable.VariableId"));
-        String currVariableType = variables.getString("Variable.VariableType");
-        String currDomainType = variables.getString("Variable.DomainType");
-        String currIntDomainType = "";
-        String currIntDomainLB = "";
-        String currIntDomainUB = "";
-        String currEnumDomain = "";
-        Integer currConstraintId = new Integer(variables.getInt("ConstraintVarMap.ConstraintId"));
-        Integer currParameterId = new Integer(variables.getInt("ParamVarTokenMap.ParameterId"));
-        Integer currTokenId = new Integer(variables.getInt("ParamVarTokenMap.TokenId"));
-        if(!parameterId.equals(currParameterId) && !currParameterId.equals(NULL)) {
-          if(!parameterId.equals(M1) && !parameterIdList.contains(currParameterId)) {
-            parameterIdList.add(currParameterId);
+        Integer variableId = new Integer(variables.getInt("Variable.VariableId"));
+        if(variable == null || !variable.getId().equals(variableId)) {
+          PwDomainImpl domain = null;
+          String domainType = variables.getString("Variable.DomainType");
+          if(domainType.equals("EnumeratedDomain")) {
+            Blob blob = variables.getBlob("EnumeratedDomain.Domain");
+            domain = new PwEnumeratedDomainImpl(new String(blob.getBytes(1, (int) blob.length())));
           }
-          parameterId = currParameterId;
-        }
-        if(!tokenId.equals(currTokenId) && !currTokenId.equals(NULL)) {
-          if(!tokenId.equals(M1) && !tokenIdList.contains(currTokenId)) {
-            tokenIdList.add(currTokenId);
+          else if(domainType.equals("IntervalDomain")) {
+            domain = 
+              new PwIntervalDomainImpl(variables.getString("IntervalDomain.IntervalDomainType"),
+                                       variables.getString("IntervalDomain.LowerBound"),
+                                       variables.getString("IntervalDomain.UpperBound"));
           }
-          tokenId = currTokenId;
+          variable = new PwVariableImpl(variableId, variables.getString("Variable.VariableType"),
+                                        domain, partialPlan);
+          partialPlan.addVariable(variableId, variable);
         }
-        if(domainType.equals("")) {
-          domainType = currDomainType;
+        Integer constraintId = new Integer(variables.getInt("ConstraintVarMap.ConstraintId"));
+        if(!variables.wasNull()) {
+          variable.addConstraint(constraintId);
         }
-        if(currDomainType.equals("IntervalDomain")) {
-          currIntDomainType = variables.getString("IntervalDomain.IntervalDomainType");
-          currIntDomainLB = variables.getString("IntervalDomain.LowerBound");
-          currIntDomainUB = variables.getString("IntervalDomain.UpperBound");
-          if((intDomainType == null || intDomainType.equals("")) && 
-             (intDomainLB == null || intDomainLB.equals("")) && 
-             (intDomainUB == null || intDomainUB.equals(""))) {
-            intDomainType = currIntDomainType;
-            intDomainLB = currIntDomainLB;
-            intDomainUB = currIntDomainUB;
-          }
+        Integer parameterId = new Integer(variables.getInt("ParamVarTokenMap.ParameterId"));
+        if(!variables.wasNull()) {
+          variable.addParameter(parameterId);
         }
-        else if(currDomainType.equals("EnumeratedDomain")) {
-          Blob blob = variables.getBlob("EnumeratedDomain.Domain");
-          if(blob == null) {
-            throw new SQLException("Undefined EnumeratedDomain");
-          }
-          currEnumDomain = new String(blob.getBytes(1, (int) blob.length()));
-          if(enumDomain.equals("")) {
-            enumDomain = currEnumDomain;
-          }
+        Integer tokenId = new Integer(variables.getInt("ParamVarTokenMap.TokenId"));
+        if(!variables.wasNull()) {
+          variable.addToken(tokenId);
         }
-        if(!variableId.equals(currVariableId) && !currVariableId.equals(NULL)) {
-          if(!variableId.equals(M1)) {
-            if(!constraintIdList.contains(constraintId) && !constraintId.equals(M1) && 
-               !constraintId.equals(NULL) && !currConstraintId.equals(NULL)) {
-              constraintIdList.add(constraintId);
-            }
-            partialPlan.addVariable(variableId, new PwVariableImpl(variableId, variableType,
-                                                                   constraintIdList,
-                                                                   parameterIdList, tokenIdList,
-                                                                   domainImpl, partialPlan));
-          }
-          variableId = currVariableId;
-          variableType = currVariableType;
-          domainType = currDomainType;
-          enumDomain = currEnumDomain;
-          intDomainType = currIntDomainType;
-          intDomainLB = currIntDomainLB;
-          intDomainUB = currIntDomainUB;
-          constraintIdList.clear();
-          parameterIdList.clear();
-          tokenIdList.clear();
-        }
-        if(domainType.equals("IntervalDomain")) {
-          domainImpl = new PwIntervalDomainImpl(intDomainType, intDomainLB, intDomainUB);
-        }
-        else if(domainType.equals("EnumeratedDomain")) {
-          Blob blob = variables.getBlob("EnumeratedDomain.Domain");
-          enumDomain = new String(blob.getBytes(1, (int) blob.length()));
-          domainImpl = new PwEnumeratedDomainImpl(enumDomain);
-        }
-        if(!constraintId.equals(M1) && !constraintIdList.contains(currConstraintId) &&
-           !currConstraintId.equals(NULL)) {
-          constraintIdList.add(currConstraintId);
-        }
-        constraintId = currConstraintId;
       }
-      partialPlan.addVariable(variableId, new PwVariableImpl(variableId, variableType,
-                                                             constraintIdList,
-                                                             parameterIdList, tokenIdList,
-                                                             domainImpl, partialPlan));
       System.err.println("Time spent creating variables: " +
                          (System.currentTimeMillis() - t1));
     }
