@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.5 2003-06-11 01:02:12 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.6 2003-06-26 18:20:06 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -31,10 +31,10 @@ import gov.nasa.arc.planworks.db.PwVariable;
  */
 public class PwVariableImpl implements PwVariable {
 
-  private String key;
+  private Integer key;
   private String type;
   private List constraintIdList; // element String
-  private String paramId;
+  private Integer paramId;
   private PwDomainImpl domain; // PwEnumeratedDomainImpl || PwIntervalDomainImpl
   private PwPartialPlanImpl partialPlan;
 
@@ -42,22 +42,18 @@ public class PwVariableImpl implements PwVariable {
   /**
    * <code>PwVariableImpl</code> - constructor 
    *
-   * @param key - <code>String</code> - 
+   * @param key - <code>Integer</code> - 
    * @param type - <code>String</code> - 
-   * @param constraintIdList - <code>String</code> - 
-   * @param paramId - <code>String</code> - 
+   * @param constraintIdList - <code>List</code> - 
+   * @param paramId - <code>Integer</code> - 
    * @param domain - <code>PwDomainImpl</code> - PwEnumeratedDomainImpl || PwIntervalDomainImpl
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwVariableImpl( String key, String type, String constraintIds, String paramId,
+  public PwVariableImpl( Integer key, String type, List constraintIds, Integer paramId,
                          PwDomainImpl domain, PwPartialPlanImpl partialPlan) {
     this.key = key;
     this.type = type;
-    this.constraintIdList = new ArrayList();
-    StringTokenizer tokenizer = new StringTokenizer( constraintIds);
-    while (tokenizer.hasMoreTokens()) {
-      this.constraintIdList.add( tokenizer.nextToken());
-    }
+    this.constraintIdList = constraintIds;
     this.paramId = paramId;
     this.domain = domain;
     this.partialPlan = partialPlan;
@@ -67,9 +63,9 @@ public class PwVariableImpl implements PwVariable {
   /**
    * <code>getKey</code>
    *
-   * @return - <code>String</code> - 
+   * @return - <code>Integer</code> - 
    */
-  public String getKey()  {
+  public Integer getKey()  {
     return this.key;
   }
 
@@ -99,7 +95,7 @@ public class PwVariableImpl implements PwVariable {
   public List getConstraintList() {
     List retval = new ArrayList( constraintIdList.size());
     for (int i = 0; i < constraintIdList.size(); i++) {
-      retval.add( partialPlan.getConstraint( (String) constraintIdList.get( i)));
+      retval.add( partialPlan.getConstraint( (Integer) constraintIdList.get( i)));
     }
     return retval;
   }

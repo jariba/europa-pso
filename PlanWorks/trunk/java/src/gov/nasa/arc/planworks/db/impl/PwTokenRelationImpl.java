@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenRelationImpl.java,v 1.4 2003-06-25 17:04:04 taylor Exp $
+// $Id: PwTokenRelationImpl.java,v 1.5 2003-06-26 18:20:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -31,9 +31,10 @@ import gov.nasa.arc.planworks.db.PwTokenRelation;
  */
 public class PwTokenRelationImpl implements PwTokenRelation {
 
-  private String key;
-  private String masterTokenId;
-  private String slaveTokenId;
+  private Integer key;
+  private Integer tokenAId;
+  private Integer tokenBId;
+  private String type;
   
   private PwPartialPlanImpl partialPlan;
 
@@ -41,63 +42,67 @@ public class PwTokenRelationImpl implements PwTokenRelation {
   /**
    * <code>PwTokenRelationImpl</code> - constructor 
    *
-   * @param key - <code>String</code> - 
-   * @param masterTokenId - <code>String</code> - 
-   * @param slaveTokenId - <code>String</code> - 
+   * @param key - <code>Integer</code> - 
+   * @param tokenAId - <code>Integer</code> - 
+   * @param tokenBId - <code>Integer</code> - 
+   * @param type - <code>String</code> -
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwTokenRelationImpl( String key, String masterTokenId, String slaveTokenId,
+  public PwTokenRelationImpl( Integer key, Integer tokenAId, Integer tokenBId, String type,
                               PwPartialPlanImpl partialPlan) {
     this.key = key;
-    this.masterTokenId = masterTokenId;
-    this.slaveTokenId = slaveTokenId;
+    this.tokenAId = tokenAId;
+    this.tokenBId = tokenBId;
+    this.type = type;
     this.partialPlan = partialPlan;
   } // end constructor
 
   /**
    * <code>getKey</code>
    *
-   * @return name - <code>String</code> -
+   * @return name - <code>Integer</code> -
    */
-  public String getKey() {
+  public Integer getKey() {
     return key;
   }
 	
   /**
-   * <code>getMasterTokenId</code>
+   * <code>getTokenAId</code>
    *
-   * @return - <code>String</code> - 
+   * @return - <code>Integer</code> - 
    */
-  public String getMasterTokenId() {
-    return masterTokenId;
+  public Integer getTokenAId() {
+    return tokenAId;
   }
  
   /**
-   * <code>getSlaveTokenId</code>
+   * <code>getTokenBId</code>
    *
-   * @return - <code>String</code> - 
+   * @return - <code>Integer</code> - 
    */
-  public String getSlaveTokenId() {
-    return slaveTokenId;
+  public Integer getTokenBId() {
+    return tokenBId;
   }
 
   /**
-   * <code>getMasterToken</code>
+   * <code>getTokenA</code>
    *
    * @return - <code>PwToken</code> - 
    */
-  public PwToken getMasterToken() {
-    return partialPlan.getToken( masterTokenId);
+  public PwToken getTokenA() {
+    return partialPlan.getToken( tokenAId);
   }
  
   /**
-   * <code>getSlaveToken</code>
+   * <code>getTokenB</code>
    *
    * @return - <code>PwToken</code> - 
    */
-  public PwToken getSlaveToken() {
-    return partialPlan.getToken( slaveTokenId);
+  public PwToken getTokenB() {
+    return partialPlan.getToken( tokenBId);
   }
  
-
+  public String getType() {
+    return type;
+  }
 } // end class PwTokenRelationImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwParameter.java,v 1.4 2003-06-25 17:04:04 taylor Exp $
+// $Id: PwParameter.java,v 1.5 2003-06-26 18:18:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -38,7 +38,7 @@ public interface PwParameter {
    *
    * @return name - <code>int</code> -
    */
-  public abstract int getKey();
+  public abstract Integer getKey();
 	
 
 } // end interface PwParameter

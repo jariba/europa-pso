@@ -20,6 +20,7 @@ import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
 import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
 import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
+import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 
 
@@ -59,13 +60,13 @@ public class MySQLDB {
     dbStopString.append(System.getProperty("mysql.sock")).append(" shutdown");
     Runtime.getRuntime().exec(dbStopString.toString());
   }
-  public static void registerDatabase() {
+  public static void registerDatabase() throws IOException {
     if(!dbIsStarted) {
-      startDataBase();
+      startDatabase();
     }
     try {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
-      conn = DriverManager.getConnection("jdbc:mysql://localhost/mysql?user=root&password=root");
+      conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=root&password=root");
     }
     catch(Exception e) {
       System.err.println(e);
@@ -73,7 +74,7 @@ public class MySQLDB {
     }
   }
   public static void unregisterDatabase() {
-    if(!dbIdStarted) {
+    if(!dbIsStarted) {
       return;
     }
     try {
@@ -110,10 +111,10 @@ public class MySQLDB {
     }
     return result;
   }
-  public static String queryPartialPlanModelByKey(long partialPlanKey) {
+  public static String queryPartialPlanModelByKey(Long partialPlanKey) {
     try {
       ResultSet model = 
-        queryDatabase("SELECT (Model) FROM PartialPlan WHERE PartialPlanId=".concat(Long.toString(partialPlanKey)));
+        queryDatabase("SELECT (Model) FROM PartialPlan WHERE PartialPlanId=".concat(partialPlanKey.toString()));
       model.first();
       return model.getString("Model");
     }
@@ -122,11 +123,11 @@ public class MySQLDB {
       return null;
     }
   }
-  public static List queryPartialPlanObjectsByKey(long partialPlanKey) {
+  public static List queryPartialPlanObjectsByKey(Long partialPlanKey) {
     ArrayList retval = null;
     try {
       ResultSet objects = 
-        queryDatabase("SELECT (ObjectName, ObjectId) FROM Object WHERE PartialPlanId=".concat(Long.toString(partialPlanKey)));
+        queryDatabase("SELECT (ObjectName, ObjectId) FROM Object WHERE PartialPlanId=".concat(partialPlanKey.toString()));
       retval = new ArrayList(objects.getFetchSize() * 2);
       while(objects.next()) {
         retval.add(objects.getString("ObjectName"));
@@ -147,39 +148,43 @@ public class MySQLDB {
     PwSlotImpl slot = null;
     try {
       while(objectIdIterator.hasNext()) {
-        int objectId = ((Integer) objectIdIterator.next()).intValue();
+        Integer objectId = (Integer) objectIdIterator.next();
         object = partialPlan.getObjectImpl(objectId);
         ResultSet timelines =
-          queryDatabase("SELECT (TimelineId, TimelineName) FROM Timeline WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND ObjectId=").concat(Integer.toString(objectId)));
+          queryDatabase("SELECT (TimelineId, TimelineName) FROM Timeline WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND ObjectId=").concat(objectId.toString()));
         while(timelines.next()) {
-          int timelineId = timelines.getInt("TimelineId");
+          Integer timelineId = new Integer(timelines.getInt("TimelineId"));
           timeline = object.addTimeline(timelines.getString("TimelineName"), timelineId);
           ResultSet slots =
-            queryDatabase("SELECT (SlotId) FROM Slot WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND TimelineId=").concat(Integer.toString(timelineId)));
+            queryDatabase("SELECT (SlotId) FROM Slot WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND TimelineId=").concat(timelineId.toString()));
           while(slots.next()) {
-            int slotId = slots.getInt("SlotId");
+            Integer slotId = new Integer(slots.getInt("SlotId"));
             slot = timeline.addSlot(slotId);
             ResultSet tokens =
-              queryDatabase("SELECT (TokenId, IsValueToken, StartVarId, EndVarId, DurationVarId, RejectVarId, PredicateId, MasterTokenId) FROM Token WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND SlotId=").concat(Integer.toString(slotId)));
+              queryDatabase("SELECT (TokenId, IsValueToken, StartVarId, EndVarId, DurationVarId, RejectVarId, PredicateId, MasterTokenId) FROM Token WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND SlotId=").concat(slotId.toString()));
             while(tokens.next()) {
-              int tokenId = tokens.getInt("TokenId");
+              Integer tokenId = new Integer(tokens.getInt("TokenId"));
               ResultSet paramVarIds =
-                queryDatabase("SELECT (VariableId) FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey()).concat(" AND TokenId=").concat(Integer.toString(tokenId)));
+                queryDatabase("SELECT (VariableId) FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND TokenId=").concat(tokenId.toString()));
               ArrayList variableIdList = new ArrayList();
               while(paramVarIds.next()) {
                 variableIdList.add(new Integer(paramVarIds.getInt("VariableId")));
               }
-              ResultSet slaveIds =
-                queryDatabase("SELECT (TokenId) FROM Token WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND MasterTokenId=").concat(Integer.toString(tokenId)));
-              ArrayList slaveIdList = new ArrayList();
-              while(slaveIds.next()) {
-                slaveIdList.add(new Integer(slaveIds.getInt("TokenId")));
+              ResultSet tokenRelationIds =
+                queryDatabase("SELECT (TokenRelationId) FROM TokenRelation WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND (TokenAId=").concat(tokenId.toString()).concat(" OR TokenBId=").concat(tokenId.toString()).concat(")"));
+              ArrayList tokenRelationIdList = new ArrayList();
+              while(tokenRelationIds.next()) {
+                tokenRelationIdList.add(new Integer(tokenRelationIds.getInt("TokenRelationId")));
               }
               slot.addToken(tokenId, tokens.getBoolean("IsValueToken"),
-                            tokens.getInt("StartVarId"), tokens.getInt("EndVarId"),
-                            tokens.getInt("DurationVarId"), tokens.getInt("RejectVarId"),
-                            tokens.getInt("PredicateId"), tokens.getInt("MasterTokenId"),
-                            variableIdList, slaveIdList);
+                            new Integer(tokens.getInt("SlotId")),
+                            new Integer(tokens.getInt("PredicateId")),
+                            new Integer(tokens.getInt("StartVarId")), 
+                            new Integer(tokens.getInt("EndVarId")),
+                            new Integer(tokens.getInt("DurationVarId")),
+                            new Integer(tokens.getInt("ObjectVarId")),
+                            new Integer(tokens.getInt("RejectVarId")),
+                            tokenRelationIdList, variableIdList);
             }
           }
         }
@@ -192,19 +197,20 @@ public class MySQLDB {
   public static void queryConstraints(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet constraints = 
-        queryDatabase("SELECT (ConstraintId, ConstraintName, ConstraintType) FROM VConstraint WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())));
+        queryDatabase("SELECT (ConstraintId, ConstraintName, ConstraintType) FROM VConstraint WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
       while(constraints.next()) {
-        int constraintId = constraints.getInt("ConstraintId");
+        Integer constraintId = new Integer(constraints.getInt("ConstraintId"));
         ResultSet variableIds =
-          queryDatabase("SELECT (VariableId) FROM ConstraintVarMap WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND ConstraintId=").concat(Integer.toString(constraintId)));
+          queryDatabase("SELECT (VariableId) FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND ConstraintId=").concat(constraintId.toString()));
         ArrayList constrainedVarIds = new ArrayList();
         while(variableIds.next()) {
           constrainedVarIds.add(new Integer(variableIds.getInt("VariableId")));
         }
-        partialPlan.addConstraint(new PwConstraintImpl(constraints.getString("ConstraintName"), 
+        partialPlan.addConstraint(constraintId, 
+                                  new PwConstraintImpl(constraints.getString("ConstraintName"), 
                                                        constraintId,
                                                        constraints.getString("ConstraintType"), 
-                                                       constrainedVarIds));
+                                                       constrainedVarIds, partialPlan));
        }
     }
     catch(SQLException sqle) {
@@ -212,19 +218,23 @@ public class MySQLDB {
     }
   }
   public static void queryPredicates(PwPartialPlanImpl partialPlan) {
-    PwPredicateImpl predicate = null;
+    //PwPredicateImpl predicate = null;
     try {
       ResultSet predicates = 
-        queryDatabase("SELECT (PredicateId, PredicateName) FROM Predicate WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())));
+        queryDatabase("SELECT (PredicateId, PredicateName) FROM Predicate WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
       while(predicates.next()) {
-        predicate = partialPlan.addPredicate(predicates.getInt("PredicateId"),
-                                             predicates.getString("PredicateName"));
+        Integer predicateId = new Integer(predicates.getInt("PredicateId"));
+        PwPredicateImpl predicate =  new PwPredicateImpl(predicateId,
+                                                         predicates.getString("PredicateName"),
+                                                         partialPlan);
+        partialPlan.addPredicate(predicateId, predicate);
         ResultSet parameters =
-          queryDatabase("SELECT (ParameterId, ParameterName) FROM Parameter WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())));
+          queryDatabase("SELECT (ParameterId, ParameterName) FROM Parameter WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
         while(parameters.next()) {
-          partialPlan.addParameter(parameters.getInt("ParameterId"),
-                                   predicate.addParameter(parameters.getString("ParameterName"),
-                                                          parameters.getInt("ParameterId")));
+          Integer parameterId = new Integer(parameters.getInt("ParameterId"));
+          partialPlan.addParameter(parameterId,
+                                   predicate.addParameter(parameterId,
+                                                          parameters.getString("ParameterName")));
         }
       }
     }
@@ -236,27 +246,27 @@ public class MySQLDB {
     PwDomainImpl domainImpl = null;
     try {
       ResultSet variables =
-        queryDatabase("SELECT (VariableId, DomainType, VariableType, DomainId, ParameterId) FROM Variable WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())));
+        queryDatabase("SELECT (VariableId, DomainType, VariableType, DomainId, ParameterId) FROM Variable WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
       while(variables.next()) {
-        int variableId = variables.getInt("VariableId");
-        int domainId = variables.getInt("DomainId");
+        Integer variableId = new Integer(variables.getInt("VariableId"));
+        Integer domainId = new Integer(variables.getInt("DomainId"));
         String domainType = variables.getString("DomainType");
         ArrayList constraintIdList = new ArrayList();
         ResultSet constraintIds =
-          queryDatabase("SELECT (ConstraintId) FROM ConstraintVarMap WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND VariableId=").concat(Integer.toString(variableId)));
+          queryDatabase("SELECT (ConstraintId) FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(variableId.toString()));
         while(constraintIds.next()) {
           constraintIdList.add(new Integer(constraintIds.getInt("ConstraintId")));
         }
         if(domainType.equals("EnumeratedDomain")) {
           ResultSet domain = 
-            queryDatabase("SELECT (Domain) FROM EnumeratedDomain WHERE EnumeratedDomainId=".concat(Integer.toString(domainId)));
+            queryDatabase("SELECT (Domain) FROM EnumeratedDomain WHERE EnumeratedDomainId=".concat(domainId.toString()));
           domain.first();
           domainImpl = 
             new PwEnumeratedDomainImpl(new String(domain.getBlob("Domain").getBytes(0, (int)domain.getBlob("Domain").length())));
         }
         else if(domainType.equals("IntervalDomain")) {
           ResultSet domain =
-            queryDatabase("SELECT (IntervalDomainType, LowerBound, UpperBound) FROM IntervalDomain WHERE IntervalDomainId=".concat(Integer.toString(domainId)));
+            queryDatabase("SELECT (IntervalDomainType, LowerBound, UpperBound) FROM IntervalDomain WHERE IntervalDomainId=".concat(domainId.toString()));
           domain.first();
           domainImpl =
             new PwIntervalDomainImpl(domain.getString("IntervalDomainType"),
@@ -265,7 +275,7 @@ public class MySQLDB {
         partialPlan.addVariable(variableId, new PwVariableImpl(variableId, 
                                                                variables.getString("VariableType"),
                                                                constraintIdList,
-                                                               variables.getInt("ParameterId"),
+                                                               new Integer(variables.getInt("ParameterId")),
                                                                domainImpl, partialPlan));
       }
     }
@@ -273,20 +283,36 @@ public class MySQLDB {
       System.err.println(sqle);
     }
   }
-  public static PwPredicateImpl queryPredicateByKey(int key, PwPartialPlanImpl partialPlan) {
+  public static void queryTokenRelations(PwPartialPlanImpl partialPlan) {
+    try {
+      ResultSet tokenRelations = 
+        queryDatabase("SELECT (TokenRelationId, TokenAId, TokenBId, RelationType) FROM TokenRelation WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
+      while(tokenRelations.next()) {
+        Integer key = new Integer(tokenRelations.getInt("TokenRelationId"));
+        partialPlan.addTokenRelation(key, new PwTokenRelationImpl(key,
+                                                                  new Integer(tokenRelations.getInt("TokenAId")),
+                                                                  new Integer(tokenRelations.getInt("TokenBId")),
+                                                                  tokenRelations.getString("RelationType"), partialPlan));
+      }
+    }
+    catch(SQLException sqle) {
+      System.err.println(sqle);
+    }
+  }
+  public static PwPredicateImpl queryPredicateByKey(Integer key, PwPartialPlanImpl partialPlan) {
     PwPredicateImpl predicateImpl = null;
     try {
       ResultSet predicate = 
-        queryDatabase("SELECT (PredicateName) FROM Predicate WHERE PredicateId=".concat(Integer.toString(key)));
+        queryDatabase("SELECT (PredicateName) FROM Predicate WHERE PredicateId=".concat(key.toString()));
       predicate.first();
-      predicateImpl = new PwPredicateImpl(predicate.getString("PredicateName"),
-                                          key, partialPlan);
+      predicateImpl = new PwPredicateImpl(key, predicate.getString("PredicateName"),
+                                          partialPlan);
       ResultSet parameters =
-        queryDatabase("SELECT (ParameterName, ParameterId) FROM Parameter WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND PredicateId=").concat(Integer.toString(key)));
+        queryDatabase("SELECT (ParameterName, ParameterId) FROM Parameter WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND PredicateId=").concat(key.toString()));
       while(parameters.next()) {
-        partialPlan.addParameter(parameters.getInt("ParameterId"),
-                                 predicateImpl.addParameter(parameters.getString("ParameterName"),
-                                                            parameters.getInt("ParameterId")));
+        partialPlan.addParameter(new Integer(parameters.getInt("ParameterId")),
+                                 predicateImpl.addParameter(new Integer(parameters.getInt("ParameterId")),
+                                                            parameters.getString("ParameterName")));
       }
       return predicateImpl;
     }
@@ -295,14 +321,14 @@ public class MySQLDB {
       return null;
     }
   }
-  public static PwConstraintImpl queryConstraintByKey(int key, PwPartialPlanImpl partialPlan) {
+  public static PwConstraintImpl queryConstraintByKey(Integer key, PwPartialPlanImpl partialPlan) {
     PwConstraintImpl constraintImpl = null;
     try {
       ResultSet constraint =
-        queryDatabase("SELECT (ConstraintName, ConstraintType) FROM VConstraint WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND ConstraintId=").concat(Integer.toString(key)));
+        queryDatabase("SELECT (ConstraintName, ConstraintType) FROM VConstraint WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND ConstraintId=").concat(key.toString()));
       constraint.first();
       ResultSet constrainedVariables = 
-        queryDatabase("SELECT (VariableId) from ConstraintVarMap WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND ConstraintId=").concat(constraint.getString("ConstraintId")));
+        queryDatabase("SELECT (VariableId) from ConstraintVarMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND ConstraintId=").concat(constraint.getString("ConstraintId")));
       ArrayList constrainedVarIds = new ArrayList();
       while(constrainedVariables.next()) {
         constrainedVarIds.add(new Integer(constrainedVariables.getInt("VariableId")));
@@ -317,36 +343,37 @@ public class MySQLDB {
       return null;
     }
   }
-  public static PwVariableImpl queryVariableByKey(int key, PwPartialPlan partialPlan) {
+  public static PwVariableImpl queryVariableByKey(Integer key, PwPartialPlanImpl partialPlan) {
     PwVariableImpl variableImpl = null;
     PwDomainImpl domainImpl = null;
     try {
       ResultSet variable = 
-        queryDatabase("SELECT (DomainType, VariableType, DomainId, ParameterId) FROM Variable WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND VariableId=").concat(Integer.toString(key)));
+        queryDatabase("SELECT (DomainType, VariableType, DomainId, ParameterId) FROM Variable WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()));
       variable.first();
       if(variable.getString("DomainType").equals("IntervalDomain")) {
         ResultSet domain =
-          queryDatabase("SELECT (IntervalDomainType, LowerBound, UpperBound) FROM IntervalDomain WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND VariableId=").concat(Integer.toString(key)).concat(" AND IntervalDomainId=").concat(variable.getString("DomainId")));
+          queryDatabase("SELECT (IntervalDomainType, LowerBound, UpperBound) FROM IntervalDomain WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()).concat(" AND IntervalDomainId=").concat(variable.getString("DomainId")));
         domain.first();
-        domainImpl = new PwIntervalDomain(domain.getString("IntervalDomainType"),
-                                          domain.getString("LowerBound"),
-                                          domain.getString("UpperBound"));
+        domainImpl = new PwIntervalDomainImpl(domain.getString("IntervalDomainType"),
+                                              domain.getString("LowerBound"),
+                                              domain.getString("UpperBound"));
       }
       else if(variable.getString("DomainType").equals("EnumeratedDomain")) {
         ResultSet domain =
-          queryDatabase("SELECT (Domain) FROM EnumeratedDomain WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND VariableId=").concat(Integer.toString(key)).concat(" AND EnumeratedDomainId=").concat(variable.getString("DomainId")));
+          queryDatabase("SELECT (Domain) FROM EnumeratedDomain WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()).concat(" AND EnumeratedDomainId=").concat(variable.getString("DomainId")));
         domain.first();
         domainImpl = new PwEnumeratedDomainImpl(new String(domain.getBlob("Domain").getBytes(0, (int)domain.getBlob("Domain").length())));
       }
       ResultSet constraintIds =
-        queryDatabase("SELECT (ConstraintId) FROM ConstraintVarMap WHERE PartialPlanId=".concat(Long.toString(partialPlan.getKey())).concat(" AND VariableId=").concat(Integer.toString(key)));
+        queryDatabase("SELECT (ConstraintId) FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()));
       ArrayList constraintIdList = new ArrayList();
       while(constraintIds.next()) {
         constraintIdList.add(new Integer(constraintIds.getInt("ConstraintId")));
       }
-      variable = new PwVariableImpl(key, variable.getString("VariableType"), constraintIdList,
-                                    variable.getInt("ParameterId"), domain, partialPlan);
-      return variable;
+      variableImpl = new PwVariableImpl(key, variable.getString("VariableType"), constraintIdList,
+                                    new Integer(variable.getInt("ParameterId")), domainImpl, 
+                                    partialPlan);
+      return variableImpl;
     }
     catch(SQLException sqle) {
       System.err.println(sqle);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicateImpl.java,v 1.6 2003-06-02 17:49:58 taylor Exp $
+// $Id: PwPredicateImpl.java,v 1.7 2003-06-26 18:19:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,7 +30,7 @@ import gov.nasa.arc.planworks.db.PwPredicate;
 public class PwPredicateImpl implements PwPredicate {
 
   private String name;
-  private String key;
+  private Integer key;
   private List parameterIdList; // element String
   private PwPartialPlanImpl partialPlan;
 
@@ -41,7 +41,7 @@ public class PwPredicateImpl implements PwPredicate {
    * @param key - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwPredicateImpl( String name, String key, PwPartialPlanImpl partialPlan) {
+  public PwPredicateImpl( Integer key, String name, PwPartialPlanImpl partialPlan) {
     this.name = name;
     this.key = key;
     this.parameterIdList = new ArrayList();
@@ -62,7 +62,7 @@ public class PwPredicateImpl implements PwPredicate {
    *
    * @return name - <code>String</code> -
    */
-  public String getKey() {
+  public Integer getKey() {
     return key;
   }
 	
@@ -74,7 +74,7 @@ public class PwPredicateImpl implements PwPredicate {
   public List getParameterList() {
     List retval = new ArrayList( parameterIdList.size());
     for (int i = 0; i < parameterIdList.size(); i++) {
-      retval.add( partialPlan.getParameter( (String) parameterIdList.get( i)));
+      retval.add( partialPlan.getParameter( (Integer)parameterIdList.get( i)));
     }
     return retval;
   }
@@ -86,8 +86,8 @@ public class PwPredicateImpl implements PwPredicate {
    * @param key - <code>String</code> - 
    * @return - <code>PwParameterImpl</code> - 
    */
-  public PwParameterImpl addParameter( String name, String key) {
-    PwParameterImpl parameter = new PwParameterImpl( name, key);
+  public PwParameterImpl addParameter( Integer key, String name) {
+    PwParameterImpl parameter = new PwParameterImpl(key, name);
     parameterIdList.add( key);
     return parameter;
   } // end addParameter

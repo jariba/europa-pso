@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.13 2003-06-25 16:39:52 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.14 2003-06-26 18:19:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,9 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,15 +52,16 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   private String url; // pathaname of xml file (no extension)
   //  private String projectCollectionName; // e.g. test
   //private String sequenceCollectionName; // e.g. monkey
-  private int projectId;
-  private int sequenceId;
+  private Integer projectId;
+  private Integer sequenceId;
 
   //private String userCollectionName; // e.g. /wtaylor
   //private String collectionName; // e.g. /wtaylor/test/monkey (xml files directory)
   //private String xmlFileName; // with no extension
 
   private String model;
-  private long key; // PartialPlan key
+  private String name;
+  private Long key; // PartialPlan key
   private Map objectMap; // key = attribute key, value = PwObjectImpl instance
   private Map timelineMap; // key = attribute key, value = PwTimelineImpl instance
   private Map slotMap; // key = attribute key, value = PwSlotImpl instance
@@ -71,17 +75,8 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   private List objectIdList; // PwObjectImpl keys
 
 
-  /**
-   * <code>PwPartialPlanImpl</code> - constructor 
-   *     retrieves partial plan from XML:DB and
-   *     builds Java data structure
-   * @param url - <code>String</code> - 
-   * @param projectCollectionName - <code>String</code> - 
-   * @param sequenceCollectionName - <code>String</code> - 
-   */
-  public PwPartialPlanImpl( String url, String projectCollectionName,
-                            String sequenceCollectionName)
-    throws ResourceNotFoundException {
+  public PwPartialPlanImpl(String url, String planName, Integer sequenceKey)  
+    throws ResourceNotFoundException, SQLException {
     objectMap = new HashMap();
     timelineMap = new HashMap();
     slotMap = new HashMap();
@@ -92,79 +87,52 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
     objectIdList = new ArrayList();
-    userCollectionName = System.getProperty( "file.separator") + System.getProperty( "user");
-    this.url = url;
-    this.projectCollectionName = projectCollectionName;
-    this.sequenceCollectionName = sequenceCollectionName;
-    StringBuffer collectionBuffer = new StringBuffer(userCollectionName );
-    collectionBuffer.append( System.getProperty( "file.separator"));
-    collectionBuffer.append( projectCollectionName).
-      append( System.getProperty( "file.separator"));
-    collectionBuffer.append( sequenceCollectionName).
-      append( System.getProperty( "file.separator"));
+    this.url = (new StringBuffer(url)).append(System.getProperty("file.spearator")).append(planName).toString();
+    this.name = planName;
+    createPartialPlan(sequenceKey);
+  }
 
-    int index = url.lastIndexOf( System.getProperty( "file.separator"));
-    if (index == -1) {
-      throw new ResourceNotFoundException( "partial plan url '" + url +
-                                           "' cannot be parsed for '" +
-                                           System.getProperty( "file.separator") + "'");
-    } 
-    xmlFileName = url.substring( index + 1);
-    index = xmlFileName.lastIndexOf( ".");
-    xmlFileName = xmlFileName.substring( 0, index);
-    collectionBuffer.append( xmlFileName);
-    collectionName = collectionBuffer.toString();
-    System.err.println( "PwPartialPlanImpl collectionName: " + collectionName);
-
-    if (XmlDBeXist.INSTANCE.getCollection( collectionName) == null) {
-      System.err.println( "Loading " + url + " ...");
-      long startLoadTimeMSecs = (new Date()).getTime();
-
-      XmlDBeXist.INSTANCE.addXMLFileToCollection( collectionName, url);
-
-      long stopLoadTimeMSecs = (new Date()).getTime();
-      String loadTimeString = "   ... elapsed time: " +
-        (stopLoadTimeMSecs - startLoadTimeMSecs) + " msecs.";
-      System.err.println( loadTimeString);
-    }
-
-    createPartialPlan();
-
-  } // end constructor
-
-
-  private void createPartialPlan() {
-    System.err.println( "Creating PwPartialPlan from Collection ...");
-    long startTimeMSecs = (new Date()).getTime();
-
-    List partialPlanKeys = XmlDBeXist.INSTANCE.queryPartialPlanKeys( collectionName);
-    // should only be one with collection structure of
-    // /db/wtaylor/test/monkey/step000
-    Iterator keysIterator = partialPlanKeys.iterator();
-    while (keysIterator.hasNext()) {
-      String partialPlanKey = (String) keysIterator.next();
-      key = partialPlanKey;
-      // System.err.println( "partialPlan key " + partialPlanKey);
-      model = XmlDBeXist.INSTANCE.queryPartialPlanModelByKey( partialPlanKey,
-                                                            collectionName);
-      List objectNameAndKeyList = XmlDBeXist.INSTANCE.queryPartialPlanObjectsByKey
-        ( partialPlanKey, collectionName);
-      for (int i = 0, n = objectNameAndKeyList.size(); i < n; i += 2) {
-        String objectName = (String) objectNameAndKeyList.get( i);
-        String objectKey = (String) objectNameAndKeyList.get( i + 1);
-        objectIdList.add( objectKey);
-        objectMap.put( objectKey, 
-                       new PwObjectImpl( objectKey, objectName, this));
+  private void createPartialPlan(Integer sequenceKey) throws ResourceNotFoundException, SQLException  {
+    System.err.println( "Creating PwPartialPlan  ...");
+    long startTimeMSecs = System.currentTimeMillis();
+    ResultSet existingPartialPlan =
+      MySQLDB.queryDatabase("SELECT (PartialPlanId) FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" AND PlanName=").concat(name));
+    if(existingPartialPlan.getFetchSize() < 1) {
+      String [] fileNames = new File(url).list(new FilenameFilter () {
+          public boolean accept(File dir, String name) {
+            return (name.indexOf(".partialPlan") != -1 || name.indexOf(".objects") != -1 ||
+                    name.indexOf(".timelines") != -1 || name.indexOf(".slots") != -1 || 
+                    name.indexOf(".tokens") != -1 || name.indexOf(".variables") != -1 || 
+                    name.indexOf(".predicates") != -1 || name.indexOf(".parameters") != -1 ||
+                    name.indexOf(".enumeratedDomains") != -1 ||
+                    name.indexOf(".intervalDomains") != -1 ||
+                    name.indexOf(".constraints") != -1 || name.indexOf(".tokenRelations") != -1 || 
+                    name.indexOf(".paramVarTokenMap") != -1 || 
+                    name.indexOf(".constraintVarMap") != -1);
+          }
+        });
+      for(int i = 0; i < fileNames.length; i++) {
+        String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".")+1);
+        tableName = tableName.substring(0,1).toUpperCase().concat(tableName.substring(1));
+        MySQLDB.updateDatabase("LOAD DATA INFILE '".concat(url).concat(System.getProperty("file.separator")).concat(fileNames[i]).concat("' INTO TABLE ").concat(tableName));
       }
-      XmlDBeXist.INSTANCE.createTimelineSlotTokenNodesStructure( this, collectionName);
- 
-      System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
-      long start2TimeMSecs = (new Date()).getTime();
-      fillElementMaps();
-      long stop2TimeMSecs = (new Date()).getTime();
-      System.err.println( "   ... elapsed time: " +
-                          (stop2TimeMSecs - start2TimeMSecs) + " msecs.");
     }
+
+    ResultSet dbObject =
+      MySQLDB.queryDatabase("SELECT (ObjectName, ObjectId) FROM Object WHERE PartialPlanId=".concat(key.toString()));
+    while(dbObject.next()) {
+      Integer objectKey = new Integer(dbObject.getInt("ObjectId"));
+      objectMap.put(objectKey, new PwObjectImpl(objectKey, dbObject.getString("ObjectName"),this));
+    }
+    dbObject.close();
+    model = MySQLDB.INSTANCE.queryPartialPlanModelByKey(key);
+    MySQLDB.INSTANCE.createTimelineSlotTokenNodesStructure(this);
+    System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
+    long start2TimeMSecs = (new Date()).getTime();
+    fillElementMaps();
+    long stop2TimeMSecs = (new Date()).getTime();
+    System.err.println( "   ... elapsed time: " +
+                        (stop2TimeMSecs - start2TimeMSecs) + " msecs.");
     long stopTimeMSecs = (new Date()).getTime();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
@@ -173,14 +141,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
   private final void fillElementMaps() {
 
-    XmlDBeXist.INSTANCE.queryConstraints( this, collectionName);
+    MySQLDB.INSTANCE.queryConstraints( this);
     
     // parameters are inside predicates
-    XmlDBeXist.INSTANCE.queryPredicates( this, collectionName);
+    MySQLDB.INSTANCE.queryPredicates( this);
 
-    XmlDBeXist.INSTANCE.queryTokenRelations( this, collectionName);
+    MySQLDB.INSTANCE.queryTokenRelations( this);
 
-    XmlDBeXist.INSTANCE.queryVariables( this, collectionName);
+    MySQLDB.INSTANCE.queryVariables( this);
 
     System.err.println( "Partial Plan keys:");
     System.err.println( "  objectMap        " + objectMap.keySet().size());
@@ -207,10 +175,10 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>getObjectImpl</code>
    *
-   * @param key - <code>String</code> - 
+   * @param key - <code>int</code> - 
    * @return - <code>PwObjectImpl</code> - 
    */
-  public PwObjectImpl getObjectImpl( String key) {
+  public PwObjectImpl getObjectImpl( Integer key) {
     return (PwObjectImpl) objectMap.get( key);
   }
 
@@ -228,13 +196,8 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     return url;
   }
 
-  /**
-   * <code>getCollectionName</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public String getCollectionName() {
-    return collectionName;
+  public Long getKey() {
+    return key;
   }
 
   /**
@@ -245,7 +208,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   public List getObjectList() {
     List retval = new ArrayList( objectIdList.size());
     for (int i = 0; i < objectIdList.size(); i++) {
-      retval.add( this.getObject( (String) objectIdList.get(i)));
+      retval.add( this.getObject(  (Integer)objectIdList.get(i)));
     }
     return retval;
   }
@@ -255,13 +218,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwObject</code> - 
    */
-  public PwObject getObject( String key) {
-    PwObject object = (PwObject) objectMap.get( key);
-    if (object == null) {
+  public PwObject getObject( Integer key) {
+    /*    PwObject object = (PwObject) objectMap.get( key);
+    /*if (object == null) {
 //       object = XmlDBeXist.INSTANCE.queryObjectByKey( key, this, collectionName);
-      objectMap.put( key, object);
-    }
-    return object;
+objectMap.put( key, object);
+}
+return object;*/
+    return (PwObject)objectMap.get(key);
   } // end getObject
 
 
@@ -271,13 +235,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwTimeline</code> - 
    */
-  public PwTimeline getTimeline( String key) {
-    PwTimeline timeline = (PwTimeline) timelineMap.get( key);
+  public PwTimeline getTimeline( Integer key) {
+    /*    PwTimeline timeline = (PwTimeline) timelineMap.get( key);
     if (timeline == null) {
 //       timeline = XmlDBeXist.INSTANCE.queryTimelineByKey( key, this, collectionName);
       timelineMap.put( key, timeline);
     }
-    return timeline;
+    return timeline;*/
+    return (PwTimeline)timelineMap.get(key);
   } // end getTimeline
 
 
@@ -287,13 +252,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwSlot</code> - 
    */
-  public PwSlot getSlot( String key) {
-    PwSlot slot = (PwSlot) slotMap.get( key);
+  public PwSlot getSlot( Integer key) {
+    /*    PwSlot slot = (PwSlot) slotMap.get( key);
     if (slot == null) {
 //       slot = XmlDBeXist.INSTANCE.querySlotByKey( key, this, collectionName);
       slotMap.put( key, slot);
     }
-    return slot;
+    return slot;*/
+    return (PwSlot)slotMap.get(key);
   } // end getSlot
 
 
@@ -303,13 +269,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwToken</code> - 
    */
-  public PwToken getToken( String key) {
-    PwToken token = (PwToken) tokenMap.get( key);
+  public PwToken getToken( Integer key) {
+    /*    PwToken token = (PwToken) tokenMap.get( key);
     if (token == null) {
 //       token = XmlDBeXist.INSTANCE.queryTokenByKey( key, this, collectionName);
       tokenMap.put( key, token);
     }
-    return token;
+    return token;*/
+    return (PwToken) tokenMap.get(key);
   } // end getToken
 
 
@@ -319,13 +286,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwConstraint</code> - 
    */
-  public PwConstraint getConstraint( String key) {
-    PwConstraint constraint = (PwConstraint) constraintMap.get( key);
+  public PwConstraint getConstraint( Integer key) {
+    /*    PwConstraint constraint = (PwConstraint) constraintMap.get( key);
     if (constraint == null) {
       constraint = XmlDBeXist.INSTANCE.queryConstraintByKey( key, this, collectionName);
       constraintMap.put( key, constraint);
     }
-    return constraint;
+    return constraint;*/
+    return (PwConstraint) constraintMap.get(key);
   } // end getConstraint
 
 
@@ -335,13 +303,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwParameter</code> - 
    */
-  public PwParameter getParameter( String key) {
-    PwParameter parameter = (PwParameter) parameterMap.get( key);
+  public PwParameter getParameter( Integer key) {
+    /*    PwParameter parameter = (PwParameter) parameterMap.get( key);
     if (parameter == null) {
 //       parameter = XmlDBeXist.INSTANCE.queryParameterByKey( key, this, collectionName);
       parameterMap.put( key, parameter);
     }
-    return parameter;
+    return parameter;*/
+    return (PwParameter) parameterMap.get(key);
   } // end getParameter
 
 
@@ -351,13 +320,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwPredicate</code> - 
    */
-  public PwPredicate getPredicate( String key) {
-    PwPredicate predicate = (PwPredicate) predicateMap.get( key);
+  public PwPredicate getPredicate( Integer key) {
+    /*    PwPredicate predicate = (PwPredicate) predicateMap.get( key);
     if (predicate == null) {
       predicate = XmlDBeXist.INSTANCE.queryPredicateByKey( key, this, collectionName);
       predicateMap.put( key, predicate);
     }
-    return predicate;
+    return predicate;*/
+    return (PwPredicate) predicateMap.get(key);
   } // end getPredicate
 
 
@@ -367,14 +337,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwTokenRelation</code> - 
    */
-  public PwTokenRelation getTokenRelation( String key) {
-    PwTokenRelation tokenRelation = (PwTokenRelation) tokenRelationMap.get( key);
+  public PwTokenRelation getTokenRelation( Integer key) {
+    /*    PwTokenRelation tokenRelation = (PwTokenRelation) tokenRelationMap.get( key);
     if (tokenRelation == null) {
       tokenRelation =
         XmlDBeXist.INSTANCE.queryTokenRelationByKey( key, this, collectionName);
       tokenRelationMap.put( key, tokenRelation);
     }
-    return tokenRelation;
+    return tokenRelation;*/
+    return (PwTokenRelation) tokenRelationMap.get(key);
   } // end getTokenRelation
 
 
@@ -384,14 +355,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getVariable( String key) {
-    PwVariable variable = (PwVariable) variableMap.get( key);
+  public PwVariable getVariable( Integer key) {
+    /*    PwVariable variable = (PwVariable) variableMap.get( key);
     // System.err.println( "getVariable: key  " + key + " variable " + variable);
     if (variable == null) {
       variable = XmlDBeXist.INSTANCE.queryVariableByKey( key, this, collectionName);
       variableMap.put( key, variable);
     }
-    return variable;
+    return variable;*/
+    return (PwVariable) variableMap.get(key);
   } // end getVariable
 
 
@@ -404,7 +376,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @param constraint - <code>PwConstraintImpl</code> - 
    */
-  public void addConstraint( String key, PwConstraintImpl constraint) {
+  public void addConstraint( Integer key, PwConstraintImpl constraint) {
     constraintMap.put( key, constraint);
   }
 
@@ -414,7 +386,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @param parameter - <code>PwParameterImpl</code> - 
    */
-  public void addParameter( String key, PwParameterImpl parameter) {
+  public void addParameter( Integer key, PwParameterImpl parameter) {
     parameterMap.put( key, parameter);
   }
 
@@ -424,7 +396,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @param predicate - <code>PwPredicateImpl</code> - 
    */
-  public void addPredicate( String key, PwPredicateImpl predicate) {
+  public void addPredicate( Integer key, PwPredicateImpl predicate) {
     predicateMap.put( key, predicate);
   }
 
@@ -434,7 +406,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @param slot - <code>PwSlotImpl</code> - 
    */
-  public void addSlot( String key, PwSlotImpl slot) {
+  public void addSlot( Integer key, PwSlotImpl slot) {
     slotMap.put( key, slot);
   }
 
@@ -444,7 +416,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @param timeline - <code>PwTimelineImpl</code> - 
    */
-  public void addTimeline( String key, PwTimelineImpl timeline) {
+  public void addTimeline( Integer key, PwTimelineImpl timeline) {
     timelineMap.put( key, timeline);
   }
 
@@ -454,7 +426,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @param token - <code>PwTokenImpl</code> - 
    */
-  public void addToken( String key, PwTokenImpl token) {
+  public void addToken( Integer key, PwTokenImpl token) {
     tokenMap.put( key, token);
   }
   /**
@@ -463,7 +435,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @param tokenRelation - <code>PwTokenRelationImpl</code> - 
    */
-  public void addTokenRelation( String key, PwTokenRelationImpl tokenRelation) {
+  public void addTokenRelation( Integer key, PwTokenRelationImpl tokenRelation) {
     tokenRelationMap.put( key, tokenRelation);
   }
 
@@ -473,7 +445,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @param key - <code>String</code> - 
    * @param variable - <code>PwVariableImpl</code> - 
    */
-  public void addVariable( String key, PwVariableImpl variable) {
+  public void addVariable( Integer key, PwVariableImpl variable) {
     variableMap.put( key, variable);
   }
 
