@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.10 2003-09-02 00:52:10 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.11 2003-09-02 21:49:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -506,28 +506,34 @@ public class TemporalExtentView extends VizView {
         List slotList = timeline.getSlotList();
         Iterator slotIterator = slotList.iterator();
         PwToken previousToken = null;
+        boolean isFirstSlot = true;
         while (slotIterator.hasNext()) {
           PwSlot slot = (PwSlot) slotIterator.next();
           boolean isLastSlot = (! slotIterator.hasNext());
           PwToken token = slot.getBaseToken();
-          PwDomain[] intervalArray =
-            SlotNode.getStartEndIntervals( this, slot, previousToken, isLastSlot,
-                                           alwaysReturnEnd);
-          PwDomain startTimeIntervalDomain = intervalArray[0];
-          PwDomain endTimeIntervalDomain = intervalArray[1];
-          String earliestDurationString =
-            SlotNode.getShortestDuration( slot, startTimeIntervalDomain,
-                                          endTimeIntervalDomain);
-          String latestDurationString =
-            SlotNode.getLongestDuration( slot, startTimeIntervalDomain,
-                                         endTimeIntervalDomain);
-          TemporalNode temporalNode = 
-            new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
-                              earliestDurationString, latestDurationString, objectCnt,
-                              isFreeToken, this); 
-          tmpTemporalNodeList.add( temporalNode);
-          jGoDocument.addObjectAtTail( temporalNode);
-          previousToken = token;
+          if ((token == null) && (isFirstSlot || isLastSlot)) {
+            // discard leading and trailing empty slots
+          } else {
+            PwDomain[] intervalArray =
+              SlotNode.getStartEndIntervals( this, slot, previousToken, isLastSlot,
+                                             alwaysReturnEnd);
+            PwDomain startTimeIntervalDomain = intervalArray[0];
+            PwDomain endTimeIntervalDomain = intervalArray[1];
+            String earliestDurationString =
+              SlotNode.getShortestDuration( slot, startTimeIntervalDomain,
+                                            endTimeIntervalDomain);
+            String latestDurationString =
+              SlotNode.getLongestDuration( slot, startTimeIntervalDomain,
+                                           endTimeIntervalDomain);
+            TemporalNode temporalNode = 
+              new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
+                                earliestDurationString, latestDurationString, objectCnt,
+                                isFreeToken, this); 
+            tmpTemporalNodeList.add( temporalNode);
+            jGoDocument.addObjectAtTail( temporalNode);
+            previousToken = token;
+          }
+          isFirstSlot = false;
         }
       }
       objectCnt += 1;
