@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.56 2003-10-23 20:22:31 miatauro Exp $
+// $Id: MySQLDB.java,v 1.57 2003-10-25 00:58:09 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1045,12 +1045,25 @@ public class MySQLDB {
     return retval;
   }
 
+//   synchronized public static List queryStepsWithRestrictions(Long sequenceId) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet steps = queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RESTRICTED).concat("'"));
+//       while(steps.next()) {
+//         retval.add(new Integer(steps.getInt("StepNumber")));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
+
   synchronized public static List queryStepsWithRestrictions(Long sequenceId) {
     List retval = new UniqueSet();
     try {
-      ResultSet steps = queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RESTRICTED).concat("'"));
-      while(steps.next()) {
-        retval.add(new Integer(steps.getInt("StepNumber")));
+      ResultSet transactions = queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RESTRICTED).concat("'"));
+      while(transactions.next()) {
+        retval.add(Long.toString(transactions.getLong("PartialPlanId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
       }
     }
     catch(SQLException sqle) {
@@ -1058,19 +1071,57 @@ public class MySQLDB {
     return retval;
   }
 
+//   synchronized public static List queryStepsWithRelaxations(Long sequenceId) {
+//     List retval = new UniqueSet();
+//     try {
+//       ResultSet steps = 
+//         queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RELAXED).concat("'"));
+//       while(steps.next()) {
+//         retval.add(new Integer(steps.getInt("StepNumber")));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
+
   synchronized public static List queryStepsWithRelaxations(Long sequenceId) {
     List retval = new UniqueSet();
     try {
-      ResultSet steps = 
-        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RELAXED).concat("'"));
-      while(steps.next()) {
-        retval.add(new Integer(steps.getInt("StepNumber")));
+      ResultSet transactions = 
+        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RELAXED).concat("'"));
+      while(transactions.next()) {
+        retval.add(Long.toString(transactions.getLong("PartialPlanId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
       }
     }
     catch(SQLException sqle) {
     }
     return retval;
   }
+
+//   synchronized public static List queryStepsWithUnitVariableDecisions(PwPlanningSequenceImpl seq) {
+//     List retval = new ArrayList();
+//     try {
+//       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
+//       while(transactedSteps.next()) {
+// 	int stepNum = transactedSteps.getInt("StepNumber");
+// 	//Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
+//         int varId = transactedSteps.getInt("ObjectId");
+// 	//try {
+// 	  //if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() && 
+// 	  //   seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
+//           if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
+//              varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
+// 	    retval.add(new Integer(stepNum));
+// 	  }
+//           //}
+// 	//catch(ResourceNotFoundException rnfe){}
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
 
   synchronized public static List queryStepsWithUnitVariableDecisions(PwPlanningSequenceImpl seq) {
     List retval = new ArrayList();
@@ -1085,7 +1136,7 @@ public class MySQLDB {
 	  //   seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
           if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
              varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
-	    retval.add(new Integer(stepNum));
+	    retval.add(Long.toString(transactedSteps.getLong("PartialPlanId")).concat(Integer.toString(transactedSteps.getInt("TransactionId"))));
 	  }
           //}
 	//catch(ResourceNotFoundException rnfe){}
@@ -1095,6 +1146,26 @@ public class MySQLDB {
     }
     return retval;
   }
+
+//   synchronized public static List queryStepsWithNonUnitVariableDecisions(PwPlanningSequenceImpl seq) {
+//     List retval = new ArrayList();
+//     try {
+//       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
+//       while(transactedSteps.next()) {
+// 	int stepNum = transactedSteps.getInt("StepNumber");
+
+// 	//Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
+//         int varId = transactedSteps.getInt("ObjectId");
+//         if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
+//            !varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
+//           retval.add(new Integer(stepNum));
+//         }
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
 
   synchronized public static List queryStepsWithNonUnitVariableDecisions(PwPlanningSequenceImpl seq) {
     List retval = new ArrayList();
@@ -1107,7 +1178,7 @@ public class MySQLDB {
         int varId = transactedSteps.getInt("ObjectId");
         if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
            !varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
-          retval.add(new Integer(stepNum));
+          retval.add(Long.toString(transactedSteps.getLong("PartialPlanId")).concat(Integer.toString(transactedSteps.getInt("TransactionId"))));
         }
       }
     }

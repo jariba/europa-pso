@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.24 2003-10-16 16:39:46 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.25 2003-10-25 00:58:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -296,7 +296,10 @@ public class PwTokenImpl implements PwToken {
       buffer.append( ((PwDomain) ((PwVariable) paramVarsList.
                                   get( paramVarsList.size() - 1)).getDomain()).toString());
     }
-    buffer.append( " )").append("  ").append(partialPlan.getId());
+    // this change adds the suffix of partial plan id to all token node tool tip displays
+    // if this suffix is needed, then another method needs to handle it - will 24oct03
+    //buffer.append( " )").append("  ").append(partialPlan.getId());
+    buffer.append( " )");
     return buffer.toString();
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.8 2003-10-23 23:02:11 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.9 2003-10-25 00:58:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1305,7 +1305,8 @@ public class ConstraintNetworkView extends PartialPlanView {
   private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
     tokenByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          AskTokenByKey tokenByKeyDialog = new AskTokenByKey( partialPlan);
+          AskTokenByKey tokenByKeyDialog =
+            new AskTokenByKey( partialPlan, "Find Token by Key", "key (int)");
           Integer tokenKey = tokenByKeyDialog.getTokenKey();
           if (tokenKey != null) {
             // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());

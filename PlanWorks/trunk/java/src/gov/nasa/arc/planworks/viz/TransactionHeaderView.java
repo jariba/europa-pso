@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.4 2003-10-23 19:22:33 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.5 2003-10-25 00:58:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,9 +12,14 @@
 
 package gov.nasa.arc.planworks.viz;
 
+import java.util.List;
 import java.awt.Color;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -27,7 +32,12 @@ import com.nwoods.jgo.JGoView;
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.TextNode;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
 
 
 /**
@@ -46,15 +56,16 @@ public class TransactionHeaderView extends JGoView {
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE);
 
-  protected static final String KEY_HEADER =        "TX_KEY "; 
-  protected static final String TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
-  protected static final String SOURCE_HEADER =     " SOURCE  ";   
-  protected static final String OBJECT_KEY_HEADER = "OBJ_KEY";
-  protected static final String STEP_NUM_HEADER =   "  STEP  ";
-  protected static final String OBJ_NAME_HEADER =   "     OBJ_NAME     ";
-  protected static final String PREDICATE_HEADER =  "  PREDICATE  ";
+  private static final String KEY_HEADER =        "TX_KEY "; 
+  private static final String TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
+  private static final String SOURCE_HEADER =     " SOURCE  ";   
+  private static final String OBJECT_KEY_HEADER = "OBJ_KEY";
+  private static final String STEP_NUM_HEADER =   "  STEP  ";
+  private static final String OBJ_NAME_HEADER =   "     OBJ_NAME     ";
+  private static final String PREDICATE_HEADER =  "  PREDICATE_NAME  ";
+  private static final String PARAMETER_HEADER =  "  PARAMETER_NAME  ";
 
-
+  private List transactionList; // element PwTransaction
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
   private TextNode keyNode;
@@ -64,6 +75,7 @@ public class TransactionHeaderView extends JGoView {
   private TextNode stepNumNode;
   private TextNode objectNameNode;
   private TextNode predicateNode;
+  private TextNode parameterNode;
 
   /**
    * <code>TransactionHeaderView</code> - constructor 
@@ -71,8 +83,9 @@ public class TransactionHeaderView extends JGoView {
    * @param vizView - <code>VizView</code> - 
    * @param query - <code>String</code> - 
    */
-  public TransactionHeaderView( VizView vizView, String query) {
+  public TransactionHeaderView( List transactionList, String query, VizView vizView) {
     super();
+    this.transactionList = transactionList;
     this.vizView= vizView;
 
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
@@ -127,6 +140,11 @@ public class TransactionHeaderView extends JGoView {
     configureTextNode( predicateNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( predicateNode);
     x += predicateNode.getSize().getWidth();
+
+    parameterNode = new TextNode( PARAMETER_HEADER);
+    configureTextNode( parameterNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( parameterNode);
+    x += parameterNode.getSize().getWidth();
   } // end renderTransactionHeader
 
 
@@ -151,7 +169,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of keyNode
    */
-  public TextNode getKeyNode() {
+  protected TextNode getKeyNode() {
     return this.keyNode;
   }
 
@@ -160,7 +178,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of typeNode
    */
-  public TextNode getTypeNode()  {
+  protected TextNode getTypeNode()  {
     return this.typeNode;
   }
 
@@ -169,7 +187,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of sourceNode
    */
-  public TextNode getSourceNode()  {
+  protected TextNode getSourceNode()  {
     return this.sourceNode;
   }
 
@@ -178,7 +196,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of objectKeyNode
    */
-  public TextNode getObjectKeyNode()  {
+  protected TextNode getObjectKeyNode()  {
     return this.objectKeyNode;
   }
 
@@ -187,7 +205,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of stepNumNode
    */
-  public TextNode getStepNumNode()  {
+  protected TextNode getStepNumNode()  {
     return this.stepNumNode;
   }
 
@@ -196,7 +214,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of objectNameNode
    */
-  public TextNode getObjectNameNode()  {
+  protected TextNode getObjectNameNode()  {
     return this.objectNameNode;
   }
 
@@ -205,9 +223,69 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of predicateNode
    */
-  public TextNode getPredicateNode()  {
+  protected TextNode getPredicateNode()  {
     return this.predicateNode;
   }
+
+  /**
+   * Gets the value of parameterNode
+   *
+   * @return the value of parameterNode
+   */
+  protected TextNode getParameterNode()  {
+    return this.parameterNode;
+  }
+
+
+  /**
+   * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
+   *
+   * @param modifiers - <code>int</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   */
+  public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
+    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      // do nothing
+    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( viewCoords);
+    }
+  } // end doBackgroundClick 
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem transByKeyItem = new JMenuItem( "Find Transaction by Obj_Key");
+    createTransByKeyItem( transByKeyItem);
+    mouseRightPopup.add( transByKeyItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+  } // end mouseRightPopupMenu
+
+  private void createTransByKeyItem( JMenuItem transByKeyItem) {
+    transByKeyItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          AskTransactionObjectKey transByKeyDialog =
+            new AskTransactionObjectKey( TransactionHeaderView.this.transactionList,
+                                         "Find Transaction by Obj_Key", "key (int)");
+          Integer objectKey = transByKeyDialog.getObjectKey();
+          if (objectKey != null) {
+            System.err.println( "createTransByKeyItem: objectKey " + objectKey.toString());
+            int entryIndx = transByKeyDialog.getTransactionListIndex();
+            if (vizView instanceof TransactionView) {
+              ((TransactionView) vizView).getTransactionContentView().
+                scrollEntries( entryIndx);
+            } else if (vizView instanceof TransactionQueryView) {
+              ((TransactionQueryView) vizView).getTransactionContentView().
+                scrollEntries( entryIndx);
+            } else {
+              System.err.println( "TransactionHeaderView.createTransByKeyItem: " +
+                                  vizView + " not handled");
+              System.exit( -1);
+            }
+          }
+        }
+      });
+  } // end createTokenByKeyItem
 
 
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepContentView.java,v 1.2 2003-10-23 18:28:10 taylor Exp $
+// $Id: StepContentView.java,v 1.3 2003-10-25 00:58:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -25,6 +25,7 @@ import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.db.PwTransaction;
 import gov.nasa.arc.planworks.viz.nodes.StepField;
+import gov.nasa.arc.planworks.viz.nodes.TransactionField;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
@@ -119,6 +120,15 @@ public class StepContentView extends JGoView {
                               (int) predicateField.getSize().getHeight());
       x += headerJGoView.getPredicateNode().getSize().getWidth();
       stepFieldList.add( predicateField);
+
+      TransactionField parameterField =
+        new TransactionField( "",
+                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+      jGoDocument.addObjectAtTail( parameterField);
+      parameterField.setSize( (int) headerJGoView.getParameterNode().getSize().getWidth(),
+                           (int) parameterField.getSize().getHeight());
+      x += headerJGoView.getParameterNode().getSize().getWidth();
+      stepFieldList.add( parameterField);
 
       y += stepNumField.getSize().getHeight();
       i++;

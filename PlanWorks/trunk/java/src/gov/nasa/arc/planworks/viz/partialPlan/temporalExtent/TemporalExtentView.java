@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.8 2003-10-16 21:40:41 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.9 2003-10-25 00:58:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -985,7 +985,8 @@ public class TemporalExtentView extends PartialPlanView  {
   private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
     tokenByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          AskTokenByKey tokenByKeyDialog = new AskTokenByKey( partialPlan);
+          AskTokenByKey tokenByKeyDialog =
+            new AskTokenByKey( partialPlan, "Find Token by Key", "key (int)");
           Integer tokenKey = tokenByKeyDialog.getTokenKey();
           if (tokenKey != null) {
             // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());
@@ -1001,33 +1002,41 @@ public class TemporalExtentView extends PartialPlanView  {
   private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
     boolean isTokenFound = false;
     Iterator temporalNodeListItr = temporalNodeList.iterator();
+    TemporalNode temporalNode = null;
     foundMatch:
     while (temporalNodeListItr.hasNext()) {
-      TemporalNode temporalNode = (TemporalNode) temporalNodeListItr.next();
+      temporalNode = (TemporalNode) temporalNodeListItr.next();
       if (temporalNode.getToken() != null) {
-        // check overloaded tokens, since only base tokens are rendered
-        Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
-        while (tokenListItr.hasNext()) {
-          if (((PwToken) tokenListItr.next()).getId().equals( tokenToFind.getId())) {
-            System.err.println( "TemporalExtentView found token: " +
-                                tokenToFind.getPredicate().getName() +
-                                " (key=" + tokenToFind.getId().toString() + ")");
-            NodeGenerics.focusViewOnNode( temporalNode, jGoExtentView);
-            isTokenFound = true;
-            break foundMatch;
+        if (temporalNode.getSlot() != null) {
+          // check overloaded tokens, since only base tokens are rendered
+          Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
+          while (tokenListItr.hasNext()) {
+            if (((PwToken) tokenListItr.next()).getId().equals( tokenToFind.getId())) {
+              isTokenFound = true;
+              break foundMatch;
+            }
           }
+        } else if (temporalNode.getToken().getId().equals( tokenToFind.getId())) {
+          // free token
+          isTokenFound = true;
+          break foundMatch;          
         }
       }
     }
-    if (isTokenFound && (! isByKey)) {
-      // only base tokens are rendered in this view
-      // NodeGenerics.selectSecondaryNodes
-      //   ( NodeGenerics.mapTokensToTokenNodes
-      //     (((PartialPlanViewSet) TemporalExtentView.this.getViewSet()).
-      //      getSecondaryTokens(), nodeList),
-      //     jGoView);
-    }
-    if (! isTokenFound) {
+    if (isTokenFound) {
+      System.err.println( "TemporalExtentView found token: " +
+                          tokenToFind.getPredicate().getName() +
+                          " (key=" + tokenToFind.getId().toString() + ")");
+      NodeGenerics.focusViewOnNode( temporalNode, jGoExtentView);
+      if (! isByKey) {
+        // only base tokens are rendered in this view
+        // NodeGenerics.selectSecondaryNodes
+        //   ( NodeGenerics.mapTokensToTokenNodes
+        //     (((PartialPlanViewSet) TemporalExtentView.this.getViewSet()).
+        //      getSecondaryTokens(), nodeList),
+        //     jGoView);
+      }
+    } else {
       String message = "Token " + tokenToFind.getPredicate().getName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,

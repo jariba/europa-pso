@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.43 2003-10-16 21:40:38 taylor Exp $
+# $Id: README,v 1.44 2003-10-25 00:58:08 taylor Exp $
 #
 
 SUMMARY
@@ -55,13 +55,20 @@ Set environment varibles:
     e.g. setenv EUROPA_HOME ~/NewPlan
 
 
-OPTIONAL SETTINGS
-=================
-The default value for the maximum memory required by the Java Virtual Machine
-is 200 mega-bytes.  It is posible to set it to a much higher value, but only
-to this one particular value:
+OPTIONAL CONFIGURATION
+======================
+o The default value for the maximum memory required by the Java Virtual Machine
+  is 200 mega-bytes.  It is posible to set it to a much higher value, but only
+  to this one particular value (Ant is reponsible for this restriction):
 
-> setenv JVM_GC_MAX 975
+  > setenv JVM_GC_MAX 975
+
+o PlanWorks starts up without any default project name or default sequence
+  directory.  To specify such, go to PlanWorks/build.xml:
+
+  <!-- specify values for the next two properties to have PlanWorks have a default project -->
+  <property name="default.project.name" value=""/>
+  <property name="default.sequence.dir" value=""/>
 
 
 BUILDING THE PARTIAL PLAN WRITER

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionQueryView.java,v 1.2 2003-10-21 21:51:30 taylor Exp $
+// $Id: TransactionQueryView.java,v 1.3 2003-10-25 00:58:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -125,7 +125,7 @@ public class TransactionQueryView extends SequenceView {
 
     transactionHeaderPanel = new TransactionHeaderPanel();
     transactionHeaderPanel.setLayout( new BoxLayout( transactionHeaderPanel, BoxLayout.Y_AXIS));
-    headerJGoView = new TransactionHeaderView( this, query);
+    headerJGoView = new TransactionHeaderView( transactionList, query, this);
     headerJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     headerJGoView.validate();
     headerJGoView.setVisible( true);
@@ -163,6 +163,15 @@ public class TransactionQueryView extends SequenceView {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end init
 
+
+  /**
+   * <code>getTransactionContentView</code>
+   *
+   * @return - <code>TransactionContentView</code> - 
+   */
+  public TransactionContentView getTransactionContentView() {
+    return contentJGoView;
+  }
 
   /**
    * <code>ScrollBarListener</code> - keep both headerJGoView & contentJGoView aligned,
