@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.11 2004-01-16 19:05:37 taylor Exp $
+// $Id: VariableNode.java,v 1.12 2004-02-19 21:57:52 miatauro Exp $
 //
 // PlanWorks
 //
@@ -47,6 +47,7 @@ import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
@@ -70,17 +71,17 @@ public class VariableNode extends ExtendedBasicNode {
   private static final boolean IS_TEXT_EDITABLE = false;
 
   private PwVariable variable;
-  private TokenNode tokenNode;
-  private boolean isFreeToken;
+  //private TokenNode tokenNode;
+  private VariableContainerNode parentNode;
   private PartialPlanView partialPlanView;
   private String nodeLabel;
-  private List tokenNodeList; // element TokenNode
+  private List containerNodeList; // element TokenNode
   private List constraintNodeList; // element ConstraintNode
-  private List variableTokenLinkList; // element BasicNodeLink
+  private List variableContainerLinkList; // element BasicNodeLink
   private boolean areNeighborsShown;
   private boolean inLayout;
   private boolean hasZeroConstraints;
-  private int tokenLinkCount;
+  private int containerLinkCount;
   private int constraintLinkCount;
   private boolean isDebug;
   private boolean hasBeenVisited;
@@ -97,17 +98,16 @@ public class VariableNode extends ExtendedBasicNode {
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public VariableNode( PwVariable variable, TokenNode tokenNode, Point variableLocation, 
-                       Color backgroundColor, boolean isFreeToken, boolean isDraggable,
-                       PartialPlanView partialPlanView) { 
+  public VariableNode( final PwVariable variable, final VariableContainerNode parentNode, 
+                       final Point variableLocation, final Color backgroundColor, 
+                       final boolean isDraggable, final PartialPlanView partialPlanView) { 
     super( ViewConstants.ELLIPSE);
     this.variable = variable;
-    this.isFreeToken = isFreeToken;
     this.partialPlanView = partialPlanView;
-    tokenNodeList = new ArrayList();
-    tokenNodeList.add( tokenNode);
+    containerNodeList = new ArrayList();
+    containerNodeList.add( parentNode);
     constraintNodeList = new ArrayList();
-    variableTokenLinkList = new ArrayList();
+    variableContainerLinkList = new ArrayList();
     this.backgroundColor = backgroundColor;
 
     inLayout = false;
@@ -180,7 +180,7 @@ public class VariableNode extends ExtendedBasicNode {
       StringBuffer tip = new StringBuffer( "<html> ");
       NodeGenerics.getVariableNodeToolTipText( variable, partialPlanView, tip);
       if (isDebug) {
-        tip.append( " linkCnt ").append( String.valueOf( tokenLinkCount +
+        tip.append( " linkCnt ").append( String.valueOf( containerLinkCount +
                                                          constraintLinkCount));
       }
        tip.append( "<br> Mouse-L: ").append( operation);
@@ -210,8 +210,8 @@ public class VariableNode extends ExtendedBasicNode {
    *
    * @return - <code>List</code> - of TokenNode
    */
-  public List getTokenNodeList() {
-    return tokenNodeList;
+  public List getContainerNodeList() {
+    return containerNodeList;
   }
 
   /**
@@ -219,9 +219,9 @@ public class VariableNode extends ExtendedBasicNode {
    *
    * @param tokenNode - <code>TokenNode</code> - 
    */
-  public void addTokenNode( TokenNode tokenNode) {
-    if (!tokenNodeList.contains(tokenNode)) {
-      tokenNodeList.add( tokenNode);
+  public void addContainerNode( VariableContainerNode parentNode) {
+    if (!containerNodeList.contains(parentNode)) {
+      containerNodeList.add( parentNode);
     }
   }
 
@@ -250,8 +250,8 @@ public class VariableNode extends ExtendedBasicNode {
    *
    * @return - <code>List</code> - 
    */
-  public List getVariableTokenLinkList() {
-    return variableTokenLinkList;
+  public List getVariableContainerLinkList() {
+    return variableContainerLinkList;
   }
 
   /**
@@ -260,8 +260,8 @@ public class VariableNode extends ExtendedBasicNode {
    * @param link - <code>BasicNodeLink</code> - 
    */
   public void addLink( BasicNodeLink link) {
-    if (!variableTokenLinkList.contains(link)) {
-      variableTokenLinkList.add( link);
+    if (!variableContainerLinkList.contains(link)) {
+      variableContainerLinkList.add( link);
     }
   }
 
@@ -322,16 +322,16 @@ public class VariableNode extends ExtendedBasicNode {
    * <code>incrTokenLinkCount</code>
    *
    */
-  public void incrTokenLinkCount() {
-    tokenLinkCount++;
+  public void incrContainerLinkCount() {
+    containerLinkCount++;
   }
 
   /**
    * <code>decTokenLinkCount</code>
    *
    */
-  public void decTokenLinkCount() {
-    tokenLinkCount--;
+  public void decContainerLinkCount() {
+    containerLinkCount--;
   }
 
   /**
@@ -339,8 +339,8 @@ public class VariableNode extends ExtendedBasicNode {
    *
    * @return - <code>int</code> - 
    */
-  public int getTokenLinkCount() {
-    return tokenLinkCount;
+  public int getContainerLinkCount() {
+    return containerLinkCount;
   }
 
   /**
@@ -369,12 +369,12 @@ public class VariableNode extends ExtendedBasicNode {
   }
 
   /**
-   * <code>getLinkCount</code> - tokenLinkCount + constraintLinkCount
+   * <code>getLinkCount</code> - containerLinkCount + constraintLinkCount
    *
    * @return - <code>int</code> - 
    */
   public int getLinkCount() {
-    return tokenLinkCount + constraintLinkCount;
+    return containerLinkCount + constraintLinkCount;
   }
 
   /**
@@ -389,11 +389,11 @@ public class VariableNode extends ExtendedBasicNode {
                           "; constraintLinkCount != 0: " + constraintLinkCount);
     }
     constraintLinkCount = 0;
-    if (isDebug && (tokenLinkCount != 0)) {
+    if (isDebug && (containerLinkCount != 0)) {
       System.err.println( "reset variable node: " + variable.getId() +
-                          "; tokenLinkCount != 0: " + tokenLinkCount);
+                          "; containerLinkCount != 0: " + containerLinkCount);
     }
-    tokenLinkCount = 0;
+    containerLinkCount = 0;
   } // end resetNode
 
   /**
@@ -435,13 +435,13 @@ public class VariableNode extends ExtendedBasicNode {
           //System.err.println
           //  ( "doMouseClick: Mouse-L show constraint/token nodes of variable id " +
           //    variableNode.getVariable().getId());
-          addVariableNodeTokensAndConstraints( this, (ConstraintNetworkView) partialPlanView);
+          addVariableNodeContainersAndConstraints( this, (ConstraintNetworkView) partialPlanView);
           areNeighborsShown = true;
         } else {
           //System.err.println
           //  ( "doMouseClick: Mouse-L hide constraint/token nodes of variable id " +
           //    variableNode.getVariable().getId());
-          removeVariableNodeTokensAndConstraints( this, (ConstraintNetworkView) partialPlanView);
+          removeVariableNodeContainersAndConstraints( this, (ConstraintNetworkView) partialPlanView);
           areNeighborsShown = false;
         }
         return true;
@@ -478,12 +478,12 @@ public class VariableNode extends ExtendedBasicNode {
    * @param variableNode - <code>VariableNode</code> - 
    * @param constraintNetworkView - <code>ConstraintNetworkView</code> - 
    */
-  protected void addVariableNodeTokensAndConstraints
-    ( VariableNode variableNode, ConstraintNetworkView constraintNetworkView) {
+  protected void addVariableNodeContainersAndConstraints
+    ( final VariableNode variableNode, final ConstraintNetworkView constraintNetworkView) {
     constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
     boolean areNodesChanged = constraintNetworkView.addConstraintNodes( variableNode);
     boolean areLinksChanged =
-      constraintNetworkView.addTokenAndConstraintToVariableLinks( variableNode);
+      constraintNetworkView.addContainerAndConstraintToVariableLinks( variableNode);
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();
       constraintNetworkView.setFocusNode( variableNode);
@@ -492,10 +492,10 @@ public class VariableNode extends ExtendedBasicNode {
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
   } // end addVariableNodeTokensAndConstraints
 
-  private void removeVariableNodeTokensAndConstraints
-    ( VariableNode variableNode, ConstraintNetworkView constraintNetworkView) {
+  private void removeVariableNodeContainersAndConstraints
+    ( final VariableNode variableNode, final ConstraintNetworkView constraintNetworkView) {
     constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
-    boolean areLinksChanged = constraintNetworkView.removeTokenToVariableLinks( variableNode);
+    boolean areLinksChanged = constraintNetworkView.removeContainerToVariableLinks( variableNode);
     boolean areNodesChanged = constraintNetworkView.removeConstraintNodes( variableNode);
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.19 2004-02-17 19:01:17 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.20 2004-02-19 21:56:47 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -134,7 +134,7 @@ public class PwObjectImpl implements PwObject {
 
   public int getObjectType(){return type;}
 
-  public List getVariablesList() {
+  public List getVariables() {
     List retval = new ArrayList(variableIdList.size());
     ListIterator varIdIterator = variableIdList.listIterator();
     while(varIdIterator.hasNext()) {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNodePort.java,v 1.4 2004-01-16 19:05:35 taylor Exp $
+// $Id: ExtendedBasicNodePort.java,v 1.5 2004-02-19 21:57:15 miatauro Exp $
 //
 // PlanWorks
 //
@@ -109,12 +109,12 @@ public class ExtendedBasicNodePort extends BasicNodePort {
         JGoEllipse.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                 rect.height, x, y, p);
       }
-      else if(node instanceof ModelClassNavNode) {
-        ((LeftTrapezoid) ((ModelClassNavNode)node).getDrawable()).
+      else if(node instanceof ObjectNode) {
+        ((LeftTrapezoid) ((ObjectNode)node).getDrawable()).
           getNearestIntersectionPoint(x, y, cx, cy, p);
       }
-      else if(node instanceof TimelineNavNode) {
-        ((RightTrapezoid)((TimelineNavNode)node).getDrawable()).
+      else if(node instanceof TimelineNode) {
+        ((RightTrapezoid)((TimelineNode)node).getDrawable()).
           getNearestIntersectionPoint(x, y, cx, cy, p);
       }
       else if(node instanceof SlotNavNode) {
