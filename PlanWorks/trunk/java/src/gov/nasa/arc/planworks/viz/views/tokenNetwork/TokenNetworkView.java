@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.7 2003-07-11 00:02:31 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.8 2003-07-12 01:36:33 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -422,6 +422,9 @@ public class TokenNetworkView extends VizView {
 
 
   private void setNodesVisible() {
+    // print content spec
+    System.err.println( "Token Network View - contentSpec");
+    viewSet.printSpec();
     validTokenIds = viewSet.getValidTokenIds();
     displayedTokenIds = new ArrayList();
     Iterator tokenNodeIterator = nodeList.iterator();

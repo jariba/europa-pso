@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.18 2003-07-11 00:02:31 taylor Exp $
+// $Id: TimelineView.java,v 1.19 2003-07-12 01:36:33 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -100,9 +100,6 @@ public class TimelineView extends VizView {
                      ViewConstants.TIMELINE_VIEW_FONT_SIZE);
     jGoView.setFont( font);
     this.setVisible( true);
-
-    // print content spec
-    // viewSet.printSpec();
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -320,6 +317,9 @@ public class TimelineView extends VizView {
   // is timelines and slots are in content spec, in terms of their tokens,
   // set them visible
   private void setNodesVisible() {
+    // print content spec
+    System.err.println( "TimelineView - contentSpec");
+    viewSet.printSpec();
     validTokenIds = viewSet.getValidTokenIds();
     displayedTokenIds = new ArrayList();
     Iterator timelineIterator = timelineNodeList.iterator();
