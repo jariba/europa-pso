@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.1 2003-10-02 23:24:22 taylor Exp $
+// $Id: StepElement.java,v 1.2 2003-10-07 02:13:35 taylor Exp $
 //
 // PlanWorks
 //
@@ -18,6 +18,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -33,8 +34,10 @@ import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwTransaction;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.Extent;
@@ -53,32 +56,52 @@ import gov.nasa.arc.planworks.viz.nodes.HistogramElement;
  */
 public class StepElement extends HistogramElement {
 
-  private static final int STEP_WIDTH = 10;
+  private static final int STEP_WIDTH = ViewConstants.STEP_VIEW_STEP_WIDTH;
   private static final int STEP_LINE_WIDTH = 1;
   private static final int STEP_LINE_TYPE = JGoPen.SOLID;
   private static final Color STEP_LINE_COLOR = ColorMap.getColor( "black");
   private static final Color STEP_BG_COLOR = ViewConstants.VIEW_BACKGROUND_COLOR;
 
   private int stepNumber;
-  private PwToken activeToken;
-  private String tokenTransaction;
+  private String partialPlanName;
+  private PwPartialPlan partialPlan;
+  private int planDBSize;
+  private int height;
+  private List transactionList;
+  private int numTransactions;
 
   /**
    * <code>StepElement</code> - constructor 
    *
    * @param x - <code>int</code> - 
    * @param y - <code>int</code> - 
-   * @param height - <code>int</code> - 
-   * @param activeToken - <code>PwToken</code> - 
-   * @param tokenTransaction - <code>String</code> - 
+   * @param planDBSize - <code>int</code> - 
+   * @param partialPlanName - <code>String</code> - 
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param transactionList - <code>List</code> - 
    */
-  public StepElement( int x, int y, int height, int stepNumber,PwToken activeToken,
-                      String tokenTransaction) {
-    super( x, y, STEP_WIDTH, height, STEP_LINE_WIDTH, STEP_LINE_TYPE, STEP_LINE_COLOR,
-           STEP_BG_COLOR); 
-    this.stepNumber = stepNumber;
-    this.activeToken = activeToken;
-    this.tokenTransaction = tokenTransaction;  
+  public StepElement( int x, int y, int planDBSize, String partialPlanName,
+                      PwPartialPlan partialPlan, List transactionList) {
+    super( x, y, STEP_WIDTH, planDBSize / ViewConstants.STEP_VIEW_DB_SIZE_SCALING,
+           STEP_LINE_WIDTH, STEP_LINE_TYPE, STEP_LINE_COLOR, STEP_BG_COLOR);
+    this.planDBSize = planDBSize;
+    this.height = planDBSize / ViewConstants.STEP_VIEW_DB_SIZE_SCALING;
+    this.partialPlanName = partialPlanName;
+    this.stepNumber = Integer.parseInt( partialPlanName.substring( 4)); // discard prefix "step"
+    this.partialPlan = partialPlan;
+    this.transactionList = transactionList;
+
+    numTransactions = 0;
+    if (transactionList != null) {
+      numTransactions = transactionList.size();
+      Iterator transItr = transactionList.iterator();
+      System.err.println( "\n\nStep " + this.stepNumber);
+      while (transItr.hasNext()) {
+        PwTransaction transaction = (PwTransaction) transItr.next();
+        System.err.println( "   type " + transaction.getType() + " objectId " +
+                            transaction.getObjectId());
+      }
+    }
   } // end constructor
 
 
@@ -93,8 +116,10 @@ public class StepElement extends HistogramElement {
     tip.append( ": ");
     // tip.append( activeToken.toString());
     tip.append( "token-predicate-name");
-    tip.append( "<br>");
-    tip.append( tokenTransaction);
+    tip.append( "<br>planDBSize: ");
+    tip.append( String.valueOf( planDBSize));
+    tip.append( "; numTransactions: ");
+    tip.append( String.valueOf( numTransactions));
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText

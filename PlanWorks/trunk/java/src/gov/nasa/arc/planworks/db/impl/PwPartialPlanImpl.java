@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.48 2003-10-02 23:16:35 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.49 2003-10-07 02:13:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -846,6 +846,20 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   public void setSeqName( String seqName) {
     this.seqName = seqName;
   }
+
+
+  /**
+   * <code>getPlanDBSize</code> - sum of hash map sizes of all plan objects
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getPlanDBSize() {
+    return (objectMap.keySet().size() + timelineMap.keySet().size() +
+            slotMap.keySet().size() + tokenMap.keySet().size() +
+            constraintMap.keySet().size() + predicateMap.keySet().size() +
+            parameterMap.keySet().size() + tokenRelationMap.keySet().size() +
+            variableMap.keySet().size());
+  } // end getDataBaseSize
 
 
 } // end class PwPartialPlanImpl

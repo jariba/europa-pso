@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.5 2003-10-02 23:24:21 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.6 2003-10-07 02:13:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -102,6 +102,7 @@ public class TemporalExtentView extends PartialPlanView  {
   private float timeScale;
   private JGoStroke timeScaleMark;
   private static Point docCoords;
+  private List leftMarginAdjust; // end LeftMarginAdjust
 
 
   /**
@@ -189,6 +190,7 @@ public class TemporalExtentView extends PartialPlanView  {
     fontMetrics = graphics.getFontMetrics( font);
     graphics.dispose();
 
+    leftMarginAdjust = new ArrayList();
     collectAndComputeTimeScaleMetrics();
     createTimeScale();
     boolean isRedraw = false;
@@ -366,7 +368,7 @@ public class TemporalExtentView extends PartialPlanView  {
           PwDomain[] intervalArray =
             NodeGenerics.getStartEndIntervals( this, slot, previousSlot, isLastSlot,
                                                alwaysReturnEnd);
-          collectTimeScaleMetrics( intervalArray[0], intervalArray[1]);
+          collectTimeScaleMetrics( intervalArray[0], intervalArray[1], token);
           previousSlot = slot;
         }
         if (slotCnt > maxSlots) {
@@ -383,15 +385,16 @@ public class TemporalExtentView extends PartialPlanView  {
   } // collectAndComputeTimeScaleMetrics
 
   private void collectTimeScaleMetrics( PwDomain startTimeIntervalDomain,
-                                        PwDomain endTimeIntervalDomain) {
+                                        PwDomain endTimeIntervalDomain, PwToken token) {
+    int earliestTime = 0;
     if (startTimeIntervalDomain != null) {
 //       System.err.println( "collectTimeScaleMetrics earliest " +
 //                           startTimeIntervalDomain.getLowerBound() + " latest " +
 //                           startTimeIntervalDomain.getUpperBound());
-      int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+      earliestTime = startTimeIntervalDomain.getLowerBoundInt();
       if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
           (earliestTime < timeScaleStart)) {
-        timeScaleStart = earliestTime;
+          timeScaleStart = earliestTime;
       }
       int latestTime = startTimeIntervalDomain.getUpperBoundInt();
       if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
@@ -405,11 +408,18 @@ public class TemporalExtentView extends PartialPlanView  {
 //                           endTimeIntervalDomain.getUpperBound() + " earliest " +
 //                           endTimeIntervalDomain.getLowerBound());
       int latestTime = endTimeIntervalDomain.getUpperBoundInt();
-      if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
-          (latestTime > timeScaleEnd)) {
-        timeScaleEnd = latestTime;
+      if (latestTime != DbConstants.PLUS_INFINITY_INT) {
+        if (latestTime > timeScaleEnd) {
+          timeScaleEnd = latestTime;
+        }
+        if (earliestTime != DbConstants.MINUS_INFINITY_INT) {
+          int nodeLabelWidth = 
+            TemporalNode.getNodeLabelWidth( TemporalNode.createNodeLabel( token), this);
+          leftMarginAdjust.add( new LeftMarginAdjust( earliestTime, latestTime,
+                                                      nodeLabelWidth));
+        }
       }
-      int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
+      earliestTime = endTimeIntervalDomain.getLowerBoundInt();
       if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
           (earliestTime != DbConstants.PLUS_INFINITY_INT) &&
           (earliestTime > timeScaleEnd)) {
@@ -417,6 +427,55 @@ public class TemporalExtentView extends PartialPlanView  {
       }
     }
   } // end collectTimeScaleMetrics
+
+  private void collectFreeTokenMetrics() {
+    List freeTokenList = partialPlan.getFreeTokenList();
+    Iterator freeTokenItr = freeTokenList.iterator();
+    while (freeTokenItr.hasNext()) {
+      PwToken token = (PwToken) freeTokenItr.next();
+      PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
+      PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
+
+      int earliestTime = 0;
+      if (startTimeIntervalDomain != null) {
+//         System.err.println( "collectFreeTokenMetrics earliest " +
+//                             startTimeIntervalDomain.getLowerBound() + " latest " +
+//                             startTimeIntervalDomain.getUpperBound());
+        earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+        if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
+            (earliestTime < timeScaleStart)) {
+            timeScaleStart = earliestTime;
+        }
+        int latestTime = startTimeIntervalDomain.getUpperBoundInt();
+        if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
+            (latestTime < timeScaleStart)) {
+          timeScaleStart = latestTime;
+        }
+      }
+      if (endTimeIntervalDomain != null) {
+//         System.err.println( "collectFreeTokenMetrics latest " +
+//                             endTimeIntervalDomain.getUpperBound() + " earliest " +
+//                             endTimeIntervalDomain.getLowerBound());
+        int latestTime = endTimeIntervalDomain.getUpperBoundInt();
+        if (latestTime != DbConstants.PLUS_INFINITY_INT) {
+          if (latestTime > timeScaleEnd) {
+            timeScaleEnd = latestTime;
+          }
+          if (earliestTime != DbConstants.MINUS_INFINITY_INT) {
+            int nodeLabelWidth = 
+              TemporalNode.getNodeLabelWidth( TemporalNode.createNodeLabel( token), this);
+            leftMarginAdjust.add( new LeftMarginAdjust( earliestTime, latestTime,
+                                                        nodeLabelWidth));
+          }
+        }
+        earliestTime = endTimeIntervalDomain.getLowerBoundInt();
+        if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
+            (earliestTime > timeScaleEnd)) {
+          timeScaleEnd = earliestTime;
+        }
+      }
+    }
+  } // end collectFreeTokenMetrics
 
   private void computeTimeScaleMetrics() {
     endXLoc = Math.max( startXLoc +
@@ -462,48 +521,23 @@ public class TemporalExtentView extends PartialPlanView  {
 //       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
 //                           " xOrigin " + xOrigin);
     }
-  } // end computeTimeScaleMetrics
-
-  private void collectFreeTokenMetrics() {
-    List freeTokenList = partialPlan.getFreeTokenList();
-    Iterator freeTokenItr = freeTokenList.iterator();
-    while (freeTokenItr.hasNext()) {
-      PwToken token = (PwToken) freeTokenItr.next();
-      PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
-      PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
-
-      if (startTimeIntervalDomain != null) {
-//         System.err.println( "collectFreeTokenMetrics earliest " +
-//                             startTimeIntervalDomain.getLowerBound() + " latest " +
-//                             startTimeIntervalDomain.getUpperBound());
-        int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
-        if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
-            (earliestTime < timeScaleStart)) {
-          timeScaleStart = earliestTime;
-        }
-        int latestTime = startTimeIntervalDomain.getUpperBoundInt();
-        if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
-            (latestTime < timeScaleStart)) {
-          timeScaleStart = latestTime;
-        }
-      }
-      if (endTimeIntervalDomain != null) {
-//         System.err.println( "collectFreeTokenMetrics latest " +
-//                             endTimeIntervalDomain.getUpperBound() + " earliest " +
-//                             endTimeIntervalDomain.getLowerBound());
-        int latestTime = endTimeIntervalDomain.getUpperBoundInt();
-        if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
-            (latestTime > timeScaleEnd)) {
-          timeScaleEnd = latestTime;
-        }
-        int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
-        if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
-            (earliestTime > timeScaleEnd)) {
-          timeScaleEnd = earliestTime;
+    // translate view to adjust for wide labels near the left edge of view
+    int maxMarginAdjust = 0;
+    Iterator marginAdjustItr = leftMarginAdjust.iterator();
+    while (marginAdjustItr.hasNext()) {
+      LeftMarginAdjust adjustObject = (LeftMarginAdjust) marginAdjustItr.next();
+      if (adjustObject.getLabelWidth() >
+          ((adjustObject.getLatestEndTime() - adjustObject.getEarliestStartTime()) *
+           timeScale)) {
+        int adjustX = - (int) ((timeScale * adjustObject.getEarliestStartTime()) -
+                               (adjustObject.getLabelWidth() * 0.5));
+        if (adjustX > maxMarginAdjust) {
+          maxMarginAdjust = adjustX;
         }
       }
     }
-  } // end collectFreeTokenMetrics
+    xOrigin += maxMarginAdjust;
+  } // end computeTimeScaleMetrics
 
   private void createTimeScale() {
     int xLoc = (int) scaleTime( tickTime);
@@ -1039,6 +1073,33 @@ public class TemporalExtentView extends PartialPlanView  {
 
   } // end class TimeScaleMark
 
+
+  class LeftMarginAdjust {
+
+    private int earliestStartTime; 
+    private int latestEndTime; 
+    private int labelWidth;
+
+    public LeftMarginAdjust( int earliestStartTime, int latestEndTime, int labelWidth) {
+      this.earliestStartTime = earliestStartTime;
+      this.latestEndTime = latestEndTime;
+      this.labelWidth = labelWidth;
+    }
+
+    public int getEarliestStartTime() {
+      return earliestStartTime;
+    }
+
+    public int getLatestEndTime() {
+      return latestEndTime;
+    }
+
+    public int getLabelWidth() {
+      return labelWidth;
+    }
+
+  } // end class LeftMarginAdjust
+    
 
 } // end class TemporalExtentView
  
