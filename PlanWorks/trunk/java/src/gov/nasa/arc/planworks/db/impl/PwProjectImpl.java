@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.35 2003-10-16 16:39:41 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.36 2003-10-31 00:50:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -40,16 +40,7 @@ import gov.nasa.arc.planworks.db.util.MySQLDB;
  */
 public class PwProjectImpl extends PwProject {
 
-  //private static List projectNames;  // element String
-  //private static List projects;  // element PwProjectImpl
-
   private static HashMap projects;
-
-  /*  static {
-    try {
-      initProjects();
-    }
-    }*/
 
   /**
    * <code>initProjects</code> - initialize projects in the database
@@ -63,7 +54,6 @@ public class PwProjectImpl extends PwProject {
     ListIterator dbProjectNameIterator = MySQLDB.getProjectNames().listIterator();
     while(dbProjectNameIterator.hasNext()) {
       String name = (String) dbProjectNameIterator.next();
-      //System.err.println("Got project " + name);
       projects.put(name, new PwProjectImpl(name, true));
     }
   } // end initProjects
@@ -175,8 +165,6 @@ public class PwProjectImpl extends PwProject {
       planningSequences.add(new PwPlanningSequenceImpl((String) sequences.get(sequenceId), 
                                                        sequenceId, new PwModelImpl()));
     }
-    // this project is already in projectNames & projectUrls
-    //projects.add(name, this);
   } // end  constructor PwProjectImpl.openProject
 
   /**
@@ -286,7 +274,9 @@ public class PwProjectImpl extends PwProject {
    * @exception Exception if an error occurs
    */
   public void delete() throws Exception, ResourceNotFoundException {
+    long t1 = System.currentTimeMillis();
     projects.remove(name);
     MySQLDB.deleteProject(id);
+    System.err.println("Deleting project took " + (System.currentTimeMillis() - t1) + "ms");
   } // end delete
 } // end class PwProjectImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.60 2003-10-28 23:47:06 miatauro Exp $
+// $Id: MySQLDB.java,v 1.61 2003-10-31 00:50:37 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -223,7 +223,6 @@ public class MySQLDB {
     Statement stmt = null;
     try {
       stmt = conn.createStatement();
-      long t1 = System.currentTimeMillis();
       stmt.execute("ANALYZE TABLE PartialPlan");
       stmt.execute("ANALYZE TABLE Object");
       stmt.execute("ANALYZE TABLE Timeline");
@@ -238,7 +237,7 @@ public class MySQLDB {
       stmt.execute("ANALYZE TABLE Parameter");
       stmt.execute("ANALYZE TABLE ParamVarTokenMap");
       stmt.execute("ANALYZE TABLE TokenRelation");
-      //System.err.println((System.currentTimeMillis() - t1) + "ms in database analysis.");
+      stmt.execute("ANALYZE TABLE Transaction");
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -255,7 +254,6 @@ public class MySQLDB {
 
   synchronized public static void loadFile(String file, String tableName) {
     updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
-    //analyzeDatabase();
   }
 
   /**
@@ -413,7 +411,7 @@ public class MySQLDB {
 
   synchronized public static Long latestSequenceId() {
     try {
-      ResultSet newId = //queryDatabase("SELECT MAX(SequenceId) AS SequenceId from Sequence");
+      ResultSet newId = 
         queryDatabase("SELECT SequenceId FROM Sequence ORDER BY SequenceOrdering");
       newId.last();
       return new Long(newId.getLong("SequenceId"));
@@ -494,24 +492,31 @@ public class MySQLDB {
     try {
       ResultSet partialPlanIds =
         queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
+      StringBuffer whereClause = new StringBuffer(" WHERE PartialPlanId IN (");
       while(partialPlanIds.next()) {
-        Long partialPlanId = new Long(partialPlanIds.getLong("PartialPlanId"));
-        updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM Timeline WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM Slot WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM EnumeratedDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM IntervalDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM VConstraint WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM TokenRelation WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM Predicate WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        updateDatabase("DELETE FROM Parameter WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        whereClause.append(partialPlanIds.getLong("PartialPlanId"));
+        if(!partialPlanIds.isLast()) {
+          whereClause.append(", ");
+        }
       }
+      whereClause.append(")");
+      updateDatabase("DELETE FROM Object".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM Timeline".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM Slot".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM Token".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM Variable".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM EnumeratedDomain".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM IntervalDomain".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM VConstraint".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM TokenRelation".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM ParamVarTokenMap".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM ConstraintVarMap".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM Predicate".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM Parameter".concat(whereClause.toString()));
+      updateDatabase("DELETE FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()));
       updateDatabase("DELETE FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
       updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
+      analyzeDatabase();
     }
     catch(SQLException sqle){}
   }
@@ -537,15 +542,6 @@ public class MySQLDB {
     return retval;
   }
 
-  /**
-   * Set the sequence Id of a partial plan to a non-negative value
-   * 
-   * @param sequenceId
-   */
-  //  synchronized public static void updatePartialPlanSequenceId(Integer sequenceId) {
-  //    updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceId.toString()).concat(" WHERE SequenceId=-1"));
-  //}
-  
   /**
    * Get the Id for the most recently created partial plan
    *
@@ -575,7 +571,6 @@ public class MySQLDB {
       temp.append(sequenceId.toString()).append(" && PlanName='").append(name).append("'");
       System.err.println(temp.toString());
       ResultSet partialPlan =
-        //queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()).concat(" && PlanName=").concat(name));
         queryDatabase(temp.toString());
       partialPlan.last();
       retval = new Long(partialPlan.getLong("PartialPlanId"));
@@ -687,7 +682,6 @@ public class MySQLDB {
       long t1 = System.currentTimeMillis();
       ResultSet timelineSlotTokens = 
         queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline LEFT JOIN Slot ON Slot.TimelineId=Timeline.TimelineId && Slot.PartialPlanId=Timeline.PartialPlanId LEFT JOIN Token ON Token.PartialPlanId=Slot.PartialPlanId && Token.SlotId=Slot.SlotId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Token.PartialPlanId && ParamVarTokenMap.TokenId=Token.TokenId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Timeline.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" ORDER BY Timeline.ObjectId, Timeline.TimelineId, Slot.SlotIndex, Token.TokenId, ParamVarTokenMap.ParameterId"));
-      //System.err.println("Time spent in token query: " + (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
       PwObjectImpl object = null;
       PwTimelineImpl timeline = null;
@@ -706,15 +700,6 @@ public class MySQLDB {
           object = partialPlan.getObjectImpl(objectId);
         }
         if(timeline == null || !timeline.getId().equals(timelineId)) {
-          if(object == null) {
-            //System.err.println("object " + objectId + " is null...?");
-          }
-          if(timelineSlotTokens.getString("Timeline.TimelineName") == null) {
-            //System.err.println("name for timeline " + timelineId + " is null");
-          }
-          if(timelineId == null) {
-            //System.err.println("timelineId is null");
-          }
           timeline = object.addTimeline(timelineSlotTokens.getString("Timeline.TimelineName"),
                                         timelineId);
         }
@@ -750,8 +735,6 @@ public class MySQLDB {
       }
       t1 = System.currentTimeMillis();
       ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.RejectVarId, Token.PredicateId, ParamVarTokenMap.VariableId, ParamVarTokenMap.ParameterId, TokenRelation.TokenRelationId FROM Token LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.TokenId=Token.TokenId && ParamVarTokenMap.PartialPlanId=Token.PartialPlanId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
-      //System.err.println("Time spent in free token query: " + 
-      //                   (System.currentTimeMillis() - t1));
       token = null;
       t1 = System.currentTimeMillis();
       while(freeTokens.next()) {
@@ -778,8 +761,6 @@ public class MySQLDB {
           token.addTokenRelation(tokenRelationId);
         }
       }
-      //System.err.println("Time spent creating free tokens: " + 
-      //                   (System.currentTimeMillis() - t1));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -798,14 +779,7 @@ public class MySQLDB {
       long t1 = System.currentTimeMillis();
       ResultSet constraints = 
         queryDatabase("SELECT VConstraint.ConstraintId, VConstraint.ConstraintName, VConstraint.ConstraintType, ConstraintVarMap.VariableId FROM VConstraint LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=VConstraint.PartialPlanId && ConstraintVarMap.ConstraintId=VConstraint.ConstraintId WHERE VConstraint.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" ORDER BY VConstraint.ConstraintId"));
-      //System.err.println("Time spent in constraint query: " + 
-      //                  (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
-      /*Integer constraintId = new Integer(-1);
-      Integer variableId = new Integer(-1);
-      String constraintName = new String("");
-      String constraintType = new String("");
-      ArrayList constrainedVarIds = new ArrayList();*/
       PwConstraintImpl constraint = null;
       while(constraints.next()) {
         Integer constraintId = new Integer(constraints.getInt("VConstraint.ConstraintId"));
@@ -822,8 +796,6 @@ public class MySQLDB {
           constraint.addVariable(variableId);
         }
       }
-      //System.err.println("Time spent creating constraints: " + 
-      //                   (System.currentTimeMillis() - t1));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -869,14 +841,10 @@ public class MySQLDB {
    * @param partialPlan The partial plan to which the PwVariableImpls should be attached
    */
   synchronized public static void queryVariables(PwPartialPlanImpl partialPlan) {
-    //PwDomainImpl domainImpl = null;
     try {
-      //System.err.println("Executing variable query...");
       long t1 = System.currentTimeMillis();
       ResultSet variables =
         queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId, Token.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId LEFT JOIN Token ON Token.PartialPlanId=Variable.PartialPlanId && (Token.StartVarId=Variable.VariableId || Token.EndVarId=Variable.VariableId || Token.DurationVarId=Variable.VariableId || Token.RejectVarId=Variable.VariableId || Token.ObjectVarId=Variable.VariableId) WHERE Variable.PartialPlanId=".concat(partialPlan.getId().toString()));
-      //System.err.println("Time spent in variable query: " +
-      //                   (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
       PwVariableImpl variable = null;
       while(variables.next()) {
@@ -912,8 +880,6 @@ public class MySQLDB {
         }
         variable.addToken(tokenId);
       }
-      //System.err.println("Time spent creating variables: " +
-      //                   (System.currentTimeMillis() - t1));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -967,7 +933,6 @@ public class MySQLDB {
       ResultSet transactions =
         queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionType LIKE 'TOKEN_%' ORDER BY TransactionId"));
       while(transactions.next()) {
-        //retval.add(new Integer(transactions.getInt("TransactionId")));
         retval.add(Long.toString(transactions.getLong("PartialPlanId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
       }
     }
@@ -982,7 +947,6 @@ public class MySQLDB {
       ResultSet transactions =
         queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionType LIKE 'VARIABLE_%' ORDER BY TransactionId"));
       while(transactions.next()) {
-        //retval.add(new Integer(transactions.getInt("TransactionId")));
         retval.add(Long.toString(transactions.getLong("PartialPlanId")).concat(Integer.toString(transactions.getInt("TransactionId"))));
       }
     }
@@ -991,22 +955,6 @@ public class MySQLDB {
     return retval;
   }
 
-//   synchronized public static List queryStepsWithTokenTransaction(Long sequenceId, Integer tokenId,
-//                                                                  String type) {
-//     List retval = new UniqueSet();
-//     try {
-//       ResultSet steps =
-//         queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
-//       while(steps.next()) {
-//         retval.add(new Integer(steps.getInt("StepNumber")));
-//       }
-//     }
-//     catch(SQLException sqle) {
-//     }
-//     return retval;
-//   }
-
-  // return PwTransactions, rather than Integer( StepNumber)
   synchronized public static List queryStepsWithTokenTransaction(Long sequenceId, Integer tokenId,
                                                                  String type) {
     List retval = new UniqueSet();
@@ -1022,22 +970,6 @@ public class MySQLDB {
     return retval;
   }
 
-//   synchronized public static List queryStepsWithVariableTransaction(Long sequenceId, Integer varId,
-//                                                                     String type) {
-//     List retval = new UniqueSet();
-//     try {
-//       ResultSet steps =
-//         queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
-//       while(steps.next()) {
-//         retval.add(new Integer(steps.getInt("StepNumber")));
-//       }
-//     }
-//     catch(SQLException sqle) {
-//     }
-//     return retval;
-//   }
-
-  // return PwTransactions, rather than Integer( StepNumber)
   synchronized public static List queryStepsWithVariableTransaction(Long sequenceId, Integer varId,
                                                                     String type) {
     List retval = new UniqueSet();
@@ -1053,23 +985,6 @@ public class MySQLDB {
     return retval;
   }
 
-//   synchronized public static List queryStepsWithConstraintTransaction(Long sequenceId, 
-//                                                                       Integer constraintId,
-//                                                                       String type) {
-//     List retval = new UniqueSet();
-//     try {
-//       ResultSet steps =
-//         queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
-//       while(steps.next()) {
-//         retval.add(new Integer(steps.getInt("StepNumber")));
-//       }
-//     }
-//     catch(SQLException sqle) {
-//     }
-//     return retval;
-//   }
-
-  // return PwTransactions, rather than Integer( StepNumber)
   synchronized public static List queryStepsWithConstraintTransaction(Long sequenceId, 
                                                                       Integer constraintId,
                                                                       String type) {
@@ -1086,19 +1001,6 @@ public class MySQLDB {
     return retval;
   }
 
-//   synchronized public static List queryStepsWithRestrictions(Long sequenceId) {
-//     List retval = new UniqueSet();
-//     try {
-//       ResultSet steps = queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RESTRICTED).concat("'"));
-//       while(steps.next()) {
-//         retval.add(new Integer(steps.getInt("StepNumber")));
-//       }
-//     }
-//     catch(SQLException sqle) {
-//     }
-//     return retval;
-//   }
-
   synchronized public static List queryStepsWithRestrictions(Long sequenceId) {
     List retval = new UniqueSet();
     try {
@@ -1111,20 +1013,6 @@ public class MySQLDB {
     }
     return retval;
   }
-
-//   synchronized public static List queryStepsWithRelaxations(Long sequenceId) {
-//     List retval = new UniqueSet();
-//     try {
-//       ResultSet steps = 
-//         queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RELAXED).concat("'"));
-//       while(steps.next()) {
-//         retval.add(new Integer(steps.getInt("StepNumber")));
-//       }
-//     }
-//     catch(SQLException sqle) {
-//     }
-//     return retval;
-//   }
 
   synchronized public static List queryStepsWithRelaxations(Long sequenceId) {
     List retval = new UniqueSet();
@@ -1140,73 +1028,23 @@ public class MySQLDB {
     return retval;
   }
 
-//   synchronized public static List queryStepsWithUnitVariableDecisions(PwPlanningSequenceImpl seq) {
-//     List retval = new ArrayList();
-//     try {
-//       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
-//       while(transactedSteps.next()) {
-// 	int stepNum = transactedSteps.getInt("StepNumber");
-// 	//Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
-//         int varId = transactedSteps.getInt("ObjectId");
-// 	//try {
-// 	  //if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() && 
-// 	  //   seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
-//           if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
-//              varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
-// 	    retval.add(new Integer(stepNum));
-// 	  }
-//           //}
-// 	//catch(ResourceNotFoundException rnfe){}
-//       }
-//     }
-//     catch(SQLException sqle) {
-//     }
-//     return retval;
-//   }
-
   synchronized public static List queryStepsWithUnitVariableDecisions(PwPlanningSequenceImpl seq) {
     List retval = new ArrayList();
     try {
       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
       while(transactedSteps.next()) {
 	int stepNum = transactedSteps.getInt("StepNumber");
-	//Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
         int varId = transactedSteps.getInt("ObjectId");
-	//try {
-	  //if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() && 
-	  //   seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
           if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
              varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
 	    retval.add(Long.toString(transactedSteps.getLong("PartialPlanId")).concat(Integer.toString(transactedSteps.getInt("TransactionId"))));
 	  }
-          //}
-	//catch(ResourceNotFoundException rnfe){}
       }
     }
     catch(SQLException sqle) {
     }
     return retval;
   }
-
-//   synchronized public static List queryStepsWithNonUnitVariableDecisions(PwPlanningSequenceImpl seq) {
-//     List retval = new ArrayList();
-//     try {
-//       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
-//       while(transactedSteps.next()) {
-// 	int stepNum = transactedSteps.getInt("StepNumber");
-
-// 	//Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
-//         int varId = transactedSteps.getInt("ObjectId");
-//         if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
-//            !varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
-//           retval.add(new Integer(stepNum));
-//         }
-//       }
-//     }
-//     catch(SQLException sqle) {
-//     }
-//     return retval;
-//   }
 
   synchronized public static List queryStepsWithNonUnitVariableDecisions(PwPlanningSequenceImpl seq) {
     List retval = new ArrayList();
@@ -1215,7 +1053,6 @@ public class MySQLDB {
       while(transactedSteps.next()) {
 	int stepNum = transactedSteps.getInt("StepNumber");
 
-	//Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
         int varId = transactedSteps.getInt("ObjectId");
         if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
            !varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
