@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.23 2003-07-02 23:18:04 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.24 2003-07-03 21:18:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -47,6 +47,7 @@ public class PwProjectImpl extends PwProject {
    *
    */
   public static void initProjects() throws ResourceNotFoundException, SQLException, IOException {
+    System.err.println("***********In initProjects!");
     projectNames = new ArrayList();
     projects = new ArrayList();
 
@@ -266,7 +267,6 @@ public class PwProjectImpl extends PwProject {
           MySQLDB.updateDatabase("DELETE FROM Parameter WHERE PartialPlanId=".concat(partialPlanId.toString()));
         }
         MySQLDB.updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
-        MySQLDB.updateDatabase("DELETE FROM ProjectSequenceMap WHERE SequenceId=".concat(sequenceId.toString()).concat(" AND ProjectId=").concat(key.toString()));
       }
       MySQLDB.updateDatabase("DELETE FROM Project WHERE ProjectId=".concat(key.toString()));
     }

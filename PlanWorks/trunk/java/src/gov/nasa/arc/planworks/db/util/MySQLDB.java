@@ -78,7 +78,18 @@ public class MySQLDB {
     }
     try {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
-      conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=PlanWorksUser&password=PlanWorksUser");
+      for(int triedConnections = 0; triedConnections < 10; triedConnections++) {
+        try {
+          conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=PlanWorksUser&password=PlanWorksUser");
+        }
+        catch(Exception e) {
+          if(triedConnections == 10) {
+            throw e;
+          }
+          System.err.println("Connection faled.  Trying again...");
+          Thread.sleep(500);
+        }
+      }
     }
     catch(Exception e) {
       System.err.println(e);
@@ -101,7 +112,6 @@ public class MySQLDB {
   public static ResultSet queryDatabase(String query) {
     Statement stmt = null;
     ResultSet result = null;
-    System.err.println("query: " + query);
     try {
       stmt = conn.createStatement();
       result = stmt.executeQuery(query);
@@ -116,7 +126,6 @@ public class MySQLDB {
   public static int updateDatabase(String update) {
     Statement stmt = null;
     int result = -1;
-    System.err.println("update: " + update);
     try {
       stmt = conn.createStatement();
       result = stmt.executeUpdate(update);
