@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.6 2003-07-03 23:44:13 taylor Exp $
+// $Id: PwToken.java,v 1.7 2003-07-09 16:51:18 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -96,7 +96,8 @@ public interface PwToken {
    * @return - <code>String</code> - 
    */
   public abstract Integer getSlotId();
- 
+
+  public abstract Integer getTimelineId();
   /**
    * <code>toString</code>
    *

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.10 2003-07-03 23:44:14 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.11 2003-07-09 16:51:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,7 @@ public class PwTokenImpl implements PwToken {
   private Integer durationVarId;
   private Integer objectVarId;
   private Integer rejectVarId;
+  private Integer timelineId;
   private List tokenRelationIds; // element String
   private List paramVarIds; // element String
   private Integer slotId;
@@ -54,8 +55,8 @@ public class PwTokenImpl implements PwToken {
 
   public PwTokenImpl(Integer key, boolean isValueToken, Integer slotId, Integer predicateId, 
                      Integer startVarId, Integer endVarId, Integer durationVarId, 
-                     Integer objectVarId, Integer rejectVarId, List tokenRelationIds, 
-                     List paramVarIds, PwPartialPlanImpl partialPlan)
+                     Integer objectVarId, Integer rejectVarId, Integer timelineId,
+                     List tokenRelationIds, List paramVarIds, PwPartialPlanImpl partialPlan)
   {
     this.key = key;
     this.isValueToken = isValueToken;
@@ -69,6 +70,7 @@ public class PwTokenImpl implements PwToken {
     this.tokenRelationIds = tokenRelationIds;
     this.paramVarIds = paramVarIds;
     this.partialPlan = partialPlan;
+    this.timelineId = timelineId;
   }
 		
   /**
@@ -79,7 +81,10 @@ public class PwTokenImpl implements PwToken {
   public Integer getKey() {
     return key;
   }
-	
+
+  public Integer getTimelineId() {
+    return timelineId;
+  }
   /**
    * <code>getPredicate</code>
    *
