@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.14 2004-08-26 20:51:28 taylor Exp $
+// $Id: StepQueryView.java,v 1.15 2004-09-27 23:27:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -391,8 +391,8 @@ public class StepQueryView extends SequenceView {
         keyString = ViewConstants.QUERY_VARIABLE_KEY_HEADER;
       }
       JMenuItem transByKeyItem = new JMenuItem( "Find Transaction by " + keyString);
-      createTransByKeyItem( transByKeyItem, stepList, contentScrollPane,
-                            stepTable, objectKeyColumnIndx, StepQueryView.this);
+      createTransByKeyItem( transByKeyItem, contentScrollPane, stepTable,
+                            objectKeyColumnIndx, StepQueryView.this);
       mouseRightPopup.add( transByKeyItem);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionTable.java,v 1.5 2004-07-15 21:24:48 taylor Exp $
+// $Id: DBTransactionTable.java,v 1.6 2004-09-27 23:27:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -232,6 +232,22 @@ public class DBTransactionTable extends JTable {
       };
   } // end createDefaultTableHeader
 
+
+  /**
+   * <code>getCurrentEntityKeyList</code> - row order changes when sorting is done
+   *
+   * @param colIndx - <code>int</code> - 
+   * @return - <code>List</code> - 
+   */
+  public final List getCurrentEntityKeyList( int colIndx) {
+    TableModel model = getModel();
+    int rowCnt = model.getRowCount();
+    List entityKeyList = new ArrayList();
+    for (int rowIndx = 0; rowIndx < rowCnt; rowIndx++) {
+      entityKeyList.add ( model.getValueAt( rowIndx, colIndx));
+    }
+    return entityKeyList;
+  } // end getCurrentEntityKeyList
 
   /**
    * <code>getToolTipText</code> - 

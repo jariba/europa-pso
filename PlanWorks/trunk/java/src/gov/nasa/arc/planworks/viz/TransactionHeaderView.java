@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.17 2004-08-07 01:18:26 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.18 2004-09-27 23:27:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -16,10 +16,12 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.TableModel;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -30,8 +32,9 @@ import com.nwoods.jgo.JGoView;
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.TextNode;
 
+import gov.nasa.arc.planworks.db.PwEntity;
 import gov.nasa.arc.planworks.viz.util.AskQueryEntityKey;
-
+import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
 
 /**
  * <code>TransactionHeaderView</code> - render query text, if appropriate
@@ -97,22 +100,21 @@ public class TransactionHeaderView extends JGoView {
    * <code>createTransByKeyItem</code>
    *
    * @param transByKeyItem - <code>JMenuItem</code> - 
-   * @param transactionList - <code>List</code> - 
    * @param contentScrollPane - <code>JScrollPane</code> - 
    * @param contentTable - <code>JTable</code> - 
    * @param colIndx - <code>int</code> - 
    * @param vizView - <code>VizView</code> - 
    */
   protected final void createTransByKeyItem( final JMenuItem transByKeyItem,
-                                             final List transactionList,
                                              final JScrollPane contentScrollPane,
                                              final JTable contentTable, final int colIndx,
                                              final VizView vizView) {
     transByKeyItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent evt) {
           AskQueryEntityKey transByKeyDialog =
-            new AskQueryEntityKey( transactionList, transByKeyItem.getText(),
-                                   "key (int)", vizView);
+            new AskQueryEntityKey( ((DBTransactionTable) contentTable).
+                                   getCurrentEntityKeyList( colIndx),
+                                   transByKeyItem.getText(), "key (int)", vizView);
           Integer entityKey = transByKeyDialog.getEntityKey();
           if (entityKey != null) {
             int rowIndx = transByKeyDialog.getEntityListIndex();

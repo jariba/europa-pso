@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskQueryEntityKey.java,v 1.1 2004-08-07 01:18:30 taylor Exp $
+// $Id: AskQueryEntityKey.java,v 1.2 2004-09-27 23:27:28 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwEntity;
 import gov.nasa.arc.planworks.db.PwTokenQuery;
 import gov.nasa.arc.planworks.db.PwVariableQuery;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
@@ -50,10 +51,10 @@ import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.VariableQueryView;
  */
 public class AskQueryEntityKey extends JDialog { 
 
-  private List entityList;
+  private List entityKeyList;
   private VizView queryView;
   private Integer entityKey;
-  private int entityListIndex;
+  private int entityKeyListIndex;
   private String keyType;
 
   private String typedText = null;
@@ -65,18 +66,18 @@ public class AskQueryEntityKey extends JDialog {
   /**
    * <code>AskQueryEntityKey</code> - constructor 
    *
-   * @param entityList - <code>List</code> - 
+   * @param entityKeyList - <code>List</code> - of String
    * @param dialogTitle - <code>String</code> - 
    * @param textFieldLabel - <code>String</code> - 
    * @param queryView - <code>VizView</code> - 
    */
-  public AskQueryEntityKey( final List entityList, final String dialogTitle,
+  public AskQueryEntityKey( final List entityKeyList, final String dialogTitle,
                             final String textFieldLabel, final VizView queryView) {
     // modal dialog - blocks other activity
     super( PlanWorks.getPlanWorks(), true);
-    this.entityList = entityList;
+    this.entityKeyList = entityKeyList;
     this.queryView = queryView;
-    entityListIndex = -1;
+    entityKeyListIndex = -1;
 
     if ((queryView instanceof StepQueryView) ||
         (queryView instanceof DBTransactionQueryView) ||
@@ -145,7 +146,7 @@ public class AskQueryEntityKey extends JDialog {
    * @return - <code>int</code> - 
    */
   public final int getEntityListIndex() {
-    return entityListIndex;
+    return entityKeyListIndex;
   }
 
   private void addInputListener() {
@@ -190,10 +191,10 @@ public class AskQueryEntityKey extends JDialog {
                    "Sorry, \"" + typedText + "\" " + "isn't a valid response.\n" +
                    "Please enter a intger number",
                    "Invalid value for key", JOptionPane.ERROR_MESSAGE);
-                entityKey = null; entityListIndex = -1;
+                entityKey = null; entityKeyListIndex = -1;
               }
             } else { // user closed dialog or clicked cancel
-              entityKey = null; entityListIndex = -1;
+              entityKey = null; entityKeyListIndex = -1;
               setVisible( false);
             }
           }
@@ -205,41 +206,15 @@ public class AskQueryEntityKey extends JDialog {
   private boolean isValidEntityKey( final Integer entityKey) {
     boolean isValid = false;
     int indx = 0;
-    Iterator objItr = entityList.iterator();
-    if ((queryView instanceof StepQueryView) ||
-        (queryView instanceof DBTransactionQueryView) ||
-        (queryView instanceof DBTransactionView)) {
-      while (objItr.hasNext()) {
-        if (((PwDBTransaction) objItr.next()).getEntityId().equals( entityKey)) {
-          entityListIndex = indx;
-          return true;
-        }
-        indx++;
+    Iterator objItr = entityKeyList.iterator();
+    while (objItr.hasNext()) {
+      if (((String) objItr.next()).equals( entityKey.toString())) {
+        entityKeyListIndex = indx;
+        return true;
       }
-      return isValid;
-    } else if (queryView instanceof TokenQueryView) {
-      while (objItr.hasNext()) {
-        if (((PwTokenQuery) objItr.next()).getId().equals( entityKey)) {
-          entityListIndex = indx;
-          return true;
-        }
-        indx++;
-      }
-      return isValid;
-    } else if (queryView instanceof VariableQueryView) {
-      while (objItr.hasNext()) {
-        if (((PwVariableQuery) objItr.next()).getId().equals( entityKey)) {
-          entityListIndex = indx;
-          return true;
-        }
-        indx++;
-      }
-      return isValid;
-    } else {
-      System.err.println( "AskQueryEntityKey.isValidEntityKey not handled");
-      System.exit( -1);
+      indx++;
     }
-    return false;
+    return isValid;
   } // end isValidEntityKey
 
 
