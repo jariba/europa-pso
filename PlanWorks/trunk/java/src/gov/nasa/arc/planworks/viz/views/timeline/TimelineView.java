@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.22 2003-07-16 01:15:43 taylor Exp $
+// $Id: TimelineView.java,v 1.23 2003-07-17 17:22:19 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -211,6 +211,9 @@ public class TimelineView extends VizView {
     return timelineNodeList;
   }
 
+  public List getFreeTokenNodeList() {
+    return freeTokenNodeList;
+  }
   private void createTimelineAndSlotNodes() {
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.13 2003-07-11 01:22:19 taylor Exp $
+# $Id: README,v 1.14 2003-07-17 17:17:13 miatauro Exp $
 #
 
 SUMMARY
@@ -16,7 +16,7 @@ base queries by the Content Specification processor.  An XML to
 MySQL convertor program has been added to convert planGen's XML output
 to MySQL files.  The Token Network view has been added.  Project
 management is now handled completely in MysQL, rather than using
-Java "beans".  THe Content Specification processor now filters only
+Java "beans".  The Content Specification processor now filters only
 by tokens, and predicates.  It will later add time intervals.
 
 
@@ -54,6 +54,10 @@ the "mysql", "mysqld", and "mysqladmin" executables from the
 bin directory into PlanWorks/lib/mysql/bin, then follow
 the instructions below.  If you're on any other system, the above advice
 still holds, but you're on your own beyond that.
+If you run 'ant planWorksTest', you have to hit C-c to exit the testing
+after it prints its report.  Also, it is strongly recommended that you run
+'ant cleanDb' after the tests to make sure the test data is purged from
+the database.
 
 > cd PlanWorks
 

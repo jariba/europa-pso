@@ -268,17 +268,17 @@ public class MySQLDB {
         Integer objectId = (Integer) objectIdIterator.next();
         object = partialPlan.getObjectImpl(objectId);
         ResultSet timelines =
-          queryDatabase("SELECT TimelineId, TimelineName FROM Timeline WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND ObjectId=").concat(objectId.toString()));
+          queryDatabase("SELECT TimelineId, TimelineName FROM Timeline WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND ObjectId=").concat(objectId.toString()).concat(" ORDER BY TimelineId"));
         while(timelines.next()) {
           Integer timelineId = new Integer(timelines.getInt("TimelineId"));
           timeline = object.addTimeline(timelines.getString("TimelineName"), timelineId);
           ResultSet slots =
-            queryDatabase("SELECT SlotId FROM Slot WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND TimelineId=").concat(timelineId.toString()));
+            queryDatabase("SELECT SlotId FROM Slot WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND TimelineId=").concat(timelineId.toString()).concat(" ORDER BY SlotId"));
           while(slots.next()) {
             Integer slotId = new Integer(slots.getInt("SlotId"));
             slot = timeline.addSlot(slotId);
             ResultSet tokens =
-              queryDatabase("SELECT TokenId, IsValueToken, StartVarId, EndVarId, DurationVarId, RejectVarId, PredicateId, SlotId, ObjectId, TimelineId, ObjectVarId FROM Token WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND SlotId=").concat(slotId.toString()));
+              queryDatabase("SELECT TokenId, IsValueToken, StartVarId, EndVarId, DurationVarId, RejectVarId, PredicateId, SlotId, ObjectId, TimelineId, ObjectVarId FROM Token WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND SlotId=").concat(slotId.toString()).concat(" ORDER BY TokenId"));
             while(tokens.next()) {
               Integer tokenId = new Integer(tokens.getInt("TokenId"));
               ResultSet paramVarIds =
@@ -288,7 +288,7 @@ public class MySQLDB {
                 variableIdList.add(new Integer(paramVarIds.getInt("VariableId")));
               }
               ResultSet tokenRelationIds =
-                queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND (TokenAId=").concat(tokenId.toString()).concat(" OR TokenBId=").concat(tokenId.toString()).concat(")"));
+                queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND (TokenAId=").concat(tokenId.toString()).concat(" OR TokenBId=").concat(tokenId.toString()).concat(") ORDER BY TokenRelationId"));
               ArrayList tokenRelationIdList = new ArrayList();
               while(tokenRelationIds.next()) {
                 tokenRelationIdList.add(new Integer(tokenRelationIds.getInt("TokenRelationId")));

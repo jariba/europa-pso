@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.5 2003-07-16 01:15:42 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.6 2003-07-17 17:19:11 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -45,6 +46,8 @@ import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
+import gov.nasa.arc.planworks.viz.nodes.TokenLink;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
@@ -122,12 +125,16 @@ public class PlanWorksTest extends JFCTestCase{
       System.setProperty( "default.project.name", projectName);
       System.setProperty( "default.sequence.dir",
                           System.getProperty( "planworks.test.data.dir") +
-                          System.getProperty( "file.separator") + sequenceName);
+                          System.getProperty( "file.separator") + projectName +
+                          System.getProperty("file.separator") + sequenceName);
+      System.err.println("Set default.project.name: " + System.getProperty("default.project.name"));
+      System.err.println("Set default.sequence.dir: " + System.getProperty("default.sequence.dir"));
     } else if (testType.equals( "emptySlots")) {
       projectName = "emptySlots";
       System.setProperty( "default.project.name", projectName);
       System.setProperty( "default.sequence.dir",
                           System.getProperty( "planworks.test.data.dir") +
+                          System.getProperty("file.separator") + projectName +
                           System.getProperty( "file.separator") + sequenceName);
     } else {
       throw new Exception( "setup: testType " + testType + " not handled"); 
@@ -204,10 +211,15 @@ public class PlanWorksTest extends JFCTestCase{
       validateMonkeyTimelines( timelineView);
     } else if (testType.equals( "freeTokens")) {
       validateFreeTokensTimelines( timelineView);
+    } else if (testType.equals("emptySlots")) {
+      validateEmptySlotsTimelines(timelineView);
     }
     seqAndPlanNames = selectView( "Token Network");
     TokenNetworkView tokenNetworkView = getTokenNetworkView( seqAndPlanNames);
-
+    
+    if(testType.equals("freeTokens")) {
+      validateFreeTokensNetwork(tokenNetworkView);
+    }
     exitPlanWorks( menuBar);
   } // end createProject
 
@@ -487,8 +499,55 @@ public class PlanWorksTest extends JFCTestCase{
   } // end validateMonkeyTimelines
 
   private void validateFreeTokensTimelines( TimelineView timelineView) {
-    System.err.println( "\n\nvalidateFreeTokensTimelines does nothing\n\n");
+    List freeTokenNodeList = timelineView.getFreeTokenNodeList();
+    ListIterator freeTokenNodeIterator = freeTokenNodeList.listIterator();
+    while(freeTokenNodeIterator.hasNext()) {
+      TokenNode tokenNode = (TokenNode) freeTokenNodeIterator.next();
+      assertTrue("Non-free token asserts freedom.", tokenNode.isFreeToken());
+      String predicateName = tokenNode.getPredicateName().trim();
+      assertTrue("Invalid free token predicate '" + predicateName + "'", 
+                 predicateName.equals("Predicate 0") || predicateName.equals("Predicate 1") ||
+                 predicateName.equals("Predicate 6"));
+    }
   } // end validateFreeTokensimelines
+
+  private void validateFreeTokensNetwork(TokenNetworkView tokenNetworkView) {
+    List tokenNodeList = tokenNetworkView.getNodeList();
+    ListIterator tokenNodeIterator = tokenNodeList.listIterator();
+    int numFreeTokens = 0;
+    while(tokenNodeIterator.hasNext()) {
+      TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
+      if(tokenNode.isFreeToken()) {
+        String predicateName = tokenNode.getPredicateName().trim();
+        assertTrue("Invalid free token predicate '" + predicateName + "'",
+                   predicateName.equals("Predicate 0") || predicateName.equals("Predicate 1") ||
+                   predicateName.equals("Predicate 6"));
+        numFreeTokens++;
+      }
+    }
+    assertTrue("Incorrect number of free tokens in Token Network View", numFreeTokens == 4);
+    List tokenLinkList = tokenNetworkView.getLinkList();
+    ListIterator tokenLinkIterator = tokenLinkList.listIterator();
+    while(tokenLinkIterator.hasNext()) {
+      TokenLink tokenLink = (TokenLink) tokenLinkIterator.next();
+      assertTrue("Free token is super-goal.", 
+                 tokenLink.getFromTokenNode().isFreeToken() == false);
+    }
+  }
+
+  private void validateEmptySlotsTimelines(TimelineView timelineView) {
+    ListIterator timelineNodeIterator = timelineView.getTimelineNodeList().listIterator();
+    TimelineNode firstTimeline = (TimelineNode) timelineNodeIterator.next();
+    List slotNodeList = firstTimeline.getSlotNodeList();
+    SlotNode leadingNode = (SlotNode) slotNodeList.get(0);
+    SlotNode trailingNode = (SlotNode) slotNodeList.get(slotNodeList.size()-1);
+    assertTrue("Incorrectly displayed leading empty slot.  Displayed '" +
+               leadingNode.getPredicateName() + "'", 
+               leadingNode.getPredicateName().trim().equals("<empty>"));
+    assertTrue("Incorrectly displayed trailing empty slot.  Displayed '" + 
+               trailingNode.getPredicateName() + "'",
+               trailingNode.getPredicateName().trim().equals("<empty>"));
+  }
 
   private void exitPlanWorks( JMenuBar menuBar) throws Exception {
     // exit from CreateProject Test
@@ -539,7 +598,7 @@ public class PlanWorksTest extends JFCTestCase{
     assertNotNull("Failed to get \"Apply Spec\" button.", activateSpecButton);
     assertNotNull("Failed to get \"Reset Spec\" button.", resetSpecButton);
     assertNotNull("Failed to get Timline GroupBox.", timelineGroup);
-    JTextField keyBox = null;
+    JComboBox keyBox = null;
     NegationCheckBox negationBox = null;
     for(int i = 0; i < timelineGroup.getComponentCount(); i++) {
       if(timelineGroup.getComponent(i) instanceof TimelineBox) {
@@ -553,8 +612,8 @@ public class PlanWorksTest extends JFCTestCase{
                 if(timelineBox.getComponent(k) instanceof NegationCheckBox) {
                   negationBox = (NegationCheckBox) timelineBox.getComponent(k);
                 }
-                else if(timelineBox.getComponent(k) instanceof JTextField) {
-                  keyBox = (JTextField) timelineBox.getComponent(k);
+                else if(timelineBox.getComponent(k) instanceof JComboBox) {
+                  keyBox = (JComboBox) timelineBox.getComponent(k);
                 }
               }
             }
@@ -564,7 +623,7 @@ public class PlanWorksTest extends JFCTestCase{
     }
     assertNotNull("Failed to get key text field.", keyBox);
     assertNotNull("Failed to get negation check box.", negationBox);
-    keyBox.setText("3");
+    keyBox.setSelectedIndex(3);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     List timelineNodes;
     while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
@@ -639,7 +698,7 @@ public class PlanWorksTest extends JFCTestCase{
       Thread.sleep(50);
     }
     validateMonkeyTimelines(timelineView);
-    assertTrue("Reset spec didn't reset text box", keyBox.getText().trim().equals(""));
+    assertTrue("Reset spec didn't reset text box", keyBox.getSelectedIndex() == 0);
     assertTrue("Reset spec didn't reset check box", !negationBox.isSelected());
   }
 
@@ -743,8 +802,8 @@ public class PlanWorksTest extends JFCTestCase{
     TestSuite testSuite = new TestSuite();
     testSuite.addTest( new PlanWorksTest( "testCreateProject", "create"));
     testSuite.addTest( new PlanWorksTest( "testOpenAndContentSpec", "contentSpec"));
-    // testSuite.addTest( new PlanWorksTest( "testFreeTokens", "freeTokens"));
-    // testSuite.addTest( new PlanWorksTest( "testEmptySlots", "emptySlots"));
+    testSuite.addTest( new PlanWorksTest( "testFreeTokens", "freeTokens"));
+    testSuite.addTest( new PlanWorksTest( "testEmptySlots", "emptySlots"));
     return testSuite;
   }
 
