@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.1 2003-09-10 01:06:58 taylor Exp $
+# $Id: GETTING_STARTED,v 1.2 2003-09-11 00:25:47 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -41,8 +41,9 @@ the selected sequence from the current project, and the MySQL data base.
 Plan Sequence Views
 ===================
 
-This cascading menu allows the user to select the sequence, the partial
-plan, and the plan view to be displayed.  There are four active views:
+The "Plannning Sequence" cascading menu allows the user to select the 
+sequence, the partial plan, and the plan view to be displayed.  There are 
+four active views:
 
 Constraint Network
 ------------------
@@ -62,7 +63,9 @@ and end variable values.  The range of extent is shown by a horizontal line.
 The extent line and associated triangles are displayed immediately below 
 each predicate node.  Downward triangles are start times, upward triangles 
 are end times, leftward triangles are -Infinity, and rightward triangles are 
-+Infinity.
++Infinity.  Clicking Mouse-Left on the temporal node extent pane background
+will cause a vertical time scale mark line to be drawn.  Clicking at another
+location will move the time scale mark line.
 
 Timeline
 --------

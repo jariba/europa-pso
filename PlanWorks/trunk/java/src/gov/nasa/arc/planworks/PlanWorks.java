@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.47 2003-09-10 00:31:58 miatauro Exp $
+// $Id: PlanWorks.java,v 1.48 2003-09-11 00:25:48 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -861,7 +861,7 @@ public class PlanWorks extends MDIDesktopFrame {
           JMenu partialPlanMenu = new JMenu( partialPlanName);
           //change seqUrl
           //buildViewSubMenu( partialPlanMenu, seqUrl, partialPlanName);
-          System.err.println("PartialPlan name: " + partialPlanName);
+          // System.err.println("PartialPlan name: " + partialPlanName);
           buildViewSubMenu(partialPlanMenu, seqUrl, (String) sequenceNameMap.get(seqUrl), partialPlanName);
           seqMenu.add( partialPlanMenu);
         }

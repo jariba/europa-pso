@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.24 2003-08-26 01:37:10 taylor Exp $
+# $Id: build-tags-file.csh,v 1.25 2003-09-11 00:25:48 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -51,6 +51,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/util/ContentSpec.java \
     src/gov/nasa/arc/planworks/db/util/FileUtils.java \
     src/gov/nasa/arc/planworks/db/util/MySQLDB.java \
+    src/gov/nasa/arc/planworks/db/util/PwSQLFilenameFilter.java \
     src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopFrame.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopPane.java \
@@ -60,6 +61,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/mdi/MDIMenu.java \
     src/gov/nasa/arc/planworks/mdi/MDIWindowBar.java \
     src/gov/nasa/arc/planworks/mdi/MDIWindowButtonBar.java \
+    src/gov/nasa/arc/planworks/mdi/SplashWindow.java \
+    src/gov/nasa/arc/planworks/mdi/TileCascader.java \
+    src/gov/nasa/arc/planworks/test/PlanWorksBigTest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
     src/gov/nasa/arc/planworks/util/Algorithms.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
@@ -112,7 +116,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNetworkView.java \
     src/gov/nasa/arc/planworks/viz/views/temporalExtent/TemporalExtentView.java \
     src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkLayout.java
+    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java
 
 echo "Writing `pwd`/planWorks.TAGS"
