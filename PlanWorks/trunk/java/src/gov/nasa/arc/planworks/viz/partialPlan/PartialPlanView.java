@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.47 2004-07-15 21:24:47 taylor Exp $
+// $Id: PartialPlanView.java,v 1.48 2004-07-27 21:58:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -47,6 +47,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.ViewRenderingException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -433,6 +434,11 @@ public class PartialPlanView extends VizView {
         rnfe.printStackTrace();
         return;
       }
+      catch (CreatePartialPlanException cppExcep) {
+        String msg = "User Canceled Create Partial Plan";
+        System.err.println( msg);
+        return;
+      }
       if(nextStep.getName() == null) {
         String [] title = viewFrame.getTitle().split("\\s+", 3);
         String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
@@ -692,7 +698,7 @@ public class PartialPlanView extends VizView {
                                    final List viewListenerList,
                                    final String currentViewName) {
     if (viewListenerList.size() != PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()) {
-      System.err.println( "createOpenViewtems: num view listeners not = " +
+      System.err.println( "createOpenViewIxtems: num view listeners not = " +
                           PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
       System.exit( -1);
     }
@@ -720,7 +726,9 @@ public class PartialPlanView extends VizView {
     PartialPlanViewMenuItem openViewItem =
       viewMenu.createOpenViewFindItem( viewName, partialPlanName, planSequence, viewListener,
                                        viewSet, idToFind);
-    mouseRightPopup.add( openViewItem);
+    if (openViewItem != null) {
+      mouseRightPopup.add( openViewItem);
+    }
   } // end createAnOpenViewFindItem
 
   /**

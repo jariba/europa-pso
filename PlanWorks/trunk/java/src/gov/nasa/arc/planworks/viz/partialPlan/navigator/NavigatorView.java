@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.31 2004-07-08 21:33:25 taylor Exp $
+// $Id: NavigatorView.java,v 1.32 2004-07-27 21:58:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -47,6 +47,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.StringViewSetKey;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -184,14 +185,21 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end commonConstructor
 
-  Runnable runInit = new Runnable() {
-      public final void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public final void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -201,11 +209,12 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public final void init() {
     // wait for NavigatorView instance to become displayable
     if (! ViewGenerics.displayableWait( NavigatorView.this)) {
+      closeView( this);
       return;
     }
     this.computeFontMetrics( this);

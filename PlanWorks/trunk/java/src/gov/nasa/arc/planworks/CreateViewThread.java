@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.17 2004-07-15 21:24:45 taylor Exp $
+// $Id: CreateViewThread.java,v 1.18 2004-07-27 21:58:03 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -33,7 +33,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentS
  *                  NASA Ames Research Center - Code IC
  * @version 0.0 
  */
-public class CreateViewThread extends Thread {
+public class CreateViewThread extends ThreadWithProgressMonitor {
 
   protected String viewName;
   protected String seqUrl;
@@ -56,9 +56,9 @@ public class CreateViewThread extends Thread {
    * @param viewListener - <code>ViewListener</code> - 
    * @return - <code>MDIInternalFrame</code> - 
    */
-  protected MDIInternalFrame renderView( final String fullSequenceName, 
-                                         final ViewableObject viewable,
-                                         final ViewListener viewListener) {
+  public MDIInternalFrame renderView( final String fullSequenceName, 
+                                      final ViewableObject viewable,
+                                      final ViewListener viewListener) {
     ViewSet viewSet = PlanWorks.getPlanWorks().viewManager.getViewSet( viewable);
     MDIInternalFrame viewFrame = null;
     boolean viewExists = false;
@@ -95,7 +95,7 @@ public class CreateViewThread extends Thread {
     while (viewSet == null) {
       // System.err.println( "wait for ViewSet");
       try {
-        Thread.currentThread().sleep(50);
+        Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
       } catch (InterruptedException excp) {
       }
       viewSet = PlanWorks.getPlanWorks().viewManager.getViewSet( viewable);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.8 2004-07-16 22:54:45 taylor Exp $
+// $Id: DecisionView.java,v 1.9 2004-07-27 21:58:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -68,11 +68,14 @@ import gov.nasa.arc.planworks.db.impl.PwChoiceImpl;
 import gov.nasa.arc.planworks.db.impl.PwDecisionImpl;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
@@ -112,7 +115,7 @@ public class DecisionView extends PartialPlanView {
 
   /**
    * <code>DecisionView</code> - constructor - 
-   *                             Use SwingUtilities.invokeLater( runInit) to
+   *                             Use SwingWorker to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>ViewableObject</code> - 
@@ -122,7 +125,14 @@ public class DecisionView extends PartialPlanView {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     isStepButtonView = false;
     decisionViewInit( (PwPartialPlan) partialPlan, viewSet);
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   /**
@@ -139,7 +149,14 @@ public class DecisionView extends PartialPlanView {
     isStepButtonView = true;
     decisionViewInit( (PwPartialPlan) partialPlan, viewSet);
     setState(s);
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   }
 
   /**
@@ -157,7 +174,14 @@ public class DecisionView extends PartialPlanView {
     if (viewListener != null) {
       addViewListener( viewListener);
     }
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   }
 
   private void decisionViewInit(ViewableObject partialPlan, ViewSet viewSet) {
@@ -181,11 +205,11 @@ public class DecisionView extends PartialPlanView {
     }
   } // end setState
 
-  Runnable runInit = new Runnable() {
-      public final void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public final void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -194,12 +218,13 @@ public class DecisionView extends PartialPlanView {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public final void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for DecisionView instance to become displayable
     if (! ViewGenerics.displayableWait( DecisionView.this)) {
+      closeView( this);
       return;
     }
 
@@ -356,6 +381,15 @@ public class DecisionView extends PartialPlanView {
   }
 
   private DefaultMutableTreeNode renderDecisions() {
+    int numOperations = 6;
+    progressMonitorThread( "Rendering Decision View:", 0, numOperations,
+                           Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      closeView( this);
+      return null;
+    }
+    progressMonitor.setNote( "Get Decisions ...");
+    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
     try {
       decisionList = planSequence.getOpenDecisionsForStep( partialPlan.getStepNumber());
     } catch ( ResourceNotFoundException rnfExcep) {
@@ -365,7 +399,15 @@ public class DecisionView extends PartialPlanView {
          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
       System.err.println( rnfExcep);
       rnfExcep.printStackTrace();
+    } catch (CreatePartialPlanException cppExcep) {
+      closeView( this);
+      return null;
     }
+
+    progressMonitor.setNote( "Create Tree ...");
+    progressMonitor.setMaximum( decisionList.size());
+    numOperations = 4;
+    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
 //     // test data => basic-model-res/step50
 //     decisionList = new ArrayList();
@@ -447,12 +489,21 @@ public class DecisionView extends PartialPlanView {
 //           break;
 //         }
       } // end while choiceList
+      if (progressMonitor.isCanceled()) {
+        String msg = "User Canceled Decision View Rendering";
+        System.err.println( msg);
+        isProgressMonitorCancel = true;
+        closeView( this);
+        return null;
+      }
+      numOperations++;
+      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     } // end while decisionList
 
     // prevents last node from being clipped off by bottom of scroll pane
     DefaultMutableTreeNode dummyNode = new DefaultMutableTreeNode();
     top.add( dummyNode);
-
+    progressMonitor.close();
     return top;
   } // end renderDecisions
 
@@ -709,7 +760,9 @@ public class DecisionView extends PartialPlanView {
           setFont( DecisionView.this.getFont());
         }
       } else if (value instanceof DecisionView.ChoiceNode) {
-        if (((DecisionView.ChoiceNode) value).isCurrent()) {
+        PwChoice choice = ((DecisionView.ChoiceNode) value).getChoice();
+        if (((DecisionView.ChoiceNode) value).isCurrent() &&
+            (choice.toString().indexOf( "key=-1") == -1)) {
           setFont( DecisionView.this.getCurrentDecisionFont());
         } else {
           setFont( DecisionView.this.getFont());

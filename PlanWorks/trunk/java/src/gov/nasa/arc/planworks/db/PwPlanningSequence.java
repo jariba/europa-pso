@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.36 2004-06-22 22:38:37 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.37 2004-07-27 21:58:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.db;
 
 import java.util.List;
 
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
@@ -91,11 +92,13 @@ public interface PwPlanningSequence extends ViewableObject {
    * <code>getPartialPlan</code>
    *
    * @param step - <code>int</code> - 
-   * @return - <code>PartialPlan</code> - 
+   * @return - <code>PwPartialPlan</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
+   * @exception ResourceNotFoundException if an error occurs
+   * @exception CreatePartialPlanException if an error occurs
    */
   public abstract PwPartialPlan getPartialPlan( final int step)
-    throws IndexOutOfBoundsException, ResourceNotFoundException;
+    throws IndexOutOfBoundsException, ResourceNotFoundException, CreatePartialPlanException;
 
   /**
    * <code>getPartialPlan</code>
@@ -103,12 +106,21 @@ public interface PwPlanningSequence extends ViewableObject {
    * @param planName - <code>String</code> - 
    * @return - <code>PwPartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
+   * @exception CreatePartialPlanException if an error occurs
    */
   public abstract PwPartialPlan getPartialPlan( final String planName)
-    throws ResourceNotFoundException;
+    throws ResourceNotFoundException, CreatePartialPlanException;
 
+  /**
+   * <code>getPartialPlan</code>
+   *
+   * @param ppid - <code>Long</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   * @exception CreatePartialPlanException if an error occurs
+   */
   public abstract PwPartialPlan getPartialPlan(final Long ppid)
-    throws ResourceNotFoundException;
+    throws ResourceNotFoundException, CreatePartialPlanException;
 
   /**
    * <code>getPartialPlanIfLoaded</code>
@@ -121,14 +133,16 @@ public interface PwPlanningSequence extends ViewableObject {
     throws ResourceNotFoundException;
 
   public abstract PwPartialPlan getNextPartialPlan(final int step) 
-    throws ResourceNotFoundException, IndexOutOfBoundsException;
+    throws ResourceNotFoundException, IndexOutOfBoundsException, CreatePartialPlanException;
+
   public abstract PwPartialPlan getNextPartialPlan(final String planName) 
-    throws ResourceNotFoundException, IndexOutOfBoundsException;
+    throws ResourceNotFoundException, IndexOutOfBoundsException, CreatePartialPlanException;
   
   public abstract PwPartialPlan getPrevPartialPlan(final int step) 
-    throws ResourceNotFoundException, IndexOutOfBoundsException;
+    throws ResourceNotFoundException, IndexOutOfBoundsException, CreatePartialPlanException;
+
   public abstract PwPartialPlan getPrevPartialPlan(final String planName)
-    throws ResourceNotFoundException, IndexOutOfBoundsException;
+    throws ResourceNotFoundException, IndexOutOfBoundsException, CreatePartialPlanException;
   
   /**
    * <code>delete</code>
@@ -169,7 +183,8 @@ public interface PwPlanningSequence extends ViewableObject {
   
   // end extend ViewableObject
 
-  public List getOpenDecisionsForStep(final int stepnum) throws ResourceNotFoundException;
+  public List getOpenDecisionsForStep(final int stepnum)
+    throws ResourceNotFoundException, CreatePartialPlanException;
 
   public Integer getCurrentDecisionIdForStep(final int stepNum) throws ResourceNotFoundException;
 

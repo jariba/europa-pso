@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.21 2004-07-08 21:33:25 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.22 2004-07-27 21:58:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;    
 import java.util.List;
@@ -43,6 +44,7 @@ import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
@@ -205,6 +207,13 @@ public class ResourceProfileView extends ResourceView  {
     boolean isNamesOnly = false;
     currentYLoc = 0;
     List resourceList = partialPlan.getResourceList();
+    progressMonitorThread( "Rendering Resource Profile View ...", 0, resourceList.size(),
+                           Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      closeView( this);
+      return;
+    }
+    int numResources = 0;
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
@@ -214,8 +223,17 @@ public class ResourceProfileView extends ResourceView  {
       // System.err.println( "resourceProfile " + resourceProfile);
       this.getJGoExtentDocument().addObjectAtTail( resourceProfile);
       resourceProfileList.add( resourceProfile);
+      if (progressMonitor.isCanceled()) {
+        String msg = "User Canceled Resource Profile View Rendering";
+        System.err.println( msg);
+        isProgressMonitorCancel = true;
+        closeView( this);
+        return;
+      }
+      numResources++;
+      progressMonitor.setProgress( numResources * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-
+    progressMonitor.close();
   } // end createResourceProfiles
 
   /**

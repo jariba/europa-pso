@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.72 2004-07-08 21:33:24 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.73 2004-07-27 21:58:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -20,6 +20,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,9 +59,11 @@ import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -130,7 +133,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 
   /**
    * <code>ConstraintNetworkView</code> - constructor -
-   *                             Use SwingUtilities.invokeLater( runInit) to
+   *                             Use SwingWorker to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>ViewableObject</code> -
@@ -141,7 +144,14 @@ public class ConstraintNetworkView extends PartialPlanView {
     constraintNetworkViewInit(viewSet);
     s = null;
     isStepButtonView = false;
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   /**
@@ -158,7 +168,14 @@ public class ConstraintNetworkView extends PartialPlanView {
     isStepButtonView = true;
     //setState(s);
     this.s = s;
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   }
 
   /**
@@ -177,7 +194,14 @@ public class ConstraintNetworkView extends PartialPlanView {
     if (viewListener != null) {
       addViewListener( viewListener);
     }
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   private void constraintNetworkViewInit(ViewSet viewSet) {
@@ -262,11 +286,11 @@ public class ConstraintNetworkView extends PartialPlanView {
     }
   }
 
-  Runnable runInit = new Runnable() {
-      public void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -276,12 +300,13 @@ public class ConstraintNetworkView extends PartialPlanView {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for ConstraintNetworkView instance to become displayable
     if (! ViewGenerics.displayableWait( ConstraintNetworkView.this)) {
+      closeView( this);
       return;
     }
 
@@ -296,11 +321,19 @@ public class ConstraintNetworkView extends PartialPlanView {
     newLayout = new NewConstraintNetworkLayout(getContainerNodeList(), this);
     setState(s);
     s = null;
-    System.err.println("createTokenNodes took " + (System.currentTimeMillis() - t1) + "ms");
+    System.err.println("createContainerNodes took " + (System.currentTimeMillis() - t1) + "ms");
     // setVisible( true | false) depending on ContentSpec
     setNodesLinksVisible();
 
     double maxTokenWidth = 0.;
+    int numContainerNodes = containerNodeMap.size();
+    progressMonitorThread( "Rendering Constraint Network View ...", 0, numContainerNodes,
+                           Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      closeView( this);
+      return;
+    }
+    numContainerNodes = 0;
     Iterator tokenIterator = containerNodeMap.values().iterator();
     while(tokenIterator.hasNext()) {
       VariableContainerNode node = (VariableContainerNode) tokenIterator.next();
@@ -309,7 +342,17 @@ public class ConstraintNetworkView extends PartialPlanView {
       if(node.getSize().getWidth() > maxTokenWidth) {
         maxTokenWidth = node.getSize().getWidth();
       }
+      if (progressMonitor.isCanceled()) {
+        String msg = "User Canceled Constraint Network View Rendering";
+        System.err.println( msg);
+        isProgressMonitorCancel = true;
+        closeView( this);
+        return;
+      }
+      numContainerNodes++;
+      progressMonitor.setProgress( numContainerNodes * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
+    progressMonitor.close();
 
     VERTICAL_TOKEN_BAND_X = (maxTokenWidth / 2) + NODE_SPACING;
     VERTICAL_VARIABLE_BAND_X = VERTICAL_TOKEN_BAND_X + VERTICAL_BAND_DISTANCE;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.8 2004-04-09 23:11:23 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.9 2004-07-27 21:58:02 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -25,6 +25,7 @@ import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
 /**
@@ -34,7 +35,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0 
  */
-public class AddSequenceThread extends Thread {
+public class AddSequenceThread extends ThreadWithProgressMonitor {
 
   /**
    * <code>AddSequenceThread</code> - constructor 
@@ -67,6 +68,12 @@ public class AddSequenceThread extends Thread {
         List selectedSequenceUrls = (List) selectedAndInvalidUrls.get( 0);
         List invalidSequenceUrls = (List) selectedAndInvalidUrls.get( 1);
 
+        progressMonitorThread( "Adding sequence ...", 0, 6);
+        if (! progressMonitorWait()) {
+          return;
+        }
+        progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+
         PwProject project = PlanWorks.getPlanWorks().currentProject;
         isSequenceAdded = true;
         PlanWorks.getPlanWorks().addPlanningSequences( project, selectedSequenceUrls,
@@ -79,6 +86,7 @@ public class AddSequenceThread extends Thread {
         PlanWorks.getPlanWorks().addPlanSeqViewMenu
           ( PlanWorks.getPlanWorks().currentProject, planSeqMenu);
 
+        isProgressMonitorCancel = true;
       }
       catch (DuplicateNameException dupExcep) {
         int index = dupExcep.getMessage().indexOf( ":");
@@ -87,6 +95,7 @@ public class AddSequenceThread extends Thread {
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( dupExcep);
         // dupExcep.printStackTrace();
+        progressMonitor.close();
         isSequenceAdded = false;
       } 
       catch (ResourceNotFoundException rnfExcep) {
@@ -96,6 +105,7 @@ public class AddSequenceThread extends Thread {
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
         rnfExcep.printStackTrace();
+        progressMonitor.close();
         isSequenceAdded = false;
       }
       catch (Exception e) {
@@ -103,6 +113,7 @@ public class AddSequenceThread extends Thread {
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
         e.printStackTrace();
+        progressMonitor.close();
         isSequenceAdded = false;
       }
     }

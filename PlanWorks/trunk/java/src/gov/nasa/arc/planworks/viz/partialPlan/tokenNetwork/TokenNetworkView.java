@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.59 2004-07-08 21:33:26 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.60 2004-07-27 21:58:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -44,9 +44,11 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
@@ -81,7 +83,7 @@ public class TokenNetworkView extends PartialPlanView {
 
   /**
    * <code>TokenNetworkView</code> - constructor - 
-   *                             Use SwingUtilities.invokeLater( runInit) to
+   *                             Use SwingWorker to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>ViewableObject</code> -
@@ -94,7 +96,14 @@ public class TokenNetworkView extends PartialPlanView {
     // print content spec
     // viewSet.printSpec();
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   /**
@@ -110,7 +119,14 @@ public class TokenNetworkView extends PartialPlanView {
     tokenNetworkViewInit( viewSet);
     isStepButtonView = true;
     setState( s);
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   }
 
   /**
@@ -131,7 +147,14 @@ public class TokenNetworkView extends PartialPlanView {
       addViewListener( viewListener);
     }
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   private void tokenNetworkViewInit( final ViewSet viewSet) {
@@ -151,11 +174,11 @@ public class TokenNetworkView extends PartialPlanView {
     viewName = ViewConstants.TOKEN_NETWORK_VIEW;
   }
 
-  private Runnable runInit = new Runnable() {
-      public final void run() {
-        init();
-      }
-    };
+//   private Runnable runInit = new Runnable() {
+//       public final void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -165,12 +188,13 @@ public class TokenNetworkView extends PartialPlanView {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     if (! ViewGenerics.displayableWait( TokenNetworkView.this)) {
+      closeView( this);
       return;
     }
     this.computeFontMetrics( this);
@@ -267,11 +291,32 @@ public class TokenNetworkView extends PartialPlanView {
 
     jGoDocument = jGoView.getDocument();
 
+    int numOperations = 3;
+    progressMonitorThread( "Rendering Token Network View:", 0, numOperations,
+                             Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      closeView( this);
+      return;
+    }
+    numOperations = 1;
+    progressMonitor.setNote( "Creating nodes ...");
+    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     // create all nodes
     createTokenNodes();
 
+    if (progressMonitor.isCanceled()) {
+      String msg = "User Canceled Token Network View Rendering";
+      System.err.println( msg);
+      isProgressMonitorCancel = true;
+      closeView( this);
+      return;
+    }
     boolean showDialog = true;
     isContentSpecRendered( ViewConstants.TOKEN_NETWORK_VIEW, showDialog);
+    
+    numOperations++;
+    progressMonitor.setNote( "Laying out nodes ...");
+    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
     TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
@@ -289,6 +334,8 @@ public class TokenNetworkView extends PartialPlanView {
     if (isRedraw) {
       this.setVisible( true);
     }
+    isProgressMonitorCancel = true;
+
   } // end renderTokenNetwork
 
   /**
@@ -690,6 +737,7 @@ public class TokenNetworkView extends PartialPlanView {
         }
       });
   } // end createOverviewWindowItem
+
 
 
 } // end class TokenNetworkView

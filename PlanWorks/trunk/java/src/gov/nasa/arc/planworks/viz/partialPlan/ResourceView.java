@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.16 2004-06-16 22:09:12 taylor Exp $
+// $Id: ResourceView.java,v 1.17 2004-07-27 21:58:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -152,7 +153,7 @@ public abstract class ResourceView extends PartialPlanView  {
 
   /**
    * <code>ResourceView</code> - constructor 
-   *                             Use SwingUtilities.invokeLater( runInit) to
+   *                             Use SwingWorker to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>ViewableObject</code> - 
@@ -165,7 +166,14 @@ public abstract class ResourceView extends PartialPlanView  {
     resourceViewInit( vSet);
     isStepButtonView = false;
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
 
@@ -184,7 +192,14 @@ public abstract class ResourceView extends PartialPlanView  {
     resourceViewInit( vSet);
     isStepButtonView = true;
     setState( state);
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   }
 
   /**
@@ -205,7 +220,14 @@ public abstract class ResourceView extends PartialPlanView  {
       addViewListener( viewListener);
     }
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   private void resourceViewInit( final ViewSet vSet) {
@@ -279,15 +301,11 @@ public abstract class ResourceView extends PartialPlanView  {
     add( fillerAndRulerPanel, "South");
   } // end createFillerAndRulerPanel
 
-  /**
-   * Runnable <code>runInit</code>
-   *
-   */
-  public Runnable runInit = new Runnable() {
-      public final void run() {
-        init();
-      }
-    };
+//   public Runnable runInit = new Runnable() {
+//       public final void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -298,12 +316,13 @@ public abstract class ResourceView extends PartialPlanView  {
    *    "Cannot measure text until a JGoExtentView exists and is part of a visible window".
    *     int extentScrollExtent = jGoExtentView.getHorizontalScrollBar().getSize().getWidth();
    *    called by componentShown method on the JFrame
-   *    JGoExtentView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoExtentView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public final void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for ResourceView instance to become displayable
     if (! ViewGenerics.displayableWait( ResourceView.this)) {
+      closeView( this);
       return;
     }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.31 2004-07-15 21:24:47 taylor Exp $
+// $Id: VizView.java,v 1.32 2004-07-27 21:58:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -56,6 +56,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
+import gov.nasa.arc.planworks.viz.util.PWProgressMonitor;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
@@ -86,6 +87,8 @@ public class VizView extends JPanel {
   protected VizViewOverview overview;
   protected int zoomFactor;
   protected MDIInternalFrame viewFrame;
+  protected PWProgressMonitor progressMonitor;
+  protected boolean isProgressMonitorCancel;
 
   /**
    * <code>VizView</code> - constructor 
@@ -167,7 +170,6 @@ public class VizView extends JPanel {
   public void redraw() {
   }
 
-
   /**
    * <code>getJGoView</code> - each subclass of VizView will implement, as needed
    *
@@ -176,6 +178,18 @@ public class VizView extends JPanel {
     return null;
   }
 
+  /**
+   * <code>closeView</code>
+   *
+   * @param view - <code>VizView</code> - 
+   */
+  public void closeView( VizView view ) {
+    try {
+      ViewListener viewListener = null;
+      viewSet.openView( view.getClass().getName(), viewListener).setClosed( true);
+    } catch (PropertyVetoException excp) {
+    }
+  } // end closeView
 
   /**
    * <code>isContentSpecRendered</code> - each subclass of VizView will implement
@@ -539,5 +553,80 @@ public class VizView extends JPanel {
   protected JGoViewListener createViewListener() {
     return new JGoListener(this);
   }
+
+  protected void progressMonitorThread( String title, int minValue, int maxValue,
+                                        Thread monitoredThread, VizView view) {
+    Thread thread = new ProgressMonitorThread( title, minValue, maxValue, monitoredThread,
+                                                view);
+    thread.setPriority(Thread.MAX_PRIORITY);
+    thread.start();
+  }
+
+  public class ProgressMonitorThread extends Thread {
+
+    private String title;
+    private int minValue;
+    private int maxValue;
+    private Thread monitoredThread;
+    private VizView view;
+
+    public ProgressMonitorThread( String title, int minValue, int maxValue,
+                                  Thread monitoredThread, VizView view) {
+      isProgressMonitorCancel = false;
+      this.title = title;
+      this.minValue = minValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
+      this.maxValue = maxValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
+      this.monitoredThread = monitoredThread;
+      this.view = view;
+    }  // end constructor
+
+    public void run() {
+      progressMonitor = new PWProgressMonitor( PlanWorks.getPlanWorks(), title, "",
+                                              minValue, maxValue, monitoredThread, view);
+      progressMonitor.setMillisToDecideToPopup( 0);
+      progressMonitor.setMillisToPopup( 0);
+      // these two must be set to 0 before calling setProgress, which puts up the dialog
+      progressMonitor.setProgress( 0);
+
+      while (! isProgressMonitorCancel) {
+        try {
+          Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL * 2);
+        }
+        catch (InterruptedException ie) {}
+      }
+      progressMonitor.close();
+    } // end run
+
+  } // end class ProgressMonitorThread
+
+  /**
+   * <code>progressMonitorWait</code>
+   *
+   * @param vizView - <code>VizView</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean progressMonitorWait( VizView vizView) {
+    int maxCycles = ViewConstants.WAIT_NUM_CYCLES;
+    int numCycles = maxCycles;
+    while ((progressMonitor == null) && numCycles != 0) {
+      try {
+        Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
+      }
+      catch (InterruptedException ie) {}
+      numCycles--;
+      // System.err.println( "progressMonitorWait numCycles " + numCycles);
+    }
+    if (numCycles == 0) {
+      System.err.println( "progressMonitorWait failed after " +
+                          (ViewConstants.WAIT_INTERVAL * maxCycles) + " msec for " +
+                          vizView.getClass().getName());
+      try {
+        throw new Exception();
+      } catch (Exception e) { e.printStackTrace(); }
+    }
+    // System.err.println( "progressMonitorWait took " + (maxCycles - numCycles) + " numCycles");
+    return numCycles != 0;
+  } // end progressMonitorWait
+
 } // end class VizView
 

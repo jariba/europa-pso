@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.33 2004-07-08 21:33:27 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.34 2004-07-27 21:58:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -53,8 +53,10 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -128,6 +130,7 @@ public class SequenceStepsView extends SequenceView {
   private List stepRepresentedList;
   private List statusIndicatorList;
   private List stepNumberList;
+  private int numOperations;
 
   /**
    * variable <code>selectedStepElement</code>
@@ -168,7 +171,7 @@ public class SequenceStepsView extends SequenceView {
 
   /**
    * <code>SequenceStepsView</code> - constructor 
-   *                             Use SwingUtilities.invokeLater( runInit) to
+   *                             Use SswingWorker to
    *                             properly render the JGo widgets
    *
    * @param planSequence - <code>ViewableObject</code> - 
@@ -219,15 +222,22 @@ public class SequenceStepsView extends SequenceView {
 
     ((PwPlanningSequence) planSequence).addListener( new SequenceChangeListener( this));
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
 
-  Runnable runInit = new Runnable() {
-      public final void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public final void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -237,12 +247,13 @@ public class SequenceStepsView extends SequenceView {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for SequenceStepsView instance to become displayable
     if (! ViewGenerics.displayableWait( SequenceStepsView.this)) {
+      closeView( this);
       return;
     }
 
@@ -250,8 +261,27 @@ public class SequenceStepsView extends SequenceView {
 
     document = jGoView.getDocument();
 
+    numOperations = planSequence.getPlanDBSizeList().size() * 2;
+    progressMonitorThread( "Rendering Sequence Steps View ...", 0, numOperations,
+                           Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      closeView( this);
+      return;
+    }
+    numOperations = 0;
     heightScaleFactor = computeHeightScaleFactor();
-    renderHistogram();
+    if (heightScaleFactor == -1.0f) {
+      ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+      closeView( this);
+      return;
+    }
+
+    boolean isValid = renderHistogram();
+    if (! isValid) {
+      ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+      closeView( this);
+      return;
+    }
 
     expandViewFrame( viewFrame,
                      (int) jGoView.getDocumentSize().getWidth(),
@@ -263,6 +293,7 @@ public class SequenceStepsView extends SequenceView {
                          ( ViewConstants.SEQUENCE_STEPS_VIEW)) + " msecs.");
     ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
     startTimeMSecs = 0L;
+    isProgressMonitorCancel = true;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
@@ -306,7 +337,20 @@ public class SequenceStepsView extends SequenceView {
       }
       statusIndicatorList.clear();
     
-      renderHistogram();
+      numOperations = planSequence.getPlanDBSizeList().size();
+      progressMonitorThread( "Rendering Sequence Steps View ...", 0, numOperations,
+                             Thread.currentThread(), this);
+      numOperations = 0;
+      if (! progressMonitorWait( this)) {
+        closeView( this);
+        return;
+      }
+      boolean isValid = renderHistogram();
+      if (! isValid) {
+       ViewGenerics.resetRedrawCursor( viewFrame);
+       closeView( this);
+        return;
+      }
 
       expandViewFrame( viewFrame,
                        (int) jGoView.getDocumentSize().getWidth(),
@@ -319,6 +363,7 @@ public class SequenceStepsView extends SequenceView {
     System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     startTimeMSecs = 0L;
+    isProgressMonitorCancel = true;
     handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
   } // end redrawView
 
@@ -397,6 +442,14 @@ public class SequenceStepsView extends SequenceView {
       if (dbSize > maxDbSize) {
         maxDbSize = dbSize;
       }
+      if (progressMonitor.isCanceled()) {
+        String msg = "User Canceled Sequence Steps View Rendering";
+        System.err.println( msg);
+        isProgressMonitorCancel = true;
+        return -1.0f;
+      }
+      numOperations++;
+      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
 //     System.err.println( "computeHeightScaleFactor: " +
 //                         ViewConstants.STEP_VIEW_Y_MAX / (float) maxDbSize +
@@ -404,7 +457,7 @@ public class SequenceStepsView extends SequenceView {
     return ViewConstants.STEP_VIEW_Y_MAX / (float) maxDbSize;
   } // end computeHeightScaleFactor
 
-  private void renderHistogram() {
+  private boolean renderHistogram() {
     // System.err.println( "stepCount " + planSequence.getStepCount());
     // System.err.println( "stepNumbers " + planSequence.getPartialPlanNamesList());
     
@@ -476,8 +529,17 @@ public class SequenceStepsView extends SequenceView {
         document.addObjectAtTail( textObject);
       }
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
+      if (progressMonitor.isCanceled()) {
+        String msg = "User Canceled Sequence Steps View Rendering";
+        System.err.println( msg);
+        isProgressMonitorCancel = true;
+        return false;
+      }
       stepNumber++;
+      numOperations++;
+      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
+    return true;
   } // end renderHistogram
 
   private void addStepStatusIndicator( final int stepNum, final int x, final JGoDocument doc) {
@@ -650,6 +712,7 @@ public class SequenceStepsView extends SequenceView {
       partialPlan = planSequence.getPartialPlan( stepNumber);
     } catch (IndexOutOfBoundsException excp) {
     } catch (ResourceNotFoundException excpR) {
+    } catch (CreatePartialPlanException excpPP) {
     }
     PartialPlanViewSet partialPlanViewSet =
       (PartialPlanViewSet) PlanWorks.getPlanWorks().getViewManager().getViewSet( partialPlan);

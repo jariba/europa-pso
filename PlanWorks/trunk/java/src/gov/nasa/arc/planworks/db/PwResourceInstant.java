@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstant.java,v 1.4 2004-07-13 21:33:51 pdaley Exp $
+// $Id: PwResourceInstant.java,v 1.5 2004-07-27 21:58:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,9 +14,6 @@
 package gov.nasa.arc.planworks.db;
 
 import java.util.List;
-
-import gov.nasa.arc.planworks.db.PwIntervalDomain;
-
 
 /**
  * <code>PwResourceInstant</code> - Represents the state of the Resource at an

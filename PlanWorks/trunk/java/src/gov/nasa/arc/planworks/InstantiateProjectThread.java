@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.12 2004-04-09 23:11:23 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.13 2004-07-27 21:58:03 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -21,12 +21,15 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.SwingWorker;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 
 
@@ -37,7 +40,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0 
  */
-public class InstantiateProjectThread extends Thread {
+public class InstantiateProjectThread extends ThreadWithProgressMonitor {
 
   private String type;
 
@@ -55,6 +58,22 @@ public class InstantiateProjectThread extends Thread {
    *
    */
   public void run() {      
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          instantiateProject();
+          return null;
+        }
+    };
+    worker.start();
+  } // end run
+
+  private void instantiateProject() {
+    progressMonitorThread( type + "Project" + " ...", 0, 6);
+    if (! progressMonitorWait()) {
+      return;
+    }
+    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
@@ -86,7 +105,8 @@ public class InstantiateProjectThread extends Thread {
 
     PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
-  } //end run
+    isProgressMonitorCancel = true;
+  } // end instantiateProject
 
 
   // projects can have 0 sequences: create project, even if selected sequences
@@ -203,4 +223,6 @@ public class InstantiateProjectThread extends Thread {
     return project;
   } // end openProject
 
+  
 } // end class InstantiateProjectThread
+

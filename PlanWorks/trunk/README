@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.111 2004-07-16 22:54:43 taylor Exp $
+# $Id: README,v 1.112 2004-07-27 21:58:00 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -58,6 +58,13 @@ o PlanWorksGUITest now supports tests 1-11 of 24, defined in testCases/planViz.t
 o The sequence directory chooser now supports the selection of a directory,
   whose children are all sequence directories, so that user multiple directory 
   selection is not necessary.
+
+o "Progress monitors" have been added for functions which can be cpu intensive, such
+  as creating partial plans and rendering views.  The user has the option to "Cancel" 
+  these operations, if desired.
+
+o Added new Ant target 'createJars' which creates PlanWorksDB.jar and PlanWorksPlugin.jar
+  in PlanWorks/java/jars.
 
 o GNATS PRs and CRs completed:
   #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.
@@ -160,6 +167,7 @@ MySQL.
  cleanCls           -- delete the 'java/classes' directory tree
  cleanDb            -- delete loaded projects from data base, unless -Dno.clean.db=yes
  compile            -- compile 'java/src' tree into 'java/classes' tree
+ createJars         -- create PlanWorksDB.jar and PlanWorksPlugin.jar in ./java/jars
  planWorks          -- run PlanWorks application (compile dependency)
  planWorksDbInstall -- create all necessary databases and tables
  planWorksProf      -- run PlanWorks with profiling info
