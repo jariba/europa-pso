@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineViewTest.java,v 1.16 2003-07-02 21:46:10 taylor Exp $
+// $Id: TimelineViewTest.java,v 1.17 2003-07-07 17:30:24 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.views.test;
 
@@ -631,13 +631,11 @@ public class TimelineViewTest extends JFCTestCase{
     exitPlanWorks( menuBar);
   }
   
-  //=======
   /**
    * <code>suite</code> - create the test cases for the TestRunner
    *
    * @return - <code>TestSuite</code> - 
    */
-  //>>>>>>> 1.13
   public static TestSuite suite() {
     TestSuite testSuite = new TestSuite();
     testSuite.addTest( new TimelineViewTest( "testCreateProject", "create"));
@@ -662,7 +660,7 @@ public class TimelineViewTest extends JFCTestCase{
         System.exit(-1);
       }
     }
-    PlanWorks.osName = System.getProperty("os.name");
+    PlanWorks.osType = System.getProperty("os.type");
     PlanWorks.planWorksRoot = System.getProperty( "planworks.root");
 
     TestRunner.run( suite());
