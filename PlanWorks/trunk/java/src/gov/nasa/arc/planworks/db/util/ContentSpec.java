@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.7 2003-09-09 20:40:29 miatauro Exp $
+// $Id: ContentSpec.java,v 1.8 2003-09-18 19:01:48 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -12,20 +12,16 @@ import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
-//import gov.nasa.arc.planworks.db.util.XmlDBeXist;
-//import gov.nasa.arc.planworks.db.util.ParsedDomNode;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.viewMgr.RedrawNotifier;
-//import org.w3c.dom.Node;
 
 /*
  * <code>ContentSpec</code> -
@@ -36,7 +32,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.RedrawNotifier;
  */
 
 public class ContentSpec {
-  private ArrayList validTokenIds;
+  private UniqueSet validTokenIds;
   private Long partialPlanId;
   private PwPartialPlan partialPlan;
   private RedrawNotifier redrawNotifier;
@@ -63,6 +59,10 @@ public class ContentSpec {
     "SELECT Object.ObjectName, Timeline.TimelineName, Timeline.TimelineId FROM Object RIGHT JOIN Timeline ON Timeline.ObjectId=Object.ObjectId && Timeline.PartialPlanId=Object.PartialPlanId WHERE Object.PartialPlanId=";
   private static final String TOKENID = "TokenId";
   private static final String TOKENID_QUERY = "SELECT TokenId FROM Token WHERE PartialPlanId=";
+  private static final int FREE_ONLY = -1;
+  private static final int SLOTTED_ONLY = 0;
+  private static final int ALL = 1;
+
   /**
    * Creates the ContentSpec object, then makes a query for all valid tokens
    *
@@ -74,7 +74,7 @@ public class ContentSpec {
     this.partialPlanId = partialPlan.getId();
     this.partialPlan = partialPlan;
     this.redrawNotifier = redrawNotifier;
-    this.validTokenIds = new ArrayList();
+    this.validTokenIds = new UniqueSet();
     queryValidTokens();
   }
   /**
@@ -122,8 +122,11 @@ public class ContentSpec {
    * @param timeline the result of getValues() in TimelineGroupBox.
    * @param predicate the result of getValues() in PredicateGroupBox.
    * @param timeInterval the result of getValues() in TimeIntervalGroupBox.
+   * @param mergeTokens the result of getValue() in MergeBox.
+   * @param tokenTypes the result of getValue() in TokenTypeBox.
    */
-  public void applySpec(List timeline, List predicate, List timeInterval) 
+  public void applySpec(List timeline, List predicate, List timeInterval, boolean mergeTokens,
+                        int tokenTypes) 
     throws NumberFormatException {
     try {
       StringBuffer tokenQuery = new StringBuffer(TOKENID_QUERY);
@@ -179,6 +182,45 @@ public class ContentSpec {
       validTokenIds.clear();
       while(tokenIds.next()) {
         validTokenIds.add(new Integer(tokenIds.getInt(TOKENID)));
+      }
+      if(tokenTypes == FREE_ONLY) {
+        ListIterator freeTokenIdIterator = validTokenIds.listIterator();
+        while(freeTokenIdIterator.hasNext()) {
+          Integer id = (Integer) freeTokenIdIterator.next();
+          if(!partialPlan.getToken(id).isFreeToken()) {
+            freeTokenIdIterator.remove();
+          }
+        }
+      }
+      else if(tokenTypes == SLOTTED_ONLY) {
+        ListIterator slottedTokenIdIterator = validTokenIds.listIterator();
+        while(slottedTokenIdIterator.hasNext()) {
+          Integer id = (Integer) slottedTokenIdIterator.next();
+          if(partialPlan.getToken(id).isFreeToken()) {
+            slottedTokenIdIterator.remove();
+          }
+        }
+      }
+      else if(tokenTypes != ALL) {
+        System.err.println("Invalid tokenType value " + tokenTypes + ".  Ignoring.");
+      }
+      if(mergeTokens) {
+        UniqueSet tempValidIds = new UniqueSet();
+        ListIterator mergeTokenIdIterator = validTokenIds.listIterator();
+        while(mergeTokenIdIterator.hasNext()) {
+          Integer id = (Integer) mergeTokenIdIterator.next();
+          if(partialPlan.getSlot(partialPlan.getToken(id).getSlotId()) != null) {
+            System.err.println("Token " + id + " on slot " + partialPlan.getToken(id).getSlotId() +
+                               " with base token " + 
+                               partialPlan.getSlot(partialPlan.getToken(id).getSlotId()).getBaseToken().getId());
+            tempValidIds.add(partialPlan.getSlot(partialPlan.getToken(id).getSlotId()).getBaseToken().getId());
+          }
+          else if(partialPlan.getToken(id).isFreeToken()) {
+            tempValidIds.add(id);
+          }
+        }
+        validTokenIds.clear();
+        validTokenIds.addAll(tempValidIds);
       }
       if(timeInterval != null) {
         ListIterator tokenIdIterator = validTokenIds.listIterator();
