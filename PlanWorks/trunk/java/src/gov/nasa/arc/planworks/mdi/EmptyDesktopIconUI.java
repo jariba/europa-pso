@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: EmptyDesktopIconUI.java,v 1.2 2003-06-16 22:32:13 miatauro Exp $
+//
 /*
  * JScroll - the scrollable desktop pane for Java.
  * Copyright (C) 2003 Tom Tessier
@@ -30,17 +38,15 @@ import java.awt.*;
 
 
 /**
- * This class provides an empty DesktopIconUI for
- * {@link org.jscroll.widgets.RootDesktopPane RootDesktopPane}.
+ * This class provides an empty DesktopIconUI for MDIDesktopPane
+ * 
  *
  * @author <a href="mailto:tessier@gabinternet.com">Tom Tessier</a>
  * @version 1.0  29-Jul-2001
  */
 public class EmptyDesktopIconUI extends DesktopIconUI {
     /**
-     * stores the instance of this class. Used by
-     * {@link org.jscroll.widgets.EmptyDesktopIconUI#createUI(JComponent)
-     * createUI}.
+     * stores the instance of this class.
      */
     protected static EmptyDesktopIconUI desktopIconUI;
 
