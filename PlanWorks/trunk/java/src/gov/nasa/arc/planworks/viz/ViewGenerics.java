@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.4 2003-12-12 01:23:05 taylor Exp $
+// $Id: ViewGenerics.java,v 1.5 2003-12-20 00:45:50 miatauro Exp $
 //
 // PlanWorks
 //
@@ -131,6 +131,7 @@ public class ViewGenerics {
       Container contentPane = overviewFrame.getContentPane();
 
       overview = new VizViewOverview( overviewTitle, vizView);
+      vizView.setOverview(overview);
       overview.setObserved( jGoView);
       // do not allow drag & drop copying 
       jGoView.setInternalMouseActions( DnDConstants.ACTION_MOVE);

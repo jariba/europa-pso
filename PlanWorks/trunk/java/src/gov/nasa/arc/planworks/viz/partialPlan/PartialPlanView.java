@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.9 2003-12-19 18:54:01 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.10 2003-12-20 00:46:04 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.partialPlan;
 
 import java.awt.Point;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +33,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
+import com.nwoods.jgo.JGoView;
+
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -41,7 +44,9 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 // import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 
@@ -289,10 +294,15 @@ public class PartialPlanView extends VizView {
           getNextPartialPlan(prevStepNumber);
       }
       catch(IndexOutOfBoundsException ibe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, "Attempted to step beyond last step.",
+                                      "Step Exception", JOptionPane.ERROR_MESSAGE);
         ibe.printStackTrace();
         return;
       }
       catch(ResourceNotFoundException rnfe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(),
+                                      "ResourceNotFoundException", JOptionPane.ERROR_MESSAGE);
+
         rnfe.printStackTrace();
         return;
       }
@@ -301,18 +311,45 @@ public class PartialPlanView extends VizView {
         String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
         nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" + (prevStepNumber + 1));
       }
-      MDIInternalFrame nextView = viewManager.openView(nextStep, view.getClass().getName());
+      MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, view.getClass().getName());
       try {
-        if(viewFrame.isMaximum()) {
-          nextView.setNormalBounds(viewFrame.getNormalBounds());
-          nextView.setMaximum(true);
+        nextViewFrame.setBounds(viewFrame.getBounds());
+        nextViewFrame.setNormalBounds(viewFrame.getNormalBounds());
+        nextViewFrame.setSelected(true);
+        VizViewOverview overview = null;
+        VizView view = null;
+        Container contentPane = viewFrame.getContentPane();
+        for(int i = 0; i < contentPane.getComponentCount(); i++) {
+          if(contentPane.getComponent(i) instanceof VizView) {
+            view = (VizView) contentPane.getComponent(i);
+            overview = view.getOverview();
+            break;
+          }
         }
-        else {
-          nextView.setMaximum(false);
+        if(overview != null) {
+          VizView nextView = null;
+          JGoView nextJGoView = null;
+          JGoView temp = null;
+          contentPane = nextViewFrame.getContentPane();
+          for(int i = 0; i < contentPane.getComponentCount(); i++) {
+            if(contentPane.getComponent(i) instanceof VizView) {
+              nextView = (VizView) contentPane.getComponent(i);
+              //Container subPane = nextView.getContentPane();
+              for(int j = 0; j < nextView.getComponentCount(); j++) {
+                if(nextView.getComponent(i) instanceof JGoView) {
+                  nextJGoView = (JGoView) nextView.getComponent(i);
+                  break;
+                }
+              }
+              break;
+            }
+          }
+          VizViewOverview nextOverview = 
+            ViewGenerics.openOverviewFrame("Temporary View", nextStep, nextView, 
+                                           viewManager.getViewSet(nextStep), nextJGoView, 
+                                           new Point(30, 30));
+          nextView.setOverview(nextOverview);
         }
-        nextView.setBounds(viewFrame.getBounds());
-        nextView.setIcon(viewFrame.isIcon());
-        nextView.setSelected(true);
         viewSet.removeViewFrame(viewFrame);
         viewFrame.setClosed(true);
       }
@@ -336,10 +373,15 @@ public class PartialPlanView extends VizView {
           getPrevPartialPlan(nextStepNumber);
       }
       catch(IndexOutOfBoundsException ibe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, "Attempted to step beyond first step.",
+                                      "Step Exception", JOptionPane.ERROR_MESSAGE);
+
         ibe.printStackTrace();
         return;
       }
       catch(ResourceNotFoundException rnfe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(),
+                                      "ResourceNotFoundException", JOptionPane.ERROR_MESSAGE);
         rnfe.printStackTrace();
         return;
       }
@@ -352,11 +394,11 @@ public class PartialPlanView extends VizView {
       try {
         if(viewFrame.isMaximum()) {
           prevView.setNormalBounds(viewFrame.getNormalBounds());
-          prevView.setMaximum(true);
+          //prevView.setMaximum(true);
         }
         else {
           prevView.setBounds(viewFrame.getBounds());
-          prevView.setMaximum(false);
+          //prevView.setMaximum(false);
         }
         prevView.setIcon(viewFrame.isIcon());
         prevView.setSelected(true);
