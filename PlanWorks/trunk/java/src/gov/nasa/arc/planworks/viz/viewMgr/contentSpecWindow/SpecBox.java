@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SpecBox.java,v 1.5 2003-07-08 22:24:24 miatauro Exp $
+// $Id: SpecBox.java,v 1.6 2003-07-14 20:52:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -15,11 +15,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.util.regex.*;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -36,10 +40,11 @@ import javax.swing.JTextField;
 
 
 public class SpecBox extends JPanel implements ContentSpecElement {
-  private LogicComboBox logicBox;
-  private NegationCheckBox negationBox;
-  private JTextField keyField;
+  protected LogicComboBox logicBox;
+  protected NegationCheckBox negationBox;
+  protected JComboBox keyField;
   private String name;
+  private Map names;
   private static final Pattern keyPattern = Pattern.compile("\\d+");
 
   /**
@@ -49,12 +54,13 @@ public class SpecBox extends JPanel implements ContentSpecElement {
    *              OR.
    * @param name the name of the type of SpecBox.  One of Timeline, Predicate, or Constraint.
    */
-  public SpecBox(boolean first, String name) {
+  public SpecBox(boolean first, String name, Map names) {
     this.name = name.toString();
+    this.names = names;
     GridBagLayout gridBag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
     setLayout(gridBag);
-    
+
     logicBox = new LogicComboBox();
     logicBox.addItemListener(new LogicListener(this));
     if(first) {
@@ -68,6 +74,9 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     add(logicBox);
 
     negationBox = new NegationCheckBox();
+    if(!first) {
+      negationBox.setEnabled(false);
+    }
     c.gridx = 1;
     gridBag.setConstraints(negationBox, c);
     add(negationBox);
@@ -76,8 +85,18 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     c.gridx = 2;
     gridBag.setConstraints(label1, c);
     add(label1);
-    
-    keyField = new JTextField(5);
+    keyField = new JComboBox();
+    keyField.addItem("");
+
+    Object [] nameArray = names.keySet().toArray();
+    Arrays.sort(nameArray);
+
+    for(int i = 0; i < nameArray.length; i++) {
+      keyField.addItem(nameArray[i]);
+    }
+    if(!first) {
+      keyField.setEnabled(false);
+    }
     c.gridx = 3;
     gridBag.setConstraints(keyField, c);
     add(keyField);
@@ -90,12 +109,8 @@ public class SpecBox extends JPanel implements ContentSpecElement {
   public List getValue() throws NullPointerException, IllegalArgumentException {
     ArrayList retval = new ArrayList();
     StringBuffer connective = new StringBuffer();
-    if(keyField.getText().trim().equals("")) {
+    if(keyField.getSelectedItem().equals("")) {
       return null;
-    }
-    if(!keyPattern.matcher(keyField.getText().trim()).matches()) {
-      JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), (new StringBuffer("Invalid ")).append(name).append(" key format.  Must be of the form \\d+.").toString(), "Error!", JOptionPane.ERROR_MESSAGE);
-      throw new IllegalArgumentException();
     }
     if(logicBox.isEnabled()) {
       if(((String)logicBox.getSelectedItem()).equals("")) {
@@ -110,7 +125,7 @@ public class SpecBox extends JPanel implements ContentSpecElement {
       connective.append(" not");
     }
     retval.add(connective.toString());
-    retval.add(new Integer(keyField.getText().trim()));
+    retval.add((Integer) names.get(keyField.getSelectedItem()));
     return retval;
   }
   /**
@@ -121,7 +136,7 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     GroupBox parent = (GroupBox) getParent();
     GridBagLayout gridBag = (GridBagLayout) parent.getLayout();
     GridBagConstraints c = new GridBagConstraints();
-    SpecBox box = new SpecBox(false, name);
+    SpecBox box = new SpecBox(false, name, names);
     c.weightx = 0.5;
     c.gridx = 0;
     c.gridy = GridBagConstraints.RELATIVE;
@@ -144,7 +159,7 @@ public class SpecBox extends JPanel implements ContentSpecElement {
    */
   public void reset() {
     negationBox.setSelected(false);
-    keyField.setText("");
+    keyField.setSelectedItem("");
     logicBox.setSelectedItem("");
   }
   /**
@@ -170,6 +185,8 @@ public class SpecBox extends JPanel implements ContentSpecElement {
            (((String)ie.getItem()).equals("AND") || 
             ((String)ie.getItem()).equals("OR"))) {
           box.addSpecBox();
+          box.keyField.setEnabled(true);
+          box.negationBox.setEnabled(true);
         }
         else if((itemStateChangedFrom.equals("AND") || 
                  itemStateChangedFrom.equals("OR")) && 

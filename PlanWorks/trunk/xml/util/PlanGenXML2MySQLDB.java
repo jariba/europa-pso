@@ -642,7 +642,7 @@ class DbObject {
   public Integer getId(){return id;}
   public String toDbString() {
     StringBuffer retval = new StringBuffer(id.toString());
-    retval.append("\t").append(ppId.toString()).append("\t").append("name").append("\n");
+    retval.append("\t").append(ppId.toString()).append("\t").append(name).append("\n");
     return retval.toString();
   }
 }
@@ -831,18 +831,18 @@ class DbToken {
       retval.append(predicate.toString());
     }
     retval.append("\t");
-    if(tid == null) {
-      retval.append("NULL");
-    }
-    else {
-      retval.append(tid.toString());
-    }
-    retval.append("\t");
     if(oid == null) {
       retval.append("NULL");
     }
     else {
       retval.append(oid.toString());
+    }
+    retval.append("\t");
+    if(tid == null) {
+      retval.append("NULL");
+    }
+    else {
+      retval.append(tid.toString());
     }
     retval.append("\t");
     if(objectVar == null) {

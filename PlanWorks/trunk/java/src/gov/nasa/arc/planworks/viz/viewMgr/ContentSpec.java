@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.16 2003-07-08 22:24:16 miatauro Exp $
+// $Id: ContentSpec.java,v 1.17 2003-07-14 20:52:02 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -14,8 +14,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 //import gov.nasa.arc.planworks.db.util.XmlDBeXist;
 //import gov.nasa.arc.planworks.db.util.ParsedDomNode;
@@ -157,6 +159,31 @@ public class ContentSpec {
     }
     printSpec();
     redrawNotifier.notifyRedraw();
+  }
+  public Map getPredicateNames() throws SQLException {
+    HashMap predicates = new HashMap();
+    
+    System.err.println("Getting predicate names...");
+    ResultSet predicateNames = 
+      MySQLDB.queryDatabase("SELECT PredicateName, PredicateId FROM Predicate WHERE PartialPlanId=".concat(partialPlanKey.toString()));
+    while(predicateNames.next()) {
+      predicates.put(predicateNames.getString("PredicateName"), 
+                       new Integer(predicateNames.getInt("PredicateId")));
+    }
+    return predicates;
+  }
+  public Map getTimelineNames() throws SQLException {
+    HashMap timelines = new HashMap();
+    System.err.println("Getting timeline names...");
+    ResultSet timelineNames =
+      MySQLDB.queryDatabase("SELECT Object.ObjectName, Timeline.TimelineName, Timeline.TimelineId FROM Object RIGHT JOIN Timeline ON Timeline.ObjectId=Object.ObjectId && Timeline.PartialPlanId=Object.PartialPlanId WHERE Object.PartialPlanId=".concat(partialPlanKey.toString()));
+    String objName = null;
+    while(timelineNames.next()) {
+      objName = (timelineNames.getString("Object.ObjectName") == null ? objName : 
+                 timelineNames.getString("Object.ObjectName"));
+      timelines.put("".concat(objName).concat(":").concat(timelineNames.getString("Timeline.TimelineName")), new Integer(timelineNames.getInt("Timeline.TimelineId")));
+    }
+    return timelines;
   }
   public void executeQuery(String query) throws SQLException {
     System.err.println("Test: executing query " + query);

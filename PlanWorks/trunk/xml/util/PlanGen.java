@@ -781,6 +781,9 @@ class KeyManager
   {
     return (Timeline) timelines.get(key);
   }
+  public int getNumTimelines() {
+    return timelines.size();
+  }
   public Slot getSlot(String key)
   {
     return (Slot) slots.get(key);
@@ -870,14 +873,29 @@ class PartialPlan
     if(availableMasters.size() > 1)
       {
         System.err.println("Generating token relations...");
+        int numSupremeMasters = PlanGenState.getRandInRange(1, PlanGen.keyManager.getNumTimelines());
+        ArrayList supremeMasters = new ArrayList(numSupremeMasters);
+        for(int i = 0; i < numSupremeMasters; i++) {
+          int masterIndex = PlanGenState.getRandInRange(0, availableMasters.size()-1);
+          if(!PlanGen.keyManager.getToken((String)availableMasters.get(masterIndex)).isFreeToken())
+            {
+              supremeMasters.add(availableMasters.get(i));
+              availableSlaves.remove(availableMasters.get(i));
+            }
+          else {
+            i--;
+          }
+        }
         while(availableMasters.size() != 0 && availableSlaves.size() != 0) {
           int masterIndex = PlanGenState.getRandInRange(0, availableMasters.size()-1);
           String masterKey = (String) availableMasters.get(masterIndex);
           if(PlanGen.keyManager.getToken(masterKey).isFreeToken()) {
-            availableMasters.removeElementAt(masterIndex);
+            availableMasters.removeElement(masterKey);
             continue;
           }
-          availableSlaves.remove(masterKey);
+          if(!supremeMasters.contains(masterKey)) {
+            availableSlaves.remove(masterKey);
+          }
           availableMasters.remove(masterKey);
           int numSlaves = PlanGenState.getRandInRange(1, (availableSlaves.size() > 3 ? 4 :
                                                           availableSlaves.size()));
@@ -890,7 +908,9 @@ class PartialPlan
           for(int i = 0; i < numSlaves; i++) {
             new TokenRelation(masterKey, slaveKeys[i]);
           }
-          availableSlaves.add(masterKey);
+          //if(!supremeMasters.contains(masterKey)) {
+          //  availableSlaves.add(masterKey);
+          //}
         }
       }
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.9 2003-07-09 16:50:57 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.10 2003-07-14 20:52:19 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -58,10 +59,15 @@ public class ContentSpecWindow extends JPanel {
    * @param contentSpec The ContentSpec with which this window is associated.  Instantiated in
    *                    ViewSet
    */
-  public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec) {
+  public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec) throws SQLException {
     this.contentSpec = contentSpec;
     queryTestExists = false;
 
+    Map predicateNames = contentSpec.getPredicateNames();
+    Map timelineNames = contentSpec.getTimelineNames();
+
+    System.err.println("Pred: " + predicateNames);
+    System.err.println("Time: " + timelineNames);
     GridBagLayout gridBag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
     setLayout(gridBag);
@@ -75,7 +81,7 @@ public class ContentSpecWindow extends JPanel {
     gridBag.setConstraints(constraintGroup, c);
     add(constraintGroup);*/
 
-    predicateGroup = new PredicateGroupBox(window);
+    predicateGroup = new PredicateGroupBox(window, predicateNames);
     gridBag.setConstraints(predicateGroup, c);
     add(predicateGroup);
 
@@ -85,12 +91,12 @@ public class ContentSpecWindow extends JPanel {
     gridBag.setConstraints(timeIntervalGroup, c);
     add(timeIntervalGroup);
 
-    timelineGroup = new TimelineGroupBox(window);
+    timelineGroup = new TimelineGroupBox(window, timelineNames);
     c.gridx = 0;
     c.gridy++;
     gridBag.setConstraints(timelineGroup, c);
     add(timelineGroup);
-    
+
     /*variableTypeGroup = new VariableTypeGroupBox(window);
     c.gridx++;
     c.gridy++;

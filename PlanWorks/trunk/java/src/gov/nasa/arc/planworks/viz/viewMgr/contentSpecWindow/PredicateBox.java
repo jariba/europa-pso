@@ -4,9 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PredicateBox.java,v 1.3 2003-06-16 18:51:09 miatauro Exp $
+// $Id: PredicateBox.java,v 1.4 2003-07-14 20:52:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
+
+import java.util.Map;
 
 /**
  * <code>PredicateBox</code> -
@@ -16,7 +18,7 @@ package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
  */
 
 public class PredicateBox extends SpecBox {
-  public PredicateBox(boolean first) {
-    super(first, "Predicate");
+  public PredicateBox(boolean first, Map predicateNames) {
+    super(first, "Predicate", predicateNames);
   }
 }
