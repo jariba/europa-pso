@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.140 2004-12-08 21:36:46 pdaley Exp $
+# $Id: README,v 1.141 2005-01-20 21:48:40 miatauro Exp $
 #
 
 NOTE: Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -102,6 +102,8 @@ Just follow the instructions below.
 If you're running Linux, you'll have to download the MySQL binary release 
 version 4.0.13 or higher for your system. MySQL is open source. Download from:
      http://dev.mysql.com/downloads/mysql/4.1.html
+NOTE: MySQL 4.1.8 is known not to work with PlanWorks.  The latest known good
+version of MySQL is 4.1.1.  
 
 Download the version for your specific platform, un[zip|tar] it, and copy 
 the "mysql", "mysqld", and "mysqladmin" executables from the bin directory 
