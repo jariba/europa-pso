@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.73 2004-02-13 00:25:08 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.74 2004-02-13 22:29:29 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -610,15 +610,15 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         retval = false;
       }
       if(!token.isFreeToken()) {
-        if(token.getObjectId() == null) {
-          System.err.println("Slotted token " + token.getId() + " has null objectId.");
-          retval = false;
-        }
-        else if(!objectMap.containsKey(token.getObjectId())) {
-          System.err.println("Slotted token " + token.getId() + " has nonexistant objectId " + 
-                             token.getObjectId());
-          retval = false;
-        }
+        //if(token.getObjectId() == null) {
+        //  System.err.println("Slotted token " + token.getId() + " has null objectId.");
+        //  retval = false;
+        //}
+        //else if(!objectMap.containsKey(token.getObjectId())) {
+        //  System.err.println("Slotted token " + token.getId() + " has nonexistant objectId " + 
+        //                     token.getObjectId());
+        //  retval = false;
+        //}
         if(token.getTimelineId() == null) {
           System.err.println("Slotted token " + token.getId() + " has null timelineId.");
           retval = false;

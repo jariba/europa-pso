@@ -258,11 +258,11 @@ public class MySQLDBTest extends TestCase {
       assertTrue(t.getInt("StartVarId") == 1);
       assertTrue(t.getInt("EndVarId") == 1);
       assertTrue(t.getInt("DurationVarId") == 1);
-      assertTrue(t.getInt("RejectVarId") == 1);
+      assertTrue(t.getInt("StateVarId") == 1);
       //assertTrue(t.getInt("PredicateId") == 1);
       assertTrue(t.getString("PredicateName").equals("1"));
       assertTrue(t.getInt("TimelineId") == 1);
-      assertTrue(t.getInt("ObjectId") == 1);
+      //assertTrue(t.getInt("ObjectId") == 1);
       assertTrue(t.getInt("ObjectVarId") == 1);
     }
     catch(SQLException sqle) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.82 2004-02-13 00:27:37 miatauro Exp $
+// $Id: MySQLDB.java,v 1.83 2004-02-13 22:29:44 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1342,9 +1342,13 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet ids = 
-        queryDatabase("SELECT DISTINCT TimelineId FROM Token WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ObjectId=").concat(objId.toString()));
-      while(ids.next()) {
-        retval.add(new Integer(ids.getInt("TimelineId")));
+        queryDatabase("SELECT ChildObjectIds FROM Object WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ObjectId=").concat(objId.toString()));
+      ids.last();
+      Blob blob = ids.getBlob("ComponentIds");
+      String timelineIds = new String(blob.getBytes(1, (int) blob.length()));
+      StringTokenizer strTok = new StringTokenizer(timelineIds, ",");
+      while(strTok.hasMoreTokens()) {
+        retval.add(Integer.valueOf(strTok.nextToken()));
       }
     }
     catch(SQLException sqle) {
@@ -1357,9 +1361,20 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet ids =
-        queryDatabase("SELECT DISTINCT SlotId FROM Token WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ObjectId=").concat(objId.toString()).concat(" && TimelineId=").concat(tId.toString()));
+        queryDatabase("SELECT DISTINCT SlotId FROM Token WHERE PartialPlanId=".concat(ppId.toString()).concat(" && TimelineId=").concat(tId.toString()));
       while(ids.next()) {
         retval.add(new Integer(ids.getInt("SlotId")));
+      }
+      ResultSet empties =
+        queryDatabase("SELECT EmptySlotInfo FROM Object WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ObjectId=").concat(tId.toString()));
+      empties.last();
+      Blob emptySlots = empties.getBlob("EmptySlotInfo");
+      if(!empties.wasNull()) {
+        String slotIds = new String(emptySlots.getBytes(1, (int) emptySlots.length()));
+        StringTokenizer strTok = new StringTokenizer(slotIds, ",");
+        while(strTok.hasMoreTokens()) {
+          retval.add(Integer.valueOf(strTok.nextToken()));
+        }
       }
     }
     catch(SQLException sqle) {
