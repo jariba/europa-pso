@@ -26,7 +26,7 @@ import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 
 public class MySQLDB {
   
-  private static boolean dbIsStarted;
+  protected static boolean dbIsStarted;
   private static Connection conn;
 
   public static final MySQLDB INSTANCE = new MySQLDB();
@@ -51,6 +51,16 @@ public class MySQLDB {
     Runtime.getRuntime().exec(dbStartString.toString());
     //    try{Thread.sleep(100000);}catch(Exception e){}
     dbIsStarted = true;
+    Runtime.getRuntime().addShutdownHook(new Thread() 
+      { 
+        public void start() throws IllegalThreadStateException {
+          if(MySQLDB.dbIsStarted) {
+            System.err.println("Shuttong down database.");
+            try{MySQLDB.stopDatabase();}
+            catch(Exception e){System.err.println("FAILED TO STOP DATABASE: " + e);}
+          }
+        }
+      });
   }
   public static void stopDatabase() throws IllegalArgumentException, IOException, SecurityException
   {
