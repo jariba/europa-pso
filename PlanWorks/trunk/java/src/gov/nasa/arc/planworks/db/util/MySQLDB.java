@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.110 2004-06-23 21:36:35 pdaley Exp $
+// $Id: MySQLDB.java,v 1.111 2004-07-13 21:33:53 pdaley Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1084,7 +1084,7 @@ public class MySQLDB {
   synchronized public static void queryResourceInstants(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet resInsts = 
-        queryDatabase("SELECT InstantId, TimePoint, LevelMin, LevelMax, Transactions FROM ResourceInstants WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
+        queryDatabase("SELECT InstantId, ResourceId, TimePoint, LevelMin, LevelMax, Transactions FROM ResourceInstants WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
       while(resInsts.next()) {
         Integer instId = new Integer(resInsts.getInt("InstantId"));
         String transactionIds = null;
@@ -1095,6 +1095,7 @@ public class MySQLDB {
         partialPlan.
           addResourceInstant(instId, 
                              new PwResourceInstantImpl(instId, 
+                                                       new Integer(resInsts.getInt("ResourceId")),
                                                        resInsts.getInt("TimePoint"),
                                                        resInsts.getDouble("LevelMin"),
                                                        resInsts.getDouble("LevelMax"),
@@ -1637,23 +1638,58 @@ public class MySQLDB {
       while(ids.next()) {
         retval.put(DbConstants.TBL_VARIABLE, new Integer(ids.getInt("VariableId")));
       }
+      ids = queryDatabase("SELECT InstantId FROM ResourceInstants WHERE PartialPlanId=".concat(ppId.toString()));
+      while(ids.next()) {
+        retval.put(DbConstants.TBL_INSTANTS, new Integer(ids.getInt("InstantId")));
+      }
+      ids = queryDatabase("SELECT ConstraintId FROM VConstraint WHERE PartialPlanId=".concat(ppId.toString()));
+      while(ids.next()) {
+        retval.put(DbConstants.TBL_CONSTRAINT, new Integer(ids.getInt("ConstraintId")));
+      }
     }
     catch(SQLException sqle) {
     }
     return retval;
   }
   
-  synchronized public static List queryTimelineIdsForObject(final Long ppId, final Integer objId) {
+  synchronized public static List queryRuleIdsForSequence(final Long seqId) {
     List retval = new ArrayList();
     try {
       ResultSet ids = 
-        queryDatabase("SELECT ChildObjectIds FROM Object WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ObjectId=").concat(objId.toString()));
-      ids.last();
-      Blob blob = ids.getBlob("ComponentIds");
-      String timelineIds = new String(blob.getBytes(1, (int) blob.length()));
-      StringTokenizer strTok = new StringTokenizer(timelineIds, ",");
-      while(strTok.hasMoreTokens()) {
-        retval.add(Integer.valueOf(strTok.nextToken()));
+        queryDatabase("SELECT RuleId FROM Rules WHERE SequenceId=".concat(seqId.toString()));
+      while(ids.next()) {
+        retval.add(new Integer(ids.getInt("RuleId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+
+  synchronized public static List queryResourceIdsForObject(final Long ppId, final Integer objId) {
+    List retval = new ArrayList();
+    Integer resourceObjectType = new Integer(DbConstants.O_RESOURCE);
+    try {
+      ResultSet ids = 
+        queryDatabase("SELECT ObjectId FROM Object WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ParentId=").concat(objId.toString()).concat(" && ObjectType=").concat(resourceObjectType.toString()));
+      while(ids.next()) {
+        retval.add(new Integer(ids.getInt("ObjectId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryTimelineIdsForObject(final Long ppId, final Integer objId) {
+    List retval = new ArrayList();
+    Integer timelineObjectType = new Integer(DbConstants.O_TIMELINE);
+    try {
+      ResultSet ids = 
+        queryDatabase("SELECT ObjectId FROM Object WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ParentId=").concat(objId.toString()).concat(" && ObjectType=").concat(timelineObjectType.toString()));
+      while(ids.next()) {
+        retval.add(new Integer(ids.getInt("ObjectId")));
       }
     }
     catch(SQLException sqle) {
@@ -1678,7 +1714,9 @@ public class MySQLDB {
         String slotIds = new String(emptySlots.getBytes(1, (int) emptySlots.length()));
         StringTokenizer strTok = new StringTokenizer(slotIds, ",");
         while(strTok.hasMoreTokens()) {
+          //format is SlotId, SlotIndex 
           retval.add(Integer.valueOf(strTok.nextToken()));
+          strTok.nextToken(); //skip slot index
         }
       }
     }

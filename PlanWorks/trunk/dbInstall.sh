@@ -155,6 +155,7 @@ c_m=""
   c_c="$c_c   comment='Column privileges';"
 
 echo "Installing all prepared tables"
+echo "$1 $2 $3"
 eval "$1/mysqld --bootstrap --skip-grant-tables --basedir=$2 --datadir=$3 --skip-innodb --skip-bdb " << END_OF_DATA
 use mysql;
 $c_m

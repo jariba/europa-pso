@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.13 2004-07-08 21:33:21 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.14 2004-07-13 21:33:55 pdaley Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -33,6 +33,7 @@ import gov.nasa.arc.planworks.db.impl.PwObjectImpl;
 import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
 import gov.nasa.arc.planworks.db.impl.PwPlanningSequenceImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceImpl;
+import gov.nasa.arc.planworks.db.impl.PwResourceInstantImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwRuleImpl;
 import gov.nasa.arc.planworks.db.impl.PwRuleInstanceImpl;
@@ -73,7 +74,7 @@ public abstract class PWSetupHelper {
   public static final int NUM_VARS_PER_RESOURCE_TRANS = 5;
   public static final int NUM_VARS_PER_RULE_INSTANCE = 2;
   public static final int NUM_CONSTRAINTS_PER_TOKEN = 1;
-  public static final int NUM_CONSTRAINTS_PER_RESOURCE = 0;
+  public static final int NUM_INSTANTS_PER_RESOURCE = 1;
 
   private static List decisionsForStep;
   private static List rulesForSequence;
@@ -211,8 +212,14 @@ public abstract class PWSetupHelper {
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_VARIABLES_EXT,
                           variablesBuffer.toString());
 
+    StringBuffer resourceInstantsBuffer = new StringBuffer();
+    Iterator resourceInstantsItr = partialPlan.getInstantList().iterator();
+    while (resourceInstantsItr.hasNext()) {
+      resourceInstantsBuffer.append( ((PwResourceInstantImpl) resourceInstantsItr.next()).
+                                   toOutputString());
+    }
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_RESOURCE_INSTANTS_EXT,
-                          "");
+                          resourceInstantsBuffer.toString());
     StringBuffer decisionsBuffer = new StringBuffer();
     Iterator decisionsItr = decisionsForStep.iterator();
     while (decisionsItr.hasNext()) {
@@ -367,6 +374,17 @@ public abstract class PWSetupHelper {
                      partialPlan, planSequence, stepNum, idSource);
         memberValue += 10;
       }
+      // resource instants
+      for (int i = 0; i < NUM_INSTANTS_PER_RESOURCE; i++) {
+        resInfo.append( ",");
+        Integer instantId = new Integer( idSource.incEntityIdInt());
+        resInfo.append( String.valueOf( instantId));
+        int time = 60;
+        double levelMin = 0.0;
+        double levelMax = 200.0;
+        addResourceInstant(instantId, resourceId, time, levelMin, levelMax, "", partialPlan);
+      }
+
       // resourceTransactions
       String [] stringArray =
         addTokensToTimeline( RESOURCE_TRANSACTION, NUM_RESOURCE_TRANSACTIONS,
@@ -492,7 +510,8 @@ public abstract class PWSetupHelper {
         addResourceTransaction( tokenId, isValueToken, "resource.change" +
                                 String.valueOf( tokenInt), startVarId, endVarId,
                                 durationVarId, stateVarId, objectVarId, parentId,
-                                ruleInstanceIds, paramVarIds, transInfo, partialPlan);
+                                ruleInstanceIds, paramVarIds, transInfo, partialPlan,
+                                planSequence, stepNum, idSource);
         // no constraints
       }
       time += timeIncrement;
@@ -689,7 +708,10 @@ public abstract class PWSetupHelper {
                                               final String ruleInstanceIds,
                                               final String paramVarIds,
                                               final String transInfo, 
-                                              final PwPartialPlanImpl partialPlan) {
+                                              final PwPartialPlanImpl partialPlan,
+                                              final PwPlanningSequenceImpl planSequence,
+                                              final int stepNum,
+                                              final IdSource idSource) {
     Integer ruleInstanceId = null; //dummy value until this code is fixed
     PwResourceTransactionImpl resourceTransaction =
       new PwResourceTransactionImpl( id, isValueToken, predName, startVarId,
@@ -697,7 +719,22 @@ public abstract class PWSetupHelper {
                                      objectVarId, parentId, ruleInstanceId,
                                      paramVarIds, transInfo, partialPlan);
     partialPlan.addResourceTransaction( id, resourceTransaction);
+    addTransaction( DbConstants.TOKEN_CREATED, new Integer( idSource.incEntityIdInt()),
+                    DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
+                    partialPlan.getId(), null, planSequence);
   } // end addResourceTransaction
+
+  private static void addResourceInstant( final Integer id,
+                                          final Integer resourceId, 
+                                          final int time, 
+                                          final double levelMin,
+                                          final double levelMax,
+                                          final String transactions,
+                                          final PwPartialPlanImpl partialPlan) {
+    PwResourceInstantImpl resourceInstant =
+      new PwResourceInstantImpl( id, resourceId, time, levelMin, levelMax, transactions, partialPlan);
+    partialPlan.addResourceInstant( id, resourceInstant);
+  } // end addResourceInstant
 
   private static void addDecision( final Integer id, final int type, Integer entityId,
                                    boolean unit, PwPartialPlanImpl partialPlan) {

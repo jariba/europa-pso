@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstant.java,v 1.3 2004-03-23 18:20:05 miatauro Exp $
+// $Id: PwResourceInstant.java,v 1.4 2004-07-13 21:33:51 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -35,6 +35,13 @@ public interface PwResourceInstant extends PwEntity {
    * @return id - <code>Integer</code> -
    */
   public abstract Integer getId();
+
+  /**
+   * <code>getResourceId</code>
+   *
+   * @return resourceId - <code>Integer</code> -
+   */
+  public abstract Integer getResourceId();
 
   /**
    * <code>getTime</code>

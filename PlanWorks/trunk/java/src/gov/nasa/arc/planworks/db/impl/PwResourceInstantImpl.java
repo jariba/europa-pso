@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstantImpl.java,v 1.6 2004-03-23 18:20:48 miatauro Exp $
+// $Id: PwResourceInstantImpl.java,v 1.7 2004-07-13 21:33:53 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -35,16 +35,19 @@ import gov.nasa.arc.planworks.db.PwResourceTransaction;
 public class PwResourceInstantImpl implements PwResourceInstant {
 
   private Integer id;
+  private Integer resourceId;
   private int time;
   private double levelMin;
   private double levelMax;
   private List transactionIds;
   private PwPartialPlanImpl partialPlan;
 
-  public PwResourceInstantImpl( final Integer id,  final int time, final double levelMin,
-                                final double levelMax, final String transactions,
+  public PwResourceInstantImpl( final Integer id,  final Integer resourceId, final int time, 
+                                final double levelMin, final double levelMax, 
+                                final String transactions,
                                 final PwPartialPlanImpl partialPlan) {
     this.id = id;
+    this.resourceId = resourceId;
     this.time = time;
     this.levelMin = levelMin;
     this.levelMax = levelMax;
@@ -66,6 +69,15 @@ public class PwResourceInstantImpl implements PwResourceInstant {
    */
   public Integer getId() {
     return id;
+  }
+
+  /**
+   * <code>getResourceId</code>
+   *
+   * @return resourceId - <code>Integer</code> -
+   */
+  public Integer getResourceId() {
+    return resourceId;
   }
 
   /**
@@ -105,7 +117,8 @@ public class PwResourceInstantImpl implements PwResourceInstant {
 
   public String toOutputString() {
     StringBuffer retval = new StringBuffer(partialPlan.getId().toString());
-    retval.append("\t").append(id).append("\t").append(time).append("\t").append(levelMin);
+    retval.append("\t").append(resourceId).append("\t").append(id);
+    retval.append("\t").append(time).append("\t").append(levelMin);
     retval.append("\t").append(levelMax).append("\t");
     for(ListIterator it = transactionIds.listIterator(); it.hasNext();) {
       retval.append(it.next()).append(",");
