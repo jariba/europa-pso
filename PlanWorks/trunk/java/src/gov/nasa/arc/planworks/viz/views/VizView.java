@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.17 2003-09-15 23:47:18 taylor Exp $
+// $Id: VizView.java,v 1.18 2003-09-18 20:48:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoText;
+import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -44,6 +45,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 public class VizView extends JPanel {
 
   protected PwPartialPlan partialPlan;
+  protected ViewSet viewSet;
   protected List validTokenIds;
   protected List displayedTokenIds;
 
@@ -52,10 +54,12 @@ public class VizView extends JPanel {
    * <code>VizView</code> - constructor 
    *
    * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
    */
-  public VizView( PwPartialPlan partialPlan) {
+  public VizView( PwPartialPlan partialPlan, ViewSet viewSet) {
     super();
     this.partialPlan = partialPlan;
+    this.viewSet = viewSet;
     validTokenIds = null;
     displayedTokenIds = null;
     
@@ -66,10 +70,18 @@ public class VizView extends JPanel {
   }
 
   /**
+   * <code>getViewSet</code>
+   *
+   * @return - <code>ViewSet</code> - 
+   */
+  public ViewSet getViewSet() {
+    return viewSet;
+  }
+
+  /**
    * <code>redraw</code> - each subclass of VizView will implement redraw()
    *
    */  
-
   public void redraw() {
   }
 
@@ -211,13 +223,11 @@ public class VizView extends JPanel {
   /**
    * <code>expandViewFrame</code> - expand up to size of PlanWorks frame
    *
-   * @param viewSet - <code>ViewSet</code> - 
    * @param viewName - <code>String</code> - 
    * @param maxViewWidth - <code>int</code> - 
    * @param maxViewHeight - <code>int</code> - 
    */
-  protected void expandViewFrame( ViewSet viewSet, String viewName, int maxViewWidth,
-                                  int maxViewHeight) {
+  protected void expandViewFrame( String viewName, int maxViewWidth, int maxViewHeight) {
     MDIInternalFrame viewFrame = null;
     if (viewName.equals( "timelineView")) {
       viewFrame = viewSet.openTimelineView( 0L);

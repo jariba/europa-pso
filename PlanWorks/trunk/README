@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.28 2003-09-17 01:16:16 miatauro Exp $
+# $Id: README,v 1.29 2003-09-18 20:48:41 taylor Exp $
 #
 
 SUMMARY
@@ -24,13 +24,16 @@ o  PRs and CRs completed:
    #2044: Need a minimal getting started guide.
    #2048: In large plans, may lose the time scale with current approach.
    #2049: Project vertical line on clicks for Temporal Extent View.
+   #2050: Synchronize focus among views.
+          See PlanWorks/GETTING_STARTED - "Token Focus in Views"
    #2051: Need better window management - how about a tiling option?
    #2052: Need to handle redraw on content spec change to use space better.
           Temporal Extent View & Timeline View are now redrawn.
    #2053: Post error message if trying to add sequence from other project.
    #2055: Bug creating project.
    #2057: Floating data left over filtering timeline view.
-
+   #2058: Timeline color coding incorrect.  
+          Each timeline now has unique color.
 
 CVS CHECKOUT
 ============

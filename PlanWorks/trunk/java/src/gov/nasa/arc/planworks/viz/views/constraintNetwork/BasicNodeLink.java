@@ -3,29 +3,21 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodeLink.java,v 1.4 2003-08-29 22:08:58 taylor Exp $
+// $Id: BasicNodeLink.java,v 1.1 2003-09-18 20:48:46 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 28july03
 //
 
-package gov.nasa.arc.planworks.viz.nodes;
-
-import java.awt.Point;
+package gov.nasa.arc.planworks.viz.views.constraintNetwork;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoLabeledLink;
-import com.nwoods.jgo.JGoObject;
-import com.nwoods.jgo.JGoPort;
-import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoText;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
-
-import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwVariable;
 
 
 /**
@@ -49,8 +41,9 @@ public class BasicNodeLink extends JGoLabeledLink {
   /**
    * <code>BasicNodeLink</code> - constructor 
    *
-   * @param fromVariableNode - <code>TokenNode</code> - 
-   * @param toTokenNode - <code>TokenNode</code> - 
+   * @param fromNode - <code>BasicNode</code> - 
+   * @param toNode - <code>BasicNode</code> - 
+   * @param linkName - <code>String</code> - 
    */
   public BasicNodeLink( BasicNode fromNode, BasicNode toNode, String linkName) {
     super( fromNode.getPort(), toNode.getPort());
@@ -125,7 +118,7 @@ public class BasicNodeLink extends JGoLabeledLink {
   /**
    * <code>equals</code>
    *
-   * @param node - <code>Object</code> - 
+   * @param link - <code>BasicNodeLink</code> - 
    * @return - <code>boolean</code> - 
    */
   public boolean equals( BasicNodeLink link) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.13 2003-09-11 23:41:30 miatauro Exp $
+// $Id: PlanWorksTest.java,v 1.14 2003-09-18 20:48:42 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -47,16 +47,16 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNode;
+import gov.nasa.arc.planworks.viz.views.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalNode;
+import gov.nasa.arc.planworks.viz.views.timeline.TimelineNode;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
+import gov.nasa.arc.planworks.viz.views.timeline.SlotNode;
+import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenLink;
 import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
-import gov.nasa.arc.planworks.viz.nodes.ConstraintNode;
-import gov.nasa.arc.planworks.viz.nodes.SlotNode;
-import gov.nasa.arc.planworks.viz.nodes.TemporalNode;
-import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
-import gov.nasa.arc.planworks.viz.nodes.TokenLink;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.nodes.VariableNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.GroupBox;

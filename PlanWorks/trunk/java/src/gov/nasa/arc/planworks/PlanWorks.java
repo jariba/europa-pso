@@ -4,11 +4,10 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.52 2003-09-15 23:47:18 taylor Exp $
+// $Id: PlanWorks.java,v 1.53 2003-09-18 20:48:42 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -18,9 +17,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,14 +39,12 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.util.FileUtils;
-import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.SplashWindow;
-import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.DuplicateNameException;

@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.10 2003-09-16 19:29:13 taylor Exp $
+// $Id: ConstraintNode.java,v 1.1 2003-09-18 20:48:47 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 29july03
 //
 
-package gov.nasa.arc.planworks.viz.nodes;
+package gov.nasa.arc.planworks.viz.views.constraintNetwork;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -38,9 +38,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.views.VizView;
-import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
 
 
 /**
@@ -82,7 +80,7 @@ public class ConstraintNode extends BasicNode {
    * @param constraint - <code>PwConstraint</code> - 
    * @param variableNode - <code>VariableNode</code> - 
    * @param constraintLocation - <code>Point</code> - 
-   * @param backgroundColor- <code>Color</code> - 
+   * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param vizView - <code>VizView</code> - 

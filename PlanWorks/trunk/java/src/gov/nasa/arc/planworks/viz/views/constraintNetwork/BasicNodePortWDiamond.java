@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodePortWDiamond.java,v 1.1 2003-08-06 01:20:13 taylor Exp $
+// $Id: BasicNodePortWDiamond.java,v 1.1 2003-09-18 20:48:47 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 05aug03
 //
 
-package gov.nasa.arc.planworks.viz.nodes;
+package gov.nasa.arc.planworks.viz.views.constraintNetwork;
 
 import java.awt.Point;
 import java.awt.Rectangle;
