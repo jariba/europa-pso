@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.74 2004-01-02 19:05:18 miatauro Exp $
+// $Id: MySQLDB.java,v 1.75 2004-01-02 22:28:32 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -78,7 +78,8 @@ public class MySQLDB {
     dbStartString.append(System.getProperty("mysql.log.err")).append(" --skip-symlink ");
     dbStartString.append("--socket=").append(System.getProperty("mysql.sock"));
     dbStartString.append(" --tmpdir=").append(System.getProperty("mysql.tmpdir"));
-    dbStartString.append(" --key_buffer_size=64M --join_buffer_size=16M --query_cache_size=16M");
+    dbStartString.append(" --key_buffer_size=64M --join_buffer_size=16M --query_cache_size=16M ");
+    dbStartString.append(" -O bulk_insert_buffer_size=16M");
     //System.err.println("Starting db with: " + dbStartString.toString());
     Runtime.getRuntime().exec(dbStartString.toString());
     //    try{Thread.sleep(100000);}catch(Exception e){}
@@ -250,7 +251,16 @@ public class MySQLDB {
    */
 
   synchronized public static void loadFile(String file, String tableName) {
-    updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
+//     try {
+//       Statement stmt = conn.createStatement();
+//       stmt.execute("ALTER TABLE ".concat(tableName).concat(" DISABLE KEYS"));
+      updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
+ //      stmt.execute("ALTER TABLE ".concat(tableName).concat(" ENABLE KEYS"));
+//     }
+//     catch(SQLException sqle) {
+//       System.err.println(sqle);
+//       sqle.printStackTrace();
+//     }
   }
 
   /**
@@ -1377,7 +1387,9 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet ids =
-        queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()).concat(" && (TokenAId=").concat(tId.toString()).concat(" || TokenBId=").concat(tId.toString()).concat(")"));
+        //        queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()).concat(" && (TokenAId=").concat(tId.toString()).concat(" || TokenBId=").concat(tId.toString()).concat(")"));
+        queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()).concat(" && TokenBId=").concat(tId.toString()));
+
       while(ids.next()) {
         retval.add(new Integer(ids.getInt("TokenRelationId")));
       }

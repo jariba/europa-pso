@@ -333,55 +333,59 @@ public class BackendTest extends TestCase {
     assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 0",
                transactions.size() == 0);
     transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(53));
-    assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 1",
-               transactions.size() == 1);
+    assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 0",
+               transactions.size() == 0);
     List steps = MySQLDB.queryStepsWithConstraintTransaction(sequence.getId(), new Integer(53), 
                                                              "CONSTRAINT_CREATED");
-    String check = "106814074228136";
-    assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 1", steps.size() == 1);
-    assertTrue("Incorret step.  Is " + steps.get(0) + " should be " + check, 
-               ((String)steps.get(0)).equals(check));
+    //String check = "106814074228136";
+    assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 0", steps.size() == 0);
+    //assertTrue("Incorret step.  Is " + steps.get(0) + " should be " + check, 
+    //           ((String)steps.get(0)).equals(check));
   }
 
   private void testQueriesForToken() {
     List transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(2));
     assertTrue(transactions.size() == 0);
     transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(21));
-    assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 2", 
-               transactions.size() == 2);
+    assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 0", 
+               transactions.size() == 0);
     List steps = MySQLDB.queryStepsWithTokenTransaction(sequence.getId(), new Integer(21),
                                                         "TOKEN_INSERTED");
     String check = "106814074228134";
-    assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 1", steps.size() == 1);
-    assertTrue("Incorrect step.  Is " + steps.get(0) + " should be " + check, 
-               ((String)steps.get(0)).equals(check));
+    assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 0", steps.size() == 0);
+    //assertTrue("Incorrect step.  Is " + steps.get(0) + " should be " + check, 
+    //           ((String)steps.get(0)).equals(check));
   }
 
   private void testQueriesForVariable() {
     List transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(2));
     assertTrue(transactions.size() == 0);
     transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(50));
-    assertTrue(transactions.size() == 3);
+    assertTrue("Wrong number of transactions.  Is " + transactions.size() + " should be 0", 
+               transactions.size() == 0);
     List steps = MySQLDB.queryStepsWithVariableTransaction(sequence.getId(), new Integer(50),
                                                            "VARIABLE_CREATED");
     String check = "106814074228140";
-    assertTrue(steps.size() == 1);
-    assertTrue(((String)steps.get(0)).equals(check));
+    assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 0", steps.size() == 0);
+    //assertTrue(((String)steps.get(0)).equals(check));
   }
 
   private void testQueriesForRestrictionsAndRelaxations() {
     List steps = MySQLDB.queryStepsWithRestrictions(sequence.getId());
     assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 1264", 
-               steps.size() == 1264);
-    String check = "106814073957715";
-    assertTrue(((String)steps.get(0)).equals(check));
+               steps.size() == 1744);
+    String check = "10730793146288";
+    assertTrue("Wrong step.  Was " + (String) steps.get(0) + " should be " + check,
+               ((String)steps.get(0)).equals(check));
     steps = MySQLDB.queryStepsWithRelaxations(sequence.getId());
     assertTrue(steps.size() == 0);
   }
   private void testQueriesForDecisions() {
     List steps = MySQLDB.queryStepsWithUnitVariableDecisions(sequence);
-    assertTrue(steps.size() == 0);
+    assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 38",
+               steps.size() == 38);
     steps = MySQLDB.queryStepsWithNonUnitVariableDecisions(sequence);
-    assertTrue(steps.size() == 0);
+    assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 0",
+               steps.size() == 0);
   }
 }

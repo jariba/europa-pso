@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.8 2004-01-02 19:05:19 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.9 2004-01-02 22:28:32 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -56,8 +56,8 @@ public class PartialPlanContentSpec implements ContentSpec {
   private static final String PREDICATENAME = "PredicateName";
   private static final String PREDICATENAME_QUERY =
     "SELECT PredicateName, PredicateId FROM Predicate WHERE PartialPlanId=";
-  private static final String TIMELINEID = "Timeline.TimelineId";
-  private static final String TIMELINENAME = "Timeline.TimelineName";
+  private static final String TIMELINEID = "Token.TimelineId";
+  private static final String TIMELINENAME = "Token.TimelineName";
   private static final String TIMELINENAME_QUERY =
     "SELECT DISTINCT Object.ObjectName, Token.TimelineName, Token.TimelineId FROM Object RIGHT JOIN Token ON Token.ObjectId=Object.ObjectId && Token.PartialPlanId=Object.PartialPlanId WHERE Object.PartialPlanId=";
   private static final String TOKENID = "TokenId";
