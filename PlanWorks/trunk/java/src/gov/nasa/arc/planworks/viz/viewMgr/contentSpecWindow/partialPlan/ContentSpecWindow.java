@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.2 2003-10-08 01:30:24 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.3 2003-10-09 17:23:30 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -338,14 +338,11 @@ public class ContentSpecWindow extends JPanel {
     }
     public void actionPerformed(ActionEvent ae) {
       if(ae.getActionCommand().equals("Apply Spec")) {
-        StringBuffer output = new StringBuffer();
-        List /*constraint, */timeInterval, /*variableType, */predicate, timeline, uniqueKeys;
+        List timeInterval, predicate, timeline, uniqueKeys;
         boolean mergeTokens;
         int tokenType;
         try {
-          //constraint = specWindow.constraintGroup.getValues();
           timeInterval = specWindow.timeIntervalGroup.getValues();
-          //variableType = specWindow.variableTypeGroup.getValues();
           predicate = specWindow.predicateGroup.getValues();
           timeline = specWindow.timelineGroup.getValues();
           mergeTokens = specWindow.mergeBox.getValue();
@@ -353,73 +350,7 @@ public class ContentSpecWindow extends JPanel {
           uniqueKeys = specWindow.uniqueKeyGroup.getValues();
         }
         catch(IllegalArgumentException e){return;}
-        //if they're all null, put up a dialog
-        /*output.append("Constraint: ");
-        if(constraint == null) {
-          output.append(" null");
-        }
-        else {
-          ListIterator constraintIterator = constraint.listIterator();
-          while(constraintIterator.hasNext()) {
-            output.append(constraintIterator.next()).append(" ");
-          }
-        }
-        output.append("\n");*/
-        output.append("TimeInterval: ");
-        if(timeInterval == null) {
-          output.append(" null");
-        }
-        else {
-          ListIterator timeIntervalIterator = timeInterval.listIterator();
-          while(timeIntervalIterator.hasNext()) {
-            output.append(timeIntervalIterator.next()).append(" ");
-          }
-        }
-        output.append("\n");
-        /*output.append("VariableType: ");
-        if(variableType == null) {
-            output.append(" null");
-        }
-        else {
-          ListIterator variableTypeIterator = variableType.listIterator();
-          while(variableTypeIterator.hasNext()) {
-            output.append(variableTypeIterator.next()).append(" ");
-          }
-        }
-        output.append("\n");*/
-        output.append("Predicate: ");
-        if(predicate == null) {
-          output.append(" null");
-        }
-        else {
-          ListIterator predicateIterator = predicate.listIterator();
-          while(predicateIterator.hasNext()) {
-            output.append(predicateIterator.next()).append(" ");
-          }
-        }
-        output.append("\n");
-        output.append("Timeline: ");
-        if(timeline == null) {
-          output.append(" null");
-        }
-        else {
-          ListIterator timelineIterator = timeline.listIterator();
-          while(timelineIterator.hasNext()) {
-            output.append(timelineIterator.next()).append(" ");
-          }
-        }
-        output.append("\nmerge ").append(mergeTokens);
-        output.append("\ntype ").append(tokenType);
-        output.append("Unique keys: ");
-        if(uniqueKeys == null) {
-          output.append(" null");
-        }
-        else {
-          output.append(uniqueKeys.toString());
-        }
-        output.append("\n");
-        System.err.println(output.toString());
-        //timeline, predicate, constraint, variableType, timeInterval
+
         System.err.println("Applying Specification...");
         try {
           List specList = new ArrayList();
@@ -429,6 +360,9 @@ public class ContentSpecWindow extends JPanel {
           specList.add( new Boolean( mergeTokens));
           specList.add( new Integer( tokenType));
           specList.add(uniqueKeys);
+          //if(!specWindow.specChanged(specList)) {
+          //  return;
+          //}
           specWindow.contentSpec.applySpec(specList);
         }
         catch(Exception e){
@@ -441,9 +375,7 @@ public class ContentSpecWindow extends JPanel {
       else if(ae.getActionCommand().equals("Reset Spec")) {
         
         try{specWindow.contentSpec.resetSpec();}catch(Exception e){}
-        //specWindow.constraintGroup.reset();
         specWindow.timeIntervalGroup.reset();
-        //specWindow.variableTypeGroup.reset();
         specWindow.predicateGroup.reset();
         specWindow.timelineGroup.reset();
         specWindow.mergeBox.reset();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.4 2003-10-08 01:29:35 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.5 2003-10-09 17:23:00 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -147,9 +147,9 @@ public class PartialPlanContentSpec implements ContentSpec {
    * @param tokenTypes the result of getValue() in TokenTypeBox.
    */
   public void applySpec(List spec) throws NumberFormatException {
-//   public void applySpec(List timeline, List predicate, List timeInterval, boolean mergeTokens,
-//                         int tokenTypes) 
-//     throws NumberFormatException {
+    if(!specChanged(spec)) {
+      return;
+    }
     List timeline = (List) spec.get(0);
     List predicate = (List) spec.get(1);
     List timeInterval = (List) spec.get(2);
@@ -157,12 +157,7 @@ public class PartialPlanContentSpec implements ContentSpec {
     int tokenTypes = ((Integer)spec.get(4)).intValue();
     List uniqueKeys = (List) spec.get(5);
     currentSpec = spec;
-//     currentSpec.clear();
-//     currentSpec.add(timeline);
-//     currentSpec.add(predicate);
-//     currentSpec.add(timeInterval);
-//     currentSpec.add(new Boolean(mergeTokens));
-//     currentSpec.add(new Integer(tokenTypes));
+
     try {
       StringBuffer tokenQuery = new StringBuffer(TOKENID_QUERY);
       tokenQuery.append(partialPlanId.toString()).append(" ");
@@ -377,5 +372,47 @@ public class PartialPlanContentSpec implements ContentSpec {
   
   public List getCurrentSpec() {
     return new ArrayList(currentSpec);
+  }
+
+  private boolean specChanged(List newSpec) {
+    if(currentSpec.size() != newSpec.size()) {
+      return true;
+    }
+    ListIterator newIterator = newSpec.listIterator();
+    ListIterator oldIterator = currentSpec.listIterator();
+    while(newIterator.hasNext()) {
+      Object newObject = newIterator.next();
+      Object oldObject = oldIterator.next();
+      
+      if(newObject instanceof List && oldObject instanceof List) {
+        List newList = (List) newObject;
+        List oldList = (List) oldObject;
+        if(newList == null ^ oldList == null) {
+          return true;
+        }
+        if(newList == null && oldList == null) {
+          continue;
+        }
+        if(newList.size() != oldList.size()) {
+          return true;
+        }
+        ListIterator newSubIterator = newList.listIterator();
+        ListIterator oldSubIterator = oldList.listIterator();
+        while(newSubIterator.hasNext()) {
+          Object newItem = newSubIterator.next();
+          Object oldItem = oldSubIterator.next();
+          if(!newItem.equals(oldItem)) {
+            return true;
+          }
+        }
+      }
+      else if((newObject instanceof Boolean && oldObject instanceof Boolean) ||
+              (newObject instanceof Integer && oldObject instanceof Integer)) {
+        if(!newObject.equals(oldObject)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

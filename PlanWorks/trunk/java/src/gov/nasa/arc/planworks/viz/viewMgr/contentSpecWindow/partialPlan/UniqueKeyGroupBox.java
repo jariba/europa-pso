@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: UniqueKeyGroupBox.java,v 1.1 2003-10-08 01:30:24 miatauro Exp $
+// $Id: UniqueKeyGroupBox.java,v 1.2 2003-10-09 17:23:32 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -18,6 +18,9 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 public class UniqueKeyGroupBox extends GroupBox {
   public UniqueKeyGroupBox(MDIInternalFrame window) {
     super(window);
+    build();
+  }
+  private void build() {
     GridBagLayout gridBag = (GridBagLayout) getLayout();
     GridBagConstraints c = new GridBagConstraints();
     
@@ -28,5 +31,9 @@ public class UniqueKeyGroupBox extends GroupBox {
     UniqueKeyBox box = new UniqueKeyBox();
     gridBag.setConstraints(box, c);
     this.add((ContentSpecElement)box);
+  }
+  public void reset() {
+    super.reset();
+    build();
   }
 }

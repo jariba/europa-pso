@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineGroupBox.java,v 1.1 2003-10-01 23:54:03 taylor Exp $
+// $Id: TimelineGroupBox.java,v 1.2 2003-10-09 17:23:32 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -23,8 +23,13 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
  */
 
 public class TimelineGroupBox extends GroupBox {
+  private Map timelineNames;
   public TimelineGroupBox(MDIInternalFrame window, Map timelineNames) {
     super(window);
+    build(timelineNames);
+  }
+  private void build(Map timelineNames) {
+    this.timelineNames = timelineNames;
     GridBagLayout gridBag = (GridBagLayout) getLayout();
     GridBagConstraints c = new GridBagConstraints();
     
@@ -40,5 +45,9 @@ public class TimelineGroupBox extends GroupBox {
     c.gridy++;
     gridBag.setConstraints(box2, c);
     this.add((ContentSpecElement)box2);
+  }
+  public void reset() {
+    super.reset();
+   build(timelineNames);
   }
 }
