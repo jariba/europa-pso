@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.5 2003-06-26 20:47:26 miatauro Exp $ -->
+<!-- $Id: planWorks.xml,v 1.6 2003-06-30 21:52:46 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 <target name="launch" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
@@ -14,9 +14,7 @@
 		<pathelement location="${planworks.root}/java/lib/JGo/JGoLayout.jar"/>
 		<pathelement location="${planworks.root}/java/lib/JGo/Classier.jar"/>
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
-                <pathelement location="${exist.home}/exist.jar"/>
 		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
-                <fileset dir="${exist.home}/lib/core" includes="*.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -27,14 +25,6 @@
             <jvmarg value="-Xmx${arg_gcMax}m"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
             <jvmarg value="-Duser=${env.USER}"/>
-<!--            <jvmarg value="-Dexist.initdb=true"/>
-            <jvmarg value="-Dexist.home=${exist.home}"/>
-            <jvmarg value="-Dexist.conf.file=${exist.conf.file}"/>
-            <jvmarg value="-Ddefault.project.dir=${default.project.dir}"/>
-            <jvmarg value="-Dprojects.xml.data.dir=${projects.xml.data.dir}"/>
-            <jvmarg value="-Dprojects.xml.data.pathname=${projects.xml.data.pathname}"/>
-            <jvmarg value="-Dxml.dtd.pathname=${xml.dtd.pathname}"/>
--->
 	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
 	    <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
 	    <jvmarg value="-Dmysql.log=${mysql.log}"/>
@@ -61,8 +51,6 @@
 		<pathelement location="${planworks.root}/java/lib/JGo/JGoLayout.jar"/>
 		<pathelement location="${planworks.root}/java/lib/JGo/Classier.jar"/>
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
-                <pathelement location="${exist.home}/exist.jar"/>
-                <fileset dir="${exist.home}/lib/core" includes="*.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -77,12 +65,6 @@ value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.t
 	    <jvmarg value="-Xprof"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
             <jvmarg value="-Duser=${env.USER}"/>
-            <jvmarg value="-Dexist.initdb=true"/>
-            <jvmarg value="-Dexist.home=${exist.home}"/>
-            <jvmarg value="-Dexist.conf.file=${exist.conf.file}"/>
-            <jvmarg value="-Ddefault.project.dir=${default.project.dir}"/>
-            <jvmarg value="-Dprojects.xml.data.dir=${projects.xml.data.dir}"/>
-            <jvmarg value="-Dprojects.xml.data.pathname=${projects.xml.data.pathname}"/>
             <jvmarg value="-Dxml.dtd.pathname=${xml.dtd.pathname}"/>
             <arg value="${name.application}"/>
 	</java>

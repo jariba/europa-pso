@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineViewTest.java,v 1.14 2003-06-19 19:54:09 miatauro Exp $
+// $Id: TimelineViewTest.java,v 1.15 2003-06-30 21:52:47 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.views.test;
 
@@ -28,7 +28,7 @@ import junit.extensions.jfcunit.*;
 // import junit.extensions.jfcunit.eventdata.EventDataConstants;
 // import junit.extensions.jfcunit.eventdata.KeyEventData;
 import junit.extensions.jfcunit.eventdata.MouseEventData;
-import junit.framework.*;
+import junit.framework.*; 
 import junit.textui.TestRunner;
 
 import gov.nasa.arc.planworks.PlanWorks;
@@ -41,7 +41,6 @@ import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
-//<<<<<<< TimelineViewTest.java
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.GroupBox;
@@ -50,8 +49,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.LogicComboBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.NegationCheckBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineGroupBox;
-//=======
-//>>>>>>> 1.13
+
 
 /**
  * <code>TimelineViewTest</code> - JFCUnit test case for timeline view, along with
@@ -183,9 +181,10 @@ public class TimelineViewTest extends JFCTestCase{
     // System.err.println( "\n\nGot to here 1\n\n");
     JMenu sequenceMenu = null;
     JMenu partialPlanSubMenu = null;
-    JMenuItem timelineViewItem = null;
+    PlanWorks.SeqPartPlanViewMenuItem timelineViewItem = null;
     String sequenceName = null;
     String partialPlanName = null;
+    String seqUrl = null;
     found: for (int i = 0; i < partialPlanMenu.getItemCount(); i++) {
       if (partialPlanMenu.getItem(i).getText().equals("monkey")) {
         sequenceMenu = (JMenu) partialPlanMenu.getItem(i);
@@ -202,7 +201,8 @@ public class TimelineViewTest extends JFCTestCase{
             partialPlanName = sequenceMenu.getItem(j).getText();
             for (int k = 0; k < partialPlanSubMenu.getItemCount(); k++) {
               if (partialPlanSubMenu.getItem(k).getText().equals("Timeline")) {
-                timelineViewItem = partialPlanSubMenu.getItem(k);
+                timelineViewItem =
+                  (PlanWorks.SeqPartPlanViewMenuItem) partialPlanSubMenu.getItem(k);
                 assertNotNull( "Failed to get view \"Timeline\"", sequenceMenu);
                 helper.enterClickAndLeave(new MouseEventData(this, timelineViewItem));
                 break found;
@@ -217,7 +217,7 @@ public class TimelineViewTest extends JFCTestCase{
                timelineViewItem.getText().equals("Timeline"));
     // System.err.println( "\n\nGot to here 2\n\n");
     // helper.mousePressed(timelineViewItem, EventDataConstants.DEFAULT_MOUSE_MODIFIERS, 1, false);
-    return new String [] { sequenceName, partialPlanName };
+    return new String [] { sequenceName, partialPlanName , timelineViewItem.getSeqUrl()};
   } // end selectTimelineView
 
 
@@ -296,9 +296,7 @@ public class TimelineViewTest extends JFCTestCase{
   private TimelineView getTimelineView( String [] seqAndPlanNames) throws Exception {
     String sequenceName = seqAndPlanNames[0];
     String partialPlanName = seqAndPlanNames[1];
-    String projectUrl = planWorks.getCurrentProjectUrl();
-    String sequenceUrl = projectUrl + System.getProperty( "file.separator") +
-      sequenceName;
+    String sequenceUrl = seqAndPlanNames[2];
     PwPlanningSequence planSequence =
       planWorks.getCurrentProject().getPlanningSequence( sequenceUrl);
     PwPartialPlan partialPlan = null;

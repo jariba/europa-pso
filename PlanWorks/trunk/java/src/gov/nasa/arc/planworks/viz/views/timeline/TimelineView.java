@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.11 2003-06-25 17:42:55 taylor Exp $
+// $Id: TimelineView.java,v 1.12 2003-06-30 21:52:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -95,7 +95,7 @@ public class TimelineView extends VizView {
     this.setVisible( true);
 
     // print content spec
-    // viewSet.printSpec();
+    viewSet.printSpec();
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
