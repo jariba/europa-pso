@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.66 2003-11-13 23:30:45 miatauro Exp $
+// $Id: MySQLDB.java,v 1.67 2003-11-18 22:15:34 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -399,9 +399,6 @@ public class MySQLDB {
    */
 
   synchronized public static Long addSequence(String url, Integer projectId) {
-    //String sequenceId = url.substring(url.length()-13);
-    //updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId, SequenceId) VALUES ('".concat(url).concat("', ").concat(projectId.toString()).concat(", ").concat(sequenceId).concat(")"));
-    //updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId)
     loadFile(url + System.getProperty("file.separator") + "sequence", "Sequence");
     Long latestSequenceId = latestSequenceId();
     updateDatabase("UPDATE Sequence SET ProjectId=".concat(projectId.toString()).concat(" WHERE SequenceId=").concat(latestSequenceId.toString()));
@@ -647,10 +644,16 @@ public class MySQLDB {
         Blob blob = transactions.getBlob("TransactionInfo");
         String infoStr = new String(blob.getBytes(1, (int) blob.length()));
         StringTokenizer strTok = new StringTokenizer(infoStr, ",");
-        int index = 0;
-        while(strTok.hasMoreTokens()) {
-          info[index] = strTok.nextToken();
-          index++;
+        for(int i = 0; i < 3; i++) {
+          if(strTok.hasMoreTokens()) {
+            info[i] = strTok.nextToken();
+          }
+          else {
+            break;
+          }
+          if(i == 2 && !info[0].equals("PARAMETER_VAR")) {
+            info[2] = "";
+          }
         }
         transaction.setInfo(info);
         retval.put(partialPlanId.toString() + transactionId.toString(), transaction);
@@ -1070,10 +1073,16 @@ public class MySQLDB {
       while(transactedSteps.next()) {
 	int stepNum = transactedSteps.getInt("StepNumber");
         int varId = transactedSteps.getInt("ObjectId");
-          if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
-             varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
-	    retval.add(Long.toString(transactedSteps.getLong("PartialPlanId")).concat(Integer.toString(transactedSteps.getInt("TransactionId"))));
-	  }
+        ResultSet previousSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && ObjectId=").concat(Integer.toString(varId)).concat(" && StepNumber < ").concat(Integer.toString(stepNum)).concat(" ORDER BY StepNumber"));
+        previousSteps.last();
+        int lastStepNum = previousSteps.getInt("StepNumber");
+        if(previousSteps.wasNull()) {
+          continue;
+        }
+        if(varSpecDomainIsSingleton(transactedSteps.getBlob("TransactionInfo")) &&
+           varDerivedDomainIsSingleton(previousSteps.getBlob("TransactionInfo"))) {
+          retval.add(Long.toString(transactedSteps.getLong("PartialPlanId")).concat(Integer.toString(transactedSteps.getInt("TransactionId"))));
+        }
       }
     }
     catch(SQLException sqle) {
@@ -1087,10 +1096,8 @@ public class MySQLDB {
       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
       while(transactedSteps.next()) {
 	int stepNum = transactedSteps.getInt("StepNumber");
-
         int varId = transactedSteps.getInt("ObjectId");
-        if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
-           !varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
+        if(!varDerivedDomainIsSingleton(transactedSteps.getBlob("TransactionInfo"))) {
           retval.add(Long.toString(transactedSteps.getLong("PartialPlanId")).concat(Integer.toString(transactedSteps.getInt("TransactionId"))));
         }
       }
@@ -1100,68 +1107,46 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized private static boolean varDomainIsSingleton(Long seqId, int stepNum, int varId) {
-    boolean retval = false;
+  synchronized private static boolean varDerivedDomainIsSingleton(Blob info) {
+    String temp;
     try {
-      if(stepNum < 0) {
-        return false;
-      }
-      long ppId = 
-        queryPartialPlanId(seqId, "step".concat(Integer.toString(stepNum))).longValue();
-      ResultSet varInfo = queryDatabase("SELECT DomainId, DomainType FROM Variable WHERE PartialPlanId=" + ppId + " && VariableId=" + varId);
-      varInfo.last();
-      int domainId = varInfo.getInt("DomainId");
-      String domainType = varInfo.getString("DomainType");
-      if(domainType == null) {
-        return false;
-      }
-      if(domainType.equals("EnumeratedDomain")) {
-        ResultSet domainInfo = queryDatabase("SELECT Domain FROM EnumeratedDomain WHERE PartialPlanId=" + ppId + " && EnumeratedDomainId=" + domainId);
-        domainInfo.last();
-        Blob blob = domainInfo.getBlob("Domain");
-        String domain = new String(blob.getBytes(1, (int) blob.length()));
-        StringTokenizer strTok = new StringTokenizer(domain);
-        if(strTok.countTokens() == 1) {
-          return true;
-        }
-      }
-      else if(domainType.equals("IntervalDomain")) {
-        ResultSet domainInfo = queryDatabase("SELECT IntervalDomainType, LowerBound, UpperBound FROM IntervalDomain WHERE PartialPlanId=" + ppId + " && IntervalDomainId=" + domainId);
-        domainInfo.last();
-        String lb = domainInfo.getString("LowerBound");
-        String ub = domainInfo.getString("UpperBound");
-        if(domainInfo.getString("IntervalDomainType").equals("INTEGER_SORT")) {
-          int lowerBound, upperBound;
-          if(lb.equals(DbConstants.PLUS_INFINITY)) {
-            lowerBound = DbConstants.PLUS_INFINITY_INT;
-          }
-          else if(lb.equals(DbConstants.MINUS_INFINITY)) {
-            lowerBound = DbConstants.MINUS_INFINITY_INT;
-          }
-          else {
-            lowerBound = Integer.parseInt(lb);
-          }
-          if(ub.equals(DbConstants.PLUS_INFINITY)) {
-            upperBound = DbConstants.PLUS_INFINITY_INT;
-          }
-          else if(ub.equals(DbConstants.MINUS_INFINITY)) {
-            upperBound = DbConstants.MINUS_INFINITY_INT;
-          }
-          else {
-            upperBound = Integer.parseInt(ub);
-          }
-          return lowerBound == upperBound;
-        }
-        else {
-          double lowerBound = Double.parseDouble(lb);
-          double upperBound = Double.parseDouble(ub);
-          return lowerBound == upperBound;
-        }
-      }
+      temp = new String(info.getBytes(1, (int) info.length()));
     }
-    catch(SQLException sqle) {
+    catch(SQLException sqle) {return false;}
+    StringTokenizer strTok = new StringTokenizer(temp, ",");
+    while(strTok.countTokens() != 4) {
+      strTok.nextToken();
     }
-    return retval;
+    String type = strTok.nextToken();
+    String domain = strTok.nextToken();
+    return varDomainIsSingleton(type, domain);
+  }
+
+  synchronized private static boolean varSpecDomainIsSingleton(Blob info) {
+    String temp;
+    try {
+      temp = new String(info.getBytes(1, (int) info.length()));
+    }
+    catch(SQLException sqle) {return false;}
+    StringTokenizer strTok = new StringTokenizer(temp, ",");
+    while(strTok.countTokens() != 2) {
+      strTok.nextToken();
+    }
+    String type = strTok.nextToken();
+    String domain = strTok.nextToken();
+    return varDomainIsSingleton(type, domain);
+  }
+
+  synchronized private static boolean varDomainIsSingleton(String type, String domain) {
+    StringTokenizer strTok = new StringTokenizer(domain);
+    if(type.equals("E")) {
+      return strTok.countTokens() == 1;
+    }
+    else if(type.equals("I")) {
+      return strTok.countTokens() == 2 && 
+        strTok.nextToken().trim().equals(strTok.nextToken().trim());
+    }
+    return false;
   }
 
   synchronized public static List queryPartialPlanSizes(Long sequenceId) {

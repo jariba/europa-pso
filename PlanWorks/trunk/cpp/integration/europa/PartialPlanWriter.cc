@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.15 2003-11-13 22:03:33 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.16 2003-11-18 22:14:43 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -50,6 +50,51 @@ enum transactionTypes {TOKEN_CREATED = 0, TOKEN_DELETED, TOKEN_INSERTED, TOKEN_F
 
 const char *sourceTypeNames[3] = {"SYSTEM", "USER", "UNKNOWN"};
 
+const String CONSTRAINT_TOKEN("constraintToken");
+const String COMMA(",");
+const String SLASH("/");
+const String SPACE(" ");
+const String PARAMETER_VAR("PARAMETER_VAR");
+const String DURATION_VAR("DURATION_VAR");
+const String END_VAR("END_VAR");
+const String START_VAR("START_VAR");
+const String REJECT_VAR("REJECT_VAR");
+const String OBJECT_VAR("OBJECT_VAR");
+const String TEMPORAL("TEMPORAL");
+const String ATEMPORAL("ATEMPORAL");
+const String VAR_TEMP_CONSTR("variableTempConstr");
+const String UNARY_TEMP_CONSTR("unaryTempConstr");
+const String FIXED_TEMP_CONSTR("fixedTempConstr");
+const String UNARY_CONSTR("unaryConstr");
+const String EQ_CONSTR("equalityConstr");
+const String BUG_CONSTR("bugConstr");
+const String STRUE("true");
+const String SFALSE("false");
+const String PINFINITY("Infinity");
+const String NINFINITY("-Infinity");
+const String INTEGER_SORT("INTEGER_SORT");
+const String REAL_SORT("REAL_SORT");
+const String STEP("step");
+const String PARTIAL_PLAN_STATS("/partialPlanStats");
+const String TRANSACTIONS("/transactions");
+const String SEQUENCE("/sequence");
+const String PARTIAL_PLAN(".partialPlan");
+const String OBJECTS(".objects");
+const String TIMELINES(".timelines");
+const String SLOTS(".slots");
+const String TOKENS(".tokens");
+const String PARAM_VAR_TOKEN_MAP(".paramVarTokenMap");
+const String TOKEN_RELATIONS(".tokenRelations");
+const String VARIABLES(".variables");
+const String ENUMERATED_DOMAINS(".enumeratedDomains");
+const String INTERVAL_DOMAINS(".intervalDomains");
+const String CONSTRAINTS(".constraints");
+const String CONSTRAINT_VAR_MAP(".constraintVarMap");
+const String PREDICATES(".predicates");
+const String PARAMETERS(".parameters");
+const String E_DOMAIN("E");
+const String I_DOMAIN("I");
+
 enum sourceTypes {SYSTEM = 0, USER, UNKNOWN};
 
 #define FatalError(s) handleError(generalUnknownError, (s), fatalError,);
@@ -90,7 +135,7 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
   delete [] destBuf;
 
   if(dest.getChar(dest.getLength()) != '/') {
-    dest += String("/");
+    dest += SLASH;
   }
 
   FILE *sequenceOut;
@@ -121,9 +166,9 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
     cerr << "Failed to make directory " << dest << endl;
     FatalError(strerror(errno));
   }
-  String ppStats = dest + String("/partialPlanStats");
-  String ppTransactions = dest + String("/transactions");
-  String sequenceStr = dest + String("/sequence");
+  String ppStats = dest + PARTIAL_PLAN_STATS;
+  String ppTransactions = dest + TRANSACTIONS;
+  String sequenceStr = dest + SEQUENCE;
   if(!(sequenceOut = fopen(sequenceStr.chars(), "w"))) {
     cerr << "Failed to open " << sequenceStr << endl;
     FatalError(strerror(errno));
@@ -159,13 +204,13 @@ void PartialPlanWriter::write(void) {
   }
   partialPlanId = (((long long int)currTime.tv_sec) * 1000) + (currTime.tv_usec / 1000);
 
-  String stepnum = String("step") + String(nstep);
+  String stepnum = STEP + String(nstep);
 
-  String partialPlanDest = dest + String("/") + stepnum;
+  String partialPlanDest = dest + SLASH + stepnum;
   if(mkdir(partialPlanDest.chars(), 0777) && errno != EEXIST) {
     FatalError(strerror(errno));
   }
-  String ppPartialPlan = partialPlanDest + String("/") + stepnum + String(".partialPlan");
+  String ppPartialPlan = partialPlanDest + SLASH + stepnum + PARTIAL_PLAN;
   if(!(partialPlanOut = fopen(ppPartialPlan.chars(), "w"))) {
     FatalError(strerror(errno));
   }
@@ -173,55 +218,55 @@ void PartialPlanWriter::write(void) {
           tnet->getModelId().getModelName().chars(), sequenceId);
   fclose(partialPlanOut);
 
-  String ppObject = partialPlanDest + String("/") + stepnum + String(".objects");
+  String ppObject = partialPlanDest + SLASH + stepnum + OBJECTS;
   if(!(objectOut = fopen(ppObject.chars(), "w"))) {
    FatalError(strerror(errno));
   }
-  String ppTimeline = partialPlanDest + String("/") + stepnum + String(".timelines");
+  String ppTimeline = partialPlanDest + SLASH + stepnum + TIMELINES;
   if(!(timelineOut = fopen(ppTimeline.chars(), "w"))) {
    FatalError(strerror(errno));
   }
-  String ppSlot = partialPlanDest + String("/") + stepnum + String(".slots");
+  String ppSlot = partialPlanDest + SLASH + stepnum + SLOTS;
   if(!(slotOut = fopen(ppSlot.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppToken = partialPlanDest + String("/") + stepnum + String(".tokens");
+  String ppToken = partialPlanDest + SLASH + stepnum + TOKENS;
   if(!(tokenOut = fopen(ppToken.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppPVTM = partialPlanDest + String("/") + stepnum + String(".paramVarTokenMap");
+  String ppPVTM = partialPlanDest + SLASH + stepnum + PARAM_VAR_TOKEN_MAP;
   if(!(paramVarTokenMapOut = fopen(ppPVTM.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppTokenRelation = partialPlanDest + String("/") + stepnum + String(".tokenRelations");
+  String ppTokenRelation = partialPlanDest + SLASH + stepnum + TOKEN_RELATIONS;
   if(!(tokenRelationOut = fopen(ppTokenRelation.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppVariables = partialPlanDest + String("/") + stepnum + String(".variables");
+  String ppVariables = partialPlanDest + SLASH + stepnum + VARIABLES;
   if(!(variableOut = fopen(ppVariables.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppEnumDomain = partialPlanDest + String("/") + stepnum + String(".enumeratedDomains");
+  String ppEnumDomain = partialPlanDest + SLASH + stepnum + ENUMERATED_DOMAINS;
   if(!(enumDomainOut = fopen(ppEnumDomain.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppIntDomain = partialPlanDest + String("/") + stepnum + String(".intervalDomains");
+  String ppIntDomain = partialPlanDest + SLASH + stepnum + INTERVAL_DOMAINS;
   if(!(intDomainOut = fopen(ppIntDomain.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppConstraints = partialPlanDest + String("/") + stepnum + String(".constraints");
+  String ppConstraints = partialPlanDest + SLASH + stepnum + CONSTRAINTS;
   if(!(constraintOut = fopen(ppConstraints.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppCVM = partialPlanDest + String("/") + stepnum + String(".constraintVarMap");
+  String ppCVM = partialPlanDest + SLASH + stepnum + CONSTRAINT_VAR_MAP;
   if(!(constraintVarMapOut = fopen(ppCVM.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppPredicates = partialPlanDest + String("/") + stepnum + String(".predicates");
+  String ppPredicates = partialPlanDest + SLASH + stepnum + PREDICATES;
   if(!(predOut = fopen(ppPredicates.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppParameters = partialPlanDest + String("/") + stepnum + String(".parameters");
+  String ppParameters = partialPlanDest + SLASH + stepnum + PARAMETERS;
   if(!(paramOut = fopen(ppParameters.chars(), "w"))) {
     FatalError(strerror(errno));
   }
@@ -431,175 +476,126 @@ void PartialPlanWriter::outputVariable(const VarId &variable, const char *type,
   numVariables++;
   Domain domain = tnet->getVariableDomain(variable);
   fprintf(variableOut, "%d\t%lld\t%d\t", variable->getKey(), partialPlanId, tokenId->getKey());
-  if(domain.isDynamic()) {
-    //should this be otherwise?
+  if(domain.isDynamic() || domain.isEnumerated()) {
     fprintf(variableOut, "EnumeratedDomain\t%d\t%s\n", enumeratedDomainId, type);
-    Set<Value> enumeration = domain.getSort().getCurrentMembers();
-    SetIterator<Value> enumIterator = SetIterator<Value>(enumeration);
-    String enumStr = String("");
-    while(!enumIterator.isDone()) {
-      Value value = enumIterator.item();
-      if(value.isObject()) {
-        enumStr += String(value.getObjectValue()->getKey());
-      }
-      else if(value.isLabel()) {
-        enumStr += domain.getSort().getMemberName(value);
-      }
-      else if(value.isBool()) {
-        if(value.getBoolValue()) {
-          enumStr += String("true");
-        }
-        else {
-          enumStr += String("false");
-        }
-      }
-      else if(value.isReal()) {
-        enumStr += String(value.getRealValue());
-      }
-      else if(value.isInt()) {
-        enumStr += String(value.getIntValue());
-      }
-      enumStr += " ";
-      enumIterator.step();
-    }
-    fprintf(enumeratedDomainOut, "%d\t%lld\t%s\n", enumeratedDomainId, partialPlanId,
-            enumStr.chars());
-    enumeratedDomainId++;
-  }
-  else if(domain.isEnumerated()) {
-    fprintf(variableOut, "EnumeratedDomain\t%d\t%s\n", enumeratedDomainId, type);
-    Set<Value> enumeration = domain.getMembers();
-    SetIterator<Value> enumIterator = SetIterator<Value>(enumeration);
-    String enumStr = String("");
-    while(!enumIterator.isDone()) {
-      Value value = enumIterator.item();
-      if(value.isObject()) {
-        enumStr += String(value.getObjectValue()->getKey());
-      }
-      else if(value.isLabel()) {
-        enumStr += domain.getSort().getMemberName(value);
-      }
-      else if(value.isBool()) {
-        if(value.getBoolValue()) {
-          enumStr += String("true");
-        }
-        else {
-          enumStr += String("false");
-        }
-      }
-      else if(value.isReal()) {
-        enumStr += String(value.getRealValue());
-      }
-      else if(value.isInt()) {
-        enumStr += String(value.getIntValue());
-      }
-      enumStr += " ";
-      enumIterator.step();
-    }
-    fprintf(enumeratedDomainOut, "%d\t%lld\t%s\n", enumeratedDomainId, partialPlanId,
-            enumStr.chars());
-    enumeratedDomainId++;
+    outputEnumDomain(domain, partialPlanId, enumeratedDomainOut);
   }
   else if (domain.isInterval()) {
     fprintf(variableOut, "IntervalDomain\t%d\t%s\n", intervalDomainId, type);
-    Value upperBound = domain.getUpperBound();
-    Value lowerBound = domain.getLowerBound();
-    String upperBoundStr = String("");
-    String lowerBoundStr = String("");
-    
-    if(upperBound.isObject()) {
-      upperBoundStr += String(upperBound.getObjectValue()->getKey());
-    }
-    else if(upperBound.isLabel()) {
-      upperBoundStr += domain.getSort().getMemberName(upperBound);
-    }
-    else if(upperBound.isBool()) {
-      if(upperBound.getBoolValue()) {
-        upperBoundStr += String("true");
-      }
-      else {
-        upperBoundStr += String("false");
-      }
-    }
-    else if(upperBound.isReal()) {
-      if(upperBound.isInfinite()) {
-        if(upperBound < rzero) {
-          upperBoundStr += String("-Infinity");
-        }
-        else {
-          upperBoundStr += String("Infinity");
-        }
-      }
-      else {
-        upperBoundStr += String(upperBound.getRealValue());
-      }
-    }
-    else if(upperBound.isInt()) {
-      if(upperBound.isInfinite()) {
-        if(upperBound < izero) {
-          upperBoundStr += String("-Infinity");
-        }
-        else {
-          upperBoundStr += String("Infinity");
-        }
-      }
-      else {
-        String ubs = String(upperBound.getIntValue());
-        upperBoundStr += ubs;
-      }
-    }
-    if(lowerBound.isObject()) {
-      lowerBoundStr += String(lowerBound.getObjectValue()->getKey());
-    }
-    else if(lowerBound.isLabel()) {
-      lowerBoundStr += domain.getSort().getMemberName(lowerBound);
-    }
-    else if(lowerBound.isBool()) {
-      if(lowerBound.getBoolValue()) {
-        lowerBoundStr += String("true");
-      }
-      else {
-        lowerBoundStr += String("false");
-      }
-    }
-    else if(lowerBound.isReal()) {
-      if(lowerBound.isInfinite()) {
-        if(lowerBound < rzero) {
-          lowerBoundStr += String("-Infinity");
-        }
-        else {
-          lowerBoundStr += String("Infinity");
-        }
-      }
-      else {
-        lowerBoundStr += String(lowerBound.getRealValue());
-      }
-    }
-    else if(lowerBound.isInt()) {
-      if(lowerBound.isInfinite()) {
-        if(lowerBound < izero) {
-          lowerBoundStr += String("-Infinity");
-        }
-        else {
-          lowerBoundStr += String("Infinity");
-        }
-      }
-      else {
-        lowerBoundStr += String(lowerBound.getIntValue());
-      }
-    }
-    SortId sortId = domain.getSort();
-    String sort;
-    if(sortId.isInt()) {
-      sort = String("INTEGER_SORT");
-    }
-    else if(sortId.isReal()) {
-      sort = String("REAL_SORT");
-    }
-    fprintf(intervalDomainOut, "%d\t%lld\t%s\t%s\t%s\n", intervalDomainId, partialPlanId,
-            lowerBoundStr.chars(), upperBoundStr.chars(), sort.chars());
-    intervalDomainId++;
+    outputIntervalDomain(domain, partialPlanId, intervalDomainOut);
   }
+}
+
+void PartialPlanWriter::outputIntervalDomain(const Domain &domain, 
+                                             const long long int partialPlanId, 
+                                             FILE *intervalDomainOut) {
+  String upperBoundStr = getBoundString(domain, ((Domain &)domain).getUpperBound());
+  String lowerBoundStr = getBoundString(domain, ((Domain &)domain).getLowerBound());
+
+  SortId sortId = domain.getSort();
+  String sort;
+  if(sortId.isInt()) {
+    sort = INTEGER_SORT;
+  }
+  else if(sortId.isReal()) {
+    sort = REAL_SORT;
+  }
+  fprintf(intervalDomainOut, "%d\t%lld\t%s\t%s\t%s\n", intervalDomainId, partialPlanId,
+          lowerBoundStr.chars(), upperBoundStr.chars(), sort.chars());
+  intervalDomainId++;
+}
+
+String PartialPlanWriter::getBoundString(const Domain &domain, const Value &bound) {
+  String retval("");
+  if(bound.isObject()) {
+    retval += String(bound.getObjectValue()->getKey());
+  }
+  else if(bound.isLabel()) {
+    retval += domain.getSort().getMemberName(bound);
+  }
+  else if(bound.isBool()) {
+    if(bound.getBoolValue()) {
+      retval += STRUE;
+    }
+    else {
+      retval += SFALSE;
+    }
+  }
+  else if(bound.isReal()) {
+    if(bound.isInfinite()) {
+      if(bound < rzero) {
+        retval += NINFINITY;
+      }
+      else {
+        retval += PINFINITY;
+      }
+    }
+    else {
+      retval += String(bound.getRealValue());
+    }
+  }
+  else if(bound.isInt()) {
+    if(bound.isInfinite()) {
+      if(bound < izero) {
+        retval += NINFINITY;
+      }
+      else {
+        retval += PINFINITY;
+      }
+    }
+    else {
+      String ubs = String(bound.getIntValue());
+      retval += ubs;
+    }
+  }
+  return retval;
+}
+
+void PartialPlanWriter::outputEnumDomain(const Domain &domain, const long long int partialPlanId,
+                                         FILE *enumeratedDomainOut) {
+  String enumStr = getEnumString(domain);
+  fprintf(enumeratedDomainOut, "%d\t%lld\t%s\n", enumeratedDomainId, partialPlanId,
+          enumStr.chars());
+  enumeratedDomainId++;
+}
+
+
+String PartialPlanWriter::getEnumString(const Domain &domain) {
+  Set<Value> enumeration;
+  if(((Domain &)domain).isDynamic()) {
+    enumeration = ((Domain &)domain).getSort().getCurrentMembers();
+  }
+  else if(((Domain &)domain).isEnumerated()) {
+    enumeration = ((Domain &)domain).getMembers();
+  }
+  SetIterator<Value> enumIterator = SetIterator<Value>(enumeration);
+  String retval("");
+  while(!enumIterator.isDone()) {
+    Value value = enumIterator.item();
+    if(value.isObject()) {
+      retval += String(value.getObjectValue()->getKey());
+    }
+    else if(value.isLabel()) {
+      retval += domain.getSort().getMemberName(value);
+    }
+    else if(value.isBool()) {
+      if(value.getBoolValue()) {
+        retval += STRUE;
+      }
+      else {
+        retval += SFALSE;
+      }
+    }
+    else if(value.isReal()) {
+      retval += String(value.getRealValue());
+    }
+    else if(value.isInt()) {
+      retval += String(value.getIntValue());
+    }
+    retval += SPACE;
+    enumIterator.step();
+  }
+  return retval;
 }
 
 void PartialPlanWriter::outputConstraint(const ConstraintId &constraintId, 
@@ -622,28 +618,28 @@ void PartialPlanWriter::outputConstraint(const ConstraintId &constraintId,
 const String PartialPlanWriter::getNameForConstraint(const ConstraintId &constraintId) {
   String retval("");
   if(tnet->isTemporalVariableConstraint(constraintId)) {
-    retval = String("variableTempConstr");
+    retval = VAR_TEMP_CONSTR;
   }
   else if(tnet->isTemporalBoundConstraint(constraintId)) {
-    retval = String("unaryTempConstr");
+    retval = UNARY_TEMP_CONSTR;
   }
   else if(tnet->isTemporalRelationConstraint(constraintId)) {
-    retval = String("fixedTempConstr");
+    retval = FIXED_TEMP_CONSTR;
   }
   else if(tnet->isArgumentBoundConstraint(constraintId)) {
-    retval = String("unaryConstr");
+    retval = UNARY_CONSTR;
   }
   else if(tnet->isArgumentEqualsConstraint(constraintId)) {
-    retval = String("equlityConstr");
+    retval = EQ_CONSTR;
   }
   else if(tnet->isExpertConstraint(constraintId)) {
     retval = tnet->getExpertConstraintName(constraintId);
   }
   else {
-    retval = String("bugConstr");
+    retval = BUG_CONSTR;
   }
   if(retval.chars() == NULL) {
-    retval = String("bugConstr");
+    retval = BUG_CONSTR;
   }
   return retval;
 }
@@ -653,25 +649,29 @@ const String PartialPlanWriter::getTemporalityForConstraint(const ConstraintId &
   if(tnet->isTemporalVariableConstraint(constraintId) || 
      tnet->isTemporalBoundConstraint(constraintId) || 
      tnet->isTemporalRelationConstraint(constraintId) ) {
-    retval = String("TEMPORAL");
+    retval = TEMPORAL;
   }
   else {
-    retval = String("ATEMPORAL");
+    retval = ATEMPORAL;
   }
   return retval;
 }
 
 void PartialPlanWriter::notifyOfNewToken(TokenId tokenId) {
   if(stepsPerWrite) {
-    String info = modelId.getPredicateName(tokenId->getPredicate());
-    transactionList->append(Transaction(TOKEN_CREATED, tokenId->getKey(), UNKNOWN, transactionId++,
-                                        sequenceId, nstep, info));
+    String info;
+    info = (tokenId->getTokenClass() == valueTokenClass ? tokenId->getPredicate()->getName() :
+            CONSTRAINT_TOKEN);
+    transactionList->append(Transaction(TOKEN_CREATED, tokenId->getKey(), UNKNOWN, 
+                                        transactionId++, sequenceId, nstep, info));
     numTransactions++;
   }
 }
 void PartialPlanWriter::notifyTokenIsInserted(TokenId tokenId) { //signals plan step
   if(stepsPerWrite) {
-    String info = modelId.getPredicateName(tokenId->getPredicate());
+    String info;
+    info = (tokenId->getTokenClass() == valueTokenClass ? tokenId->getPredicate()->getName() :
+            CONSTRAINT_TOKEN);
     transactionList->append(Transaction(TOKEN_INSERTED, tokenId->getKey(), UNKNOWN, transactionId++,
                                         sequenceId, nstep, info));
     numTransactions++;
@@ -679,7 +679,9 @@ void PartialPlanWriter::notifyTokenIsInserted(TokenId tokenId) { //signals plan 
 }
 void PartialPlanWriter::notifyTokenIsNotInserted(TokenId tokenId) {
   if(stepsPerWrite) {
-    String info = modelId.getPredicateName(tokenId->getPredicate());
+    String info;
+    info = (tokenId->getTokenClass() == valueTokenClass ? tokenId->getPredicate()->getName() :
+            CONSTRAINT_TOKEN);
     transactionList->append(Transaction(TOKEN_FREED, tokenId->getKey(), UNKNOWN, transactionId++,
                                         sequenceId, nstep, info));
     numTransactions++;
@@ -690,7 +692,9 @@ void PartialPlanWriter::notifyAfterTokenIsNotInserted(TokenId tokenId) {
 
 void PartialPlanWriter::notifyOfDeletedToken(TokenId tokenId) {
   if(stepsPerWrite) {
-    String info = modelId.getPredicateName(tokenId->getPredicate());
+    String info;
+    info = (tokenId->getTokenClass() == valueTokenClass ? tokenId->getPredicate()->getName() :
+            CONSTRAINT_TOKEN);
     transactionList->append(Transaction(TOKEN_DELETED, tokenId->getKey(), UNKNOWN, transactionId++,
                                         sequenceId, nstep, info));
     numTransactions++;
@@ -805,7 +809,6 @@ void PartialPlanWriter::notifyFlushed(void) {
 }
 
 String PartialPlanWriter::getVarInfo(const VarId &varId) {
-  static int count = 0;
   TokenId parentToken = varId->getParentToken();
   String type("");
   String paramName("");
@@ -817,23 +820,23 @@ String PartialPlanWriter::getVarInfo(const VarId &varId) {
 
   switch(varId->getType()) {
   case Variable::objectVariable:
-    type = String("OBJECT_VAR");
+    type = OBJECT_VAR;
     break;
   case Variable::rejectVariable:
-    type = String("REJECT_VAR");
+    type = REJECT_VAR;
     break;
   case Variable::startVariable:
-    type = String("START_VAR");
+    type = START_VAR;
     break;
   case Variable::endVariable:
-    type = String("END_VAR");
+    type = END_VAR;
     break;
   case Variable::durationVariable:
-    type = String("DURATION_VAR");
+    type = DURATION_VAR;
     break;
   case Variable::compatGuardVariable:
   case Variable::parameterVariable:
-    type = String("PARAMETER_VAR");
+    type = PARAMETER_VAR;
     params = modelId.getPredicateArgumentNames(parentToken->getPredicate());
     paramVarList = parentToken->getParameterVariables();
     paramVarIterator = ListIterator<VarId>(paramVarList);
@@ -852,16 +855,37 @@ String PartialPlanWriter::getVarInfo(const VarId &varId) {
     break;
   }
 
-  String retval = type + String(",");
+  String retval = type + COMMA;
   if(parentToken->getTokenClass() == valueTokenClass) {
     //retval += modelId.getPredicateName(parentToken->getPredicate());
     retval += parentToken->getPredicate().getName();
   }
   else {
-    retval += String("notValueToken");
+    retval += CONSTRAINT_TOKEN;
     }
-  retval += String(",") + paramName;
-  count++;
+  retval += COMMA + paramName + COMMA;
+  
+  Domain derivedDomain = varId->getDerivedDomain();
+  Domain specifiedDomain = varId->getSpecifiedDomain();
+
+  if(derivedDomain.isDynamic() || derivedDomain.isEnumerated()) {
+    retval += E_DOMAIN + COMMA;
+    retval += getEnumString(derivedDomain) + COMMA;
+  }
+  else if(derivedDomain.isInterval()) {
+    retval += I_DOMAIN + COMMA;
+    retval += getBoundString(derivedDomain, derivedDomain.getLowerBound()) + SPACE;
+    retval += getBoundString(derivedDomain, derivedDomain.getUpperBound()) + COMMA;
+  }
+  if(specifiedDomain.isDynamic() || specifiedDomain.isEnumerated()) {
+    retval += E_DOMAIN + COMMA;
+    retval += getEnumString(specifiedDomain);
+  }
+  else if(specifiedDomain.isInterval()) {
+    retval += I_DOMAIN + COMMA;
+    retval += getBoundString(specifiedDomain, specifiedDomain.getLowerBound()) + SPACE;
+    retval += getBoundString(specifiedDomain, specifiedDomain.getUpperBound());
+  }
   return retval;
 }
 
@@ -870,5 +894,6 @@ void Transaction::write(FILE *out, long long int partialPlanId) {
     FatalError("Attempted to write invalid transaction.");
   }
   fprintf(out, "%s\t%d\t%s\t%d\t%d\t%lld\t%lld\t%s\n", transactionTypeNames[transactionType], 
-          objectKey, sourceTypeNames[source], id, stepNum, sequenceId, partialPlanId, info.chars());
+          objectKey, sourceTypeNames[source], id, stepNum, sequenceId, partialPlanId,
+          info.chars());
 }
