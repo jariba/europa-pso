@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.8 2003-10-21 14:21:41 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.9 2003-10-21 22:51:34 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H
@@ -82,4 +82,4 @@ private:
   void outputConstraint(const ConstraintId &, const long long int, FILE *, FILE *);
 };
 
-#endif PARTIALPLANWRITER_H
+#endif //PARTIALPLANWRITER_H

@@ -29,9 +29,9 @@ public class BackendTest extends TestCase {
       MySQLDB.loadFile(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat("test.sequence"), "Sequence");
       String p1 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step1).concat(System.getProperty("file.separator")).concat(step1).concat(".");
       String p2 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step2).concat(".");
-      String p3 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step3).concat(".");
-      String p4 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step4).concat(".");
-      String p5 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step5).concat(".");
+      String p3 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step3).concat(System.getProperty("file.separator")).concat(step3).concat(".");
+      String p4 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step4).concat(System.getProperty("file.separator")).concat(step4).concat(".");
+      String p5 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step5).concat(System.getProperty("file.separator")).concat(step5).concat(".");
       for(int i = 0; i < DbConstants.NUMBER_OF_PP_FILES; i++) {
         MySQLDB.loadFile(p1.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
                          DbConstants.PW_DB_TABLES[i]);
@@ -91,7 +91,6 @@ public class BackendTest extends TestCase {
     return suite;
   }
   public void testPlanLoad() {
-    System.err.println("IN TESTPLANLOAD");
     assertTrue("Plan 1 is null", plan1 != null);
     assertTrue("Plan 2 is null", plan2 != null);
     assertTrue("Plan 3 is null", plan3 != null);
@@ -328,25 +327,30 @@ public class BackendTest extends TestCase {
   }
 
   private void testQueriesForConstraint() {
-    List transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(17));
-    assertTrue(transactions.size() == 0);
+    List transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(16));
+    assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 0",
+               transactions.size() == 0);
     transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(53));
-    assertTrue(transactions.size() == 1);
+    assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 1",
+               transactions.size() == 1);
     List steps = MySQLDB.queryStepsWithConstraintTransaction(sequence.getId(), new Integer(53), 
                                                              "CONSTRAINT_CREATED");
-    assertTrue(steps.size() == 1);
-    assertTrue(((Integer)steps.get(0)).equals(new Integer(2)));
+    assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 1", steps.size() == 1);
+    assertTrue("Incorret step.  Is " + ((Integer)steps.get(0)) + " should be 2", 
+               ((Integer)steps.get(0)).equals(new Integer(2)));
   }
 
   private void testQueriesForToken() {
     List transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(2));
     assertTrue(transactions.size() == 0);
     transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(21));
-    assertTrue(transactions.size() == 1);
+    assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 2", 
+               transactions.size() == 2);
     List steps = MySQLDB.queryStepsWithTokenTransaction(sequence.getId(), new Integer(21),
                                                         "TOKEN_INSERTED");
-    assertTrue(steps.size() == 1);
-    assertTrue(((Integer)steps.get(0)).equals(new Integer(2)));
+    assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 1", steps.size() == 1);
+    assertTrue("Incorrect step.  Is " + ((Integer)steps.get(0)) + " should be 2", 
+               ((Integer)steps.get(0)).equals(new Integer(2)));
   }
 
   private void testQueriesForVariable() {
@@ -362,7 +366,7 @@ public class BackendTest extends TestCase {
 
   private void testQueriesForRestrictionsAndRelaxations() {
     List steps = MySQLDB.queryStepsWithRestrictions(sequence.getId());
-    assertTrue(steps.size() == 1);
+    assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 4", steps.size() == 4);
     assertTrue(((Integer)steps.get(0)).equals(new Integer(2)));
     steps = MySQLDB.queryStepsWithRelaxations(sequence.getId());
     assertTrue(steps.size() == 0);
