@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.7 2004-06-10 01:35:58 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.8 2004-06-10 18:50:44 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -72,7 +72,7 @@ public abstract class PWSetupHelper {
 
 
   public static List buildTestData( final int numSequences, final int numSteps,
-                                    final PlanWorksGUITest guiTest) {
+                                    final IdSource idSource) {
     String guiSequencesUrl = System.getProperty( "planworks.test.data.dir") +
       System.getProperty( "file.separator") + PWTestHelper.GUI_TEST_DIR;
     File guiSequencesUrlFile = new File( guiSequencesUrl);
@@ -91,15 +91,15 @@ public abstract class PWSetupHelper {
     }
     List sequenceUrls = new ArrayList();
     for (int i = 0; i < numSequences; i++) {
-      sequenceUrls.add( createSequence( guiSequencesUrl, numSteps, guiTest));
+      sequenceUrls.add( createSequence( guiSequencesUrl, numSteps, idSource));
     }
     return sequenceUrls;
   } // end buildTestData
 
   private static String createSequence( final String guiSequencesUrl, final int numSteps,
-                                        final PlanWorksGUITest guiTest) {
+                                        final IdSource idSource) {
     boolean forTesting = true;
-    guiTest.resetEntityIdInt();
+    idSource.resetEntityIdInt();
     Long sequenceId = new Long( System.currentTimeMillis());
     String sequenceIdString = sequenceId.toString();
     String sequenceName = PWTestHelper.SEQUENCE_NAME + sequenceIdString;
@@ -116,7 +116,7 @@ public abstract class PWSetupHelper {
 
     for (int stepNum = 0; stepNum < numSteps; stepNum++) {
       planSequence.addPartialPlan( createPartialPlan( planSequence, sequenceUrl,
-                                                      stepNum, guiTest), forTesting);
+                                                      stepNum, idSource), forTesting);
     }
 
     String [] planSequenceContent = planSequence.toOutputString();
@@ -132,7 +132,7 @@ public abstract class PWSetupHelper {
   private static PwPartialPlanImpl createPartialPlan( final PwPlanningSequenceImpl planSequence,
                                                       final String sequenceUrl,
                                                       final int stepNum,
-                                                      final PlanWorksGUITest guiTest) {
+                                                      final IdSource idSource) {
     String model = "basic-model";
     Long partialPlanId = new Long( System.currentTimeMillis());
     String partialPlanName = "step" + String.valueOf( stepNum);
@@ -146,7 +146,7 @@ public abstract class PWSetupHelper {
                                            partialPlanId, model);
       partialPlan.setName( partialPlanUrl);
 
-      createObjectTableEntries( partialPlan, planSequence, stepNum, guiTest);
+      createObjectTableEntries( partialPlan, planSequence, stepNum, idSource);
                                                          
 
     } catch (ResourceNotFoundException rnfe) {
@@ -255,28 +255,28 @@ public abstract class PWSetupHelper {
   private static void createObjectTableEntries( final PwPartialPlanImpl partialPlan,
                                                 final PwPlanningSequenceImpl planSequence,
                                                 final int stepNum,
-                                                final PlanWorksGUITest guiTest) {
+                                                final IdSource idSource) {
     for (int i = 0; i < NUM_OBJECTS; i++) {
-      Integer objectId = new Integer( guiTest.incEntityIdInt());
+      Integer objectId = new Integer( idSource.incEntityIdInt());
       StringBuffer componentIds = new StringBuffer();
       boolean isFirst = true;
       for (int j = 0; j < NUM_TIMELINES; j++) {
-        int timelineIdInt = guiTest.incEntityIdInt();
+        int timelineIdInt = idSource.incEntityIdInt();
         if (isFirst) { isFirst = false; } else { componentIds.append( ","); }
         componentIds.append( timelineIdInt);
         Integer timelineId = new Integer( timelineIdInt);
         String tokenIds = null;
-        String emptySlotInfo = (new Integer( guiTest.incEntityIdInt())).toString() +
+        String emptySlotInfo = (new Integer( idSource.incEntityIdInt())).toString() +
           "," + String.valueOf( EMPTY_SLOT_INDEX);
         PwTimelineImpl timeline =
           addTimeline( timelineId, DbConstants.O_TIMELINE, objectId,
                        "timeline" + String.valueOf( timelineIdInt), "", emptySlotInfo, "", 
-                       tokenIds, partialPlan, planSequence, stepNum, guiTest);
+                       tokenIds, partialPlan, planSequence, stepNum, idSource);
         // timeline object must exist when tokens are created
         // slotted tokens
         String [] stringArray = addTokensToTimeline( SLOTTED_TOKEN, NUM_SLOTTED_TOKENS,
                                                      timelineId, partialPlan,
-                                                     planSequence, stepNum, guiTest);
+                                                     planSequence, stepNum, idSource);
         tokenIds = stringArray[0];
         String slotIds = stringArray[1];
         StringTokenizer strTok = new StringTokenizer( tokenIds, ",");
@@ -292,7 +292,7 @@ public abstract class PWSetupHelper {
         // free tokens
         stringArray = addTokensToTimeline( FREE_TOKEN, NUM_FREE_TOKENS,
                                            DbConstants.NO_ID, partialPlan,
-                                           planSequence, stepNum, guiTest);
+                                           planSequence, stepNum, idSource);
         tokenIds = stringArray[0];
         strTok = new StringTokenizer( tokenIds, ",");
         while (strTok.hasMoreTokens()) {
@@ -301,10 +301,10 @@ public abstract class PWSetupHelper {
         }
       }
       componentIds.append( addResourcesAndInstants( objectId, partialPlan, planSequence,
-                                                    stepNum, guiTest));
+                                                    stepNum, idSource));
       addObject( objectId, DbConstants.O_OBJECT, DbConstants.NO_ID, "object" +
                  objectId.toString(), componentIds.toString(), "", "", partialPlan,
-                 planSequence, stepNum, guiTest);
+                 planSequence, stepNum, idSource);
     }
   } // end createObjectTableEntries
 
@@ -312,7 +312,7 @@ public abstract class PWSetupHelper {
                                                        final PwPartialPlanImpl partialPlan,
                                                        final PwPlanningSequenceImpl planSequence,
                                                        final int stepNum,
-                                                       final PlanWorksGUITest guiTest) {
+                                                       final IdSource idSource) {
     StringBuffer componentIds = new StringBuffer();
     StringBuffer resInfo = new StringBuffer();
     int horizonStart = 0; resInfo.append( String.valueOf( horizonStart));
@@ -326,7 +326,7 @@ public abstract class PWSetupHelper {
     double levelLimitMax = 80.0; resInfo.append( String.valueOf( levelLimitMax));
     // resource instant ids optionally follow
     for (int j = 0; j < NUM_RESOURCES; j++) {
-      Integer resourceId = new Integer( guiTest.incEntityIdInt());
+      Integer resourceId = new Integer( idSource.incEntityIdInt());
       componentIds.append( ",");
       componentIds.append( resourceId.toString());
       int memberValue = 0;
@@ -335,19 +335,19 @@ public abstract class PWSetupHelper {
       for (int i = 0; i < NUM_VARS_PER_RESOURCE; i++) {
         List constraintIds = new ArrayList();
         List parameterNames = new ArrayList(); parameterNames.add( "member");
-        Integer resourceVarId = new Integer( guiTest.incEntityIdInt());
+        Integer resourceVarId = new Integer( idSource.incEntityIdInt());
         if (isFirst) { isFirst = false; } else { resourceVarIds.append( ","); }
         resourceVarIds.append( resourceVarId.toString());
         addVariable( resourceVarId, DbConstants.MEMBER_VAR, constraintIds,
                      parameterNames, resourceId,
                      new PwEnumeratedDomainImpl( String.valueOf( memberValue)),
-                     partialPlan, planSequence, stepNum, guiTest);
+                     partialPlan, planSequence, stepNum, idSource);
         memberValue += 10;
       }
       // resourceTransactions
       String [] stringArray =
         addTokensToTimeline( RESOURCE_TRANSACTION, NUM_RESOURCE_TRANSACTIONS,
-                             resourceId, partialPlan, planSequence, stepNum, guiTest);
+                             resourceId, partialPlan, planSequence, stepNum, idSource);
       String transactionIds = stringArray[0];
       addResource( resourceId, DbConstants.O_RESOURCE, objectId,
                    "resource" + resourceId.toString(), transactionIds, resInfo.toString(),
@@ -362,7 +362,7 @@ public abstract class PWSetupHelper {
                                                 final PwPartialPlanImpl partialPlan,
                                                 final PwPlanningSequenceImpl planSequence,
                                                 final int stepNum,
-                                                final PlanWorksGUITest guiTest) {
+                                                final IdSource idSource) {
     StringBuffer tokenIds = new StringBuffer();
     StringBuffer slotIds = new StringBuffer();
     boolean isFirst = true, isFirstSlot = true; boolean isValueToken = true;
@@ -370,7 +370,7 @@ public abstract class PWSetupHelper {
     int time = 0, timeIncrement = 20;
     Integer previousTokenId = null, previousSlotId = null;
     for (int i = 0; i < numTokens; i++) {
-      int tokenInt = guiTest.incEntityIdInt();
+      int tokenInt = idSource.incEntityIdInt();
       if (isFirst) { isFirst = false; } else { tokenIds.append( ","); }
       tokenIds.append( tokenInt);
       Integer tokenId = new Integer( tokenInt);
@@ -380,7 +380,7 @@ public abstract class PWSetupHelper {
           slotId = previousSlotId;
           isFirstMerge = false;
         } else {
-          int slotInt = guiTest.incEntityIdInt();
+          int slotInt = idSource.incEntityIdInt();
           if (isFirstSlot) { isFirstSlot = false; } else { slotIds.append( ","); }
           slotIds.append( slotInt);
           slotId =  new Integer( slotInt);
@@ -388,7 +388,7 @@ public abstract class PWSetupHelper {
       }
       List constraintIds = new ArrayList();
       List parameterNames = new ArrayList(); parameterNames.add( "start");
-      Integer startVarId = new Integer( guiTest.incEntityIdInt());
+      Integer startVarId = new Integer( idSource.incEntityIdInt());
       int startLower = time, startUpper = time + 4;
       PwVariableImpl startVar =
         addVariable( startVarId, DbConstants.START_VAR, constraintIds,
@@ -396,15 +396,15 @@ public abstract class PWSetupHelper {
                      new PwIntervalDomainImpl( DbConstants.INTEGER_INTERVAL_DOMAIN_TYPE,
                                                String.valueOf( startLower),
                                                String.valueOf( startUpper)),
-                     partialPlan, planSequence, stepNum, guiTest);
-      Integer durationVarId = new Integer( guiTest.incEntityIdInt());
+                     partialPlan, planSequence, stepNum, idSource);
+      Integer durationVarId = new Integer( idSource.incEntityIdInt());
       int endLower = time + 20, endUpper = time + 24;
       int durationLower = endLower - startUpper;
       int durationUpper = endUpper - startLower;
       parameterNames = new ArrayList(); parameterNames.add( "duration");
       PwVariableImpl durationVar = null, endVar = null; Integer endVarId = null;
       if (tokenType != RESOURCE_TRANSACTION) {
-        endVarId = new Integer( guiTest.incEntityIdInt());
+        endVarId = new Integer( idSource.incEntityIdInt());
         parameterNames = new ArrayList(); parameterNames.add( "end");
         endVar =
           addVariable( endVarId, DbConstants.END_VAR, constraintIds,
@@ -412,52 +412,52 @@ public abstract class PWSetupHelper {
                        new PwIntervalDomainImpl( DbConstants.INTEGER_INTERVAL_DOMAIN_TYPE,
                                                  String.valueOf( endLower),
                                                  String.valueOf( endUpper)),
-                       partialPlan, planSequence, stepNum, guiTest);
+                       partialPlan, planSequence, stepNum, idSource);
         durationVar =
           addVariable( durationVarId, DbConstants.DURATION_VAR, constraintIds,
                        parameterNames, tokenId,
                        new PwIntervalDomainImpl( DbConstants.INTEGER_INTERVAL_DOMAIN_TYPE,
                                                  String.valueOf( durationLower),
                                                  String.valueOf( durationUpper)),
-                       partialPlan, planSequence, stepNum, guiTest);
+                       partialPlan, planSequence, stepNum, idSource);
       } else {
         durationVar =
           addVariable( durationVarId, DbConstants.DURATION_VAR, constraintIds,
                        parameterNames, tokenId, new PwEnumeratedDomainImpl( "0"),
-                       partialPlan, planSequence, stepNum, guiTest);
+                       partialPlan, planSequence, stepNum, idSource);
       }
-      Integer stateVarId = new Integer( guiTest.incEntityIdInt());
+      Integer stateVarId = new Integer( idSource.incEntityIdInt());
       parameterNames = new ArrayList(); parameterNames.add( "state");
       PwVariableImpl stateVar =
         addVariable( stateVarId, DbConstants.STATE_VAR, constraintIds,
                      parameterNames, tokenId, new PwEnumeratedDomainImpl( "2"),
-                     partialPlan, planSequence, stepNum, guiTest);
-      Integer objectVarId = new Integer( guiTest.incEntityIdInt());
+                     partialPlan, planSequence, stepNum, idSource);
+      Integer objectVarId = new Integer( idSource.incEntityIdInt());
       parameterNames = new ArrayList(); parameterNames.add( "object");
       addVariable( objectVarId, DbConstants.OBJECT_VAR, constraintIds,
                    parameterNames, tokenId,
                    new PwEnumeratedDomainImpl( "predicate"), partialPlan, planSequence,
-                   stepNum, guiTest);
-      Integer paramVarId = new Integer( guiTest.incEntityIdInt());
+                   stepNum, idSource);
+      Integer paramVarId = new Integer( idSource.incEntityIdInt());
       String paramVarIds = String.valueOf( paramVarId) + ":";
       parameterNames = new ArrayList(); parameterNames.add( "param1");
       addVariable( paramVarId, DbConstants.PARAMETER_VAR, constraintIds,
                    parameterNames, tokenId,
                    new PwEnumeratedDomainImpl( "parameter"), partialPlan, planSequence,
-                   stepNum, guiTest);
+                   stepNum, idSource);
       if ((tokenType == SLOTTED_TOKEN) || (tokenType == FREE_TOKEN)) {
         String tokenInfo = "0"; // becomes slotIndex -- 0 means base token
         addToken( tokenId, isValueToken, slotId, "predicate" +
                   String.valueOf( tokenInt), startVarId, endVarId, durationVarId,
                   stateVarId, objectVarId, parentId, paramVarIds, tokenInfo,
-                  partialPlan, planSequence, stepNum, previousTokenId, guiTest);
+                  partialPlan, planSequence, stepNum, previousTokenId, idSource);
         List variablesList = new ArrayList();
         variablesList.add( startVarId); variablesList.add( endVarId);
         variablesList.add( durationVarId);
-        Integer constraintId = new Integer( guiTest.incEntityIdInt());
+        Integer constraintId = new Integer( idSource.incEntityIdInt());
         addConstraint( "startEndDurationRelation", constraintId,
                        DbConstants.ATEMPORAL_CONSTRAINT_TYPE, variablesList, partialPlan,
-                       planSequence, stepNum, guiTest);
+                       planSequence, stepNum, idSource);
         startVar.addConstraint( constraintId);
         endVar.addConstraint( constraintId);
         durationVar.addConstraint( constraintId);
@@ -487,19 +487,19 @@ public abstract class PWSetupHelper {
                                  final String tokenIds,
                                  final PwPartialPlanImpl partialPlan,
                                  final PwPlanningSequenceImpl planSequence,
-                                 final int stepNum, final PlanWorksGUITest guiTest) {
+                                 final int stepNum, final IdSource idSource) {
     int memberValue = 0; boolean isFirst = true;
     StringBuffer variableIds = new StringBuffer();
     for (int i = 0; i < NUM_VARS_PER_OBJECT; i++) {
       List constraintIds = new ArrayList();
       List parameterNames = new ArrayList(); parameterNames.add( "member");
-      Integer variableId = new Integer( guiTest.incEntityIdInt());
+      Integer variableId = new Integer( idSource.incEntityIdInt());
       if (isFirst) { isFirst = false; } else { variableIds.append( ","); }
       variableIds.append( variableId.toString());
       addVariable( variableId, DbConstants.MEMBER_VAR, constraintIds,
                    parameterNames, id,
                    new PwEnumeratedDomainImpl( String.valueOf( memberValue)),
-                   partialPlan, planSequence, stepNum, guiTest);
+                   partialPlan, planSequence, stepNum, idSource);
       memberValue += 10;
     }
     partialPlan.addObject( id,
@@ -515,19 +515,19 @@ public abstract class PWSetupHelper {
                                              final PwPartialPlanImpl partialPlan,
                                              final PwPlanningSequenceImpl planSequence,
                                              final int stepNum,
-                                             final PlanWorksGUITest guiTest) {
+                                             final IdSource idSource) {
     int memberValue = 0; boolean isFirst = true;
     StringBuffer variableIds = new StringBuffer();
     for (int i = 0; i < NUM_VARS_PER_TIMELINE; i++) {
       List constraintIds = new ArrayList();
       List parameterNames = new ArrayList(); parameterNames.add( "member");
-      Integer variableId = new Integer( guiTest.incEntityIdInt());
+      Integer variableId = new Integer( idSource.incEntityIdInt());
       if (isFirst) { isFirst = false; } else { variableIds.append( ","); }
       variableIds.append( variableId.toString());
       addVariable( variableId, DbConstants.MEMBER_VAR, constraintIds,
                    parameterNames, id,
                    new PwEnumeratedDomainImpl( String.valueOf( memberValue)),
-                   partialPlan, planSequence, stepNum, guiTest);
+                   partialPlan, planSequence, stepNum, idSource);
       memberValue += 10;
     }
     PwTimelineImpl timeline = new PwTimelineImpl( id, type, parentId, name, childObjectIds,
@@ -557,11 +557,11 @@ public abstract class PWSetupHelper {
                                 final PwPartialPlanImpl partialPlan,
                                 final PwPlanningSequenceImpl planSequence,
                                 final int stepNum, final Integer previousTokenId,
-                                final PlanWorksGUITest guiTest) {
+                                final IdSource idSource) {
     //String tokenRelationIds = null;
     //Integer tokenRelationId = null;
     //if (previousTokenId != null) {
-    //  tokenRelationId = new Integer( guiTest.incEntityIdInt());
+    //  tokenRelationId = new Integer( idSource.incEntityIdInt());
     //  tokenRelationIds = String.valueOf( tokenRelationId);
     //}
     Integer ruleInstanceId = null; //dummy value until this code is fixed
@@ -573,7 +573,7 @@ public abstract class PWSetupHelper {
     //  addTokenRelation( tokenRelationId, previousTokenId, id,
     //                    DbConstants.TOKEN_RELATION_TYPE, partialPlan);
     //}
-    addTransaction( DbConstants.TOKEN_CREATED, new Integer( guiTest.incEntityIdInt()),
+    addTransaction( DbConstants.TOKEN_CREATED, new Integer( idSource.incEntityIdInt()),
                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
                     partialPlan.getId(), null, planSequence);
   } // end addToken
@@ -583,7 +583,7 @@ public abstract class PWSetupHelper {
                                              final Integer parentId, final PwDomainImpl domain,
                                              final PwPartialPlanImpl partialPlan,
                                              final PwPlanningSequenceImpl planSequence,
-                                             final int stepNum, final PlanWorksGUITest guiTest) {
+                                             final int stepNum, final IdSource idSource) {
     PwVariableImpl variable = new PwVariableImpl( id, type, constraintIds, parameterNames,
                                                   parentId, domain, partialPlan);
     partialPlan.addVariable( id, variable);
@@ -591,7 +591,7 @@ public abstract class PWSetupHelper {
     if (type.equals( DbConstants.PARAMETER_VAR)) {
       info[2] = (String) parameterNames.get( 0);
     }
-    addTransaction( DbConstants.VARIABLE_CREATED, new Integer( guiTest.incEntityIdInt()),
+    addTransaction( DbConstants.VARIABLE_CREATED, new Integer( idSource.incEntityIdInt()),
                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
                     partialPlan.getId(), info, planSequence);
     return variable;
@@ -610,11 +610,11 @@ public abstract class PWSetupHelper {
                                                  final PwPartialPlanImpl partialPlan,
                                                  final PwPlanningSequenceImpl planSequence,
                                                  final int stepNum,
-                                                 final PlanWorksGUITest guiTest) {
+                                                 final IdSource idSource) {
     PwConstraintImpl constraint = new PwConstraintImpl( name, id, type, variableIds,
                                                         partialPlan);
     partialPlan.addConstraint( id, constraint);
-    addTransaction( DbConstants.CONSTRAINT_CREATED, new Integer( guiTest.incEntityIdInt()),
+    addTransaction( DbConstants.CONSTRAINT_CREATED, new Integer( idSource.incEntityIdInt()),
                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
                     partialPlan.getId(), null, planSequence);
     return constraint;
