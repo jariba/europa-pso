@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.16 2004-07-27 21:58:10 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.17 2004-08-06 20:05:29 taylor Exp $
 //
 // PlanWorks
 //
@@ -182,8 +182,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
     if (viewName.equals( ViewConstants.CONSTRAINT_NETWORK_VIEW)) {
       ConstraintNetworkView constraintNetworkView =
         ViewGenerics.getConstraintNetworkView( viewFrame);
-      ((ConstraintNetworkView.ConstraintJGoView) constraintNetworkView.getJGoView()).
-        findAndSelectNodeKey( idToFind);
+      constraintNetworkView.findAndSelectNodeKey( idToFind);
     } else if (viewName.equals( ViewConstants.RESOURCE_PROFILE_VIEW)) {
       ResourceProfileView resourceProfileView = ViewGenerics.getResourceProfileView( viewFrame);
       if (partialPlan.getResource( idToFind) != null) {
