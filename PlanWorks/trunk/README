@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.17 2003-08-20 18:52:35 taylor Exp $
+# $Id: README,v 1.18 2003-09-02 21:50:50 miatauro Exp $
 #
 
 SUMMARY
@@ -52,6 +52,12 @@ Set environment varibles:
 
   o USER - user's account name, used in defining the data base collection
     should be set by user's standard environment
+
+BUILDING THE PARTIAL PLAN WRITER
+================================
+
+Instructions for building the PartialPlanWriter class are in 
+PlanWorks/cpp/integration/europa/README
 
 
 BUILDING & RUNNING PLANWORKS
