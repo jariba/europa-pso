@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepContentView.java,v 1.13 2004-05-08 01:44:13 taylor Exp $
+// $Id: StepContentView.java,v 1.14 2004-05-13 20:24:08 taylor Exp $
 //
 // PlanWorks
 //
@@ -118,7 +118,8 @@ public class StepContentView extends JGoView {
       x = 0;
       PwDBTransaction transaction = (PwDBTransaction) transItr.next();
       QueryResultField stepNumField =
-        new QueryResultField( transaction.getStepNumber().toString(), new Point( x, y),
+        new QueryResultField( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
+                              transaction.getStepNumber().toString(), new Point( x, y),
                               JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
       jGoDocument.addObjectAtTail( stepNumField);
       stepNumField.setSize( (int) headerJGoView.getStepNumNode().getSize().getWidth(),
@@ -126,7 +127,8 @@ public class StepContentView extends JGoView {
       x += headerJGoView.getStepNumNode().getSize().getWidth();
 
       keyField =
-        new QueryResultField( transaction.getId().toString(),
+        new QueryResultField( ViewConstants.DB_TRANSACTION_KEY_HEADER,
+                              transaction.getId().toString(),
                               new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( keyField);
       keyField.setSize( (int) headerJGoView.getKeyNode().getSize().getWidth(),
@@ -134,7 +136,8 @@ public class StepContentView extends JGoView {
       x += headerJGoView.getKeyNode().getSize().getWidth();
 
       QueryResultField nameField =
-        new QueryResultField( transaction.getName(),
+        new QueryResultField( ViewConstants.DB_TRANSACTION_NAME_HEADER,
+                              transaction.getName(),
                               new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( nameField);
       nameField.setSize( (int) headerJGoView.getNameNode().getSize().getWidth(),
@@ -144,7 +147,8 @@ public class StepContentView extends JGoView {
       if ((query.indexOf( " With ") >= 0) ||
           ((query.indexOf( " With ") == -1) && key.equals( ""))) {
         QueryResultField objectKeyField =
-          new QueryResultField( transaction.getObjectId().toString(),
+          new QueryResultField( ViewConstants.DB_TRANSACTION_OBJECT_KEY_HEADER,
+                                transaction.getObjectId().toString(),
                                 new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
         objectKeyFieldList.add( objectKeyField);
         jGoDocument.addObjectAtTail(objectKeyField );
@@ -157,7 +161,8 @@ public class StepContentView extends JGoView {
         NodeGenerics.trimName( transaction.getInfo()[0], headerJGoView.getObjectNameNode(),
                                vizView);
       QueryResultField objectNameField =
-        new QueryResultField( objectName, new Point( x, y),
+        new QueryResultField( ViewConstants.DB_TRANSACTION_OBJ_NAME_HEADER,
+                              objectName, new Point( x, y),
                               JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail(objectNameField );
       objectNameField.setSize( (int) headerJGoView.getObjectNameNode().getSize().getWidth(),
@@ -168,7 +173,8 @@ public class StepContentView extends JGoView {
         NodeGenerics.trimName( transaction.getInfo()[1], headerJGoView.getPredicateNode(),
                                vizView);
       QueryResultField predicateField =
-        new QueryResultField( predicateName, new Point( x, y),
+        new QueryResultField( ViewConstants.DB_TRANSACTION_PREDICATE_HEADER,
+                              predicateName, new Point( x, y),
                               JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( predicateField);
       predicateField.setSize( (int) headerJGoView.getPredicateNode().getSize().getWidth(),
@@ -179,7 +185,8 @@ public class StepContentView extends JGoView {
         NodeGenerics.trimName( transaction.getInfo()[2], headerJGoView.getParameterNode(),
                                vizView);
       QueryResultField parameterField =
-        new QueryResultField( parameterName, new Point( x, y),
+        new QueryResultField( ViewConstants.DB_TRANSACTION_PARAMETER_HEADER,
+                              parameterName, new Point( x, y),
                               JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( parameterField);
       parameterField.setSize( (int) headerJGoView.getParameterNode().getSize().getWidth(),

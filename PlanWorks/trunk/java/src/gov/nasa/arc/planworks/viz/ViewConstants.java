@@ -343,6 +343,10 @@ public abstract class ViewConstants {
   public static final String MODEL_RULES_VIEW        = "Model Rules View";
   public static List SEQUENCE_VIEW_LIST = null;
 
+  public static final String VIEW_TITLE = "View for ";
+  public static final String OVERVIEW_TITLE = "Overview for ";
+  public static final String RULE_VIEW_TITLE = "RuleView for ";
+
   public static final String CONTENT_SPEC_TITLE = "ContentFilter";
   // the next two must be unique as far as String/indexOf()
   public static final String SEQUENCE_QUERY_TITLE = "SequenceQuery";

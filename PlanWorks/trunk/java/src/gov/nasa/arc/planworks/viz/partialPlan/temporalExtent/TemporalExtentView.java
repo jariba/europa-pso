@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.46 2004-05-08 01:44:15 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.47 2004-05-13 20:24:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -266,7 +266,8 @@ public class TemporalExtentView extends PartialPlanView  {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.TEMPORAL_EXTENT_VIEW + " elapsed time: " +
                         (stopTimeMSecs -
-                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime
+                         ( ViewConstants.TEMPORAL_EXTENT_VIEW)) + " msecs.");
     startTimeMSecs = 0L;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init

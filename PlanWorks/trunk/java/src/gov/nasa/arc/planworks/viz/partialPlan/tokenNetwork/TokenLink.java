@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenLink.java,v 1.3 2004-03-30 22:01:04 taylor Exp $
+// $Id: TokenLink.java,v 1.4 2004-05-13 20:24:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,6 +24,7 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizViewRuleView;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
@@ -113,7 +114,7 @@ public class TokenLink extends JGoLabeledLink {
          (! ((TokenLink) currentMouseOverLink).getToToken().getId().equals
           ( toToken.getId())))) {
       tokenNetworkView.setMouseOverLink( tokenLink);
-      String ruleViewKey = ViewGenerics.RULE_VIEW_TITLE +
+      String ruleViewKey = ViewConstants.RULE_VIEW_TITLE +
         tokenNetworkView.getPartialPlan().getName();
       MDIInternalFrame ruleViewFrame = tokenNetworkView.getViewSet().getView( ruleViewKey);
       if (tokenNetworkView.getViewSet().getView( ruleViewKey) != null) {

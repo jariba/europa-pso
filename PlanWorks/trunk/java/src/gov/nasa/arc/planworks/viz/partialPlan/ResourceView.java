@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.11 2004-05-08 01:44:14 taylor Exp $
+// $Id: ResourceView.java,v 1.12 2004-05-13 20:24:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -368,7 +368,7 @@ public abstract class ResourceView extends PartialPlanView  {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + viewName + " elapsed time: " +
                         (stopTimeMSecs -
-                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime( viewName)) + " msecs.");
     startTimeMSecs = 0L;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init

@@ -4,12 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewMenuItem.java,v 1.3 2004-04-22 19:26:18 taylor Exp $
+// $Id: SequenceViewMenuItem.java,v 1.4 2004-05-13 20:24:04 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
 import javax.swing.JMenuItem;
 
+import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewListener;
 
 
@@ -39,6 +40,7 @@ public class SequenceViewMenuItem extends JMenuItem {
     this.seqUrl = seqUrl;
     this.sequenceName = seqName;
     this.viewListener = null;
+    this.setToolTipText( Utilities.getUrlLeaf( seqUrl));
   }
 
   /**
@@ -55,6 +57,7 @@ public class SequenceViewMenuItem extends JMenuItem {
     this.seqUrl = seqUrl;
     this.sequenceName = seqName;
     this.viewListener = viewListener;
+    this.setToolTipText( Utilities.getUrlLeaf( seqUrl));
   }
 
   /**
@@ -92,6 +95,7 @@ public class SequenceViewMenuItem extends JMenuItem {
   public final void setViewListener( ViewListener listener) {
     viewListener = listener;
   }
+
 
 } // end class SequenceViewMenuItem
 

@@ -4,11 +4,18 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.86 2004-04-09 23:11:22 taylor Exp $
+# $Id: README,v 1.87 2004-05-13 20:24:02 taylor Exp $
 #
 
 SUMMARY
 =======
+o This release *does* require a total rebuild of the PlanWorks data base,
+  using "ant planWorksDbInstall".  All plans to be loaded must be
+  regenerated using the PartialPlanWriter.
+
+o Beginning with this version, there is no up to date PartialPlanWriter 
+  support for Europa, and thus no support by PlanWorks.
+
 o Mouse-Right "Zoom View" has been added for the Constraint Network, 
   Navigator, Temporal Extent, Timeline, and Token Network partial plan 
   views.  It also is available in the Sequence Steps view.  The zoom 
@@ -29,13 +36,30 @@ o In the Sequence Steps View above each histogram step is a colored dot:
   disk; and red - partial plan not on disk.
 
 o The Token Network View now has a Mouse-Right selection "Rule Window",
-  such that when it exists, moving the mouse over the view's token node 
-  links will present in the "Rule View for <sequence-name>/step<nn>"
-  window, the "from" and "to" token predicates and parameter lists,
-  their keys, and the model rule which is responsible.
+  which will bring up a window, such that when it exists, moving the 
+  mouse over the view's token node links will present in the "Rule View 
+  for <sequence-name>/step<nn>" window, the "from" and "to" token predicates 
+  and parameter lists, their keys, and the model rule which is responsible. 
 
+o The model rules shown in instances of "Rule View for <sequence-name>/step<nn>"
+  are loaded from the appropriate NDDL model.
+
+o The "test" target of ant now runs, in addition to the BackendTest, the MySQLDBTest,
+  and the PlanWorksUtilsTest, the PlanWorksGUITest which is an implementation
+  of 10 of the 23 tests defined in PlanWorks/testCases/planViz.txt.  The
+  JUnit and JFCUnit packages are used in the PlanWorksGUITest implementation.
 
 o  GNATS PRs and CRs completed:
+   #2238: unable to build planworks.
+   #2335: Exception dialog box with no description.
+   #2345: Variables in the Plan seem to have many possible values while the planner 
+          output shows singletons.
+   #2375: RELAXATION TRANSACTIONS not listed in query by transaction type.
+   #2376: The Query results display the transaction types. Some are too long for 
+          the space.
+   #2389: Crash when quickly stepping in Timeline view.
+   #2390: Cannot scroll window to end of object at far right of view.
+   #2398: Transaction types too long for space: Query-Steps-Where Variable Transacted.
 
 
 CVS CHECKOUT
@@ -188,25 +212,30 @@ o Two partial plan resource views have been added: ResourceProfileView and
 
 o  GNATS PRs and CRs completed:
    #2080: Require capability to visualize resource envelopes and transactions.
+   #2184: build does not work due to bad mysql.bin dir in build.xml.
    #2198: Provide queries of constraint execution and when domains become emptied.
+   #2235: Over-zealous invariant test in Timeline data.
+   #2237: ColorStream not returning correct colors.
    #2241: Timeline view disappear and does not reappear after the 
           non-monotonic timeline error message.
    #2242: Script to clean database does not work correctly.
    #2243: Prototype:Planworks bug: Timeline view crash.
    #2244: Change Request: Not crash if a model's seq directories have been deleted.
+   #2246: Not showing object names when variable is an object var.
+   #2247: PartialPlanWriter outputting screwy data.
    #2248: Fix interaction between content filter persistance and state switching.
    #2249: Partial Plan View frames do not maintain user's resizing when stepping.
    #2250: Always show timeline objects in Timeline View.
    #2251: Keep Content Filter frame and view frames in same position when stepping.
    #2252: When stepping, move SequenceSteps View highlight to current step.
    #2256: SequenceStepsView: add hide/show all partial plan views.
+   #2285: PLASMA:PPW: Incorrect data about merged tokens being displayed.
 
 
 20January04: Milestone 12
 =========================
 o In the Temporal Extent View, Mouse-Right on the background now offers
   "Show Earliest" and "Show Latest", as options to "Show Intervals".
-
 o A query for "All Decisions ..." at a step has been added to the "SequenceQuery" 
   window.  It brings up two results windows, one for free tokens and
   one for unbound variables.
@@ -227,6 +256,8 @@ o Content Filter specifications are maintained across partial plan view
 
 o  GNATS PRs and CRs completed:
    #2186: Provide scoped viewing of information related to an item of interest.
+   #2187: Use names of Objects rather than keys or provide a place to lookup 
+          detail of item (like name) based on key.
    #2192: Snap to Earliest Start/Latest end in Temporal extent view.
    #2196: Provide integrated exploration view.
    #2205: Bad behavior when you try to switch to another project.
@@ -260,6 +291,8 @@ o Providing the Temporal Extent View is open for a partial plan step which
   View slots and free tokens.
 
 o  GNATS PRs and CRs completed:
+   #2087: Wierd behavior in constraint network.
+   #2126: PartialPlanWriter breaks EUROPA make tests
    #2190: Align boxes in Temporal extent view with earliest start.
    #2191: Integrate Localized Temporal Extent Vizualization with Timeline/Token view.
    #2193: Provide stepping forward and backward capability for all views.
@@ -307,6 +340,9 @@ o The partial plan views, except for Transaction View, and the Sequence
   "jump" to that location.
 
 o  GNATS PRs and CRs completed:
+   #2169: Step query does not retrieve variable decisions.
+   #2170: Exceptions thrown in deletion of a sequence.
+   #2171: Possible source of error in PlanWriter.
    #2172: Invalid behaviour for sequence windows after closing and opening.
 
 
@@ -383,6 +419,8 @@ o  GNATS PRs and CRs completed:
    #2159: Change option to Find By Key instead of Find Token By Key.
    #2160: Time to delete a sequence is way too long   
    #2161: Project menu goes away after deleting a sequence.
+   #2167: Error creating a project.
+   #2168: Other error behaviors creating project/sequence. Can't create a project.
 
 
 16october03: Milestone 8

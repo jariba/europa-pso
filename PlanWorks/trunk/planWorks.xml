@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.30 2004-04-30 21:47:12 miatauro Exp $ -->
+<!-- $Id: planWorks.xml,v 1.31 2004-05-13 20:24:02 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -97,7 +97,6 @@
 	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
 	<property environment="env"/>
-	<property name="name.application" value="PlanWorks -- Plan Visualization"/>
 	<property name="boolean.isMaxScreen" value="false"/>
 	<property environment="env"/>
 

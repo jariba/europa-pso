@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.41 2004-05-08 01:44:19 taylor Exp $
+// $Id: planViz.txt,v 1.42 2004-05-13 20:24:14 taylor Exp $
 //
 // PlanWorks
 //
@@ -301,13 +301,10 @@ Method:
      close the "opened" variable, constraint, and token nodes to return to the
      initial state.
   7. On "step<nn>" element of "SequenceStepsView of test-seq-1", click
-     Mouse-Right and select "Hide All Views", then "Open All Views", and then
+     Mouse-Right and select "Hide All Views", then "Show All Views", and then
      "Close All Views".
   8. On the Sequence Steps View, use Mouse-Right "Overview Window" to open a
-     1/8th scale overview of the entire "observed" view.  Drag the scoping
-     rectangle to cause the "observed" view to scroll.  Use Mouse-Left clicks
-     on areas outside the rectangle to cause the "observed" view to jump to
-     a new location.  
+     1/8th scale overview of the entire "observed" view.  
 
 Post-conditions:
   1. Method:6 - All variable containing nodes: interval tokens and resource transactions
@@ -338,26 +335,31 @@ Post-conditions:
      token.  Mouse cursor over start/end interval "triangles" displays their time 
      scale value.  Mouse cursor over a token's duration line displays the duration 
      time interval.
-  3. Timeline nodes and slot nodes appear in the Timeline View.  Timeline node
-     labels consist of the object name, the timeline name, and the timeline key
-     value.  Slot node labels consist of the slotted token predicate name, the
+  3. Timeline nodes, slot nodes, and free token nodes appear in the Timeline View.
+     Timeline node labels consist of the object name, the timeline name, and the timeline
+     key value.  Slot node labels consist of the slotted token predicate name, the
      number of tokens on the slot, and the slot key value.  Empty slot labels
      replace the predicate name and number of tokens with "-empty-".  Mouse cursor
      over slot nodes displays the slot's "predicateName( parameterValues)",
      and the second line displays the token keys(s), if it is not an "empty" slot.
-  4. Token nodes, with "master roots" appear in the Token Network View.
-     Token node labels consist of the predicate name and the token key value.  
-     Mouse cursor over token nodes displays "predicateName( parameterValues)",
-     and the second line displays its slot key.
-  5. Transaction entries appear in the Transaction View.  All transaction
-     entries have values for TX_KEY, TRANSACTION_TYPE, SOURCE, OBJ_KEY, and
-     OBJ_NAME.  Entries with TRANSACTION_TYPEs of VARIABLE_* have values for 
-     PREDICATE_NAME.  Entries with TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = 
+     Free token labels consist of the predicate name, and the token key value.  The
+     mouse cursor over free token nodes displays the free token's
+     "predicateName( parameterValues)".
+  4. Interval tokens (slotted and free) and resource transactions appear as nodes, 
+     with "master roots" in the Token Network View.  Interval token node labels consist
+     of the predicate name and the key value.  Resource transaction node labels consist 
+     of the transaction name and the key value.  Mouse cursor over interval token nodes 
+     displays "predicateName( parameterValues)", and the second line displays its 
+     slot key, if the token is slotted.  Mouse cursor over resource transaction nodes 
+     displays the transaction name and argument.
+  5. Transaction entries appear in the DBTransaction View.  All transaction
+     entries have values for TX_KEY, TRANSACTION_NAME, SOURCE, OBJ_KEY, and
+     OBJ_NAME.  Entries with TRANSACTION_NAMEs of VARIABLE_* have values for 
+     PREDICATE_NAME.  Entries with TRANSACTION_NAMEs of VARIABLE_* and OBJ_NAME = 
      PARAMETER_VAR have values for PARAMETER_NAME.
-  6. Method:7 - First all the "step<nn>" windows should be iconified, then 
-     opened, and then deleted.
-  7. Method:8 - The "observed" view should respond properly to operations on
-     the overview window.
+  6. Method:7 - First all the "step<nn>" windows should be iconified, then shown
+     again, and then deleted.
+  7. Method:8 - An overview window of the Sequence Steps View should appear.
 
 
 Requirements: 4.2.1, 4.2.2, 4.2.3.d, 4.2.3.e, 4.2.3.f, 4.3.2.a

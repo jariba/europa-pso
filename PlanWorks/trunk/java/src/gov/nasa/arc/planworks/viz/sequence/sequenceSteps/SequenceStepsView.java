@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.27 2004-05-08 01:44:17 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.28 2004-05-13 20:24:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -267,7 +267,9 @@ public class SequenceStepsView extends SequenceView {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
                         (stopTimeMSecs -
-                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime
+                         ( ViewConstants.SEQUENCE_STEPS_VIEW)) + " msecs.");
+    ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
     startTimeMSecs = 0L;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.28 2004-05-04 01:27:15 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.29 2004-05-13 20:24:07 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -39,9 +39,9 @@ public class PlanWorksTest extends JFCTestCase {
   }
   public static TestSuite suite() {
     TestSuite suite = new TestSuite();
-    //suite.addTest(BackendTest.suite());
-    //suite.addTest(MySQLDBTest.suite());
-    //suite.addTest(PlanWorksUtilsTest.suite());
+    suite.addTest(BackendTest.suite());
+    suite.addTest(MySQLDBTest.suite());
+    suite.addTest(PlanWorksUtilsTest.suite());
     suite.addTest(PlanWorksGUITest.suite());
     return suite;
   }

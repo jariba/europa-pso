@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.53 2004-05-08 01:44:16 taylor Exp $
+// $Id: TimelineView.java,v 1.54 2004-05-13 20:24:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -82,10 +82,8 @@ public class TimelineView extends PartialPlanView {
   private ViewSet viewSet;
   private TimelineJGoView jGoView;
   private JGoDocument jGoDocument;
-  // timelineNodeList & tmpTimelineNodeList used by JFCUnit test case
   private List timelineNodeList; // element TimelineNode
   private List freeTokenNodeList; // element TokenNode
-  private List tmpTimelineNodeList; // element TimelineNode
   private int slotLabelMinLength;
   private JGoArea mouseOverNode;
   private boolean isAutoSnapEnabled;
@@ -219,7 +217,8 @@ public class TimelineView extends PartialPlanView {
       long stopTimeMSecs = System.currentTimeMillis();
       System.err.println( "   ... " + ViewConstants.TIMELINE_VIEW + " elapsed time: " +
                           (stopTimeMSecs -
-                           PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+                           PlanWorks.getPlanWorks().getViewRenderingStartTime
+                           ( ViewConstants.TIMELINE_VIEW)) + " msecs.");
       startTimeMSecs = 0L;
     } else {
       try {
@@ -282,9 +281,8 @@ public class TimelineView extends PartialPlanView {
 
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
-    timelineNodeList = null;
+    timelineNodeList = new ArrayList();
     freeTokenNodeList = new ArrayList();
-    tmpTimelineNodeList = new ArrayList();
 
     boolean isValid = createTimelineAndSlotNodes();
     if (isValid) {
@@ -382,7 +380,7 @@ public class TimelineView extends PartialPlanView {
         TimelineViewTimelineNode timelineNode =
           new TimelineViewTimelineNode(timelineLabel, timeline, new Point(x, y), timelineColor, 
                                        this);
-        tmpTimelineNodeList.add(timelineNode);
+        timelineNodeList.add(timelineNode);
         jGoDocument.addObjectAtTail(timelineNode);
         x += timelineNode.getSize().getWidth();
         isValid = createSlotNodes(timeline, timelineNode, x, y, timelineColor);
@@ -430,7 +428,6 @@ public class TimelineView extends PartialPlanView {
         }
       }
     }
-    timelineNodeList = tmpTimelineNodeList;
     return isValid;
   } // end createFreeTokenNodes
 

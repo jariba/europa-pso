@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: QueryResultField.java,v 1.2 2004-04-22 19:26:22 taylor Exp $
+// $Id: QueryResultField.java,v 1.3 2004-05-13 20:24:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -42,24 +42,17 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 public class QueryResultField extends TextNode {
 
   private String fieldName;
+  private String fieldText;
   private ViewableObject viewableObject; // PwPlanningSequence
   private VizView vizView;
   private boolean fieldIsStepNumber;
   private ViewListener viewListener;
 
-  /**
-   * <code>QueryResultField</code> - constructor 
-   *
-   * @param fieldName - <code>String</code> - 
-   * @param location - <code>Point</code> - 
-   * @param alignment - <code>int</code> - 
-   * @param bgColor - <code>Color</code> - 
-   * @param viewableObject - <code>ViewableObject</code> - 
-   */
-  public QueryResultField( String fieldName, Point location, int alignment, Color bgColor,
-                           ViewableObject viewableObject) {
-    super( fieldName);
+  public QueryResultField( String fieldName, String fieldText, Point location, int alignment,
+                           Color bgColor, ViewableObject viewableObject) {
+    super( fieldText);
     this.fieldName = fieldName;
+    this.fieldText = fieldText;
     this.viewableObject = viewableObject;
     fieldIsStepNumber = false;
     this.vizView = null;
@@ -73,16 +66,18 @@ public class QueryResultField extends TextNode {
    * <code>QueryResultField</code> - constructor 
    *
    * @param fieldName - <code>String</code> - 
+   * @param fieldText - <code>String</code> - 
    * @param location - <code>Point</code> - 
    * @param alignment - <code>int</code> - 
    * @param bgColor - <code>Color</code> - 
    * @param viewableObject - <code>ViewableObject</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public QueryResultField( String fieldName, Point location, int alignment, Color bgColor,
-                           ViewableObject viewableObject, VizView vizView) {
-    super( fieldName);
+  public QueryResultField( String fieldName, String fieldText, Point location, int alignment,
+                           Color bgColor, ViewableObject viewableObject, VizView vizView) {
+    super( fieldText);
     this.fieldName = fieldName;
+    this.fieldText = fieldText;
     this.viewableObject = viewableObject;
     fieldIsStepNumber = true;
     this.vizView = vizView;
@@ -106,6 +101,23 @@ public class QueryResultField extends TextNode {
     setLocation( (int) location.getX(), (int) location.getY());
   } // end configure
 
+  /**
+   * <code>getFieldName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getFieldName() {
+    return fieldName;
+  }
+
+  /**
+   * <code>getFieldText</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getFieldText() {
+    return fieldText;
+  }
 
   /**
    * <code>getToolTipText</code>
@@ -138,7 +150,7 @@ public class QueryResultField extends TextNode {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       if (fieldIsStepNumber && (viewableObject instanceof PwPlanningSequence)) {
-        ViewGenerics.partialPlanViewsPopupMenu( Integer.parseInt( fieldName),
+        ViewGenerics.partialPlanViewsPopupMenu( Integer.parseInt( fieldText),
                                                 (PwPlanningSequence) viewableObject,
                                                 vizView, viewCoords, viewListener);
         return true;

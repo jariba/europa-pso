@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableQueryContentView.java,v 1.1 2003-12-20 01:54:50 taylor Exp $
+// $Id: VariableQueryContentView.java,v 1.2 2004-05-13 20:24:08 taylor Exp $
 //
 // PlanWorks
 //
@@ -115,16 +115,18 @@ public class VariableQueryContentView extends JGoView {
       x = 0;
       PwVariableQuery variable = (PwVariableQuery) variableItr.next();
       QueryResultField stepNumField =
-        new QueryResultField( variable.getStepNumber().toString(), new Point( x, y),
-                       JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
+        new QueryResultField( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
+                              variable.getStepNumber().toString(), new Point( x, y),
+                              JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
       jGoDocument.addObjectAtTail( stepNumField);
       stepNumField.setSize( (int) headerJGoView.getStepNumNode().getSize().getWidth(),
                             (int) stepNumField.getSize().getHeight());
       x += headerJGoView.getStepNumNode().getSize().getWidth();
 
       keyField =
-        new QueryResultField( variable.getId().toString(),
-                       new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+        new QueryResultField( ViewConstants.DB_TRANSACTION_OBJECT_KEY_HEADER,
+                              variable.getId().toString(),
+                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( keyField);
       keyField.setSize( (int) headerJGoView.getKeyNode().getSize().getWidth(),
                          (int) keyField.getSize().getHeight());
@@ -134,8 +136,9 @@ public class VariableQueryContentView extends JGoView {
       String variableName =
         NodeGenerics.trimName( variable.getName(), headerJGoView.getNameNode(), vizView);
       QueryResultField variableNameField =
-        new QueryResultField( variableName,
-                       new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+        new QueryResultField( ViewConstants.DB_TRANSACTION_OBJ_NAME_HEADER,
+                              variableName,
+                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( variableNameField);
       variableNameField.setSize( (int) headerJGoView.getNameNode().getSize().getWidth(),
                          (int) variableNameField.getSize().getHeight());

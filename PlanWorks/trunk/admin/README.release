@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.9 2004-04-06 01:31:40 taylor Exp $
+# $Id: README.release,v 1.10 2004-05-13 20:24:03 taylor Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
@@ -20,12 +20,14 @@ o Update PlanWorks/testCases/planViz.txt
 
 o Update PlanWorks/cpp/integration/europa/README
 
-o Perform test cases outlined in PlanWorks/testCases/planViz.txt
+o Run "ant test" to execute the BackendTest, the MySQLDBTest,
+  the PlanWorksUtilsTest, and the PlanWorksGUITest (1-10 of 23 planViz.txt tests)
 
-o Run "ant test"
+o Perform test cases outlined in PlanWorks/testCases/planViz.txt (11-23)
 
 o Build PartialPlanWriter, integrate into freshly checked-out
-  Europa, and run Europa "make tests".  View a generated sequence.
+  Plasma, and run Plasma "cd McGann/SystemTests; jam nddl-planner-tests".  
+  View a generated sequence.
 
 o Tag the Release
   - In a clean directory, do a fresh checkout of the CVS "head":
