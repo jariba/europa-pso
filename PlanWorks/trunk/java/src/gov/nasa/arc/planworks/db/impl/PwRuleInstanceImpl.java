@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRuleInstanceImpl.java,v 1.1 2004-06-08 21:48:53 pdaley Exp $
+// $Id: PwRuleInstanceImpl.java,v 1.2 2004-06-09 20:10:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -126,11 +126,11 @@ public class PwRuleInstanceImpl implements PwRuleInstance {
 
   public String toOutputString() {
     StringBuffer retval = new StringBuffer(id.toString());
-    retval.append("\t").append(partialPlan.getId()).append("\t").append(ruleId);
-    retval.append("\t").append(masterId);
+    retval.append("\t").append(partialPlan.getId().toString()).append("\t").append(partialPlan.getSequence().getId());
+    retval.append("\t").append(ruleId.toString()).append("\t").append(masterId.toString()).append("\t");
     if(!slaveIds.isEmpty()) {
       for(ListIterator it = slaveIds.listIterator(); it.hasNext();) {
-        retval.append(it.next()).append(":");
+        retval.append(it.next().toString()).append(",");
       }
     }
     else {
@@ -139,13 +139,13 @@ public class PwRuleInstanceImpl implements PwRuleInstance {
     retval.append("\t");
     if(!ruleVarIds.isEmpty()) {
       for(ListIterator it = ruleVarIds.listIterator(); it.hasNext();) {
-        retval.append(it.next()).append(":");
+        retval.append(it.next().toString()).append(",");
       }
     }
     else {
       retval.append("\\N");
     }
-    retval.append("\t").append("\n");
+    retval.append("\n");
 
     return retval.toString();
   }
