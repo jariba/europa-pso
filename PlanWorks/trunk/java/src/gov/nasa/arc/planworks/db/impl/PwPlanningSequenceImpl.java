@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.61 2003-11-26 01:24:27 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.62 2003-12-03 01:49:04 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -105,7 +105,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       partialPlans.put((String) planNameIterator.next(), null);
       stepCount++;
     }
-    loadTransactions();
+    //loadTransactions();
+    transactions = null;
   }
 
 
@@ -145,7 +146,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     loadTransactionFile();
     loadStatsFile();
     MySQLDB.analyzeDatabase();
-    loadTransactions();
+    //loadTransactions();
+    transactions = null;
     ListIterator ppNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
     while(ppNameIterator.hasNext()) {
       partialPlans.put(ppNameIterator.next(), null);
@@ -240,6 +242,9 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @return - <code>List</code> - of PwTransaction
    */
   public List getTransactionsList( Long partialPlanId) {
+    if(transactions == null) {
+      loadTransactions();
+    }
     List retval = new ArrayList();
     String ppId = partialPlanId.toString();
     ListIterator transactionKeyIterator = (new ArrayList(transactions.keySet())).listIterator();
@@ -406,6 +411,9 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
 
 
   private List getTransactionsById(List ids) {
+    if(transactions == null) {
+      loadTransactions();
+    }
     List retval = new ArrayList();
     ListIterator idIterator = ids.listIterator();
     while(idIterator.hasNext()) {
@@ -580,7 +588,6 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     }
     Arrays.sort(files, new StepDirectoryComparator());
     for(int i = 0; i < files.length; i++) {
-      System.err.println(files[i].getName());
       if(files[i].isDirectory()) {
         if(!files[i].getName().equals("step" + i)) {
           return "Skipped step " + i;

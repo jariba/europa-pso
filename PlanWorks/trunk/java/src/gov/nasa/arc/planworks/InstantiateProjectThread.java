@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.5 2003-11-25 01:40:37 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.6 2003-12-03 01:48:39 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -139,6 +139,7 @@ public class InstantiateProjectThread extends Thread {
                                       PlanWorks.planWorks.currentProjectName);
         PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, true);
         PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
+        PlanWorks.planWorks.setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, true);
         if (PwProject.listProjects().size() > 1) {
           PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
           PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
@@ -211,6 +212,7 @@ public class InstantiateProjectThread extends Thread {
             if (PlanWorks.planWorks.getProjectsLessCurrent().size() == 0) {
               PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
             }
+            PlanWorks.planWorks.setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, true);
             PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
             PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
           } catch (ResourceNotFoundException rnfExcep) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.73 2003-11-26 01:23:42 miatauro Exp $
+// $Id: PlanWorks.java,v 1.74 2003-12-03 01:48:39 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -263,6 +263,7 @@ public class PlanWorks extends MDIDesktopFrame {
     setProjectMenuEnabled(CREATE_MENU_ITEM, true);
     setProjectMenuEnabled( ADDSEQ_MENU_ITEM, false);
     setProjectMenuEnabled(DELSEQ_MENU_ITEM, false);
+    setProjectMenuEnabled(NEWSEQ_MENU_ITEM, false);
     if ((PwProject.listProjects() != null) && (PwProject.listProjects().size() > 0)) {
       setProjectMenuEnabled( OPEN_MENU_ITEM, true);
       setProjectMenuEnabled( DELETE_MENU_ITEM, true);
