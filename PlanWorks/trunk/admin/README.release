@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.1 2003-10-13 20:28:04 taylor Exp $
+# $Id: README.release,v 1.2 2003-10-16 21:02:59 miatauro Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
@@ -16,7 +16,11 @@ o Update PlanWorks/GETTING_STARTED
 
 o Update PlanWorks/testCases/planViz.txt
 
+o Update PlanWorks/cpp/integration/europa/README
+
 o Perform test cases outlined in PlanWorks/testCases/planViz.txt
+
+o Run "ant test"
 
 o Tag the Release
   - In a clean directory, do a fresh checkout of the CVS "head":
