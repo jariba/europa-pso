@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNode.java,v 1.2 2004-03-02 02:34:12 taylor Exp $
+// $Id: ExtendedBasicNode.java,v 1.3 2004-03-16 02:24:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -51,6 +51,7 @@ public class ExtendedBasicNode extends BasicNode {
 
 
   private int nodeType;
+  private boolean areNeighborsShown;
 
   /**
    * <code>ExtendedBasicNode</code> - constructor 
@@ -137,6 +138,24 @@ public class ExtendedBasicNode extends BasicNode {
     d.setSize(20, 20);
     return d;
   } // end createDrawable
+
+  /**
+   * <code>setAreNeighborsShown</code>
+   *
+   * @param areShown - <code>boolean</code> - 
+   */
+  public void setAreNeighborsShown( final boolean areShown) {
+    areNeighborsShown = areShown;
+  }
+
+  /**
+   * <code>areNeighborsShown</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean areNeighborsShown() {
+    return areNeighborsShown;
+  }
 
 
 

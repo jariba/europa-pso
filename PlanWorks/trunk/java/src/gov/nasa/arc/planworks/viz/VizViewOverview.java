@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.10 2004-03-08 19:30:16 taylor Exp $
+// $Id: VizViewOverview.java,v 1.11 2004-03-16 02:24:08 taylor Exp $
 //
 // PlanWorks
 //
@@ -29,6 +29,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.ModelClassNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.ResourceNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
@@ -39,7 +40,8 @@ import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransa
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.ThickDurationBridge;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
-import gov.nasa.arc.planworks.viz.sequence.modelRules.PredicateNode;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
+// import gov.nasa.arc.planworks.viz.sequence.modelRules.PredicateNode;
 
 /**
  * <code>VizViewOverview</code> - 
@@ -149,7 +151,7 @@ public class VizViewOverview extends Overview {
     convertViewToDoc(p);
     String tip = null;
     JGoObject obj = getObserved().pickDocObject(p, false);
-
+    
     while (obj != null) {
       if (obj instanceof ConstraintNetworkObjectNode) {
         tip = ((ConstraintNetworkObjectNode) obj).getToolTipText( isOverview);
@@ -174,6 +176,8 @@ public class VizViewOverview extends Overview {
 //         tip = ((PredicateNode) obj).getToolTipText( isOverview);
       } else if (obj instanceof ModelClassNavNode) {
         tip = ((ModelClassNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ResourceNavNode) {
+        tip = ((ResourceNavNode) obj).getToolTipText( isOverview);
       } else if (obj instanceof TimelineNavNode) {
         tip = ((TimelineNavNode) obj).getToolTipText( isOverview);
       } else if (obj instanceof SlotNavNode) {
@@ -189,6 +193,8 @@ public class VizViewOverview extends Overview {
         tip = ((ResourceProfile.ProfileLine) obj).getToolTipText( isOverview);
       } else if (obj instanceof ResourceTransactionNode) {
         tip = ((ResourceTransactionNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TimelineViewTimelineNode) {
+        tip = ((TimelineViewTimelineNode) obj).getToolTipText( isOverview);
       } else {
         tip = obj.getToolTipText();
       }

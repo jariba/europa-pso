@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.32 2004-03-10 02:21:22 taylor Exp $
+// $Id: planViz.txt,v 1.33 2004-03-16 02:24:14 taylor Exp $
 //
 // PlanWorks
 //
@@ -464,7 +464,7 @@ Pre-conditions:
   1. PlanWorks is running.
   2. The "test1" project is open, and all partial plan views, except
      Transaction View, are being displayed for step<nn> in a "tiled" layout 
-     arrangement.  Create overviw windows for each partial plan view to
+     arrangement.  Create overview windows for each partial plan view to
      aid to monitoring the effects of Content Filter application.
   3. The Constraint Network View has been expanded for at least two tokens,
      and all their variable and constraint nodes.
@@ -798,7 +798,7 @@ Pre-conditions:
   2. A project containing a sequence is open.
   3. The "Sequence Steps View" for the sequence is open.
   4. For any sequence step, select Mouse-Right "Open All Views".
-  5. Delete the "TransactionView" window.
+  5. Delete the "DBTransactionView" window.
 
 Method:
   1. In the Timeline View, Mouse-Right "Open Navigator View" on a
@@ -934,6 +934,33 @@ Post-conditions:
      highlighted.
  12. Method:11 - The resource transaction node with the entered id will be highlighted.
 
+
+PLANVIZ-22
+--------------------
+Exercise the Zoom View capabilities.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. A project containing a sequence is open.
+  3. The "Sequence Steps View" for the sequence is open.
+  4. For any sequence step, select Mouse-Right "Open All Views".
+  5. Delete the "Resource Profile", "Resource Transaction", "Temporal
+     Extent", and "DBTransaction" views.
+
+Method:
+  1. In the Timeline View, Mouse-Right "Zoom View" on the background.
+  2. In the Token Network View, Mouse-Right "Zoom View" on the background.
+  3. In the Constraint Network View, Mouse-Right "ZoomView" on the background.
+  4. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
+     variable node.  In the Navigator View, Mouse-Right "Zoom View" on the 
+     background.
+
+
+Post-conditions:
+  1. Use the other views to verify the relationships
+     rendered on the Zoom Views.
+
+Requirements: N/A
 
 
 

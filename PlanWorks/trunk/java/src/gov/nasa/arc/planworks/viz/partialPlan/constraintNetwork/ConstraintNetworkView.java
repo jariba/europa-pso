@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.49 2004-03-12 23:23:00 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.50 2004-03-16 02:24:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -159,7 +159,6 @@ public class ConstraintNetworkView extends PartialPlanView {
     constraintLinkMap = new HashMap();
     variableLinkMap = new HashMap();
     containerNodeMap = new HashMap();
-
     //isDebugPrint = true;
     isDebugPrint = false;
 
@@ -599,7 +598,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   }
 
   private void createVarNodesAndLinksForConstr(ConstraintNode constrNode) {
-    boolean isDraggable = false;
+    boolean isDraggable = true;
     int x = 0, y = 0;
     PwConstraint constr = constrNode.getConstraint();
     ListIterator varIterator = constr.getVariablesList().listIterator();
@@ -1364,7 +1363,7 @@ public class ConstraintNetworkView extends PartialPlanView {
      *                NASA Ames Research Center - Code IC
      * @version 0.0
      */
-  class ConstraintJGoView extends JGoView {
+  public class ConstraintJGoView extends JGoView {
 
     private ConstraintNetworkView constraintNetworkView;
     private PwPartialPlan partialPlan;
@@ -1382,6 +1381,41 @@ public class ConstraintNetworkView extends PartialPlanView {
     }
 
     /**
+     * <code>resetOpenNodes</code> - reset the nodes bounding rectangles highlight width
+     *                               to the current zoom factor
+     *
+     */
+    public void resetOpenNodes() {
+      int penWidth =
+        constraintNetworkView.getOpenJGoPenWidth( constraintNetworkView.getZoomFactor());
+      Iterator constraintNodeItr = constraintNodeMap.values().iterator();
+      while (constraintNodeItr.hasNext()) {
+        ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
+        if (constraintNode.areNeighborsShown()) {
+          constraintNode.setPen( new JGoPen( JGoPen.SOLID, penWidth,
+                                             ColorMap.getColor( "black")));
+        }
+      }
+      Iterator variableNodeItr = variableNodeMap.values().iterator();
+      while (variableNodeItr.hasNext()) {
+        VariableNode variableNode = (VariableNode) variableNodeItr.next();
+        if (variableNode.areNeighborsShown()) {
+          variableNode.setPen( new JGoPen( JGoPen.SOLID, penWidth,
+                                           ColorMap.getColor( "black")));
+        }
+      }
+      Iterator containerNodeIterator = containerNodeMap.values().iterator();
+      while (containerNodeIterator.hasNext()) {
+        VariableContainerNode parentNode =
+          (VariableContainerNode) containerNodeIterator.next();
+        if (parentNode.areNeighborsShown()) {
+          parentNode.setPen( new JGoPen( JGoPen.SOLID, penWidth,
+                                         ColorMap.getColor( "black")));
+        }
+      }
+    } // end resetOpenNodes
+
+    /**
      * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
      *
      * @param modifiers - <code>int</code> - 
@@ -1395,8 +1429,6 @@ public class ConstraintNetworkView extends PartialPlanView {
         mouseRightPopupMenu( viewCoords);
       }
     } // end doBackgroundClick
-
-
 
     private void mouseRightPopupMenu( Point viewCoords) {
       String partialPlanName = partialPlan.getPartialPlanName();
@@ -1436,6 +1468,9 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
       createChangeLayoutItem(changeLayoutItem);
       mouseRightPopup.add(changeLayoutItem);
+
+      constraintNetworkView.createZoomItem( jGoView, zoomFactor, mouseRightPopup,
+                                            ConstraintNetworkView.this);
 
       if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
         mouseRightPopup.addSeparator();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineViewTimelineNode.java,v 1.1 2004-02-17 22:22:04 miatauro Exp $
+// $Id: TimelineViewTimelineNode.java,v 1.2 2004-03-16 02:24:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -193,6 +193,36 @@ public class TimelineViewTimelineNode extends TextNode {
   // doUncapturedMouseMove - mouse over object
   // getToolTipText - return string to display in Tool Tip
 
+  /**
+   * <code>getToolTipText</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText() {
+    StringBuffer tip = new StringBuffer( "<html> ");
+    tip.append( timeline.getName());
+    if (timelineView.getZoomFactor() > 1) {
+      tip.append( "<br>key=");
+      tip.append( timeline.getId().toString());
+    }
+    tip.append( "</html>");
+    return tip.toString();
+  } // end getToolTipText
+
+  /**
+   * <code>getToolTipText</code> - when over 1/8 scale overview token node
+   *
+   * @param isOverview - <code>boolean</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText( boolean isOverview) {
+    StringBuffer tip = new StringBuffer( "<html> ");
+    tip.append( timeline.getName());
+    tip.append( "<br>key=");
+    tip.append( timeline.getId().toString());
+    tip.append( "</html>");
+    return tip.toString();
+  } // end getToolTipText
 
   /**
    * <code>doMouseClick</code>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.7 2004-03-02 02:34:17 taylor Exp $
+// $Id: VariableNavNode.java,v 1.8 2004-03-16 02:24:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -51,7 +51,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
   private NavigatorView navigatorView;
   private String nodeLabel;
   private boolean isDebug;
-  private boolean areNeighborsShown;
+  private boolean hasZeroConstraints;
   private int linkCount;
   private boolean inLayout;
 
@@ -80,7 +80,11 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
     // System.err.println( "VariableNavNode: " + nodeLabel);
 
     inLayout = false;
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
+    hasZeroConstraints = true;
+    if (variable.getConstraintList().size() > 0) {
+      hasZeroConstraints = false;
+    }
     linkCount = 0;
 
     configure( variableLocation, backgroundColor, isDraggable);
@@ -96,6 +100,11 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
     // do not allow user links
     getPort().setVisible( false);
     getLabel().setMultiline( true);
+    if (hasZeroConstraints) {
+      setAreNeighborsShown( true);
+      int penWidth = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
+      setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
+    }
   } // end configure
 
   /**
@@ -159,9 +168,13 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
     int width = 1;
     inLayout = value;
     if (value == false) {
-      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
-      areNeighborsShown = false;
+      setAreNeighborsShown( false);
     }
+    if (hasZeroConstraints) {
+      setAreNeighborsShown( true);
+      width = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
+    }
+    setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
   /**
@@ -170,22 +183,13 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
    * @param isDebug - <code>boolean</code> - 
    */
   public final void resetNode( final boolean isDbg) {
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     if (isDbg && (linkCount != 0)) {
       System.err.println( "reset variable node: " + variable.getId() +
                           "; linkCount != 0: " + linkCount);
     }
     linkCount = 0;
   } // end resetNode
-
- /**
-   * <code>setAreNeighborsShown</code> - implements NavNode
-   *
-   * @param value - <code>boolean</code> - 
-   */
-  public final void setAreNeighborsShown( final boolean value) {
-    areNeighborsShown = value;
-  }
 
   /**
    * <code>getParentEntityList</code> - implements NavNode
@@ -251,13 +255,17 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
    */
   public final String getToolTipText() {
     String operation = "";
-    if (areNeighborsShown) {
+    if (areNeighborsShown()) {
       operation = "close";
     } else {
       operation = "open";
     }
     StringBuffer tip = new StringBuffer( "<html>");
     NodeGenerics.getVariableNodeToolTipText( variable, navigatorView, tip);
+    if (navigatorView.getZoomFactor() > 1) {
+      tip.append( "<br>key=");
+      tip.append( variable.getId().toString());
+    }
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
     }
@@ -274,7 +282,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
    */
   public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html>");
-    tip.append( variable.getDomain().toString());
+    NodeGenerics.getVariableNodeToolTipText( variable, navigatorView, tip);
     tip.append( "<br>key=");
     tip.append( variable.getId().toString());
     tip.append( "</html>");
@@ -300,12 +308,12 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       navigatorView.setStartTimeMSecs( System.currentTimeMillis());
       boolean areObjectsChanged = false;
-      if (! areNeighborsShown) {
+      if (! areNeighborsShown()) {
         areObjectsChanged = addVariableObjects( this);
-        areNeighborsShown = true;
+        setAreNeighborsShown( true);
       } else {
         areObjectsChanged = removeVariableObjects( this);
-        areNeighborsShown = false;
+        setAreNeighborsShown( false);
       }
       if (areObjectsChanged) {
         navigatorView.setLayoutNeeded();
@@ -329,7 +337,8 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
   } // end addVariableObjects
 

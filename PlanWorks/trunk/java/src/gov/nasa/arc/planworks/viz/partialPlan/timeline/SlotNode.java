@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.14 2004-03-10 02:21:21 taylor Exp $
+// $Id: SlotNode.java,v 1.15 2004-03-16 02:24:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -299,14 +299,24 @@ public class SlotNode extends TextNode {
    */
   public String getToolTipText() {
     int numTokens = slot.getTokenList().size();
+    StringBuffer tip = new StringBuffer( "<html> ");
     if (numTokens > 0) {
-      StringBuffer tip = new StringBuffer( "<html> ");
       NodeGenerics.getSlotNodeToolTipText( slot, tip);
-      tip.append( " </html>");
-      return tip.toString();
-    } else {
-      return null;
+      if (timelineView.getZoomFactor() > 1) {
+        tip.append( "<br>slot key=");
+        tip.append( slot.getId().toString());
+      }
+    } else { // empty slot
+      if (timelineView.getZoomFactor() > 1) {
+        tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
+        tip.append( "<br>slot key=");
+        tip.append( slot.getId().toString());
+      } else {
+        return null;
+      }
     }
+    tip.append( " </html>");
+    return tip.toString();
   } // end getToolTipText
 
   /**
@@ -318,7 +328,8 @@ public class SlotNode extends TextNode {
   public String getToolTipText( boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html> ");
     if (token != null) {
-      tip.append( predicateName);
+      // tip.append( predicateName);
+      NodeGenerics.getSlotNodeToolTipText( slot, tip);
     } else {
       tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
     }

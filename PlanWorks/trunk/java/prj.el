@@ -1,4 +1,4 @@
-;;; $Id: prj.el,v 1.7 2004-02-03 20:43:42 taylor Exp $
+;;; $Id: prj.el,v 1.8 2004-03-16 02:24:08 taylor Exp $
 ;;;
 ;;; JAVA_HOME ANT_HOME JDE_HOME & PLANWORKS_HOME must be set properly
 ;;;
@@ -29,6 +29,7 @@
  '(jde-compile-option-classpath
    (list (concat (getenv "JAVA_HOME") "/jre/lib/rt.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/classes/")
+         (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/JGo.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/JGoLayout.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/Classier.jar")
@@ -65,6 +66,7 @@
          (concat (getenv "JDE_HOME") "/java/lib/bsh.jar")
          (concat (getenv "JDE_HOME") "/java/lib/jde.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/classes/")
+         (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/JGo.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/JGoLayout.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/Classier.jar")

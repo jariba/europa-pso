@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceNavNode.java,v 1.1 2004-03-02 02:34:16 taylor Exp $
+// $Id: ResourceNavNode.java,v 1.2 2004-03-16 02:24:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,7 +46,6 @@ public class ResourceNavNode extends ResourceNode implements NavNode {
   private PwResource resource;
   private NavigatorView navigatorView;
 
-  private boolean areNeighborsShown;
   private int linkCount;
   private boolean inLayout;
   private boolean isDebugPrint;
@@ -70,7 +69,7 @@ public class ResourceNavNode extends ResourceNode implements NavNode {
     // isDebugPrint = true;
 
     inLayout = false;
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     linkCount = 0;
   } // end constructor
 
@@ -135,9 +134,9 @@ public class ResourceNavNode extends ResourceNode implements NavNode {
     int width = 1;
     inLayout = value;
     if (value == false) {
-      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
-      areNeighborsShown = false;
+      setAreNeighborsShown( false);
     }
+    setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
   /**
@@ -146,22 +145,13 @@ public class ResourceNavNode extends ResourceNode implements NavNode {
    * @param isDebug - <code>boolean</code> - 
    */
   public final void resetNode( final boolean isDebug) {
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     if (isDebug && (linkCount != 0)) {
       System.err.println( "reset resource node: " + resource.getId() +
                           "; linkCount != 0: " + linkCount);
     }
     linkCount = 0;
   } // end resetNode
-
-  /**
-   * <code>setAreNeighborsShown</code> - implements NavNode
-   *
-   * @param value - <code>boolean</code> - 
-   */
-  public final void setAreNeighborsShown( final boolean value) {
-    areNeighborsShown = value;
-  }
 
   /**
    * <code>getParentEntityList</code> - implements NavNode
@@ -197,12 +187,19 @@ public class ResourceNavNode extends ResourceNode implements NavNode {
    */
   public final String getToolTipText() {
     String operation = "";
-    if (areNeighborsShown) {
+    if (areNeighborsShown()) {
       operation = "close";
     } else {
       operation = "open";
     }
-    StringBuffer tip = new StringBuffer( "<html>resource<br>");
+    // StringBuffer tip = new StringBuffer( "<html>resource<br>");
+    StringBuffer tip = new StringBuffer( "<html>");
+    tip.append( resource.getName());
+    if (partialPlanView.getZoomFactor() > 1) {
+      tip.append( "<br>key=");
+      tip.append( resource.getId().toString());
+      tip.append( "<br>");
+    }
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
       tip.append( "<br>");
@@ -248,12 +245,12 @@ public class ResourceNavNode extends ResourceNode implements NavNode {
       NavigatorView navigatorView = (NavigatorView) partialPlanView;
       navigatorView.setStartTimeMSecs( System.currentTimeMillis());
       boolean areObjectsChanged = false;
-      if (! areNeighborsShown) {
+      if (! areNeighborsShown()) {
         areObjectsChanged = addResourceObjects( this);
-        areNeighborsShown = true;
+        setAreNeighborsShown( true);
       } else {
         areObjectsChanged = removeResourceObjects( this);
-        areNeighborsShown = false;
+        setAreNeighborsShown( false);
       }
       if (areObjectsChanged) {
         navigatorView.setLayoutNeeded();
@@ -277,7 +274,8 @@ public class ResourceNavNode extends ResourceNode implements NavNode {
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
   } // end addResourceObjects
 

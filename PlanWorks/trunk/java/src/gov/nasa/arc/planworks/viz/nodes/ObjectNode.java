@@ -28,8 +28,9 @@ public class ObjectNode extends ExtendedBasicNode {
   protected boolean isDebug;
   protected Color backgroundColor;
 
-  public ObjectNode( final PwObject object, final Point objectLocation, final Color backgroundColor,
-                     final boolean isDraggable, final PartialPlanView partialPlanView) { 
+  public ObjectNode( final PwObject object, final Point objectLocation,
+                     final Color backgroundColor, final boolean isDraggable,
+                     final PartialPlanView partialPlanView) { 
     super( ViewConstants.LEFT_TRAPEZOID);
     this.object = object;
     this.backgroundColor = backgroundColor;

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.60 2004-03-07 01:49:26 taylor Exp $
+# $Id: build-tags-file.csh,v 1.61 2004-03-16 02:24:06 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -12,6 +12,7 @@ if ( "`/bin/uname -s`" == "SunOS" ) then # SUN-OS OR SOLARIS
 endif
 
 etags $etags_flag planWorks.TAGS \
+    ../../../pub/JGo41/com/nwoods/jgo/JGoSelection.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/Diamond.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/Hexagon.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/LeftTrapezoid.java \
@@ -98,20 +99,25 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/test/BackendTest.java \
     src/gov/nasa/arc/planworks/test/MySQLDBTest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
+    src/gov/nasa/arc/planworks/test/PlanWorksUtilsTest.java \
     src/gov/nasa/arc/planworks/util/Algorithms.java \
+    src/gov/nasa/arc/planworks/util/BooleanFunctor.java \
     src/gov/nasa/arc/planworks/util/BrowseButton.java \
+    src/gov/nasa/arc/planworks/util/CollectionUtils.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/ColorStream.java \
     src/gov/nasa/arc/planworks/util/DirectoryChooser.java \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
     src/gov/nasa/arc/planworks/util/Extent.java \
     src/gov/nasa/arc/planworks/util/FileCopy.java \
+    src/gov/nasa/arc/planworks/util/FunctorFactory.java \
     src/gov/nasa/arc/planworks/util/MouseEventOSX.java \
     src/gov/nasa/arc/planworks/util/OneToManyMap.java \
     src/gov/nasa/arc/planworks/util/PlannerCommandLineDialog.java \
     src/gov/nasa/arc/planworks/util/ProjectNameDialog.java \
     src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java \
     src/gov/nasa/arc/planworks/util/StringNameComparator.java \
+    src/gov/nasa/arc/planworks/util/UnaryFunctor.java \
     src/gov/nasa/arc/planworks/util/UniqueSet.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
@@ -158,6 +164,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkResourceNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTimelineNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTokenNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkUtils.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkViewState.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNode.java \
