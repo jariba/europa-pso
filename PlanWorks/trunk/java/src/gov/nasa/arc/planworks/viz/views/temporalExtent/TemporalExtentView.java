@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.14 2003-09-05 19:11:20 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.15 2003-09-10 00:23:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -15,9 +15,12 @@ package gov.nasa.arc.planworks.viz.views.temporalExtent;
 
 import java.awt.BorderLayout;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,9 +59,9 @@ import gov.nasa.arc.planworks.viz.views.VizView;
 
 
 /**
- * <code>TemporalExtentView</code> - render a partial plan's timelines and slots
- *                JPanel->VizView->TemporalExtentView
- *                JComponent->JGoView
+ * <code>TemporalExtentView</code> - render the temporal extents of a
+ *                partial plan's tokens
+ *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
@@ -68,9 +71,9 @@ public class TemporalExtentView extends VizView {
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private JGoView jGoView;
+  private JGoView jGoExtentView;
+  private JGoView jGoRulerView;
   private String viewName;
-  private JGoDocument jGoDocument;
   private JGoSelection jGoSelection;
   // temporalNodeList & tmpTemporalNodeList used by JFCUnit test case
   private List temporalNodeList; // element TemporalNode
@@ -91,6 +94,8 @@ public class TemporalExtentView extends VizView {
   private float timeScale;
   private int maxViewWidth;
   private int maxViewHeight;
+  private GridBagLayout gridBagLayout;
+  private GridBagConstraints gridBagConstraints;
 
   /**
    * <code>TemporalExtentView</code> - constructor - called by ViewSet.openTemporalExtentView.
@@ -116,16 +121,43 @@ public class TemporalExtentView extends VizView {
     maxCellRow = 0;
     maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
     maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
-
+//     gridBagLayout = new GridBagLayout();
+//     gridBagConstraints = new GridBagConstraints();
+//     setLayout( gridBagLayout);
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
+
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
 
-    jGoView = new JGoView();
-    jGoSelection = new JGoSelection( jGoView);
-    jGoView.setBackground( ColorMap.getColor( "lightGray"));
-    add( jGoView, BorderLayout.NORTH);
-    jGoView.validate();
-    jGoView.setVisible( true);
+    jGoExtentView = new JGoView();
+    jGoSelection = new JGoSelection( jGoExtentView);
+    jGoExtentView.setBackground( ColorMap.getColor( "lightGray"));
+//     gridBagConstraints.gridx = 0;
+//     gridBagConstraints.gridy = 0;
+//     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+//     gridBagConstraints.fill = GridBagConstraints.BOTH;
+//     gridBagConstraints.gridwidth = 1;
+//     gridBagConstraints.weightx = 1.0;
+//     gridBagConstraints.weighty = 0.9;
+//     gridBagLayout.setConstraints( jGoExtentView, gridBagConstraints);
+//     add( jGoExtentView);
+    add( jGoExtentView, BorderLayout.NORTH);
+    jGoExtentView.validate();
+    jGoExtentView.setVisible( true);
+
+    jGoRulerView = new RulerView();
+    jGoRulerView.setBackground( ColorMap.getColor( "lightGray"));
+//     gridBagConstraints.gridx = 0;
+//     gridBagConstraints.gridy = 1;
+//     gridBagConstraints.anchor = GridBagConstraints.NORTHWEST;
+//     gridBagConstraints.fill = GridBagConstraints.BOTH;
+//     gridBagConstraints.gridwidth = 1;
+//     gridBagConstraints.weightx = 1.0;
+//     gridBagConstraints.weighty = 0.1;
+//     gridBagLayout.setConstraints( jGoRulerView, gridBagConstraints);
+//     add( jGoRulerView);
+    add( jGoRulerView, BorderLayout.NORTH);
+    jGoRulerView.validate();
+    jGoRulerView.setVisible( true);
     this.setVisible( true);
 
     SwingUtilities.invokeLater( runInit);
@@ -143,12 +175,12 @@ public class TemporalExtentView extends VizView {
    *                     and slot widgets
    *
    *    These functions are not done in the constructor to avoid:
-   *    "Cannot measure text until a JGoView exists and is part of a visible window".
+   *    "Cannot measure text until a JGoExtentView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoExtentView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
+    jGoExtentView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for TemporalExtentView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -162,11 +194,9 @@ public class TemporalExtentView extends VizView {
                      ViewConstants.TIMELINE_VIEW_FONT_STYLE,
                      ViewConstants.TIMELINE_VIEW_FONT_SIZE);
     // does nothing
-    // jGoView.setFont( font);
+    // jGoExtentView.setFont( font);
     fontMetrics = graphics.getFontMetrics( font);
     graphics.dispose();
-
-    jGoDocument = jGoView.getDocument();
 
     collectAndComputeTimeScaleMetrics();
     createTemporalNodes();
@@ -183,7 +213,7 @@ public class TemporalExtentView extends VizView {
     long stopTimeMSecs = (new Date()).getTime();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
+    jGoExtentView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
 
@@ -214,12 +244,12 @@ public class TemporalExtentView extends VizView {
   } // end redrawView
 
   /**
-   * <code>getJGoDocument</code>
+   * <code>getJGoDocument</code> - the temporal extent view document
    *
    * @return - <code>JGoDocument</code> - 
    */
   public JGoDocument getJGoDocument()  {
-    return this.jGoDocument;
+    return this.jGoExtentView.getDocument();
   }
 
   /**
@@ -454,8 +484,9 @@ public class TemporalExtentView extends VizView {
 
   private void createTimeScale() {
     int xLoc = (int) scaleTime( tickTime);
+    int maxRulerWidth = 0, maxRulerHeight = 0;
     // System.err.println( "createTimeScale: xLoc " + xLoc);
-    int yRuler = startYLoc + ((maxCellRow + 1) * ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2;
+    int yRuler = startYLoc;
     int yLabelUpper = yRuler, yLabelLower = yRuler;
     if ((timeScaleEnd - timeScaleStart) > ViewConstants.TEMPORAL_LARGE_LABEL_RANGE) {
       yLabelLower = yRuler + ViewConstants.TIMELINE_VIEW_Y_INIT;
@@ -484,15 +515,21 @@ public class TemporalExtentView extends VizView {
     timeScaleRuler.addPoint( xLoc, yRuler);
     timeScaleRuler.addPoint( xLoc, yRuler + tickHeight);
     addTickLabel( tickTime, xLoc, yLabel + 4);
-    int maxHeight = yRuler + (ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
-    if (maxHeight > maxViewHeight) {
-      maxViewHeight = maxHeight;
+    int maxHeight = yLabelLower + (ViewConstants.TIMELINE_VIEW_Y_INIT * 3);
+    if (yLabelUpper != yLabelLower) {
+      maxHeight += ViewConstants.TIMELINE_VIEW_Y_INIT;
+    }
+    if (maxHeight > maxRulerHeight) {
+      maxRulerHeight = maxHeight;
     }
     int maxWidth = xLoc + ViewConstants.TIMELINE_VIEW_X_INIT;
-    if (maxWidth > maxViewWidth) {
-      maxViewWidth = maxWidth;
+    if (maxWidth > maxRulerWidth) {
+      maxRulerWidth = maxWidth; 
     }
-    jGoDocument.addObjectAtTail( timeScaleRuler);
+    jGoRulerView.getDocument().addObjectAtTail( timeScaleRuler);
+    System.err.println( "createTimeScale: maxRulerHeight " + maxRulerHeight);
+    ((RulerView) jGoRulerView).setHeight( maxRulerHeight);
+    jGoRulerView.validate();
   } // end createTimeScale
 
   private void addTickLabel( int tickTime, int x, int y) {
@@ -510,7 +547,7 @@ public class TemporalExtentView extends VizView {
     textObject.setEditable( false);
     textObject.setDraggable( false);
     textObject.setBkColor( ColorMap.getColor( "lightGray"));
-    jGoDocument.addObjectAtTail( textObject);
+    jGoRulerView.getDocument().addObjectAtTail( textObject);
   } // end addTickLabel
 
 
@@ -553,7 +590,7 @@ public class TemporalExtentView extends VizView {
                                 earliestDurationString, latestDurationString, objectCnt,
                                 isFreeToken, this); 
             tmpTemporalNodeList.add( temporalNode);
-            jGoDocument.addObjectAtTail( temporalNode);
+            jGoExtentView.getDocument().addObjectAtTail( temporalNode);
             previousToken = token;
           }
           isFirstSlot = false;
@@ -590,7 +627,7 @@ public class TemporalExtentView extends VizView {
                           isFreeToken, this); 
       tmpTemporalNodeList.add(temporalNode );
       // nodes are always in front of any links
-      jGoDocument.addObjectAtTail( temporalNode);
+      jGoExtentView.getDocument().addObjectAtTail( temporalNode);
     }
   } // end createFreeTokenTemporalNodes
 
@@ -698,11 +735,11 @@ public class TemporalExtentView extends VizView {
 
 
   private void iterateOverJGoDocument() {
-    JGoListPosition position = jGoDocument.getFirstObjectPos();
+    JGoListPosition position = jGoExtentView.getDocument().getFirstObjectPos();
     int cnt = 0;
     while (position != null) {
-      JGoObject object = jGoDocument.getObjectAtPos( position);
-      position = jGoDocument.getNextObjectPosAtTop( position);
+      JGoObject object = jGoExtentView.getDocument().getObjectAtPos( position);
+      position = jGoExtentView.getDocument().getNextObjectPosAtTop( position);
       //System.err.println( "iterateOverJGoDoc: position " + position +
       //                   " className " + object.getClass().getName());
       if (object instanceof TemporalNode) {
@@ -717,6 +754,31 @@ public class TemporalExtentView extends VizView {
     //System.err.println( "iterateOverJGoDoc: cnt " + cnt);
   } // end iterateOverJGoDocument
 
+
+
+class RulerView extends JGoView {
+
+  private int height;
+
+  public RulerView() {
+    super();
+    height = 0;
+  }
+
+  public void setHeight( int height) {
+    this.height = height;
+  }
+
+  public Dimension getPreferredSize() { 
+    System.err.println( " RulerView getPreferredSize height " + height);
+    int h = height +
+      (int) getHorizontalScrollBar().getSize().getHeight();
+    int w = super.getSize().width; 
+    return new Dimension( w, h);
+  };
+
+
+} // end class RulerView
 
 
 } // end class TemporalExtentView

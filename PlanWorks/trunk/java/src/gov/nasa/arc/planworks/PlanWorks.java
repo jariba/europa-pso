@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.45 2003-09-05 16:50:48 miatauro Exp $
+// $Id: PlanWorks.java,v 1.46 2003-09-10 00:23:09 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -20,7 +20,6 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +36,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -122,10 +122,10 @@ public class PlanWorks extends MDIDesktopFrame {
 
   private static JMenu projectMenu;
   private final DirectoryChooser sequenceDirChooser;
-  private static String sequenceDirectory; // pathname
+  private static String sequenceParentDirectory; // pathname
+  private static File [] sequenceDirectories; // directory name
 
   private String currentProjectName;
-  private String currentSequenceDirectory; // pathname
   private PwProject currentProject;
   private ViewManager viewManager;
   private Map sequenceNameMap;
@@ -154,7 +154,6 @@ public class PlanWorks extends MDIDesktopFrame {
   public PlanWorks( JMenu[] constantMenus) {
     super( name, constantMenus);
     projectMenu.setEnabled(false);
-    currentSequenceDirectory = "";
     currentProjectName = "";
     currentProject = null;
     viewManager = null;
@@ -397,6 +396,8 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end class InstantiateProjectThread
 
 
+  // projects can have 0 sequences: create project, even if selected sequences
+  // are invalid
   private PwProject createProject() {
     boolean isProjectCreated = false;
     PwProject project = null;
@@ -409,27 +410,35 @@ public class PlanWorks extends MDIDesktopFrame {
       try {
         if (PwProject.listProjects().indexOf( inputName) >= 0) {
           throw new DuplicateNameException( "A project named '" + inputName +
-                                               "' already exists.");
+                                            "' already exists.");
         }
+        List invalidSequenceDirs = new ArrayList();
         while (true) {
           // ask user for a single sequence directory of partialPlan directories
           int returnVal = sequenceDirChooser.showDialog( this, "");
           if (returnVal == JFileChooser.APPROVE_OPTION) {
-            if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
-              continue;
+            for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
+              String sequenceDirectory = sequenceParentDirectory +
+                System.getProperty( "file.separator") + sequenceDirectories[i].getName();
+              if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
+                JOptionPane.showMessageDialog
+                  (PlanWorks.this, sequenceDirectory, "Invalid Sequence Directory",
+                   JOptionPane.ERROR_MESSAGE);
+                invalidSequenceDirs.add( sequenceDirectory);
+              }
+            }
+            if (invalidSequenceDirs.size() == sequenceDirectories.length) {
+              continue; // user must reselect
             } else {
-              break;
+              break; // some sequences are valid
             }
           } else {
-            return null;
+            return null; // exit dialog
           }
-        }
+        } // end while
         project = PwProject.createProject( inputName);
-        // System.err.println( "project.addPlanningSequence " + sequenceDirectory);
-        project.addPlanningSequence( sequenceDirectory);
-        isProjectCreated = true;
         currentProjectName = inputName;
-        currentSequenceDirectory = sequenceDirectory;
+        isProjectCreated = true;
         //System.err.println( "Create Project: " + currentProjectName);
         this.setTitle( name + " of Project =>  " + currentProjectName);
         setProjectMenuEnabled( DELETE_MENU, true);
@@ -438,40 +447,35 @@ public class PlanWorks extends MDIDesktopFrame {
         if (PwProject.listProjects().size() > 1) {
           setProjectMenuEnabled( OPEN_MENU, true);
         }
+        for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
+          String sequenceDirectory = sequenceParentDirectory +
+            System.getProperty( "file.separator") + sequenceDirectories[i].getName();
+          if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
+            System.err.println( "project.addPlanningSequence " + sequenceDirectory);
+            project.addPlanningSequence( sequenceDirectory);
+          }
+        }
+
       } catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog
           (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-          System.err.println( rnfExcep);
-          rnfExcep.printStackTrace();
-          isProjectCreated = false;
+        System.err.println( rnfExcep);
+        // rnfExcep.printStackTrace();
+        isProjectCreated = false;
       } catch (DuplicateNameException dupExcep) {
+        // duplicate project name or duplicate sequence
         int index = dupExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog
           (PlanWorks.this, dupExcep.getMessage().substring( index + 1),
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
-          System.err.println( dupExcep);
-          dupExcep.printStackTrace();
-          isProjectCreated = false; 
-      } catch (SQLException sqlExcep) {
-        StringBuffer errorOutput =
-          new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
-                                                           indexOf(":") + 1));
-        StackTraceElement [] stackTrace = sqlExcep.getStackTrace();
-        for(int i = 0; i < stackTrace.length; i++) {
-          errorOutput.append(stackTrace[i].getFileName()).append(":");
-          errorOutput.append(stackTrace[i].getLineNumber()).append(" ");
-          errorOutput.append(stackTrace[i].getClassName()).append(".");
-          errorOutput.append(stackTrace[i].getMethodName()).append("\n");
-        }
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
-        isProjectCreated = false; 
+        System.err.println( dupExcep);
+        // dupExcep.printStackTrace();
       } catch(Exception e) {
-//         int index = e.getMessage().indexOf(":");
-//         JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage().substring(index+1),
-//                                       "Exception", JOptionPane.ERROR_MESSAGE);
+        //         int index = e.getMessage().indexOf(":");
+        //         JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage().substring(index+1),
+        //                                       "Exception", JOptionPane.ERROR_MESSAGE);
         JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage(),
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
@@ -639,22 +643,44 @@ public class PlanWorks extends MDIDesktopFrame {
   private void addSequence() {
     boolean isSequenceAdded = false;
     while (! isSequenceAdded) {
+      List invalidSequenceDirs = new ArrayList();
       while (true) {
         // ask user for a single sequence directory of partialPlan directories
         int returnVal = sequenceDirChooser.showDialog( this, "");
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-          if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
-            continue;
+          for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
+            String sequenceDirectory = sequenceParentDirectory +
+              System.getProperty( "file.separator") + sequenceDirectories[i].getName();
+            if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
+              JOptionPane.showMessageDialog
+                (PlanWorks.this, sequenceDirectory, "Invalid Sequence Directory",
+                 JOptionPane.ERROR_MESSAGE);
+              invalidSequenceDirs.add( sequenceDirectory);
+            }
+          }
+          if (invalidSequenceDirs.size() == sequenceDirectories.length) {
+            System.err.println( "continue");
+            continue; // user must reselect
           } else {
-            break;
+            System.err.println( "break");
+            break; // some sequences are valid
           }
         } else {
-          return;
+          return; // exit dialog
         }
-      }
+      } // end while
+
       try {
-        currentProject.addPlanningSequence( sequenceDirectory);
-        isSequenceAdded = true;
+            System.err.println( "try");
+        for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
+          String sequenceDirectory = sequenceParentDirectory +
+            System.getProperty( "file.separator") + sequenceDirectories[i].getName();
+          if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
+            System.err.println( "project.addPlanningSequence " + sequenceDirectory);
+            currentProject.addPlanningSequence( sequenceDirectory);
+            isSequenceAdded = true;
+         }
+        }
         //System.err.println( "Adding sequence " + sequenceDirectory);
       } catch (DuplicateNameException dupExcep) {
         int index = dupExcep.getMessage().indexOf( ":");
@@ -662,29 +688,15 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, dupExcep.getMessage().substring( index + 1),
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( dupExcep);
-        dupExcep.printStackTrace();
+        // dupExcep.printStackTrace();
       } catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog
           (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
-        rnfExcep.printStackTrace();
-      } catch (SQLException sqlExcep) {
-        StringBuffer errorOutput =
-          new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
-                                                           indexOf(":") + 1));
-        StackTraceElement [] stackTrace = sqlExcep.getStackTrace();
-        for(int i = 0; i < stackTrace.length; i++) {
-          errorOutput.append(stackTrace[i].getFileName()).append(":");
-          errorOutput.append(stackTrace[i].getLineNumber()).append(" ");
-          errorOutput.append(stackTrace[i].getClassName()).append(".");
-          errorOutput.append(stackTrace[i].getMethodName()).append("\n");
-        }
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
+        // rnfExcep.printStackTrace();
       }
-      currentSequenceDirectory = sequenceDirectory;
       JMenu partialPlanMenu = clearSeqPartialPlanViewMenu();
       addSeqPartialPlanViewMenu( currentProject, partialPlanMenu);
     }
@@ -992,67 +1004,46 @@ public class PlanWorks extends MDIDesktopFrame {
       if ((viewSet != null) && viewSet.viewExists( viewName)) {
         viewExists = true;
       }
-      try {
-        if (viewName.equals( ViewManager.TIMELINE_VIEW)) {
-          if (! viewExists) {
-            System.err.println( "Rendering Timeline View ...");
-          }
-          viewFrame = viewManager.openTimelineView
-            ( partialPlan, sequenceName + System.getProperty( "file.separator") +
-              partialPlanName, startTimeMSecs);
-          finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
-        } else if (viewName.equals( ViewManager.TNET_VIEW)) {
-          if (! viewExists) {
-            System.err.println( "Rendering Token Network View ...");
-          }
-          viewFrame = viewManager.openTokenNetworkView
-            ( partialPlan, sequenceName + System.getProperty( "file.separator") +
-              partialPlanName, startTimeMSecs);        
-          finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
-        } else if (viewName.equals( ViewManager.TEMPEXT_VIEW)) {
-          if (! viewExists) {
-            System.err.println( "Rendering Temporal Extent View ...");
-          }
-          viewFrame = viewManager.openTemporalExtentView
-            ( partialPlan, sequenceName + System.getProperty( "file.separator") +
-              partialPlanName, startTimeMSecs);        
-          finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
-        } else if (viewName.equals( ViewManager.CNET_VIEW)) {
-          if (! viewExists) {
-            System.err.println( "Rendering Constraint Network View ...");
-          }
-          viewFrame = viewManager.openConstraintNetworkView
-            ( partialPlan, sequenceName + System.getProperty( "file.separator") +
-              partialPlanName, startTimeMSecs);        
-          finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
-        } else if (viewName.equals( ViewManager.TEMPNET_VIEW)) {
-          JOptionPane.showMessageDialog
-            (PlanWorks.this, viewName, "View Not Supported", 
-             JOptionPane.INFORMATION_MESSAGE);
-        } else {
-          JOptionPane.showMessageDialog
-            (PlanWorks.this, viewName, "View Not Supported", 
-             JOptionPane.INFORMATION_MESSAGE);
+      if (viewName.equals( ViewManager.TIMELINE_VIEW)) {
+        if (! viewExists) {
+          System.err.println( "Rendering Timeline View ...");
         }
-      } catch (SQLException sqlExcep) {
-        StringBuffer errorOutput =
-          new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
-                                                           indexOf(":") + 1));
-        StackTraceElement [] stackTrace = sqlExcep.getStackTrace();
-        for(int i = 0; i < stackTrace.length; i++) {
-          errorOutput.append(stackTrace[i].getFileName()).append(":");
-          errorOutput.append(stackTrace[i].getLineNumber()).append(" ");
-          errorOutput.append(stackTrace[i].getClassName()).append(".");
-          errorOutput.append(stackTrace[i].getMethodName()).append("\n");
+        viewFrame = viewManager.openTimelineView
+          ( partialPlan, sequenceName + System.getProperty( "file.separator") +
+            partialPlanName, startTimeMSecs);
+        finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
+      } else if (viewName.equals( ViewManager.TNET_VIEW)) {
+        if (! viewExists) {
+          System.err.println( "Rendering Token Network View ...");
         }
+        viewFrame = viewManager.openTokenNetworkView
+          ( partialPlan, sequenceName + System.getProperty( "file.separator") +
+            partialPlanName, startTimeMSecs);        
+        finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
+      } else if (viewName.equals( ViewManager.TEMPEXT_VIEW)) {
+        if (! viewExists) {
+          System.err.println( "Rendering Temporal Extent View ...");
+        }
+        viewFrame = viewManager.openTemporalExtentView
+          ( partialPlan, sequenceName + System.getProperty( "file.separator") +
+            partialPlanName, startTimeMSecs);        
+        finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
+      } else if (viewName.equals( ViewManager.CNET_VIEW)) {
+        if (! viewExists) {
+          System.err.println( "Rendering Constraint Network View ...");
+        }
+        viewFrame = viewManager.openConstraintNetworkView
+          ( partialPlan, sequenceName + System.getProperty( "file.separator") +
+            partialPlanName, startTimeMSecs);        
+        finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
+      } else if (viewName.equals( ViewManager.TEMPNET_VIEW)) {
         JOptionPane.showMessageDialog
-          (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
-        /*  StringBuffer errorOutput =
-          new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
-                                                           indexOf(":") + 1));
+          (PlanWorks.this, viewName, "View Not Supported", 
+           JOptionPane.INFORMATION_MESSAGE);
+      } else {
         JOptionPane.showMessageDialog
-          (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
-          System.err.println(sqlExcep);*/
+          (PlanWorks.this, viewName, "View Not Supported", 
+           JOptionPane.INFORMATION_MESSAGE);
       }
     } // end renderView
 
@@ -1118,25 +1109,89 @@ public class PlanWorks extends MDIDesktopFrame {
       ( new File( System.getProperty( "default.sequence.dir")));
     sequenceDirChooser.setDialogTitle
       ( "Select Sequence Directory of Partial Plan Directory(ies)");
-    sequenceDirChooser.getOkButton().addActionListener( new ActionListener()
-      {
+    sequenceDirChooser.setMultiSelectionEnabled( true);
+    sequenceDirChooser.getOkButton().addActionListener( new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          File ff = sequenceDirChooser.getCurrentDirectory();
-          String dirChoice = ff.getAbsolutePath();
+          String dirChoice = sequenceDirChooser.getCurrentDirectory().getAbsolutePath();
+          File [] seqDirs = sequenceDirChooser.getSelectedFiles();
+          // System.err.println( "sequence parent directory" + dirChoice);
+          // System.err.println( "sequenceDirectories");
+          // for (int i = 0, n = seqDirs.length; i < n; i++) {
+          //   System.err.println( "  " + seqDirs[i].getName());
+          // }
           if ((dirChoice != null) && (dirChoice.length() > 0) &&
-              (new File( dirChoice)).isDirectory()) {
-            // System.err.println( "directory choice " + dirChoice);
-            PlanWorks.sequenceDirectory = dirChoice;
+              (new File( dirChoice)).isDirectory() &&
+              (seqDirs.length != 0)) {
+            PlanWorks.sequenceParentDirectory = dirChoice;
+            PlanWorks.sequenceDirectories = seqDirs;
             sequenceDirChooser.approveSelection();
           } else {
             JOptionPane.showMessageDialog
               ( PlanWorks.this,
-                "`" + dirChoice + "'\ndoes not exist or is not a directory.",
+                "`" + dirChoice + "'\nis not a valid sequence directory.",
                 "No Directory Selected", JOptionPane.ERROR_MESSAGE);
           }
         }
       });
+    sequenceDirChooser.setFileFilter( new SequenceDirectoryFilter());
   } // end createDirectoryChooser
+
+
+class SequenceDirectoryFilter extends FileFilter {
+
+  public SequenceDirectoryFilter() {
+    super();
+  }
+
+  /**
+   * accept - Accept all files and directories which are not partial plan 
+   *          step directories
+   *
+   * @param file - a directory or file name
+   * @return true, if a directory is valid
+   */
+  public boolean accept( File file) {
+    boolean isValid = true;
+    if (! file.isDirectory()) {
+      // accept all files
+    } else if (file.isDirectory()) {
+      if (file.getName().equals( "CVS")) {
+        isValid = false;
+      } else {
+        int fileCnt = 0;
+        File [] filePathNames = file.listFiles();
+        for (int i = 0, n = filePathNames.length; i < n; i++) {
+          if (! filePathNames[i].getName().equals( "CVS")) {
+            fileCnt++;
+          }
+        }
+        if (fileCnt != DbConstants.NUMBER_OF_PP_FILES) {
+          // accept all directories with != partial plan file count
+        } else {
+          for (int i = 0, n = filePathNames.length; i < n; i++) {
+            String ext = FileUtils.getExtension( filePathNames[i]);
+            // System.err.println( "ext " + ext );
+            if ((ext != null) && ext.equals( DbConstants.PP_PARTIAL_PLAN_EXT)) {
+              isValid = false;
+              break;
+            }
+          }
+        }
+      }
+    }
+    // System.err.println( "accept " + file.getName() + " isValid " + isValid); 
+    return isValid;
+  } // end accept
+
+  /**
+   * getDescription - string to describe this filter
+   *
+   * @return string to describe this filter
+   */
+  public String getDescription() { 
+    return "Sequence Directories";
+  }
+} // end class SequenceDirectoryFilter
 
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DirectoryChooser.java,v 1.1 2003-06-30 21:52:46 taylor Exp $
+// $Id: DirectoryChooser.java,v 1.2 2003-09-10 00:23:09 taylor Exp $
 //
 //
 // Will Taylor -- started 26mar03
@@ -45,7 +45,8 @@ public class DirectoryChooser extends JFileChooser {
     // with this, files do not show up
     // setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY);
     // with this, files can be selected
-    setFileSelectionMode( JFileChooser.FILES_ONLY);
+    // setFileSelectionMode( JFileChooser.FILES_ONLY);
+    setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
     setDialogType( JFileChooser.CUSTOM_DIALOG);
     setAccessory( buttonPanel);
     buttonPanel.add( okButton);
