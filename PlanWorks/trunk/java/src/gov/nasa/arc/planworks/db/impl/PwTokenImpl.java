@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.48 2004-06-14 22:11:22 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.49 2004-07-23 16:18:34 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -27,6 +27,7 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwPredicate;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwRule;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
@@ -67,7 +68,6 @@ public class PwTokenImpl implements PwToken {
   private Integer slotId;
   private int slotIndex;
   protected PwPartialPlanImpl partialPlan;
-  protected Integer ruleId;
 
 
   public PwTokenImpl(final Integer id, final boolean isValueToken, final Integer slotId, 
@@ -107,10 +107,6 @@ public class PwTokenImpl implements PwToken {
       PwSlotImpl slot = timeline.addSlot(slotId);
       slot.addToken(this);
     }
-
-    //ruleId = new Integer(rand.nextInt(20));
-    //ruleId = new Integer(19);
-    ruleId = null;
     partialPlan.addToken(id, this);
   }
 
@@ -349,13 +345,16 @@ public class PwTokenImpl implements PwToken {
     return buffer.toString();
   }
 
+//These next two methods are in PwTokenImpl because ruleId was once part of the class
+//now it can be gotten from the PwRuleInstance class
   /**
    * <code>getModelRule</code>
    *
    * @return - <code>String</code> - 
    */
   public String getModelRule() {
-    PwRule rule = partialPlan.getRule(ruleId);
+    PwRuleInstance ruleInstance = partialPlan.getRuleInstance(ruleInstanceId);
+    PwRule rule = partialPlan.getRule(ruleInstance.getRuleId());
     if(rule == null) {
       return "No rule text";
     }
@@ -368,17 +367,10 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>Integer</code> - 
    */
   public Integer getRuleId() {
-    return ruleId;
+    PwRuleInstance ruleInstance = partialPlan.getRuleInstance(ruleInstanceId);
+    return ruleInstance.getRuleId();
   }
 
-  /**
-   * <code>setRuleId</code>
-   *
-   * @param id - <code>Integer</code> - 
-   */
-  public void setRuleId( Integer ruleId) {
-    this.ruleId = ruleId;
-  }
 
   /**
    * <code>addParamVar</code>
