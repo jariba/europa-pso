@@ -345,5 +345,12 @@ public class BackendTest extends TestCase {
     steps = MySQLDB.queryStepsWithRelaxations(sequence.getId());
     assertTrue(steps.size() == 0);
   }
-  private void testQueriesForDecisions(){}
+  private void testQueriesForDecisions() {
+    List steps = MySQLDB.queryStepsWithUnitVariableDecisions(sequence);
+    assertTrue(steps.size() == 1);
+    assertTrue(((Integer)steps.get(0)).equals(new Integer(9)));
+    steps = MySQLDB.queryStepsWithNonUnitVariableDecisions(sequence);
+    assertTrue(steps.size() == 1);
+    assertTrue(((Integer)steps.get(0)).equals(new Integer(1)));
+  }
 }
