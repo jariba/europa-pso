@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.2 2003-06-10 20:34:37 miatauro Exp $
+// $Id: ContentSpec.java,v 1.3 2003-06-11 00:32:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -60,6 +60,7 @@ public class ContentSpec {
         }
       }
     }
+    System.out.println("Content spec highest index: " + highestIndex);
     currentSpec = new BitSet(highestIndex + 1);
     currentSpec.set(0, highestIndex, true);
   }
@@ -76,6 +77,14 @@ public class ContentSpec {
     if(index < 0)
       return false;
     return currentSpec.get(index);
+  }
+  public void printSpec() {
+    System.err.println("Allowable keys: ");
+    for(int i = 0; i < currentSpec.size(); i++) {
+      if(currentSpec.get(i)) {
+        System.err.println("K" + i);
+      }
+    }
   }
   private int keyToIndex(String key) throws NumberFormatException {
     return Integer.parseInt(key.substring(1)); //i hope the key format never changes

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.3 2003-06-10 20:35:07 miatauro Exp $
+// $Id: ViewSet.java,v 1.4 2003-06-11 00:32:11 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -78,8 +78,10 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
       }
     }
   }
-  public boolean isInContentSpec(String key)
-  {
+  public boolean isInContentSpec(String key) {
     return contentSpec.isInContentSpec(key);
+  }
+  public void printSpec() {
+    contentSpec.printSpec();
   }
 }
