@@ -1,4 +1,4 @@
-// $Id: PwPlanningSequence.java,v 1.1 2003-05-10 01:00:31 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.2 2003-05-10 01:19:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -39,9 +39,9 @@ public abstract class PwPlanningSequence {
   /**
    * <code>getModel</code>
    *
-   * @return - <code>Model</code> - 
+   * @return - <code>PwModel</code> - 
    */
-  // public abstract Model getModel();
+  public abstract PwModel getModel();
 
   /**
    * <code>listTransactions</code>
@@ -61,6 +61,13 @@ public abstract class PwPlanningSequence {
    */
   public abstract PwPartialPlan getPartialPlan( int step) throws IndexOutOfBoundsException;
 
-
+  /**
+   * <code>addPartialPlan</code>
+   *
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param transactionList - <code>List</code> - of PwTransaction
+   * @return - <code>int</code> - length of partial plan set
+   */
+  public abstract int addPartialPlan( PwPartialPlan partialPlan, List transactionList);
 
 } // end class PwPlanningSequence

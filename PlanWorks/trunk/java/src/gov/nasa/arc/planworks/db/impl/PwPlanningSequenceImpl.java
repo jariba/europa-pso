@@ -1,4 +1,4 @@
-// $Id: PwPlanningSequenceImpl.java,v 1.1 2003-05-10 01:00:32 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.2 2003-05-10 01:19:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -73,7 +73,7 @@ class PwPlanningSequenceImpl extends PwPlanningSequence {
   /**
    * <code>getModel</code>
    *
-   * @return - <code>ModelImpl</code> - 
+   * @return - <code>PwModel</code> - 
    */
   public PwModel getModel() {
     return model;
@@ -110,6 +110,18 @@ class PwPlanningSequenceImpl extends PwPlanningSequence {
     }
   } // end getPartialPlan
 
+  /**
+   * <code>addPartialPlan</code>
+   *
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param transactionList - <code>List</code> - of PwTransaction
+   * @return - <code>int</code> - length of partial plan set
+   */
+  public int addPartialPlan( PwPartialPlan partialPlan, List transactionList) {
+    partialPlanList.add( partialPlan);
+    transactionList.add( transactionList);
+    return partialPlanList.size();
+  } //end addPartialPlan
 
 
 } // end class PwPlanningSequenceImpl
