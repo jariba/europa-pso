@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: build.xml,v 1.6 2003-07-16 01:15:42 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.7 2003-07-30 23:56:00 taylor Exp $ -->
 <project name="PlanWorks" default="compile" basedir=".">
     <description>
         Planworks Build Targets
@@ -29,6 +29,7 @@
           <pathelement location="${jgo.home}/JGo.jar"/>
           <pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
           <pathelement location="${jgo.home}/Classier.jar"/>
+          <pathelement location="${jgo.home}"/>
           <pathelement location="${jfcunit.home}/junit.jar"/>
           <pathelement location="${jfcunit.home}/jfcunit.jar"/>
           <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
