@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.5 2003-10-09 17:23:00 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.6 2003-10-09 21:20:56 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -136,6 +136,62 @@ public class PartialPlanContentSpec implements ContentSpec {
       System.err.println(((Integer)tokenIdIterator.next()).toString());
     }
   }
+
+  public void printContentSpecification() {
+    printSpecLists(currentSpec);
+  }
+
+  private void printSpecLists(List list) {
+    List timeline = (List) list.get(0);
+    List predicate = (List) list.get(1);
+    List timeInterval = (List) list.get(2);
+    boolean mergeTokens = ((Boolean)list.get(3)).booleanValue();
+    int tokenTypes = ((Integer)list.get(4)).intValue();
+    List uniqueKeys = (List) list.get(5);
+    System.err.println("Timeline: ");
+    if(timeline != null) {
+      StringBuffer timelineStr = new StringBuffer();
+      for(int i = 0; i < timeline.size(); i += 2) {
+        timelineStr.append((String)timeline.get(i)).append(" ");
+        timelineStr.append(((Integer)timeline.get(i+1)).toString()).append(" ");
+      }
+      System.err.println(timelineStr.toString());
+    }
+    System.err.println("Predicate: ");
+    if(predicate != null) {
+      StringBuffer predicateStr = new StringBuffer();
+      for(int i = 0; i < predicate.size(); i += 2) {
+        predicateStr.append((String)predicate.get(i)).append(" ");
+        predicateStr.append(((Integer)predicate.get(i+1)).toString()).append(" ");
+      }
+      System.err.println(predicateStr.toString());
+    }
+    System.err.println("Time Interval: ");
+    if(timeInterval != null) {
+      StringBuffer timeIntervalStr = new StringBuffer();
+      for(int i = 0; i < timeInterval.size(); i += 3) {
+        timeIntervalStr.append((String)timeInterval.get(i)).append(" ");
+        timeIntervalStr.append(((Integer)timeInterval.get(i+1)).toString()).append("-");
+        timeIntervalStr.append(((Integer)timeInterval.get(i+2)).toString()).append(" ");
+      }
+      System.err.println(timeIntervalStr.toString());
+    }
+    System.err.println("Merge tokens " + mergeTokens);
+    System.err.println("Viewing types " + tokenTypes);
+    System.err.println("Uniquely Specified: ");
+    if(uniqueKeys != null) {
+      StringBuffer uniqueStr = new StringBuffer();
+      for(int i = 0; i < uniqueKeys.size(); i += 2) {
+        uniqueStr.append((String)uniqueKeys.get(i)).append(" ");
+        uniqueStr.append(((Integer)uniqueKeys.get(i+1)).toString());
+        if(i != uniqueKeys.size() - 2) {
+          uniqueStr.append(" ^ ");
+        }
+      }
+      System.err.println(uniqueStr.toString());
+    }
+  }
+
   /**
    * Given the parametes specified by the user in the ContentSpecWindow, constructs the entire
    * specification of valid ids through a database query, then informs the windows
@@ -383,16 +439,15 @@ public class PartialPlanContentSpec implements ContentSpec {
     while(newIterator.hasNext()) {
       Object newObject = newIterator.next();
       Object oldObject = oldIterator.next();
-      
+      if(newObject == null ^ oldObject == null) {
+        return true;
+      }
+      if(newObject == null && oldObject == null) {
+        continue;
+      }
       if(newObject instanceof List && oldObject instanceof List) {
         List newList = (List) newObject;
         List oldList = (List) oldObject;
-        if(newList == null ^ oldList == null) {
-          return true;
-        }
-        if(newList == null && oldList == null) {
-          continue;
-        }
         if(newList.size() != oldList.size()) {
           return true;
         }
