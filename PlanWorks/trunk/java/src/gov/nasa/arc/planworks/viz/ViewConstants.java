@@ -321,8 +321,7 @@ public abstract class ViewConstants {
   public static final String RESOURCE_PROFILE_VIEW     = "Resource Profile View";
   public static final String RESOURCE_TRANSACTION_VIEW = "Resource Transaction View";
   public static final String DECISION_VIEW             = "Decision View";
-  public static final String RULE_INSTANCE_VIEW                 = "Rule Instance View";
-  public static List PARTIAL_PLAN_VIEW_LIST = null;
+  public static final String RULE_INSTANCE_VIEW        = "Rule Instance View";
 
   public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
   public static List SEQUENCE_VIEW_LIST = null;
@@ -336,20 +335,6 @@ public abstract class ViewConstants {
   public static final String SEQUENCE_QUERY_RESULTS_TITLE = "QueryResults";
 
   static {
-
-    PARTIAL_PLAN_VIEW_LIST = new ArrayList();
-    PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( DB_TRANSACTION_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( DECISION_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_TRANSACTION_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
-    // not in list, since it is created from nodes in views, not from other views
-    // PARTIAL_PLAN_VIEW_LIST.add( NAVIGATOR_VIEW);
-    // not in list, since it is created from nodes in views, not from other views
-    // PARTIAL_PLAN_VIEW_LIST.add( RULE_INSTANCE_VIEW);
 
     SEQUENCE_VIEW_LIST = new ArrayList();
     SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);

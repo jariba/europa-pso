@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.46 2004-07-13 23:54:09 taylor Exp $
+// $Id: PartialPlanView.java,v 1.47 2004-07-15 21:24:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -112,7 +112,7 @@ public class PartialPlanView extends VizView {
     buttonViewListener = null;
     viewName = null;
     viewListenerList = new ArrayList();
-    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+    for (int i = 0, n = PlanWorks.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
       viewListenerList.add( null);
     }
   }
@@ -667,7 +667,7 @@ public class PartialPlanView extends VizView {
                                    final PwPlanningSequence planSequence,
                                    JPopupMenu mouseRightPopup, final String currentViewName) {
     List viewListenerList = new ArrayList();
-    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+    for (int i = 0, n = PlanWorks.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
       viewListenerList.add( null);
     }
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
@@ -691,13 +691,13 @@ public class PartialPlanView extends VizView {
                                    JPopupMenu mouseRightPopup,
                                    final List viewListenerList,
                                    final String currentViewName) {
-    if (viewListenerList.size() != ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()) {
+    if (viewListenerList.size() != PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()) {
       System.err.println( "createOpenViewtems: num view listeners not = " +
-                          ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
+                          PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
       System.exit( -1);
     }
     PartialPlanViewMenu viewMenu = new PartialPlanViewMenu();
-    Iterator viewNamesItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
+    Iterator viewNamesItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
     Iterator viewListenerItr = viewListenerList.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();

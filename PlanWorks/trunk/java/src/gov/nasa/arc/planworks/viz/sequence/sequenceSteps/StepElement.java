@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.15 2004-06-21 22:43:04 taylor Exp $
+// $Id: StepElement.java,v 1.16 2004-07-15 21:24:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -111,7 +111,7 @@ public class StepElement extends HistogramElement {
     this.planSequence = planSequence;
     this.sequenceView = sequenceView;
     viewListenerList = new ArrayList();
-    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+    for (int i = 0, n = PlanWorks.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
       viewListenerList.add( null);
     }
   } // end constructor

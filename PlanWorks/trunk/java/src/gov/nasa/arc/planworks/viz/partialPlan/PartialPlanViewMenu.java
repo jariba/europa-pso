@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.14 2004-06-21 22:43:01 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.15 2004-07-15 21:24:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -69,12 +69,12 @@ public class PartialPlanViewMenu extends JPopupMenu{
   public void buildPartialPlanViewMenu( String partialPlanName,
                                         PwPlanningSequence planSequence,
                                         List viewListenerList) {
-    if (viewListenerList.size() != ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()) {
+    if (viewListenerList.size() != PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()) {
       System.err.println( "buildPartialPlanViewMenu: num view listeners not = " +
-                          ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
+                          PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
       System.exit( -1);
     }
-    Iterator viewNamesItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
+    Iterator viewNamesItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
     Iterator viewListenerItr = viewListenerList.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();

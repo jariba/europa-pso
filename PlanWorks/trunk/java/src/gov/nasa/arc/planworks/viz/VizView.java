@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.30 2004-07-08 21:33:23 taylor Exp $
+// $Id: VizView.java,v 1.31 2004-07-15 21:24:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -247,7 +247,7 @@ public class VizView extends JPanel {
                                   PwPlanningSequence planSequence,
                                   JPopupMenu mouseRightPopup) {
     List viewListenerList = new ArrayList();
-    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+    for (int i = 0, n = PlanWorks.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
       viewListenerList.add( null);
     }
      PartialPlanView partialPlanView = null;
@@ -348,14 +348,14 @@ public class VizView extends JPanel {
                                   final List viewListenerList) {
     openAllItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          if (viewListenerList.size() != ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()) {
+          if (viewListenerList.size() != PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()) {
             System.err.println( "VizView.createOpenAllItem: num view listeners not = " +
-                                ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
+                                PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
             System.exit( -1);
           }
           String seqUrl = planSequence.getUrl();
           String seqName = planSequence.getName();
-          Iterator viewListItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
+          Iterator viewListItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
           Iterator viewListenerItr = viewListenerList.iterator();
           while (viewListItr.hasNext()) {
             final String viewName = (String) viewListItr.next();
