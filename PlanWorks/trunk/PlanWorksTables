@@ -218,6 +218,7 @@ CREATE TABLE PartialPlan (
 CREATE TABLE Project (
   ProjectId int(11) NOT NULL auto_increment,
   ProjectName varchar(255) NOT NULL default 'ErrorProject',
+  Tests longblob default NULL,
   PRIMARY KEY  (ProjectId)
 ) TYPE=MyISAM;
 
@@ -415,6 +416,16 @@ CREATE TABLE RuleTokenMap (
   INDEX (SequenceId), INDEX (PartialPlanId),
   INDEX (RuleId), INDEX(MasterId)
 ) TYPE=MyISAM;
+
+CREATE TABLE Decision (
+  PartialPlanId bigint(20) NOT NULL default '0',
+  DecisionId int(11) NOT NULL default '0',
+  DecisionType int(11) NOT NULL default '0',
+  EntityId int(11) NOT NULL default '0',
+  IsUnit tinyint(1) NOT NULL default '0',
+  Choices blob default NULL,
+  PRIMARY KEY(PartialPlanId, DecisionId)
+) TYPE=MyISAM; 
 
 --------------060506080005040106060505--
 
