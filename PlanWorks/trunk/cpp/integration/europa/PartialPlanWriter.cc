@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.26 2004-01-02 21:12:27 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.27 2004-01-02 21:16:35 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -18,6 +18,12 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#ifdef __BEOS__
+# include <Path.h>
+#endif
+#ifndef NBBY
+#define NBBY (8)
+#endif
 #include "PartialPlanWriter.hh"
 #include "Id.hh"
 #include "Token.hh"
@@ -105,6 +111,14 @@ const String I_DOMAIN("I");
 enum sourceTypes {SYSTEM = 0, USER, UNKNOWN};
 
 #define FatalError(s) handleError(generalUnknownError, (s), fatalError,);
+
+#ifdef __BEOS__
+static char *realpath(const char *path, char *resolved_path) {
+    BPath tempPath(path,NULL,true);
+    strcpy(resolved_path,tempPath.Path());
+    return resolved_path;
+}
+#endif
 
 PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) { 
   tnet = ptnet; 
