@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.66 2004-01-05 17:17:43 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.67 2004-01-08 00:39:30 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -254,6 +254,22 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       }
     }
     return retval;
+  }
+
+  public List getSlottedTokenList() {
+    List retval = new ArrayList();
+    Iterator tokenIterator = tokenMap.values().iterator();
+    while(tokenIterator.hasNext()) {
+      PwToken token = (PwToken) tokenIterator.next();
+      if(!token.isFreeToken()) {
+        retval.add(token);
+      }
+    }
+    return retval;
+  }
+
+  public List getTokenList() {
+    return new ArrayList(tokenMap.values());
   }
 
   /**
