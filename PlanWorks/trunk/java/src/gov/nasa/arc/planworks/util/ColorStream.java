@@ -8,7 +8,7 @@ public class ColorStream {
 
   private Map hashMap;
   private static final int COLOR_INC = 69/*51*/;
-  private static final float MIN_BRIGHTNESS = 0.60f;
+  private static final float MIN_BRIGHTNESS = 0.75f;
   private int r, g, b;
 
   public ColorStream() {
