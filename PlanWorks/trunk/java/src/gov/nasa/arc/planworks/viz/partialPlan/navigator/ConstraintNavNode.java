@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.5 2004-02-13 18:56:48 taylor Exp $
+// $Id: ConstraintNavNode.java,v 1.6 2004-02-25 02:30:14 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,7 +14,7 @@ package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -25,13 +25,9 @@ import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
-import gov.nasa.arc.planworks.db.PwTimeline;
-import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
@@ -44,16 +40,14 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ConstraintNavNode extends ExtendedBasicNode {
+public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
 
   private PwConstraint constraint;
-  private List variableList; // element PwVariable
-  private PwVariable variable;
   private NavigatorView navigatorView;
   private String nodeLabel;
   private boolean isDebug;
   private boolean areNeighborsShown;
-  private int variableLinkCount;
+  private int linkCount;
   private boolean inLayout;
   private boolean isUnaryConstraint;
 
@@ -66,13 +60,11 @@ public class ConstraintNavNode extends ExtendedBasicNode {
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public ConstraintNavNode( PwConstraint constraint, Point constraintLocation,
-                            Color backgroundColor, boolean isDraggable,
-                            PartialPlanView partialPlanView) { 
+  public ConstraintNavNode( final PwConstraint constraint, final Point constraintLocation,
+                            final Color backgroundColor, final boolean isDraggable,
+                            final PartialPlanView partialPlanView) { 
     super( ViewConstants.DIAMOND);
     this.constraint = constraint;
-    variableList =  constraint.getVariablesList();
-    variable = (PwVariable) variableList.get( 0);
     navigatorView = (NavigatorView) partialPlanView;
 
     isDebug = false;
@@ -88,13 +80,13 @@ public class ConstraintNavNode extends ExtendedBasicNode {
       isUnaryConstraint = false;
     }
     areNeighborsShown = false;
-    variableLinkCount = 0;
+    linkCount = 0;
 
     configure( constraintLocation, backgroundColor, isDraggable);
   } // end constructor
 
-  private final void configure( Point constraintLocation, Color backgroundColor,
-                                boolean isDraggable) {
+  private final void configure( final Point constraintLocation, final Color backgroundColor,
+                                final boolean isDraggable) {
     setLabelSpot( JGoObject.Center);
     initialize( constraintLocation, nodeLabel);
     setBrush( JGoBrush.makeStockBrush( backgroundColor));  
@@ -109,12 +101,125 @@ public class ConstraintNavNode extends ExtendedBasicNode {
   } // end configure
 
   /**
+   * <code>getId</code> - implements NavNode
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public final Integer getId() {
+    return constraint.getId();
+  }
+
+  /**
+   * <code>getTypeName</code> - implements NavNode
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getTypeName() {
+    return "constraint";
+  }
+
+  /**
+   * <code>incrLinkCount</code> - implements NavNode
+   *
+   */
+  public final void incrLinkCount() {
+    linkCount++;
+  }
+
+  /**
+   * <code>decLinkCount</code> - implements NavNode
+   *
+   */
+  public final void decLinkCount() {
+    linkCount--;
+  }
+
+  /**
+   * <code>getLinkCount</code> - implements NavNode
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getLinkCount() {
+    return linkCount;
+  }
+
+  /**
+   * <code>inLayout</code> - implements NavNode
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public final boolean inLayout() {
+    return inLayout;
+  }
+
+  /**
+   * <code>setInLayout</code> - implements NavNode
+   *
+   * @param value - <code>boolean</code> - 
+   */
+  public final void setInLayout( final boolean value) {
+    int width = 1;
+    inLayout = value;
+    if (value == false) {
+      if (isUnaryConstraint) {
+        width = 2;
+      }
+      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
+      areNeighborsShown = false;
+    }
+  }
+
+  /**
+   * <code>resetNode</code> - implements NavNode
+   *
+   * @param isDebug - <code>boolean</code> - 
+   */
+  public final void resetNode( final boolean isDbg) {
+    areNeighborsShown = false;
+    if (isDbg && (linkCount != 0)) {
+      System.err.println( "reset constraint node: " + constraint.getId() +
+                          "; linkCount != 0: " + linkCount);
+    }
+    linkCount = 0;
+  } // end resetNode
+
+ /**
+   * <code>setAreNeighborsShown</code> - implements NavNode
+   *
+   * @param value - <code>boolean</code> - 
+   */
+  public final void setAreNeighborsShown( final boolean value) {
+    areNeighborsShown = value;
+  }
+
+  /**
+   * <code>getParentEntityList</code> - implements NavNode
+   *
+   * @return - <code>List</code> - of PwEntity
+   */
+  public final List getParentEntityList() {
+    List returnList = new ArrayList();
+    returnList.addAll( constraint.getVariablesList());
+    return returnList;
+  }
+
+  /**
+   * <code>getComponentEntityList</code> - implements NavNode
+   *
+   * @return - <code>List</code> - of PwEntity
+   */
+  public final List getComponentEntityList() {
+    List returnList = new ArrayList();
+    return returnList;
+  }
+
+  /**
    * <code>equals</code>
    *
    * @param node - <code>ConstraintNavNode</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean equals( ConstraintNavNode node) {
+  public final boolean equals( final ConstraintNavNode node) {
     return (this.getConstraint().getId().equals( node.getConstraint().getId()));
   }
 
@@ -128,94 +233,20 @@ public class ConstraintNavNode extends ExtendedBasicNode {
   }
 
   /**
-   * <code>inLayout</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  public boolean inLayout() {
-    return inLayout;
-  }
-
-  /**
-   * <code>setInLayout</code>
-   *
-   * @param value - <code>boolean</code> - 
-   */
-  public void setInLayout( boolean value) {
-    int width = 1;
-    inLayout = value;
-    if (value == false) {
-      if (isUnaryConstraint) {
-        width = 2;
-      }
-      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
-      areNeighborsShown = false;
-    }
-  }
-
- /**
-   * <code>setAreNeighborsShown</code>
-   *
-   * @param value - <code>boolean</code> - 
-   */
-  public void setAreNeighborsShown( boolean value) {
-    areNeighborsShown = value;
-  }
-
-  /**
    * <code>toString</code>
    *
    * @return - <code>String</code> - 
    */
-  public String toString() {
+  public final String toString() {
     return constraint.getId().toString();
   }
-
-  /**
-   * <code>incrVariableLinkCount</code>
-   *
-   */
-  public void incrVariableLinkCount() {
-    variableLinkCount++;
-  }
-
-  /**
-   * <code>decVariableLinkCount</code>
-   *
-   */
-  public void decVariableLinkCount() {
-    variableLinkCount--;
-  }
-
-  /**
-   * <code>getVariableLinkCount</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getVariableLinkCount() {
-    return variableLinkCount;
-  }
-
-  /**
-   * <code>resetNode</code> - when closed 
-   *
-   * @param isDebug - <code>boolean</code> - 
-   */
-  public void resetNode( boolean isDebug) {
-    areNeighborsShown = false;
-    if (isDebug && (variableLinkCount != 0)) {
-      System.err.println( "reset variable node: " + variable.getId() +
-                          "; variableLinkCount != 0: " + variableLinkCount);
-    }
-    variableLinkCount = 0;
-  } // end resetNode
 
   /**
    * <code>getToolTipText</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getToolTipText() {
+  public final String getToolTipText() {
     String operation = "";
     if (areNeighborsShown) {
       operation = "close";
@@ -226,10 +257,10 @@ public class ConstraintNavNode extends ExtendedBasicNode {
       StringBuffer tip = new StringBuffer( "<html>constraint<br>");
       tip.append( constraint.getType());
       if (isDebug) {
-        tip.append( " linkCntVariable ").append( String.valueOf( variableLinkCount));
+        tip.append( " linkCntVariable ").append( String.valueOf( linkCount));
       }
       tip.append( "<br> Mouse-L: ").append( operation);
-      tip.append("</html>");
+      tip.append( "</html>");
       return tip.toString();
     } else {
       return constraint.getType();
@@ -242,7 +273,7 @@ public class ConstraintNavNode extends ExtendedBasicNode {
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
-  public String getToolTipText( boolean isOverview) {
+  public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html>constraint<br>");
     tip.append( constraint.getName());
     tip.append( "<br>key=");
@@ -250,33 +281,6 @@ public class ConstraintNavNode extends ExtendedBasicNode {
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
-
-
-  /**
-   * <code>addConstraintNavNode</code>
-   *
-   */
-  protected void addConstraintNavNode() {
-    if (isDebug) {
-      System.err.println( "add constraintNavNode " + constraint.getId());
-    }
-    if (! inLayout()) {
-      inLayout = true;
-    }
-  } // end addConstraintNavNode
-
-  /**
-   * <code>removeConstraintNavNode</code>
-   *
-   */
-  protected void removeConstraintNavNode() {
-    if (isDebug) {
-      System.err.println( "remove constraintNavNode " + constraint.getId());
-    }
-    inLayout = false;
-    resetNode( isDebug);
-  } // end removeConstraintNavNode
-
 
   /**
    * <code>doMouseClick</code> - For Model Network View, Mouse-left opens/closes
@@ -288,23 +292,23 @@ public class ConstraintNavNode extends ExtendedBasicNode {
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
+  public final boolean doMouseClick( final int modifiers, final Point dc, final Point vc,
+                                     final JGoView view) {
     JGoObject obj = view.pickDocObject( dc, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
     ConstraintNavNode constraintNavNode = (ConstraintNavNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      boolean areVariablesChanged = false;
-      boolean areConstraintsChanged = false;
       navigatorView.setStartTimeMSecs( System.currentTimeMillis());
+      boolean areObjectsChanged = false;
       if (! areNeighborsShown) {
-        areVariablesChanged = addConstraintVariables();
+        areObjectsChanged = addConstraintObjects( this);
         areNeighborsShown = true;
       } else {
-        areVariablesChanged = removeConstraintVariables();
+        areObjectsChanged = removeConstraintObjects( this);
         areNeighborsShown = false;
       }
-      if (areVariablesChanged) {
+      if (areObjectsChanged) {
         navigatorView.setLayoutNeeded();
         navigatorView.setFocusNode( this);
         navigatorView.redraw();
@@ -315,113 +319,35 @@ public class ConstraintNavNode extends ExtendedBasicNode {
     return false;
   } // end doMouseClick   
 
-  private boolean addConstraintVariables() {
-    boolean areNodesChanged = addVariableNavNodes();
-    boolean areLinksChanged = addVariableToConstraintNavLinks();
+  private boolean addConstraintObjects( final ConstraintNavNode constraintNavNode) {
+    boolean areNodesChanged =
+      NavNodeGenerics.addEntityNavNodes( constraintNavNode, navigatorView, isDebug);
+    boolean areLinksChanged = false;
+    boolean isParentLinkChanged =
+      NavNodeGenerics.addParentToEntityNavLinks( constraintNavNode, navigatorView, isDebug);
+     boolean areChildLinksChanged =
+       NavNodeGenerics.addEntityToChildNavLinks( constraintNavNode, navigatorView, isDebug);
+     if (isParentLinkChanged || areChildLinksChanged) {
+       areLinksChanged = true;
+     }
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end addConstraintVariables
+  } // end addConstraintObjects
 
-  private boolean removeConstraintVariables() {
-    boolean areLinksChanged = removeVariableToConstraintNavLinks();
-    boolean areNodesChanged = removeVariableNavNodes();
+  private boolean removeConstraintObjects( final ConstraintNavNode constraintNavNode) {
+    boolean areLinksChanged = false;
+    boolean isParentLinkChanged =
+      NavNodeGenerics.removeParentToEntityNavLinks( constraintNavNode, navigatorView, isDebug);
+    boolean areChildLinksChanged =
+      NavNodeGenerics.removeEntityToChildNavLinks( constraintNavNode, navigatorView, isDebug);
+     if (isParentLinkChanged || areChildLinksChanged) {
+       areLinksChanged = true;
+     }
+    boolean areNodesChanged =
+      NavNodeGenerics.removeEntityNavNodes( constraintNavNode, navigatorView, isDebug);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end removeConstraintVariables
-
-  /**
-   * <code>addVariableNavNodes</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean addVariableNavNodes() {
-    boolean areNodesChanged = false, isDraggable = true;
-    Iterator variableItr = variableList.iterator();
-    while (variableItr.hasNext()) {
-      PwVariable variable = (PwVariable) variableItr.next();
-      VariableNavNode variableNavNode =
-        (VariableNavNode) navigatorView.variableNavNodeMap.get( variable.getId());
-      if (variableNavNode == null) {
-        Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
-        //THIS NEEDS TO CHANGE!!!
-        PwToken token = (PwToken) variable.getParent();
-        if (! token.isFreeToken()) {
-          PwTimeline timeline =
-            navigatorView.getPartialPlan().getTimeline( token.getTimelineId());
-          nodeColor = navigatorView.getTimelineColor( timeline.getId());
-        }
-        variableNavNode =
-          new VariableNavNode( variable, 
-                            new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                       ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                            nodeColor, isDraggable, navigatorView);
-        navigatorView.variableNavNodeMap.put( variable.getId(), variableNavNode);
-        navigatorView.getJGoDocument().addObjectAtTail( variableNavNode);
-      }
-      variableNavNode.addVariableNavNode();
-      areNodesChanged = true;
-    }
-    return areNodesChanged;
-  } // end addVariableNavNodes
-
-  private boolean removeVariableNavNodes() {
-    boolean areNodesChanged = false;
-    Iterator variableItr = variableList.iterator();
-    while (variableItr.hasNext()) {
-      PwVariable variable = (PwVariable) variableItr.next();
-      VariableNavNode variableNavNode =
-        (VariableNavNode) navigatorView.variableNavNodeMap.get( variable.getId());
-      if ((variableNavNode != null) && variableNavNode.inLayout() &&
-          (variableNavNode.getTokenLinkCount() == 0) &&
-          (variableNavNode.getConstraintLinkCount() == 0)) {
-        variableNavNode.removeVariableNavNode();
-        areNodesChanged = true;
-      }
-    }
-    return areNodesChanged;
-  } // end removeVariableNavNodes
-
-
-  /**
-   * <code>addVariableToConstraintNavLinks</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean addVariableToConstraintNavLinks() {
-    boolean areLinksChanged = false;
-    Iterator variableItr = variableList.iterator();
-    while (variableItr.hasNext()) {
-      PwVariable variable = (PwVariable) variableItr.next();
-      VariableNavNode variableNavNode =
-        (VariableNavNode) navigatorView.variableNavNodeMap.get( variable.getId());
-      if ((variableNavNode != null) && variableNavNode.inLayout()) {
-        if (navigatorView.addNavigatorLink( variableNavNode, this, this)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // addVariableToConstraintNavLinks
-
-  private boolean removeVariableToConstraintNavLinks() {
-    boolean areLinksChanged = false;
-    Iterator variableItr = variableList.iterator();
-    while (variableItr.hasNext()) {
-      PwVariable variable = (PwVariable) variableItr.next();
-      VariableNavNode variableNavNode =
-        (VariableNavNode) navigatorView.variableNavNodeMap.get( variable.getId());
-      if ((variableNavNode != null) && variableNavNode.inLayout()) {
-        String linkName = variableNavNode.getVariable().getId().toString() + "->" +
-          constraint.getId().toString();
-        BasicNodeLink link = (BasicNodeLink) navigatorView.navLinkMap.get( linkName);
-        if ((link != null) && link.inLayout() &&
-            variableNavNode.removeVariableToConstraintNavLink( link, this)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // end removeVariableToConstraintNavLinks
+  } // end removeConstraintObjects
 
 
 } // end class ConstraintNavNode

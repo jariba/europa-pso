@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraint.java,v 1.7 2003-09-02 23:01:13 miatauro Exp $
+// $Id: PwConstraint.java,v 1.8 2004-02-25 02:30:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,7 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwConstraint {
+public interface PwConstraint extends PwEntity {
 
   public static final String varTempConst = "variableTempConstr";
   public static final String unaryTempConst = "unaryTempConstr";

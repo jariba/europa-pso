@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.56 2004-02-10 02:35:51 taylor Exp $
+# $Id: build-tags-file.csh,v 1.57 2004-02-25 02:30:11 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -30,6 +30,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/PwConstraint.java \
     src/gov/nasa/arc/planworks/db/PwDBTransaction.java \
     src/gov/nasa/arc/planworks/db/PwDomain.java \
+    src/gov/nasa/arc/planworks/db/PwEntity.java \
     src/gov/nasa/arc/planworks/db/PwEnumeratedDomain.java \
     src/gov/nasa/arc/planworks/db/PwIntervalDomain.java \
     src/gov/nasa/arc/planworks/db/PwModel.java \
@@ -49,6 +50,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/PwTokenQuery.java \
     src/gov/nasa/arc/planworks/db/PwTokenRelation.java \
     src/gov/nasa/arc/planworks/db/PwVariable.java \
+    src/gov/nasa/arc/planworks/db/PwVariableContainer.java \
     src/gov/nasa/arc/planworks/db/PwVariableQuery.java \
     src/gov/nasa/arc/planworks/db/impl/PwConstraintImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwDBTransactionImpl.java \
@@ -130,10 +132,13 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
+    src/gov/nasa/arc/planworks/viz/nodes/ObjectNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/QueryResultField.java \
     src/gov/nasa/arc/planworks/viz/nodes/ResourceNameNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenQueryHeaderNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/VariableContainerNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/VariableQueryHeaderNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/AskNodeByKey.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java \
@@ -145,19 +150,23 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/TimeScaleView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkObjectNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTimelineNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkViewState.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/NewConstraintNetworkLayout.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/TokenBoundingBox.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableBoundingBox.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableContainerBoundingBox.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/dbTransaction/DBTransactionView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ConstraintNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ModelClassNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorViewLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavNodeGenerics.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/SlotNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/TimelineNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/TokenNavNode.java \
@@ -175,9 +184,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNodeTimeMark.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/ThickDurationBridge.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/SlotNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineViewTimelineNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenLink.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \

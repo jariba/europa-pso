@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.7 2004-02-17 22:24:35 miatauro Exp $
+// $Id: ModelClassNavNode.java,v 1.8 2004-02-25 02:30:14 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,9 +14,10 @@ package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
@@ -25,7 +26,6 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.ObjectNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
@@ -38,12 +38,16 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ModelClassNavNode extends ObjectNode {
+public class ModelClassNavNode extends ObjectNode implements NavNode {
+
+  private PwObject object;
+  private NavigatorView navigatorView;
 
   private boolean areNeighborsShown;
-  private int timelineLinkCount;
+  private int linkCount;
   private boolean inLayout;
   private boolean hasSingleTimeline;
+  private boolean isDebugPrint;
 
   /**
    * <code>ModelClassNavNode</code> - constructor 
@@ -59,8 +63,9 @@ public class ModelClassNavNode extends ObjectNode {
                             final PartialPlanView partialPlanView) { 
     super(object, objectLocation, backgroundColor, isDraggable, partialPlanView);
 
-    isDebug = false;
-    // isDebug = true;
+    this.object = object;
+    navigatorView = (NavigatorView) partialPlanView;
+
     StringBuffer labelBuf = new StringBuffer( object.getName());
     labelBuf.append( "\nkey=").append( object.getId().toString());
     nodeLabel = labelBuf.toString();
@@ -69,31 +74,76 @@ public class ModelClassNavNode extends ObjectNode {
     if (object.getComponentList().size() == 1) {
       hasSingleTimeline = true;
     }
+    isDebugPrint = false;
+    // isDebugPrint = true;
 
     inLayout = false;
     areNeighborsShown = false;
-    timelineLinkCount = 0;
+    linkCount = 0;
 
-    if(hasSingleTimeline) {
-      setPen(new JGoPen(JGoPen.SOLID, 2, ColorMap.getColor("black")));
+    if (hasSingleTimeline) {
+      setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor("black")));
     }
   } // end constructor
 
   /**
-   * <code>inLayout</code>
+   * <code>getId</code> - implements NavNode
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public final Integer getId() {
+    return object.getId();
+  }
+
+  /**
+   * <code>getTypeName</code> - implements NavNode
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getTypeName() {
+    return "object";
+  }
+
+  /**
+   * <code>incrLinkCount</code> - implements NavNode
+   *
+   */
+  public final void incrLinkCount() {
+    linkCount++;
+  }
+
+  /**
+   * <code>decLinkCount</code> - implements NavNode
+   *
+   */
+  public final void decLinkCount() {
+    linkCount--;
+  }
+
+  /**
+   * <code>getLinkCount</code> - implements NavNode
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getLinkCount() {
+    return linkCount;
+  }
+
+  /**
+   * <code>inLayout</code> - implements NavNode
    *
    * @return - <code>boolean</code> - 
    */
-  public boolean inLayout() {
+  public final boolean inLayout() {
     return inLayout;
   }
 
   /**
-   * <code>setInLayout</code>
+   * <code>setInLayout</code> - implements NavNode
    *
    * @param value - <code>boolean</code> - 
    */
-  public void setInLayout( boolean value) {
+  public final void setInLayout( final boolean value) {
     int width = 1;
     inLayout = value;
     if (value == false) {
@@ -106,50 +156,56 @@ public class ModelClassNavNode extends ObjectNode {
   }
 
   /**
-   * <code>incrTimelineLinkCount</code>
-   *
-   */
-  public void incrTimelineLinkCount() {
-    timelineLinkCount++;
-  }
-
-  /**
-   * <code>decTimelineLinkCount</code>
-   *
-   */
-  public void decTimelineLinkCount() {
-    timelineLinkCount--;
-  }
-
-  /**
-   * <code>getTimelineLinkCount</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getTimelineLinkCount() {
-    return timelineLinkCount;
-  }
-
-  /**
-   * <code>resetNode</code> - when closed by token close traversal
+   * <code>resetNode</code> - implements NavNode
    *
    * @param isDebug - <code>boolean</code> - 
    */
-  public void resetNode( boolean isDebug) {
+  public final void resetNode( final boolean isDebug) {
     areNeighborsShown = false;
-    if (isDebug && (timelineLinkCount != 0)) {
+    if (isDebug && (linkCount != 0)) {
       System.err.println( "reset object node: " + object.getId() +
-                          "; timelineLinkCount != 0: " + timelineLinkCount);
+                          "; linkCount != 0: " + linkCount);
     }
-    timelineLinkCount = 0;
+    linkCount = 0;
   } // end resetNode
+
+  /**
+   * <code>setAreNeighborsShown</code> - implements NavNode
+   *
+   * @param value - <code>boolean</code> - 
+   */
+  public final void setAreNeighborsShown( final boolean value) {
+    areNeighborsShown = value;
+  }
+
+  /**
+   * <code>getParentEntityList</code> - implements NavNode
+   *
+   * @return - <code>List</code> - of PwEntity
+   */
+  public final List getParentEntityList() {
+    List returnList = new ArrayList();
+    if (object.getParent() != null) {
+      returnList.add( object.getParent());
+    }
+    return returnList;
+  }
+
+  /**
+   * <code>getComponentEntityList</code> - implements NavNode
+   *
+   * @return - <code>List</code> - of PwEntity
+   */
+  public final List getComponentEntityList() {
+    return object.getComponentList();
+  }
 
   /**
    * <code>getToolTipText</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getToolTipText() {
+  public final String getToolTipText() {
     String operation = "";
     if (areNeighborsShown) {
       operation = "close";
@@ -157,14 +213,14 @@ public class ModelClassNavNode extends ObjectNode {
       operation = "open";
     }
     StringBuffer tip = new StringBuffer( "<html>object<br>");
-    if (isDebug) {
-      tip.append( " linkCnt ").append( String.valueOf( timelineLinkCount));
+    if (isDebugPrint) {
+      tip.append( " linkCnt ").append( String.valueOf( linkCount));
       tip.append( "<br>");
     }
     if (! hasSingleTimeline) {
       tip.append( "Mouse-L: ").append( operation);
     }
-    return tip.append("</html>").toString();
+    return tip.append( "</html>").toString();
   } // end getToolTipText
 
   /**
@@ -173,7 +229,7 @@ public class ModelClassNavNode extends ObjectNode {
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
-  public String getToolTipText( boolean isOverview) {
+  public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html>object<br>");
     tip.append( object.getName());
     tip.append( "<br>key=");
@@ -181,7 +237,6 @@ public class ModelClassNavNode extends ObjectNode {
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
-
 
   /**
    * <code>doMouseClick</code> - For Navigator View, Mouse-left opens/closes
@@ -193,24 +248,28 @@ public class ModelClassNavNode extends ObjectNode {
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
+  public final boolean doMouseClick( final int modifiers, final Point dc, final Point vc,
+                                     final JGoView view) {
     JGoObject obj = view.pickDocObject( dc, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
     ModelClassNavNode objectNode = (ModelClassNavNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       if (! hasSingleTimeline) {
-        ((NavigatorView) partialPlanView).setStartTimeMSecs( System.currentTimeMillis());
+         NavigatorView navigatorView = (NavigatorView) partialPlanView;
+         navigatorView.setStartTimeMSecs( System.currentTimeMillis());
+         boolean areObjectsChanged = false;
         if (! areNeighborsShown) {
-          //System.err.println( "doMouseClick: Mouse-L show object nodes of object id " +
-          //                    objectNode.getObject().getId());
-          addObjectTimelines( this, (NavigatorView) partialPlanView);
+          areObjectsChanged = addObjects( this);
           areNeighborsShown = true;
         } else {
-          //System.err.println( "doMouseClick: Mouse-L hide timeline nodes of object id " +
-          //                    objectNode.getObject().getId());
-          removeObjectTimelines( this, (NavigatorView) partialPlanView);
+          areObjectsChanged = removeObjects( this);
           areNeighborsShown = false;
+        }
+        if (areObjectsChanged) {
+          navigatorView.setLayoutNeeded();
+          navigatorView.setFocusNode( this);
+          navigatorView.redraw();
         }
         return true;
       }
@@ -219,31 +278,35 @@ public class ModelClassNavNode extends ObjectNode {
     return false;
   } // end doMouseClick   
 
-  private void addObjectTimelines( ModelClassNavNode objectNode,
-                                   NavigatorView navigatorView) {
-    boolean areNodesChanged = navigatorView.addTimelineNavNodes( objectNode);
-    boolean areLinksChanged =
-      navigatorView.addObjectToTimelineNavLinks( objectNode);
-    if (areNodesChanged || areLinksChanged) {
-      navigatorView.setLayoutNeeded();
-      navigatorView.setFocusNode( objectNode);
-      navigatorView.redraw();
-    }
+  private boolean addObjects( final ModelClassNavNode objectNode) {
+    boolean areNodesChanged =
+      NavNodeGenerics.addEntityNavNodes( objectNode, navigatorView, isDebugPrint);
+    boolean areLinksChanged = false;
+    boolean isParentLinkChanged =
+      NavNodeGenerics.addParentToEntityNavLinks( objectNode, navigatorView, isDebugPrint);
+    boolean areChildLinksChanged =
+      NavNodeGenerics.addEntityToChildNavLinks( objectNode, navigatorView, isDebugPrint);
+     if (isParentLinkChanged || areChildLinksChanged) {
+       areLinksChanged = true;
+     }
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-  } // end addObjectTimelines
+    return (areNodesChanged || areLinksChanged);
+  } // end addObjectObjects
 
-  private void removeObjectTimelines( ModelClassNavNode objectNode,
-                                      NavigatorView navigatorView) {
-    boolean areLinksChanged =
-      navigatorView.removeObjectToTimelineNavLinks( objectNode);
-    boolean areNodesChanged = navigatorView.removeTimelineNavNodes( objectNode);
-    if (areNodesChanged || areLinksChanged) {
-      navigatorView.setLayoutNeeded();
-      navigatorView.setFocusNode( objectNode);
-      navigatorView.redraw();
-    }
+  private boolean removeObjects( final ModelClassNavNode objectNode) {
+    boolean areLinksChanged = false;
+    boolean isParentLinkChanged =
+      NavNodeGenerics.removeParentToEntityNavLinks( objectNode, navigatorView, isDebugPrint);
+    boolean areChildLinksChanged =
+      NavNodeGenerics.removeEntityToChildNavLinks( objectNode, navigatorView, isDebugPrint);
+     if (isParentLinkChanged || areChildLinksChanged) {
+       areLinksChanged = true;
+     }
+    boolean areNodesChanged =
+      NavNodeGenerics.removeEntityNavNodes( objectNode, navigatorView, isDebugPrint);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
-  } // end removeObjectTimelines
+    return (areNodesChanged || areLinksChanged);
+  } // end removeObjectObjects
 
 
 } // end class ModelClassNavNode
