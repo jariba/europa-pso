@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomain.java,v 1.4 2003-08-26 01:37:11 taylor Exp $
+// $Id: PwIntervalDomain.java,v 1.5 2004-03-23 18:20:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -23,43 +23,6 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwIntervalDomain {
-
-  /**
-   * <code>getLowerBound</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public abstract String getLowerBound();
-
-  /**
-   * <code>getUpperBound</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public abstract String getUpperBound();
-		
-  /**
-   * <code>getLowerBoundInt</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public abstract int getLowerBoundInt();
-
-  /**
-   * <code>getUpperBoundInt</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public abstract int getUpperBoundInt();
-		
-  /**
-   * <code>toString</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public abstract String toString();
-
-
+public interface PwIntervalDomain extends PwDomain {
 
 } // end interface PwIntervalDomain

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenRelation.java,v 1.7 2003-08-19 00:24:02 miatauro Exp $
+// $Id: PwTokenRelation.java,v 1.8 2004-03-23 18:20:05 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,7 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwTokenRelation {
+public interface PwTokenRelation extends PwEntity {
 
   /**
    * <code>getId</code>

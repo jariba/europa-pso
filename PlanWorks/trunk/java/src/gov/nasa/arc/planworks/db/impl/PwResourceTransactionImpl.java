@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceTransactionImpl.java,v 1.3 2004-03-02 21:45:16 miatauro Exp $
+// $Id: PwResourceTransactionImpl.java,v 1.4 2004-03-23 18:20:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -74,4 +75,49 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
     PwIntervalDomain endDomain = (PwIntervalDomain) getEndVariable().getDomain();
     return new PwIntervalDomainImpl(type, startDomain.getLowerBound(), endDomain.getUpperBound());
   }
+
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(id.toString());
+    retval.append("\t").append(DbConstants.T_TRANSACTION).append("\t");
+    retval.append("\\N").append("\t").append("\\N").append("\t");
+    
+    if(isFree()) {
+      retval.append("1").append("\t");
+    }
+    else {
+      retval.append("0").append("\t");
+    }
+    if(isValueToken) {
+      retval.append("1").append("\t");
+    }
+    else {
+      retval.append("0").append("\t");
+    }
+    retval.append(startVarId).append("\t").append(endVarId).append("\t").append(durationVarId);
+    retval.append(stateVarId).append("\t").append(predicateName).append("\t").append(parentId);
+    retval.append("\t").append(partialPlan.getObject(parentId).getName()).append("\t");
+    retval.append(objectVarId).append("\t");
+    if(!tokenRelationIds.isEmpty()) {
+      for(ListIterator it = tokenRelationIds.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    if(!paramVarIds.isEmpty()) {
+      for(ListIterator it = paramVarIds.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    retval.append(quantityMin).append(":").append(quantityMax);
+    retval.append("\n");
+    return retval.toString();
+  }
+
 } // end class PwResourceTransactionImpl

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PwEntity.java,v 1.1 2004-02-25 02:30:13 taylor Exp $
+// $Id: PwEntity.java,v 1.2 2004-03-23 18:20:03 miatauro Exp $
 //
 // PlanWorks
 //
@@ -25,4 +25,5 @@ public interface PwEntity {
    */
   public Integer getId();
 
+  public String toOutputString();
 }

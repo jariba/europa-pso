@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.14 2004-03-20 01:00:37 taylor Exp $
+// $Id: VizView.java,v 1.15 2004-03-23 18:22:32 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -28,10 +29,14 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoDocumentEvent;
+import com.nwoods.jgo.JGoDocumentListener;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
+import com.nwoods.jgo.JGoViewEvent;
+import com.nwoods.jgo.JGoViewListener;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -64,6 +69,11 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class VizView extends JPanel {
 
+  public static final String EVT_BEGUN_DRAWING = "drawingBegun";
+  public static final String EVT_ENDED_DRAWING = "drawingEnded";
+  public static final String EVT_JGO_VIEW_CHANGED = "jGoViewChanged";
+  public static final String EVT_JGO_DOCUMENT_CHANGED = "jGoDocumentChanged";
+
   /**
    * constant <code>ZOOM_FACTORS</code>
    *
@@ -80,7 +90,7 @@ public class VizView extends JPanel {
   protected FontMetrics fontMetrics;
   protected VizViewOverview overview;
   protected int zoomFactor;
-
+  private List listenerList;
 
   /**
    * <code>VizView</code> - constructor 
@@ -101,8 +111,12 @@ public class VizView extends JPanel {
 
     JGoText.setDefaultFontFaceName( "Monospaced");
     JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-
+    listenerList = new LinkedList();
     // Utilities.printFontNames();
+  }
+
+  public void addViewListener(ViewListener l) {
+    listenerList.add(l);
   }
 
   /**
@@ -438,6 +452,51 @@ public class VizView extends JPanel {
     jGoView.setScale( 1.0d / zoomFactor);
   } // end zoomView
 
+  protected void handleEvent(String eventName, Object [] params) {
+    Class [] paramTypes = new Class [params.length];
+    for(int i = 0; i < params.length; i++) {
+      paramTypes[i] = params[i].getClass();
+    }
+    for(Iterator it = listenerList.iterator(); it.hasNext();) {
+      ViewListener l = (ViewListener) it.next();
+      try {
+        //System.err.println("Accessing method " + l.getClass().getName() + "." + eventName + "("
+        //                   + paramTypes + ")");
+        l.getClass().getMethod(eventName, paramTypes).invoke(l, params);
+        
+      }
+      catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
 
+  protected void handleEvent(String eventName) {
+    Object [] params = {};
+    handleEvent(eventName, params);
+  }
+
+  class JGoListener implements JGoDocumentListener, JGoViewListener {
+    VizView view;
+    public JGoListener(VizView view) {
+      this.view = view;
+    }
+    public void documentChanged(JGoDocumentEvent e) {
+      Object [] params = {e};
+      view.handleEvent(EVT_JGO_VIEW_CHANGED, params);
+    }
+    public void viewChanged(JGoViewEvent e) {
+      Object [] params = {e};
+      view.handleEvent(EVT_JGO_DOCUMENT_CHANGED, params);
+    }
+  }
+
+  protected JGoDocumentListener createDocListener() {
+    return new JGoListener(this);
+  }
+
+  protected JGoViewListener createViewListener() {
+    return new JGoListener(this);
+  }
 } // end class VizView
 

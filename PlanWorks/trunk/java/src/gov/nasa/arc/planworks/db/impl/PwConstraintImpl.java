@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.11 2004-02-03 19:22:15 miatauro Exp $
+// $Id: PwConstraintImpl.java,v 1.12 2004-03-23 18:20:42 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -115,5 +115,12 @@ public class PwConstraintImpl implements PwConstraint {
 
   public void addVariable(final Integer variableId) {
     variableIds.add(variableId);
+  }
+
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(id.toString());
+    retval.append("\t").append(partialPlan.getId()).append("\t").append(name).append("\t");
+    retval.append(type).append("\n");
+    return retval.toString();
   }
 } // end class PwConstraintImpl

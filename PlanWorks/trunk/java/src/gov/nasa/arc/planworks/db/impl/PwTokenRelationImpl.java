@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenRelationImpl.java,v 1.7 2004-02-03 19:22:19 miatauro Exp $
+// $Id: PwTokenRelationImpl.java,v 1.8 2004-03-23 18:20:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -104,5 +104,12 @@ public class PwTokenRelationImpl implements PwTokenRelation {
  
   public String getType() {
     return type;
+  }
+
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(partialPlan.getId().toString());
+    retval.append("\t").append(tokenAId).append("\t").append(tokenBId).append("\t").append(type);
+    retval.append("\t").append(id).append("\n");
+    return retval.toString();
   }
 } // end class PwTokenRelationImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.88 2004-03-12 23:19:01 miatauro Exp $
+// $Id: PlanWorks.java,v 1.89 2004-03-23 18:19:12 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -46,6 +46,7 @@ import gov.nasa.arc.planworks.mdi.SplashWindow;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
+import gov.nasa.arc.planworks.util.FunctorFactory;
 import gov.nasa.arc.planworks.util.PlannerCommandLineDialog;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
@@ -67,17 +68,17 @@ public class PlanWorks extends MDIDesktopFrame {
   private static final int DESKTOP_FRAME_HEIGHT;// = 750;
   private static final int FRAME_X_LOCATION;// = 100;
   private static final int FRAME_Y_LOCATION;// = 125;
-  private static final Map VIEW_CLASS_NAME_MAP;
+  public static final Map VIEW_CLASS_NAME_MAP;
 
-  protected static final String PROJECT_MENU = "Project";
-  protected static final String CREATE_MENU_ITEM = "Create ...";
-  protected static final String OPEN_MENU_ITEM = "Open ...";
-  protected static final String DELETE_MENU_ITEM = "Delete ...";
-  protected static final String NEWSEQ_MENU_ITEM = "New Sequence ...";
-  protected static final String ADDSEQ_MENU_ITEM = "Add Sequence ...";
-  protected static final String DELSEQ_MENU_ITEM = "Delete Sequence ...";
-  protected static final String CREATE = "create";
-  protected static final String OPEN = "open";
+  public static final String PROJECT_MENU = "Project";
+  public static final String CREATE_MENU_ITEM = "Create ...";
+  public static final String OPEN_MENU_ITEM = "Open ...";
+  public static final String DELETE_MENU_ITEM = "Delete ...";
+  public static final String NEWSEQ_MENU_ITEM = "New Sequence ...";
+  public static final String ADDSEQ_MENU_ITEM = "Add Sequence ...";
+  public static final String DELSEQ_MENU_ITEM = "Delete Sequence ...";
+  public static final String CREATE = "create";
+  public static final String OPEN = "open";
 
   public static final String PLANSEQ_MENU = "Planning Sequence";
   public static final String CONSTRAINT_NETWORK_VIEW   = "Constraint Network View";
@@ -194,7 +195,7 @@ public class PlanWorks extends MDIDesktopFrame {
   private Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
 
   protected final DirectoryChooser sequenceDirChooser;
-  protected final PlannerCommandLineDialog executeDialog;
+  //protected final PlannerCommandLineDialog executeDialog;
   protected static String sequenceParentDirectory; // pathname
   protected static File [] sequenceDirectories; // directory name
 
@@ -294,8 +295,8 @@ public class PlanWorks extends MDIDesktopFrame {
     toolTipManager.setInitialDelay( 100); // default 750
     // toolTipManager.setDismissDelay( 8000); // default 4000
     toolTipManager.setReshowDelay( 100); // default 500
-    executeDialog = new PlannerCommandLineDialog(this);
-    executeDialog.hide();
+    //executeDialog = new PlannerCommandLineDialog(this);
+    //executeDialog.hide();
   } // end constructor 
 
 
@@ -372,18 +373,9 @@ public class PlanWorks extends MDIDesktopFrame {
    * @return - <code>List</code> - 
    */
   protected final List getProjectsLessCurrent() {
-    return CollectionUtils.lGrep(new NotEqualFunctor(currentProjectName), PwProject.listProjects());
+    return CollectionUtils.lGrep(FunctorFactory.notEqualFunctor(currentProjectName), 
+                                 PwProject.listProjects());
   } // end getProjectsLessCurrent
-
-  class NotEqualFunctor implements BooleanFunctor {
-    private Object ne;
-    public NotEqualFunctor(Object ne) {
-      this.ne = ne;
-    }
-    public final boolean func(final Object cmp) {
-      return !ne.equals(cmp);
-    }
-  }
 
   /**
    * <code>getSequenceStepsViewFrame</code>

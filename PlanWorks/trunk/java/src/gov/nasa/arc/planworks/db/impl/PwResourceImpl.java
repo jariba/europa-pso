@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceImpl.java,v 1.3 2004-03-12 23:19:52 miatauro Exp $
+// $Id: PwResourceImpl.java,v 1.4 2004-03-23 18:20:47 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -120,6 +120,40 @@ public class PwResourceImpl extends PwObjectImpl implements PwResource {
     return partialPlan.getInstantList(instantIdList);
   }
 
-
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(id.toString());
+    retval.append("\t").append(type).append("\t").append(parentId).append("\t");
+    retval.append(partialPlan.getId()).append("\t").append(name).append("\t");
+    if(!componentIdList.isEmpty()) {
+      for(ListIterator it = componentIdList.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    if(!variableIdList.isEmpty()) {
+      for(ListIterator it = variableIdList.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    if(!tokenIdList.isEmpty()) {
+      for(ListIterator it = tokenIdList.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    retval.append(horizonStart).append(",").append(horizonEnd).append(",").append(initialCapacity);
+    retval.append(",").append(levelLimitMin).append(",").append(levelLimitMax).append("\n");
+    return retval.toString();
+  }
 
 } // end class PwResourceImpl

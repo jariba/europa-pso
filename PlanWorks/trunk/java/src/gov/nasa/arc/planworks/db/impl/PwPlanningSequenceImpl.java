@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.72 2004-03-12 23:19:51 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.73 2004-03-23 18:20:46 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
+import java.awt.Frame;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -29,8 +30,10 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
 
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwListenable;
 import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -55,8 +58,9 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
-
+public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSequence, 
+                                                                    ViewableObject {
+  
   private Long id;
   private String projectName;
   private String url; //directory containing the partialplan directories
@@ -67,6 +71,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   private String name;
   private List contentSpec;
   private Map partialPlans; // partialPlanName Map of PwPartialPlan
+  private List planNamesInDb;
+  private List planNamesInFilesystem;
 
   private long timeSpentLoadingFiles;
   private long timeSpentAnalyzingDatabase;
@@ -101,11 +107,17 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    
     partialPlans = new HashMap();
     //ListIterator planNameIterator = MySQLDB.getPlanNamesInSequence(id).listIterator();
+    planNamesInFilesystem = new ArrayList();
     ListIterator planNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
     while(planNameIterator.hasNext()) {
-      partialPlans.put((String) planNameIterator.next(), null);
+      String planName = (String)planNameIterator.next();
+      if((new File(url + System.getProperty("file.separator") + planName)).exists()) {
+        planNamesInFilesystem.add(planName);
+      }
+      partialPlans.put(planName, null);
       stepCount++;
     }
+    planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
     //loadTransactions();
     transactions = null;
   }
@@ -142,18 +154,37 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
                                           + error);
     }
     this.id = MySQLDB.addSequence(url, project.getId());
+    String dbUrl = MySQLDB.getSequenceUrl(id);
+    if(!url.equals(dbUrl)) {
+      urlsDontMatchDialog(url, dbUrl);
+    }
     loadTransactionFile();
     loadStatsFile();
     MySQLDB.analyzeDatabase();
     //loadTransactions();
     transactions = null;
+    planNamesInFilesystem = new ArrayList();
     ListIterator ppNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
     while(ppNameIterator.hasNext()) {
-      partialPlans.put(ppNameIterator.next(), null);
+      String planName = (String) ppNameIterator.next();
+      if((new File(url + System.getProperty("file.separator") + planName)).exists()) {
+        planNamesInFilesystem.add(planName);
+      }
+      partialPlans.put(planName, null);
       stepCount++;
     }
+    planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
   } // end constructor for OpenProject call
   
+
+  private void urlsDontMatchDialog(String fsUrl, String dbUrl) {
+    Frame f = new Frame();
+    String [] urls = {fsUrl, dbUrl};
+    int choice = JOptionPane.showOptionDialog(f, "The URL in the sequence files and the URL from the file selecter don't match.  Please choose one.", "URL Mismatch", JOptionPane.YES_NO_OPTION,
+                                              JOptionPane.QUESTION_MESSAGE, null, urls, fsUrl);
+    MySQLDB.setSequenceUrl(id, urls[choice]);
+    url = urls[choice];
+  }
 
   private void loadTransactionFile() {
     MySQLDB.loadFile(url + System.getProperty("file.separator") + "transactions", "Transaction");
@@ -166,39 +197,17 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
 
   private void loadTransactions() {
     long t1 = System.currentTimeMillis();
-    transactions = MySQLDB.queryTransactions(id);
+    int currTransactions = 0;
+    if(transactions != null) {
+      currTransactions = transactions.keySet().size();
+    }
+    if(currTransactions < MySQLDB.countTransactions(id)) {
+      transactions = MySQLDB.queryTransactions(id);
+    }
     System.err.println(transactions.keySet().size() + " transactions.");
     System.err.println("Loading transactions took " + (System.currentTimeMillis() - t1) + "ms");
   }
   
-  public void cleanTransactions(final PwPartialPlanImpl pp) {
-    ListIterator transactionNameIterator = (new ArrayList(transactions.keySet())).listIterator();
-    String ppIdStr = pp.getId().toString();
-    while(transactionNameIterator.hasNext()) {
-      String transactionName = (String) transactionNameIterator.next();
-      if(transactionName.indexOf(ppIdStr) == 0) {
-        PwDBTransactionImpl transaction = (PwDBTransactionImpl) transactions.get(transactionName);
-        if(transaction.getType().indexOf("DELETED") == -1) {
-          if(transaction.getType().indexOf("TOKEN") != -1) {
-            if(!pp.tokenExists(transaction.getObjectId())) {
-              transactions.remove(transactionName);
-            }
-          }
-          else if(transaction.getType().indexOf("VARIABLE") != -1) {
-            if(pp.getVariable(transaction.getObjectId()) == null) {
-              transactions.remove(transactionName);
-            }
-          }
-          else if(transaction.getType().indexOf("CONSTRAINT") != -1) {
-            if(pp.getConstraint(transaction.getObjectId()) == null) {
-              transactions.remove(transactionName);
-            }
-          }
-        }
-      }
-    }
-  }
-
   // IMPLEMENT INTERFACE 
 
 
@@ -352,9 +361,18 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   private PwPartialPlan addPartialPlan(final String partialPlanName) 
     throws ResourceNotFoundException {
     if(partialPlans.containsKey(partialPlanName)) {
-      PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, this);
-      partialPlans.put(partialPlanName, partialPlan);
-      return partialPlan;
+      try {
+        PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, this);
+        partialPlans.put(partialPlanName, partialPlan);
+        planNamesInDb.add(partialPlanName);
+        handleEvent(EVT_PP_ADDED);
+        return partialPlan;
+      }
+      catch(ResourceNotFoundException rnfe) {
+        planNamesInFilesystem.remove(partialPlanName);
+        handleEvent(EVT_PP_REMOVED);
+        throw rnfe;
+      }
     }
     throw new ResourceNotFoundException("Failed to find plan " + partialPlanName +
                                         " in sequence " + name);
@@ -374,6 +392,17 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
                                           "' not found in url " + url);
     }
     return (PwPartialPlan) partialPlans.get(planName);
+  }
+
+  public boolean isPartialPlanLoaded(final int step) {
+    return partialPlans.get("step" + step) != null;
+  }
+  public boolean isPartialPlanInDb(final int step) {
+    return planNamesInDb.contains("step" + step);
+  }
+  public boolean isPartialPlanInFilesystem(final int step) {
+    //return (new File(url + System.getProperty("file.separator") + "step" + step)).exists();
+    return planNamesInFilesystem.contains("step" + step);
   }
 
   public void delete() throws ResourceNotFoundException {
@@ -602,14 +631,19 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     System.err.println("Loading transactions...");
     loadTransactions();
     System.err.println("Loading new partial plan info...");
+    planNamesInFilesystem.clear();
     ListIterator planNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
     while(planNameIterator.hasNext()) {
       String planName = (String) planNameIterator.next();
+      if((new File(url + System.getProperty("file.separator") + planName)).exists()) {
+        planNamesInFilesystem.add(planName);
+      }
       if(!partialPlans.containsKey(planName)) {
         partialPlans.put(planName, null);
         stepCount++;
       }
     }
+    planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
     System.err.println("Planning sequence refresh done.");
   }
 

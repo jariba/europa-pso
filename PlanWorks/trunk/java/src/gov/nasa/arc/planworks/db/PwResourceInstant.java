@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstant.java,v 1.2 2004-02-27 18:04:14 miatauro Exp $
+// $Id: PwResourceInstant.java,v 1.3 2004-03-23 18:20:05 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -26,7 +26,7 @@ import gov.nasa.arc.planworks.db.PwIntervalDomain;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwResourceInstant {
+public interface PwResourceInstant extends PwEntity {
 
 
   /**

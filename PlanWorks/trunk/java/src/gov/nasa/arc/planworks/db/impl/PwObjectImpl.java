@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.23 2004-03-12 23:19:50 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.24 2004-03-23 18:20:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -31,14 +31,14 @@ import gov.nasa.arc.planworks.db.PwVariable;
  * @version 0.0
  */
 public class PwObjectImpl implements PwObject {
-  private int type;
+  protected int type;
   protected Integer id;
-  private Integer parentId;
-  private String name;
+  protected Integer parentId;
+  protected String name;
   //private String emptySlotInfo;
-  private List componentIdList; // element Integer
-  private List variableIdList;
-  private List tokenIdList;
+  protected List componentIdList; // element Integer
+  protected List variableIdList;
+  protected List tokenIdList;
   protected PwPartialPlanImpl partialPlan;
   //  private boolean haveCreatedSlots;
   //   private boolean haveCalculatedSlotTimes;
@@ -132,6 +132,40 @@ public class PwObjectImpl implements PwObject {
 
   public String toString() {
     return id.toString();
+  }
+
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(id.toString());
+    retval.append("\t").append(type).append("\t").append(parentId).append("\t");
+    retval.append(partialPlan.getId()).append("\t").append(name).append("\t");
+    if(!componentIdList.isEmpty()) {
+      for(ListIterator it = componentIdList.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    if(!variableIdList.isEmpty()) {
+      for(ListIterator it = variableIdList.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    if(!tokenIdList.isEmpty()) {
+      for(ListIterator it = tokenIdList.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t").append("\\N").append("\n");
+    return retval.toString();
   }
 
 } // end class PwObjectImpl

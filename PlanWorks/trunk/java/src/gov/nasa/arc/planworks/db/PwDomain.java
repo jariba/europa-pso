@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomain.java,v 1.8 2003-10-18 00:01:07 miatauro Exp $
+// $Id: PwDomain.java,v 1.9 2004-03-23 18:20:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -21,7 +21,7 @@ package gov.nasa.arc.planworks.db;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwDomain {
+public interface PwDomain extends PwEntity {
 
   /**
    * <code>getLowerBound</code>

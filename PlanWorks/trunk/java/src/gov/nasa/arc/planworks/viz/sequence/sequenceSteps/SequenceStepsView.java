@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.18 2004-03-17 01:45:23 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.19 2004-03-23 18:24:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -16,6 +16,7 @@ package gov.nasa.arc.planworks.viz.sequence.sequenceSteps;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -39,6 +40,8 @@ import javax.swing.SwingUtilities;
 import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDocument;
+import com.nwoods.jgo.JGoEllipse;
+import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoRectangle;
 import com.nwoods.jgo.JGoText;
@@ -51,6 +54,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.CreateSequenceViewThread;
 import gov.nasa.arc.planworks.SequenceViewMenuItem;
 import gov.nasa.arc.planworks.db.PwConstraint;
+import gov.nasa.arc.planworks.db.PwListener;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -101,12 +105,27 @@ public class SequenceStepsView extends SequenceView {
   private Font font;
   private float heightScaleFactor;
   private List stepElementList;
+  private List stepRepresentedList;
+  private List statusIndicatorList;
 
   /**
    * variable <code>selectedStepElement</code>
    *
    */
   protected StepElement selectedStepElement;
+
+  class SequenceChangeListener implements PwListener {
+    private SequenceStepsView view;
+    public SequenceChangeListener(SequenceStepsView view) {
+      this.view = view;
+    }
+    public void fireEvent(String evtName) {
+      if(evtName.equals(PwPlanningSequence.EVT_PP_ADDED) ||
+         evtName.equals(PwPlanningSequence.EVT_PP_REMOVED)) {
+        view.redraw();
+      }
+    }
+  }
 
   /**
    * <code>SequenceStepsView</code> - constructor 
@@ -121,7 +140,8 @@ public class SequenceStepsView extends SequenceView {
     this.planSequence = (PwPlanningSequence) planSequence;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (SequenceViewSet) viewSet;
-
+    statusIndicatorList = new ArrayList();
+    stepRepresentedList = new ArrayList();
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
     stepElementList = new ArrayList();
@@ -133,6 +153,8 @@ public class SequenceStepsView extends SequenceView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
+
+    ((PwPlanningSequence)planSequence).addListener(new SequenceChangeListener(this));
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -212,7 +234,12 @@ public class SequenceStepsView extends SequenceView {
 
   private void redrawView() {
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
-    document.deleteContents();
+    //document.deleteContents();
+    for(Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
+      document.removeObject((JGoObject) it.next());
+    }
+    statusIndicatorList.clear();
+    
     renderHistogram();
 
     expandViewFrame( viewSet.openView( this.getClass().getName()),
@@ -303,50 +330,83 @@ public class SequenceStepsView extends SequenceView {
     int x = ViewConstants.STEP_VIEW_X_INIT;
     int stepNumber = 0;
     Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
+    long time = 0L;
     while (sizeItr.hasNext()) {
       int y = ViewConstants.STEP_VIEW_Y_INIT;
+      
+      long temp = System.currentTimeMillis();
+      addStepStatusIndicator(stepNumber, x, document);
+      time += System.currentTimeMillis() - temp;
+      
       String partialPlanName = "step".concat( String.valueOf( stepNumber));
       int [] planDbSizes= (int[]) sizeItr.next();
+      if(!stepRepresentedList.contains(partialPlanName)) {
+        int height = Math.max( 1, (int) (planDbSizes[0] * heightScaleFactor));
+        List elementList = new ArrayList();
+        StepElement stepElement = new StepElement( x, y, height, DB_TOKENS,
+                                                   planDbSizes[0], TOKENS_BG_COLOR,
+                                                   partialPlanName, planSequence, this);
+        elementList.add( stepElement);
+        document.addObjectAtTail( stepElement);
+        y += height;
+        
+        height = Math.max( 1, (int) (planDbSizes[1] * heightScaleFactor));
+        stepElement = new StepElement( x, y, height, DB_VARIABLES,
+                                       planDbSizes[1], VARIABLES_BG_COLOR,
+                                       partialPlanName, planSequence, this);
+        elementList.add( stepElement);
+        document.addObjectAtTail( stepElement);
+        y += height;
+        
+        height = Math.max( 1, (int) (planDbSizes[2] * heightScaleFactor));
+        stepElement = new StepElement( x, y, height, DB_CONSTRAINTS,
+                                       planDbSizes[2], DB_CONSTRAINTS_BG_COLOR,
+                                       partialPlanName, planSequence, this);
+        elementList.add( stepElement);
+        document.addObjectAtTail( stepElement);
+        y += height;
 
-      int height = Math.max( 1, (int) (planDbSizes[0] * heightScaleFactor));
-      List elementList = new ArrayList();
-      StepElement stepElement = new StepElement( x, y, height, DB_TOKENS,
-                                                 planDbSizes[0], TOKENS_BG_COLOR,
-                                                 partialPlanName, planSequence, this);
-      elementList.add( stepElement);
-      document.addObjectAtTail( stepElement);
-      y += height;
-
-      height = Math.max( 1, (int) (planDbSizes[1] * heightScaleFactor));
-      stepElement = new StepElement( x, y, height, DB_VARIABLES,
-                                     planDbSizes[1], VARIABLES_BG_COLOR,
-                                     partialPlanName, planSequence, this);
-      elementList.add( stepElement);
-      document.addObjectAtTail( stepElement);
-      y += height;
-
-      height = Math.max( 1, (int) (planDbSizes[2] * heightScaleFactor));
-      stepElement = new StepElement( x, y, height, DB_CONSTRAINTS,
-                                     planDbSizes[2], DB_CONSTRAINTS_BG_COLOR,
-                                     partialPlanName, planSequence, this);
-      elementList.add( stepElement);
-      document.addObjectAtTail( stepElement);
-      y += height;
-
-      stepElementList.add( elementList);
-      // display step number for every 10th step
-      if ((stepNumber % 10) == 0) {
-        JGoText textObject = new JGoText( new Point( x, y + 4), String.valueOf( stepNumber));
-        textObject.setResizable( false);
-        textObject.setEditable( false);
-        textObject.setDraggable( false);
-        textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
-        document.addObjectAtTail( textObject);
+        stepElementList.add( elementList);
+        // display step number for every 10th step
+        if ((stepNumber % 10) == 0) {
+          JGoText textObject = new JGoText( new Point( x, y + 4), String.valueOf( stepNumber));
+          textObject.setResizable( false);
+          textObject.setEditable( false);
+          textObject.setDraggable( false);
+          textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
+          document.addObjectAtTail( textObject);
+        }
+        stepRepresentedList.add(partialPlanName);
       }
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
       stepNumber++;
     }
+    System.err.println("Spent " + time + " in addStepStatusIndicator");
   } // end renderHistogram
+
+  private void addStepStatusIndicator(int stepNum, int x, JGoDocument doc) {
+    JGoEllipse statusIndicator = new JGoEllipse(new Point(x + 4, 
+                                                          ViewConstants.STEP_VIEW_Y_INIT - 6),
+                                                new Dimension(4, 4));
+    statusIndicator.setDraggable(false);
+    statusIndicator.setResizable(false);
+    statusIndicator.setSelectable(false);
+    Color color = null;
+    if(planSequence.isPartialPlanInDb(stepNum)) {
+      color = ColorMap.getColor("green3");
+    }
+    else if(planSequence.isPartialPlanInFilesystem(stepNum)) {
+      color = ColorMap.getColor("yellow");
+    }
+    else {
+      color = ColorMap.getColor("red");
+    }
+    //setPen(new JGoPen(type, width, color));
+    statusIndicator.setPen(JGoPen.Null);
+    statusIndicator.setBrush(JGoBrush.makeStockBrush(color));
+    doc.addObjectAtTail(statusIndicator);
+    statusIndicatorList.add(statusIndicator);
+  }
 
 
   /**
