@@ -1,0 +1,211 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+// $Id: VizViewOverview.java,v 1.12 2004-03-30 22:01:02 taylor Exp $
+//
+// PlanWorks
+//
+// Will Taylor -- started 17nov03
+//
+
+package gov.nasa.arc.planworks.viz;
+
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
+// PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoView;
+
+// PlanWorks/java/lib/JGo/Classier.jar
+import com.nwoods.jgo.examples.Overview;
+
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.ModelClassNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.ResourceNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.VariableNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.ConstraintNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfile;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionNode;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.ThickDurationBridge;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
+// import gov.nasa.arc.planworks.viz.sequence.modelRules.PredicateNode;
+
+/**
+ * <code>VizViewOverview</code> - 
+ *
+ * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
+ *               NASA Ames Research Center - Code IC
+ * @version 0.0
+ */
+public class VizViewOverview extends Overview implements StringViewSetKey {
+
+  private String overviewTitle; // key for viewSet hash map
+  private VizView vizView;
+
+  /**
+   * <code>VizViewOverview</code> - constructor 
+   *
+   * @param overviewTitle - <code>String</code> - 
+   * @param vizView - <code>VizView</code> - 
+   */
+  public VizViewOverview( String overviewTitle, VizView vizView) {
+    super();
+    this.overviewTitle = overviewTitle;
+    this.vizView = vizView;
+    vizView.setOverview(this);
+  }
+
+  /**
+   * <code>getViewSetKey</code> - implements StringViewSetKey
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getViewSetKey() {
+    return overviewTitle;
+  }
+
+  /**
+   * <code>getVizView</code>
+   *
+   * @return - <code>VizView</code> - 
+   */
+  public final VizView getVizView() {
+    return vizView;
+  }
+
+  // when the Overview window is no longer needed, make sure the observed view doesn't keep
+  // any references to this view
+//   public void removeNotify()
+//   {
+//     removeListeners();
+//     myObserved = null;
+//     super.removeNotify();
+//   }
+
+  /**
+   * I believe the problem may be related to focus changes in the
+   * JDesktopPane.  When focus changes between different JInternalFrames on
+   * the desktop it appears that the parent component of the JInternalFrame
+   * changes, so momentarily it has no parent.  This causes
+   * JGoOverview.removeNotify() to be called which sets the observed JGoView
+   * to null:
+   *
+   * You should subclass JGoOverview and override this method to do nothing.
+   * Then make sure these operations are performed when the JInternalFrame
+   * holdiong the JGoOverview is closed.
+   */
+  public void removeNotify() {
+    // System.err.println( "VizViewOverview.removeNotify");
+    // System.err.println( "myObserved " + getObserved());
+//     removeListeners();
+//     myObserved = null;
+//     super.removeNotify();
+  }  
+
+  /**
+   * <code>removeNotifyFromViewSet</code>
+   *
+   */
+  public void removeNotifyFromViewSet() {
+    OverviewRectangle overviewRect = getOverviewRect();
+    JGoView observed = getObserved();
+    // System.err.println( "removeNotifyFromViewSet");
+    if (observed != null && overviewRect != null) {
+      observed.getDocument().removeDocumentListener(this);
+      observed.removeViewListener(overviewRect);
+      observed.getCanvas().removeComponentListener(overviewRect);
+      observed = null;
+      vizView.setOverview( null);
+      super.removeNotify();
+    }
+  } // end removeNotifyFromViewSet
+
+  // show tooltips, so users might get a clue about which object is which
+  // even though the objects are so small
+  /**
+   * <code>getToolTipText</code> -
+   *            show tooltips, so users might get a clue about which object is which
+   *            even though the objects are so small.
+   *            Show the node label, not its tool tip.
+   *
+   * @param evt - <code>MouseEvent</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText( MouseEvent evt) {
+    if (getObserved() == null) return null;
+    boolean isOverview = true;
+    Point p = new Point(evt.getPoint());
+    convertViewToDoc(p);
+    String tip = null;
+    JGoObject obj = getObserved().pickDocObject(p, false);
+    
+    while (obj != null) {
+      if (obj instanceof ConstraintNetworkObjectNode) {
+        tip = ((ConstraintNetworkObjectNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ConstraintNetworkTimelineNode) {
+        tip = ((ConstraintNetworkTimelineNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ConstraintNetworkTokenNode) {
+        tip = ((ConstraintNetworkTokenNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ConstraintNode) {
+        tip = ((ConstraintNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof VariableNode) {
+        tip = ((VariableNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TemporalNode) {
+        tip = ((TemporalNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TokenNode) {
+        tip = ((TokenNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof SlotNode) {
+        tip = ((SlotNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ThickDurationBridge) {
+        tip = ((ThickDurationBridge) obj).getToolTipText( isOverview);
+        // viz/sequence/modelRules
+//       } else if (obj instanceof PredicateNode) {
+//         tip = ((PredicateNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ModelClassNavNode) {
+        tip = ((ModelClassNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ResourceNavNode) {
+        tip = ((ResourceNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TimelineNavNode) {
+        tip = ((TimelineNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof SlotNavNode) {
+        tip = ((SlotNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TokenNavNode) {
+        tip = ((TokenNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof VariableNavNode) {
+        tip = ((VariableNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ConstraintNavNode) {
+        tip = ((ConstraintNavNode) obj).getToolTipText( isOverview);
+
+      } else if (obj instanceof ResourceProfile.ProfileLine) {
+        tip = ((ResourceProfile.ProfileLine) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ResourceTransactionNode) {
+        tip = ((ResourceTransactionNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TimelineViewTimelineNode) {
+        tip = ((TimelineViewTimelineNode) obj).getToolTipText( isOverview);
+      } else {
+        tip = obj.getToolTipText();
+      }
+      if (tip != null) {
+        return tip;
+      } else {
+        obj = obj.getParent();
+      }
+    }
+    return null;
+  } // end getToolTipText
+
+} // end class VizViewOverview
+
