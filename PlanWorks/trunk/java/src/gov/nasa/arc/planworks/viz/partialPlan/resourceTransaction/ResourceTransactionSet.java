@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.3 2004-03-02 02:34:18 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.4 2004-03-03 02:14:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -19,6 +19,7 @@ import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -84,6 +85,7 @@ public class ResourceTransactionSet extends BasicNode {
   private int extentYBottom;
   private int transactionSetYOrigin;
   private int levelScaleWidth;
+  private List transactionObjectList;
 
   /**
    * <code>ResourceTransactionSet</code> - constructor 
@@ -108,6 +110,7 @@ public class ResourceTransactionSet extends BasicNode {
     nodeLabel = resource.getName();
     nodeLabelWidth =
       ResourceTransactionSet.getNodeLabelWidth( nodeLabel, resourceTransactionView);
+    transactionObjectList = new ArrayList();
 
     configure();
   } // end constructor
@@ -192,6 +195,15 @@ public class ResourceTransactionSet extends BasicNode {
     return transactionSetYOrigin;
   }
 
+  /**
+   * <code>getTransactionObjectList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public final List getTransactionObjectList() {
+    return transactionObjectList;
+  }
+
   private void renderBordersUpper( final int xLeft, final int xRight, final int yLoc,
                                    final JGoDocument jGoDocument) {
     JGoStroke divider = new JGoStroke();
@@ -247,21 +259,23 @@ public class ResourceTransactionSet extends BasicNode {
       checkIntervalForInfinity( transIdString, transStart);
       int transEnd = transInterval.getUpperBoundInt();
       checkIntervalForInfinity( transIdString, transEnd);
-//       System.err.println( "transId = " + transIdString + " start " + transStart +
-//                           " end " + transEnd);
-      double minDelta = transaction.getQuantityMin();
-      double maxDelta = transaction.getQuantityMax();
       int transStartX = resourceTransactionView.getJGoRulerView().scaleTime( transStart);
       int transEndX = resourceTransactionView.getJGoRulerView().scaleTime( transEnd);
+//       System.err.println( "transId = " + transIdString + " start " + transStart +
+//                           " end " + transEnd + " transStartX " + transStartX +
+//                           " transEndX " + transEndX);
       int yDelta = ViewConstants.RESOURCE_TRANSACTION_HEIGHT;
+      // force min width to 2, so that toolTip will show up
       TransactionObject transactionObject =
         new TransactionObject( transaction,
                                new Point( transStartX, resourceTransactionView.currentYLoc),
-                               new Dimension( transEndX - transStartX, yDelta));
+                               new Dimension( Math.max( transEndX - transStartX, 2),
+                                              yDelta));
       transactionObject.setResizable( false); transactionObject.setDraggable( false);
       transactionObject.setSelectable( false);
       resourceTransactionView.getJGoExtentDocument().addObjectAtTail( transactionObject);
       resourceTransactionView.currentYLoc += yDelta;
+      transactionObjectList.add( transactionObject);
     }
     resourceTransactionView.currentYLoc += 2;
   } // end renderTransactions
@@ -298,6 +312,15 @@ public class ResourceTransactionSet extends BasicNode {
                               Dimension size) {
       super( location, size);
       this.transaction = transaction;
+    }
+
+    /**
+     * <code>getTransaction</code>
+     *
+     * @return - <code>PwResourceTransaction</code> - 
+     */
+    public PwResourceTransaction getTransaction() {
+      return transaction;
     }
 
     /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.33 2004-03-02 02:34:18 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.34 2004-03-03 02:14:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -267,9 +267,10 @@ public class TemporalExtentView extends PartialPlanView  {
       boolean isRedraw = true;
       renderTemporalExtent( isRedraw);
       addStepButtons( jGoExtentView);
-      if (! isStepButtonView) {
-        expandViewFrameForStepButtons( viewFrame);
-      }
+      // causes bottom view edge to creep off screen
+//       if (! isStepButtonView) {
+//         expandViewFrameForStepButtons( viewFrame);
+//       }
     } //end run
 
   } // end class RedrawViewThread

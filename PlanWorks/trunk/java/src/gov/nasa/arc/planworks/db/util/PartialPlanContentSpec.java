@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.19 2004-03-02 22:00:23 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.20 2004-03-03 02:14:21 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -306,7 +306,7 @@ public class PartialPlanContentSpec implements ContentSpec {
         ListIterator slottedTokenIdIterator = validTokenIds.listIterator();
         while(slottedTokenIdIterator.hasNext()) {
           Integer id = (Integer) slottedTokenIdIterator.next();
-          if(partialPlan.getToken(id).isSlotted()) {
+          if(!partialPlan.getToken(id).isSlotted()) {
             slottedTokenIdIterator.remove();
           }
         }

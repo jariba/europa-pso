@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.5 2004-03-02 02:34:18 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.6 2004-03-03 02:14:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,16 +43,19 @@ import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwSlot;
+import gov.nasa.arc.planworks.db.PwToken;
 // testing
-import gov.nasa.arc.planworks.db.PwIntervalDomain;
-import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
-import gov.nasa.arc.planworks.db.impl.PwResourceImpl;
-import gov.nasa.arc.planworks.db.impl.PwResourceInstantImpl;
-import gov.nasa.arc.planworks.db.impl.PwResourceTransactionImpl;
+// import gov.nasa.arc.planworks.db.PwIntervalDomain;
+// import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
+// import gov.nasa.arc.planworks.db.impl.PwResourceImpl;
+// import gov.nasa.arc.planworks.db.impl.PwResourceInstantImpl;
+// import gov.nasa.arc.planworks.db.impl.PwResourceTransactionImpl;
 
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
@@ -309,9 +312,10 @@ public class ResourceTransactionView extends PartialPlanView  {
     // iterateOverNodes();
 
     int maxStepButtonY = addStepButtons( jGoExtentView);
-    if (! isStepButtonView) {
-      expandViewFrameForStepButtons( viewFrame);
-    }
+    // screws up the equality of the two vertical scroll bars
+//     if (! isStepButtonView) {
+//       expandViewFrameForStepButtons( viewFrame);
+//     }
     // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
     // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
     equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
@@ -352,9 +356,10 @@ public class ResourceTransactionView extends PartialPlanView  {
       renderResourceExtent();
 
       int maxStepButtonY = addStepButtons( jGoExtentView);
-      if (! isStepButtonView) {
-        expandViewFrameForStepButtons( viewFrame);
-      }
+      // causes bottom view edge to creep off screen
+//       if (! isStepButtonView) {
+//         expandViewFrameForStepButtons( viewFrame);
+//       }
       // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
       // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
       equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
@@ -959,9 +964,9 @@ public class ResourceTransactionView extends PartialPlanView  {
     createTimeMarkItem( timeMarkItem, resource);
     mouseRightPopup.add( timeMarkItem);
 
-//     JMenuItem activeResourceItem = new JMenuItem( "Snap to Active Resource");
-//     createActiveResourceItem( activeResourceItem);
-//     mouseRightPopup.add( activeResourceItem);
+    JMenuItem activeResourceItem = new JMenuItem( "Snap to Active Resource Transaction");
+    createActiveResourceItem( activeResourceItem);
+    mouseRightPopup.add( activeResourceItem);
 
     if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
@@ -974,18 +979,21 @@ public class ResourceTransactionView extends PartialPlanView  {
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
-
-//   private void createActiveResourceItem( final JMenuItem activeResourceItem) {
-//     activeResourceItem.addActionListener( new ActionListener() {
-//         public final void actionPerformed( final ActionEvent evt) {
-//           PwResource activeResource =
-//             ((PartialPlanViewSet) ResourceTransactionView.this.getViewSet()).getActiveResource();
-//           if (activeResource != null) {
-//             findAndSelectResource( activeResource);
-//           }
-//         }
-//       });
-//   } // end createActiveResourceItem
+  private void createActiveResourceItem( final JMenuItem activeResourceItem) {
+    activeResourceItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          PwToken activeToken =
+            ((PartialPlanViewSet) ResourceTransactionView.this.getViewSet()).getActiveToken();
+          if ((activeToken != null) && (activeToken instanceof PwResourceTransaction)) {
+              findAndSelectResourceTransaction( (PwResourceTransaction) activeToken);
+          } else {
+            JOptionPane.showMessageDialog
+              (PlanWorks.getPlanWorks(), "Active token is not a resource transaction",
+              "Active Resource Transaction Not Found", JOptionPane.INFORMATION_MESSAGE);
+          }
+        }
+      });
+  } // end createActiveResourceItem
 
 
 //   private void createNodeByKeyItem( final JMenuItem nodeByKeyItem) {
@@ -1059,6 +1067,56 @@ public class ResourceTransactionView extends PartialPlanView  {
     }
     return yLoc;
   } // end findResourceYLoc
+
+
+  public final void findAndSelectResourceTransaction ( final PwResourceTransaction
+                                                       resourceTransToFind) {
+    boolean isResourceTransFound = false;
+    if ((resourceTransToFind.getParentId() != null) &&
+        (! resourceTransToFind.getParentId().equals( DbConstants.noId))) {
+      PwResource resourceToFind =
+        (PwResource) partialPlan.getObject( resourceTransToFind.getParentId());
+//       System.err.println( "findAndSelectResourceTransaction resourceToFind " +
+//                           resourceToFind);
+      Iterator resourceSetListItr = resourceTransactionSetList.iterator();
+      foundIt:
+      while (resourceSetListItr.hasNext()) {
+        ResourceTransactionSet resourceTransactionSet =
+          (ResourceTransactionSet) resourceSetListItr.next();
+        if (resourceTransactionSet.getResource().getId().equals( resourceToFind.getId())) {
+          Iterator transObjectItr =
+            resourceTransactionSet.getTransactionObjectList().iterator();
+          while (transObjectItr.hasNext()) {
+            ResourceTransactionSet.TransactionObject transObject =
+              (ResourceTransactionSet.TransactionObject) transObjectItr.next();
+            if (transObject.getTransaction().getId().equals( resourceTransToFind.getId())) {
+              System.err.println( "ResourceTransactionView found resourceTransaction: " +
+                                  resourceTransToFind.getName() + 
+                                  " (key=" + resourceTransToFind.getId().toString() + ")");
+              isResourceTransFound = true;
+
+              jGoExtentView.getHorizontalScrollBar().
+                setValue( Math.max( 0, (int) (transObject.getLocation().getX() -
+                                              (jGoExtentView.getExtentSize().getWidth() / 2))));
+              jGoExtentView.getVerticalScrollBar().
+                setValue( Math.max( 0, (int) (transObject.getLocation().getY() -
+                                              (jGoExtentView.getExtentSize().getHeight() / 2))));
+              break foundIt;
+            }
+          }
+        }
+      }
+      if (! isResourceTransFound) {
+        // Content Spec filtering may cause this to happen
+        String message = "Resource Transaction'" +  resourceTransToFind.getName() +
+          "' (key=" + resourceTransToFind.getId().toString() + ") not found.";
+        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                       "Resource TransactionNot Found in ResourceTransactionView",
+                                       JOptionPane.ERROR_MESSAGE);
+        System.err.println( message);
+      }
+    }
+  } // end findAndSelectResourceTransaction
 
 
   private void createTimeMarkItem( final JMenuItem timeMarkItem,
