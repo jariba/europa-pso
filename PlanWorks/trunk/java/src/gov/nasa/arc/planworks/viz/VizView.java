@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.27 2004-06-10 01:35:59 taylor Exp $
+// $Id: VizView.java,v 1.28 2004-06-21 22:43:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -237,7 +237,7 @@ public class VizView extends JPanel {
   /**
    * <code>createAllViewItems</code>
    *
-   * @param partialPlanIfLoaded - <code>PwPartialPlan</code> - StepElement may pass null
+   * @param partialPlanIfLoaded - <code>PwPartialPlan</code> - 
    * @param partialPlanName - <code>String</code> - 
    * @param planSequence - <code>PwPlanningSequence</code> - 
    * @param mouseRightPopup - <code>JPopupMenu</code> - 
@@ -245,6 +245,28 @@ public class VizView extends JPanel {
   public void createAllViewItems( PwPartialPlan partialPlanIfLoaded,
                                   String partialPlanName,
                                   PwPlanningSequence planSequence,
+                                  JPopupMenu mouseRightPopup) {
+    List viewListenerList = new ArrayList();
+    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+      viewListenerList.add( null);
+    }
+    createAllViewItems( partialPlanIfLoaded, partialPlanName, planSequence,
+                        viewListenerList, mouseRightPopup);
+  } // end createAllViewItems 
+
+  /**
+   * <code>createAllViewItems</code>
+   *
+   * @param partialPlanIfLoaded - <code>PwPartialPlan</code> - StepElement may pass null
+   * @param partialPlanName - <code>String</code> - 
+   * @param planSequence - <code>PwPlanningSequence</code> - 
+   * @param viewListenerList - <code>List</code> - 
+   * @param planSequence - <code>PwPlanningSequence</code> - 
+   */
+  public void createAllViewItems( PwPartialPlan partialPlanIfLoaded,
+                                  String partialPlanName,
+                                  PwPlanningSequence planSequence,
+                                  List viewListenerList,
                                   JPopupMenu mouseRightPopup) { 
     mouseRightPopup.addSeparator();
 
@@ -264,7 +286,8 @@ public class VizView extends JPanel {
     }
 
     JMenuItem openAllItem = new JMenuItem( "Open All Views");
-    createOpenAllItem( openAllItem, partialPlanIfLoaded, partialPlanName, planSequence);
+    createOpenAllItem( openAllItem, partialPlanIfLoaded, partialPlanName, planSequence,
+                       viewListenerList);
     mouseRightPopup.add( openAllItem);
 
     if ((partialPlanIfLoaded != null) && (partialPlanViewSet != null)) {
@@ -272,7 +295,7 @@ public class VizView extends JPanel {
       createShowAllItem( showAllItem, partialPlanViewSet);
       mouseRightPopup.add( showAllItem);
     }    
-  } // end createAllViewItems
+  } // end createAllViewItems with viewListenerList
 
   private void createCloseAllItem( JMenuItem closeAllItem,
                                    final PartialPlanViewSet partialPlanViewSet) {
@@ -320,18 +343,24 @@ public class VizView extends JPanel {
   private void createOpenAllItem( JMenuItem openAllItem,
                                   final PwPartialPlan partialPlanIfLoaded,
                                   final String partialPlanName,
-                                  final PwPlanningSequence planSequence) {
+                                  final PwPlanningSequence planSequence,
+                                  final List viewListenerList) {
     openAllItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
+          if (viewListenerList.size() != ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()) {
+            System.err.println( "createOpenAllItem: num view listeners not = " +
+                                ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
+            System.exit( -1);
+          }
           String seqUrl = planSequence.getUrl();
           String seqName = planSequence.getName();
           Iterator viewListItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
-          ViewListener viewListener = null;
+          Iterator viewListenerItr = viewListenerList.iterator();
           while (viewListItr.hasNext()) {
             final String viewName = (String) viewListItr.next();
             final PartialPlanViewMenuItem viewItem =
               new PartialPlanViewMenuItem( viewName, seqUrl, seqName, partialPlanName,
-                                           viewListener);
+                                           (ViewListener) viewListenerItr.next());
             Thread thread = new CreatePartialPlanViewThread( viewName, viewItem);
             thread.setPriority(Thread.MIN_PRIORITY);
             thread.start();

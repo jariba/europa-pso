@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.20 2004-06-16 22:09:09 taylor Exp $
+// $Id: ViewGenerics.java,v 1.21 2004-06-21 22:43:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -19,6 +19,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.dnd.DnDConstants;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -60,7 +62,9 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
@@ -106,7 +110,7 @@ public class ViewGenerics {
   public static void partialPlanViewsPopupMenu( int stepNumber,
                                                 PwPlanningSequence planSequence,
                                                 VizView vizView, Point viewCoords,
-                                                ViewListener viewListener) {
+                                                List viewListenerList) {
     JPopupMenu mouseRightPopup = new PartialPlanViewMenu();
     String partialPlanName = "step" + String.valueOf( stepNumber);
     JMenuItem header = new JMenuItem( partialPlanName);
@@ -114,7 +118,7 @@ public class ViewGenerics {
     mouseRightPopup.addSeparator();
 
     ((PartialPlanViewMenu) mouseRightPopup).
-      buildPartialPlanViewMenu( partialPlanName, planSequence, viewListener);
+      buildPartialPlanViewMenu( partialPlanName, planSequence, viewListenerList);
     PwPartialPlan partialPlanIfLoaded = null;
     try {
       partialPlanIfLoaded = planSequence.getPartialPlanIfLoaded( partialPlanName);
@@ -127,8 +131,8 @@ public class ViewGenerics {
       // rnfExcep.printStackTrace();
       return;
     }
-    vizView.createAllViewItems( partialPlanIfLoaded, partialPlanName,
-                                planSequence, mouseRightPopup);
+    vizView.createAllViewItems( partialPlanIfLoaded, partialPlanName, planSequence,
+                                viewListenerList, mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, vizView, viewCoords);
 
@@ -254,7 +258,7 @@ public class ViewGenerics {
   /**
    * <code>openNodeShapesView</code>
    *
-   * @param menuItem - <code>JMenuItem</code> - 
+   * @param menuItem - <code>JMenuItem</code> -
    */
   public static void openNodeShapesView( JMenuItem menuItem) {
     JFrame nodeShapesFrame = PlanWorks.getPlanWorks().getNodeShapesFrame();
@@ -554,6 +558,41 @@ public class ViewGenerics {
     }
     return numCycles != 0;
   }
+
+  public static JMenuItem createRuleInstanceViewItem( final RuleInstanceNode ruleInstanceNode,
+                                                      final PartialPlanView partialPlanView) {
+    JMenuItem ruleInstanceViewItem = new JMenuItem( "Open Rule Instance View");
+    ruleInstanceViewItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          MDIInternalFrame ruleInstanceViewFrame = null;
+          RuleInstanceView ruleInstanceView = null;
+          ViewSet viewSet = partialPlanView.getViewSet();
+          Iterator viewItr = viewSet.getViews().keySet().iterator();
+          while (viewItr.hasNext()) {
+            MDIInternalFrame viewFrame = viewSet.getView( (Object) viewItr.next());
+            if (((ruleInstanceView = ViewGenerics.getRuleInstanceView( viewFrame)) != null) &&
+                (ruleInstanceView.getRuleInstanceId().equals
+                 ( ruleInstanceNode.getRuleInstance().getId()))) {
+              ruleInstanceViewFrame = viewFrame;
+              break;
+            }
+          }
+          if (ruleInstanceViewFrame == null) {
+            String viewSetKey = partialPlanView.getRuleViewSetKey();
+            ruleInstanceViewFrame = partialPlanView.openRuleViewFrame( viewSetKey);
+            Container contentPane = ruleInstanceViewFrame.getContentPane();
+            PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+            contentPane.add( new RuleInstanceView( ruleInstanceNode, partialPlan,
+                                                   partialPlanView.getViewSet(),
+                                                   viewSetKey, ruleInstanceViewFrame));
+          } else {
+            ViewGenerics.raiseFrame( ruleInstanceViewFrame);
+          }
+        }
+      });
+    return ruleInstanceViewItem;
+  } // end createRuleInstanceViewItem
+
 
 } // end class ViewGenerics 
 

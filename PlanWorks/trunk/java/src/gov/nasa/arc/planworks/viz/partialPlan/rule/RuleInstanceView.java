@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceView.java,v 1.3 2004-06-16 22:09:15 taylor Exp $
+// $Id: RuleInstanceView.java,v 1.4 2004-06-21 22:43:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -67,9 +67,10 @@ public class RuleInstanceView extends PartialPlanView implements StringViewSetKe
    * @param viewSetKey - <code>String</code> - 
    * @param ruleFrame - <code>MDIInternalFrame</code> - 
    */
-  public RuleInstanceView( final RuleInstanceNode ruleInstanceNode, final ViewableObject partialPlan,
-                   final ViewSet viewSet, final String viewSetKey,
-                   final MDIInternalFrame ruleFrame) {
+  public RuleInstanceView( final RuleInstanceNode ruleInstanceNode,
+                           final ViewableObject partialPlan,
+                           final ViewSet viewSet, final String viewSetKey,
+                           final MDIInternalFrame ruleFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.ruleInstanceNode = ruleInstanceNode;
     this.partialPlan = (PwPartialPlan) partialPlan;

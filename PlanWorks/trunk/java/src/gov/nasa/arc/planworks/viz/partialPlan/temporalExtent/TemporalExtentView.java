@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.51 2004-06-16 22:09:15 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.52 2004-06-21 22:43:03 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -102,6 +102,7 @@ public class TemporalExtentView extends PartialPlanView  {
   private boolean isShowLabels;
   private int temporalDisplayMode;
   private boolean isStepButtonView;
+  private Integer focusNodeId;
 
 
   /**
@@ -136,6 +137,13 @@ public class TemporalExtentView extends PartialPlanView  {
     SwingUtilities.invokeLater(runInit);
   }
 
+  /**
+   * <code>TemporalExtentView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
   public TemporalExtentView( ViewableObject partialPlan, ViewSet viewSet,
                              ViewListener viewListener) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
@@ -157,6 +165,7 @@ public class TemporalExtentView extends PartialPlanView  {
     timeScaleMark = null;
     isShowLabels = true;
     temporalDisplayMode = SHOW_INTERVALS;
+    focusNodeId = null;
     
     ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
@@ -413,6 +422,24 @@ public class TemporalExtentView extends PartialPlanView  {
    */
   public TimeScaleView getJGoRulerView() {
     return jGoRulerView;
+  }
+
+  /**
+   * <code>getFocusNodeId</code>
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public Integer getFocusNodeId() {
+    return focusNodeId;
+  }
+
+  /**
+   * <code>getTimeScaleMark</code>
+   *
+   * @return - <code>JGoStroke</code> - 
+   */
+  public JGoStroke getTimeScaleMark() {
+    return timeScaleMark;
   }
 
   private void createTemporalNodes() {
@@ -893,6 +920,7 @@ public class TemporalExtentView extends PartialPlanView  {
                             tokenToFind.getPredicateName() +
                             " (key=" + tokenToFind.getId().toString() + ")");
       }
+      focusNodeId = temporalNode.getToken().getId();
       NodeGenerics.focusViewOnNode( temporalNode, isHighlightNode, jGoExtentView);
       if (! isByKey) {
         NodeGenerics.selectSecondaryNodes
@@ -953,7 +981,7 @@ public class TemporalExtentView extends PartialPlanView  {
    *                              as a tool tip.
    *
    */
-  class TimeScaleMark extends JGoStroke {
+  public class TimeScaleMark extends JGoStroke {
 
     private int xLoc;
 
@@ -971,6 +999,20 @@ public class TemporalExtentView extends PartialPlanView  {
       setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "red")));
     }
 
+    /**
+     * <code>getXLoc</code>
+     *
+     * @return - <code>int</code> - 
+     */
+    public int getXLoc() {
+      return xLoc;
+    }
+
+    /**
+     * <code>getToolTipText</code>
+     *
+     * @return - <code>String</code> - 
+     */
     public String getToolTipText() {
       return String.valueOf( jGoRulerView.scaleXLocNoZoom( xLoc));
     }

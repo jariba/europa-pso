@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.13 2004-05-28 20:21:18 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.14 2004-06-21 22:43:01 taylor Exp $
 //
 // PlanWorks
 //
@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
+import java.util.List;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
@@ -63,16 +64,23 @@ public class PartialPlanViewMenu extends JPopupMenu{
    *
    * @param partialPlanName - <code>String</code> - 
    * @param planSequence - <code>PwPlanningSequence</code> - 
-   * @param viewListener - <code>ViewListener</code> - 
+   * @param viewListenerList - <code>List</code> - 
    */
   public void buildPartialPlanViewMenu( String partialPlanName,
                                         PwPlanningSequence planSequence,
-                                        ViewListener viewListener) {
+                                        List viewListenerList) {
+    if (viewListenerList.size() != ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()) {
+      System.err.println( "buildPartialPlanViewMenu: num view listeners not = " +
+                          ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
+      System.exit( -1);
+    }
     Iterator viewNamesItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
+    Iterator viewListenerItr = viewListenerList.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
       PartialPlanViewMenuItem viewItem = 
-        createOpenViewItem(viewName, partialPlanName, planSequence, viewListener);
+        createOpenViewItem( viewName, partialPlanName, planSequence,
+                            (ViewListener) viewListenerItr.next());
       this.add(viewItem);
     }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkObjectNode.java,v 1.10 2004-06-10 01:36:01 taylor Exp $
+// $Id: ConstraintNetworkObjectNode.java,v 1.11 2004-06-21 22:43:01 taylor Exp $
 //
 
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
@@ -159,13 +159,14 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
     ConstraintNetworkUtils.mouseRightPopupMenu(viewCoords, this, partialPlanView);
   } // end mouseRightPopupMenu
 
-  public void addContainerNodeVariables(Object n, Object v) {
-    addContainerNodeVariables((VariableContainerNode) n, (ConstraintNetworkView) v);
+  public void addContainerNodeVariables(Object n, Object v, boolean doRedraw) {
+    addContainerNodeVariables((VariableContainerNode) n, (ConstraintNetworkView) v, doRedraw);
   }
 
   public void addContainerNodeVariables( VariableContainerNode objNode,
-                                            ConstraintNetworkView constraintNetworkView) {
-    ConstraintNetworkUtils.addContainerNodeVariables(objNode, constraintNetworkView);
+                                         ConstraintNetworkView constraintNetworkView,
+                                         boolean doRedraw) {
+    ConstraintNetworkUtils.addContainerNodeVariables(objNode, constraintNetworkView, doRedraw);
     int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
   } // end addTokenNodeVariables 

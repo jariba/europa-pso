@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.57 2004-06-16 22:09:17 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.58 2004-06-21 22:43:03 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -77,6 +77,7 @@ public class TokenNetworkView extends PartialPlanView {
   private Map ruleInstanceNodeMap; // key = ruleInstanceId, element RuleInstanceNode
   private boolean isStepButtonView;
   private List rootNodes;
+  private Integer focusNodeId;
 
   /**
    * <code>TokenNetworkView</code> - constructor - 
@@ -135,6 +136,7 @@ public class TokenNetworkView extends PartialPlanView {
 
   private void tokenNetworkViewInit( final ViewSet viewSet) {
     this.viewSet = (PartialPlanViewSet) viewSet;
+    focusNodeId = null;
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     jGoView = new TokenNetworkJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
@@ -343,6 +345,15 @@ public class TokenNetworkView extends PartialPlanView {
    */
   public final RuleInstanceNode getRuleInstanceNode( final Integer id) {
     return (RuleInstanceNode) ruleInstanceNodeMap.get( id);
+  }
+
+  /**
+   * <code>getFocusNodeId</code>
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public final Integer getFocusNodeId() {
+    return focusNodeId;
   }
 
   private void createTokenNodes() {
@@ -611,6 +622,7 @@ public class TokenNetworkView extends PartialPlanView {
         System.err.println( "TokenNetworkView found token: " +
                             tokenToFind.getPredicateName() +
                             " (key=" + tokenToFind.getId().toString() + ")");
+        focusNodeId = tokenNode.getToken().getId();
         NodeGenerics.focusViewOnNode( tokenNode, isHighlightNode, jGoView);
         isTokenFound = true;
         break;
@@ -646,6 +658,7 @@ public class TokenNetworkView extends PartialPlanView {
         System.err.println( "TokenNetworkView found ruleInstance: rule " +
                             ruleInstanceToFind.getRuleId() +
                             " (key=" + ruleInstanceToFind.getId().toString() + ")");
+        focusNodeId = ruleInstanceNode.getRuleInstance().getId();
         NodeGenerics.focusViewOnNode( ruleInstanceNode, isHighlightNode, jGoView);
         isRuleInstanceFound = true;
         break;

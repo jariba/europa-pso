@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeShapes.java,v 1.1 2004-06-16 22:09:08 taylor Exp $
+// $Id: NodeShapes.java,v 1.2 2004-06-21 22:43:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -174,6 +174,17 @@ public  class NodeShapes extends JPanel {
                                                   new Point( x, y),
                                                   ColorMap.getColor( "cyan"));
     jGoView.getDocument().addObjectAtTail( variableNode);
+
+    x = VIEW_X_INIT;
+    y = y + VIEW_Y_DELTA / 2;
+    String text = "This window is external to the PlanWorks desktop";
+    JGoText textObject = new JGoText( new Point( x, y), text);
+    textObject.setResizable( false);
+    textObject.setEditable( false);
+    textObject.setDraggable( false);
+    textObject.setSelectable( false);
+    textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
+    jGoView.getDocument().addObjectAtTail( textObject);
 
 //     int maxViewWidth = (int) jGoView.getDocumentSize().getWidth();
 //     int maxViewHeight = (int) jGoView.getDocumentSize().getHeight();

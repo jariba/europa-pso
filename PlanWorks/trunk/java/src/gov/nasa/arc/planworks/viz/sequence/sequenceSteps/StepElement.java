@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.14 2004-04-22 19:26:27 taylor Exp $
+// $Id: StepElement.java,v 1.15 2004-06-21 22:43:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -81,7 +81,7 @@ public class StepElement extends HistogramElement {
   private int stepNumber;
   private int height;
   private int numTransactions;
-  private ViewListener viewListener;
+  private List viewListenerList; // element ViewListener
 
 
   /**
@@ -110,7 +110,10 @@ public class StepElement extends HistogramElement {
     stepNumber = Utilities.getStepNumber( partialPlanName);
     this.planSequence = planSequence;
     this.sequenceView = sequenceView;
-    this.viewListener = null;
+    viewListenerList = new ArrayList();
+    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+      viewListenerList.add( null);
+    }
   } // end constructor
 
 
@@ -165,12 +168,12 @@ public class StepElement extends HistogramElement {
    * @param docCoords - <code>Point</code> - 
    * @param viewCoords - <code>Point</code> - 
    * @param view - <code>JGoView</code> - 
-   * @param viewListener - <code>ViewListener</code> - 
+   * @param viewListenerList - <code>List</code> - 
    */
   public void doMouseClickWithListener( int modifiers, Point docCoords,
                                         Point viewCoords, JGoView view,
-                                        ViewListener viewListener) {
-    this.viewListener = viewListener;
+                                        List viewListenerList) {
+    this.viewListenerList = viewListenerList;
     doMouseClick( modifiers, docCoords, viewCoords, view);
   } // end doMouseClickWithListener
 
@@ -193,7 +196,7 @@ public class StepElement extends HistogramElement {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       ViewGenerics.partialPlanViewsPopupMenu( stepNumber, planSequence, sequenceView,
-                                              viewCoords, viewListener);
+                                              viewCoords, viewListenerList);
       return true;
     }
     return false;

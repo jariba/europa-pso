@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionTable.java,v 1.3 2004-05-25 23:42:55 taylor Exp $
+// $Id: DBTransactionTable.java,v 1.4 2004-06-21 22:43:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -19,6 +19,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -334,9 +336,13 @@ public class DBTransactionTable extends JTable {
     } else if (vizView instanceof SequenceView) {
       planSequence = ((SequenceView) vizView).getPlanSequence();
     }
+    List viewListenerList = new ArrayList();
+    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+      viewListenerList.add( null);
+    }
     ViewGenerics.partialPlanViewsPopupMenu
       ( Integer.parseInt( stepNumberStr), planSequence,
-        vizView, new Point( 0, 0), viewListener);
+        vizView, new Point( 0, 0), viewListenerList);
   } // end popupMenuForStepNumberColumn
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.58 2004-06-16 22:09:16 taylor Exp $
+// $Id: TimelineView.java,v 1.59 2004-06-21 22:43:03 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -88,6 +88,7 @@ public class TimelineView extends PartialPlanView {
   private JGoArea mouseOverNode;
   private boolean isAutoSnapEnabled;
   private boolean isStepButtonView;
+  private Integer focusNodeId;
 
   /**
    * <code>TimelineView</code> - constructor - 
@@ -146,6 +147,7 @@ public class TimelineView extends PartialPlanView {
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
     viewName = ViewConstants.TIMELINE_VIEW;
+    focusNodeId = null;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
@@ -354,6 +356,15 @@ public class TimelineView extends PartialPlanView {
    */
   public boolean isAutoSnapEnabled() {
     return isAutoSnapEnabled;
+  }
+
+  /**
+   * <code>getFocusNodeId</code>
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public Integer getFocusNodeId() {
+    return focusNodeId;
   }
 
   private boolean createTimelineAndSlotNodes() {
@@ -832,7 +843,8 @@ public class TimelineView extends PartialPlanView {
     Iterator timelineNodeListItr = timelineNodeList.iterator();
     foundIt:
     while (timelineNodeListItr.hasNext()) {
-      TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineNodeListItr.next();
+      TimelineViewTimelineNode timelineNode =
+        (TimelineViewTimelineNode) timelineNodeListItr.next();
       Iterator slotNodeListItr = timelineNode.getSlotNodeList().iterator();
       while (slotNodeListItr.hasNext()) {
         SlotNode slotNode = (SlotNode) slotNodeListItr.next();
@@ -847,6 +859,7 @@ public class TimelineView extends PartialPlanView {
             System.err.println( "TimelineView found token: " +
                                 tokenToFind.getPredicateName() +
                                 " (key=" + tokenToFind.getId().toString() + ")");
+            focusNodeId = token.getId();
             NodeGenerics.focusViewOnNode( slotNode, isHighlightNode, jGoView);
             // secondary nodes do not apply here
             isTokenFound = true;
@@ -863,6 +876,7 @@ public class TimelineView extends PartialPlanView {
           System.err.println( "TimelineView found token: " +
                               tokenToFind.getPredicateName() +                   
                               " (key=" + tokenToFind.getId().toString() + ")");
+          focusNodeId = freeTokenNode.getToken().getId();
           NodeGenerics.focusViewOnNode( freeTokenNode, isHighlightNode, jGoView);
           // secondary nodes do not apply here
           isTokenFound = true;
@@ -888,7 +902,8 @@ public class TimelineView extends PartialPlanView {
     Iterator timelineNodeListItr = timelineNodeList.iterator();
     foundIt:
     while (timelineNodeListItr.hasNext()) {
-      TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineNodeListItr.next();
+      TimelineViewTimelineNode timelineNode =
+        (TimelineViewTimelineNode) timelineNodeListItr.next();
       Iterator slotNodeListItr = timelineNode.getSlotNodeList().iterator();
       while (slotNodeListItr.hasNext()) {
         SlotNode slotNode = (SlotNode) slotNodeListItr.next();
@@ -896,6 +911,7 @@ public class TimelineView extends PartialPlanView {
           System.err.println( "TimelineView found slot: " +
                               slotNode.getPredicateName() +
                               " (key=" + slotToFind.getId().toString() + ")");
+          focusNodeId = slotNode.getSlot().getId();
           NodeGenerics.focusViewOnNode( slotNode, isHighlightNode, jGoView);
           // secondary nodes do not apply here
           isSlotFound = true;
@@ -930,6 +946,7 @@ public class TimelineView extends PartialPlanView {
         System.err.println( "TimelineView found timeline: " +
                             timelineNode.getTimeline().getName() +
                             " (key=" + timelineToFind.getId().toString() + ")");
+        focusNodeId = timelineNode.getTimeline().getId();
         NodeGenerics.focusViewOnNode( timelineNode, isHighlightNode, jGoView);
         isTimelineFound = true;
         break;
