@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.9 2004-03-10 02:21:21 taylor Exp $
+// $Id: TimeScaleView.java,v 1.10 2004-03-20 01:00:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -37,6 +37,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 
 /**
@@ -58,14 +59,15 @@ public class TimeScaleView extends JGoView  {
   private PwPartialPlan partialPlan;
   private PartialPlanView partialPlanView;
   private int maxSlots;
-  private int xOrigin;
-  private int endXLoc;
   private int timeScaleStart;
   private int timeScaleEnd;
   private int slotLabelMinLength;
-  private double timeScale;
   private int timeDelta;
   private int tickTime;
+  private int xOriginNoZoom;
+  private double timeScaleNoZoom;
+  private int xOriginWithZoom;
+  private double timeScaleWithZoom;
 
   /**
    * <code>TimeScaleView</code> - constructor 
@@ -106,12 +108,21 @@ public class TimeScaleView extends JGoView  {
   }
 
   /**
-   * <code>getTimeScale</code>
+   * <code>getTimeScaleNoZoom</code>
    *
    * @return - <code>double</code> - 
    */
-  public final double getTimeScale() {
-    return timeScale;
+  public final double getTimeScaleNoZoom() {
+    return timeScaleNoZoom;
+  }
+
+  /**
+   * <code>getTimeScaleWithZoom</code>
+   *
+   * @return - <code>double</code> - 
+   */
+  public final double getTimeScaleWithZoom() {
+    return timeScaleWithZoom;
   }
 
   /**
@@ -119,10 +130,9 @@ public class TimeScaleView extends JGoView  {
    *
    * @param doFreeTokens - <code>boolean</code> - 
    * @param partPlanView - <code>PartialPlanView</code> - 
-   * @return - <code>int</code> - 
    */
-  public final int collectAndComputeTimeScaleMetrics( final boolean doFreeTokens,
-                                                      final PartialPlanView partPlanView) {
+  public final void collectAndComputeTimeScaleMetrics( final boolean doFreeTokens,
+                                                       final PartialPlanView partPlanView) {
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
     while (objectIterator.hasNext()) {
@@ -154,7 +164,9 @@ public class TimeScaleView extends JGoView  {
     if (timeScaleStart == timeScaleEnd) {
       timeScaleEnd = timeScaleStart + TIME_SCALE_END_DEFAULT;
     }
-    return computeTimeScaleMetrics( partPlanView);
+
+    int zoomFactor = 1;
+    computeTimeScaleMetrics( zoomFactor, partPlanView);
   } // end collectAndComputeTimeScaleMetrics
 
 
@@ -164,7 +176,7 @@ public class TimeScaleView extends JGoView  {
     int leftMarginTime = 0;
     if (startTimeIntervalDomain != null) {
 //       System.err.println( "collectTimeScaleMetrics earliest " +
-//                           startTimeIntervalDomain.getLowerBound() + " latest " +
+//                           startTimeIntervalDomain.getLowerBound() + " latest " +zoomFactor
 //                           startTimeIntervalDomain.getUpperBound());
       int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
       leftMarginTime = earliestTime;
@@ -250,16 +262,30 @@ public class TimeScaleView extends JGoView  {
     }
   } // end collectFreeTokenMetrics
 
-  private int computeTimeScaleMetrics( final PartialPlanView partPlanView) {
-    endXLoc = Math.max( startXLoc +
-                        (maxSlots * slotLabelMinLength *
-                         partialPlanView.getFontMetrics().charWidth( 'A')),
-                        ViewConstants.TEMPORAL_MIN_END_X_LOC);
-    timeScale = ((double) (endXLoc - startXLoc)) / ((double) (timeScaleEnd - timeScaleStart));
+  /**
+   * <code>computeTimeScaleMetrics</code>
+   *
+   * @param zoomFactor - <code>int</code> - 
+   * @param partPlanView - <code>PartialPlanView</code> - 
+   */
+  public void computeTimeScaleMetrics( final int zoomFactor,
+                                       final PartialPlanView partPlanView) {
+    int endXLoc = Math.max( startXLoc +
+                            (maxSlots * slotLabelMinLength *
+                             partPlanView.getFontMetrics().charWidth( 'A')),
+                            ViewConstants.TEMPORAL_MIN_END_X_LOC);
+    double xLocRange =  ((double) (endXLoc - startXLoc)) / (double) zoomFactor;
+    double timeScale = xLocRange / ((double) (timeScaleEnd - timeScaleStart));
+    if (zoomFactor == 1) {
+      timeScaleNoZoom = timeScale;
+    }
+    timeScaleWithZoom = timeScale;
+//     System.err.println( "zoomFactor " + zoomFactor + " timeScaleNoZoom " + timeScaleNoZoom +
+//                         " timeScaleWithZoom " + timeScaleWithZoom);
 //     System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
 //                        " endXLoc " + endXLoc);
-//     System.err.println( "Temporal Extent View time scale: " + timeScaleStart + " " +
-//                        timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
+//     System.err.println( "TimeScaleView time scale: " + timeScaleStart + " " +
+//                         timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
     int timeScaleRange = timeScaleEnd - timeScaleStart;
     timeDelta = 1;
     int maxIterationCnt = TIME_DELTA_INTERATION_CNT, iterationCnt = 0;
@@ -271,30 +297,15 @@ public class TimeScaleView extends JGoView  {
       } else {
         timeDelta *= 2;
       }
-//       System.err.println( "range " + timeScaleRange + " maxSlots " +
-//                           maxSlots + " timeDelta " + timeDelta);
+      // System.err.println( "range " + timeScaleRange + " maxSlots " +
+      //                     maxSlots + " timeDelta " + timeDelta);
       iterationCnt++;
       if (iterationCnt > maxIterationCnt) {
-        String dialogTitle = null;
-        if (partPlanView instanceof TemporalExtentView) {
-          dialogTitle = PlanWorks.TEMPORAL_EXTENT_VIEW;
-        } else if (partPlanView instanceof ResourceProfileView) {
-          dialogTitle = PlanWorks.RESOURCE_PROFILE_VIEW;
-        } else {
-          System.err.println( "TimeScaleView.computeTimeScaleMetrics: view " +
-                              partialPlanView + " not handled");
-          System.exit( 1);
-        }
-        String message = "Range (" + timeScaleRange + ") execeeds functionality";
-        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                       dialogTitle + " Exception",
-                                       JOptionPane.ERROR_MESSAGE);
-        System.err.println( message);
-        System.exit( 1);
+        iterationCntError( timeScaleRange, partPlanView);
       }
     }
     tickTime = 0;
-    xOrigin = startXLoc;
+    int xOrigin = (int) (startXLoc / (double) zoomFactor);
     int scaleStart = timeScaleStart;
     if ((scaleStart < 0) && ((scaleStart % timeDelta) == 0)) {
       scaleStart -= 1;
@@ -305,25 +316,52 @@ public class TimeScaleView extends JGoView  {
 //       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
 //                           " xOrigin " + xOrigin);
     }
-//     System.err.println( " xOrigin " + xOrigin);
-    return xOrigin;
+    if (zoomFactor == 1) {
+      xOriginNoZoom = xOrigin;
+    }
+    xOriginWithZoom = xOrigin;
+//     System.err.println( "zoomFactor " + zoomFactor + " xOriginNoZoom " + xOriginNoZoom +
+//                         " xOriginWithZoom " + xOriginWithZoom);
   } // end computeTimeScaleMetrics
 
+  private void iterationCntError( int timeScaleRange, PartialPlanView partPlanView) {
+    String dialogTitle = null;
+    if (partPlanView instanceof TemporalExtentView) {
+      dialogTitle = PlanWorks.TEMPORAL_EXTENT_VIEW;
+    } else if (partPlanView instanceof ResourceProfileView) {
+      dialogTitle = PlanWorks.RESOURCE_PROFILE_VIEW;
+    } else if (partPlanView instanceof ResourceTransactionView) {
+      dialogTitle = PlanWorks.RESOURCE_TRANSACTION_VIEW;
+    } else {
+      System.err.println( "TimeScaleView.computeTimeScaleMetrics: view " +
+                          partialPlanView + " not handled");
+      System.exit( 1);
+    }
+    String message = "TimeScaleView.computeTimeScaleMetrics: " +
+      "range (" + timeScaleRange + ") execeeds functionality";
+    JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                   dialogTitle + " Exception",
+                                   JOptionPane.ERROR_MESSAGE);
+    System.err.println( message);
+  } // end iterationCntError
 
   /**
-   * <code>createTimeScale</code>
+   * <code>createTimeScale</code> -  ScaleTimeWithZoom is used since TimeScaleView is
+   *                             *not* scaled by "Zoom View"
    *
    */
   public final void createTimeScale() {
-    int xLoc = (int) scaleTime( (double) tickTime);
-    // System.err.println( "createTimeScale: xLoc " + xLoc);
+    getDocument().deleteContents();
+    int xLoc = (int) scaleTimeWithZoom( (double) tickTime);
+    // System.err.println( "createTimeScale: xLoc start " + xLoc);
     int yRuler = startYLoc;
     int yLabelUpper = yRuler, yLabelLower = yRuler;
-    if ((timeScaleEnd - timeScaleStart) > ViewConstants.TEMPORAL_LARGE_LABEL_RANGE) {
-      yLabelLower = yRuler + ViewConstants.TIMELINE_VIEW_Y_INIT;
+    if (((int) scaleTimeWithZoom( (double) timeDelta)) <
+        ViewConstants.TEMPORAL_TICK_DELTA_X_MIN) { 
+      yLabelLower = yRuler + (int) (ViewConstants.TIMELINE_VIEW_Y_INIT * 1.25);
     }
     int yLabel = yLabelUpper;
-    int scaleWidth = 2, tickHeight = ViewConstants.TIMELINE_VIEW_Y_INIT / 2;
+    int scaleWidth = 1, tickHeight = ViewConstants.TIMELINE_VIEW_Y_INIT / 2;
     JGoStroke timeScaleRuler = new JGoStroke();
     timeScaleRuler.setPen( new JGoPen( JGoPen.SOLID, scaleWidth, ColorMap.getColor( "black")));
     timeScaleRuler.setDraggable( false);
@@ -337,7 +375,9 @@ public class TimeScaleView extends JGoView  {
       timeScaleRuler.addPoint( xLoc, yRuler);
       addTickLabel( tickTime, xLoc, yLabel + TICK_Y_INCREMENT);
       tickTime += timeDelta;
-      xLoc = (int) scaleTime( (double) tickTime);
+      xLoc = (int) scaleTimeWithZoom( (double) tickTime);
+      // System.err.println( "createTimeScale: xLoc " + xLoc + " tickTime " + tickTime);
+      
       isUpperLabel = (! isUpperLabel);
       if (isUpperLabel) {
         yLabel = yLabelUpper;
@@ -350,6 +390,16 @@ public class TimeScaleView extends JGoView  {
     addTickLabel( tickTime, xLoc, yLabel + TICK_Y_INCREMENT);
 
     getDocument().addObjectAtTail( timeScaleRuler);
+    // add invisible  line to force space for yLabelLower, when needed
+    JGoStroke labelMaxExtent = new JGoStroke();
+    labelMaxExtent.addPoint( startXLoc, startYLoc +
+                             (int) (ViewConstants.TIMELINE_VIEW_Y_INIT * 3));
+    labelMaxExtent.addPoint( startXLoc * 2, startYLoc +
+                             (int) (ViewConstants.TIMELINE_VIEW_Y_INIT * 3));
+    labelMaxExtent.setPen( new JGoPen( JGoPen.SOLID, 1,
+                                       ViewConstants.VIEW_BACKGROUND_COLOR));
+    // ColorMap.getColor( "black")));
+    getDocument().addObjectAtTail( labelMaxExtent);
   } // end createTimeScale
 
   private void addTickLabel( final int time, final int x, final int y) {
@@ -364,25 +414,44 @@ public class TimeScaleView extends JGoView  {
     getDocument().addObjectAtTail( textObject);
   } // end addTickLabel
 
-
   /**
-   * <code>scaleTime</code>
+   * <code>scaleTimeNoZoom</code>
    *
    * @param time - <code>double</code> - 
    * @return - <code>int</code> - 
    */
-  public final int scaleTime( final double time) {
-    return xOrigin + (int) (timeScale * time);
+  public final int scaleTimeNoZoom( final double time) {
+    return xOriginNoZoom + (int) (timeScaleNoZoom * time);
   }
 
   /**
-   * <code>scaleXLoc</code>
+   * <code>scaleXLocNoZoom</code>
    *
    * @param xLoc - <code>int</code> - 
    * @return - <code>int</code> - 
    */
-  public final int  scaleXLoc( final int xLoc) {
-    return (int) Math.round( (xLoc - xOrigin) / timeScale);
+  public final int  scaleXLocNoZoom( final int xLoc) {
+    return (int) Math.round( (xLoc - xOriginNoZoom) / timeScaleNoZoom);
+  }
+
+  /**
+   * <code>scaleTimeWithZoom</code>
+   *
+   * @param time - <code>double</code> - 
+   * @return - <code>int</code> - 
+   */
+  public final int scaleTimeWithZoom( final double time) {
+    return xOriginWithZoom + (int) (timeScaleWithZoom * time);
+  }
+
+  /**
+   * <code>scaleXLocWithZoom</code>
+   *
+   * @param xLoc - <code>int</code> - 
+   * @return - <code>int</code> - 
+   */
+  public final int  scaleXLocWithZoom( final int xLoc) {
+    return (int) Math.round( (xLoc - xOriginWithZoom) / timeScaleWithZoom);
   }
 
 

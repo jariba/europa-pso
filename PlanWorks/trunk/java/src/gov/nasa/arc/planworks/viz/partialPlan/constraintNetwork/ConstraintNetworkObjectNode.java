@@ -97,11 +97,17 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
     }
     if (object != null) {
       // tip.append( object.toString());
-      tip.append( "object");
+      // tip.append( "object");
+      tip.append( object.getName());
+      if (partialPlanView.getZoomFactor() > 1) {
+        tip.append( "<br>key=");
+        tip.append( object.getId().toString());
+      }
     } else {
       tip.append( "This is a bug");
     }
-    tip.append( "<br> Mouse-L: ").append( operation).append( "</html>");
+    tip.append( "<br>Mouse-L: ").append( operation);
+    tip.append( "</html>");
     return tip.toString();
   }
 

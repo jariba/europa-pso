@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.33 2004-03-17 01:45:20 taylor Exp $
+// $Id: PartialPlanView.java,v 1.34 2004-03-20 01:00:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -590,7 +590,7 @@ public class PartialPlanView extends VizView {
    *
    * @param viewFrame - <code>MDIInternalFrame</code> - 
    */
-  protected void expandViewFrameForStepButtons( MDIInternalFrame viewFrame) {
+  protected void expandViewFrameForStepButtons( MDIInternalFrame viewFrame, JGoView jGoView) {
     viewFrame.setSize( (int) viewFrame.getSize().getWidth(),
                        (int) (viewFrame.getSize().getHeight() +
                               forwardButton.getSize().getHeight()));
@@ -598,8 +598,11 @@ public class PartialPlanView extends VizView {
                                (int) (forwardButton.getLocation().getY() +
                                       forwardButton.getSize().getHeight()));
     backwardButton.setLocation( (int) backwardButton.getLocation().getX(),
-                               (int) (backwardButton.getLocation().getY() +
-                                      backwardButton.getSize().getHeight()));
+                                (int) (backwardButton.getLocation().getY() +
+                                       backwardButton.getSize().getHeight()));
+    if (jGoView.getVerticalScrollBar() != null) {
+      jGoView.getVerticalScrollBar().setValueIsAdjusting( true);
+    }
   } // end expandViewFrameForStepButtons
 
   /**

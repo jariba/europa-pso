@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.34 2004-03-17 01:45:23 taylor Exp $
+// $Id: planViz.txt,v 1.35 2004-03-20 01:00:42 taylor Exp $
 //
 // PlanWorks
 //
@@ -944,22 +944,28 @@ Pre-conditions:
   2. A project containing a sequence is open.
   3. The "Sequence Steps View" for the sequence is open.
   4. For any sequence step, select Mouse-Right "Open All Views".
-  5. Delete the "Resource Profile", "Resource Transaction", "Temporal
-     Extent", and "DBTransaction" views.
+  5. Delete the "Resource Profile", "Resource Transaction", and
+     "DBTransaction" views.
 
 Method:
-  1. In the Timeline View, Mouse-Right "Zoom View" on the background.
-  2. In the Token Network View, Mouse-Right "Zoom View" on the background.
-  3. In the Constraint Network View, Mouse-Right "ZoomView" on the background.
-  4. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
+  1. In the Temporal Extent View, Mouse-Right "Zoom View" on the background,
+     and choose a "zoom" factor.
+  2. In the Timeline View, Mouse-Right "Zoom View" on the background,
+     and choose a "zoom" factor.
+  3. In the Token Network View, Mouse-Right "Zoom View" on the background,
+     and choose a "zoom" factor.
+  4. In the Constraint Network View, Mouse-Right "ZoomView" on the background,
+     and choose a "zoom" factor.
+  5. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
      variable node.  In the Navigator View, Mouse-Right "Zoom View" on the 
-     background.
-  5. In the Sequence Steps View, Mouse-Right "Zoom View" on the background.
+     background, and choose a "zoom" factor.
+  6. In the Sequence Steps View, Mouse-Right "Zoom View" on the background,
+     and choose a "zoom" factor.
 
 
 Post-conditions:
-  1. Use the other views to verify the relationships
-     rendered in the Zoom Views.
+  1. Verify that the functionality and visibility of the "full scale" views
+     is rendered in the Zoom Views.
 
 Requirements: N/A
 

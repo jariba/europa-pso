@@ -4,16 +4,16 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.80 2004-03-17 01:45:19 taylor Exp $
+# $Id: README,v 1.81 2004-03-20 01:00:37 taylor Exp $
 #
 
 SUMMARY
 =======
 o Mouse-Right "Zoom View" has been added for the Constraint Network, 
-  Navigator, Timeline, and Token Network partial plan views.  It also
-  is available in the Sequence Steps view.  The zoom out factors
-  are x2, x4, x6, and x8 (the same scaling as the Overview views).
-  Whereas Mouse-Right "Overview Window" creates a new window and
+  Navigator, Temporal Extent, Timeline, and Token Network partial plan 
+  views.  It also is available in the Sequence Steps view.  The zoom 
+  out factors are x2, x4, x6, and x8 (the same scaling as the Overview 
+  views).  Whereas Mouse-Right "Overview Window" creates a new window and
   allows the coordinated  viewing of the paired windows, "Zoom View" 
   does not create a new window, rather it changes scaling in the 
   existing window.  Thus the existing Mouse-Right functionality on

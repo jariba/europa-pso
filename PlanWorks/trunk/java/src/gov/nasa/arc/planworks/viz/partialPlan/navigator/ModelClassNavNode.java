@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.10 2004-03-16 02:24:11 taylor Exp $
+// $Id: ModelClassNavNode.java,v 1.11 2004-03-20 01:00:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,7 +46,6 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
 
   private int linkCount;
   private boolean inLayout;
-  private boolean hasSingleTimeline;
   private boolean isDebugPrint;
 
   /**
@@ -70,22 +69,12 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
     labelBuf.append( "\nkey=").append( object.getId().toString());
     nodeLabel = labelBuf.toString();
     // System.err.println( "ModelClassNavNode: " + nodeLabel);
-    hasSingleTimeline = false;
-    if (object.getComponentList().size() == 1) {
-      hasSingleTimeline = true;
-    }
     isDebugPrint = false;
     // isDebugPrint = true;
 
     inLayout = false;
     setAreNeighborsShown( false);
     linkCount = 0;
-
-    if (hasSingleTimeline) {
-      setAreNeighborsShown( true);
-      int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
-      setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
-    }
   } // end constructor
 
   /**
@@ -151,10 +140,6 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
     if (value == false) {
       setAreNeighborsShown( false);
     }
-    if (hasSingleTimeline) {
-      setAreNeighborsShown( true);
-      width = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
-    }
     setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
@@ -215,15 +200,11 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
     if (partialPlanView.getZoomFactor() > 1) {
       tip.append( "<br>key=");
       tip.append( object.getId().toString());
-      tip.append( "<br>");
-   }
+    }
     if (isDebugPrint) {
-      tip.append( " linkCnt ").append( String.valueOf( linkCount));
-      tip.append( "<br>");
+      tip.append( "<br>linkCnt ").append( String.valueOf( linkCount));
     }
-    if (! hasSingleTimeline) {
-      tip.append( "Mouse-L: ").append( operation);
-    }
+    tip.append( "<br>Mouse-L: ").append( operation);
     return tip.append( "</html>").toString();
   } // end getToolTipText
 
@@ -259,24 +240,22 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
     //                             obj.getTopLevelObject().getClass().getName());
     ModelClassNavNode objectNode = (ModelClassNavNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      if (! hasSingleTimeline) {
-         NavigatorView navigatorView = (NavigatorView) partialPlanView;
-         navigatorView.setStartTimeMSecs( System.currentTimeMillis());
-         boolean areObjectsChanged = false;
-        if (! areNeighborsShown()) {
-          areObjectsChanged = addObjects( this);
-          setAreNeighborsShown( true);
-        } else {
-          areObjectsChanged = removeObjects( this);
-          setAreNeighborsShown( false);
-        }
-        if (areObjectsChanged) {
-          navigatorView.setLayoutNeeded();
-          navigatorView.setFocusNode( this);
-          navigatorView.redraw();
-        }
-        return true;
+      NavigatorView navigatorView = (NavigatorView) partialPlanView;
+      navigatorView.setStartTimeMSecs( System.currentTimeMillis());
+      boolean areObjectsChanged = false;
+      if (! areNeighborsShown()) {
+        areObjectsChanged = addObjects( this);
+        setAreNeighborsShown( true);
+      } else {
+        areObjectsChanged = removeObjects( this);
+        setAreNeighborsShown( false);
       }
+      if (areObjectsChanged) {
+        navigatorView.setLayoutNeeded();
+        navigatorView.setFocusNode( this);
+        navigatorView.redraw();
+      }
+      return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
     }
     return false;

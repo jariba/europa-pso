@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.9 2004-03-17 01:45:22 taylor Exp $
+// $Id: VariableNavNode.java,v 1.10 2004-03-20 01:00:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -275,7 +275,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
       tip.append( variable.getId().toString());
     }
     if (isVariableWithConstraints) {
-      tip.append( "<br> Mouse-L: ").append( operation);
+      tip.append( "<br>Mouse-L: ").append( operation);
     }
     tip.append( "</html>");
     return tip.toString();

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.11 2004-03-09 19:59:30 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.12 2004-03-20 01:00:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -132,8 +132,8 @@ public class ResourceTransactionSet extends BasicNode {
     levelScaleWidth = resourceTransactionView.getLevelScaleViewWidth() -
       ViewConstants.RESOURCE_LEVEL_SCALE_WIDTH_OFFSET;
     ResourceView.renderBordersUpper
-      ( resourceTransactionView.getJGoRulerView().scaleTime( earliestStartTime),
-        resourceTransactionView.getJGoRulerView().scaleTime( latestEndTime),
+      ( resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
+        resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( latestEndTime),
         currentYLoc, resourceTransactionView.getJGoExtentDocument());
     ResourceView.renderBordersUpper
       ( 0, levelScaleWidth, currentYLoc, resourceTransactionView.getJGoLevelScaleDocument());
@@ -152,8 +152,8 @@ public class ResourceTransactionSet extends BasicNode {
     currentYLoc += ResourceTransactionSet.scaleY( maxCellRow + 1, 0);
 
     ResourceView.renderBordersLower
-      ( resourceTransactionView.getJGoRulerView().scaleTime( earliestStartTime),
-        resourceTransactionView.getJGoRulerView().scaleTime( latestEndTime),
+      ( resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
+        resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( latestEndTime),
         currentYLoc, resourceTransactionView.getJGoExtentDocument());
     ResourceView.renderBordersLower
       ( 0, levelScaleWidth, currentYLoc, resourceTransactionView.getJGoLevelScaleDocument());
@@ -214,8 +214,10 @@ public class ResourceTransactionSet extends BasicNode {
       checkIntervalForInfinity( transIdString, transStart);
       int transEnd = transInterval.getUpperBoundInt();
       checkIntervalForInfinity( transIdString, transEnd);
-      int transStartX = resourceTransactionView.getJGoRulerView().scaleTime( transStart);
-      int transEndX = resourceTransactionView.getJGoRulerView().scaleTime( transEnd);
+      int transStartX =
+        resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( transStart);
+      int transEndX =
+        resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( transEnd);
 //       System.err.println( "transId = " + transIdString + " start " + transStart +
 //                           " end " + transEnd + " transStartX " + transStartX +
 //                           " transEndX " + transEndX);
@@ -300,15 +302,15 @@ public class ResourceTransactionSet extends BasicNode {
     List results =
       Algorithms.allocateRows
       ( resourceTransactionView.getJGoRulerView().
-        scaleTime( (double) resourceTransactionView.getTimeScaleStart()),
+        scaleTimeNoZoom( (double) resourceTransactionView.getTimeScaleStart()),
         resourceTransactionView.getJGoRulerView().
-        scaleTime( (double) resourceTransactionView.getTimeScaleEnd()), extents);
+        scaleTimeNoZoom( (double) resourceTransactionView.getTimeScaleEnd()), extents);
 //     List results =
 //       Algorithms.betterAllocateRows
 //       ( resourceTransactionView.getJGoRulerView().
-//         scaleTime( (double) resourceTransactionView.getTimeScaleStart()),
+//         scaleTimeNoZoom( (double) resourceTransactionView.getTimeScaleStart()),
 //         resourceTransactionView.getJGoRulerView().
-//         scaleTime( (double) resourceTransactionView.getTimeScaleEnd()), extents);
+//         scaleTimeNoZoom( (double) resourceTransactionView.getTimeScaleEnd()), extents);
     if (transactionNodeList.size() != results.size()) {
       String message = String.valueOf( transactionNodeList.size() - results.size()) +
         " nodes not successfully allocated";

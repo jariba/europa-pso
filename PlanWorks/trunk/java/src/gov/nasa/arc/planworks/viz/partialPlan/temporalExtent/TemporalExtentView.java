@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.38 2004-03-09 19:59:30 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.39 2004-03-20 01:00:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -96,7 +96,6 @@ public class TemporalExtentView extends PartialPlanView  {
   private List temporalNodeList; // element TemporalNode
   private List tmpTemporalNodeList; // element TemporalNode
   private int startXLoc;
-  private int xOrigin;
   private int startYLoc;
   private int maxCellRow;
   private JGoStroke timeScaleMark;
@@ -155,7 +154,8 @@ public class TemporalExtentView extends PartialPlanView  {
     rulerPanel = new RulerPanel();
     rulerPanel.setLayout( new BoxLayout( rulerPanel, BoxLayout.Y_AXIS));
 
-    jGoRulerView = new TimeScaleView( startXLoc, startYLoc, partialPlan, this);
+    int startY = 2;
+    jGoRulerView = new TimeScaleView( startXLoc, startY, partialPlan, this);
     jGoRulerView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoRulerView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     jGoRulerView.validate();
@@ -176,10 +176,17 @@ public class TemporalExtentView extends PartialPlanView  {
 
   public void setState(PartialPlanViewState s) {
     super.setState(s);
+    if(s == null) {
+      return;
+    }
+    zoomFactor = s.getCurrentZoomFactor();
+    boolean isSetState = true;
+    zoomView( jGoExtentView, isSetState, this);
+
     TemporalExtentViewState state = (TemporalExtentViewState)s;
     isShowLabels = state.showingLabels();
     temporalDisplayMode = state.displayMode();
-  }
+  } // end setState
 
   Runnable runInit = new Runnable() {
       public void run() {
@@ -211,7 +218,11 @@ public class TemporalExtentView extends PartialPlanView  {
     this.computeFontMetrics( this);
 
     boolean doFreeTokens = true;
-    xOrigin = jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+    jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+    // in case zoomFactor != 1
+    if (zoomFactor > 1) {
+      jGoRulerView.computeTimeScaleMetrics( zoomFactor, this);
+    }
     jGoRulerView.createTimeScale();
 
     boolean isRedraw = false;
@@ -231,7 +242,7 @@ public class TemporalExtentView extends PartialPlanView  {
 
     addStepButtons( jGoExtentView);
     if (! isStepButtonView) {
-      expandViewFrameForStepButtons( viewFrame);
+      expandViewFrameForStepButtons( viewFrame, jGoExtentView);
     }
 
     long stopTimeMSecs = System.currentTimeMillis();
@@ -240,7 +251,6 @@ public class TemporalExtentView extends PartialPlanView  {
     
     jGoExtentView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
-
 
   /**
    * <code>redraw</code> - called by Content Spec to apply user's content spec request.
@@ -264,12 +274,17 @@ public class TemporalExtentView extends PartialPlanView  {
     }  // end constructor
 
     public void run() {
+      // redraw jGoRulerView, in case zoomFactor changed
+      jGoRulerView.computeTimeScaleMetrics( TemporalExtentView.this.getZoomFactor(),
+                                            TemporalExtentView.this);
+      jGoRulerView.createTimeScale();
+
       boolean isRedraw = true;
       renderTemporalExtent( isRedraw);
       addStepButtons( jGoExtentView);
       // causes bottom view edge to creep off screen
 //       if (! isStepButtonView) {
-//         expandViewFrameForStepButtons( viewFrame);
+//         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
 //       }
     } //end run
 
@@ -321,7 +336,7 @@ public class TemporalExtentView extends PartialPlanView  {
    * @return - <code>double</code> - 
    */
   public double getTimeScale() {
-    return jGoRulerView.getTimeScale();
+    return jGoRulerView.getTimeScaleNoZoom();
   }
 
   /**
@@ -417,12 +432,12 @@ public class TemporalExtentView extends PartialPlanView  {
     // do the layout -- compute cellRow for each node
     List results =
       Algorithms.allocateRows
-      ( jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleStart()),
-        jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleEnd()), extents);
+      ( jGoRulerView.scaleTimeNoZoom( (double) jGoRulerView.getTimeScaleStart()),
+        jGoRulerView.scaleTimeNoZoom( (double) jGoRulerView.getTimeScaleEnd()), extents);
 //     List results =
 //       Algorithms.betterAllocateRows
-//       ( jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleStart()),
-//         jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleEnd()), extents);
+//       ( jGoRulerView.scaleTimeNoZoom( (double) jGoRulerView.getTimeScaleStart()),
+//         jGoRulerView.scaleTimeNoZoom( (double) jGoRulerView.getTimeScaleEnd()), extents);
     if (temporalNodeList.size() != results.size()) {
       String message = String.valueOf( temporalNodeList.size() - results.size()) +
         " nodes not successfully allocated";
@@ -587,15 +602,24 @@ public class TemporalExtentView extends PartialPlanView  {
       // final position, comment out next check
       // if (! source.getValueIsAdjusting()) {
 //         System.err.println( "adjustmentValueChanged " + source.getValue());
-//         System.err.println( "jGoExtentView " +
+//         System.err.println( "\njGoExtentView " +
 //                             jGoExtentView.getHorizontalScrollBar().getValue());
 //         System.err.println( "jGoRulerView " +
 //                             jGoRulerView.getHorizontalScrollBar().getValue());
         int newPostion = source.getValue();
-        if (newPostion != jGoExtentView.getHorizontalScrollBar().getValue()) {
-          jGoExtentView.getHorizontalScrollBar().setValue( newPostion);
-        } else if (newPostion != jGoRulerView.getHorizontalScrollBar().getValue()) {
-          jGoRulerView.getHorizontalScrollBar().setValue( newPostion);
+//         System.err.println( "newPostion " + newPostion);
+        int timeScaleViewPosition = 0, extentViewPosition = 0;
+        if (source.getParent() instanceof TimeScaleView) {
+          timeScaleViewPosition = newPostion;
+          extentViewPosition = (int) ((double) zoomFactor * newPostion);
+        } else {
+          timeScaleViewPosition = (int) (newPostion / (double) zoomFactor);
+          extentViewPosition = newPostion;
+        }
+        if (extentViewPosition != jGoExtentView.getHorizontalScrollBar().getValue()) {
+          jGoExtentView.getHorizontalScrollBar().setValue( extentViewPosition);
+        } else if (timeScaleViewPosition != jGoRulerView.getHorizontalScrollBar().getValue()) {
+          jGoRulerView.getHorizontalScrollBar().setValue( timeScaleViewPosition);
         }
         // }
     } // end adjustmentValueChanged 
@@ -608,7 +632,7 @@ public class TemporalExtentView extends PartialPlanView  {
    *                               vertical time marks on view
    *
    */
-  class ExtentView extends JGoView {
+  public class ExtentView extends JGoView {
 
     /**
      * <code>TemporalExtent</code> - constructor 
@@ -683,6 +707,8 @@ public class TemporalExtentView extends PartialPlanView  {
       createActiveTokenItem( activeTokenItem);
       mouseRightPopup.add( activeTokenItem);
     }
+
+    this.createZoomItem( jGoExtentView, zoomFactor, mouseRightPopup, this);
 
     if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
@@ -883,12 +909,12 @@ public class TemporalExtentView extends PartialPlanView  {
           if (timeScaleMark != null) {
             jGoExtentView.getDocument().removeObject( timeScaleMark);
             // jGoExtentView.validate();
-          } 
-          timeScaleMark = new TimeScaleMark( xLoc);
-          timeScaleMark.addPoint( xLoc, startYLoc);
-          timeScaleMark.addPoint( xLoc, startYLoc +
-                                  ((maxCellRow + 1) *
-                                   ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2);
+          }
+          timeScaleMark = new TimeScaleMark( xLoc, getZoomFactor());
+          timeScaleMark.addPoint( xLoc, 0);
+          timeScaleMark.addPoint( xLoc, ((maxCellRow + 1) *
+                                         ViewConstants.TEMPORAL_NODE_CELL_HEIGHT *
+                                         getZoomFactor()));
           jGoExtentView.getDocument().addObjectAtTail( timeScaleMark);
         }
       });
@@ -924,17 +950,18 @@ public class TemporalExtentView extends PartialPlanView  {
      * <code>TimeScaleMark</code> - constructor 
      *
      * @param xLoc - <code>int</code> - 
+     * @param penWidth - <code>int</code> - 
      */
-    public TimeScaleMark( int xLoc) {
+    public TimeScaleMark( int xLoc, int penWidth) {
       super();
       this.xLoc = xLoc;
       setDraggable( false);
       setResizable( false);
-      setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "red")));
+      setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "red")));
     }
 
     public String getToolTipText() {
-      return String.valueOf( jGoRulerView.scaleXLoc( xLoc) + 1);
+      return String.valueOf( jGoRulerView.scaleXLocNoZoom( xLoc));
     }
 
   } // end class TimeScaleMark

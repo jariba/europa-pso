@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.45 2004-03-17 01:45:22 taylor Exp $
+// $Id: TimelineView.java,v 1.46 2004-03-20 01:00:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -184,7 +184,7 @@ public class TimelineView extends PartialPlanView {
 
       addStepButtons( jGoView);
       if (! isStepButtonView) {
-        expandViewFrameForStepButtons( viewFrame);
+        expandViewFrameForStepButtons( viewFrame, jGoView);
       }
 
       long stopTimeMSecs = System.currentTimeMillis();
@@ -222,7 +222,7 @@ public class TimelineView extends PartialPlanView {
       addStepButtons( jGoView);
       // causes bottom view edge to creep off screen
 //       if (! isStepButtonView) {
-//         expandViewFrameForStepButtons( viewFrame);
+//         expandViewFrameForStepButtons( viewFrame, jGoView);
 //       }
     } //end run
 
