@@ -8,7 +8,6 @@ DELETE FROM Parameter;
 DELETE FROM PartialPlan;
 DELETE FROM Predicate;
 DELETE FROM Project;
-DELETE FROM ProjectSequenceMap;
 DELETE FROM Sequence;
 DELETE FROM Slot;
 DELETE FROM Timeline;
