@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.57 2004-09-29 23:52:18 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.58 2004-10-01 20:04:28 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -81,6 +81,11 @@
   <target name="compile" depends="chk_jvm_2"
       description="-- compile 'java/src' tree into 'java/classes' tree">
     <ant dir="./java" antfile="build.xml" target="compile"/>
+  </target>
+
+  <target name="createJNI" depends="chk_jvm_2"
+      description="-- create the JNI interface to Planners">
+    <ant dir="./java" antfile="build.xml" target="createJNI"/>
   </target>
 
   <!-- target name="createJars" depends="chk_jvm_2" -->

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.54 2004-09-30 22:03:03 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.55 2004-10-01 20:04:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -496,7 +496,8 @@ public class PwTokenImpl implements PwToken {
     for(Iterator it = linkTypes.iterator(); it.hasNext();) {
       String linkType = (String) it.next();
       if(linkType.equals(ViewConstants.RULE_INST_TO_TOKEN_LINK_TYPE) &&
-         CollectionUtils.findFirst(new AssignableFunctor(PwRuleInstance.class), classes) != null) {
+         CollectionUtils.findFirst(new AssignableFunctor(PwRuleInstance.class),
+                                   classes) != null) {
         if(getRuleInstanceId() != null && getRuleInstanceId().intValue() > 0) {
           retval.add(partialPlan.getRuleInstance(getRuleInstanceId()));
         }
@@ -504,14 +505,16 @@ public class PwTokenImpl implements PwToken {
         for(Iterator slaveIdIterator = partialPlan.getSlaveTokenIds(getId()).iterator(); slaveIdIterator.hasNext();) {
           Integer ruleInstanceId =
             partialPlan.getToken((Integer) slaveIdIterator.next()).getRuleInstanceId();
-          if(ruleInstanceId != null && ruleInstanceId.intValue() > 0 && !usedRuleInstanceIds.contains(ruleInstanceId)) {
+          if(ruleInstanceId != null && ruleInstanceId.intValue() > 0 &&
+             !usedRuleInstanceIds.contains(ruleInstanceId)) {
             retval.add(partialPlan.getRuleInstance(ruleInstanceId));
             usedRuleInstanceIds.add(ruleInstanceId);
           }
         }
       }
       else if(linkType.equals(ViewConstants.TOKEN_TO_VARIABLE_LINK_TYPE) &&
-              CollectionUtils.findFirst(new AssignableFunctor(PwVariable.class), classes) != null) {
+              CollectionUtils.findFirst(new AssignableFunctor(PwVariable.class),
+                                        classes) != null) {
         retval.addAll(getVariablesList());
       }
       else if(linkType.equals(ViewConstants.SLOT_TO_TOKEN_LINK_TYPE) &&
@@ -519,9 +522,15 @@ public class PwTokenImpl implements PwToken {
               slotId.intValue() > 0) {
         retval.add(partialPlan.getSlot(slotId));
       }
-      else if(linkType.equals(ViewConstants.OBJECT_TO_TOKEN_LINK_TYPE) && 
-              Collections.binarySearch(classes, PwObject.class) >= 0) {
-        retval.add(partialPlan.getObject(getParentId()));
+//       else if(linkType.equals(ViewConstants.OBJECT_TO_TOKEN_LINK_TYPE) && 
+//               Collections.binarySearch( classes, PwObject.class) >= 0) {
+//         retval.add(partialPlan.getObject(getParentId()));
+//       }
+      else if(linkType.equals(ViewConstants.OBJECT_TO_TOKEN_LINK_TYPE) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwObject.class), classes) != null) {
+        if (partialPlan.getObject(getParentId()) != null) {
+          retval.add(partialPlan.getObject(getParentId()));
+        }
       }
     }
     return retval;

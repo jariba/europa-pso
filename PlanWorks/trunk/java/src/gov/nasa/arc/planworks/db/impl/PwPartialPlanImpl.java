@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.108 2004-09-30 22:03:02 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.109 2004-10-01 20:04:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1634,8 +1634,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return component.contains(end);
   }
 
-  private void buildConnectedComponent(final PwEntity ent, final List classes, final List linkTypes,
-                                       LinkedList component) {
+  private void buildConnectedComponent(final PwEntity ent, final List classes,
+                                       final List linkTypes, LinkedList component) {
     if (isPathDebug) {
       System.err.println( "buildConnectedComponent " + ent.getClass().getName());
       System.err.println( "   id " + ent.getId());
@@ -1664,7 +1664,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     if(current.getId().equals(eKey))
       return true;
     for(Iterator it = current.getNeighbors(classes, linkTypes).iterator(); it.hasNext();) {
-      if(getPathRecurse((PwEntity)it.next(), eKey, classes, linkTypes, path, currentDepth, finalDepth))
+      if(getPathRecurse((PwEntity)it.next(), eKey, classes, linkTypes, path, currentDepth,
+                        finalDepth))
         return true;
     }
     path.removeLast();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FindEntityPath.java,v 1.4 2004-09-30 22:05:22 miatauro Exp $
+// $Id: FindEntityPath.java,v 1.5 2004-10-01 20:04:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -213,8 +213,8 @@ public class FindEntityPath {
           if (doPathExists) {
             foundPathExists =
               new Boolean ( partialPlan.pathExists( partialPlan.getEntity( entityKey1),
-                                                    entityKey2, partialPlanView.getDefaultLinkTypes(),
-                                                    pathClasses));
+                                                    entityKey2, pathClasses,
+                                                    partialPlanView.getDefaultLinkTypes()));
           } else {
             entityKeyList = partialPlan.getPath( entityKey1, entityKey2, pathClasses,
                                                  partialPlanView.getDefaultLinkTypes(),

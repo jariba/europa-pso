@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: build.xml,v 1.17 2004-09-29 23:52:18 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.18 2004-10-01 20:04:29 taylor Exp $ -->
 <project name="PlanWorks" default="compile" basedir=".">
     <description>
         Planworks Build Targets
@@ -12,7 +12,6 @@
   <property name="debug"  value="true"/>
   <!-- property name="deprecation"  value="off"/ -->
   <property name="deprecation"  value="true"/>
-  <property name="javahDestdir"  value="../cpp/include/europa"/>
   <property environment="env"/>
 
   <target name="init">
@@ -39,7 +38,6 @@
        </classpath> 
     </javac>
     <echo message="optimized compile completed"/>
-    <ant dir="./" antfile="build.xml" target="buildJNI"/>
   </target>
 
   <target name="compile" depends="init"
@@ -60,7 +58,6 @@
        </classpath>
     </javac>
     <echo message="compile completed"/>
-    <ant dir="./" antfile="build.xml" target="buildJNI"/>
   </target>
 
   <target name="dist" depends="clean,compile"
@@ -96,7 +93,8 @@
     <echo message=" PlanWorksPlugin.jar completed"/>
   </target>
 
-  <target name="buildJNI" description="build the JNI interface to Planners">
+  <target name="createJNI" depends="compile"
+        description="create the JNI interface to Planners">
     <delete file="${integration.home}/PlannerControlJNI.h"/>
     <javah outputFile="${integration.home}/PlannerControlJNI.h"
              classpath="${build}" class="gov.nasa.arc.planworks.PlannerControlJNI"/>
