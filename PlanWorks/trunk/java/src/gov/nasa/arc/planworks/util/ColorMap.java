@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ColorMap.java,v 1.3 2004-02-03 19:23:52 miatauro Exp $
+// $Id: ColorMap.java,v 1.4 2004-05-21 21:38:57 taylor Exp $
 //
 // PlanWorks
 //
@@ -51,6 +51,7 @@ public class ColorMap {
     x11Colors.put( "deepSkyBlue", new Color( 0, 191, 255));
     x11Colors.put( "gray25", new Color( 64, 64, 64));  // almost black
     x11Colors.put( "gray60", new Color( 153, 153, 153));  // java.awt.Color.gray
+    x11Colors.put( "green", new Color( 0, 255, 0)); // java.awt.Color.green
     x11Colors.put( "green3", new Color( 0, 205, 0));
     x11Colors.put( "khaki2", new Color( 238, 230, 133));  
     x11Colors.put( "lightGray", new Color( 192, 192, 192));  // java.awt.Color.lightGray

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ParamNode.java,v 1.2 2003-12-31 01:02:25 taylor Exp $
+// $Id: ParamNode.java,v 1.3 2004-05-21 21:39:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 
@@ -169,7 +170,7 @@ public class ParamNode extends BasicNode {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
   } // end mouseRightPopupMenu
 
 

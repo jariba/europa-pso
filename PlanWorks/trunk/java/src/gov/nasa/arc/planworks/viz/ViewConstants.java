@@ -38,6 +38,19 @@ public abstract class ViewConstants {
    */
   public static final Color VIEW_BACKGROUND_COLOR = ColorMap.getColor( "lightGray");
 
+  /**
+   * constant <code>FREE_TOKEN_BG_COLOR</code>
+   *
+   */
+  public static final Color FREE_TOKEN_BG_COLOR = ColorMap.getColor( "lightGray");
+
+  /**
+   * constant <code>PRIMARY_SELECTION_COLOR</code> -
+   *                   same as jGoView.getDefaultPrimarySelectionColor()
+   *
+   */
+  public static final Color PRIMARY_SELECTION_COLOR = ColorMap.getColor( "green");
+
   public static final int INTERNAL_FRAME_X_DELTA = 100;
 
   public static final int INTERNAL_FRAME_X_DELTA_DIV_4 = 25;
@@ -69,22 +82,28 @@ public abstract class ViewConstants {
   public static final int TIMELINE_VIEW_Y_DELTA = 80; // 60;
 
   /**
-   * constant <code>TIMELINE_VIEW_FONT_SIZE</code>
+   * constant <code>VIEW_FONT_SIZE</code>
    *
    */
-  public static final int TIMELINE_VIEW_FONT_SIZE = 12;
+  public static final int VIEW_FONT_SIZE = 12;
 
   /**
-   * constant <code>TIMELINE_VIEW_FONT_NAME</code> - fixed width font
+   * constant <code>VIEW_FONT_NAME</code> - fixed width font
    *
    */
-  public static final String TIMELINE_VIEW_FONT_NAME = "Monospaced";
+  public static final String VIEW_FONT_NAME = "Monospaced";
 
   /**
-   * constant <code>TIMELINE_VIEW_FONT_STYLE</code>
+   * constant <code>VIEW_FONT_PLAIN_STYLE</code>
    *
    */
-  public static final int TIMELINE_VIEW_FONT_STYLE = Font.PLAIN;
+  public static final int VIEW_FONT_PLAIN_STYLE = Font.PLAIN;
+
+  /**
+   * constant <code>VIEW_FONT_BOLD_STYLE</code>
+   *
+   */
+  public static final int VIEW_FONT_BOLD_STYLE = Font.BOLD;
 
   /**
    * constant <code>TIME_INTERVAL_STRINGS_OVERLAP_OFFSET</code>
@@ -115,48 +134,6 @@ public abstract class ViewConstants {
    *
    */
   public static final int TIMELINE_VIEW_INSET_SIZE_HALF = TIMELINE_VIEW_INSET_SIZE / 2;
-
-  /**
-   * constant <code>TIMELINE_VIEW_IS_FONT_BOLD</code>
-   *
-   */
-  public static final boolean TIMELINE_VIEW_IS_FONT_BOLD = false;
-
-  /**
-   * constant <code>TIMELINE_VIEW_IS_FONT_UNDERLINED</code>
-   *
-   */
-  public static final boolean TIMELINE_VIEW_IS_FONT_UNDERLINED = false;
-
-  /**
-   * constant <code>TIMELINE_VIEW_IS_FONT_ITALIC</code>
-   *
-   */
-  public static final boolean TIMELINE_VIEW_IS_FONT_ITALIC = false;
-
-  /**
-   * constant <code>TIMELINE_VIEW_TEXT_ALIGNMENT</code>
-   *
-   */
-  public static final int TIMELINE_VIEW_TEXT_ALIGNMENT = JGoText.ALIGN_LEFT;
-
-  /**
-   * constant <code>TIMELINE_VIEW_IS_TEXT_MULTILINE</code>
-   *
-   */
-  public static final boolean TIMELINE_VIEW_IS_TEXT_MULTILINE = false;
-
-  /**
-   * constant <code>TIMELINE_VIEW_IS_TEXT_EDITABLE</code>
-   *
-   */
-  public static final boolean TIMELINE_VIEW_IS_TEXT_EDITABLE = false;
-
-  /**
-   * constant <code>FREE_TOKEN_BG_COLOR</code>
-   *
-   */
-  public static final String FREE_TOKEN_BG_COLOR = "lightGray";
 
   /**
    * constant <code>EMPTY_SLOT_WIDTH</code>
@@ -267,23 +244,24 @@ public abstract class ViewConstants {
 
   public static final int STEP_VIEW_Y_MAX = 100;
 
-  public static final String DB_TRANSACTION_KEY_HEADER =        "TX_KEY ";
+  public static final String DB_TRANSACTION_KEY_HEADER         = "TX_KEY   ";
   // ViewGenerics.computeTransactionNameHeader pads this appropriately with blanks 
-  public static final String DB_TRANSACTION_NAME_HEADER =       "TRANSACTION_NAME"; 
-  public static final String DB_TRANSACTION_SOURCE_HEADER =     " SOURCE  ";   
-  public static final String DB_TRANSACTION_OBJECT_KEY_HEADER = "OBJ_KEY";
-  public static final String DB_TRANSACTION_STEP_NUM_HEADER =   "  STEP  ";
-  public static final String DB_TRANSACTION_OBJ_NAME_HEADER =   "     OBJ_NAME     ";
-  public static final String DB_TRANSACTION_PREDICATE_HEADER =  "  PREDICATE_NAME  ";
-  public static final String DB_TRANSACTION_PARAMETER_HEADER =  "  PARAMETER_NAME  ";
+  public static final String DB_TRANSACTION_NAME_HEADER        = "TRANSACTION_NAME"; 
+  public static final String DB_TRANSACTION_SOURCE_HEADER      = "  SOURCE  ";   
+  public static final String DB_TRANSACTION_ENTITY_KEY_HEADER  = "ENTITY_KEY";
+  public static final String DB_TRANSACTION_STEP_NUM_HEADER    = " STEP   ";
+  public static final String DB_TRANSACTION_ENTITY_NAME_HEADER = "  ENTITY_NAME     ";
+  public static final String DB_TRANSACTION_PARENT_HEADER      = "   PARENT_NAME    ";
+  public static final String DB_TRANSACTION_PARAMETER_HEADER   = "   PARAMETER_NAME    ";
 
-  public static final String QUERY_TOKEN_KEY_HEADER =        "TOK_KEY"; 
-  public static final String QUERY_TOKEN_PREDICATE_HEADER =  "  PREDICATE_NAME  "; 
-  public static final String QUERY_TOKEN_STEP_NUM_HEADER  =  "  STEP  ";
+  public static final String QUERY_CONSTRAINT_KEY_HEADER       = "CSTR_KEY"; 
+  public static final String QUERY_CONSTRAINT_TYPE_HEADER      = "CONSTRAINT_TYPE"; 
 
-  public static final String QUERY_VARIABLE_KEY_HEADER =      "VAR_KEY"; 
-  public static final String QUERY_VARIABLE_NAME_HEADER =     "   VARIABLE_NAME  "; 
-  public static final String QUERY_VARIABLE_STEP_NUM_HEADER = "  STEP  ";
+  public static final String QUERY_TOKEN_KEY_HEADER            = "TOK_KEY"; 
+  public static final String QUERY_TOKEN_PREDICATE_HEADER      = "   PREDICATE_NAME   "; 
+
+  public static final String QUERY_VARIABLE_KEY_HEADER         = "VAR_KEY"; 
+  public static final String QUERY_VARIABLE_TYPE_HEADER        = "   VARIABLE_TYPE  "; 
 
   // Extended BasicNode Shapes for viz/nodes/ExtendedBasicNode
 

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.66 2004-04-22 19:26:12 taylor Exp $
+# $Id: build-tags-file.csh,v 1.67 2004-05-21 21:38:54 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -124,16 +124,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/UniqueSet.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
-    src/gov/nasa/arc/planworks/viz/AskQueryObjectKey.java \
-    src/gov/nasa/arc/planworks/viz/DBTransactionContentView.java \
-    src/gov/nasa/arc/planworks/viz/DBTransactionHeaderView.java \
-    src/gov/nasa/arc/planworks/viz/StepContentView.java \
-    src/gov/nasa/arc/planworks/viz/StepHeaderView.java \
+    src/gov/nasa/arc/planworks/viz/AskQueryEntityKey.java \
     src/gov/nasa/arc/planworks/viz/StringViewSetKey.java \
-    src/gov/nasa/arc/planworks/viz/TokenQueryContentView.java \
-    src/gov/nasa/arc/planworks/viz/TokenQueryHeaderView.java \
-    src/gov/nasa/arc/planworks/viz/VariableQueryContentView.java \
-    src/gov/nasa/arc/planworks/viz/VariableQueryHeaderView.java \
+    src/gov/nasa/arc/planworks/viz/TransactionHeaderView.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
     src/gov/nasa/arc/planworks/viz/ViewGenerics.java \
     src/gov/nasa/arc/planworks/viz/ViewListener.java \
@@ -141,20 +134,16 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/VizViewOverview.java \
     src/gov/nasa/arc/planworks/viz/VizViewRuleView.java \
     src/gov/nasa/arc/planworks/viz/nodes/BasicNodeLink.java \
-    src/gov/nasa/arc/planworks/viz/nodes/DBTransactionHeaderNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNodePort.java \
     src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
     src/gov/nasa/arc/planworks/viz/nodes/ObjectNode.java \
-    src/gov/nasa/arc/planworks/viz/nodes/QueryResultField.java \
     src/gov/nasa/arc/planworks/viz/nodes/ResourceNameNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/ResourceNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
-    src/gov/nasa/arc/planworks/viz/nodes/TokenQueryHeaderNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/VariableContainerNode.java \
-    src/gov/nasa/arc/planworks/viz/nodes/VariableQueryHeaderNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/AskNodeByKey.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
@@ -226,8 +215,12 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/VariableQueryView.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionComparatorAscending.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionComparatorDescending.java \
+    src/gov/nasa/arc/planworks/viz/util/DBTransactionTable.java \
+    src/gov/nasa/arc/planworks/viz/util/DBTransactionTableModel.java \
+    src/gov/nasa/arc/planworks/viz/util/FixedHeightPanel.java \
     src/gov/nasa/arc/planworks/viz/util/SortStringComparator.java \
     src/gov/nasa/arc/planworks/viz/util/StepButton.java \
+    src/gov/nasa/arc/planworks/viz/util/TableSorter.java \
     src/gov/nasa/arc/planworks/viz/util/TokenQueryComparatorAscending.java \
     src/gov/nasa/arc/planworks/viz/util/TokenQueryComparatorDescending.java \
     src/gov/nasa/arc/planworks/viz/util/VariableQueryComparatorAscending.java \

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ProjectNameDialog.java,v 1.4 2004-02-03 19:23:58 miatauro Exp $
+// $Id: ProjectNameDialog.java,v 1.5 2004-05-21 21:38:57 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -85,13 +85,7 @@ public class ProjectNameDialog extends JDialog {
     // size dialog appropriately
     pack();
     // place it in center of JFrame
-    Point planWorksLocation = planWorks.getLocation();
-    setLocation( (int) (planWorksLocation.getX() +
-                        planWorks.getSize().getWidth() / 2 -
-                        this.getPreferredSize().getWidth() / 2),
-                 (int) (planWorksLocation.getY() +
-                        planWorks.getSize().getHeight() / 2 -
-                        this.getPreferredSize().getHeight() / 2));
+    Utilities.setPopupLocation( this, PlanWorks.getPlanWorks());
     setBackground( ColorMap.getColor( "gray60"));
     setVisible( true);
   } // end constructor

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableQuery.java,v 1.1 2003-12-20 01:54:48 taylor Exp $
+// $Id: PwVariableQuery.java,v 1.2 2004-05-21 21:38:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -31,11 +31,18 @@ public interface PwVariableQuery {
   public abstract Integer getId();
 
   /**
-   * <code>getName</code>
+   * <code>getType</code>
    *
-   * @return - <code>String</code> - variable name
+   * @return - <code>String</code> - variable type
    */
-  public abstract String getName();
+  public abstract String getType();
+
+  /**
+   * <code>getParentId</code>
+   *
+   * @return - <code>Integer</code> - parent id
+   */
+  public abstract Integer getParentId();
 
   /**
    * <code>getStepNumber</code> - step number containing this variable

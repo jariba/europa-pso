@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionComparatorAscending.java,v 1.2 2004-05-08 01:44:18 taylor Exp $
+// $Id: DBTransactionComparatorAscending.java,v 1.3 2004-05-21 21:39:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -40,19 +40,19 @@ public class DBTransactionComparatorAscending implements Comparator {
       String s1 = ((PwDBTransaction) o1).getSource();
       String s2 = ((PwDBTransaction) o2).getSource();
       return SortStringComparator.compareTo( s1, s2, isAscending);
-    } else if (field.equals( ViewConstants.DB_TRANSACTION_OBJECT_KEY_HEADER)) {
-      Integer s1 = ((PwDBTransaction) o1).getObjectId();
-      Integer s2 = ((PwDBTransaction) o2).getObjectId();
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER)) {
+      Integer s1 = ((PwDBTransaction) o1).getEntityId();
+      Integer s2 = ((PwDBTransaction) o2).getEntityId();
       return s1.compareTo(s2);
     } else if (field.equals( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
       Integer s1 = ((PwDBTransaction) o1).getStepNumber();
       Integer s2 = ((PwDBTransaction) o2).getStepNumber();
       return s1.compareTo(s2);
-    } else if (field.equals( ViewConstants.DB_TRANSACTION_OBJ_NAME_HEADER)) {
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_ENTITY_NAME_HEADER)) {
       String s1 = ((PwDBTransaction) o1).getInfo()[0];
       String s2 = ((PwDBTransaction) o2).getInfo()[0];
       return SortStringComparator.compareTo( s1, s2, isAscending);
-    } else if (field.equals( ViewConstants.DB_TRANSACTION_PREDICATE_HEADER)) {
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_PARENT_HEADER)) {
       String s1 = ((PwDBTransaction) o1).getInfo()[1];
       String s2 = ((PwDBTransaction) o2).getInfo()[1];
       return SortStringComparator.compareTo( s1, s2, isAscending);
@@ -80,19 +80,19 @@ public class DBTransactionComparatorAscending implements Comparator {
       String s1 = ((PwDBTransaction) o1).getSource();
       String s2 = ((PwDBTransaction) o2).getSource();
       return s1.equals(s2);
-    } else if (field.equals( ViewConstants.DB_TRANSACTION_OBJECT_KEY_HEADER)) {
-      Integer s1 = ((PwDBTransaction) o1).getObjectId();
-      Integer s2 = ((PwDBTransaction) o2).getObjectId();
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER)) {
+      Integer s1 = ((PwDBTransaction) o1).getEntityId();
+      Integer s2 = ((PwDBTransaction) o2).getEntityId();
       return s1.equals(s2);
     } else if (field.equals( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
       Integer s1 = ((PwDBTransaction) o1).getStepNumber();
       Integer s2 = ((PwDBTransaction) o2).getStepNumber();
       return s1.equals(s2);
-    } else if (field.equals( ViewConstants.DB_TRANSACTION_OBJ_NAME_HEADER)) {
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_ENTITY_NAME_HEADER)) {
       String s1 = ((PwDBTransaction) o1).getInfo()[0];
       String s2 = ((PwDBTransaction) o2).getInfo()[0];
       return s1.equals(s2);
-    } else if (field.equals( ViewConstants.DB_TRANSACTION_PREDICATE_HEADER)) {
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_PARENT_HEADER)) {
       String s1 = ((PwDBTransaction) o1).getInfo()[1];
       String s2 = ((PwDBTransaction) o2).getInfo()[1];
       return s1.equals(s2);

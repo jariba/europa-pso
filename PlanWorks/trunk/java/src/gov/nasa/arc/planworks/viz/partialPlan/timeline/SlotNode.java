@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.20 2004-05-08 01:44:16 taylor Exp $
+// $Id: SlotNode.java,v 1.21 2004-05-21 21:39:08 taylor Exp $
 //
 // PlanWorks
 //
@@ -129,11 +129,11 @@ public class SlotNode extends TextNode {
     getLabel().setAlignment( JGoText.ALIGN_CENTER);
     setDraggable( false);
     // to override VizView:
-    // JGoText.setDefaultFontFaceName( ViewConstants.TIMELINE_VIEW_FONT_NAME);
-    // JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+    // JGoText.setDefaultFontFaceName( ViewConstants.VIEW_FONT_NAME);
+    // JGoText.setDefaultFontSize( ViewConstants.VIEW_FONT_SIZE);
 
-    // getLabel().setFaceName( ViewConstants.TIMELINE_VIEW_FONT_NAME);
-    // getLabel().setFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+    // getLabel().setFaceName( ViewConstants.VIEW_FONT_NAME);
+    // getLabel().setFontSize( ViewConstants.VIEW_FONT_SIZE);
 
     // do not allow user links
     getTopPort().setVisible( false);
@@ -262,14 +262,11 @@ public class SlotNode extends TextNode {
 
 
   private JGoText renderIntervalText( String text, Point textLoc) {
-    JGoText textObject = new JGoText( textLoc, ViewConstants.TIMELINE_VIEW_FONT_SIZE,
-                                      text, ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                                      ViewConstants.TIMELINE_VIEW_IS_FONT_BOLD,
-                                      ViewConstants.TIMELINE_VIEW_IS_FONT_UNDERLINED,
-                                      ViewConstants.TIMELINE_VIEW_IS_FONT_ITALIC,
-                                      ViewConstants.TIMELINE_VIEW_TEXT_ALIGNMENT,
-                                      ViewConstants.TIMELINE_VIEW_IS_TEXT_MULTILINE,
-                                      ViewConstants.TIMELINE_VIEW_IS_TEXT_EDITABLE);
+    JGoText textObject = new JGoText( textLoc, ViewConstants.VIEW_FONT_SIZE,
+                                      text, ViewConstants.VIEW_FONT_NAME,
+                                      IS_FONT_BOLD, IS_FONT_UNDERLINED,
+                                      IS_FONT_ITALIC, TEXT_ALIGNMENT,
+                                      IS_TEXT_MULTILINE, IS_TEXT_EDITABLE);
     textObject.setResizable( false);
     textObject.setEditable( false);
     textObject.setDraggable( false);
@@ -415,7 +412,7 @@ public class SlotNode extends TextNode {
         });
       mouseRightPopup.add( activeTokenItem);
 
-      NodeGenerics.showPopupMenu( mouseRightPopup, timelineView, viewCoords);
+      ViewGenerics.showPopupMenu( mouseRightPopup, timelineView, viewCoords);
     }
   } // end mouseRightPopupMenu
 

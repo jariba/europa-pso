@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.12 2004-05-13 20:24:11 taylor Exp $
+// $Id: ResourceView.java,v 1.13 2004-05-21 21:39:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -310,8 +310,8 @@ public abstract class ResourceView extends PartialPlanView  {
     this.computeFontMetrics( this);
 
     // resource names font
-    levelScaleFont = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                               ViewConstants.TIMELINE_VIEW_FONT_STYLE,
+    levelScaleFont = new Font( ViewConstants.VIEW_FONT_NAME,
+                               ViewConstants.VIEW_FONT_PLAIN_STYLE,
                                LEVEL_SCALE_FONT_SIZE);
     Graphics graphics = ((JPanel) this).getGraphics();
     levelScaleFontMetrics = graphics.getFontMetrics( levelScaleFont);

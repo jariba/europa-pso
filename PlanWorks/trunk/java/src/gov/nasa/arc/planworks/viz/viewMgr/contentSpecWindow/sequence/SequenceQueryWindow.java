@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.28 2004-05-13 20:24:14 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.29 2004-05-21 21:39:13 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -46,6 +46,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -572,7 +573,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         getQueryStringBuf( QUERY_FOR_UNBOUND_VARIABLES, variableQuery);
       queryStringBuf.append( " Step ").append( stepString);
       contentPane.add( new VariableQueryView
-                       ( variableList, queryStringBuf.toString(), viewable,
+                       ( variableList, queryStringBuf.toString(), viewable, stepString,
                          viewSet, SequenceQueryWindow.this, variablesQueryFrame,
                          startTimeMSecs, viewListener));
       queryResultFrameCnt++;
@@ -1140,7 +1141,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     createCloseWindowsItem( closeWindowsItem);
     mouseRightPopup.add( closeWindowsItem);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
   private void createCloseWindowsItem( JMenuItem closeWindowsItem) {

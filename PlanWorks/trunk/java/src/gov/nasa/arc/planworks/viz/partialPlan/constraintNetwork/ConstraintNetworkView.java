@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.61 2004-05-13 20:24:11 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.62 2004-05-21 21:39:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -525,7 +525,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       PwToken token = (PwToken) tokenIterator.next();
       Color backgroundColor = null;
       if(token.isFree()) {
-        backgroundColor = ColorMap.getColor(ViewConstants.FREE_TOKEN_BG_COLOR);
+        backgroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
       }
       else {
         backgroundColor = getTimelineColor( token.getParentId());
@@ -1513,7 +1513,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       constraintNetworkView.createAllViewItems( partialPlan, partialPlanName,
                                                 planSequence, mouseRightPopup);
 
-      NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+      ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     } // end mouseRightPopupMenu
 
     private void createActiveTokenItem( JMenuItem activeTokenItem) {

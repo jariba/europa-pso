@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionNode.java,v 1.4 2004-03-30 22:01:03 taylor Exp $
+// $Id: ResourceTransactionNode.java,v 1.5 2004-05-21 21:39:07 taylor Exp $
 //
 // PlanWorks
 //
@@ -32,6 +32,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Extent;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
@@ -224,7 +225,7 @@ public  class ResourceTransactionNode extends JGoRectangle implements Extent {
       });
     mouseRightPopup.add( activeTokenItem);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, resourceView, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, resourceView, viewCoords);
   } // end mouseRightPopupMenu
 
 

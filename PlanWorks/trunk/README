@@ -4,67 +4,37 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.87 2004-05-13 20:24:02 taylor Exp $
+# $Id: README,v 1.88 2004-05-21 21:38:53 taylor Exp $
 #
 
 SUMMARY
 =======
-o This release *does* require a total rebuild of the PlanWorks data base,
-  using "ant planWorksDbInstall".  All plans to be loaded must be
-  regenerated using the PartialPlanWriter.
-
-o Beginning with this version, there is no up to date PartialPlanWriter 
-  support for Europa, and thus no support by PlanWorks.
-
-o Mouse-Right "Zoom View" has been added for the Constraint Network, 
-  Navigator, Temporal Extent, Timeline, and Token Network partial plan 
-  views.  It also is available in the Sequence Steps view.  The zoom 
-  out factors are x2, x4, x6, and x8 (the same scaling as the Overview 
-  views).  Whereas Mouse-Right "Overview Window" creates a new window and
-  allows the coordinated  viewing of the paired windows, "Zoom View" 
-  does not create a new window, rather it changes scaling in the 
-  existing window.  Thus the existing Mouse-Right functionality on
-  the view background and the view nodes is maintained.
-
-o The Sequence Steps View now has Mouse-Right "Step Backward step<nn> 
-  Active Views" and Mouse-Right "Step Forward step<nn> Active Views",
-  where <nn> is the currently selected step. Active views are those views
-  which exist for the currently selected step.
-
-o In the Sequence Steps View above each histogram step is a colored dot: 
-  green - partial plan loaded into data base; yellow - partial plan on 
-  disk; and red - partial plan not on disk.
-
-o The Token Network View now has a Mouse-Right selection "Rule Window",
-  which will bring up a window, such that when it exists, moving the 
-  mouse over the view's token node links will present in the "Rule View 
-  for <sequence-name>/step<nn>" window, the "from" and "to" token predicates 
-  and parameter lists, their keys, and the model rule which is responsible. 
-
-o The model rules shown in instances of "Rule View for <sequence-name>/step<nn>"
-  are loaded from the appropriate NDDL model.
-
-o The "test" target of ant now runs, in addition to the BackendTest, the MySQLDBTest,
-  and the PlanWorksUtilsTest, the PlanWorksGUITest which is an implementation
-  of 10 of the 23 tests defined in PlanWorks/testCases/planViz.txt.  The
-  JUnit and JFCUnit packages are used in the PlanWorksGUITest implementation.
+o The partial plan DBTransaction View and the Sequence Query result views for
+  Steps, Transactions, Free Tokens, Unbound Variables, and All Decisions - have
+  all been reimplemented using Swing JTable, instead of JGo widgets.  A
+  significant performance improvement has been realized, and additional
+  capabilities now exist.  The table column widths can be resized by dragging
+  the column header boundaries.  The row sorting by column values is now more
+  advanced: Mouse-Left clicks cycle through sortAscending, sortDescending, &
+  noSort - while clearing other column sorts; Control-Mouse-Left clicks cycle
+  through sortAscending, sortDescending, & noSort - while not clearing other 
+  column sorts.  "Find Object/Token/Variable by Key" is available with
+  Mouse-Right, where appropriate, on the panel between the window title and the
+  table header.  Mouse-Left on "Step" column cells offers to open partial plan
+  views for that step.
 
 o  GNATS PRs and CRs completed:
-   #2238: unable to build planworks.
-   #2335: Exception dialog box with no description.
-   #2345: Variables in the Plan seem to have many possible values while the planner 
-          output shows singletons.
-   #2375: RELAXATION TRANSACTIONS not listed in query by transaction type.
-   #2376: The Query results display the transaction types. Some are too long for 
-          the space.
-   #2389: Crash when quickly stepping in Timeline view.
-   #2390: Cannot scroll window to end of object at far right of view.
-   #2398: Transaction types too long for space: Query-Steps-Where Variable Transacted.
+   #2332: Need resizable column width in DB transaction view.
+   #2385: Crash while trying to sort transactions by name in the DBTransaction window.
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_14 PlanWorks
+Latest development state:
+  > cvs co PlanWorks  or
+  > cvs update PlanWorks
+Latest tagged milestone: (see Summary below)
+  > cvs co -r PW_M_14 PlanWorks
 
 
 PREREQUISITES
@@ -80,9 +50,6 @@ Set environment varibles:
       or, put this statement in
       $HOME/.MACOSX/env.plist
 
-  o ANT_HOME - location of Apache Ant 
-    e.g. setenv ANT_HOME <root>/PlanWorks/java/lib/apache-ant
-
   o PATH - should include Ant 
     e.g. tcsh: set path = ($path <root>/PlanWorks/java/lib/apache-ant/bin)
 
@@ -91,9 +58,6 @@ Set environment varibles:
 
   o USER - user's account name, used in defining the data base collection
     Should be set by user's standard environment
-
-  o EUROPA_HOME - path to the root Europa directory
-    e.g. setenv EUROPA_HOME ~/NewPlan
 
 
 OPTIONAL CONFIGURATION
@@ -146,6 +110,9 @@ after it prints its report.  Also, it is strongly recommended that you run
 'ant cleanDb' after the tests to make sure the test data is purged from
 the database.
 
+Only one instance of PlanWorks may be run concurrently, due to interactions with
+MySQL.
+
 > cd PlanWorks
 
 > ant planWorksDbInstall # this sets up the database and must be run before
@@ -180,6 +147,61 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+14may04: Milestone 14
+=======================
+o This release *does* require a total rebuild of the PlanWorks data base,
+  using "ant planWorksDbInstall".  All plans to be loaded must be
+  regenerated using the PartialPlanWriter.
+
+o Beginning with this version, there is no up to date PartialPlanWriter 
+  support for Europa, and thus no support by PlanWorks.
+
+o Mouse-Right "Zoom View" has been added for the Constraint Network, 
+  Navigator, Temporal Extent, Timeline, and Token Network partial plan 
+  views.  It also is available in the Sequence Steps view.  The zoom 
+  out factors are x2, x4, x6, and x8 (the same scaling as the Overview 
+  views).  Whereas Mouse-Right "Overview Window" creates a new window and
+  allows the coordinated  viewing of the paired windows, "Zoom View" 
+  does not create a new window, rather it changes scaling in the 
+  existing window.  Thus the existing Mouse-Right functionality on
+  the view background and the view nodes is maintained.
+
+o The Sequence Steps View now has Mouse-Right "Step Backward step<nn> 
+  Active Views" and Mouse-Right "Step Forward step<nn> Active Views",
+  where <nn> is the currently selected step. Active views are those views
+  which exist for the currently selected step.
+
+o In the Sequence Steps View above each histogram step is a colored dot: 
+  green - partial plan loaded into data base; yellow - partial plan on 
+  disk; and red - partial plan not on disk.
+
+o The Token Network View now has a Mouse-Right selection "Rule Window",
+  which will bring up a window, such that when it exists, moving the 
+  mouse over the view's token node links will present in the "Rule View 
+  for <sequence-name>/step<nn>" window, the "from" and "to" token predicates 
+  and parameter lists, their keys, and the model rule which is responsible. 
+
+o The model rules shown in instances of "Rule View for <sequence-name>/step<nn>"
+  are loaded from the appropriate NDDL model.
+
+o The "test" target of ant now runs, in addition to the BackendTest, the MySQLDBTest,
+  and the PlanWorksUtilsTest, the PlanWorksGUITest which is an implementation
+  of 10 of the 23 tests defined in PlanWorks/testCases/planViz.txt.  The
+  JUnit and JFCUnit packages are used in the PlanWorksGUITest implementation.
+
+o  GNATS PRs and CRs completed:
+   #2238: unable to build planworks.
+   #2335: Exception dialog box with no description.
+   #2345: Variables in the Plan seem to have many possible values while the planner 
+          output shows singletons.
+   #2375: RELAXATION TRANSACTIONS not listed in query by transaction type.
+   #2376: The Query results display the transaction types. Some are too long for 
+          the space.
+   #2389: Crash when quickly stepping in Timeline view.
+   #2390: Cannot scroll window to end of object at far right of view.
+   #2398: Transaction types too long for space: Query-Steps-Where Variable Transacted.
+
 
 10March04: Milestone 13
 =======================

@@ -4,10 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.97 2004-05-13 20:24:04 taylor Exp $
+// $Id: PlanWorks.java,v 1.98 2004-05-21 21:38:55 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.DisplayMode;
 import java.awt.GraphicsEnvironment;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.17 2004-05-08 01:44:15 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.18 2004-05-21 21:39:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -284,9 +284,7 @@ public class ResourceTransactionView extends ResourceView  {
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
       ResourceTransactionSet resourceTransactionSet =
-        new ResourceTransactionSet( resource,
-                                    ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR),
-                                    this);
+        new ResourceTransactionSet( resource, ViewConstants.FREE_TOKEN_BG_COLOR, this);
       // System.err.println( "resourceTransactionSet " + resourceTransactionSet);
       this.getJGoExtentDocument().addObjectAtTail( resourceTransactionSet);
       resourceTransactionSetList.add( resourceTransactionSet);
@@ -405,7 +403,7 @@ public class ResourceTransactionView extends ResourceView  {
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
   private void createActiveResourceTransItem( final JMenuItem activeResourceTransItem) {

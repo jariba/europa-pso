@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.16 2004-05-13 20:24:09 taylor Exp $
+// $Id: ViewGenerics.java,v 1.17 2004-05-21 21:39:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -123,9 +123,25 @@ public class ViewGenerics {
     vizView.createAllViewItems( partialPlanIfLoaded, partialPlanName,
                                 planSequence, mouseRightPopup);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, vizView, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, vizView, viewCoords);
 
   } // end partialPlanViewsPopupMenu
+
+  /**
+   * <code>showPopupMenu</code> - show pop up menu in component at viewCoords location
+   *
+   * @param popupMenu - <code>JPopupMenu</code> - 
+   * @param component - <code>JComponent</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   */
+  public static void showPopupMenu( JPopupMenu popupMenu, JComponent component,
+                                    Point viewCoords) {
+    boolean isLocationAbsolute = false;
+    Point popupPoint = Utilities.computeNestedLocation( viewCoords, component,
+                                                        isLocationAbsolute);
+    popupMenu.show( PlanWorks.getPlanWorks(), (int) popupPoint.getX(),
+                    (int) popupPoint.getY());
+  } // end showPopupMenu
 
   /**
    * <code>openOverviewFrame</code>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.25 2004-04-09 23:11:26 taylor Exp $
+// $Id: NodeGenerics.java,v 1.26 2004-05-21 21:39:03 taylor Exp $
 //
 // PlanWorks
 //
@@ -58,22 +58,6 @@ public class NodeGenerics {
 
   private NodeGenerics() {
   }
-
-  /**
-   * <code>showPopupMenu</code> - show pop up menu in component at viewCoords location
-   *
-   * @param popupMenu - <code>JPopupMenu</code> - 
-   * @param component - <code>JComponent</code> - 
-   * @param viewCoords - <code>Point</code> - 
-   */
-  public static void showPopupMenu( JPopupMenu popupMenu, JComponent component,
-                                    Point viewCoords) {
-    boolean isLocationAbsolute = false;
-    Point popupPoint = Utilities.computeNestedLocation( viewCoords, component,
-                                                        isLocationAbsolute);
-    popupMenu.show( PlanWorks.getPlanWorks(), (int) popupPoint.getX(),
-                    (int) popupPoint.getY());
-  } // end showPopupMenu
 
   /**
    * <code>getShortestDuration</code>

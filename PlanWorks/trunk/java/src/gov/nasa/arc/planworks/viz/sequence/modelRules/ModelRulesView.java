@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ModelRulesView.java,v 1.7 2004-05-08 01:44:17 taylor Exp $
+// $Id: ModelRulesView.java,v 1.8 2004-05-21 21:39:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -138,14 +138,6 @@ public class ModelRulesView extends SequenceView {
   } // end constructor
 
 
-  /**
-   * <code>getPlanSequence</code>
-   *
-   * @return - <code>PwPlanningSequence</code> - 
-   */
-  public PwPlanningSequence getPlanSequence() {
-    return planSequence;
-  }
 
 
   Runnable runInit = new Runnable() {
@@ -173,15 +165,8 @@ public class ModelRulesView extends SequenceView {
       }
       // System.err.println( "ModelRulesView displayable " + this.isDisplayable());
     }
-    graphics = this.getGraphics();
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-    // does nothing
-    // jGoView.setFont( font);
-    fontMetrics = graphics.getFontMetrics( font);
 
-    // graphics.dispose();
+    this.computeFontMetrics( this);
 
     jGoDocument = jGoView.getDocument();
 
@@ -419,7 +404,7 @@ public class ModelRulesView extends SequenceView {
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
     mouseRightPopup.add( overviewWindowItem);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
 

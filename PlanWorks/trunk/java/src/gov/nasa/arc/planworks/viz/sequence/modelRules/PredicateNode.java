@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PredicateNode.java,v 1.4 2004-03-27 00:30:47 taylor Exp $
+// $Id: PredicateNode.java,v 1.5 2004-05-21 21:39:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 
@@ -268,7 +269,7 @@ public class PredicateNode extends BasicNode {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
   } // end mouseRightPopupMenu
 
 

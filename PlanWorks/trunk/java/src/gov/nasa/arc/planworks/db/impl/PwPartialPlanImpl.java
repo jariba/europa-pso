@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.88 2004-05-13 20:24:05 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.89 2004-05-21 21:38:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1286,7 +1286,41 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return retval.toString();
   }
 
+  /**
+   * <code>getRule</code>
+   *
+   * @param rId - <code>Integer</code> - 
+   * @return - <code>PwRule</code> - 
+   */
   public PwRule getRule(Integer rId) {
     return sequence.getRule(rId);
   }
+
+  /**
+   * <code>getVariableParentName</code>
+   *
+   * @param parentId - <code>Integer</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getVariableParentName( final Integer parentId) {
+    Object parent = null;
+    parent = getToken( parentId);
+    if (parent != null) {
+      return ((PwToken) parent).getPredicateName();
+    }
+    parent = getObject( parentId);
+    if (parent != null) {
+      return ((PwObject) parent).getName();
+    }
+    parent = getResource( parentId);
+    if (parent != null) {
+      return ((PwResource) parent).getName();
+    }
+    parent = getTimeline( parentId);
+    if (parent != null) {
+      return ((PwTimeline) parent).getName();
+    }
+    return "<not found>";
+  } // end getVariableParentName
+
 } // end class PwPartialPlanImpl

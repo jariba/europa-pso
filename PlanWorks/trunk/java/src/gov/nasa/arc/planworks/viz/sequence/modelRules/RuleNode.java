@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleNode.java,v 1.3 2004-01-12 19:46:34 taylor Exp $
+// $Id: RuleNode.java,v 1.4 2004-05-21 21:39:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -40,6 +40,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
@@ -184,7 +185,7 @@ public class RuleNode extends ExtendedBasicNode {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
+    ViewGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
   } // end mouseRightPopupMenu
 
 

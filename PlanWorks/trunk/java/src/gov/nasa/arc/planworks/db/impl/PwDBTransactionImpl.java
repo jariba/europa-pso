@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransactionImpl.java,v 1.5 2004-05-13 20:24:05 taylor Exp $
+// $Id: PwDBTransactionImpl.java,v 1.6 2004-05-21 21:38:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,19 +33,19 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   private Integer transactionId;
   private String source;
   private String [] info;
-  private Integer objectId;
+  private Integer entityId;
   private Integer stepNumber;
   private Long sequenceId;
   private Long partialPlanId;
 
   public PwDBTransactionImpl( final String name, final Integer transactionId,
-                              final String source, final Integer objectId,
+                              final String source, final Integer entityId,
                               final Integer stepNumber, final Long sequenceId,
                               final Long partialPlanId) {
     this.name = name;
     this.transactionId = transactionId;
     this.source = source;
-    this.objectId = objectId;
+    this.entityId = entityId;
     this.stepNumber = stepNumber;
     this.sequenceId = sequenceId;
     this.partialPlanId = partialPlanId;
@@ -91,12 +91,12 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   }
 
   /**
-   * <code>getObjectId</code> - id of object acted on by this transaction
+   * <code>getEntityId</code> - id of entity acted on by this transaction
    *
    * @return - <code>Integer</code> - 
    */
-  public Integer getObjectId() {
-    return objectId;
+  public Integer getEntityId() {
+    return entityId;
   }
 
   /**
@@ -109,7 +109,7 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   }
 
   /**
-   * <code>getSequenceId</code> - id of sequence of object acted on by this transaction
+   * <code>getSequenceId</code> - id of sequence of entity acted on by this transaction
    *
    * @return - <code>Long</code> - 
    */
@@ -120,7 +120,7 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   /**
    * <code>getPartialPlanId</code>
    *
-   * @return - <code>Long</code> - id of partial plan of object acted on by this transaction
+   * @return - <code>Long</code> - id of partial plan of entity acted on by this transaction
    */
   public Long getPartialPlanId() {
     return partialPlanId;
@@ -136,7 +136,7 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   public String toOutputString() {
     StringBuffer retval = new StringBuffer(name); retval.append("\t");
     retval.append(getTransactionType(name)).append("\t");
-    retval.append(objectId).append("\t").append(source).append("\t");
+    retval.append(entityId).append("\t").append(source).append("\t");
     retval.append(transactionId).append("\t").append(stepNumber).append("\t").append(sequenceId);
     retval.append("\t").append(partialPlanId).append("\t");
     for(int i = 0; i < info.length; i++) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.12 2004-05-08 01:44:18 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.13 2004-05-21 21:39:13 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -48,6 +48,7 @@ import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.db.util.PartialPlanContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -504,7 +505,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
       ((PartialPlanView) partialPlanViews.get(0)).
         createAllViewItems( partialPlan, partialPlanName,
                                                     planSequence, mouseRightPopup);
-      NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+      ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     }
   } // end mouseRightPopupMenu
 
