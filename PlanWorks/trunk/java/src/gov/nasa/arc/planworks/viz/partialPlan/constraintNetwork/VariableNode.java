@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.22 2004-08-21 00:31:55 taylor Exp $
+// $Id: VariableNode.java,v 1.23 2004-08-25 18:41:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -503,7 +503,7 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
     if (doRedraw && (areNodesChanged || areLinksChanged)) {
       constraintNetworkView.setLayoutNeeded();
       constraintNetworkView.setFocusNode( variableNode);
-      constraintNetworkView.redraw();
+      constraintNetworkView.redraw( true);
     }
     int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
@@ -517,7 +517,7 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();
       constraintNetworkView.setFocusNode( variableNode);
-      constraintNetworkView.redraw();
+      constraintNetworkView.redraw( true);
     }
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
   } // end removeVariableNodeTokensAndConstraints

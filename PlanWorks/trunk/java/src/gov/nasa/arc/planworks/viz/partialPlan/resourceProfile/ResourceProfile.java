@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.16 2004-08-23 22:07:40 taylor Exp $
+// $Id: ResourceProfile.java,v 1.17 2004-08-25 18:41:03 taylor Exp $
 //
 // PlanWorks
 //
@@ -148,13 +148,15 @@ public class ResourceProfile extends BasicNode {
                                           final FontMetrics levelScaleFontMetrics) {
     int maxLabelWidth = 0;
     double minMax[] = ResourceProfile.getResourceMinMax( resource);
-    int tickDelta = Math.max( ((int) minMax[1] - (int) minMax[0]) / NUM_LEVEL_SCALE_TICKS, 1);
-    // System.err.println( "getResourceMinMax: minMax[0] " + (int) minMax[0] +
-    //                     " minMax[1] " + (int) minMax[1] + " tickDelta " + tickDelta);
-    int level = (int) minMax[0];
-    while (level < (int) minMax[1]) {
+    double tickDelta = (minMax[1] - minMax[0]) / NUM_LEVEL_SCALE_TICKS;
+//     System.err.println( "getResourceMinMax: minMax[0] " + minMax[0] +
+//                         " minMax[1] " + minMax[1] + " tickDelta " + tickDelta);
+    double level = minMax[0];
+    while (level < minMax[1]) {
       String tickLabel = new Double( level).toString();
       int labelWidth = SwingUtilities.computeStringWidth( levelScaleFontMetrics, tickLabel);
+//       System.err.println( "getTickLabelMaxWidth: level " + level + " labelWidth " +
+//                           labelWidth);
       if (labelWidth > maxLabelWidth) {
         maxLabelWidth = labelWidth;
       }
@@ -177,8 +179,11 @@ public class ResourceProfile extends BasicNode {
         minMax[0] = instant.getLevelMin();
       }
     }
-    // System.err.println( "getResourceMinMax: minMax[0] " + (int) minMax[0] +
-    //                     " minMax[1] " + (int) minMax[1] );
+    if (minMax[0] >=  minMax[1]) {
+      System.err.println( "getResourceMinMax: minimum (minMax[0]) " + (int) minMax[0] +
+                          " is >= maximum (minMax[1]) " + (int) minMax[1] +
+                          " for resource " + resource.getName());
+    }
     return minMax;
   } // end getResourceMinMax
 
@@ -217,12 +222,12 @@ public class ResourceProfile extends BasicNode {
     // System.err.println( "resourceProfile: levelLimitMin " + levelLimitMin +
     //                     " levelLimitMax " + levelLimitMax);
     double minMax[] = ResourceProfile.getResourceMinMax( resource);
-    levelMin = (int) minMax[0];
-    levelMax = (int) minMax[1];
+    levelMin = minMax[0];
+    levelMax = minMax[1];
     levelScaleScaling = (extentYBottom - extentYTop) / (levelMax - levelMin);
-    // System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
-    // System.err.println( " levelMin " + levelMin + " levelMax " +
-    //                     levelMax + " levelScaleScaling " + levelScaleScaling);
+//     System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
+//     System.err.println( " levelMin " + levelMin + " levelMax " +
+//                         levelMax + " levelScaleScaling " + levelScaleScaling);
 
     renderLevelScaleLinesAndTicks();
 
@@ -271,16 +276,16 @@ public class ResourceProfile extends BasicNode {
   }
 
   private void renderLevelScaleLinesAndTicks() {
-    int tickDelta = Math.max( ((int) levelMax - (int) levelMin) / NUM_LEVEL_SCALE_TICKS, 1);
-//      System.err.println( "renderLevelScale: max " + levelMax + " min " + levelMin +
-//                          " tickDelta " + tickDelta);
-    int level = (int) levelMin;
+    double tickDelta = (levelMax - levelMin) / NUM_LEVEL_SCALE_TICKS;
+//      System.err.println( "renderLevelScaleLinesAndTicks: max " + levelMax + " min " +
+//                          levelMin + " tickDelta " + tickDelta);
+    double level = levelMin;
     while (level <= levelMax) {
 //       System.err.println( "  level " + level);
       JGoStroke tickLine = new JGoStroke();
       tickLine.addPoint( levelScaleWidth - LEVEL_SCALE_TICK_WIDTH,
-                         scaleResourceLevel( (double) level));
-      tickLine.addPoint( levelScaleWidth, scaleResourceLevel( (double) level));
+                         scaleResourceLevel( level));
+      tickLine.addPoint( levelScaleWidth, scaleResourceLevel( level));
       tickLine.setDraggable( false); tickLine.setResizable( false);
       tickLine.setSelectable( false);
       tickLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "white")));
@@ -289,10 +294,10 @@ public class ResourceProfile extends BasicNode {
       JGoStroke tickLevelLine = new JGoStroke();
       tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
                               scaleTimeNoZoom( earliestStartTime),
-                              scaleResourceLevel( (double) level));
+                              scaleResourceLevel( level));
       tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
                               scaleTimeNoZoom( latestEndTime),
-                              scaleResourceLevel( (double) level));
+                              scaleResourceLevel( level));
       tickLevelLine.setDraggable( false); tickLevelLine.setResizable( false);
       tickLevelLine.setSelectable( false);
       tickLevelLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "white")));
@@ -301,14 +306,14 @@ public class ResourceProfile extends BasicNode {
       level += tickDelta;
     }
     // labels
-    level = (int) levelMin;
-    while (level < levelMax) {
+    level = levelMin;
+    while (level <= levelMax) {
       String label = new Double( level).toString();
       int xTop = levelScaleWidth / 2;
       Point labelLoc =
         new Point( levelScaleWidth - LEVEL_SCALE_TICK_WIDTH - 2 -
                    SwingUtilities.computeStringWidth( levelScaleFontMetrics, label),
-                   scaleResourceLevel( (double) level +
+                   scaleResourceLevel( level +
                                        tickDelta * ResourceView.ONE_HALF_MULTIPLIER));
       JGoText labelObject = new JGoText( labelLoc, label);
       labelObject.setResizable( false); labelObject.setEditable( false);

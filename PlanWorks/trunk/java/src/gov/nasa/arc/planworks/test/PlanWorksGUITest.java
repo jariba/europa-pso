@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.23 2004-08-23 22:51:41 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.24 2004-08-25 18:41:00 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -67,6 +67,7 @@ import junit.textui.TestRunner;
 
 import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.ThreadListener;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
@@ -123,6 +124,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineTokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkRuleInstanceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
@@ -191,6 +193,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   private boolean viewListenerWait06;
   private boolean viewListenerWait07;
   private boolean viewListenerWait08;
+
+  private boolean threadListenerWait01;
 
   public PlanWorksGUITest(String test) {
     super(test);
@@ -270,6 +274,14 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     viewListenerWait08 = value;
   }
 
+  public boolean getThreadListenerWait01() {
+    return threadListenerWait01;
+  }
+
+  public void setThreadListenerWait01( boolean value) {
+    threadListenerWait01 = value;
+  }
+
 
   public void setUp() throws Exception {
     try {
@@ -339,11 +351,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   // catch assert errors and Exceptions here, since JUnit seems to not do it 
   public void planVizTests() throws Exception {
     try {
-//       planViz01(); 
-//       planViz02(); 
-//       planViz03(); planViz04(); // 04 depends on 03
-//       planViz05(); 
-//       planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
+      planViz01(); 
+      planViz02(); 
+      planViz03(); planViz04(); // 04 depends on 03
+      planViz05(); 
+      planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
       planViz10(); 
       planViz11(); // methods 1-16 of 20 complete
       planViz12(); // methods 1-15 of 18 complete for TimelineView; no other views yet
@@ -924,8 +936,14 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     // try{Thread.sleep(2000);}catch(Exception e){}
 
     // delete seq2 & seq3
+    ThreadListener threadListener01 = new ThreadListenerWait01( this);
+    PlanWorks.getPlanWorks().setDeleteSequenceThreadListener( threadListener01);
     PWTestHelper.deleteSequenceFromProject( (String) sequenceUrls.get( 5), helper, this);
+    threadListener01.threadWait();
+    threadListener01.reset();
+    PlanWorks.getPlanWorks().setDeleteSequenceThreadListener( threadListener01);
     PWTestHelper.deleteSequenceFromProject( (String) sequenceUrls.get( 6), helper, this);
+    threadListener01.threadWait();
     // Method:2 - Four windows remain: the ContentFilter, the SequenceQuery,
     //  the TimelineView, and the SequenceStepsView of "test-seq-1".
     int totalFrameCnt = 4;
@@ -985,7 +1003,10 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                        equals( (String) sequenceUrls.get( 6)), "not ");
     //try{Thread.sleep(2000);}catch(Exception e){}
 
+    threadListener01.reset();
+    PlanWorks.getPlanWorks().setDeleteSequenceThreadListener( threadListener01);
     PWTestHelper.deleteSequenceFromProject( (String) sequenceUrls.get( 4), helper, this);
+    threadListener01.threadWait();
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
 
     System.err.println( "\nPLANVIZ_09 COMPLETED\n");
@@ -1068,11 +1089,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
     PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
 
-//     planViz10CNet( constraintNetworkView, stepNumber, planSeq, partialPlan);
+    planViz10CNet( constraintNetworkView, stepNumber, planSeq, partialPlan);
 
-//     planViz10TempExt( temporalExtentView, stepNumber, planSeq, partialPlan);
+    planViz10TempExt( temporalExtentView, stepNumber, planSeq, partialPlan);
 
-//     planViz10Timeline( timelineView, stepNumber, planSeq, partialPlan);
+    planViz10Timeline( timelineView, stepNumber, planSeq, partialPlan);
 
     planViz10TokNet( tokenNetworkView, stepNumber, planSeq, partialPlan);
 
@@ -1121,6 +1142,10 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     System.err.println( "OverviewRectangle location " + rectangle.getLocation());
     // try{Thread.sleep(4000);}catch(Exception e){}
 
+    ThreadListener threadListener01 = new ThreadListenerWait01( this);
+    PlanWorks.getPlanWorks().setDeleteSequenceThreadListener( threadListener01);
+    PWTestHelper.deleteSequenceFromProject( (String) sequenceUrls.get( 4), helper, this);
+    threadListener01.threadWait();
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
 
     System.err.println( "\nPLANVIZ_10 COMPLETED\n");
@@ -1944,13 +1969,24 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
         }
         numRuleInstanceNodes++;
     }
-    try{Thread.sleep(20000);}catch(Exception e){}
+    // try{Thread.sleep(20000);}catch(Exception e){}
 
-//     System.err.println( "numSlottedTokenNodes " + numSlottedTokenNodes +
-//                         "numFreeTokenNodes " + numFreeTokenNodes +
-//                         " numResTransactionNodes " + numResTransactionNodes);
-//     System.err.println( "pp tokenCnt " + partialPlan.getTokenList().size() +
-//                         " pp resTrans " + partialPlan.getResTransactionList().size());
+    List rootTokens = new ArrayList();
+    Iterator tokenIterator = partialPlan.getTokenList().iterator();
+    while (tokenIterator.hasNext()) {
+      PwToken token = (PwToken) tokenIterator.next();
+      Integer masterTokenId = partialPlan.getMasterTokenId( token.getId());
+      if (masterTokenId == null) {
+        rootTokens.add( token);
+      }
+    }
+
+    System.err.println( "numSlottedTokenNodes " + numSlottedTokenNodes +
+                        "numFreeTokenNodes " + numFreeTokenNodes +
+                        " numResTransactionNodes " + numResTransactionNodes);
+    System.err.println( "pp tokenCnt " + partialPlan.getTokenList().size() +
+                        " master tokenCnt " + rootTokens.size() +
+                        " pp resTrans " + partialPlan.getResTransactionList().size());
     assertNotNullVerbose( "Did not find TokenNetworkView slotted TokenNode (TokenNode)",
                           slottedTokenNode, "not ");
     assertNotNullVerbose( "Did not find TokenNetworkView free TokenNode (TokenNode)",
@@ -1959,41 +1995,44 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                           resTransactionNode, "not ");
     assertNotNullVerbose( "Did not find TokenNetworkView ruleInstanceNode (RuleInstanceNode)",
                           ruleInstanceNode, "not ");
-    assertTrueVerbose( "Number of partial plan interval tokens and resource transactions (" +
-                       partialPlan.getTokenList().size() +
+  // assertTrueVerbose( "Number of partial plan interval tokens and resource transactions (" +
+  //                     partialPlan.getTokenList().size() +
+    assertTrueVerbose( "Number of partial plan root token nodes (" + rootTokens.size() +
                        ") not equal to number of TokenNetworkView slotted token, " +
                        "free token, and resource transaction nodes (" +
                        (numSlottedTokenNodes + numFreeTokenNodes + numResTransactionNodes) +
-                       ")", (partialPlan.getTokenList().size() ==
+                       // ")", (partialPlan.getTokenList().size() ==
+                       ")", (rootTokens.size() ==
                              (numSlottedTokenNodes + numFreeTokenNodes +
                               numResTransactionNodes)), "not ");
-    assertTrueVerbose
-      ( "Number of partial plan slotted interval tokens (" +
-        (partialPlan.getTokenList().size() - partialPlan.getFreeTokenList().size() -
-         partialPlan.getResTransactionList().size()) +
-        ") not equal to number of TokenNetworkView slotted interval token nodes (" +
-        numSlottedTokenNodes + ")", ((partialPlan.getTokenList().size() -
-                                      partialPlan.getFreeTokenList().size() -
-                                      partialPlan.getResTransactionList().size()) ==
-                                     numSlottedTokenNodes), "not ");
-    assertTrueVerbose
-      ( "Number of partial plan free interval tokens (" +
-        partialPlan.getFreeTokenList().size() +
-        ") not equal to number of TokenNetworkView slotted interval token nodes (" +
-        numFreeTokenNodes + ")", (partialPlan.getFreeTokenList().size() ==
-                                     numFreeTokenNodes), "not ");
-    assertTrueVerbose( "Number of partial plan resource transactions (" +
-                       partialPlan.getResTransactionList().size() +
-                       ") not equal to number of TokenNetworkView resource transaction nodes (" +
-                       numResTransactionNodes + ")",
-                       partialPlan.getResTransactionList().size() ==
-                       numResTransactionNodes, "not ");
-    assertTrueVerbose( "Number of partial plan rule instances (" +
-                       partialPlan.getRuleInstanceList().size() +
-                       ") not equal to number of TokenNetworkView rule instance nodes (" +
-                       numRuleInstanceNodes + ")",
-                       partialPlan.getRuleInstanceList().size() ==
-                       numRuleInstanceNodes, "not ");
+    // token network view is now incremental -> just root nodes are rendered
+//     assertTrueVerbose
+//       ( "Number of partial plan slotted interval tokens (" +
+//         (partialPlan.getTokenList().size() - partialPlan.getFreeTokenList().size() -
+//          partialPlan.getResTransactionList().size()) +
+//         ") not equal to number of TokenNetworkView slotted interval token nodes (" +
+//         numSlottedTokenNodes + ")", ((partialPlan.getTokenList().size() -
+//                                       partialPlan.getFreeTokenList().size() -
+//                                       partialPlan.getResTransactionList().size()) ==
+//                                      numSlottedTokenNodes), "not ");
+//     assertTrueVerbose
+//       ( "Number of partial plan free interval tokens (" +
+//         partialPlan.getFreeTokenList().size() +
+//         ") not equal to number of TokenNetworkView slotted interval token nodes (" +
+//         numFreeTokenNodes + ")", (partialPlan.getFreeTokenList().size() ==
+//                                      numFreeTokenNodes), "not ");
+//     assertTrueVerbose( "Number of partial plan resource transactions (" +
+//                        partialPlan.getResTransactionList().size() +
+//                        ") not equal to number of TokenNetworkView resource transaction nodes (" +
+//                        numResTransactionNodes + ")",
+//                        partialPlan.getResTransactionList().size() ==
+//                        numResTransactionNodes, "not ");
+//     assertTrueVerbose( "Number of partial plan rule instances (" +
+//                        partialPlan.getRuleInstanceList().size() +
+//                        ") not equal to number of TokenNetworkView rule instance nodes (" +
+//                        numRuleInstanceNodes + ")",
+//                        partialPlan.getRuleInstanceList().size() ==
+//                        numRuleInstanceNodes, "not ");
  
     System.err.println( "slottedTokenNode labelText " + slottedTokenNode.getText());
     System.err.println( "slottedTokenNode toolTipText " + slottedTokenNode.getToolTipText());
@@ -2016,11 +2055,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                        ") tool tip does not contain '" +
                        predArgsString + "'", (toolTipText.indexOf( predArgsString) >= 0),
                        "not ");
-    assertTrueVerbose( "TokenNetworkView slotted token node (" +
-                       slottedTokenNode.getToken().getId().toString() +
-                       ") tool tip does not contain '" +
-                       slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
-                       "not ");
+//     assertTrueVerbose( "TokenNetworkView slotted token node (" +
+//                        slottedTokenNode.getToken().getId().toString() +
+//                        ") tool tip does not contain '" +
+//                        slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
+//                        "not ");
 
     System.err.println( "freeTokenNode labelText " + freeTokenNode.getText());
     System.err.println( "freeTokenNode toolTipText " + freeTokenNode.getToolTipText());
@@ -2043,11 +2082,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                        ") tool tip does not contain '" +
                        predArgsString + "'", (toolTipText.indexOf( predArgsString) >= 0),
                        "not ");
-    assertFalseVerbose( "TokenNetworkView free token node (" +
-                       freeTokenNode.getToken().getId().toString() +
-                       ") tool tip does not contain '" +
-                       slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
-                       "not ");
+//     assertFalseVerbose( "TokenNetworkView free token node (" +
+//                        freeTokenNode.getToken().getId().toString() +
+//                        ") tool tip does not contain '" +
+//                        slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
+//                        "not ");
 
     System.err.println( "resTransactionNode labelText " + resTransactionNode.getText());
     System.err.println( "resTransactionNode toolTipText " + resTransactionNode.getToolTipText());
@@ -2070,11 +2109,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                        ") tool tip does not contain '" +
                        predArgsString + "'", (toolTipText.indexOf( predArgsString) >= 0),
                        "not ");
-    assertFalseVerbose( "TokenNetworkView resource transaction node (" +
-                       resTransactionNode.getToken().getId().toString() +
-                       ") tool tip does not contain '" +
-                       slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
-                       "not ");
+//     assertFalseVerbose( "TokenNetworkView resource transaction node (" +
+//                        resTransactionNode.getToken().getId().toString() +
+//                        ") tool tip does not contain '" +
+//                        slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
+//                        "not ");
 
     System.err.println( "ruleInstanceNode labelText " + ruleInstanceNode.getText());
     System.err.println( "ruleInstanceNode toolTipText " + ruleInstanceNode.getToolTipText());
@@ -2395,13 +2434,16 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                       timelineView.getFocusNodeId().equals( freeTokenId), "not ");
 
    ViewGenerics.raiseFrame( tokenNetworkView.getViewFrame());
+   tokenNetworkView.setDisableEntityKeyPathDialog();
    PWTestHelper.viewBackgroundItemSelection( tokenNetworkView, "Find by Key", helper,
                                              this);
    PWTestHelper.handleDialogValueEntry( "Find by Key", freeTokenId.toString(),
                                          helper, this);
+   List findPathList = tokenNetworkView.getHighlightPathNodesList();
+   TokenNetworkTokenNode foundNode =
+     (TokenNetworkTokenNode) findPathList.get( findPathList.size() - 1);
    assertTrueVerbose( "Token Network focus node id is not " + freeTokenId.toString() +
-                      " (free token)",
-                      tokenNetworkView.getFocusNodeId().equals( freeTokenId), "not ");
+                      " (free token)", foundNode.getId().equals( freeTokenId), "not ");
 
    ViewGenerics.raiseFrame(timelineView .getViewFrame());
    PWTestHelper.viewBackgroundItemSelection( timelineView, "Find by Key", helper,
@@ -2893,6 +2935,10 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
 
    // try{Thread.sleep(4000);}catch(Exception e){}
 
+   ThreadListener threadListener01 = new ThreadListenerWait01( this);
+   PlanWorks.getPlanWorks().setDeleteSequenceThreadListener( threadListener01);
+   PWTestHelper.deleteSequenceFromProject( (String) sequenceUrls.get( 4), helper, this);
+   threadListener01.threadWait();
    PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
 
    System.err.println( "\nPLANVIZ_11 COMPLETED\n");
@@ -4230,6 +4276,34 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       System.exit( -1);
     }
   } // end viewListenerListReset
+
+  public class ThreadListenerWait01 extends ThreadListener {
+    private PlanWorksGUITest guiTest;
+    public ThreadListenerWait01( PlanWorksGUITest guiTest) {
+      super();
+      this.guiTest = guiTest;
+      guiTest.setThreadListenerWait01( false);
+    }
+    public void reset() {
+      guiTest.setThreadListenerWait01( false);
+    }
+    public void threadEnded() {
+      String shortClassName = this.getClass().getName();
+      int index = shortClassName.indexOf( "$");
+      System.err.println( shortClassName.substring( index + 1) + " released");
+      guiTest.setThreadListenerWait01( true);
+    }
+    public void threadWait() {
+      while (! guiTest.getThreadListenerWait01()) {
+        try {
+          Thread.currentThread().sleep(50);
+        } catch (InterruptedException excp) {
+        }
+        // System.err.println( "threadListenerWait01 still false");
+      }
+      flushAWT(); awtSleep();
+    } 
+  } // end class ThreadListenerWait01
 
   public static TestSuite suite() {
     TestSuite suite = new TestSuite();

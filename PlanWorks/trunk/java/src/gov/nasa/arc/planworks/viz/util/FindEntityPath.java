@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FindEntityPath.java,v 1.1 2004-08-21 00:32:00 taylor Exp $
+// $Id: FindEntityPath.java,v 1.2 2004-08-25 18:41:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -70,6 +70,18 @@ public class FindEntityPath {
   private Boolean foundPathExists;
   private ProgressMonitorThread findPathPMThread;
 
+  /**
+   * <code>FindEntityPath</code> - constructor 
+   *
+   * @param entityKey1 - <code>Integer</code> - 
+   * @param entityKey2 - <code>Integer</code> - 
+   * @param pathClasses - <code>List</code> - 
+   * @param doPathExists - <code>boolean</code> - 
+   * @param maxPathLength - <code>int</code> - 
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   * @param dialogWindowFrame - <code>MDIInternalFrame</code> - 
+   */
   public FindEntityPath( Integer entityKey1, Integer entityKey2, List pathClasses,
                          boolean doPathExists, int maxPathLength, PwPartialPlan partialPlan,
                          PartialPlanView partialPlanView, MDIInternalFrame dialogWindowFrame) {
@@ -86,17 +98,41 @@ public class FindEntityPath {
     foundPathExists = null;
   }
 
+  /**
+   * <code>getEntityKeyList</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public List getEntityKeyList() {
     return entityKeyList;
   }
 
+  /**
+   * <code>setEntityKeyList</code>
+   *
+   * @param lst - <code>List</code> - 
+   */
   public void setEntityKeyList( List lst) {
     // System.err.println( "setEntityKeyList " + lst);
     entityKeyList = lst;
   }
 
+  /**
+   * <code>invokeAndWait</code>
+   *
+   */
   public void invokeAndWait() {
+    boolean disableEntityKeyPathDialog = false;
+    invokeAndWait( disableEntityKeyPathDialog);
+  }
 
+  /**
+   * <code>invokeAndWait</code> - for PlanWorksGUITest
+   *
+   * @param disableEntityKeyPathDialog - <code>boolean</code> - 
+   */
+  public void invokeAndWait( boolean disableEntityKeyPathDialog) {
+    
     launchFindEntityPath();
 
     if (doPathExists) {
@@ -147,7 +183,9 @@ public class FindEntityPath {
           dialogWindowFrame.dispose();
         }
 
-        outputEntityPathNodes( nodeList, partialPlanView);
+        if (! disableEntityKeyPathDialog) {
+          outputEntityPathNodes( nodeList, partialPlanView);
+        }
       }
     }
   } // end invokeAndWait

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.85 2004-08-23 22:51:41 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.86 2004-08-25 18:41:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -406,20 +406,36 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
    *
    */
   public void redraw() {
-    Thread thread = new RedrawViewThread();
-    thread.setPriority(Thread.MIN_PRIORITY);
+    setFocusNode( null);
+    highlightPathNodesList = null;
+    boolean isContentSpecRedraw = true;
+    createRedrawViewThread( isContentSpecRedraw);
+  }
+
+  protected final void redraw( boolean isFindEntityPath) {
+    boolean isContentSpecRedraw = false;
+    createRedrawViewThread( isContentSpecRedraw);
+  }
+
+  private  final void createRedrawViewThread( boolean isContentSpecRedraw) {
+    Thread thread = new RedrawViewThread( isContentSpecRedraw);
+    thread.setPriority( Thread.MIN_PRIORITY);
     thread.start();
   }
 
+
   class RedrawViewThread extends Thread {
 
-    public RedrawViewThread() {
+    private boolean isContentSpecRedraw;
+
+    public RedrawViewThread( boolean isContentSpecRedraw) {
+      this.isContentSpecRedraw = isContentSpecRedraw;
     }  // end constructor
 
     public void run() {
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
-        redrawView();
+        redrawView( isContentSpecRedraw);
       } finally {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
@@ -427,7 +443,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
 
   } // end class RedrawViewThread
 
-  private void redrawView() {
+  private void redrawView( boolean isContentSpecRedraw) {
     synchronized( staticObject) {
       handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
       // prevent user from seeing intermediate layouts
@@ -436,8 +452,6 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
       if (startTimeMSecs == 0L) {
 	startTimeMSecs = System.currentTimeMillis();
       }
-      // setVisible(true | false) depending on keys
-      setNodesLinksVisible();
 
       redrawPMThread = 
 	createProgressMonitorThread( "Redrawing Constraint Network View ...", 0, 6,
@@ -449,7 +463,11 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
       redrawPMThread.getProgressMonitor().setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
       // content spec apply/reset do not change layout, only ConstraintNetworkTokenNode/
       // variableNode/constraintNode opening/closing
-      if (isLayoutNeeded) {
+      // setVisible(true | false) depending on keys
+
+      setNodesLinksVisible();
+
+      if (isContentSpecRedraw || ((! isContentSpecRedraw) && isLayoutNeeded)) {
 	if (isDebugPrint) {
 	  //network.validateConstraintNetwork();
 	}
@@ -468,6 +486,9 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
 				   ((focusNode instanceof ConstraintNode) &&
 				    (((ConstraintNode) focusNode).inLayout())));
 	NodeGenerics.focusViewOnNode( focusNode, isHighlightNode, jGoView);
+      } else {
+        JGoObject node = null; boolean isHighlightNode = false;
+        NodeGenerics.focusViewOnNode( node, isHighlightNode, jGoView);
       }
       long stopTimeMSecs = System.currentTimeMillis();
       System.err.println( "   ... " + ViewConstants.CONSTRAINT_NETWORK_VIEW + " elapsed time: " +
@@ -1695,6 +1716,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
 	    new AskNodeByKey( "Find by Key", "key (int)", ConstraintNetworkView.this);
 	  Integer nodeKey = nodeByKeyDialog.getNodeKey();
 	  if (nodeKey != null) {
+            highlightPathNodesList = null;
 	    // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
 	    findAndSelectNodeKey( nodeKey);
 	  }
@@ -1826,6 +1848,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
    */
   public List renderEntityPathNodes( final FindEntityPath findEntityPath) {
     List nodeList =  new ArrayList();
+    boolean isFindEntityPath = true;
     try {
       ConstraintNetworkView.this.setVisible( false);
       Iterator vcItr = findEntityPath.getEntityKeyList().iterator();
@@ -1880,7 +1903,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
       setFocusNode( null);
       highlightPathNodesList = nodeList;
     } finally {
-      redraw();
+      redraw( isFindEntityPath);
     }
     return nodeList;
   } // end renderEntityPathNodes

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.13 2004-08-14 01:39:08 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.14 2004-08-25 18:40:57 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -41,10 +41,13 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
    * <code>AddSequenceThread</code> - constructor 
    *
    */
-  public AddSequenceThread() {
+  public AddSequenceThread( ThreadListener threadListener) {
     boolean doProgMonitor = true;
     if (System.getProperty("ant.target.test").equals( "true")) {
       doProgMonitor = false;
+    }
+    if (threadListener != null) {
+      addThreadListener( threadListener);
     }
   }  // end constructor
     
@@ -53,6 +56,7 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
    *
    */
   public void run() {
+    handleEvent( ThreadListener.EVT_THREAD_BEGUN);
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
@@ -61,6 +65,7 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
     PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
     dynamicMenuBar.enableMenu( planSeqMenu);
+    handleEvent( ThreadListener.EVT_THREAD_ENDED);
   } // end run
 
 

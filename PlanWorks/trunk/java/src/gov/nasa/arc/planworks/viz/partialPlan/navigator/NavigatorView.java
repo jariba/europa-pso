@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.36 2004-08-21 00:31:55 taylor Exp $
+// $Id: NavigatorView.java,v 1.37 2004-08-25 18:41:02 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -182,6 +182,7 @@ public class NavigatorView extends PartialPlanView
     //timelineColorMap = createTimelineColorMap();
     highlightPathNodesList = null;
     this.setName( navigatorFrame.getTitle());
+    viewName = ViewConstants.NAVIGATOR_VIEW;
 
     navLinkMap = new HashMap();
     entityNavNodeMap = new HashMap();
@@ -830,6 +831,7 @@ public class NavigatorView extends PartialPlanView
             new AskNodeByKey( "Find by Key", "key (int)", NavigatorView.this);
           Integer nodeKey = nodeByKeyDialog.getNodeKey();
           if (nodeKey != null) {
+            highlightPathNodesList = null;
             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
             Integer entityKey1 = null, entityKey2 = null; List pathClasses = null;
             boolean doPathExists = false;

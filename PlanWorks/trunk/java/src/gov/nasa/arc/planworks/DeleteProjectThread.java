@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteProjectThread.java,v 1.5 2004-04-22 19:26:17 taylor Exp $
+// $Id: DeleteProjectThread.java,v 1.6 2004-08-25 18:40:58 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -30,13 +30,16 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0 
  */
-public class DeleteProjectThread extends Thread {
+public class DeleteProjectThread extends ThreadWithProgressMonitor {
 
   /**
    * <code>DeleteProjectThread</code> - constructor 
    *
    */
-  public DeleteProjectThread() {
+  public DeleteProjectThread( ThreadListener threadListener) {
+    if (threadListener != null) {
+      addThreadListener( threadListener);
+    }
   }  // end constructor
 
   /**
@@ -44,6 +47,7 @@ public class DeleteProjectThread extends Thread {
    *
    */
   public void run() {
+    handleEvent( ThreadListener.EVT_THREAD_BEGUN);
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
@@ -53,6 +57,7 @@ public class DeleteProjectThread extends Thread {
 
     PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
+    handleEvent( ThreadListener.EVT_THREAD_ENDED);
   } //end run
 
 
