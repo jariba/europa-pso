@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.7 2004-01-05 23:34:19 taylor Exp $
+// $Id: VariableNode.java,v 1.8 2004-01-07 23:02:21 miatauro Exp $
 //
 // PlanWorks
 //
@@ -74,6 +74,7 @@ public class VariableNode extends BasicNode {
   private int constraintLinkCount;
   private boolean isDebug;
   private boolean hasBeenVisited;
+  private Color backgroundColor;
 
   /**
    * <code>VariableNode</code> - constructor 
@@ -97,6 +98,7 @@ public class VariableNode extends BasicNode {
     tokenNodeList.add( tokenNode);
     constraintNodeList = new ArrayList();
     variableTokenLinkList = new ArrayList();
+    this.backgroundColor = backgroundColor;
 
     inLayout = false;
     hasZeroConstraints = true;
@@ -133,15 +135,7 @@ public class VariableNode extends BasicNode {
   } // end configure
 
 
-  /**
-   * <code>equals</code>
-   *
-   * @param node - <code>VariableNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean equals( VariableNode node) {
-    return (this.getVariable().getId().equals( node.getVariable().getId()));
-  }
+  public Color getColor(){return backgroundColor;}
 
   /**
    * <code>getVariable</code>
@@ -251,7 +245,7 @@ public class VariableNode extends BasicNode {
    * @param tokenNode - <code>TokenNode</code> - 
    */
   public void addTokenNode( TokenNode tokenNode) {
-    if (tokenNodeList.indexOf( tokenNode) == -1) {
+    if (!tokenNodeList.contains(tokenNode)) {
       tokenNodeList.add( tokenNode);
     }
   }
@@ -271,7 +265,7 @@ public class VariableNode extends BasicNode {
    * @param constraintNode - <code>ConstraintNode</code> - 
    */
   public void addConstraintNode( ConstraintNode constraintNode) {
-    if (constraintNodeList.indexOf( constraintNode) == -1) {
+    if (!constraintNodeList.contains(constraintNode)) {
       constraintNodeList.add( constraintNode);
     }
   }
@@ -291,7 +285,7 @@ public class VariableNode extends BasicNode {
    * @param link - <code>BasicNodeLink</code> - 
    */
   public void addLink( BasicNodeLink link) {
-    if (variableTokenLinkList.indexOf( link) == -1) {
+    if (!variableTokenLinkList.contains(link)) {
       variableTokenLinkList.add( link);
     }
   }
@@ -517,6 +511,8 @@ public class VariableNode extends BasicNode {
   } // end removeVariableNodeTokensAndConstraints
 
 
-
+  public boolean equals(VariableNode v) {
+    return variable.getId().equals(v.getVariable().getId());
+  }
 
 } // end class VariableNode
