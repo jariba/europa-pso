@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.18 2004-09-14 22:59:40 taylor Exp $
+// $Id: ResourceProfile.java,v 1.19 2004-09-15 22:26:49 taylor Exp $
 //
 // PlanWorks
 //
@@ -323,7 +323,8 @@ public class ResourceProfile extends BasicNode {
   } // end renderLevelScaleLinesAndTicks
 
   private void renderLimits() {
-    JGoStroke levelLimitMaxLine = new ProfileLine( levelLimitMax);
+    boolean isLimit = true;
+    JGoStroke levelLimitMaxLine = new ProfileLine( levelLimitMax, "max", isLimit);
     levelLimitMaxLine.addPoint( resourceProfileView.getJGoRulerView().
                                 scaleTimeNoZoom( earliestStartTime),
                                 scaleResourceLevel( levelLimitMax));
@@ -336,7 +337,7 @@ public class ResourceProfile extends BasicNode {
     levelLimitMaxLine.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "red")));
     resourceProfileView.getJGoExtentDocument().addObjectAtTail( levelLimitMaxLine);
 
-    JGoStroke levelLimitMinLine = new ProfileLine( levelLimitMin);
+    JGoStroke levelLimitMinLine = new ProfileLine( levelLimitMin, "min", isLimit);
     levelLimitMinLine.addPoint( resourceProfileView.getJGoRulerView().
                                 scaleTimeNoZoom( earliestStartTime),
                                 scaleResourceLevel( levelLimitMin));
@@ -395,8 +396,9 @@ public class ResourceProfile extends BasicNode {
   private void addLineSegment( int xLeft, int yLeft, int xRight, int yRight,
                                double level, String type) {
     JGoStroke lineSegment = null;
+    boolean isLimit = false;
     if (yLeft == yRight) { // horizontal segment
-      lineSegment = new ProfileLine( level, type);
+      lineSegment = new ProfileLine( level, type, isLimit);
       lineSegment.addPoint( xLeft, yLeft);
       lineSegment.addPoint( xRight, yRight);
     } else { // vertical segment
@@ -441,20 +443,20 @@ public class ResourceProfile extends BasicNode {
 
     private double quantity;
     private String type;
+    private boolean isLimit;
 
-    public ProfileLine(final double quantity) {
-      super();
-      this.quantity = quantity;
-      this.type = null;
-    }
     /**
      * <code>ProfileLine</code> - constructor 
      *
+     * @param quantity - <code>double</code> - 
+     * @param type - <code>String</code> - 
+     * @param isLimit - <code>boolean</code> - 
      */
-    public ProfileLine( final double quantity, final String type) {
+    public ProfileLine(final double quantity, final String type, final boolean isLimit) {
       super();
       this.quantity = quantity;
       this.type = type;
+      this.isLimit = isLimit;
     }
 
     /**
@@ -463,11 +465,13 @@ public class ResourceProfile extends BasicNode {
      * @return - <code>String</code> - 
      */
     public final String getToolTipText() {
-      String retval = "";
-      if(type != null) {
-        retval += type + " ";
+      String retval = type + " ";
+      if (isLimit) {
+        retval += "limit = ";
+      } else {
+        retval += "quantity = ";
       }
-      retval += "quantity = " + Double.toString(quantity);
+      retval += Double.toString( quantity);
       return retval;
     } // end getToolTipText
 

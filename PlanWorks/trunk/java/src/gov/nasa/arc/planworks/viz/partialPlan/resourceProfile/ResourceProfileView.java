@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.28 2004-09-14 22:59:41 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.29 2004-09-15 22:26:49 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -613,7 +613,7 @@ public class ResourceProfileView extends ResourceView  {
 //                               initialTimeScaleEnd);
           RescaleProfileDialog rescaleDialog =
             new RescaleProfileDialog( PlanWorks.getPlanWorks(), resource, resourceProfileView,
-                                      initialTimeScaleEnd, unaryResource);
+                                      initialTimeScaleEnd, unaryResource, profileScalingList);
           if (rescaleDialog.getMaxY().doubleValue() == -1.0d) {
             // user chose cancel
             return;
