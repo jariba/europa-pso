@@ -1,0 +1,75 @@
+# 
+# * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+# * information on usage and redistribution of this file, 
+# * and for a DISCLAIMER OF ALL WARRANTIES. 
+# 
+
+# $Id: GETTING_STARTED,v 1.1 2003-09-10 01:06:58 taylor Exp $
+#
+
+Projects and Plan Sequences
+===========================
+
+"Project->Create ..." brings up the "Create Project" dialog requesting
+a project name.  The default is "monkey", which is an embedded test plan.
+
+Clicking "OK" on the "Create Project" dialog brings up the "Select Sequence 
+Directory of Partial Plan Directory(ies)" chooser.  The sequence directory 
+chooser (also invoked by "Project->Add Sequence") supports multiple 
+selection of sequence directories, by using Ctrl-Mouse-Left for the second 
+and subsequent selections.  Mouse-left is used for the first selection and 
+Mouse-Left-Double is used to open directories.  When selection is complete,
+click on "OK".  The selected sequence(s) are then loaded into the MySQL
+data base.  Pull-down menu "Planning Sequence" will be created, which is a 
+cascading menu of "sequence names", then "partial plan names", and then 
+"partial plan views".
+
+"Project->Open ..." will bring up pre-loaded plan sequences for a pre-
+defined project, and allow them the be viewed using the "Planning
+Sequence" cascading menu.
+
+"Project-Delete ..." will remove a pre-loaded project and its sequences
+from view (if being currently displayed), and from the MySQL data base.
+
+"Project->Add Sequence" prompts the user, via the sequence chooser dialog,
+to add one or more sequences to the current project, and the MySQL data
+base.
+
+"Project->Delete Sequence" prompts the user, via a list dialog, to remove
+the selected sequence from the current project, and the MySQL data base.
+
+Plan Sequence Views
+===================
+
+This cascading menu allows the user to select the sequence, the partial
+plan, and the plan view to be displayed.  There are four active views:
+
+Constraint Network
+------------------
+An incrementally built directed graph of tokens, variables, and constraints.
+Because of its complexity, initially only the token nodes are displayed.  
+They are "opened" by mouse clicks which lay out the token's variable nodes. 
+Clicking on variable nodes "opens" them to show or link to their nearest 
+neighbors (constraints or tokens).  Similarly, clicking on constraint nodes 
+"opens" their nearest neighbors.  Clicking on an "open" node (bold border), 
+"closes" that nodes nearest neighbor nodes/links, provided the link counts
+are 1.  Then the node becomes "closed" and has an unbold border.
+
+Temporal Extent
+---------------
+Lays out all predicates on a time scale, with triangles denoting the start 
+and end variable values.  The range of extent is shown by a horizontal line.
+The extent line and associated triangles are displayed immediately below 
+each predicate node.  Downward triangles are start times, upward triangles 
+are end times, leftward triangles are -Infinity, and rightward triangles are 
++Infinity.
+
+Timeline
+--------
+Lays out the plan's objects, timelines, and slots.  Start/end time intervals
+are displayed at slot boundaries.
+
+Token Network
+-------------
+Lays out the plan's token relations in directed graphs whose root nodes
+are the "supreme" master tokens.
