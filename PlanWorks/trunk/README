@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.18 2003-09-02 21:50:50 miatauro Exp $
+# $Id: README,v 1.19 2003-09-04 00:27:36 taylor Exp $
 #
 
 SUMMARY
@@ -85,12 +85,14 @@ the database.
 
 > ant -projecthelp # lists available targets
 
- cleanCls          -- delete the 'java/classes' directory tree
- cleanDb           -- delete loaded projects from data base, unless -Dno.clean.db=yes
- compile           -- compile 'java/src' tree into 'java/classes' tree
- planWorks         -- run PlanWorks application (compile dependency)
- planWorksProf     -- run PlanWorks with profiling info
- planWorksTest     -- JFCunit test (compile, cleanDb dependencies)
+ cleanCls           -- delete the 'java/classes' directory tree
+ cleanDb            -- delete loaded projects from data base, unless -Dno.clean.db=yes
+ compile            -- compile 'java/src' tree into 'java/classes' tree
+ hurtPlanWorks      -- Big JFCUnit test (compile, cleandb dependencies)
+ planWorks          -- run PlanWorks application (compile dependency)
+ planWorksDbInstall -- create all necessary databases and tables
+ planWorksProf      -- run PlanWorks with profiling info
+ planWorksTest      -- JFCunit test (compile, cleanDb dependencies)
 
 Default target: planWorks
 

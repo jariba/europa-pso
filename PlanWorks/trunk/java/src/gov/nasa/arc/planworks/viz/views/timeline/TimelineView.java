@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.34 2003-09-02 21:49:17 taylor Exp $
+// $Id: TimelineView.java,v 1.35 2003-09-04 00:27:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -95,7 +95,7 @@ public class TimelineView extends VizView {
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
     viewName = "timelineView";
-    this.timelineNodeList = new ArrayList();
+    this.timelineNodeList = null;
     this.freeTokenNodeList = new ArrayList();
     this.tmpTimelineNodeList = new ArrayList();
     maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
@@ -195,7 +195,7 @@ public class TimelineView extends VizView {
     // setVisible(true | false) depending on ids
     setNodesVisible();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
-  } // end redrawView
+ } // end redrawView
 
   /**
    * <code>getJGoDocument</code>
