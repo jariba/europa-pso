@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!-- $Id: project-test.xml,v 1.3 2003-05-23 22:20:21 taylor Exp $ -->
+<project name="project-test" default="test" basedir=".">
+<target name="test" depends="totalbuild">
+        <!-- planworks.root is an inherited property from PlanWorks/build.xml -->
+	<property name="arg_gcInit" value="192"/>
+	<property name="arg_gcMax" value="975"/>
+	<property name="eXist_conf_file" value="conf-nolog.xml"/>
+        <!-- MacOS still has JDK 1.3 -->
+        <property name="jdk_gt_eq_1_4" value="true"/>
+	<property name="xml_files_dir" value="xml/test/monkey"/>
+	<property environment="env"/>
+	<property name="exist.home" location="${planworks.root}/java/lib/eXist"/>
+	<property environment="env"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/JGo.jar"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/JGoLayout.jar"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/Classier.jar"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+                <pathelement location="${exist.home}/exist.jar"/>
+                <fileset dir="${exist.home}/lib/core" includes="*.jar"/>
+	</path>
+	<delete>
+		<fileset dir="${planworks.root}/xml/db/data" includes="*.dbx"/>
+		<fileset dir="${planworks.root}/xml/db/logs" includes="*.log"/>
+		<fileset dir="${planworks.root}/xml/db/logs" includes="*.log*"/>
+	</delete>
+
+	<java dir="${planworks.root}/java/src" 
+                classname="gov.nasa.arc.planworks.proj.test.PwProjectTest" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dexist.initdb=true"/>
+            <jvmarg value="-Dexist.home=${exist.home}"/>
+            <jvmarg value="-Dexist.conf.xml=${eXist_conf_file}"/>
+            <arg value="${env.OSTYPE}"/>
+            <arg value="${jdk_gt_eq_1_4}"/>
+            <arg value="${planworks.root}/${xml_files_dir}"/>
+	</java>
+
+</target>
+
+<target name="totalbuild" description="conditionally build class files">
+	<ant dir="../java"/>
+</target>
+</project>
