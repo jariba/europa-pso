@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.16 2004-01-09 20:41:46 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.17 2004-01-09 23:09:37 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -109,7 +109,6 @@ public class PartialPlanView extends VizView {
         ContentSpecWindow csw = (ContentSpecWindow) contentPane.getComponent(i);
         csw.getSpec().resetSpecFromPlan();
         csw.buildFromSpec();
-        csw.applySpec();
       }
     }
   }

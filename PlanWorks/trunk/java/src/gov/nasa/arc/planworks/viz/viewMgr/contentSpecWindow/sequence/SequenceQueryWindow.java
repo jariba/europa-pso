@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.16 2003-12-30 00:40:05 miatauro Exp $
+// $Id: SequenceQueryWindow.java,v 1.17 2004-01-09 23:11:59 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -47,6 +47,7 @@ import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
+//import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DecisionQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TokenQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
@@ -65,6 +66,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   private static final String QUERY_FOR_TRANSACTIONS = "Transactions ...";
   private static final String QUERY_FOR_FREE_TOKENS = "Free Tokens ...";
   private static final String QUERY_FOR_UNBOUND_VARIABLES = "Unbound Variables ...";
+  private static final String QUERY_FOR_ALL_DECISIONS = "All decisions ...";
 
   private static final String STEPS_WHERE_CONSTRAINT_TRANSACTED =
     "Where Constraint Transacted ...";
@@ -95,6 +97,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   private static final String UNBOUND_VARIABLES_AT_STEP = "At ...";
   private static final List UNBOUND_VARIABLE_QUERIES;
 
+  private static final String ALL_DECISIONS_AT_STEP = "At ...";
+  private static final List ALL_DECISIONS_QUERIES;
 
   static {
     STEP_QUERIES = new ArrayList();
@@ -130,6 +134,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     FREE_TOKEN_QUERIES.add( FREE_TOKENS_AT_STEP);
     UNBOUND_VARIABLE_QUERIES = new ArrayList();
     UNBOUND_VARIABLE_QUERIES.add( UNBOUND_VARIABLES_AT_STEP);
+    ALL_DECISIONS_QUERIES = new ArrayList();
+    ALL_DECISIONS_QUERIES.add(ALL_DECISIONS_AT_STEP);
   }
 
   protected MDIInternalFrame sequenceQueryFrame;
@@ -376,6 +382,17 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
             renderUnboundVariableQueryFrame( variableQuery, variableList, startTimeMSecs);
           }
         }
+        else if(((String) queryWindow.majorTypeBox.getSelectedItem()).
+                equals(QUERY_FOR_ALL_DECISIONS)) {
+          String decisionQuery = (String) queryWindow.minorTypeBox.getSelectedItem();
+          List decisionList = getDecisionsAtStep();
+          if(decisionList != null) {
+            System.err.println("   Query elapsed time: " +
+                               (System.currentTimeMillis() - startTimeMSecs) + " msecs.");
+            ensureSequenceStepsViewExists();
+            renderDecisionQueryFrame(decisionQuery, decisionList, startTimeMSecs);
+          }
+        }
       } else if (ae.getActionCommand().equals("Reset Query")) {
         if (majorTypeBox != null) {
           majorTypeBox.setSelectedItem( QUERY_FOR_STEPS);
@@ -508,6 +525,22 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
                          startTimeMSecs));
       queryResultFrameCnt++;
     } // end renderVariableQueryFrame
+
+    private void renderDecisionQueryFrame(String decisionQuery, List decisionList, 
+                                          long startTimeMSecs) {
+      MDIInternalFrame decisionsQueryFrame = 
+        desktopFrame.createFrame(ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE + " for " + 
+                                 viewable.getName(), viewSet, true, true, true, true);
+      viewSet.getViews().put(new String(QUERY_RESULT_FRAME + queryResultFrameCnt), 
+                             decisionsQueryFrame);
+      Container contentPane = decisionsQueryFrame.getContentPane();
+      StringBuffer queryStringBuf = getQueryStringBuf(QUERY_FOR_ALL_DECISIONS, decisionQuery);
+      queryStringBuf.append(" Step ").append(stepString);
+      // contentPane.add(new DecisionQueryView(decisionList, queryStringBuf.toString(), viewable,
+//                                             viewSet, SequenceQueryWindow.this, 
+//                                             decisionsQueryFrame, startTimeMSecs));
+      queryResultFrameCnt++;
+    }
 
     private StringBuffer getQueryStringBuf( String majorQuery, String minorQuery) {
       String majorQueryShort = majorQuery;
@@ -748,6 +781,31 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       return unboundVariableList;
     } // end getUnboundVariablesAtStep
 
+    private List getDecisionsAtStep() {
+      List retval = new ArrayList(2);
+      try {
+        String stepString = getStepString();
+        if(stepString.equals("")) {
+          return null;
+        }
+        int step = Integer.parseInt(stepString);
+        if(!isStepNumberValid(step)) {
+          return null;
+        }
+        retval.add(((PwPlanningSequence)queryWindow.viewable).getFreeTokensAtStep(step));
+        retval.add(((PwPlanningSequence)queryWindow.viewable).getUnboundVariablesAtStep(step));
+      }
+      catch(IllegalArgumentException e) {
+        return null;
+      }
+      catch(ResourceNotFoundException rnfe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, rnfe.getMessage(), "ResourceNotFound",
+                                      JOptionPane.ERROR_MESSAGE);
+        return null;
+      }
+      return retval;
+    }
+
   } // end class QueryListener
 
 
@@ -758,6 +816,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       addItem( QUERY_FOR_TRANSACTIONS);
       addItem( QUERY_FOR_FREE_TOKENS);
       addItem( QUERY_FOR_UNBOUND_VARIABLES);
+      //addItem(QUERY_FOR_ALL_DECISIONS);
       setSize(58, 44);
     }
   }
@@ -853,6 +912,13 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
           Iterator unboundVariablesItr = UNBOUND_VARIABLE_QUERIES.iterator();
           while (unboundVariablesItr.hasNext()) {
             minorTypeBox.addItem( (String) unboundVariablesItr.next());
+          }
+          addStepField();
+        }
+        else if(((String)ie.getItem()).equals(QUERY_FOR_ALL_DECISIONS)) {
+          Iterator allDecisionsIterator = ALL_DECISIONS_QUERIES.iterator();
+          while(allDecisionsIterator.hasNext()) {
+            minorTypeBox.addItem((String)allDecisionsIterator.next());
           }
           addStepField();
         }

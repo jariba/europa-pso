@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.24 2004-01-09 20:43:05 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.25 2004-01-09 23:10:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -282,7 +282,6 @@ public class TemporalExtentView extends PartialPlanView  {
     tmpTemporalNodeList = new UniqueSet();
 
     createTemporalNodes();
-    System.err.println(tmpTemporalNodeList);
     boolean showDialog = true;
     isContentSpecRendered( PlanWorks.TEMPORAL_EXTENT_VIEW, showDialog);
 

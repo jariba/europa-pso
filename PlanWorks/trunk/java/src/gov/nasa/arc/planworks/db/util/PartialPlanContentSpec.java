@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.11 2004-01-09 20:41:15 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.12 2004-01-09 23:09:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -90,11 +90,6 @@ public class PartialPlanContentSpec implements ContentSpec {
     currentSpec.add( new Integer( ALL)); // tokenTypes
     currentSpec.add(null);
 
-//     if (currentSpec.size() != 0) {
-//       applySpec((List)currentSpec.get(0), (List)currentSpec.get(1), (List)currentSpec.get(2),
-//                 ((Boolean)currentSpec.get(3)).booleanValue(),
-//                 ((Integer)currentSpec.get(4)).intValue());
-//     }
     applySpec(currentSpec);
   }
 
@@ -109,17 +104,7 @@ public class PartialPlanContentSpec implements ContentSpec {
   }
  
   public void resetSpecFromPlan() {
-    validTokenIds.clear();
-    currentSpec.clear();
-    currentSpec = partialPlan.getContentSpec();
-    currentSpec.add( null); // timeline
-    currentSpec.add( null); // predicate
-    currentSpec.add( null); // time interval
-    currentSpec.add( new Boolean( false)); // merge
-    currentSpec.add( new Integer( ALL)); // tokenTypes
-    currentSpec.add(null);
-    queryValidTokens();
-    redrawNotifier.notifyRedraw();
+    applySpec(partialPlan.getContentSpec());
   }
  
   /**
@@ -141,7 +126,9 @@ public class PartialPlanContentSpec implements ContentSpec {
    *
    * @return List - valid token ids
    */
-  public List getValidIds(){return validTokenIds;}
+  public List getValidIds() {
+    return validTokenIds;
+  }
 
   /**
    * <code>getPartialPlan</code>
