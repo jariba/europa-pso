@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.19 2004-02-27 18:04:15 miatauro Exp $
+// $Id: PwToken.java,v 1.20 2004-03-02 02:34:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -115,12 +115,25 @@ public interface PwToken extends PwVariableContainer {
   public abstract Integer getSlotId();
 
   /**
-   * <code>isFreeToken</code>
+   * <code>isFree</code> - not attached to an object
    *
-   * @return - <code>boolean</code> -
+   * @return - <code>boolean</code> - 
    */
+  public abstract boolean isFree();
 
-  public abstract boolean isFreeToken();
+  /**
+   * <code>isSlotted</code> - in a slot in a timeline
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public abstract boolean isSlotted();
+
+  /**
+   * <code>isBaseToken</code> - is slotted and the base token
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public abstract boolean isBaseToken();
 
   /**
    * <code>getTimelineId</code>

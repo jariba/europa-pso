@@ -3,11 +3,10 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNode.java,v 1.16 2004-03-02 02:34:13 taylor Exp $
+// $Id: ResourceNode.java,v 1.1 2004-03-02 02:34:13 taylor Exp $
 //
 // PlanWorks
 //
-
 package gov.nasa.arc.planworks.viz.nodes;
 
 import java.awt.Color;
@@ -23,7 +22,7 @@ import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.PwTimeline;
+import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -32,33 +31,34 @@ import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
-public class TimelineNode extends ExtendedBasicNode {
+public class ResourceNode extends ExtendedBasicNode {
   
-  protected PwTimeline timeline;
+  protected PwResource resource;
   protected PartialPlanView partialPlanView;
   protected String nodeLabel;
   protected boolean isDebug;
   protected Color backgroundColor;
-    public TimelineNode( PwTimeline timeline, Point timelineLocation, Color backgroundColor,
-                            boolean isDraggable, PartialPlanView partialPlanView) { 
-    super( ViewConstants.RIGHT_TRAPEZOID);
-    this.timeline = timeline;
+
+  public ResourceNode( PwResource resource, Point resourceLocation, Color backgroundColor,
+                       boolean isDraggable, PartialPlanView partialPlanView) { 
+    super( ViewConstants.PINCHED_HEXAGON);
+    this.resource = resource;
     this.partialPlanView = partialPlanView;
     this.backgroundColor = backgroundColor;
     isDebug = false;
     // isDebug = true;
-    StringBuffer labelBuf = new StringBuffer( timeline.getName());
-    labelBuf.append( "\nkey=").append( timeline.getId().toString());
+    StringBuffer labelBuf = new StringBuffer( resource.getName());
+    labelBuf.append( "\nkey=").append( resource.getId().toString());
     nodeLabel = labelBuf.toString();
-    // System.err.println( "TimelineNavNode: " + nodeLabel);
+    // System.err.println( "ResourceNavNode: " + nodeLabel);
 
-    configure( timelineLocation, backgroundColor, isDraggable);
+    configure( resourceLocation, backgroundColor, isDraggable);
   } // end constructor
 
-  private final void configure( final Point timelineLocation, final Color backgroundColor,
+  private final void configure( final Point resourceLocation, final Color backgroundColor,
                                 final boolean isDraggable) {
     setLabelSpot( JGoObject.Center);
-    initialize( timelineLocation, nodeLabel);
+    initialize( resourceLocation, nodeLabel);
     setBrush( JGoBrush.makeStockBrush( backgroundColor));  
     getLabel().setEditable( false);
     setDraggable( isDraggable);
@@ -67,12 +67,12 @@ public class TimelineNode extends ExtendedBasicNode {
     getLabel().setMultiline( true);
   } // end configure
 
-  public boolean equals( TimelineNode node) {
-    return (this.getTimeline().getId().equals( node.getTimeline().getId()));
+  public boolean equals( ResourceNode node) {
+    return (this.getResource().getId().equals( node.getResource().getId()));
   }
   
-  public PwTimeline getTimeline() {
-    return timeline;
+  public PwResource getResource() {
+    return resource;
   }
   
   public PartialPlanView getPartialPlanView() {
@@ -80,7 +80,7 @@ public class TimelineNode extends ExtendedBasicNode {
   }
 
   public String toString() {
-    return timeline.getId().toString();
+    return resource.getId().toString();
   }
 
   public Color getColor(){return backgroundColor;}

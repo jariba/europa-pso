@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.75 2004-02-27 18:04:37 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.76 2004-03-02 02:34:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -142,7 +142,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     cleanConstraints();
     //cleanTransactions();
-    checkPlan();
+    // checkPlan();
   } // end createPartialPlan
 
   //  private void loadFiles(File planDir) throws ResourceNotFoundException {
@@ -276,7 +276,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     Iterator tokenIterator = tokenMap.values().iterator();
     while(tokenIterator.hasNext()) {
       PwToken token = (PwToken) tokenIterator.next();
-      if(token.isFreeToken()) {
+      if(token.isFree()) {
         retval.add(token);
       }
     }
@@ -288,7 +288,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     Iterator tokenIterator = tokenMap.values().iterator();
     while(tokenIterator.hasNext()) {
       PwToken token = (PwToken) tokenIterator.next();
-      if(!token.isFreeToken()) {
+      if(token.isSlotted()) {
         retval.add(token);
       }
     }
@@ -663,7 +663,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         System.err.println("Token " + token.getId() + " has null predicate name.");
         retval = false;
       }
-      if(!token.isFreeToken()) {
+      if(token.isSlotted()) {
         //if(token.getObjectId() == null) {
         //  System.err.println("Slotted token " + token.getId() + " has null objectId.");
         //  retval = false;
@@ -759,7 +759,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         retval = false;
       }
       else {
-        retval = retval && checkObjectVariable(objectVar, token.isFreeToken());
+        retval = retval && checkObjectVariable(objectVar, token.isFree());
       }
     }
     if(stateVar == null) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResource.java,v 1.3 2004-02-27 18:04:14 miatauro Exp $
+// $Id: PwResource.java,v 1.4 2004-03-02 02:34:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -24,22 +24,8 @@ import gov.nasa.arc.planworks.util.UniqueSet;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwResource extends PwEntity {
+public interface PwResource extends PwObject {
 
-
-  /**
-   * <code>getId</code>
-   *
-   * @return id - <code>Integer</code> -
-   */
-  public abstract Integer getId();
-
-  /**
-   * <code>getName</code>
-   *
-   * @return name - <code>String</code> -
-   */
-  public abstract String getName();
 
   /**
    * <code>getInitialCapacity</code>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.18 2004-02-13 02:37:07 taylor Exp $
+// $Id: NodeGenerics.java,v 1.19 2004-03-02 02:34:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -183,6 +183,49 @@ public class NodeGenerics {
   } // end getShortestDuration
 
   /**
+   * <code>getShortestDuration</code>
+   *
+   * @param isFreeToken - <code>boolean</code> - 
+   * @param baseToken - <code>PwToken</code> - 
+   * @param endTimeIntervalDomain - <code>PwDomain</code> - 
+   * @return - <code>String</code> - 
+   */
+  public static String getShortestDuration( boolean isFreeToken, PwToken baseToken,
+                                            PwDomain startTimeIntervalDomain,
+                                            PwDomain endTimeIntervalDomain) {
+    PwVariable durationVariable = null;
+    if (isFreeToken ||
+        (baseToken == null)) { // empty slot
+      int startUpper = startTimeIntervalDomain.getUpperBoundInt();
+      int endUpper = endTimeIntervalDomain.getUpperBoundInt();
+      int startLower = startTimeIntervalDomain.getLowerBoundInt();
+      int endLower = endTimeIntervalDomain.getLowerBoundInt();
+      int valueStart = Math.max( startLower, startUpper);
+      if (valueStart == DbConstants.PLUS_INFINITY_INT) {
+        valueStart = Math.min( startLower, startUpper);
+      }
+      if (valueStart == DbConstants.MINUS_INFINITY_INT) {
+        valueStart = 0;
+      }
+      int valueEnd = Math.min( endLower, endUpper);
+      if (valueEnd == DbConstants.MINUS_INFINITY_INT) {
+        valueEnd = Math.max( endLower, endUpper);
+      }
+      if (valueEnd == DbConstants.PLUS_INFINITY_INT) {
+        valueEnd = valueStart;
+      }
+      return String.valueOf( Math.abs( valueEnd - valueStart));
+    } else {
+      durationVariable = baseToken.getDurationVariable();
+      if (durationVariable != null) {
+        return durationVariable.getDomain().getLowerBound();
+      } else {
+        return "0";
+      }
+    }
+  } // end getShortestDuration
+
+  /**
    * <code>getLongestDuration</code>
    *
    * @param slot - <code>PwSlot</code> - 
@@ -208,6 +251,42 @@ public class NodeGenerics {
       }
     } else {
       durationVariable = slot.getBaseToken().getDurationVariable();
+      if (durationVariable != null) {
+        return durationVariable.getDomain().getUpperBound();
+      } else {
+        return "0";
+      }
+    }
+  } // end getLongestDuration
+
+
+  /**
+   * <code>getLongestDuration</code>
+   *
+   * @param isFreeToken - <code>boolean</code> - 
+   * @param baseToken - <code>PwToken</code> - 
+   * @param startTimeIntervalDomain - <code>PwDomain</code> - 
+   * @param endTimeIntervalDomain - <code>PwDomain</code> - 
+   * @return - <code>String</code> - 
+   */
+  public static String getLongestDuration( boolean isFreeToken, PwToken baseToken,
+                                           PwDomain startTimeIntervalDomain,
+                                           PwDomain endTimeIntervalDomain) {
+    PwVariable durationVariable = null;
+    if (isFreeToken ||  
+        (baseToken == null)) { // empty slot
+      String upperBound = endTimeIntervalDomain.getUpperBound();
+      String lowerBound = startTimeIntervalDomain.getLowerBound();
+      if (upperBound.equals( DbConstants.PLUS_INFINITY)) {
+        return DbConstants.PLUS_INFINITY;
+      } else if (lowerBound.equals( DbConstants.MINUS_INFINITY)) {
+        return DbConstants.PLUS_INFINITY;
+      } else {
+        return String.valueOf( endTimeIntervalDomain.getUpperBoundInt() -
+                               startTimeIntervalDomain.getLowerBoundInt());      
+      }
+    } else {
+      durationVariable = baseToken.getDurationVariable();
       if (durationVariable != null) {
         return durationVariable.getDomain().getUpperBound();
       } else {

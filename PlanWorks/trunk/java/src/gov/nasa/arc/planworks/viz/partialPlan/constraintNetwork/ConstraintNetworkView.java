@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.45 2004-02-27 18:05:21 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.46 2004-03-02 02:34:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -486,7 +486,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     while(tokenIterator.hasNext()) {
       PwToken token = (PwToken) tokenIterator.next();
       Color backgroundColor = null;
-      if(token.isFreeToken()) {
+      if(token.isFree()) {
         backgroundColor = ColorMap.getColor(ViewConstants.FREE_TOKEN_BG_COLOR);
       }
       else {
@@ -498,7 +498,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       long t1 = System.currentTimeMillis();
       ConstraintNetworkTokenNode tokenNode =
         new ConstraintNetworkTokenNode( token, partialPlan.getSlot(token.getSlotId()), 
-                                        new Point( x, y), backgroundColor, token.isFreeToken(), 
+                                        new Point( x, y), backgroundColor, token.isFree(), 
                                         isDraggable, this);
       tokenTime += System.currentTimeMillis() - t1;
       containerNodeMap.put(token.getId(), tokenNode);
@@ -518,6 +518,12 @@ public class ConstraintNetworkView extends PartialPlanView {
           document.addObjectAtTail(timelineNode);
         }
         else if(obj instanceof PwResource) {
+          backgroundColor = getTimelineColor(obj.getId());
+          ConstraintNetworkResourceNode resourceNode =
+            new ConstraintNetworkResourceNode((PwResource) obj, new Point(x, y), backgroundColor,
+                                              isDraggable, this);
+          containerNodeMap.put(obj.getId(), resourceNode);
+          document.addObjectAtTail(resourceNode);
         }
         else {
           ConstraintNetworkObjectNode objNode =

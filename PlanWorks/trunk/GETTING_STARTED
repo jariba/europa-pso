@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.28 2004-02-12 01:26:49 taylor Exp $
+# $Id: GETTING_STARTED,v 1.29 2004-03-02 02:34:08 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -202,7 +202,7 @@ Network view, entered keys will find find token, variable, and constraint
 nodes -- opening appropriate connecting nodes, if needed.
 
 
-Token/Variable/Constraint/Slot/Timeline/ModelClass Relationships
+Token/Variable/Constraint/Slot/Object/Timeline/Resource Relationships
 ================================================================
 For all nodes, except empty slots, in the Constraint Network, the Temporal
 Extent, the Timeline, and the Token Network views, there is a 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.2 2004-02-27 18:06:23 miatauro Exp $
+// $Id: ResourceTransactionSet.java,v 1.3 2004-03-02 02:34:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -198,6 +198,7 @@ public class ResourceTransactionSet extends BasicNode {
     divider.addPoint( xLeft, yLoc);
     divider.addPoint( xRight, yLoc);
     divider.setDraggable( false); divider.setResizable( false);
+    divider.setSelectable( false);
     divider.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "black")));
     jGoDocument.addObjectAtTail( divider);
 
@@ -206,6 +207,7 @@ public class ResourceTransactionSet extends BasicNode {
     extentTop.addPoint( xLeft, extentYTop);
     extentTop.addPoint( xRight, extentYTop);
     extentTop.setDraggable( false); extentTop.setResizable( false);
+    extentTop.setSelectable( false);
     extentTop.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "green3")));
     jGoDocument.addObjectAtTail( extentTop);
   } // end renderBordersUpper
@@ -217,6 +219,7 @@ public class ResourceTransactionSet extends BasicNode {
     extentBottom.addPoint( xLeft, extentYBottom);
     extentBottom.addPoint( xRight, extentYBottom);
     extentBottom.setDraggable( false); extentBottom.setResizable( false);
+    extentBottom.setSelectable( false);
     extentBottom.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "green3")));
     jGoDocument.addObjectAtTail( extentBottom);
   } // end renderBordersLower
@@ -226,9 +229,8 @@ public class ResourceTransactionSet extends BasicNode {
       (int) (ViewConstants.TIMELINE_VIEW_INSET_SIZE * ONE_HALF_MULTIPLIER);
     Point nameLoc = new Point( xTop, yLoc + RESOURCE_NAME_Y_OFFSET);
     ResourceNameNode nameNode = new ResourceNameNode( nameLoc, resource);
-    nameNode.setResizable( false);
-    nameNode.setEditable( false);
-    nameNode.setDraggable( false);
+    nameNode.setResizable( false); nameNode.setEditable( false);
+    nameNode.setDraggable( false); nameNode.setSelectable( false);
     nameNode.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
     resourceTransactionView.getJGoLevelScaleDocument().addObjectAtTail( nameNode);
   } // end renderResourceName
@@ -256,6 +258,8 @@ public class ResourceTransactionSet extends BasicNode {
         new TransactionObject( transaction,
                                new Point( transStartX, resourceTransactionView.currentYLoc),
                                new Dimension( transEndX - transStartX, yDelta));
+      transactionObject.setResizable( false); transactionObject.setDraggable( false);
+      transactionObject.setSelectable( false);
       resourceTransactionView.getJGoExtentDocument().addObjectAtTail( transactionObject);
       resourceTransactionView.currentYLoc += yDelta;
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.28 2004-02-26 19:01:59 taylor Exp $
+// $Id: PartialPlanView.java,v 1.29 2004-03-02 02:34:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -637,7 +637,7 @@ public class PartialPlanView extends VizView {
       navigatorViewName =
         navigatorViewName.concat(" (").concat( viewNameCnt.toString()).concat(")");
     }
-    System.err.println( "navigatorViewName " + navigatorViewName);
+    // System.err.println( "navigatorViewName " + navigatorViewName);
     return navigatorViewName;
   } // end getNavigatorViewName
 

@@ -3,11 +3,11 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.8 2004-03-02 02:34:17 taylor Exp $
+// $Id: ResourceNavNode.java,v 1.1 2004-03-02 02:34:16 taylor Exp $
 //
 // PlanWorks
 //
-// Will Taylor -- started 12jan04
+// Will Taylor -- started 26feb04
 //
 
 package gov.nasa.arc.planworks.viz.partialPlan.navigator;
@@ -19,103 +19,60 @@ import java.util.Iterator;
 import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.DbConstants;
-import gov.nasa.arc.planworks.db.PwObject;
-import gov.nasa.arc.planworks.db.PwPartialPlan;
-import gov.nasa.arc.planworks.db.PwResourceTransaction;
-import gov.nasa.arc.planworks.db.PwSlot;
-import gov.nasa.arc.planworks.db.PwTimeline;
-import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
-import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.ResourceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
 /**
- * <code>TokenNavNode</code> - JGo widget to render a plan token and its neighbors
+ * <code>ResourceNavNode</code> - JGo widget to render a plan resource and its neighbors
  *                                   for the navigator view
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TokenNavNode extends ExtendedBasicNode implements NavNode {
+public class ResourceNavNode extends ResourceNode implements NavNode {
 
-  private PwToken token;
-  private PwSlot slot;
-  private PwObject object;
-  private PwPartialPlan partialPlan;
+  private PwResource resource;
   private NavigatorView navigatorView;
-  private String nodeLabel;
-  private boolean isDebug;
+
   private boolean areNeighborsShown;
   private int linkCount;
   private boolean inLayout;
+  private boolean isDebugPrint;
 
   /**
-   * <code>TokenNavNode</code> - constructor 
+   * <code>ResourceNavNode</code> - constructor 
    *
-   * @param token - <code>PwToken</code> - 
-   * @param tokenLocation - <code>Point</code> - 
+   * @param resource - <code>PwResource</code> - 
+   * @param resourceLocation - <code>Point</code> - 
    * @param backgroundColor - <code>Color</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public TokenNavNode( final PwToken token, final Point tokenLocation,
-                       final Color backgroundColor, final boolean isDraggable,
-                       final PartialPlanView partialPlanView) { 
-    super( ViewConstants.RECTANGLE);
-    this.token = token;
-    partialPlan = partialPlanView.getPartialPlan();
-    slot = null; object = null;
-    if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.noId)) {
-      slot = (PwSlot) partialPlan.getSlot( token.getSlotId());
-    }
-    if (token.getParentId() != null && !token.getParentId().equals(DbConstants.noId)) {
-      object = partialPlan.getObject( token.getParentId());
-    }
-//     if ((token.getSlotId() == null) &&
-//         (token.getTimelineId() == null)) {
-//       // free token
-//     }
-
+  public ResourceNavNode( final PwResource resource, final Point resourceLocation, 
+                          final Color backgroundColor, final boolean isDraggable, 
+                          final PartialPlanView partialPlanView) { 
+    super(resource, resourceLocation, backgroundColor, isDraggable, partialPlanView);
+    this.resource = resource;
     navigatorView = (NavigatorView) partialPlanView;
-
-    isDebug = false;
-    // isDebug = true;
-    StringBuffer labelBuf = new StringBuffer( token.getPredicateName());
-    labelBuf.append( "\nkey=").append( token.getId().toString());
-    nodeLabel = labelBuf.toString();
-    // System.err.println( "TokenNavNode: " + nodeLabel);
+    isDebugPrint = false;
+    // isDebugPrint = true;
 
     inLayout = false;
     areNeighborsShown = false;
     linkCount = 0;
-
-    configure( tokenLocation, backgroundColor, isDraggable);
   } // end constructor
-
-  private final void configure( final Point tokenLocation, final Color backgroundColor,
-                                final boolean isDraggable) {
-    setLabelSpot( JGoObject.Center);
-    initialize( tokenLocation, nodeLabel);
-    setBrush( JGoBrush.makeStockBrush( backgroundColor));  
-    getLabel().setEditable( false);
-    setDraggable( isDraggable);
-    // do not allow user links
-    getPort().setVisible( false);
-    getLabel().setMultiline( true);
-  } // end configure
 
   /**
    * <code>getId</code> - implements NavNode
@@ -123,7 +80,7 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
    * @return - <code>Integer</code> - 
    */
   public final Integer getId() {
-    return token.getId();
+    return resource.getId();
   }
 
   /**
@@ -132,7 +89,7 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
    * @return - <code>String</code> - 
    */
   public final String getTypeName() {
-    return "token";
+    return "resource";
   }
 
   /**
@@ -184,20 +141,20 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
   }
 
   /**
-   * <code>resetNode</code> - - implements NavNode
+   * <code>resetNode</code> - implements NavNode
    *
    * @param isDebug - <code>boolean</code> - 
    */
-  public final void resetNode( final boolean isDbg) {
+  public final void resetNode( final boolean isDebug) {
     areNeighborsShown = false;
-    if (isDbg && (linkCount != 0)) {
-      System.err.println( "reset slot node: " + slot.getId() +
+    if (isDebug && (linkCount != 0)) {
+      System.err.println( "reset resource node: " + resource.getId() +
                           "; linkCount != 0: " + linkCount);
     }
     linkCount = 0;
   } // end resetNode
 
- /**
+  /**
    * <code>setAreNeighborsShown</code> - implements NavNode
    *
    * @param value - <code>boolean</code> - 
@@ -213,17 +170,8 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
    */
   public final List getParentEntityList() {
     List returnList = new ArrayList();
-    if (slot != null) {
-      returnList.add( slot);
-    } else if (object != null) {
-      returnList.add( object);
-    } else {
-      // free token
-    }
-    Integer masterId = partialPlan.getMasterTokenId( token.getId());
-    if (masterId != null) {
-      PwToken master = partialPlan.getToken( masterId);
-      returnList.add( master);
+    if (resource.getParent() != null) {
+      returnList.add( resource.getParent());
     }
     return returnList;
   }
@@ -231,45 +179,15 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
   /**
    * <code>getComponentEntityList</code> - implements NavNode
    *
-   * @return - <code>List</code> - of PwEntity
+   * @return - <code>List</code> - of PwEntity 
    */
   public final List getComponentEntityList() {
     List returnList = new ArrayList();
-    // returnList.addAll( token.getVariablesList());
-    returnList.addAll( ((PwVariableContainer) token).getVariables());
-    Iterator slaveIdItr = partialPlan.getSlaveTokenIds( token.getId()).iterator();
-    while (slaveIdItr.hasNext()) {
-      returnList.add( partialPlan.getToken( (Integer) slaveIdItr.next()));
-    }
+    returnList.addAll( resource.getComponentList());
+    // PwResourceTransaction list
+    returnList.addAll( resource.getTransactionSet());
+    returnList.addAll( ((PwVariableContainer) resource).getVariables());
     return returnList;
-  }
-
-  /**
-   * <code>equals</code>
-   *
-   * @param node - <code>TokenNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public final boolean equals( final TokenNavNode node) {
-    return (this.getToken().getId().equals( node.getToken().getId()));
-  }
-
-  /**
-   * <code>getToken</code>
-   *
-   * @return - <code>PwToken</code> - 
-   */
-  public final PwToken getToken() {
-    return token;
-  }
-
-  /**
-   * <code>toString</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public final String toString() {
-    return token.getId().toString();
   }
 
   /**
@@ -284,36 +202,31 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
     } else {
       operation = "open";
     }
-    StringBuffer tip = new StringBuffer( "<html>");
-    if (token instanceof PwResourceTransaction) {
-      tip.append( "resourceTransaction");
-    } else {
-      tip.append( "token");
-    }
-      tip.append( "<br>");
-    tip.append( token.toString());
+    StringBuffer tip = new StringBuffer( "<html>resource<br>");
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
+      tip.append( "<br>");
     }
-    tip.append( "<br> Mouse-L: ").append( operation);
+    tip.append( "Mouse-L: ").append( operation);
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
 
   /**
-   * <code>getToolTipText</code> - when over 1/8 scale overview token node
+   * <code>getToolTipText</code> - when over 1/8 scale overview resource node
    *
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
   public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html>");
-    tip.append( token.getPredicateName());
+    tip.append( resource.getName());
     tip.append( "<br>key=");
-    tip.append( token.getId().toString());
+    tip.append( resource.getId().toString());
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
+
 
   /**
    * <code>doMouseClick</code> - For Model Network View, Mouse-left opens/closes
@@ -330,15 +243,16 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
     JGoObject obj = view.pickDocObject( dc, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
-    TokenNavNode tokenNavNode = (TokenNavNode) obj.getTopLevelObject();
+    ResourceNavNode resourceNode = (ResourceNavNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      NavigatorView navigatorView = (NavigatorView) partialPlanView;
       navigatorView.setStartTimeMSecs( System.currentTimeMillis());
       boolean areObjectsChanged = false;
       if (! areNeighborsShown) {
-        areObjectsChanged = addTokenObjects( this);
+        areObjectsChanged = addResourceObjects( this);
         areNeighborsShown = true;
       } else {
-        areObjectsChanged = removeTokenObjects( this);
+        areObjectsChanged = removeResourceObjects( this);
         areNeighborsShown = false;
       }
       if (areObjectsChanged) {
@@ -352,36 +266,37 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
     return false;
   } // end doMouseClick   
 
-  private boolean addTokenObjects( final TokenNavNode tokenNavNode) {
+  private boolean addResourceObjects( final ResourceNavNode resourceNavNode) {
     boolean areNodesChanged =
-      NavNodeGenerics.addEntityNavNodes( tokenNavNode, navigatorView, isDebug);
+      NavNodeGenerics.addEntityNavNodes( resourceNavNode, navigatorView, isDebugPrint);
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      NavNodeGenerics.addParentToEntityNavLinks( tokenNavNode, navigatorView, isDebug);
+      NavNodeGenerics.addParentToEntityNavLinks( resourceNavNode, navigatorView, isDebugPrint);
      boolean areChildLinksChanged =
-       NavNodeGenerics.addEntityToChildNavLinks( tokenNavNode, navigatorView, isDebug);
+       NavNodeGenerics.addEntityToChildNavLinks( resourceNavNode, navigatorView, isDebugPrint);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end addTokenObjects
+  } // end addResourceObjects
 
-  private boolean removeTokenObjects( final TokenNavNode tokenNavNode) {
+  private boolean removeResourceObjects( final ResourceNavNode resourceNavNode) {
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      NavNodeGenerics.removeParentToEntityNavLinks( tokenNavNode, navigatorView, isDebug);
+      NavNodeGenerics.removeParentToEntityNavLinks( resourceNavNode, navigatorView,
+                                                    isDebugPrint);
     boolean areChildLinksChanged =
-      NavNodeGenerics.removeEntityToChildNavLinks( tokenNavNode, navigatorView, isDebug);
+      NavNodeGenerics.removeEntityToChildNavLinks( resourceNavNode, navigatorView,
+                                                   isDebugPrint);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
     boolean areNodesChanged =
-      NavNodeGenerics.removeEntityNavNodes( tokenNavNode, navigatorView, isDebug);
+      NavNodeGenerics.removeEntityNavNodes( resourceNavNode, navigatorView, isDebugPrint);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end removeTokenObjects
+  } // end removeResourceObjects
 
 
-} // end class TokenNavNode
-
+} // end class ResourceNavNode

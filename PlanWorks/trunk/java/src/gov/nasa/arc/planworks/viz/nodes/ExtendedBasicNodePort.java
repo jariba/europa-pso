@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNodePort.java,v 1.5 2004-02-19 21:57:15 miatauro Exp $
+// $Id: ExtendedBasicNodePort.java,v 1.6 2004-03-02 02:34:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -26,6 +26,8 @@ import com.nwoods.jgo.examples.Diamond;
 import com.nwoods.jgo.examples.LeftTrapezoid;
 import com.nwoods.jgo.examples.RightTrapezoid;
 import com.nwoods.jgo.examples.Hexagon;
+import com.nwoods.jgo.examples.PinchedRectangle;
+import com.nwoods.jgo.examples.PinchedHexagon;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
@@ -36,6 +38,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.ConstraintNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.ModelClassNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.ResourceNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
@@ -92,7 +95,8 @@ public class ExtendedBasicNodePort extends BasicNodePort {
     p.y = y;
     // if (x,y) is inside the object, just return it instead of finding the edge intersection
     //if (! obj.isPointInObj(p)) {
-    if (node.isRectangular() || (node instanceof TokenNavNode)) {
+    if (node.isRectangular() || (node instanceof TokenNavNode) ||
+        (node instanceof TokenNode)) {
         JGoRectangle.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                   rect.height, x, y, cx, cy, p);
       } else if (node instanceof ConstraintNode) {
@@ -104,21 +108,31 @@ public class ExtendedBasicNodePort extends BasicNodePort {
       } else if (node instanceof ParamNode) {
         ((Diamond) ((ParamNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
-      } else if ((node instanceof VariableNode) ||
-                 (node instanceof VariableNavNode)) {
-        JGoEllipse.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
-                                                rect.height, x, y, p);
-      }
-      else if(node instanceof ObjectNode) {
-        ((LeftTrapezoid) ((ObjectNode)node).getDrawable()).
+//       } else if ((node instanceof VariableNode) ||
+//                  (node instanceof VariableNavNode)) {
+//         JGoEllipse.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
+//                                                 rect.height, x, y, p);
+      } else if (node instanceof VariableNode) {
+        ((PinchedRectangle) ((VariableNode) node).getDrawable()).
+          getNearestIntersectionPoint(x, y, cx, cy, p);
+      } else if (node instanceof VariableNavNode) {
+        ((PinchedRectangle) ((VariableNavNode) node).getDrawable()).
           getNearestIntersectionPoint(x, y, cx, cy, p);
       }
-      else if(node instanceof TimelineNode) {
-        ((RightTrapezoid)((TimelineNode)node).getDrawable()).
+      else if (node instanceof ObjectNode) {
+        ((LeftTrapezoid) ((ObjectNode) node).getDrawable()).
           getNearestIntersectionPoint(x, y, cx, cy, p);
       }
-      else if(node instanceof SlotNavNode) {
-        ((Hexagon)((SlotNavNode)node).getDrawable()).
+      else if (node instanceof TimelineNode) {
+        ((RightTrapezoid) ((TimelineNode) node).getDrawable()).
+          getNearestIntersectionPoint(x, y, cx, cy, p);
+      }
+      else if (node instanceof SlotNavNode) {
+        ((Hexagon) ((SlotNavNode) node).getDrawable()).
+          getNearestIntersectionPoint(x, y, cx, cy, p);
+      }
+      else if (node instanceof ResourceNode) {
+        ((PinchedHexagon) ((ResourceNode) node).getDrawable()).
           getNearestIntersectionPoint(x, y, cx, cy, p);
       }
       // }

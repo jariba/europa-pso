@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.6 2004-02-12 21:42:40 taylor Exp $
+// $Id: TimeScaleView.java,v 1.7 2004-03-02 02:34:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -63,7 +63,7 @@ public class TimeScaleView extends JGoView  {
   private int timeScaleStart;
   private int timeScaleEnd;
   private int slotLabelMinLength;
-  private float timeScale;
+  private double timeScale;
   private int timeDelta;
   private int tickTime;
 
@@ -108,9 +108,9 @@ public class TimeScaleView extends JGoView  {
   /**
    * <code>getTimeScale</code>
    *
-   * @return - <code>float</code> - 
+   * @return - <code>double</code> - 
    */
-  public final float getTimeScale() {
+  public final double getTimeScale() {
     return timeScale;
   }
 
@@ -256,7 +256,7 @@ public class TimeScaleView extends JGoView  {
                         (maxSlots * slotLabelMinLength *
                          partialPlanView.getFontMetrics().charWidth( 'A')),
                         ViewConstants.TEMPORAL_MIN_END_X_LOC);
-    timeScale = ((float) (endXLoc - startXLoc)) / ((float) (timeScaleEnd - timeScaleStart));
+    timeScale = ((double) (endXLoc - startXLoc)) / ((double) (timeScaleEnd - timeScaleStart));
 //     System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
 //                        " endXLoc " + endXLoc);
 //     System.err.println( "Temporal Extent View time scale: " + timeScaleStart + " " +
@@ -316,7 +316,7 @@ public class TimeScaleView extends JGoView  {
    *
    */
   public final void createTimeScale() {
-    int xLoc = (int) scaleTime( tickTime);
+    int xLoc = (int) scaleTime( (double) tickTime);
     // System.err.println( "createTimeScale: xLoc " + xLoc);
     int yRuler = startYLoc;
     int yLabelUpper = yRuler, yLabelLower = yRuler;
@@ -329,6 +329,8 @@ public class TimeScaleView extends JGoView  {
     timeScaleRuler.setPen( new JGoPen( JGoPen.SOLID, scaleWidth, ColorMap.getColor( "black")));
     timeScaleRuler.setDraggable( false);
     timeScaleRuler.setResizable( false);
+    timeScaleRuler.setSelectable( false);
+
     boolean isUpperLabel = true;
     while (tickTime < timeScaleEnd) {
       timeScaleRuler.addPoint( xLoc, yRuler);
@@ -336,7 +338,7 @@ public class TimeScaleView extends JGoView  {
       timeScaleRuler.addPoint( xLoc, yRuler);
       addTickLabel( tickTime, xLoc, yLabel + TICK_Y_INCREMENT);
       tickTime += timeDelta;
-      xLoc = (int) scaleTime( tickTime);
+      xLoc = (int) scaleTime( (double) tickTime);
       isUpperLabel = (! isUpperLabel);
       if (isUpperLabel) {
         yLabel = yLabelUpper;
@@ -358,6 +360,7 @@ public class TimeScaleView extends JGoView  {
     textObject.setResizable( false);
     textObject.setEditable( false);
     textObject.setDraggable( false);
+    textObject.setSelectable( false);
     textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
     getDocument().addObjectAtTail( textObject);
   } // end addTickLabel
@@ -366,10 +369,10 @@ public class TimeScaleView extends JGoView  {
   /**
    * <code>scaleTime</code>
    *
-   * @param time - <code>int</code> - 
+   * @param time - <code>double</code> - 
    * @return - <code>int</code> - 
    */
-  public final int scaleTime( final int time) {
+  public final int scaleTime( final double time) {
     return xOrigin + (int) (timeScale * time);
   }
 
