@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.30 2004-01-16 19:05:36 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.31 2004-01-17 01:22:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1392,6 +1392,12 @@ public class ConstraintNetworkView extends PartialPlanView {
       createChangeLayoutItem(changeLayoutItem);
       mouseRightPopup.add(changeLayoutItem);
 
+      if (areThereNavigatorWindows()) {
+        mouseRightPopup.addSeparator();
+        JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
+        createCloseNavigatorWindowsItem( closeWindowsItem);
+        mouseRightPopup.add( closeWindowsItem);
+      }
       constraintNetworkView.createAllViewItems( partialPlan, partialPlanName,
                                                 planSequence, mouseRightPopup);
 

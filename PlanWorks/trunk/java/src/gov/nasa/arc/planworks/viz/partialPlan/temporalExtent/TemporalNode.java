@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.13 2004-01-16 19:05:39 taylor Exp $
+// $Id: TemporalNode.java,v 1.14 2004-01-17 01:22:54 taylor Exp $
 //
 // PlanWorks
 //
@@ -15,8 +15,8 @@ package gov.nasa.arc.planworks.viz.partialPlan.temporalExtent;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -630,7 +630,7 @@ public class TemporalNode extends BasicNode implements Extent {
                                // minumum width of 2 to allow tooltip to register
                                Math.max( xEndTime - xStartTime, 2),
                                ViewConstants.TEMPORAL_NODE_Y_DELTA,
-                               backgroundColor, labelLines);
+                               backgroundColor, labelLines, this, temporalExtentView);
     markAndBridgeList.add( bridge);
     temporalExtentView.getJGoDocument().addObjectAtTail( bridge);
   } // end renderBridge

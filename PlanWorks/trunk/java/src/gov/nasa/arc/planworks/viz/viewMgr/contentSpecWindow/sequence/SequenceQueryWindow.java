@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.18 2004-01-12 19:26:13 miatauro Exp $
+// $Id: SequenceQueryWindow.java,v 1.19 2004-01-17 01:22:55 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -66,7 +66,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   private static final String QUERY_FOR_TRANSACTIONS = "Transactions ...";
   private static final String QUERY_FOR_FREE_TOKENS = "Free Tokens ...";
   private static final String QUERY_FOR_UNBOUND_VARIABLES = "Unbound Variables ...";
-  private static final String QUERY_FOR_ALL_DECISIONS = "All decisions ...";
+  private static final String QUERY_FOR_ALL_DECISIONS = "All Decisions ...";
 
   private static final String STEPS_WHERE_CONSTRAINT_TRANSACTED =
     "Where Constraint Transacted ...";
@@ -1075,15 +1075,15 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
-    JMenuItem discardWindowsItem = new JMenuItem( "Discard Query Results Windows");
-    createDiscardWindowsItem( discardWindowsItem);
-    mouseRightPopup.add( discardWindowsItem);
+    JMenuItem closeWindowsItem = new JMenuItem( "Close Query Results Windows");
+    createCloseWindowsItem( closeWindowsItem);
+    mouseRightPopup.add( closeWindowsItem);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
-  private void createDiscardWindowsItem( JMenuItem discardWindowsItem) {
-    discardWindowsItem.addActionListener( new ActionListener() {
+  private void createCloseWindowsItem( JMenuItem closeWindowsItem) {
+    closeWindowsItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           List windowKeyList =
             new ArrayList( viewSet.getViews().keySet());
@@ -1104,7 +1104,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
           }
         }
       });
-  } // end createDiscardWindowsItem
+  } // end createCloseWindowsItem
 
   /**
    * mousePressed - implement MouseListener - do nothing

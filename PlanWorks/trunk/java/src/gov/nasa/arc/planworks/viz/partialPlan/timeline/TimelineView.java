@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.29 2004-01-16 19:05:40 taylor Exp $
+// $Id: TimelineView.java,v 1.30 2004-01-17 01:22:54 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -703,9 +703,9 @@ public class TimelineView extends PartialPlanView {
 
     if (areThereNavigatorWindows()) {
       mouseRightPopup.addSeparator();
-      JMenuItem discardWindowsItem = new JMenuItem( "Close Navigator Views");
-      createDiscardNavigatorWindowsItem( discardWindowsItem);
-      mouseRightPopup.add( discardWindowsItem);
+      JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
+      createCloseNavigatorWindowsItem( closeWindowsItem);
+      mouseRightPopup.add( closeWindowsItem);
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.18 2004-01-12 19:46:20 taylor Exp $
+// $Id: PartialPlanView.java,v 1.19 2004-01-17 01:22:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -533,12 +533,12 @@ public class PartialPlanView extends VizView {
   } // end areThereNavigatorWindows
 
   /**
-   * <code>createDiscardNavigatorWindowsItem</code>
+   * <code>createCloseNavigatorWindowsItem</code>
    *
-   * @param discardWindowsItem - <code>JMenuItem</code> - 
+   * @param closeWindowsItem - <code>JMenuItem</code> - 
    */
-  public void createDiscardNavigatorWindowsItem( JMenuItem discardWindowsItem) {
-    discardWindowsItem.addActionListener( new ActionListener() {
+  public void createCloseNavigatorWindowsItem( JMenuItem closeWindowsItem) {
+    closeWindowsItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           String navigatorWindowName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
           List windowKeyList =
@@ -560,7 +560,7 @@ public class PartialPlanView extends VizView {
           }
         }
       });
-  } // end createDiscardNavigatorWindowsItem
+  } // end createCloseNavigatorWindowsItem
 
   /**
    * <code>createTimelineColorMap</code>
