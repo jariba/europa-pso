@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicateImpl.java,v 1.4 2003-05-18 00:02:26 taylor Exp $
+// $Id: PwPredicateImpl.java,v 1.5 2003-05-20 18:25:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -76,10 +76,10 @@ public class PwPredicateImpl implements PwPredicate {
    * @return - <code>List</code> - of PwParameter
    */
   public List getParameterList() {
-    ArrayList retval = new ArrayList( parameterIdList.size());
+    List retval = new ArrayList( parameterIdList.size());
     for (int i = 0; i < parameterIdList.size(); i++) {
-      retval.set( i, partialPlan.getParameter( (String) parameterIdList.get( i),
-                                               collectionName));
+      retval.add( partialPlan.getParameter( (String) parameterIdList.get( i),
+                                            collectionName));
     }
     return retval;
   }

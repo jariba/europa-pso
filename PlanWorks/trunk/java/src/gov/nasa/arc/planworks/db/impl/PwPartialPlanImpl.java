@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.5 2003-05-18 00:02:25 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.6 2003-05-20 18:25:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -183,11 +183,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
       getVariable( (String) keysIterator.next(), collectionName);
     }
 
-    System.err.println( "constraintMap " + constraintMap.keySet());
-    System.err.println( "predicateMap " + predicateMap.keySet());
-    System.err.println( "parameterMap " + parameterMap.keySet());
-    System.err.println( "tokenRelationMap " + tokenRelationMap.keySet());
-    System.err.println( "variableMap " + variableMap.keySet());
+//     System.err.println( "objectMap " + objectMap.keySet());
+//     System.err.println( "timelineMap " + timelineMap.keySet());
+//     System.err.println( "slotMap " + slotMap.keySet());
+//     System.err.println( "tokenMap " + tokenMap.keySet());
+//     System.err.println( "constraintMap " + constraintMap.keySet());
+//     System.err.println( "predicateMap " + predicateMap.keySet());
+//     System.err.println( "parameterMap " + parameterMap.keySet());
+//     System.err.println( "tokenRelationMap " + tokenRelationMap.keySet());
+//     System.err.println( "variableMap " + variableMap.keySet());
   } // end fillElementMaps
 
 
@@ -220,10 +224,58 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     parameterMap.put( key, parameter);
   } // end addParameter
 
+  /**
+   * <code>getTimelineMap</code>
+   *
+   * @return - <code>Map</code> - 
+   */
+  public Map getTimelineMap() {
+    return timelineMap;
+  }
 
+  /**
+   * <code>getSlotMap</code>
+   *
+   * @return - <code>Map</code> - 
+   */
+  public Map getSlotMap() {
+    return slotMap;
+  }
+
+  /**
+   * <code>getTokenMap</code>
+   *
+   * @return - <code>Map</code> - 
+   */
+  public Map getTokenMap() {
+    return tokenMap;
+  }
+
+
+  /// IMPLEMENT PwPartialPlan INTERFACE /////
     
-  /// IMPLEMENT INTERFACE /////
 
+  /**
+   * <code>getCollectionName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getCollectionName() {
+    return collectionName;
+  }
+
+  /**
+   * <code>getObjectList</code> -
+   *
+   * @return - <code>List</code> - of PwObject
+   */
+  public List getObjectList() {
+    List retval = new ArrayList( objectIdList.size());
+    for (int i = 0; i < objectIdList.size(); i++) {
+      retval.add( this.getObject( (String) objectIdList.get(i), collectionName));
+    }
+    return retval;
+  }
   /**
    * <code>getObject</code> - if not in Map, query
    *

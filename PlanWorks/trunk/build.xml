@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 
-<project name="PlanWorks" default="existTest" basedir=".">
+<project name="PlanWorks" default="projectTest" basedir=".">
 
 <target name="existTest">
   <ant dir="./test" antfile="exist-test.xml"/>
+</target>
+
+<target name="projectTest">
+  <ant dir="./test" antfile="project-test.xml"/>
 </target>
 
 </project>

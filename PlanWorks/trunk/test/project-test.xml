@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="exist-test" default="test" basedir=".">
+<project name="project-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
 	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
@@ -29,7 +29,7 @@
 	</delete>
 
 	<java dir="${PLANWORKS_ROOT}/java/src" 
-                classname="gov.nasa.arc.planworks.db.test.ExistTest" fork="true">
+                classname="gov.nasa.arc.planworks.proj.test.PwProjectTest" fork="true">
             <classpath refid="planworks.jars"/>
             <jvmarg value="-verbose:gc"/>
             <jvmarg value="-Xms${arg_gcInit}m"/>
