@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.92 2004-06-10 01:35:58 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.93 2004-06-23 21:36:34 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -176,7 +176,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
                         (stop2TimeMSecs - start2TimeMSecs) + " msecs.");
     long stopTimeMSecs = System.currentTimeMillis();
     cleanConstraints();
-    // checkPlan();
+    //checkPlan();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end createPartialPlan
@@ -690,15 +690,21 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   /**
    * <code>checkPlan</code> - verify that the PwPartialPlan structure is internally consistent.
    */
-/*
+
   public boolean checkPlan() {
     System.err.println("Checking plan internal consistency.");
-    boolean retval = checkRelations() && checkConstraints() && checkTokens() && checkVariables();
+    //for debug make sure they all run even if a prior one fails
+    boolean retval = checkRuleInstances();
+    retval = checkConstraints();
+    retval = checkTokens();
+    retval = checkVariables();
+    //boolean retval = checkRuleInstances() && checkConstraints() && checkTokens() && checkVariables();
     System.err.println("Done checking plan.");
     return retval;
   }
-*/
+
   private boolean checkVariables() {
+    //System.err.println("In checkVariables");
     Iterator variableIterator = variableMap.values().iterator();
     boolean retval = true;
     while(variableIterator.hasNext()) {
@@ -716,19 +722,15 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
          variable.getType().equals(DbConstants.DURATION_VAR) ||
          variable.getType().equals(DbConstants.OBJECT_VAR) ||
          variable.getType().equals(DbConstants.STATE_VAR) ||
-         variable.getType().equals(DbConstants.MEMBER_VAR)) {
+         variable.getType().equals(DbConstants.MEMBER_VAR) ||
+         variable.getType().equals(DbConstants.PARAMETER_VAR) ||
+         variable.getType().equals(DbConstants.RULE_VAR)) {
         if(variable.getParameterNameList().size() != 0 &&
            variable.getParameterNameList().size() != 1) {
           System.err.println(variable.getType() + " " + variable.getId() +
                              " has parameter list of size " + 
                              variable.getParameterNameList().size());
           System.err.println(variable.getParameterNameList());
-          retval = false;
-        }
-      }
-      else if(variable.getType().equals(DbConstants.PARAMETER_VAR)) {
-        if(variable.getParameterNameList().size() == 0) {
-          System.err.println("Parameter variable " + variable.getId() + " has no parameters.");
           retval = false;
         }
       }
@@ -742,31 +744,73 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   }
 
   /**
-   * <code>checkRelations</code> - verify that all tokens related by token relations exist
+   * <code>checkRuleInstances</code> - verify that all tokens related by rule instances exist
+   *                                   that the rule for this rule instance exists
+   *                                   and that any rule variables exist and are the correct type
    */
-/*  private boolean checkRelations() {
-    Iterator relationIterator = tokenRelationMap.values().iterator();
+  private boolean checkRuleInstances() {
+    //System.err.println("In checkRuleInstances");
+    Iterator ruleInstanceIterator = ruleInstanceMap.values().iterator();
     boolean retval = true;
-    while(relationIterator.hasNext()) {
-      PwTokenRelationImpl relation = (PwTokenRelationImpl) relationIterator.next();
-      if(!tokenMap.containsKey(relation.getTokenAId())) {
-        System.err.println("Token relation " + relation.getId() + " has nonexistant token " +
-                           relation.getTokenAId());
+    while(ruleInstanceIterator.hasNext()) {
+      PwRuleInstanceImpl ruleInstance = (PwRuleInstanceImpl) ruleInstanceIterator.next();
+      if(!tokenMap.containsKey(ruleInstance.getMasterId())) {
+        System.err.println("Rule instance " + ruleInstance.getId() + " has nonexistant master token " +
+                           ruleInstance.getMasterId());
         retval = false;
       }
-      if(!tokenMap.containsKey(relation.getTokenBId())) {
-        System.err.println("Token relation " + relation.getId() + " has nonexistant token " +
-                           relation.getTokenBId());
+      Integer ruleId = ruleInstance.getRuleId();
+      if (getRule(ruleId) == null) {
+        System.err.println("Rule instance " + ruleInstance.getId() + " has nonexistant rule " + ruleId);
         retval = false;
+      }
+      List slaves = ruleInstance.getSlaveIdsList();
+      Iterator sidIterator = slaves.iterator();
+      while (sidIterator.hasNext()) {
+        Integer slaveId = (Integer)sidIterator.next();
+        if(!tokenMap.containsKey(slaveId)) {
+          System.err.println("Rule instance " + ruleInstance.getId() + " has nonexistant slave token " +
+                             slaveId);
+          retval = false;
+        }
+      }
+      List ruleVarList = ruleInstance.getRuleVarIdList();
+      Iterator ruleVarIterator = ruleVarList.iterator();
+      int ruleVarIndex = 0;
+      while(ruleVarIterator.hasNext()) {
+        Integer ruleVarId = (Integer)ruleVarIterator.next();
+        if(!variableMap.containsKey(ruleVarId)) {
+          System.err.println("Rule instance " + ruleInstance.getId() + " has nonexistant rule variable " +
+                             ruleVarId + " at position " + ruleVarIndex);
+          retval = false;
+        }
+        else {
+          PwVariableImpl ruleVar = (PwVariableImpl) getVariable(ruleVarId);
+          if(!(ruleVar.getType().equals(DbConstants.RULE_VAR))) {
+            System.err.println("Rule instance " + ruleInstance.getId() + " has rule variable " +
+                               ruleVarId + " that is not type RULE_VAR");
+            retval = false;
+          }
+          if(ruleVar.getParameterNameList().size() != 0 &&
+             ruleVar.getParameterNameList().size() != 1) {
+            System.err.println(ruleVar.getType() + " " + ruleVar.getId() +
+                               " has parameter list of size " + 
+                               ruleVar.getParameterNameList().size());
+            System.err.println(ruleVar.getParameterNameList());
+            retval = false;
+          }
+        }
+        ruleVarIndex++;
       }
     }
     return retval;
   }
-*/
+
   /**
    * <code>checkConstraints</code> - verify that all constrained variables exist
    */
   private boolean checkConstraints() {
+    //System.err.println("In checkConstraints");
     Iterator constraintIterator = constraintMap.values().iterator();
     boolean retval = true;
     while(constraintIterator.hasNext()) {
@@ -789,12 +833,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * <code>checkTokens</code> - verify that all tokens have predicates, the correct number of parameter
    *                            variables, that all variables exist and are of the right type, that 
    *                            slotted tokens have valid slots, timelines, and objects, as well as
-   *                            checking that the tokens have the relations they are in as well as being
+   *                            checking that the tokens have a valid rule instance
    *                            in only the relations they have.
    */
   private boolean checkTokens() {
+    //System.err.println("In checkTokens");
     Iterator tokenIterator = tokenMap.values().iterator();
     boolean retval = true;
+    int zeroRuleInstanceIdCount = 0;
     while(tokenIterator.hasNext()) {
       PwTokenImpl token = (PwTokenImpl) tokenIterator.next();
       if(token.getPredicateName() == null) {
@@ -830,8 +876,25 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
           retval = false;
         }
       }
-      retval = retval && checkTokenVars(token) && checkTokenParamVars(token) /* && 
-        checkTokenRelations(token)*/;
+      Integer ruleInstanceId = token.getRuleInstanceId();
+      if (ruleInstanceId.intValue() == 0)  {
+         //only the initial state token is allowed to not have a rule instance, in this case the
+         //id will be zero. keep a count of these. Only one will be allowed.
+         zeroRuleInstanceIdCount++;
+      }
+      else {
+        if(getRuleInstance(ruleInstanceId) == null) {
+          System.err.println("Token " + token.getId() + " has null rule instance for RuleInstanceId " +
+                             ruleInstanceId);
+          retval = false;
+        }
+      }
+      retval = retval && checkTokenVars(token) && checkTokenParamVars(token);
+    }
+    if (zeroRuleInstanceIdCount > 1) {
+      // check commented out until inconsistancy is resolved -- pdaley
+      //System.err.println(zeroRuleInstanceIdCount + " tokens found with a null RuleInstanceId");
+      //retval = false;
     }
     return retval;
   }
@@ -864,12 +927,15 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       retval = false;
     }
     else {
-      if(!endVar.getType().equals(DbConstants.END_VAR)) {
-        System.err.println("Token " + token.getId() + "'s end variable " + endVar.getId() + " isn't.");
-        retval = false;
-      }
-      else {
-        retval = retval && checkVariable(endVar);
+      //PwResourceTransaction tokens have no end variables
+      if (token instanceof PwResourceTransaction == false) {
+        if(!endVar.getType().equals(DbConstants.END_VAR)) {
+          System.err.println("Token " + token.getId() + "'s end variable " + endVar.getId() + " isn't.");
+          retval = false;
+        }
+        else {
+          retval = retval && checkVariable(endVar);
+        }
       }
     }
     if(durationVar == null) {
@@ -942,69 +1008,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     return retval;
   }
-  /**
-   * <code>checkTokenRelations</code> - ensure that all tokens related exist, are in the relations they
-   *                                    have, and are in only the relations they have.
-   */
-/*  private boolean checkTokenRelations(final PwTokenImpl token) {
-    List relations = token.getTokenRelationIdsList();
-    boolean retval = true;
-    if(relations.size() == 0) {
-      return true;
-    }
-    ListIterator relationIdIterator = relations.listIterator();
-    while(relationIdIterator.hasNext()) {
-      Integer tokenRelationId = (Integer) relationIdIterator.next();
-      PwTokenRelationImpl tokenRelation = 
-        (PwTokenRelationImpl) tokenRelationMap.get(tokenRelationId);
-      
-      if(tokenRelation == null) {
-        System.err.println("Token " + token.getId() + " has nonexistant token relation " +
-                           tokenRelationId);
-        retval = false;
-        continue;
-      }
-      if(tokenRelation.getTokenAId() == null) {
-        System.err.println("Master token id of relation " + tokenRelation.getId() + " is null.");
-        retval = false;
-        if(tokenRelation.getTokenBId() == null) {
-          System.err.println("Slave token id of relation " + tokenRelation.getId() + " is null.");
-          continue;
-        }
-      }
-      if(tokenRelation.getTokenBId() == null) {
-        System.err.println("Slave token id of relation " + tokenRelation.getId() + " is null.");
-        retval = false;
-        continue;
-      }
-      if(// !tokenRelation.getTokenAId().equals(token.getId()) && 
-         !tokenRelation.getTokenBId().equals(token.getId())) {
-        System.err.println("Token " + token.getId() + " has relation " + tokenRelation.getId() + 
-                           " but isn't in it.");
-        retval = false;
-      }
-      if(tokenMap.get(tokenRelation.getTokenAId()) == null) {
-        System.err.println("Master token " + tokenRelation.getTokenAId() + " doesn't exist.");
-        retval = false;
-      }
-      if(tokenMap.get(tokenRelation.getTokenBId()) == null) {
-        System.err.println("Slave token " + tokenRelation.getTokenBId() + " doesn't exist.");
-        retval = false;
-      }
-    }
-    Iterator tokenRelationIterator = tokenRelationMap.values().iterator();
-    while(tokenRelationIterator.hasNext()) {
-      PwTokenRelationImpl tokenRelation = (PwTokenRelationImpl) tokenRelationIterator.next();
-      if(// (tokenRelation.getTokenAId().equals(token.getId()) || 
-          tokenRelation.getTokenBId().equals(token.getId()) && !relations.contains(tokenRelation.getId())) {
-        System.err.println("Token " + token.getId() + " is in relation " + tokenRelation.getId() +
-                           " but doesn't have it.");
-        retval = false;
-      }
-    }
-    return retval;
-  }
-
 
   /**
    * <code>checkVariable</code> - verify that a variable is of a valid type, has constraints that exist,
@@ -1067,13 +1070,15 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     boolean retval = true && checkVariable(objectVar);
     //checkVariable(objectVar);
     PwEnumeratedDomainImpl domain = (PwEnumeratedDomainImpl) objectVar.getDomain();
-    if(!isFreeToken) {
-      if(domain.getEnumeration().size() > 1) {
-        System.err.println("Slotted token has object variable " + objectVar.getId() + 
-                           " with multiple objects.");
-        retval = false;
-      }
-    }
+
+// check commented out until inconsistancy is resolveda -- pdaley
+//    if(!isFreeToken) {
+//      if(domain.getEnumeration().size() > 1) {
+//        System.err.println("Slotted token has object variable " + objectVar.getId() + 
+//                           " with multiple objects.");
+//        retval = false;
+//      }
+//    }
     return retval;
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.109 2004-06-22 22:41:26 miatauro Exp $
+// $Id: MySQLDB.java,v 1.110 2004-06-23 21:36:35 pdaley Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1629,14 +1629,10 @@ public class MySQLDB {
       while(ids.next()) {
         retval.put(DbConstants.TBL_TOKEN, new Integer(ids.getInt("TokenId")));
       }
-
-// TokenRelation Table no longer exists
-//      ids = queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()));
-//      while(ids.next()) {
-//        retval.put(DbConstants.TBL_TOKENREL, new Integer(ids.getInt("TokenRelationId")));
-//      }
-
-
+      ids = queryDatabase("SELECT RuleInstanceId FROM RuleInstance WHERE PartialPlanId=".concat(ppId.toString()));
+      while(ids.next()) {
+        retval.put(DbConstants.TBL_RULE_INSTANCE, new Integer(ids.getInt("RuleInstanceId")));
+      }
       ids = queryDatabase("SELECT VariableId FROM Variable WHERE PartialPlanId=".concat(ppId.toString()));
       while(ids.next()) {
         retval.put(DbConstants.TBL_VARIABLE, new Integer(ids.getInt("VariableId")));

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.11 2004-06-21 22:42:59 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.12 2004-06-23 21:36:35 pdaley Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -625,7 +625,7 @@ public abstract class PWSetupHelper {
      Integer ruleVarId = new Integer( idSource.incEntityIdInt());
      if (isFirst) { isFirst = false; } else { ruleVarIds.append( ","); }
      ruleVarIds.append( ruleVarId.toString());
-     addVariable( ruleVarId, DbConstants.MEMBER_VAR, constraintIds,
+     addVariable( ruleVarId, DbConstants.RULE_VAR, constraintIds,
                   parameterNames, ruleId,
                   new PwEnumeratedDomainImpl( String.valueOf( enumValue)),
                   partialPlan, planSequence, stepNum, idSource);

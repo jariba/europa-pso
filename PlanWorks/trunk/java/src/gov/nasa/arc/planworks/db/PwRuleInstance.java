@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRuleInstance.java,v 1.1 2004-06-08 21:48:51 pdaley Exp $
+// $Id: PwRuleInstance.java,v 1.2 2004-06-23 21:36:34 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -52,6 +52,13 @@ public interface PwRuleInstance extends PwVariableContainer {
    * @return - <code>List</code> - of Integer.  
    */
   public abstract List getSlaveIdsList();
+
+  /**
+   * <code>getRuleVarIdList</code>
+   *
+   * @return - <code>List</code> - of Integer.  
+   */
+  public abstract List getRuleVarIdList();
 
   /**
    * <code>getVariables</code> - return rule variables

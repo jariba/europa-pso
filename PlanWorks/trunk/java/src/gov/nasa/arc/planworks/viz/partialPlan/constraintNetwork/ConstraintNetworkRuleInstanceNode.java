@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkRuleInstanceNode.java,v 1.3 2004-06-21 22:43:01 taylor Exp $
+// $Id: ConstraintNetworkRuleInstanceNode.java,v 1.4 2004-06-23 21:36:37 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -55,6 +55,7 @@ import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -84,12 +85,13 @@ public class ConstraintNetworkRuleInstanceNode extends RuleInstanceNode implemen
   private PartialPlanView partialPlanView;
 
   public ConstraintNetworkRuleInstanceNode( final PwRuleInstance ruleInstance,
+                                            final TokenNode fromTokenNode,
+                                            final List toTokenNodeList,
                                             final Point ruleInstanceLocation,
                                             final Color backgroundColor,
                                             final boolean isDraggable,
                                             final PartialPlanView partialPlanView) {
-    // TokenNode fromTokenNode & List toTokenNodeList are null
-    super (ruleInstance, null, null, ruleInstanceLocation, backgroundColor, isDraggable,
+    super (ruleInstance, fromTokenNode, toTokenNodeList, ruleInstanceLocation, backgroundColor, isDraggable,
            partialPlanView);
     this.backgroundColor = backgroundColor;
     this.partialPlanView = partialPlanView;
