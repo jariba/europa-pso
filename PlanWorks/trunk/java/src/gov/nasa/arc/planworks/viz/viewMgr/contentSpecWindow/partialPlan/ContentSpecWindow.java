@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.6 2003-12-20 01:54:52 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.7 2004-01-09 20:44:21 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -74,7 +74,8 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
 
   protected PartialPlanContentSpec contentSpec;
   protected PartialPlanViewSet partialPlanViewSet;
-
+  
+  private JButton valueButton;
   private static boolean queryTestExists;
 
   /**
@@ -155,7 +156,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
     buttonConstraints.gridx = 0;
     buttonConstraints.gridy = 0;
 
-    JButton valueButton = new JButton("Apply Filter");
+    valueButton = new JButton("Apply Filter");
     valueButton.addActionListener(new SpecButtonListener(this));
     buttonGridBag.setConstraints(valueButton, buttonConstraints);
     buttonPanel.add(valueButton);
@@ -171,11 +172,19 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
     gridBag.setConstraints(buttonPanel, c);
     add(buttonPanel);
     buildFromSpec();
-
+    valueButton.doClick();
     addMouseListener( this);
   }
 
-  private void buildFromSpec() {
+  public PartialPlanContentSpec getSpec() {
+    return contentSpec;
+  }
+
+  public void applySpec() {
+    valueButton.doClick();
+  }
+
+  public void buildFromSpec() {
     List currentSpec = contentSpec.getCurrentSpec();
     if(currentSpec.size() == 0) {
       return;
@@ -393,7 +402,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
           e.printStackTrace();
         }
         System.err.println("Done applying Filter.");
-        specWindow.contentSpec.printSpec();
+        //specWindow.contentSpec.printSpec();
       }
       else if(ae.getActionCommand().equals("Reset Filter")) {
         forceConstraintNetworkViewLayout();

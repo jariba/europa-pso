@@ -14,20 +14,14 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 
 public class NewConstraintNetworkLayout {
   private List orderedTokenNodes;
-  //private List variableNodes;
-  //private List constraintNodes;
   private List tokenBoundingBoxes;
-  //private List variableBoundingBoxes;
   private boolean horizontalLayout;
   public NewConstraintNetworkLayout(List tokenNodes) {
     long t1 = System.currentTimeMillis();
     horizontalLayout = true;
     //horizontalLayout = false;
-    //this.variableNodes = variableNodes;
-    //this.constraintNodes = constraintNodes;
     orderedTokenNodes = new ArrayList();
     tokenBoundingBoxes = new ArrayList(tokenNodes.size());
-    //variableBoundingBoxes = new ArrayList(variableNodes.size());
 
     List tempTokenNodes = new ArrayList(tokenNodes);
 
@@ -48,7 +42,6 @@ public class NewConstraintNetworkLayout {
       }
       assembleConnectedComponent(connectedComponent, tempTokenNodes, firstNode);
 
-      //Collections.sort(connectedComponent, new TokenLinkCountComparator());
       LinkedList subOrdering = new LinkedList();
       firstNode = (ConstraintNetworkTokenNode) connectedComponent.remove(0);
       Collections.sort(connectedComponent, new SpecificTokenLinkCountComparator(firstNode));
@@ -71,12 +64,10 @@ public class NewConstraintNetworkLayout {
     while(orderedIterator.hasNext()) {
       ConstraintNetworkTokenNode node = (ConstraintNetworkTokenNode) orderedIterator.next();
       TokenBoundingBox box = new TokenBoundingBox(this, node);
-      //variableBoundingBoxes.addAll(box.getVariableBoxes());
       tokenBoundingBoxes.add(box);
     }
     System.err.println("Constraint network init took " + (System.currentTimeMillis() - t1) +
                        "ms");
-    //performLayout();
   }
 
   private void assembleConnectedComponent(List component, List tokenNodes, 
@@ -104,10 +95,6 @@ public class NewConstraintNetworkLayout {
 
   public void performLayout() {
     long t1 = System.currentTimeMillis();
-//     ListIterator varBoxIterator = variableBoundingBoxes.listIterator();
-//     while(varBoxIterator.hasNext()) {
-//       ((VariableBoundingBox)varBoxIterator.next()).clearVisited();
-//     }
     if(horizontalLayout) {
       performHorizontalLayout();
     }
@@ -124,14 +111,6 @@ public class NewConstraintNetworkLayout {
       xpos += box.getWidth();
       box.positionNodes(xpos);
     }
-//     ListIterator variableBoxIterator = variableBoundingBoxes.listIterator();
-//     while(variableBoxIterator.hasNext()) {
-//       VariableBoundingBox box = (VariableBoundingBox) variableBoxIterator.next();
-//       if(box.isVisible() && !box.wasVisited()) {
-//         xpos += box.getWidth();
-//         box.positionNodes(xpos);
-//       }
-//     }
   }
   private void performVerticalLayout() {
     ListIterator tokenBoxIterator = tokenBoundingBoxes.listIterator();
@@ -141,14 +120,6 @@ public class NewConstraintNetworkLayout {
       ypos += box.getHeight();
       box.positionNodes(ypos);
     }
-//     ListIterator variableBoxIterator = variableBoundingBoxes.listIterator();
-//     while(variableBoxIterator.hasNext()) {
-//       VariableBoundingBox box = (VariableBoundingBox) variableBoxIterator.next();
-//       if(box.isVisible() && !box.wasVisited()) {
-//         ypos += box.getHeight();
-//         box.positionNodes(ypos);
-//       }
-//     }
   }
 
   class TokenLinkCountComparator implements Comparator {

@@ -44,22 +44,14 @@ public class TokenBoundingBox {
     }
   }
   public void addVariable(VariableNode variable) {
-//     VariableBoundingBox temp = new VariableBoundingBox(variable, layout);
-//     if(!variableBoundingBoxes.contains(temp)) {
-//       variableBoundingBoxes.add(temp);
-//       System.err.println("Adding bounding box for " + variable + " in " + tokenNode);
-//     }
-    ListIterator varBoxIterator = variableBoundingBoxes.listIterator();
-    while(varBoxIterator.hasNext()) {
-      VariableBoundingBox varBox = (VariableBoundingBox) varBoxIterator.next();
-      if(varBox.getVariable().equals(variable)) {
-        return;
-      }
+    VariableBoundingBox temp = new VariableBoundingBox(variable, layout);
+    if(!variableBoundingBoxes.contains(temp)) {
+      variableBoundingBoxes.add(temp);
+      System.err.println("Adding bounding box for " + variable + " in " + tokenNode);
     }
-    variableBoundingBoxes.add(new VariableBoundingBox(variable, layout));
   }
   public boolean isVisible() { return tokenNode.isVisible();}
-
+  
   public double getHeight() {
     double retval = 0.;
     if(layout.layoutHorizontal()) {
@@ -68,6 +60,7 @@ public class TokenBoundingBox {
     }
     else {
       if(tokenNode.isVisible()) {
+        createNecessaryNodes();
         ListIterator variableBoxIterator = variableBoundingBoxes.listIterator();
         double varBoxesHeight = 0.;
         while(variableBoxIterator.hasNext()) {
@@ -83,6 +76,7 @@ public class TokenBoundingBox {
     double retval = 0.;
     if(layout.layoutHorizontal()) {
       if(tokenNode.isVisible()) {
+        createNecessaryNodes();
         ListIterator variableBoxIterator = variableBoundingBoxes.listIterator();
         double varBoxesWidth = 0.;
         while(variableBoxIterator.hasNext()) {
@@ -102,18 +96,7 @@ public class TokenBoundingBox {
     if(!tokenNode.isVisible()) {
       return;
     }
-    if(variableBoundingBoxes.size() > tokenNode.getVariableNodeList().size()) {
-      System.err.println("Too many bounding boxes in token " + tokenNode);
-      System.err.println("box:  " + variableBoundingBoxes);
-      System.err.println("node: " + tokenNode.getVariableNodeList());
-      return;
-    }
-    if(variableBoundingBoxes.size() < tokenNode.getVariableNodeList().size()) {
-      ListIterator variableIterator = tokenNode.getVariableNodeList().listIterator();
-      while(variableIterator.hasNext()) {
-        addVariable((VariableNode) variableIterator.next());
-      }
-    }
+    createNecessaryNodes();
     if(layout.layoutHorizontal()) {
       positionHorizontal(pos);
     }
@@ -145,6 +128,20 @@ public class TokenBoundingBox {
       varBox.positionNodes(boxX - lastBoxWidth);
       lastBoxWidth += varBox.getWidth();
       varBox.setVisited();
+    }
+  }
+  private void createNecessaryNodes() {
+    if(variableBoundingBoxes.size() > tokenNode.getVariableNodeList().size()) {
+      System.err.println("Too many bounding boxes in token " + tokenNode);
+      System.err.println("box:  " + variableBoundingBoxes);
+      System.err.println("node: " + tokenNode.getVariableNodeList());
+      return;
+    }
+    if(variableBoundingBoxes.size() < tokenNode.getVariableNodeList().size()) {
+      ListIterator variableIterator = tokenNode.getVariableNodeList().listIterator();
+      while(variableIterator.hasNext()) {
+        addVariable((VariableNode) variableIterator.next());
+      }
     }
   }
   public List getVariableBoxes() {

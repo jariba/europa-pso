@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.22 2003-12-19 18:55:37 miatauro Exp $
+// $Id: ViewManager.java,v 1.23 2004-01-09 20:44:07 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -22,6 +22,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 
 /**
@@ -65,6 +66,31 @@ public class ViewManager implements ViewSetRemover {
 	else {
 	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
 	}
+    }
+    return ((ViewSet)viewSets.get(viewable)).openView(viewClassName);
+  }
+
+  public MDIInternalFrame openView(ViewableObject viewable, String viewClassName, 
+                                   PartialPlanViewState state) {
+    if (!viewSets.containsKey(viewable)) {
+	if (viewable instanceof PwPartialPlan) {
+	    viewSets.put(viewable,
+                         new PartialPlanViewSet(desktopFrame,
+                                                (PwPartialPlan) viewable, this));
+            contentSpecWindowCnt++;
+	}
+	else if (viewable instanceof PwPlanningSequence) {
+	    viewSets.put(viewable,
+                         new SequenceViewSet(desktopFrame,
+                                             (PwPlanningSequence) viewable, this));
+            contentSpecWindowCnt++;
+	}
+	else {
+	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
+	}
+    }
+    if(viewable instanceof PwPartialPlan) {
+      ((PartialPlanViewSet)viewSets.get(viewable)).openView(viewClassName, state);
     }
     return ((ViewSet)viewSets.get(viewable)).openView(viewClassName);
   }

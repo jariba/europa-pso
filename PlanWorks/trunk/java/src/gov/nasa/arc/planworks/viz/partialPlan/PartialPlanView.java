@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.15 2004-01-02 18:58:58 taylor Exp $
+// $Id: PartialPlanView.java,v 1.16 2004-01-09 20:41:46 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -56,6 +56,7 @@ import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.util.JGoButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
 
 
 /**
@@ -91,6 +92,26 @@ public class PartialPlanView extends VizView {
    */
   public PwPartialPlan getPartialPlan() {
     return partialPlan;
+  }
+
+  public PartialPlanViewState getState() {
+    return new PartialPlanViewState(this);
+  }
+
+  public void setState(PartialPlanViewState state) {
+    if(state == null) {
+      return;
+    }
+    partialPlan.setContentSpec(state.getContentSpec());
+    Container contentPane = this.viewSet.getContentSpecWindow().getContentPane();
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof ContentSpecWindow) {
+        ContentSpecWindow csw = (ContentSpecWindow) contentPane.getComponent(i);
+        csw.getSpec().resetSpecFromPlan();
+        csw.buildFromSpec();
+        csw.applySpec();
+      }
+    }
   }
 
   /**
@@ -313,7 +334,8 @@ public class PartialPlanView extends VizView {
         String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
         nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" + (currStepNumber + dir));
       }
-      MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName());
+      MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),
+                                                            pView.getState());
       try {
         nextViewFrame.setBounds(viewFrame.getBounds());
         nextViewFrame.setNormalBounds(viewFrame.getNormalBounds());

@@ -54,6 +54,7 @@ public class VariableBoundingBox {
     }
     else {
       if(varNode.isVisible()) {
+        createNecessaryNodes();
         ListIterator constraintIterator = constraintNodes.listIterator();
         double constraintsHeight = 0.;
         int visibleConstraints = 0;
@@ -77,6 +78,7 @@ public class VariableBoundingBox {
     double retval = 0.;
     if(layout.layoutHorizontal()) {
       if(varNode.isVisible()) {
+        createNecessaryNodes();
         ListIterator constraintIterator = constraintNodes.listIterator();
         double constraintsWidth = 0.;
         int visibleConstraints = 0;
@@ -104,18 +106,7 @@ public class VariableBoundingBox {
     if(!varNode.isVisible()) {
       return;
     }
-    if(constraintNodes.size() > varNode.getConstraintNodeList().size()) {
-      System.err.println("Too many constraint nodes in var node " + varNode);
-      System.err.println("box:  " + constraintNodes.size());
-      System.err.println("node: " + varNode.getConstraintNodeList());
-    }
-    if(constraintNodes.size() < varNode.getConstraintNodeList().size()) {
-      //constraintNodes = new LinkedList(varNode.getConstraintNodeList());
-      ListIterator constrNodeIterator = varNode.getConstraintNodeList().listIterator();
-      while(constrNodeIterator.hasNext()) {
-        addConstraint((ConstraintNode)constrNodeIterator.next());
-      }
-    }
+    createNecessaryNodes();
     if(layout.layoutHorizontal()) {
       positionHorizontal(pos);
     }
@@ -177,6 +168,20 @@ public class VariableBoundingBox {
   
   public String toString() {
     return varNode.toString();
+  }
+  private void createNecessaryNodes() {
+    if(constraintNodes.size() > varNode.getConstraintNodeList().size()) {
+      System.err.println("Too many constraint nodes in var node " + varNode);
+      System.err.println("box:  " + constraintNodes.size());
+      System.err.println("node: " + varNode.getConstraintNodeList());
+    }
+    if(constraintNodes.size() < varNode.getConstraintNodeList().size()) {
+      //constraintNodes = new LinkedList(varNode.getConstraintNodeList());
+      ListIterator constrNodeIterator = varNode.getConstraintNodeList().listIterator();
+      while(constrNodeIterator.hasNext()) {
+        addConstraint((ConstraintNode)constrNodeIterator.next());
+      }
+    }
   }
 }
 

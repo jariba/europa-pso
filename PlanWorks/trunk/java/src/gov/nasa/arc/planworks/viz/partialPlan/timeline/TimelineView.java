@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.25 2004-01-05 17:18:18 miatauro Exp $
+// $Id: TimelineView.java,v 1.26 2004-01-09 20:43:22 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -56,6 +56,7 @@ import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -92,10 +93,23 @@ public class TimelineView extends PartialPlanView {
    */
   public TimelineView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    timelineViewInit((PwPartialPlan) partialPlan, viewSet);
+    SwingUtilities.invokeLater( runInit);
+  } // end constructor
+
+  public TimelineView(ViewableObject partialPlan, ViewSet viewSet, PartialPlanViewState s) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    timelineViewInit((PwPartialPlan) partialPlan, viewSet);
+    setState(s);
+    SwingUtilities.invokeLater( runInit);
+    
+  }
+
+  private void timelineViewInit(ViewableObject partialPlan, ViewSet viewSet) {
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-
+    
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
     mouseOverNode = null;
@@ -107,9 +121,7 @@ public class TimelineView extends PartialPlanView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
-
-    SwingUtilities.invokeLater( runInit);
-  } // end constructor
+  }
 
   Runnable runInit = new Runnable() {
       public void run() {
