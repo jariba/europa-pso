@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.25 2003-07-03 00:05:24 miatauro Exp $
+// $Id: PlanWorks.java,v 1.26 2003-07-03 21:18:38 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -712,7 +712,11 @@ public class PlanWorks extends MDIDesktopFrame {
       if (((JMenu) dynamicMenuBar.getMenu( i)).getText().equals( "Partial Plan")) {
         partialPlanMenu = (JMenu) dynamicMenuBar.getMenu( i);
         partialPlanMenu.removeAll();
-        dynamicMenuBar.validate();
+        if(PwProject.listProjects().size() == 0) {
+          dynamicMenuBar.remove(partialPlanMenu);
+        }
+        //dynamicMenuBar.validate();
+        dynamicMenuBar.repaint();
         return partialPlanMenu;
       }
     }
@@ -755,7 +759,8 @@ public class PlanWorks extends MDIDesktopFrame {
         PwPlanningSequence planSequence =
           currentProject.getPlanningSequence( seqUrl);
 
-        PwPartialPlan partialPlan = planSequence.addPartialPlan( partialPlanName);
+        //PwPartialPlan partialPlan = planSequence.addPartialPlan( partialPlanName);
+        PwPartialPlan partialPlan = planSequence.getPartialPlan(partialPlanName);
 
         renderView( viewName, sequenceName, partialPlanName, partialPlan);
 
@@ -765,7 +770,7 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
-      } catch (SQLException sqlExcep) {
+      } /*catch (SQLException sqlExcep) {
         StringBuffer errorOutput =
           new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
                                                            indexOf(":") + 1));
@@ -779,7 +784,7 @@ public class PlanWorks extends MDIDesktopFrame {
         JOptionPane.showMessageDialog
           (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(sqlExcep);
-      }
+        }*/
     } //end run
 
 
