@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.78 2003-12-12 01:23:03 taylor Exp $
+// $Id: PlanWorks.java,v 1.79 2003-12-16 23:18:26 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -416,7 +416,7 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenuItem createProjectItem = new JMenuItem( CREATE_MENU_ITEM);
     JMenuItem openProjectItem = new JMenuItem( OPEN_MENU_ITEM);
     JMenuItem deleteProjectItem = new JMenuItem( DELETE_MENU_ITEM);
-    JMenuItem newSequenceItem = new JMenuItem( NEWSEQ_MENU_ITEM);
+    //JMenuItem newSequenceItem = new JMenuItem( NEWSEQ_MENU_ITEM);
     JMenuItem addSequenceItem = new JMenuItem( ADDSEQ_MENU_ITEM);
     JMenuItem deleteSequenceItem = new JMenuItem(DELSEQ_MENU_ITEM);
     createProjectItem.addActionListener( new ActionListener() {
@@ -442,11 +442,11 @@ public class PlanWorks extends MDIDesktopFrame {
         }});
     projectMenu.add( deleteProjectItem);
     projectMenu.addSeparator();
-    newSequenceItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          PlanWorks.planWorks.newSequenceThread();
-        }});
-    projectMenu.add(newSequenceItem);
+//     newSequenceItem.addActionListener(new ActionListener() {
+//         public void actionPerformed(ActionEvent e) {
+//           PlanWorks.planWorks.newSequenceThread();
+//         }});
+//     projectMenu.add(newSequenceItem);
     addSequenceItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent e) {
           PlanWorks.planWorks.addSequenceThread();

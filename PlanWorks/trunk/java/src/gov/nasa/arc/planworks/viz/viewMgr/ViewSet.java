@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.47 2003-11-21 00:41:51 taylor Exp $
+// $Id: ViewSet.java,v 1.48 2003-12-16 23:18:34 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -67,29 +67,15 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
    *                 partial plans.
    * @param remover the interface which is responsible for removing entire ViewSets.
    */
-  public ViewSet(MDIDesktopFrame desktopFrame,/* PwPartialPlan partialPlan*/ViewableObject viewable,
-                 /*String planName,*/ ViewSetRemover remover) {
-    this.views = new HashMap();//new LinkedList(); 
-    //this.partialPlan = partialPlan;
+  public ViewSet(MDIDesktopFrame desktopFrame, ViewableObject viewable, ViewSetRemover remover) {
+    this.views = new HashMap();
     this.viewable = viewable;
-    //this.planName = planName;
     this.remover = remover;
     this.desktopFrame = desktopFrame;
-    /*content spec specified in PartialPlanViewSet and SequenceViewSet*/
-    //this.contentSpec = new ContentSpec(viewable, this);
     this.contentSpec = null;
     constructorArgs = new Object[2];
     constructorArgs[0] = (ViewableObject) viewable;
     constructorArgs[1] = this;
-    //this.contentSpecWindow = 
-    //  desktopFrame.createFrame(ContentSpec.CONTENT_SPEC_TITLE + " for " + viewable.getName(), this, true, false,
-    //                          false, true);
-    //Container contentPane = this.contentSpecWindow.getContentPane();
-    //contentPane.add(new ContentSpecWindow(this.contentSpecWindow, contentSpec));
-    //this.contentSpecWindow.pack();
-    //this.contentSpecWindow.setVisible(true);
-    //this.colorStream = new ColorStream();
-    //this.activeToken = null;
   }
 
   public MDIInternalFrame openView(String viewClassName) {
@@ -114,16 +100,6 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     Container contentPane = viewFrame.getContentPane();
     VizView view = null;
     try {
-// 	System.err.println("Class " + viewClassName + " has " + constructors.length +
-//                            " constructor(s).");
-// 	System.err.println("First constructor has " + constructors[0].getParameterTypes().length +
-// 			   " arguments.");
-// 	for(int i = 0; i < constructors[0].getParameterTypes().length; i++) {
-// 	    System.err.println((constructors[0].getParameterTypes())[i].getName());
-// 	}
-// 	System.err.println("---------------");
-// 	System.err.println(constructorArgs[0].getClass().getName());
-// 	System.err.println(constructorArgs[1].getClass().getName());
       view = (VizView) constructors[0].newInstance(constructorArgs);
     } 
     catch (InvocationTargetException ite) {
@@ -141,86 +117,6 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   private MDIInternalFrame getViewByClass(Class viewClass) {
     return (MDIInternalFrame) views.get(viewClass);
   }
-
-//   /**
-//    * Opens a new TimelineView, stuffs it in an MDIInternalFrame, adds it to the hash of frames,
-//    * then returns it.  If a TimelineView already exists for this partial plan, returns that.
-//    * @return MDIInternalFrame the frame containing the vew.
-//    */
-//   public MDIInternalFrame openTimelineView( long startTimeMSecs) {
-//     if(viewExists(ViewManager.TIMELINE_VIEW)) {
-//       return (MDIInternalFrame) views.get(ViewManager.TIMELINE_VIEW);
-//     }
-//     MDIInternalFrame timelineViewFrame = 
-//       desktopFrame.createFrame("Timeline view of ".concat(planName), this, true, true, true, true);
-//     views.put(ViewManager.TIMELINE_VIEW, timelineViewFrame);
-//     Container contentPane = timelineViewFrame.getContentPane();
-//     contentPane.add(new TimelineView(partialPlan, startTimeMSecs, this));
-//     return timelineViewFrame;
-//   }
-
-//   /**
-//    * Opens a new TokenNetworkView, stuffs it in an MDIInternalFrame, adds it to the hash
-//    * of frames, then returns it.  If a TokenNetworkView already exists for this partial
-//    * plan, returns that.
-//    * @return MDIInternalFrame the frame containing the vew.
-//    */
-//   public MDIInternalFrame openTokenNetworkView( long startTimeMSecs) {
-//     if(viewExists(ViewManager.TNET_VIEW)) {
-//       return (MDIInternalFrame) views.get(ViewManager.TNET_VIEW);
-//     }
-//     MDIInternalFrame tokenNetworkViewFrame = 
-//       desktopFrame.createFrame("Token Network view of ".concat(planName), this, true, true,
-//                                true, true);
-//     views.put(ViewManager.TNET_VIEW, tokenNetworkViewFrame);
-//     Container contentPane = tokenNetworkViewFrame.getContentPane();
-//     contentPane.add(new TokenNetworkView(partialPlan, startTimeMSecs, this));
-//     return tokenNetworkViewFrame;
-//   }
-
-//   /**
-//    * Opens a new TemporalExtentView, stuffs it in an MDIInternalFrame, adds it to the hash
-//    * of frames, then returns it.  If a TemporalExtentView already exists for this partial
-//    * plan, returns that.
-//    * @return MDIInternalFrame the frame containing the vew.
-//    */
-//   public MDIInternalFrame openTemporalExtentView( long startTimeMSecs) {
-//     if(viewExists(ViewManager.TEMPEXT_VIEW)) {
-//       return (MDIInternalFrame) views.get(ViewManager.TEMPEXT_VIEW);
-//     }
-//     MDIInternalFrame temporalExtentViewFrame = 
-//       desktopFrame.createFrame("Temporal Extent view of ".concat(planName), this, true, true,
-//                                true, true);
-//     views.put(ViewManager.TEMPEXT_VIEW, temporalExtentViewFrame);
-//     Container contentPane = temporalExtentViewFrame.getContentPane();
-//     contentPane.add(new TemporalExtentView(partialPlan, startTimeMSecs, this));
-//     return temporalExtentViewFrame;
-//   }
-
-//   /**
-//    * Opens a new ConstraintNetworkView, stuffs it in an MDIInternalFrame, adds it to the hash
-//    * of frames, then returns it.  If a ConstraintNetworkView already exists for this partial
-//    * plan, returns that.
-//    * @return MDIInternalFrame the frame containing the vew.
-//    */
-//   public MDIInternalFrame openConstraintNetworkView( long startTimeMSecs) {
-//     if(viewExists(ViewManager.CNET_VIEW)) {
-//       return (MDIInternalFrame) views.get(ViewManager.CNET_VIEW);
-//     }
-//     MDIInternalFrame constraintNetworkViewFrame = 
-//       desktopFrame.createFrame("Constraint Network view of ".concat(planName), this, true, true,
-//                                true, true);
-//     views.put(ViewManager.CNET_VIEW, constraintNetworkViewFrame);
-//     Container contentPane = constraintNetworkViewFrame.getContentPane();
-//     contentPane.add(new ConstraintNetworkView(partialPlan, startTimeMSecs, this));
-//     return constraintNetworkViewFrame;
-//   }
-
-  //  public void addViewFrame(MDIInternalFrame viewFrame) {
-  // if(!views.contains(viewFrame)) {
-  //   views.add(viewFrame);
-  // }
-  //}
 
   /**
    * Removes a view from the ViewSet.  If there are no more views extant, removes the ViewSet.
@@ -287,14 +183,6 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   public List getValidIds() {
    return contentSpec.getValidIds();
   }
-
-//   public List getValidIds() {
-//     return new ArrayList();
-//   }
-
-  //public void printSpec() {
-  //  contentSpec.printSpec();
-  //}
 
   /**
    * Closes all of the views in the ViewSet.

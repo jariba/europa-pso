@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.10 2003-11-18 23:54:15 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.11 2003-12-16 23:18:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,12 +15,17 @@ package gov.nasa.arc.planworks.viz.partialPlan;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -79,6 +84,18 @@ public class PartialPlanViewSet extends ViewSet {
               sequenceStepsViewMap.get( seqUrl)).getSize().getHeight() * 0.5);
     this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
     this.contentSpecWindow.setVisible(true);
+  }
+
+  public MDIInternalFrame openView(String viewClassName) {
+    MDIInternalFrame retval = super.openView(viewClassName);
+    retval.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK, false),
+                             "foobar");
+    retval.getActionMap().put("foobar", new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          System.err.println("foobar");
+        }
+      });
+    return retval;
   }
 
   /**

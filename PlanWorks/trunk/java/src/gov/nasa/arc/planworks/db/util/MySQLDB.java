@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.70 2003-12-11 22:00:54 miatauro Exp $
+// $Id: MySQLDB.java,v 1.71 2003-12-16 23:18:30 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -818,9 +818,7 @@ public class MySQLDB {
           queryDatabase("SELECT ParameterId, ParameterName FROM Parameter WHERE PartialPlanId=".concat(partialPlan.getId().toString()).concat(" && PredicateId=").concat(predicateId.toString()));
         while(parameters.next()) {
           Integer parameterId = new Integer(parameters.getInt("ParameterId"));
-          partialPlan.addParameter(parameterId,
-                                   predicate.addParameter(parameterId,
-                                                          parameters.getString("ParameterName")));
+          predicate.addParameter(parameterId, parameters.getString("ParameterName"));
         }
       }
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.14 2003-10-23 22:54:32 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.15 2003-12-16 23:18:29 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -111,9 +111,12 @@ public class PwVariableImpl implements PwVariable {
    */
   public List getParameterList() {
     List retval = new ArrayList(parameterIdList.size());
-    ListIterator parameterIdIterator = parameterIdList.listIterator();
-    while(parameterIdIterator.hasNext()) {
-      retval.add(partialPlan.getParameter((Integer)parameterIdIterator.next()));
+    ListIterator tokenIdIterator = tokenIdList.listIterator();
+    ListIterator paramIdIterator = parameterIdList.listIterator();
+    while(tokenIdIterator.hasNext()) {
+      Integer tokenId = (Integer) tokenIdIterator.next();
+      Integer paramId = (Integer) paramIdIterator.next();
+      retval.add(partialPlan.getToken(tokenId).getPredicate().getParameter(paramId));
     }
     return retval;
   }
