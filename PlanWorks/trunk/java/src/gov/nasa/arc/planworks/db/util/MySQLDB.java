@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.43 2003-10-03 00:01:50 miatauro Exp $
+// $Id: MySQLDB.java,v 1.44 2003-10-07 17:11:31 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -600,24 +600,23 @@ public class MySQLDB {
   synchronized public static Map queryTransactions(Long sequenceId) {
     Map retval = new OneToManyMap();
     try {
+      long startQuery = System.currentTimeMillis();
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
-      int stepnum = -1;
-      Long partialPlanId = new Long(0L);
+        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
+      long endQuery = System.currentTimeMillis();
+      System.err.println("Transaction query took " + (endQuery-startQuery) + "ms");
       while(transactions.next()) {
-        Long currPartialPlanId = new Long(transactions.getLong("PartialPlanId"));
-        if(!partialPlanId.equals(currPartialPlanId)) {
-          stepnum++;
-          partialPlanId = currPartialPlanId;
-        }
+        Long partialPlanId = new Long(transactions.getLong("PartialPlanId"));
         retval.put(partialPlanId, new PwTransactionImpl(transactions.getString("TransactionType"),
                                                         new Integer(transactions.getInt("TransactionId")),
                                                         transactions.getString("Source"),
                                                         new Integer(transactions.getInt("ObjectId")),
-                                                        new Integer(stepnum),
+                                                        new Integer(transactions.getInt("StepNumber")),
                                                         sequenceId,
                                                         new Long(transactions.getLong("PartialPlanId"))));
       }
+      long endLoop = System.currentTimeMillis();
+      System.err.println("Transaction building took " + (endLoop - endQuery) + "ms");
     }
     catch(SQLException sqle) {}
     return retval;
