@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.13 2004-07-29 20:31:44 taylor Exp $
+// $Id: PWTestHelper.java,v 1.14 2004-08-23 22:07:40 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -228,7 +228,9 @@ public abstract class PWTestHelper {
       System.err.println( "  i " + i + " sequenceFileArray " + sequenceFileArray[i].getName());
     }
     planWorks.getSequenceDirChooser().setCurrentDirectory( new File( sequenceDirectory));
+    guiTest.flushAWT(); guiTest.awtSleep();
     planWorks.getSequenceDirChooser().setSelectedFiles( sequenceFileArray);
+    guiTest.flushAWT(); guiTest.awtSleep();
 
     JMenuItem createItem =
       PWTestHelper.findMenuItem( PlanWorks.PROJECT_MENU, PlanWorks.CREATE_MENU_ITEM,
@@ -617,6 +619,42 @@ public abstract class PWTestHelper {
   } // end sequenceStepsViewStepSelection
 
   /**
+   * <code>seqStepsViewStepItemExists</code>
+   *
+   * @param seqStepsView - <code>SequenceStepsView</code> - 
+   * @param stepNumber - <code>int</code> - 
+   * @param viewMenuItemName - <code>String</code> - 
+   * @param viewListenerList - <code>List</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @return - <code>boolean</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static boolean seqStepsViewStepItemExists( SequenceStepsView seqStepsView,
+                                                    int stepNumber,
+                                                    String viewMenuItemName,
+                                                    List viewListenerList,
+                                                    JFCTestHelper helper,
+                                                    PlanWorksGUITest guiTest)
+    throws Exception {
+    // System.err.println( "seqStepsViewStepItemSelection " + seqStepsView.getName());
+    StepElement stepElement =
+      (StepElement) ((List) seqStepsView.getStepElementList().get( stepNumber)).get( 0);
+    // 2nd arg to enterClickAndLeave must be of class Component
+    // JGo objects are not
+    // helper.enterClickAndLeave( new MouseEventData( this, stepElement, 1,
+    //                                                MouseEvent.BUTTON3_MASK));
+    stepElement.doMouseClickWithListener( MouseEvent.BUTTON3_MASK, stepElement.getLocation(),
+                                          new Point( 0, 0), seqStepsView.getJGoView(),
+                                          viewListenerList);
+    guiTest.flushAWT(); guiTest.awtSleep();
+    // try{Thread.sleep(2000);}catch(Exception e){}
+
+    // PWTestHelper.selectViewMenuItem( seqStepsView, viewMenuItemName, helper, guiTest);
+    return PWTestHelper.viewMenuItemExists( seqStepsView, viewMenuItemName, helper, guiTest);
+  } // end sequenceStepsViewStepExists
+
+  /**
    * <code>viewBackgroundItemSelection</code>
    *
    * @param view - <code>VizView</code> - 
@@ -746,12 +784,37 @@ public abstract class PWTestHelper {
 
     // try{Thread.sleep(2000);}catch(Exception e){}
 
+    Assert.assertNotNull( viewMenuItemName + "' not found:", viewMenuItem); 
     System.err.println( "'" + view.getName() + "' viewMenuItem '" +
                         viewMenuItem.getText() + "'");
-    Assert.assertNotNull( viewMenuItemName + "' not found:", viewMenuItem); 
     helper.enterClickAndLeave( new MouseEventData( guiTest, viewMenuItem));
     guiTest.flushAWT(); guiTest.awtSleep();
   } // end selectViewMenuItem
+
+  /**
+   * <code>viewMenuItemExists</code>
+   *
+   * @param view - <code>VizView</code> - 
+   * @param viewMenuItemName - <code>String</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @return - <code>boolean</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static boolean viewMenuItemExists( VizView view, String viewMenuItemName,
+                                            JFCTestHelper helper, PlanWorksGUITest guiTest)
+    throws Exception {  
+    guiTest.flushAWT(); guiTest.awtSleep();
+    JPopupMenu popupMenu =
+      (JPopupMenu) PWTestHelper.findComponentByClass( JPopupMenu.class);
+    Assert.assertNotNull( "Failed to get \"" + popupMenu + "\" popupMenu.", popupMenu);
+    JMenuItem viewMenuItem = PWTestHelper.getPopupViewMenuItem( viewMenuItemName, popupMenu);
+
+    // deprecated JMenuItem viewMenuItem =
+    //  (JMenuItem) helper.findComponent( new JMenuItemFinder( viewMenuItemName), 0);
+
+    return (viewMenuItem != null);
+  } // end viewMenuItemExists
 
   /**
    * <code>getPopupViewMenuItem</code> - partial plan views and all views

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.57 2004-08-21 00:32:01 taylor Exp $
+// $Id: planViz.txt,v 1.58 2004-08-23 22:07:41 taylor Exp $
 //
 // PlanWorks
 //
@@ -63,8 +63,8 @@ Method:
   5. Click "OK" on the error dialog.
   6. Click "OK" on the error dialog.
   7. Select "Planning Sequence-><seq-name> and in the SequenceStepsView, Mouse-Right
-     on the <m>'th step and choose "Open Timeline View".
-  8.  Click "OK" on the error dialog and then "Project->Delete-><project-name>.
+     on the <m>'th step.
+  8. Select "Open DBTransaction View" and then "Project->Delete-><project-name>.
 
 Post-conditions:
   1. Method: 2 - Error dialog appears: "Invalid Sequence Directory" with
@@ -77,8 +77,8 @@ Post-conditions:
      Directory" with "<..../work3/<seq-name>nnnnnnnnnnnnn/step<m>>  
      Has 7 files -- 8 are required".
   5. Method: 6 - Error dialog disappears and the fourth sequence is loaded successfully.
-  6. Method: 7 - Error dialog appears: "Failed to get file listing for step<m>".
-  7. Method: 8 - Error dialog disappears and PlanWorks frame title has <project-name>
+  6. Method: 7 - "Open DBTransaction View" is the only selection available.
+  7. Method: 8 - DBTransaction View appears, and then PlanWorks frame title has <project-name>
      removed.
 
 Requirements: N/A

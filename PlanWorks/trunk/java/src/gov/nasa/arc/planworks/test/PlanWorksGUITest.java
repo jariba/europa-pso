@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.21 2004-08-10 21:17:08 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.22 2004-08-23 22:07:40 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -339,11 +339,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   // catch assert errors and Exceptions here, since JUnit seems to not do it 
   public void planVizTests() throws Exception {
     try {
-      planViz01(); 
-      planViz02(); 
-      planViz03(); planViz04(); // 04 depends on 03
-      planViz05(); 
-      planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
+//       planViz01(); 
+//       planViz02(); 
+//       planViz03(); planViz04(); // 04 depends on 03
+//       planViz05(); 
+//       planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
       planViz10(); 
       planViz11(); // methods 1-16 of 20 complete
       planViz12(); // methods 1-15 of 18 complete for TimelineView; no other views yet
@@ -477,12 +477,22 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
 
     List viewListenerList = createViewListenerList();
     String viewMenuItemName = "Open " + ViewConstants.TIMELINE_VIEW;
+    boolean isTimelineViewAvailable =
+      PWTestHelper.seqStepsViewStepItemExists( seqStepsView, stepNumber, viewMenuItemName,
+                                               viewListenerList, helper, this);
+    assertFalseVerbose( "DBTransaction View is not is only view available",
+                        isTimelineViewAvailable, "not ");
+
+    viewMenuItemName = "Open " + ViewConstants.DB_TRANSACTION_VIEW;
     PWTestHelper.seqStepsViewStepItemSelection( seqStepsView, stepNumber,
                                                 viewMenuItemName, viewListenerList,
                                                 helper, this);
+   String viewNameSuffix = PWTestHelper.SEQUENCE_NAME +
+     System.getProperty( "file.separator") + "step" + String.valueOf( stepNumber);
+    DBTransactionView dbTransactionView =
+      ( DBTransactionView) PWTestHelper.getPartialPlanView
+      ( ViewConstants.DB_TRANSACTION_VIEW, viewNameSuffix, this);
 
-    PWTestHelper.handleDialog( "Resource Not Found Exception", "OK",
-                               "Failed to get file listing for " + stepName, helper, this);
     // try{Thread.sleep(2000);}catch(Exception e){}
 
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
@@ -975,6 +985,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                        equals( (String) sequenceUrls.get( 6)), "not ");
     //try{Thread.sleep(2000);}catch(Exception e){}
 
+    PWTestHelper.deleteSequenceFromProject( (String) sequenceUrls.get( 4), helper, this);
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
 
     System.err.println( "\nPLANVIZ_09 COMPLETED\n");
@@ -1057,11 +1068,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
     PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
 
-    planViz10CNet( constraintNetworkView, stepNumber, planSeq, partialPlan);
+//     planViz10CNet( constraintNetworkView, stepNumber, planSeq, partialPlan);
 
-    planViz10TempExt( temporalExtentView, stepNumber, planSeq, partialPlan);
+//     planViz10TempExt( temporalExtentView, stepNumber, planSeq, partialPlan);
 
-    planViz10Timeline( timelineView, stepNumber, planSeq, partialPlan);
+//     planViz10Timeline( timelineView, stepNumber, planSeq, partialPlan);
 
     planViz10TokNet( tokenNetworkView, stepNumber, planSeq, partialPlan);
 
@@ -1898,6 +1909,15 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     RuleInstanceNode ruleInstanceNode = null;
     int numSlottedTokenNodes = 0, numFreeTokenNodes = 0, numResTransactionNodes = 0;
     int numRuleInstanceNodes = 0;
+    // token network now is incrementally rendered by the user.  Here we have
+    // no master/slave relationships => slotted tokens and resource transactions are all
+    // root nodes.  create free tokens
+    boolean isByKey = true;
+    Iterator freeTokenItr = partialPlan.getFreeTokenList().iterator();
+    while (freeTokenItr.hasNext()) {
+      PwToken freeToken = (PwToken) freeTokenItr.next();
+      tokenNetworkView.findAndSelectNode( ((PwToken) freeTokenItr.next()).getId(), isByKey);
+    }
     Iterator tokenNodeKeyItr = tokenNetworkView.getTokenNodeKeyList().iterator();
     while (tokenNodeKeyItr.hasNext()) {
       TokenNetworkTokenNode tokenNode =
@@ -1923,6 +1943,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
         }
       }
     }
+
     Iterator ruleInstKeyItr = tokenNetworkView.getRuleInstanceNodeKeyList().iterator();
     while (ruleInstKeyItr.hasNext()) {
       RuleInstanceNode ruleInstNode =
@@ -1932,7 +1953,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
         }
         numRuleInstanceNodes++;
     }
-       
+    try{Thread.sleep(20000);}catch(Exception e){}
+
 //     System.err.println( "numSlottedTokenNodes " + numSlottedTokenNodes +
 //                         "numFreeTokenNodes " + numFreeTokenNodes +
 //                         " numResTransactionNodes " + numResTransactionNodes);
