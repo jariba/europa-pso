@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomainImpl.java,v 1.8 2003-10-02 23:24:21 taylor Exp $
+// $Id: PwEnumeratedDomainImpl.java,v 1.9 2003-10-18 00:01:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -116,7 +116,11 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
       return Integer.parseInt( upperBound);
     }
   }
-		
+
+  public boolean isSingleton() {
+    return enumeration.size() == 1;
+  }
+
   /**
    * <code>toString</code>
    *
