@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.57 2003-11-20 19:31:05 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.58 2003-11-25 01:40:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -141,7 +141,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     String [] fileNames = planDir.list(new PwSQLFilenameFilter());
     if(fileNames == null) {
-      throw new ResourceNotFoundException("Failed to get file listing.");
+      throw new ResourceNotFoundException("Failed to get file listing for " +
+                                          planDir.getName());
     }
     for(int i = 0; i < fileNames.length; i++) {
       String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".") + 1);

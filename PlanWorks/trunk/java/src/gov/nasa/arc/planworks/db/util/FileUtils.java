@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.10 2003-11-06 21:52:52 miatauro Exp $
+// $Id: FileUtils.java,v 1.11 2003-11-25 01:40:38 taylor Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -70,25 +70,27 @@ public class FileUtils {
    * <code>validateSequenceDirectory</code>
    *
    * @param sequenceDirectory - <code>String</code> - 
-   * @return - <code>boolean</code> - 
+   * @return - <code>String</code> - 
    */
-  public static boolean validateSequenceDirectory( String sequenceDirectory) {
+  public static String validateSequenceDirectory( String sequenceDirectory) {
     // determine sequence's partial plan directories
     List partialPlanDirs = new ArrayList();
     String [] fileNames = new File( sequenceDirectory).list();
-    if(fileNames == null) {
-      //System.err.println("No files in directory " + sequenceDirectory);
-      return false;
+    String msg = null;
+    if(fileNames.length == 0) {
+      msg = sequenceDirectory + "\n\n    No files in directory.";
+      System.err.println( msg);
+      return msg;
     }
-    //System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
-    //                     sequenceDirectory + "' numFiles " + fileNames.length);
+    // System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
+    //                      sequenceDirectory + "' numFiles " + fileNames.length);
     int seenSequenceFiles = 0;
     for (int i = 0; i < fileNames.length; i++) {
       String fileName = fileNames[i];
       if ((! fileName.equals( "CVS")) &&
           (new File( sequenceDirectory + System.getProperty( "file.separator") +
                      fileName)).isDirectory()) {
-        //System.err.println( "Sequence " + sequenceDirectory +
+        // System.err.println( "Sequence " + sequenceDirectory +
         //                    " => partialPlanDirName: " + fileName);
         partialPlanDirs.add( fileName);
       }
@@ -97,22 +99,31 @@ public class FileUtils {
         seenSequenceFiles++;
       }
     }
+    if (seenSequenceFiles != DbConstants.NUMBER_OF_SEQ_FILES) {
+      msg = sequenceDirectory + "\n\n    " + seenSequenceFiles +
+        " sequence files in directory -- " + DbConstants.NUMBER_OF_SEQ_FILES +
+        " are required.";
+      System.err.println( msg);
+      return msg;
+    }
     if (partialPlanDirs.size() == 0) {
-      //System.err.println( "partialPlanDirs.size() == 0");
-      return false;
+      msg = sequenceDirectory + "\n\n    No partial plans in directory.";
+      System.err.println( msg);
+      return msg;
     }
     // determine existence of the N SQL-input files in partial plan directories (steps)
     for (int i = 0, n = partialPlanDirs.size(); i < n; i++) {
       String partialPlanPath = sequenceDirectory + System.getProperty( "file.separator") +
         partialPlanDirs.get( i);
       fileNames = new File(partialPlanPath).list(new PwSQLFilenameFilter());
-      //System.err.println( "partialPlanPath " + partialPlanPath + " numFiles " +
-      //                     fileNames.length);
-      if(fileNames.length != DbConstants.NUMBER_OF_PP_FILES) {
-        return false;
+      if (fileNames.length != DbConstants.NUMBER_OF_PP_FILES) { 
+         msg = partialPlanPath + "\n\n    Has " + fileNames.length +
+           " files -- " + DbConstants.NUMBER_OF_PP_FILES + " are required.";
+        System.err.println( msg);
+        return msg;
       }
     }
-    return true && seenSequenceFiles == DbConstants.NUMBER_OF_SEQ_FILES;
+    return msg;
   } // end validateSequenceDirectory
 
 } // class FileUtils

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.3 2003-10-09 22:07:41 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.4 2003-11-25 01:40:37 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -74,9 +74,10 @@ public class AddSequenceThread extends Thread {
             String sequenceDirectory = PlanWorks.planWorks.sequenceParentDirectory +
               System.getProperty( "file.separator") +
               PlanWorks.planWorks.sequenceDirectories[i].getName();
-            if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
+            String validateMsg = FileUtils.validateSequenceDirectory( sequenceDirectory);
+            if (validateMsg != null) {
               JOptionPane.showMessageDialog
-                (PlanWorks.planWorks, sequenceDirectory, "Invalid Sequence Directory",
+                (PlanWorks.planWorks, validateMsg, "Invalid Sequence Directory",
                  JOptionPane.ERROR_MESSAGE);
               invalidSequenceDirs.add( sequenceDirectory);
             }

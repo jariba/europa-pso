@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.4 2003-11-13 22:42:29 miatauro Exp $
+// $Id: InstantiateProjectThread.java,v 1.5 2003-11-25 01:40:37 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -103,8 +103,9 @@ public class InstantiateProjectThread extends Thread {
           throw new DuplicateNameException( "A project named '" + inputName +
                                             "' already exists.");
         }
-        List invalidSequenceDirs = new ArrayList();
+        List invalidSequenceDirs = null;
         while (true) {
+          invalidSequenceDirs = new ArrayList();
           // ask user for a single sequence directory of partialPlan directories
           int returnVal =
             PlanWorks.planWorks.sequenceDirChooser.showDialog( PlanWorks.planWorks, "");
@@ -113,9 +114,10 @@ public class InstantiateProjectThread extends Thread {
               String sequenceDirectory = PlanWorks.planWorks.sequenceParentDirectory +
                 System.getProperty( "file.separator") +
                 PlanWorks.planWorks.sequenceDirectories[i].getName();
-              if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
+              String validateMsg = FileUtils.validateSequenceDirectory( sequenceDirectory);
+              if (validateMsg != null) {
                 JOptionPane.showMessageDialog
-                  (PlanWorks.planWorks, sequenceDirectory, "Invalid Sequence Directory",
+                  (PlanWorks.planWorks, validateMsg, "Invalid Sequence Directory",
                    JOptionPane.ERROR_MESSAGE);
                 invalidSequenceDirs.add( sequenceDirectory);
               }
@@ -166,7 +168,7 @@ public class InstantiateProjectThread extends Thread {
           (PlanWorks.planWorks, dupExcep.getMessage().substring( index + 1),
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
           System.err.println( dupExcep);
-          dupExcep.printStackTrace();
+          // dupExcep.printStackTrace();
           isProjectCreated = false; 
       } catch (Exception e) {
         //         int index = e.getMessage().indexOf(":");
