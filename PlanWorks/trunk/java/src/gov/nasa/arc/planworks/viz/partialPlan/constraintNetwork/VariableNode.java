@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.13 2004-03-02 02:34:15 taylor Exp $
+// $Id: VariableNode.java,v 1.14 2004-03-12 23:23:01 miatauro Exp $
 //
 // PlanWorks
 //
@@ -455,21 +455,7 @@ public class VariableNode extends ExtendedBasicNode {
   } // end doMouseClick   
 
   private void mouseRightPopupMenu( Point viewCoords) {
-    JPopupMenu mouseRightPopup = new JPopupMenu();
-    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
-    navigatorItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame();
-          Container contentPane = navigatorFrame.getContentPane();
-          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
-          contentPane.add( new NavigatorView( VariableNode.this, partialPlan,
-                                              partialPlanView.getViewSet(),
-                                              navigatorFrame));
-        }
-      });
-    mouseRightPopup.add( navigatorItem);
-
-    NodeGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
+    ConstraintNetworkUtils.mouseRightPopupMenu(viewCoords, this, partialPlanView);
   } // end mouseRightPopupMenu
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstantImpl.java,v 1.4 2004-03-09 01:48:27 taylor Exp $
+// $Id: PwResourceInstantImpl.java,v 1.5 2004-03-12 23:19:52 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -39,11 +39,11 @@ public class PwResourceInstantImpl implements PwResourceInstant {
   private double levelMin;
   private double levelMax;
   private List transactionIds;
-  private PwPartialPlan partialPlan;
+  private PwPartialPlanImpl partialPlan;
 
   public PwResourceInstantImpl( final Integer id,  final int time, final double levelMin,
                                 final double levelMax, final String transactions,
-                                final PwPartialPlan partialPlan) {
+                                final PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.time = time;
     this.levelMin = levelMin;
@@ -96,16 +96,7 @@ public class PwResourceInstantImpl implements PwResourceInstant {
   }
 
   public List getTransactions() {
-    List retval = new ArrayList(transactionIds.size());
-    ListIterator idIterator = transactionIds.listIterator();
-    while(idIterator.hasNext()) {
-      PwResourceTransaction trans =
-        partialPlan.getResourceTransaction((Integer)idIterator.next());
-      if(trans != null) {
-        retval.add(trans);
-      }
-    }
-    return retval;
+    return partialPlan.getResourceTransactionList(transactionIds);
   }
 
   public String toString() {

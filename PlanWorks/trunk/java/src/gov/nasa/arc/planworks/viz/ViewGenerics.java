@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.8 2004-03-02 02:34:12 taylor Exp $
+// $Id: ViewGenerics.java,v 1.9 2004-03-12 23:21:54 miatauro Exp $
 //
 // PlanWorks
 //
@@ -46,7 +46,10 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.BooleanFunctor;
+import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -67,7 +70,7 @@ public class ViewGenerics {
 
   public static final String VIEW_TITLE = "View for ";
   public static final String OVERVIEW_TITLE = "Overview for ";
-
+  private static final ViewGenerics generics = new ViewGenerics();
   private ViewGenerics() {
   }
 
@@ -237,6 +240,10 @@ public class ViewGenerics {
     }
   } // end raiseOverviewFrame
 
+  class TemporalExtentViewFinder implements BooleanFunctor {
+    public TemporalExtentViewFinder(){}
+    public final boolean func(Object o){return (o instanceof TemporalExtentView);}
+  }
 
   /**
    * <code>getTemporalExtentView</code> - cannot be generalized (jdk1.4)
@@ -245,16 +252,13 @@ public class ViewGenerics {
    * @return - <code>TemporalExtentView</code> - 
    */
   public static TemporalExtentView getTemporalExtentView( MDIInternalFrame frame) {
-    Container contentPane = frame.getContentPane();
-    for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
-      //       System.err.println( "i " + i + " " +
-      //                           contentPane.getComponent( i).getClass().getName());
-      if (contentPane.getComponent(i) instanceof TemporalExtentView) {
-        return (TemporalExtentView) contentPane.getComponent(i);
-      }
-    }
-    return null;
+    return generics._getTemporalExtentView(frame);
   } // end getTemporalExtentView
+
+  private final TemporalExtentView _getTemporalExtentView(MDIInternalFrame frame) {
+    return (TemporalExtentView) CollectionUtils.findFirst(new TemporalExtentViewFinder(),
+                                                          frame.getContentPane().getComponents());
+  }
 
 } // end class ViewGenerics 
 

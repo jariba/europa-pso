@@ -9,6 +9,7 @@ import java.util.Map;
 import com.nwoods.jgo.JGoPen;
 
 import gov.nasa.arc.planworks.db.PwVariableContainer;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 
 public interface VariableContainerNode {
   public abstract PwVariableContainer getContainer();
@@ -30,4 +31,8 @@ public interface VariableContainerNode {
   public abstract void decVariableLinkCount();
   public abstract void setVisible(boolean b);
   public abstract void addContainerNodeVariables(Object p, Object v);
+  public abstract void mouseRightPopupMenu(Point p);
+  public abstract void addContainerNodeVariables(VariableContainerNode n, ConstraintNetworkView v);
+  public abstract void removeContainerNodeVariables(VariableContainerNode n,
+                                                    ConstraintNetworkView v);
 }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.16 2004-03-07 01:49:28 taylor Exp $
+// $Id: NavigatorView.java,v 1.17 2004-03-12 23:23:40 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -56,6 +56,7 @@ import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;

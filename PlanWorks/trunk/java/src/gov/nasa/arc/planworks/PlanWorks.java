@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.87 2004-03-02 02:34:10 taylor Exp $
+// $Id: PlanWorks.java,v 1.88 2004-03-12 23:19:01 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -43,9 +43,12 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.SplashWindow;
+import gov.nasa.arc.planworks.util.BooleanFunctor;
+import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.PlannerCommandLineDialog;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
@@ -369,18 +372,18 @@ public class PlanWorks extends MDIDesktopFrame {
    * @return - <code>List</code> - 
    */
   protected final List getProjectsLessCurrent() {
-    List projectNames = PwProject.listProjects();
-    List projectsLessCurrent = new ArrayList();
-    for (int i = 0, n = projectNames.size(); i < n; i++) {
-      String projectName = (String) projectNames.get( i);
-      // discard current project
-      if (! projectName.equals( this.currentProjectName)) {
-        projectsLessCurrent.add( projectName);
-      }
-    }
-    return projectsLessCurrent;
+    return CollectionUtils.lGrep(new NotEqualFunctor(currentProjectName), PwProject.listProjects());
   } // end getProjectsLessCurrent
 
+  class NotEqualFunctor implements BooleanFunctor {
+    private Object ne;
+    public NotEqualFunctor(Object ne) {
+      this.ne = ne;
+    }
+    public final boolean func(final Object cmp) {
+      return !ne.equals(cmp);
+    }
+  }
 
   /**
    * <code>getSequenceStepsViewFrame</code>

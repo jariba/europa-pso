@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.44 2004-03-09 22:00:38 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.45 2004-03-12 23:19:52 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -33,6 +33,8 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.util.BooleanFunctor;
+import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
@@ -231,13 +233,19 @@ public class PwProjectImpl extends PwProject {
    */
   public List listPlanningSequences() {
     return new ArrayList(sequenceIdUrlMap.values());
-//     ArrayList retval = new ArrayList();
-//     ListIterator sequenceIterator = planningSequences.listIterator();
-//     while(sequenceIterator.hasNext()) {
-//       retval.add(((PwPlanningSequenceImpl)sequenceIterator.next()).getUrl());
-//     }
-//    return retval;
   } // end listPlanningSequences
+
+  class PlanningSequenceNameEquals implements BooleanFunctor {
+    private String name;
+    public PlanningSequenceNameEquals(String name){this.name = name;}
+    public final boolean func(Object n){return name.equals(((PwPlanningSequence)n).getUrl());}
+  }
+
+  class PlanningSequenceIdEquals implements BooleanFunctor {
+    private Long id;
+    public PlanningSequenceIdEquals(Long id){this.id = id;}
+    public final boolean func(Object n){return id.equals(((PwPlanningSequence)n).getId());}
+  }
 
   /**
    * <code>getPlanningSequence</code>
@@ -251,13 +259,14 @@ public class PwProjectImpl extends PwProject {
     if(!sequenceIdUrlMap.containsValue(url)) {
       throw new ResourceNotFoundException("getPlanningSequence could not find " + url);
     }
-    Iterator planningSeqIterator = planningSequences.iterator();
-    while (planningSeqIterator.hasNext()) {
-      PwPlanningSequence pwPlanningSequence =
-        (PwPlanningSequence) planningSeqIterator.next();
-      if (pwPlanningSequence.getUrl().equals( url)) {
-        return pwPlanningSequence;
-      }
+    List temp = CollectionUtils.lGrep(new PlanningSequenceNameEquals(url), planningSequences);
+
+    if(temp.size() > 1) {
+      throw new ResourceNotFoundException("Found multiple sequences with names equal to '" + url + 
+                                          "'");
+    }
+    else if(temp.size() == 1) {
+      return (PwPlanningSequence) temp.get(0);
     }
     planningSequences.add(retval = new PwPlanningSequenceImpl(url, this));
     return retval;
@@ -266,14 +275,15 @@ public class PwProjectImpl extends PwProject {
   public PwPlanningSequence getPlanningSequence(final Long seqId) throws ResourceNotFoundException {
     PwPlanningSequence retval;
     if(!sequenceIdUrlMap.containsKey(seqId)) {
-      throw new ResourceNotFoundException("getPlanning sequence could not find " + id);
+      throw new ResourceNotFoundException("getPlanning sequence could not find " + seqId);
     }
-    Iterator planningSeqIterator = planningSequences.iterator();
-    while(planningSeqIterator.hasNext()) {
-      PwPlanningSequence pwPlanningSequence = (PwPlanningSequence) planningSeqIterator.next();
-      if(pwPlanningSequence.getId().equals(seqId)) {
-        return pwPlanningSequence;
-      }
+    List temp = CollectionUtils.lGrep(new PlanningSequenceIdEquals(seqId), planningSequences);
+
+    if(temp.size() > 1) {
+      throw new ResourceNotFoundException("Multiple sequences found with id " + seqId);
+    }
+    else if(temp.size() == 1) {
+      return (PwPlanningSequence) temp.get(0);
     }
     planningSequences.add(retval = 
                           new PwPlanningSequenceImpl((String) sequenceIdUrlMap.get(seqId), this));
@@ -305,28 +315,36 @@ public class PwProjectImpl extends PwProject {
     }
   }
 
-  public PwPlanningSequence closePlanningSequence(final String seqName) {
-    ListIterator seqIterator = planningSequences.listIterator();
-    while(seqIterator.hasNext()) {
-      PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();
-      if(planSeq.getUrl().equals(seqName)) {
-        seqIterator.remove();
-        System.gc();
-        return planSeq;
-      }
+  public PwPlanningSequence closePlanningSequence(final String seqName) 
+    throws ResourceNotFoundException {
+    if(!sequenceIdUrlMap.containsValue(seqName)) {
+      throw new ResourceNotFoundException("Failed to find a sequence with url " + seqName);
+    }
+    List temp = CollectionUtils.lGrep(new PlanningSequenceNameEquals(seqName), planningSequences);
+    if(temp.size() > 1) {
+      throw new ResourceNotFoundException("Found more than one sequence with url " + seqName);
+    }
+    else if(temp.size() == 1) {
+      planningSequences.removeAll(temp);
+      System.gc();
+      return (PwPlanningSequence) temp.get(0);
     }
     return null;
   }
 
-  public PwPlanningSequence closePlanningSequence(final Long seqId) {
-    ListIterator seqIterator = planningSequences.listIterator();
-    while(seqIterator.hasNext()) {
-      PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();
-      if(planSeq.getId().equals(seqId)) {
-        seqIterator.remove();
-        System.gc();
-        return planSeq;
-      }
+  public PwPlanningSequence closePlanningSequence(final Long seqId) 
+    throws ResourceNotFoundException{
+    if(!sequenceIdUrlMap.containsKey(seqId)) {
+      throw new ResourceNotFoundException("Failed to find sequence with id " + seqId);
+    }
+    List temp = CollectionUtils.lGrep(new PlanningSequenceIdEquals(seqId), planningSequences);
+    if(temp.size() > 1) {
+      throw new ResourceNotFoundException("Found more than one sequence with id " + seqId);
+    }
+    else if(temp.size() == 1) {
+      planningSequences.removeAll(temp);
+      System.gc();
+      return (PwPlanningSequence) temp.get(0);
     }
     return null;
   }

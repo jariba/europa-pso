@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.22 2004-03-04 20:50:25 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.23 2004-03-12 23:19:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -111,53 +111,17 @@ public class PwObjectImpl implements PwObject {
   }
 
   public List getComponentList() {
-    List retval = new ArrayList(componentIdList.size());
-    ListIterator componentIdIterator = componentIdList.listIterator();
-    while(componentIdIterator.hasNext()) {
-      Integer compId = (Integer) componentIdIterator.next();
-      PwObject comp = partialPlan.getObject(compId);
-      if(comp != null) {
-        retval.add(comp);
-      }
-      else {
-        System.err.println("PwObjectImpl.getComponentList: ObjectId " + compId + " is null.");
-      }
-    }
-    return retval;
+    return partialPlan.getObjectList(componentIdList);
   }
 
   public int getObjectType(){return type;}
 
   public List getVariables() {
-    List retval = new ArrayList(variableIdList.size());
-    ListIterator varIdIterator = variableIdList.listIterator();
-    while(varIdIterator.hasNext()) {
-      Integer varId = (Integer) varIdIterator.next();
-      PwVariable var = partialPlan.getVariable(varId);
-      if(var != null) {
-        retval.add(var);
-      }
-      else {
-        System.err.println("PwObjectImpl.getVariablesList: VarId " + varId + " is null.");
-      }
-    }
-    return retval;
+    return partialPlan.getVariableList(variableIdList);
   }
 
   public List getTokens() {
-    List retval = new ArrayList(tokenIdList.size());
-    ListIterator tokenIdIterator = tokenIdList.listIterator();
-    while(tokenIdIterator.hasNext()) {
-      Integer tokenId = (Integer) tokenIdIterator.next();
-      PwToken tok = partialPlan.getToken(tokenId);
-      if(tok != null) {
-        retval.add(tok);
-      }
-      else {
-        System.err.println("PwObjectImpl.getTokens: TokenId " + tokenId + " is null.");
-      }
-    }
-    return retval;
+    return partialPlan.getTokenList(tokenIdList);
   }
 
   public void addToken(Integer tokenId) {

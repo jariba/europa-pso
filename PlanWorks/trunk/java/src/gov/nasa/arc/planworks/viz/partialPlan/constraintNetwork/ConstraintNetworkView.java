@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.48 2004-03-07 01:49:27 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.49 2004-03-12 23:23:00 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -345,7 +345,6 @@ public class ConstraintNetworkView extends PartialPlanView {
         //network.validateConstraintNetwork();
       }
       newLayout.performLayout();
-      //newLayout.performLayout(); //<----- BIG FAT HACK!!!!
       // do not highlight node, if it has been removed
       boolean isHighlightNode = ((focusNode instanceof VariableContainerNode) ||
                                  ((focusNode instanceof VariableNode) &&
@@ -490,10 +489,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         backgroundColor = ColorMap.getColor(ViewConstants.FREE_TOKEN_BG_COLOR);
       }
       else {
-        backgroundColor = getTimelineColor( token.getParentId());//, timelineIndexMap);
-          // ((PartialPlanViewSet) viewSet).getColorStream().
-          // getColor(((Integer)timelineIndexMap.get(token.getTimelineId())).intValue());
-//         System.err.println(token.getId() + "=>" + token.getTimelineId() + "=>" + backgroundColor);
+        backgroundColor = getTimelineColor( token.getParentId());
       }
       long t1 = System.currentTimeMillis();
       ConstraintNetworkTokenNode tokenNode =

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.11 2004-02-17 23:29:17 miatauro Exp $
+// $Id: ConstraintNode.java,v 1.12 2004-03-12 23:23:00 miatauro Exp $
 //
 // PlanWorks
 //
@@ -398,22 +398,8 @@ public class ConstraintNode extends ExtendedBasicNode {
     return false;
   } // end doMouseClick   
 
-    private void mouseRightPopupMenu( Point viewCoords) {
-    JPopupMenu mouseRightPopup = new JPopupMenu();
-    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
-    navigatorItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame();
-          Container contentPane = navigatorFrame.getContentPane();
-          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
-          contentPane.add( new NavigatorView( ConstraintNode.this, partialPlan,
-                                              partialPlanView.getViewSet(),
-                                              navigatorFrame));
-        }
-      });
-    mouseRightPopup.add( navigatorItem);
-
-    NodeGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
+  private void mouseRightPopupMenu( Point viewCoords) {
+    ConstraintNetworkUtils.mouseRightPopupMenu(viewCoords, this, partialPlanView);
   } // end mouseRightPopupMenu
 
   private void addConstraintNodeVariables( ConstraintNode constraintNode,

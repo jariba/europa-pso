@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.31 2004-03-10 02:21:20 taylor Exp $
+// $Id: PartialPlanView.java,v 1.32 2004-03-12 23:22:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -45,7 +45,10 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.BooleanFunctor;
+import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.ViewRenderingException;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -654,6 +657,27 @@ public class PartialPlanView extends VizView {
     return false;
   } // end doesViewFrameExist
 
+  class NavViewClose implements UnaryFunctor {
+    private PartialPlanViewSet viewSet;
+    private String navName;
+    public NavViewClose(PartialPlanViewSet viewSet, String navName) {
+      this.viewSet = viewSet;
+      this.navName = navName;
+    }
+    public final Object func(Object o) {
+      if(o instanceof String && ((String) o).indexOf(navName) >= 0) {
+        MDIInternalFrame viewFrame = 
+          (MDIInternalFrame) viewSet.getView(o);
+        try {
+          viewFrame.setClosed(true);
+        } 
+        catch ( PropertyVetoException pve){
+        }
+      }
+      return o;
+    }
+  }
+
   /**
    * <code>createCloseNavigatorWindowsItem</code>
    *
@@ -663,23 +687,9 @@ public class PartialPlanView extends VizView {
     closeWindowsItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           String navigatorWindowName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
-          List windowKeyList =
-            new ArrayList( viewSet.getViews().keySet());
-          Iterator windowListItr = windowKeyList.iterator();
-          while (windowListItr.hasNext()) {
-            Object windowKey = (Object) windowListItr.next();
-            if (windowKey instanceof String) {
-              String navigatorWindowKey = (String) windowKey;
-              if (navigatorWindowKey.indexOf( navigatorWindowName) >= 0) {
-                MDIInternalFrame window = 
-                  (MDIInternalFrame) viewSet.getViews().get( navigatorWindowKey);
-                try {
-                  window.setClosed( true);
-                } catch ( PropertyVetoException pve){
-                }
-              }
-            }
-          }
+          List windowKeyList = new ArrayList( viewSet.getViews().keySet());
+          CollectionUtils.lMap(new NavViewClose((PartialPlanViewSet) viewSet, navigatorWindowName),
+                               windowKeyList);
           ((PartialPlanViewSet) viewSet).setNavigatorFrameCnt( 0);
         }
       });

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.20 2004-02-13 21:22:56 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.21 2004-03-12 23:19:54 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -118,11 +118,7 @@ public class PwVariableImpl implements PwVariable {
    * @return - <code>List</code> - of PwConstraint
    */
   public List getConstraintList() {
-    List retval = new ArrayList( constraintIdList.size());
-    for (int i = 0; i < constraintIdList.size(); i++) {
-      retval.add( partialPlan.getConstraint( (Integer) constraintIdList.get( i)));
-    }
-    return retval;
+    return partialPlan.getConstraintList(constraintIdList);
   }
 
   public PwVariableContainer getParent() {

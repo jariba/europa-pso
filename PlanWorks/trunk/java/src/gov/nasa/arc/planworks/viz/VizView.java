@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.10 2004-02-03 20:43:52 taylor Exp $
+// $Id: VizView.java,v 1.11 2004-03-12 23:21:54 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -39,7 +39,9 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-// import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.util.BooleanFunctor;
+import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.viz.partialPlan.CreatePartialPlanViewThread;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
@@ -147,16 +149,6 @@ public class VizView extends JPanel {
                               (int) viewFrame.getLocation().getY() -
                               ViewConstants.MDI_FRAME_DECORATION_HEIGHT -
                               ViewConstants.FRAME_DECORATION_HEIGHT); 
-//     maxViewWidth = Math.min( Math.max( maxViewWidth, PlanWorks.INTERNAL_FRAME_WIDTH),
-//                              (int) PlanWorks.getPlanWorks().getSize().getWidth() -
-//                              (int) viewFrame.getLocation().getX() -
-//                              ViewConstants.MDI_FRAME_DECORATION_WIDTH -
-//                              ViewConstants.FRAME_DECORATION_WIDTH); 
-//     maxViewHeight = Math.min( Math.max( maxViewHeight, PlanWorks.INTERNAL_FRAME_HEIGHT),
-//                               (int) PlanWorks.getPlanWorks().getSize().getHeight() -
-//                               (int) viewFrame.getLocation().getY() -
-//                               ViewConstants.MDI_FRAME_DECORATION_HEIGHT -
-//                               ViewConstants.FRAME_DECORATION_HEIGHT); 
     viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
                        maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
   } // end expandViewFrame
@@ -252,6 +244,28 @@ public class VizView extends JPanel {
       });
   } // end createShowAllItem
  
+  class NavViewDeIcon implements UnaryFunctor {
+    private PartialPlanViewSet viewSet;
+    private String navName;
+    public NavViewDeIcon(PartialPlanViewSet viewSet, String navName) {
+      this.viewSet = viewSet;
+      this.navName = navName;
+    }
+    public final Object func(Object o) {
+      if(o instanceof String && ((String) o).indexOf(navName) >= 0) {
+        MDIInternalFrame viewFrame = (MDIInternalFrame) viewSet.getView(o);
+        try {
+          viewFrame.setIcon( false);
+          viewFrame.setSelected( false);
+          viewFrame.setSelected( true);
+        } 
+        catch ( PropertyVetoException pve){
+        }
+      }
+      return o;
+    }
+  }
+
   private void createOpenAllItem( JMenuItem openAllItem,
                                   final PwPartialPlan partialPlanIfLoaded,
                                   final String partialPlanName,
@@ -276,24 +290,8 @@ public class VizView extends JPanel {
               (PartialPlanViewSet) viewSet.getViewManager().getViewSet( partialPlanIfLoaded);
             String navigatorWindowName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
             List windowKeyList = new ArrayList( partialPlanViewSet.getViews().keySet());
-            Iterator windowListItr = windowKeyList.iterator();
-            while (windowListItr.hasNext()) {
-              Object windowKey = (Object) windowListItr.next();
-              System.err.println( " windowKey " + windowKey.toString());
-              if (windowKey instanceof String) {
-                String navigatorWindowKey = (String) windowKey;
-                if (navigatorWindowKey.indexOf( navigatorWindowName) >= 0) {
-                  MDIInternalFrame viewFrame = 
-                    (MDIInternalFrame) partialPlanViewSet.getViews().get( navigatorWindowKey);
-                  try {
-                    viewFrame.setIcon( false);
-                    viewFrame.setSelected( false);
-                    viewFrame.setSelected( true);
-                  } catch ( PropertyVetoException pve){
-                  }
-                }
-              }
-            }
+            CollectionUtils.lMap(new NavViewDeIcon(partialPlanViewSet, navigatorWindowName),
+                                 windowKeyList);
           }
         }
       });

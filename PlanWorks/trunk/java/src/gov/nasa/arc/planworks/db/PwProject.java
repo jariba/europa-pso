@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.23 2004-03-09 22:00:26 miatauro Exp $
+// $Id: PwProject.java,v 1.24 2004-03-12 23:19:22 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -142,9 +142,11 @@ public abstract class PwProject {
   public abstract void deletePlanningSequence(final Long seqId)
     throws ResourceNotFoundException;
 
-  public abstract PwPlanningSequence closePlanningSequence(final String seqName);
+  public abstract PwPlanningSequence closePlanningSequence(final String seqName)
+    throws ResourceNotFoundException;
   
-  public abstract PwPlanningSequence closePlanningSequence(final Long seqId);
+  public abstract PwPlanningSequence closePlanningSequence(final Long seqId) 
+    throws ResourceNotFoundException;
 
   /**
    * <code>close</code> - 

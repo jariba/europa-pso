@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.9 2004-02-10 02:35:54 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.10 2004-03-12 23:22:34 miatauro Exp $
 //
 // PlanWorks
 //
@@ -51,47 +51,9 @@ public class PartialPlanViewMenu extends JPopupMenu{
     Iterator viewNamesItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
-      if (viewName.equals( PlanWorks.CONSTRAINT_NETWORK_VIEW)) {
-        PartialPlanViewMenuItem constraintNetworkViewItem =
-          createOpenViewItem( viewName, partialPlanName, planSequence);
-        this.add( constraintNetworkViewItem);
-
-      } else if (viewName.equals( PlanWorks.RESOURCE_PROFILE_VIEW)) {
-        PartialPlanViewMenuItem resourceProfileViewItem =
-          createOpenViewItem( viewName, partialPlanName, planSequence);
-        this.add( resourceProfileViewItem);
-
-      } else if (viewName.equals( PlanWorks.RESOURCE_TRANSACTION_VIEW)) {
-        PartialPlanViewMenuItem resourceTransactionViewItem =
-          createOpenViewItem( viewName, partialPlanName, planSequence);
-        this.add( resourceTransactionViewItem);
-
-      } else if (viewName.equals( PlanWorks.TEMPORAL_EXTENT_VIEW)) {
-        PartialPlanViewMenuItem temporalExtentViewItem =
-          createOpenViewItem( viewName, partialPlanName, planSequence);
-        this.add( temporalExtentViewItem);
-
-      } else if (viewName.equals( PlanWorks.TEMPORAL_NETWORK_VIEW)) {
-        PartialPlanViewMenuItem temporalNetworkViewItem =
-          createOpenViewItem( viewName, partialPlanName, planSequence);
-        temporalNetworkViewItem.setEnabled(false);
-        this.add( temporalNetworkViewItem);
-
-      } else if (viewName.equals( PlanWorks.TIMELINE_VIEW)) {
-        PartialPlanViewMenuItem timelineViewItem =
-          createOpenViewItem( viewName, partialPlanName, planSequence);
-        this.add( timelineViewItem);
-
-      } else if (viewName.equals( PlanWorks.TOKEN_NETWORK_VIEW)) {
-        PartialPlanViewMenuItem tokenNetworkViewItem =
-          createOpenViewItem( viewName, partialPlanName, planSequence);
-        this.add( tokenNetworkViewItem);
-
-      } else if (viewName.equals( PlanWorks.DB_TRANSACTION_VIEW)) {
-        PartialPlanViewMenuItem transactionViewItem =
-          createOpenViewItem( viewName, partialPlanName, planSequence);
-        this.add( transactionViewItem);
-      }
+      PartialPlanViewMenuItem viewItem = 
+        createOpenViewItem(viewName, partialPlanName, planSequence);
+      this.add(viewItem);
     }
 
   } // end buildPartialPlanViewMenu
@@ -105,93 +67,26 @@ public class PartialPlanViewMenu extends JPopupMenu{
    * @param planSequence - <code>PwPlanningSequence</code> - 
    * @return - <code>PartialPlanViewMenuItem</code> - 
    */
+  class CreateOpenViewListener implements ActionListener {
+    private PartialPlanViewMenu menu;
+    private String viewName;
+    public CreateOpenViewListener(PartialPlanViewMenu menu, String viewName){
+      this.menu = menu;
+      this.viewName = viewName;
+    }
+    public void actionPerformed(ActionEvent e) {
+      menu.createPartialPlanViewThread(viewName, (PartialPlanViewMenuItem) e.getSource());
+    }
+  }
+
   public PartialPlanViewMenuItem createOpenViewItem( String viewName, String partialPlanName,
                                                      PwPlanningSequence planSequence) {
-    String seqUrl = planSequence.getUrl();
-    String seqName = planSequence.getName();
-    if (viewName.equals( PlanWorks.CONSTRAINT_NETWORK_VIEW)) {
-      PartialPlanViewMenuItem constraintNetworkViewItem =
-        new PartialPlanViewMenuItem( "Open " + PlanWorks.CONSTRAINT_NETWORK_VIEW,
-                                     seqUrl, seqName, partialPlanName);
-      constraintNetworkViewItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent e) {
-            PartialPlanViewMenu.this.createPartialPlanViewThread
-              ( PlanWorks.CONSTRAINT_NETWORK_VIEW, (PartialPlanViewMenuItem) e.getSource());
-          }});
-      return constraintNetworkViewItem;
-    } else if (viewName.equals( PlanWorks.RESOURCE_PROFILE_VIEW)) {
-      PartialPlanViewMenuItem resourceProfileViewItem =
-        new PartialPlanViewMenuItem( "Open " + PlanWorks.RESOURCE_PROFILE_VIEW,
-                                     seqUrl, seqName, partialPlanName);
-      resourceProfileViewItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent e) {
-            PartialPlanViewMenu.this.createPartialPlanViewThread
-              ( PlanWorks.RESOURCE_PROFILE_VIEW, (PartialPlanViewMenuItem) e.getSource());
-          }});
-      return resourceProfileViewItem;
-    } else if (viewName.equals( PlanWorks.RESOURCE_TRANSACTION_VIEW)) {
-      PartialPlanViewMenuItem resourceTransactionViewItem =
-        new PartialPlanViewMenuItem( "Open " + PlanWorks.RESOURCE_TRANSACTION_VIEW,
-                                     seqUrl, seqName, partialPlanName);
-      resourceTransactionViewItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent e) {
-            PartialPlanViewMenu.this.createPartialPlanViewThread
-              ( PlanWorks.RESOURCE_TRANSACTION_VIEW, (PartialPlanViewMenuItem) e.getSource());
-          }});
-      return resourceTransactionViewItem;
-    } else if (viewName.equals( PlanWorks.TEMPORAL_EXTENT_VIEW)) {
-      PartialPlanViewMenuItem temporalExtentViewItem =
-        new PartialPlanViewMenuItem( "Open " + PlanWorks.TEMPORAL_EXTENT_VIEW,
-                                     seqUrl, seqName, partialPlanName);
-      temporalExtentViewItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent e) {
-            PartialPlanViewMenu.this.createPartialPlanViewThread
-              ( PlanWorks.TEMPORAL_EXTENT_VIEW, (PartialPlanViewMenuItem) e.getSource());
-          }});
-      return temporalExtentViewItem;
-    } else if (viewName.equals( PlanWorks.TEMPORAL_NETWORK_VIEW)) {
-      PartialPlanViewMenuItem temporalNetworkViewItem =
-        new PartialPlanViewMenuItem( "Open " + PlanWorks.TEMPORAL_NETWORK_VIEW,
-                                     seqUrl, seqName, partialPlanName);
-      temporalNetworkViewItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent e) {
-            PartialPlanViewMenu.this.createPartialPlanViewThread
-              ( PlanWorks.TEMPORAL_NETWORK_VIEW, (PartialPlanViewMenuItem) e.getSource());
-          }});
-      temporalNetworkViewItem.setEnabled( false);
-      return temporalNetworkViewItem;
-    } else if (viewName.equals( PlanWorks.TIMELINE_VIEW)) {
-      PartialPlanViewMenuItem timelineViewItem =
-        new PartialPlanViewMenuItem( "Open " + PlanWorks.TIMELINE_VIEW,
-                                     seqUrl, seqName, partialPlanName);
-      timelineViewItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent e) {
-            PartialPlanViewMenu.this.createPartialPlanViewThread
-              ( PlanWorks.TIMELINE_VIEW, (PartialPlanViewMenuItem) e.getSource());
-          }});
-      return timelineViewItem;
-    } else if (viewName.equals( PlanWorks.TOKEN_NETWORK_VIEW)) {
-      PartialPlanViewMenuItem tokenNetworkViewItem =
-        new PartialPlanViewMenuItem( "Open " + PlanWorks.TOKEN_NETWORK_VIEW,
-                                     seqUrl, seqName, partialPlanName);
-      tokenNetworkViewItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent e) {
-            PartialPlanViewMenu.this.createPartialPlanViewThread
-              ( PlanWorks.TOKEN_NETWORK_VIEW, (PartialPlanViewMenuItem) e.getSource());
-          }});
-      return tokenNetworkViewItem;
-    } else if (viewName.equals( PlanWorks.DB_TRANSACTION_VIEW)) {
-      PartialPlanViewMenuItem transactionViewItem =
-        new PartialPlanViewMenuItem( "Open " + PlanWorks.DB_TRANSACTION_VIEW,
-                                     seqUrl, seqName, partialPlanName);
-      transactionViewItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent e) {
-            PartialPlanViewMenu.this.createPartialPlanViewThread
-              ( PlanWorks.DB_TRANSACTION_VIEW, (PartialPlanViewMenuItem) e.getSource());
-          }});
-      return transactionViewItem;
-    }
-    return null;
+    PartialPlanViewMenuItem viewItem = new PartialPlanViewMenuItem("Open " + viewName,
+                                                                   planSequence.getUrl(),
+                                                                   planSequence.getName(),
+                                                                   partialPlanName);
+    viewItem.addActionListener(new CreateOpenViewListener(this, viewName));
+    return viewItem;
   } // end createOpenViewItem
 
 
@@ -207,12 +102,6 @@ public class PartialPlanViewMenu extends JPopupMenu{
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
   } // end createPartialPlanViewThread
-
-
-
-
-
-
 } // end PartialPlanViewMenu
 
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.21 2004-03-09 01:48:28 taylor Exp $
+// $Id: NodeGenerics.java,v 1.22 2004-03-12 23:22:15 miatauro Exp $
 //
 // PlanWorks
 //
@@ -304,25 +304,11 @@ public class NodeGenerics {
 //                         " typeName '" + typeName + "'");
     tip.append( typeName);
     if (typeName.equals( DbConstants.OBJECT_VAR)) {
-      //String objectName = "_not_found_";
-      //Integer objectId =
-      //  Integer.valueOf( ((PwEnumeratedDomain) variable.getDomain()).getLowerBound());
-      //Iterator objectIterator = partialPlanView.getPartialPlan().getObjectList().iterator();
-      //while (objectIterator.hasNext()) {
-      //  PwObject object = (PwObject) objectIterator.next();
-      //  if (object.getId().equals( objectId)) {
-      //    objectName = object.getName();
-      //    break;
-      //  }
-      //}
-      //tip.append ( ": ");
-      //tip.append( objectName);
       tip.append("<br>");
       ListIterator objectNameIterator = 
         ((PwEnumeratedDomain) variable.getDomain()).getEnumeration().listIterator();;
       while(objectNameIterator.hasNext()) {
         String name = (String) objectNameIterator.next();
-        // tip.append( name).append( ": ");
         tip.append( "value: ");
         tip.append( partialPlanView.getPartialPlan().getObjectIdByName( name));
         if (objectNameIterator.hasNext()) {

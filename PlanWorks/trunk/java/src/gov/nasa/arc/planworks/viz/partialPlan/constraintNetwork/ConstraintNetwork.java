@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetwork.java,v 1.2 2004-01-12 19:46:22 taylor Exp $
+// $Id: ConstraintNetwork.java,v 1.3 2004-03-12 23:22:57 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -88,12 +88,6 @@ public class ConstraintNetwork extends JGoNetwork {
 //                           " to " +
 //                           ((BasicNode) pToNode.getJGoObject()).getLabel().getText());
     }
-    // causes duplicate link to be added
-//     if (pNetworkLink != null) {
-//       addLink( pNetworkLink);
-//     } else {
-//       System.err.println( "INVALID link: " + ((BasicNodeLink) pGoObject).toString());
-//     }
   } // end addConstraintLink
 
   /**

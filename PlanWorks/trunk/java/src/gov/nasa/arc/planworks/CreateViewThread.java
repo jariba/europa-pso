@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.12 2004-02-11 02:29:30 taylor Exp $
+// $Id: CreateViewThread.java,v 1.13 2004-03-12 23:19:01 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -53,9 +53,7 @@ public class CreateViewThread extends Thread {
     MDIInternalFrame viewFrame = null;
     boolean viewExists = false;
     String viewClassName = (String) PlanWorks.getPlanWorks().getViewClassName( viewName);
-    if ((viewSet != null) && viewSet.viewExists( viewClassName)) {
-      viewExists = true;
-    }
+    viewExists = (viewSet != null) && viewSet.viewExists(viewClassName);
     if (PlanWorks.supportedViewNames.contains( viewName)) {
       if (! viewExists) {
         if (viewable instanceof PwPartialPlan) {
