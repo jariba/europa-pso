@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.32 2004-03-02 02:34:11 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.33 2004-03-02 21:45:05 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -51,7 +51,7 @@ public class PwTokenImpl implements PwToken {
   private List tokenRelationIds; // element Integer
   private List paramVarIds; // element Integer
   private Integer slotId;
-  
+  private int slotIndex;
   private PwPartialPlanImpl partialPlan;
 
 
@@ -60,7 +60,7 @@ public class PwTokenImpl implements PwToken {
                      final Integer durationVarId, final Integer stateVarId, 
                      final Integer objectVarId, final Integer parentId, 
                      final String tokenRelationIds, final String paramVarIds, 
-                     final PwPartialPlanImpl partialPlan)
+                     final String tokenInfo, final PwPartialPlanImpl partialPlan)
   {
     this.id = id;
     this.isValueToken = isValueToken;
@@ -76,7 +76,7 @@ public class PwTokenImpl implements PwToken {
     this.paramVarIds = new UniqueSet();
     this.partialPlan = partialPlan;
     this.parentId = parentId;
-
+    this.slotIndex = -1;
     if(paramVarIds != null) {
       StringTokenizer strTok = new StringTokenizer(paramVarIds, ":");
       while(strTok.hasMoreTokens()) {
@@ -89,7 +89,9 @@ public class PwTokenImpl implements PwToken {
         this.tokenRelationIds.add(Integer.valueOf(strTok.nextToken()));
       }
     }
-
+    if(tokenInfo != null) {
+      slotIndex = Integer.parseInt(tokenInfo);
+    }
     PwObjectImpl parent = (PwObjectImpl) partialPlan.getObject(parentId);
     if(parent instanceof PwTimelineImpl) {
       PwTimelineImpl timeline = (PwTimelineImpl) parent;
@@ -142,6 +144,8 @@ public class PwTokenImpl implements PwToken {
   public String getName() {
     return predicateName;
   }
+
+  protected int getSlotIndex() {return slotIndex;}
 
   /**
    * <code>getStartVariable</code>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.23 2004-02-27 18:04:39 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.24 2004-03-02 21:45:05 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -38,6 +39,7 @@ public class PwSlotImpl implements PwSlot {
   private PwDomain startTime;
   private PwDomain endTime;
   private PwPartialPlanImpl partialPlan;
+  private Integer baseTokenId;
 
   /**
    * <code>PwSlotImpl</code> - constructor 
@@ -53,6 +55,7 @@ public class PwSlotImpl implements PwSlot {
     startTime = endTime = null;
     hasSetTimes = false;
     tokenIdList = new ArrayList();
+    baseTokenId = null;
   } // end constructor
 
 
@@ -129,14 +132,16 @@ public class PwSlotImpl implements PwSlot {
    * @return - <code>PwToken</code> - 
    */
   public PwToken getBaseToken() {
-//    PwToken token = null;
-//     List tokenList = getTokenList();
-//     if (tokenList.size() > 0) {
-//       token = (PwToken) tokenList.get( 0);
-//     }
-    if(tokenIdList.size() > 0) {
-      return partialPlan.getToken((Integer)tokenIdList.get(0));
+    if(baseTokenId == null) {
+      ListIterator tokenIdIterator = tokenIdList.listIterator();
+      while(tokenIdIterator.hasNext()) {
+        Integer tokId = (Integer) tokenIdIterator.next();
+        if(((PwTokenImpl)partialPlan.getToken(tokId)).getSlotIndex() == 0) {
+          baseTokenId = tokId;
+          break;
+        }
+      }
     }
-    return null;
+    return partialPlan.getToken(baseTokenId);
   }
 } // end class PwSlotImpl
