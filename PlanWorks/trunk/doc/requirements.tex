@@ -1,6 +1,7 @@
 \documentclass[twoside, 11pt]{article}
 
-\pagestyle{empty}
+\pagestyle{plain}
+\pagenumbering{arabic}
 
 \author{Conor McGann}
 \title{PlanWorks Requirements Specification - FY03}
@@ -80,17 +81,23 @@ This document outlines the requirements to be addressed in FY2003, the first yea
 \item A Project shall contain 0 or more named Planning Sequences.
 \item A Planning Sequence shall contain 1 or more Steps.
 \item Each Step of a Planning Sequence must contain a Partial Plan.
-\item Each step of a Planning Sequence may contain one or more Transactions. A Transaction is an operation on a Partial Plan. The following Transactions must be supported:
+\item Each step of a Planning Sequence may contain one or more Transactions. A Transaction is an operation on a Partial Plan. The following Transactions  must be supported (source codes: B - both; S - system; U - user):
 \begin{enumerate}
-\item \begin{verbatim}RESTRICT_SPECIFIED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
-\item \begin{verbatim}RESTRICT_DERIVED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
-\item \begin{verbatim}RELAX_SPECIFIED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
-\item \begin{verbatim}RELAX_DERIVED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
-\item \begin{verbatim}EMPTY_DOMAIN. Constraint, Variable.\end{verbatim}
-\item \begin{verbatim}CREATE_TOKEN. Token\end{verbatim}
-\item \begin{verbatim}DELETE_TOKEN. Token\end{verbatim}
-\item \begin{verbatim}INSERT_TOKEN. Token, Timeline, Slot, Alternative Slots.\end{verbatim}
-\item \begin{verbatim}FREE_TOKEN. Token.\end{verbatim}
+\item \begin{verbatim}TOKEN_CREATED( key) - source: B\end{verbatim}
+\item \begin{verbatim}TOKEN_DELETED( key) - source: B\end{verbatim}
+\item \begin{verbatim}TOKEN_FREED( key) - source: B\end{verbatim}
+\item \begin{verbatim}TOKEN_INSERTED( key) - source: B\end{verbatim}
+\item \begin{verbatim}VARIABLE_CREATED( key) - source: B\end{verbatim}
+\item \begin{verbatim}VARIABLE_DELETED( key) - source: B\end{verbatim}
+\item \begin{verbatim}VARIABLE_DOMAIN_EMPTIED( key) - source: S\end{verbatim}
+\item \begin{verbatim}VARIABLE_DOMAIN_RELAXED( key) - source: S\end{verbatim}
+\item \begin{verbatim}VARIABLE_DOMAIN_RESET( key) - source: U\end{verbatim}
+\item \begin{verbatim}VARIABLE_DOMAIN_RESTRICTED( key) - source: S\end{verbatim}
+\item \begin{verbatim}VARIABLE_DOMAIN_SPECIFIED( key) - source: U\end{verbatim}
+\item \begin{verbatim}CONSTRAINT_CREATED( key) - source: B\end{verbatim}
+\item \begin{verbatim}CONSTRAINT_DELETED( key) - source: B\end{verbatim}
+\item \begin{verbatim}PROPOGATION_BEGUN( transactionNumber) - source: S\end{verbatim}
+\item \begin{verbatim}PROPOGATION_ENDED( transactionNumber) - source: S\end{verbatim}
 \end{enumerate}
 \item All Partial Plans in a Planning Sequence share the same Model.
 \item The Partial Plan of the first Step is the initial state of a planning process.
