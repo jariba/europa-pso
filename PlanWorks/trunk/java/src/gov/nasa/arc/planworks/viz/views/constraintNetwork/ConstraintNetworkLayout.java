@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkLayout.java,v 1.4 2003-09-05 19:11:19 taylor Exp $
+// $Id: ConstraintNetworkLayout.java,v 1.5 2003-09-18 20:48:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,6 +42,7 @@ public class ConstraintNetworkLayout extends JGoLayeredDigraphAutoLayout {
    * <code>ConstraintNetworkLayout</code> - constructor 
    *
    * @param jGoDocument - <code>JGoDocument</code> - 
+   * @param jGoNetwork - <code>JGoNetwork</code> - 
    * @param startTimeMSecs - <code>long</code> - 
    */
   public ConstraintNetworkLayout( JGoDocument jGoDocument, JGoNetwork jGoNetwork,
@@ -59,7 +60,8 @@ public class ConstraintNetworkLayout extends JGoLayeredDigraphAutoLayout {
     setAggressiveOption( JGoLayeredDigraphAutoLayout.LD_AGGRESSIVE_FALSE);
     setIterations( 4);
 
-    // int NlayerSpacing, int NcolumnSpacing, int NdirectionOption, int NcycleremoveOption, int NlayeringOption, int NinitializeOption, int Niterations, int NaggressiveOption) 
+    // int NlayerSpacing, int NcolumnSpacing, int NdirectionOption, int NcycleremoveOption,
+    //    int NlayeringOption, int NinitializeOption, int Niterations, int NaggressiveOption) 
 
   } // end constructor
 

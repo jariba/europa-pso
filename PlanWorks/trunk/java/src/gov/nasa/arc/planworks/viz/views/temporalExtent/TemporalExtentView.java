@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.18 2003-09-16 19:29:14 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.19 2003-09-18 20:48:48 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -21,6 +21,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
@@ -29,7 +31,9 @@ import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.SwingUtilities;
 
@@ -54,9 +58,9 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.SlotNode;
-import gov.nasa.arc.planworks.viz.nodes.TemporalNode;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
 
@@ -97,6 +101,8 @@ public class TemporalExtentView extends VizView  {
   private int maxCellRow;
   private float timeScale;
   private JGoStroke timeScaleMark;
+  private static Point docCoords;
+
 
   /**
    * <code>TemporalExtentView</code> - constructor - called by ViewSet.openTemporalExtentView.
@@ -109,7 +115,7 @@ public class TemporalExtentView extends VizView  {
    */
   public TemporalExtentView( PwPartialPlan partialPlan, long startTimeMSecs,
                              ViewSet viewSet) {
-    super( partialPlan);
+    super( partialPlan, viewSet);
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
@@ -162,8 +168,8 @@ public class TemporalExtentView extends VizView  {
    *                     and slot widgets
    *
    *    These functions are not done in the constructor to avoid:
-   *    "Cannot measure text until a JGoExtentView exists and is part of a visible window".    int extentScrollExtent = jGoExtentView.getHorizontalScrollBar().getSize().getWidth();
-
+   *    "Cannot measure text until a JGoExtentView exists and is part of a visible window".
+   *     int extentScrollExtent = jGoExtentView.getHorizontalScrollBar().getSize().getWidth();
    *    called by componentShown method on the JFrame
    *    JGoExtentView.setVisible( true) must be completed -- use runInit in constructor
    */
@@ -191,7 +197,7 @@ public class TemporalExtentView extends VizView  {
     boolean isRedraw = false;
     renderTemporalExtent( isRedraw);
 
-    expandViewFrame( viewSet, viewName,
+    expandViewFrame( viewName,
                      (int) Math.max( jGoExtentView.getDocumentSize().getWidth(),
                                      jGoRulerView.getDocumentSize().getWidth()),
                      (int) (jGoExtentView.getDocumentSize().getHeight() +
@@ -359,8 +365,8 @@ public class TemporalExtentView extends VizView  {
           PwToken token = slot.getBaseToken();
           slotCnt++;
           PwDomain[] intervalArray =
-            SlotNode.getStartEndIntervals( this, slot, previousSlot, isLastSlot,
-                                           alwaysReturnEnd);
+            NodeGenerics.getStartEndIntervals( this, slot, previousSlot, isLastSlot,
+                                               alwaysReturnEnd);
           collectTimeScaleMetrics( intervalArray[0], intervalArray[1]);
           previousSlot = slot;
         }
@@ -586,27 +592,29 @@ public class TemporalExtentView extends VizView  {
           if ((token == null) && (isFirstSlot || isLastSlot)) {
             // discard leading and trailing empty slots (planworks/test/data/emptySlots)
           } else {
-            // check for embedded empty slots - always show them
+            // check for embedded empty slots - always show them, unless free standing
             if ((token == null) ||
                 (token != null) && isTokenInContentSpec( token)) {
               PwDomain[] intervalArray =
-                SlotNode.getStartEndIntervals( this, slot, previousSlot, isLastSlot,
-                                               alwaysReturnEnd);
+                NodeGenerics.getStartEndIntervals( this, slot, previousSlot, isLastSlot,
+                                                   alwaysReturnEnd);
               PwDomain startTimeIntervalDomain = intervalArray[0];
               PwDomain endTimeIntervalDomain = intervalArray[1];
-              String earliestDurationString =
-                SlotNode.getShortestDuration( slot, startTimeIntervalDomain,
-                                              endTimeIntervalDomain);
-              String latestDurationString =
-                SlotNode.getLongestDuration( slot, startTimeIntervalDomain,
-                                             endTimeIntervalDomain);
-              TemporalNode temporalNode = 
-                new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
-                                  earliestDurationString, latestDurationString,
-                                  timelineColor, isFreeToken, this); 
-              tmpTemporalNodeList.add( temporalNode);
-              jGoExtentView.getDocument().addObjectAtTail( temporalNode);
-              previousSlot = slot;
+              if ((startTimeIntervalDomain != null) && (endTimeIntervalDomain != null)) {
+                String earliestDurationString =
+                  NodeGenerics.getShortestDuration( slot, startTimeIntervalDomain,
+                                                    endTimeIntervalDomain);
+                String latestDurationString =
+                  NodeGenerics.getLongestDuration( slot, startTimeIntervalDomain,
+                                                   endTimeIntervalDomain);
+                TemporalNode temporalNode = 
+                  new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
+                                    earliestDurationString, latestDurationString,
+                                    timelineColor, isFreeToken, this); 
+                tmpTemporalNodeList.add( temporalNode);
+                jGoExtentView.getDocument().addObjectAtTail( temporalNode);
+                previousSlot = slot;
+              }
             }
           }
           isFirstSlot = false;
@@ -634,11 +642,11 @@ public class TemporalExtentView extends VizView  {
         PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
         PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
         String earliestDurationString =
-          SlotNode.getShortestDuration( slot, startTimeIntervalDomain,
-                                        endTimeIntervalDomain);
+          NodeGenerics.getShortestDuration( slot, startTimeIntervalDomain,
+                                            endTimeIntervalDomain);
         String latestDurationString =
-          SlotNode.getLongestDuration( slot, startTimeIntervalDomain,
-                                       endTimeIntervalDomain);
+          NodeGenerics.getLongestDuration( slot, startTimeIntervalDomain,
+                                           endTimeIntervalDomain);
         TemporalNode temporalNode = 
           new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
                             earliestDurationString, latestDurationString,
@@ -902,35 +910,104 @@ public class TemporalExtentView extends VizView  {
     }
 
     /**
-     * <code>doBackgroundClick</code> - Mouse-left draws vertical line in extent view to
-     *                             focus that time point across all temporal nodes
+     * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
+     *                             1) draws vertical line in extent view to
+     *                                focus that time point across all temporal nodes
+     *                             2) snap to active token
      *
      * @param modifiers - <code>int</code> - 
-     * @param dc - <code>Point</code> - 
-     * @param vc - <code>Point</code> - 
+     * @param docCoords - <code>Point</code> - 
+     * @param viewCoords - <code>Point</code> - 
      */
-    public void doBackgroundClick( int modifiers, Point dc, Point vc) {
+    public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-        int xLoc = (int) dc.getX();
-        // System.err.println( "doMouseClick: xLoc " + xLoc + " time " + scaleXLoc( xLoc));
-        if (timeScaleMark != null) {
-          jGoExtentView.getDocument().removeObject( timeScaleMark);
-          // jGoExtentView.validate();
-        } 
-        timeScaleMark = new TimeScaleMark( xLoc);
-        timeScaleMark.addPoint( xLoc, startYLoc);
-        timeScaleMark.addPoint( xLoc, startYLoc +
-                                ((maxCellRow + 1) *
-                                 ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2);
-        jGoExtentView.getDocument().addObjectAtTail( timeScaleMark);
-        // jGoExtentView.validate();
-
-      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
         // do nothing
+      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        TemporalExtentView.docCoords = docCoords;
+        mouseRightPopupMenu( viewCoords);
       }
     } // end doBackgroundClick
 
+
   } // end class ExtentView
+
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem timeMarkItem = new JMenuItem( "Set Time Scale Line");
+    createTimeMarkItem( timeMarkItem);
+    mouseRightPopup.add( timeMarkItem);
+
+    JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
+    createActiveTokenItem( activeTokenItem);
+    mouseRightPopup.add( activeTokenItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+  } // end mouseRightPopupMenu
+
+
+  private void createActiveTokenItem( JMenuItem activeTokenItem) {
+    activeTokenItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          PwToken activeToken = TemporalExtentView.this.getViewSet().getActiveToken();
+          boolean isTokenFound = false;
+          if (activeToken != null) {
+            Iterator temporalNodeListItr = temporalNodeList.iterator();
+            while (temporalNodeListItr.hasNext()) {
+              TemporalNode temporalNode = (TemporalNode) temporalNodeListItr.next();
+              if ((temporalNode.getToken() != null) &&
+                  (temporalNode.getToken().getId().equals( activeToken.getId()))) {
+                System.err.println( "TemporalExtentView snapToActiveToken: " +
+                                    activeToken.getPredicate().getName());
+//                 System.err.println( "loc " + temporalNode.getLocation().getX() +
+//                                     " extent " + jGoExtentView.getExtentSize().getWidth());
+                jGoExtentView.getHorizontalScrollBar().
+                  setValue( Math.max( 0,
+                                      (int) (temporalNode.getLocation().getX() -
+                                             (jGoExtentView.getExtentSize().getWidth() / 2))));
+                jGoExtentView.getVerticalScrollBar().
+                  setValue( Math.max( 0,
+                                      (int) (temporalNode.getLocation().getY() -
+                                             (jGoExtentView.getExtentSize().getHeight() / 2))));
+                jGoExtentView.getSelection().clearSelection();
+                jGoExtentView.getSelection().extendSelection( temporalNode);
+                isTokenFound = true;
+                break;
+              }
+            }
+            if (! isTokenFound) {
+              String message = "active token '" + activeToken.getPredicate().getName() +
+                "' not found in TemporalExtentView";
+              JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                             "Active Token Not Found",
+                                             JOptionPane.ERROR_MESSAGE);
+              System.err.println( message);
+              System.exit( 1);
+            }
+          }
+        }
+      });
+  } // end createActiveTokenItem
+
+
+  private void createTimeMarkItem( JMenuItem timeMarkItem) {
+    timeMarkItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          int xLoc = (int) TemporalExtentView.docCoords.getX();
+          // System.err.println( "doMouseClick: xLoc " + xLoc + " time " + scaleXLoc( xLoc));
+          if (timeScaleMark != null) {
+            jGoExtentView.getDocument().removeObject( timeScaleMark);
+            // jGoExtentView.validate();
+          } 
+          timeScaleMark = new TimeScaleMark( xLoc);
+          timeScaleMark.addPoint( xLoc, startYLoc);
+          timeScaleMark.addPoint( xLoc, startYLoc +
+                                  ((maxCellRow + 1) *
+                                   ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2);
+          jGoExtentView.getDocument().addObjectAtTail( timeScaleMark);
+        }
+      });
+  } // end createTimeMarkItem
 
 
   /**
@@ -964,3 +1041,6 @@ public class TemporalExtentView extends VizView  {
 
 } // end class TemporalExtentView
  
+
+
+

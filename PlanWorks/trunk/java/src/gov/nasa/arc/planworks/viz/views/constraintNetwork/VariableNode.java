@@ -3,19 +3,18 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.10 2003-09-16 19:29:13 taylor Exp $
+// $Id: VariableNode.java,v 1.1 2003-09-18 20:48:47 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 28july03
 //
 
-package gov.nasa.arc.planworks.viz.nodes;
+package gov.nasa.arc.planworks.viz.views.constraintNetwork;
 
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -32,9 +31,8 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.views.VizView;
-import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 
 
 /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.41 2003-09-16 19:53:25 taylor Exp $
+// $Id: TimelineView.java,v 1.42 2003-09-18 20:48:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -20,23 +20,29 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoListPosition;
 import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoObject;
-import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
+// PlanWorks/java/lib/JGo/Classier.jar
+import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -46,9 +52,9 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.SlotNode;
-import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
@@ -66,7 +72,7 @@ public class TimelineView extends VizView {
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private JGoView jGoView;
+  private TimelineJGoView jGoView;
   private String viewName;
   private JGoDocument jGoDocument;
   private JGoSelection jGoSelection;
@@ -88,7 +94,7 @@ public class TimelineView extends VizView {
    * @param viewSet - <code>ViewSet</code> - 
    */
   public TimelineView( PwPartialPlan partialPlan, long startTimeMSecs, ViewSet viewSet) {
-    super( partialPlan);
+    super( partialPlan, viewSet);
 
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
@@ -101,8 +107,7 @@ public class TimelineView extends VizView {
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
 
-    jGoView = new JGoView();
-    jGoSelection = new JGoSelection( jGoView);
+    jGoView = new TimelineJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -153,7 +158,7 @@ public class TimelineView extends VizView {
     // create all nodes
     renderTimelineAndSlotNodes();
 
-    expandViewFrame( viewSet, viewName,
+    expandViewFrame( viewName,
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
 
@@ -250,9 +255,15 @@ public class TimelineView extends VizView {
     return timelineNodeList;
   }
 
+  /**
+   * <code>getFreeTokenNodeList</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public List getFreeTokenNodeList() {
     return freeTokenNodeList;
   }
+
   private void createTimelineAndSlotNodes() {
     timelineNodeList = null;
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
@@ -387,7 +398,8 @@ public class TimelineView extends VizView {
       }
       boolean isLastSlot = (! slotIterator.hasNext());
       PwDomain[] intervalArray =
-        SlotNode.getStartEndIntervals( this, slot, previousSlot, isLastSlot, alwaysReturnEnd);
+        NodeGenerics.getStartEndIntervals( this, slot, previousSlot, isLastSlot,
+                                           alwaysReturnEnd);
       PwDomain startTimeIntervalDomain = intervalArray[0];
       PwDomain endTimeIntervalDomain = intervalArray[1];
       if ((endTimeIntervalDomain != null) &&
@@ -591,6 +603,120 @@ public class TimelineView extends VizView {
   } // end iterateOverJGoDocument
 
 
+  /**
+   * <code>TimelineJGoView</code> - subclass JGoView to add doBackgroundClick
+   *
+   */
+  class TimelineJGoView extends JGoView {
+
+    /**
+     * <code>TimelineJGoView</code> - constructor 
+     *
+     */
+    public TimelineJGoView() {
+      super();
+    }
+
+    /**
+     * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
+     *                                 1) snap to active token
+     *
+     * @param modifiers - <code>int</code> - 
+     * @param docCoords - <code>Point</code> - 
+     * @param viewCoords - <code>Point</code> - 
+     */
+    public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
+      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+        // do nothing
+      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        mouseRightPopupMenu( viewCoords);
+      }
+    } // end doBackgroundClick
+
+  } // end class TimelineJGoView
+
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
+    createActiveTokenItem( activeTokenItem);
+    mouseRightPopup.add( activeTokenItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+  } // end mouseRightPopupMenu
+
+
+  private void createActiveTokenItem( JMenuItem activeTokenItem) {
+    activeTokenItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          PwToken activeToken = TimelineView.this.getViewSet().getActiveToken();
+          if (activeToken != null) {
+            boolean isTokenFound = false;
+            Iterator timelineNodeListItr = timelineNodeList.iterator();
+            foundIt:
+            while (timelineNodeListItr.hasNext()) {
+              TimelineNode timelineNode = (TimelineNode) timelineNodeListItr.next();
+              Iterator slotNodeListItr = timelineNode.getSlotNodeList().iterator();
+              while (slotNodeListItr.hasNext()) {
+                SlotNode slotNode = (SlotNode) slotNodeListItr.next();
+                List tokenList = slotNode.getSlot().getTokenList();
+                if (tokenList == null) { // empty slot
+                  continue;
+                }
+                Iterator tokenItr = tokenList.iterator();
+                while (tokenItr.hasNext()) {
+                  PwToken token = (PwToken) tokenItr.next();
+                  if (token.getId().equals( activeToken.getId())) {
+                    locateAndSelectNode( activeToken, slotNode);
+                    isTokenFound = true;
+                    break foundIt;
+                  }
+                }
+              }
+            }
+            if (! isTokenFound) {
+              Iterator freeTokenNodeItr = freeTokenNodeList.iterator();
+              while (freeTokenNodeItr.hasNext()) {
+                TokenNode freeTokenNode = (TokenNode) freeTokenNodeItr.next();
+                if (freeTokenNode.getToken().getId().equals( activeToken.getId())) {
+                  locateAndSelectNode( activeToken, freeTokenNode);
+                  isTokenFound = true;
+                  break;
+                }
+              }
+            }
+            if (! isTokenFound) {
+              String message = "active token '" + activeToken.getPredicate().getName() +
+                "' not found in TimelineView";
+              JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                             "Active Token Not Found",
+                                             JOptionPane.ERROR_MESSAGE);
+              System.err.println( message);
+              System.exit( 1);
+            }
+          }
+        }
+      });
+  } // end createActiveTokenItem
+
+  private void locateAndSelectNode( PwToken activeToken, JGoArea node) {
+    System.err.println( "TimelineView snapToActiveToken: " +
+                        activeToken.getPredicate().getName());
+    jGoView.getHorizontalScrollBar().
+      setValue( Math.max( 0,
+                          (int) (node.getLocation().getX() -
+                                 (jGoView.getExtentSize().getWidth() / 2))));
+    jGoView.getVerticalScrollBar().
+      setValue( Math.max( 0,
+                          (int) (node.getLocation().getY() -
+                                 (jGoView.getExtentSize().getHeight() / 2))));
+    jGoView.getSelection().clearSelection();
+    jGoView.getSelection().extendSelection( node);
+  } // end locateAndSelectNode
+
 
 } // end class TimelineView
  
+
+
+

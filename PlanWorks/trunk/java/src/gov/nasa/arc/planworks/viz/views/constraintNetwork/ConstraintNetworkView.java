@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.16 2003-09-16 19:29:14 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.17 2003-09-18 20:48:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -20,24 +20,23 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoLink;
-import com.nwoods.jgo.JGoListPosition;
-import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoView;
-
-// PlanWorks/java/lib/JGo/JGoLayout.jar
-import com.nwoods.jgo.layout.JGoNetwork;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
@@ -51,12 +50,10 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
-import gov.nasa.arc.planworks.viz.nodes.ConstraintNode;
-import gov.nasa.arc.planworks.viz.nodes.TimelineBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.nodes.VariableNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
 
@@ -91,7 +88,7 @@ public class ConstraintNetworkView extends VizView {
   private long startTimeMSecs;
   private ViewSet viewSet;
   private String viewName;
-  private JGoView jGoView;
+  private ConstraintJGoView jGoView;
   private JGoDocument document;
   private ConstraintNetwork network;
   private Font font;
@@ -119,7 +116,7 @@ public class ConstraintNetworkView extends VizView {
    */
   public ConstraintNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
                            ViewSet viewSet) {
-    super( partialPlan);
+    super( partialPlan, viewSet);
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
@@ -136,7 +133,7 @@ public class ConstraintNetworkView extends VizView {
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
-    jGoView = new JGoView();
+    jGoView = new ConstraintJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -194,7 +191,7 @@ public class ConstraintNetworkView extends VizView {
     ConstraintNetworkLayout layout =
       new ConstraintNetworkLayout( document, network, startTimeMSecs);
     layout.performLayout();
-    expandViewFrame( viewSet, viewName,
+    expandViewFrame( viewName,
                      (int) jGoView.getDocumentSize().getWidth(),
                      // JGo Layout computes a very large value for doc height
                      // (int) jGoView.getDocumentSize().getHeight());
@@ -1207,6 +1204,91 @@ public class ConstraintNetworkView extends VizView {
     }
   } // end setLinksVisible
 
+
+  /**
+   * <code>ConstraintJGoView</code> - subclass JGoView to add doBackgroundClick
+   *
+   */
+  class ConstraintJGoView extends JGoView {
+
+    /**
+     * <code>ConstraintJGoView</code> - constructor 
+     *
+     */
+    public ConstraintJGoView() {
+      super();
+    }
+
+    /**
+     * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
+     *                                 1) snap to active token
+     *
+     * @param modifiers - <code>int</code> - 
+     * @param docCoords - <code>Point</code> - 
+     * @param viewCoords - <code>Point</code> - 
+     */
+    public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
+      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+        // do nothing
+      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        mouseRightPopupMenu( viewCoords);
+      }
+    } // end doBackgroundClick
+
+  } // end class ConstraintJGoView
+
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
+    createActiveTokenItem( activeTokenItem);
+    mouseRightPopup.add( activeTokenItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+  } // end mouseRightPopupMenu
+
+  private void createActiveTokenItem( JMenuItem activeTokenItem) {
+    activeTokenItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          PwToken activeToken = ConstraintNetworkView.this.getViewSet().getActiveToken();
+          boolean isTokenFound = false;
+          if (activeToken != null) {
+            Iterator tokenNodeListItr = tokenNodeList.iterator();
+            while (tokenNodeListItr.hasNext()) {
+              TokenNode tokenNode = (TokenNode) tokenNodeListItr.next();
+              if ((tokenNode.getToken() != null) &&
+                  (tokenNode.getToken().getId().equals( activeToken.getId()))) {
+                System.err.println( "ConstraintNetworkView snapToActiveToken: " +
+                                    activeToken.getPredicate().getName());
+                // System.err.println( "loc " + tokenNode.getLocation().getX() +
+                //                     " extent " + jGoView.getExtentSize().getWidth());
+                jGoView.getHorizontalScrollBar().
+                  setValue( Math.max( 0,
+                                      (int) (tokenNode.getLocation().getX() -
+                                             (jGoView.getExtentSize().getWidth() / 2))));
+                jGoView.getVerticalScrollBar().
+                  setValue( Math.max( 0,
+                                      (int) (tokenNode.getLocation().getY() -
+                                             (jGoView.getExtentSize().getHeight() / 2))));
+                jGoView.getSelection().clearSelection();
+                jGoView.getSelection().extendSelection( tokenNode);
+                isTokenFound = true;
+                break;
+              }
+            }
+            if (! isTokenFound) {
+              String message = "active token '" + activeToken.getPredicate().getName() +
+                "' not found in ConstraintNetworkView";
+              JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                             "Active Token Not Found",
+                                             JOptionPane.ERROR_MESSAGE);
+              System.err.println( message);
+              System.exit( 1);
+            }
+          }
+        }
+      });
+  } // end createActiveTokenItem
 
 } // end class ConstraintNetworkView
 

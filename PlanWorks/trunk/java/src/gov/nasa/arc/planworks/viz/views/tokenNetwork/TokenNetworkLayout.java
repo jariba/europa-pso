@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkLayout.java,v 1.3 2003-09-05 19:11:20 taylor Exp $
+// $Id: TokenNetworkLayout.java,v 1.4 2003-09-18 20:48:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -49,7 +49,8 @@ public class TokenNetworkLayout extends JGoLayeredDigraphAutoLayout {
     setCycleRemoveOption( JGoLayeredDigraphAutoLayout.LD_CYCLEREMOVE_DFS);
     setInitializeOption( JGoLayeredDigraphAutoLayout.LD_INITIALIZE_NAIVE);
 
-    // int NlayerSpacing, int NcolumnSpacing, int NdirectionOption, int NcycleremoveOption, int NlayeringOption, int NinitializeOption, int Niterations, int NaggressiveOption) 
+    // int NlayerSpacing, int NcolumnSpacing, int NdirectionOption, int NcycleremoveOption,
+    //   int NlayeringOption, int NinitializeOption, int Niterations, int NaggressiveOption) 
 
   } // end constructor
 

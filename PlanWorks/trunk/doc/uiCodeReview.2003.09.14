@@ -9,6 +9,7 @@ PlanWorks:
 1. renderView - invokes open<ViewName> with a fixed pattern and a fixed set of views hard-coded.
 2. menu handling - could we factor out common patterns for dyanmica menu bar handling. For example, the code in buildViewSubMenu
 3. Is MySQLDB required for import? Could not find a reference - happy to see :-)
+DONE - will 17sep03
 4. Note that this is quite a large file.
 
 ViewManager:
@@ -40,6 +41,7 @@ TokenNetworkView:
 
 Nodes:
 1. Should we break out nodes spearate from views if they only belong to the view? For example, SlotNode and TimelineNode apply only to TimelineView.
+DONE - will 17sep03
 
 ContentSpec:
 1. Coupling of ContentSpec to viz.viewMgr.redrawNotifier is a major violation of the layering in the architecture. Views should be able to register as listeners to the content space. This is easily fixed!

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.18 2003-09-16 19:29:13 taylor Exp $
+// $Id: TokenNode.java,v 1.19 2003-09-18 20:48:45 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,9 +13,14 @@
 package gov.nasa.arc.planworks.viz.nodes;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Point;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -31,15 +36,17 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.views.constraintNetwork.VariableNode;
 
 
 /**
  * <code>TokenNode</code> - JGo widget to render a token with a
  *                          label consisting of the slot's predicate name.
- *             Object->JGoObject->JGoArea->TextNode->TokenNode
+ *             Object->JGoObject->JGoArea->BasicNode->TokenNode
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
@@ -233,8 +240,8 @@ public class TokenNode extends BasicNode {
   }
 
   /**
-   * <code>doMouseClick</code> - For Constraint Network View, Mouse-left opens/closes
-   *            tokenNode to show variableNodes
+   * <code>doMouseClick</code> - For Constraint Network View, Mouse-Left opens/closes
+   *            tokenNode to show variableNodes.  Mouse-Right: Set Active Token
    *
    * @param modifiers - <code>int</code> - 
    * @param dc - <code>Point</code> - 
@@ -242,8 +249,9 @@ public class TokenNode extends BasicNode {
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
-    JGoObject obj = view.pickDocObject( dc, false);
+  public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
+                               JGoView view) {
+    JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
     TokenNode tokenNode = (TokenNode) obj.getTopLevelObject();
@@ -253,18 +261,18 @@ public class TokenNode extends BasicNode {
           //System.err.println( "doMouseClick: Mouse-L show variable nodes of " +
           //                    tokenNode.getPredicateName());
           addTokenNodeVariables( this);
-          setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
           areNeighborsShown = true;
         } else {
           //System.err.println( "doMouseClick: Mouse-L hide variable nodes of " +
           //                    tokenNode.getPredicateName());
           removeTokenNodeVariables( this);
-          setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
           areNeighborsShown = false;
         }
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( viewCoords);
+      return true;
     }
     return false;
   } // end doMouseClick   
@@ -278,6 +286,7 @@ public class TokenNode extends BasicNode {
       constraintNetworkView.setLayoutNeeded();
       constraintNetworkView.redraw();
     }
+    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
   } // end addTokenNodeVariables
 
   private void removeTokenNodeVariables( TokenNode tokenNode) {
@@ -289,7 +298,23 @@ public class TokenNode extends BasicNode {
       constraintNetworkView.setLayoutNeeded();
       constraintNetworkView.redraw();
     }
+    setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
   } // end adremoveTokenNodeVariables
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
+    activeTokenItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          vizView.getViewSet().setActiveToken( TokenNode.this.getToken());
+          System.err.println( "TokenNode setActiveToken: " +
+                              TokenNode.this.getToken().getPredicate().getName());
+        }
+      });
+    mouseRightPopup.add( activeTokenItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, vizView, viewCoords);
+  } // end mouseRightPopupMenu
 
 
 

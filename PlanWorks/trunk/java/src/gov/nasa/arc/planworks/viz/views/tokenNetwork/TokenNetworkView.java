@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.24 2003-09-16 19:29:14 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.25 2003-09-18 20:48:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -16,24 +16,27 @@ package gov.nasa.arc.planworks.viz.views.tokenNetwork;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoView;
-import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwObject;
@@ -43,8 +46,9 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTokenRelation;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.TokenLink;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
@@ -64,7 +68,7 @@ public class TokenNetworkView extends VizView {
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private JGoView jGoView;
+  private TokenNetworkJGoView jGoView;
   private String viewName;
   private JGoDocument jGoDocument;
   // private JGoLayer hiddenLayer;
@@ -88,7 +92,7 @@ public class TokenNetworkView extends VizView {
    */
   public TokenNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
                            ViewSet viewSet) {
-    super( partialPlan);
+    super( partialPlan, viewSet);
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
@@ -100,7 +104,7 @@ public class TokenNetworkView extends VizView {
     this.linkNameList = new ArrayList();
     buildTokenParentChildRelationships();
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
-    jGoView = new JGoView();
+    jGoView = new TokenNetworkJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -162,7 +166,7 @@ public class TokenNetworkView extends VizView {
     //layout.ensureAllPositive();
     //layout.position(getWidth(), getHeight());
     System.err.println("Ring layout took " + (System.currentTimeMillis() - t1));*/
-    expandViewFrame( viewSet, viewName,
+    expandViewFrame( viewName,
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
     // print out info for created nodes
@@ -391,7 +395,7 @@ public class TokenNetworkView extends VizView {
         x += freeTokenNode.getSize().getWidth() * 0.5;
         freeTokenNode.setLocation( x, y);
       }
-      if(!tmpNodeList.contains(freeTokenNode)) {
+      if (!tmpNodeList.contains(freeTokenNode)) {
         tmpNodeList.add( freeTokenNode);
         jGoDocument.addObjectAtTail( freeTokenNode);
         x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
@@ -418,7 +422,7 @@ public class TokenNetworkView extends VizView {
           tokenNode.setLocation( x, y);
         }
         //MIKE
-        if(!tmpNodeList.contains(tokenNode)) {
+        if (!tmpNodeList.contains(tokenNode)) {
           tmpNodeList.add( tokenNode);
           jGoDocument.addObjectAtTail( tokenNode);
           x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
@@ -523,6 +527,91 @@ public class TokenNetworkView extends VizView {
     isContentSpecRendered( "Token Network View", showDialog);
   } // end setNodesVisible
 
+
+  /**
+   * <code>TokenNetworkJGoView</code> - subclass JGoView to add doBackgroundClick
+   *
+   */
+  class TokenNetworkJGoView extends JGoView {
+
+    /**
+     * <code>TokenNetworkJGoView</code> - constructor 
+     *
+     */
+    public TokenNetworkJGoView() {
+      super();
+    }
+
+    /**
+     * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
+     *                                 1) snap to active token
+     *
+     * @param modifiers - <code>int</code> - 
+     * @param docCoords - <code>Point</code> - 
+     * @param viewCoords - <code>Point</code> - 
+     */
+    public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
+      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+        // do nothing
+      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        mouseRightPopupMenu( viewCoords);
+      }
+    } // end doBackgroundClick
+
+  } // end class TokenNetworkJGoView
+
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
+    createActiveTokenItem( activeTokenItem);
+    mouseRightPopup.add( activeTokenItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+  } // end mouseRightPopupMenu
+
+  private void createActiveTokenItem( JMenuItem activeTokenItem) {
+    activeTokenItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          PwToken activeToken = TokenNetworkView.this.getViewSet().getActiveToken();
+          boolean isTokenFound = false;
+          if (activeToken != null) {
+            Iterator tokenNodeListItr = nodeList.iterator();
+            while (tokenNodeListItr.hasNext()) {
+              TokenNode tokenNode = (TokenNode) tokenNodeListItr.next();
+              if ((tokenNode.getToken() != null) &&
+                  (tokenNode.getToken().getId().equals( activeToken.getId()))) {
+                System.err.println( "TokenNetworkView snapToActiveToken: " +
+                                    activeToken.getPredicate().getName());
+//                 System.err.println( "loc " + tokenNode.getLocation().getX() +
+//                                     " extent " + jGoExtentView.getExtentSize().getWidth());
+                jGoView.getHorizontalScrollBar().
+                  setValue( Math.max( 0,
+                                      (int) (tokenNode.getLocation().getX() -
+                                             (jGoView.getExtentSize().getWidth() / 2))));
+                jGoView.getVerticalScrollBar().
+                  setValue( Math.max( 0,
+                                      (int) (tokenNode.getLocation().getY() -
+                                             (jGoView.getExtentSize().getHeight() / 2))));
+                jGoView.getSelection().clearSelection();
+                jGoView.getSelection().extendSelection( tokenNode);
+                isTokenFound = true;
+                break;
+              }
+            }
+            if (! isTokenFound) {
+              String message = "active token '" + activeToken.getPredicate().getName() +
+                "' not found in TokenNetworkView";
+              JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                             "Active Token Not Found",
+                                             JOptionPane.ERROR_MESSAGE);
+              System.err.println( message);
+              System.exit( 1);
+            }
+          }
+        }
+      });
+  } // end createActiveTokenItem
 
 
 } // end class TokenNetworkView

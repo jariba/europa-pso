@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.28 2003-09-16 19:29:13 taylor Exp $
+// $Id: ViewSet.java,v 1.29 2003-09-18 20:48:46 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -22,6 +22,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIWindowBar;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.util.ColorStream;
 import gov.nasa.arc.planworks.viz.views.VizView;
@@ -49,6 +50,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   private String planName;
   private MDIInternalFrame contentSpecWindow;
   private ColorStream colorStream;
+  private PwToken activeToken;
 
   /**
    * Creates the ViewSet object, creates a new ContentSpec, and creates storage for the new views.
@@ -74,6 +76,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     this.contentSpecWindow.pack();
     this.contentSpecWindow.setVisible(true);
     this.colorStream = new ColorStream();
+    this.activeToken = null;
   }
 
   /**
@@ -232,8 +235,32 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   public void add(JButton button) {
   }
 
+  /**
+   * <code>getColorStream</code> - manages timeline colors
+   *
+   * @return - <code>ColorStream</code> - 
+   */
   public ColorStream getColorStream() {
     return colorStream;
   }
+
+  /**
+   * <code>getActiveToken</code>
+   *
+   * @return - <code>PwToken</code> - user selected view focus
+   */
+  public PwToken getActiveToken() {
+    return activeToken;
+  }
+
+  /**
+   * <code>setActiveToken</code>
+   *
+   * @param token - <code>PwToken</code> - make this token the view focus
+   */
+  public void setActiveToken( PwToken token) {
+    activeToken = token;
+  }
+
 
 }

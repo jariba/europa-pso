@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetwork.java,v 1.2 2003-09-05 19:11:19 taylor Exp $
+// $Id: ConstraintNetwork.java,v 1.3 2003-09-18 20:48:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,8 +14,6 @@
 package gov.nasa.arc.planworks.viz.views.constraintNetwork;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoLabeledLink;
-import com.nwoods.jgo.JGoLink;
 import com.nwoods.jgo.JGoObject;
 
 // PlanWorks/java/lib/JGo/Classier.jar
@@ -25,8 +23,6 @@ import com.nwoods.jgo.examples.BasicNode;
 import com.nwoods.jgo.layout.JGoNetwork;
 import com.nwoods.jgo.layout.JGoNetworkLink;
 import com.nwoods.jgo.layout.JGoNetworkNode;
-
-import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 
 
 /**
@@ -109,6 +105,10 @@ public class ConstraintNetwork extends JGoNetwork {
     deleteLink( link);
   } // end removeConstraintLink
 
+  /**
+   * <code>validateConstraintNetwork</code>
+   *
+   */
   public void validateConstraintNetwork() {
     JGoNetworkNode[] nodeArray = getNodeArray();
     for (int i = 0, n = nodeArray.length; i < n; i++) {

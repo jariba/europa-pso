@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.10 2003-09-16 19:29:13 taylor Exp $
+// $Id: TimelineNode.java,v 1.1 2003-09-18 20:48:49 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 18may03
 //
 
-package gov.nasa.arc.planworks.viz.nodes;
+package gov.nasa.arc.planworks.viz.views.timeline;
 
 import java.awt.Color;
 import java.awt.Insets;
@@ -26,7 +26,6 @@ import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.db.PwTimeline;
-import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.views.VizView;
 
