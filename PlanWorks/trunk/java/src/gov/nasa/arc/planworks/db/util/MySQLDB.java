@@ -68,7 +68,7 @@ public class MySQLDB {
       return;
     }
     StringBuffer dbStopString = new StringBuffer(System.getProperty("mysql.bindir"));
-    dbStopString.append("/mysqladmin --user=PlanWorksUser --password=PlanWorksUser --host=127.0.0.1 --socket=");
+    dbStopString.append("/mysqladmin --user=root --password=root --host=127.0.0.1 --socket=");
     dbStopString.append(System.getProperty("mysql.sock")).append(" shutdown");
     Runtime.getRuntime().exec(dbStopString.toString());
   }
@@ -80,7 +80,7 @@ public class MySQLDB {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
       for(int triedConnections = 0; triedConnections <= 10; triedConnections++) {
         try {
-          conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=PlanWorksUser&password=PlanWorksUser");
+          conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=root&password=root");
         }
         catch(Exception e) {
           if(triedConnections == 10) {

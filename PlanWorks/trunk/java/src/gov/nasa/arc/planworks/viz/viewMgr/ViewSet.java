@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.15 2003-06-30 21:29:09 miatauro Exp $
+// $Id: ViewSet.java,v 1.16 2003-07-08 20:27:18 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -79,7 +79,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
       return (MDIInternalFrame) views.get("timelineView");
     }
     MDIInternalFrame timelineViewFrame = 
-      desktopFrame.createFrame("Timeline view of ".concat(planName), true, true, true, true);
+      desktopFrame.createFrame("Timeline view of ".concat(planName), this, true, true, true, true);
     views.put("timelineView", timelineViewFrame);
     Container contentPane = timelineViewFrame.getContentPane();
     contentPane.add(new TimelineView(partialPlan, this));
@@ -97,7 +97,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
       return (MDIInternalFrame) views.get("tokenNetworkView");
     }
     MDIInternalFrame tokenNetworkViewFrame = 
-      desktopFrame.createFrame("Token Network view of ".concat(planName), true, true,
+      desktopFrame.createFrame("Token Network view of ".concat(planName), this, true, true,
                                true, true);
     views.put("tokenNetworkView", tokenNetworkViewFrame);
     Container contentPane = tokenNetworkViewFrame.getContentPane();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.13 2003-06-30 21:25:07 miatauro Exp $
+// $Id: ContentSpec.java,v 1.14 2003-07-08 20:28:17 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -129,7 +129,7 @@ public class ContentSpec {
    * @param timeInterval the result of getValues() in TimeIntervalGroupBox.
    */
   //REALLY INEFFICIENT INITIAL RUN.  some of this should probably be refactored
-  public void applySpec(List timeline, List predicate, List constraint, List variableType, 
+  public void applySpec(List timeline, List predicate, /*List constraint, */List variableType, 
                         List timeInterval) throws NumberFormatException {
   }
   public void executeQuery(String query) throws SQLException {

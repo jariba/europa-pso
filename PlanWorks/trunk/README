@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.8 2003-07-07 21:41:17 miatauro Exp $
+# $Id: README,v 1.9 2003-07-08 20:25:28 miatauro Exp $
 #
 
 SUMMARY
@@ -39,9 +39,17 @@ Set environment varibles:
   o USER - user's account name, used in defining the data base collection
     should be set by user's standard environment
 
-
 BUILDING & RUNNING PLANWORKS
 ============================
+If you're running Solaris 8, everything should work right out of
+CVS.  Just follow the instructions below.  If you're running Linux, you'll
+have to go download the MySQL binary release for your system
+(http://www.mysql.com/downloads/mysql-4.0.html), un[zip|tar] it, and copy
+the "mysql", "mysqld", and "mysqladmin" executables from the
+mysql-bin-install/bin directory into PlanWorks/lib/mysql/bin, then follow
+the instructions below.  If you're on any other system, the above advice
+still holds, but you're on your own beyond that.
+
 > ant planWorksDbInstall #this sets up the database and must be run before
 			 #anything else
 
