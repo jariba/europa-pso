@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.6 2003-10-28 18:01:24 taylor Exp $
+// $Id: TransactionContentView.java,v 1.7 2003-10-28 20:41:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -35,6 +35,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTransaction;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.UniqueSet;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TransactionField;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
@@ -155,26 +156,37 @@ public class TransactionContentView extends JGoView {
                             (int) stepNumField.getSize().getHeight());
       x += headerJGoView.getStepNumNode().getSize().getWidth();
 
-      String objectName = getObjectName( transaction.getObjectId());
+      // String objectName = getObjectName( transaction.getObjectId());
+      String objectName =
+        NodeGenerics.trimName( transaction.getInfo[0], headerJGoView.getObjectNameNode(),
+                               vizView);
       TransactionField objectNameField =
-        new TransactionField( objectName, new Point( x, y), JGoText.ALIGN_CENTER,
-                              bgColor, viewableObject);
+        new TransactionField( objectName, new Point( x, y),
+                              JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail(objectNameField );
       objectNameField.setSize( (int) headerJGoView.getObjectNameNode().getSize().getWidth(),
                            (int) objectNameField.getSize().getHeight());
       x += headerJGoView.getObjectNameNode().getSize().getWidth();
 
+        // new TransactionField( getPredicateName( transaction.getObjectId()),
+      String predicateName =
+        NodeGenerics.trimName( transaction.getInfo[1], headerJGoView.getPredicateNode(),
+                               vizView);
       TransactionField predicateField =
-        new TransactionField( getPredicateName( transaction.getObjectId()),
-                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+        new TransactionField( predicateName, new Point( x, y),
+                              JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( predicateField);
       predicateField.setSize( (int) headerJGoView.getPredicateNode().getSize().getWidth(),
                            (int) predicateField.getSize().getHeight());
       x += headerJGoView.getPredicateNode().getSize().getWidth();
 
+        // new TransactionField( getParameterName( transaction.getObjectId(), objectName),
+      String parameterName =
+         NodeGenerics.trimName( transaction.getInfo[2], headerJGoView.getParameterNode(),
+                                vizView);
       TransactionField parameterField =
-        new TransactionField( getParameterName( transaction.getObjectId(), objectName),
-                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+        new TransactionField( parameterName, new Point( x, y),
+                              JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( parameterField);
       parameterField.setSize( (int) headerJGoView.getParameterNode().getSize().getWidth(),
                            (int) parameterField.getSize().getHeight());
@@ -185,142 +197,142 @@ public class TransactionContentView extends JGoView {
     }
   } // end renderTransactions
 
-  private String getObjectName( Integer objectId) {
-    String objectName = "";
-    boolean isNameFound = false;
-    // System.err.println( "\ngetObjectName: objectId " + objectId.toString());
-    if (viewableObject instanceof PwPartialPlan) {
-      PwConstraint constraint = ((PwPartialPlan) viewableObject).getConstraint( objectId);
-      if (constraint != null) {
-        objectName = constraint.getName();
-        isNameFound = true;
-        // System.err.println( "  isConstraint");
-      }
-      if (! isNameFound) {
-        PwToken token = ((PwPartialPlan) viewableObject).getToken( objectId);
-        if (token != null) {
-          objectName = token.getPredicate().getName();
-          isNameFound = true;
-          // System.err.println( "  isToken");
-        }
-        if (! isNameFound) {
-          PwVariable variable = ((PwPartialPlan) viewableObject).getVariable( objectId);
-          if (variable != null) {
-            objectName = variable.getType();
-            // System.err.println( "  isVariable");
-            isNameFound = true;
-          }
-        }
-      }
-    } else if (viewableObject instanceof PwPlanningSequence) {
-      // accessing a step of a planSequence will cause Java data structures to be built
-    }
-    if (isNameFound) {
-      // check name is less than column width
-      objectName = trimName( objectName, headerJGoView.getObjectNameNode(), vizView);
-    }
-    return objectName;
-  } // end getObjectName 
+//   private String getObjectName( Integer objectId) {
+//     String objectName = "";
+//     boolean isNameFound = false;
+//     // System.err.println( "\ngetObjectName: objectId " + objectId.toString());
+//     if (viewableObject instanceof PwPartialPlan) {
+//       PwConstraint constraint = ((PwPartialPlan) viewableObject).getConstraint( objectId);
+//       if (constraint != null) {
+//         objectName = constraint.getName();
+//         isNameFound = true;
+//         // System.err.println( "  isConstraint");
+//       }
+//       if (! isNameFound) {
+//         PwToken token = ((PwPartialPlan) viewableObject).getToken( objectId);
+//         if (token != null) {
+//           objectName = token.getPredicate().getName();
+//           isNameFound = true;
+//           // System.err.println( "  isToken");
+//         }
+//         if (! isNameFound) {
+//           PwVariable variable = ((PwPartialPlan) viewableObject).getVariable( objectId);
+//           if (variable != null) {
+//             objectName = variable.getType();
+//             // System.err.println( "  isVariable");
+//             isNameFound = true;
+//           }
+//         }
+//       }
+//     } else if (viewableObject instanceof PwPlanningSequence) {
+//       // accessing a step of a planSequence will cause Java data structures to be built
+//     }
+//     if (isNameFound) {
+//       // check name is less than column width
+//       objectName = trimName( objectName, headerJGoView.getObjectNameNode(), vizView);
+//     }
+//     return objectName;
+//   } // end getObjectName 
 
-  private String getPredicateName( Integer objectId) {
-    String predicateName = "";
-    boolean isNameFound = false;
-    // System.err.println( "\ngetPredicateName: objectId " + objectId.toString());
-    if (viewableObject instanceof PwPartialPlan) {
-      PwConstraint constraint = ((PwPartialPlan) viewableObject).getConstraint( objectId);
-      if (constraint != null) {
-        // System.err.println( "  isConstraint");
-        UniqueSet predicateNameList = new UniqueSet();
-        List variableList = constraint.getVariablesList();
-        // System.err.println( "  variableList.size " + variableList.size());
-        Iterator variableListItr = variableList.iterator();
-        while (variableListItr.hasNext()) {
-           List tokenList = ((PwVariable) variableListItr.next()).getTokenList();
-           addPredicateName( tokenList, predicateNameList);
-        }
-        // System.err.println( "  predicateNameList " + predicateNameList);
-        // for a constraint, may have multiple predicate names ???
-        isNameFound = true;
-      }
-      if (! isNameFound) {
-        PwToken token = ((PwPartialPlan) viewableObject).getToken( objectId);
-        if (token != null) {
-          // System.err.println( "  isToken");
-          predicateName = token.getPredicate().getName();
-          isNameFound = true;
-        }
-        if (! isNameFound) {
-          PwVariable variable = ((PwPartialPlan) viewableObject).getVariable( objectId);
-          if (variable != null) {
-            // System.err.println( "  isVariable");
-            UniqueSet predicateNameList = new UniqueSet();
-            List tokenList = variable.getTokenList();
-            addPredicateName( tokenList, predicateNameList);
-            // System.err.println( "  predicateNameList " + predicateNameList);
-            // Europa guarantees only one predicate name
-            predicateName = (String) predicateNameList.get( 0);
-            isNameFound = true;
-          }
-        }
-      }
-    } else if (viewableObject instanceof PwPlanningSequence) {
-      // accessing a step of a planSequence will cause Java data structures to be built
-    }
-    if (isNameFound) {
-      // check name is less than column width
-      predicateName = trimName( predicateName, headerJGoView.getPredicateNode(), vizView);
-    }
-    return predicateName;
-  } // end getPredicateName 
+//   private String getPredicateName( Integer objectId) {
+//     String predicateName = "";
+//     boolean isNameFound = false;
+//     // System.err.println( "\ngetPredicateName: objectId " + objectId.toString());
+//     if (viewableObject instanceof PwPartialPlan) {
+//       PwConstraint constraint = ((PwPartialPlan) viewableObject).getConstraint( objectId);
+//       if (constraint != null) {
+//         // System.err.println( "  isConstraint");
+//         UniqueSet predicateNameList = new UniqueSet();
+//         List variableList = constraint.getVariablesList();
+//         // System.err.println( "  variableList.size " + variableList.size());
+//         Iterator variableListItr = variableList.iterator();
+//         while (variableListItr.hasNext()) {
+//            List tokenList = ((PwVariable) variableListItr.next()).getTokenList();
+//            addPredicateName( tokenList, predicateNameList);
+//         }
+//         // System.err.println( "  predicateNameList " + predicateNameList);
+//         // for a constraint, may have multiple predicate names ???
+//         isNameFound = true;
+//       }
+//       if (! isNameFound) {
+//         PwToken token = ((PwPartialPlan) viewableObject).getToken( objectId);
+//         if (token != null) {
+//           // System.err.println( "  isToken");
+//           predicateName = token.getPredicate().getName();
+//           isNameFound = true;
+//         }
+//         if (! isNameFound) {
+//           PwVariable variable = ((PwPartialPlan) viewableObject).getVariable( objectId);
+//           if (variable != null) {
+//             // System.err.println( "  isVariable");
+//             UniqueSet predicateNameList = new UniqueSet();
+//             List tokenList = variable.getTokenList();
+//             addPredicateName( tokenList, predicateNameList);
+//             // System.err.println( "  predicateNameList " + predicateNameList);
+//             // Europa guarantees only one predicate name
+//             predicateName = (String) predicateNameList.get( 0);
+//             isNameFound = true;
+//           }
+//         }
+//       }
+//     } else if (viewableObject instanceof PwPlanningSequence) {
+//       // accessing a step of a planSequence will cause Java data structures to be built
+//     }
+//     if (isNameFound) {
+//       // check name is less than column width
+//       predicateName = trimName( predicateName, headerJGoView.getPredicateNode(), vizView);
+//     }
+//     return predicateName;
+//   } // end getPredicateName 
 
-  private void addPredicateName( List tokenList, UniqueSet predicateNameList) {
-    // System.err.println( "  tokenList.size " + tokenList.size());
-    Iterator tokenListItr = tokenList.iterator();
-    while (tokenListItr.hasNext()) {
-      predicateNameList.add( ((PwToken) tokenListItr.next()).getPredicate().getName());
-    }
-  } // end addPredicateName
+//   private void addPredicateName( List tokenList, UniqueSet predicateNameList) {
+//     // System.err.println( "  tokenList.size " + tokenList.size());
+//     Iterator tokenListItr = tokenList.iterator();
+//     while (tokenListItr.hasNext()) {
+//       predicateNameList.add( ((PwToken) tokenListItr.next()).getPredicate().getName());
+//     }
+//   } // end addPredicateName
 
-  private String getParameterName( Integer objectId, String objectName) {
-    String parameterName = "";
-    boolean isNameFound = false;
-    // System.err.println( "\ngetParameterName: objectId " + objectId.toString());
-    if (viewableObject instanceof PwPartialPlan) {
-      PwConstraint constraint = ((PwPartialPlan) viewableObject).getConstraint( objectId);
-      if (constraint != null) {
-        // System.err.println( "  isConstraint");
-      }
-      if (! isNameFound) {
-        PwToken token = ((PwPartialPlan) viewableObject).getToken( objectId);
-        if (token != null) {
-          // System.err.println( "  isToken");
-        }
-        if (! isNameFound) {
-          PwVariable variable = ((PwPartialPlan) viewableObject).getVariable( objectId);
-          if ((variable != null) && objectName.equals( "PARAMETER_VAR")) {
-            // System.err.println( "  isVariable");
-            UniqueSet parameterNameList = new UniqueSet();
-            List parameterList = variable.getParameterList();
-            Iterator paramListItr = parameterList.iterator();
-            while (paramListItr.hasNext()) {
-              parameterNameList.add( ((PwParameter) paramListItr.next()).getName());
-            }
-            // System.err.println( "  parameterNameList " + parameterNameList);
-            // Europa guarantees only one parameter name
-            parameterName = (String) parameterNameList.get( 0);
-            isNameFound = true;
-          }
-        }
-      }
-    } else if (viewableObject instanceof PwPlanningSequence) {
-      // accessing a step of a planSequence will cause Java data structures to be built
-    }
-    if (isNameFound) {
-      // check name is less than column width
-      parameterName = trimName( parameterName, headerJGoView.getParameterNode(), vizView);
-    }
-    return parameterName;
-  } // end getParameterName 
+//   private String getParameterName( Integer objectId, String objectName) {
+//     String parameterName = "";
+//     boolean isNameFound = false;
+//     // System.err.println( "\ngetParameterName: objectId " + objectId.toString());
+//     if (viewableObject instanceof PwPartialPlan) {
+//       PwConstraint constraint = ((PwPartialPlan) viewableObject).getConstraint( objectId);
+//       if (constraint != null) {
+//         // System.err.println( "  isConstraint");
+//       }
+//       if (! isNameFound) {
+//         PwToken token = ((PwPartialPlan) viewableObject).getToken( objectId);
+//         if (token != null) {
+//           // System.err.println( "  isToken");
+//         }
+//         if (! isNameFound) {
+//           PwVariable variable = ((PwPartialPlan) viewableObject).getVariable( objectId);
+//           if ((variable != null) && objectName.equals( "PARAMETER_VAR")) {
+//             // System.err.println( "  isVariable");
+//             UniqueSet parameterNameList = new UniqueSet();
+//             List parameterList = variable.getParameterList();
+//             Iterator paramListItr = parameterList.iterator();
+//             while (paramListItr.hasNext()) {
+//               parameterNameList.add( ((PwParameter) paramListItr.next()).getName());
+//             }
+//             // System.err.println( "  parameterNameList " + parameterNameList);
+//             // Europa guarantees only one parameter name
+//             parameterName = (String) parameterNameList.get( 0);
+//             isNameFound = true;
+//           }
+//         }
+//       }
+//     } else if (viewableObject instanceof PwPlanningSequence) {
+//       // accessing a step of a planSequence will cause Java data structures to be built
+//     }
+//     if (isNameFound) {
+//       // check name is less than column width
+//       parameterName = trimName( parameterName, headerJGoView.getParameterNode(), vizView);
+//     }
+//     return parameterName;
+//   } // end getParameterName 
 
   /**
    * <code>scrollEntries</code>
@@ -332,26 +344,6 @@ public class TransactionContentView extends JGoView {
     getVerticalScrollBar().setValue( newPosition);
   } // end scrollEntries
 
-  /**
-   * <code>trimName</code> - trim name to fit in headerNode column
-   *
-   * @param name - <code>String</code> - 
-   * @param headerNode - <code>TextNode</code> - 
-   * @return - <code>String</code> - 
-   */
-  public static String trimName( String name, TextNode headerNode, VizView vizView) {
-    int columnWidth = (int) headerNode.getSize().getWidth();
-    int nameWidth = SwingUtilities.computeStringWidth( vizView.getFontMetrics(), name);
-    // System.err.println( " name " + name + " " + nameWidth + " columnWidth " + columnWidth);
-    if (nameWidth > columnWidth) {
-      int numTrimChars = ((nameWidth - columnWidth) /
-                          vizView.getFontMetrics().charWidth( 'A')) + 1;
-      // System.err.println( " numTrimChars " + numTrimChars);
-      name = name.substring( 0, (name.length() - numTrimChars - 2)).concat( "..");
-    }
-    // System.err.println( " name " + name);
-    return name;
-  } // end trimName
 
 
 

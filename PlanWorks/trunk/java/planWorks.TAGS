@@ -799,62 +799,67 @@ public class ViewRenderingException ViewRenderingException17,353
     public ViewRenderingException(ViewRenderingException.ViewRenderingException32,749
 
 src/gov/nasa/arc/planworks/viz/AskTransactionObjectKey.java,501
-public class AskTransactionObjectKey AskTransactionObjectKey43,1218
-  public AskTransactionObjectKey(AskTransactionObjectKey.AskTransactionObjectKey60,1663
-  public Integer getObjectKey(AskTransactionObjectKey.getObjectKey115,3351
-  public int getTransactionListIndex(AskTransactionObjectKey.getTransactionListIndex124,3506
-  private void addInputListener(AskTransactionObjectKey.addInputListener128,3585
-  private boolean isValidObjectKey(AskTransactionObjectKey.isValidObjectKey181,5875
+public class AskTransactionObjectKey AskTransactionObjectKey43,1283
+  public AskTransactionObjectKey(AskTransactionObjectKey.AskTransactionObjectKey60,1728
+  public Integer getObjectKey(AskTransactionObjectKey.getObjectKey115,3416
+  public int getTransactionListIndex(AskTransactionObjectKey.getTransactionListIndex124,3571
+  private void addInputListener(AskTransactionObjectKey.addInputListener128,3650
+  private boolean isValidObjectKey(AskTransactionObjectKey.isValidObjectKey181,5940
 
-src/gov/nasa/arc/planworks/viz/StepContentView.java,264
-public class StepContentView StepContentView39,1049
-  public StepContentView(StepContentView.StepContentView57,1729
-  private void renderStepContent(StepContentView.renderStepContent71,2204
-  public void scrollEntries(StepContentView.scrollEntries148,5890
+src/gov/nasa/arc/planworks/viz/StepContentView.java,615
+public class StepContentView StepContentView40,1103
+  public StepContentView(StepContentView.StepContentView59,1807
+  public void redraw(StepContentView.redraw78,2348
+  class RedrawViewThread StepContentView.RedrawViewThread82,2414
+    public RedrawViewThread(StepContentView.RedrawViewThread.RedrawViewThread84,2457
+    public void run(StepContentView.RedrawViewThread.run87,2516
+  public List getTransactionList(StepContentView.getTransactionList99,2718
+  private void renderStepContent(StepContentView.renderStepContent103,2788
+  public void scrollEntries(StepContentView.scrollEntries190,7051
 
 src/gov/nasa/arc/planworks/viz/StepHeaderView.java,1037
-public class StepHeaderView StepHeaderView48,1368
-  public StepHeaderView(StepHeaderView.StepHeaderView84,2796
-  private void renderStepHeader(StepHeaderView.renderStepHeader98,3114
-  private void configureTextNode(StepHeaderView.configureTextNode146,5028
-  protected TextNode getStepNumNode(StepHeaderView.getStepNumNode167,5803
-  protected TextNode getKeyNode(StepHeaderView.getKeyNode176,5960
-  protected TextNode getTypeNode(StepHeaderView.getTypeNode185,6111
-  protected TextNode getObjectKeyNode(StepHeaderView.getObjectKeyNode194,6274
-  protected TextNode getObjectNameNode(StepHeaderView.getObjectNameNode203,6449
-  protected TextNode getPredicateNode(StepHeaderView.getPredicateNode212,6624
-  protected TextNode getParameterNode(StepHeaderView.getParameterNode221,6797
-  public void doBackgroundClick(StepHeaderView.doBackgroundClick233,7095
-  private void mouseRightPopupMenu(StepHeaderView.mouseRightPopupMenu241,7437
-  private void createTransByKeyItem(StepHeaderView.createTransByKeyItem250,7808
+public class StepHeaderView StepHeaderView50,1480
+  public StepHeaderView(StepHeaderView.StepHeaderView78,2538
+  private void renderStepHeader(StepHeaderView.renderStepHeader93,2880
+  private void configureTextNode(StepHeaderView.configureTextNode146,5366
+  protected TextNode getStepNumNode(StepHeaderView.getStepNumNode167,6141
+  protected TextNode getKeyNode(StepHeaderView.getKeyNode176,6298
+  protected TextNode getTypeNode(StepHeaderView.getTypeNode185,6449
+  protected TextNode getObjectKeyNode(StepHeaderView.getObjectKeyNode194,6612
+  protected TextNode getObjectNameNode(StepHeaderView.getObjectNameNode203,6787
+  protected TextNode getPredicateNode(StepHeaderView.getPredicateNode212,6962
+  protected TextNode getParameterNode(StepHeaderView.getParameterNode221,7135
+  public void doBackgroundClick(StepHeaderView.doBackgroundClick233,7433
+  private void mouseRightPopupMenu(StepHeaderView.mouseRightPopupMenu243,7828
+  private void createTransByKeyItem(StepHeaderView.createTransByKeyItem252,8199
 
-src/gov/nasa/arc/planworks/viz/TransactionContentView.java,733
-public class TransactionContentView TransactionContentView49,1462
-  public TransactionContentView(TransactionContentView.TransactionContentView67,2134
-  private void renderTransactionContent(TransactionContentView.renderTransactionContent81,2610
-  private String getObjectName(TransactionContentView.getObjectName159,6818
-  private String getPredicateName(TransactionContentView.getPredicateName196,8269
-  private void addPredicateName(TransactionContentView.addPredicateName247,10621
-  private String getParameterName(TransactionContentView.getParameterName255,10979
-  public void scrollEntries(TransactionContentView.scrollEntries301,12930
-  public static String trimName(TransactionContentView.trimName313,13341
+src/gov/nasa/arc/planworks/viz/TransactionContentView.java,715
+public class TransactionContentView TransactionContentView50,1516
+  public TransactionContentView(TransactionContentView.TransactionContentView68,2188
+  public void redraw(TransactionContentView.redraw86,2706
+  class RedrawViewThread TransactionContentView.RedrawViewThread90,2772
+    public RedrawViewThread(TransactionContentView.RedrawViewThread.RedrawViewThread92,2815
+    public void run(TransactionContentView.RedrawViewThread.run95,2874
+  public List getTransactionList(TransactionContentView.getTransactionList106,3074
+  private void renderTransactionContent(TransactionContentView.renderTransactionContent110,3144
+  public void scrollEntries(TransactionContentView.scrollEntries342,14475
 
-src/gov/nasa/arc/planworks/viz/TransactionHeaderView.java,1252
-public class TransactionHeaderView TransactionHeaderView50,1465
-  public TransactionHeaderView(TransactionHeaderView.TransactionHeaderView87,3001
-  private void renderTransactionHeader(TransactionHeaderView.renderTransactionHeader101,3333
-  private void configureTextNode(TransactionHeaderView.configureTextNode152,5405
-  protected TextNode getKeyNode(TransactionHeaderView.getKeyNode173,6172
-  protected TextNode getTypeNode(TransactionHeaderView.getTypeNode182,6322
-  protected TextNode getSourceNode(TransactionHeaderView.getSourceNode191,6479
-  protected TextNode getObjectKeyNode(TransactionHeaderView.getObjectKeyNode200,6646
-  protected TextNode getStepNumNode(TransactionHeaderView.getStepNumNode209,6815
-  protected TextNode getObjectNameNode(TransactionHeaderView.getObjectNameNode218,6986
-  protected TextNode getPredicateNode(TransactionHeaderView.getPredicateNode227,7161
-  protected TextNode getParameterNode(TransactionHeaderView.getParameterNode236,7334
-  public void doBackgroundClick(TransactionHeaderView.doBackgroundClick248,7632
-  private void mouseRightPopupMenu(TransactionHeaderView.mouseRightPopupMenu256,7974
-  private void createTransByKeyItem(TransactionHeaderView.createTransByKeyItem265,8345
+src/gov/nasa/arc/planworks/viz/TransactionHeaderView.java,1355
+public class TransactionHeaderView TransactionHeaderView52,1577
+  public TransactionHeaderView(TransactionHeaderView.TransactionHeaderView80,2667
+  private void renderTransactionHeader(TransactionHeaderView.renderTransactionHeader94,2999
+  private void configureTextNode(TransactionHeaderView.configureTextNode149,5644
+  protected TransactionHeaderNode getKeyNode(TransactionHeaderView.getKeyNode170,6411
+  protected TransactionHeaderNode getTypeNode(TransactionHeaderView.getTypeNode179,6574
+  protected TransactionHeaderNode getSourceNode(TransactionHeaderView.getSourceNode188,6744
+  protected TransactionHeaderNode getObjectKeyNode(TransactionHeaderView.getObjectKeyNode197,6924
+  protected TransactionHeaderNode getStepNumNode(TransactionHeaderView.getStepNumNode206,7106
+  protected TransactionHeaderNode getObjectNameNode(TransactionHeaderView.getObjectNameNode215,7290
+  protected TransactionHeaderNode getPredicateNode(TransactionHeaderView.getPredicateNode224,7478
+  protected TransactionHeaderNode getParameterNode(TransactionHeaderView.getParameterNode233,7664
+  public void doBackgroundClick(TransactionHeaderView.doBackgroundClick245,7975
+  private void mouseRightPopupMenu(TransactionHeaderView.mouseRightPopupMenu253,8317
+  private void createTransByKeyItem(TransactionHeaderView.createTransByKeyItem262,8688
 
 src/gov/nasa/arc/planworks/viz/ViewConstants.java,53
 public interface ViewConstants ViewConstants30,626
@@ -873,16 +878,17 @@ src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java,124
 public class HistogramElement HistogramElement31,753
   public HistogramElement(HistogramElement.HistogramElement46,1205
 
-src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java,689
-public class NodeGenerics NodeGenerics48,1374
-  private NodeGenerics(NodeGenerics.NodeGenerics50,1403
-  public static void showPopupMenu(NodeGenerics.showPopupMenu60,1688
-  public static PwDomain[] getStartEndIntervals(NodeGenerics.getStartEndIntervals83,2670
-  public static String getShortestDuration(NodeGenerics.getShortestDuration146,5165
-  public static String getLongestDuration(NodeGenerics.getLongestDuration189,6886
-  public static void focusViewOnNode(NodeGenerics.focusViewOnNode222,8204
-  public static void selectSecondaryNodes(NodeGenerics.selectSecondaryNodes246,9306
-  public static List mapTokensToTokenNodes(NodeGenerics.mapTokensToTokenNodes265,10050
+src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java,754
+public class NodeGenerics NodeGenerics49,1415
+  private NodeGenerics(NodeGenerics.NodeGenerics51,1444
+  public static void showPopupMenu(NodeGenerics.showPopupMenu61,1729
+  public static PwDomain[] getStartEndIntervals(NodeGenerics.getStartEndIntervals84,2711
+  public static String getShortestDuration(NodeGenerics.getShortestDuration147,5206
+  public static String getLongestDuration(NodeGenerics.getLongestDuration190,6927
+  public static void focusViewOnNode(NodeGenerics.focusViewOnNode223,8245
+  public static void selectSecondaryNodes(NodeGenerics.selectSecondaryNodes247,9347
+  public static List mapTokensToTokenNodes(NodeGenerics.mapTokensToTokenNodes266,10091
+  public static String trimName(NodeGenerics.trimName298,11205
 
 src/gov/nasa/arc/planworks/viz/nodes/StepField.java,347
 public class StepField StepField40,1036
@@ -903,8 +909,8 @@ public class TokenNode TokenNode55,1724
   public String getPredicateName(TokenNode.getPredicateName150,4461
   public String toString(TokenNode.toString159,4611
   public String getToolTipText(TokenNode.getToolTipText168,4770
-  public boolean doMouseClick(TokenNode.doMouseClick187,5312
-  private void mouseRightPopupMenu(TokenNode.mouseRightPopupMenu202,5993
+  public boolean doMouseClick(TokenNode.doMouseClick186,5209
+  private void mouseRightPopupMenu(TokenNode.mouseRightPopupMenu201,5890
 
 src/gov/nasa/arc/planworks/viz/nodes/TransactionField.java,410
 public class TransactionField TransactionField40,1057
@@ -913,6 +919,13 @@ public class TransactionField TransactionField40,1057
   public String getToolTipText(TransactionField.getToolTipText93,2854
   public boolean doMouseClick(TransactionField.doMouseClick106,3201
   private void mouseRightPopupMenu(TransactionField.mouseRightPopupMenu122,3896
+
+src/gov/nasa/arc/planworks/viz/nodes/TransactionHeaderNode.java,389
+public class TransactionHeaderNode TransactionHeaderNode47,1466
+  public TransactionHeaderNode(TransactionHeaderNode.TransactionHeaderNode60,1779
+  public String getToolTipText(TransactionHeaderNode.getToolTipText81,2405
+  public boolean doMouseClick(TransactionHeaderNode.doMouseClick100,2974
+  private void sortTransactionList(TransactionHeaderNode.sortTransactionList117,3704
 
 src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java,63
 public interface ContentSpecChecker ContentSpecChecker18,507
@@ -1320,6 +1333,34 @@ public class NewConstraintNetworkLayout NewConstraintNetworkLayout15,535
     public int compare(NewConstraintNetworkLayout.SpecificTokenLinkCountComparator.compare158,5979
     public boolean equals(NewConstraintNetworkLayout.SpecificTokenLinkCountComparator.equals164,6245
 
+src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/TokenBoundingBox.java,738
+public class TokenBoundingBox TokenBoundingBox21,301
+  public TokenBoundingBox(TokenBoundingBox.TokenBoundingBox25,470
+  public TokenBoundingBox(TokenBoundingBox.TokenBoundingBox35,972
+  public void addVariable(TokenBoundingBox.addVariable46,1492
+  public boolean isVisible(TokenBoundingBox.isVisible49,1621
+  public double getHeight(TokenBoundingBox.getHeight50,1683
+  public double getWidth(TokenBoundingBox.getWidth68,2325
+  public void positionNodes(TokenBoundingBox.positionNodes86,2958
+  private void positionVertical(TokenBoundingBox.positionVertical97,3176
+  private void positionHorizontal(TokenBoundingBox.positionHorizontal110,3746
+  public List getVariableBoxes(TokenBoundingBox.getVariableBoxes123,4313
+
+src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableBoundingBox.java,917
+public class VariableBoundingBox VariableBoundingBox22,302
+  public VariableBoundingBox(VariableBoundingBox.VariableBoundingBox27,479
+  public VariableBoundingBox(VariableBoundingBox.VariableBoundingBox33,717
+  public void addConstraint(VariableBoundingBox.addConstraint40,988
+  public boolean isVisible(VariableBoundingBox.isVisible43,1090
+  public double getHeight(VariableBoundingBox.getHeight44,1150
+  public double getWidth(VariableBoundingBox.getWidth74,2330
+  public void positionNodes(VariableBoundingBox.positionNodes98,3212
+  private void positionVertical(VariableBoundingBox.positionVertical110,3429
+  private void positionHorizontal(VariableBoundingBox.positionHorizontal139,4814
+  public void setVisited(VariableBoundingBox.setVisited166,6092
+  public void clearVisited(VariableBoundingBox.clearVisited169,6145
+  public boolean wasVisited(VariableBoundingBox.wasVisited172,6201
+
 src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java,2204
 public class VariableNode VariableNode47,1355
   public VariableNode(VariableNode.VariableNode83,2748
@@ -1543,17 +1584,17 @@ public class TokenNetworkView TokenNetworkView64,2098
   private void findAndSelectToken(TokenNetworkView.findAndSelectToken623,22995
 
 src/gov/nasa/arc/planworks/viz/partialPlan/transaction/TransactionView.java,946
-public class TransactionView TransactionView55,1831
-  public TransactionView(TransactionView.TransactionView77,2526
-  public void init(TransactionView.init126,4462
-  public TransactionContentView getTransactionContentView(TransactionView.getTransactionContentView174,6321
-  class ScrollBarListener TransactionView.ScrollBarListener183,6589
-    public void adjustmentValueChanged(TransactionView.ScrollBarListener.adjustmentValueChanged191,6891
-  class TransactionHeaderPanel TransactionView.TransactionHeaderPanel218,8147
-    public TransactionHeaderPanel(TransactionView.TransactionHeaderPanel.TransactionHeaderPanel224,8277
-    public Dimension getMinimumSize(TransactionView.TransactionHeaderPanel.getMinimumSize233,8438
-    public Dimension getMaximumSize(TransactionView.TransactionHeaderPanel.getMaximumSize245,8905
-    public Dimension getPreferredSize(TransactionView.TransactionHeaderPanel.getPreferredSize257,9399
+public class TransactionView TransactionView55,1838
+  public TransactionView(TransactionView.TransactionView77,2533
+  public void init(TransactionView.init128,4558
+  public TransactionContentView getTransactionContentView(TransactionView.getTransactionContentView176,6417
+  class ScrollBarListener TransactionView.ScrollBarListener185,6685
+    public void adjustmentValueChanged(TransactionView.ScrollBarListener.adjustmentValueChanged193,6987
+  class TransactionHeaderPanel TransactionView.TransactionHeaderPanel220,8243
+    public TransactionHeaderPanel(TransactionView.TransactionHeaderPanel.TransactionHeaderPanel226,8373
+    public Dimension getMinimumSize(TransactionView.TransactionHeaderPanel.getMinimumSize235,8534
+    public Dimension getMaximumSize(TransactionView.TransactionHeaderPanel.getMaximumSize247,9001
+    public Dimension getPreferredSize(TransactionView.TransactionHeaderPanel.getPreferredSize259,9495
 
 src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java,105
 public class SequenceView SequenceView42,1178
@@ -1589,33 +1630,39 @@ public class StepElement StepElement62,2002
   private void mouseRightPopupMenu(StepElement.mouseRightPopupMenu158,5669
 
 src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/StepQueryView.java,841
-public class StepQueryView StepQueryView49,1581
-  public StepQueryView(StepQueryView.StepQueryView76,2497
-  public void init(StepQueryView.init110,3844
-  public StepContentView getStepContentView(StepQueryView.getStepContentView167,6437
-  class ScrollBarListener StepQueryView.ScrollBarListener176,6691
-    public void adjustmentValueChanged(StepQueryView.ScrollBarListener.adjustmentValueChanged185,7029
-  class StepHeaderPanel StepQueryView.StepHeaderPanel212,8271
-    public StepHeaderPanel(StepQueryView.StepHeaderPanel.StepHeaderPanel218,8387
-    public Dimension getMinimumSize(StepQueryView.StepHeaderPanel.getMinimumSize227,8569
-    public Dimension getMaximumSize(StepQueryView.StepHeaderPanel.getMaximumSize238,8995
-    public Dimension getPreferredSize(StepQueryView.StepHeaderPanel.getPreferredSize249,9422
+public class StepQueryView StepQueryView50,1652
+  public StepQueryView(StepQueryView.StepQueryView77,2568
+  public void init(StepQueryView.init114,4073
+  public StepContentView getStepContentView(StepQueryView.getStepContentView171,6666
+  class ScrollBarListener StepQueryView.ScrollBarListener180,6920
+    public void adjustmentValueChanged(StepQueryView.ScrollBarListener.adjustmentValueChanged189,7258
+  class StepHeaderPanel StepQueryView.StepHeaderPanel216,8500
+    public StepHeaderPanel(StepQueryView.StepHeaderPanel.StepHeaderPanel222,8616
+    public Dimension getMinimumSize(StepQueryView.StepHeaderPanel.getMinimumSize231,8798
+    public Dimension getMaximumSize(StepQueryView.StepHeaderPanel.getMaximumSize242,9224
+    public Dimension getPreferredSize(StepQueryView.StepHeaderPanel.getPreferredSize253,9651
 
-src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TransactionQueryView.java,1016
-public class TransactionQueryView TransactionQueryView51,1724
-  public TransactionQueryView(TransactionQueryView.TransactionQueryView78,2701
-  public void init(TransactionQueryView.init115,4245
-  public TransactionContentView getTransactionContentView(TransactionQueryView.getTransactionContentView172,6929
-  class ScrollBarListener TransactionQueryView.ScrollBarListener181,7197
-    public void adjustmentValueChanged(TransactionQueryView.ScrollBarListener.adjustmentValueChanged190,7535
-  class TransactionHeaderPanel TransactionQueryView.TransactionHeaderPanel217,8791
-    public TransactionHeaderPanel(TransactionQueryView.TransactionHeaderPanel.TransactionHeaderPanel223,8921
-    public Dimension getMinimumSize(TransactionQueryView.TransactionHeaderPanel.getMinimumSize232,9110
-    public Dimension getMaximumSize(TransactionQueryView.TransactionHeaderPanel.getMaximumSize243,9543
-    public Dimension getPreferredSize(TransactionQueryView.TransactionHeaderPanel.getPreferredSize254,9977
+src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TransactionQueryView.java,1017
+public class TransactionQueryView TransactionQueryView51,1731
+  public TransactionQueryView(TransactionQueryView.TransactionQueryView78,2708
+  public void init(TransactionQueryView.init117,4341
+  public TransactionContentView getTransactionContentView(TransactionQueryView.getTransactionContentView174,7025
+  class ScrollBarListener TransactionQueryView.ScrollBarListener183,7293
+    public void adjustmentValueChanged(TransactionQueryView.ScrollBarListener.adjustmentValueChanged192,7631
+  class TransactionHeaderPanel TransactionQueryView.TransactionHeaderPanel219,8887
+    public TransactionHeaderPanel(TransactionQueryView.TransactionHeaderPanel.TransactionHeaderPanel225,9017
+    public Dimension getMinimumSize(TransactionQueryView.TransactionHeaderPanel.getMinimumSize234,9206
+    public Dimension getMaximumSize(TransactionQueryView.TransactionHeaderPanel.getMaximumSize245,9639
+    public Dimension getPreferredSize(TransactionQueryView.TransactionHeaderPanel.getPreferredSize256,10073
 
-src/gov/nasa/arc/planworks/viz/util/TransactionIdComparator.java,282
-public class TransactionIdComparator TransactionIdComparator20,432
-  public TransactionIdComparator(TransactionIdComparator.TransactionIdComparator22,494
-  public int compare(TransactionIdComparator.compare25,536
-  public boolean equals(TransactionIdComparator.equals31,709
+src/gov/nasa/arc/planworks/viz/util/TransactionComparatorAscending.java,332
+public class TransactionComparatorAscending TransactionComparatorAscending21,488
+  public TransactionComparatorAscending(TransactionComparatorAscending.TransactionComparatorAscending25,582
+  public int compare(TransactionComparatorAscending.compare29,668
+  public boolean equals(TransactionComparatorAscending.equals69,2556
+
+src/gov/nasa/arc/planworks/viz/util/TransactionComparatorDescending.java,339
+public class TransactionComparatorDescending TransactionComparatorDescending21,489
+  public TransactionComparatorDescending(TransactionComparatorDescending.TransactionComparatorDescending25,584
+  public int compare(TransactionComparatorDescending.compare29,671
+  public boolean equals(TransactionComparatorDescending.equals69,2560

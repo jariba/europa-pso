@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.42 2003-10-28 18:01:24 taylor Exp $
+# $Id: build-tags-file.csh,v 1.43 2003-10-28 20:41:59 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -143,6 +143,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/NewConstraintNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/TokenBoundingBox.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableBoundingBox.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNode.java \

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.13 2003-10-28 18:01:23 taylor Exp $
+# $Id: GETTING_STARTED,v 1.14 2003-10-28 20:41:59 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -118,7 +118,10 @@ OBJ_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
 Mouse-Right click on the background of the "header" portion of the view, 
 offers "Find Transaction By Obj_Key".  Entering an OBJ_KEY value will cause
 the lower portion of the Transaction view to scroll up to show the transaction 
-entry with the selected OBJ_KEY value.
+entry with the selected OBJ_KEY value.  Mouse-Left click on the column header
+nodes offer sorting of that columns's values, alternately in ascending order 
+and desending order.
+
 
 Token Focus in Views
 ====================
@@ -198,6 +201,9 @@ The "Query Results for ..." windows for "Transactions" queries and the
 "With ..." "Steps" queries offer the user a pop-up dialog entitled "Find 
 Transaction by Obj_Key".  Mouse-Right on the background of the header section 
 of the window brings up this dialog.
+
+The column header nodes of the "Query Results for ..." windows, offer sorting 
+of that columns's values, alternately in ascending order and desending order.
 
 
 Screen Management

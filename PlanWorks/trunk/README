@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.45 2003-10-28 18:01:23 taylor Exp $
+# $Id: README,v 1.46 2003-10-28 20:41:59 taylor Exp $
 #
 
 SUMMARY
@@ -35,6 +35,9 @@ Both the partial plan "Transaction View" windows , and the sequence query
 "Find Transaction by Obj_Key".  Mouse-Right on the background of the 
 header section of the window brings up this dialog.
 
+The column header nodes of the "Transaction View", and "Query Results for ..."
+windows, offer sorting of that columns's values, alternately in
+ascending order and desending order.
 
 o  GNATS PRs and CRs completed:
 
