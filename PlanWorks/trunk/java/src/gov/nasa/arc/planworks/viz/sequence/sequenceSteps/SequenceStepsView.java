@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.20 2004-03-23 20:05:59 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.21 2004-03-24 02:31:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -21,9 +21,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -31,49 +29,33 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoEllipse;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
-import com.nwoods.jgo.JGoRectangle;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
-
-// PlanWorks/java/lib/JGo/Classier.jar
-import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.CreateSequenceViewThread;
 import gov.nasa.arc.planworks.SequenceViewMenuItem;
-import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwListener;
-import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.db.PwSlot;
-import gov.nasa.arc.planworks.db.PwTimeline;
-import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
-import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
@@ -92,12 +74,40 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class SequenceStepsView extends SequenceView {
 
+  /**
+   * constant <code>DB_TOKENS</code>
+   *
+   */
   protected static final String DB_TOKENS = "numTokens";
+
+  /**
+   * constant <code>DB_VARIABLES</code>
+   *
+   */
   protected static final String DB_VARIABLES = "numVariables";
+
+  /**
+   * constant <code>DB_CONSTRAINTS</code>
+   *
+   */
   protected static final String DB_CONSTRAINTS = "numConstraints";
 
+  /**
+   * constant <code>TOKENS_BG_COLOR</code>
+   *
+   */
   public static final Color TOKENS_BG_COLOR = ColorMap.getColor( "seaGreen1");
+
+  /**
+   * constant <code>VARIABLES_BG_COLOR</code>
+   *
+   */
   public static final Color VARIABLES_BG_COLOR = ColorMap.getColor( "skyBlue");
+
+  /**
+   * constant <code>DB_CONSTRAINTS_BG_COLOR</code>
+   *
+   */
   public static final Color DB_CONSTRAINTS_BG_COLOR = ColorMap.getColor( "lightYellow");
 
   private PwPlanningSequence planSequence;
@@ -119,14 +129,31 @@ public class SequenceStepsView extends SequenceView {
    */
   protected StepElement selectedStepElement;
 
+  /**
+   * <code>SequenceChangeListener</code> - 
+   *
+   */
   class SequenceChangeListener implements PwListener {
+
     private SequenceStepsView view;
-    public SequenceChangeListener(SequenceStepsView view) {
+
+    /**
+     * <code>SequenceChangeListener</code> - constructor 
+     *
+     * @param view - <code>SequenceStepsView</code> - 
+     */
+    public SequenceChangeListener( final SequenceStepsView view) {
       this.view = view;
     }
-    public void fireEvent(String evtName) {
-      if(evtName.equals(PwPlanningSequence.EVT_PP_ADDED) ||
-         evtName.equals(PwPlanningSequence.EVT_PP_REMOVED)) {
+
+    /**
+     * <code>fireEvent</code>
+     *
+     * @param evtName - <code>String</code> - 
+     */
+    public final void fireEvent( final String evtName) {
+      if (evtName.equals( PwPlanningSequence.EVT_PP_ADDED) ||
+          evtName.equals( PwPlanningSequence.EVT_PP_REMOVED)) {
         view.redraw();
       }
     }
@@ -140,7 +167,7 @@ public class SequenceStepsView extends SequenceView {
    * @param planSequence - <code>ViewableObject</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    */
-  public SequenceStepsView( ViewableObject planSequence,  ViewSet viewSet) {
+  public SequenceStepsView( final ViewableObject planSequence,  final ViewSet viewSet) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.planSequence = (PwPlanningSequence) planSequence;
     this.startTimeMSecs = System.currentTimeMillis();
@@ -159,14 +186,14 @@ public class SequenceStepsView extends SequenceView {
     jGoView.setVisible( true);
     this.setVisible( true);
 
-    ((PwPlanningSequence)planSequence).addListener(new SequenceChangeListener(this));
+    ((PwPlanningSequence) planSequence).addListener( new SequenceChangeListener( this));
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
 
 
   Runnable runInit = new Runnable() {
-      public void run() {
+      public final void run() {
         init();
       }
     };
@@ -186,7 +213,7 @@ public class SequenceStepsView extends SequenceView {
     // wait for ConstraintNetworkView instance to become displayable
     while (! this.isDisplayable()) {
       try {
-        Thread.currentThread().sleep(50);
+        Thread.currentThread().sleep( 50);
       } catch (InterruptedException excp) {
       }
       // System.err.println( "constraintNetworkView displayable " + this.isDisplayable());
@@ -220,9 +247,9 @@ public class SequenceStepsView extends SequenceView {
    * <code>redraw</code>
    *
    */
-  public void redraw() {
+  public final void redraw() {
     Thread thread = new RedrawViewThread();
-    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.setPriority( Thread.MIN_PRIORITY);
     thread.start();
   }
 
@@ -231,7 +258,7 @@ public class SequenceStepsView extends SequenceView {
     public RedrawViewThread() {
     }  // end constructor
 
-    public void run() {
+    public final void run() {
       redrawView();
     } //end run
 
@@ -240,8 +267,8 @@ public class SequenceStepsView extends SequenceView {
   private void redrawView() {
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     //document.deleteContents();
-    for(Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
-      document.removeObject((JGoObject) it.next());
+    for (Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
+      document.removeObject( (JGoObject) it.next());
     }
     statusIndicatorList.clear();
     
@@ -304,9 +331,8 @@ public class SequenceStepsView extends SequenceView {
    * <code>setSelectedStepElement</code>
    *
    * @param element - <code>StepElement</code> - 
-   * @return - <code>StepElement</code> - 
    */
-  public final void setSelectedStepElement( StepElement element) {
+  public final void setSelectedStepElement( final StepElement element) {
     selectedStepElement = element;
   }
 
@@ -314,7 +340,7 @@ public class SequenceStepsView extends SequenceView {
     int maxDbSize = 0;
     Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
     while (sizeItr.hasNext()) {
-      int [] planDbSizes= (int[]) sizeItr.next();
+      int [] planDbSizes = (int[]) sizeItr.next();
       int dbSize = planDbSizes[0] + planDbSizes[1] + planDbSizes[2];
 //       System.err.println( "dbSize " + dbSize + " " + planDbSizes[0] +
 //                           " " + planDbSizes[1] + " " + planDbSizes[2]);
@@ -340,12 +366,12 @@ public class SequenceStepsView extends SequenceView {
       int y = ViewConstants.STEP_VIEW_Y_INIT;
       
       long temp = System.currentTimeMillis();
-      addStepStatusIndicator(stepNumber, x, document);
+      addStepStatusIndicator( stepNumber, x, document);
       time += System.currentTimeMillis() - temp;
       
       String partialPlanName = "step".concat( String.valueOf( stepNumber));
-      int [] planDbSizes= (int[]) sizeItr.next();
-      if(!stepRepresentedList.contains(partialPlanName)) {
+      int [] planDbSizes = (int[]) sizeItr.next();
+      if(!stepRepresentedList.contains( partialPlanName)) {
         int height = Math.max( 1, (int) (planDbSizes[0] * heightScaleFactor));
         List elementList = new ArrayList();
         StepElement stepElement = new StepElement( x, y, height, DB_TOKENS,
@@ -381,36 +407,36 @@ public class SequenceStepsView extends SequenceView {
           textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
           document.addObjectAtTail( textObject);
         }
-        stepRepresentedList.add(partialPlanName);
+        stepRepresentedList.add( partialPlanName);
       }
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
       stepNumber++;
     }
-    System.err.println("Spent " + time + " in addStepStatusIndicator");
+    System.err.println( "Spent " + time + " msecs in addStepStatusIndicator");
   } // end renderHistogram
 
-  private void addStepStatusIndicator(int stepNum, int x, JGoDocument doc) {
+  private void addStepStatusIndicator( final int stepNum, final int x, final JGoDocument doc) {
     JGoEllipse statusIndicator = new JGoEllipse(new Point(x + 4, 
                                                           ViewConstants.STEP_VIEW_Y_INIT - 6),
                                                 new Dimension(4, 4));
-    statusIndicator.setDraggable(false);
-    statusIndicator.setResizable(false);
-    statusIndicator.setSelectable(false);
+    statusIndicator.setDraggable( false);
+    statusIndicator.setResizable( false);
+    statusIndicator.setSelectable( false);
     Color color = null;
-    if(planSequence.isPartialPlanInDb(stepNum)) {
-      color = ColorMap.getColor("green3");
+    if (planSequence.isPartialPlanInDb( stepNum)) {
+      color = ColorMap.getColor( "green3");
     }
-    else if(planSequence.isPartialPlanInFilesystem(stepNum)) {
-      color = ColorMap.getColor("yellow");
+    else if(planSequence.isPartialPlanInFilesystem( stepNum)) {
+      color = ColorMap.getColor( "yellow");
     }
     else {
-      color = ColorMap.getColor("red");
+      color = ColorMap.getColor( "red");
     }
     //setPen(new JGoPen(type, width, color));
-    statusIndicator.setPen(JGoPen.Null);
-    statusIndicator.setBrush(JGoBrush.makeStockBrush(color));
-    doc.addObjectAtTail(statusIndicator);
-    statusIndicatorList.add(statusIndicator);
+    statusIndicator.setPen( JGoPen.Null);
+    statusIndicator.setBrush( JGoBrush.makeStockBrush( color));
+    doc.addObjectAtTail( statusIndicator);
+    statusIndicatorList.add( statusIndicator);
   }
 
 
@@ -435,7 +461,8 @@ public class SequenceStepsView extends SequenceView {
      * @param docCoords - <code>Point</code> - 
      * @param viewCoords - <code>Point</code> - 
      */
-    public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
+    public final void doBackgroundClick( final int modifiers, final Point docCoords,
+                                         final Point viewCoords) {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
         // do nothing
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -447,7 +474,7 @@ public class SequenceStepsView extends SequenceView {
 
   } // end class SequenceStepsJGoView
 
-  private void mouseRightPopupMenu( Point viewCoords) {
+  private void mouseRightPopupMenu( final Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
 //     JMenuItem modelRulesViewItem = new JMenuItem( "Open Model Rules View");
@@ -459,8 +486,8 @@ public class SequenceStepsView extends SequenceView {
     mouseRightPopup.add( overviewWindowItem);
 
     JMenuItem refreshItem = new JMenuItem("Refresh");
-    createRefreshItem(refreshItem, this);
-    mouseRightPopup.add(refreshItem);
+    createRefreshItem( refreshItem, this);
+    mouseRightPopup.add( refreshItem);
 
     List partialPlanViewList = null;
     if ((selectedStepElement != null) &&
@@ -489,7 +516,7 @@ public class SequenceStepsView extends SequenceView {
                                          final SequenceStepsView sequenceStepsView,
                                          final Point viewCoords) {
     overviewWindowItem.addActionListener( new ActionListener() { 
-        public void actionPerformed( ActionEvent evt) {
+        public final void actionPerformed( final ActionEvent evt) {
           VizViewOverview currentOverview =
             ViewGenerics.openOverviewFrame( PlanWorks.SEQUENCE_STEPS_VIEW, planSequence,
                                             sequenceStepsView, viewSet, jGoView, viewCoords);
@@ -505,28 +532,28 @@ public class SequenceStepsView extends SequenceView {
                                          final SequenceStepsView sequenceStepsView,
                                          final Point viewCoords) {
     modelRulesViewItem.addActionListener( new ActionListener() { 
-        public void actionPerformed( ActionEvent evt) {
+        public final void actionPerformed( ActionEvent evt) {
           String seqName = planSequence.getName();
           SequenceViewMenuItem modelRulesItem =
             new SequenceViewMenuItem( seqName, planSequence.getUrl(), seqName);
           Thread thread = new CreateSequenceViewThread(PlanWorks.MODEL_RULES_VIEW,
                                                        modelRulesItem);
-          thread.setPriority(Thread.MIN_PRIORITY);
+          thread.setPriority( Thread.MIN_PRIORITY);
           thread.start();
         }
       });
   } // end createModelRulesViewItem
 
-  private void createRefreshItem(JMenuItem refreshItem, 
-                                 final SequenceStepsView sequenceStepsView) {
-    refreshItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          System.err.println("Refreshing planning sequence...");
+  private void createRefreshItem( JMenuItem refreshItem, 
+                                  final SequenceStepsView sequenceStepsView) {
+    refreshItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          System.err.println( "Refreshing planning sequence...");
           planSequence.refresh();
-          System.err.println("Redrawing sequence steps view...");
+          System.err.println( "Redrawing sequence steps view...");
           heightScaleFactor = computeHeightScaleFactor();
           redraw();
-          System.err.println("   ... Done.");
+          System.err.println( "   ... Done.");
         }
       });
   }
@@ -563,7 +590,7 @@ public class SequenceStepsView extends SequenceView {
   private void createStepBackwardItem( JMenuItem stepBackwardItem, 
                                        final List partialPlanViewList) {
     stepBackwardItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
+        public final void actionPerformed( final ActionEvent evt) {
           Iterator viewsItr = partialPlanViewList.iterator();
           while (viewsItr.hasNext()) {
             PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
@@ -584,7 +611,7 @@ public class SequenceStepsView extends SequenceView {
   private void createStepForwardItem( JMenuItem stepForwardItem, 
                                       final List partialPlanViewList) {
     stepForwardItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
+        public final void actionPerformed( final ActionEvent evt) {
           Iterator viewsItr = partialPlanViewList.iterator();
           while (viewsItr.hasNext()) {
             PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();

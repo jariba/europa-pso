@@ -4,13 +4,13 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.37 2004-03-23 20:05:55 taylor Exp $
+# $Id: GETTING_STARTED,v 1.38 2004-03-24 02:31:03 taylor Exp $
 #
 
 Projects and Plan Sequences
 ===========================
 "Project->Create ..." brings up the "Create Project" dialog requesting
-a project name.  The default is "monkey", which is an embedded test plan.
+a project name.  
 
 Clicking "OK" on the "Create Project" dialog brings up the "Select Sequence 
 Directory of Partial Plan Directory(ies)" chooser.  The sequence directory 
@@ -48,15 +48,15 @@ rectangle will cause the "observed" view to "jump" to that location.
 
 
 Zooming of Plan Sequence and Partial Plan Views
-=================================================
+===============================================
 Mouse-Right "Zoom View" is available for the Constraint Network, Navigator, 
-Temporal Extent, Timeline, and Token Network views.  It also is available in 
-the Sequence Steps view.  The zoom out factors are x2, x4, x6, and x8 (the 
-same scaling as the Overview windows).  Whereas Mouse-Right "Overview Window" 
-creates a new window and allows the coordinated viewing of the paired windows, 
-"Zoom View" does not create a new window, rather it changes scaling in the 
-existing window.  Thus the existing Mouse-Right functionality on the view 
-background and the view nodes is maintained.
+Temporal Extent, Timeline, and Token Network partial plan views.  It also 
+is available in the Sequence Steps view.  The zoom out factors are x2, x4, 
+x6, and x8 (the same scaling as the Overview windows).  Whereas Mouse-Right 
+"Overview Window" creates a new window and allows the coordinated viewing of 
+the paired windows, "Zoom View" does not create a new window, rather it 
+changes scaling in the existing window.  Thus the existing Mouse-Right 
+functionality on the view background and the view nodes is maintained.
 
 
 Plan Sequence Views
@@ -64,12 +64,12 @@ Plan Sequence Views
 The "Planning Sequence" menu expands into the available sequence names.  
 Selecting a sequence name brings up two windows.  The first,
 "SequenceQuery ...", allows the user to make data base queries over the 
-sequence (see below).  The second, "SequenceStepsView", is a histogram 
-of the partial plan data base size for each step of the sequence, with
-every tenth step number displayed at the bottom of the appropriate
-element.  The "SequenceStepsView" background has these Mouse-Right selections: 
-"Close/Hide/Show <sequence-name>/step Views", which effect the views on
-all sequence steps.
+sequence (see "Querying Sequences" below).  The second, "SequenceStepsView", 
+is a histogram of the partial plan data base size for each step of the 
+sequence, with every tenth step number displayed at the bottom of the 
+appropriate element.  The "SequenceStepsView" background has these Mouse-
+Right selections: "Close/Hide/Show <sequence-name>/step Views", which 
+effect the views on all sequence steps.
 
 Individual or all partial plan views for each step are available by
 clicking Mouse-Right on the desired step in the histogram ("SequenceStepsView"). 
@@ -81,6 +81,10 @@ Views" and "Step Forward step<nn> Active Views", where <nn> is the currently
 selected step. Active views are those views which exist for the currently 
 selected step.  Note that stepping an individual view will change the
 currently selected step.
+
+Above each histogram step in the SequenceStepsView is a colored dot: green - 
+partial plan loaded into data base; yellow - partial plan on disk; and red - 
+partial plan not on disk.
 
 
 Partial Plan Views
@@ -309,7 +313,7 @@ selections for opening individual or all partial plan views.
 Querying Sequences
 ==================
 The "SequenceQuery for <sequence-name>" dialog, provides the user with 
-queries which are in four groups, based on the primary kind of information 
+queries which are in five groups, based on the primary kind of information 
 returned:
 "Steps": "Where Constraint/Token/Variable Transacted ..." which 
 asks for a key value (if the key value is left blank, then all key values 

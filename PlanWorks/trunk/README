@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.82 2004-03-23 20:05:55 taylor Exp $
+# $Id: README,v 1.83 2004-03-24 02:31:04 taylor Exp $
 #
 
 SUMMARY
@@ -24,6 +24,9 @@ o The Sequence Steps View now has Mouse-Right "Step Backward step<nn>
   where <nn> is the currently selected step. Active views are those views
   which exist for the currently selected step.
 
+o In the Sequence Steps View above each histogram step is a colored dot: 
+  green - partial plan loaded into data base; yellow - partial plan on 
+  disk; and red - partial plan not on disk.
 
 o  GNATS PRs and CRs completed:
 
@@ -170,6 +173,7 @@ o Two partial plan resource views have been added: ResourceProfileView and
 
 
 o  GNATS PRs and CRs completed:
+   #2080: Require capability to visualize resource envelopes and transactions.
    #2198: Provide queries of constraint execution and when domains become emptied.
    #2241: Timeline view disappear and does not reappear after the 
           non-monotonic timeline error message.
@@ -182,6 +186,7 @@ o  GNATS PRs and CRs completed:
    #2251: Keep Content Filter frame and view frames in same position when stepping.
    #2252: When stepping, move SequenceSteps View highlight to current step.
    #2256: SequenceStepsView: add hide/show all partial plan views.
+
 
 20January04: Milestone 12
 =========================

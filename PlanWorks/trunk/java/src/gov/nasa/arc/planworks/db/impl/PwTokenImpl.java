@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.37 2004-03-23 18:20:50 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.38 2004-03-24 02:31:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -336,6 +336,15 @@ public class PwTokenImpl implements PwToken {
     //buffer.append( " )").append("  ").append(partialPlan.getId());
     buffer.append( " )");
     return buffer.toString();
+  }
+
+  /**
+   * <code>getModelRule</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getModelRule() {
+    return "n/a";
   }
 
   /**
