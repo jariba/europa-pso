@@ -4,18 +4,12 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TransactionTypesDialog.java,v 1.1 2004-09-21 01:07:05 taylor Exp $
+// $Id: TransactionTypesDialog.java,v 1.2 2004-09-29 23:52:19 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
 
-import gov.nasa.arc.planworks.ConfigureAndPlugins;
-import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.PlannerControlJNI;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -23,20 +17,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent; 
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
+
+import gov.nasa.arc.planworks.PlanWorks;
+
 
 /**
  * <code>TransactionTypesDialog</code> - have user specify which transaction types the
@@ -47,6 +37,9 @@ import javax.swing.JTextField;
  * @version 0.0
  */
 public class TransactionTypesDialog extends JDialog {
+
+  private static final int DIALOG_WIDTH = 450;
+  private static final int DIALOG_HEIGHT = 400;
 
   private int[] transTypeStates;
   private List checkBoxList;
@@ -70,7 +63,8 @@ public class TransactionTypesDialog extends JDialog {
 
     btnString1 = "OK";
     btnString2 = "Cancel";
-    Object[] options = {btnString1, btnString2};
+    // Object[] options = {btnString1, btnString2};
+    Object[] options = {btnString1};
     JPanel dialogPanel = new JPanel();
     dialogPanel.setLayout( new GridLayout( transactionTypeStates.length, 1));
 
@@ -111,6 +105,8 @@ public class TransactionTypesDialog extends JDialog {
     // place it in center of JFrame
     Utilities.setPopupLocation( this, PlanWorks.getPlanWorks());
     setBackground( ColorMap.getColor( "gray60"));
+    setSize( DIALOG_WIDTH, DIALOG_HEIGHT);
+    Utilities.setPopupLocation( this, PlanWorks.getPlanWorks());
     setVisible( true);
   } // end constructor
 
@@ -153,6 +149,11 @@ public class TransactionTypesDialog extends JDialog {
       });
   } // end addInputListener
 
+  /**
+   * <code>getTransactionTypeStates</code>
+   *
+   * @return - <code>int[]</code> - 
+   */
   public int[] getTransactionTypeStates() {
     return transTypeStates;
   }

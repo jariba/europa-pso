@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.12 2004-09-28 23:57:40 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.13 2004-09-29 23:52:19 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -31,6 +31,13 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
+/**
+ * <code>NewSequenceThread</code> - 
+ *
+ * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
+ *                            NASA Ames Research Center - Code IC
+ * @version 0.0
+ */
 public class NewSequenceThread extends ThreadWithProgressMonitor {
 
   private PwProject currentProject;
@@ -41,13 +48,25 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
   private String modelPath;
   private String modelInitStatePath;
   private String modelOutputDestDir;
+  private boolean areConfigParamsChanged;
 
+
+  /**
+   * <code>NewSequenceThread</code> - constructor 
+   *
+   * @param threadListener - <code>ThreadListener</code> - 
+   */
   public NewSequenceThread( ThreadListener threadListener) {
     if (threadListener != null) {
       addThreadListener( threadListener);
     }
+    areConfigParamsChanged = false;
   } // end constructor 
 
+  /**
+   * <code>run</code>
+   *
+   */
   public void run() {
     handleEvent( ThreadListener.EVT_THREAD_BEGUN);
     MDIDynamicMenuBar dynamicMenuBar =
@@ -129,7 +148,9 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
         (SequenceViewMenuItem) dynamicMenuBar.getPlanSeqItem( seqUrl);
       PlanWorks.getPlanWorks().createSequenceViewThread
         ( ViewConstants.SEQUENCE_STEPS_VIEW, seqViewMenuItem);
-      setConfigureParameters( currentProject);
+      if (areConfigParamsChanged) {
+        setConfigureParameters( currentProject);
+      }
       PwPlanningSequence planSequence = currentProject.getPlanningSequence( seqUrl);
       ViewSet viewSet = getViewSetWithWait( planSequence);
       MDIInternalFrame sequenceStepsFrame = getSequenceStepsFrameWithWait( viewSet);
@@ -207,12 +228,21 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
   } // end getSequenceStepsFrameWithWait
 
   private boolean getConfigureParameters() {
+    areConfigParamsChanged = false;
+    String modelPathCurrent = ConfigureAndPlugins.getProjectConfigValue
+      ( ConfigureAndPlugins.PROJECT_MODEL_PATH, projectName);
+    String modelInitStatePathCurrent = ConfigureAndPlugins.getProjectConfigValue
+      ( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH, projectName);
+    String modelOutputDestDirCurrent = ConfigureAndPlugins.getProjectConfigValue
+      ( ConfigureAndPlugins.PROJECT_MODEL_OUTPUT_DEST_DIR, projectName);
+
     ConfigureNewSequenceDialog configureDialog =
       new ConfigureNewSequenceDialog( PlanWorks.getPlanWorks());
     if (configureDialog.getModelPath() == null) {
       // user chose cancel
       return false;
     }
+
     workingDir = ConfigureAndPlugins.getProjectConfigValue
       ( ConfigureAndPlugins.PROJECT_WORKING_DIR, projectName);
     plannerPath = ConfigureAndPlugins.getProjectConfigValue
@@ -221,6 +251,11 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     modelPath = configureDialog.getModelPath();
     modelInitStatePath = configureDialog.getModelInitStatePath();
     modelOutputDestDir = configureDialog.getModelOutputDestDir();
+    if ((! modelPath.equals( modelPathCurrent)) ||
+        (! modelInitStatePath.equals( modelInitStatePathCurrent)) ||
+        (! modelOutputDestDir.equals( modelOutputDestDirCurrent))) {
+      areConfigParamsChanged = true;
+    }
     return true;
   } // end getConfigureParameters
 
@@ -271,8 +306,14 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       new TransactionTypesDialog( PlanWorks.getPlanWorks(), transactionTypes,
                                   transactionTypeStates);
     int[] transStates = transactionTypesDialog.getTransactionTypeStates();
-    if (transStates == null) {
-      // user chose cancel
+    boolean areTransStatesChanged = false;
+    for (int i = 0, n = transactionTypeStates.length; i < n; i++) {
+      if (transactionTypeStates[i] != transStates[i]) {
+        areTransStatesChanged = true;
+        break;
+      }
+    }
+    if (areTransStatesChanged == false) {
       return;
     } else {
       PlannerControlJNI.setTransactionTypeStates( transStates);

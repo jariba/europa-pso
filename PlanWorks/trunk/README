@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.133 2004-09-28 18:54:45 taylor Exp $
+# $Id: README,v 1.134 2004-09-29 23:52:18 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -134,6 +134,14 @@ MySQL.
  test               -- All PlanWorks tests, including JFCUnit test (compile, cleandb dependencies)
 
 Default target: planWorks
+
+
+THE JNI INTERFACE TO INTEGRATED PLANNERS
+========================================
+The ant "compile" and "planWorks" targets create
+${PLANWORKS_HOME}/cpp/integration/PlannerControlJNI.h
+and compile it with PlannerControlJNI.cc to generate
+${PLANWORKS_HOME}/cpp/integration/libPlannerControl_JNI_adapter.so
 
 
 USER DOCUMENTATION
