@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.135 2004-10-01 20:04:28 taylor Exp $
+# $Id: README,v 1.136 2004-10-07 21:26:51 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -16,7 +16,11 @@ The current known-good MySQL versions are:
 
 SUMMARY
 =======
-o 
+o Ant target 'createJNI' has been added to create the shared library 
+  "libPlannerControlJNI.so" which PlanWorks loads when it processes
+  "Project->New Sequence".  "Project->Configure" and "Project->New Sequence" 
+  both have a settable parameter named "planner path", which is the planner
+  user's shared library loaded when processing "Project->New Sequence".
 
 
 o GNATS PRs and CRs completed:
