@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SpecBox.java,v 1.4 2003-06-16 18:51:10 miatauro Exp $
+// $Id: SpecBox.java,v 1.5 2003-07-08 22:24:24 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -40,7 +40,7 @@ public class SpecBox extends JPanel implements ContentSpecElement {
   private NegationCheckBox negationBox;
   private JTextField keyField;
   private String name;
-  private static final Pattern keyPattern = Pattern.compile("[K|k]\\d+");
+  private static final Pattern keyPattern = Pattern.compile("\\d+");
 
   /**
    * Constructs the SpecBox and arranges the appropriate input fields.
@@ -94,7 +94,7 @@ public class SpecBox extends JPanel implements ContentSpecElement {
       return null;
     }
     if(!keyPattern.matcher(keyField.getText().trim()).matches()) {
-      JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), (new StringBuffer("Invalid ")).append(name).append(" key format.  Must be of the form [K|k]\\d+.").toString(), "Error!", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), (new StringBuffer("Invalid ")).append(name).append(" key format.  Must be of the form \\d+.").toString(), "Error!", JOptionPane.ERROR_MESSAGE);
       throw new IllegalArgumentException();
     }
     if(logicBox.isEnabled()) {
@@ -110,7 +110,7 @@ public class SpecBox extends JPanel implements ContentSpecElement {
       connective.append(" not");
     }
     retval.add(connective.toString());
-    retval.add(keyField.getText().trim());
+    retval.add(new Integer(keyField.getText().trim()));
     return retval;
   }
   /**
