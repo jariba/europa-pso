@@ -46,8 +46,10 @@ public class MySQLDB {
     dbStartString.append(System.getProperty("mysql.log")).append(" --log-error=");
     dbStartString.append(System.getProperty("mysql.log.err")).append(" --skip-symlink ");
     dbStartString.append("--socket=").append(System.getProperty("mysql.sock"));
-    dbStartString.append("--tmpdir=").append(System.getProperty("mysql.tmpdir"));
+    dbStartString.append(" --tmpdir=").append(System.getProperty("mysql.tmpdir"));
+    System.err.println("Starting db with: " + dbStartString.toString());
     Runtime.getRuntime().exec(dbStartString.toString());
+    //    try{Thread.sleep(100000);}catch(Exception e){}
     dbIsStarted = true;
   }
   public static void stopDatabase() throws IllegalArgumentException, IOException, SecurityException
