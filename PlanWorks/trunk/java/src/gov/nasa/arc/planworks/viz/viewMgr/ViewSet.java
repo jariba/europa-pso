@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.9 2003-06-13 18:35:23 miatauro Exp $
+// $Id: ViewSet.java,v 1.10 2003-06-13 21:13:16 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -39,7 +39,10 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
     this.desktopFrame = desktopFrame;
     this.contentSpec = new ContentSpec(partialPlan.getCollectionName(), this);
     //change the arguments to something more sensible
-    this.contentSpecWindow = desktopFrame.createFrame(planName, true, true, true, true);
+    System.err.println(planName);
+    this.contentSpecWindow = 
+      desktopFrame.createFrame("Content specification for ".concat(planName), true, true, true,
+                               true);
     Container contentPane = this.contentSpecWindow.getContentPane();
     contentPane.add(new ContentSpecWindow(this.contentSpecWindow, contentSpec));
     this.contentSpecWindow.pack();
@@ -50,7 +53,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
     if(viewExists("timelineView")) {
       return (MDIInternalFrame) views.get("timelineView");
     }
-    MDIInternalFrame timelineViewFrame = desktopFrame.createFrame(planName,true, true, true, true);
+    MDIInternalFrame timelineViewFrame = desktopFrame.createFrame("Timeline view of ".concat(planName),true, true, true, true);
     Container contentPane = timelineViewFrame.getContentPane();
     contentPane.add(new TimelineView(partialPlan, this));
     views.put("timelineView", timelineViewFrame);
