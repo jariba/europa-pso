@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.23 2004-01-14 21:27:04 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.24 2004-01-16 19:05:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -58,8 +58,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 /**
- * <code>TokenNetworkView</code> - render a partial plan's tokens, their
- *                                 parents and children
+ * <code>TokenNetworkView</code> - render a partial plan's tokens, their masters
+ *                                 and slaves
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
@@ -71,13 +71,8 @@ public class TokenNetworkView extends PartialPlanView {
   private ViewSet viewSet;
   private TokenNetworkJGoView jGoView;
   private JGoDocument jGoDocument;
-  // private JGoLayer hiddenLayer;
-  // nodeList & tmpNodeList used by JFCUnit test case
-  private List nodeList; // element TokenNode
-  private List tmpNodeList; // element TokenNode
-  private List linkList; // element TokenLink
-  private Map relationships; // master, slave, self relationships
-  private List linkNameList; // element String
+  private Map tokenNodeMap; // key = tokenId, element TokenNode
+  private Map tokenLinkMap; // key = linkName, element TokenLink
 
   /**
    * <code>TokenNetworkView</code> - constructor - 
@@ -197,14 +192,11 @@ public class TokenNetworkView extends PartialPlanView {
 
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
-    nodeList = null;
-    tmpNodeList = new ArrayList();
-    linkList = new ArrayList();
-    linkNameList = new ArrayList();
+    tokenNodeMap = new HashMap();
+    tokenLinkMap = new HashMap();
 
     jGoDocument = jGoView.getDocument();
 
-    buildTokenParentChildRelationships();
    // create all nodes
     createTokenNodes();
 
@@ -233,163 +225,6 @@ public class TokenNetworkView extends PartialPlanView {
   public JGoDocument getJGoDocument()  {
     return this.jGoDocument;
   }
-
-  /**
-   * <code>getNodeList</code>
-   *
-   * @return - <code>List</code> - 
-   */
-  public List getNodeList() {
-    return nodeList;
-  }
-
-  /**
-   * <code>getLinkList</code>
-   *
-   * @return - <code>List</code> - 
-   */
-  public List getLinkList() {
-    return linkList;
-  }
-
-  private void buildTokenParentChildRelationships() {
-    relationships = new HashMap();
-    initRelationships();
-    buildRelationships();
-//     System.err.println( "Token Network View: count: " + relationships.keySet().size());
-//     Iterator keyIterator = relationships.keySet().iterator();
-//     while (keyIterator.hasNext()) {
-//       System.err.println( relationships.get( (Integer) keyIterator.next()));
-//     }
-  } // end buildTokenParentChildRelationships 
-
-
-  private void initRelationships() {
-    Iterator objectIterator = partialPlan.getObjectList().iterator();
-    while (objectIterator.hasNext()) {
-      PwObject object = (PwObject) objectIterator.next();
-      Iterator timelineIterator = object.getTimelineList().iterator();
-      while (timelineIterator.hasNext()) {
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        if (isTimelineInContentSpec( timeline)) {
-          Iterator slotIterator = timeline.getSlotList().iterator();
-          while (slotIterator.hasNext()) {
-            PwSlot slot = (PwSlot) slotIterator.next();
-            if (isSlotInContentSpec( slot)) {
-              Iterator tokenIterator = slot.getTokenList().iterator();
-              while (tokenIterator.hasNext()) {
-                PwToken token = (PwToken) tokenIterator.next();
-                if (isTokenInContentSpec( token)) {
-                  if (token != null) { // empty slot
-                    relationships.put( token.getId(), new TokenRelations( token));
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  } // end initRelationships
-
-
-  class TokenRelations {
-
-    private PwToken token;
-    private List masterTokenIds; // element Integer
-    private List slaveTokenIds; // element Integer
-
-    public TokenRelations( PwToken token) {
-      this.token = token;
-      masterTokenIds = new ArrayList();
-      slaveTokenIds = new ArrayList();
-    } // end constructor
-
-    public List getMasterTokenIds () {
-      return masterTokenIds;
-    }
-
-    public void addMasterTokenId( Integer id) {
-      masterTokenIds.add( id);
-    }
-
-    public List getSlaveTokenIds () {
-      return slaveTokenIds;
-    }
-
-    public void addSlaveTokenId( Integer id) {
-      slaveTokenIds.add( id);
-    }
-
-    public String toString() {
-      StringBuffer buffer = new StringBuffer( "tokenId: " +
-                                              String.valueOf( token.getId()));
-      buffer.append( "\n  masterTokenIds: " + masterTokenIds);
-      buffer.append( "\n  slaveTokenIds: " + slaveTokenIds);
-      return buffer.toString();
-    }
-
-  } // end class TokenRelations
-
-
-  private void buildRelationships() {
-    // process each token relation only once
-    // List tokenRelationIds = new ArrayList();
-    Iterator objectIterator = partialPlan.getObjectList().iterator();
-    while (objectIterator.hasNext()) {
-      PwObject object = (PwObject) objectIterator.next();
-      Iterator timelineIterator = object.getTimelineList().iterator();
-      while (timelineIterator.hasNext()) {
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        if (isTimelineInContentSpec( timeline)) {
-          Iterator slotIterator = timeline.getSlotList().iterator();
-          while (slotIterator.hasNext()) {
-            PwSlot slot = (PwSlot) slotIterator.next();
-            if (isSlotInContentSpec( slot)) {
-              Iterator tokenIterator = slot.getTokenList().iterator();
-              while (tokenIterator.hasNext()) {
-                PwToken token = (PwToken) tokenIterator.next();
-                if (isTokenInContentSpec( token)) {
-                  if (token != null) {
-                    if (token.getTokenRelationIdsList().size() == 0) {
-                      continue;
-                    }
-                    Integer tokenId = token.getId();
-                    TokenRelations tokenRelations =
-                      (TokenRelations) relationships.get( tokenId);
-                    Iterator tokenRelationIdIterator = token.getTokenRelationIdsList().iterator();
-                    while (tokenRelationIdIterator.hasNext()) {
-                      PwTokenRelation tokenRelation =
-                        partialPlan.getTokenRelation( (Integer) tokenRelationIdIterator.next());
-                      if (tokenRelation == null) {
-                        continue;
-                      }
-                      // buildTokenParentChildRelationships printout is complete with
-                      // this commented out -- same links are drawn
-                      //                 Integer id = tokenRelation.getId();
-                      //                 if (tokenRelationIds.indexOf( id) == -1) {
-                      //                   tokenRelationIds.add( id);
-                      Integer masterTokenId = tokenRelation.getTokenAId();
-                      Integer slaveTokenId = tokenRelation.getTokenBId();
-                      if (masterTokenId.equals( tokenId)) {
-                        tokenRelations.addSlaveTokenId( slaveTokenId);
-                      }
-                      if (slaveTokenId.equals( tokenId)) {
-                        tokenRelations.addMasterTokenId( masterTokenId);
-                      }
-                      //                 }
-                    }
-                    relationships.put( tokenId, tokenRelations);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  } // end buildRelationships
-
 
   private void createTokenNodes() {
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT * 2;
@@ -427,15 +262,14 @@ public class TokenNetworkView extends PartialPlanView {
           x += freeTokenNode.getSize().getWidth() * 0.5;
           freeTokenNode.setLocation( x, y);
         }
-        if (!tmpNodeList.contains(freeTokenNode)) {
-          tmpNodeList.add( freeTokenNode);
+        if (tokenNodeMap.get( freeToken.getId()) == null) {
+          tokenNodeMap.put( freeToken.getId(), freeTokenNode);
           jGoDocument.addObjectAtTail( freeTokenNode);
           x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
         }
       }
     }
     createTokenParentChildRelationships();
-    nodeList = tmpNodeList;
   } // end createTokenNodes
 
   private void createTokenNodesOfTimeline( PwTimeline timeline, int x, int y,
@@ -456,8 +290,8 @@ public class TokenNetworkView extends PartialPlanView {
             tokenNode.setLocation( x, y);
           }
           //MIKE
-          if (!tmpNodeList.contains(tokenNode)) {
-            tmpNodeList.add( tokenNode);
+          if (tokenNodeMap.get( token.getId()) == null) {
+            tokenNodeMap.put( token.getId(), tokenNode);
             jGoDocument.addObjectAtTail( tokenNode);
             x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
           }
@@ -467,75 +301,40 @@ public class TokenNetworkView extends PartialPlanView {
   } // end createTokenNodes
 
   private void createTokenParentChildRelationships() {
-    Iterator tokenNodeIterator = tmpNodeList.iterator();
-    while (tokenNodeIterator.hasNext()) {
-      TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
+    List tokenNodeKeyList = new ArrayList( tokenNodeMap.keySet());
+    Iterator tokenNodeKeyItr = tokenNodeKeyList.iterator();
+    while (tokenNodeKeyItr.hasNext()) {
+      TokenNode tokenNode =
+        (TokenNode) tokenNodeMap.get( (Integer) tokenNodeKeyItr.next());
       Integer tokenId = tokenNode.getToken().getId();
-      TokenRelations tokenRelations =
-        (TokenRelations) relationships.get( tokenId);
-      if (tokenRelations != null) {
-        Iterator masterTokenItr = tokenRelations.getMasterTokenIds().iterator();
-        while (masterTokenItr.hasNext()) {
-          Integer masterTokenId = (Integer) masterTokenItr.next();
-          if (! masterTokenId.equals( tokenId)) {
-            createTokenLink( getTokenNode( masterTokenId), tokenNode, "master");
-          }
+      Integer masterTokenId = partialPlan.getMasterTokenId( tokenId);
+      if (masterTokenId != null) {
+        TokenNode masterToken = (TokenNode) tokenNodeMap.get( masterTokenId);
+        if ((masterToken != null) && (! masterTokenId.equals( tokenId))) {
+          createTokenLink( masterToken, tokenNode, "master");
         }
-        Iterator slaveTokenItr = tokenRelations.getSlaveTokenIds().iterator();
-        while (slaveTokenItr.hasNext()) {
-          Integer slaveTokenId = (Integer) slaveTokenItr.next();
-          if (! slaveTokenId.equals( tokenId)) {
-            createTokenLink( tokenNode, getTokenNode( slaveTokenId), "slave");
-          }
+      }
+      Iterator slaveTokenIdItr = partialPlan.getSlaveTokenIds( tokenId).iterator();
+      while (slaveTokenIdItr.hasNext()) {
+        Integer slaveTokenId = (Integer) slaveTokenIdItr.next();
+        TokenNode slaveToken = (TokenNode) tokenNodeMap.get( slaveTokenId);
+        if ((slaveToken != null) && (! slaveTokenId.equals( tokenId))) {
+          createTokenLink( tokenNode, slaveToken, "slave");
         }
       }
     }
   } // end createTokenParentChildRelationships
 
-  private TokenNode getTokenNode( Integer nodeId) {
-    Iterator tokenNodeItr = tmpNodeList.iterator();
-    while (tokenNodeItr.hasNext()) {
-      TokenNode tokenNode = (TokenNode) tokenNodeItr.next();
-      if (nodeId.equals( tokenNode.getToken().getId())) {
-        return tokenNode;
-      }
-    }
-    return null;
-  } // end getTokenNode
-
- 
   private void createTokenLink( TokenNode fromTokenNode, TokenNode toTokenNode,
                                 String type) {
-    if ((fromTokenNode == null) || (toTokenNode == null)) {
-      return;
-    }
     String linkName = fromTokenNode.getToken().getId().toString() + "->" +
       toTokenNode.getToken().getId().toString();
-    Iterator linkItr = linkNameList.iterator();
-    while (linkItr.hasNext()) {
-      if (linkName.equals( (String) linkItr.next())) {
-        // System.err.println( "discard " + linkName + " type " + type);
-        return;
-      }
+    if (tokenLinkMap.get( linkName) != null) {
+      return;
     }
     TokenLink link = new TokenLink( fromTokenNode, toTokenNode);
-    linkList.add( link);
-    // master/slave & meets/met-by are on the same link ???
-//     if (type.equals( "master")) {
-//       link.setMidLabel( new JGoText( "meets"));
-//     } else if (type.equals( "slave")) {
-//       link.setMidLabel( new JGoText( "met-by"));
-//     } else {
-//       System.err.println( "createTokenLink: type " + type + " not handled");
-//     }
-//     ((JGoText) link.getMidLabel()).setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
-
-//     System.err.println( fromTokenNode.getPredicateName() + " " +
-//                         fromTokenNode.getToken().getId().toString() + " => " +
-//                         toTokenNode.getPredicateName() + " " +
-//                         toTokenNode.getToken().getId().toString() + " " + type);
+    tokenLinkMap.put( linkName, link);
     jGoDocument.addObjectAtTail( link);
-    linkNameList.add( linkName);
   } // end createTokenLink
 
 
@@ -663,7 +462,8 @@ public class TokenNetworkView extends PartialPlanView {
   private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
     boolean isTokenFound = false;
     boolean isHighlightNode = true;
-    Iterator tokenNodeListItr = nodeList.iterator();
+    List tokenNodeList = new ArrayList( tokenNodeMap.values());
+    Iterator tokenNodeListItr = tokenNodeList.iterator();
     while (tokenNodeListItr.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeListItr.next();
       if ((tokenNode.getToken() != null) &&
@@ -679,8 +479,8 @@ public class TokenNetworkView extends PartialPlanView {
     if (isTokenFound && (! isByKey)) {
       NodeGenerics.selectSecondaryNodes
         ( NodeGenerics.mapTokensToTokenNodes
-          (((PartialPlanViewSet) TokenNetworkView.this.getViewSet()).
-           getSecondaryTokens(), nodeList),
+          (((PartialPlanViewSet) TokenNetworkView.this.getViewSet()).getSecondaryTokens(),
+           tokenNodeList),
           jGoView);
     }
     if (! isTokenFound) {

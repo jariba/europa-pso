@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.9 2004-01-12 19:46:23 taylor Exp $
+// $Id: ConstraintNode.java,v 1.10 2004-01-16 19:05:36 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,11 +13,16 @@
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -31,12 +36,16 @@ import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
@@ -255,7 +264,7 @@ public class ConstraintNode extends ExtendedBasicNode {
         tip.append( " linkCnt ").append( String.valueOf( variableLinkCount));
       }
        tip.append( "<br> Mouse-L: ").append( operation);
-       return tip.append(" nearest token variables</html>").toString();
+       return tip.append("</html>").toString();
     } else {
       return constraint.getType();
     }
@@ -362,8 +371,8 @@ public class ConstraintNode extends ExtendedBasicNode {
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
-    JGoObject obj = view.pickDocObject( dc, false);
+  public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords, JGoView view) {
+    JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
     ConstraintNode constraintNode = (ConstraintNode) obj.getTopLevelObject();
@@ -383,9 +392,29 @@ public class ConstraintNode extends ExtendedBasicNode {
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( viewCoords);
+      return true;
     }
     return false;
   } // end doMouseClick   
+
+    private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame();
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+          contentPane.add( new NavigatorView( ConstraintNode.this, partialPlan,
+                                              partialPlanView.getViewSet(),
+                                              navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
+  } // end mouseRightPopupMenu
 
   private void addConstraintNodeVariables( ConstraintNode constraintNode,
                                            ConstraintNetworkView constraintNetworkView) {

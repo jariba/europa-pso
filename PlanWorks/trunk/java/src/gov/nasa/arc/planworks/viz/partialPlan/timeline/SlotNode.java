@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.7 2004-01-14 21:26:49 miatauro Exp $
+// $Id: SlotNode.java,v 1.8 2004-01-16 19:05:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,6 +13,7 @@
 package gov.nasa.arc.planworks.viz.partialPlan.timeline;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionListener;
@@ -35,15 +36,18 @@ import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
-import gov.nasa.arc.planworks.db.PwPredicate;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
+import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 
 
@@ -76,6 +80,7 @@ public class SlotNode extends TextNode {
 
   private String predicateName;
   private PwSlot slot;
+  private PwTimeline timeline;
   private SlotNode previousSlotNode;
   private boolean isFirstSlot;
   private boolean isLastSlot;
@@ -83,26 +88,13 @@ public class SlotNode extends TextNode {
 
   private PwDomain startTimeIntervalDomain;
   private PwDomain endTimeIntervalDomain;
-  private PwPredicate predicate;
   private JGoText startTimeIntervalObject;
   private JGoText endTimeIntervalObject;
   private boolean isTimeLabelYLocLevel1;
   private PwToken token;
 
 
-  /**
-   * <code>SlotNode</code> - constructor 
-   *
-   * @param nodeLabel - <code>String</code> - 
-   * @param slot - <code>PwSlot</code> - 
-   * @param slotLocation - <code>Point</code> - 
-   * @param previousSlotNode - <code>SlotNode</code> - 
-   * @param isFirstSlot - <code>boolean</code> - 
-   * @param isLastSlot - <code>boolean</code> - 
-   * @param backgroundColor - <code>Color</code> - 
-   * @param timelineView - <code>TimelineView</code> - 
-   */
-  public SlotNode( String nodeLabel, PwSlot slot, Point slotLocation,
+  public SlotNode( String nodeLabel, PwSlot slot, PwTimeline timeline, Point slotLocation,
                    SlotNode previousSlotNode, boolean isFirstSlot, boolean isLastSlot,
                    Color backgroundColor, TimelineView timelineView) {
     super( nodeLabel);
@@ -113,7 +105,8 @@ public class SlotNode extends TextNode {
     } else {
       this.predicateName = token.getPredicateName();
     }
-    this.slot = slot; 
+    this.slot = slot;
+    this.timeline = timeline;
     this.previousSlotNode = previousSlotNode;
     this.isFirstSlot = isFirstSlot;
     this.isLastSlot = isLastSlot;
@@ -312,19 +305,7 @@ public class SlotNode extends TextNode {
     int numTokens = slot.getTokenList().size();
     if (numTokens > 0) {
       StringBuffer tip = new StringBuffer( "<html> ");
-      tip.append( ((PwToken) slot.getTokenList().get( 0)).toString());
-      tip.append( "<br>token key");
-      if (numTokens > 1) {
-        tip.append( "s");
-      }
-      tip.append( "=");
-      Iterator tokenItr = slot.getTokenList().iterator();
-      while (tokenItr.hasNext()) {
-        tip.append( ((PwToken) tokenItr.next()).getId().toString());
-        if (tokenItr.hasNext()) {
-          tip.append( ", ");
-        }
-      }
+      NodeGenerics.getSlotNodeToolTipText( slot, tip);
       tip.append( " </html>");
       return tip.toString();
     } else {
@@ -393,6 +374,20 @@ public class SlotNode extends TextNode {
   private void mouseRightPopupMenu( Point viewCoords) {
     if (SlotNode.this.getSlot().getBaseToken() != null) {
       JPopupMenu mouseRightPopup = new JPopupMenu();
+
+      JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+      navigatorItem.addActionListener( new ActionListener() {
+          public void actionPerformed( ActionEvent evt) {
+            MDIInternalFrame navigatorFrame = timelineView.openNavigatorViewFrame();
+            Container contentPane = navigatorFrame.getContentPane();
+            PwPartialPlan partialPlan = timelineView.getPartialPlan();
+            contentPane.add( new NavigatorView( SlotNode.this, partialPlan,
+                                                timelineView.getViewSet(),
+                                                navigatorFrame));
+          }
+        });
+      mouseRightPopup.add( navigatorItem);
+
       JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
       activeTokenItem.addActionListener( new ActionListener() {
           public void actionPerformed( ActionEvent evt) {

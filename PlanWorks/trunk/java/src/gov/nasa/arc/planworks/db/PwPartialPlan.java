@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.28 2004-01-14 21:22:11 miatauro Exp $
+// $Id: PwPartialPlan.java,v 1.29 2004-01-16 19:05:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -200,5 +200,23 @@ public interface PwPartialPlan extends ViewableObject {
   public abstract String getSequenceUrl();
   
   public abstract Integer getObjectIdByName(String name);
+
+  /**
+   * <code>getMasterTokenId</code>
+   *
+   * @param tokenId - <code>Integer</code> - 
+   * @return - <code>Integer</code> - 
+   */
+  public abstract Integer getMasterTokenId( Integer tokenId);
+
+  /**
+   * <code>getSlaveTokenIds</code>
+   *
+   * @param tokenId - <code>Integer</code> - 
+   * @return - <code>List</code> - of Integer
+   */
+  public abstract List getSlaveTokenIds( Integer tokenId);
+
+
 } // end interface PwPartialPlan
 

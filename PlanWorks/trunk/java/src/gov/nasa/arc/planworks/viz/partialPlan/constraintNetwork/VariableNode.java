@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.10 2004-01-14 21:25:56 miatauro Exp $
+// $Id: VariableNode.java,v 1.11 2004-01-16 19:05:37 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,11 +13,15 @@
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -33,15 +37,18 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwEnumeratedDomain;
 import gov.nasa.arc.planworks.db.PwObject;
-import gov.nasa.arc.planworks.db.PwParameter;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
@@ -171,47 +178,13 @@ public class VariableNode extends ExtendedBasicNode {
       }
     if ((! hasZeroConstraints) && (partialPlanView instanceof ConstraintNetworkView)) {
       StringBuffer tip = new StringBuffer( "<html> ");
-      String typeName = variable.getType();
-      tip.append( typeName);
-      if (typeName.equals( DbConstants.OBJECT_VAR)) {
-        //String objectName = "_not_found_";
-        //Integer objectId =
-        //  Integer.valueOf( ((PwEnumeratedDomain) variable.getDomain()).getLowerBound());
-        //Iterator objectIterator = partialPlanView.getPartialPlan().getObjectList().iterator();
-        //while (objectIterator.hasNext()) {
-        //  PwObject object = (PwObject) objectIterator.next();
-        //  if (object.getId().equals( objectId)) {
-        //    objectName = object.getName();
-        //    break;
-        //  }
-        //}
-        //tip.append ( ": ");
-        //tip.append( objectName);
-        tip.append("<br>");
-        ListIterator objectNameIterator = 
-          ((PwEnumeratedDomain) variable.getDomain()).getEnumeration().listIterator();;
-        while(objectNameIterator.hasNext()) {
-          String name = (String) objectNameIterator.next();
-          tip.append(name).append(": ");
-          tip.append(partialPlanView.getPartialPlan().getObjectIdByName(name));
-          if (objectNameIterator.hasNext()) {
-            tip.append("<br>");
-          }
-        }
-      } else if (typeName.equals( DbConstants.PARAMETER_VAR)) {
-        tip.append ( ": ");
-//         System.err.println( "key " + variable.getId().toString() + " paramId " +
-//                             ((PwParameter) variable.getParameterList().get( 0)).getId() +
-//                             " paramName " +
-//                             ((PwParameter) variable.getParameterList().get( 0)).getName());
-        tip.append( variable.getParameterNameList().get(0));
-      }
+      NodeGenerics.getVariableNodeToolTipText( variable, partialPlanView, tip);
       if (isDebug) {
         tip.append( " linkCnt ").append( String.valueOf( tokenLinkCount +
                                                          constraintLinkCount));
       }
        tip.append( "<br> Mouse-L: ").append( operation);
-       return tip.append(" nearest token links/constraints</html>").toString();
+       return tip.append("</html>").toString();
     } else {
       return variable.getType();
     }
@@ -451,8 +424,8 @@ public class VariableNode extends ExtendedBasicNode {
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
-    JGoObject obj = view.pickDocObject( dc, false);
+  public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords, JGoView view) {
+    JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
     VariableNode variableNode = (VariableNode) obj.getTopLevelObject();
@@ -474,9 +447,29 @@ public class VariableNode extends ExtendedBasicNode {
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( viewCoords);
+      return true;
     }
     return false;
   } // end doMouseClick   
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame();
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+          contentPane.add( new NavigatorView( VariableNode.this, partialPlan,
+                                              partialPlanView.getViewSet(),
+                                              navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
+  } // end mouseRightPopupMenu
 
   /**
    * <code>addVariableNodeTokensAndConstraints</code> - protected since

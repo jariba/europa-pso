@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNodePort.java,v 1.3 2004-01-12 22:26:01 miatauro Exp $
+// $Id: ExtendedBasicNodePort.java,v 1.4 2004-01-16 19:05:35 taylor Exp $
 //
 // PlanWorks
 //
@@ -34,9 +34,12 @@ import com.nwoods.jgo.examples.BasicNodePort;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.ConstraintNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.ModelClassNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.VariableNavNode;
 import gov.nasa.arc.planworks.viz.sequence.modelRules.ParamNode;
 
 
@@ -89,22 +92,20 @@ public class ExtendedBasicNodePort extends BasicNodePort {
     p.y = y;
     // if (x,y) is inside the object, just return it instead of finding the edge intersection
     //if (! obj.isPointInObj(p)) {
-      if (node.isRectangular()) {
+    if (node.isRectangular() || (node instanceof TokenNavNode)) {
         JGoRectangle.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                   rect.height, x, y, cx, cy, p);
       } else if (node instanceof ConstraintNode) {
         ((Diamond) ((ConstraintNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
-        //         ((LeftTrapezoid) ((ConstraintNode) node).getDrawable()).
-        //           getNearestIntersectionPoint( x, y, cx, cy, p);
-        //         ((RightTrapezoid) ((ConstraintNode) node).getDrawable()).
-        //           getNearestIntersectionPoint( x, y, cx, cy, p);
-        //         ((Hexagon) ((ConstraintNode) node).getDrawable()).
-        //           getNearestIntersectionPoint( x, y, cx, cy, p);
+      } else if (node instanceof ConstraintNavNode) {
+        ((Diamond) ((ConstraintNavNode) node).getDrawable()).
+          getNearestIntersectionPoint( x, y, cx, cy, p);
       } else if (node instanceof ParamNode) {
         ((Diamond) ((ParamNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
-      } else  if (node instanceof VariableNode) {
+      } else if ((node instanceof VariableNode) ||
+                 (node instanceof VariableNavNode)) {
         JGoEllipse.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                 rect.height, x, y, p);
       }

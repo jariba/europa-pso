@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.52 2004-01-12 19:46:12 taylor Exp $
+# $Id: build-tags-file.csh,v 1.53 2004-01-16 19:05:33 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -146,11 +146,14 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/TokenBoundingBox.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableBoundingBox.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ConstraintNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ModelClassNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorViewLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/SlotNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/TimelineNavNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/TokenNavNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/VariableNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentViewState.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNode.java \

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.1 2004-01-12 19:46:33 taylor Exp $
+// $Id: TimelineNavNode.java,v 1.2 2004-01-16 19:05:38 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,35 +14,25 @@ package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
-import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
-// PlanWorks/java/lib/JGo/Classier.jar
-import com.nwoods.jgo.examples.BasicNode;
-
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
 /**
- * <code>TimelineNavNode</code> - JGo widget to render a plan object (class model)
- *                                   with a label for the navigator view
+ * <code>TimelineNavNode</code> - JGo widget to render a plan timeline and its neighbors
+ *                                   for the navigator view
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
@@ -50,15 +40,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  */
 public class TimelineNavNode extends ExtendedBasicNode {
 
-  private static final boolean IS_FONT_BOLD = false;
-  private static final boolean IS_FONT_UNDERLINED = false;
-  private static final boolean IS_FONT_ITALIC = false;
-  private static final int TEXT_ALIGNMENT = JGoText.ALIGN_LEFT;
-  private static final boolean IS_TEXT_MULTILINE = false;
-  private static final boolean IS_TEXT_EDITABLE = false;
-
   private PwTimeline timeline;
-  private ExtendedBasicNode parentNode;
   private PartialPlanView partialPlanView;
   private String nodeLabel;
   private boolean isDebug;
@@ -67,17 +49,23 @@ public class TimelineNavNode extends ExtendedBasicNode {
   private int slotLinkCount;
   private boolean inLayout;
 
-  public TimelineNavNode( PwTimeline timeline, ExtendedBasicNode parentNode,
-                            Point timelineLocation, Color backgroundColor,
-                            boolean isDraggable,
-                            PartialPlanView partialPlanView) { 
+  /**
+   * <code>TimelineNavNode</code> - constructor 
+   *
+   * @param timeline - <code>PwTimeline</code> - 
+   * @param timelineLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   * @param isDraggable - <code>boolean</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   */
+  public TimelineNavNode( PwTimeline timeline, Point timelineLocation, Color backgroundColor,
+                            boolean isDraggable, PartialPlanView partialPlanView) { 
     super( ViewConstants.RIGHT_TRAPEZOID);
     this.timeline = timeline;
-    this.parentNode = parentNode;
     this.partialPlanView = partialPlanView;
 
-    // isDebug = false;
-    isDebug = true;
+    isDebug = false;
+    // isDebug = true;
     StringBuffer labelBuf = new StringBuffer( timeline.getName());
     labelBuf.append( "\nkey=").append( timeline.getId().toString());
     nodeLabel = labelBuf.toString();
@@ -254,25 +242,11 @@ public class TimelineNavNode extends ExtendedBasicNode {
       operation = "open";
     }
     StringBuffer tip = new StringBuffer( "<html> ");
-    tip.append( timeline.getName());
     if (isDebug) {
       tip.append( " linkCntObj ").append( String.valueOf( objectLinkCount));
       tip.append( " linkCntSlot ").append( String.valueOf( slotLinkCount));
     }
     tip.append( "<br> Mouse-L: ").append( operation);
-    tip.append(" nearest");
-    if ((operation.equals( "open") && (objectLinkCount == 0)) ||
-        (operation.equals( "close") && (objectLinkCount > 0))) {
-      tip.append( " object");
-    }
-    if ((operation.equals( "open") && (objectLinkCount == 0) && (slotLinkCount == 0)) ||
-        (operation.equals( "close") && (objectLinkCount > 0) && (slotLinkCount > 0))) {
-        tip.append( " &");
-    }
-    if ((operation.equals( "open") && (slotLinkCount == 0)) ||
-        (operation.equals( "close") && (slotLinkCount > 0))) {
-      tip.append( " slots");
-    }
     tip.append("</html>");
     return tip.toString();
   } // end getToolTipText
@@ -309,18 +283,23 @@ public class TimelineNavNode extends ExtendedBasicNode {
     //                             obj.getTopLevelObject().getClass().getName());
     TimelineNavNode timelineNode = (TimelineNavNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      NavigatorView navigatorView = (NavigatorView) partialPlanView;
+      navigatorView.setStartTimeMSecs( System.currentTimeMillis());
+      boolean areObjectsChanged = false;
+      boolean areSlotsChanged = false;
       if (! areNeighborsShown) {
-        //System.err.println( "doMouseClick: Mouse-L show object & slot nodes of timeline id " +
-        //                    timelineNode.getTimeline().getId());
-        addTimelineObjects( this, (NavigatorView) partialPlanView);
-        addTimelineSlots( this, (NavigatorView) partialPlanView);
+        areObjectsChanged = addTimelineObjects( this, navigatorView);
+        areSlotsChanged = addTimelineSlots( this, navigatorView);
         areNeighborsShown = true;
       } else {
-        //System.err.println( "doMouseClick: Mouse-L hide object & slot nodes of timeline id " +
-        //                    timelineNode.getTimeline().getId());
-        removeTimelineObjects( this, (NavigatorView) partialPlanView);
-        removeTimelineSlots( this, (NavigatorView) partialPlanView);
+        areObjectsChanged = removeTimelineObjects( this, navigatorView);
+        areSlotsChanged = removeTimelineSlots( this, navigatorView);
         areNeighborsShown = false;
+      }
+      if (areObjectsChanged || areSlotsChanged) {
+        navigatorView.setLayoutNeeded();
+        navigatorView.setFocusNode( this);
+        navigatorView.redraw();
       }
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -328,60 +307,37 @@ public class TimelineNavNode extends ExtendedBasicNode {
     return false;
   } // end doMouseClick   
 
-  private void addTimelineObjects( TimelineNavNode timelineNavNode,
-                                   NavigatorView navigatorView) {
-    navigatorView.setStartTimeMSecs( System.currentTimeMillis());
+  private boolean addTimelineObjects( TimelineNavNode timelineNavNode,
+                                      NavigatorView navigatorView) {
     boolean areNodesChanged = navigatorView.addObjectNavNodes( timelineNavNode);
-    boolean areLinksChanged =
-      navigatorView.addObjectToTimelineNavLinks( timelineNavNode);
-    if (areNodesChanged || areLinksChanged) {
-      navigatorView.setLayoutNeeded();
-      navigatorView.setFocusNode( timelineNavNode);
-      navigatorView.redraw();
-    }
+    boolean areLinksChanged = navigatorView.addObjectToTimelineNavLinks( timelineNavNode);
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    return (areNodesChanged || areLinksChanged);
   } // end addTimelineObjects
 
-  private void removeTimelineObjects( TimelineNavNode timelineNavNode,
-                                      NavigatorView navigatorView) {
-    navigatorView.setStartTimeMSecs( System.currentTimeMillis());
+  private boolean removeTimelineObjects( TimelineNavNode timelineNavNode,
+                                         NavigatorView navigatorView) {
     boolean areLinksChanged =
       navigatorView.removeObjectToTimelineNavLinks( timelineNavNode);
     boolean areNodesChanged = navigatorView.removeObjectNavNodes( timelineNavNode);
-    if (areNodesChanged || areLinksChanged) {
-      navigatorView.setLayoutNeeded();
-      navigatorView.setFocusNode( timelineNavNode);
-      navigatorView.redraw();
-    }
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
+    return (areNodesChanged || areLinksChanged);
   } // end removeTimelineObjects
 
-  private void addTimelineSlots( TimelineNavNode timelineNavNode,
-                                   NavigatorView navigatorView) {
-    navigatorView.setStartTimeMSecs( System.currentTimeMillis());
+  private boolean addTimelineSlots( TimelineNavNode timelineNavNode,
+                                    NavigatorView navigatorView) {
     boolean areNodesChanged = navigatorView.addSlotNavNodes( timelineNavNode);
-    boolean areLinksChanged =
-      navigatorView.addTimelineToSlotNavLinks( timelineNavNode);
-    if (areNodesChanged || areLinksChanged) {
-      navigatorView.setLayoutNeeded();
-      navigatorView.setFocusNode( timelineNavNode);
-      navigatorView.redraw();
-    }
+    boolean areLinksChanged = navigatorView.addTimelineToSlotNavLinks( timelineNavNode);
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    return (areNodesChanged || areLinksChanged);
   } // end addTimelineSlots
 
-  private void removeTimelineSlots( TimelineNavNode timelineNavNode,
-                                      NavigatorView navigatorView) {
-    navigatorView.setStartTimeMSecs( System.currentTimeMillis());
-    boolean areLinksChanged =
-      navigatorView.removeTimelineToSlotNavLinks( timelineNavNode);
+  private boolean removeTimelineSlots( TimelineNavNode timelineNavNode,
+                                       NavigatorView navigatorView) {
+    boolean areLinksChanged = navigatorView.removeTimelineToSlotNavLinks( timelineNavNode);
     boolean areNodesChanged = navigatorView.removeSlotNavNodes( timelineNavNode);
-    if (areNodesChanged || areLinksChanged) {
-      navigatorView.setLayoutNeeded();
-      navigatorView.setFocusNode( timelineNavNode);
-      navigatorView.redraw();
-    }
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
+    return (areNodesChanged || areLinksChanged);
   } // end removeTimelineSlots
 
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.6 2003-12-20 01:54:50 taylor Exp $
+// $Id: VizViewOverview.java,v 1.7 2004-01-16 19:05:35 taylor Exp $
 //
 // PlanWorks
 //
@@ -26,6 +26,12 @@ import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.ModelClassNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.VariableNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.ConstraintNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.ThickDurationBridge;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
@@ -155,8 +161,21 @@ public class VizViewOverview extends Overview {
         tip = ((SlotNode) obj).getToolTipText( isOverview);
       } else if (obj instanceof ThickDurationBridge) {
         tip = ((ThickDurationBridge) obj).getToolTipText( isOverview);
-      } else if (obj instanceof PredicateNode) {
-        tip = ((PredicateNode) obj).getToolTipText( isOverview);
+        // viz/sequence/modelRules
+//       } else if (obj instanceof PredicateNode) {
+//         tip = ((PredicateNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ModelClassNavNode) {
+        tip = ((ModelClassNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TimelineNavNode) {
+        tip = ((TimelineNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof SlotNavNode) {
+        tip = ((SlotNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof TokenNavNode) {
+        tip = ((TokenNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof VariableNavNode) {
+        tip = ((VariableNavNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ConstraintNavNode) {
+        tip = ((ConstraintNavNode) obj).getToolTipText( isOverview);
       } else {
         tip = obj.getToolTipText();
       }

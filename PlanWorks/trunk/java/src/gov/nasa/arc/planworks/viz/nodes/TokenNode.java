@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.31 2004-01-14 21:25:37 miatauro Exp $
+// $Id: TokenNode.java,v 1.32 2004-01-16 19:05:36 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,6 +14,7 @@ package gov.nasa.arc.planworks.viz.nodes;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -33,8 +34,10 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.Utilities;
@@ -43,6 +46,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
@@ -232,6 +236,20 @@ public class TokenNode extends BasicNode {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame();
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+          contentPane.add( new NavigatorView( TokenNode.this, partialPlan,
+                                              partialPlanView.getViewSet(),
+                                              navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
+
     JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.65 2004-01-13 18:11:49 miatauro Exp $
+# $Id: README,v 1.66 2004-01-16 19:05:33 taylor Exp $
 #
 
 SUMMARY
@@ -12,9 +12,17 @@ SUMMARY
 o In the Temporal Extent View, Mouse-Right on the background now offers
   "Show Earliest" and "Show Latest", as options to "Show Intervals".
 
-o A query for all decisions at a step has been added to the "SequenceQuery" window.
+o A query for "All Decisions ..." at a step has been added to the "SequenceQuery" 
+  window.  It brings up two results windows, one for free tokens and
+  one for unbound variables.
 
-o Speedups in database querying and Constraint Network View rendering.
+o Speedups in database querying, Constraint Network View rendering, and
+  Token Network View rendering.
+
+o For all nodes, except empty slots, in the Constraint Network, the Temporal
+  Extent, the Timeline, and the Token Network views, there is a 
+  Mouse-Right selection "Open Navigator View" which allows navigation
+  through all relationships in the partial plan data base.
 
 o  GNATS PRs and CRs completed:
    #2192: Snap to Earliest Start/Latest end in Temporal extent view.

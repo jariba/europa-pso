@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.28 2004-01-14 21:26:50 miatauro Exp $
+// $Id: TimelineView.java,v 1.29 2004-01-16 19:05:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -372,8 +372,9 @@ public class TimelineView extends PartialPlanView {
         if ((token == null) ||
             (token != null) && isTokenInContentSpec( token)) {
           String slotNodeLabel = getSlotNodeLabel( token, slot, isFirstSlot);
-          slotNode = new SlotNode( slotNodeLabel, slot, new Point( x, y), previousSlotNode,
-                                   isFirstSlot, isLastSlot, backgroundColor, this);
+          slotNode = new SlotNode( slotNodeLabel, slot, timeline, new Point( x, y),
+                                   previousSlotNode, isFirstSlot, isLastSlot,
+                                   backgroundColor, this);
           timelineNode.addToSlotNodeList( slotNode);
           // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
           jGoDocument.addObjectAtTail( slotNode);

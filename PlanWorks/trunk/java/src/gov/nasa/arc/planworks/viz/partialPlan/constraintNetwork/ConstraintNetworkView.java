@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.29 2004-01-14 21:25:55 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.30 2004-01-16 19:05:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -467,22 +467,9 @@ public class ConstraintNetworkView extends PartialPlanView {
 
   private void createTokenNodes() {
     boolean isDraggable = true;
-    int timelineCnt = 0;
-    Map timelineIndexMap = new HashMap();
+    Map timelineIndexMap = createTimelineColorMap();
     int x = 0;
     int y = 0;
-    ListIterator objectIterator = partialPlan.getObjectList().listIterator();
-    while(objectIterator.hasNext()) {
-      PwObject obj = (PwObject) objectIterator.next();
-      ListIterator timelineIterator = obj.getTimelineList().listIterator();
-      while(timelineIterator.hasNext()) {
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        timelineIndexMap.put(timeline.getId(), new Integer(timelineCnt));
-//         System.err.println(timeline.getId() + "=>" + 
-//                            ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineCnt));
-        timelineCnt++;
-      }
-    }
     long tokenTime = 0L;
     long varTime = 0L;
     long constrTime = 0L;
@@ -495,9 +482,9 @@ public class ConstraintNetworkView extends PartialPlanView {
         backgroundColor = ColorMap.getColor(ViewConstants.FREE_TOKEN_BG_COLOR);
       }
       else {
-        backgroundColor = 
-          ((PartialPlanViewSet) viewSet).getColorStream().
-          getColor(((Integer)timelineIndexMap.get(token.getTimelineId())).intValue());
+        backgroundColor = getTimelineColor( token.getTimelineId(), timelineIndexMap);
+          // ((PartialPlanViewSet) viewSet).getColorStream().
+          // getColor(((Integer)timelineIndexMap.get(token.getTimelineId())).intValue());
 //         System.err.println(token.getId() + "=>" + token.getTimelineId() + "=>" + backgroundColor);
       }
       long t1 = System.currentTimeMillis();
