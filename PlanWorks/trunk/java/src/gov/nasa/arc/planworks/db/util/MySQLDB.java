@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.53 2003-10-21 21:45:44 miatauro Exp $
+// $Id: MySQLDB.java,v 1.54 2003-10-21 22:01:34 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1052,17 +1052,13 @@ public class MySQLDB {
       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
       while(transactedSteps.next()) {
 	int stepNum = transactedSteps.getInt("StepNumber");
+
 	//Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
-        int varId = transactedSteps.getInt("StepNumber");
-	//try {
-        //if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() &&
-        //!seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
+        int varId = transactedSteps.getInt("ObjectId");
         if(varDomainIsSingleton(seq.getId(), stepNum, varId) &&
            !varDomainIsSingleton(seq.getId(), stepNum-1, varId)) {
           retval.add(new Integer(stepNum));
         }
-	//}
-	//catch(ResourceNotFoundException rnfe) {}
       }
     }
     catch(SQLException sqle) {
