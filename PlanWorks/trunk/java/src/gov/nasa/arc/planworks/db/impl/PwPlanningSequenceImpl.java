@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.8 2003-06-12 19:57:20 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.9 2003-06-12 23:49:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -65,10 +65,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     partialPlans = new ArrayList();
     transactions = new ArrayList();
 
-    int index = url.lastIndexOf( "/");
+    int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
       throw new ResourceNotFoundException( "sequence url '" + url +
-                                           "' cannot be parsed for '/'");
+                                           "' cannot be parsed for '" +
+                                           System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
 
@@ -86,7 +87,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
                                            "' does not have any xml files");
     }
     // ensure that DTD file is in this directory
-    File dtdFile = new File( url + "/" + DbConstants.XML_DTD_FILENAME);
+    File dtdFile = new File( url + System.getProperty( "file.separator") +
+                             DbConstants.XML_DTD_FILENAME);
     if (! dtdFile.exists()) {
       try {
         FileCopy.copy( System.getProperty( "xml.dtd.pathname"), dtdFile.getPath());
@@ -123,10 +125,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     partialPlans = new ArrayList();
     transactions = new ArrayList();
 
-    int index = url.lastIndexOf( "/");
+    int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
       throw new ResourceNotFoundException( "sequence url '" + url +
-                                           "' cannot be parsed for '/'");
+                                           "' cannot be parsed for '" +
+                                           System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
     stepCount = this.partialPlanNames.size();
@@ -236,7 +239,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     for (int index = 0, n = partialPlanNames.size(); index < n; index++) {
       if (((String) partialPlanNames.get( index)).equals( partialPlanName)) {
         PwPartialPlan partialPlan =
-          new PwPartialPlanImpl( url + "/" + partialPlanName +
+          new PwPartialPlanImpl( url + System.getProperty( "file.separator") +
+                                 partialPlanName +
                                  XmlFileFilter.XML_EXTENSION_W_DOT,
                                  projectName, name);
         partialPlans.set( index, partialPlan);

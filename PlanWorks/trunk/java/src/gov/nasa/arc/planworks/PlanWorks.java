@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.4 2003-06-12 19:57:20 taylor Exp $
+// $Id: PlanWorks.java,v 1.5 2003-06-12 23:49:45 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -557,9 +557,10 @@ public class PlanWorks extends MDIDesktopFrame {
       this.viewName = viewName;
     }  // end constructor
 
-    public void run() {
+    public void run() { 
       try {
-        String sequenceUrl = currentProjectUrl + "/" + sequenceName;
+        String sequenceUrl = currentProjectUrl + System.getProperty( "file.separator") +
+          sequenceName;
         PwPlanningSequence planSequence = currentProject.getPlanningSequence( sequenceUrl);
         PwPartialPlan partialPlan = planSequence.getPartialPlan( partialPlanName);
         if (partialPlan == null) {
@@ -594,7 +595,8 @@ public class PlanWorks extends MDIDesktopFrame {
         MDIInternalFrame viewFrame =
           viewManager.openTimelineView( partialPlan,
                                         "Timeline View of " + sequenceName +
-                                        "/" + partialPlanName);
+                                        System.getProperty( "file.separator") +
+                                        partialPlanName);
         if (! viewExists) {
           stopTimeMSecs = (new Date()).getTime();
           System.err.println( "   ... elapsed time: " +
@@ -788,7 +790,7 @@ public class PlanWorks extends MDIDesktopFrame {
     }
     osName = System.getProperty("os.name");
     planWorksRoot = System.getProperty( "planworks.root");
-    userCollectionName = "/" + System.getProperty( "user");
+    userCollectionName = System.getProperty( "file.separator") + System.getProperty( "user");
 
     planWorks = new PlanWorks( buildConstantMenus());
 

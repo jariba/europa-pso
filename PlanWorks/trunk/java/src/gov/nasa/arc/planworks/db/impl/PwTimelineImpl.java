@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.7 2003-06-02 17:49:59 taylor Exp $
+// $Id: PwTimelineImpl.java,v 1.8 2003-06-12 23:49:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -87,7 +87,7 @@ public class PwTimelineImpl implements PwTimeline {
   public PwSlotImpl addSlot( String key) {
     PwSlotImpl slot = new PwSlotImpl( key, partialPlan);
     slotIdList.add( key);
-    partialPlan.getSlotMap().put( key, slot);
+    partialPlan.addSlot( key, slot);
     return slot;
   } // end addSlot
 

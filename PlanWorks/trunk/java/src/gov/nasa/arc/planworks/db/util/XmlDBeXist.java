@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.10 2003-06-12 00:08:53 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.11 2003-06-12 23:49:46 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -134,7 +134,11 @@ public class XmlDBeXist {
   private static final String END_SELECT_VALUE = "\"]";
   private static final String MODEL_KEY_QUERY_PRE;
   private static final String MODEL_KEY_QUERY_POST;
-  private static final String PARTIAL_PLAN_OBJECT_QUERY;
+  private static final String PARTIAL_PLAN_OBJECTS_QUERY;
+  private static final String CONSTRAINTS_QUERY;
+  private static final String PREDICATES_QUERY;
+  private static final String TOKEN_RELATIONS_QUERY;
+  private static final String VARIABLES_QUERY;
 
   private static final String CONSTRAINT_KEYLIST_QUERY;
   private static final String PREDICATE_KEYLIST_QUERY;
@@ -163,7 +167,31 @@ public class XmlDBeXist {
     xmlQuery = new StringBuffer( "/");
     xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
     xmlQuery.append( OBJECT_ELEMENT);
-    PARTIAL_PLAN_OBJECT_QUERY = xmlQuery.toString();
+    PARTIAL_PLAN_OBJECTS_QUERY = xmlQuery.toString();
+
+    // /PartialPlan/Constraint
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( CONSTRAINT_ELEMENT);
+    CONSTRAINTS_QUERY = xmlQuery.toString();
+
+    // /PartialPlan/Predicate
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( PREDICATE_ELEMENT);
+    PREDICATES_QUERY = xmlQuery.toString();
+
+    // /PartialPlan/TokenRelation
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( TOKEN_RELATION_ELEMENT);
+    TOKEN_RELATIONS_QUERY = xmlQuery.toString();
+
+    // /PartialPlan/Variable
+    xmlQuery = new StringBuffer( "/");
+    xmlQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    xmlQuery.append( VARIABLE_ELEMENT);
+    VARIABLES_QUERY = xmlQuery.toString();
 
     // ----------------------------
 
@@ -804,7 +832,7 @@ public class XmlDBeXist {
 
 
   private static List queryTimelinesSlotsTokens( String collectionName) {
-    List nodeContentList = queryCollection( collectionName, PARTIAL_PLAN_OBJECT_QUERY);
+    List nodeContentList = queryCollection( collectionName, PARTIAL_PLAN_OBJECTS_QUERY);
 
 //     System.err.println( "\nDOM tree:");
 //     printDomNodeTriplets( nodeContentList);
@@ -876,22 +904,136 @@ public class XmlDBeXist {
 
 
   /**
-   * <code>queryVariableByKey</code> -- /PartialPlan/Variable[@key="K55"]
+   * <code>queryConstraints</code>
    *
-   * @param key - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    * @param collectionName - <code>String</code> - 
-   * @return - <code>PwVariableImpl</code> - 
    */
-  public static PwVariableImpl queryVariableByKey( String key, PwPartialPlanImpl partialPlan,
-                                                   String collectionName) {
-    String varType = "", constraintIds = "", paramId = "";
+  public static void queryConstraints( PwPartialPlanImpl partialPlan,
+                                       String collectionName) {
+    String currentNodeName = "", key = "", type = "", name = "";
+    String variableIds = "";
+    List contentList = queryCollection( collectionName, CONSTRAINTS_QUERY);
+    for (int i = 0, n = contentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( " type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+        if (nodeName.equals( CONSTRAINT_ELEMENT)) {
+          currentNodeName = CONSTRAINT_ELEMENT;
+        } else { currentNodeName = ""; }
+      } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        if (currentNodeName.equals( CONSTRAINT_ELEMENT)) {
+          if (nodeName.equals( CONSTRAINT_KEY_ATTRIBUTE)) {
+            key = nodeValue;
+          } else if (nodeName.equals( CONSTRAINT_TYPE_ATTRIBUTE)) {
+            type = nodeValue;
+          }  else if (nodeName.equals( CONSTRAINT_NAME_ATTRIBUTE)) {
+            name = nodeValue;
+          }  else if (nodeName.equals( CONSTRAINT_VARIABLE_IDS_ATTRIBUTE)) {
+            variableIds = nodeValue;;
+          }
+        }
+      } else if ((nodeType == END_ELEMENT_NODE) && nodeName.equals( CONSTRAINT_ELEMENT)) {
+        partialPlan.addConstraint( key,
+                                    new PwConstraintImpl( name, key, type, nodeValue,
+                                                          partialPlan));
+      }
+    }
+  } // end queryConstraints
+
+  /**
+   * <code>queryPredicates</code>
+   *
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param collectionName - <code>String</code> - 
+   */
+  public static void queryPredicates( PwPartialPlanImpl partialPlan,
+                                      String collectionName) {
+    PwPredicateImpl predicate = null;
+    String key = "", name = "";
+    String parameterKey = "", parameterName = "", currentNodeName = "";
+    List contentList = queryCollection( collectionName, PREDICATES_QUERY);
+    for (int i = 0, n = contentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( " type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+        if (nodeName.equals( PREDICATE_ELEMENT)) {
+          currentNodeName = PREDICATE_ELEMENT;
+        } else if (nodeName.equals( PARAMETER_ELEMENT)) {
+          currentNodeName = PARAMETER_ELEMENT;
+        } else { currentNodeName = ""; }
+      } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        if (currentNodeName.equals( PREDICATE_ELEMENT)) {
+          if (nodeName.equals( PREDICATE_KEY_ATTRIBUTE)) {
+            key = nodeValue;
+          } else if (nodeName.equals( PREDICATE_NAME_ATTRIBUTE)) {
+            predicate = new PwPredicateImpl( nodeValue, key, partialPlan);
+            partialPlan.addPredicate( key, predicate);
+          }
+        } else if (currentNodeName.equals( PARAMETER_ELEMENT)) {
+          if (nodeName.equals( PARAMETER_KEY_ATTRIBUTE)) {
+            parameterKey = nodeValue;
+          } else if (nodeName.equals( PARAMETER_NAME_ATTRIBUTE)) {
+            parameterName = nodeValue;
+          }
+        }
+      } else if ((nodeType == END_ELEMENT_NODE) && (nodeName.equals( PARAMETER_ELEMENT))) {
+        partialPlan.addParameter( parameterKey,
+                                  predicate.addParameter( parameterName, parameterKey));
+      }
+    }
+  } // end queryPredicates
+
+  public static void queryTokenRelations( PwPartialPlanImpl partialPlan,
+                                          String collectionName) {
+    String currentNodeName = "", master = "", slave = "", key = "";
+    List contentList = queryCollection( collectionName, TOKEN_RELATIONS_QUERY);
+    for (int i = 0, n = contentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( " type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+        if (nodeName.equals( TOKEN_RELATION_ELEMENT)) {
+          currentNodeName = TOKEN_RELATION_ELEMENT;
+        } else { currentNodeName = ""; }
+      } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        if (currentNodeName.equals( TOKEN_RELATION_ELEMENT)) {
+          if (nodeName.equals( TOKEN_RELATION_KEY_ATTRIBUTE)) {
+            key = nodeValue;
+          } else if (nodeName.equals( TOKEN_RELATION_MASTER_TOKEN_ATTRIBUTE)) {
+            master = nodeValue;
+          }  else if (nodeName.equals( TOKEN_RELATION_SLAVE_TOKEN_ATTRIBUTE)) {
+            slave = nodeValue;
+          }
+        }
+      } else if ((nodeType == END_ELEMENT_NODE) &&
+                 nodeName.equals( TOKEN_RELATION_ELEMENT)) {
+        partialPlan.addTokenRelation( key,
+                                      new PwTokenRelationImpl( key, master, slave,
+                                                               partialPlan));
+      }
+    }
+  } // end queryTokenRelationByKey
+
+  /**
+   * <code>queryVariables</code>
+   *
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param collectionName - <code>String</code> - 
+   */
+  public static void queryVariables( PwPartialPlanImpl partialPlan, String collectionName) {
+    String varKey = "", varType = "", constraintIds = "", paramId = "";
     String enumeration = "", intDomainType = "", lowerBound = "";
-    String upperBound = "", currentNodeName = "";
-    PwVariableImpl variable = null; PwDomainImpl domain = null;
-    StringBuffer query = new StringBuffer( VARIABLE_KEY_QUERY);
-    query.append( key).append( END_SELECT_VALUE);
-    List contentList = queryCollection( collectionName, query.toString());
+    String upperBound = "", currentNodeName = ""; PwDomainImpl domain = null;
+    List contentList = queryCollection( collectionName, VARIABLES_QUERY);
     for (int i = 0, n = contentList.size(); i < n; i++) {
       ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
       short nodeType = domNode.getNodeType().shortValue();
@@ -908,7 +1050,9 @@ public class XmlDBeXist {
         } else { currentNodeName = ""; }
       } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
         if (currentNodeName.equals( VARIABLE_ELEMENT)) {
-          if (nodeName.equals( VARIABLE_TYPE_ATTRIBUTE)) {
+          if (nodeName.equals( VARIABLE_KEY_ATTRIBUTE)) {
+            varKey = nodeValue;
+          } else if (nodeName.equals( VARIABLE_TYPE_ATTRIBUTE)) {
             varType = nodeValue;
           } else if (nodeName.equals( VARIABLE_CONSTRAINT_IDS_ATTRIBUTE)) {
             constraintIds = nodeValue;
@@ -927,19 +1071,21 @@ public class XmlDBeXist {
       } else if ((nodeType == org.w3c.dom.Node.TEXT_NODE) &&
                  currentNodeName.equals( ENUMERATED_DOMAIN_ELEMENT)) {
         enumeration = nodeValue;
+      } else if ((nodeType == END_ELEMENT_NODE) && nodeName.equals( VARIABLE_ELEMENT)) {
+        if (enumeration.equals( "")) {
+          domain = new PwIntervalDomainImpl( intDomainType, lowerBound, upperBound);
+        } else {
+          domain = new PwEnumeratedDomainImpl( enumeration);
+        }
+        partialPlan.addVariable( varKey,
+                                 new PwVariableImpl( varKey, varType, constraintIds,
+                                                     paramId, domain, partialPlan));
+        enumeration = "";
       }
-    } // end for
-    if (enumeration.equals( "")) {
-      domain = new PwIntervalDomainImpl( intDomainType, lowerBound, upperBound);
-    } else {
-      domain = new PwEnumeratedDomainImpl( enumeration);
     }
-    variable = new PwVariableImpl( key, varType, constraintIds, paramId, domain,
-                                   partialPlan);
-    return variable;
-  } // end queryVariableByKey
+  } // end queryVariables
 
-
+  
   /**
    * <code>queryPredicateByKey</code> - /PartialPlan/Predicate[@key="K32"]
    *
@@ -1069,7 +1215,73 @@ public class XmlDBeXist {
   } // end queryTokenRelationByKey
 
   /**
-   * <code>queryElementKeysByType</code>
+   * <code>queryVariableByKey</code> -- /PartialPlan/Variable[@key="K55"]
+   *
+   * @param key - <code>String</code> - 
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwVariableImpl</code> - 
+   */
+  public static PwVariableImpl queryVariableByKey( String key, PwPartialPlanImpl partialPlan,
+                                                   String collectionName) {
+    String varType = "", constraintIds = "", paramId = "";
+    String enumeration = "", intDomainType = "", lowerBound = "";
+    String upperBound = "", currentNodeName = "";
+    PwVariableImpl variable = null; PwDomainImpl domain = null;
+    StringBuffer query = new StringBuffer( VARIABLE_KEY_QUERY);
+    query.append( key).append( END_SELECT_VALUE);
+    List contentList = queryCollection( collectionName, query.toString());
+    for (int i = 0, n = contentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( " type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+        if (nodeName.equals( VARIABLE_ELEMENT)) {
+          currentNodeName = VARIABLE_ELEMENT;
+        } else if (nodeName.equals( ENUMERATED_DOMAIN_ELEMENT)) {
+          currentNodeName = ENUMERATED_DOMAIN_ELEMENT;
+        } else if (nodeName.equals( INTERVAL_DOMAIN_ELEMENT)) {
+          currentNodeName = INTERVAL_DOMAIN_ELEMENT;
+        } else { currentNodeName = ""; }
+      } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        if (currentNodeName.equals( VARIABLE_ELEMENT)) {
+          if (nodeName.equals( VARIABLE_TYPE_ATTRIBUTE)) {
+            varType = nodeValue;
+          } else if (nodeName.equals( VARIABLE_CONSTRAINT_IDS_ATTRIBUTE)) {
+            constraintIds = nodeValue;
+          } else if (nodeName.equals( VARIABLE_PARAM_ID_ATTRIBUTE)) {
+            paramId = nodeValue;
+          }
+        } else if (currentNodeName.equals( INTERVAL_DOMAIN_ELEMENT)) {
+          if (nodeName.equals( INTERVAL_DOMAIN_TYPE_ATTRIBUTE)) {
+            intDomainType = nodeValue;
+          } else if (nodeName.equals( INTERVAL_DOMAIN_LOWER_BOUND_ATTRIBUTE)) {
+            lowerBound = nodeValue;
+          } else if (nodeName.equals( INTERVAL_DOMAIN_UPPER_BOUND_ATTRIBUTE)) {
+            upperBound = nodeValue;
+          }
+        }
+      } else if ((nodeType == org.w3c.dom.Node.TEXT_NODE) &&
+                 currentNodeName.equals( ENUMERATED_DOMAIN_ELEMENT)) {
+        enumeration = nodeValue;
+      }
+    } // end for
+    if (enumeration.equals( "")) {
+      domain = new PwIntervalDomainImpl( intDomainType, lowerBound, upperBound);
+    } else {
+      domain = new PwEnumeratedDomainImpl( enumeration);
+    }
+    variable = new PwVariableImpl( key, varType, constraintIds, paramId, domain,
+                                   partialPlan);
+    return variable;
+  } // end queryVariableByKey
+
+
+  /**
+   * <code>queryElementKeysByType</code> - not used, since all instances of each
+   *                   element type are now done in one query
    *
    * @param type - <code>String</code> - 
    * @param collectionName - <code>String</code> - 
