@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRuleImpl.java,v 1.3 2004-03-27 00:30:45 taylor Exp $
+// $Id: PwRuleImpl.java,v 1.4 2004-04-30 21:49:39 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -27,6 +27,7 @@ import gov.nasa.arc.planworks.db.PwRule;
  */
 public class PwRuleImpl implements PwRule {
 
+  private Long sequenceId;
   private Integer id;
   private String text;
   
@@ -36,7 +37,8 @@ public class PwRuleImpl implements PwRule {
    * @param id - <code>Integer</code> - 
    * @param text - <code>String</code> - 
    */
-  public PwRuleImpl( Integer id, String text) {
+  public PwRuleImpl( Long sequenceId, Integer id, String text) {
+    this.sequenceId = sequenceId;
     this.id = id;
     this.text = text;
   } // end constructor

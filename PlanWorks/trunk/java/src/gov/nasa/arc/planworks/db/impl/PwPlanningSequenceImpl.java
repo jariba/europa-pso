@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.78 2004-04-06 01:31:42 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.79 2004-04-30 21:49:39 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -118,7 +118,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
     //loadTransactions();
     transactions = null;
-    fakeRules();
+    instantiateRules();
   }
 
   //for testing only
@@ -182,6 +182,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     }
     loadTransactionFile();
     loadStatsFile();
+    loadRulesFile();
+    loadRulesMapFile();
     MySQLDB.analyzeDatabase();
     //loadTransactions();
     transactions = null;
@@ -196,7 +198,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       stepCount++;
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
-    fakeRules();
+    instantiateRules();
   } // end constructor for OpenProject call
   
 
@@ -210,12 +212,23 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   }
 
   private void loadTransactionFile() {
-    MySQLDB.loadFile(url + System.getProperty("file.separator") + "transactions", "Transaction");
+    MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_TRANSACTIONS,
+                     DbConstants.TBL_TRANSACTION);
   }
 
   private void loadStatsFile() {
-    MySQLDB.loadFile(url + System.getProperty("file.separator") + "partialPlanStats",
-                     "PartialPlanStats");
+    MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_PP_STATS,
+                     DbConstants.TBL_PP_STATS);
+  }
+
+  private void loadRulesFile() {
+    MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_RULES, 
+                     DbConstants.TBL_RULES);
+  }
+
+  private void loadRulesMapFile() {
+    MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_RULES_MAP,
+                     DbConstants.TBL_RULE_TOKEN_MAP);
   }
 
   private void loadTransactions() {
@@ -640,6 +653,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     loadStatsFile();
     System.err.println("Loading transactions...");
     loadTransactions();
+    System.err.println("Loading rule information...");
+    loadRulesMapFile();
     System.err.println("Loading new partial plan info...");
     planNamesInFilesystem.clear();
     ListIterator planNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
@@ -662,8 +677,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     for(int i = 0; i < 20; i++) {
       Integer n = new Integer(i);
       String text = "fake rule " + i;
-      ruleMap.put(n, new PwRuleImpl(n, text));
+      ruleMap.put(n, new PwRuleImpl(id, n, text));
     }
+  }
+
+  private void instantiateRules() {
+    ruleMap = MySQLDB.queryRules(id);
   }
 
   public PwRule getRule(Integer rId) {

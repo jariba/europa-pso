@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.84 2004-04-22 19:26:18 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.85 2004-04-30 21:49:38 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -163,7 +163,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     MySQLDB.createObjects(this);
     model = MySQLDB.queryPartialPlanModelById(id);
-    MySQLDB.createSlotTokenNodesStructure(this);
+    MySQLDB.createSlotTokenNodesStructure(this, sequence.getId());
 
     long start2TimeMSecs = System.currentTimeMillis();
     fillElementMaps();
