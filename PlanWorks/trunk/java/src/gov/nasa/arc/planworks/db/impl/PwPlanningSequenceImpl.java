@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.83 2004-05-14 18:02:27 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.84 2004-05-21 22:24:52 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -499,6 +499,11 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
 
   // end implement ViewableObject
 
+	public List getOpenDecisionsForStep(final int stepNum) throws ResourceNotFoundException {
+		loadPartialPlanFiles("step" + stepNum);
+		return MySQLDB.queryOpenDecisionsForStep(MySQLDB.getPartialPlanIdByStepNum(id, stepNum));
+	}
+
   public List getTransactionsForConstraint(final Integer id) {
 		loadTransactionFile();
     return MySQLDB.queryTransactionsForConstraint(this.id, id);
@@ -699,6 +704,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       }
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
+		hasLoadedTransactionFile = false;
     System.err.println("Planning sequence refresh done.");
   }
 
