@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNavNode.java,v 1.2 2004-06-29 00:47:17 taylor Exp $
+// $Id: RuleInstanceNavNode.java,v 1.3 2004-07-08 21:33:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -33,6 +33,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -272,8 +273,9 @@ public class RuleInstanceNavNode extends RuleInstanceNode implements NavNode, Ov
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       JPopupMenu menu = new JPopupMenu();
+      ViewListener viewListener = null;
       menu.add( ViewGenerics.createRuleInstanceViewItem
-                ( (RuleInstanceNode) ruleInstanceNode, partialPlanView));
+                ( (RuleInstanceNode) ruleInstanceNode, partialPlanView, viewListener));
       ViewGenerics.showPopupMenu( menu, partialPlanView, viewCoords);
       return true;
     }

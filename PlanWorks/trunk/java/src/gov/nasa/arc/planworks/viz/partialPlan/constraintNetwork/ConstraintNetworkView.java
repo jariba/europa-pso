@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.71 2004-06-23 21:36:37 pdaley Exp $
+// $Id: ConstraintNetworkView.java,v 1.72 2004-07-08 21:33:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -207,7 +207,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
-  }
+  } // end constraintNetworkViewInit
 
   public PartialPlanViewState getState() {
     return new ConstraintNetworkViewState(this);
@@ -1528,7 +1528,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       mouseRightPopup.add( tokenByKeyItem);
 
       constraintNetworkView.createOpenViewItems( partialPlan, partialPlanName, planSequence,
-                                                 mouseRightPopup,
+                                                 mouseRightPopup, viewListenerList,
                                                  ViewConstants.CONSTRAINT_NETWORK_VIEW);
     
       JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
@@ -1566,7 +1566,8 @@ public class ConstraintNetworkView extends PartialPlanView {
         mouseRightPopup.add( closeWindowsItem);
       }
       constraintNetworkView.createAllViewItems( partialPlan, partialPlanName,
-                                                planSequence, mouseRightPopup);
+                                                planSequence, viewListenerList,
+                                                mouseRightPopup);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     } // end mouseRightPopupMenu

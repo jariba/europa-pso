@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.44 2004-06-16 22:09:11 taylor Exp $
+// $Id: PartialPlanView.java,v 1.45 2004-07-08 21:33:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -82,6 +82,7 @@ public class PartialPlanView extends VizView {
   protected List validTokenIds;
   protected List displayedTokenIds;
   protected String viewName; 
+  protected List viewListenerList; // element ViewListener
 
   private StepButton backwardButton;
   private StepButton forwardButton;
@@ -110,6 +111,10 @@ public class PartialPlanView extends VizView {
     verticalAdjustmentListener = null;
     buttonViewListener = null;
     viewName = null;
+    viewListenerList = new ArrayList();
+    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+      viewListenerList.add( null);
+    }
   }
 
   /**
@@ -166,6 +171,24 @@ public class PartialPlanView extends VizView {
   public final String getViewName() {
     return viewName;
   }
+
+  /**
+   * <code>getViewListenerList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public final List getViewListenerList() {
+    return viewListenerList;
+  }
+
+  /**
+   * <code>setViewListenerList</code> - called from PlanWorksGUITest
+   *
+   * @param viewListenerList - <code>List</code> - 
+   */
+  public final void setViewListenerList( List viewListenerList) {
+    this.viewListenerList = viewListenerList;
+  } // end setViewListenerList
 
   /**
    * <code>isContentSpecRendered</code>
@@ -641,18 +664,49 @@ public class PartialPlanView extends VizView {
                                    final String partialPlanName,
                                    final PwPlanningSequence planSequence,
                                    JPopupMenu mouseRightPopup, final String currentViewName) {
+    List viewListenerList = new ArrayList();
+    for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
+      viewListenerList.add( null);
+    }
+    createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
+                         viewListenerList, currentViewName);
+  } // end createOpenViewItems
+
+  /**
+   * <code>createOpenViewItems</code> - partial plan background Mouse-Right item
+   *                                    all views except current
+   *
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param partialPlanName - <code>String</code> - 
+   * @param planSequence - <code>PwPlanningSequence</code> - 
+   * @param mouseRightPopup - <code>JPopupMenu</code> - 
+   * @param viewListenerList - <code>List</code> - 
+   * @param currentViewName - <code>String</code> - 
+   */
+  public void createOpenViewItems( final PwPartialPlan partialPlan,
+                                   final String partialPlanName,
+                                   final PwPlanningSequence planSequence,
+                                   JPopupMenu mouseRightPopup,
+                                   final List viewListenerList,
+                                   final String currentViewName) {
+    if (viewListenerList.size() != ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()) {
+      System.err.println( "createOpenViewtems: num view listeners not = " +
+                          ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
+      System.exit( -1);
+    }
     PartialPlanViewMenu viewMenu = new PartialPlanViewMenu();
     Iterator viewNamesItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
+    Iterator viewListenerItr = viewListenerList.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
       if (! viewName.equals( currentViewName)) {
-        ViewListener viewListener = null;
         PartialPlanViewMenuItem openViewItem =
-          viewMenu.createOpenViewItem( viewName, partialPlanName, planSequence, viewListener);
+          viewMenu.createOpenViewItem( viewName, partialPlanName, planSequence,
+                                       (ViewListener) viewListenerItr.next());
         mouseRightPopup.add( openViewItem);
       }
     }
-  } // end createOpenViewItems
+  } // end createOpenViewItems - viewListenerList
 
   public void createAnOpenViewFindItem( final PwPartialPlan partialPlan,
                                         final String partialPlanName,
@@ -665,7 +719,7 @@ public class PartialPlanView extends VizView {
       viewMenu.createOpenViewFindItem( viewName, partialPlanName, planSequence, viewListener,
                                        viewSet, idToFind);
     mouseRightPopup.add( openViewItem);
-  } // end createOpenViewItems
+  } // end createAnOpenViewFindItem
 
   /**
    * <code>createRaiseContentSpecItem</code> - partial plan background Mouse-Right item

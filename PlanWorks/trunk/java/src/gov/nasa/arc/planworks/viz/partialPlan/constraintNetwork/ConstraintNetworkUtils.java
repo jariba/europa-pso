@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ConstraintNetworkUtils.java,v 1.7 2004-06-29 00:47:16 taylor Exp $
+// $Id: ConstraintNetworkUtils.java,v 1.8 2004-07-08 21:33:24 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -33,6 +33,7 @@ import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
@@ -138,7 +139,9 @@ public final class ConstraintNetworkUtils {
     menu.add(navItem);
 
     if (node instanceof ConstraintNetworkRuleInstanceNode) {
-      menu.add( ViewGenerics.createRuleInstanceViewItem( (RuleInstanceNode) node, view));
+      ViewListener viewListener = null;
+      menu.add( ViewGenerics.createRuleInstanceViewItem( (RuleInstanceNode) node, view,
+                                                         viewListener));
     }
 
     ViewGenerics.showPopupMenu(menu, view, viewCoords);

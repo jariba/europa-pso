@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: build.xml,v 1.13 2004-06-22 21:43:51 miatauro Exp $ -->
+<!-- $Id: build.xml,v 1.14 2004-07-08 21:33:20 taylor Exp $ -->
 <project name="PlanWorks" default="compile" basedir=".">
     <description>
         Planworks Build Targets
@@ -10,6 +10,8 @@
   <property name="dist"  value="jars"/>
   <!-- show line numbers in stack trace -->
   <property name="debug"  value="true"/>
+  <!-- property name="deprecation"  value="off"/ -->
+  <property name="deprecation"  value="true"/>
   <property name="javahDestdir"  value="../cpp/include/europa"/>
   <property environment="env"/>
 
@@ -42,7 +44,7 @@
     <ant dir="./src/gov/nasa/arc/planworks/dbg/testLang"
        antfile="build.xml" target="generateTestLang"/>
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}" debug="${debug}">
+    <javac srcdir="${src}" destdir="${build}" debug="${debug}" deprecation="${deprecation}">
        <classpath>
           <pathelement location="${jgo.home}/JGo.jar"/>
           <pathelement location="${jgo.layout.home}/JGoLayout.jar"/>

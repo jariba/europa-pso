@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.9 2004-06-21 22:42:59 taylor Exp $
+// $Id: PWTestHelper.java,v 1.10 2004-07-08 21:33:22 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -29,16 +29,21 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.JTree;
 
 import junit.extensions.jfcunit.JFCTestHelper;
 import junit.extensions.jfcunit.eventdata.JComboBoxMouseEventData;
+import junit.extensions.jfcunit.eventdata.JTreeMouseEventData;
 import junit.extensions.jfcunit.eventdata.KeyEventData;
 import junit.extensions.jfcunit.eventdata.MouseEventData;
 import junit.extensions.jfcunit.eventdata.StringEventData;
 import junit.extensions.jfcunit.finder.AbstractButtonFinder;
 import junit.extensions.jfcunit.finder.ComponentFinder;
+import junit.extensions.jfcunit.finder.DialogFinder;
 import junit.extensions.jfcunit.finder.Finder;
 import junit.extensions.jfcunit.finder.NamedComponentFinder;
+import junit.extensions.jfcunit.finder.JFileChooserFinder;
+import junit.extensions.jfcunit.finder.JMenuItemFinder;
 import junit.framework.Assert;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -50,19 +55,26 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
+import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
+import gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
+import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
 public abstract class PWTestHelper {
@@ -103,9 +115,12 @@ public abstract class PWTestHelper {
       return null;
     }
     helper.enterClickAndLeave(new MouseEventData( guiTest, parent));
+
     AbstractButtonFinder finder = new AbstractButtonFinder(itemName);
     // finder.setDebug( true);
-    return (JMenuItem) finder.find();
+    JMenuItem menuItem = (JMenuItem) finder.find();
+    // System.err.println( "findMenuItem menuItem " + menuItem);
+    return menuItem;
   }
 
   /**
@@ -121,22 +136,27 @@ public abstract class PWTestHelper {
   public static JMenuItem findDynamicMenuItem(String menuName, String itemName,
                                               JFCTestHelper helper,
                                               PlanWorksGUITest guiTest)
-  throws Exception {
+    throws Exception {
     JMenu parent = findMenu(menuName);
-    // System.err.println( "findMenuItem parent " + parent);
+    // System.err.println( "findDynamicMenuItem parent " + parent);
     Assert.assertTrue(parent != null);
     if(parent == null) {
       return null;
     }
     helper.enterClickAndLeave(new MouseEventData( guiTest, parent));
-//     System.err.println( "findDynamicMenuItem clicked on parent itemName '" +
-//                         itemName + "'");
+    //     System.err.println( "findDynamicMenuItem clicked on parent itemName '" +
+    //                         itemName + "'");
     for (int i = 0, n = parent.getMenuComponentCount(); i < n; i++) {
-      JMenuItem menuItem = (JMenuItem) parent.getMenuComponent( i);
-//       System.err.println( "  menu component i " + i + " " + menuItem.getText());
-      if (menuItem.getText().equals( itemName)) {
-//         System.err.println( "  menuItem match " + menuItem.getText());
-        return menuItem;
+      Object item = parent.getMenuComponent( i);
+      if (item != null) { // check for separators
+        if (item instanceof JMenuItem) {
+          JMenuItem menuItem = (JMenuItem) item;
+          //       System.err.println( "  menu component i " + i + " " + menuItem.getText());
+          if (menuItem.getText().equals( itemName)) {
+            //         System.err.println( "  menuItem match " + menuItem.getText());
+            return menuItem;
+          }
+        }
       }
     }
     return null;
@@ -240,7 +260,9 @@ public abstract class PWTestHelper {
     throws Exception {
     
     JFileChooser fileChooser = null;
-    fileChooser = helper.getShowingJFileChooser( planWorks);
+    // deprecated fileChooser = helper.getShowingJFileChooser( planWorks);
+    fileChooser = (JFileChooser) new JFileChooserFinder( null).find( planWorks, 0);
+
     Assert.assertNotNull( "'Select Sequence Directory' dialog not found:", fileChooser);
     Container projectSeqDialog = (Container) fileChooser;
 
@@ -394,7 +416,9 @@ public abstract class PWTestHelper {
   public static void handleDialog( String dialogName, String buttonName, String dialogMessage,
                                    JFCTestHelper helper, PlanWorksGUITest guiTest)
     throws Exception {
-    List dialogs = helper.getShowingDialogs( dialogName);
+    // deprecated List dialogs = helper.getShowingDialogs( dialogName);
+    List dialogs = new DialogFinder( null).findAll( PlanWorks.getPlanWorks());
+
     // System.err.println( "dialogs size " + dialogs.size() + " " + dialogs);
     // assertEquals quietly exits ???
     // assertEquals(  dialogName + " dialog not found", 1, dialogs.size());
@@ -439,7 +463,8 @@ public abstract class PWTestHelper {
   public static void handleComboDialog( String dialogName, String itemName,
                                         JFCTestHelper helper, PlanWorksGUITest guiTest)
     throws Exception {
-    List dialogs = helper.getShowingDialogs( dialogName);
+    // deprecated List dialogs = helper.getShowingDialogs( dialogName);
+    List dialogs = new DialogFinder( null).findAll( PlanWorks.getPlanWorks());
     // System.err.println( "dialogs size " + dialogs.size() + " " + dialogs);
     // assertEquals(  dialogName + " dialog not found", 1, dialogs.size());
     Assert.assertTrue(  dialogName + " dialog not found", (1 == dialogs.size()));
@@ -604,12 +629,70 @@ public abstract class PWTestHelper {
                                                   PlanWorksGUITest guiTest)
     throws Exception {
     // System.err.println( "viewBackgroundItemSelection " + view.getName());
-    JGoView jGoView = view.getJGoView();
-    // 2nd arg to enterClickAndLeave must be of class Component
-    // JGo objects are not
-    // helper.enterClickAndLeave( new MouseEventData( this, stepElement, 1,
-    //                                                MouseEvent.BUTTON3_MASK));
-    jGoView.doBackgroundClick( MouseEvent.BUTTON3_MASK, view.getLocation(), new Point( 0, 0));
+    // make view the selected frame so that jfcunit finds its popup menu rather
+    // than that of any other frame which may be currently in focus (selected)
+    ViewGenerics.raiseFrame( view.getViewFrame());
+    JGoView jGoView = null;
+     if (! (view instanceof DecisionView)) {
+       if (view instanceof ResourceView) {
+         jGoView = ((ResourceView) view).getJGoExtentView();
+       } else {
+         jGoView = view.getJGoView();
+       }
+      // 2nd arg to enterClickAndLeave must be of class Component
+      // JGo objects are not
+      // helper.enterClickAndLeave( new MouseEventData( this, stepElement, 1,
+      //                                                MouseEvent.BUTTON3_MASK));
+      jGoView.doBackgroundClick( MouseEvent.BUTTON3_MASK, view.getLocation(), new Point( 0, 0));
+    } else {
+      JTree decisionTree = ((DecisionView) view).getDecisionTree();
+      boolean isPopupTrigger = true;
+      helper.enterClickAndLeave( new MouseEventData( guiTest, decisionTree, 1, isPopupTrigger));
+    }
+
+    guiTest.flushAWT(); guiTest.awtSleep();
+    // try{Thread.sleep(2000);}catch(Exception e){}
+
+    PWTestHelper.selectViewMenuItem( view, viewMenuItemName, helper, guiTest);
+  } // end viewBackgroundItemSelection
+
+  /**
+   * <code>viewBackgroundItemSelection</code>
+   *
+   * @param view - <code>VizView</code> - 
+   * @param viewMenuItemName - <code>String</code> - 
+   * @param viewListenerList - <code>List</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static void viewBackgroundItemSelection( VizView view, String viewMenuItemName,
+                                                  List viewListenerList,
+                                                  JFCTestHelper helper,
+                                                  PlanWorksGUITest guiTest) throws Exception {
+    // make view the selected frame so that jfcunit finds its popup menu rather
+    // than that of any other frame which may be currently in focus (selected)
+    ViewGenerics.raiseFrame( view.getViewFrame());
+    JGoView jGoView = null;
+    if (! (view instanceof DecisionView)) {
+      if (view instanceof ResourceView) {
+        jGoView = ((ResourceView) view).getJGoExtentView();
+      } else {
+        jGoView = view.getJGoView();
+      }
+      // 2nd arg to enterClickAndLeave must be of class Component
+      // JGo objects are not
+      // helper.enterClickAndLeave( new MouseEventData( this, stepElement, 1,
+      //                                                MouseEvent.BUTTON3_MASK));
+      ((PartialPlanView) view).setViewListenerList( viewListenerList);
+      jGoView.doBackgroundClick( MouseEvent.BUTTON3_MASK, view.getLocation(), new Point( 0, 0));
+    } else {
+      JTree decisionTree = ((DecisionView) view).getDecisionTree();
+      boolean isPopupTrigger = true;
+      ((DecisionView) view).setViewListenerList( viewListenerList);
+      helper.enterClickAndLeave( new MouseEventData( guiTest, decisionTree, 1, isPopupTrigger));
+    }
+
     guiTest.flushAWT(); guiTest.awtSleep();
     // try{Thread.sleep(2000);}catch(Exception e){}
 
@@ -630,6 +713,9 @@ public abstract class PWTestHelper {
                                                   Point location, JFCTestHelper helper,
                                                   PlanWorksGUITest guiTest)
     throws Exception {
+    // make view the selected frame so that jfcunit finds its popup menu rather
+    // than that of any other frame which may be currently in focus (selected)
+    ViewGenerics.raiseFrame( view.getViewFrame());
     JGoView jGoView = view.getJGoView();
     jGoView.doBackgroundClick( MouseEvent.BUTTON3_MASK, location, new Point( 0, 0));
     guiTest.flushAWT(); guiTest.awtSleep();
@@ -648,11 +734,15 @@ public abstract class PWTestHelper {
   public static void selectViewMenuItem( VizView view, String viewMenuItemName,
                                          JFCTestHelper helper, PlanWorksGUITest guiTest)
     throws Exception {  
+    guiTest.flushAWT(); guiTest.awtSleep();
     JPopupMenu popupMenu =
       (JPopupMenu) PWTestHelper.findComponentByClass( JPopupMenu.class);
-    Assert.assertNotNull( "Failed to get \"" + popupMenu + "\" popupMenu.", popupMenu); 
-
+    Assert.assertNotNull( "Failed to get \"" + popupMenu + "\" popupMenu.", popupMenu);
     JMenuItem viewMenuItem = PWTestHelper.getPopupViewMenuItem( viewMenuItemName, popupMenu);
+
+    // deprecated JMenuItem viewMenuItem =
+    //  (JMenuItem) helper.findComponent( new JMenuItemFinder( viewMenuItemName), 0);
+
     // try{Thread.sleep(2000);}catch(Exception e){}
 
     System.err.println( "'" + view.getName() + "' viewMenuItem '" +
@@ -930,7 +1020,7 @@ public abstract class PWTestHelper {
    * @return - <code>PartialPlanView</code> - 
    */
   public static PartialPlanView getPartialPlanView( String viewName, String viewNameSuffix,
-                                                    PlanWorksGUITest guiTest) {
+                                                    PlanWorksGUITest guiTest) throws Exception {
     if (viewName.equals( ViewConstants.CONSTRAINT_NETWORK_VIEW)) {
       String constraintNetworkViewTitle =
         ViewConstants.CONSTRAINT_NETWORK_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
@@ -949,6 +1039,33 @@ public abstract class PWTestHelper {
       guiTest.assertNotNullVerbose( dbTransactionViewName + " not found",
                                     dbTransactionView, "not ");
       return dbTransactionView;
+    } else if (viewName.equals( ViewConstants.DECISION_VIEW)) {
+      String decisionViewName =
+        ViewConstants.DECISION_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+      DecisionView decisionView =
+        (DecisionView) PWTestHelper.findComponentByName
+        ( DecisionView.class, decisionViewName, Finder.OP_EQUALS);
+      guiTest.assertNotNullVerbose( decisionViewName + " not found",
+                                    decisionView, "not ");
+      return decisionView;
+    } else if (viewName.equals( ViewConstants.RESOURCE_PROFILE_VIEW)) {
+      String resourceProfileViewName =
+        ViewConstants.RESOURCE_PROFILE_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+      ResourceProfileView resourceProfileView =
+        (ResourceProfileView) PWTestHelper.findComponentByName
+        ( ResourceProfileView.class, resourceProfileViewName, Finder.OP_EQUALS);
+      guiTest.assertNotNullVerbose( resourceProfileViewName + " not found",
+                                    resourceProfileView, "not ");
+      return resourceProfileView;
+    } else if (viewName.equals( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
+      String resourceTransactionViewName =
+        ViewConstants.RESOURCE_TRANSACTION_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+      ResourceTransactionView resourceTransactionView =
+        (ResourceTransactionView) PWTestHelper.findComponentByName
+        ( ResourceTransactionView.class, resourceTransactionViewName, Finder.OP_EQUALS);
+      guiTest.assertNotNullVerbose( resourceTransactionViewName + " not found",
+                                    resourceTransactionView, "not ");
+      return resourceTransactionView;
     } else if (viewName.equals( ViewConstants.TEMPORAL_EXTENT_VIEW)) {
       String temporalExtentViewTitle =
         ViewConstants.TEMPORAL_EXTENT_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
@@ -975,11 +1092,62 @@ public abstract class PWTestHelper {
       guiTest.assertNotNullVerbose( tokenNetworkViewName + " not found",
                                     tokenNetworkView, "not ");
       return tokenNetworkView;
+    } else if (viewName.equals( ViewConstants.RULE_INSTANCE_VIEW)) {
+      String ruleInstanceViewName =
+        ViewConstants.RULE_INSTANCE_VIEW.replaceAll( " ", "") + " of " + viewNameSuffix;
+      RuleInstanceView ruleInstanceView =
+        (RuleInstanceView) PWTestHelper.findComponentByName
+        ( RuleInstanceView.class, ruleInstanceViewName, Finder.OP_EQUALS);
+      guiTest.assertNotNullVerbose( "'" + ruleInstanceViewName + "' not found",
+                                    ruleInstanceView, "not ");
+      return ruleInstanceView;
     } else {
       return null;
     }
   } // end getPartialPlanView
 
+  /**
+   * <code>openAllExistingViews</code>
+   *
+   * @param currentViewName - <code>String</code> - 
+   * @param currentView - <code>PartialPlanView</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   */
+  public static void openAllExistingViews( String currentViewName,  PartialPlanView currentView,
+                                           JFCTestHelper helper, PlanWorksGUITest guiTest)
+    throws Exception {
+    Iterator viewItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
+    while (viewItr.hasNext()) {
+      String viewName = (String) viewItr.next();
+      if (! viewName.equals( currentViewName)) {
+        ViewGenerics.raiseFrame( currentView.getViewFrame());
+        PWTestHelper.viewBackgroundItemSelection( currentView, "Open " + viewName,
+                                                  helper, guiTest);
+        ViewSet viewSet = currentView.getViewSet();
+         guiTest.assertTrueVerbose( viewName + " is not selected",
+                                    (viewSet.getViewFrame( viewName).isSelected() == true),
+                                    "not ");
+      }
+    }
+  } // end openAllExistingViews
+
+  /**
+   * <code>selectWindow</code>
+   *
+   * @param viewName - <code>String</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static void selectWindow( String viewName, JFCTestHelper helper,
+                                   PlanWorksGUITest guiTest) throws Exception {
+    JMenuItem menuItem =
+      PWTestHelper.findDynamicMenuItem( PlanWorks.WINDOW_MENU, viewName,
+                                        helper, guiTest);
+    helper.enterClickAndLeave( new MouseEventData( guiTest, menuItem));
+    guiTest.flushAWT(); guiTest.awtSleep();
+  } // end selectWindow
 
 } // end abstract class PWTestHelper
 

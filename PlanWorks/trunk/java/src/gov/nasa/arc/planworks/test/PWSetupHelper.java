@@ -4,11 +4,21 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.12 2004-06-23 21:36:35 pdaley Exp $
+// $Id: PWSetupHelper.java,v 1.13 2004-07-08 21:33:21 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import junit.framework.Assert;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -32,15 +42,6 @@ import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-import junit.framework.Assert;
 
 
 /**
@@ -75,6 +76,7 @@ public abstract class PWSetupHelper {
   public static final int NUM_CONSTRAINTS_PER_RESOURCE = 0;
 
   private static List decisionsForStep;
+  private static List rulesForSequence;
 
   public static List buildTestData( final int numSequences, final int numSteps,
                                     final IdSource idSource, final String dest) {
@@ -119,6 +121,7 @@ public abstract class PWSetupHelper {
       System.exit( -1);
     }
 
+    rulesForSequence = new ArrayList();
     for (int stepNum = 0; stepNum < numSteps; stepNum++) {
       planSequence.addPartialPlan( createPartialPlan( planSequence, sequenceUrl,
                                                       stepNum, idSource), forTesting);
@@ -129,8 +132,12 @@ public abstract class PWSetupHelper {
     writePlanSequenceFile( sequenceUrl, DbConstants.SEQ_FILE, planSequenceContent[1]);
     writePlanSequenceFile( sequenceUrl, DbConstants.SEQ_TRANSACTIONS, planSequenceContent[2]);
 
-    writePlanSequenceFile( sequenceUrl, DbConstants.SEQ_RULES, "");
-    //writePlanSequenceFile( sequenceUrl, DbConstants.SEQ_RULES_MAP, "");
+    StringBuffer rulesBuffer = new StringBuffer();
+    Iterator rulesItr = rulesForSequence.iterator();
+    while (rulesItr.hasNext()) {
+      rulesBuffer.append( ((PwRuleImpl) rulesItr.next()).toOutputString());
+    }
+    writePlanSequenceFile( sequenceUrl, DbConstants.SEQ_RULES, rulesBuffer.toString());
     return sequenceUrl;
   } // end createSequence
 
@@ -145,7 +152,8 @@ public abstract class PWSetupHelper {
       partialPlanName;
     System.err.println( "partialPlanUrl " + partialPlanUrl);
     writeDirectory( partialPlanUrl);
-    PwPartialPlanImpl partialPlan = null; decisionsForStep = new ArrayList();
+    PwPartialPlanImpl partialPlan = null; 
+    decisionsForStep = new ArrayList();
     try {
       partialPlan = new PwPartialPlanImpl( sequenceUrl, partialPlanName, planSequence,
                                            partialPlanId, model);
@@ -385,6 +393,7 @@ public abstract class PWSetupHelper {
     int time = 0, timeIncrement = 20;
     Integer previousTokenId = null, previousSlotId = null;
     Integer ruleId = new Integer( idSource.incEntityIdInt());
+    addRule(ruleId, "/dummy/rulesource/model.nddl,1", planSequence);
     for (int i = 0; i < numTokens; i++) {
       int tokenInt = idSource.incEntityIdInt();
       if (isFirst) { isFirst = false; } else { tokenIds.append( ","); }
@@ -597,6 +606,7 @@ public abstract class PWSetupHelper {
                                              final PwPartialPlanImpl partialPlan,
                                              final PwPlanningSequenceImpl planSequence,
                                              final int stepNum, final IdSource idSource) {
+    //System.err.println( "PWSetupHelper:addVariable " + id + " type " + type + " parent " + parentId);
     PwVariableImpl variable = new PwVariableImpl( id, type, parentId, domain, partialPlan);
     variable.addParameter( (String) parameterNames.get( 0));
 
@@ -626,7 +636,7 @@ public abstract class PWSetupHelper {
      if (isFirst) { isFirst = false; } else { ruleVarIds.append( ","); }
      ruleVarIds.append( ruleVarId.toString());
      addVariable( ruleVarId, DbConstants.RULE_VAR, constraintIds,
-                  parameterNames, ruleId,
+                  parameterNames, id,
                   new PwEnumeratedDomainImpl( String.valueOf( enumValue)),
                   partialPlan, planSequence, stepNum, idSource);
      enumValue += 1;
@@ -696,6 +706,12 @@ public abstract class PWSetupHelper {
     decisionsForStep.add( decision);
   } // end addDecision
 
-
+  private static void addRule( final Integer id, final String blob, 
+                               PwPlanningSequenceImpl planSequence) {
+    PwRuleImpl rule = 
+      new PwRuleImpl( planSequence.getId(), id, blob);
+    rulesForSequence.add(rule);
+    //System.err.println( "PWSetupHelper.buildTestData: addRule " + planSequence.getId() + " " + id + " " + blob);
+  } // end addRule
 
 } // end class PWSetupHelper

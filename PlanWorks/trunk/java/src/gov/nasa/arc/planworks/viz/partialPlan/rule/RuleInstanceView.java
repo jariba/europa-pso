@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceView.java,v 1.4 2004-06-21 22:43:02 taylor Exp $
+// $Id: RuleInstanceView.java,v 1.5 2004-07-08 21:33:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -34,6 +34,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.StringViewSetKey;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
@@ -66,17 +67,21 @@ public class RuleInstanceView extends PartialPlanView implements StringViewSetKe
    * @param viewSet - <code>ViewSet</code> - 
    * @param viewSetKey - <code>String</code> - 
    * @param ruleFrame - <code>MDIInternalFrame</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
    */
   public RuleInstanceView( final RuleInstanceNode ruleInstanceNode,
                            final ViewableObject partialPlan,
                            final ViewSet viewSet, final String viewSetKey,
-                           final MDIInternalFrame ruleFrame) {
+                           final MDIInternalFrame ruleFrame, final ViewListener viewListener) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.ruleInstanceNode = ruleInstanceNode;
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.viewSet = (PartialPlanViewSet) viewSet;
     this.viewSetKey = viewSetKey;
     this.ruleFrame = ruleFrame;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
 
     System.err.println( "Render Rule Instance View ...");
     this.startTimeMSecs = System.currentTimeMillis();
@@ -89,6 +94,11 @@ public class RuleInstanceView extends PartialPlanView implements StringViewSetKe
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
+    
+    // for PWTestHelper.findComponentByName
+    this.setName( ruleFrame.getTitle());
+    viewName = ViewConstants.RULE_INSTANCE_VIEW;
+
     SwingUtilities.invokeLater( runInit);
   } // end constructor
 
@@ -110,6 +120,7 @@ public class RuleInstanceView extends PartialPlanView implements StringViewSetKe
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public final void init() {
+    handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for NavigatorView instance to become displayable
     if (! ViewGenerics.displayableWait( RuleInstanceView.this)) {
       return;
@@ -148,6 +159,7 @@ public class RuleInstanceView extends PartialPlanView implements StringViewSetKe
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 

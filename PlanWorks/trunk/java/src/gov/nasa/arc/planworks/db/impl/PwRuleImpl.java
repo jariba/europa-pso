@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRuleImpl.java,v 1.6 2004-06-08 23:22:24 taylor Exp $
+// $Id: PwRuleImpl.java,v 1.7 2004-07-08 21:33:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -59,6 +59,14 @@ public class PwRuleImpl implements PwRule {
    */
   public String getText() {
     return text;
+  }
+
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(sequenceId.toString());
+    retval.append("\t").append(id.toString()).append("\t").append(text);
+    retval.append("\n");
+
+    return retval.toString();
   }
 
 } // end PwRuleImpl

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.50 2004-06-29 00:47:18 taylor Exp $
+// $Id: planViz.txt,v 1.51 2004-07-08 21:33:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -408,23 +408,24 @@ Method:
      "header" portion of the view, and select "Find Transaction by Entity_Key".
      Enter an ENTITY_KEY value.
  10. In the DBTransaction view, move the mouse over any of the column header
-     nodes to see whether that column is sortable, in either ascending or
-     descending order.  Mouse-left click to initiate the sort.  Sort all
-     the columns.
+     nodes and sort, in either ascending or descending order, by Mouse-Left
+     click to initiate the sort.  Sort all the columns.
  11. In each partial plan view, use Mouse-Right "Open <view-name> View" to
      navigate to the other views.  Iconify the ContentFilter window, by clicking
      on the "minimize" icon of its title bar.  In all views, except DBTransaction
-     view, use Mouse-Right "Raise Content Filter" to set focus on the 
+     and Decision, use Mouse-Right "Raise Content Filter" to set focus on the 
      ContentFilter window.
- 12. For a selected plan sequence step, open only one partial plan view, and
-     choose Mouse-Right "Hide All Views", then "Show All Views", then
-     "Open All Views", and finally "Close All Views".  Do this for each of 
-     the partial plan views.
+ 12. For a selected plan sequence step, select Mouse-Right "Close All Views".
+     Then open only two partial plan views, and on one of them, choose Mouse-Right 
+     "Hide All Views".  Then from the menu bar select the other one of them, and
+     when it appears select on it Mouse-Right "Show All Views", and then
+     "Open All Views".  Do this for each of the partial plan views.
  13. In each partial plan view, use Mouse-Right "Overview Window" to open a
      1/8th scale overview of the entire "observed" view.  Drag the scoping
      rectangle to cause the "observed" view to scroll.  Use Mouse-Left clicks
      on areas outside the rectangle to cause the "observed" view to jump to
-     a new location.  Do this for all partial plan views, except DBTransaction.
+     a new location.  Do this for all partial plan views, except DBTransaction
+     and Decision.
  14. In the Timeline View, Mouse-Right click on the background and select
      "Enable Auto Snap". Then move the mouse cursor over slots, and free tokens.
      (empty slots are not recognized)
@@ -464,7 +465,7 @@ Post-conditions:
      internal frame, and will have focus.
  11. Method:12 - the partial plan step's views will respond appropriately to
      the "Hide", "Show", "Open" and "Close" selections.
- 12. Method:13 - The "observed" views should respond properly to operatins on
+ 12. Method:13 - The "observed" views should respond properly to operations on
      the overview windows.
  13. Method:14 - The Temporal Extent View's focus with green highlight will
      follow the movement of the mouse cursor over the Timeline View's non-

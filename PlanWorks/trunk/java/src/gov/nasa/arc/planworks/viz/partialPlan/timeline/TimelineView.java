@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.59 2004-06-21 22:43:03 taylor Exp $
+// $Id: TimelineView.java,v 1.60 2004-07-08 21:33:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -746,7 +746,7 @@ public class TimelineView extends PartialPlanView {
     mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         ViewConstants.TIMELINE_VIEW);
+                         viewListenerList, ViewConstants.TIMELINE_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -770,7 +770,8 @@ public class TimelineView extends PartialPlanView {
       createCloseNavigatorWindowsItem( closeWindowsItem);
       mouseRightPopup.add( closeWindowsItem);
     }
-    createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
+    createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
+                        mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
