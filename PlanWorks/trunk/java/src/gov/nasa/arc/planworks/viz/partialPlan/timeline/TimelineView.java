@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.39 2004-02-17 22:22:03 miatauro Exp $
+// $Id: TimelineView.java,v 1.40 2004-03-02 02:34:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -324,35 +324,46 @@ public class TimelineView extends PartialPlanView {
       }
     }
 
+    return createFreeTokenNodes( x, y, isValid);
+
+  } // end createTimelineAndSlotNodes
+
+  private boolean createFreeTokenNodes( int x, int y, boolean isValid) {
     y += ViewConstants.TIMELINE_VIEW_Y_INIT;
-    List freeTokenList = partialPlan.getFreeTokenList();
-    Iterator freeTokenItr = freeTokenList.iterator();
+    List tokenList = partialPlan.getTokenList();
+    Iterator tokenIterator = tokenList.iterator();
     boolean isFreeToken = true, isDraggable = false;
-    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     PwSlot slot = null;
-    while (freeTokenItr.hasNext()) {
-      PwToken freeToken = (PwToken) freeTokenItr.next();
-      if (isTokenInContentSpec( freeToken))  {
-        // increment by half the label width, since x is center, not left edge
-        int divisor = 2;
-        if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
-          divisor = 1;
+    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+    while (tokenIterator.hasNext()) {
+      PwToken token = (PwToken) tokenIterator.next();
+      if (token.isSlotted()) {
+        continue;
+      } else if ((! token.isSlotted()) && (! token.isFree())) {
+        // resourceTransactions - not displayed, put in displayedTokenIds
+        isTokenInContentSpec( token);
+        continue;
+      } else { // free tokens
+        if (isTokenInContentSpec( token))  {
+          // increment by half the label width, since x is center, not left edge
+          int divisor = 2;
+          if (x == ViewConstants.TIMELINE_VIEW_X_INIT) { divisor = 1; }
+          x = x +  Math.max( SwingUtilities.computeStringWidth
+                             ( this.fontMetrics, token.getPredicateName()) / divisor,
+                             SwingUtilities.computeStringWidth
+                             ( this.fontMetrics, "key=" + token.getId().toString()) / divisor);
+          TimelineTokenNode freeTokenNode =
+            new TimelineTokenNode( token, slot, new Point( x, y), backgroundColor,
+                                   isFreeToken, isDraggable, this);
+          freeTokenNodeList.add( freeTokenNode);
+          jGoDocument.addObjectAtTail( freeTokenNode);
+          x = x + (int) freeTokenNode.getSize().getWidth();
         }
-        x = x +  Math.max( SwingUtilities.computeStringWidth
-                           ( this.fontMetrics, freeToken.getPredicateName()) / divisor,
-                           SwingUtilities.computeStringWidth
-                           ( this.fontMetrics, "key=" + freeToken.getId().toString()) / divisor);
-        TimelineTokenNode freeTokenNode =
-          new TimelineTokenNode( freeToken, slot, new Point( x, y), backgroundColor,
-                                 isFreeToken, isDraggable, this);
-        freeTokenNodeList.add( freeTokenNode);
-        jGoDocument.addObjectAtTail( freeTokenNode);
-        x = x + (int) freeTokenNode.getSize().getWidth();
       }
     }
     timelineNodeList = tmpTimelineNodeList;
     return isValid;
-  } // end createTimelineAndSlotNodes
+  } // end createFreeTokenNodes
 
   private boolean createSlotNodes( PwTimeline timeline, TimelineViewTimelineNode timelineNode,
                                    int x, int y, Color backgroundColor) {

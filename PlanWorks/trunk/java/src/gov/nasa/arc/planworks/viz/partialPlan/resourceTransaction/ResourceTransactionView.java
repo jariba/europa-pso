@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.4 2004-02-27 18:06:24 miatauro Exp $
+// $Id: ResourceTransactionView.java,v 1.5 2004-03-02 02:34:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,6 +19,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -32,7 +33,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
+import javax.swing.JScrollBar; 
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -289,6 +290,9 @@ public class ResourceTransactionView extends PartialPlanView  {
 
     viewFrame = viewSet.openView( this.getClass().getName());
     if (! isStepButtonView) {
+//       Rectangle documentBounds = jGoExtentView.getDocument().computeBounds();
+//       jGoExtentView.getDocument().setDocumentSize( (int) documentBounds.getWidth(),
+//                                                    (int) documentBounds.getHeight());
       expandViewFrame( viewFrame,
                        (int) (Math.max( jGoExtentView.getDocumentSize().getWidth(),
                                         jGoRulerView.getDocumentSize().getWidth()) +
@@ -423,9 +427,9 @@ public class ResourceTransactionView extends PartialPlanView  {
   /**
    * <code>getTimeScale</code>
    *
-   * @return - <code>float</code> - 
+   * @return - <code>double</code> - 
    */
-  public final float getTimeScale() {
+  public final double getTimeScale() {
     return jGoRulerView.getTimeScale();
   }
 
@@ -856,6 +860,10 @@ public class ResourceTransactionView extends PartialPlanView  {
       // final position, comment out next check
       // if (! source.getValueIsAdjusting()) {
         int newPostion = source.getValue();
+        if ((jGoExtentView.getVerticalScrollBar() == null) ||
+            (jGoLevelScaleView.getVerticalScrollBar() == null)) {
+          return;
+        }
         if (newPostion != jGoExtentView.getVerticalScrollBar().getValue()) {
           jGoExtentView.getVerticalScrollBar().setValue( newPostion);
         } else if (newPostion != jGoLevelScaleView.getVerticalScrollBar().getValue()) {

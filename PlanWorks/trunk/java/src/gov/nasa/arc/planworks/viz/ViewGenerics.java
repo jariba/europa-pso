@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.7 2004-02-03 20:43:52 taylor Exp $
+// $Id: ViewGenerics.java,v 1.8 2004-03-02 02:34:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -65,6 +65,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class ViewGenerics {
 
+  public static final String VIEW_TITLE = "View for ";
   public static final String OVERVIEW_TITLE = "Overview for ";
 
   private ViewGenerics() {
@@ -121,6 +122,48 @@ public class ViewGenerics {
                                                    JGoView jGoView, Point viewCoords) {
     String overviewTitle = Utilities.trimView( viewName).replaceAll( " ", "") +
       OVERVIEW_TITLE + viewable.getName();
+    // System.err.println( "openOverviewFrame( String, " + overviewTitle);
+    return openOverviewFrameCommon( overviewTitle, viewable, vizView, viewSet, jGoView,
+                                     viewCoords);
+  } // openOverviewFrame( String, ...
+
+  /**
+   * <code>openOverviewFrame</code> - for Navigator View, suffixed (n) on frame title
+   *
+   * @param viewFrame - <code>MDIInternalFrame</code> - 
+   * @param viewable - <code>ViewableObject</code> - 
+   * @param vizView - <code>VizView</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param jGoView - <code>JGoView</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   * @return - <code>VizViewOverview</code> - 
+   */
+  public static VizViewOverview openOverviewFrame( MDIInternalFrame viewFrame,
+                                                   ViewableObject viewable,
+                                                   VizView vizView, ViewSet viewSet,
+                                                   JGoView jGoView, Point viewCoords) {
+    String overviewTitle = viewFrame.getTitle();
+    overviewTitle = overviewTitle.replaceAll( VIEW_TITLE, OVERVIEW_TITLE);
+    // System.err.println( "openOverviewFrame( MDIInternalFrame, " + overviewTitle);
+    return openOverviewFrameCommon( overviewTitle, viewable, vizView, viewSet, jGoView,
+                                     viewCoords);
+  } // openOverviewFrame( MDIInternalFrame, ...
+
+  /**
+   * <code>openOverviewFrameCommon</code>
+   *
+   * @param overviewTitle - <code>String</code> - 
+   * @param viewable - <code>ViewableObject</code> - 
+   * @param vizView - <code>VizView</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param jGoView - <code>JGoView</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   * @return - <code>VizViewOverview</code> - 
+   */
+  public static VizViewOverview openOverviewFrameCommon( String overviewTitle,
+                                                         ViewableObject viewable,
+                                                         VizView vizView, ViewSet viewSet,
+                                                         JGoView jGoView, Point viewCoords) {
     MDIInternalFrame overviewFrame = (MDIInternalFrame) viewSet.getViews().get( overviewTitle);
     VizViewOverview overview = null;
     // System.err.println( "openOverviewFrame " + overviewFrame);
@@ -159,8 +202,7 @@ public class ViewGenerics {
     raiseOverviewFrame( overviewFrame);
     
     return overview;
-  } // end openOverviewFrame
-
+  } // end openOverviewFrameCommon
 
   /**
    * <code>openExistingOverviewFrame</code>

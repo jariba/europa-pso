@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.57 2004-02-25 02:30:11 taylor Exp $
+# $Id: build-tags-file.csh,v 1.58 2004-03-02 02:34:09 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -15,6 +15,8 @@ etags $etags_flag planWorks.TAGS \
     ../../../pub/JGo41/com/nwoods/jgo/examples/Diamond.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/Hexagon.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/LeftTrapezoid.java \
+    ../../../pub/JGo41/com/nwoods/jgo/examples/PinchedHexagon.java \
+    ../../../pub/JGo41/com/nwoods/jgo/examples/PinchedRectangle.java \
     ../../../pub/JGo41/com/nwoods/jgo/examples/RightTrapezoid.java \
     src/gov/nasa/arc/planworks/AddSequenceThread.java \
     src/gov/nasa/arc/planworks/CreateSequenceViewThread.java \
@@ -135,6 +137,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/ObjectNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/QueryResultField.java \
     src/gov/nasa/arc/planworks/viz/nodes/ResourceNameNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/ResourceNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenQueryHeaderNode.java \
@@ -151,6 +154,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkObjectNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkResourceNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTimelineNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java \
@@ -167,6 +171,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorViewLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavNodeGenerics.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ResourceNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/SlotNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/TimelineNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/TokenNavNode.java \

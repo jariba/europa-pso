@@ -1,3 +1,14 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: ConstraintNetworkResourceNode.java,v 1.1 2004-03-02 02:34:14 taylor Exp $
+//
+// PlanWorks -- 
+//
+
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.awt.Color;
@@ -31,6 +42,7 @@ import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
+import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
@@ -41,7 +53,7 @@ import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.ObjectNode;
+import gov.nasa.arc.planworks.viz.nodes.ResourceNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
@@ -50,7 +62,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
-public class ConstraintNetworkObjectNode extends ObjectNode implements VariableContainerNode{
+public class ConstraintNetworkResourceNode extends ResourceNode implements VariableContainerNode{
 
   private Map connectedContainerMap;
   private List variableNodeList;
@@ -59,12 +71,14 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
   private boolean hasDiscoveredLinks;
   private int variableLinkCount;
   private int connectedContainerCount;
+  private Color backgroundColor;
   private PartialPlanView partialPlanView;
 
-  public ConstraintNetworkObjectNode(PwObject obj, Point objLocation, boolean isDraggable,
-                                     PartialPlanView partialPlanView) {
-    super(obj, objLocation, partialPlanView.getTimelineColor( obj.getId()),
-          isDraggable, partialPlanView);
+  public ConstraintNetworkResourceNode(PwResource resource, Point resourceLocation,
+                                       Color backgroundColor, boolean isDraggable,
+                                       PartialPlanView partialPlanView) {
+    super(resource, resourceLocation, backgroundColor, isDraggable, partialPlanView);
+    this.backgroundColor = backgroundColor;
     this.partialPlanView = partialPlanView;
     variableNodeList = new UniqueSet();
     areNeighborsShown = false;
@@ -95,9 +109,9 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
     } else {
       operation = "open";
     }
-    if (object != null) {
-      // tip.append( object.toString());
-      tip.append( "object");
+    if (resource != null) {
+      // tip.append( resource.toString());
+      tip.append( "resource");
     } else {
       tip.append( "This is a bug");
     }
@@ -107,13 +121,13 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
 
   public String getToolTipText(boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html> ");
-    if (object != null) {
-      tip.append( object.getName());
+    if (resource != null) {
+      tip.append( resource.getName());
     } else {
       tip.append( "This is a bug");
     }
     tip.append( "<br>key=");
-    tip.append( object.getId().toString());
+    tip.append( resource.getId().toString());
     tip.append( "</html>");
     return tip.toString();
   }
@@ -123,16 +137,15 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
   }
 
   public void addVariableNode(Object v) {
-    addVariableNode((VariableNode)v);
+    addVariableNode((VariableNode) v);
   }
-
   public void addVariableNode(VariableNode varNode) {
     if(!variableNodeList.contains(varNode)) {
       variableNodeList.add(varNode);
     }
   }
 
-  public  void setAreNeighborsShown( boolean areShown) {
+  public void setAreNeighborsShown( boolean areShown) {
     areNeighborsShown = areShown;
   }
 
@@ -145,8 +158,8 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
     JGoObject obj = view.pickDocObject( docCoords, false);
     // System.err.println( "ConstraintNetworkTokenNode: doMouseClick obj class " +
     //                     obj.getTopLevelObject().getClass().getName());
-    ConstraintNetworkObjectNode objNode =
-      (ConstraintNetworkObjectNode) obj.getTopLevelObject();
+    ConstraintNetworkResourceNode resourceNode =
+      (ConstraintNetworkResourceNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       if (! areNeighborsShown) {
         //System.err.println( "doMouseClick: Mouse-L show variable nodes of " +
@@ -177,7 +190,7 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
           MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame();
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
-          contentPane.add( new NavigatorView( ConstraintNetworkObjectNode.this,
+          contentPane.add( new NavigatorView( ConstraintNetworkResourceNode.this,
                                               partialPlan, partialPlanView.getViewSet(),
                                               navigatorFrame));
         }
@@ -191,7 +204,7 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
     addContainerNodeVariables((VariableContainerNode) n, (ConstraintNetworkView) v);
   }
 
-   protected void addContainerNodeVariables( VariableContainerNode objNode,
+  protected void addContainerNodeVariables( VariableContainerNode objNode,
                                              ConstraintNetworkView constraintNetworkView) {
     constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
     boolean areNodesChanged = constraintNetworkView.addVariableNodes( objNode);
@@ -211,18 +224,18 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
     boolean areNodesChanged = constraintNetworkView.removeVariableNodes( objNode);
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();
-      constraintNetworkView.setFocusNode( (JGoArea) objNode);
+      constraintNetworkView.setFocusNode( (JGoArea)objNode);
       constraintNetworkView.redraw();
     }
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
-  } // end adremoveTokenNodeVariables
+  } // end removeTokenNodeVariables
 
   public PwVariableContainer getContainer() {
-    return object;
+    return resource;
   } 
 
   public void discoverLinkage() {
-    ListIterator varIterator = object.getVariables().listIterator();
+    ListIterator varIterator = resource.getVariables().listIterator();
     while(varIterator.hasNext()) {
       PwVariable var = (PwVariable) varIterator.next();
       ListIterator constraintIterator = var.getConstraintList().listIterator();
@@ -294,6 +307,6 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
   }
   
   public boolean equals(VariableContainerNode n) {
-    return object.getId().equals(n.getContainer().getId());
+    return resource.getId().equals(n.getContainer().getId());
   }
 }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.28 2004-02-10 02:35:57 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.29 2004-03-02 02:34:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -150,7 +150,7 @@ public class TokenNetworkView extends PartialPlanView {
     viewFrame = viewSet.openView( this.getClass().getName());
     Rectangle documentBounds = jGoView.getDocument().computeBounds();
     jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
-                                           (ViewConstants.TIMELINE_VIEW_X_INIT * 2),
+                                           (ViewConstants.TIMELINE_VIEW_X_INIT * 4),
                                            (int) documentBounds.getHeight() +
                                            (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
     if (! isStepButtonView) {
@@ -241,75 +241,44 @@ public class TokenNetworkView extends PartialPlanView {
   }
 
   private void createTokenNodes() {
-    int y = ViewConstants.TIMELINE_VIEW_Y_INIT * 2;
-    List objectList = partialPlan.getObjectList();
-    Iterator objectIterator = objectList.iterator();
-    int timelineCnt = 0;
-    while (objectIterator.hasNext()) {
-      PwObject object = (PwObject) objectIterator.next();
-      if(object.getObjectType() == DbConstants.O_TIMELINE) {
-        int x = ViewConstants.TIMELINE_VIEW_X_INIT;
-        PwTimeline timeline = (PwTimeline) object;
-        Color timelineColor = getTimelineColor(timeline.getId());
-        createTokenNodesOfTimeline( timeline, x, y, timelineColor);
-        y += 2 * ViewConstants.TIMELINE_VIEW_Y_DELTA; 
-      }
-    }
-    // free tokens
-    List freeTokenList = partialPlan.getFreeTokenList();
+    boolean isDraggable = false;
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
-    // System.err.println( "token network view freeTokenList " + freeTokenList);
-    Iterator freeTokenItr = freeTokenList.iterator();
-    boolean isFreeToken = true, isDraggable = false;
-    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
-    PwSlot slot = null;
-    while (freeTokenItr.hasNext()) {
-      PwToken freeToken = (PwToken) freeTokenItr.next();
-      if (isTokenInContentSpec( freeToken)) {
-        TokenNode freeTokenNode = new TokenNode( freeToken, slot, new Point( x, y),
-                                                 backgroundColor, isFreeToken,
-                                                 isDraggable, this);
-        if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
-          x += freeTokenNode.getSize().getWidth() * 0.5;
-          freeTokenNode.setLocation( x, y);
+    int y = ViewConstants.TIMELINE_VIEW_Y_INIT * 2;
+    List tokenList = partialPlan.getTokenList();
+    Iterator tokenIterator = tokenList.iterator();
+    Color backgroundColor = null;
+    while (tokenIterator.hasNext()) {
+      PwToken token = (PwToken) tokenIterator.next();
+      if (token.isSlotted() && (! token.isBaseToken())) {
+        // non-slotted, non-base tokens - not displayed, put in displayedTokenIds
+        isTokenInContentSpec( token);
+        continue;
+      }
+      boolean isFreeToken = false;
+      PwSlot slot = null;
+      if (! token.isFree()) { // slotted base tokens, resourceTransactions, other tokens
+        if (token.getSlotId() != null) {
+          slot = partialPlan.getSlot( token.getSlotId());
         }
-        if (tokenNodeMap.get( freeToken.getId()) == null) {
-          tokenNodeMap.put( freeToken.getId(), freeTokenNode);
-          jGoDocument.addObjectAtTail( freeTokenNode);
-          x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        backgroundColor = getTimelineColor( token.getParentId());
+      } else { // free tokens
+        isFreeToken = true;
+        backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+      }
+      if (isTokenInContentSpec( token)) {
+        TokenNode tokenNode =
+          new TokenNode( token, slot, new Point( x, y), backgroundColor, isFreeToken,
+                         isDraggable, this);
+        if (tokenNodeMap.get( token.getId()) == null) {
+          tokenNodeMap.put( token.getId(), tokenNode);
+          jGoDocument.addObjectAtTail( tokenNode);
+          x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
         }
       }
     }
-    createTokenParentChildRelationships();
-  } // end createTokenNodes
 
-  private void createTokenNodesOfTimeline( PwTimeline timeline, int x, int y,
-                                           Color backgroundColor) {
-    boolean isFreeToken = false, isDraggable = false;
-    Iterator slotIterator = timeline.getSlotList().iterator();
-    while (slotIterator.hasNext()) {
-      PwSlot slot = (PwSlot) slotIterator.next();
-      Iterator tokenIterator = slot.getTokenList().iterator();
-      while (tokenIterator.hasNext()) {
-        PwToken token = (PwToken) tokenIterator.next();
-        if (isTokenInContentSpec( token)) {
-          TokenNode tokenNode =
-            new TokenNode( token, slot, new Point( x, y), backgroundColor, isFreeToken,
-                           isDraggable, this);
-          if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
-            x += tokenNode.getSize().getWidth() * 0.5;
-            tokenNode.setLocation( x, y);
-          }
-          //MIKE
-          if (tokenNodeMap.get( token.getId()) == null) {
-            tokenNodeMap.put( token.getId(), tokenNode);
-            jGoDocument.addObjectAtTail( tokenNode);
-            x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
-          }
-        }
-      }
-    }
-  } // end createTokenNodes
+    createTokenParentChildRelationships();
+   } // end createTokenNodes
 
   private void createTokenParentChildRelationships() {
     List tokenNodeKeyList = new ArrayList( tokenNodeMap.keySet());

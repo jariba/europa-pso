@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.12 2004-02-19 21:57:52 miatauro Exp $
+// $Id: VariableNode.java,v 1.13 2004-03-02 02:34:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -101,7 +101,8 @@ public class VariableNode extends ExtendedBasicNode {
   public VariableNode( final PwVariable variable, final VariableContainerNode parentNode, 
                        final Point variableLocation, final Color backgroundColor, 
                        final boolean isDraggable, final PartialPlanView partialPlanView) { 
-    super( ViewConstants.ELLIPSE);
+    super( ViewConstants.PINCHED_RECTANGLE);
+    // super( ViewConstants.ELLIPSE);
     this.variable = variable;
     this.partialPlanView = partialPlanView;
     containerNodeList = new ArrayList();

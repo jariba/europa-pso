@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.6 2004-02-25 02:30:16 taylor Exp $
+// $Id: VariableNavNode.java,v 1.7 2004-03-02 02:34:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -67,7 +67,8 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
   public VariableNavNode( final PwVariable variable, final Point variableLocation,
                           final Color backgroundColor, final boolean isDraggable,
                           final PartialPlanView partialPlanView) { 
-    super( ViewConstants.ELLIPSE);
+    super( ViewConstants.PINCHED_RECTANGLE);
+    // super( ViewConstants.ELLIPSE);
     this.variable = variable;
     navigatorView = (NavigatorView) partialPlanView;
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.17 2004-02-11 01:08:38 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.18 2004-03-02 02:34:12 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -297,7 +297,7 @@ public class PartialPlanContentSpec implements ContentSpec {
         ListIterator freeTokenIdIterator = validTokenIds.listIterator();
         while(freeTokenIdIterator.hasNext()) {
           Integer id = (Integer) freeTokenIdIterator.next();
-          if(!partialPlan.getToken(id).isFreeToken()) {
+          if(!partialPlan.getToken(id).isFree()) {
             freeTokenIdIterator.remove();
           }
         }
@@ -306,7 +306,7 @@ public class PartialPlanContentSpec implements ContentSpec {
         ListIterator slottedTokenIdIterator = validTokenIds.listIterator();
         while(slottedTokenIdIterator.hasNext()) {
           Integer id = (Integer) slottedTokenIdIterator.next();
-          if(partialPlan.getToken(id).isFreeToken()) {
+          if(partialPlan.getToken(id).isSlotted()) {
             slottedTokenIdIterator.remove();
           }
         }
@@ -322,7 +322,7 @@ public class PartialPlanContentSpec implements ContentSpec {
           if(partialPlan.getSlot(partialPlan.getToken(id).getSlotId()) != null) {
             tempValidIds.add(partialPlan.getSlot(partialPlan.getToken(id).getSlotId()).getBaseToken().getId());
           }
-          else if(partialPlan.getToken(id).isFreeToken()) {
+          else if(partialPlan.getToken(id).isFree()) {
             tempValidIds.add(id);
           }
         }

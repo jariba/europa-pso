@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.7 2004-02-27 18:06:08 miatauro Exp $
+// $Id: ResourceProfileView.java,v 1.8 2004-03-02 02:34:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
@@ -269,7 +270,6 @@ public class ResourceProfileView extends PartialPlanView  {
       }
       // System.err.println( "timelineView displayable " + this.isDisplayable());
     }
-    System.err.println("1");
     this.computeFontMetrics( this);
 
     // resource names font
@@ -280,7 +280,6 @@ public class ResourceProfileView extends PartialPlanView  {
     levelScaleFontMetrics = graphics.getFontMetrics( levelScaleFont);
     graphics.dispose();
 
-    System.err.println("2");
 
     levelScaleViewWidth = computeMaxResourceLabelWidth();
     fillerWidth = levelScaleViewWidth + ViewConstants.JGO_SCROLL_BAR_WIDTH;
@@ -289,31 +288,23 @@ public class ResourceProfileView extends PartialPlanView  {
 
     createLevelScaleAndExtentPanel();
 
-    System.err.println("3");
-
     createFillerAndRulerPanel();
    
-    System.err.println("4");
-
     this.setVisible( true);
 
     boolean doFreeTokens = false;
       xOrigin = jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
       jGoRulerView.createTimeScale();
 
-    System.err.println("5");
-
     boolean isRedraw = false, isScrollBarAdjustment = false;
     renderResourceExtent();
 
-    System.err.println("6");
-
-
     viewFrame = viewSet.openView( this.getClass().getName());
 
-    System.err.println("7");
-
     if (! isStepButtonView) {
+//       Rectangle documentBounds = jGoExtentView.getDocument().computeBounds();
+//       jGoExtentView.getDocument().setDocumentSize( (int) documentBounds.getWidth(),
+//                                                    (int) documentBounds.getHeight());
       expandViewFrame( viewFrame,
                        (int) (Math.max( jGoExtentView.getDocumentSize().getWidth(),
                                         jGoRulerView.getDocumentSize().getWidth()) +
@@ -326,8 +317,6 @@ public class ResourceProfileView extends PartialPlanView  {
       this.validate();
     }
 
-    System.err.println("8");
-
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
@@ -337,13 +326,9 @@ public class ResourceProfileView extends PartialPlanView  {
       expandViewFrameForStepButtons( viewFrame);
     }
 
-    System.err.println("9");
-
     // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
     // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
     equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
-
-    System.err.println("10");
 
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
@@ -390,21 +375,17 @@ public class ResourceProfileView extends PartialPlanView  {
 
   private void renderResourceExtent() {
     jGoExtentView.getDocument().deleteContents();
-    System.err.println("5.1");
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     if (resourceProfileList != null) {
       resourceProfileList.clear();
     }
     resourceProfileList = new UniqueSet();
-    System.err.println("5.2");
     createResourceProfiles();
-    System.err.println("5.3");
     boolean showDialog = true;
     // isContentSpecRendered( PlanWorks.RESOURCE_PROFILE_VIEW, showDialog);
 
     layoutResourceProfiles();
-    System.err.println("5.4");
   } // end createResourceProfileView
 
   /**
@@ -455,9 +436,9 @@ public class ResourceProfileView extends PartialPlanView  {
   /**
    * <code>getTimeScale</code>
    *
-   * @return - <code>float</code> - 
+   * @return - <code>double</code> - 
    */
-  public final float getTimeScale() {
+  public final double getTimeScale() {
     return jGoRulerView.getTimeScale();
   }
 
@@ -544,7 +525,6 @@ public class ResourceProfileView extends PartialPlanView  {
 
   private void createResourceProfiles() {
     boolean isNamesOnly = false;
-    // resourceList will come from partialPlan
     List resourceList = partialPlan.getResourceList();
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
@@ -562,14 +542,21 @@ public class ResourceProfileView extends PartialPlanView  {
   private int computeMaxResourceLabelWidth() {
     boolean isNamesOnly = true;
     int maxWidth = ViewConstants.JGO_SCROLL_BAR_WIDTH * 2;
-    // resourceList will come from partialPlan
     List resourceList = partialPlan.getResourceList();//createDummyData( isNamesOnly);
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
+      // System.err.println( "resource " + resource.getName());
       int width = ResourceProfile.getNodeLabelWidth( resource.getName(), this);
+      // System.err.println( "  labelWidth " + width);
       if (width > maxWidth) {
         maxWidth = width;
+      }
+      int tickLabelMaxWidth =
+        ResourceProfile.getTickLabelMaxWidth( resource, levelScaleFontMetrics);
+      // System.err.println( "  tickLabelMaxWidth " + tickLabelMaxWidth);
+      if (tickLabelMaxWidth > maxWidth) {
+        maxWidth = tickLabelMaxWidth;
       }
     }
     return maxWidth;
@@ -584,16 +571,14 @@ public class ResourceProfileView extends PartialPlanView  {
       }*/
     List extents = new ArrayList(resourceProfileList);
     // do the layout -- compute cellRow for each node
-    System.err.println("5.3.1");
     List results =
-      Algorithms.allocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
-                               jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
-                               extents);
-    System.err.println("5.3.2");
+      Algorithms.allocateRows
+      ( jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleStart()),
+        jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleEnd()), extents);
 //     List results =
-//       Algorithms.betterAllocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
-//                                      jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
-//                                      extents);
+//       Algorithms.betterAllocateRows
+//       ( jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleStart()),
+//         jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleEnd()), extents);
     if (resourceProfileList.size() != results.size()) {
       String message = String.valueOf( resourceProfileList.size() - results.size()) +
         " nodes not successfully allocated";
@@ -602,20 +587,15 @@ public class ResourceProfileView extends PartialPlanView  {
                                      JOptionPane.ERROR_MESSAGE);
       return;
     }
-    System.err.println("5.3.3: " + extents.size());
     for (Iterator it = extents.iterator(); it.hasNext();) {
       ResourceProfile resourceProfile = (ResourceProfile) it.next();
-      System.err.println("5.3.3.1");
       // System.err.println( resourceProfile.getName() + " cellRow " + resourceProfile.getRow());
       if (resourceProfile.getRow() > maxCellRow) {
         maxCellRow = resourceProfile.getRow();
       }
-      System.err.println("5.3.3.2");
       // render the profile
       resourceProfile.configure();
-      System.err.println("5.3.3.3");
     }
-    System.err.println("5.3.4");
   } // end layoutResourceProfiles
 
 
@@ -668,8 +648,8 @@ public class ResourceProfileView extends PartialPlanView  {
                                                   final boolean isScrollBarAdjustment) {
     Dimension extentViewDocSize = jGoExtentView.getDocumentSize();
     Dimension rulerViewDocSize = jGoRulerView.getDocumentSize();
-//     System.err.println( "extentViewDocumentWidth B" + extentViewDocSize.getWidth() +
-//                         " rulerViewDocumentWidth B" + rulerViewDocSize.getWidth());
+//     System.err.println( "extentViewDocumentWidth B " + extentViewDocSize.getWidth() +
+//                         " rulerViewDocumentWidth B " + rulerViewDocSize.getWidth());
     int xRulerMargin = ViewConstants.TIMELINE_VIEW_X_INIT;
     int jGoDocBorderWidth = ViewConstants.JGO_DOC_BORDER_WIDTH;
     if (isRedraw) {
@@ -695,8 +675,10 @@ public class ResourceProfileView extends PartialPlanView  {
     JGoStroke maxViewWidthPoint = new JGoStroke();
     maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT);
     maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
+//     System.err.println( "jGoExtentView maxWidth " + maxWidth);
     // make mark invisible
     maxViewWidthPoint.setPen( new JGoPen( JGoPen.SOLID, 1, 
+                                          // ColorMap.getColor( "black")));
                                           ViewConstants.VIEW_BACKGROUND_COLOR));
     jGoExtentView.getDocument().addObjectAtTail( maxViewWidthPoint);
 
@@ -706,6 +688,7 @@ public class ResourceProfileView extends PartialPlanView  {
       maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
       // make mark invisible
       maxViewWidthPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
+                                            // ColorMap.getColor( "black")));
                                             ViewConstants.VIEW_BACKGROUND_COLOR));
       jGoRulerView.getDocument().addObjectAtTail( maxViewWidthPoint);
     }
@@ -725,8 +708,12 @@ public class ResourceProfileView extends PartialPlanView  {
       maxExtentViewHeightPoint.addPoint( maxWidth, maxYExtent);
       maxExtentViewHeightPoint.addPoint( maxWidth - ViewConstants.TIMELINE_VIEW_X_INIT,
                                          maxYExtent);
-      // make mark invisible
+//      System.err.println( "jGoExtentView height maxWidth " + maxWidth);
+//      System.err.println( "jGoExtentView height maxWidth - " +
+//                          (maxWidth - ViewConstants.TIMELINE_VIEW_X_INIT));
+     // make mark invisible
       maxExtentViewHeightPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
+                                                   // ColorMap.getColor( "black")));
                                                    ViewConstants.VIEW_BACKGROUND_COLOR));
       jGoExtentView.getDocument().addObjectAtTail( maxExtentViewHeightPoint);
 
@@ -740,6 +727,7 @@ public class ResourceProfileView extends PartialPlanView  {
                                         maxYExtent);
       // make mark invisible
       maxLevelViewHeightPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
+                                                  // ColorMap.getColor( "black")));
                                                   ViewConstants.VIEW_BACKGROUND_COLOR));
       jGoLevelScaleView.getDocument().addObjectAtTail( maxLevelViewHeightPoint);
     }
@@ -912,6 +900,14 @@ public class ResourceProfileView extends PartialPlanView  {
       // final position, comment out next check
       // if (! source.getValueIsAdjusting()) {
         int newPostion = source.getValue();
+        while ((jGoExtentView.getVerticalScrollBar() == null) ||
+               (jGoLevelScaleView.getVerticalScrollBar() == null)) {
+          try {
+            Thread.currentThread().sleep( SLEEP_FOR_50MS);
+          } catch (InterruptedException excp) {
+          }
+          System.err.println( "adjustmentValueChanged scroll bars null");
+        }
         if (newPostion != jGoExtentView.getVerticalScrollBar().getValue()) {
           jGoExtentView.getVerticalScrollBar().setValue( newPostion);
         } else if (newPostion != jGoLevelScaleView.getVerticalScrollBar().getValue()) {

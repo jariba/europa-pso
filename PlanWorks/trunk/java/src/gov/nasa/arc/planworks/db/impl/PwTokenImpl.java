@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.31 2004-02-27 18:04:40 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.32 2004-03-02 02:34:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -286,9 +286,40 @@ public class PwTokenImpl implements PwToken {
     return this.slotId;
   }
 
-  public boolean isFreeToken() {
-    return this.slotId == null || slotId.equals(DbConstants.noId);
+  /**
+   * <code>isFree</code> - not attached to an object
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isFree() {
+    return ((parentId == null) || parentId.equals( DbConstants.noId));
   }
+
+  /**
+   * <code>isSlotted</code> - in a slot in a timeline
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isSlotted() {
+    return ((! isFree()) && (this.slotId != null) && (! slotId.equals( DbConstants.noId)));
+  }
+
+  /**
+   * <code>isBaseToken</code> - is slotted and the base token
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isBaseToken() {
+    System.err.println ( "isSlotted " + isSlotted() + " getSlotId " + getSlotId());
+    System.err.println ( " slot " + partialPlan.getSlot( getSlotId()));
+    System.err.println ( " baseToken " + partialPlan.getSlot( getSlotId()).getBaseToken());
+    System.err.println ( " baseTokenId " +
+                         partialPlan.getSlot( getSlotId()).getBaseToken().getId());
+                         
+    return (isSlotted() &&
+            (partialPlan.getSlot( getSlotId()).getBaseToken().getId().equals( id)));
+  }
+
   /**
    * <code>toString</code>
    *

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.2 2004-02-27 18:05:41 miatauro Exp $
+// $Id: NavNodeGenerics.java,v 1.3 2004-03-02 02:34:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -51,6 +51,7 @@ public final class NavNodeGenerics {
   public static final String VARIABLE_TO_CONSTRAINT_LINK_TYPE = "VtoC";
   public static final String OBJECT_TO_VARIABLE_LINK_TYPE = "OtoV";
   public static final String TIMELINE_TO_VARIABLE_LINK_TYPE = "TitoV";
+  public static final String RESOURCE_TO_TOKEN_LINK_TYPE = "RtoT";
  
   private NavNodeGenerics() {
   }
@@ -384,6 +385,9 @@ public final class NavNodeGenerics {
     } else if ((fromNavNode instanceof TimelineNavNode) &&
                (toNavNode instanceof VariableNavNode)) {
       return TIMELINE_TO_VARIABLE_LINK_TYPE;
+    } else if ((fromNavNode instanceof ResourceNavNode) &&
+               (toNavNode instanceof TokenNavNode)) {
+      return RESOURCE_TO_TOKEN_LINK_TYPE;
     } else {
       System.err.println( "NavNodeGenerics.getLinkType: no link type for " +
                           fromNavNode + " => " + toNavNode);
@@ -404,14 +408,13 @@ public final class NavNodeGenerics {
     //                     " parent " + variable.getParent());
     Color variableColor = ColorMap.getColor( "black");
     PwVariableContainer variableContainer = variable.getParent();
-    if (variableContainer instanceof PwTimeline) {
-      variableColor =
-        navigatorView.getTimelineColor( ((PwTimeline) variableContainer).getId());
-    } else if (variableContainer instanceof PwToken) {
+    if (variableContainer instanceof PwToken) {
       PwToken token = (PwToken) variableContainer;
       variableColor = getTokenColor( token, navigatorView);
     } else if (variableContainer instanceof PwObject) {
-      variableColor = ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR);
+      // PwTimeline & PwResource as well
+      variableColor =
+        navigatorView.getTimelineColor( ((PwObject) variableContainer).getId());
     } else {
       System.err.println( "\nNavNodeGenerics.getVariableColor variable " + variable +
                           " not handled");

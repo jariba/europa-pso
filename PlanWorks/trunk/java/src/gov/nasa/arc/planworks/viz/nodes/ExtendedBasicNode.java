@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNode.java,v 1.1 2004-01-12 19:46:19 taylor Exp $
+// $Id: ExtendedBasicNode.java,v 1.2 2004-03-02 02:34:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -27,6 +27,8 @@ import com.nwoods.jgo.examples.Diamond;
 import com.nwoods.jgo.examples.LeftTrapezoid;
 import com.nwoods.jgo.examples.RightTrapezoid;
 import com.nwoods.jgo.examples.Hexagon;
+import com.nwoods.jgo.examples.PinchedRectangle;
+import com.nwoods.jgo.examples.PinchedHexagon;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
@@ -106,7 +108,6 @@ public class ExtendedBasicNode extends BasicNode {
     }
   }
 
-
   /**
    * <code>createDrawable</code> - modified from BasicNode to handle other node shapes
    *
@@ -126,6 +127,10 @@ public class ExtendedBasicNode extends BasicNode {
       d = new RightTrapezoid();
     } else if (nodeType == ViewConstants.HEXAGON) {
       d = new Hexagon();
+    } else if (nodeType == ViewConstants.PINCHED_RECTANGLE) {
+      d = new PinchedRectangle();
+    } else if (nodeType == ViewConstants.PINCHED_HEXAGON) {
+      d = new PinchedHexagon();
     }
     d.setSelectable(false);
     d.setDraggable(false);

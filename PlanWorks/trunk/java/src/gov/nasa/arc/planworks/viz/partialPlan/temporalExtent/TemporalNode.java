@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.15 2004-02-03 20:43:58 taylor Exp $
+// $Id: TemporalNode.java,v 1.16 2004-03-02 02:34:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -230,7 +230,7 @@ public class TemporalNode extends BasicNode implements Extent {
     if (isShowLabels) {
       // set center point of label to earliestStartTime
       Point tokenLocation =
-        new Point( temporalExtentView.getJGoRulerView().scaleTime( earliestStartTime),
+        new Point( temporalExtentView.getJGoRulerView().scaleTime( (double) earliestStartTime),
                    scaleY() + ViewConstants.TEMPORAL_NODE_Y_LABEL_OFFSET);
       boolean isRectangular = true;
       setLabelSpot( JGoObject.Center);
@@ -242,12 +242,11 @@ public class TemporalNode extends BasicNode implements Extent {
       }
       int newXLoc =
         (int) temporalExtentView.getJGoRulerView().scaleTime
-        ( (int) (startTime + (((nodeLabelWidth -
-                                (ViewConstants.TIMELINE_VIEW_INSET_SIZE * 2))
-                               * 0.5) /
-                              temporalExtentView.getTimeScale())));
+        ( ((double) startTime) + (((nodeLabelWidth -
+                                   (ViewConstants.TIMELINE_VIEW_INSET_SIZE * 2))
+                                  * 0.5) /
+                                 temporalExtentView.getTimeScale()));
       setLocation( newXLoc, (int) getLocation().getY());
-
       setBrush( JGoBrush.makeStockBrush( backgroundColor));  
       getLabel().setEditable( false);
       setDraggable( false);
@@ -435,7 +434,7 @@ public class TemporalNode extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getStart() {
-    int xStart = temporalExtentView.getJGoRulerView().scaleTime( getStartTime());
+    int xStart = temporalExtentView.getJGoRulerView().scaleTime( (double) getStartTime());
 //     if (tokenId.equals( "185") || tokenId.equals( "978")) {
 //       System.err.println( "xStart: " + predicateName + " xStart " +
 //                           String.valueOf( (xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE)));
@@ -451,8 +450,8 @@ public class TemporalNode extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getEnd() {
-    int xStart = temporalExtentView.getJGoRulerView().scaleTime( getStartTime());
-    int xEnd = temporalExtentView.getJGoRulerView().scaleTime( getEndTime());
+    int xStart = temporalExtentView.getJGoRulerView().scaleTime( (double) getStartTime());
+    int xEnd = temporalExtentView.getJGoRulerView().scaleTime( (double) getEndTime());
     int xStartPlusLabel = xStart;
     if (isShowLabels) {
       xStartPlusLabel = xStartPlusLabel + nodeLabelWidth;
@@ -509,7 +508,7 @@ public class TemporalNode extends BasicNode implements Extent {
     TemporalNodeTimeMark downwardMark = new TemporalNodeTimeMark( time);
     downwardMark.setDraggable( false);
     downwardMark.setResizable(false);
-    int xDown = temporalExtentView.getJGoRulerView().scaleTime( time);
+    int xDown = temporalExtentView.getJGoRulerView().scaleTime( (double) time);
     // System.err.println( "renderStartMark: time " + time + " xDown " + xDown);
     downwardMark.addPoint( xDown - ViewConstants.TEMPORAL_NODE_X_DELTA, y);
     downwardMark.addPoint( xDown + ViewConstants.TEMPORAL_NODE_X_DELTA, y);
@@ -527,7 +526,7 @@ public class TemporalNode extends BasicNode implements Extent {
     minusInfinityMark.setDraggable( false);
     minusInfinityMark.setResizable(false);
     // offset to the left to prevent overlap with earliestStartMark
-    int xMinusInfinity = temporalExtentView.getJGoRulerView().scaleTime( time) -
+    int xMinusInfinity = temporalExtentView.getJGoRulerView().scaleTime( (double) time) -
       ViewConstants.TEMPORAL_NODE_X_DELTA - 2;
     // System.err.println( "renderMinusInfinityMark: time " + time + " xMinusInfinity " +
     //                     xMinusInfinity);
@@ -546,7 +545,7 @@ public class TemporalNode extends BasicNode implements Extent {
     TemporalNodeTimeMark upwardMark = new TemporalNodeTimeMark( time);
     upwardMark.setDraggable( false);
     upwardMark.setResizable(false);
-    int xUp = temporalExtentView.getJGoRulerView().scaleTime( time);
+    int xUp = temporalExtentView.getJGoRulerView().scaleTime( (double) time);
     // System.err.println( "renderEndMark: time " + time + " xUp " + xUp);
     upwardMark.addPoint( xUp, y);
     upwardMark.addPoint( xUp + ViewConstants.TEMPORAL_NODE_X_DELTA,
@@ -565,7 +564,7 @@ public class TemporalNode extends BasicNode implements Extent {
     plusInfinityMark.setDraggable( false);
     plusInfinityMark.setResizable(false);
     // offset to the right to prevent overlap with earliestEndMark
-    int xPlusInfinity = temporalExtentView.getJGoRulerView().scaleTime( time) +
+    int xPlusInfinity = temporalExtentView.getJGoRulerView().scaleTime( (double) time) +
       ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     // System.err.println( "renderPlusInfinityMark: time " + time + " xPlusInfinity " +
     //                     xPlusInfinity);
@@ -585,12 +584,12 @@ public class TemporalNode extends BasicNode implements Extent {
     int lineWidth = 1;
     TemporalNodeDurationBridge bridge =
       new TemporalNodeDurationBridge( earliestDurationTime, latestDurationTime);
-    int xStartTime = temporalExtentView.getJGoRulerView().scaleTime( startTime);
+    int xStartTime = temporalExtentView.getJGoRulerView().scaleTime( (double) startTime);
     if (isEarliestStartMinusInf && (temporalDisplayMode != TemporalExtentView.SHOW_LATEST)) {
       xStartTime -= ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     }
     bridge.addPoint( xStartTime, y);
-    int xEndTime = temporalExtentView.getJGoRulerView().scaleTime( endTime);
+    int xEndTime = temporalExtentView.getJGoRulerView().scaleTime( (double) endTime);
     if (isLatestEndPlusInf && (temporalDisplayMode != TemporalExtentView.SHOW_EARLIEST)) {
       xEndTime += ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     }
@@ -602,11 +601,11 @@ public class TemporalNode extends BasicNode implements Extent {
   private void renderThickBridge( int startTime, int endTime, int y,
                                   int earliestDurationTime, int latestDurationTime) {
     int lineWidth = 1;
-    int xStartTime = temporalExtentView.getJGoRulerView().scaleTime( startTime);
+    int xStartTime = temporalExtentView.getJGoRulerView().scaleTime( (double) startTime);
     if (isEarliestStartMinusInf && (temporalDisplayMode != TemporalExtentView.SHOW_LATEST)) {
       xStartTime -= ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     }
-    int xEndTime = temporalExtentView.getJGoRulerView().scaleTime( endTime);
+    int xEndTime = temporalExtentView.getJGoRulerView().scaleTime( (double) endTime);
     if (isLatestEndPlusInf && (temporalDisplayMode != TemporalExtentView.SHOW_EARLIEST)) {
       xEndTime += ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.13 2004-02-26 19:02:01 taylor Exp $
+// $Id: NavigatorView.java,v 1.14 2004-03-02 02:34:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -40,6 +40,7 @@ import gov.nasa.arc.planworks.db.PwEntity;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -57,6 +58,7 @@ import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkResourceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
@@ -158,6 +160,26 @@ public class NavigatorView extends PartialPlanView {
                         final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.initialNode = timelineNode;
+    this.partialPlan = (PwPartialPlan) partialPlan;
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    this.navigatorFrame = navigatorFrame;
+
+    commonConstructor();
+  } // end constructor
+
+  /**
+   * <code>NavigatorView</code> - constructor 
+   *
+   * @param resourceNode - <code>ConstraintNetworkResourceNode</code> - 
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param navigatorFrame - <code>MDIInternalFrame</code> - 
+   */
+  public NavigatorView( final ConstraintNetworkResourceNode resourceNode,
+                        final ViewableObject partialPlan, final ViewSet viewSet,
+                        final MDIInternalFrame navigatorFrame) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    this.initialNode = resourceNode;
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.viewSet = (PartialPlanViewSet) viewSet;
     this.navigatorFrame = navigatorFrame;
@@ -465,6 +487,9 @@ public class NavigatorView extends PartialPlanView {
     if (initialNode instanceof ConstraintNetworkObjectNode) {
       PwObject object = ((ConstraintNetworkObjectNode) initialNode).getObject();
       node = addEntityNavNode( object, isDebugPrint);
+    } else if (initialNode instanceof ConstraintNetworkResourceNode) {
+      PwResource object = ((ConstraintNetworkResourceNode) initialNode).getResource();
+      node = addEntityNavNode( object, isDebugPrint);
     } else if ((initialNode instanceof TimelineViewTimelineNode) ||
                (initialNode instanceof ConstraintNetworkTimelineNode)) {
       PwTimeline timeline = null;
@@ -520,6 +545,8 @@ public class NavigatorView extends PartialPlanView {
     ExtendedBasicNode node = null;
     if (object instanceof PwTimeline) {
       node = addTimelineNavNode( (PwTimeline) object);
+    } else if (object instanceof PwResource) {
+      node = addResourceNavNode( (PwResource) object);
     } else if (object instanceof PwSlot) {
       node = addSlotNavNode( (PwSlot) object);
     } else if (object instanceof PwToken) {
@@ -561,7 +588,7 @@ public class NavigatorView extends PartialPlanView {
         new ModelClassNavNode( object, 
                                new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                           ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                               ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
+                               getTimelineColor( object.getId()),
                                isDraggable, this);
       entityNavNodeMap.put( object.getId(), objectNavNode);
       jGoDocument.addObjectAtTail( objectNavNode);
@@ -591,6 +618,29 @@ public class NavigatorView extends PartialPlanView {
     }
     return timelineNavNode;
   } // end addTimelineNavNode
+
+  /**
+   * <code>addResourceNavNode</code>
+   *
+   * @param resource - <code>PwResource</code> - 
+   * @return - <code>ResourceNavNode</code> - 
+   */
+  protected final ResourceNavNode addResourceNavNode( final PwResource resource) {
+    boolean isDraggable = true;
+    ResourceNavNode resourceNavNode =
+      (ResourceNavNode) entityNavNodeMap.get( resource.getId());
+    if (resourceNavNode == null) {
+      resourceNavNode =
+        new ResourceNavNode( resource, 
+                             new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
+                                        ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
+                             getTimelineColor( resource.getId()),
+                             isDraggable, this);
+      entityNavNodeMap.put( resource.getId(), resourceNavNode);
+      jGoDocument.addObjectAtTail( resourceNavNode);
+    }
+    return resourceNavNode;
+  } // end addResourceNavNode
 
   /**
    * <code>addSlotNavNode</code>
@@ -634,6 +684,7 @@ public class NavigatorView extends PartialPlanView {
    */
   protected final TokenNavNode addTokenNavNode( final PwToken token) {
     // TokenNetwork.TokenNode  TemporalExtent.TemporalNode
+    // System.err.println( "addTokenNavNode " + token.getClass());
     boolean isDraggable = true;
     TokenNavNode tokenNavNode =
       (TokenNavNode) entityNavNodeMap.get( token.getId());
@@ -814,8 +865,8 @@ public class NavigatorView extends PartialPlanView {
     overviewWindowItem.addActionListener( new ActionListener() { 
         public final void actionPerformed( final ActionEvent evt) {
           VizViewOverview currentOverview =
-            ViewGenerics.openOverviewFrame( PlanWorks.NAVIGATOR_VIEW, partialPlan,
-                                            navigatorView, viewSet, jGoView, viewCoords);
+            ViewGenerics.openOverviewFrame( navigatorFrame, partialPlan, navigatorView,
+                                            viewSet, jGoView, viewCoords);
           if (currentOverview != null) {
             overview = currentOverview;
           }

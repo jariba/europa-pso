@@ -156,12 +156,6 @@ public interface ViewConstants {
   public static final String FREE_TOKEN_BG_COLOR = "lightGray";
 
   /**
-   * constant <code>OBJECT_BG_COLOR</code>
-   *
-   */
-  public static final String OBJECT_BG_COLOR = "white";
-
-  /**
    * constant <code>EMPTY_SLOT_WIDTH</code>
    *
    */
@@ -289,12 +283,14 @@ public interface ViewConstants {
 
   // Extended BasicNode Shapes for viz/nodes/ExtendedBasicNode
 
-  public static final int RECTANGLE = 0;
-  public static final int ELLIPSE = 1;
-  public static final int DIAMOND = 2;
-  public static final int LEFT_TRAPEZOID = 3;
-  public static final int RIGHT_TRAPEZOID = 4;
-  public static final int HEXAGON = 5;
+  public static final int RECTANGLE = 0;         // PwToken
+  public static final int ELLIPSE = 1;           // not used - long text goes outside border
+  public static final int DIAMOND = 2;           // PwConstraint
+  public static final int LEFT_TRAPEZOID = 3;    // PwObject
+  public static final int RIGHT_TRAPEZOID = 4;   // PwTimeline
+  public static final int HEXAGON = 5;           // PwSlot
+  public static final int PINCHED_RECTANGLE = 6; // PwVariable
+  public static final int PINCHED_HEXAGON = 7;   // PwResource
 
   /**
    * constant <code>RESOURCE_PROFILE_CELL_HEIGHT</code>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.32 2004-02-10 02:35:56 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.33 2004-03-02 02:34:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -317,9 +317,9 @@ public class TemporalExtentView extends PartialPlanView  {
   /**
    * <code>getTimeScale</code>
    *
-   * @return - <code>float</code> - 
+   * @return - <code>double</code> - 
    */
-  public float getTimeScale() {
+  public double getTimeScale() {
     return jGoRulerView.getTimeScale();
   }
 
@@ -360,95 +360,50 @@ public class TemporalExtentView extends PartialPlanView  {
   }
 
   private void createTemporalNodes() {
-    List objectList = partialPlan.getObjectList();
-    Iterator objectIterator = objectList.iterator();
-    int timelineCnt = 0;
-    boolean isFreeToken = false;
-    while (objectIterator.hasNext()) {
-      PwObject object = (PwObject) objectIterator.next();
-      if(object.getObjectType() == DbConstants.O_TIMELINE) {
-        PwTimeline timeline = (PwTimeline) object;
-        Color timelineColor = getTimelineColor(timeline.getId());
-        List slotList = timeline.getSlotList();
-        Iterator slotIterator = slotList.iterator();
-        PwSlot previousSlot = null;
-        boolean isFirstSlot = true;
-        while(slotIterator.hasNext()) {
-          PwSlot slot = (PwSlot) slotIterator.next();
-          // overloaded tokens on slot - not displayed, put in displayedTokenIds
-          List tokenList = slot.getTokenList();
-          for (int i = 1, n = tokenList.size(); i < n; i++) {
-            isTokenInContentSpec( (PwToken) tokenList.get( i));
-          }
-          boolean isLastSlot = (! slotIterator.hasNext());
-          PwToken token = slot.getBaseToken();
-          if ((token == null) && (isFirstSlot || isLastSlot)) {
-            // discard leading and trailing empty slots (planworks/test/data/emptySlots)
-          } else {
-            // check for embedded empty slots - always show them, unless free standing
-            if ((token == null) ||
-                (token != null) && isTokenInContentSpec( token)) {
-              PwDomain startTimeIntervalDomain = slot.getStartTime();
-              PwDomain endTimeIntervalDomain = slot.getEndTime();
-              if ((startTimeIntervalDomain != null) && (endTimeIntervalDomain != null)) {
-                String earliestDurationString =
-                  NodeGenerics.getShortestDuration( slot, startTimeIntervalDomain,
-                                                    endTimeIntervalDomain);
-                String latestDurationString =
-                  NodeGenerics.getLongestDuration( slot, startTimeIntervalDomain,
-                                                   endTimeIntervalDomain);
-                TemporalNode temporalNode = 
-                  new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
-                                    earliestDurationString, latestDurationString,
-                                    timelineColor, isFreeToken, isShowLabels,
-                                    temporalDisplayMode, this); 
-                tmpTemporalNodeList.add( temporalNode);
-                jGoExtentView.getDocument().addObjectAtTail( temporalNode);
-                previousSlot = slot;
-              }
-            }
-          }
-          isFirstSlot = false;
-        }
+    List tokenList = partialPlan.getTokenList();
+    Iterator tokenIterator = tokenList.iterator();
+    Color backgroundColor = null;
+    while (tokenIterator.hasNext()) {
+      PwToken token = (PwToken) tokenIterator.next();
+      if (token.isSlotted() && (! token.isBaseToken())) {
+        // non-slotted, non-base tokens - not displayed, put in displayedTokenIds
+        isTokenInContentSpec( token);
+        continue;
       }
-    }
-
-    createFreeTokenTemporalNodes();
-    
-    temporalNodeList = tmpTemporalNodeList;
-  } // end createTemporalNodes
-
-
-  private void createFreeTokenTemporalNodes() {
-    List freeTokenList = partialPlan.getFreeTokenList();
-    // System.err.println( "temporal extent view freeTokenList " + freeTokenList);
-    Iterator freeTokenItr = freeTokenList.iterator();
-    boolean isFreeToken = true;
-    PwSlot slot = null;
-    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
-    while (freeTokenItr.hasNext()) {
-      PwToken token = (PwToken) freeTokenItr.next();
+      boolean isFreeToken = false;
+      PwSlot slot = null;
+      if (! token.isFree()) { // slotted base tokens, resourceTransactions, other tokens
+        if (token.getSlotId() != null) {
+          slot = partialPlan.getSlot( token.getSlotId());
+        }
+        backgroundColor = getTimelineColor( token.getParentId());
+      } else { // free tokens
+        isFreeToken = true;
+        backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+      }
       if (isTokenInContentSpec( token)) {
         PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
         PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
-        String earliestDurationString =
-          NodeGenerics.getShortestDuration( slot, startTimeIntervalDomain,
-                                            endTimeIntervalDomain);
-        String latestDurationString =
-          NodeGenerics.getLongestDuration( slot, startTimeIntervalDomain,
-                                           endTimeIntervalDomain);
-        TemporalNode temporalNode = 
-          new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
-                            earliestDurationString, latestDurationString,
-                            backgroundColor, isFreeToken, isShowLabels,
-                            temporalDisplayMode, this); 
-        tmpTemporalNodeList.add(temporalNode );
-        // nodes are always in front of any links
-        jGoExtentView.getDocument().addObjectAtTail( temporalNode);
+        if ((startTimeIntervalDomain != null) && (endTimeIntervalDomain != null)) {
+          String earliestDurationString =
+            NodeGenerics.getShortestDuration( isFreeToken, token, startTimeIntervalDomain,
+                                              endTimeIntervalDomain);
+          String latestDurationString =
+            NodeGenerics.getLongestDuration( isFreeToken, token, startTimeIntervalDomain,
+                                             endTimeIntervalDomain);
+          // System.err.println( "token id " + token.getId());
+          TemporalNode temporalNode = 
+            new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
+                              earliestDurationString, latestDurationString,
+                              backgroundColor, isFreeToken, isShowLabels,
+                              temporalDisplayMode, this); 
+          tmpTemporalNodeList.add( temporalNode);
+          jGoExtentView.getDocument().addObjectAtTail( temporalNode);
+        }
       }
     }
-  } // end createFreeTokenTemporalNodes
-
+    temporalNodeList = tmpTemporalNodeList;
+  } // end createTemporalNodes
 
   private void layoutTemporalNodes() {
     /*List extents = new ArrayList();
@@ -460,13 +415,13 @@ public class TemporalExtentView extends PartialPlanView  {
     List extents = new ArrayList(temporalNodeList);
     // do the layout -- compute cellRow for each node
     List results =
-      Algorithms.allocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
-                               jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
-                               extents);
+      Algorithms.allocateRows
+      ( jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleStart()),
+        jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleEnd()), extents);
 //     List results =
-//       Algorithms.betterAllocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
-//                                      jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
-//                                      extents);
+//       Algorithms.betterAllocateRows
+//       ( jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleStart()),
+//         jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleEnd()), extents);
     if (temporalNodeList.size() != results.size()) {
       String message = String.valueOf( temporalNodeList.size() - results.size()) +
         " nodes not successfully allocated";
@@ -981,6 +936,3 @@ public class TemporalExtentView extends PartialPlanView  {
 
 } // end class TemporalExtentView
  
-
-
-
