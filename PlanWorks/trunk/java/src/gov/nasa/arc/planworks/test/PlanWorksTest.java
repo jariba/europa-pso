@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.16 2003-09-23 16:10:39 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.17 2003-09-29 23:52:11 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -15,7 +15,6 @@ import java.awt.event.MouseEvent;
 // import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -53,17 +52,17 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
-import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNode;
-import gov.nasa.arc.planworks.viz.views.constraintNetwork.VariableNode;
-import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
-import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalNode;
-import gov.nasa.arc.planworks.viz.views.timeline.TimelineNode;
-import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
-import gov.nasa.arc.planworks.viz.views.timeline.SlotNode;
-import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenLink;
-import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineNode;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenLink;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.GroupBox;
@@ -431,11 +430,10 @@ public class PlanWorksTest extends JFCTestCase{
     MDIInternalFrame viewFrame = null;
     TimelineView timelineView = null;
     Thread.sleep( 3000);
-    long startTimeMSecs = (new Date()).getTime();
     viewFrame =
-      viewManager.openTimelineView( partialPlan, sequenceName +
-                                    System.getProperty( "file.separator") +
-                                    partialPlanName, startTimeMSecs);
+      viewManager.openView( partialPlan,
+                            (String) PlanWorks.viewNameToViewClassMap.
+                            get( PlanWorks.TIMELINE_VIEW));
     assertNotNull("Failed to get timeline view MDI internal frame.", viewFrame);
 
     Container contentPane = viewFrame.getContentPane();
@@ -480,11 +478,10 @@ public class PlanWorksTest extends JFCTestCase{
     MDIInternalFrame viewFrame = null;
     TokenNetworkView tokenNetworkView = null;
     Thread.sleep( 3000);
-    long startTimeMSecs = (new Date()).getTime();
     viewFrame =
-      viewManager.openTokenNetworkView( partialPlan, sequenceName +
-                                    System.getProperty( "file.separator") +
-                                    partialPlanName, startTimeMSecs);
+      viewManager.openView( partialPlan,
+                            (String) PlanWorks.viewNameToViewClassMap.
+                            get( PlanWorks.TOKEN_NETWORK_VIEW));
     assertNotNull("Failed to get tokenNetwork view MDI internal frame.", viewFrame);
 
     Container contentPane = viewFrame.getContentPane();
@@ -512,11 +509,10 @@ public class PlanWorksTest extends JFCTestCase{
     MDIInternalFrame viewFrame = null;
     TemporalExtentView temporalExtentView = null;
     Thread.sleep( 3000);
-    long startTimeMSecs = (new Date()).getTime();
     viewFrame =
-      viewManager.openTemporalExtentView( partialPlan, sequenceName +
-                                    System.getProperty( "file.separator") +
-                                    partialPlanName, startTimeMSecs);
+      viewManager.openView( partialPlan, 
+                            (String) PlanWorks.viewNameToViewClassMap.
+                            get( PlanWorks.TEMPORAL_EXTENT_VIEW));
     assertNotNull("Failed to get temporalExtent view MDI internal frame.", viewFrame);
 
     Container contentPane = viewFrame.getContentPane();
@@ -545,11 +541,10 @@ public class PlanWorksTest extends JFCTestCase{
     MDIInternalFrame viewFrame = null;
     ConstraintNetworkView constraintNetworkView = null;
     Thread.sleep( 3000);
-    long startTimeMSecs = (new Date()).getTime();
     viewFrame =
-      viewManager.openConstraintNetworkView( partialPlan, sequenceName +
-                                    System.getProperty( "file.separator") +
-                                    partialPlanName, startTimeMSecs);
+      viewManager.openView( partialPlan,
+                            (String) PlanWorks.viewNameToViewClassMap.
+                            get( PlanWorks.CONSTRAINT_NETWORK_VIEW));
     assertNotNull("Failed to get constraintNetwork view MDI internal frame.", viewFrame);
 
     Container contentPane = viewFrame.getContentPane();

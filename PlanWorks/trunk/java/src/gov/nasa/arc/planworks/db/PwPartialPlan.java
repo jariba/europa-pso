@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.19 2003-09-28 00:19:29 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.20 2003-09-29 23:52:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -136,6 +136,8 @@ public interface PwPartialPlan extends ViewableObject {
    */
   public abstract PwVariable getVariable( Integer id);
 
+  // extend ViewableObject
+
   /**
    * <code>setContentSpec</code>
    *
@@ -157,4 +159,14 @@ public interface PwPartialPlan extends ViewableObject {
    */
   public abstract String getName();
   
+  // end extend ViewableObject
+
+  /**
+   * <code>setSeqName</code>
+   *
+   * @param seqName - <code>String</code> - 
+   */
+  public void setSeqName( String seqName);
+
+
 } // end interface PwPartialPlan
