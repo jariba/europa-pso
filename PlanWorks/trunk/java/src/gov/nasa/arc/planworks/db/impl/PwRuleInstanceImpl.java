@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRuleInstanceImpl.java,v 1.3 2004-06-23 21:36:35 pdaley Exp $
+// $Id: PwRuleInstanceImpl.java,v 1.4 2004-07-29 20:31:44 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -157,5 +157,16 @@ public class PwRuleInstanceImpl implements PwRuleInstance {
     retval.append("\n");
 
     return retval.toString();
-  }
+  } // end toOutputString
+
+  public String toOutputStringSlaveMap() {
+    StringBuffer retval = new StringBuffer( "");
+    for(ListIterator it = slaveIds.listIterator(); it.hasNext();) {
+      retval.append( id.toString()).append("\t");
+      retval.append( it.next().toString()).append("\t");
+      retval.append( partialPlan.getId().toString()).append("\n");
+    }
+    return retval.toString();
+  } // end toOutputStringSlaveMap
+
 } // end class PwRuleInstanceImpl

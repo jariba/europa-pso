@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.15 2004-07-16 22:54:45 taylor Exp $
+// $Id: FileUtils.java,v 1.16 2004-07-29 20:31:44 taylor Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -166,8 +166,7 @@ public abstract class FileUtils {
     }
     if (seenSequenceFiles != DbConstants.NUMBER_OF_SEQ_FILES) {
       msg = sequenceDirectory + "\n    " + seenSequenceFiles +
-        " sequence files in directory --\n    " +
-        DbConstants.NUMBER_OF_SEQ_FILES + " are required.";
+        " sequence files in directory -- " + DbConstants.NUMBER_OF_SEQ_FILES + " are required.";
       System.err.println( msg);
       return msg;
     }

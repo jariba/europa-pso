@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.15 2004-07-13 23:54:07 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.16 2004-07-29 20:31:44 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -221,21 +221,32 @@ public abstract class PWSetupHelper {
     }
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_RESOURCE_INSTANTS_EXT,
                           resourceInstantsBuffer.toString());
+
     StringBuffer decisionsBuffer = new StringBuffer();
     Iterator decisionsItr = decisionsForStep.iterator();
     while (decisionsItr.hasNext()) {
       decisionsBuffer.append( ((PwDecisionImpl) decisionsItr.next()).toOutputString());
     }
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_DECISIONS_EXT,
-                          decisionsBuffer.toString());    
+                          decisionsBuffer.toString());  
+  
     StringBuffer ruleInstancesBuffer = new StringBuffer();
     Iterator ruleInstancesItr = partialPlan.getRuleInstanceList().iterator();
     while (ruleInstancesItr.hasNext()) {
       ruleInstancesBuffer.append( ((PwRuleInstanceImpl) ruleInstancesItr.next()).
                                    toOutputString());
     }
+    StringBuffer ruleInstancesSlaveMapBuffer = new StringBuffer();
+    ruleInstancesItr = partialPlan.getRuleInstanceList().iterator();
+    while (ruleInstancesItr.hasNext()) {
+      ruleInstancesSlaveMapBuffer.append( ((PwRuleInstanceImpl) ruleInstancesItr.next()).
+                                          toOutputStringSlaveMap());
+    }
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_RULE_INSTANCE_EXT,
                            ruleInstancesBuffer.toString());
+    writePartialPlanFile( partialPlanUrl, partialPlanName,
+                          DbConstants.PP_RULE_INSTANCE_SLAVE_MAP_EXT,
+                           ruleInstancesSlaveMapBuffer.toString());
     return partialPlan;
   } // end createPartialPlan
 

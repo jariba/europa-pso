@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.10 2004-07-29 01:36:36 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.11 2004-07-29 20:31:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -37,11 +37,17 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
  */
 public class AddSequenceThread extends ThreadWithProgressMonitor {
 
+  private boolean doProgMonitor;
+
   /**
    * <code>AddSequenceThread</code> - constructor 
    *
    */
   public AddSequenceThread() {
+    boolean doProgMonitor = true;
+    if (System.getProperty("ant.target.test").equals( "true")) {
+      doProgMonitor = false;
+    }
   }  // end constructor
     
   /**
@@ -68,12 +74,13 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
         List selectedSequenceUrls = (List) selectedAndInvalidUrls.get( 0);
         List invalidSequenceUrls = (List) selectedAndInvalidUrls.get( 1);
 
-        progressMonitorThread( "Adding sequence ...", 0, 6);
-        if (! progressMonitorWait()) {
-          return;
+        if (doProgMonitor) {
+          progressMonitorThread( "Adding sequence ...", 0, 6);
+          if (! progressMonitorWait()) {
+            return;
+          }
+          progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
         }
-        progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
-
         PwProject project = PlanWorks.getPlanWorks().currentProject;
         isSequenceAdded = true;
         PlanWorks.getPlanWorks().addPlanningSequences( project, selectedSequenceUrls,
@@ -86,7 +93,9 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
         PlanWorks.getPlanWorks().addPlanSeqViewMenu
           ( PlanWorks.getPlanWorks().currentProject, planSeqMenu);
 
-        isProgressMonitorCancel = true;
+        if (doProgMonitor) {
+          isProgressMonitorCancel = true;
+        }
       }
       catch (DuplicateNameException dupExcep) {
         int index = dupExcep.getMessage().indexOf( ":");
@@ -95,7 +104,9 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( dupExcep);
         // dupExcep.printStackTrace();
-        isProgressMonitorCancel = true;
+        if (doProgMonitor) {
+          isProgressMonitorCancel = true;
+        }
         isSequenceAdded = false;
       } 
       catch (ResourceNotFoundException rnfExcep) {
@@ -105,7 +116,9 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
         rnfExcep.printStackTrace();
-        isProgressMonitorCancel = true;
+        if (doProgMonitor) {
+          isProgressMonitorCancel = true;
+        }
         isSequenceAdded = false;
       }
       catch (Exception e) {
@@ -113,7 +126,9 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
         e.printStackTrace();
-        isProgressMonitorCancel = true;
+        if (doProgMonitor) {
+          isProgressMonitorCancel = true;
+        }
         isSequenceAdded = false;
       }
     }

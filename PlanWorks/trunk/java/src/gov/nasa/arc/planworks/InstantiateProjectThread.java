@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.13 2004-07-27 21:58:03 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.14 2004-07-29 20:31:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 public class InstantiateProjectThread extends ThreadWithProgressMonitor {
 
   private String type;
+  private boolean doProgMonitor;
 
   /**
    * <code>InstantiateProjectThread</code> - constructor 
@@ -51,6 +52,10 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
    */
   public InstantiateProjectThread( final String type) {
     this.type = type;
+    doProgMonitor = true;
+    if (System.getProperty("ant.target.test").equals( "true")) {
+      doProgMonitor = false;
+    }
   }  // end constructor
 
   /**
@@ -68,12 +73,13 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
   } // end run
 
   private void instantiateProject() {
-    progressMonitorThread( type + "Project" + " ...", 0, 6);
-    if (! progressMonitorWait()) {
-      return;
+    if (doProgMonitor) {
+      progressMonitorThread( type + "Project" + " ...", 0, 6);
+      if (! progressMonitorWait()) {
+        return;
+      }
+      progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
-
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
@@ -105,7 +111,9 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
 
     PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
-    isProgressMonitorCancel = true;
+    if (doProgMonitor) {
+      isProgressMonitorCancel = true;
+    }
   } // end instantiateProject
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteSequenceThread.java,v 1.9 2004-07-27 21:58:03 taylor Exp $
+// $Id: DeleteSequenceThread.java,v 1.10 2004-07-29 20:31:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -35,11 +35,17 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
  */
 public class DeleteSequenceThread extends ThreadWithProgressMonitor {
 
+  private boolean doProgMonitor;
+
   /**
    * <code>DeleteSequenceThread</code> - constructor 
    *
    */
   public DeleteSequenceThread() {
+    doProgMonitor = true;
+    if (System.getProperty("ant.target.test").equals( "true")) {
+      doProgMonitor = false;
+    }
   }
 
   /**
@@ -52,18 +58,22 @@ public class DeleteSequenceThread extends ThreadWithProgressMonitor {
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
     PlanWorks.getPlanWorks().projectMenu.setEnabled(false);
 
-    progressMonitorThread( "Deleting sequence ...", 0, 6);
-    if (! progressMonitorWait()) {
-      return;
+    if (doProgMonitor) {
+      progressMonitorThread( "Deleting sequence ...", 0, 6);
+      if (! progressMonitorWait()) {
+        return;
+      }
+      progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
     deleteSequence();
 
     PlanWorks.getPlanWorks().projectMenu.setEnabled(true);
     dynamicMenuBar.enableMenu( planSeqMenu);
 
-    isProgressMonitorCancel = true;
+    if (doProgMonitor) {
+      isProgressMonitorCancel = true;
+    }
   }
 
   private void deleteSequence() {

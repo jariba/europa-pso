@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.13 2004-07-29 01:36:36 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.14 2004-07-29 20:31:43 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -40,6 +40,7 @@ public class CreateSequenceViewThread extends CreateViewThread {
 
   private PwPlanningSequence planSequence;
   private ViewListener viewListener;
+  private boolean doProgMonitor;
 
   /**
    * <code>CreateSequenceViewThread</code> - constructor 
@@ -53,6 +54,10 @@ public class CreateSequenceViewThread extends CreateViewThread {
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();
     this.viewListener = menuItem.getViewListener();
+    doProgMonitor = true;
+    if (System.getProperty("ant.target.test").equals( "true")) {
+      doProgMonitor = false;
+    }
   }
 
   /**
@@ -85,12 +90,13 @@ public class CreateSequenceViewThread extends CreateViewThread {
 
   private void createSequenceView() {
     synchronized( staticObject) {
-      progressMonitorThread( "Get Planning Sequence ...", 0, 6);
-      if (! progressMonitorWait()) {
-        return;
+      if (doProgMonitor) {
+        progressMonitorThread( "Get Planning Sequence ...", 0, 6);
+        if (! progressMonitorWait()) {
+          return;
+        }
+        progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
       }
-      progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
-
       PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), viewName);
       ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
       MDIDynamicMenuBar dynamicMenuBar =
@@ -101,7 +107,9 @@ public class CreateSequenceViewThread extends CreateViewThread {
       try {
         planSequence = PlanWorks.getPlanWorks().currentProject.getPlanningSequence( seqUrl);
 
-        isProgressMonitorCancel = true;
+        if (doProgMonitor) {
+          isProgressMonitorCancel = true;
+        }
  
         MDIInternalFrame viewFrame = renderView( sequenceName, planSequence, viewListener);
 
