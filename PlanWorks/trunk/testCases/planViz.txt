@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.27 2004-02-12 01:26:51 taylor Exp $
+// $Id: planViz.txt,v 1.28 2004-03-04 21:30:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -256,7 +256,8 @@ Requirements: 3.10
 
 PLANVIZ-10
 --------------------
-Display all partial plan views for a sequence step.
+Display all partial plan views for a sequence step, except Resource Profile and
+Resource Transaction views, which are handled in PLANVIZ-21.
 
 Pre-conditions:
   1. PlanWorks is running.
@@ -843,3 +844,74 @@ Post-conditions:
   3. Method:1 - All views vanish, and are not listed by clicking on the "Window"
      menu bar item.
  
+
+PLANVIZ-21
+------------------------
+Display Resource Profile and Resource Transaction partial plan views for a 
+sequence step, and exercise their Mouse-Right pop-up selections.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. The "test1" project is open.
+  3. No partial plan views are displayed.
+
+Method:
+  1. Display "test-seq-1" Sequence Steps View using menu-bar selection
+     "Planning Sequence->test-seq-1".
+  2. Display "test-seq-1/step<nn>" Resource Profile View by clicking Mouse-Right 
+     on the "step<nn>" element of the "SequenceStepsView of test-seq-1", and 
+     selecting "Resource Profile View".
+  3. Display "test-seq-1/step<nn>" Resource Transaction View by clicking Mouse-Right 
+     on the "step<nn>" element of the "SequenceStepsView of test-seq-1", and 
+     selecting "Resource Transaction View". Move the view so there is no overlap
+     with the Profile View.
+  4. Move the mouse into the Resource Profile View's "extent" area and Mouse-Right
+     at a certain time scale value and select "Set Time Scale Line/ Snap to
+     Resource Transactions".
+  5. Move the mouse into the Resource Transaction View's "extent" area and Mouse-Right
+     at a certain time scale value and select "Set Time Scale Line/ Snap to
+     Resource Profile".
+  6. Display "test-seq-1/step<nn>" Token Network View by clicking Mouse-Right 
+     on the "step<nn>" element of the "SequenceStepsView of test-seq-1", and 
+     selecting "Token Network View".
+  7. On the Token Network View, Mouse-Right on an interval token and select
+     "Set Active Token". On the Resource Profile View, and then on the Resource
+     Transaction View, Mouse-Right on the "extent" background and select "Snap to
+     Active Resource" on the Resource Profile View, and "Snap to Active Resource
+     Transaction"
+  8. On the Token Network View, Mouse-Right on a resource transaction and select
+     "Set Active Token". On the Resource Profile View, and then on the Resource
+     Transaction View, Mouse-Right on the "extent" background and select "Snap to
+     Active Resource" on the Resource Profile View, and "Snap to Active Resource
+     Transaction"
+
+
+Post-conditions:
+  1. Method:1 - The SequenceStepsView of test-seq-1 appears.
+  2. Method:2 - The Resource Profile View appears with min/max limits and min/max 
+     profile lines.
+  3. Method:3 - The Resource Transaction View appears with stacked transaction 
+     interval rectangles.
+  4. Method:4 - A vertical red line appears under the mouse, with a tool tip of
+     the time scale value. The Resource Transaction View also has the same vertical
+     red line, at the same time scale value.  If necessary, the Resource Transaction 
+     View is scrolled to expose the vertical red line.
+  5. Method:5 - A vertical red line appears under the mouse, with a tool tip of
+     the time scale value. The Resource Profile View also has the same vertical
+     red line, at the same time scale value.  If necessary, the Resource Profile
+     View is scrolled to expose the vertical red line.
+  6. Method:6 - The Token Network View appears with the interval token and resource
+     transaction hierarchy.
+  7. Method:7 - In both cases, an advisory dialog appears: "Active Resource Transaction
+     Not Found".
+  8. Method:8 - In both cases, the view scrolls to expose the appropriate resource
+     (Resource Profile View) or appropriate resource transaction (Resource Transaction 
+     View).
+
+
+
+
+
+
+
+

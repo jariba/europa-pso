@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.29 2004-03-02 02:34:14 taylor Exp $
+// $Id: PartialPlanView.java,v 1.30 2004-03-04 21:30:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -16,31 +16,21 @@ package gov.nasa.arc.planworks.viz.partialPlan;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JOptionPane;
-import javax.swing.JMenuItem;
 import javax.swing.JScrollBar;
-import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
     
 import com.nwoods.jgo.JGoView;
@@ -48,7 +38,6 @@ import com.nwoods.jgo.JGoViewEvent;
 import com.nwoods.jgo.JGoViewListener;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
@@ -58,12 +47,10 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.util.ViewRenderingException;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
-import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
 import gov.nasa.arc.planworks.viz.util.StepButton;
@@ -504,15 +491,16 @@ public class PartialPlanView extends VizView {
                              back.getSize().getHeight()));
       forward.setLocation((int)(back.getLocation().getX() + back.getWidth()),
                           (int)(back.getLocation().getY()));
-//       System.err.println( "adjustmentValueChanged " +
-//                           ((JScrollBar) evt.getSource()).getOrientation());
+      //       System.err.println( "adjustmentValueChanged " +
+      //                           ((JScrollBar) evt.getSource()).getOrientation());
+      // ResourceProfileView & ResourceTransactionView have two vertical
+      // scroll bars to keep at equal length
+      boolean isRedraw = false, isScrollBarAdjustment = true;
       if ((((JScrollBar) evt.getSource()).getOrientation() == SwingConstants.VERTICAL) &&
           (! ((JScrollBar) evt.getSource()).getValueIsAdjusting()) &&
-          (PartialPlanView.this instanceof ResourceProfileView)) {
-//         System.err.println( "adjustmentValueChanged  call equalize");
-        // ResourceProfileView has two vertical scroll bars to keep at equal length
-        boolean isRedraw = false, isScrollBarAdjustment = true;
-        ((ResourceProfileView) PartialPlanView.this).equalizeViewWidthsAndHeights
+          (PartialPlanView.this instanceof ResourceView)) {
+        // System.err.println( "adjustmentValueChanged  call equalize");
+        ((ResourceView) PartialPlanView.this).equalizeViewWidthsAndHeights
           ( (int) (viewRect.getY() + viewRect.getHeight()), isRedraw, isScrollBarAdjustment);
       }
     }

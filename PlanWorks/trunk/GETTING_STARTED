@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.29 2004-03-02 02:34:08 taylor Exp $
+# $Id: GETTING_STARTED,v 1.30 2004-03-04 21:30:24 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -113,6 +113,31 @@ links/constraints" on the second line.  Mouse cursor over constraint nodes
 displays "constraintType" on the first line, and "Mouse-L: open nearest 
 token variables" on the second line. 
 
+Resource Profile View
+---------------------
+Lays out each resource's min/max profiles and min/max limits with the x-axis 
+being time and the y-axes being the resource quantity.
+
+Resource Transaction View
+-------------------------
+Lays each resource's transactions stacked vertically by their time intervals
+when they overlap.  Mouse over the transaction rectangle pops up the time
+interval and the min/max change values, along with the transaction's key value.
+The x-axis is time and the y-axes are dynamic, depending on how many stacked 
+transactions are rendered.
+
+Resource Views Mouse Operations
+--------------------------------
+Mouse over the resource names pops up a tool tip with the resource's key value.
+Mouse-Right on their "extent" backgrounds allows the setting of a vertical 
+time mark.  If both views are active for the same partial plan, the time mark 
+is rendered on the companion view, which is scrolled so the time mark is in 
+the view port.  The Mouse-Right selection "Snap to Active Resource Transaction" 
+(on the ResourceTransactionView) and "Snap to Active Resource" (on the 
+ResourceProfileView) will find and scroll into view the appropriate Resource 
+or Resource Transaction, providing the "active" token is a Resource Transaction, 
+rather than an Interval Token.
+
 Temporal Extent View
 --------------------
 Lays out all predicates on a time scale, with triangles denoting the start 
@@ -197,9 +222,12 @@ In all the partial plan views (except the Transaction View), Mouse-Right on
 the background offers "Find by Key" which allows the user to enter a key
 and have the view scroll to that node's location.  For Temporal Extent and 
 Token Network views, entered keys will find token nodes; for the Timeline 
-view, entered keys will find token and slot nodes; and for the Constraint 
-Network view, entered keys will find find token, variable, and constraint 
-nodes -- opening appropriate connecting nodes, if needed.
+view, entered keys will find token and slot nodes; for the Resource Profile
+view, entered keys will find resource profiles; for the Resource Transaction
+view, entered keys will find resources and resource transactions and for the 
+Constraint Network view, entered keys will find find object, timeline, 
+resource, token, variable, and constraint nodes -- opening appropriate 
+connecting nodes, if needed.
 
 
 Token/Variable/Constraint/Slot/Object/Timeline/Resource Relationships
