@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteProjectThread.java,v 1.8 2004-09-27 19:18:57 taylor Exp $
+// $Id: DeleteProjectThread.java,v 1.9 2005-01-21 22:45:09 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -80,6 +80,8 @@ public class DeleteProjectThread extends ThreadWithProgressMonitor {
           try {
 
             PwProject.getProject( projectName).delete();
+            PlanWorks.PROJECT_CONFIG_MAP.remove( projectName);
+            ConfigureAndPlugins.writeProjectConfigMap();
 
             if ((! PlanWorks.getPlanWorks().currentProjectName.equals( "")) &&
                 PlanWorks.getPlanWorks().currentProjectName.equals( projectName)) {
@@ -87,8 +89,6 @@ public class DeleteProjectThread extends ThreadWithProgressMonitor {
               PlanWorks.getPlanWorks().setTitle( PlanWorks.getPlanWorksTitle());
               int numProjects = PwProject.listProjects().size();
               dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
-              PlanWorks.PROJECT_CONFIG_MAP.remove( projectName);
-              ConfigureAndPlugins.writeProjectConfigMap();
             }
             PlanWorks planWorks = PlanWorks.getPlanWorks();
             if (PwProject.listProjects().size() == 0) {
