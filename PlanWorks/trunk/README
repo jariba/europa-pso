@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.88 2004-05-21 21:38:53 taylor Exp $
+# $Id: README,v 1.89 2004-05-25 23:12:46 taylor Exp $
 #
 
 SUMMARY
@@ -20,7 +20,7 @@ o The partial plan DBTransaction View and the Sequence Query result views for
   through sortAscending, sortDescending, & noSort - while not clearing other 
   column sorts.  "Find Object/Token/Variable by Key" is available with
   Mouse-Right, where appropriate, on the panel between the window title and the
-  table header.  Mouse-Left on "Step" column cells offers to open partial plan
+  table header.  Mouse-Right on "Step" column cells offers to open partial plan
   views for that step.
 
 o  GNATS PRs and CRs completed:

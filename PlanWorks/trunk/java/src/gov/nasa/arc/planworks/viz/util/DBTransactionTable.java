@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionTable.java,v 1.1 2004-05-21 21:39:11 taylor Exp $
+// $Id: DBTransactionTable.java,v 1.2 2004-05-25 23:12:47 taylor Exp $
 //
 // PlanWorks
 //
@@ -17,7 +17,9 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -35,6 +37,7 @@ import javax.swing.table.TableModel;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
@@ -126,12 +129,16 @@ public class DBTransactionTable extends JTable {
 
     setDefaultRenderer( Object.class, new TransactionCellRenderer( vizView, this));
 
-    // Ask to be notified of selection changes.
-    selectedRow = -1; selectedCol = -1;
-    ListSelectionModel rowSM = getSelectionModel();
-    rowSM.addListSelectionListener( new DBTransTableRowListener( this));
-    ListSelectionModel colSM = getColumnModel().getSelectionModel();
-    colSM.addListSelectionListener( new DBTransTableColListener( this) );
+//     // Ask to be notified of selection changes.
+//     selectedRow = -1; selectedCol = -1;
+//     ListSelectionModel rowSM = getSelectionModel();
+//     rowSM.addListSelectionListener( new DBTransTableRowListener( this));
+//     ListSelectionModel colSM = getColumnModel().getSelectionModel();
+//     colSM.addListSelectionListener( new DBTransTableColListener( this) );
+
+    // detect Mouse-Right clicks
+    addMouseListener( new TableMouseAdapter());
+
   } // end constructor
 
   /**
@@ -239,7 +246,7 @@ public class DBTransactionTable extends JTable {
     int realColIndex = convertColumnIndexToModel( colIndex);
     Object currentValue = getValueAt( rowIndex, colIndex);
     if (realColIndex == stepNumberColumn) {
-      tip = "Mouse-Left: Open partial plan views for step " + currentValue;
+      tip = "Mouse-Right: Open partial plan views for step " + currentValue;
     } 
     return tip;
   } 
@@ -331,9 +338,8 @@ public class DBTransactionTable extends JTable {
     ViewGenerics.partialPlanViewsPopupMenu
       ( Integer.parseInt( stepNumberStr), planSequence,
         vizView, new Point( 0, 0), viewListener);
-//     table.setSelectedRow( -1);
-//     table.setSelectedCol( -1);
   } // end popupMenuForStepNumberColumn
+
 
   // set header font and background color
   class TransactionHeaderRenderer extends DefaultTableCellRenderer {
@@ -435,6 +441,28 @@ public class DBTransactionTable extends JTable {
   } // end class TransactionCellRenderer
 
 
+  class TableMouseAdapter extends MouseAdapter {
+
+    public void mouseClicked( MouseEvent mouseEvent) {
+      if (MouseEventOSX.isMouseLeftClick( mouseEvent,
+                                          PlanWorks.getPlanWorks().isMacOSX())) {
+        //System.err.println( "mouseClicked left");
+
+      } else if (MouseEventOSX.isMouseRightClick( mouseEvent,
+                                                  PlanWorks.getPlanWorks().isMacOSX())) {
+        // System.err.println( "mouseClicked right");
+        int rowIndx = DBTransactionTable.this.rowAtPoint( mouseEvent.getPoint());
+        int columnIndx =
+          DBTransactionTable.this.getTableHeader().columnAtPoint( mouseEvent.getPoint());
+        if (DBTransactionTable.this.getStepNumberColumn() == columnIndx) {
+          String stepNumberStr =
+            (String) DBTransactionTable.this.getModel().getValueAt( rowIndx, columnIndx);
+          popupMenuForStepNumberColumn( stepNumberStr, DBTransactionTable.this);
+        }
+      }
+    }
+
+  } // end class TableMouseAdapter
 
 } // end class DBTransactionTable
 
