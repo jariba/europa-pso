@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.3 2003-05-27 19:00:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,10 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -168,7 +172,56 @@ public class PwProjectImpl extends PwProject {
    * @exception Exception if an error occurs
    */
   public void save() throws Exception {
+    StringBuffer projectDataPathname =
+      new StringBuffer( System.getProperty( "planworks.root"));
+    projectDataPathname.append( "/data/project/");
+    projectDataPathname.append( "project.serialized");
+    FileOutputStream fileOutStream =
+      new FileOutputStream( projectDataPathname.toString());
+    ObjectOutputStream objectOutStream = new ObjectOutputStream( fileOutStream);
+    objectOutStream.writeObject( projectName);
+
+    /**
+
+           PwProjectImpl clonedProject = this.clone();
+           // null out PwPlanningSequenceImpl.partialPlans & transactions
+
+
+	oos.writeInt(12345);
+	oos.writeObject("Today");
+	oos.writeObject(new Date());
+
+    **/
+    objectOutStream.close();
   } // end save
+
+  /**
+   * <code>restore</code>
+   *
+   * @exception Exception if an error occurs
+   */
+  public void restore() throws Exception {
+    StringBuffer projectDataPathname =
+      new StringBuffer( System.getProperty( "planworks.root"));
+    projectDataPathname.append( "/data/project/");
+    projectDataPathname.append( "project.serialized");
+    FileInputStream fileInStream =
+      new FileInputStream( projectDataPathname.toString());
+    ObjectInputStream objectInStream = new ObjectInputStream( fileInStream);
+    String projectName = (String) objectInStream.readObject();
+    System.err.println( "restore: projectName " + projectName);
+    /**
+           planWorksRoot = System.getProperty( "planworks.root");
+
+
+	int i = ois.readInt();
+	String today = (String) ois.readObject();
+	Date date = (Date) ois.readObject();
+
+ 
+    **/
+    objectInStream.close();
+  } // end restore
 
 
 
