@@ -4,10 +4,10 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DirectoryChooser.java,v 1.6 2004-09-24 22:39:59 taylor Exp $
+// $Id: FileChooser.java,v 1.1 2004-09-24 22:39:59 taylor Exp $
 //
 //
-// Will Taylor -- started 26mar03
+// Will Taylor -- started 24sep04
 //
 
 package gov.nasa.arc.planworks.util;
@@ -20,66 +20,61 @@ import gov.nasa.arc.planworks.PlanWorks;
 
 
 /**
- * <code>DirectoryChooser</code> - these class instances are utilized by
- *                                 dirChooser.showDialog( PlanWorks.planWorks, "OK");
+ * <code>FileChooser</code> - these class instances are utilized by
+ *                                 fileChooser.showDialog( PlanWorks.planWorks, "OK");
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class DirectoryChooser extends JFileChooser {
+public class FileChooser extends JFileChooser {
+
+  private File currentDirectory;
 
   /**
-   * <code>DirectoryChooser</code> - constructor 
+   * <code>FileChooser</code> - constructor 
    *
    * @param title - <code>String</code> - 
-   * @param isMultiSelectionEnabled - <code>boolean</code> - 
    */
-  public DirectoryChooser( String title, boolean isMultiSelectionEnabled) {
+  public FileChooser( String title) {
     super();
-    commonConstructor( title, isMultiSelectionEnabled);
+    this.currentDirectory = null;
+    commonConstructor( title);
   }
     
   /**
-   * <code>DirectoryChooser</code> - constructor 
+   * <code>FileChooser</code> - constructor 
    *
    * @param title - <code>String</code> - 
-   * @param isMultiSelectionEnabled - <code>boolean</code> - 
    * @param currentDirectory - <code>File</code> - 
    */
-  public DirectoryChooser( String title, boolean isMultiSelectionEnabled,
-                           File currentDirectory) {
-    super();
-    this.setCurrentDirectory( currentDirectory.getParentFile());
-    commonConstructor( title, isMultiSelectionEnabled);
+  public FileChooser( String title, File currentDirectory) {
+    super( currentDirectory);
+    this.currentDirectory = currentDirectory;
+    commonConstructor( title);
   }
 
-  private void commonConstructor( String title, boolean isMultiSelectionEnabled) {
+  private void commonConstructor( String title) {
     setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
+    setMultiSelectionEnabled( false);
     setDialogTitle( title);
-    setMultiSelectionEnabled( isMultiSelectionEnabled);
+    setApproveButtonToolTipText( "Accept selected file");
   } // end commonConstructor
 
 
   /**
-   * <code>getValidSelectedDirectory</code> - For setMultiSelectionEnabled( false)
+   * <code>getValidSelectedFile</code> -
    *
    * @return - <code>String</code> - 
    */
-  public String getValidSelectedDirectory() {
-    if (isMultiSelectionEnabled()) {
-      JOptionPane.showMessageDialog
-        ( PlanWorks.getPlanWorks(), "MultiSelection is not handled -- returning null",
-          "No Directory Selected", JOptionPane.ERROR_MESSAGE);
-      return null;
-    }
+  public String getValidSelectedFile() {
     boolean isValid =  false;
     while (! isValid) {
       int returnVal = this.showDialog( PlanWorks.getPlanWorks(), "OK");
       if (returnVal == JFileChooser.APPROVE_OPTION) {
         File selectedFile = this.getSelectedFile();
         // System.err.println( "selectedFile " + selectedFile);
-        if ((selectedFile != null) && selectedFile.isDirectory()) {
+        if ((selectedFile != null) && selectedFile.isFile()) {
           this.approveSelection();
           isValid = true;
         } else {
@@ -90,8 +85,8 @@ public class DirectoryChooser extends JFileChooser {
           }
           JOptionPane.showMessageDialog
             ( PlanWorks.getPlanWorks(), "`" + selectedFileStr +
-              "'\nis not a valid directory.",
-              "No Directory Selected", JOptionPane.ERROR_MESSAGE);
+              "'\nis not a valid file.",
+              "No File Selected", JOptionPane.ERROR_MESSAGE);
           this.setCurrentDirectory( this.getCurrentDirectory());
         }
       } else {
@@ -99,6 +94,6 @@ public class DirectoryChooser extends JFileChooser {
       }
     }
     return this.getSelectedFile().getAbsolutePath();
-  } // end getValidSelectedDirectory
+  } // end getValidSelectedFile
 
-} // end class DirectoryChooser
+} // end class FileChooser

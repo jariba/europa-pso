@@ -1,3 +1,11 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: PlannerCommandLineDialog.java,v 1.7 2004-09-24 22:39:59 taylor Exp $
+//
 package gov.nasa.arc.planworks.util;
 
 import java.awt.Container;

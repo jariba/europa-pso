@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.89 2004-09-21 01:07:05 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.90 2004-09-24 22:40:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -104,9 +104,10 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class ConstraintNetworkView extends PartialPlanView implements FindEntityPathAdapter {
 
+  private static Object staticObject = new Object();
+
   private static final int SET_VISIBLE = 1;
   private static final int VIEW_HEIGHT = 275;
-  private static final Object staticObject = new Object();
 
   public static final double HORIZONTAL_CONSTRAINT_BAND_Y = 50.;
   public static final double HORIZONTAL_VARIABLE_BAND_Y = 150.;
@@ -115,9 +116,9 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
   public static double VERTICAL_CONSTRAINT_BAND_X = 450.;
   public static double VERTICAL_VARIABLE_BAND_X = 250.;
   public static double VERTICAL_TOKEN_BAND_X= 50.;
+  public static final double NODE_SPACING = 10.;
 
   private static final double VERTICAL_BAND_DISTANCE = 200;
-  public static final double NODE_SPACING = 10.;
 
   private long startTimeMSecs;
   private ConstraintJGoView jGoView;

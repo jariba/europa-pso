@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.5 2004-09-21 01:07:05 taylor Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.6 2004-09-24 22:39:58 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -16,21 +16,14 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent; 
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -238,17 +231,28 @@ public class ConfigureNewSequenceDialog extends JDialog {
     public ModelPathButtonListener() {
     }
     public void actionPerformed(ActionEvent ae) {
-      JFileChooser fileChooser = new JFileChooser( new File( modelPath));
-      fileChooser.setDialogTitle( "Select File");
-      fileChooser.setMultiSelectionEnabled( false);
-      fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
-      int retval = fileChooser.showOpenDialog( PlanWorks.getPlanWorks());
-      if (retval == JFileChooser.APPROVE_OPTION) {
-        String currentSelectedFile = fileChooser.getSelectedFile().getAbsolutePath();
-        modelPathField.setText( currentSelectedFile);
+      FileChooser fileChooser = new FileChooser( "Select File", new File( modelPath));
+      String currentSelectedFile = fileChooser.getValidSelectedFile();
+      if (currentSelectedFile == null) {
+        return;
       }
+      modelPathField.setText( currentSelectedFile);
     }
   } // end class ModelPathButtonListener
+
+  class ModelInitStatePathButtonListener implements ActionListener {
+    public ModelInitStatePathButtonListener() {
+    }
+    public void actionPerformed( ActionEvent ae) {
+      FileChooser fileChooser = new FileChooser( "Select File",
+                                                   new File( modelInitStatePath));
+      String currentSelectedFile = fileChooser.getValidSelectedFile();
+      if (currentSelectedFile == null) {
+        return;
+      }
+      modelInitStatePathField.setText( currentSelectedFile);
+    }
+  } // end class ModelInitStatePathButtonListener
 
   class ModelOutputDestDirButtonListener implements ActionListener {
     public ModelOutputDestDirButtonListener() {
@@ -256,29 +260,13 @@ public class ConfigureNewSequenceDialog extends JDialog {
     public void actionPerformed(ActionEvent ae) {
       DirectoryChooser dirChooser =
         PlanWorks.getPlanWorks().createDirectoryChooser( new File( modelOutputDestDir));
-      int returnVal = dirChooser.showDialog( PlanWorks.getPlanWorks(), "");
-      if (returnVal == JFileChooser.APPROVE_OPTION) {
-        String currentSelectedDir = dirChooser.getCurrentDirectory().getAbsolutePath();
-        modelOutputDestDirField.setText( currentSelectedDir);
+      String currentSelectedDir = dirChooser.getValidSelectedDirectory();
+      if (currentSelectedDir == null) {
+        return;
       }
+      modelOutputDestDirField.setText( currentSelectedDir);
     }
   } // end class ModelOutputDestDirButtonListener
-
-  class ModelInitStatePathButtonListener implements ActionListener {
-    public ModelInitStatePathButtonListener() {
-    }
-    public void actionPerformed( ActionEvent ae) {
-      JFileChooser fileChooser = new JFileChooser( new File( modelInitStatePath));
-      fileChooser.setDialogTitle( "Select File");
-      fileChooser.setMultiSelectionEnabled( false);
-      fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
-      int retval = fileChooser.showOpenDialog( PlanWorks.getPlanWorks());
-      if (retval == JFileChooser.APPROVE_OPTION) {
-        String currentSelectedFile = fileChooser.getSelectedFile().getAbsolutePath();
-        modelInitStatePathField.setText( currentSelectedFile);
-      }
-    }
-  } // end class ModelInitStatePathButtonListener
 
   class TransactionTypesButtonListener implements ActionListener {
     public TransactionTypesButtonListener() {

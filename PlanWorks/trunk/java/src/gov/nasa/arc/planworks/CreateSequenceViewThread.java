@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.15 2004-09-14 22:59:38 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.16 2004-09-24 22:39:57 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -58,6 +58,8 @@ public class CreateSequenceViewThread extends CreateViewThread {
     if (System.getProperty("ant.target.test").equals( "true")) {
       doProgMonitor = false;
     }
+
+    System.err.println( "CreateSequenceViewThread: sequenceName " + sequenceName);
   }
 
   /**

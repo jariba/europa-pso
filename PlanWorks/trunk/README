@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.129 2004-09-22 22:37:18 taylor Exp $
+# $Id: README,v 1.130 2004-09-24 22:39:56 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -16,27 +16,10 @@ The current known-good MySQL versions are:
 
 SUMMARY
 =======
-o "Project->Configure" and "Project->New Sequence" have been added to support
-  integration with PLASMA.  The "Planner Controller" window allows the user
-  to run plans with PLASMA and view the results in PlanWorks.
-
-o Background Mouse-Right "Find Entity Path" in the Token Network, Constraint
-  Network, and Navigator views, now highlights the appropriate links, as well
-  as the nodes.
-
-o In the Resource Profile View, Mouse-Right "Rescale '<resource-name>' Profile" over
-  a resource profile will allow the user to enter new x, y minumum and maximum
-  values and create a new view of the selected resource.  It is also possible to
-  "Reset" the created "unary" resource view to its original scaling.
-
-o All partial plan views, and Content Filter dialogs now have the background 
-  Mouse-Right selections: "Step Backward All Views" and "Step Forward All Views" 
-  which "step" all active views for the partial plan step upon which it is invoked.
+o 
 
 
 o GNATS PRs and CRs completed:
-  #2556: Scale for resource view.
-  #2566: Find Path should highlight links.
 
 
 CVS CHECKOUT
@@ -45,7 +28,7 @@ Latest development state:
   > cvs co PlanWorks  or
   > cvs update PlanWorks
 Latest tagged milestone: (see Summary below)
-  > cvs co -r PW_M_16 PlanWorks
+  > cvs co -r PW_M_17 PlanWorks
 
 
 PLATFORM REQUIREMENTS
@@ -56,6 +39,7 @@ Mac OSX - three button mouse is required.
 PREREQUISITES
 =============
 Set environment varibles:
+
   o JAVA_HOME - location of J2SDK >= 1.4.1
     On Solaris (Code IC)
       setenv JAVA_HOME /usr/local/j2sdk1.4.1
@@ -71,7 +55,7 @@ Set environment varibles:
 
   o OSTYPE - linux, solaris, or darwin (MacOSX)
     Should be set by user's standard environment (may need to be set locally on
-    MacOSX to "darwin", since global setting is "darwin7.0")
+    MacOSX to "darwin", since global setting maybe "darwin7.0")
 
   o USER - user's account name, used in defining the data base collection
     Should be set by user's standard environment
@@ -79,6 +63,8 @@ Set environment varibles:
   o PLANWORKS_HOME - path to this directory
     On Linux, e.g.
       setenv PLANWORKS_HOME /home/wtaylor/PlanWorksProject/PlanWorks
+
+  o CLASSPATH - should be the empty string( actually this is a requirement for PLASMA).
 
 
 OPTIONAL CONFIGURATION
@@ -160,6 +146,31 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+22september04: Milestone 17
+===========================
+o "Project->Configure" and "Project->New Sequence" have been added to support
+  integration with PLASMA.  The "Planner Controller" window allows the user
+  to run plans with PLASMA and view the results in PlanWorks.
+
+o Background Mouse-Right "Find Entity Path" in the Token Network, Constraint
+  Network, and Navigator views, now highlights the appropriate links, as well
+  as the nodes.
+
+o In the Resource Profile View, Mouse-Right "Rescale '<resource-name>' Profile" over
+  a resource profile will allow the user to enter new x, y minumum and maximum
+  values and create a new view of the selected resource.  It is also possible to
+  "Reset" the created "unary" resource view to its original scaling.
+
+o All partial plan views, and Content Filter dialogs now have the background 
+  Mouse-Right selections: "Step Backward All Views" and "Step Forward All Views" 
+  which "step" all active views for the partial plan step upon which it is invoked.
+
+
+o GNATS PRs and CRs completed:
+  #2556: Scale for resource view.
+  #2566: Find Path should highlight links.
+
 
 26august04: Milestone 16
 ========================
