@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.61 2004-09-14 22:59:42 taylor Exp $
+// $Id: planViz.txt,v 1.62 2004-09-21 01:07:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -441,6 +441,9 @@ Method:
      "Find Entity Path", enter two token keys, and click "Find Path".
  20. In the Token Network View, Mouse-Left click on the background, and then
      Mouse-Right click on the background and select "Highlight Current Path".
+ 21. Select Mouse-Right on the background of each view and in turn select "Step Backward
+     All Views" and "Step Forward All Views".
+
 
 Post-conditions:
   1. Method:2 - In turn, each of the views should re-oriented itself to
@@ -491,6 +494,9 @@ Post-conditions:
      be rendered and highlighted: the first green and the others turquoise.
  19. Method:20 - After the Mouse-Left click the node highlighting will disappear.
      After the Mouse-Right click the node highlighting of Method:18 will reappear.
+ 20. Method:21 - the view titles will reflect that the views displayed are the next
+     lowest step (backward), or the next highest step (forward).
+
 
 Requirements: TBD
 
@@ -963,6 +969,9 @@ Method:
  13. On the Resource Profile View, click Mouse-Right on the background, over a 
      resource profile and select "Rescale '<resource-name>' Profile".  Enter new
      x, y minumum and maximum values and click "OK".
+ 14. On the Resource Profile and Resource Transaction Views, click Mouse-Right on 
+     the background, and in turn select "Step Backward All Views" and "Step Forward 
+     All Views".
 
 Post-conditions:
   1. Method:1 - The SequenceStepsView of test-seq-1 appears.
@@ -994,6 +1003,8 @@ Post-conditions:
  12. Method:12 - The resource transaction node with the entered id will be highlighted.
  13. Method:13 - A new resource profile view for the selected resource will appear with
      the specified x and y min/max values.
+ 14. Method:14 - the view titles will reflect that the views displayed are both the next
+     lowest step (backward), or the next highest step (forward).
 
 
 PLANVIZ-22
@@ -1135,6 +1146,8 @@ Method:
      and choose all available view options, one after another.
   5. Mouse-Right on a choice node item and choose all available view options, one
      after another.
+  6. Click Mouse-Right on the background, and in turn select "Step Backward All Views" 
+     and "Step Forward All Views".
 
 Post-conditions:
   1. Method:1 - The SequenceStepsView of test-seq-1 appears.
@@ -1147,6 +1160,9 @@ Post-conditions:
      highlighted nodes for the decision key value to be viewed.
   5. Method:5 - The selected views should open and scroll to the appropriate
      highlighted nodes for the choice key value to be viewed.
+  6. Method:6 - the view titles will reflect that the views displayed are both the next
+     lowest step (backward), or the next highest step (forward).
+
 
 Requirements: N/A
 

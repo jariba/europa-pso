@@ -4,30 +4,37 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.4 2004-09-14 22:59:38 taylor Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.5 2004-09-21 01:07:05 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
+
+import gov.nasa.arc.planworks.ConfigureAndPlugins;
+import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.PlannerControlJNI;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent; 
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
-import gov.nasa.arc.planworks.ConfigureAndPlugins;
-import gov.nasa.arc.planworks.PlanWorks;
 
 
 /**
@@ -52,6 +59,8 @@ public class ConfigureNewSequenceDialog extends JDialog {
   private JTextField modelOutputDestDirField;
   private String modelInitStatePath;
   private JTextField modelInitStatePathField;
+  private String [] transactionTypes;
+  private int[] transactionTypeStates; // i = enabled; 0 = disabled
 
   private String btnString1;
   private String btnString2;
@@ -84,6 +93,10 @@ public class ConfigureNewSequenceDialog extends JDialog {
     modelInitStatePathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
     modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
+
+    final JButton transactionTypesButton = new JButton( "transaction types to log");
+    transactionTypesButton.addActionListener( new TransactionTypesButtonListener());
+    
     // current values
     try {
       String currentProjectName = planWorks.getCurrentProjectName();
@@ -99,6 +112,31 @@ public class ConfigureNewSequenceDialog extends JDialog {
                                      ( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH,
                                        currentProjectName)).getCanonicalPath();
     } catch (IOException ioExcep) {
+    }
+
+    try {
+      transactionTypes = PlannerControlJNI.getTransactionTypes();
+//     for (int i = 0, n = transactionTypes.length; i < n; i++) {
+//       String transType = (String) transactionTypes[i];
+//       System.err.println( "transType i=" + i + " " + transType);
+//     }
+      transactionTypeStates = PlannerControlJNI.getTransactionTypeStates();
+//     for (int i = 0, n = transactionTypeStates.length; i < n; i++) {
+//       int transTypeState = (int) transactionTypeStates[i];
+//       System.err.println( "transTypeState i=" + i + " " + transTypeState);
+//     }
+    } catch (UnsatisfiedLinkError ule) {
+      JOptionPane.showMessageDialog
+        (PlanWorks.getPlanWorks(), "JNI method '" + ule.getMessage() + "' has not been loaded",
+         "Planner Loading Error", JOptionPane.ERROR_MESSAGE);
+      modelPath = null; // abort New Sequence operation
+      return;
+    }
+    if (transactionTypes.length != transactionTypeStates.length) {
+      System.err.println( "ConfigureNewSequenceDialog: num transactionTypes (" +
+                          transactionTypes.length + ") is != num transactionTypeStates (" +
+                          transactionTypeStates.length + ") from PlannerControlJNI");
+      System.exit( -1);
     }
 //     modelNameField.setText( modelName);
     modelPathField.setText( modelPath);
@@ -157,6 +195,12 @@ public class ConfigureNewSequenceDialog extends JDialog {
     c.gridx++;
     gridBag.setConstraints( modelOutputDestDirBrowseButton, c);
     dialogPanel.add( modelOutputDestDirBrowseButton);
+
+    c.gridx = 0;  
+    c.gridy++;
+    gridBag.setConstraints( transactionTypesButton, c);
+    dialogPanel.add( transactionTypesButton);
+
 
     optionPane = new JOptionPane
       ( dialogPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
@@ -223,7 +267,7 @@ public class ConfigureNewSequenceDialog extends JDialog {
   class ModelInitStatePathButtonListener implements ActionListener {
     public ModelInitStatePathButtonListener() {
     }
-    public void actionPerformed(ActionEvent ae) {
+    public void actionPerformed( ActionEvent ae) {
       JFileChooser fileChooser = new JFileChooser( new File( modelInitStatePath));
       fileChooser.setDialogTitle( "Select File");
       fileChooser.setMultiSelectionEnabled( false);
@@ -235,6 +279,24 @@ public class ConfigureNewSequenceDialog extends JDialog {
       }
     }
   } // end class ModelInitStatePathButtonListener
+
+  class TransactionTypesButtonListener implements ActionListener {
+    public TransactionTypesButtonListener() {
+    }
+    public void actionPerformed( ActionEvent ae) {
+      TransactionTypesDialog transactionTypesDialog =
+        new TransactionTypesDialog( PlanWorks.getPlanWorks(), transactionTypes,
+                                    transactionTypeStates);
+      int[] transStates = transactionTypesDialog.getTransactionTypeStates();
+      if (transStates == null) {
+        // user chose cancel
+        return;
+      } else {
+        transactionTypeStates = transStates;
+      }
+    }
+  } // end class TransactionTypesButtonListener
+
 
 
   private void addInputListener() {
@@ -259,8 +321,11 @@ public class ConfigureNewSequenceDialog extends JDialog {
               if (handleTextFieldValues()) {
                 return;
               }
+              PlannerControlJNI.setTransactionTypeStates( transactionTypeStates);
+
               // we're done; dismiss the dialog
               setVisible( false);
+
             } else { // user closed dialog or clicked cancel
               modelName = null;
               modelPath = null;
@@ -353,6 +418,9 @@ public class ConfigureNewSequenceDialog extends JDialog {
   public String getModelInitStatePath() {
     return modelInitStatePath;
   }
+
+
+
 
 } // end class ConfigureNewSequenceDialog
 

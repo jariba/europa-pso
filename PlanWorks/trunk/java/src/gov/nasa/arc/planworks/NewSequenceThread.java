@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.10 2004-09-14 22:59:38 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.11 2004-09-21 01:07:04 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -68,10 +68,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
   } // end run
 
   private String getNewSequenceUrl() {
-    if (! getConfigureParameters()) {
-      return null;
-    }
-
+    String plannerPath = ConfigureAndPlugins.getProjectConfigValue
+      ( ConfigureAndPlugins.PROJECT_PLANNER_PATH, projectName);
     if (! currentProject.getJNIAdapterLoaded()) {
       if (plannerPath.indexOf( ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH) == -1) {
         JOptionPane.showMessageDialog
@@ -94,6 +92,10 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       }
     }
 
+    if (! getConfigureParameters()) {
+      return null;
+    }
+
     if (PlannerControlJNI.initPlannerRun( modelPath, modelInitStatePath,
                                           modelOutputDestDir) !=
         PlannerControlJNI.PLANNER_IN_PROGRESS) {
@@ -104,7 +106,6 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     }
 
     String seqUrl = PlannerControlJNI.getDestinationPath();
-    // String seqUrl = "/home/wtaylor/PlanWorksProject/sequences/PLASMA/basic-model1091643100999";
     return seqUrl;
   } // end getNewSequenceUrl
 

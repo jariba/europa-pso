@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceView.java,v 1.4 2004-05-21 21:39:09 taylor Exp $
+// $Id: SequenceView.java,v 1.5 2004-09-21 01:07:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -31,6 +31,8 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
+import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 // import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.VizView;
@@ -68,6 +70,23 @@ public class SequenceView extends VizView {
   public final PwPlanningSequence getPlanSequence() {
     return planSequence;
   }
+
+  /**
+   * <code>getPartialPlan</code>
+   *
+   * @param stepNumber - <code>int</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   */
+  protected PwPartialPlan getPartialPlan( int stepNumber) {
+    PwPartialPlan partialPlan = null;
+    try {
+      partialPlan = planSequence.getPartialPlan( stepNumber);
+    } catch (IndexOutOfBoundsException excp) {
+    } catch (ResourceNotFoundException excpR) {
+    } catch (CreatePartialPlanException excpPP) {
+    }
+    return partialPlan;
+  } //  getPartialPlan
 
   /**
    * <code>createCloseHideShowViewItems</code>

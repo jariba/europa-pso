@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.85 2004-09-14 22:59:36 taylor Exp $
+# $Id: build-tags-file.csh,v 1.86 2004-09-21 01:07:03 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -148,6 +148,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java \
     src/gov/nasa/arc/planworks/util/StringNameComparator.java \
     src/gov/nasa/arc/planworks/util/SwingWorker.java \
+    src/gov/nasa/arc/planworks/util/TransactionTypesDialog.java \
     src/gov/nasa/arc/planworks/util/UnaryFunctor.java \
     src/gov/nasa/arc/planworks/util/UniqueSet.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \

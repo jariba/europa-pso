@@ -4,12 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlannerControlJNI.java,v 1.1 2004-09-03 00:35:33 taylor Exp $
+// $Id: PlannerControlJNI.java,v 1.2 2004-09-21 01:07:04 taylor Exp $
 //
 // PlanWorks -- started 31aug04
 //
 
 package gov.nasa.arc.planworks;
+
 
 /**
  * <code>PlannerControlJNI</code> - Java Native Interface for PLASMA Planner Control
@@ -20,12 +21,30 @@ package gov.nasa.arc.planworks;
  */
 public class PlannerControlJNI {
 
-  public static native int initPlannerRun( String modelPath,
-                                           String nodelInitStatePath,
-                                           String modelOutputDestDir);
+  /**
+   * <code>initPlannerRun</code>
+   *
+   * @param modelPath - <code>String</code> - 
+   * @param nodelInitStatePath - <code>String</code> - 
+   * @param modelOutputDestDir - <code>String</code> - 
+   * @return - <code>int</code> - 
+   */
+  public static native int initPlannerRun( final String modelPath,
+                                           final String nodelInitStatePath,
+                                           final String modelOutputDestDir);
 
+  /**
+   * <code>getPlannerStatus</code>
+   *
+   * @return - <code>int</code> - 
+   */
   public static native int getPlannerStatus();
 
+  /**
+   * <code>getDestinationPath</code>
+   *
+   * @return - <code>String</code> - 
+   */
   public static native String getDestinationPath();
 
   /*
@@ -42,10 +61,53 @@ public class PlannerControlJNI {
   public static final int PLANNER_INITIALLY_INCONSISTANT  = 4;
 
   // return value for following methods is int lastStepCompleted  
-  public static native int writeStep( int step);
-  public static native int writeNext( int numStep);
+  /**
+   * <code>writeStep</code>
+   *
+   * @param step - <code>int</code> - 
+   * @return - <code>int</code> - 
+   */
+  public static native int writeStep(  final int step);
+  /**
+   * <code>writeNext</code>
+   *
+   * @param numStep - <code>int</code> - 
+   * @return - <code>int</code> - 
+   */
+  public static native int writeNext(  final int numStep);
+  /**
+   * <code>completePlannerRun</code>
+   *
+   * @return - <code>int</code> - 
+   */
   public static native int completePlannerRun();
+  /**
+   * <code>terminatePlannerRun</code>
+   *
+   * @return - <code>int</code> - 
+   */
   public static native int terminatePlannerRun();
 
+
+  /**
+   * <code>getTransactionTypes</code>
+   *
+   * @return - <code>String[]</code> - 
+   */
+  public static native String [] getTransactionTypes();
+
+  /**
+   * <code>getTransactionTypeStates</code>
+   *
+   * @return - <code>int[]</code> - 
+   */
+  public static native int[] getTransactionTypeStates();
+
+  /**
+   * <code>setTransactionTypeStates</code>
+   *
+   * @param transTypeStates - <code>int[]</code> - 
+   */
+  public static native void setTransactionTypeStates(  final int[] transTypeStates);
 
 } // end PlannerControlJNI

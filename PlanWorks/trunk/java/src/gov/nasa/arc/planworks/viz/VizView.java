@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.40 2004-09-09 22:45:05 taylor Exp $
+// $Id: VizView.java,v 1.41 2004-09-21 01:07:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.viz;
 
+import java.awt.AWTEvent;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -55,6 +57,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.util.FindEntityPath;
 import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
+import gov.nasa.arc.planworks.viz.util.StepButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
@@ -627,6 +630,105 @@ public class VizView extends JPanel {
     // System.err.println( "progressMonitorWait took " + (maxCycles - numCycles) + " numCycles");
     return numCycles != 0;
   } // end progressMonitorWait
+
+  /**
+   * <code>createStepAllViewItems</code>
+   *
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param mouseRightPopup - <code>JPopupMenu</code> - 
+   */
+  public void createStepAllViewItems( PwPartialPlan partialPlan, JPopupMenu mouseRightPopup) {
+    List partialPlanViewList = getPartialPlanViewList( partialPlan);
+    String stepBackwardTitle = "Step Backward All Views";
+    JMenuItem stepBackwardItem = new JMenuItem( stepBackwardTitle);
+    createStepBackwardItem( stepBackwardItem, partialPlanViewList);
+    mouseRightPopup.add( stepBackwardItem);
+
+    String stepForwardTitle = "Step Forward All Views";
+    JMenuItem stepForwardItem = new JMenuItem( stepForwardTitle);
+    createStepForwardItem( stepForwardItem, partialPlanViewList);
+    mouseRightPopup.add( stepForwardItem);
+
+  } // createStepAllViewItems
+
+  /**
+   * <code>getPartialPlanViewList</code>
+   *
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @return - <code>List</code> - 
+   */
+  protected List getPartialPlanViewList( PwPartialPlan partialPlan) {
+    List partialPlanViewList = new ArrayList();
+    PartialPlanViewSet partialPlanViewSet =
+      (PartialPlanViewSet) PlanWorks.getPlanWorks().getViewManager().getViewSet( partialPlan);
+    if (partialPlanViewSet != null) {
+      int numToReturn = 0; // return all
+      List partialPlanViews = partialPlanViewSet.getPartialPlanViews( numToReturn);
+      Iterator viewsItr = partialPlanViews.iterator();
+      while (viewsItr.hasNext()) {
+        PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
+        StepButton backwardButton = partialPlanView.getBackwardButton();
+        // System.err.println( "partialPlanView " + partialPlanView);
+        partialPlanViewList.add( partialPlanView);
+      }
+    }
+    return partialPlanViewList;
+  } // end getPartialPlanViewList
+
+  /**
+   * <code>createStepBackwardItem</code>
+   *
+   * @param stepBackwardItem - <code>JMenuItem</code> - 
+   * @param partialPlanViewList - <code>List</code> - 
+   */
+  protected void createStepBackwardItem( JMenuItem stepBackwardItem, 
+                                       final List partialPlanViewList) {
+    stepBackwardItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          Iterator viewsItr = partialPlanViewList.iterator();
+          while (viewsItr.hasNext()) {
+            PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
+            StepButton backwardButton = partialPlanView.getBackwardButton();
+            ListIterator actionList =
+              backwardButton.getActionListeners().listIterator();
+            ActionEvent e =
+              new ActionEvent( backwardButton, ActionEvent.ACTION_PERFORMED, "LeftClick", 
+                               (int) AWTEvent.MOUSE_EVENT_MASK);
+            while (actionList.hasNext()) {
+              ((ActionListener) actionList.next()).actionPerformed( e);
+            }
+          }
+        }
+      });
+  } // end createStepBackwardItem
+
+  /**
+   * <code>createStepForwardItem</code>
+   *
+   * @param stepForwardItem - <code>JMenuItem</code> - 
+   * @param partialPlanViewList - <code>List</code> - 
+   */
+  protected void createStepForwardItem( JMenuItem stepForwardItem, 
+                                      final List partialPlanViewList) {
+    stepForwardItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          Iterator viewsItr = partialPlanViewList.iterator();
+          while (viewsItr.hasNext()) {
+            PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
+            StepButton forwardButton = partialPlanView.getForwardButton();
+            ListIterator actionList =
+              forwardButton.getActionListeners().listIterator();
+            ActionEvent e =
+              new ActionEvent( forwardButton, ActionEvent.ACTION_PERFORMED, "LeftClick", 
+                               (int) AWTEvent.MOUSE_EVENT_MASK);
+            while (actionList.hasNext()) {
+              ((ActionListener) actionList.next()).actionPerformed( e);
+            }
+          }
+        }
+      });
+  } // end createStepForwardItem
+
 
 } // end class VizView
 

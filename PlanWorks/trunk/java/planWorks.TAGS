@@ -205,18 +205,18 @@ public class InstantiateProjectThread InstantiateProjectThread41,1225
   private PwProject openProject(InstantiateProjectThread.openProject208,8261
 
 src/gov/nasa/arc/planworks/NewSequenceThread.java,706
-public class NewSequenceThread NewSequenceThread33,1147
-  public NewSequenceThread(NewSequenceThread.NewSequenceThread44,1471
-  public void run(NewSequenceThread.run50,1639
-  private String getNewSequenceUrl(NewSequenceThread.getNewSequenceUrl70,2441
-  private void newSequence(NewSequenceThread.newSequence111,4035
-  private ViewSet getViewSetWithWait(NewSequenceThread.getViewSetWithWait163,6865
-  private MDIInternalFrame getSequenceStepsFrameWithWait(NewSequenceThread.getSequenceStepsFrameWithWait176,7382
-  private boolean getConfigureParameters(NewSequenceThread.getConfigureParameters205,8612
-  private void setConfigureParameters(NewSequenceThread.setConfigureParameters223,9403
+public class NewSequenceThread NewSequenceThread33,1148
+  public NewSequenceThread(NewSequenceThread.NewSequenceThread44,1472
+  public void run(NewSequenceThread.run50,1640
+  private String getNewSequenceUrl(NewSequenceThread.getNewSequenceUrl70,2442
+  private void newSequence(NewSequenceThread.newSequence112,4068
+  private ViewSet getViewSetWithWait(NewSequenceThread.getViewSetWithWait164,6898
+  private MDIInternalFrame getSequenceStepsFrameWithWait(NewSequenceThread.getSequenceStepsFrameWithWait177,7415
+  private boolean getConfigureParameters(NewSequenceThread.getConfigureParameters206,8645
+  private void setConfigureParameters(NewSequenceThread.setConfigureParameters224,9436
 
 src/gov/nasa/arc/planworks/PlannerControlJNI.java,57
-public class PlannerControlJNI PlannerControlJNI21,569
+public class PlannerControlJNI PlannerControlJNI22,570
 
 src/gov/nasa/arc/planworks/PlanWorks.java,5070
 public class PlanWorks PlanWorks79,2767
@@ -1819,24 +1819,27 @@ public class ColorStream ColorStream11,220
   private Color nextColor(ColorStream.nextColor50,1181
   public Color getColor(ColorStream.getColor71,1670
 
-src/gov/nasa/arc/planworks/util/ConfigureNewSequenceDialog.java,1795
-public class ConfigureNewSequenceDialog ConfigureNewSequenceDialog41,1263
-  public ConfigureNewSequenceDialog ConfigureNewSequenceDialog.ConfigureNewSequenceDialog65,1941
-  class ModelPathButtonListener ConfigureNewSequenceDialog.ModelPathButtonListener193,7136
-    public ModelPathButtonListener(ConfigureNewSequenceDialog.ModelPathButtonListener.ModelPathButtonListener194,7196
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelPathButtonListener.actionPerformed196,7241
-  class ModelOutputDestDirButtonListener ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener209,7865
-    public ModelOutputDestDirButtonListener(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener210,7934
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.actionPerformed212,7988
-  class ModelInitStatePathButtonListener ConfigureNewSequenceDialog.ModelInitStatePathButtonListener223,8508
-    public ModelInitStatePathButtonListener(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener224,8577
-    public void actionPerformed(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.actionPerformed226,8631
-  private void addInputListener(ConfigureNewSequenceDialog.addInputListener240,9283
-  private boolean handleTextFieldValues(ConfigureNewSequenceDialog.handleTextFieldValues276,10659
-  private boolean doesPathExist(ConfigureNewSequenceDialog.doesPathExist310,11715
-  public String getModelPath(ConfigureNewSequenceDialog.getModelPath335,12316
-  public String getModelOutputDestDir(ConfigureNewSequenceDialog.getModelOutputDestDir344,12471
-  public String getModelInitStatePath(ConfigureNewSequenceDialog.getModelInitStatePath353,12644
+src/gov/nasa/arc/planworks/util/ConfigureNewSequenceDialog.java,2166
+public class ConfigureNewSequenceDialog ConfigureNewSequenceDialog48,1489
+  public ConfigureNewSequenceDialog ConfigureNewSequenceDialog.ConfigureNewSequenceDialog74,2273
+  class ModelPathButtonListener ConfigureNewSequenceDialog.ModelPathButtonListener234,8717
+    public ModelPathButtonListener(ConfigureNewSequenceDialog.ModelPathButtonListener.ModelPathButtonListener235,8777
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelPathButtonListener.actionPerformed237,8822
+  class ModelOutputDestDirButtonListener ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener250,9446
+    public ModelOutputDestDirButtonListener(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.ModelOutputDestDirButtonListener251,9515
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelOutputDestDirButtonListener.actionPerformed253,9569
+  class ModelInitStatePathButtonListener ConfigureNewSequenceDialog.ModelInitStatePathButtonListener264,10089
+    public ModelInitStatePathButtonListener(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.ModelInitStatePathButtonListener265,10158
+    public void actionPerformed(ConfigureNewSequenceDialog.ModelInitStatePathButtonListener.actionPerformed267,10212
+  class TransactionTypesButtonListener ConfigureNewSequenceDialog.TransactionTypesButtonListener280,10864
+    public TransactionTypesButtonListener(ConfigureNewSequenceDialog.TransactionTypesButtonListener.TransactionTypesButtonListener281,10931
+    public void actionPerformed(ConfigureNewSequenceDialog.TransactionTypesButtonListener.actionPerformed283,10983
+  private void addInputListener(ConfigureNewSequenceDialog.addInputListener299,11508
+  private boolean handleTextFieldValues(ConfigureNewSequenceDialog.handleTextFieldValues338,12968
+  private boolean doesPathExist(ConfigureNewSequenceDialog.doesPathExist372,14024
+  public String getModelPath(ConfigureNewSequenceDialog.getModelPath397,14625
+  public String getModelOutputDestDir(ConfigureNewSequenceDialog.getModelOutputDestDir406,14780
+  public String getModelInitStatePath(ConfigureNewSequenceDialog.getModelInitStatePath415,14953
 
 src/gov/nasa/arc/planworks/util/ConfigureProjectDialog.java,2604
 public class ConfigureProjectDialog ConfigureProjectDialog41,1250
@@ -2044,6 +2047,12 @@ public abstract class SwingWorker SwingWorker19,582
     public Object get(SwingWorker.get81,2315
     public SwingWorker(SwingWorker.SwingWorker102,2822
     public void start(SwingWorker.start127,3426
+
+src/gov/nasa/arc/planworks/util/TransactionTypesDialog.java,335
+public class TransactionTypesDialog TransactionTypesDialog46,1292
+  public TransactionTypesDialog(TransactionTypesDialog.TransactionTypesDialog61,1745
+  private void addInputListener(TransactionTypesDialog.addInputListener113,3665
+  public int[] getTransactionTypeStates(TransactionTypesDialog.getTransactionTypeStates151,5132
 
 src/gov/nasa/arc/planworks/util/UnaryFunctor.java,51
 public interface UnaryFunctor UnaryFunctor11,281
@@ -2276,8 +2285,8 @@ public class NodeGenerics NodeGenerics62,1957
   public static List mapTokensToTokenNodes(NodeGenerics.mapTokensToTokenNodes298,11371
   public static String trimName(NodeGenerics.trimName335,12719
   public static void getSlotNodeToolTipText(NodeGenerics.getSlotNodeToolTipText356,13626
-  public static void getVariableNodeToolTipText(NodeGenerics.getVariableNodeToolTipText382,14390
-  public static BasicNodeLink getLinkFromNodes(NodeGenerics.getLinkFromNodes420,15934
+  public static void getVariableNodeToolTipText(NodeGenerics.getVariableNodeToolTipText387,14558
+  public static BasicNodeLink getLinkFromNodes(NodeGenerics.getLinkFromNodes425,16102
 
 src/gov/nasa/arc/planworks/viz/nodes/ObjectNode.java,584
 public class ObjectNode ObjectNode24,729
@@ -2540,25 +2549,25 @@ public abstract class ResourceView ResourceView61,1893
     public final String getToolTipText(ResourceView.ResourceLine.getToolTipText1129,39183
 
 src/gov/nasa/arc/planworks/viz/partialPlan/TimeScaleView.java,1497
-public class TimeScaleView TimeScaleView50,1589
-  public TimeScaleView(TimeScaleView.TimeScaleView80,2557
-  public final int getTimeScaleStart(TimeScaleView.getTimeScaleStart97,3107
-  public final void setTimeScaleStart(TimeScaleView.setTimeScaleStart106,3277
-  public final int getTimeScaleEnd(TimeScaleView.getTimeScaleEnd115,3456
-  public final void setTimeScaleEnd(TimeScaleView.setTimeScaleEnd124,3618
-  public final double getTimeScaleNoZoom(TimeScaleView.getTimeScaleNoZoom133,3795
-  public final double getTimeScaleWithZoom(TimeScaleView.getTimeScaleWithZoom142,3967
-  public final void collectAndComputeTimeScaleMetrics(TimeScaleView.collectAndComputeTimeScaleMetrics152,4228
-  private void collectTimeScaleMetrics(TimeScaleView.collectTimeScaleMetrics191,5669
-  private void collectFreeTokenMetrics(TimeScaleView.collectFreeTokenMetrics236,7814
-  public void computeTimeScaleMetrics(TimeScaleView.computeTimeScaleMetrics297,10628
-  private void iterationCntError(TimeScaleView.iterationCntError361,13430
-  public final void createTimeScale(TimeScaleView.createTimeScale387,14632
-  private void addTickLabel(TimeScaleView.addTickLabel439,16960
-  public final int scaleTimeNoZoom(TimeScaleView.scaleTimeNoZoom457,17580
-  public final int  scaleXLocNoZoom(TimeScaleView.scaleXLocNoZoom467,17826
-  public final int scaleTimeWithZoom(TimeScaleView.scaleTimeWithZoom477,18088
-  public final int  scaleXLocWithZoom(TimeScaleView.scaleXLocWithZoom490,18572
+public class TimeScaleView TimeScaleView49,1588
+  public TimeScaleView(TimeScaleView.TimeScaleView78,2497
+  public final int getTimeScaleStart(TimeScaleView.getTimeScaleStart95,3047
+  public final void setTimeScaleStart(TimeScaleView.setTimeScaleStart104,3217
+  public final int getTimeScaleEnd(TimeScaleView.getTimeScaleEnd113,3396
+  public final void setTimeScaleEnd(TimeScaleView.setTimeScaleEnd122,3558
+  public final double getTimeScaleNoZoom(TimeScaleView.getTimeScaleNoZoom131,3735
+  public final double getTimeScaleWithZoom(TimeScaleView.getTimeScaleWithZoom140,3907
+  public final void collectAndComputeTimeScaleMetrics(TimeScaleView.collectAndComputeTimeScaleMetrics150,4168
+  private void collectTimeScaleMetrics(TimeScaleView.collectTimeScaleMetrics189,5609
+  private void collectFreeTokenMetrics(TimeScaleView.collectFreeTokenMetrics234,7754
+  public void computeTimeScaleMetrics(TimeScaleView.computeTimeScaleMetrics295,10568
+  private void iterationCntError(TimeScaleView.iterationCntError352,13247
+  public final void createTimeScale(TimeScaleView.createTimeScale378,14449
+  private void addTickLabel(TimeScaleView.addTickLabel430,16820
+  public final int scaleTimeNoZoom(TimeScaleView.scaleTimeNoZoom448,17440
+  public final int  scaleXLocNoZoom(TimeScaleView.scaleXLocNoZoom458,17686
+  public final int scaleTimeWithZoom(TimeScaleView.scaleTimeWithZoom468,17948
+  public final int  scaleXLocWithZoom(TimeScaleView.scaleXLocWithZoom481,18432
 
 src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java,544
 public class ConstraintNetwork ConstraintNetwork37,1027
@@ -3223,18 +3232,18 @@ public class VariableNavNode VariableNavNode50,1612
   private boolean removeVariableObjects(VariableNavNode.removeVariableObjects357,11369
 
 src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/RescaleProfileDialog.java,754
-public class RescaleProfileDialog RescaleProfileDialog37,1113
-  public RescaleProfileDialog RescaleProfileDialog.RescaleProfileDialog69,2026
-  private void addInputListener(RescaleProfileDialog.addInputListener182,6006
-  private boolean handleTextFieldValues(RescaleProfileDialog.handleTextFieldValues226,7780
-  private void showRangeErrorDialog(RescaleProfileDialog.showRangeErrorDialog304,10332
-  private void showFormatErrorDialog(RescaleProfileDialog.showFormatErrorDialog312,10704
-  public Double getMaxY(RescaleProfileDialog.getMaxY323,11029
-  public Double getMinY(RescaleProfileDialog.getMinY332,11173
-  public Double getMaxX(RescaleProfileDialog.getMaxX341,11317
-  public Double getMinX(RescaleProfileDialog.getMinX350,11461
+public class RescaleProfileDialog RescaleProfileDialog38,1194
+  public RescaleProfileDialog RescaleProfileDialog.RescaleProfileDialog71,2161
+  private void addInputListener(RescaleProfileDialog.addInputListener192,6663
+  private boolean handleTextFieldValues(RescaleProfileDialog.handleTextFieldValues236,8437
+  private void showRangeErrorDialog(RescaleProfileDialog.showRangeErrorDialog314,10989
+  private void showFormatErrorDialog(RescaleProfileDialog.showFormatErrorDialog322,11361
+  public Double getMaxY(RescaleProfileDialog.getMaxY333,11686
+  public Double getMinY(RescaleProfileDialog.getMinY342,11830
+  public Double getMaxX(RescaleProfileDialog.getMaxX351,11974
+  public Double getMinX(RescaleProfileDialog.getMinX360,12118
 
-src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfile.java,1900
+src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfile.java,1826
 public class ResourceProfile ResourceProfile62,1995
   public ResourceProfile(ResourceProfile.ResourceProfile90,2894
   public static int getNodeLabelWidth(ResourceProfile.getNodeLabelWidth124,4245
@@ -3246,20 +3255,19 @@ public class ResourceProfile ResourceProfile62,1995
   public final int getProfileYOrigin(ResourceProfile.getProfileYOrigin270,10319
   private void renderLevelScaleLinesAndTicks(ResourceProfile.renderLevelScaleLinesAndTicks274,10392
   private void renderLimits(ResourceProfile.renderLimits325,13065
-  private void renderLevels(ResourceProfile.renderLevels353,14845
-  private void addLineSegment(ResourceProfile.addLineSegment395,17230
-  private void addMaxLineSegment(ResourceProfile.addMaxLineSegment414,17933
-  private void addMinLineSegment(ResourceProfile.addMinLineSegment421,18317
-  private int scaleResourceLevel(ResourceProfile.scaleResourceLevel428,18698
-  public class ProfileLine ResourceProfile.ProfileLine440,19098
-    public ProfileLine(ResourceProfile.ProfileLine.ProfileLine445,19228
-    public ProfileLine(ResourceProfile.ProfileLine.ProfileLine454,19423
-    public final String getToolTipText(ResourceProfile.ProfileLine.getToolTipText465,19667
-    public final String getToolTipText(ResourceProfile.ProfileLine.getToolTipText480,20114
-    public final boolean doMouseClick(ResourceProfile.ProfileLine.doMouseClick498,20719
-  public final String toString(ResourceProfile.toString520,21599
-  public final boolean equals(ResourceProfile.equals530,21812
-  public final int hashCode(ResourceProfile.hashCode539,22024
+  private void renderLevels(ResourceProfile.renderLevels354,14905
+  private void addLineSegment(ResourceProfile.addLineSegment396,17290
+  private void addMaxLineSegment(ResourceProfile.addMaxLineSegment416,18031
+  private void addMinLineSegment(ResourceProfile.addMinLineSegment423,18415
+  private int scaleResourceLevel(ResourceProfile.scaleResourceLevel430,18796
+  public class ProfileLine ResourceProfile.ProfileLine442,19196
+    public ProfileLine(ResourceProfile.ProfileLine.ProfileLine455,19565
+    public final String getToolTipText(ResourceProfile.ProfileLine.getToolTipText467,19861
+    public final String getToolTipText(ResourceProfile.ProfileLine.getToolTipText484,20345
+    public final boolean doMouseClick(ResourceProfile.ProfileLine.doMouseClick502,20950
+  public final String toString(ResourceProfile.toString524,21830
+  public final boolean equals(ResourceProfile.equals534,22043
+  public final int hashCode(ResourceProfile.hashCode543,22255
 
 src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfileView.java,2292
 public class ResourceProfileView ResourceProfileView71,2671
@@ -3293,10 +3301,10 @@ src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfileViewSt
 class ResourceProfileViewState ResourceProfileViewState13,392
   public ResourceProfileViewState(ResourceProfileViewState.ResourceProfileViewState17,528
 
-src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/UnaryResourceProfileView.java,248
-public class UnaryResourceProfileView UnaryResourceProfileView34,990
-  public UnaryResourceProfileView(UnaryResourceProfileView.UnaryResourceProfileView47,1463
-  public final String getViewSetKey(UnaryResourceProfileView.getViewSetKey62,2090
+src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/UnaryResourceProfileView.java,249
+public class UnaryResourceProfileView UnaryResourceProfileView34,1052
+  public UnaryResourceProfileView(UnaryResourceProfileView.UnaryResourceProfileView47,1525
+  public final String getViewSetKey(UnaryResourceProfileView.getViewSetKey62,2152
 
 src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionNode.java,915
 public  class ResourceTransactionNode ResourceTransactionNode51,1689
@@ -3545,23 +3553,23 @@ public class TimelineView TimelineView80,2795
   private boolean createTimelineAndSlotNodes(TimelineView.createTimelineAndSlotNodes396,12393
   private boolean createFreeTokenNodes(TimelineView.createFreeTokenNodes467,15192
   private boolean createSlotNodes(TimelineView.createSlotNodes504,16895
-  private boolean computeTimeIntervalLabelSize(TimelineView.computeTimeIntervalLabelSize560,19516
-  private boolean outputNonMonotonicError(TimelineView.outputNonMonotonicError616,21903
-  private int computeTimelineNodesWidth(TimelineView.computeTimelineNodesWidth658,24039
-  public String getSlotNodeLabel(TimelineView.getSlotNodeLabel688,25420
-  private void iterateOverNodes(TimelineView.iterateOverNodes725,27057
-  class TimelineJGoView TimelineView.TimelineJGoView774,29076
-    public TimelineJGoView(TimelineView.TimelineJGoView.TimelineJGoView780,29193
-    public void doBackgroundClick(TimelineView.TimelineJGoView.doBackgroundClick792,29541
-  private void mouseRightPopupMenu(TimelineView.mouseRightPopupMenu803,29931
-  private void createEnableAutoSnapItem(TimelineView.createEnableAutoSnapItem859,32405
-  private void createDisableAutoSnapItem(TimelineView.createDisableAutoSnapItem867,32687
-  private void createNodeByKeyItem(TimelineView.createNodeByKeyItem875,32973
-  private void createActiveTokenItem(TimelineView.createActiveTokenItem903,34144
-  public void findAndSelectToken(TimelineView.findAndSelectToken922,34816
-  private void findAndSelectSlot(TimelineView.findAndSelectSlot988,37830
-  public void findAndSelectTimeline(TimelineView.findAndSelectTimeline1027,39487
-  private void createOverviewWindowItem(TimelineView.createOverviewWindowItem1055,40810
+  private boolean computeTimeIntervalLabelSize(TimelineView.computeTimeIntervalLabelSize568,19987
+  private boolean outputNonMonotonicError(TimelineView.outputNonMonotonicError624,22374
+  private int computeTimelineNodesWidth(TimelineView.computeTimelineNodesWidth666,24510
+  public String getSlotNodeLabel(TimelineView.getSlotNodeLabel696,25891
+  private void iterateOverNodes(TimelineView.iterateOverNodes733,27528
+  class TimelineJGoView TimelineView.TimelineJGoView782,29547
+    public TimelineJGoView(TimelineView.TimelineJGoView.TimelineJGoView788,29664
+    public void doBackgroundClick(TimelineView.TimelineJGoView.doBackgroundClick800,30012
+  private void mouseRightPopupMenu(TimelineView.mouseRightPopupMenu811,30402
+  private void createEnableAutoSnapItem(TimelineView.createEnableAutoSnapItem867,32876
+  private void createDisableAutoSnapItem(TimelineView.createDisableAutoSnapItem875,33158
+  private void createNodeByKeyItem(TimelineView.createNodeByKeyItem883,33444
+  private void createActiveTokenItem(TimelineView.createActiveTokenItem911,34615
+  public void findAndSelectToken(TimelineView.findAndSelectToken930,35287
+  private void findAndSelectSlot(TimelineView.findAndSelectSlot996,38301
+  public void findAndSelectTimeline(TimelineView.findAndSelectTimeline1035,39958
+  private void createOverviewWindowItem(TimelineView.createOverviewWindowItem1063,41281
 
 src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineViewTimelineNode.java,1158
 public class TimelineViewTimelineNode TimelineViewTimelineNode60,1978
