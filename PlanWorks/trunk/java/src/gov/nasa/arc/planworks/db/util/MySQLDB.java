@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.51 2003-10-16 23:43:23 miatauro Exp $
+// $Id: MySQLDB.java,v 1.52 2003-10-18 00:01:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -29,6 +29,7 @@ import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwObjectImpl;
 import gov.nasa.arc.planworks.db.impl.PwParameterImpl;
 import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
+import gov.nasa.arc.planworks.db.impl.PwPlanningSequenceImpl;
 import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
 import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
@@ -1013,6 +1014,48 @@ public class MySQLDB {
         queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RELAXED).concat("'"));
       while(steps.next()) {
         retval.add(new Integer(steps.getInt("StepNumber")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithUnitVariableDecisions(PwPlanningSequenceImpl seq) {
+    List retval = new ArrayList();
+    try {
+      ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
+      while(transactedSteps.next()) {
+	int stepNum = transactedSteps.getInt("StepNumber");
+	Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
+	try {
+	  if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() && 
+	     seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
+	    retval.add(new Integer(stepNum));
+	  }
+	}
+	catch(ResourceNotFoundException rnfe){}
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithNonUnitVariableDecisions(PwPlanningSequenceImpl seq) {
+    List retval = new ArrayList();
+    try {
+      ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
+      while(transactedSteps.next()) {
+	int stepNum = transactedSteps.getInt("StepNumber");
+	Integer varId = new Integer(transactedSteps.getInt("ObjectId"));
+	try {
+	  if(seq.getPartialPlan(stepNum).getVariable(varId).getDomain().isSingleton() &&
+	     !seq.getPartialPlan(stepNum-1).getVariable(varId).getDomain().isSingleton()) {
+	    retval.add(new Integer(stepNum));
+	  }
+	}
+	catch(ResourceNotFoundException rnfe) {}
       }
     }
     catch(SQLException sqle) {

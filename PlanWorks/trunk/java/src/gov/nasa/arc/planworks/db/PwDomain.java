@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomain.java,v 1.7 2003-10-02 23:24:21 taylor Exp $
+// $Id: PwDomain.java,v 1.8 2003-10-18 00:01:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -50,6 +50,8 @@ public interface PwDomain {
    * @return - <code>int</code> - 
    */
   public abstract int getUpperBoundInt();
+
+  public abstract boolean isSingleton();
 
   /**
    * <code>toString</code>

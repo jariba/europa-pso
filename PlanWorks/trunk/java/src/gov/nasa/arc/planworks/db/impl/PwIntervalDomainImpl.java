@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomainImpl.java,v 1.6 2003-10-02 23:24:21 taylor Exp $
+// $Id: PwIntervalDomainImpl.java,v 1.7 2003-10-18 00:01:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -95,6 +95,10 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
     } else {
       return Integer.parseInt( upperBound);
     }
+  }
+
+  public boolean isSingleton() {
+    return upperBound.equals(lowerBound);
   }
 
   /**

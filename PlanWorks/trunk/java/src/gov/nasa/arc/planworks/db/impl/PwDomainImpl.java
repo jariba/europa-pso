@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomainImpl.java,v 1.3 2003-08-26 01:37:11 taylor Exp $
+// $Id: PwDomainImpl.java,v 1.4 2003-10-18 00:01:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -63,6 +63,10 @@ public class PwDomainImpl implements PwDomain {
    */
   public int getUpperBoundInt() {
     return -1;
+  }
+
+  public boolean isSingleton() {
+    return false;
   }
 		
   /**
