@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.1 2004-05-28 20:21:20 taylor Exp $
+// $Id: DecisionView.java,v 1.2 2004-05-29 00:31:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -88,11 +88,12 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
  */
 public class DecisionView extends PartialPlanView {
 
+  private static final int ROW_SEPARATOR_HEIGHT = 6;
+
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
   private List decisionList; // element PwDecision
-  private Object[] decisionArray; // element JLabel
   private JTree decisionTree;
   private JScrollPane scrollPane;
 
@@ -146,6 +147,7 @@ public class DecisionView extends PartialPlanView {
   private void decisionViewInit(ViewableObject partialPlan, ViewSet viewSet) {
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.viewSet = (PartialPlanViewSet) viewSet;
+    decisionList = null;
     ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
@@ -206,9 +208,15 @@ public class DecisionView extends PartialPlanView {
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
+  /**
+   * <code>getDecisionList</code> - constructor 
+   *
+   */
+  public final List getDecisionList() {
+    return decisionList;
+  }
 
   private DefaultMutableTreeNode renderDecisions() {
-    List decisionList = null;
     try {
       PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
       decisionList = planSequence.getOpenDecisionsForStep( partialPlan.getStepNumber());
@@ -316,7 +324,8 @@ public class DecisionView extends PartialPlanView {
       // Enable tool tips.
       ToolTipManager.sharedInstance().registerComponent( this);
 
-      setCellRenderer( new TreeCellRenderer());
+      setCellRenderer( new DecisionTreeCellRenderer());
+      setRowHeight( fontMetrics.getHeight() + ROW_SEPARATOR_HEIGHT);
 
       MouseListener mouseListener = new MouseAdapter() {
           public void mousePressed( MouseEvent evt) {
@@ -332,9 +341,14 @@ public class DecisionView extends PartialPlanView {
               }
             } else {
               // background clicks
-              if ((evt.getClickCount() == 1) &&
-                  (MouseEventOSX.isMouseRightClick( evt.getModifiers(), PlanWorks.isMacOSX()))) {
+              if (evt.getClickCount() == 1) {
+                if (MouseEventOSX.isMouseLeftClick( evt.getModifiers(),
+                                                    PlanWorks.isMacOSX())) {
+                  DecisionTree.this.getSelectionModel().clearSelection();
+                } else if (MouseEventOSX.isMouseRightClick( evt.getModifiers(),
+                                                            PlanWorks.isMacOSX())) {
                  mouseRightPopupMenu( evt.getPoint());
+                }
               }
             }
           }
@@ -432,6 +446,10 @@ public class DecisionView extends PartialPlanView {
       PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
       JPopupMenu mouseRightPopup = new JPopupMenu();
 
+      JMenuItem findByKeyItem = new JMenuItem( "Find Decision by Key");
+      createFindByKeyItem( findByKeyItem);
+      mouseRightPopup.add( findByKeyItem);
+
       createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
                            ViewConstants.DECISION_VIEW);
       if (viewSet.doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
@@ -445,14 +463,59 @@ public class DecisionView extends PartialPlanView {
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     } // end mouseRightPopupMenu
 
+    private void createFindByKeyItem( JMenuItem findByKeyItem) {
+      findByKeyItem.addActionListener( new ActionListener() {
+          public void actionPerformed( ActionEvent evt) {
+            AskNodeByKey nodeByKeyDialog =
+              new AskNodeByKey( "Find Decision by Key", "key (int)", DecisionView.this);
+            PwDecision decision = (PwDecision) nodeByKeyDialog.getEntity();
+            if (decision != null) {
+              // System.err.println( "createFindByKeyItem: entity " + entity);
+              findAndSelectDecision( decision);
+            }
+          }
+        });
+    } // end createFindByKeyItem
 
   } // end class DecisionTree
 
+  private void findAndSelectDecision( PwDecision decisionToFind) {
+    int maxRows = decisionTree.getRowCount();
+    int foundRow = -1;
+    for (int row = 0; row < maxRows; row++) {
+      TreePath treePath = decisionTree.getPathForRow( row);
+      // System.err.println( "row " + row + " treePath " + treePath);
+      Object lastComponent = treePath.getLastPathComponent() ;
+      if (lastComponent instanceof DecisionNode) {
+        PwDecision decision = ((DecisionNode) lastComponent).getDecision();
+        if (decision.getId().equals( decisionToFind.getId())) {
+          foundRow = row;
+          System.err.println( "DecisionView found decision: '" +
+                              decisionToFind.toString() + "' (key=" +
+                              decisionToFind.getId().toString() + ")");
+          scrollPane.getVerticalScrollBar().
+            setValue( Math.max( 0, (int) ((row * decisionTree.getRowHeight()) -
+                                          (scrollPane.getViewport().getHeight() / 2))));
+          decisionTree.getSelectionModel().clearSelection();
+          decisionTree.getSelectionModel().addSelectionPath( treePath);
+          decisionTree.repaint();
+          break;
+        }
+      }
+    }
+    if (foundRow == -1) {
+      String message = "Decision (key=" + decisionToFind.getId().toString() + ") not found.";
+      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                     "Decision Not Found in DecisionView",
+                                     JOptionPane.ERROR_MESSAGE);
+      System.err.println( message);
+      return;
+    }
+  } // end findAndSelectDecision
 
+  class DecisionTreeCellRenderer extends DefaultTreeCellRenderer {
 
-  class TreeCellRenderer extends DefaultTreeCellRenderer {
-
-    public TreeCellRenderer() {
+    public DecisionTreeCellRenderer() {
       super();
     }
 
@@ -484,7 +547,7 @@ public class DecisionView extends PartialPlanView {
       return this;
     }
 
-  } // end class TreeCellRenderer
+  } // end class DecisionTreeCellRenderer
 
 
   class DecisionNode extends DefaultMutableTreeNode {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.13 2004-03-16 02:24:11 taylor Exp $
+// $Id: ConstraintNode.java,v 1.14 2004-05-29 00:31:38 taylor Exp $
 //
 // PlanWorks
 //
@@ -37,6 +37,7 @@ import com.nwoods.jgo.examples.BasicNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -114,6 +115,13 @@ public class ConstraintNode extends ExtendedBasicNode {
     if (constraint.getVariablesList().size() > 1) {
       isUnaryConstraint = false;
     }
+//     System.err.println( "constraint key=" + constraint.getId() + " varLen " +
+//                         constraint.getVariablesList().size() + "  isUnaryConstraint " +
+//                         isUnaryConstraint);
+//     for (int i = 0, n = constraint.getVariablesList().size(); i < n; i++) {
+//       System.err.println( "  i " + i + " key=" +
+//                           ((PwVariable) constraint.getVariablesList().get( i)).getId());
+//     }
     isDebug = false;
     // isDebug = true;
     StringBuffer labelBuf = new StringBuffer( constraint.getName());

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.43 2004-05-28 20:21:23 taylor Exp $
+// $Id: planViz.txt,v 1.44 2004-05-29 00:31:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -271,7 +271,8 @@ Requirements: 3.10
 PLANVIZ-10
 --------------------
 Display all partial plan views for a sequence step, except Resource Profile and
-Resource Transaction views, which are handled in PLANVIZ-21.
+Resource Transaction views, which are handled in PLANVIZ-21, and Decision view,
+which is handled in PLANVIZ-24.
 
 Pre-conditions:
   1. PlanWorks is running.
@@ -293,7 +294,7 @@ Method:
   4. Display "test-seq-1/step<nn>" Token Network View by clicking Mouse-Right on the
      "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "Token Network View".
-  5. Display "test-seq-1/step<nn>" Transaction View by clicking Mouse-Right on the
+  5. Display "test-seq-1/step<nn>" DBTransaction View by clicking Mouse-Right on the
      "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "DBTransactionView".
   6. Open the first two token nodes of the Constraint Network View, and then
@@ -367,7 +368,9 @@ Requirements: 4.2.1, 4.2.2, 4.2.3.d, 4.2.3.e, 4.2.3.f, 4.3.2.a
 
 PLANVIZ-11
 --------------------
-Exercise popup menu facilities of partial plan views.
+Exercise popup menu facilities of partial plan views, except Resource Profile and
+Resource Transaction views, which are handled in PLANVIZ-21, and Decision view,
+which is handled in PLANVIZ-24.
 
 Pre-conditions:
   1. PlanWorks is running.
@@ -481,7 +484,7 @@ partial plan views.
 Pre-conditions:
   1. PlanWorks is running.
   2. The "test1" project is open, and all partial plan views, except
-     Transaction View, are being displayed for step<nn> in a "tiled" layout 
+     DBTransaction View, are being displayed for step<nn> in a "tiled" layout 
      arrangement.  Create overview windows for each partial plan view to
      aid to monitoring the effects of Content Filter application.
   3. The Constraint Network View has been expanded for at least two tokens,
@@ -709,7 +712,7 @@ Pre-conditions:
   3. "Sequence Steps View" is visible for a sequence with multiple steps.
 
 Method:
-  1. Open a view that is not the "Transaction View" for a plan step that is neither the first nor
+  1. Open a view that is not the "DBTransaction View" for a plan step that is neither the first nor
   the last step.
   2. Click on the "Step forward" button.
   3. Click on the "Step backward" button.
@@ -962,7 +965,7 @@ Pre-conditions:
   2. A project containing a sequence is open.
   3. The "Sequence Steps View" for the sequence is open.
   4. For any sequence step, select Mouse-Right "Open All Views".
-  5. Delete the "Resource Profile", "Resource Transaction", and
+  5. Delete the "Resource Profile", "Resource Transaction", "Decision" and
      "DBTransaction" views.
 
 Method:
@@ -1030,8 +1033,7 @@ Pre-conditions:
   3. "Sequence Steps View" is visible for a sequence with multiple steps.
 
 Method:
-  1. Open a view that is not the "Transaction View" for a plan step that is 
-     neither the first nor the last step.
+  1. Open a view for a plan step that is neither the first nor the last step.
   2. On the Sequence Steps View, select Mouse-Right "Step Forward step nn 
      Active Views".
   3. On the Sequence Steps View, select Mouse-Right "Step Backward step nn 
@@ -1064,7 +1066,27 @@ Post-conditions:
 Requirements: N/A
 
 
+PLANVIZ-24
+------------------------
+Display Decision partial plan view for a sequence step, and exercise its Mouse-Right 
+pop-up selections.
 
+Pre-conditions:
+  1. PlanWorks is running.
+  2. The "test1" project is open.
+  3. No partial plan views are displayed.
+
+Method:
+  1. Display "test-seq-1" Sequence Steps View using menu-bar selection
+     "Planning Sequence->test-seq-1".
+  2. Display "test-seq-1/step<nn>" Decision View by clicking Mouse-Right 
+     on the "step<nn>" element of the "SequenceStepsView of test-seq-1", and 
+     selecting "Decision View".
+
+Post-conditions:
+  1. Method:1 - The SequenceStepsView of test-seq-1 appears.
+  2. Method:2 - The Decision View appears with tree display of the step's decisions.
+  3. Method:3 - 
 
 
 
