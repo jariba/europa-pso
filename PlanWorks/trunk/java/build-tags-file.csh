@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.68 2004-05-28 20:21:13 taylor Exp $
+# $Id: build-tags-file.csh,v 1.69 2004-06-10 01:35:56 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -50,11 +50,11 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/PwResourceInstant.java \
     src/gov/nasa/arc/planworks/db/PwResourceTransaction.java \
     src/gov/nasa/arc/planworks/db/PwRule.java \
+    src/gov/nasa/arc/planworks/db/PwRuleInstance.java \
     src/gov/nasa/arc/planworks/db/PwSlot.java \
     src/gov/nasa/arc/planworks/db/PwTimeline.java \
     src/gov/nasa/arc/planworks/db/PwToken.java \
     src/gov/nasa/arc/planworks/db/PwTokenQuery.java \
-    src/gov/nasa/arc/planworks/db/PwTokenRelation.java \
     src/gov/nasa/arc/planworks/db/PwVariable.java \
     src/gov/nasa/arc/planworks/db/PwVariableContainer.java \
     src/gov/nasa/arc/planworks/db/PwVariableQuery.java \
@@ -75,11 +75,11 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/impl/PwResourceInstantImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwResourceTransactionImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwRuleImpl.java \
+    src/gov/nasa/arc/planworks/db/impl/PwRuleInstanceImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwSlotImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTimelineImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTokenImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTokenQueryImpl.java \
-    src/gov/nasa/arc/planworks/db/impl/PwTokenRelationImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwVariableImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwVariableQueryImpl.java \
     src/gov/nasa/arc/planworks/db/util/ContentSpec.java \
@@ -129,6 +129,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
     src/gov/nasa/arc/planworks/viz/AskQueryEntityKey.java \
+    src/gov/nasa/arc/planworks/viz/OverviewToolTip.java \
     src/gov/nasa/arc/planworks/viz/StringViewSetKey.java \
     src/gov/nasa/arc/planworks/viz/TransactionHeaderView.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
@@ -136,7 +137,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/ViewListener.java \
     src/gov/nasa/arc/planworks/viz/VizView.java \
     src/gov/nasa/arc/planworks/viz/VizViewOverview.java \
-    src/gov/nasa/arc/planworks/viz/VizViewRuleView.java \
     src/gov/nasa/arc/planworks/viz/nodes/BasicNodeLink.java \
     src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNodePort.java \
     src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNode.java \
@@ -191,6 +191,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionSet.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionViewState.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/rule/RuleInstanceView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentViewState.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNode.java \
@@ -201,17 +202,12 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineViewTimelineNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/RuleInstanceNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenLink.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ModelRulesLayout.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ModelRulesView.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ParamNode.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/PredicateNode.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/RuleLink.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/RuleNode.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/DBTransactionQueryView.java \

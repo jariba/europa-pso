@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.30 2004-06-08 21:48:50 pdaley Exp $
+// $Id: DbConstants.java,v 1.31 2004-06-10 01:35:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -82,11 +82,6 @@ public interface DbConstants {
    *
    */
   public static final String PP_RULE_INSTANCE_EXT = "ruleInstances";
-
-  /**
-   * constant <code>PP_PARAM_VAR_TOKEN_MAP_EXT</code>
-   *
-   */
 
   /**
    * constant <code>PP_CONSTRAINT_VAR_MAP_EXT</code>

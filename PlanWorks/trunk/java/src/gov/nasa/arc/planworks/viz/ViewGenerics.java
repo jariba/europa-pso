@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.18 2004-05-28 20:21:17 taylor Exp $
+// $Id: ViewGenerics.java,v 1.19 2004-06-10 01:35:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -64,6 +64,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
+import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
@@ -302,50 +303,6 @@ public class ViewGenerics {
       ( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR));
   } // end resetRedrawCursor
 
-  /**
-   * <code>openRuleViewFrame</code>
-   *
-   * @param partialPlan - <code>PwPartialPlan</code> - 
-   * @param tokenNetworkView - <code>TokenNetworkView</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param viewCoords - <code>Point</code> - 
-   * @return - <code>VizViewRuleView</code> - 
-   */
-  public static VizViewRuleView openRuleViewFrame( PwPartialPlan partialPlan,
-                                                   TokenNetworkView tokenNetworkView,
-                                                   ViewSet viewSet, Point viewCoords) {
-    String ruleViewTitle = ViewConstants.RULE_VIEW_TITLE + partialPlan.getName();
-    MDIInternalFrame ruleViewFrame = (MDIInternalFrame) viewSet.getView( ruleViewTitle);
-    VizViewRuleView ruleView = null;
-    // System.err.println( "openRuleViewFrame " + ruleViewFrame);
-    if (ruleViewFrame == null) {
-      ruleViewFrame = viewSet.getDesktopFrame().createFrame( ruleViewTitle, viewSet,
-                                                             true, true, true, true);
-      viewSet.getViews().put( ruleViewTitle, ruleViewFrame);
-      // System.err.println( "views " + viewSet.getViews());
-      Container contentPane = ruleViewFrame.getContentPane();
-      ruleView = new VizViewRuleView( ruleViewTitle, tokenNetworkView);
-      ruleView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-      tokenNetworkView.setRuleView( ruleView);
-      ruleView.validate();
-      ruleView.setVisible( true);
-      contentPane.add( ruleView);
-
-      ruleViewFrame.setLocation( viewCoords);
-      ruleView.getDocument().setDocumentSize( RULE_VIEW_WIDTH, RULE_VIEW_HEIGHT);
-      Dimension ruleViewDocSize = new Dimension( ruleView.getDocument().getDocumentSize());
-      ruleView.convertDocToView( ruleViewDocSize);
-      tokenNetworkView.expandViewFrame( ruleViewFrame,
-                                        (int) ruleViewDocSize.getWidth(),
-                                        (int) ruleViewDocSize.getHeight());
-    }
-
-    raiseFrame( ruleViewFrame);
-    
-    return ruleView;
-  } // end openRuleViewFrame
-
-
 
   class ConstraintNetworkViewFinder implements BooleanFunctor {
     public ConstraintNetworkViewFinder(){}
@@ -490,6 +447,27 @@ public class ViewGenerics {
   private final ResourceTransactionView _getResourceTransactionView(MDIInternalFrame frame) {
     return (ResourceTransactionView) CollectionUtils.findFirst
       ( new ResourceTransactionViewFinder(), frame.getContentPane().getComponents());
+  }
+
+
+  class RuleInstanceViewFinder implements BooleanFunctor {
+    public RuleInstanceViewFinder(){}
+    public final boolean func(Object o){return (o instanceof RuleInstanceView);}
+  }
+
+  /**
+   * <code>getRuleInstanceView</code> - cannot be generalized (jdk1.4)
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @return - <code>RuleInstanceView</code> - 
+   */
+  public static RuleInstanceView getRuleInstanceView( MDIInternalFrame frame) {
+    return generics._getRuleInstanceView(frame);
+  } // end getRuleView
+
+  private final RuleInstanceView _getRuleInstanceView(MDIInternalFrame frame) {
+    return (RuleInstanceView) CollectionUtils.findFirst
+      ( new RuleInstanceViewFinder(), frame.getContentPane().getComponents());
   }
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.26 2004-05-28 20:21:20 taylor Exp $
+// $Id: NavigatorView.java,v 1.27 2004-06-10 01:36:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -225,7 +225,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
                                  contentFilterMaxY -
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
     navigatorFrame.setLocation
-      ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta, contentFilterMaxY + delta);
+      ( (ViewConstants.INTERNAL_FRAME_X_DELTA / 2) + delta, contentFilterMaxY + delta);
 
 //     Rectangle documentBounds = jGoView.getDocument().computeBounds();
 //     jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +

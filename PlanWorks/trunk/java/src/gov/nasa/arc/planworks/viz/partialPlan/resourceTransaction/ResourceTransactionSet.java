@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.12 2004-03-20 01:00:40 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.13 2004-06-10 01:36:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -131,17 +131,18 @@ public class ResourceTransactionSet extends BasicNode {
     transactionSetYOrigin = currentYLoc;
     levelScaleWidth = resourceTransactionView.getLevelScaleViewWidth() -
       ViewConstants.RESOURCE_LEVEL_SCALE_WIDTH_OFFSET;
-    ResourceView.renderBordersUpper
-      ( resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
+    resourceTransactionView.renderBordersUpper
+      ( resource,
+        resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
         resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( latestEndTime),
         currentYLoc, resourceTransactionView.getJGoExtentDocument());
-    ResourceView.renderBordersUpper
-      ( 0, levelScaleWidth, currentYLoc, resourceTransactionView.getJGoLevelScaleDocument());
-    ResourceView.renderResourceName( resource,
-                                     resourceTransactionView.getLevelScaleViewWidth() -
-                                     nodeLabelWidth, currentYLoc,
-                                     resourceTransactionView.getJGoLevelScaleDocument(),
-                                     resourceTransactionView);
+    resourceTransactionView.renderBordersUpper
+      ( resource, 0, levelScaleWidth, currentYLoc,
+        resourceTransactionView.getJGoLevelScaleDocument());
+    resourceTransactionView.renderResourceName
+      ( resource, resourceTransactionView.getLevelScaleViewWidth() - nodeLabelWidth,
+        currentYLoc, resourceTransactionView.getJGoLevelScaleDocument(),
+        resourceTransactionView);
 
     currentYLoc = currentYLoc + ViewConstants.RESOURCE_PROFILE_MAX_Y_OFFSET +
       ResourceView.Y_MARGIN;
@@ -151,12 +152,14 @@ public class ResourceTransactionSet extends BasicNode {
 
     currentYLoc += ResourceTransactionSet.scaleY( maxCellRow + 1, 0);
 
-    ResourceView.renderBordersLower
-      ( resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
+    resourceTransactionView.renderBordersLower
+      ( resource,
+        resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
         resourceTransactionView.getJGoRulerView().scaleTimeNoZoom( latestEndTime),
         currentYLoc, resourceTransactionView.getJGoExtentDocument());
-    ResourceView.renderBordersLower
-      ( 0, levelScaleWidth, currentYLoc, resourceTransactionView.getJGoLevelScaleDocument());
+    resourceTransactionView.renderBordersLower
+      ( resource, 0, levelScaleWidth, currentYLoc,
+        resourceTransactionView.getJGoLevelScaleDocument());
 
     currentYLoc += ViewConstants.RESOURCE_PROFILE_MIN_Y_OFFSET;
     resourceTransactionView.setCurrentYLoc( currentYLoc);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepButton.java,v 1.2 2004-03-23 20:06:00 taylor Exp $
+// $Id: StepButton.java,v 1.3 2004-06-10 01:36:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -30,12 +30,13 @@ import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 
 
 /**
  * <code>StepButton</code> - 
  */
-public class StepButton extends BasicNode {
+public class StepButton extends BasicNode implements OverviewToolTip{
 
   protected Point location;
   protected String nodeLabel;
@@ -106,7 +107,7 @@ public class StepButton extends BasicNode {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview token node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

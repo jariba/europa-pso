@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.12 2004-03-30 22:01:02 taylor Exp $
+// $Id: VizViewOverview.java,v 1.13 2004-06-10 01:35:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -21,27 +21,6 @@ import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.Overview;
-
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.ModelClassNavNode;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.ResourceNavNode;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.VariableNavNode;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.ConstraintNavNode;
-import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfile;
-import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionNode;
-import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
-import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.ThickDurationBridge;
-import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
-import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
-// import gov.nasa.arc.planworks.viz.sequence.modelRules.PredicateNode;
 
 /**
  * <code>VizViewOverview</code> - 
@@ -61,11 +40,11 @@ public class VizViewOverview extends Overview implements StringViewSetKey {
    * @param overviewTitle - <code>String</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public VizViewOverview( String overviewTitle, VizView vizView) {
+  public VizViewOverview( final String overviewTitle, final VizView vizView) {
     super();
     this.overviewTitle = overviewTitle;
     this.vizView = vizView;
-    vizView.setOverview(this);
+    vizView.setOverview( this);
   }
 
   /**
@@ -119,13 +98,13 @@ public class VizViewOverview extends Overview implements StringViewSetKey {
    * <code>removeNotifyFromViewSet</code>
    *
    */
-  public void removeNotifyFromViewSet() {
+  public final void removeNotifyFromViewSet() {
     OverviewRectangle overviewRect = getOverviewRect();
     JGoView observed = getObserved();
     // System.err.println( "removeNotifyFromViewSet");
     if (observed != null && overviewRect != null) {
-      observed.getDocument().removeDocumentListener(this);
-      observed.removeViewListener(overviewRect);
+      observed.getDocument().removeDocumentListener( this);
+      observed.removeViewListener( overviewRect);
       observed.getCanvas().removeComponentListener(overviewRect);
       observed = null;
       vizView.setOverview( null);
@@ -144,57 +123,19 @@ public class VizViewOverview extends Overview implements StringViewSetKey {
    * @param evt - <code>MouseEvent</code> - 
    * @return - <code>String</code> - 
    */
-  public String getToolTipText( MouseEvent evt) {
-    if (getObserved() == null) return null;
+  public final String getToolTipText( final MouseEvent evt) {
+    if (getObserved() == null) {
+      return null;
+    }
     boolean isOverview = true;
     Point p = new Point(evt.getPoint());
-    convertViewToDoc(p);
+    convertViewToDoc( p);
     String tip = null;
-    JGoObject obj = getObserved().pickDocObject(p, false);
+    JGoObject obj = getObserved().pickDocObject( p, false);
     
     while (obj != null) {
-      if (obj instanceof ConstraintNetworkObjectNode) {
-        tip = ((ConstraintNetworkObjectNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof ConstraintNetworkTimelineNode) {
-        tip = ((ConstraintNetworkTimelineNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof ConstraintNetworkTokenNode) {
-        tip = ((ConstraintNetworkTokenNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof ConstraintNode) {
-        tip = ((ConstraintNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof VariableNode) {
-        tip = ((VariableNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof TemporalNode) {
-        tip = ((TemporalNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof TokenNode) {
-        tip = ((TokenNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof SlotNode) {
-        tip = ((SlotNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof ThickDurationBridge) {
-        tip = ((ThickDurationBridge) obj).getToolTipText( isOverview);
-        // viz/sequence/modelRules
-//       } else if (obj instanceof PredicateNode) {
-//         tip = ((PredicateNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof ModelClassNavNode) {
-        tip = ((ModelClassNavNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof ResourceNavNode) {
-        tip = ((ResourceNavNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof TimelineNavNode) {
-        tip = ((TimelineNavNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof SlotNavNode) {
-        tip = ((SlotNavNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof TokenNavNode) {
-        tip = ((TokenNavNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof VariableNavNode) {
-        tip = ((VariableNavNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof ConstraintNavNode) {
-        tip = ((ConstraintNavNode) obj).getToolTipText( isOverview);
-
-      } else if (obj instanceof ResourceProfile.ProfileLine) {
-        tip = ((ResourceProfile.ProfileLine) obj).getToolTipText( isOverview);
-      } else if (obj instanceof ResourceTransactionNode) {
-        tip = ((ResourceTransactionNode) obj).getToolTipText( isOverview);
-      } else if (obj instanceof TimelineViewTimelineNode) {
-        tip = ((TimelineViewTimelineNode) obj).getToolTipText( isOverview);
+      if (obj instanceof OverviewToolTip) {
+        tip = ((OverviewToolTip) obj).getToolTipText( isOverview);
       } else {
         tip = obj.getToolTipText();
       }

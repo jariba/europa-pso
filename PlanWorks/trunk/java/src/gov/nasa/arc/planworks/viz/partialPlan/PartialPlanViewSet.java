@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.19 2004-05-04 01:27:17 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.20 2004-06-10 01:36:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -70,6 +70,7 @@ public class PartialPlanViewSet extends ViewSet {
   private List secondaryTokens; // in timeline view, the overloaded tokens
   private PwResource activeResource; // in resource extent view
   private int navigatorFrameCnt;
+  private int ruleFrameCnt;
   private MDIDesktopFrame desktopFrame;
   private PartialPlanViewState state;
 
@@ -149,6 +150,7 @@ public class PartialPlanViewSet extends ViewSet {
     this.contentSpecWindow.setVisible(true);
 
     navigatorFrameCnt = 0;
+    ruleFrameCnt = 0;
   } // end commonConstructor
 
   public MDIInternalFrame openView(String viewClassName, ViewListener viewListener) {
@@ -253,6 +255,32 @@ public class PartialPlanViewSet extends ViewSet {
    */
   public void setNavigatorFrameCnt( int cnt) {
     navigatorFrameCnt = cnt;
+  }
+
+  /**
+   * <code>getRuleFrameCnt</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getRuleFrameCnt() {
+    return ruleFrameCnt;
+  }
+
+  /**
+   * <code>incrRuleFrameCnt</code>
+   *
+   */
+  public void incrRuleFrameCnt() {
+    ruleFrameCnt++;
+  }
+
+  /**
+   * <code>setRuleFrameCnt</code>
+   *
+   * @param cnt - <code>int</code> - 
+   */
+  public void setRuleFrameCnt( int cnt) {
+    ruleFrameCnt = cnt;
   }
 
   /**

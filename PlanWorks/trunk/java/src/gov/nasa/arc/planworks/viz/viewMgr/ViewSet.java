@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.63 2004-06-03 17:33:38 taylor Exp $
+// $Id: ViewSet.java,v 1.64 2004-06-10 01:36:12 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -39,7 +39,6 @@ import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
-import gov.nasa.arc.planworks.viz.VizViewRuleView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
@@ -194,7 +193,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       //System.err.println("have frame");
       Container contentPane = viewFrame.getContentPane();
       for (int i = 0; i < contentPane.getComponentCount(); i++) {
-        // String viewSet keys: NavigatorView, VizViewOverview, VizViewRuleView
+        // String viewSet keys: NavigatorView, VizViewOverview, RuleView
         if (contentPane.getComponent(i) instanceof StringViewSetKey) {
           views.remove( ((StringViewSetKey) contentPane.getComponent(i)).getViewSetKey());
           if (contentPane.getComponent(i) instanceof VizViewOverview) {
@@ -209,13 +208,6 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
             String overviewStringKey = overview.getViewSetKey();
             // System.err.println( "VizView overviewStringKey " + overviewStringKey);
             removeViewByStringKey( overviewStringKey);
-          }
-          VizViewRuleView ruleView =
-            ((VizView) contentPane.getComponent(i)).getRuleView();
-          if (ruleView != null) {
-            String ruleViewStringKey = ruleView.getViewSetKey();
-            // System.err.println( "VizView ruleViewStringKey " + ruleViewStringKey);
-            removeViewByStringKey( ruleViewStringKey);
           }
         }
       }
@@ -428,7 +420,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     Iterator windowListItr = windowKeyList.iterator();
     while (windowListItr.hasNext()) {
       Object windowKey = (Object) windowListItr.next();
-      // System.err.println( "windowKey " + windowKey);
+      // System.err.println( "   windowKey " + windowKey);
       if ((windowKey instanceof String) &&
           (((String) windowKey).indexOf( windowName) >= 0)) {
         return true;

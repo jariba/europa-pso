@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ThickDurationBridge.java,v 1.6 2004-05-28 20:21:21 taylor Exp $
+// $Id: ThickDurationBridge.java,v 1.7 2004-06-10 01:36:06 taylor Exp $
 //
 // PlanWorks
 //
@@ -34,6 +34,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
@@ -47,7 +48,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ThickDurationBridge extends JGoRectangle {
+public class ThickDurationBridge extends JGoRectangle implements OverviewToolTip {
 
   private int minDurationTime;
   private int maxDurationTime;
@@ -106,7 +107,7 @@ public class ThickDurationBridge extends JGoRectangle {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview temporal node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

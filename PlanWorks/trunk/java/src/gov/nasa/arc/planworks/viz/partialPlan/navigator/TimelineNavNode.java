@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.8 2004-03-16 02:24:12 taylor Exp $
+// $Id: TimelineNavNode.java,v 1.9 2004-06-10 01:36:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -29,6 +29,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
@@ -41,7 +42,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TimelineNavNode extends TimelineNode implements NavNode {
+public class TimelineNavNode extends TimelineNode implements NavNode, OverviewToolTip {
 
   private PwTimeline timeline;
   private NavigatorView navigatorView;
@@ -210,7 +211,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview timeline node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

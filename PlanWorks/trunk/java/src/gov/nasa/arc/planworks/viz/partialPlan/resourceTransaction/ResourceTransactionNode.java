@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionNode.java,v 1.6 2004-05-28 20:21:20 taylor Exp $
+// $Id: ResourceTransactionNode.java,v 1.7 2004-06-10 01:36:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -32,6 +32,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Extent;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
@@ -47,7 +48,7 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
  *             NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public  class ResourceTransactionNode extends JGoRectangle implements Extent {  
+public  class ResourceTransactionNode extends JGoRectangle implements Extent, OverviewToolTip {  
 
   private PwResourceTransaction transaction;
   private Point location;
@@ -158,7 +159,7 @@ public  class ResourceTransactionNode extends JGoRectangle implements Extent {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview resource node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

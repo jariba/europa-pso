@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.100 2004-05-28 20:21:14 taylor Exp $
+// $Id: PlanWorks.java,v 1.101 2004-06-10 01:35:57 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -113,6 +113,7 @@ public class PlanWorks extends MDIDesktopFrame {
     VIEW_CLASS_NAME_MAP.put
       ( ViewConstants.TEMPORAL_EXTENT_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView");
+    // not implemented
 //     VIEW_CLASS_NAME_MAP.put
 //       ( ViewConstants.TEMPORAL_NETWORK_VIEW,
 //         "gov.nasa.arc.planworks.viz.partialPlan.temporalNetwork.TemporalNetworkView");
@@ -142,14 +143,6 @@ public class PlanWorks extends MDIDesktopFrame {
     VIEW_CLASS_NAME_MAP.put
       ( ViewConstants.SEQUENCE_STEPS_VIEW,
         "gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView");
-    // not in map, since it is created by M-R on SequenceStepsView
-//     VIEW_CLASS_NAME_MAP.put
-//       ( ViewConstants.OBJECT_TREE_VIEW,
-//         "gov.nasa.arc.planworks.viz.sequence.objectTree.ObjectTreeView");
-    // not implemented yet
-//     VIEW_CLASS_NAME_MAP.put
-//       ( ViewConstants.MODEL_RULES_VIEW,
-//         "gov.nasa.arc.planworks.viz.sequence.modelRules.ModelRulesView");
 
   } // end static
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.65 2004-06-03 17:33:36 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.66 2004-06-10 01:36:02 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -642,6 +642,8 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
       PwVariableContainer parent = (PwVariableContainer) var.getParent();
       VariableContainerNode parentNode = getContainerNode(parent.getId());
+      System.err.println( "createVarNodesAndLinksForConstr parent " + parent);
+      System.err.println( "  parentNode " + parentNode);
       if(var != null) {
         VariableNode varNode;
         if((varNode = getVariableNode(var.getId())) == null) {
