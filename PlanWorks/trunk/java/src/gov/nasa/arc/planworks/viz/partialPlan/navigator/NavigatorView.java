@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.37 2004-08-25 18:41:02 taylor Exp $
+// $Id: NavigatorView.java,v 1.38 2004-09-09 22:45:06 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -95,6 +95,7 @@ public class NavigatorView extends PartialPlanView
   private boolean isDebugPrint;
   private String viewSetKey;
   private List highlightPathNodesList;
+  private List highlightPathLinksList;
   private ProgressMonitorThread redrawPMThread;
   private boolean didRenderInitialNodeChange;
   /**
@@ -181,6 +182,8 @@ public class NavigatorView extends PartialPlanView
     isDebugPrint = false;
     //timelineColorMap = createTimelineColorMap();
     highlightPathNodesList = null;
+    highlightPathLinksList = null;
+    viewFrame = navigatorFrame;
     this.setName( navigatorFrame.getTitle());
     viewName = ViewConstants.NAVIGATOR_VIEW;
 
@@ -329,8 +332,10 @@ public class NavigatorView extends PartialPlanView
       isLayoutNeeded = false;
     }
 
-    if ((focusNode == null) && (highlightPathNodesList != null)) {
+    if ((focusNode == null) && (highlightPathNodesList != null) &&
+        (highlightPathLinksList != null)) {
       NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
+      NodeGenerics.highlightPathLinks( highlightPathLinksList, this, jGoView);
     } else if (focusNode != null) {
       // do not highlight node, if it has been removed
       NodeGenerics.focusViewOnNode( focusNode, ((IncrementalNode) focusNode).inLayout(),
@@ -782,8 +787,9 @@ public class NavigatorView extends PartialPlanView
     public final void doBackgroundClick( final int modifiers, final Point docCoords,
                                          final Point viewCoords) {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-        // do nothing
+        NodeGenerics.unhighlightPathLinks( NavigatorView.this);
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        NodeGenerics.unhighlightPathLinks( NavigatorView.this);
         mouseRightPopupMenu( viewCoords);
       }
     } // end doBackgroundClick
@@ -805,7 +811,8 @@ public class NavigatorView extends PartialPlanView
 
     if (highlightPathNodesList != null) {
       JMenuItem highlightPathItem = new JMenuItem( "Highlight Current Path");
-      createHighlightPathItem( highlightPathItem, highlightPathNodesList);
+      createHighlightPathItem( highlightPathItem, highlightPathNodesList,
+                               highlightPathLinksList);
       mouseRightPopup.add( highlightPathItem);
     }
 
@@ -832,6 +839,7 @@ public class NavigatorView extends PartialPlanView
           Integer nodeKey = nodeByKeyDialog.getNodeKey();
           if (nodeKey != null) {
             highlightPathNodesList = null;
+            highlightPathLinksList = null;
             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
             Integer entityKey1 = null, entityKey2 = null; List pathClasses = null;
             boolean doPathExists = false;
@@ -928,7 +936,7 @@ public class NavigatorView extends PartialPlanView
    */
   public List renderEntityPathNodes( final FindEntityPath findEntityPath) {
     boolean isLayoutNeeded = false;
-    List nodeList =  new ArrayList();
+    List nodeList =  new ArrayList(); List linkList  =  new ArrayList();
     Iterator entityItr = findEntityPath.getEntityKeyList().iterator();
     PwEntity entity = null;
     boolean isFirstNode = true;
@@ -1065,6 +1073,11 @@ public class NavigatorView extends PartialPlanView
 	System.err.println( "NavigatorView.renderEntityPathNodes: entityKey " +
 			    entityKey + " not handled");
       }
+      if (nodeList.size() >= 2) {
+        linkList.add( NodeGenerics.getLinkFromNodes
+                      ( (IncrementalNode) nodeList.get( nodeList.size() - 2),
+                        (IncrementalNode) nodeList.get( nodeList.size() - 1), navLinkMap));
+      }
     }
     if (isLayoutNeeded) {
       // System.err.println( "NavigatorView.renderEntityPathNodes: setLayoutNeeded");
@@ -1072,15 +1085,17 @@ public class NavigatorView extends PartialPlanView
     }
     setFocusNode( null);
     highlightPathNodesList = nodeList;
+    highlightPathLinksList = linkList;
     redraw();
     return nodeList;
   } // end renderEntityPathNodes
 
   private void createHighlightPathItem( final JMenuItem highlightPathItem,
-					final List nodeList) {
+					final List nodeList, final List linksList) {
     highlightPathItem.addActionListener( new ActionListener() {
 	public void actionPerformed(ActionEvent evt) {
 	  NodeGenerics.highlightPathNodes( nodeList, jGoView);
+	  NodeGenerics.highlightPathLinks( linksList, NavigatorView.this, jGoView);
 	  FindEntityPath.outputEntityPathNodes( nodeList, NavigatorView.this);
 	}
       });

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.52 2004-08-14 01:39:13 taylor Exp $
+// $Id: PartialPlanView.java,v 1.53 2004-09-09 22:45:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -93,6 +93,8 @@ public class PartialPlanView extends VizView {
   private String stringViewSetKey; // key for viewSet hash map - NavigatorView,
                                    // VizViewOverview, & VizViewRuleView
 
+  private List highlightLinksList;  // for FindPath
+
   /**
    * <code>PartialPlanView</code> - constructor 
    *
@@ -115,6 +117,7 @@ public class PartialPlanView extends VizView {
     for (int i = 0, n = PlanWorks.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
       viewListenerList.add( null);
     }
+    highlightLinksList = null;
   }
 
   /**
@@ -192,6 +195,24 @@ public class PartialPlanView extends VizView {
   public final void setViewListenerList( List viewListenerList) {
     this.viewListenerList = viewListenerList;
   } // end setViewListenerList
+
+  /**
+   * <code>getHighlightLinksList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getHighlightLinksList() {
+    return highlightLinksList;
+  }
+
+  /**
+   * <code>setHighlightLinksList</code>
+   *
+   * @param linkList - <code>List</code> - 
+   */
+  public void setHighlightLinksList( List linkList) {
+    highlightLinksList = linkList;
+  }
 
   /**
    * <code>isContentSpecRendered</code>

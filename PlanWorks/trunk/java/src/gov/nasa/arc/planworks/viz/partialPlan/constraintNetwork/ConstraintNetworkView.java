@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.87 2004-08-26 20:51:26 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.88 2004-09-09 22:45:06 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -137,6 +137,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
   private NewConstraintNetworkLayout newLayout;
   private boolean isStepButtonView;
   private List highlightPathNodesList;
+  private List highlightPathLinksList;
   private Integer variableKey1;
   private Integer variableKey2;
   private ProgressMonitorThread initPMThread;
@@ -229,7 +230,8 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
     this.setName( viewFrame.getTitle());
     viewName = ViewConstants.CONSTRAINT_NETWORK_VIEW;
     highlightPathNodesList = null;
-    // isDebugPrint = true;
+    highlightPathLinksList = null;
+     // isDebugPrint = true;
     isDebugPrint = false;
 
     //isDebugTraverse = true;
@@ -408,6 +410,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
   public void redraw() {
     setFocusNode( null);
     highlightPathNodesList = null;
+    highlightPathLinksList = null;
     boolean isContentSpecRedraw = true;
     createRedrawViewThread( isContentSpecRedraw);
   }
@@ -476,8 +479,10 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
 	isLayoutNeeded = false;
       }
 
-      if ((focusNode == null) && (highlightPathNodesList != null)) {
+      if ((focusNode == null) && (highlightPathNodesList != null) &&
+          (highlightPathLinksList != null)) {
         NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
+        NodeGenerics.highlightPathLinks( highlightPathLinksList, this, jGoView);
       } else if (focusNode != null) {
 	// do not highlight node, if it has been removed
 	boolean isHighlightNode = ((focusNode instanceof VariableContainerNode) ||
@@ -1605,8 +1610,9 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
      */
     public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-        // do nothing
+        NodeGenerics.unhighlightPathLinks( ConstraintNetworkView.this);
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        NodeGenerics.unhighlightPathLinks( ConstraintNetworkView.this);
         mouseRightPopupMenu( viewCoords);
       }
     } // end doBackgroundClick
@@ -1627,7 +1633,8 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
 
       if (highlightPathNodesList != null) {
 	JMenuItem highlightPathItem = new JMenuItem( "Highlight Current Path");
-	createHighlightPathItem( highlightPathItem, highlightPathNodesList);
+	createHighlightPathItem( highlightPathItem, highlightPathNodesList,
+                                 highlightPathLinksList);
 	mouseRightPopup.add( highlightPathItem);
       }
 
@@ -1717,6 +1724,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
 	  Integer nodeKey = nodeByKeyDialog.getNodeKey();
 	  if (nodeKey != null) {
             highlightPathNodesList = null;
+            highlightPathLinksList = null;
 	    // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
 	    findAndSelectNodeKey( nodeKey);
 	  }
@@ -1847,7 +1855,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
    * @return - <code>List</code> - 
    */
   public List renderEntityPathNodes( final FindEntityPath findEntityPath) {
-    List nodeList =  new ArrayList();
+    List nodeList =  new ArrayList(); List linkList =  new ArrayList();
     boolean isFindEntityPath = true;
     try {
       ConstraintNetworkView.this.setVisible( false);
@@ -1898,22 +1906,64 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
 	      "Find Entity Path Error", JOptionPane.ERROR_MESSAGE);
 	  break;
 	}
+        if (nodeList.size() >= 2) {
+          linkList.add( getLinkFromNodes( (Object) nodeList.get( nodeList.size() - 2),
+                                          (Object) nodeList.get( nodeList.size() - 1)));
+        }
       }
       setLayoutNeeded();
       setFocusNode( null);
       highlightPathNodesList = nodeList;
-    } finally {
+      highlightPathLinksList = linkList;
+     } finally {
       redraw( isFindEntityPath);
     }
     return nodeList;
   } // end renderEntityPathNodes
 
+  private BasicNodeLink getLinkFromNodes( Object node1, Object node2) {
+    BasicNodeLink link = null;
+    String linkName = getNodeIdAsString( node1) + "->" + getNodeIdAsString( node2);
+    link = (BasicNodeLink) variableLinkMap.get( linkName);
+    if (link == null) {
+      link = (BasicNodeLink) constraintLinkMap.get( linkName);
+    }
+    if (link == null) {
+      linkName = getNodeIdAsString( node2) + "->" + getNodeIdAsString( node1);
+      link = (BasicNodeLink) variableLinkMap.get( linkName);
+      if (link == null) {
+        link = (BasicNodeLink) constraintLinkMap.get( linkName);
+      }
+    }
+    if (link == null) {
+      System.err.println( "getLinkFromNodes: no link found between key=" +
+                          getNodeIdAsString( node1) + " and key=" +
+                          getNodeIdAsString( node2));
+    }
+    return link;
+  } // end getLinkFromNodes
+
+  private String getNodeIdAsString( Object node) {
+    if (node instanceof VariableContainerNode) {
+      return ((VariableContainerNode) node).getContainer().getId().toString();
+    } else if (node instanceof VariableNode) {
+      return ((VariableNode) node).getVariable().getId().toString();
+    } else if (node instanceof ConstraintNode) {
+      return ((ConstraintNode) node).getConstraint().getId().toString();
+    } else {
+      System.err.println( "ConstraintNetworkView.getNodeIdAsString: node " + node +
+                          " not handled");
+      return "";
+    }
+  } // end getNodeIdAsString
+
   private void createHighlightPathItem( final JMenuItem highlightPathItem,
-					final List nodeList) {
+					final List nodesList, final List linksList) {
     highlightPathItem.addActionListener( new ActionListener() {
 	public void actionPerformed(ActionEvent evt) {
-	  NodeGenerics.highlightPathNodes( nodeList, jGoView);
-	  FindEntityPath.outputEntityPathNodes( nodeList, ConstraintNetworkView.this);
+	  NodeGenerics.highlightPathNodes( nodesList, jGoView);
+	  NodeGenerics.highlightPathLinks( linksList, ConstraintNetworkView.this, jGoView);
+	  FindEntityPath.outputEntityPathNodes( nodesList, ConstraintNetworkView.this);
 	}
       });
   } // end createHighlightPathItem
@@ -1948,7 +1998,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
       String message = "Token " + contToFind.getName() +
 	" (key=" + contToFind.getId().toString() + ") not available.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-				     "Token Not Currrently Found in ConstraintNetworkView",
+				     "Token Not Currently Found in ConstraintNetworkView",
 				     JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
     }

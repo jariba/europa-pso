@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.70 2004-08-26 20:51:27 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.71 2004-09-09 22:45:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -115,6 +115,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
   private boolean isDebugPrint;
   private PartialPlanViewState state;
   private List highlightPathNodesList;
+  private List highlightPathLinksList;
   private ProgressMonitorThread findPathPMThread;
   private ProgressMonitorThread redrawPMThread;
   private boolean disableEntityKeyPathDialog;  // for PlanWorksGUITest
@@ -216,6 +217,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     // isDebugPrint = true;
     isDebugPrint = false;
     highlightPathNodesList = null;
+    highlightPathLinksList = null;
     disableEntityKeyPathDialog = false;
   }
 
@@ -386,6 +388,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
   public final void redraw() {
     setFocusNode( null);
     highlightPathNodesList = null;
+    highlightPathLinksList = null;
     boolean isContentSpecRedraw = true;
     createRedrawViewThread( isContentSpecRedraw);
   }
@@ -434,8 +437,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 
     redrawPMThread = 
       createProgressMonitorThread( "Redrawing Token Network View ...", 0, 6,
-                                   Thread.currentThread(),
-			     this);
+                                   Thread.currentThread(), this);
     if (! progressMonitorWait( redrawPMThread, this)) {
       System.err.println( "progressMonitorWait failed");
       closeView( this);
@@ -458,8 +460,10 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 
 //     System.err.println( "redrawView: focusNode " + focusNode + " highlightPathNodesList " +
 //                         highlightPathNodesList);
-    if ((focusNode == null) && (highlightPathNodesList != null)) {
+    if ((focusNode == null) && (highlightPathNodesList != null) &&
+        (highlightPathLinksList != null)) {
       NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
+      NodeGenerics.highlightPathLinks( highlightPathLinksList, this, jGoView);
     } else if (focusNode != null) {
       // do not highlight node, if it has been removed
       NodeGenerics.focusViewOnNode( focusNode, ((IncrementalNode) focusNode).inLayout(),
@@ -825,6 +829,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
   public class TokenNetworkJGoView extends JGoView {
 
     private TokenNetworkView tokenNetworkView;
+
     /**
      * <code>TokenNetworkJGoView</code> - constructor 
      *
@@ -864,8 +869,9 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     public final void doBackgroundClick( final int modifiers, final Point docCoords,
                                          final Point viewCoords) {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-        // do nothing
+        NodeGenerics.unhighlightPathLinks( TokenNetworkView.this);
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        NodeGenerics.unhighlightPathLinks( TokenNetworkView.this);
         mouseRightPopupMenu( viewCoords);
       }
     } // end doBackgroundClick
@@ -888,7 +894,8 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 
     if (highlightPathNodesList != null) {
       JMenuItem highlightPathItem = new JMenuItem( "Highlight Current Path");
-      createHighlightPathItem( highlightPathItem, highlightPathNodesList);
+      createHighlightPathItem( highlightPathItem, highlightPathNodesList,
+                               highlightPathLinksList);
       mouseRightPopup.add( highlightPathItem);
     }
 
@@ -953,6 +960,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
           Integer nodeKey = nodeByKeyDialog.getNodeKey();
           if (nodeKey != null) {
             highlightPathNodesList = null;
+            highlightPathLinksList = null;
             boolean isByKey = true;
             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
             findAndSelectNode( nodeKey, isByKey);
@@ -1012,14 +1020,14 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
           String message = "Token " + tokenToFind.getPredicateName() +
             " (key=" + tokenToFind.getId().toString() + ") not found.";
           JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                         "Token Not Currrently Found in TokenNetworkView",
+                                         "Token Not Currently Found in TokenNetworkView",
                                          JOptionPane.ERROR_MESSAGE);
           System.err.println( message);
         } else {
           String message = "RuleInstance 'rule " + ruleInstanceToFind.getRuleId() +
             "' (key=" + ruleInstanceToFind.getId().toString() + ") not found.";
           JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                         "RuleInstance Not Currrently Found in TokenNetworkView",
+                                         "RuleInstance Not Currently Found in TokenNetworkView",
                                          JOptionPane.ERROR_MESSAGE);
           System.err.println( message);
         }
@@ -1125,7 +1133,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
    */
   public List renderEntityPathNodes( final FindEntityPath findEntityPath) {
     boolean layoutNeeded = false, isFindEntityPath = true;
-    List nodeList =  new ArrayList();
+    List nodeList =  new ArrayList(); List linkList  =  new ArrayList();
       Iterator tokenRuleItr = findEntityPath.getEntityKeyList().iterator();
       PwToken token = null; PwRuleInstance ruleInstance = null;
       while (tokenRuleItr.hasNext()) {
@@ -1135,6 +1143,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 	  TokenNetworkTokenNode tokenNode =
             (TokenNetworkTokenNode) addEntityTokNetNode( token, isDebugPrint);
 	  nodeList.add( tokenNode);
+          // System.err.println( "add token " + tokenNode);
 	  if (! tokenNode.areNeighborsShown()) {
 	    if (tokenNode.addTokenObjects( tokenNode)) {
 	      layoutNeeded = true;
@@ -1145,6 +1154,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 	  TokenNetworkRuleInstanceNode ruleInstanceNode =
             (TokenNetworkRuleInstanceNode) addEntityTokNetNode( ruleInstance, isDebugPrint);
 	  nodeList.add( ruleInstanceNode);
+          // System.err.println( "add rule instance " + ruleInstanceNode);
 	  if (! ruleInstanceNode.areNeighborsShown()) {
 	    if (ruleInstanceNode.addRuleInstanceObjects( ruleInstanceNode)) {
 	      layoutNeeded = true;
@@ -1152,23 +1162,30 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 	    ruleInstanceNode.setAreNeighborsShown( true);
 	  }
 	}
+        if (nodeList.size() >= 2) {
+          linkList.add( NodeGenerics.getLinkFromNodes
+                        ( (IncrementalNode) nodeList.get( nodeList.size() - 2),
+                          (IncrementalNode) nodeList.get( nodeList.size() - 1), tokNetLinkMap));
+        }
       }
       if (layoutNeeded) {
 	setLayoutNeeded();
       }
       setFocusNode( null);
       highlightPathNodesList = nodeList;
+      highlightPathLinksList = linkList;
       
       redraw( isFindEntityPath);
       return nodeList;
   } // end renderEntityPathNodes
 
   private void createHighlightPathItem( final JMenuItem highlightPathItem,
-					final List nodeList) {
+					final List nodesList, final List linksList) {
     highlightPathItem.addActionListener( new ActionListener() {
 	public void actionPerformed(ActionEvent evt) {
-	  NodeGenerics.highlightPathNodes( nodeList, jGoView);
-	  FindEntityPath.outputEntityPathNodes( nodeList, TokenNetworkView.this);
+	  NodeGenerics.highlightPathNodes( nodesList, jGoView);
+	  NodeGenerics.highlightPathLinks( linksList, TokenNetworkView.this, jGoView);
+	  FindEntityPath.outputEntityPathNodes( nodesList, TokenNetworkView.this);
 	}
       });
   } // end createHighlightPathItem

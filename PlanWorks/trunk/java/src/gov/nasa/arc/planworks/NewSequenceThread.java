@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.6 2004-09-08 20:59:50 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.7 2004-09-09 22:45:04 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -33,9 +33,6 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
 public class NewSequenceThread extends ThreadWithProgressMonitor {
-
-  private static final int WINDOW_WIDTH = 400;
-  private static final int WINDOW_HEIGHT= 150;
 
   private PwProject currentProject;
   private String projectName;
@@ -127,9 +124,6 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       PwPlanningSequence planSequence = currentProject.getPlanningSequence( seqUrl);
       ViewSet viewSet = getViewSetWithWait( planSequence);
       MDIInternalFrame sequenceStepsFrame = getSequenceStepsFrameWithWait( viewSet);
-      sequenceStepsFrame.setSize
-        ( (int) Math.max( sequenceStepsFrame.getSize().getWidth(), WINDOW_WIDTH),
-          (int) Math.max( sequenceStepsFrame.getSize().getHeight(), WINDOW_HEIGHT));
 
       // open Planner Controller frame
       MDIInternalFrame plannerControllerFrame = 
