@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.13 2003-06-13 21:07:43 miatauro Exp $ -->
+<!-- $Id: build.xml,v 1.14 2003-06-26 20:47:18 miatauro Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -8,6 +8,13 @@
   <property name="planworks.root" value="${basedir}"/>
   <property name="exist.home" location="${planworks.root}/java/lib/eXist"/>
   <property name="exist.conf.file" value="conf-nolog.xml"/>
+  <property name="mysql.basedir" value="${planworks.root}/lib/mysql"/>
+  <property name="mysql.datadir" value="${mysql.basedir}/data"/>
+  <property name="mysql.log" value="${mysql.basedir}/log/mysql.log"/>
+  <property name="mysql.log.err" value="${mysql.basedir}/log/mysql.error.log"/>
+  <property name="mysql.sock" value="${mysql.basedir}/mysql.sock"/>
+  <property name="mysql.tmpdir" value="${mysql.basedir}/tmp"/>
+  <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
   <property name="default.project.dir" location="${planworks.root}/xml/test"/>
   <property name="projects.xml.data.dir" location="${planworks.root}/xml/db/proj"/>
   <property name="projects.xml.data.pathname" 
