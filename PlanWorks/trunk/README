@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.74 2004-03-02 02:34:08 taylor Exp $
+# $Id: README,v 1.75 2004-03-03 02:14:19 taylor Exp $
 #
 
 SUMMARY
@@ -12,10 +12,6 @@ SUMMARY
 o This release *does* require a total rebuild of the PlanWorks data base,
   using "ant planWorksDbInstall".  All plans to be loaded must be
   regenerated using the PartialPlanWriter.
-
-o The forward/backward step buttons on the partial plan views
-  are now initially placed so that is most cases, they do not 
-  overlay displayed nodes.
 
 o Automatic location offsets for partial plan views and Content Filter
   windows will no longer be used -- the user will relocate overlaying 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.3 2004-03-02 02:34:16 taylor Exp $
+// $Id: NavNodeGenerics.java,v 1.4 2004-03-03 02:14:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,16 +42,18 @@ public final class NavNodeGenerics {
 
   public static final String OBJECT_TO_OBJECT_LINK_TYPE = "OtoO";
   public static final String OBJECT_TO_TIMELINE_LINK_TYPE = "OtoTi";
+  public static final String OBJECT_TO_VARIABLE_LINK_TYPE = "OtoV";
   public static final String TIMELINE_TO_OBJECT_LINK_TYPE = "TitoO";
   public static final String TIMELINE_TO_TIMELINE_LINK_TYPE = "TitoTi";
   public static final String TIMELINE_TO_SLOT_LINK_TYPE = "TitoS";
+  public static final String TIMELINE_TO_VARIABLE_LINK_TYPE = "TitoV";
+  public static final String TIMELINE_TO_RESOURCE_LINK_TYPE = "TitoR";
+  public static final String RESOURCE_TO_TOKEN_LINK_TYPE = "RtoT";
+  public static final String RESOURCE_TO_VARIABLE_LINK_TYPE = "RtoV";
   public static final String SLOT_TO_TOKEN_LINK_TYPE = "StoT";
   public static final String TOKEN_TO_TOKEN_LINK_TYPE = "TtoT";
   public static final String TOKEN_TO_VARIABLE_LINK_TYPE = "TtoV";
   public static final String VARIABLE_TO_CONSTRAINT_LINK_TYPE = "VtoC";
-  public static final String OBJECT_TO_VARIABLE_LINK_TYPE = "OtoV";
-  public static final String TIMELINE_TO_VARIABLE_LINK_TYPE = "TitoV";
-  public static final String RESOURCE_TO_TOKEN_LINK_TYPE = "RtoT";
  
   private NavNodeGenerics() {
   }
@@ -367,6 +369,9 @@ public final class NavNodeGenerics {
     } else if ((fromNavNode instanceof TimelineNavNode) &&
                (toNavNode instanceof SlotNavNode)) {
       return TIMELINE_TO_SLOT_LINK_TYPE;
+    } else if ((fromNavNode instanceof TimelineNavNode) &&
+               (toNavNode instanceof ResourceNavNode)) {
+      return TIMELINE_TO_RESOURCE_LINK_TYPE;
     } else if ((fromNavNode instanceof SlotNavNode) &&
                (toNavNode instanceof TokenNavNode)) {
       return SLOT_TO_TOKEN_LINK_TYPE;
@@ -388,6 +393,9 @@ public final class NavNodeGenerics {
     } else if ((fromNavNode instanceof ResourceNavNode) &&
                (toNavNode instanceof TokenNavNode)) {
       return RESOURCE_TO_TOKEN_LINK_TYPE;
+    } else if ((fromNavNode instanceof ResourceNavNode) &&
+               (toNavNode instanceof VariableNavNode)) {
+      return RESOURCE_TO_VARIABLE_LINK_TYPE;
     } else {
       System.err.println( "NavNodeGenerics.getLinkType: no link type for " +
                           fromNavNode + " => " + toNavNode);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.19 2004-03-02 02:34:13 taylor Exp $
+// $Id: NodeGenerics.java,v 1.20 2004-03-03 02:14:21 taylor Exp $
 //
 // PlanWorks
 //
@@ -71,118 +71,6 @@ public class NodeGenerics {
   } // end showPopupMenu
 
   /**
-   * <code>getStartEndIntervals</code>
-   *
-   * use startVariable for every token + the endVariable for the last one
-   * if a slot is empty, and has no tokens, use the endVariable from
-   * the previous slot node
-   *
-   * @param slot - <code>PwSlot</code> - 
-   * @param previousSlot - <code>PwSlot</code> - 
-   * @param isLastSlot - <code>boolean</code> - 
-   * @return - <code>PwDomain[]</code> - 
-   */
-  public static PwDomain[] getStartEndIntervals( PwSlot slot, PwSlot previousSlot,
-                                                 PwSlot nextSlot, boolean isLastSlot) {
-    PwDomain[] intervalArray = new PwDomain[2];
-    PwDomain startIntervalDomain = null;
-    PwDomain endIntervalDomain = null;
-    PwVariable intervalVariable = null, lastIntervalVariable = null;
-    PwToken baseToken = slot.getBaseToken();
-    PwToken previousToken = null;
-    if (previousSlot != null) {
-      previousToken = previousSlot.getBaseToken();
-    }
-    PwDomain intervalDomain = null, lastIntervalDomain = null;
-    if (baseToken == null) { // empty slot
-      if ((previousToken == null) || // first slot
-          (isLastSlot == true)) { // last slot
-        intervalArray[0] = null;
-        intervalArray[1] = null;
-        return intervalArray;
-      } 
-      else {
-        // empty slot between filled slots
-        intervalVariable = previousToken.getEndVariable();
-        //startIntervalDomain = previousSlot.getBaseToken().getEndVariable().getDomain();
-        endIntervalDomain = nextSlot.getBaseToken().getStartVariable().getDomain();
-      }
-    } else if (isLastSlot) {
-      intervalVariable = baseToken.getStartVariable();
-      lastIntervalVariable = baseToken.getEndVariable();
-    } else {
-      intervalVariable = baseToken.getStartVariable();      
-    }
-    
-    if (intervalVariable == null) {
-      startIntervalDomain = intervalDomain;
-    } else {
-      startIntervalDomain = intervalVariable.getDomain();
-    }
-    
-    if ((lastIntervalVariable != null) || (lastIntervalDomain != null)) {
-      if (lastIntervalVariable == null) {
-        endIntervalDomain = lastIntervalDomain;
-      } else {
-        endIntervalDomain = lastIntervalVariable.getDomain();
-      }
-    }
-    if (endIntervalDomain == null) {
-      System.err.println("EQ");
-      endIntervalDomain = startIntervalDomain;
-    }
-         System.err.println( "getStartEndIntervals: " + slot.getBaseToken());
-         System.err.println( "  startIntervalDomain " + startIntervalDomain.toString());
-         System.err.println( "  endIntervalDomain " + endIntervalDomain.toString());
-    intervalArray[0] = startIntervalDomain;
-    intervalArray[1] = endIntervalDomain;
-    return intervalArray;
-  } // end getStartEndIntervals
-
-  /**
-   * <code>getShortestDuration</code>
-   *
-   * @param slot - <code>PwSlot</code> - 
-   * @param startTimeIntervalDomain - <code>PwDomain</code> - 
-   * @param endTimeIntervalDomain - <code>PwDomain</code> - 
-   * @return - <code>String</code> - 
-   */
-  public static String getShortestDuration( PwSlot slot,
-                                            PwDomain startTimeIntervalDomain,
-                                            PwDomain endTimeIntervalDomain) {
-    PwVariable durationVariable = null;
-    if ((slot == null) ||  // free token
-        (slot.getBaseToken() == null)) { // empty slot
-      int startUpper = startTimeIntervalDomain.getUpperBoundInt();
-      int endUpper = endTimeIntervalDomain.getUpperBoundInt();
-      int startLower = startTimeIntervalDomain.getLowerBoundInt();
-      int endLower = endTimeIntervalDomain.getLowerBoundInt();
-      int valueStart = Math.max( startLower, startUpper);
-      if (valueStart == DbConstants.PLUS_INFINITY_INT) {
-        valueStart = Math.min( startLower, startUpper);
-      }
-      if (valueStart == DbConstants.MINUS_INFINITY_INT) {
-        valueStart = 0;
-      }
-      int valueEnd = Math.min( endLower, endUpper);
-      if (valueEnd == DbConstants.MINUS_INFINITY_INT) {
-        valueEnd = Math.max( endLower, endUpper);
-      }
-      if (valueEnd == DbConstants.PLUS_INFINITY_INT) {
-        valueEnd = valueStart;
-      }
-      return String.valueOf( Math.abs( valueEnd - valueStart));
-    } else {
-      durationVariable = slot.getBaseToken().getDurationVariable();
-      if (durationVariable != null) {
-        return durationVariable.getDomain().getLowerBound();
-      } else {
-        return "0";
-      }
-    }
-  } // end getShortestDuration
-
-  /**
    * <code>getShortestDuration</code>
    *
    * @param isFreeToken - <code>boolean</code> - 
@@ -224,41 +112,6 @@ public class NodeGenerics {
       }
     }
   } // end getShortestDuration
-
-  /**
-   * <code>getLongestDuration</code>
-   *
-   * @param slot - <code>PwSlot</code> - 
-   * @param startTimeIntervalDomain - <code>PwDomain</code> - 
-   * @param endTimeIntervalDomain - <code>PwDomain</code> - 
-   * @return - <code>String</code> - 
-   */
-  public static String getLongestDuration( PwSlot slot,
-                                           PwDomain startTimeIntervalDomain,
-                                           PwDomain endTimeIntervalDomain) {
-    PwVariable durationVariable = null;
-    if ((slot == null) ||  // free token
-        (slot.getBaseToken() == null)) { // empty slot
-      String upperBound = endTimeIntervalDomain.getUpperBound();
-      String lowerBound = startTimeIntervalDomain.getLowerBound();
-      if (upperBound.equals( DbConstants.PLUS_INFINITY)) {
-        return DbConstants.PLUS_INFINITY;
-      } else if (lowerBound.equals( DbConstants.MINUS_INFINITY)) {
-        return DbConstants.PLUS_INFINITY;
-      } else {
-        return String.valueOf( endTimeIntervalDomain.getUpperBoundInt() -
-                               startTimeIntervalDomain.getLowerBoundInt());      
-      }
-    } else {
-      durationVariable = slot.getBaseToken().getDurationVariable();
-      if (durationVariable != null) {
-        return durationVariable.getDomain().getUpperBound();
-      } else {
-        return "0";
-      }
-    }
-  } // end getLongestDuration
-
 
   /**
    * <code>getLongestDuration</code>

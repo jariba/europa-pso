@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.30 2004-03-03 00:32:38 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.31 2004-03-03 02:14:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -188,9 +188,10 @@ public class TokenNetworkView extends PartialPlanView {
       boolean isRedraw = true;
       renderTokenNetwork( isRedraw);
       addStepButtons( jGoView);
-      if (! isStepButtonView) {
-        expandViewFrameForStepButtons( viewFrame);
-      }
+      // causes bottom view edge to creep off screen
+//       if (! isStepButtonView) {
+//         expandViewFrameForStepButtons( viewFrame);
+//       }
     } //end run
 
   } // end class RedrawViewThread
@@ -286,9 +287,9 @@ public class TokenNetworkView extends PartialPlanView {
     while (tokenNodeKeyItr.hasNext()) {
       TokenNode tokenNode =
         (TokenNode) tokenNodeMap.get( (Integer) tokenNodeKeyItr.next());
-      System.err.println("Token: " + tokenNode + " master: " + 
-                         partialPlan.getMasterTokenId(tokenNode.getToken().getId()) + " slaves: " +
-                         partialPlan.getSlaveTokenIds(tokenNode.getToken().getId()));
+//       System.err.println("Token: " + tokenNode + " master: " + 
+//                          partialPlan.getMasterTokenId(tokenNode.getToken().getId()) + " slaves: " +
+//                          partialPlan.getSlaveTokenIds(tokenNode.getToken().getId()));
       Integer tokenId = tokenNode.getToken().getId();
       Integer masterTokenId = partialPlan.getMasterTokenId( tokenId);
       if (masterTokenId != null) {
@@ -297,14 +298,15 @@ public class TokenNetworkView extends PartialPlanView {
           createTokenLink( masterToken, tokenNode, "master");
         }
       }
-      Iterator slaveTokenIdItr = partialPlan.getSlaveTokenIds( tokenId).iterator();
-      while (slaveTokenIdItr.hasNext()) {
-        Integer slaveTokenId = (Integer) slaveTokenIdItr.next();
-        TokenNode slaveToken = (TokenNode) tokenNodeMap.get( slaveTokenId);
-        if ((slaveToken != null) && (! slaveTokenId.equals( tokenId))) {
-          createTokenLink( tokenNode, slaveToken, "slave");
-        }
-      }
+      // redundant
+//       Iterator slaveTokenIdItr = partialPlan.getSlaveTokenIds( tokenId).iterator();
+//       while (slaveTokenIdItr.hasNext()) {
+//         Integer slaveTokenId = (Integer) slaveTokenIdItr.next();
+//         TokenNode slaveToken = (TokenNode) tokenNodeMap.get( slaveTokenId);
+//         if ((slaveToken != null) && (! slaveTokenId.equals( tokenId))) {
+//           createTokenLink( tokenNode, slaveToken, "slave");
+//         }
+//       }
     }
   } // end createTokenParentChildRelationships
 

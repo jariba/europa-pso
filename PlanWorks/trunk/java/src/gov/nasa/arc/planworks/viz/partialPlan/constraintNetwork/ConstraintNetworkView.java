@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.46 2004-03-02 02:34:15 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.47 2004-03-03 02:14:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1295,8 +1295,11 @@ public class ConstraintNetworkView extends PartialPlanView {
     Iterator containerNodeIterator = containerNodeMap.values().iterator();
     while (containerNodeIterator.hasNext()) {
       VariableContainerNode parentNode = (VariableContainerNode) containerNodeIterator.next();
+//       System.err.println( "setNodesLinksVisible parentNode.getContainer() " +
+//                           parentNode.getContainer().getClass().getName());
       if (parentNode instanceof ConstraintNetworkObjectNode ||
           parentNode instanceof ConstraintNetworkTimelineNode ||
+          parentNode instanceof ConstraintNetworkResourceNode ||
           isTokenInContentSpec( (PwToken) parentNode.getContainer())) {
         parentNode.setVisible( true);
         Iterator variablesItr = parentNode.getVariableNodes().iterator();

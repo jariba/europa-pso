@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.7 2004-03-02 02:34:14 taylor Exp $
+// $Id: TimeScaleView.java,v 1.8 2004-03-03 02:14:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -138,9 +138,6 @@ public class TimeScaleView extends JGoView  {
           boolean isLastSlot = (! slotIterator.hasNext());
           PwToken token = slot.getBaseToken();
           slotCnt++;
-          //           PwDomain[] intervalArray =
-          //             NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot);
-          //           collectTimeScaleMetrics( intervalArray[0], intervalArray[1], token);
           collectTimeScaleMetrics(slot.getStartTime(), slot.getEndTime(), token);
           previousSlot = slot;
         }
@@ -205,47 +202,49 @@ public class TimeScaleView extends JGoView  {
   } // end collectTimeScaleMetrics
 
   private void collectFreeTokenMetrics() {
-    List freeTokenList = partialPlan.getFreeTokenList();
-    Iterator freeTokenItr = freeTokenList.iterator();
-    while (freeTokenItr.hasNext()) {
-      PwToken token = (PwToken) freeTokenItr.next();
-      PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
-      PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
+    List tokenList = partialPlan.getTokenList();
+    Iterator tokenIterator = tokenList.iterator();
+    while (tokenIterator.hasNext()) {
+      PwToken token = (PwToken) tokenIterator.next();
+      if (token.isFree()) {
+        PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
+        PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
 
-      int leftMarginTime = 0;
-      if (startTimeIntervalDomain != null) {
-//         System.err.println( "collectFreeTokenMetrics earliest " +
-//                             startTimeIntervalDomain.getLowerBound() + " latest " +
-//                             startTimeIntervalDomain.getUpperBound());
-        int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
-        leftMarginTime = earliestTime;
-        if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
-            (earliestTime < timeScaleStart)) {
+        int leftMarginTime = 0;
+        if (startTimeIntervalDomain != null) {
+          //         System.err.println( "collectFreeTokenMetrics earliest " +
+          //                             startTimeIntervalDomain.getLowerBound() + " latest " +
+          //                             startTimeIntervalDomain.getUpperBound());
+          int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+          leftMarginTime = earliestTime;
+          if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
+              (earliestTime < timeScaleStart)) {
             timeScaleStart = earliestTime;
-        }
-        int latestTime = startTimeIntervalDomain.getUpperBoundInt();
-        if (leftMarginTime == DbConstants.MINUS_INFINITY_INT) {
-          leftMarginTime = latestTime;
-        }
-        if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
-            (latestTime < timeScaleStart)) {
-          timeScaleStart = latestTime;
-        }
-      }
-      if (endTimeIntervalDomain != null) {
-//         System.err.println( "collectFreeTokenMetrics latest " +
-//                             endTimeIntervalDomain.getUpperBound() + " earliest " +
-//                             endTimeIntervalDomain.getLowerBound());
-        int latestTime = endTimeIntervalDomain.getUpperBoundInt();
-        if (latestTime != DbConstants.PLUS_INFINITY_INT) {
-          if (latestTime > timeScaleEnd) {
-            timeScaleEnd = latestTime;
+          }
+          int latestTime = startTimeIntervalDomain.getUpperBoundInt();
+          if (leftMarginTime == DbConstants.MINUS_INFINITY_INT) {
+            leftMarginTime = latestTime;
+          }
+          if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
+              (latestTime < timeScaleStart)) {
+            timeScaleStart = latestTime;
           }
         }
-        int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
-        if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
-            (earliestTime > timeScaleEnd)) {
-          timeScaleEnd = earliestTime;
+        if (endTimeIntervalDomain != null) {
+          //         System.err.println( "collectFreeTokenMetrics latest " +
+          //                             endTimeIntervalDomain.getUpperBound() + " earliest " +
+          //                             endTimeIntervalDomain.getLowerBound());
+          int latestTime = endTimeIntervalDomain.getUpperBoundInt();
+          if (latestTime != DbConstants.PLUS_INFINITY_INT) {
+            if (latestTime > timeScaleEnd) {
+              timeScaleEnd = latestTime;
+            }
+          }
+          int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
+          if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
+              (earliestTime > timeScaleEnd)) {
+            timeScaleEnd = earliestTime;
+          }
         }
       }
     }

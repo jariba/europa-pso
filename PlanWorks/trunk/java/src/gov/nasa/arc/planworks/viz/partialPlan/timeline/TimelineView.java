@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.41 2004-03-03 00:11:58 miatauro Exp $
+// $Id: TimelineView.java,v 1.42 2004-03-03 02:14:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -210,9 +210,10 @@ public class TimelineView extends PartialPlanView {
     public void run() {
       renderTimelineAndSlotNodes();
       addStepButtons( jGoView);
-      if (! isStepButtonView) {
-        expandViewFrameForStepButtons( viewFrame);
-      }
+      // causes bottom view edge to creep off screen
+//       if (! isStepButtonView) {
+//         expandViewFrameForStepButtons( viewFrame);
+//       }
     } //end run
 
   } // end class RedrawViewThread
@@ -448,10 +449,6 @@ public class TimelineView extends PartialPlanView {
         foundEmptySlot = false;
       }
       boolean isLastSlot = (! slotIterator.hasNext());
-//       PwDomain[] intervalArray =
-//         NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot);
-//       PwDomain startTimeIntervalDomain = intervalArray[0];
-//       PwDomain endTimeIntervalDomain = intervalArray[1];
       PwDomain startTimeIntervalDomain = slot.getStartTime();
       PwDomain endTimeIntervalDomain = slot.getEndTime();
       if ((endTimeIntervalDomain != null) &&
