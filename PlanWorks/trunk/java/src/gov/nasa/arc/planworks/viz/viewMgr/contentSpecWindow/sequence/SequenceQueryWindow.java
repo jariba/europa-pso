@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.26 2004-05-08 01:44:18 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.27 2004-05-11 22:46:41 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -21,8 +21,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -90,11 +92,14 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   public static final String TRANSACTIONS_OF_TYPE = "Of Type ...";
   public static final List DB_TRANSACTION_QUERIES;
 
-  public static final List CONSTRAINT_TRANSACTION_TYPES;
+  //public static final List CONSTRAINT_TRANSACTION_TYPES;
+	public static Set CONSTRAINT_TRANSACTION_TYPES;
   public static final String CONSTRAINT_TRANSACTION_TYPE_ALL = "CONSTRAINT_ALL";
-  public static final List TOKEN_TRANSACTION_TYPES;
+  //public static final List TOKEN_TRANSACTION_TYPES;
+	public static Set TOKEN_TRANSACTION_TYPES;
   public static final String TOKEN_TRANSACTION_TYPE_ALL = "TOKEN_ALL";
-  public static final List VARIABLE_TRANSACTION_TYPES;
+  //public static final List VARIABLE_TRANSACTION_TYPES;
+	public static Set VARIABLE_TRANSACTION_TYPES;
   public static final String VARIABLE_TRANSACTION_TYPE_ALL = "VARIABLE_ALL";
 
   public static final String FREE_TOKENS_AT_STEP = "At ...";
@@ -108,6 +113,10 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
 
   public static final String APPLY_QUERY_BUTTON = "Apply Query";
   static {
+		CONSTRAINT_TRANSACTION_TYPES = new HashSet();
+		VARIABLE_TRANSACTION_TYPES = new HashSet();
+		TOKEN_TRANSACTION_TYPES = new HashSet();
+
     STEP_QUERIES = new ArrayList();
     STEP_QUERIES.add( STEPS_WHERE_CONSTRAINT_TRANSACTED);
     STEP_QUERIES.add( STEPS_WHERE_TOKEN_TRANSACTED);
@@ -122,11 +131,11 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     DB_TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_VARIABLE);
     DB_TRANSACTION_QUERIES.add( TRANSACTIONS_IN_RANGE);
     // DB_TRANSACTION_QUERIES.add(TRANSACTIONS_OF_TYPE);
-    CONSTRAINT_TRANSACTION_TYPES = MySQLDB.queryConstraintTransactionNames();
+    //CONSTRAINT_TRANSACTION_TYPES = MySQLDB.queryConstraintTransactionNames();
 //     CONSTRAINT_TRANSACTION_TYPES = new ArrayList();
 //     CONSTRAINT_TRANSACTION_TYPES.add( DbConstants.CONSTRAINT_CREATED);
 //     CONSTRAINT_TRANSACTION_TYPES.add( DbConstants.CONSTRAINT_DELETED);
-    TOKEN_TRANSACTION_TYPES = MySQLDB.queryTokenTransactionNames();
+    //TOKEN_TRANSACTION_TYPES = MySQLDB.queryTokenTransactionNames();
 //     TOKEN_TRANSACTION_TYPES = new ArrayList();
 //     TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_CREATED);
 //     TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_DELETED);
@@ -140,7 +149,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
 //     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESET); 
 //     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESTRICTED);
 //     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_SPECIFIED);
-    VARIABLE_TRANSACTION_TYPES = MySQLDB.queryVariableTransactionNames();
+    //VARIABLE_TRANSACTION_TYPES = MySQLDB.queryVariableTransactionNames();
     VARIABLE_TRANSACTION_TYPES.add("VARIABLE_RESTRICTED");
     VARIABLE_TRANSACTION_TYPES.add("VARIABLE_RELAXED");
     FREE_TOKEN_QUERIES = new ArrayList();
@@ -187,6 +196,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
    */
   public SequenceQueryWindow( MDIInternalFrame sequenceQueryFrame, MDIDesktopFrame desktopFrame,
                               ViewableObject viewable, ViewSet viewSet) {
+		MySQLDB.queryTransactionNames((PwPlanningSequence) viewable, CONSTRAINT_TRANSACTION_TYPES, TOKEN_TRANSACTION_TYPES, 
+																	VARIABLE_TRANSACTION_TYPES);
     this.sequenceQueryFrame = sequenceQueryFrame;
     // for PWTestHelper.findComponentByName
     this.setName( sequenceQueryFrame.getTitle());
