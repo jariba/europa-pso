@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.8 2004-10-07 20:19:05 taylor Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.9 2004-12-08 20:57:56 pdaley Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -69,14 +69,14 @@ public class ConfigureNewSequenceDialog extends JDialog {
     super( planWorks, true);
     setTitle( "Create New Sequence");
     String browseTitle = "browse ...";
-    final JLabel plannerPathLabel = new JLabel( "planner path");
+    final JLabel plannerPathLabel = new JLabel( "planner library path");
     plannerPathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton plannerPathBrowseButton = new JButton( browseTitle);
     plannerPathBrowseButton.addActionListener( new PlannerPathButtonListener());
 //     final JLabel modelNameLabel = new JLabel( "model name");
 //     modelNameField = new JTextField( NAME_FIELD_WIDTH);
 
-    final JLabel modelPathLabel = new JLabel( "model path");
+    final JLabel modelPathLabel = new JLabel( "model library path");
     modelPathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelPathBrowseButton = new JButton( browseTitle);
     modelPathBrowseButton.addActionListener( new ModelPathButtonListener());
@@ -86,7 +86,7 @@ public class ConfigureNewSequenceDialog extends JDialog {
     final JButton modelOutputDestDirBrowseButton = new JButton( browseTitle);
      modelOutputDestDirBrowseButton.addActionListener( new ModelOutputDestDirButtonListener());
 
-    final JLabel modelInitStatePathLabel =  new JLabel( "model init state path");
+    final JLabel modelInitStatePathLabel =  new JLabel( "model initial state path");
     modelInitStatePathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
     modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
@@ -347,11 +347,11 @@ public class ConfigureNewSequenceDialog extends JDialog {
 
     String modelOutputDestDirTemp = modelOutputDestDirField.getText().trim();
     // if (! modelOutputDestDir.equals( modelOutputDestDirTemp)) {
-      if (! doesPathExist( modelOutputDestDirTemp)) {
-        haveSeenError = true;
-      } else {
+      //if (! doesPathExist( modelOutputDestDirTemp)) {
+        //haveSeenError = true;
+      //} else {
         modelOutputDestDir = modelOutputDestDirTemp;
-      }
+     // }
       // }
 
     return haveSeenError;

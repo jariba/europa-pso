@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.7 2004-10-07 20:19:06 taylor Exp $
+// $Id: ConfigureProjectDialog.java,v 1.8 2004-12-08 20:57:28 pdaley Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -81,13 +81,13 @@ public class ConfigureProjectDialog extends JDialog {
     workingDirField = new JTextField( PATH_FIELD_WIDTH);
     final JButton workingDirBrowseButton = new JButton( browseTitle);
     workingDirBrowseButton.addActionListener( new WorkingDirButtonListener());
-    final JLabel plannerPathLabel = new JLabel( "planner path");
+    final JLabel plannerPathLabel = new JLabel( "planner library path");
     plannerPathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton plannerPathBrowseButton = new JButton( browseTitle);
     plannerPathBrowseButton.addActionListener( new PlannerPathButtonListener());
 //     final JLabel modelNameLabel = new JLabel( "model name");
 //     modelNameField = new JTextField( NAME_FIELD_WIDTH);
-    final JLabel modelPathLabel = new JLabel( "model path");
+    final JLabel modelPathLabel = new JLabel( "model library path");
     modelPathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelPathBrowseButton = new JButton( browseTitle);
     modelPathBrowseButton.addActionListener( new ModelPathButtonListener());
@@ -95,7 +95,7 @@ public class ConfigureProjectDialog extends JDialog {
     modelOutputDestDirField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelOutputDestDirBrowseButton = new JButton( browseTitle);
      modelOutputDestDirBrowseButton.addActionListener( new ModelOutputDestDirButtonListener());
-    final JLabel modelInitStatePathLabel =  new JLabel( "model init state path");
+    final JLabel modelInitStatePathLabel =  new JLabel( "model initial state path");
     modelInitStatePathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
     modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
@@ -412,13 +412,12 @@ public class ConfigureProjectDialog extends JDialog {
       // }
 
     String modelOutputDestDirTemp = modelOutputDestDirField.getText().trim();
-    // if (! modelOutputDestDir.equals( modelOutputDestDirTemp)) {
-      if (! doesPathExist( modelOutputDestDirTemp)) {
-        haveSeenError = true;
-      } else {
-        modelOutputDestDir = modelOutputDestDirTemp;
-      }
-      // }
+//    if (! doesPathExist( modelOutputDestDirTemp)) {
+//      haveSeenError = true;
+//    } else {
+//      modelOutputDestDir = modelOutputDestDirTemp;
+//    }
+    modelOutputDestDir = modelOutputDestDirTemp;
 
     String modelRuleDelimitersTemp = modelRuleDelimitersField.getText().trim();
     // if (! modelRuleDelimiters.equals( modelRuleDelimitersTemp)) {
