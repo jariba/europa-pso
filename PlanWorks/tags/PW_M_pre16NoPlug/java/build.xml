@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: build.xml,v 1.14 2004-07-08 21:33:20 taylor Exp $ -->
+<project name="PlanWorks" default="compile" basedir=".">
+    <description>
+        Planworks Build Targets
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" value="src"/>
+  <property name="build" value="classes"/>
+  <property name="dist"  value="jars"/>
+  <!-- show line numbers in stack trace -->
+  <property name="debug"  value="true"/>
+  <!-- property name="deprecation"  value="off"/ -->
+  <property name="deprecation"  value="true"/>
+  <property name="javahDestdir"  value="../cpp/include/europa"/>
+  <property environment="env"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+    <!-- echo message="init completed"/ -->
+  </target>
+
+  <target name="optCompile" depends="init">
+    <javac srcdir="${src}" destdir="${build}" debug="off" optimize="on">
+        <classpath>
+          <pathelement location="${jgo.home}/JGo.jar"/>
+          <pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+          <pathelement location="${jgo.home}/Classier.jar"/>
+          <pathelement location="${jgo.home}"/>
+          <pathelement location="${jfcunit.home}/junit.jar"/>
+          <pathelement location="${jfcunit.home}/jfcunit.jar"/>
+          <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
+	  <pathelement location="${antlr.home}/antlr.jar"/>
+       </classpath> 
+    </javac>
+    <echo message="optimized compile completed"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile 'src' tree into 'classes' tree" >
+    <ant dir="./src/gov/nasa/arc/planworks/dbg/testLang"
+       antfile="build.xml" target="generateTestLang"/>
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}" debug="${debug}" deprecation="${deprecation}">
+       <classpath>
+          <pathelement location="${jgo.home}/JGo.jar"/>
+          <pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+          <pathelement location="${jgo.home}/Classier.jar"/>
+          <pathelement location="${jgo.home}"/>
+          <pathelement location="${jfcunit.home}/junit.jar"/>
+          <pathelement location="${jfcunit.home}/jfcunit.jar"/>
+          <pathelement location="${jfcunit.home}/jakarta-regexp.jar"/>
+	  <pathelement location="${antlr.home}/antlr.jar"/>
+       </classpath>
+    </javac>
+    <echo message="compile completed"/>
+  </target>
+
+  <target name="dist" depends="clean,compile"
+        description="NOT USED: generate a jar file in 'jars' directory" >
+    <!-- Put everything in ${build} into the planWorks.jar file -->
+    <jar jarfile="${dist}/planWorks.jar" basedir="${build}"/>
+  </target>
+
+  <target name="clean"
+        description="delete the 'classes' directory tree" >
+    <!-- Delete the ${build} directory trees -->
+    <delete dir="${build}"/>
+    <echo message="clean class files completed"/>
+  </target>
+
+</project>
