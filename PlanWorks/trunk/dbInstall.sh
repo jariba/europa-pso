@@ -182,5 +182,6 @@ sleep 1
 echo "Creating PlanWorksUser..."
 eval "$1/mysql --user=root --password=root --socket=$6 --database=mysql --execute=\"INSERT INTO user (Host, User, Password, Select_priv, Insert_priv, Update_priv, Delete_priv, Shutdown_priv, File_priv, Create_tmp_table_priv, Lock_tables_priv) VALUES ('localhost', 'PlanWorksUser', PASSWORD('PlanWorksUser'), 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y')\""
 sleep 1
+eval "$1/mysqladmin --user=root --password=root --socket=$6 reload"
 echo "Shutting down database..."
 eval "$1/mysqladmin --user=root --password=root --socket=$6 shutdown"
