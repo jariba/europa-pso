@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.29 2004-03-02 02:34:19 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.30 2004-03-03 00:32:38 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -249,11 +249,11 @@ public class TokenNetworkView extends PartialPlanView {
     Color backgroundColor = null;
     while (tokenIterator.hasNext()) {
       PwToken token = (PwToken) tokenIterator.next();
-      if (token.isSlotted() && (! token.isBaseToken())) {
-        // non-slotted, non-base tokens - not displayed, put in displayedTokenIds
-        isTokenInContentSpec( token);
-        continue;
-      }
+//       if (token.isSlotted() && (! token.isBaseToken())) {
+//         // non-slotted, non-base tokens - not displayed, put in displayedTokenIds
+//         isTokenInContentSpec( token);
+//         continue;
+//       }
       boolean isFreeToken = false;
       PwSlot slot = null;
       if (! token.isFree()) { // slotted base tokens, resourceTransactions, other tokens
@@ -286,6 +286,9 @@ public class TokenNetworkView extends PartialPlanView {
     while (tokenNodeKeyItr.hasNext()) {
       TokenNode tokenNode =
         (TokenNode) tokenNodeMap.get( (Integer) tokenNodeKeyItr.next());
+      System.err.println("Token: " + tokenNode + " master: " + 
+                         partialPlan.getMasterTokenId(tokenNode.getToken().getId()) + " slaves: " +
+                         partialPlan.getSlaveTokenIds(tokenNode.getToken().getId()));
       Integer tokenId = tokenNode.getToken().getId();
       Integer masterTokenId = partialPlan.getMasterTokenId( tokenId);
       if (masterTokenId != null) {
