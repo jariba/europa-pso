@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteProjectThread.java,v 1.2 2003-10-01 23:53:55 taylor Exp $
+// $Id: DeleteProjectThread.java,v 1.3 2003-12-03 01:48:38 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -86,6 +86,7 @@ public class DeleteProjectThread extends Thread {
               PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
               PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, false);
               PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
+              PlanWorks.planWorks.setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, false);
             } else if (PlanWorks.planWorks.getProjectsLessCurrent().size() == 0) {
               PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, false);
             } else {

@@ -7,8 +7,10 @@ public class ExecutePlannerThread extends Thread {
   }
   public void run() {
     try {
-      Thread.sleep(5000);
-      System.err.println(commandLine);
+      System.err.println("Executing command '" + commandLine + "'");
+      long t1 = System.currentTimeMillis();
+      Runtime.getRuntime().exec(commandLine);
+      System.err.println("Done.  Execution took " + (System.currentTimeMillis() - t1) + "ms");
     }
     catch(Exception e){}
   }

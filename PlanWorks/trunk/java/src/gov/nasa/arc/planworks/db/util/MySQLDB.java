@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.68 2003-11-26 01:24:50 miatauro Exp $
+// $Id: MySQLDB.java,v 1.69 2003-12-03 01:49:22 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1160,7 +1160,6 @@ public class MySQLDB {
         data[0] = steps.getInt("NumTokens");
         data[1] = steps.getInt("NumVariables");
         data[2] = steps.getInt("NumConstraints");
-        System.err.println("{" + data[0] + ", " + data[1] + ", " + data[2] + "}");
         retval.add(data);
       }
     }
