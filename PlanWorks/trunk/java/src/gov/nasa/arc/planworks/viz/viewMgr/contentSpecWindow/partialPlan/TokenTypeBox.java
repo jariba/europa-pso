@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TokenTypeBox.java,v 1.1 2003-10-01 23:54:03 taylor Exp $
+// $Id: TokenTypeBox.java,v 1.2 2004-07-13 23:54:10 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -69,7 +69,17 @@ public class TokenTypeBox extends JPanel {
     }
     return -2;
   }
+
   public void reset() {
     all.setSelected(true);
   }
+
+  public JRadioButton getSlottedButton() {
+    return slotted;
+  }
+  
+  public JRadioButton getFreeTokensButton() {
+    return free;
+  }
+  
 }

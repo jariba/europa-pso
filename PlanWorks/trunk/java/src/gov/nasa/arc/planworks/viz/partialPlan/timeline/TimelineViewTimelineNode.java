@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineViewTimelineNode.java,v 1.6 2004-06-10 01:36:07 taylor Exp $
+// $Id: TimelineViewTimelineNode.java,v 1.7 2004-07-13 23:54:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -49,9 +49,9 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
- * <code>TimelineNode</code> - JGo widget to render a timeline as a rectangle,
- *                             with a label consisting of the PwObject name,
- *                             and the PwTimeline name
+ * <code>TimelineViewTimelineNode</code> - JGo widget to render a timeline as a rectangle,
+ *                                         with a label consisting of the PwObject name,
+ *                                         and the PwTimeline name
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *        NASA Ames Research Center - Code IC

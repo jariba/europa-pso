@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: UniqueKeyBox.java,v 1.2 2003-10-09 17:23:32 miatauro Exp $
+// $Id: UniqueKeyBox.java,v 1.3 2004-07-13 23:54:10 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -151,6 +151,12 @@ public class UniqueKeyBox extends JPanel implements ContentSpecElement {
   public JButton getAddButton() {
     return addNew;
   }
+
+  public JButton getRemoveButton() {
+    return removeThis;
+  }
+
+
   class RadioListener implements ItemListener {
     private UniqueKeyBox box;
     public RadioListener(UniqueKeyBox box) {

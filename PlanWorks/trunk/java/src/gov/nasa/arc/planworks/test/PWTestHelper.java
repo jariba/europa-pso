@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.10 2004-07-08 21:33:22 taylor Exp $
+// $Id: PWTestHelper.java,v 1.11 2004-07-13 23:54:08 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -73,6 +73,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -1107,6 +1108,30 @@ public abstract class PWTestHelper {
   } // end getPartialPlanView
 
   /**
+   * <code>getContentSpecWindow</code>
+   *
+   * @param viewNameSuffix - <code>String</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @return - <code>ContentSpecWindow</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static ContentSpecWindow getContentSpecWindow( String viewNameSuffix,
+                                                        JFCTestHelper helper,
+                                                        PlanWorksGUITest guiTest)
+    throws Exception {
+    String windowFindName = ViewConstants.CONTENT_SPEC_TITLE + " for " + viewNameSuffix;
+    System.err.println( "getContentSpecWindow windowFindName '" + windowFindName + "'");
+    ContentSpecWindow contentSpecWindow =
+      (ContentSpecWindow)  PWTestHelper.findComponentByName
+      ( ContentSpecWindow.class, windowFindName,Finder.OP_EQUALS);
+     Assert.assertNotNull( windowFindName + " not found:", contentSpecWindow);
+    System.err.println( "getContentSpecWindow found " + windowFindName);
+    return contentSpecWindow;
+  } // end getContentSpecWindow
+
+
+  /**
    * <code>openAllExistingViews</code>
    *
    * @param currentViewName - <code>String</code> - 
@@ -1148,6 +1173,30 @@ public abstract class PWTestHelper {
     helper.enterClickAndLeave( new MouseEventData( guiTest, menuItem));
     guiTest.flushAWT(); guiTest.awtSleep();
   } // end selectWindow
+
+  /**
+   * <code>setQueryField</code>
+   *
+   * @param field - <code>JTextField</code> - 
+   * @param fieldValue - <code>String</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static void setQueryField( JTextField field, String fieldValue, JFCTestHelper helper,
+                                    PlanWorksGUITest guiTest)
+    throws Exception {
+    System.err.println( "field set to " + fieldValue); 
+    field.setText( null);
+    helper.sendString( new StringEventData( guiTest, field, fieldValue));
+    helper.sendKeyAction( new KeyEventData( guiTest, field, KeyEvent.VK_ENTER));
+  } // end setQueryField
+
+
+
+
+
+
 
 } // end abstract class PWTestHelper
 
