@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.4 2003-05-18 00:02:26 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.5 2003-05-20 18:25:35 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -789,7 +789,7 @@ public class XmlDBeXist {
       }
       if (currentNodeName.equals(TIMELINE_ELEMENT) &&
           (! timelineName.equals( "")) && (! timelineKey.equals( ""))) {
-        timeline = object.addTimeline( timelineName, timelineKey);
+        timeline = object.addTimeline( timelineName, timelineKey); 
       }
     }
   } // end createTimelineSlotTokenNodesStructure

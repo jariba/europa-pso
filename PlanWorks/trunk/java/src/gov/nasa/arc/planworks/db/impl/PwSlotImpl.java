@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.5 2003-05-18 00:02:26 taylor Exp $
+// $Id: PwSlotImpl.java,v 1.6 2003-05-20 18:25:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -64,10 +64,10 @@ public class PwSlotImpl implements PwSlot {
    * @return - <code>List</code> - of PwToken
    */
   public List getTokenList() {
-    ArrayList retval = new ArrayList( tokenIdList.size());
+    List retval = new ArrayList( tokenIdList.size());
     for (int i = 0; i < tokenIdList.size(); i++)
-      retval.set( i, partialPlan.getToken( (String)tokenIdList.get( i),
-                                           collectionName));
+      retval.add( partialPlan.getToken( (String)tokenIdList.get( i),
+                                        collectionName));
     return retval;
   }
 
@@ -80,9 +80,10 @@ public class PwSlotImpl implements PwSlot {
    * @return - <code>PwTokenImpl</code> - 
    */
   public PwTokenImpl addToken( List attributeList) {
+    String tokenKey = (String) attributeList.get( 0);
     PwTokenImpl token = new PwTokenImpl( attributeList, partialPlan, collectionName);
-    // add key to tokenIdList
-    tokenIdList.add( attributeList.get( 0));
+    tokenIdList.add( tokenKey);
+    partialPlan.getTokenMap().put( tokenKey, token);
     return token;
   } // end addToken
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.4 2003-05-18 00:02:26 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.5 2003-05-20 18:25:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -167,10 +167,10 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>List</code> - of PwTokenRelation
    */
   public List getTokenRelationsList() {
-    ArrayList retval = new ArrayList( tokenRelationIds.size());
+    List retval = new ArrayList( tokenRelationIds.size());
     for (int i = 0; i < tokenRelationIds.size(); i++) {
-      retval.set( i, partialPlan.getTokenRelation( (String) tokenRelationIds.get( i),
-                                                   collectionName));
+      retval.add( partialPlan.getTokenRelation( (String) tokenRelationIds.get( i),
+                                                collectionName));
     }
     return retval;
   }
@@ -181,10 +181,10 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>List</code> - of PwVariable
    */
   public List getParamVarsList() {
-    ArrayList retval = new ArrayList( paramVarIds.size());
+    List retval = new ArrayList( paramVarIds.size());
     for (int i = 0; i < paramVarIds.size(); i++) {
-      retval.set( i, partialPlan.getVariable( (String) paramVarIds.get( i),
-                                              collectionName));
+      retval.add( partialPlan.getVariable( (String) paramVarIds.get( i),
+                                           collectionName));
     }
     return retval;
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.3 2003-05-18 00:02:24 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.4 2003-05-20 18:25:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -29,11 +29,18 @@ public interface PwPartialPlan {
   // builds Java data structure
 
   /**
-   * <code>getObjectIdList</code>
+   * <code>getCollectionName</code>
    *
-   * @return - <code>List</code> - of String
+   * @return - <code>String</code> - 
    */
-  public List getObjectIdList();
+  public String getCollectionName();
+
+  /**
+   * <code>getObjectList</code>
+   *
+   * @return - <code>List</code> - of PwObject
+   */
+  public List getObjectList();
 
 
   /**

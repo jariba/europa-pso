@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.3 2003-05-18 00:02:24 taylor Exp $
+# $Id: build-tags-file.csh,v 1.4 2003-05-20 18:25:34 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -53,8 +53,13 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/util/XmlFilenameFilter.java \
     src/gov/nasa/arc/planworks/proj/PwProjectMgmt.java \
     src/gov/nasa/arc/planworks/proj/test/PwProjectTest.java \
+    src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
-    src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java 
+    src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java \
+    src/gov/nasa/arc/planworks/viz/nodes/SlotNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
+    src/gov/nasa/arc/planworks/viz/views/VizView.java \
+    src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java
 
 
 echo "Writing `pwd`/planWorks.TAGS"

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ExistTest.java,v 1.3 2003-05-16 18:33:41 taylor Exp $
+// $Id: ExistTest.java,v 1.4 2003-05-20 18:25:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -148,7 +148,7 @@ public class ExistTest {
 
   private void accessPlannerXmlFiles( String collectionName) {
     if (collectionName.indexOf( "test") >= 0) {
-      List partialPlanKeys = XmlDBeXist.INSTANCE.getPartialPlanKeys( collectionName);
+      List partialPlanKeys = XmlDBeXist.INSTANCE.queryPartialPlanKeys( collectionName);
       Iterator keysIterator = partialPlanKeys.iterator();
       while (keysIterator.hasNext()) {
         System.err.println( "PartialPlanKey: " + (String) keysIterator.next());

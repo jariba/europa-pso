@@ -1,7 +1,7 @@
 #!/bin/tcsh -f
 # -f Fast start. do not read the  .cshrc  file
 
-# $Id: runPwProjectTest,v 1.1 2003-05-10 01:00:34 taylor Exp $
+# $Id: runPwProjectTest,v 1.2 2003-05-20 18:25:36 taylor Exp $
 
 set validOption = 1
 set arg_gcInit_seen = no
@@ -13,11 +13,12 @@ set arg_gcMax = "975"
 set arg_log = false
 # see ${EXIST_HOME}/
 set eXist_conf_file = "conf-nolog.xml"
-set arg_dev = false
+# always use PlanWorks/java/classes ( PlanWorks/java/build.xml compiles *.java)
+set arg_dev = true
 
 set xml_files_dir = "xml/test"
 
-set options = "OPTIONS:\n  -log # log XPath eXist actions \n\n  -gcinit <nn>\n  -gcmax <nn>\n  -help\n  -dev # run from sources, not jar\n"
+set options = "OPTIONS:\n  -log # log XPath eXist actions \n\n  -gcinit <nn>\n  -gcmax <nn>\n  -help\n"
 
 foreach arg ($*)
   if ("$arg" == "-gcinit") then
@@ -33,8 +34,6 @@ foreach arg ($*)
   else if ("$arg" == "-log") then
     set arg_log = true
     set eXist_conf_file = "conf-log.xml"
-  else if ("$arg" == "-dev") then
-    set arg_dev = true
   else if ("$arg" == "-help") then
     echo $options 
     echo "default -gcinit is ${arg_gcInit}mb"
@@ -63,7 +62,7 @@ setenv PLANWORKS_ROOT $up1
 echo planViz: PLANWORKS_ROOT set to $PLANWORKS_ROOT 
 
 # set release classpath
-setenv CLASSPATH ${PLANWORKS_ROOT}/java/jars/planWorks.jar
+### setenv CLASSPATH ${PLANWORKS_ROOT}/java/jars/planWorks.jar
 if ("$arg_dev" == "true")  then 
   ### development classpath
   # compiled by Ant or XEmacs (see ${PLANWORKS_ROOT}/java/README)

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.5 2003-05-18 00:02:25 taylor Exp $
+// $Id: PwObjectImpl.java,v 1.6 2003-05-20 18:25:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -63,6 +63,7 @@ public class PwObjectImpl implements PwObject {
     timelineIdList.add( key);
     PwTimelineImpl timeline = new PwTimelineImpl( name, key, partialPlan,
                                                   collectionName);
+    partialPlan.getTimelineMap().put( key, timeline);
     return timeline;
   } // end addTimeline
 
@@ -91,10 +92,11 @@ public class PwObjectImpl implements PwObject {
    * @return timelineList - <code>List</code> - of PwTimelineImpl
    */
   public List getTimelineList() {
-    ArrayList retval = new ArrayList(timelineIdList.size());
-    for (int i = 0; i < timelineIdList.size(); i++)
-      retval.set ( i, partialPlan.getTimeline( (String) timelineIdList.get(i),
-                                               collectionName));
+    List retval = new ArrayList(timelineIdList.size());
+    for (int i = 0; i < timelineIdList.size(); i++) {
+      retval.add ( partialPlan.getTimeline( (String) timelineIdList.get(i),
+                                            collectionName));
+    }
     return retval;
   }
 	 
