@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.22 2004-05-04 01:27:16 taylor Exp $
+// $Id: VizView.java,v 1.23 2004-05-08 01:44:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -346,7 +346,6 @@ public class VizView extends JPanel {
         public void actionPerformed( ActionEvent evt) {
           String seqUrl = planSequence.getUrl();
           String seqName = planSequence.getName();
-          boolean isInvokeAndWait = true;
           Iterator viewListItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
           ViewListener viewListener = null;
           while (viewListItr.hasNext()) {
@@ -354,7 +353,7 @@ public class VizView extends JPanel {
             final PartialPlanViewMenuItem viewItem =
               new PartialPlanViewMenuItem( viewName, seqUrl, seqName, partialPlanName,
                                            viewListener);
-            Thread thread = new CreatePartialPlanViewThread( viewName, viewItem, isInvokeAndWait);
+            Thread thread = new CreatePartialPlanViewThread( viewName, viewItem);
             thread.setPriority(Thread.MIN_PRIORITY);
             thread.start();
           }

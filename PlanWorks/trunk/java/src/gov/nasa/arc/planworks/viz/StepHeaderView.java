@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepHeaderView.java,v 1.8 2004-02-03 20:43:50 taylor Exp $
+// $Id: StepHeaderView.java,v 1.9 2004-05-08 01:44:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -59,7 +59,7 @@ public class StepHeaderView extends JGoView {
   private JGoDocument jGoDocument;
   private DBTransactionHeaderNode stepNumNode;
   private DBTransactionHeaderNode keyNode;
-  private DBTransactionHeaderNode typeNode;
+  private DBTransactionHeaderNode nameNode;
   private DBTransactionHeaderNode objectKeyNode;
   private DBTransactionHeaderNode objectNameNode;
   private DBTransactionHeaderNode predicateNode;
@@ -84,12 +84,12 @@ public class StepHeaderView extends JGoView {
 
     jGoDocument = this.getDocument();
 
-    renderStepHeader( query);
+    renderStepHeader( query, ViewGenerics.computeTransactionNameHeader());
 
   } // end constructor
 
 
-  private void renderStepHeader( String query) {
+  private void renderStepHeader( String query, String transactionNameHeader) {
     Color bgColor = ViewConstants.VIEW_BACKGROUND_COLOR;
     int x = 0, y = 3;
     if (query != null) {
@@ -109,10 +109,10 @@ public class StepHeaderView extends JGoView {
     jGoDocument.addObjectAtTail( keyNode);
     x += keyNode.getSize().getWidth();
 
-    typeNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_TYPE_HEADER, vizView);
-    configureTextNode( typeNode, new Point( x, y), bgColor);
-    jGoDocument.addObjectAtTail( typeNode);
-    x += typeNode.getSize().getWidth();
+    nameNode = new DBTransactionHeaderNode( transactionNameHeader, vizView);
+    configureTextNode( nameNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( nameNode);
+    x += nameNode.getSize().getWidth();
 
     if ((query.indexOf( " With ") >= 0) ||
         ((query.indexOf( " With ") == -1) && key.equals( ""))) {
@@ -178,12 +178,12 @@ public class StepHeaderView extends JGoView {
   }
 
   /**
-   * Gets the value of typeNode
+   * Gets the value of nameNode
    *
-   * @return the value of typeNode
+   * @return the value of nameNode
    */
-  protected TextNode getTypeNode()  {
-    return this.typeNode;
+  protected TextNode getNameNode()  {
+    return this.nameNode;
   }
 
   /**

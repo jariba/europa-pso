@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.48 2004-05-07 19:54:02 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.49 2004-05-08 01:44:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -126,7 +126,6 @@ public class TokenNetworkView extends PartialPlanView {
   } // end constructor
 
   private void tokenNetworkViewInit( final ViewSet viewSet) {
-    this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     jGoView = new TokenNetworkJGoView();
@@ -162,20 +161,19 @@ public class TokenNetworkView extends PartialPlanView {
   public final void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
-		if(!displayableWait()) {
-			return;
-		}
-
+    if(!displayableWait()) {
+      return;
+    }
     this.computeFontMetrics( this);
 
     boolean isRedraw = false;
     renderTokenNetwork( isRedraw);
 
-    Rectangle documentBounds = jGoView.getDocument().computeBounds();
-    jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
-                                           (ViewConstants.TIMELINE_VIEW_X_INIT * 4),
-                                           (int) documentBounds.getHeight() +
-                                           (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
+//     Rectangle documentBounds = jGoView.getDocument().computeBounds();
+//     jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
+//                                            (ViewConstants.TIMELINE_VIEW_X_INIT * 4),
+//                                            (int) documentBounds.getHeight() +
+//                                            (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
     if (! isStepButtonView) {
       expandViewFrame( viewFrame, (int) jGoView.getDocumentSize().getWidth(),
                        (int) jGoView.getDocumentSize().getHeight());
@@ -246,6 +244,8 @@ public class TokenNetworkView extends PartialPlanView {
       System.err.println( "Redrawing Token Network View ...");
       startTimeMSecs = System.currentTimeMillis();
       this.setVisible( false);
+    } else {
+      startTimeMSecs = PlanWorks.getPlanWorks().getViewRenderingStartTime();
     }
     jGoView.getDocument().deleteContents();
 
@@ -348,7 +348,8 @@ public class TokenNetworkView extends PartialPlanView {
         if (tokenNodeMap.get( token.getId()) == null) {
           tokenNodeMap.put( token.getId(), tokenNode);
           jGoDocument.addObjectAtTail( tokenNode);
-          x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+          // let JGo layout position nodes -- this will result in correct view bounds
+//           x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
         }
       }
     }

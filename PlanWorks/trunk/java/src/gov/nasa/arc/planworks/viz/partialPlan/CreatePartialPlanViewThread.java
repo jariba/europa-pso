@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.6 2004-04-22 19:26:22 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.7 2004-05-08 01:44:14 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -38,7 +38,6 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
 
   private String partialPlanName;
   private PwPartialPlan partialPlan;
-  private boolean isInvokeAndWait;
   private ViewListener viewListener;
 
   /**
@@ -54,25 +53,6 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
     this.sequenceName = menuItem.getSequenceName();
     this.partialPlanName = menuItem.getPartialPlanName();
     this.viewListener = menuItem.getViewListener();
-    this.isInvokeAndWait = false;
-  }  // end constructor
-
-  /**
-   * <code>CreatePartialPlanViewThread</code> - constructor 
-   *
-   * @param viewName - <code>String</code> - 
-   * @param menuItem - <code>PartialPlanViewMenuItem</code> - 
-   * @param isInvokeAndWait - <code>boolean</code> - 
-   */
-  public CreatePartialPlanViewThread( String viewName,
-                                      PartialPlanViewMenuItem menuItem,
-                                      boolean isInvokeAndWait) {
-    super( viewName);
-    this.seqUrl = menuItem.getSeqUrl();
-    this.sequenceName = menuItem.getSequenceName();
-    this.partialPlanName = menuItem.getPartialPlanName();
-    this.viewListener = menuItem.getViewListener();
-    this.isInvokeAndWait = isInvokeAndWait;
   }  // end constructor
 
   /**
@@ -80,27 +60,23 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
    *
    */
   public void run() {
-    if (isInvokeAndWait) {
-      // needed by PartialPlanView.createOpenAllItem
-      try {
-        SwingUtilities.invokeAndWait( new Runnable() {
-            public void run() {
-              createPartialPlanView();
-            }
-          });
-      } catch (InterruptedException ie) {
-        System.err.println( "CreatePartialPlanViewThread: InterruptedException");
-        ie.printStackTrace();
-      } catch (InvocationTargetException ite) {
-        System.err.println( "CreatePartialPlanViewThread: InvocationTargetException");
-        ite.printStackTrace();
-      }
-    } else {
-      createPartialPlanView();
+    try {
+      SwingUtilities.invokeAndWait( new Runnable() {
+          public void run() {
+            createPartialPlanView();
+          }
+        });
+    } catch (InterruptedException ie) {
+      System.err.println( "CreatePartialPlanViewThread: InterruptedException");
+      ie.printStackTrace();
+    } catch (InvocationTargetException ite) {
+      System.err.println( "CreatePartialPlanViewThread: InvocationTargetException");
+      ite.printStackTrace();
     }
   } // end run
 
   private void createPartialPlanView() { 
+    PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis());
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.26 2004-05-04 01:27:23 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.27 2004-05-08 01:44:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -112,8 +112,8 @@ public class SequenceStepsView extends SequenceView {
    */
   public static final Color DB_CONSTRAINTS_BG_COLOR = ColorMap.getColor( "lightYellow");
 
-  private PwPlanningSequence planSequence;
   private long startTimeMSecs;
+  private PwPlanningSequence planSequence;
   private ViewSet viewSet;
   private SequenceStepsJGoView jGoView;
   private JGoDocument document;
@@ -194,7 +194,6 @@ public class SequenceStepsView extends SequenceView {
 
   private void sequenceStepsInit( final ViewableObject planSequence,  final ViewSet viewSet) {
     this.planSequence = (PwPlanningSequence) planSequence;
-    this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (SequenceViewSet) viewSet;
     statusIndicatorList = new ArrayList();
     stepRepresentedList = new ArrayList();
@@ -239,7 +238,6 @@ public class SequenceStepsView extends SequenceView {
    */
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for ConstraintNetworkView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -267,9 +265,10 @@ public class SequenceStepsView extends SequenceView {
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
+    System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
+                        (stopTimeMSecs -
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+    startTimeMSecs = 0L;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
@@ -297,23 +296,35 @@ public class SequenceStepsView extends SequenceView {
 
   private void redrawView() {
     handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
-    //document.deleteContents();
-    for (Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
-      document.removeObject( (JGoObject) it.next());
+    System.err.println( "Redrawing Sequence Steps View ...");
+    if (startTimeMSecs == 0L) {
+      startTimeMSecs = System.currentTimeMillis();
     }
-    for(Iterator it = stepNumberList.listIterator(); it.hasNext();) {
-      document.removeObject((JGoObject) it.next());
-    }
-    statusIndicatorList.clear();
+    try {
+      ViewGenerics.setRedrawCursor( viewFrame);
+
+      //document.deleteContents();
+      for (Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
+        document.removeObject( (JGoObject) it.next());
+      }
+      for(Iterator it = stepNumberList.listIterator(); it.hasNext();) {
+        document.removeObject((JGoObject) it.next());
+      }
+      statusIndicatorList.clear();
     
-    renderHistogram();
+      renderHistogram();
 
-    expandViewFrame( viewFrame,
-                     (int) jGoView.getDocumentSize().getWidth(),
-                     (int) jGoView.getDocumentSize().getHeight());
+      expandViewFrame( viewFrame,
+                       (int) jGoView.getDocumentSize().getWidth(),
+                       (int) jGoView.getDocumentSize().getHeight());
 
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
+    } finally {
+      ViewGenerics.resetRedrawCursor( viewFrame);
+    }
+    long stopTimeMSecs = System.currentTimeMillis();
+    System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    startTimeMSecs = 0L;
     handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
   } // end redrawView
 

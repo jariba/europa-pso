@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.86 2004-05-04 01:27:12 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.87 2004-05-08 01:44:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -150,6 +150,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    */
 
   private void createPartialPlan() throws ResourceNotFoundException {
+    System.err.println( "Create PartialPlan ...");
     long startTimeMSecs = System.currentTimeMillis();
     long loadTime = 0L;
     HashMap existingPartialPlan = null;
@@ -165,16 +166,17 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     model = MySQLDB.queryPartialPlanModelById(id);
     MySQLDB.createSlotTokenNodesStructure(this, sequence.getId());
 
+    System.err.println( "   Fill PartialPlan element maps ...");
     long start2TimeMSecs = System.currentTimeMillis();
     fillElementMaps();
     long stop2TimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
+    System.err.println( "      ... elapsed time: " +
                         (stop2TimeMSecs - start2TimeMSecs) + " msecs.");
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
     cleanConstraints();
     // checkPlan();
+    System.err.println( "   ... elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end createPartialPlan
 
   //  private void loadFiles(File planDir) throws ResourceNotFoundException {

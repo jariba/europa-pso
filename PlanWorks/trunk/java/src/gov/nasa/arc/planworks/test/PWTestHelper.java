@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.5 2004-05-04 01:27:14 taylor Exp $
+// $Id: PWTestHelper.java,v 1.6 2004-05-08 01:44:12 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -406,10 +406,7 @@ public abstract class PWTestHelper {
       if (message.indexOf( dialogMessage) >= 0) {
         foundMsg = "found";
       }
-      if (foundMsg == null) {
-        System.err.println( dialogName + " dialog does not contain '" + dialogMessage + "'");
-      }
-      Assert.assertNotNull( dialogName + " dialog does not contain '" + dialogMessage + "'",
+      Assert.assertNotNull( "'" + dialogName + "' dialog does not contain '" + dialogMessage + "'",
                             foundMsg);
     }
     JButton button = (JButton) PWTestHelper.findButton( buttonName);

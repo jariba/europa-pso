@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNodeTimeMark.java,v 1.2 2003-10-02 23:24:22 taylor Exp $
+// $Id: TemporalNodeTimeMark.java,v 1.3 2004-05-08 01:44:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -20,7 +20,6 @@ import gov.nasa.arc.planworks.db.DbConstants;
 /**
  * <code>TemporalNodeTimeMark</code> - JGo widget to render a temporal token's
  *                             time mark extents with tool tip displaying the time
- *             Object->JGoObject->JGoDrawable->JGoPolygon>TemporalNodeTimeMark
 
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
@@ -29,16 +28,37 @@ import gov.nasa.arc.planworks.db.DbConstants;
 public class TemporalNodeTimeMark extends JGoPolygon {
 
   private int time;
+  private int type;
 
   /**
    * <code>TemporalNodeTimeMark</code> - constructor 
    *
    * @param time - <code>int</code> - 
+   * @param type - <code>int</code> - 
    */
-  public TemporalNodeTimeMark( int time) {
+  public TemporalNodeTimeMark( int time, int type) {
     this.time = time;
+    this.type = type;
   }
 
+  /**
+   * <code>getTime</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getTime() {
+    return time;
+  }
+  
+  /**
+   * <code>getType</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getType() {
+    return type;
+  }
+  
   /**
    * <code>getToolTipText</code>
    *

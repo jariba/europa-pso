@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.25 2004-05-04 01:27:11 taylor Exp $
+// $Id: DbConstants.java,v 1.26 2004-05-08 01:44:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -337,7 +337,8 @@ public interface DbConstants {
   public static final String ENUMERATED_DOMAIN = "EnumeratedDomain";
 
   public static final String INTERVAL_DOMAIN = "IntervalDomain";
-  
+
+  // DB Transaction Types
   public static final String TT_CREATION = "CREATION";
   public static final String TT_DELETION = "DELETION";
   public static final String TT_ADDITION = "ADDITION";
@@ -349,28 +350,28 @@ public interface DbConstants {
   public static final String TT_SPECIFICATION = "SPECIFICATION";
   public static final String TT_UNDO = "UNDO";
 
-  public static final String [] TT_CREATION_TYPES = new String [] {
+  public static final String [] TT_CREATION_NAMES = new String [] {
     TOKEN_CREATED, VARIABLE_CREATED, CONSTRAINT_CREATED, OBJECT_CREATED };
-  public static final String [] TT_DELETION_TYPES = new String [] {
+  public static final String [] TT_DELETION_NAMES = new String [] {
     TOKEN_DELETED, VARIABLE_DELETED, CONSTRAINT_DELETED };
-  public static final String [] TT_ADDITION_TYPES = new String [] {
+  public static final String [] TT_ADDITION_NAMES = new String [] {
     TOKEN_ADDED_TO_OBJECT};
-  public static final String [] TT_REMOVAL_TYPES = new String [] {
+  public static final String [] TT_REMOVAL_NAMES = new String [] {
     TOKEN_REMOVED};
-  public static final String [] TT_CLOSURE_TYPES = new String [] {
+  public static final String [] TT_CLOSURE_NAMES = new String [] {
     VARIABLE_DOMAIN_CLOSED, TOKEN_CLOSED};
-  public static final String [] TT_RESTRICTION_TYPES = new String [] {
+  public static final String [] TT_RESTRICTION_NAMES = new String [] {
     VARIABLE_DOMAIN_RESTRICT_TO_SINGLETON, VARIABLE_DOMAIN_LOWER_BOUND_INCREASED,
     VARIABLE_DOMAIN_LOWER_BOUND_DECREASED, VARIABLE_DOMAIN_UPPER_BOUND_INCREASED,
     VARIABLE_DOMAIN_UPPER_BOUND_DECREASED, VARIABLE_DOMAIN_BOUNDS_RESTRICTED,
     VARIABLE_DOMAIN_VALUE_REMOVED };
-  public static final String [] TT_RELAXATION_TYPES = new String [] {
+  public static final String [] TT_RELAXATION_NAMES = new String [] {
     };
-  public static final String [] TT_EXECUTION_TYPES = new String [] {
+  public static final String [] TT_EXECUTION_NAMES = new String [] {
     RULE_EXECUTED, CONSTRAINT_EXECUTED };
-  public static final String [] TT_SPECIFICATION_TYPES = new String [] {
+  public static final String [] TT_SPECIFICATION_NAMES = new String [] {
     VARIABLE_DOMAIN_SET_TO_SINGLETON, VARIABLE_DOMAIN_SET};
-  public static final String [] TT_UNDO_TYPES = new String [] {
+  public static final String [] TT_UNDO_NAMES = new String [] {
     };
   
   public static final String TBL_CONSTRAINT = "VConstraint";

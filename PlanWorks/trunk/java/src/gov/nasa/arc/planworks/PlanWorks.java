@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.95 2004-05-04 01:27:11 taylor Exp $
+// $Id: PlanWorks.java,v 1.96 2004-05-08 01:44:09 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -170,13 +170,6 @@ public class PlanWorks extends MDIDesktopFrame {
   protected static JMenu projectMenu;
   protected static List supportedViewNames; // List of String
 
-  private Map sequenceStepsViewMap;
-  private Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
-
-  private DirectoryChooser sequenceDirChooser; // not final, since PlanWorksGUITest
-                                               // creates multiple instances
-  //protected final PlannerCommandLineDialog executeDialog;
-
   private static boolean windowBuilt = false;
   private static boolean usingSplash;
 
@@ -198,6 +191,14 @@ public class PlanWorks extends MDIDesktopFrame {
    * @return - <code>boolean</code> - 
    */
   public static synchronized boolean isWindowBuilt() { return windowBuilt; }
+
+  private Map sequenceStepsViewMap;
+  private Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
+
+  private DirectoryChooser sequenceDirChooser; // not final, since PlanWorksGUITest
+                                               // creates multiple instances
+  //protected final PlannerCommandLineDialog executeDialog;
+  private long viewRenderingStartTime;
 
   protected PwProject currentProject;
   protected String currentProjectName;
@@ -431,8 +432,26 @@ public class PlanWorks extends MDIDesktopFrame {
   public final DirectoryChooser getSequenceDirChooser() {
     return sequenceDirChooser;
   }
-    
+
   /**
+   * <code>getViewRenderingStartTime</code>
+   *
+   * @return - <code>long</code> - 
+   */
+  public final long getViewRenderingStartTime() {
+    return viewRenderingStartTime;
+  }
+
+  /**
+   * <code>setViewRenderingStartTime</code>
+   *
+   * @param time - <code>long</code> - 
+   */
+  public final void setViewRenderingStartTime( long time) {
+     viewRenderingStartTime = time;
+  }
+
+ /**
    * <code>setProjectMenuEnabled</code>
    *
    * @param textName - <code>String</code> - 

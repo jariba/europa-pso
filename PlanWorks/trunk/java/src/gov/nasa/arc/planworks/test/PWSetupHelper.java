@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.2 2004-05-04 01:27:14 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.3 2004-05-08 01:44:11 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -53,7 +53,9 @@ public abstract class PWSetupHelper {
   private static final int NUM_TIMELINES = 2;
   private static final int NUM_RESOURCES = 4;
   private static final int NUM_RESOURCE_TRANSACTIONS = 3;
-  private static final int NUM_SLOTTED_TOKENS = 5;
+  private static final int NUM_SLOTTED_TOKENS = 6;
+  private static final int MERGED_TOKEN_INDEX = 1; // in slotted tokens
+  private static final int EMPTY_SLOT_INDEX = 1; // in timeline
   private static final int NUM_FREE_TOKENS = 4;
 
   private static final int SLOTTED_TOKEN = 0;
@@ -251,7 +253,9 @@ public abstract class PWSetupHelper {
     for (int i = 0; i < NUM_OBJECTS; i++) {
       Integer objectId = new Integer( guiTest.incEntityIdInt());
       StringBuffer componentIds = new StringBuffer();
-      boolean isFirst = true; String emptySlotInfo = null;
+      boolean isFirst = true;
+      String emptySlotInfo = (new Integer( guiTest.incEntityIdInt())).toString() +
+        "," + String.valueOf( EMPTY_SLOT_INDEX);
       for (int j = 0; j < NUM_TIMELINES; j++) {
         int timelineIdInt = guiTest.incEntityIdInt();
         if (isFirst) { isFirst = false; } else { componentIds.append( ","); }
@@ -356,8 +360,9 @@ public abstract class PWSetupHelper {
     StringBuffer tokenIds = new StringBuffer();
     StringBuffer slotIds = new StringBuffer();
     boolean isFirst = true, isFirstSlot = true; boolean isValueToken = true;
+    boolean isFirstMerge = true;
     int time = 0, timeIncrement = 20;
-    Integer previousTokenId = null;
+    Integer previousTokenId = null, previousSlotId = null;
     for (int i = 0; i < numTokens; i++) {
       int tokenInt = guiTest.incEntityIdInt();
       if (isFirst) { isFirst = false; } else { tokenIds.append( ","); }
@@ -365,10 +370,15 @@ public abstract class PWSetupHelper {
       Integer tokenId = new Integer( tokenInt);
       Integer slotId =  null;
       if (tokenType == SLOTTED_TOKEN) {
-        int slotInt = guiTest.incEntityIdInt();
-        if (isFirstSlot) { isFirstSlot = false; } else { slotIds.append( ","); }
-        slotIds.append( slotInt);
-        slotId =  new Integer( slotInt);
+        if (i == MERGED_TOKEN_INDEX) {
+          slotId = previousSlotId;
+          isFirstMerge = false;
+        } else {
+          int slotInt = guiTest.incEntityIdInt();
+          if (isFirstSlot) { isFirstSlot = false; } else { slotIds.append( ","); }
+          slotIds.append( slotInt);
+          slotId =  new Integer( slotInt);
+        }
       }
       List constraintIds = new ArrayList();
       List parameterNames = new ArrayList(); parameterNames.add( "start");
@@ -455,6 +465,7 @@ public abstract class PWSetupHelper {
       }
       time += timeIncrement;
       previousTokenId = tokenId;
+      previousSlotId = slotId;
     }
     String [] stringArray = new String [2];
     stringArray[0] = tokenIds.toString();

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.4 2004-05-04 01:27:18 taylor Exp $
+// $Id: DBTransactionView.java,v 1.5 2004-05-08 01:44:14 taylor Exp $
 //
 // PlanWorks
 //
@@ -77,7 +77,6 @@ public class DBTransactionView extends PartialPlanView {
    */
   public DBTransactionView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     dBTransactionViewInit( partialPlan);
 
@@ -94,7 +93,6 @@ public class DBTransactionView extends PartialPlanView {
   public DBTransactionView( ViewableObject partialPlan,  ViewSet viewSet,
                             ViewListener viewListener) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     dBTransactionViewInit( partialPlan);
     if (viewListener != null) {
@@ -184,8 +182,9 @@ public class DBTransactionView extends PartialPlanView {
                             contentJGoView.getDocumentSize().getHeight()));
 
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    System.err.println( "   ... " + ViewConstants.DB_TRANSACTION_VIEW + " elapsed time: " +
+                        (stopTimeMSecs -
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 

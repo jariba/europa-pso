@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.47 2004-04-02 00:24:43 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.48 2004-05-08 01:44:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -94,16 +94,16 @@ public class PwProjectImpl extends PwProject {
    */
 
   private static void connectToDataBase() throws IOException {
-    System.err.println("Starting MySQL...");
+    System.err.println("Starting MySQL ...");
     long startTime = System.currentTimeMillis();
     MySQLDB.startDatabase();
     startTime = System.currentTimeMillis() - startTime;
-    System.err.println("   ... elapsed time: " + startTime + "ms.");
-    System.err.println("Connecting to MySQL...");
+    System.err.println("   ... elapsed time: " + startTime + "msecs.");
+    System.err.println("Connecting to MySQL ...");
     long connectTime = System.currentTimeMillis();
     MySQLDB.registerDatabase();
     connectTime = System.currentTimeMillis() - connectTime;
-    System.err.println("   ... elapsed time: " + connectTime + "ms.");
+    System.err.println("   ... elapsed time: " + connectTime + "msecs.");
   } // end connectToExistDataBase
 
   /**

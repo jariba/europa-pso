@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransaction.java,v 1.2 2004-03-23 18:19:59 miatauro Exp $
+// $Id: PwDBTransaction.java,v 1.3 2004-05-08 01:44:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -24,11 +24,11 @@ package gov.nasa.arc.planworks.db;
 public interface PwDBTransaction extends PwEntity {
 
   /**
-   * <code>getType</code>
+   * <code>getName</code>
    *
    * @return - <code>String</code> - 
    */
-  public abstract String getType();
+  public abstract String getName();
 
   /**
    * <code>getId</code>

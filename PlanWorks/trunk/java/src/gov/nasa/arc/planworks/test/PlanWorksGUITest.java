@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.6 2004-05-04 01:27:15 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.7 2004-05-08 01:44:12 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -33,6 +33,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+
+// PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoStroke;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.JFCTestHelper;
@@ -76,6 +79,9 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNodeDurationBridge;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNodeTimeMark;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
@@ -222,11 +228,11 @@ public class PlanWorksGUITest extends JFCTestCase {
   // catch assert errors and Exceptions here, since JUnit seems to not do it 
   public void planVizTests() throws Exception {
     try {
-//       planViz01(); 
-//       planViz02(); 
-//       planViz03(); planViz04(); // 04 depends on 03
-//       planViz05(); 
-//       planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
+      planViz01(); 
+      planViz02(); 
+      planViz03(); planViz04(); // 04 depends on 03
+      planViz05(); 
+      planViz06(); planViz07(); planViz08(); planViz09(); // dependent sequence of tests
       planViz10(); 
 
       PWTestHelper.exitPlanWorks( helper, this);
@@ -251,8 +257,8 @@ public class PlanWorksGUITest extends JFCTestCase {
                                 helper, this, planWorks);
     PWTestHelper.addSequencesToProject( helper, this, planWorks);
     // post condition 1
-    assertTrue("PlanWorks title does not contain " + PWTestHelper.PROJECT1,
-               PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1));
+    assertTrueVerbose("PlanWorks title does not contain " + PWTestHelper.PROJECT1,
+                      PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1), "not ");
 
     // post condition 2
     PWTestHelper.getPlanSequenceMenu();
@@ -274,6 +280,7 @@ public class PlanWorksGUITest extends JFCTestCase {
       sequenceFileArray[i] = new File( (String) sequenceUrls.get( i));
     }
     // modify sequence #1
+    int seq1NumFilesDeleted = 3;
     (new File( sequenceFileArray[0] + System.getProperty("file.separator") +
                DbConstants.SEQ_PP_STATS)).delete();
     (new File( sequenceFileArray[0] + System.getProperty("file.separator") +
@@ -293,10 +300,12 @@ public class PlanWorksGUITest extends JFCTestCase {
       }
     }
     // modify sequence #2
+    int seq2NumFilesDeleted = 1;
     (new File( sequenceFileArray[1] + System.getProperty("file.separator") +
                DbConstants.SEQ_FILE)).delete();
     // modify sequence #3
     String stepName = "step1"; int stepNumber = 1;
+    int seq3Step1FilesDeleted = 1;
     (new File( sequenceFileArray[2] + System.getProperty("file.separator") + stepName +
                System.getProperty("file.separator") + stepName + "." +
                DbConstants.PP_PARTIAL_PLAN_EXT)).delete();
@@ -313,11 +322,12 @@ public class PlanWorksGUITest extends JFCTestCase {
     PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, seqFileArray,
                                 helper, this, planWorks);
     PWTestHelper.addSequencesToProject( helper, this, planWorks);
-    PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK",
-                               "0 sequence files in directory -- 3 are required",
-                               helper, this);
+    int seq1FilesRemaining = DbConstants.SEQUENCE_FILES.length - seq1NumFilesDeleted;
+    PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK", seq1FilesRemaining +
+                               " sequence files in directory -- " +
+                               DbConstants.SEQUENCE_FILES.length + " are required", helper, this);
     AbstractButton cancelButton = PWTestHelper.findButton( "Cancel");
-    assertNotNull( "'Project->Create' cancel button not found:", cancelButton);
+    assertNotNullVerbose( "'Project->Create' cancel button not found:", cancelButton, "not ");
     helper.enterClickAndLeave(new MouseEventData(this, cancelButton));
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
     // try{Thread.sleep(5000);}catch(Exception e){}
@@ -330,13 +340,16 @@ public class PlanWorksGUITest extends JFCTestCase {
     PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, seq3FileArray,
                                 helper, this, planWorks);
     PWTestHelper.addSequencesToProject( helper, this, planWorks);
-    PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK",
-                               "2 sequence files in directory -- 3 are required",
-                               helper, this);
+    int seq2FilesRemaining = DbConstants.SEQUENCE_FILES.length - seq2NumFilesDeleted;
+    PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK", seq2FilesRemaining +
+                               " sequence files in directory -- " +
+                               DbConstants.SEQUENCE_FILES.length + " are required", helper, this);
     // try{Thread.sleep(2000);}catch(Exception e){}
-
+    int seq3Step1FilesRemaining = DbConstants.PARTIAL_PLAN_FILE_EXTS.length - seq3Step1FilesDeleted;
     PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK",
-                               "Has 7 files -- 8 are required", helper, this);
+                               "Has " + seq3Step1FilesRemaining + " files -- " +
+                               DbConstants.PARTIAL_PLAN_FILE_EXTS.length + " are required",
+                               helper, this);
     // try{Thread.sleep(2000);}catch(Exception e){}
 
     ViewListener viewListener01 = new ViewListenerWait01( this);
@@ -387,7 +400,7 @@ public class PlanWorksGUITest extends JFCTestCase {
                                "' already exists",
                                helper, this);
     AbstractButton cancelButton = PWTestHelper.findButton( "Cancel");
-    assertNotNull( "'Project->Create' cancel button not found:", cancelButton);
+    assertNotNullVerbose( "'Project->Create' cancel button not found:", cancelButton, "not ");
     helper.enterClickAndLeave( new MouseEventData( this, cancelButton));
 
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
@@ -397,16 +410,16 @@ public class PlanWorksGUITest extends JFCTestCase {
 
   public void planViz04() throws Exception {
     // post planViz03 deleteProject condition 1
-    assertFalse( "PlanWorks title contains '" + PWTestHelper.PROJECT1 +
-                 "'after Project->Delete",
-                 PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1));
+    assertFalseVerbose( "PlanWorks title does not contain '" + PWTestHelper.PROJECT1 +
+                        "'after Project->Delete",
+                        PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1), "not ");
 
     // post planViz03 deleteProject condition 2
     JMenuItem deleteItem =
       PWTestHelper.findMenuItem( PlanWorks.PROJECT_MENU, PlanWorks.DELETE_MENU_ITEM,
                                  helper, this);
-    assertTrue( "'Project->Delete' should be disabled", (deleteItem.isEnabled() == false));
-    assertNotNull( "'Project->Delete' not found:", deleteItem);
+    assertTrueVerbose( "'Project->Delete' is not disabled", (deleteItem.isEnabled() == false), "not ");
+    assertNotNullVerbose( "'Project->Delete' not found:", deleteItem, "not ");
     helper.enterClickAndLeave( new MouseEventData( this, deleteItem));
 
     System.err.println( "\nPLANVIZ_04 COMPLETED\n");
@@ -430,15 +443,14 @@ public class PlanWorksGUITest extends JFCTestCase {
                                 helper, this, planWorks);
 
     PWTestHelper.addSequencesToProject( helper, this, planWorks);
-    assertTrue( "PlanWorks title does not contain '" + PWTestHelper.PROJECT2 +
-                 "' after 2nd Project->Create",
-                 PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT2));
+    assertTrueVerbose( "PlanWorks title does not contain '" + PWTestHelper.PROJECT2 +
+                       "' after 2nd Project->Create",
+                       PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT2), "not ");
 
     PWTestHelper.openProject( PWTestHelper.PROJECT1, helper, this, planWorks);
     // try{Thread.sleep(2000);}catch(Exception e){}
-    System.err.println( "title " + PlanWorks.getPlanWorks().getTitle());
-    assertTrue( "PlanWorks title does not contain '" + PWTestHelper.PROJECT1,
-                 PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1));
+    assertTrueVerbose( "PlanWorks title does not contain '" + PWTestHelper.PROJECT1,
+                       PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1), "not ");
 
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
     PWTestHelper.deleteProject( PWTestHelper.PROJECT2, helper, this);
@@ -473,8 +485,9 @@ public class PlanWorksGUITest extends JFCTestCase {
                                   this, planWorks);
     PWTestHelper.addSequencesToProject( helper, this, planWorks);
 
-    assertTrue( "PlanWorks title does not contain '" + PWTestHelper.PROJECT1,
-                 PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1));
+    assertTrueVerbose( "PlanWorks title does not contain '" + PWTestHelper.PROJECT1,
+                       PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1),
+                       "not ");
 
     // 3 sequences under Planning Sequence
     int sequenceCount = 0;
@@ -486,8 +499,8 @@ public class PlanWorksGUITest extends JFCTestCase {
         sequenceCount++;
       }
     }
-    assertTrue( "There are not 3 'sequence' plans under 'Planning Sequence'",
-                (sequenceCount == 3));
+    assertTrueVerbose( "There are not 3 'sequence' plans under 'Planning Sequence'",
+                       (sequenceCount == 3), "not ");
 
     System.err.println( "\nPLANVIZ_06 COMPLETED\n");
   } // end planViz06
@@ -545,16 +558,16 @@ public class PlanWorksGUITest extends JFCTestCase {
                                                 "step" + String.valueOf( stepNumber));
     TimelineView timelineView = (TimelineView) PWTestHelper.findComponentByName
       ( TimelineView.class, timelineViewName, Finder.OP_EQUALS);
-    assertNotNull( ViewConstants.TIMELINE_VIEW + " for " + PWTestHelper.SEQUENCE_NAME +
-                   " not found", timelineView);
+    assertNotNullVerbose( ViewConstants.TIMELINE_VIEW + " for " + PWTestHelper.SEQUENCE_NAME +
+                          " not found", timelineView, "not ");
     int stackIndex = PWTestHelper.getStackIndex( timelineView.getViewFrame());
     // System.err.println( "  stackIndex " + stackIndex);
-    assertTrue( ViewConstants.TIMELINE_VIEW + " for " + PWTestHelper.SEQUENCE_NAME +
-                " is not at top of window stack order", (stackIndex == 0));
+    assertTrueVerbose( ViewConstants.TIMELINE_VIEW + " for " + PWTestHelper.SEQUENCE_NAME +
+                       " is not at top of window stack order", (stackIndex == 0), "not ");
 
     // post condition: 3 content filter and 3 timeline view windows exist
     JMenu  windowMenu = PWTestHelper.findMenu( PlanWorks.WINDOW_MENU);
-    assertNotNull( "Window menu not found", windowMenu);
+    assertNotNullVerbose( "Window menu not found", windowMenu, "not ");
     helper.enterClickAndLeave( new MouseEventData( this, windowMenu));
     JMenuItem stackTopMenuItem = null; // the first timeline one in the list
     int contentFilterCount = 0, timelineViewCount = 0;
@@ -573,10 +586,14 @@ public class PlanWorksGUITest extends JFCTestCase {
         }
       }
     }
-    assertTrue( "Only " + contentFilterCount + " '" + ViewConstants.CONTENT_SPEC_TITLE +
-                "' windows found, should be 3", (contentFilterCount == 3));
-    assertTrue( "Only " + timelineViewCount + " '" + ViewConstants.TIMELINE_VIEW +
-                "' windows found, should be 3", (timelineViewCount == 3));
+    assertTrueVerbose( "There are not 3 '" +  ViewConstants.CONTENT_SPEC_TITLE +
+                       "' windows (found " + String.valueOf( contentFilterCount) + ")",
+                       (contentFilterCount == 3), "not ");
+    assertTrueVerbose( "There are not 3 '" +  ViewConstants.TIMELINE_VIEW +
+                       "' windows (found " + String.valueOf( timelineViewCount) + ")",
+                       (timelineViewCount == 3), "not ");
+
+
     // this is needed to free up Window menu and allow Project->Delete to be available
     helper.enterClickAndLeave( new MouseEventData( this, stackTopMenuItem));
     
@@ -588,8 +605,7 @@ public class PlanWorksGUITest extends JFCTestCase {
     JMenuItem tileItem =
       PWTestHelper.findMenuItem( PlanWorks.WINDOW_MENU, PlanWorks.TILE_WINDOWS_MENU_ITEM,
                                  helper, this);
-    System.err.println("Found " + PlanWorks.TILE_WINDOWS_MENU_ITEM + " menu item");
-    assertNotNull( "'Window->Tile Windows' not found:", tileItem);
+    assertNotNullVerbose( "'Window->Tile Windows' not found:", tileItem, "not ");
     helper.enterClickAndLeave( new MouseEventData( this, tileItem));
     this.flushAWT(); this.awtSleep();
     // try{Thread.sleep(2000);}catch(Exception e){}
@@ -600,10 +616,12 @@ public class PlanWorksGUITest extends JFCTestCase {
       PWTestHelper.getInternalFramesByPrefixName( ViewConstants.CONTENT_SPEC_TITLE);
     List sequenceQueryFrames =
       PWTestHelper.getInternalFramesByPrefixName( ViewConstants.SEQUENCE_QUERY_TITLE);
-    assertTrue( "Only " + contentFilterFrames.size() + " '" + ViewConstants.CONTENT_SPEC_TITLE +
-                "' windows found, should be 3", (contentFilterFrames.size() == 3));
-    assertTrue( "Only " + sequenceQueryFrames.size() + " '" + ViewConstants.SEQUENCE_QUERY_TITLE +
-                "' windows found, should be 3", (sequenceQueryFrames.size() == 3));
+    assertTrueVerbose( "There are not 3 '" +  ViewConstants.CONTENT_SPEC_TITLE +
+                       "' windows (found " + contentFilterFrames.size() + ")",
+                       (contentFilterFrames.size() == 3), "not ");
+    assertTrueVerbose( "There are not 3 '" +  ViewConstants.SEQUENCE_QUERY_TITLE +
+                       "' windows (found " + sequenceQueryFrames.size() + ")",
+                       (sequenceQueryFrames.size() == 3), "not ");
     double firstRowYLocation = 0.0, secondRowYLocation = 0.0;
     contentFilterFrames.addAll( sequenceQueryFrames);
     Iterator contentFilterItr = contentFilterFrames.iterator();
@@ -614,8 +632,8 @@ public class PlanWorksGUITest extends JFCTestCase {
       if (frame.getSize().getHeight() > secondRowYLocation) {
         secondRowYLocation = frame.getSize().getHeight();
       }
-      assertTrue( frame.getTitle() + " frame y location not in first row",
-                  (frame.getLocation().getY() == firstRowYLocation));
+      assertTrueVerbose( frame.getTitle() + " frame y location not in first row",
+                         (frame.getLocation().getY() == firstRowYLocation), "not ");
     }
 //     System.err.println("secondRowYLocation " + secondRowYLocation);
     String timelineViewPrefix =
@@ -624,25 +642,26 @@ public class PlanWorksGUITest extends JFCTestCase {
     String seqStepsViewPrefix =
       Utilities.trimView( ViewConstants.SEQUENCE_STEPS_VIEW).replaceAll( " ", "");
     List sequenceStepsFrames = PWTestHelper.getInternalFramesByPrefixName( seqStepsViewPrefix);
-    assertTrue( "Only " + timelineViewFrames.size() + " '" + ViewConstants.TIMELINE_VIEW +
-                "' windows found, should be 3", (timelineViewFrames.size() == 3));
-    assertTrue( "Only " + sequenceStepsFrames.size() + " '" + ViewConstants.SEQUENCE_STEPS_VIEW +
-                "' windows found, should be 3", (sequenceStepsFrames.size() == 3));
+    assertTrueVerbose( "There are not 3 '" +  ViewConstants.TIMELINE_VIEW +
+                       "' windows (found " + timelineViewFrames.size() + ")",
+                       (timelineViewFrames.size() == 3), "not ");
+    assertTrueVerbose( "There are not 3 '" +  ViewConstants.SEQUENCE_STEPS_VIEW +
+                       "' windows (found " + sequenceStepsFrames.size() + ")",
+                       (sequenceStepsFrames.size() == 3), "not ");
     timelineViewFrames.addAll( sequenceStepsFrames);
     Iterator timelineViewItr = timelineViewFrames.iterator();
     while (timelineViewItr.hasNext()) {
       MDIInternalFrame frame = (MDIInternalFrame) timelineViewItr.next();
 //       System.err.println( frame.getTitle() + " y " + frame.getLocation().getY() +
 //                           " height " + frame.getSize().getHeight());
-      assertTrue( frame.getTitle() + " frame y location not >= second row",
-                  (frame.getLocation().getY() >= secondRowYLocation));
+      assertTrueVerbose( frame.getTitle() + " frame y location not >= second row",
+                         (frame.getLocation().getY() >= secondRowYLocation), "not ");
     }
     // "Window->Cascade".
     JMenuItem cascadeItem =
       PWTestHelper.findMenuItem( PlanWorks.WINDOW_MENU, PlanWorks.CASCADE_WINDOWS_MENU_ITEM,
                                  helper, this);
-    System.err.println("Found " + PlanWorks.CASCADE_WINDOWS_MENU_ITEM + " menu item");
-    assertNotNull( "'Window->Cascade Windows' not found:", cascadeItem);
+    assertNotNullVerbose( "'Window->Cascade Windows' not found:", cascadeItem, "not ");
     helper.enterClickAndLeave( new MouseEventData( this, cascadeItem));
     this.flushAWT(); this.awtSleep();
     // try{Thread.sleep(2000);}catch(Exception e){}
@@ -661,8 +680,8 @@ public class PlanWorksGUITest extends JFCTestCase {
 //                               " height " + frame.getSize().getHeight());
           if ((frame.getTitle().startsWith( ViewConstants.CONTENT_SPEC_TITLE)) ||
               (frame.getTitle().startsWith( ViewConstants.SEQUENCE_QUERY_TITLE))) {
-            assertTrue( frame.getTitle() + " not in first row",
-                        (frame.getLocation().getY() == firstRowYLocation));
+            assertTrueVerbose( frame.getTitle() + " not in first row",
+                               (frame.getLocation().getY() == firstRowYLocation), "not ");
           } else if ((frame.getTitle().startsWith( timelineViewPrefix)) ||
                      (frame.getTitle().startsWith( seqStepsViewPrefix))) {
             cascadedFrames.add( frame);
@@ -679,12 +698,12 @@ public class PlanWorksGUITest extends JFCTestCase {
       MDIInternalFrame frame = (MDIInternalFrame) frameItr.next();
 //       System.err.println( "frame " + frame.getTitle() + " x " +
 //                           frame.getLocation().getX() + " y " + frame.getLocation().getY());
-      assertTrue( frame.getTitle() + " not cascaded in X",
-                  ((frame.getLocation().getX() > frameX) ||
-                   (frame.getLocation().getX() == 0.0)));
+      assertTrueVerbose( frame.getTitle() + " not cascaded in X",
+                         ((frame.getLocation().getX() > frameX) ||
+                          (frame.getLocation().getX() == 0.0)), "not ");
       frameX = frame.getLocation().getX();
-      assertTrue( frame.getTitle() + " not cascaded in Y",
-                  (frame.getLocation().getY() > frameY));
+      assertTrueVerbose( frame.getTitle() + " not cascaded in Y",
+                         (frame.getLocation().getY() > frameY), "not ");
       frameY = frame.getLocation().getY();
     }
 
@@ -771,8 +790,8 @@ public class PlanWorksGUITest extends JFCTestCase {
     //  the TimelineView, and the SequenceStepsView of "test-seq-1".
     int totalFrameCnt = 4;
     int internalFrameCnt = PWTestHelper.getAllInternalFrames().size();
-    assertTrue( "There should be " +  totalFrameCnt + " frames, there are "
-                + internalFrameCnt, (internalFrameCnt == totalFrameCnt));
+    assertTrueVerbose( "There are not " +  totalFrameCnt + " (found " +
+                       internalFrameCnt + ")", (internalFrameCnt == totalFrameCnt), "not ");
     int contentFilterCnt =
       PWTestHelper.getInternalFramesByPrefixName( ViewConstants.CONTENT_SPEC_TITLE).size();
     int sequenceQueryCnt =
@@ -781,12 +800,12 @@ public class PlanWorksGUITest extends JFCTestCase {
       ( ViewConstants.TIMELINE_VIEW.replaceAll( " ", "")).size();
     int sequenceStepsViewCnt = PWTestHelper.getInternalFramesByPrefixName
         ( ViewConstants.SEQUENCE_STEPS_VIEW.replaceAll( " ", "")).size();
-    assertTrue( "There should be 1 " + ViewConstants.CONTENT_SPEC_TITLE + " window, " +
-                " 1 " + ViewConstants.SEQUENCE_QUERY_TITLE + " window, " +
-                " 1 " + ViewConstants.TIMELINE_VIEW + " window, and " +
-                " 1 " + ViewConstants.SEQUENCE_STEPS_VIEW + " window.",
-                ((contentFilterCnt + sequenceQueryCnt + timelineViewCnt +
-                  sequenceStepsViewCnt) == totalFrameCnt));
+    assertTrueVerbose( "There is not 1 " + ViewConstants.CONTENT_SPEC_TITLE + " window, " +
+                       " 1 " + ViewConstants.SEQUENCE_QUERY_TITLE + " window, " +
+                       " 1 " + ViewConstants.TIMELINE_VIEW + " window, and " +
+                       " 1 " + ViewConstants.SEQUENCE_STEPS_VIEW + " window.",
+                       ((contentFilterCnt + sequenceQueryCnt + timelineViewCnt +
+                         sequenceStepsViewCnt) == totalFrameCnt), "not ");
 
     // Re-add "test-seq-3" sequence by using menu-bar selection of
     //  "Project->Add Sequence ...".  Then open the sequence using
@@ -810,19 +829,20 @@ public class PlanWorksGUITest extends JFCTestCase {
     totalFrameCnt = 6;
     int totalSeqQueryCnt = 2, totalSeqStepsCnt = 2;
     internalFrameCnt = PWTestHelper.getAllInternalFrames().size();
-    assertTrue( "There should be " +  totalFrameCnt + " frames, there are "
-                + internalFrameCnt, (internalFrameCnt == totalFrameCnt));
+    assertTrueVerbose( "There are not " +  String.valueOf( totalFrameCnt) + " frames (found " +
+                       String.valueOf( internalFrameCnt) + ")", (internalFrameCnt == totalFrameCnt),
+                       "not ");
     sequenceQueryCnt =
       PWTestHelper.getInternalFramesByPrefixName( ViewConstants.SEQUENCE_QUERY_TITLE).size();
     sequenceStepsViewCnt = PWTestHelper.getInternalFramesByPrefixName
         ( ViewConstants.SEQUENCE_STEPS_VIEW.replaceAll( " ", "")).size();
-    assertTrue( "There should be 2 " + ViewConstants.SEQUENCE_QUERY_TITLE + " windows",
-                (sequenceQueryCnt == totalSeqQueryCnt));
-    assertTrue( "There should be 2 " + ViewConstants.SEQUENCE_STEPS_VIEW + " windows",
-                (sequenceStepsViewCnt == totalSeqStepsCnt));
-    assertTrue( "The re-loaded sequence ("  + sequenceName + ") is not the original" +
-                " third sequence ", seqStepsView.getPlanningSequence().getUrl().
-                equals( (String) sequenceUrls.get( 6)));
+    assertTrueVerbose( "There are not 2 " + ViewConstants.SEQUENCE_QUERY_TITLE + " windows",
+                       (sequenceQueryCnt == totalSeqQueryCnt), "not ");
+    assertTrueVerbose( "There are not 2 " + ViewConstants.SEQUENCE_STEPS_VIEW + " windows",
+                       (sequenceStepsViewCnt == totalSeqStepsCnt), "not ");
+    assertTrueVerbose( "The re-loaded sequence ("  + sequenceName + ") is not the original" +
+                       " third sequence ", seqStepsView.getPlanningSequence().getUrl().
+                       equals( (String) sequenceUrls.get( 6)), "not ");
     //try{Thread.sleep(2000);}catch(Exception e){}
 
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
@@ -864,7 +884,8 @@ public class PlanWorksGUITest extends JFCTestCase {
     ConstraintNetworkView constraintNetworkView =
       (ConstraintNetworkView) PWTestHelper.findComponentByName
       ( ConstraintNetworkView.class, constraintNetworkViewName, Finder.OP_EQUALS);
-    assertNotNull( constraintNetworkViewName + " not found", constraintNetworkView);
+    assertNotNullVerbose( constraintNetworkViewName + " not found", constraintNetworkView,
+                          "not ");
 
     ViewListener viewListener02 = new ViewListenerWait02( this);
     viewMenuItemName = "Open " + ViewConstants.TEMPORAL_EXTENT_VIEW;
@@ -877,7 +898,7 @@ public class PlanWorksGUITest extends JFCTestCase {
     TemporalExtentView temporalExtentView =
       (TemporalExtentView) PWTestHelper.findComponentByName
       ( TemporalExtentView.class, temporalExtentViewName, Finder.OP_EQUALS);
-    assertNotNull( temporalExtentViewName + " not found", temporalExtentView);
+    assertNotNullVerbose( temporalExtentViewName + " not found", temporalExtentView, "not ");
 
     ViewListener viewListener03 = new ViewListenerWait03( this);
     viewMenuItemName = "Open " + ViewConstants.TIMELINE_VIEW;
@@ -890,7 +911,7 @@ public class PlanWorksGUITest extends JFCTestCase {
     TimelineView timelineView =
       (TimelineView) PWTestHelper.findComponentByName
       ( TimelineView.class, timelineViewName, Finder.OP_EQUALS);
-    assertNotNull( timelineViewName + " not found", timelineView);
+    assertNotNullVerbose( timelineViewName + " not found", timelineView, "not ");
 
     ViewListener viewListener04 = new ViewListenerWait04( this);
     viewMenuItemName = "Open " + ViewConstants.TOKEN_NETWORK_VIEW;
@@ -903,7 +924,7 @@ public class PlanWorksGUITest extends JFCTestCase {
     TokenNetworkView tokenNetworkView =
       (TokenNetworkView) PWTestHelper.findComponentByName
       ( TokenNetworkView.class, tokenNetworkViewName, Finder.OP_EQUALS);
-    assertNotNull( tokenNetworkViewName + " not found", tokenNetworkView);
+    assertNotNullVerbose( tokenNetworkViewName + " not found", tokenNetworkView, "not ");
 
     ViewListener viewListener05 = new ViewListenerWait05( this);
     viewMenuItemName = "Open " + ViewConstants.DB_TRANSACTION_VIEW;
@@ -916,9 +937,11 @@ public class PlanWorksGUITest extends JFCTestCase {
     DBTransactionView dbTransactionView =
       (DBTransactionView) PWTestHelper.findComponentByName
       ( DBTransactionView.class, dbTransactionViewName, Finder.OP_EQUALS);
-    assertNotNull( dbTransactionViewName + " not found", dbTransactionView);
+    assertNotNullVerbose( dbTransactionViewName + " not found", dbTransactionView, "not ");
 
     planViz10CNet( constraintNetworkView, stepNumber, seqUrlIndex);
+
+    planViz10TExt( temporalExtentView, stepNumber, seqUrlIndex);
 
 
 
@@ -931,12 +954,15 @@ public class PlanWorksGUITest extends JFCTestCase {
 
   public void planViz10CNet( ConstraintNetworkView constraintNetworkView, int stepNumber,
                              int seqUrlIndex) throws Exception {
+    PwPlanningSequence planSeq =
+      planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
+    PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
     ViewGenerics.raiseFrame( constraintNetworkView.getViewFrame());
     // open interval token, resource, variable, and constraint nodes in ConstraintNetworkView
     int numTokensOpened = 3, numResourcesOpened = 1, numResTransactionsOpened = 1;
     int numTimelinesOpened = 1, numObjectsOpened = 1;
-    ConstraintNetworkTokenNode tokenNode1 = null;
-    ConstraintNetworkTokenNode tokenNode2 = null;
+    ConstraintNetworkTokenNode baseTokenNode = null;
+    ConstraintNetworkTokenNode mergedTokenNode = null;
     ConstraintNetworkTokenNode freeTokenNode = null;
     ConstraintNetworkTokenNode resTransactionNode = null;
     ConstraintNetworkResourceNode resourceNode = null;
@@ -958,13 +984,17 @@ public class PlanWorksGUITest extends JFCTestCase {
           }
           numResTransactionNodes++;
         } else if (tokenNode.getToken() instanceof PwToken) {
-          boolean isFree = tokenNode.getToken().isFree();
-          if ((!isFree ) && (tokenNode1 == null)) {
-            tokenNode1 = (ConstraintNetworkTokenNode) contNode;
-          } else if ((! isFree) && (tokenNode2 == null)) {
-            tokenNode2 = (ConstraintNetworkTokenNode) contNode;
+          PwToken token = (PwToken) tokenNode.getToken();
+          boolean isFree = token.isFree(), isBaseToken = token.isBaseToken();
+          int slotTokenCnt = 0;
+          if (token.getSlotId() != DbConstants.NO_ID) {
+            slotTokenCnt =
+              partialPlan.getSlot( token.getSlotId()).getTokenList().size();
+          }
+          if ((! isFree ) && isBaseToken && (slotTokenCnt > 1) && (baseTokenNode == null)) {
+            baseTokenNode = tokenNode;
           } else if (isFree && (freeTokenNode == null)) {
-            freeTokenNode = (ConstraintNetworkTokenNode) contNode;
+            freeTokenNode = tokenNode;
           }
         }
         numTokenNodes++;
@@ -985,45 +1015,75 @@ public class PlanWorksGUITest extends JFCTestCase {
         numObjectNodes++;
       }
     }
+    // find mergedTokenNode
+    containerNodeItr = constraintNetworkView.getContainerNodeList().iterator();
+    while (containerNodeItr.hasNext()) {
+      VariableContainerNode contNode = (VariableContainerNode) containerNodeItr.next();
+      if (contNode instanceof ConstraintNetworkTokenNode) {
+        ConstraintNetworkTokenNode tokenNode = (ConstraintNetworkTokenNode) contNode;
+        if (tokenNode.getToken() instanceof PwToken) {
+          PwToken token = (PwToken) tokenNode.getToken();
+          boolean isFree = token.isFree(), isBaseToken = token.isBaseToken();
+          if ((! isFree) && (! isBaseToken) && (mergedTokenNode == null) &&
+                     (baseTokenNode != null) &&
+                     (baseTokenNode.getToken().getSlotId().equals( token.getSlotId()))) {
+            mergedTokenNode = tokenNode;
+            break;
+          }
+        }
+      }
+    }
     // try{Thread.sleep(6000);}catch(Exception e){}
 
-    assertNotNull( "Did not find ConstraintNetworkTokenNode tokenNode1", tokenNode1);
-    assertNotNull( "Did not find ConstraintNetworkTokenNode tokenNode2", tokenNode2);
-    assertNotNull( "Did not find ConstraintNetworkTokenNode freeTokenNode", freeTokenNode);
-    assertNotNull( "Did not find ConstraintNetworkResourceNode resourceNode", resourceNode);
-    assertNotNull( "Did not find ConstraintNetworkTokenNode resTransactionNode",
-                   resTransactionNode);
-    assertNotNull( "Did not find ConstraintNetworkTimelineNode timelineNode", timelineNode);
-    assertNotNull( "Did not find ConstraintNetworkObjectNode objectNode", objectNode);
-    PwPlanningSequence planSeq =
-      planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
-    PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
-    assertTrue( "Number of partial plan interval tokens (" +
-                partialPlan.getTokenList().size() + ") != number of ContraintNetwork " +
-                "token nodes (" + numTokenNodes + ")",
-                (partialPlan.getTokenList().size() == numTokenNodes));
-    assertTrue( "Number of partial plan resources (" +
-                partialPlan.getResourceList().size() + ") != number of ContraintNetwork " +
-                "resource nodes (" + numResourceNodes + ")",
-                (partialPlan.getResourceList().size() == numResourceNodes));
-    assertTrue( "Number of partial plan resourceTransactions (" +
-                partialPlan.getResourceList().size() + ") != number of ContraintNetwork " +
-                "resourceTransaction nodes (" + numResTransactionNodes + ")",
-                (partialPlan.getResTransactionList().size() == numResTransactionNodes));
-    assertTrue( "Number of partial plan timelines (" +
-                partialPlan.getTimelineList().size() + ") != number of ContraintNetwork " +
-                "timeline nodes (" + numTimelineNodes + ")",
-                (partialPlan.getTimelineList().size() == numTimelineNodes));
-    assertTrue( "Number of partial plan objects (" +
-                partialPlan.getObjectList().size() + ") != number of ContraintNetwork " +
-                "object nodes (" + numObjectNodes + ")",
-                (partialPlan.getObjectList().size() == (numObjectNodes + numResourceNodes +
-                                                        numTimelineNodes)));
+    assertNotNullVerbose( "Did not find ConstraintNetworkTokenNode baseTokenNode",
+                          baseTokenNode, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetworkTokenNode mergedTokenNode",
+                          mergedTokenNode, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetworkTokenNode freeTokenNode",
+                          freeTokenNode, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetworkResourceNode resourceNode",
+                          resourceNode, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetworkTokenNode resTransactionNode",
+                          resTransactionNode, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetworkTimelineNode timelineNode",
+                          timelineNode, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetworkObjectNode objectNode",
+                          objectNode, "not ");
+    assertTrueVerbose
+      ( "Number of partial plan interval tokens and resrource transactions (" +
+        partialPlan.getTokenList().size() +
+        ") not equal number of ContraintNetwork interval token and resource transaction " +
+        "nodes (" + numTokenNodes + ")", (partialPlan.getTokenList().size() == numTokenNodes),
+        "not ");
+    assertTrueVerbose
+      ( "Number of partial plan resources (" + partialPlan.getResourceList().size() +
+        ") not equal number of ContraintNetwork resource nodes (" + numResourceNodes +
+        ")", (partialPlan.getResourceList().size() == numResourceNodes), "not ");
+    assertTrueVerbose
+      ( "Number of partial plan resourceTransactions (" +
+        partialPlan.getResTransactionList().size() + ") not equal number of ContraintNetwork " +
+        "resourceTransaction nodes (" + numResTransactionNodes + ")",
+        (partialPlan.getResTransactionList().size() == numResTransactionNodes), "not ");
+    assertTrueVerbose
+      ( "Number of partial plan timelines (" + partialPlan.getTimelineList().size() +
+        ") not equal number of ContraintNetwork timeline nodes (" + numTimelineNodes +
+        ")", (partialPlan.getTimelineList().size() == numTimelineNodes), "not ");
+    int numNodes = numObjectNodes + numResourceNodes + numTimelineNodes;
+    assertTrueVerbose
+      ( "Number of partial plan objects, timelines, & resources (" +
+        partialPlan.getObjectList().size() +
+        ") not equal number of ContraintNetwork object, timeline, & resources nodes (" +
+        numNodes + ")", (partialPlan.getObjectList().size() == numNodes), "not ");
+    assertTrueVerbose
+      ( "Token id=" + mergedTokenNode.getToken().getId() + " is not a merged " +
+        " token of base token id=" + baseTokenNode.getToken().getId(),
+        (mergedTokenNode.getToken().getSlotId().equals
+         ( baseTokenNode.getToken().getSlotId())), "not ");
 
-    tokenNode1.doMouseClick( MouseEvent.BUTTON1_MASK, tokenNode1.getLocation(),
+    baseTokenNode.doMouseClick( MouseEvent.BUTTON1_MASK, baseTokenNode.getLocation(),
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
-    tokenNode2.doMouseClick( MouseEvent.BUTTON1_MASK, tokenNode2.getLocation(),
+    mergedTokenNode.doMouseClick( MouseEvent.BUTTON1_MASK, mergedTokenNode.getLocation(),
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
     freeTokenNode.doMouseClick( MouseEvent.BUTTON1_MASK, freeTokenNode.getLocation(),
@@ -1048,9 +1108,10 @@ public class PlanWorksGUITest extends JFCTestCase {
       (numResTransactionsOpened * PWSetupHelper.NUM_VARS_PER_RESOURCE_TRANS) +
       (numTimelinesOpened * PWSetupHelper.NUM_VARS_PER_TIMELINE) +
       (numObjectsOpened * PWSetupHelper.NUM_VARS_PER_OBJECT);
-    assertTrue( "Number of ContraintNetwork variable nodes (" + numVarNodesInView +
-                ") != number of token (interval & resTrans) and resource variables opened (" +
-                numVarNodesOpened + ")", (numVarNodesOpened == numVarNodesInView));
+    assertTrueVerbose( "Number of ContraintNetwork variable nodes (" + numVarNodesInView +
+                       ") not equal number of token (interval & resTrans) and resource " +
+                       "variables opened (" + numVarNodesOpened + ")",
+                       (numVarNodesOpened == numVarNodesInView), "not ");
     // open token type = START_VAR variables
     int numVariablesOpened = 3;
     VariableNode variableNode1 = null;
@@ -1066,9 +1127,10 @@ public class PlanWorksGUITest extends JFCTestCase {
           VariableContainerNode containNode = (VariableContainerNode) containNodeItr.next();
           if (containNode instanceof ConstraintNetworkTokenNode) {
             ConstraintNetworkTokenNode tokenNode = (ConstraintNetworkTokenNode) containNode;
-            if (tokenNode.getToken().getId().equals( tokenNode1.getToken().getId())) {
+            if (tokenNode.getToken().getId().equals( baseTokenNode.getToken().getId())) {
               variableNode1 = varNode;
-            } else if (tokenNode.getToken().getId().equals( tokenNode2.getToken().getId())) {
+            } else if (tokenNode.getToken().getId().equals
+                       ( mergedTokenNode.getToken().getId())) {
               variableNode2 = varNode;
             } else if (tokenNode.getToken().getId().equals( freeTokenNode.getToken().getId())) {
               variableNode3 = varNode;
@@ -1078,12 +1140,12 @@ public class PlanWorksGUITest extends JFCTestCase {
       }
       numVariableNodes++;
     }
-    assertNotNull( "Did not find ConstraintNetwork VariableNode variableNode1",
-                   variableNode1);
-    assertNotNull( "Did not find ConstraintNetwork VariableNode variableNode2",
-                   variableNode2);
-    assertNotNull( "Did not find ConstraintNetwork VariableNode variableNode3",
-                   variableNode3);
+    assertNotNullVerbose( "Did not find ConstraintNetwork VariableNode variableNode1",
+                   variableNode1, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetwork VariableNode variableNode2",
+                   variableNode2, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetwork VariableNode variableNode3",
+                   variableNode3, "not ");
     variableNode1.doMouseClick( MouseEvent.BUTTON1_MASK, variableNode1.getLocation(),
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
@@ -1097,12 +1159,13 @@ public class PlanWorksGUITest extends JFCTestCase {
     int numContNodesOpened =
       (numTokensOpened * PWSetupHelper.NUM_CONSTRAINTS_PER_TOKEN) +
       (numResourcesOpened * PWSetupHelper.NUM_CONSTRAINTS_PER_RESOURCE);
-    assertTrue( "Number of ContraintNetwork constraint nodes (" + numContNodesInView +
-                ") != number of token (interval & resTrans) and resource constraints opened (" +
-                numContNodesOpened + ")", (numContNodesOpened == numContNodesInView));
-    System.err.println( "ContraintNetworkView: " + numVariablesOpened +
-                        " variables opened ==>> " +
-                        numContNodesInView + " constraint nodes visible");
+    assertTrueVerbose( "Number of ContraintNetwork constraint nodes (" + numContNodesInView +
+                       ") not equal number of token (interval & resTrans) and resource " +
+                       "constraints opened (" + numContNodesOpened + ")",
+                       (numContNodesOpened == numContNodesInView), "not ");
+//     System.err.println( "ContraintNetworkView: " + numVariablesOpened +
+//                         " variables opened ==>> " +
+//                         numContNodesInView + " constraint nodes visible");
 
     ConstraintNode constraintNode1 = null;
     ConstraintNode constraintNode2 = null;
@@ -1118,10 +1181,10 @@ public class PlanWorksGUITest extends JFCTestCase {
         }
       }
     }
-    assertNotNull( "Did not find ConstraintNetwork ConstraintNode constraintNode1",
-                   constraintNode1);
-    assertNotNull( "Did not find ConstraintNetwork ConstraintNode constraintNode2",
-                   constraintNode2);
+    assertNotNullVerbose( "Did not find ConstraintNetwork ConstraintNode constraintNode1",
+                   constraintNode1, "not ");
+    assertNotNullVerbose( "Did not find ConstraintNetwork ConstraintNode constraintNode2",
+                   constraintNode2, "not ");
     constraintNode1.doMouseClick( MouseEvent.BUTTON1_MASK, constraintNode1.getLocation(),
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
@@ -1147,10 +1210,10 @@ public class PlanWorksGUITest extends JFCTestCase {
     variableNode3.doMouseClick( MouseEvent.BUTTON1_MASK, variableNode3.getLocation(),
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
-    tokenNode1.doMouseClick( MouseEvent.BUTTON1_MASK, tokenNode1.getLocation(),
+    baseTokenNode.doMouseClick( MouseEvent.BUTTON1_MASK, baseTokenNode.getLocation(),
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
-    tokenNode2.doMouseClick( MouseEvent.BUTTON1_MASK, tokenNode2.getLocation(),
+    mergedTokenNode.doMouseClick( MouseEvent.BUTTON1_MASK, mergedTokenNode.getLocation(),
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
     freeTokenNode.doMouseClick( MouseEvent.BUTTON1_MASK, freeTokenNode.getLocation(),
@@ -1169,137 +1232,346 @@ public class PlanWorksGUITest extends JFCTestCase {
                              new Point( 0, 0), constraintNetworkView.getJGoView());
     flushAWT(); awtSleep();
 
-    assertFalse( "constraintNode1 is still open", constraintNode1.areNeighborsShown());
-    assertFalse( "constraintNode2 is still open", constraintNode2.areNeighborsShown());
-    assertFalse( "variableNode1 is still open", variableNode1.areNeighborsShown());
-    assertFalse( "variableNode2 is still open", variableNode2.areNeighborsShown());
-    assertFalse( "variableNode3 is still open", variableNode3.areNeighborsShown());
-    assertFalse( "tokenNode1 is still open", tokenNode1.areNeighborsShown());
-    assertFalse( "tokenNode2 is still open", tokenNode2.areNeighborsShown());
-    assertFalse( "freeTokenNode is still open", freeTokenNode.areNeighborsShown());
-    assertFalse( "resourceNode is still open", resourceNode.areNeighborsShown());
-    assertFalse( "resTransactionNode is still open", resTransactionNode.areNeighborsShown());
-    assertFalse( "timelineNode is still open", timelineNode.areNeighborsShown());
-    assertFalse( "objectNode is still open", objectNode.areNeighborsShown());
+    assertTrueVerbose( "constraintNode1 is not closed",
+                        (! constraintNode1.areNeighborsShown()), "not ");
+    assertTrueVerbose( "constraintNode2 is not closed",
+                        (! constraintNode2.areNeighborsShown()), "not ");
+    assertTrueVerbose( "variableNode1 is not closed",
+                        (! variableNode1.areNeighborsShown()), "not ");
+    assertTrueVerbose( "variableNode2 is not closed",
+                        (! variableNode2.areNeighborsShown()), "not ");
+    assertTrueVerbose( "variableNode3 is not closed",
+                       (! variableNode3.areNeighborsShown()), "not ");
+    assertTrueVerbose( "baseTokenNode is not closed",
+                       (! baseTokenNode.areNeighborsShown()), "not ");
+    assertTrueVerbose( "mergedTokenNode is not closed",
+                       (! mergedTokenNode.areNeighborsShown()), "not ");
+    assertTrueVerbose( "freeTokenNode is not closed",
+                       (! freeTokenNode.areNeighborsShown()), "not ");
+    assertTrueVerbose( "resourceNode is not closed",
+                       (! resourceNode.areNeighborsShown()), "not ");
+    assertTrueVerbose( "resTransactionNode is not closed",
+                        (! resTransactionNode.areNeighborsShown()), "not ");
+    assertTrueVerbose( "timelineNode is not closed",
+                       (! timelineNode.areNeighborsShown()), "not ");
+    assertTrueVerbose( "objectNode is not closed",
+                       (! objectNode.areNeighborsShown()), "not ");
 
-    System.err.println( "tokenNode1.getToolTipText() " + tokenNode1.getToolTipText());
-    System.err.println( "tokenNode1.getText() " + tokenNode1.getText());
-    String toolTipText = tokenNode1.getToolTipText();
-    String labelText = tokenNode1.getText();
-    String predSubString = tokenNode1.getPredicateName();
+//     System.err.println( "baseTokenNode.getToolTipText() " + baseTokenNode.getToolTipText());
+//     System.err.println( "baseTokenNode.getText() " + baseTokenNode.getText());
+    String toolTipText = baseTokenNode.getToolTipText();
+    String labelText = baseTokenNode.getText();
+    String predSubString = baseTokenNode.getPredicateName();
     String predParamSubString = predSubString + " (";
-    String slotSubString = "slot key=" + tokenNode1.getToken().getSlotId().toString();
-    String tokenSubString = "key=" + tokenNode1.getToken().getId().toString();
+    String slotSubString = "slot key=" + baseTokenNode.getToken().getSlotId().toString();
+    String tokenSubString = "key=" + baseTokenNode.getToken().getId().toString();
     String mouseSubString = "Mouse-L: open";
-    assertTrue( "ConstraintNetworkView token node (" +
-                tokenNode1.getToken().getId().toString() + ") tool tip does not contain " +
-                predParamSubString, (toolTipText.indexOf( predParamSubString) >= 0));
-    assertTrue( "ConstraintNetworkView token node (" +
-                tokenNode1.getToken().getId().toString() + ") tool tip does not contain " +
-                slotSubString, (toolTipText.indexOf( slotSubString) >= 0));
-    assertTrue( "ConstraintNetworkView token node (" +
-                tokenNode1.getToken().getId().toString() + ") tool tip does not contain " +
-                mouseSubString, (toolTipText.indexOf( mouseSubString) >= 0));
-    assertTrue( "ConstraintNetworkView token node (" +
-                tokenNode1.getToken().getId().toString() + ") label does not contain " +
-                tokenSubString, (labelText.indexOf( tokenSubString) >= 0));
-    assertTrue( "ConstraintNetworkView token node (" +
-                tokenNode1.getToken().getId().toString() + ") label does not contain " +
-                predSubString, (labelText.indexOf( predSubString) >= 0));
+    assertTrueVerbose( "ConstraintNetworkView token node (" +
+                       baseTokenNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" + predParamSubString + "'",
+                       (toolTipText.indexOf( predParamSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView token node (" +
+                       baseTokenNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" + slotSubString + "'",
+                       (toolTipText.indexOf( slotSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView token node (" +
+                       baseTokenNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" + mouseSubString + "'",
+                       (toolTipText.indexOf( mouseSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView token node (" +
+                       baseTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" + tokenSubString + "'",
+                       (labelText.indexOf( tokenSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView token node (" +
+                       baseTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" + predSubString + "'",
+                       (labelText.indexOf( predSubString) >= 0), "not ");
 
-    System.err.println( "resTransactionNode.getToolTipText() " +
-                        resTransactionNode.getToolTipText());
-    System.err.println( "resTransactionNode.getText() " + resTransactionNode.getText());
+//     System.err.println( "resTransactionNode.getToolTipText() " +
+//                         resTransactionNode.getToolTipText());
+//     System.err.println( "resTransactionNode.getText() " + resTransactionNode.getText());
     toolTipText = resTransactionNode.getToolTipText();
     labelText = resTransactionNode.getText();
     String nameSubString = resTransactionNode.getToken().getName();
     String resourceSubString = "key=" + resTransactionNode.getToken().getId().toString();
-    assertTrue( "ConstraintNetworkView resTransaction node (" +
-                resTransactionNode.getToken().getId().toString() +
-                ") tool tip does not contain " +
-                nameSubString, (toolTipText.indexOf( nameSubString) >= 0));
-    assertTrue( "ConstraintNetworkView resTransaction node (" +
-                resTransactionNode.getToken().getId().toString() +
-                ") tool tip does not contain " +
-                mouseSubString, (toolTipText.indexOf( mouseSubString) >= 0));
-    assertTrue( "ConstraintNetworkView resTransaction node (" +
-                resTransactionNode.getToken().getId().toString() +
-                ") label does not contain " +
-                resourceSubString, (labelText.indexOf( resourceSubString) >= 0));
-    assertTrue( "ConstraintNetworkView resTransaction node (" +
-                resTransactionNode.getToken().getId().toString() +
-                ") label does not contain " +
-                nameSubString, (labelText.indexOf( nameSubString) >= 0));
+    assertTrueVerbose( "ConstraintNetworkView resTransaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" + nameSubString + "'",
+                       (toolTipText.indexOf( nameSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView resTransaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" + mouseSubString + "'",
+                       (toolTipText.indexOf( mouseSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView resTransaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") label does not contain '" + resourceSubString + "'",
+                       (labelText.indexOf( resourceSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView resTransaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") label does not contain '" + nameSubString + "'",
+                       (labelText.indexOf( nameSubString) >= 0), "not ");
 
-    System.err.println( "resourceNode.getToolTipText() " + resourceNode.getToolTipText());
-    System.err.println( "resourceNode.getText() " + resourceNode.getText());
+//     System.err.println( "resourceNode.getToolTipText() " + resourceNode.getToolTipText());
+//     System.err.println( "resourceNode.getText() " + resourceNode.getText());
     toolTipText = resourceNode.getToolTipText();
     labelText = resourceNode.getText();
     nameSubString = resourceNode.getResource().getName();
     resourceSubString = "key=" + resourceNode.getResource().getId().toString();
-    assertTrue( "ConstraintNetworkView resource node (" +
-                resourceNode.getResource().getId().toString() + ") tool tip does not contain " +
-                nameSubString, (toolTipText.indexOf( nameSubString) >= 0));
-    assertTrue( "ConstraintNetworkView resource node (" +
-                resourceNode.getResource().getId().toString() + ") tool tip does not contain " +
-                mouseSubString, (toolTipText.indexOf( mouseSubString) >= 0));
-    assertTrue( "ConstraintNetworkView resource node (" +
-                resourceNode.getResource().getId().toString() + ") label does not contain " +
-                resourceSubString, (labelText.indexOf( resourceSubString) >= 0));
-    assertTrue( "ConstraintNetworkView resource node (" +
-                resourceNode.getResource().getId().toString() + ") label does not contain " +
-                nameSubString, (labelText.indexOf( nameSubString) >= 0));
+    assertTrueVerbose( "ConstraintNetworkView resource node (" +
+                       resourceNode.getResource().getId().toString() +
+                       ") tool tip does not contain '" + nameSubString + "'",
+                       (toolTipText.indexOf( nameSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView resource node (" +
+                       resourceNode.getResource().getId().toString() +
+                       ") tool tip does not contain '" + mouseSubString + "'",
+                       (toolTipText.indexOf( mouseSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView resource node (" +
+                       resourceNode.getResource().getId().toString() +
+                       ") label does not contain '" + resourceSubString + "'",
+                       (labelText.indexOf( resourceSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView resource node (" +
+                       resourceNode.getResource().getId().toString() +
+                       ") label does not contain '" + nameSubString + "'",
+                       (labelText.indexOf( nameSubString) >= 0), "not ");
 
-    System.err.println( "variableNode1.getToolTipText() " + variableNode1.getToolTipText());
-    System.err.println( "variableNode1.getText() " + variableNode1.getText());
+//     System.err.println( "variableNode1.getToolTipText() " + variableNode1.getToolTipText());
+//     System.err.println( "variableNode1.getText() " + variableNode1.getText());
     toolTipText = variableNode1.getToolTipText();
     labelText = variableNode1.getText();
     String typeSubString = variableNode1.getVariable().getType();
     String variableSubString = "key=" + variableNode1.getVariable().getId().toString();
     String domainSubString = variableNode1.getVariable().getDomain().toString();
-    assertTrue( "ConstraintNetworkView variable node (" +
-                variableNode1.getVariable().getId().toString() + ") tool tip does not contain " +
-                typeSubString, (toolTipText.indexOf( typeSubString) >= 0));
-    assertTrue( "ConstraintNetworkView variable node (" +
-                variableNode1.getVariable().getId().toString() + ") tool tip does not contain " +
-                mouseSubString, (toolTipText.indexOf( mouseSubString) >= 0));
-    assertTrue( "ConstraintNetworkView variable node (" +
-                variableNode1.getVariable().getId().toString() + ") label does not contain " +
-                variableSubString, (labelText.indexOf( variableSubString) >= 0));
-    assertTrue( "ConstraintNetworkView variable node (" +
-                variableNode1.getVariable().getId().toString() + ") label does not contain " +
-                domainSubString, (labelText.indexOf( domainSubString) >= 0));
+    assertTrueVerbose( "ConstraintNetworkView variable node (" +
+                       variableNode1.getVariable().getId().toString() +
+                       ") tool tip does not contain '" + typeSubString + "'",
+                       (toolTipText.indexOf( typeSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView variable node (" +
+                       variableNode1.getVariable().getId().toString() +
+                       ") tool tip does not contain '" +mouseSubString + "'",
+                       (toolTipText.indexOf( mouseSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView variable node (" +
+                       variableNode1.getVariable().getId().toString() +
+                       ") label does not contain '" + variableSubString + "'",
+                       (labelText.indexOf( variableSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView variable node (" +
+                       variableNode1.getVariable().getId().toString() +
+                       ") label does not contain '" + domainSubString + "'",
+                       (labelText.indexOf( domainSubString) >= 0), "not ");
 
-    System.err.println( "constraintNode1.getToolTipText() " + constraintNode1.getToolTipText());
-    System.err.println( "constraintNode1.getText() " + constraintNode1.getText());
+//     System.err.println( "constraintNode1.getToolTipText() " + constraintNode1.getToolTipText());
+//     System.err.println( "constraintNode1.getText() " + constraintNode1.getText());
     toolTipText = constraintNode1.getToolTipText();
     labelText = constraintNode1.getText();
     typeSubString = constraintNode1.getConstraint().getType();
     String constraintSubString = "key=" + constraintNode1.getConstraint().getId().toString();
     nameSubString = constraintNode1.getConstraint().getName();
-    assertTrue( "ConstraintNetworkView constraint node (" +
-                constraintNode1.getConstraint().getId().toString() +
-                ") tool tip does not contain " +
-                typeSubString, (toolTipText.indexOf( typeSubString) >= 0));
-    assertTrue( "ConstraintNetworkView constraint node (" +
-                constraintNode1.getConstraint().getId().toString() +
-                ") tool tip does not contain " +
-                mouseSubString, (toolTipText.indexOf( mouseSubString) >= 0));
-    assertTrue( "ConstraintNetworkView constraint node (" +
-                constraintNode1.getConstraint().getId().toString() +
-                ") label does not contain " +
-                constraintSubString, (labelText.indexOf( constraintSubString) >= 0));
-    assertTrue( "ConstraintNetworkView constraint node (" +
-                constraintNode1.getConstraint().getId().toString() +
-                ") label does not contain " +
-                nameSubString, (labelText.indexOf( nameSubString) >= 0));
-    
+    assertTrueVerbose( "ConstraintNetworkView constraint node (" +
+                       constraintNode1.getConstraint().getId().toString() +
+                       ") tool tip does not contain '" + typeSubString + "'",
+                       (toolTipText.indexOf( typeSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView constraint node (" +
+                       constraintNode1.getConstraint().getId().toString() +
+                       ") tool tip does not contain '" + mouseSubString + "'",
+                       (toolTipText.indexOf( mouseSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView constraint node (" +
+                       constraintNode1.getConstraint().getId().toString() +
+                       ") label does not contain '" + constraintSubString + "'",
+                       (labelText.indexOf( constraintSubString) >= 0), "not ");
+    assertTrueVerbose( "ConstraintNetworkView constraint node (" +
+                       constraintNode1.getConstraint().getId().toString() +
+                       ") label does not contain '" + nameSubString + "'",
+                       (labelText.indexOf( nameSubString) >= 0), "not ");
   } // end planViz10CNet
 
  
+  public void planViz10TExt( TemporalExtentView temporalExtentView, int stepNumber,
+                             int seqUrlIndex) throws Exception {
+    PwPlanningSequence planSeq =
+      planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
+    PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
+    ViewGenerics.raiseFrame( temporalExtentView.getViewFrame());
+    // try{Thread.sleep(6000);}catch(Exception e){}
+    TemporalNode baseTokenNode = null;
+    TemporalNode mergedTokenNode = null;
+    TemporalNode freeTokenNode = null;
+    TemporalNode resTransactionNode = null;
+    int numIntTokenNodes = 0, numResTransNodes = 0;
+    Iterator temporalNodeItr = temporalExtentView.getTemporalNodeList().iterator();
+    while (temporalNodeItr.hasNext()) {
+      TemporalNode temporalNode = (TemporalNode) temporalNodeItr.next();
+      PwToken token = temporalNode.getToken();
+      if (token instanceof PwResourceTransaction) {
+        if (resTransactionNode == null) {
+          resTransactionNode = temporalNode;
+        }
+        numResTransNodes++;
+      } else {
+        int slotTokenCnt = 0;
+        if (token.getSlotId() != DbConstants.NO_ID) {
+          slotTokenCnt =
+            partialPlan.getSlot( token.getSlotId()).getTokenList().size();
+        }
+        if ((! token.isFree()) && token.isBaseToken() && (slotTokenCnt > 1) &&
+            (baseTokenNode == null)) {
+          baseTokenNode = temporalNode;
+        } else if (token.isFree() && (freeTokenNode == null)) {
+          freeTokenNode = temporalNode;
+        }
+        numIntTokenNodes++;
+      }
+    }
+    // find mergedTokenNode
+    temporalNodeItr = temporalExtentView.getTemporalNodeList().iterator();
+    while (temporalNodeItr.hasNext()) {
+      TemporalNode temporalNode = (TemporalNode) temporalNodeItr.next();
+      PwToken token = temporalNode.getToken();
+      boolean isFree = token.isFree(), isBaseToken = token.isBaseToken();
+      if ((! token.isFree()) && (! token.isBaseToken()) &&
+          (mergedTokenNode == null) && (baseTokenNode != null) &&
+          (baseTokenNode.getToken().getSlotId().equals
+           (temporalNode.getToken().getSlotId()))) {
+          mergedTokenNode = temporalNode;
+          break;
+      }
+    }
 
+    assertNotNullVerbose( "Did not find TemporalExtentView baseToken TemporalNode",
+                   baseTokenNode, "not ");
+    assertNotNullVerbose( "Did not find TemporalExtentView mergedToken TemporalNode",
+                   mergedTokenNode, "not ");
+    assertNotNullVerbose( "Did not find TemporalExtentView freeToken TemporalNode",
+                   freeTokenNode, "not ");
+    assertNotNullVerbose( "Did not find TemporalExtentView resourceTransaction TemporalNode",
+                   resTransactionNode, "not ");
+    assertTrueVerbose( "Number of partial plan interval tokens (" +
+                       partialPlan.getTokenList().size() +
+                       ") not equal number of TemporalExtent " +
+                       "temporal nodes (" + (numIntTokenNodes + numResTransNodes) + ")",
+                       (partialPlan.getTokenList().size() ==
+                        (numIntTokenNodes + numResTransNodes)), "not ");
+    assertTrueVerbose( "mergedToken id=" + mergedTokenNode.getToken().getId() +
+                       " is not a merged token of baseToken id=" +
+                       baseTokenNode.getToken().getId(),
+                       (mergedTokenNode.getToken().getSlotId().equals
+                        ( baseTokenNode.getToken().getSlotId())), "not ");
 
+//     System.err.println( "baseTokenNode.getToolTipText() " + baseTokenNode.getToolTipText());
+//     System.err.println( "baseTokenNode.getText() " + baseTokenNode.getText());
+    String toolTipText = baseTokenNode.getToolTipText();
+    String labelText = baseTokenNode.getText();
+    String predSubString = baseTokenNode.getPredicateName();
+    String predParamSubString = predSubString + " (";
+    String slotSubString = "slot key=" + baseTokenNode.getToken().getSlotId().toString();
+    String tokenSubString = "key=" + baseTokenNode.getToken().getId().toString();
+    assertTrueVerbose( "TemporalExtentView token node (" +
+                       baseTokenNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" + predParamSubString + "'",
+                       (toolTipText.indexOf( predParamSubString) >= 0), "not ");
+    assertTrueVerbose( "TemporalExtentView token node (" +
+                       baseTokenNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" + slotSubString + "'",
+                       (toolTipText.indexOf( slotSubString) >= 0), "not ");
+    assertTrueVerbose( "TemporalExtentView token node (" +
+                       baseTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" + tokenSubString + "'",
+                       (labelText.indexOf( tokenSubString) >= 0), "not ");
+    assertTrueVerbose( "TemporalExtentView token node (" +
+                       baseTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" + predSubString + "'",
+                       (labelText.indexOf( predSubString) >= 0), "not ");
 
+//     System.err.println( "resTransactionNode.getToolTipText() " +
+//                         resTransactionNode.getToolTipText());
+//     System.err.println( "resTransactionNode.getText() " + resTransactionNode.getText());
+    toolTipText = resTransactionNode.getToolTipText();
+    labelText = resTransactionNode.getText();
+    String nameSubString = resTransactionNode.getToken().getName();
+    String resourceSubString = "key=" + resTransactionNode.getToken().getId().toString();
+    assertTrueVerbose( "TemporalExtentView resTransaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" +
+                       nameSubString + "'", (toolTipText.indexOf( nameSubString) >= 0),
+                       "not ");
+    assertTrueVerbose( "TemporalExtentView resTransaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") label does not contain '" +
+                       resourceSubString + "'", (labelText.indexOf( resourceSubString) >= 0),
+                       "not ");
+    assertTrueVerbose( "TemporalExtentView resTransaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") label does not contain '" +
+                       nameSubString + "'", (labelText.indexOf( nameSubString) >= 0), "not ");
+    
+    Iterator markBridgeItr = baseTokenNode.getMarkAndBridgeList().iterator();
+    int markBridgeCnt = 0;
+    int earliestStartTime = 0, latestStartTime = 0, earliestEndTime = 0;
+    int latestEndTime = 0, minDurationTime = 0, maxDurationTime = 0;
+    while (markBridgeItr.hasNext()) {
+      JGoStroke markOrBridge = (JGoStroke) markBridgeItr.next();
+      if (markOrBridge instanceof TemporalNodeTimeMark) {
+        TemporalNodeTimeMark timeMark = (TemporalNodeTimeMark) markOrBridge;
+        if (timeMark.getType() == TemporalNode.EARLIEST_START_TIME_MARK) {
+          earliestStartTime = timeMark.getTime();
+        } else if (timeMark.getType() == TemporalNode.LATEST_START_TIME_MARK) {
+          latestStartTime = timeMark.getTime();
+        } else if (timeMark.getType() == TemporalNode.EARLIEST_END_TIME_MARK) {
+          earliestEndTime = timeMark.getTime();
+        } else if (timeMark.getType() == TemporalNode.LATEST_END_TIME_MARK) {
+          latestEndTime = timeMark.getTime();
+        }
+        markBridgeCnt++;
+      } else if (markOrBridge instanceof TemporalNodeDurationBridge) {
+        TemporalNodeDurationBridge bridge = (TemporalNodeDurationBridge) markOrBridge;
+        minDurationTime = bridge.getMinDurationTime();
+        maxDurationTime = bridge.getMaxDurationTime();
+        markBridgeCnt++;
+      }
+    }
+    assertTrueVerbose
+      ( "TemporalExtentView baseTokenNode does not show four time marks " +
+        " and duration bridge", (markBridgeCnt == 5), "not ");
+    assertTrueVerbose
+      ( "TemporalExtentView baseTokenNode latestStartTime not >= earliestStartTime",
+        (latestStartTime >= earliestStartTime), "not ");
+    assertTrueVerbose
+      ( "TemporalExtentView baseTokenNode latestEndTime not >= earliestEndTime",
+        (latestEndTime >= earliestEndTime), "not ");
+    assertTrueVerbose
+      ( "TemporalExtentView baseTokenNode maxDuration not consistent with " +
+        "start/end times", (maxDurationTime == (latestEndTime - earliestStartTime)),
+        "not ");
+    assertTrueVerbose
+      ( "TemporalExtentView baseTokenNode minDuration not consistent with " +
+        "start/end times", (minDurationTime == (earliestEndTime - latestStartTime)),
+        "not ");
+  } // end planViz10TExt
+
+  private void assertTrueVerbose( String failureMsg, boolean condition, String replacement)
+    throws AssertionFailedError {
+    if (condition) {
+      System.err.println( "AssertTrue: " + failureMsg.replaceAll( replacement, ""));
+    } else {
+      throw new AssertionFailedError( failureMsg);
+    }
+  } // end assertTrueVerbose
+
+  private void assertFalseVerbose( String failureMsg, boolean condition, String replacement)
+    throws AssertionFailedError {
+    if (! condition) {
+      System.err.println( "AssertFalse: " + failureMsg);
+    } else {
+      throw new AssertionFailedError( failureMsg.replaceAll( replacement, ""));
+    }
+  } // end assertFalseVerbose
+
+  private void assertNotNullVerbose( String failureMsg, Object object, String replacement)
+                                     throws AssertionFailedError{
+    if (object != null) {
+      System.err.println( "AssertNotNull: " + failureMsg.replaceAll( replacement, ""));
+    } else {
+      throw new AssertionFailedError( failureMsg);
+    }
+  } // end assertTrueVerbose
 
 
   public class ViewListenerWait01 extends ViewListener {
@@ -1307,7 +1579,7 @@ public class PlanWorksGUITest extends JFCTestCase {
     public ViewListenerWait01( PlanWorksGUITest guiTest) {
       super();
       this.guiTest = guiTest;
-      guiTest.setViewListenerWait01( false);
+      guiTest.setViewListenerWait01( false); 
     }
     public void reset() {
       guiTest.setViewListenerWait01( false);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionHeaderView.java,v 1.2 2004-05-04 01:27:16 taylor Exp $
+// $Id: DBTransactionHeaderView.java,v 1.3 2004-05-08 01:44:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -62,7 +62,7 @@ public class DBTransactionHeaderView extends JGoView {
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
   private DBTransactionHeaderNode keyNode;
-  private DBTransactionHeaderNode typeNode;
+  private DBTransactionHeaderNode nameNode;
   private DBTransactionHeaderNode sourceNode;
   private DBTransactionHeaderNode objectKeyNode;
   private DBTransactionHeaderNode stepNumNode;
@@ -87,12 +87,12 @@ public class DBTransactionHeaderView extends JGoView {
 
     jGoDocument = this.getDocument();
 
-    renderTransactionHeader( query);
+    renderTransactionHeader( query, ViewGenerics.computeTransactionNameHeader());
 
   } // end constructor
 
 
-  private void renderTransactionHeader( String query) {
+  private void renderTransactionHeader( String query, String transactionNameHeader) {
     Color bgColor = ViewConstants.VIEW_BACKGROUND_COLOR;
     int x = 0, y = 3;
     boolean isDBTransactionQueryView = (vizView instanceof DBTransactionQueryView);
@@ -111,10 +111,10 @@ public class DBTransactionHeaderView extends JGoView {
     jGoDocument.addObjectAtTail( keyNode);
     x += keyNode.getSize().getWidth();
 
-    typeNode = new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_TYPE_HEADER, vizView);
-    configureTextNode( typeNode, new Point( x, y), bgColor);
-    jGoDocument.addObjectAtTail( typeNode);
-    x += typeNode.getSize().getWidth();
+    nameNode = new DBTransactionHeaderNode( transactionNameHeader, vizView);
+    configureTextNode( nameNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( nameNode);
+    x += nameNode.getSize().getWidth();
 
     sourceNode =
       new DBTransactionHeaderNode( ViewConstants.DB_TRANSACTION_SOURCE_HEADER, vizView);
@@ -184,12 +184,12 @@ public class DBTransactionHeaderView extends JGoView {
   }
 
   /**
-   * Gets the value of typeNode
+   * Gets the value of nameNode
    *
-   * @return the value of typeNode
+   * @return the value of nameNode
    */
-  protected DBTransactionHeaderNode getTypeNode()  {
-    return this.typeNode;
+  protected DBTransactionHeaderNode getNameNode()  {
+    return this.nameNode;
   }
 
   /**
