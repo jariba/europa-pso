@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionField.java,v 1.3 2003-11-13 23:21:17 taylor Exp $
+// $Id: TransactionField.java,v 1.4 2003-11-18 23:54:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -28,6 +28,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
@@ -141,7 +142,7 @@ public class TransactionField extends TextNode {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       if (fieldIsStepNumber && (viewableObject instanceof PwPlanningSequence)) {
-        NodeGenerics.partialPlanViewsPopupMenu( Integer.parseInt( fieldName),
+        ViewGenerics.partialPlanViewsPopupMenu( Integer.parseInt( fieldName),
                                                 (PwPlanningSequence) viewableObject,
                                                 vizView, viewCoords);
         return true;

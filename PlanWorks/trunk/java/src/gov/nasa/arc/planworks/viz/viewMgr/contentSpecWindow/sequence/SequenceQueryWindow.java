@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.10 2003-11-13 23:21:18 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.11 2003-11-18 23:54:16 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -303,6 +303,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
                 getStepsWithUnitVariableBindingDecisions();
             }
             if (stepList != null) {
+              System.err.println( "   Query elapsed time: " +
+                                  (System.currentTimeMillis() - startTimeMSecs) + " msecs.");
               ensureSequenceStepsViewExists();
               renderStepQueryFrame( stepsQuery, stepList, startTimeMSecs);
             }
@@ -322,6 +324,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
               transactionList =  getTransactionsInRange();
             }
             if (transactionList != null) {
+              System.err.println( "   Query elapsed time: " +
+                                  (System.currentTimeMillis() - startTimeMSecs) + " msecs.");
               ensureSequenceStepsViewExists();
               renderTransactionQueryFrame( transactionsQuery, transactionList, startTimeMSecs);
             }
@@ -348,8 +352,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       // since SequenceStepsView is closable by user, we must recreate it prior to
       // creating a QueryResults window
       boolean sequenceStepsViewExists = false;
-      List windowKeyList =
-        new ArrayList( ((SequenceViewSet) viewSet).getViews().keySet());
+      List windowKeyList = new ArrayList( viewSet.getViews().keySet());
       Iterator windowListItr = windowKeyList.iterator();
       while (windowListItr.hasNext()) {
         Object windowKey = (Object) windowListItr.next();
@@ -376,8 +379,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
                                   " for " + viewable.getName(),
                                   viewSet, true, true, true, true);
-      ((SequenceViewSet) viewSet).getViews().
-        put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt), stepQueryFrame);
+      viewSet.getViews().put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt),
+                              stepQueryFrame);
       Container contentPane = stepQueryFrame.getContentPane();
       StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_STEPS);
       int ellipsesIndx = stepsQuery.indexOf( " ...");
@@ -407,8 +410,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
                                   " for " + viewable.getName(),
                                   viewSet, true, true, true, true);
-      ((SequenceViewSet) viewSet).getViews().
-        put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt), transactionQueryFrame);
+      viewSet.getViews().put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt),
+                              transactionQueryFrame);
       Container contentPane = transactionQueryFrame.getContentPane();
       StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_TRANSACTIONS);
       String transactionsQueryShort = transactionsQuery;
@@ -809,7 +812,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     discardWindowsItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           List windowKeyList =
-            new ArrayList( ((SequenceViewSet) viewSet).getViews().keySet());
+            new ArrayList( viewSet.getViews().keySet());
           Iterator windowListItr = windowKeyList.iterator();
           while (windowListItr.hasNext()) {
             Object windowKey = (Object) windowListItr.next();
@@ -817,8 +820,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
               String resultsWindowKey = (String) windowKey;
               if (resultsWindowKey.indexOf( QUERY_RESULT_FRAME) >= 0) {
                 MDIInternalFrame window = 
-                  (MDIInternalFrame) ((SequenceViewSet) viewSet).getViews().
-                  get( resultsWindowKey);
+                  (MDIInternalFrame) viewSet.getViews().get( resultsWindowKey);
                 try {
                   window.setClosed( true);
                 } catch ( PropertyVetoException pve){

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.45 2003-11-11 02:44:53 taylor Exp $
+// $Id: ViewSet.java,v 1.46 2003-11-18 23:54:16 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -29,7 +29,10 @@ import gov.nasa.arc.planworks.mdi.MDIWindowBar;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
+import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
@@ -229,17 +232,24 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       for(int i = 0; i < contentPane.getComponentCount(); i++) {
         if(contentPane.getComponent(i) instanceof VizView) {
           views.remove(contentPane.getComponent(i).getClass());
+          String overviewTitle =
+            ((VizView) contentPane.getComponent(i)).getOverview().getTitle();
+          // System.err.println( "VizView overviewTitle " + overviewTitle);
+          MDIInternalFrame overviewFrame = (MDIInternalFrame) views.get( overviewTitle);
+          if (overviewFrame != null) {
+            try {
+              overviewFrame.setClosed( true);
+            } catch(PropertyVetoException pve){
+            }
+            views.remove( overviewTitle);
+          }
+            
+        } else if (contentPane.getComponent(i) instanceof VizViewOverview) {
+          ((VizViewOverview) contentPane.getComponent(i)).removeNotifyFromViewSet();
+          views.remove( ((VizViewOverview) contentPane.getComponent(i)).getTitle());
         }
-//         if(contentPane.getComponent(i) instanceof TimelineView) {
-//           views.remove(ViewManager.TIMELINE_VIEW);
-//         } else if(contentPane.getComponent(i) instanceof TokenNetworkView) {
-//           views.remove(ViewManager.TNET_VIEW);
-//         } else if(contentPane.getComponent(i) instanceof TemporalExtentView) {
-//           views.remove(ViewManager.TEMPEXT_VIEW);
-//         } else if(contentPane.getComponent(i) instanceof ConstraintNetworkView) {
-//           views.remove(ViewManager.CNET_VIEW);
-//         }
       }
+      // System.err.println( "removeViewFrame " + viewFrame.getTitle());
     }
     if(views.isEmpty()) {
       if (contentSpecWindow != null) {
@@ -352,9 +362,32 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   public void add(JButton button) {
   }
 
+  /**
+   * <code>getContentSpecWindow</code>
+   *
+   * @return - <code>MDIInternalFrame</code> - 
+   */
   public MDIInternalFrame getContentSpecWindow() {
     return contentSpecWindow;
   }
+
+  /**
+   * <code>getDesktopFrame</code>
+   *
+   * @return - <code>MDIDesktopFrame</code> - 
+   */
+  public MDIDesktopFrame getDesktopFrame() {
+    return desktopFrame;
+  }
+
+  /**
+   * <code>getViews</code> - 
+   * @return - <code>HashMap</code> - 
+   */
+  public HashMap getViews() {
+    return views;
+  }
+
 
 }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.9 2003-11-03 19:02:41 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.10 2003-11-18 23:54:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -70,18 +70,6 @@ public class SequenceViewSet extends ViewSet {
     this.contentSpecWindow.setVisible(true);
   }
 
-
-  /**
-   * <code>getViews</code> - make views accessible to SequenceQueryWindow, so that
-   *                         MDIInternalFrames which it creates for QueryResults,
-   *                         can be added to the view set -- and hence be deleted
-   *                         when the view set is deleted.
-   *
-   * @return - <code>HashMap</code> - 
-   */
-  public HashMap getViews() {
-    return views;
-  }
 
 } // end class SequenceViewSet
 

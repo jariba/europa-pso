@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.14 2003-11-13 23:21:17 taylor Exp $
+// $Id: TimelineView.java,v 1.15 2003-11-18 23:54:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -45,7 +46,10 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
@@ -64,6 +68,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class TimelineView extends PartialPlanView {
 
+  private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
   private TimelineJGoView jGoView;
@@ -73,7 +78,6 @@ public class TimelineView extends PartialPlanView {
   private List freeTokenNodeList; // element TokenNode
   private List tmpTimelineNodeList; // element TimelineNode
   private int slotLabelMinLength;
-
 
   /**
    * <code>TimelineView</code> - constructor - 
@@ -85,6 +89,7 @@ public class TimelineView extends PartialPlanView {
    */
   public TimelineView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
 
@@ -133,6 +138,8 @@ public class TimelineView extends PartialPlanView {
 
     // create all nodes
     renderTimelineAndSlotNodes();
+
+    // jGoView.setScale( 0.5);
 
     expandViewFrame( this.getClass().getName(),
                      (int) jGoView.getDocumentSize().getWidth(),
@@ -624,7 +631,11 @@ public class TimelineView extends PartialPlanView {
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
                          PlanWorks.TIMELINE_VIEW);
-    
+
+    JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
+    createOverviewWindowItem( overviewWindowItem, this, viewCoords);
+    mouseRightPopup.add( overviewWindowItem);
+
     JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
@@ -763,6 +774,20 @@ public class TimelineView extends PartialPlanView {
   } // end findAndSelectSlot
 
 
+  private void createOverviewWindowItem( JMenuItem overviewWindowItem,
+                                         final TimelineView timelineView,
+                                         final Point viewCoords) {
+    overviewWindowItem.addActionListener( new ActionListener() { 
+        public void actionPerformed( ActionEvent evt) {
+          VizViewOverview currentOverview =
+            ViewGenerics.openOverviewFrame( PlanWorks.TIMELINE_VIEW, partialPlan,
+                                            timelineView, viewSet, jGoView, viewCoords);
+          if (currentOverview != null) {
+            overview = currentOverview;
+          }
+        }
+      });
+  } // end createOverviewWindowItem
 
 } // end class TimelineView
  
