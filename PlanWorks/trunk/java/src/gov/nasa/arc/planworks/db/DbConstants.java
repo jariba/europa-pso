@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.4 2003-08-19 00:23:51 miatauro Exp $
+// $Id: DbConstants.java,v 1.5 2003-08-26 01:37:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -16,7 +16,7 @@ package gov.nasa.arc.planworks.db;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
+import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 
 
 /**
@@ -27,34 +27,6 @@ import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
  * @version 0.0
  */
 public interface DbConstants {
-
-  /**
-   * constant <code>NULL_DOMAIN</code> - PwEnumeratedDomain
-   *
-   */
-  public static final PwDomain NULL_DOMAIN =
-    (PwDomain) new PwEnumeratedDomainImpl( "");
-
-  /**
-   * constant <code>ZERO_DOMAIN</code> - PwEnumeratedDomain
-   *
-   */
-  public static final PwDomain ZERO_DOMAIN =
-    (PwDomain) new PwEnumeratedDomainImpl( "0");
-
-  /**
-   * constant <code>PLUS_INFINITY_DOMAIN</code> - PwEnumeratedDomain
-   *
-   */
-  public static final PwDomain PLUS_INFINITY_DOMAIN =
-    (PwDomain) new PwEnumeratedDomainImpl( "Infinity");
-
-  /**
-   * constant <code>MINUS_INFINITY_DOMAIN</code> - PwEnumeratedDomain
-   *
-   */
-  public static final PwDomain MINUS_INFINITY_DOMAIN =
-    (PwDomain) new PwEnumeratedDomainImpl( "-Infinity");
 
   /**
    * constant <code>PP_PARTIAL_PLAN_EXT</code>

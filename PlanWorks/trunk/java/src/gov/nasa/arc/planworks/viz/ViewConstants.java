@@ -12,6 +12,8 @@
 package gov.nasa.arc.planworks.viz;
 
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoText;
@@ -210,6 +212,7 @@ public interface ViewConstants {
    *
    */
   public static final int TEMPORAL_NODE_Y_END_OFFSET = 34;
+
 
   // cannot figure out how to get this from MDIInternalFrame
   /**

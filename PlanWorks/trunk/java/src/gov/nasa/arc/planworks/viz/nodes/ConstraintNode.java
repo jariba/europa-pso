@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.6 2003-08-20 18:52:36 taylor Exp $
+// $Id: ConstraintNode.java,v 1.7 2003-08-26 01:37:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -63,6 +63,7 @@ public class ConstraintNode extends BasicNode {
   private PwConstraint constraint;
   private VariableNode variableNode;
   private int objectCnt;
+  private boolean isFreeToken;
   private VizView vizView;
   private String nodeLabel;
   private List variableNodeList; // element VariableNode
@@ -82,16 +83,18 @@ public class ConstraintNode extends BasicNode {
    * @param variableNode - <code>VariableNode</code> - 
    * @param constraintLocation - <code>Point</code> - 
    * @param objectCnt - <code>int</code> - 
+   * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param vizView - <code>VizView</code> - 
    */
   public ConstraintNode( PwConstraint constraint, VariableNode variableNode,
-                         Point constraintLocation, int objectCnt, boolean isDraggable,
-                         VizView vizView) { 
+                         Point constraintLocation, int objectCnt, boolean isFreeToken,
+                         boolean isDraggable, VizView vizView) { 
     super();
     this.constraint = constraint;
     this.variableNode = variableNode;
     this.objectCnt = objectCnt;
+    this.isFreeToken = isFreeToken;
     this.vizView = vizView;
     variableNodeList = new ArrayList();
     variableNodeList.add( variableNode);
@@ -123,9 +126,13 @@ public class ConstraintNode extends BasicNode {
     initialize( constraintLocation, nodeLabel);
     // 
     String backGroundColor = null;
-    backGroundColor = ((objectCnt % 2) == 0) ?
-      ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
-      ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
+    if (isFreeToken) {
+      backGroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
+    } else {
+      backGroundColor = ((objectCnt % 2) == 0) ?
+        ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
+        ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
+    }
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
     setDraggable( isDraggable);
@@ -469,17 +476,25 @@ public class ConstraintNode extends BasicNode {
   private void addConstraintNodeVariables( ConstraintNode constraintNode) {
     ConstraintNetworkView constraintNetworkView =
       (ConstraintNetworkView) constraintNode.getVizView();
-    constraintNetworkView.addVariableNodes( constraintNode);
-    constraintNetworkView.addConstraintToVariableLinks( constraintNode);
-    constraintNetworkView.redraw();
+    boolean areNodesChanged = constraintNetworkView.addVariableNodes( constraintNode);
+    boolean areLinksChanged =
+      constraintNetworkView.addConstraintToVariableLinks( constraintNode);
+    if (areNodesChanged || areLinksChanged) {
+      constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.redraw();
+    }
   } // end addConstraintNodeVariables
 
   private void removeConstraintNodeVariables( ConstraintNode constraintNode) {
     ConstraintNetworkView constraintNetworkView =
       (ConstraintNetworkView) constraintNode.getVizView();
-    constraintNetworkView.removeConstraintToVariableLinks( constraintNode);
-    constraintNetworkView.removeVariableNodes( constraintNode);
-    constraintNetworkView.redraw();
+    boolean areLinksChanged =
+      constraintNetworkView.removeConstraintToVariableLinks( constraintNode);
+    boolean areNodesChanged = constraintNetworkView.removeVariableNodes( constraintNode);
+    if (areNodesChanged || areLinksChanged) {
+      constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.redraw();
+    }
   } // end addConstraintnodeVariablesConstraints
 
 

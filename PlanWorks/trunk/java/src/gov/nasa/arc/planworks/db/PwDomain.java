@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomain.java,v 1.3 2003-08-19 00:23:53 miatauro Exp $
+// $Id: PwDomain.java,v 1.4 2003-08-26 01:37:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,7 +13,7 @@
 
 package gov.nasa.arc.planworks.db;
 
-import java.util.List;
+import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 
 
 /**
@@ -25,8 +25,43 @@ import java.util.List;
  */
 public interface PwDomain {
 
+  /**
+   * constant <code>PLUS_INFINITY</code> - String
+   *
+   */
   public static final String PLUS_INFINITY = "Infinity";
+
+  /**
+   * constant <code>MINUS_INFINITY</code> - String
+   *
+   */
   public static final String MINUS_INFINITY = "-Infinity";
+
+  /**
+   * constant <code>PLUS_INFINITY_INT</code>
+   *
+   */
+  public static final int PLUS_INFINITY_INT = Integer.MAX_VALUE;
+
+  /**
+   * constant <code>MINUS_INFINITY_INT</code>
+   *
+   */
+  public static final int MINUS_INFINITY_INT = Integer.MIN_VALUE;
+
+  /**
+   * constant <code>ZERO_DOMAIN</code> - PwIntervalDomain
+   *
+   */
+  public static final PwDomain ZERO_INTERVAL_DOMAIN =
+    (PwDomain) new PwIntervalDomainImpl( "INTEGER_SORT", "0", "0");
+
+  /**
+   * constant <code>INFINITY_INTERVAL_DOMAIN</code> - PwIntervalDomain
+   *
+   */
+  public static final PwDomain INFINITY_INTERVAL_DOMAIN =
+    (PwDomain) new PwIntervalDomainImpl( "INTEGER_SORT", "-Infinity", "Infinity");
 
   /**
    * <code>getLowerBound</code>
@@ -41,6 +76,20 @@ public interface PwDomain {
    * @return - <code>String</code> - 
    */
   public abstract String getUpperBound();
+		
+  /**
+   * <code>getLowerBoundInt</code> - 
+   *
+   * @return - <code>int</code> - 
+   */
+  public abstract int getLowerBoundInt();
+
+  /**
+   * <code>getUpperBoundInt</code> - 
+   *
+   * @return - <code>int</code> - 
+   */
+  public abstract int getUpperBoundInt();
 		
   /**
    * <code>toString</code>

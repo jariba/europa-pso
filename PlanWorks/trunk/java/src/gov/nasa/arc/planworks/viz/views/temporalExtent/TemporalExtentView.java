@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.5 2003-08-20 18:52:37 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.6 2003-08-26 01:37:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -75,7 +75,6 @@ public class TemporalExtentView extends VizView {
   // temporalNodeList & tmpTemporalNodeList used by JFCUnit test case
   private List temporalNodeList; // element TemporalNode
   private List tmpTemporalNodeList; // element TemporalNode
-  private List freeTokenList; // element PwToken
   private Font font;
   private FontMetrics fontMetrics;
   private int slotLabelMinLength;
@@ -83,8 +82,11 @@ public class TemporalExtentView extends VizView {
   private int timeScaleEnd;
   private int maxSlots;
   private int startXLoc;
+  private int xOrigin;
   private int endXLoc;
-  private int startYLoc; 
+  private int startYLoc;
+  private int timeDelta;
+  private int tickTime;
   private int maxCellRow;
   private float timeScale;
   private int maxViewWidth;
@@ -111,6 +113,7 @@ public class TemporalExtentView extends VizView {
 
     startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
+    xOrigin = startXLoc;
     maxCellRow = 0;
     maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
     maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
@@ -165,11 +168,10 @@ public class TemporalExtentView extends VizView {
 
     jGoDocument = jGoView.getDocument();
 
-    computeTimeScaleMetrics();
+    collectAndComputeTimeScaleMetrics();
     createTemporalNodes();
     layoutTemporalNodes();
     createTimeScale();
-    freeTokenList = partialPlan.getFreeTokenList();
     // setVisible( true | false) depending on ContentSpec
     setNodesVisible();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
@@ -192,10 +194,25 @@ public class TemporalExtentView extends VizView {
    *
    */
   public void redraw() {
+    new RedrawViewThread().start();
+  }
+
+  class RedrawViewThread extends Thread {
+
+    public RedrawViewThread() {
+    }  // end constructor
+
+    public void run() {
+      redrawView();
+    } //end run
+
+  } // end class RedrawViewThread
+
+  private void redrawView() {
     // setVisible(true | false) depending on ids
     setNodesVisible();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
-  } // end redraw
+  } // end redrawView
 
   /**
    * <code>getJGoDocument</code>
@@ -237,7 +254,44 @@ public class TemporalExtentView extends VizView {
     return temporalNodeList;
   }
 
-  private void computeTimeScaleMetrics() {
+  /**
+   * <code>getTimeScaleStart</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getTimeScaleStart() {
+    return timeScaleStart;
+  }
+
+  /**
+   * <code>getTimeScaleEnd</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getTimeScaleEnd() {
+    return timeScaleEnd;
+  }
+
+  /**
+   * <code>scaleTime</code>
+   *
+   * @param time - <code>int</code> - 
+   * @return - <code>int</code> - 
+   */
+  public int scaleTime( int time) {
+    return xOrigin + (int) (timeScale * time);
+  }
+
+  /**
+   * <code>getStartYLoc</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getStartYLoc() {
+    return startYLoc;
+  }
+
+  private void collectAndComputeTimeScaleMetrics() {
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
     boolean alwaysReturnEnd = false;
@@ -267,19 +321,21 @@ public class TemporalExtentView extends VizView {
             PwDomain startTimeIntervalDomain = intervalArray[0];
             PwDomain endTimeIntervalDomain = intervalArray[1];
             if ((startTimeIntervalDomain != null) && (! isLastSlot)) {
-              // System.err.println( "Temporal Extent View start interval earliest " +
-              //                     startTimeIntervalDomain.getLowerBound());
-              int earliestTime = Integer.parseInt( startTimeIntervalDomain.getLowerBound());
-              if (earliestTime < timeScaleStart) {
+              // System.err.println( "Temporal Extent View Scale start interval earliest " +
+              //                      startTimeIntervalDomain.getLowerBound());
+              int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+              if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
+                  (earliestTime < timeScaleStart)) {
                 timeScaleStart = earliestTime;
               }
               isFirstSlot = false;
             }
             if (endTimeIntervalDomain != null) {
-              // System.err.println( "Temporal Extent View end interval latest " +
+              // System.err.println( "Temporal Extent View Scale end interval latest " +
               //                     endTimeIntervalDomain.getUpperBound());
-              int latestTime = Integer.parseInt( endTimeIntervalDomain.getUpperBound());
-              if (latestTime > timeScaleEnd) {
+              int latestTime = endTimeIntervalDomain.getUpperBoundInt();
+              if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
+                  (latestTime > timeScaleEnd)) {
                 timeScaleEnd = latestTime;
               }
             }
@@ -291,34 +347,79 @@ public class TemporalExtentView extends VizView {
         }
       }
     }
+    collectFreeTokenMetrics();
+    computeTimeScaleMetrics();
+  } // collectAndComputeTimeScaleMetrics
+
+  private void computeTimeScaleMetrics() {
     endXLoc = startXLoc + (maxSlots * slotLabelMinLength * fontMetrics.charWidth( 'A'));
     timeScale = ((float) (endXLoc - startXLoc)) / ((float) (timeScaleEnd - timeScaleStart));
+    System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
+                        " endXLoc " + endXLoc);
+    int timeScaleRange = timeScaleEnd - timeScaleStart; 
+    timeDelta = 5;
+    while ((timeDelta * maxSlots) < timeScaleRange) {
+      timeDelta *= 2;
+//       System.err.println( "range " + timeScaleRange + " maxSlots " +
+//                           maxSlots + " timeDelta " + timeDelta);
+    }
+    tickTime = 0;
+    while (timeScaleStart < tickTime) {
+      tickTime -= timeDelta;
+      xOrigin += (int) scaleTime( timeDelta); 
+    }
     System.err.println( "Temporal Extent View time scale: " + timeScaleStart + " " +
                         timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
   } // end computeTimeScaleMetrics
 
+  private void collectFreeTokenMetrics() {
+    List freeTokenList = partialPlan.getFreeTokenList();
+    Iterator freeTokenItr = freeTokenList.iterator();
+    while (freeTokenItr.hasNext()) {
+      PwToken token = (PwToken) freeTokenItr.next();
+      PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
+      PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
+
+      if (startTimeIntervalDomain != null) {
+        // System.err.println( "Temporal Extent View Scale start interval earliest " +
+        //                      startTimeIntervalDomain.getLowerBound());
+        int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+        if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
+            (earliestTime < timeScaleStart)) {
+          timeScaleStart = earliestTime;
+        }
+      }
+      if (endTimeIntervalDomain != null) {
+        // System.err.println( "Temporal Extent View Scale end interval latest " +
+        //                     endTimeIntervalDomain.getUpperBound());
+        int latestTime = endTimeIntervalDomain.getUpperBoundInt();
+        if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
+            (latestTime > timeScaleEnd)) {
+          timeScaleEnd = latestTime;
+        }
+      }
+    }
+  } // end collectFreeTokenMetrics
 
   private void createTimeScale() {
     int xLoc = startXLoc;
     int yLoc = startYLoc + ((maxCellRow + 1) * ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2;
-    int tickXDelta = (endXLoc - startXLoc) / maxSlots;
-    int tickTime = timeScaleStart;
-    int timeDelta = (timeScaleEnd - timeScaleStart) / maxSlots;
     int scaleWidth = 2, tickHeight = ViewConstants.TIMELINE_VIEW_Y_INIT / 2;
-    JGoStroke timeScale = new JGoStroke();
-    timeScale.setPen( new JGoPen( JGoPen.SOLID, scaleWidth, ColorMap.getColor( "black")));
-    timeScale.setDraggable( false);
-    for (int i = 0; i < maxSlots; i++) {
-      timeScale.addPoint( xLoc, yLoc);
-      timeScale.addPoint( xLoc, yLoc + tickHeight);
-      timeScale.addPoint( xLoc, yLoc);
+    JGoStroke timeScaleRuler = new JGoStroke();
+    timeScaleRuler.setPen( new JGoPen( JGoPen.SOLID, scaleWidth, ColorMap.getColor( "black")));
+    timeScaleRuler.setDraggable( false);
+    timeScaleRuler.setResizable(false);
+    while (tickTime < timeScaleEnd) {
+      timeScaleRuler.addPoint( xLoc, yLoc);
+      timeScaleRuler.addPoint( xLoc, yLoc + tickHeight);
+      timeScaleRuler.addPoint( xLoc, yLoc);
       addTickLabel( tickTime, xLoc, yLoc + 4);
       tickTime += timeDelta;
-      xLoc += tickXDelta;
+      xLoc = (int) scaleTime( tickTime);
     }
-    timeScale.addPoint( endXLoc, yLoc);
-    timeScale.addPoint( endXLoc, yLoc + tickHeight);
-    addTickLabel( tickTime, endXLoc, yLoc + 4);
+    timeScaleRuler.addPoint( xLoc, yLoc);
+    timeScaleRuler.addPoint( xLoc, yLoc + tickHeight);
+    addTickLabel( tickTime, xLoc, yLoc + 4);
     int maxHeight = yLoc + ViewConstants.TIMELINE_VIEW_Y_INIT;
     if (maxHeight > maxViewHeight) {
       maxViewHeight = maxHeight;
@@ -327,9 +428,8 @@ public class TemporalExtentView extends VizView {
     if (maxWidth > maxViewWidth) {
       maxViewWidth = maxWidth;
     }
-    jGoDocument.addObjectAtTail( timeScale);
+    jGoDocument.addObjectAtTail( timeScaleRuler);
   } // end createTimeScale
-
 
   private void addTickLabel( int tickTime, int x, int y) {
     String text = String.valueOf( tickTime);
@@ -353,8 +453,8 @@ public class TemporalExtentView extends VizView {
   private void createTemporalNodes() {
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
-    int objectCnt = 0, timeScaleStart = 0, timeScaleEnd = 0;
-    boolean alwaysReturnEnd = true;
+    int objectCnt = 0;
+    boolean alwaysReturnEnd = true, isFreeToken = false;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
       String objectName = object.getName();
@@ -372,14 +472,16 @@ public class TemporalExtentView extends VizView {
           if (slot.getTokenList().size() > 0) {
             token = (PwToken) slot.getTokenList().get( 0);
           }
+          // this handles empty slots
           PwDomain[] intervalArray =
             SlotNode.getStartEndIntervals( slot, previousToken, isLastSlot,
                                            alwaysReturnEnd);
           PwDomain startTimeIntervalDomain = intervalArray[0];
           PwDomain endTimeIntervalDomain = intervalArray[1];
-          TemporalNode temporalNode =
+          PwDomain durationDomain = SlotNode.getDurationInterval( slot);
+          TemporalNode temporalNode = 
             new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
-                              startXLoc, startYLoc, timeScale, objectCnt, this); 
+                              durationDomain, objectCnt, isFreeToken, this); 
           tmpTemporalNodeList.add( temporalNode);
           jGoDocument.addObjectAtTail( temporalNode);
           previousToken = token;
@@ -387,8 +489,32 @@ public class TemporalExtentView extends VizView {
       }
       objectCnt += 1;
     }
+
+    createFreeTokenTemporalNodes();
+
     temporalNodeList = tmpTemporalNodeList;
   } // end createTemporalNodes
+
+
+  private void createFreeTokenTemporalNodes() {
+    List freeTokenList = partialPlan.getFreeTokenList();
+    // System.err.println( "temporal extent view freeTokenList " + freeTokenList);
+    Iterator freeTokenItr = freeTokenList.iterator();
+    boolean isFreeToken = true; int objectCnt = -1;
+    PwSlot slot = null;
+    while (freeTokenItr.hasNext()) {
+      PwToken token = (PwToken) freeTokenItr.next();
+      PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
+      PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
+      PwDomain durationDomain = token.getDurationVariable().getDomain();
+      TemporalNode temporalNode = 
+        new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
+                          durationDomain, objectCnt, isFreeToken, this); 
+      tmpTemporalNodeList.add(temporalNode );
+      // nodes are always in front of any links
+      jGoDocument.addObjectAtTail( temporalNode);
+    }
+  } // end createFreeTokenTemporalNodes
 
 
   private void layoutTemporalNodes() {
@@ -399,7 +525,8 @@ public class TemporalExtentView extends VizView {
       extents.add( temporalNode);
     }
     // do the layout -- compute cellRow for each node
-    List results = Algorithms.allocateRows( startXLoc, endXLoc, extents);
+    List results = Algorithms.allocateRows( scaleTime( timeScaleStart),
+                                            scaleTime( timeScaleEnd), extents);
     if (temporalNodeList.size() != results.size()) {
       String message = String.valueOf( temporalNodeList.size() - results.size()) +
         " nodes not successfully allocated";
@@ -462,17 +589,15 @@ public class TemporalExtentView extends VizView {
       }
       // overloaded tokens on slot - not displayed, put in list
       PwSlot slot = (PwSlot) temporalNode.getSlot();
-      List tokenList = slot.getTokenList();
-      if (tokenList.size() > 1) {
-        for (int i = 1, n = tokenList.size(); i < n; i++) {
-          isTokenInContentSpec( (PwToken) tokenList.get( i));
+      // check for free tokens (no slots!)
+      if (slot != null) {
+        List tokenList = slot.getTokenList();
+        if (tokenList.size() > 1) {
+          for (int i = 1, n = tokenList.size(); i < n; i++) {
+            isTokenInContentSpec( (PwToken) tokenList.get( i));
+          }
         }
       }
-    }
-    // put free tokens in displayedTokenIds, event though they are not displayed
-    Iterator freeTokenItr = freeTokenList.iterator();
-    while (freeTokenItr.hasNext()) {
-      isTokenInContentSpec( (PwToken) freeTokenItr.next());
     }
     boolean showDialog = true;
     isContentSpecRendered( "Temporal Extent View", showDialog);

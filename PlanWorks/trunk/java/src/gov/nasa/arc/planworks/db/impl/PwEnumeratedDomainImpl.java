@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomainImpl.java,v 1.5 2003-07-24 20:57:11 taylor Exp $
+// $Id: PwEnumeratedDomainImpl.java,v 1.6 2003-08-26 01:37:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwEnumeratedDomain;
 
 
@@ -76,6 +77,38 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
       return (String) enumeration.get( enumeration.size() - 1);
     } else {
       return "";
+    }
+  }
+		
+  /**
+   * <code>getLowerBound</code> - 
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getLowerBoundInt() {
+    String lowerBound = getLowerBound();
+    if (lowerBound.equals( PwDomain.MINUS_INFINITY)) {
+      return PwDomain.MINUS_INFINITY_INT;
+    } else if (lowerBound.equals( "")) {
+      return -1;
+    } else {
+      return Integer.parseInt( lowerBound);
+    }
+  }
+
+  /**
+   * <code>getUpperBound</code> - 
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getUpperBoundInt() {
+    String upperBound = getUpperBound();
+    if (upperBound.equals( PwDomain.PLUS_INFINITY)) {
+      return PwDomain.PLUS_INFINITY_INT;
+    } else if (upperBound.equals( "")) {
+      return -1;
+    } else {
+      return Integer.parseInt( upperBound);
     }
   }
 		

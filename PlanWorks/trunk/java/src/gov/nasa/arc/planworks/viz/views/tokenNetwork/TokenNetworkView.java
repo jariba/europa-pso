@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.19 2003-08-20 23:36:47 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.20 2003-08-26 01:37:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -180,10 +180,25 @@ public class TokenNetworkView extends VizView {
    *
    */
   public void redraw() {
+    new RedrawViewThread().start();
+  }
+
+  class RedrawViewThread extends Thread {
+
+    public RedrawViewThread() {
+    }  // end constructor
+
+    public void run() {
+      redrawView();
+    } //end run
+
+  } // end class RedrawViewThread
+
+  private void redrawView() {
     // setVisible(true | false) depending on ids
     setNodesVisible();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
-  } // end redraw
+  } // end redrawView
 
 
   private void computeExpandedViewFrame() {
@@ -336,22 +351,22 @@ public class TokenNetworkView extends VizView {
           while (tokenIterator.hasNext()) {
             PwToken token = (PwToken) tokenIterator.next();
             if (token != null) {
-              if(token.getTokenRelationsList().size() == 0) {
+              if (token.getTokenRelationIdsList().size() == 0) {
                 continue;
               }
              Integer tokenId = token.getId();
              TokenRelations tokenRelations =
                 (TokenRelations) relationships.get( tokenId);
-             Iterator tokenRelationIterator = token.getTokenRelationsList().iterator();
-              while (tokenRelationIterator.hasNext()) {
+             Iterator tokenRelationIdIterator = token.getTokenRelationIdsList().iterator();
+              while (tokenRelationIdIterator.hasNext()) {
                 PwTokenRelation tokenRelation =
-                  (PwTokenRelation) tokenRelationIterator.next();
-                if(tokenRelation == null) {
+                  partialPlan.getTokenRelation( (Integer) tokenRelationIdIterator.next());
+                if (tokenRelation == null) {
                   continue;
                 }
-                Integer id = tokenRelation.getId();
                 // buildTokenParentChildRelationships printout is complete with
                 // this commented out -- same links are drawn
+//                 Integer id = tokenRelation.getId();
 //                 if (tokenRelationIds.indexOf( id) == -1) {
 //                   tokenRelationIds.add( id);
                   Integer masterTokenId = tokenRelation.getTokenAId();

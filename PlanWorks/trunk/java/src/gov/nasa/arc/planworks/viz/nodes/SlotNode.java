@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.18 2003-08-07 21:24:46 taylor Exp $
+// $Id: SlotNode.java,v 1.19 2003-08-26 01:37:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -30,7 +30,6 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwIntervalDomain;
 import gov.nasa.arc.planworks.db.PwPredicate;
@@ -221,10 +220,10 @@ public class SlotNode extends TextNode {
         // first slot is empty
         if (isLastSlot == true) {
           // this is also the last slot
-          intervalDomain = DbConstants.ZERO_DOMAIN;
-          lastIntervalDomain = DbConstants.PLUS_INFINITY_DOMAIN;
+          intervalDomain = PwDomain.ZERO_INTERVAL_DOMAIN;
+          lastIntervalDomain = PwDomain.INFINITY_INTERVAL_DOMAIN;
         } else {
-           intervalDomain = DbConstants.ZERO_DOMAIN;
+           intervalDomain = PwDomain.ZERO_INTERVAL_DOMAIN;
         }
       } else {
         // empty slot between filled slots
@@ -260,6 +259,32 @@ public class SlotNode extends TextNode {
     return intervalArray;
   } // end getStartEndIntervals
 
+  /**
+   * <code>getDurationInterval</code>
+   *
+   * @param slot - <code>PwSlot</code> - 
+   * @return - <code>PwDomain</code> - 
+   */
+  public static PwDomain getDurationInterval( PwSlot slot) {
+    PwDomain durationDomain = null;
+    PwVariable durationVariable = null;
+    PwToken baseToken = null;
+    if (slot.getTokenList().size() > 0) {
+      baseToken = (PwToken) slot.getTokenList().get( 0);
+    }
+    if (baseToken == null) {
+      durationDomain = PwDomain.ZERO_INTERVAL_DOMAIN;
+    } else {
+      durationVariable = baseToken.getDurationVariable();
+      if (durationVariable != null) {
+        durationDomain = durationVariable.getDomain();
+      } else {
+        durationDomain = PwDomain.ZERO_INTERVAL_DOMAIN;
+      }
+    }
+    return durationDomain;
+  } // end getDurationInterval
+
 
   private void renderTimeIntervals() {
     boolean alwaysReturnEnd = false;
@@ -286,11 +311,19 @@ public class SlotNode extends TextNode {
   private JGoText renderIntervalText( String text, Point textLoc) {
     // make sure that time interval strings do not overlap
     int textLength = text.length() + ViewConstants.TIME_INTERVAL_STRINGS_OVERLAP_OFFSET;
-    if (textLength > view.getSlotLabelMinLength()) {
-      view.setSlotLabelMinLength( textLength);
-    }
+    int minLength = view.getSlotLabelMinLength();
+    if (textLength > minLength) {
+      view.setSlotLabelMinLength( minLength + textLength);
+      // stretch this slot's label
+      String label = this.getText();
+      PwToken token = null;
+      if (slot.getTokenList().size() > 0) {
+        token = (PwToken) slot.getTokenList().get( 0);
+      }
+      this.setText( view.getSlotNodeLabel( token));
+     }
     // System.err.println( "renderIntervalText: text '" + text + "' minLen " +
-    //                    view.getSlotLabelMinLength());
+    //                     view.getSlotLabelMinLength());
 
     // Object->JGoObject->JGoText
     JGoText textObject = new JGoText( textLoc, ViewConstants.TIMELINE_VIEW_FONT_SIZE,

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.5 2003-08-20 18:52:37 taylor Exp $
+// $Id: VariableNode.java,v 1.6 2003-08-26 01:37:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -57,6 +57,7 @@ public class VariableNode extends BasicNode {
   private PwVariable variable;
   private TokenNode tokenNode;
   private int objectCnt;
+  private boolean isFreeToken;
   private VizView vizView;
   private String nodeLabel;
   private List tokenNodeList; // element TokenNode
@@ -77,14 +78,17 @@ public class VariableNode extends BasicNode {
    * @param tokenNode - <code>TokenNode</code> - 
    * @param variableLocation - <code>Point</code> - 
    * @param objectCnt - <code>int</code> - 
+   * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param vizView - <code>VizView</code> - 
    */
   public VariableNode( PwVariable variable, TokenNode tokenNode, Point variableLocation, 
-                       int objectCnt, boolean isDraggable, VizView vizView) { 
+                       int objectCnt, boolean isFreeToken, boolean isDraggable,
+                       VizView vizView) { 
     super();
     this.variable = variable;
     this.objectCnt = objectCnt;
+    this.isFreeToken = isFreeToken;
     this.vizView = vizView;
     tokenNodeList = new ArrayList();
     tokenNodeList.add( tokenNode);
@@ -112,49 +116,18 @@ public class VariableNode extends BasicNode {
     configure( variableLocation, isDraggable);
   } // end constructor
 
-  /**
-   * <code>VariableNode</code> - constructor 
-   *
-   * @param variable - <code>PwVariable</code> - 
-   * @param constraintNode - <code>ConstraintNode</code> - 
-   * @param variableLocation - <code>Point</code> - 
-   * @param objectCnt - <code>int</code> - 
-   * @param isDraggable - <code>boolean</code> - 
-   * @param vizView - <code>VizView</code> - 
-   */
-  public VariableNode( PwVariable variable, ConstraintNode constraintNode,
-                       Point variableLocation, int objectCnt, boolean isDraggable,
-                       VizView vizView) { 
-    super();
-    this.variable = variable;
-    this.objectCnt = objectCnt;
-    this.vizView = vizView;
-    tokenNodeList = new ArrayList();
-    constraintNodeList = new ArrayList();
-    constraintNodeList.add( constraintNode);
-    variableTokenLinkList = new ArrayList();
-
-    // isDebug = false;
-    isDebug = true;
-
-    if (isDebug) {
-      nodeLabel = variable.getType().substring( 0, 1) + "_" + variable.getId().toString();
-    } else {
-      nodeLabel = variable.getDomain().toString();
-    }
-    // System.err.println( "VariableNode: " + nodeLabel);
-
-    configure( variableLocation, isDraggable);
-  } // end constructor
-
   private final void configure( Point variableLocation, boolean isDraggable) {
     boolean isRectangular = false;
     setLabelSpot( JGoObject.Center);
     initialize( variableLocation, nodeLabel, isRectangular);
     String backGroundColor = null;
-    backGroundColor = ((objectCnt % 2) == 0) ?
-      ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
-      ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
+    if (isFreeToken) {
+      backGroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
+    } else {
+      backGroundColor = ((objectCnt % 2) == 0) ?
+        ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
+        ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
+    }
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
     setDraggable( isDraggable);
@@ -469,83 +442,27 @@ public class VariableNode extends BasicNode {
   private void addVariableNodeTokensAndConstraints( VariableNode variableNode) {
     ConstraintNetworkView constraintNetworkView =
       (ConstraintNetworkView) variableNode.getVizView();
-    constraintNetworkView.addConstraintNodes( variableNode);
-    constraintNetworkView.addTokenAndConstraintToVariableLinks( variableNode);
-    constraintNetworkView.redraw();
+    boolean areNodesChanged = constraintNetworkView.addConstraintNodes( variableNode);
+    boolean areLinksChanged =
+      constraintNetworkView.addTokenAndConstraintToVariableLinks( variableNode);
+    if (areNodesChanged || areLinksChanged) {
+      constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.redraw();
+    }
   } // end addVariableNodeTokensAndConstraints
 
   private void removeVariableNodeTokensAndConstraints( VariableNode variableNode) {
     ConstraintNetworkView constraintNetworkView =
       (ConstraintNetworkView) variableNode.getVizView();
-    constraintNetworkView.removeTokenToVariableLinks( variableNode);
-    constraintNetworkView.removeConstraintNodes( variableNode);
-    constraintNetworkView.redraw();
+    boolean areLinksChanged = constraintNetworkView.removeTokenToVariableLinks( variableNode);
+    boolean areNodesChanged = constraintNetworkView.removeConstraintNodes( variableNode);
+    if (areNodesChanged || areLinksChanged) {
+      constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.redraw();
+    }
   } // end removeVariableNodeTokensAndConstraints
 
 
-  /**
-   * <code>isLinkedToTokenInLayout</code>
-   *
-   * @param tokenNode - <code>TokenNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean isLinkedToTokenInLayout( TokenNode tokenNode) {
-    // System.err.println( "tokenNode " + tokenNode.getToken().getId());
-    Iterator varTokItr = variableTokenLinkList.iterator();
-    while (varTokItr.hasNext()) {
-      BasicNodeLink varTokLink = (BasicNodeLink) varTokItr.next();
-      VariableNode fromNode = (VariableNode) varTokLink.getFromNode();
-      TokenNode toNode = (TokenNode) varTokLink.getToNode();
-      // System.err.println( "  fromNode " + fromNode.getVariable().getId());
-      // System.err.println( "  toNode " + toNode.getToken().getId());
-      if (toNode.equals( tokenNode) && varTokLink.inLayout()) {
-        // System.err.println( "true");
-        return true;
-      }
-    }
-    // System.err.println( "false");
-    return false;
-  } // end isLinkedToTokenInLayout
-
-
-  /**
-   * <code>isLinkedToToken</code> - is there a link from this variableNode to a
-   *                           token, and is there a potential link from
-   *                           constraintNode to this variableNode
-   *
-   * @param constraintNode - <code>ConstraintNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean isLinkedToToken( ConstraintNode constraintNode) {
-    boolean potentialLink = false;
-    Iterator conVarLinkItr = constraintNode.getConstraintVariableLinkList().iterator();
-    while (conVarLinkItr.hasNext()) {
-      BasicNodeLink conVarLink = (BasicNodeLink) conVarLinkItr.next();
-      if (((VariableNode) conVarLink.getToNode()).equals( this) &&
-          (! conVarLink.inLayout())) {
-        potentialLink = true;
-        break;
-      }
-    }
-    if (potentialLink) {
-      Iterator varTokItr = variableTokenLinkList.iterator();
-      while (varTokItr.hasNext()) {
-        BasicNodeLink varTokLink = (BasicNodeLink) varTokItr.next();
-        VariableNode fromNode = (VariableNode) varTokLink.getFromNode();
-        // TokenNode toNode = (TokenNode) varTokLink.getToNode();
-        // System.err.println( "  fromNode " + fromNode.getVariable().getId());
-        // System.err.println( "  toNode " + toNode.getToken().getId());
-        if (varTokLink.inLayout() && fromNode.equals( this)) {
-          // System.err.println( "true");
-          return true;
-        }
-      }
-      // System.err.println( "false");
-      return false;
-    } else {
-      return false;
-    }
-  } // end isLinkedToToken
 
 
 } // end class VariableNode
