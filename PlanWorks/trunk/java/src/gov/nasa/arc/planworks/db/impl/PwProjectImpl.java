@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.21 2003-07-02 22:48:44 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.22 2003-07-02 23:04:41 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -61,14 +61,16 @@ public class PwProjectImpl extends PwProject {
   } // end initProjects
 
   public static PwProject createProject(String name) throws DuplicateNameException, SQLException {
-    ResultSet projects = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName='".concat(name).concat("'"));
-    projects.last();
-    if(projects.getRow() > 0) {
+    ResultSet dbProjects = MySQLDB.queryDatabase("SELECT ProjectId FROM Project WHERE ProjectName='".concat(name).concat("'"));
+    dbProjects.last();
+    if(dbProjects.getRow() > 0) {
       throw new DuplicateNameException("A project named '" + name +
                                        "' already exists.");
     }
+    projectNames.add(name);
     PwProjectImpl retval = null;
     retval = new PwProjectImpl(name);
+    projects.add(retval);
     MySQLDB.updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("')"));
     ResultSet newKey = MySQLDB.queryDatabase("SELECT MAX(ProjectId) AS ProjectId from Project");
     newKey.first();
@@ -238,14 +240,14 @@ public class PwProjectImpl extends PwProject {
 
     try {
       ResultSet sequenceIds = 
-        MySQLDB.queryDatabase("SELECT (SequenceId) FROM Sequence WHERE ProjectId=".concat(key.toString()));
+        MySQLDB.queryDatabase("SELECT SequenceId FROM ProjectSequenceMap WHERE ProjectId=".concat(key.toString()));
       while(sequenceIds.next()) {
         Integer sequenceId = new Integer(sequenceIds.getInt("SequenceId"));
         ResultSet partialPlanIds =
-          MySQLDB.queryDatabase("SELECT (PartialPlanId) FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
+          MySQLDB.queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
         while(partialPlanIds.next()) {
           Long partialPlanId = new Long(partialPlanIds.getLong("PartialPlanId"));
-          MySQLDB.updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()).concat();
           MySQLDB.updateDatabase("DELETE FROM Timeline WHERE PartialPlanId=".concat(partialPlanId.toString()));
           MySQLDB.updateDatabase("DELETE FROM Slot WHERE PartialPlanId=".concat(partialPlanId.toString()));
           MySQLDB.updateDatabase("DELETE FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
