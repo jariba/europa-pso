@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.32 2003-08-19 00:24:26 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.33 2003-08-20 23:34:06 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -140,6 +140,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     long stopTimeMSecs = (new Date()).getTime();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    cleanConstraints();
   } // end createPartialPlan
 
   /**
@@ -482,6 +483,39 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   }
 
   /**
+   * <code>cleanConstraints</code> - remove constraints with nonexistant variables
+   *                    done because not every variable is on a token, and is not easily
+   *                    accessable from Europa
+   */
+  private void cleanConstraints() {
+    Iterator constraintIterator = constraintMap.values().iterator();
+    while(constraintIterator.hasNext()) {
+      boolean removedConstraint = false;
+      PwConstraintImpl constraint = (PwConstraintImpl) constraintIterator.next();
+      ListIterator variableIdIterator = constraint.getVariableIdList().listIterator();
+      while(variableIdIterator.hasNext()) {
+        Integer variableId = (Integer) variableIdIterator.next();
+        if(!variableMap.containsKey(variableId)) {
+          //constraintMap.remove(constraint.getId());
+          constraintIterator.remove();
+          removedConstraint = true;
+          break;
+        }
+      }
+      if(removedConstraint) {
+        variableIdIterator = constraint.getVariableIdList().listIterator();
+        while(variableIdIterator.hasNext()) {
+          PwVariableImpl variable = (PwVariableImpl) variableMap.get(variableIdIterator.next());
+          if(variable != null) {
+            variable.removeConstraint(constraint.getId());
+          }
+        }
+      }
+    }
+  }
+
+
+  /**
    * <code>checkPlan</code> - verify that the PwPartialPlan structure is internally consistent.
    */
 
@@ -679,7 +713,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     while(relationIterator.hasNext()) {
       PwTokenRelationImpl tokenRelation = (PwTokenRelationImpl) relationIterator.next();
       if(tokenRelation == null) {
-        System.err.println("Null token relation!");
+        System.err.println("Token " + token.getId() + " has null token relation!");
         continue;
       }
       if(tokenRelation.getTokenAId() == null) {

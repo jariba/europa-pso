@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.11 2003-08-12 22:54:03 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.12 2003-08-20 23:34:17 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -128,6 +128,10 @@ public class PwVariableImpl implements PwVariable {
       retval.add(partialPlan.getToken((Integer) tokenIdList.get(i)));
     }
     return retval;
+  }
+
+  public void removeConstraint(Integer constraintId) {
+    constraintIdList.remove(constraintId);
   }
 
 } // end class PwVariableImpl

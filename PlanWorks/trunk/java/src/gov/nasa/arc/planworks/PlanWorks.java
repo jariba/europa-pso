@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.40 2003-08-19 00:23:33 miatauro Exp $
+// $Id: PlanWorks.java,v 1.41 2003-08-20 23:33:34 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -728,6 +728,7 @@ public class PlanWorks extends MDIDesktopFrame {
                 ( ViewManager.TEMPNET_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
             }});
     partialPlanMenu.add( temporalNetworkViewItem);
+    temporalNetworkViewItem.setEnabled(false);
     SeqPartPlanViewMenuItem timelineViewItem =
           new SeqPartPlanViewMenuItem( "Timeline", seqUrl, partialPlanName);
     timelineViewItem.addActionListener( new ActionListener() {
