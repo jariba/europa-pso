@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.3 2003-08-07 01:17:15 miatauro Exp $
+// $Id: FileUtils.java,v 1.4 2003-09-10 00:23:09 taylor Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -69,7 +69,7 @@ public class FileUtils {
   //should this throw an exception?
   public static boolean validateSequenceDirectory( String sequenceDirectory) {
     // System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
-    //                    sequenceDirectory + "'");
+    //                     sequenceDirectory + "'");
     // determine sequence's partial plan directories
     List partialPlanDirs = new ArrayList();
     String [] fileNames = new File( sequenceDirectory).list();

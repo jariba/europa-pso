@@ -4,52 +4,33 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.22 2003-09-09 16:31:26 miatauro Exp $
+# $Id: README,v 1.23 2003-09-10 00:23:09 taylor Exp $
 #
 
 SUMMARY
 =======
-Milestone 5 adds the Constraint Network View. Because of its
-complexity, initially only the token nodes are displayed.  They
-are "opened" by mouse clicks which lay out the token's
-variable nodes. Clicking on variable nodes "opens" them to show
-or link to their nearest neighbors (constraints or tokens).
-Similarly, clicking on constraint nodes "opens" their nearest 
-neighbors.  Clicking on an "open" node (bold border), "closes"
-that nodes nearest neighbor nodes/links, provided the link counts
-are 1.  Then the node becomes "closed" and has an unbold border.
+Milestone 6
+===========
+The sequence directory chooser invoked by "Project->Create ..." and 
+"Project->Add Sequence" now supports multiple selection of sequence
+directories, by using Ctrl-Mouse-Left for the second and subsequent
+selections.  Mouse-left is used for the first selection and Mouse-
+Left-Double is used to open directories.  When selection is complete,
+click on "OK".
 
-The Temporal Extent View layout has been improved.  Free tokens
-are now presented in all views.  The automatic expansion of the 
-four view internal frame windows, now restricts the expansion to 
-the size of the enclosing PlanWorks frame.  
+File "PlanWorks/GETTING_STARTED" has been added to assist new users.
 
-The Content Specification processor now filters time intervals, as 
-well as tokens and predicates.  
+o  PRs and CRs completed:
+   #2044: Need a minimal getting started guide.
+   #2053: Post error message if trying to add sequence from other project.
+   #2055: Bug creating project.
+   #2057: Floating data left over filtering timeline view.
 
-Massive performance improvements have been made on database end, often by 
-a factor of 4.
-
-The first stage in Europa integration, the PartialPlanWriter is
-included.  Instructions for its use are in
-PlanWorks/cpp/integration/europa/README.
-
-A new build target, hurtPlanWorks, has been added.  It finds all
-directories containing planning sequences under the path pointed to by the
-EUROPA_HOME environment variable, opens all available views for each
-sequence, validates the views, then deletes the sequence from the
-PlanWorks database.
-
-PlanWorks now has a splash screen at startup.  The current image is not
-permanent.
-
-PRs fixed:
-o #2011: Temporal extent view is wrong
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_5 PlanWorks
+> cvs co -r PW_M_6 PlanWorks
 
 
 PREREQUISITES
@@ -104,8 +85,8 @@ the database.
 
 > cd PlanWorks
 
-> ant planWorksDbInstall #this sets up the database and must be run before
-			 #anything else
+> ant planWorksDbInstall # this sets up the database and must be run before
+			 # anything else
 
 > ant # default is to run the application with compilation of all PlanWorks
       # Java source as a dependency.
@@ -123,16 +104,63 @@ the database.
 
 Default target: planWorks
 
+See file "PlanWorks/GETTING_STARTED" for PlanWorks usage.
+
 
 PREVIOUS MILESTONES
 ===================
 ===================
+
+05september03: Milestone 5
+==========================
+Milestone 5 adds the Constraint Network View. Because of its
+complexity, initially only the token nodes are displayed.  They
+are "opened" by mouse clicks which lay out the token's
+variable nodes. Clicking on variable nodes "opens" them to show
+or link to their nearest neighbors (constraints or tokens).
+Similarly, clicking on constraint nodes "opens" their nearest 
+neighbors.  Clicking on an "open" node (bold border), "closes"
+that nodes nearest neighbor nodes/links, provided the link counts
+are 1.  Then the node becomes "closed" and has an unbold border.
+
+The Temporal Extent View layout has been improved.  The extent line
+and associated arrows are displayed immediately below each predicate
+node.  Downward arrows are start times, upward arrows are end times,
+lefward arrows are -Infinity, and rightward arrows are +Infinity.
+
+Free tokens are now presented in all views.  The automatic expansion
+of the four view internal frame windows, now restricts the expansion 
+to the size of the enclosing PlanWorks frame.  
+
+The Content Specification processor now filters time intervals, as 
+well as tokens and predicates.  
+
+Massive performance improvements have been made on database end, often by 
+a factor of 4.
+
+The first stage in Europa integration, the PartialPlanWriter is
+included.  Instructions for its use are in
+PlanWorks/cpp/integration/europa/README.
+
+A new build target, hurtPlanWorks, has been added.  It finds all
+directories containing planning sequences under the path pointed to by the
+EUROPA_HOME environment variable, opens all available views for each
+sequence, validates the views, then deletes the sequence from the
+PlanWorks database.
+
+PlanWorks now has a splash screen at startup.  The current image is not
+permanent.
+
+PRs fixed:
+   #2011: Temporal extent view is wrong
+
 
 24july03: Milestone 4 
 =====================
 Milestone 4 adds the Temporal Extent View.  It also automatically
 expands the three view internal frame windows to display their
 content, without scrolling.
+
 
 17july03: Milestone 3 
 =====================
@@ -145,12 +173,13 @@ to MySQL files.  The Token Network view has been added.  Project
 management is now handled completely in MysQL, rather than using
 Java "beans".  The Content Specification processor now filters only
 by tokens, and predicates.  It will later add time intervals.
-PRs & CRs completed:
-  #1841: Suggestion: group timelines for the same object
-         Use alternating colors for grouping
-  #1844: Suggestion: consider making interval endpoints immovable
-  #1851: Closed View Windows are not restored by Partial Plan->seq->plan->view
-  #1990: INSTALLATION: Problems with build.xml under linux
+o  PRs & CRs completed:
+   #1841: Suggestion: group timelines for the same object
+          Use alternating colors for grouping
+   #1844: Suggestion: consider making interval endpoints immovable
+   #1851: Closed View Windows are not restored by Partial Plan->seq->plan->view
+   #1990: INSTALLATION: Problems with build.xml under linux
+
 
 19june03: Milestone 2 
 =====================
@@ -160,11 +189,13 @@ the plan generator, and the Content Specification functionality for
 filtering partial plan rendering in the user selected views, which is 
 currently restricted to the Timeline View.
 
+
 27may03: Milestone 1 
 =====================
 Milestone 1 includes basic Timeline View, basic eXist XPATH DB
 implementation, ant build/startup script, and basic JFCUnit test of 
 Timeline View with major deficiencies.
+
 
 
 DEVELOPING PLANWORKS

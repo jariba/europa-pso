@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.5 2003-08-26 01:37:10 taylor Exp $
+// $Id: DbConstants.java,v 1.6 2003-09-10 00:23:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,85 +32,85 @@ public interface DbConstants {
    * constant <code>PP_PARTIAL_PLAN_EXT</code>
    *
    */
-  public static final String PP_PARTIAL_PLAN_EXT = ".partialPlan";
+  public static final String PP_PARTIAL_PLAN_EXT = "partialplan";
 
   /**
    * constant <code>PP_OBJECTS_EXT</code>
    *
    */
-  public static final String PP_OBJECTS_EXT = ".objects";
+  public static final String PP_OBJECTS_EXT = "objects";
 
   /**
    * constant <code>PP_TIMELINES_EXT</code>
    *
    */
-  public static final String PP_TIMELINES_EXT = ".timelines";
+  public static final String PP_TIMELINES_EXT = "timelines";
 
   /**
    * constant <code>PP_SLOTS_EXT</code>
    *
    */
-  public static final String PP_SLOTS_EXT = ".slots";
+  public static final String PP_SLOTS_EXT = "slots";
 
   /**
    * constant <code>PP_TOKENS_EXT</code>
    *
    */
-  public static final String PP_TOKENS_EXT = ".tokens";
+  public static final String PP_TOKENS_EXT = "tokens";
 
   /**
    * constant <code>PP_VARIABLES_EXT</code>
    *
    */
-  public static final String PP_VARIABLES_EXT = ".variables";
+  public static final String PP_VARIABLES_EXT = "variables";
 
   /**
    * constant <code>PP_PREDICATES_EXT</code>
    *
    */
-  public static final String PP_PREDICATES_EXT = ".predicates";
+  public static final String PP_PREDICATES_EXT = "predicates";
 
   /**
    * constant <code>PP_PARAMETERS_EXT</code>
    *
    */
-  public static final String PP_PARAMETERS_EXT = ".parameters";
+  public static final String PP_PARAMETERS_EXT = "parameters";
 
   /**
    * constant <code>PP_ENUMERATED_DOMAINS_EXT</code>
    *
    */
-  public static final String PP_ENUMERATED_DOMAINS_EXT = ".enumeratedDomains";
+  public static final String PP_ENUMERATED_DOMAINS_EXT = "enumerateddomains";
 
   /**
    * constant <code>PP_INTERVAL_DOMAINS_EXT</code>
    *
    */
-  public static final String PP_INTERVAL_DOMAINS_EXT = ".intervalDomains";
+  public static final String PP_INTERVAL_DOMAINS_EXT = "intervaldomains";
 
   /**
    * constant <code>PP_CONSTRAINTS_EXT</code>
    *
    */
-  public static final String PP_CONSTRAINTS_EXT = ".constraints";
+  public static final String PP_CONSTRAINTS_EXT = "constraints";
 
   /**
    * constant <code>PP_TOKEN_RELATIONS_EXT</code>
    *
    */
-  public static final String PP_TOKEN_RELATIONS_EXT = ".tokenRelations";
+  public static final String PP_TOKEN_RELATIONS_EXT = "tokenrelations";
 
   /**
    * constant <code>PP_PARAM_VAR_TOKEN_MAP_EXT</code>
    *
    */
-  public static final String PP_PARAM_VAR_TOKEN_MAP_EXT = ".paramVarTokenMap";
+  public static final String PP_PARAM_VAR_TOKEN_MAP_EXT = "paramvartokenmap";
 
   /**
    * constant <code>PP_CONSTRAINT_VAR_MAP_EXT</code>
    *
    */
-  public static final String PP_CONSTRAINT_VAR_MAP_EXT = ".constraintVarMap";
+  public static final String PP_CONSTRAINT_VAR_MAP_EXT = "constraintvarmap";
 
   /**
    * constant <code>PARTIAL_PLAN_FILE_EXTS</code> - List of Strings

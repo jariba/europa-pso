@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.37 2003-09-05 19:11:20 taylor Exp $
+// $Id: TimelineView.java,v 1.38 2003-09-10 00:23:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -518,11 +518,11 @@ public class TimelineView extends VizView {
             if (slotNode.getStartTimeIntervalObject() != null) {
               slotNode.getStartTimeIntervalObject().setVisible( visibleValue);
             }
-            if ((i == n - 1) && (slotNode.getEndTimeIntervalObject() != null)) {
-              slotNode.getEndTimeIntervalObject().setVisible( false);
-            }
           } else {
             slotNode.getStartTimeIntervalObject().setVisible( false);
+          }
+          if ((i == n - 1) && (slotNode.getEndTimeIntervalObject() != null)) {
+            slotNode.getEndTimeIntervalObject().setVisible( false);
           }
         }
       }
