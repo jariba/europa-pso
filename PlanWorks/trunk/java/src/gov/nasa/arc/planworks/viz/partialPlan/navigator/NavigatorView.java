@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.1 2004-01-12 19:46:29 taylor Exp $
+// $Id: NavigatorView.java,v 1.2 2004-01-12 22:21:35 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -428,8 +428,8 @@ public class NavigatorView extends PartialPlanView {
     if (link != null) {
       // links are always behind any nodes
       // jGoDocument.addObjectAtHead( link);
-      jGoDocument.addObjectAtTail( link);
-      // jGoDocument.insertObjectBefore( jGoDocument.findObject( fromNode), link);
+      //jGoDocument.addObjectAtTail( link);
+      jGoDocument.insertObjectBefore( jGoDocument.findObject( fromNode), link);
 
       link.setInLayout( true);
       link.incrLinkCount();
@@ -474,6 +474,7 @@ public class NavigatorView extends PartialPlanView {
     BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
     if (link == null) {
       link = new BasicNodeLink( objectNavNode, timelineNavNode, linkName);
+      link.setArrowHeads(false, true);
       objectNavNode.incrTimelineLinkCount();
       timelineNavNode.incrObjectLinkCount();
       returnLink = link;
@@ -769,6 +770,7 @@ public class NavigatorView extends PartialPlanView {
     BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
     if (link == null) {
       link = new BasicNodeLink( timelineNavNode, slotNavNode, linkName);
+      link.setArrowHeads(false, true);
       timelineNavNode.incrSlotLinkCount();
       slotNavNode.incrTimelineLinkCount();
       returnLink = link;
