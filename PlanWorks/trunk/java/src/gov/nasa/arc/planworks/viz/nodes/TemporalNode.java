@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.1 2003-07-28 17:29:13 taylor Exp $
+// $Id: TemporalNode.java,v 1.2 2003-07-30 18:09:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -110,9 +110,9 @@ public class TemporalNode extends BasicNode implements Extent {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
       nodeLabel = predicateName;
     }
-    System.err.println( "TemporalNode: " + nodeLabel + " " + earliestStartTime +
-                        " " + latestStartTime + " " + earliestEndTime + " " +
-                        latestEndTime);
+    // System.err.println( "TemporalNode: " + nodeLabel + " " + earliestStartTime +
+    //                     " " + latestStartTime + " " + earliestEndTime + " " +
+    //                     latestEndTime);
     markAndBridgeList = new ArrayList();
     cellRow = Algorithms.NO_ROW;
   } // end constructor

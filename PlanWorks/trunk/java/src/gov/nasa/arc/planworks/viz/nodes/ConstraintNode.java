@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.1 2003-07-30 00:38:41 taylor Exp $
+// $Id: ConstraintNode.java,v 1.2 2003-07-30 18:09:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -70,9 +70,11 @@ public class ConstraintNode extends BasicNode {
     this.view = view;
     variableNodeList = new ArrayList();
     variableNodeList.add( variableNode);
-    nodeLabel = constraint.getType().substring( 0, 1) + "_" +
-      constraint.getKey().toString();
-    System.err.println( "ConstraintNode: " + nodeLabel);
+    // debug
+    // nodeLabel = constraint.getType().substring( 0, 1) + "_" +
+    //   constraint.getKey().toString();
+    nodeLabel = constraint.getName();
+    // System.err.println( "ConstraintNode: " + nodeLabel);
 
     configure( constraintLocation);
   } // end constructor
