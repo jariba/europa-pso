@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineViewTest.java,v 1.8 2003-06-02 18:57:04 miatauro Exp $
+// $Id: TimelineViewTest.java,v 1.9 2003-06-02 19:18:22 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.views.test;
 
@@ -102,10 +102,38 @@ public class TimelineViewTest extends JFCTestCase {
         String timelineName = timelineNode.getTimelineName();
         List slotNodes = timelineNode.getSlotNodeList();
         ListIterator slotNodeIterator = slotNodes.listIterator();
-        if(timelineName.indexOf("Monkey1 : LOCATION_SV") == -1 &&
-           timelineName.indexOf("Monkey1 : ALTITUDE_SV") == -1 &&
-           timelineName.indexOf("Monkey1 : BANANA_SV") == -1){
-          assertTrue("Invalid timeline name", false);
+        if(timelineName.indexOf("Monkey1 : LOCATION_SV") != -1) {
+          while(slotNodeIterator.hasNext()) {
+            SlotNode slotNode = (SlotNode) slotNodeIterator.next();
+            String slotName = slotNode.getPredicateName();
+            if(slotName.indexOf("At") == -1 && slotName.indexOf("Going") == -1) {
+              assertTrue("Invalid slot name for LOCATION_SV timeline.", false);
+            }
+          }
+        }
+        else if(timelineName.indexOf("Monkey1 : ALTITUDE_SV") != -1){
+          while(slotNodeIterator.hasNext()) {
+            SlotNode slotNode = (SlotNode) slotNodeIterator.next();
+            String slotName = slotNode.getPredicateName();
+            if(slotName.indexOf("LOW") == -1 && slotName.indexOf("CLIMBING") == -1 && 
+               slotName.indexOf("HIGH") == -1 && slotName.indexOf("CLIMBING_DOWN") == -1) {
+              assertTrue("Invalid slot name for ALTITUDE_SV", false);
+            }
+          }
+        }
+        else if(timelineName.indexOf("Monkey1 : BANANA_SV") != -1){
+          while(slotNodeIterator.hasNext()) {
+            SlotNode slotNode = (SlotNode) slotNodeIterator.next();
+            String slotName = slotNode.getPredicateName();
+            if(slotName.indexOf("NOT_HAVE_BANANA") == -1 && 
+               slotName.indexOf("GRABBING_BANANA") == -1 && 
+               slotName.indexOf("HAVE_BANANA") == -1) {
+              assertTrue("Invalid slot name for BANANA_SV", false);
+            }
+          }
+        }
+        else {
+          assertTrue("Invalid timeline name.", false);
         }
     }
   }
