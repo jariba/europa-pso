@@ -170,8 +170,8 @@ sleep 1
 echo "Setting root password..."
 eval "$1/mysqladmin -u root password 'root' --socket=$6"
 sleep 1
-echo "Creating PlanWorks database..."
-eval "$1/mysql --user=root --password=root --socket=$6 --execute=\"CREATE DATABASE IF NOT EXISTS PlanWorks\""
+#echo "Creating PlanWorks database..."
+#eval "$1/mysql --user=root --password=root --socket=$6 --execute=\"CREATE DATABASE IF NOT EXISTS PlanWorks\""
 echo "Creating PlanWorks tables..."
 eval "$1/mysql --user=root --password=root --database=PlanWorks --socket=$6 < PlanWorksTables"
 sleep 1
