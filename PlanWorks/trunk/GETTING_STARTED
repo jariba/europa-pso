@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.42 2004-05-21 21:38:53 taylor Exp $
+# $Id: GETTING_STARTED,v 1.43 2004-05-25 23:12:46 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -242,7 +242,7 @@ Lists the transactions for this partial plan step.  Each entry includes the
 transaction key (TX_KEY), the TRANSACTION_NAME, the transaction source
 (SOURCE), the entity key (ENTITY_KEY), the step number (STEP), and the entity name
 (ENTITY_NAME).  Entries with TRANSACTION_NAMEs of VARIABLE_* have values for 
-PREDICATE_NAME.  Entries with TRANSACTION_NAMEs of VARIABLE_* and 
+PARENT_NAME.  Entries with TRANSACTION_NAMEs of VARIABLE_* and 
 ENTITY_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
 
 Mouse-Right click on the background, between the window title and the table
@@ -359,7 +359,7 @@ the background of the "SequenceQuery for ..." dialog, and selecting
 Each entry of the "Query Results for ..." windows for "Transactions" queries 
 includes the transaction key (TX_KEY), the TRANSACTION_NAME, the transaction 
 source (SOURCE), the step number (STEP), and the entity name (ENTITY_NAME).  
-Entries with TRANSACTION_NAMEs of VARIABLE_* have values for PREDICATE_NAME.  
+Entries with TRANSACTION_NAMEs of VARIABLE_* have values for PARENT_NAME.  
 Entries with TRANSACTION_NAMEs of VARIABLE_* and ENTITY_NAME = PARAMETER_VAR 
 have values for PARAMETER_NAME.  The "In Range ..." queries, 
 also include the entity key (ENTITY_KEY).
@@ -367,15 +367,16 @@ also include the entity key (ENTITY_KEY).
 Each entry of the "Query Results for ..." windows for "Steps" queries 
 includes the step number (STEP), the transaction key (TX_KEY), the 
 TRANSACTION_NAME, and the entity name (ENTITY_NAME).  Entries with 
-TRANSACTION_NAMEs of VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  
+TRANSACTION_NAMEs of VARIABLE_* have values for PARENT_NAME.  
 Entries with TRANSACTION_NAMEs of VARIABLE_* and ENTITY_NAME = PARAMETER_VAR 
 have values for PARAMETER_NAME.  The "With ..." queries, and the "Where ..."
 queries with blank "Key" fields, also include the entity key (ENTITY_KEY).
 
-The "Query Results for ..." windows which have a (ENTITY_KEY) column offer the 
-user a pop-up dialog entitled "Find Transaction/Token/Variable by Entity_Key".  
-Mouse-Right on the background of the panel between the window title and the
-table column headers of the window, brings up this dialog.
+The "Query Results for ..." windows which have a (---_KEY) column offer the 
+user a pop-up dialog entitled "Find {Transaction|ConstraintToken|Variable} by 
+{Entity_Key|CSTR_KEY|TOK_KEY|VAR_KEY}".  Mouse-Right on the background of the 
+panel between the window title and the table column headers of the window, 
+brings up this dialog.
 
 The column header nodes of the "Query Results for ..." windows, offer sorting 
 based on that columns's values: Mouse-Left clicks cycle through sortAscending, 
@@ -384,7 +385,7 @@ clicks cycle through sortAscending, sortDescending, & noSort - while not clearin
 other column sorts.  The table column widths can be resized by dragging the column 
 header boundaries.
 
-The "Step" column values of Query Results windows offer a Mouse-Left popup 
+The "Step" column values of Query Results windows offer a Mouse-Right popup 
 with actions on the partial plan views for that step.
 
 
