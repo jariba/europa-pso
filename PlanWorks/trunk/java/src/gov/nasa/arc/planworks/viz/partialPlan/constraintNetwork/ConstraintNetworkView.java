@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.38 2004-02-13 21:23:27 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.39 2004-02-17 17:09:55 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -1528,7 +1528,7 @@ public class ConstraintNetworkView extends PartialPlanView {
           constraintNetworkView.setFocusNode( variableNode);
           NodeGenerics.focusViewOnNode( variableNode, isHighlightNode, this);
           isVariableFound = true;
-          break;
+          return;
         }
       }
       if (! isVariableFound) {
@@ -1556,12 +1556,13 @@ public class ConstraintNetworkView extends PartialPlanView {
               if(variableNode.getVariable().getId().equals(variableToFind.getId())) {
                 constraintNetworkView.setFocusNode(variableNode);
                 NodeGenerics.focusViewOnNode(variableNode, isHighlightNode, this);
-                break varNodeFind;
+                return;
               }
             }
           }
         }
       }
+      System.err.println("AAAAAAAAAACK!");
       String message = "Variable " + variableToFind.getDomain().toString() +
         " (key=" + variableToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,

@@ -12,7 +12,7 @@ public class ColorStream {
   private static final float H_DIFF = 0.15f;
   private static final float SAT = 1.0f;
   private static final float B_DIFF = 0.09f;
-  private static final float B_MIN = 0.75f;
+  private static final float B_MIN = 0.78f;
 
   private Map hashMap;
   //private 
