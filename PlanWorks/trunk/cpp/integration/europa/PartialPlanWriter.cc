@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.9 2003-10-21 14:21:41 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.10 2003-10-23 17:54:32 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -104,10 +104,13 @@ void PartialPlanWriter::write(void) {
   ModelId modelId = tnet->getModelId();
   String modelName = modelId.getModelName();
   {
-    char *temp = rindex(modelName.chars(), '/');
-    if(temp != NULL) {
-      *temp++;
+    char *tempIndex = rindex(modelName.chars(), '/');
+    if(tempIndex != NULL) {
+      *tempIndex++;
+      char *temp = new char[strlen(tempIndex)+1];
+      strcpy(temp, tempIndex);
       modelName = temp;
+      delete [] temp;
     }
   }    
   char *seqname;
