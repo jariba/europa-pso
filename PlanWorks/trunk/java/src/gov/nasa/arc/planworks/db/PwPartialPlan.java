@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.16 2003-09-02 21:49:16 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.17 2003-09-23 21:53:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -135,6 +135,8 @@ public interface PwPartialPlan {
    */
   public abstract PwVariable getVariable( Integer id);
 
+  public abstract void setContentSpec(List spec);
 
+  public abstract List getContentSpec();
   
 } // end interface PwPartialPlan

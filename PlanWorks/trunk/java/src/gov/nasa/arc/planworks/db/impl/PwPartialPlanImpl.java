@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.41 2003-09-11 00:25:48 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.42 2003-09-23 21:53:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -67,6 +67,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   private Map predicateMap; // key = attribute id, value = PwPredicateImpl instance
   private Map tokenRelationMap; // key = attribute id, value = PwTokenRelationImpl instance
   private Map variableMap; // key = attribute id, value = PwVariableImpl instance
+  private List contentSpec;
 
   /**
    * <code>PwPartialPlanImpl</code> - initialize storage structures then call createPartialPlan()
@@ -90,6 +91,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
+    contentSpec = new ArrayList();
     this.name = planName;
     createPartialPlan(sequenceId);
   }
@@ -809,6 +811,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
                            " with multiple objects.");
       }
     }
+  }
+
+  public void setContentSpec(List spec) {
+    contentSpec.clear();
+    contentSpec.addAll(spec);
+  }
+  
+  public List getContentSpec() {
+    return new ArrayList(contentSpec);
   }
 
 } // end class PwPartialPlanImpl

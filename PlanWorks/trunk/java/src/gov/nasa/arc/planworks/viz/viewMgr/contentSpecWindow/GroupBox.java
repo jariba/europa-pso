@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: GroupBox.java,v 1.4 2003-06-16 18:51:08 miatauro Exp $
+// $Id: GroupBox.java,v 1.5 2003-09-23 21:54:35 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -94,6 +94,9 @@ public class GroupBox extends JPanel implements ContentSpecGroup {
       return null;
     }
     return retval;
+  }
+  public List getElements() {
+    return new ArrayList(elements);
   }
   /**
    * Clears the values of the contained elements.

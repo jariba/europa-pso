@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimeIntervalBox.java,v 1.5 2003-07-31 21:53:08 miatauro Exp $
+// $Id: TimeIntervalBox.java,v 1.6 2003-09-23 21:54:36 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -176,6 +176,20 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement {
     startValue.setText("");
     endValue.setText("");
   }
+
+  public LogicComboBox getLogicBox() {
+    return logicBox;
+  }
+  public NegationCheckBox getNegationBox() {
+    return negationBox;
+  }
+  public JTextField getStartValue() {
+    return startValue;
+  }
+  public JTextField getEndValue() {
+    return endValue;
+  }
+
   /**
    * <code>LogicBoxListener</code> -
    *    See the LogicBoxListener documentation in SpecBox.java

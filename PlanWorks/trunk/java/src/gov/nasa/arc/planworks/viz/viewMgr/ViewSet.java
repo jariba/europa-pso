@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.30 2003-09-23 16:10:39 taylor Exp $
+// $Id: ViewSet.java,v 1.31 2003-09-23 21:54:20 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -183,6 +183,8 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       try {contentSpecWindow.setClosed(true);}
       catch(PropertyVetoException pve){}
       remover.removeViewSet(partialPlan);
+      System.err.println("Saving content spec...");
+      partialPlan.setContentSpec(contentSpec.getCurrentSpec());
     }
   }
   /**
