@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.75 2004-03-03 02:14:19 taylor Exp $
+# $Id: README,v 1.76 2004-03-04 21:30:25 taylor Exp $
 #
 
 SUMMARY
@@ -22,8 +22,19 @@ o The SequenceStepsView has these Mouse-Right selections: "Close/
   the partial plan view and Content Filter windows for all sequence
   steps.
 
-o The Navigator View has been generalized to handle Objects, Timelines,
-  and Resources, along with their variables.
+o The Partial Plan Navigator View has been generalized to handle Objects,
+  Timelines, Resources, and Resource Transactions along with their variables.
+
+o Two Partial Plan resourece views have been added: ResourceProfileView and
+  ResourceTransactionView. Mouse-Right on their "extent" backgrounds allows
+  the setting of a vertical time mark.  If both views are active for the
+  same partial plan, the time mark is rendered on the companion view, which
+  is scrolled so the time mark is in the view port.  The Mouse-Right selection
+  "Snap to Active Resource Transaction" (on the ResourceTransactionView) and
+  "Snap to Active Resource" (on the ResourceProfileView) will find and scroll
+  into view the appropriate Resource or Resource Transaction, providing the
+  "active" token is a Resource Transaction, rather than an Interval Token.
+
 
 o  GNATS PRs and CRs completed:
    #2241: Timeline view disappear and does not reappear after the 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.9 2004-03-03 02:14:23 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.10 2004-03-04 21:30:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,43 +13,22 @@
 
 package gov.nasa.arc.planworks.viz.partialPlan.resourceProfile;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
 import java.util.Iterator;    
 import java.util.List;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
-import javax.swing.SwingUtilities;
-
-// PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoPen;
-import com.nwoods.jgo.JGoStroke;
-import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
-import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 // testing
 // import gov.nasa.arc.planworks.db.PwIntervalDomain;
@@ -60,17 +39,14 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
-import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
-import gov.nasa.arc.planworks.viz.partialPlan.TimeScaleView;
+import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -83,58 +59,19 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ResourceProfileView extends PartialPlanView  {
+public class ResourceProfileView extends ResourceView  {
 
-  /**
-   * constant <code>LEVEL_SCALE_FONT_SIZE</code>
-   *
-   */
-  protected static final int LEVEL_SCALE_FONT_SIZE = 8;
-
-  private static final int SLEEP_FOR_50MS = 50;
-
-  private long startTimeMSecs;
-  private ViewSet viewSet;
-  private MDIInternalFrame viewFrame;
-  private ExtentView jGoExtentView;
-  private JGoView jGoLevelScaleView;
-  private TimeScaleView jGoRulerView;
-  private Component horizontalStrut;
   private List resourceProfileList; // element ResourceProfile
-  private int slotLabelMinLength;
-  private int maxSlots;
-  private int startXLoc;
-  private int xOrigin;
-  private int startYLoc;
-  private int maxCellRow;
-  private float timeScale;
-  private JGoStroke timeScaleMark;
-  private int levelScaleViewWidth;
-  private int fillerWidth;
-  private int maxYExtent;
-  private JGoStroke maxExtentViewHeightPoint;
-  private JGoStroke maxLevelViewHeightPoint;
-  private Font levelScaleFont;
-  private FontMetrics levelScaleFontMetrics;
-  private boolean isStepButtonView;
-
-  private static Point docCoords;
 
 
   /**
    * <code>ResourceProfileView</code> - constructor 
-   *                             Use SwingUtilities.invokeLater( runInit) to
-   *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param vSet - <code>ViewSet</code> - 
    */
   public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
-    resourceProfileViewInit( vSet);
-    isStepButtonView = false;
-
-    SwingUtilities.invokeLater( runInit);
   } // end constructor
 
 
@@ -147,79 +84,8 @@ public class ResourceProfileView extends PartialPlanView  {
    */
   public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet, 
                               final PartialPlanViewState state) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
-    resourceProfileViewInit( vSet);
-    isStepButtonView = true;
-    setState( state);
-    SwingUtilities.invokeLater( runInit);
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, state);
   }
-
-  private void resourceProfileViewInit( final ViewSet vSet) {
-    this.startTimeMSecs = System.currentTimeMillis();
-    this.viewSet = (PartialPlanViewSet) vSet;
-    
-    // startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
-    startXLoc = 1;
-    startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
-    maxCellRow = 0;
-    timeScaleMark = null;
-    maxYExtent = 0;
-    maxExtentViewHeightPoint = null;
-    maxLevelViewHeightPoint = null;
-    slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
-    // create panels/views after fontMetrics available
-   } // end resourceProfileViewInit
-
-  private void createLevelScaleAndExtentPanel() {
-    LevelScalePanel levelScalePanel = new LevelScalePanel();
-    levelScalePanel.setLayout( new BoxLayout( levelScalePanel, BoxLayout.Y_AXIS));
-
-    jGoLevelScaleView = new JGoView();
-    jGoLevelScaleView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-    jGoLevelScaleView.getVerticalScrollBar().addAdjustmentListener
-      ( new VerticalScrollBarListener());
-    
-    jGoLevelScaleView.validate();
-    jGoLevelScaleView.setVisible( true);
-    levelScalePanel.add( jGoLevelScaleView, BorderLayout.NORTH);                 
-    add( levelScalePanel, "West");
-
-    JPanel extentViewPanel = new JPanel();
-    extentViewPanel.setLayout( new BoxLayout( extentViewPanel, BoxLayout.Y_AXIS));
-
-    jGoExtentView = new ExtentView();
-    jGoExtentView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-    jGoExtentView.getHorizontalScrollBar().addAdjustmentListener
-                                     ( new HorizontalScrollBarListener());
-    jGoExtentView.getVerticalScrollBar().addAdjustmentListener
-                                     ( new VerticalScrollBarListener());
-    jGoExtentView.validate();
-    jGoExtentView.setVisible( true);
-    extentViewPanel.add( jGoExtentView, BorderLayout.NORTH);
-    add( extentViewPanel, "Center");
-  } // end createLevelScaleAndExtentPanel
-
-  private void createFillerAndRulerPanel() {
-    FillerAndRulerPanel fillerAndRulerPanel = new FillerAndRulerPanel();
-    fillerAndRulerPanel.setLayout( new BoxLayout( fillerAndRulerPanel, BoxLayout.X_AXIS));
-    fillerAndRulerPanel.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-
-    horizontalStrut = Box.createHorizontalStrut( fillerWidth);
-    fillerAndRulerPanel.add( horizontalStrut, BorderLayout.WEST);
-
-    JPanel rulerPanel = new JPanel();
-    rulerPanel.setLayout( new BoxLayout( rulerPanel, BoxLayout.Y_AXIS));
-
-    jGoRulerView = new TimeScaleView( startXLoc, startYLoc, partialPlan, this);
-    jGoRulerView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
-    jGoRulerView.getHorizontalScrollBar().addAdjustmentListener
-                                     ( new HorizontalScrollBarListener());
-    jGoRulerView.validate();
-    jGoRulerView.setVisible( true);
-    rulerPanel.add( jGoRulerView, BorderLayout.NORTH);
-    fillerAndRulerPanel.add( rulerPanel, BorderLayout.EAST);
-    add( fillerAndRulerPanel, "South");
-  } // end createFillerAndRulerPanel
 
   /**
    * <code>getState</code>
@@ -245,140 +111,49 @@ public class ResourceProfileView extends PartialPlanView  {
 //     temporalDisplayMode = state.displayMode();
   }
 
-  private Runnable runInit = new Runnable() {
-      public final void run() {
-        init();
-      }
-    };
-
   /**
-   * <code>init</code> - wait for instance to become displayable, determine
-   *                     appropriate font metrics, and render the JGo timeline,
-   *                     and slot widgets
+   * <code>getResourceProfileList</code>
    *
-   *    These functions are not done in the constructor to avoid:
-   *    "Cannot measure text until a JGoExtentView exists and is part of a visible window".
-   *     int extentScrollExtent = jGoExtentView.getHorizontalScrollBar().getSize().getWidth();
-   *    called by componentShown method on the JFrame
-   *    JGoExtentView.setVisible( true) must be completed -- use runInit in constructor
+   * @return - <code>List</code> - of ResourceProfile
    */
-  public final void init() {
-    // jGoExtentView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
-    // wait for ResourceProfileView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep( SLEEP_FOR_50MS);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "timelineView displayable " + this.isDisplayable());
-    }
-    this.computeFontMetrics( this);
-
-    // resource names font
-    levelScaleFont = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                               ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                               LEVEL_SCALE_FONT_SIZE);
-    Graphics graphics = ((JPanel) this).getGraphics();
-    levelScaleFontMetrics = graphics.getFontMetrics( levelScaleFont);
-    graphics.dispose();
-
-
-    levelScaleViewWidth = computeMaxResourceLabelWidth();
-    fillerWidth = levelScaleViewWidth + ViewConstants.JGO_SCROLL_BAR_WIDTH;
-
-    setLayout( new BorderLayout());
-
-    createLevelScaleAndExtentPanel();
-
-    createFillerAndRulerPanel();
-   
-    this.setVisible( true);
-
-    boolean doFreeTokens = false;
-      xOrigin = jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
-      jGoRulerView.createTimeScale();
-
-    boolean isRedraw = false, isScrollBarAdjustment = false;
-    renderResourceExtent();
-
-    viewFrame = viewSet.openView( this.getClass().getName());
-
-    if (! isStepButtonView) {
-//       Rectangle documentBounds = jGoExtentView.getDocument().computeBounds();
-//       jGoExtentView.getDocument().setDocumentSize( (int) documentBounds.getWidth(),
-//                                                    (int) documentBounds.getHeight());
-      expandViewFrame( viewFrame,
-                       (int) (Math.max( jGoExtentView.getDocumentSize().getWidth(),
-                                        jGoRulerView.getDocumentSize().getWidth()) +
-                              jGoLevelScaleView.getDocumentSize().getWidth() +
-                              jGoExtentView.getVerticalScrollBar().getSize().getWidth()),
-                       (int) (jGoExtentView.getDocumentSize().getHeight() +
-                              jGoRulerView.getDocumentSize().getHeight()));
-    } else {
-      // force re-display
-      this.validate();
-    }
-
-    // print out info for created nodes
-    // iterateOverJGoDocument(); // slower - many more nodes to go thru
-    // iterateOverNodes();
-
-    int maxStepButtonY = addStepButtons( jGoExtentView);
-    // screws up the equality of the two vertical scroll bars
-//     if (! isStepButtonView) {
-//       expandViewFrameForStepButtons( viewFrame);
-//     }
-
-    // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
-    // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
-    equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
-
-    long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    
-    // jGoExtentView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
-  } // end init
-
-
-  /**
-   * <code>redraw</code> - called by Content Spec to apply user's content spec request.
-   *                       setVisible(true | false)
-   *                       according to the Content Spec enabled ids
-   *
-   */
-  public final void redraw() {
-    Thread thread = new RedrawViewThread();
-    thread.setPriority( Thread.MIN_PRIORITY);
-    thread.start();
+  public final List getResourceProfileList() {
+    return resourceProfileList;
   }
 
   /**
-   * <code>RedrawViewThread</code> - execute redraw in a new thread
+   * <code>computeMaxResourceLabelWidth</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  protected final int computeMaxResourceLabelWidth() {
+    boolean isNamesOnly = true;
+    int maxWidth = ViewConstants.JGO_SCROLL_BAR_WIDTH * 2;
+    List resourceList = partialPlan.getResourceList(); //createDummyData( isNamesOnly);
+    Iterator resourceItr = resourceList.iterator();
+    while (resourceItr.hasNext()) {
+      PwResource resource = (PwResource) resourceItr.next();
+      // System.err.println( "resource " + resource.getName());
+      int width = ResourceProfile.getNodeLabelWidth( resource.getName(), this);
+      // System.err.println( "  labelWidth " + width);
+      if (width > maxWidth) {
+        maxWidth = width;
+      }
+      int tickLabelMaxWidth =
+        ResourceProfile.getTickLabelMaxWidth( resource, levelScaleFontMetrics);
+      // System.err.println( "  tickLabelMaxWidth " + tickLabelMaxWidth);
+      if (tickLabelMaxWidth > maxWidth) {
+        maxWidth = tickLabelMaxWidth;
+      }
+    }
+    return maxWidth;
+  } // end computeMaxResourceLabelWidth
+
+  /**
+   * <code>renderResourceExtent</code>
    *
    */
-  class RedrawViewThread extends Thread {
-
-    public RedrawViewThread() {
-    }  // end constructor
-
-    public final void run() {
-      boolean isRedraw = true, isScrollBarAdjustment = false;
-      renderResourceExtent();
-      int maxStepButtonY = addStepButtons( jGoExtentView);
-      // causes bottom view edge to creep off screen
-//       if (! isStepButtonView) {
-//         expandViewFrameForStepButtons( viewFrame);
-//       }
-      // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
-      // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
-      equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
-    } // end run
-
-  } // end class RedrawViewThread
-
-  private void renderResourceExtent() {
-    jGoExtentView.getDocument().deleteContents();
+  protected final void renderResourceExtent() {
+    this.getJGoExtentDocument().deleteContents();
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     if (resourceProfileList != null) {
@@ -391,96 +166,6 @@ public class ResourceProfileView extends PartialPlanView  {
 
     layoutResourceProfiles();
   } // end createResourceProfileView
-
-  /**
-   * <code>getJGoExtentView</code> - 
-   *
-   * @return - <code>JGoView</code> - 
-   */
-  public final JGoView getJGoExtentView()  {
-    return this.jGoExtentView;
-  }
-
-  /**
-   * <code>getJGoExtentDocument</code> - the resource extent view document
-   *
-   * @return - <code>JGoDocument</code> - 
-   */
-  public final JGoDocument getJGoExtentDocument()  {
-    return this.jGoExtentView.getDocument();
-  }
-
-  /**
-   * <code>getJGoLevelScaleDocument</code> - the level scale view document
-   *
-   * @return - <code>JGoDocument</code> - 
-   */
-  public final JGoDocument getJGoLevelScaleDocument()  {
-    return this.jGoLevelScaleView.getDocument();
-  }
-
-  /**
-   * <code>getLevelScaleViewWidth</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getLevelScaleViewWidth() {
-    return levelScaleViewWidth;
-  }
-
-  /**
-   * <code>getResourceProfileList</code>
-   *
-   * @return - <code>List</code> - of ResourceProfile
-   */
-  public final List getResourceProfileList() {
-    return resourceProfileList;
-  }
-
-  /**
-   * <code>getTimeScale</code>
-   *
-   * @return - <code>double</code> - 
-   */
-  public final double getTimeScale() {
-    return jGoRulerView.getTimeScale();
-  }
-
-  /**
-   * <code>getTimeScaleStart</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getTimeScaleStart() {
-    return jGoRulerView.getTimeScaleStart();
-  }
-
-  /**
-   * <code>getTimeScaleEnd</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getTimeScaleEnd() {
-    return jGoRulerView.getTimeScaleEnd();
-  }
-
-  /**
-   * <code>getStartYLoc</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getStartYLoc() {
-    return startYLoc;
-  }
-
-  /**
-   * <code>getJGoRulerView</code>
-   *
-   * @return - <code>TimeScaleView</code> - 
-   */
-  public final TimeScaleView getJGoRulerView() {
-    return jGoRulerView;
-  }
 
 //   private List createDummyData( final boolean isNameOnly) {
 //     int startTime = 0, endTime = 0;
@@ -537,34 +222,11 @@ public class ResourceProfileView extends PartialPlanView  {
         new ResourceProfile( resource, ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR),
                              levelScaleFontMetrics, this);
       // System.err.println( "resourceProfile " + resourceProfile);
-      jGoExtentView.getDocument().addObjectAtTail( resourceProfile);
+      this.getJGoExtentDocument().addObjectAtTail( resourceProfile);
       resourceProfileList.add( resourceProfile);
     }
 
   } // end createResourceProfiles
-
-  private int computeMaxResourceLabelWidth() {
-    boolean isNamesOnly = true;
-    int maxWidth = ViewConstants.JGO_SCROLL_BAR_WIDTH * 2;
-    List resourceList = partialPlan.getResourceList();//createDummyData( isNamesOnly);
-    Iterator resourceItr = resourceList.iterator();
-    while (resourceItr.hasNext()) {
-      PwResource resource = (PwResource) resourceItr.next();
-      // System.err.println( "resource " + resource.getName());
-      int width = ResourceProfile.getNodeLabelWidth( resource.getName(), this);
-      // System.err.println( "  labelWidth " + width);
-      if (width > maxWidth) {
-        maxWidth = width;
-      }
-      int tickLabelMaxWidth =
-        ResourceProfile.getTickLabelMaxWidth( resource, levelScaleFontMetrics);
-      // System.err.println( "  tickLabelMaxWidth " + tickLabelMaxWidth);
-      if (tickLabelMaxWidth > maxWidth) {
-        maxWidth = tickLabelMaxWidth;
-      }
-    }
-    return maxWidth;
-  } // end computeMaxResourceLabelWidth
 
   private void layoutResourceProfiles() {
     /*List extents = new ArrayList();
@@ -621,349 +283,28 @@ public class ResourceProfileView extends PartialPlanView  {
 //     while (position != null) {
 //       JGoObject object = jGoExtentView.getDocument().getObjectAtPos( position);
 //       position = jGoExtentView.getDocument().getNextObjectPosAtTop( position);
-//       //System.err.println( "iterateOverJGoDoc: position " + position +
-//       //                   " className " + object.getClass().getName());
-//       if (object instanceof ResourceProfile) {
-//         ResourceProfile resourceProfile = (ResourceProfile) object;
+//       System.err.println( "iterateOverJGoDoc: className " + object.getClass().getName() +
+//                           " object loc " + object.getLocation() + " object size " +
+//                           object.getSize());
+// //       if (object instanceof ResourceProfile) {
+// //         ResourceProfile resourceProfile = (ResourceProfile) object; 
 
-//       }
-//       cnt += 1;
+// //       }
+// //       cnt += 1;
 // //       if (cnt > 100) {
 // //         break;
 // //       }
 //     }
-//     //System.err.println( "iterateOverJGoDoc: cnt " + cnt);
-//   } // end iterateOverJGoDocument
-
-
-  /**
-   * <code>equalizeViewWidthsAndHeights</code>
-   *
-   *                    write a line at the max horizontal extent in each view, and
-   *                    at max vertical extent in jGoExtentView & JGoLevelScaleView
-   *                    is also called by PartialPlanView.ButtonAdjustmentListener
-   *
-   * @param maxStepButtonY - <code>int</code> - 
-   * @param isRedraw - <code>boolean</code> - 
-   * @param isScrollBarAdjustment - <code>boolean</code> - 
-   */
-  public final void equalizeViewWidthsAndHeights( final int maxStepButtonY,
-                                                  final boolean isRedraw, 
-                                                  final boolean isScrollBarAdjustment) {
-    Dimension extentViewDocSize = jGoExtentView.getDocumentSize();
-    Dimension rulerViewDocSize = jGoRulerView.getDocumentSize();
-//     System.err.println( "extentViewDocumentWidth B " + extentViewDocSize.getWidth() +
-//                         " rulerViewDocumentWidth B " + rulerViewDocSize.getWidth());
-    int xRulerMargin = ViewConstants.TIMELINE_VIEW_X_INIT;
-    int jGoDocBorderWidth = ViewConstants.JGO_DOC_BORDER_WIDTH;
-    if (isRedraw) {
-      xRulerMargin = 0;
-    }
-    int maxWidth = Math.max( (int) extentViewDocSize.getWidth() - jGoDocBorderWidth,
-                             (int) rulerViewDocSize.getWidth() + xRulerMargin -
-                             jGoDocBorderWidth);
-//     System.err.println( "maxWidth " + maxWidth);
-    if (! isScrollBarAdjustment) {
-      equalizeViewWidths( maxWidth, isRedraw);
-    }
-
-    equalizeViewHeights( maxWidth, maxStepButtonY);
-
-//     extentViewDocSize = jGoExtentView.getDocumentSize();
-//     rulerViewDocSize = jGoRulerView.getDocumentSize();
-//     System.err.println( "extentViewDocumentWidth A" + extentViewDocSize.getWidth() +
-//                         " rulerViewDocumentWidth A" + rulerViewDocSize.getWidth());
-  } // end equalizeViewWidthsAndHeights
-
-  private void equalizeViewWidths( final int maxWidth, final boolean isRedraw) {
-    JGoStroke maxViewWidthPoint = new JGoStroke();
-    maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT);
-    maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
-//     System.err.println( "jGoExtentView maxWidth " + maxWidth);
-    // make mark invisible
-    maxViewWidthPoint.setPen( new JGoPen( JGoPen.SOLID, 1, 
-                                          // ColorMap.getColor( "black")));
-                                          ViewConstants.VIEW_BACKGROUND_COLOR));
-    jGoExtentView.getDocument().addObjectAtTail( maxViewWidthPoint);
-
-    if ( ! isRedraw) {
-      maxViewWidthPoint = new JGoStroke();
-      maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT);
-      maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
-      // make mark invisible
-      maxViewWidthPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
-                                            // ColorMap.getColor( "black")));
-                                            ViewConstants.VIEW_BACKGROUND_COLOR));
-      jGoRulerView.getDocument().addObjectAtTail( maxViewWidthPoint);
-    }
-  } // end equalizeViewWidths
-
-  private void equalizeViewHeights( final int maxWidth, final int maxStepButtonY) {
-    // always put mark at max y location, so on redraw jGoRulerView does not expand
-    int maxY = Math.max( startYLoc + ((maxCellRow + 1) *
-                                      ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT) + 2,
-                         maxStepButtonY);
-    if (maxY > maxYExtent) {
-      maxYExtent = maxY;
-      if (maxExtentViewHeightPoint != null) {
-        jGoExtentView.getDocument().removeObject( maxExtentViewHeightPoint);
-      }
-      maxExtentViewHeightPoint = new JGoStroke();
-      maxExtentViewHeightPoint.addPoint( maxWidth, maxYExtent);
-      maxExtentViewHeightPoint.addPoint( maxWidth - ViewConstants.TIMELINE_VIEW_X_INIT,
-                                         maxYExtent);
-//      System.err.println( "jGoExtentView height maxWidth " + maxWidth);
-//      System.err.println( "jGoExtentView height maxWidth - " +
-//                          (maxWidth - ViewConstants.TIMELINE_VIEW_X_INIT));
-     // make mark invisible
-      maxExtentViewHeightPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
-                                                   // ColorMap.getColor( "black")));
-                                                   ViewConstants.VIEW_BACKGROUND_COLOR));
-      jGoExtentView.getDocument().addObjectAtTail( maxExtentViewHeightPoint);
-
-      if (maxLevelViewHeightPoint != null) {
-        jGoLevelScaleView.getDocument().removeObject( maxLevelViewHeightPoint);
-      }
-      maxLevelViewHeightPoint = new JGoStroke();
-      maxLevelViewHeightPoint.addPoint( 0, maxYExtent);
-      maxLevelViewHeightPoint.addPoint( levelScaleViewWidth -
-                                        ViewConstants.RESOURCE_LEVEL_SCALE_WIDTH_OFFSET,
-                                        maxYExtent);
-      // make mark invisible
-      maxLevelViewHeightPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
-                                                  // ColorMap.getColor( "black")));
-                                                  ViewConstants.VIEW_BACKGROUND_COLOR));
-      jGoLevelScaleView.getDocument().addObjectAtTail( maxLevelViewHeightPoint);
-    }
-  } // end equalizeViewHeights
-
+//     //System.err.println( "iterateOverJGoDoc: cnt " + cnt); 
+//   } // end iterateOverJGoDocument 
 
   /**
-   * <code>LevelScalePanel</code> - require level scale view panel to be of fixed width
+   * <code>findNearestResource</code>
    *
+   * @param dCoords - <code>Point</code> - 
+   * @return - <code>PwResource</code> - 
    */
-  class LevelScalePanel extends JPanel {
-
-    /**
-     * <code>LevelScalePanel</code> - constructor 
-     *
-     */
-    public LevelScalePanel() {
-      super();
-    }
-
-    /**
-     * <code>getMinimumSize</code>
-     *
-     * @return - <code>Dimension</code> - used by BoxLayout
-     */
-    public final Dimension getMinimumSize() {
-      return new Dimension
-        ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
-                 jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
-          (int) (ResourceProfileView.this.getSize().getHeight() -
-                 jGoRulerView.getDocumentSize().getHeight() -
-                 jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
-    }
-
-    /**
-     * <code>getMaximumSize</code> - used by BoxLayout
-     *
-     * @return - <code>Dimension</code> - 
-     */
-    public final Dimension getMaximumSize() {
-      return new Dimension
-        ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
-                 jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
-          (int) (ResourceProfileView.this.getSize().getHeight() -
-                 jGoRulerView.getDocumentSize().getHeight() -
-                 jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
-    }
-
-    /**
-     * <code>getPreferredSize</code> - used by BorderLayout
-     *
-     * @return - <code>Dimension</code> - 
-     */
-    public final Dimension getPreferredSize() {
-//       System.err.println( "jGoLevelScaleView " + jGoLevelScaleView);
-//       System.err.println( "jGoRulerView " + jGoRulerView);
-      if (jGoRulerView == null) {
-        return new Dimension
-          ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
-                   jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
-            (int) ResourceProfileView.this.getSize().getHeight());
-      } else {
-        return new Dimension
-          ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
-                   jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
-            (int) (ResourceProfileView.this.getSize().getHeight() -
-                   jGoRulerView.getDocumentSize().getHeight() -
-                   jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
-      }
-    }
-
-  } // end class LevelScalePanel
-
-
-  /**
-   * <code>FillerAndRulerPanel</code> - require ruler view panel to be of fixed height
-   *
-   */
-  class FillerAndRulerPanel extends JPanel {
-
-    /**
-     * <code>FillerAndRulerPanel</code> - constructor 
-     *
-     */
-    public FillerAndRulerPanel() {
-      super();
-    }
-
-    /**
-     * <code>getMinimumSize</code>
-     *
-     * @return - <code>Dimension</code> - used by BoxLaout
-     */
-    public final Dimension getMinimumSize() {
-      return new Dimension( (int) ResourceProfileView.this.getSize().getWidth(),
-                            (int) (jGoRulerView.getDocumentSize().getHeight() +
-                                   jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
-    }
-
-    /**
-     * <code>getMaximumSize</code>
-     *
-     * @return - <code>Dimension</code> - used by BoxLaout
-     */
-    public final Dimension getMaximumSize() {
-      return new Dimension( (int) ResourceProfileView.this.getSize().getWidth(),
-                            (int) (jGoRulerView.getDocumentSize().getHeight() +
-                                   jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
-    }
-
-    /**
-     * <code>getPreferredSize</code> - used by BorderLayout
-     *
-     * @return - <code>Dimension</code> - 
-     */
-    public final Dimension getPreferredSize() {
-      return new Dimension( (int) ResourceProfileView.this.getSize().getWidth(),
-                            (int) (jGoRulerView.getDocumentSize().getHeight() +
-                                   jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
-    }
-  } // end class FillerAndRulerPanel
-
-
-  /**
-   * <code>HorizontalScrollBarListener</code> - keep both jGoExtentView & jGoRulerView aligned,
-   *                                  when user moves one scroll bar
-   *
-   */
-  class HorizontalScrollBarListener implements AdjustmentListener {
-
-    /**
-     * <code>adjustmentValueChanged</code> - keep both jGoExtentView & jGoRulerView
-     *                                aligned, even when user moves one scroll bar
-     *
-     * @param event - <code>AdjustmentEvent</code> - 
-     */
-    public final void adjustmentValueChanged( final AdjustmentEvent event) {
-      JScrollBar source = (JScrollBar) event.getSource();
-      // to get immediate incremental adjustment, rather than waiting for
-      // final position, comment out next check
-      // if (! source.getValueIsAdjusting()) {
-        int newPostion = source.getValue();
-        if (newPostion != jGoExtentView.getHorizontalScrollBar().getValue()) {
-          jGoExtentView.getHorizontalScrollBar().setValue( newPostion);
-        } else if (newPostion != jGoRulerView.getHorizontalScrollBar().getValue()) {
-          jGoRulerView.getHorizontalScrollBar().setValue( newPostion);
-        }
-        // }
-    } // end adjustmentValueChanged 
-
-  } // end class HorizontalScrollBarListener 
-
-
-  /**
-   * <code>VerticalScrollBarListener</code> - keep both jGoExtentView & jGoLevelScaleView
-   *                                  aligned, when user moves one scroll bar
-   *
-   */
-  class VerticalScrollBarListener implements AdjustmentListener {
-
-    /**
-     * <code>adjustmentValueChanged</code> - keep both jGoExtentView & jGoLevelScaleView
-     *                                aligned, even when user moves one scroll bar
-     *
-     * @param event - <code>AdjustmentEvent</code> - 
-     */
-    public final void adjustmentValueChanged( final AdjustmentEvent event) {
-      JScrollBar source = (JScrollBar) event.getSource();
-      // to get immediate incremental adjustment, rather than waiting for
-      // final position, comment out next check
-      // if (! source.getValueIsAdjusting()) {
-        int newPostion = source.getValue();
-        while ((jGoExtentView.getVerticalScrollBar() == null) ||
-               (jGoLevelScaleView.getVerticalScrollBar() == null)) {
-          try {
-            Thread.currentThread().sleep( SLEEP_FOR_50MS);
-          } catch (InterruptedException excp) {
-          }
-          System.err.println( "adjustmentValueChanged scroll bars null");
-        }
-        if (newPostion != jGoExtentView.getVerticalScrollBar().getValue()) {
-          jGoExtentView.getVerticalScrollBar().setValue( newPostion);
-        } else if (newPostion != jGoLevelScaleView.getVerticalScrollBar().getValue()) {
-          jGoLevelScaleView.getVerticalScrollBar().setValue( newPostion);
-        }
-        // }
-    } // end adjustmentValueChanged 
-
-  } // end class VerticalScrollBarListener 
-
-
-  /**
-   * <code>ExtentView</code> - subclass doBackgroundClick to handle drawing
-   *                               vertical time marks on view
-   *
-   */
-  class ExtentView extends JGoView {
-
-    /**
-     * <code>ExtentView</code> - constructor 
-     *
-     */
-    public ExtentView() {
-      super();
-    }
-
-    /**
-     * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
-     *                             1) draws vertical line in extent view to
-     *                                focus that time point across all resource profiles
-     *
-     * @param modifiers - <code>int</code> - 
-     * @param dCoords - <code>Point</code> - 
-     * @param viewCoords - <code>Point</code> - 
-     */
-    public final void doBackgroundClick( final int modifiers, final Point dCoords,
-                                         final Point viewCoords) {
-      PwResource resource = findNearestResource( dCoords);
-      // System.err.println( "doBackgroundClick: resource " + resource.getName());
-      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-        // do nothing
-      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-        ResourceProfileView.docCoords = dCoords;
-        mouseRightPopupMenu( resource, viewCoords);
-      }
-    } // end doBackgroundClick
-
-
-  } // end class ExtentView
-
-
-  private PwResource findNearestResource( final Point dCoords) {
+  protected final PwResource findNearestResource( final Point dCoords) {
     int docY = (int) dCoords.getY();
     PwResource resourceCandidate = null;
     Iterator reourceProfileItr = resourceProfileList.iterator();
@@ -979,7 +320,13 @@ public class ResourceProfileView extends PartialPlanView  {
   } // end findNearestResourceProfile
 
 
-  private void mouseRightPopupMenu( final PwResource resource, final Point viewCoords) {
+  /**
+   * <code>mouseRightPopupMenu</code>
+   *
+   * @param resource - <code>PwResource</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   */
+  protected final void mouseRightPopupMenu( final PwResource resource, final Point viewCoords) {
     String partialPlanName = partialPlan.getPartialPlanName();
     PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
@@ -1037,14 +384,14 @@ public class ResourceProfileView extends PartialPlanView  {
             }
           } else {
             JOptionPane.showMessageDialog
-              (PlanWorks.getPlanWorks(), "Active token is not a resource transaction",
+              ( PlanWorks.getPlanWorks(), "Active token is not a resource transaction",
               "Active Resource Not Found", JOptionPane.INFORMATION_MESSAGE);
           }
         }
       });
   } // end createActiveResourceItem
 
-  private PwResource getActiveResource( PwResourceTransaction activeResourceTransaction) {
+  private PwResource getActiveResource( final PwResourceTransaction activeResourceTransaction) {
     Iterator resourceItr = partialPlan.getResourceList().iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
@@ -1100,11 +447,11 @@ public class ResourceProfileView extends PartialPlanView  {
                             " (key=" + resourceToFind.getId().toString() + ")");
         isResourceFound = true;
 
-        jGoExtentView.getHorizontalScrollBar().
-          setValue( Math.max( 0, (int) (xLoc - (jGoExtentView.getExtentSize().getWidth() / 2))));
-        jGoExtentView.getVerticalScrollBar().
+        this.getJGoExtentViewHScrollBar().
+          setValue( Math.max( 0, (int) (xLoc - (this.getJGoExtentViewSize().getWidth() / 2))));
+        this.getJGoExtentViewVScrollBar().
           setValue( Math.max( 0, (int) (findResourceYLoc( resourceToFind) -
-                                   (jGoExtentView.getExtentSize().getHeight() / 2))));
+                                   (this.getJGoExtentViewSize().getHeight() / 2))));
       }
     }
     if (! isResourceFound) {
@@ -1145,7 +492,7 @@ public class ResourceProfileView extends PartialPlanView  {
           // draw mark in ResourceTransactionView & scroll to same resource
           if (doesViewFrameExist( PlanWorks.RESOURCE_TRANSACTION_VIEW)) {
             MDIInternalFrame resourceTransFrame =
-              viewSet.openView( PlanWorks. getViewClassName
+              viewSet.openView( PlanWorks.getViewClassName
                                 ( PlanWorks.RESOURCE_TRANSACTION_VIEW));
             ResourceTransactionView resourceTransactionView = null;
             Container contentPane = resourceTransFrame.getContentPane();
@@ -1189,9 +536,9 @@ public class ResourceProfileView extends PartialPlanView  {
    *
    * @param xLoc - <code>int</code> - 
    */
-  public void createTimeMark( int xLoc) {
+  public final void createTimeMark( final int xLoc) {
     if (timeScaleMark != null) {
-      jGoExtentView.getDocument().removeObject( timeScaleMark);
+      this.getJGoExtentDocument().removeObject( timeScaleMark);
       // jGoExtentView.validate();
     } 
     timeScaleMark = new TimeScaleMark( xLoc);
@@ -1199,38 +546,8 @@ public class ResourceProfileView extends PartialPlanView  {
     timeScaleMark.addPoint( xLoc, startYLoc +
                             ((maxCellRow + 1) *
                              ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT) + 2);
-    jGoExtentView.getDocument().addObjectAtTail( timeScaleMark);
+    this.getJGoExtentDocument().addObjectAtTail( timeScaleMark);
   } // end createTimeMark
-
-
-  /**
-   * <code>TimeScaleMark</code> - color the mark and provide its time value
-   *                              as a tool tip.
-   *
-   */
-  class TimeScaleMark extends JGoStroke {
-
-    private int xLoc;
-
-    /**
-     * <code>TimeScaleMark</code> - constructor 
-     *
-     * @param xLoc - <code>int</code> - 
-     */
-    public TimeScaleMark( final int xLocation) {
-      super();
-      this.xLoc = xLocation;
-      setDraggable( false);
-      setResizable( false);
-      setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "red")));
-    }
-
-    public final String getToolTipText() {
-      return String.valueOf( jGoRulerView.scaleXLoc( xLoc) + 1);
-    }
-
-  } // end class TimeScaleMark
-
 
     
 

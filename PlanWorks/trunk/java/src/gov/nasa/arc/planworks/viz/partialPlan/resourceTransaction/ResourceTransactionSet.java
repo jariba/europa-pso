@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.5 2004-03-04 20:52:19 miatauro Exp $
+// $Id: ResourceTransactionSet.java,v 1.6 2004-03-04 21:30:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -348,6 +348,8 @@ public class ResourceTransactionSet extends BasicNode {
         tip.append( "+");
       }
       tip.append( new Double( minDelta).toString());
+      tip.append( "<br>key = ");
+      tip.append( transaction.getId().toString());
       tip.append( "</html>");
       return tip.toString();
     } // end getToolTipText
@@ -361,8 +363,8 @@ public class ResourceTransactionSet extends BasicNode {
   public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html> ");
     tip.append( resource.getName());
-    tip.append( "<br>key=");
-    tip.append( resource.getId().toString());
+    tip.append( "<br>transaction key=");
+    tip.append( transaction.getId().toString());
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText

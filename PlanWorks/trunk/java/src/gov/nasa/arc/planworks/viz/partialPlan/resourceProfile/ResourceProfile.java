@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.5 2004-03-02 02:34:17 taylor Exp $
+// $Id: ResourceProfile.java,v 1.6 2004-03-04 21:30:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -48,6 +48,7 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 
 
 /**
@@ -339,7 +340,7 @@ public class ResourceProfile extends BasicNode implements Extent {
       labelObject.setResizable( false); labelObject.setEditable( false);
       labelObject.setDraggable( false); labelObject.setSelectable( false);
       labelObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
-      labelObject.setFontSize( ResourceProfileView.LEVEL_SCALE_FONT_SIZE);
+      labelObject.setFontSize( ResourceView.LEVEL_SCALE_FONT_SIZE);
       resourceProfileView.getJGoLevelScaleDocument().addObjectAtTail( labelObject);
       level += tickDelta;
     }
