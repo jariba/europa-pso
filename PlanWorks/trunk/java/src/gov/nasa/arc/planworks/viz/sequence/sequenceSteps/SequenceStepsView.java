@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.16 2004-01-12 19:25:54 miatauro Exp $
+// $Id: SequenceStepsView.java,v 1.17 2004-02-12 01:26:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -86,9 +86,10 @@ public class SequenceStepsView extends SequenceView {
   protected static final String DB_TOKENS = "numTokens";
   protected static final String DB_VARIABLES = "numVariables";
   protected static final String DB_CONSTRAINTS = "numConstraints";
-  protected static final Color TOKENS_BG_COLOR = ColorMap.getColor( "seaGreen1");
-  protected static final Color VARIABLES_BG_COLOR = ColorMap.getColor( "skyBlue");
-  protected static final Color DB_CONSTRAINTS_BG_COLOR = ColorMap.getColor( "lightYellow");
+
+  public static final Color TOKENS_BG_COLOR = ColorMap.getColor( "seaGreen1");
+  public static final Color VARIABLES_BG_COLOR = ColorMap.getColor( "skyBlue");
+  public static final Color DB_CONSTRAINTS_BG_COLOR = ColorMap.getColor( "lightYellow");
 
   private PwPlanningSequence planSequence;
   private long startTimeMSecs;
@@ -99,6 +100,13 @@ public class SequenceStepsView extends SequenceView {
   private FontMetrics fontMetrics;
   private Font font;
   private float heightScaleFactor;
+  private List stepElementList;
+
+  /**
+   * variable <code>selectedStepElement</code>
+   *
+   */
+  protected StepElement selectedStepElement;
 
   /**
    * <code>SequenceStepsView</code> - constructor 
@@ -115,6 +123,9 @@ public class SequenceStepsView extends SequenceView {
     this.viewSet = (SequenceViewSet) viewSet;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
+
+    stepElementList = new ArrayList();
+    selectedStepElement = null;
 
     jGoView = new SequenceStepsJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
@@ -217,7 +228,7 @@ public class SequenceStepsView extends SequenceView {
    *
    * @return - <code>JGoDocument</code> - 
    */
-  public JGoDocument getJGoDocument()  {
+  public final JGoDocument getJGoDocument()  {
     return this.document;
   }
 
@@ -226,7 +237,7 @@ public class SequenceStepsView extends SequenceView {
    *
    * @return - <code>JGoView</code> - 
    */
-  public JGoView getJGoView()  {
+  public final JGoView getJGoView()  {
     return jGoView;
   }
 
@@ -235,8 +246,36 @@ public class SequenceStepsView extends SequenceView {
    *
    * @return - <code>FontMetrics</code> - 
    */
-  public FontMetrics getFontMetrics()  {
+  public final FontMetrics getFontMetrics()  {
     return fontMetrics;
+  }
+
+  /**
+   * <code>getStepElementList</code>
+   *
+   * @return - <code>List</code> - of List of StepElement
+   */
+  public final List getStepElementList() {
+    return stepElementList;
+  }
+
+  /**
+   * <code>getSelectedStepElement</code>
+   *
+   * @return - <code>StepElement</code> - 
+   */
+  public final StepElement getSelectedStepElement() {
+    return selectedStepElement;
+  }
+
+  /**
+   * <code>setSelectedStepElement</code>
+   *
+   * @param element - <code>StepElement</code> - 
+   * @return - <code>StepElement</code> - 
+   */
+  public final void setSelectedStepElement( StepElement element) {
+    selectedStepElement = element;
   }
 
   private float computeHeightScaleFactor() {
@@ -270,9 +309,11 @@ public class SequenceStepsView extends SequenceView {
       int [] planDbSizes= (int[]) sizeItr.next();
 
       int height = Math.max( 1, (int) (planDbSizes[0] * heightScaleFactor));
+      List elementList = new ArrayList();
       StepElement stepElement = new StepElement( x, y, height, DB_TOKENS,
                                                  planDbSizes[0], TOKENS_BG_COLOR,
                                                  partialPlanName, planSequence, this);
+      elementList.add( stepElement);
       document.addObjectAtTail( stepElement);
       y += height;
 
@@ -280,6 +321,7 @@ public class SequenceStepsView extends SequenceView {
       stepElement = new StepElement( x, y, height, DB_VARIABLES,
                                      planDbSizes[1], VARIABLES_BG_COLOR,
                                      partialPlanName, planSequence, this);
+      elementList.add( stepElement);
       document.addObjectAtTail( stepElement);
       y += height;
 
@@ -287,29 +329,20 @@ public class SequenceStepsView extends SequenceView {
       stepElement = new StepElement( x, y, height, DB_CONSTRAINTS,
                                      planDbSizes[2], DB_CONSTRAINTS_BG_COLOR,
                                      partialPlanName, planSequence, this);
+      elementList.add( stepElement);
       document.addObjectAtTail( stepElement);
       y += height;
 
+      stepElementList.add( elementList);
       // display step number for every 10th step
       if ((stepNumber % 10) == 0) {
-        JGoText textObject =
-          new JGoText( new Point( x, y + 4),
-                       ViewConstants.TIMELINE_VIEW_FONT_SIZE,
-                       String.valueOf( stepNumber),
-                       ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                       ViewConstants.TIMELINE_VIEW_IS_FONT_BOLD,
-                       ViewConstants.TIMELINE_VIEW_IS_FONT_UNDERLINED,
-                       ViewConstants.TIMELINE_VIEW_IS_FONT_ITALIC,
-                       ViewConstants.TIMELINE_VIEW_TEXT_ALIGNMENT,
-                       ViewConstants.TIMELINE_VIEW_IS_TEXT_MULTILINE,
-                       ViewConstants.TIMELINE_VIEW_IS_TEXT_EDITABLE);
+        JGoText textObject = new JGoText( new Point( x, y + 4), String.valueOf( stepNumber));
         textObject.setResizable( false);
         textObject.setEditable( false);
         textObject.setDraggable( false);
         textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
         document.addObjectAtTail( textObject);
       }
-
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
       stepNumber++;
     }
@@ -363,6 +396,8 @@ public class SequenceStepsView extends SequenceView {
     JMenuItem refreshItem = new JMenuItem("Refresh");
     createRefreshItem(refreshItem, this);
     mouseRightPopup.add(refreshItem);
+
+    createCloseHideShowViewItems( mouseRightPopup);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

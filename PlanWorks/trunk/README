@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.71 2004-02-11 02:29:29 taylor Exp $
+# $Id: README,v 1.72 2004-02-12 01:26:50 taylor Exp $
 #
 
 SUMMARY
@@ -22,6 +22,10 @@ o Automatic location offsets for partial plan views and Content Filter
   windows will no longer be used -- the user will relocate overlaying 
   windows, manually.
 
+o The SequenceStepsView has these Mouse-Right selections: "Close/
+  Hide/Show <sequence-name>/step Views", which will close/hide/show 
+  the partial plan view and Content Filter windows for all sequence
+  steps.
 
 o  GNATS PRs and CRs completed:
    #2241: Timeline view disappear and does not reappear after the 
@@ -29,6 +33,8 @@ o  GNATS PRs and CRs completed:
    #2249: Partial Plan View frames do not maintain user's resizing when stepping.
    #2250: Always show timeline objects in Timeline View.
    #2251: Keep Content Filter frame and view frames in same position when stepping.
+   #2252: When stepping, move SequenceSteps View highlight to current step.
+   #2256: SequenceStepsView: add hide/show all partial plan views.
 
 
 CVS CHECKOUT

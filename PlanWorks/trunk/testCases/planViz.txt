@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.26 2004-01-17 01:22:56 taylor Exp $
+// $Id: planViz.txt,v 1.27 2004-02-12 01:26:51 taylor Exp $
 //
 // PlanWorks
 //
@@ -669,6 +669,7 @@ Post-conditions:
 
 Requirements: N/A
 
+
 PLANVIZ-16
 --------------------
 Exercise stepping forward and backward in single views.
@@ -690,18 +691,21 @@ Method:
   8. Click on the "Step backward" button.
   9. Open a view for the last step.
   10. Click on the "Step forward" button.
+
 Post-conditions:
-  1. Method:1 - The selected view is visible and correct.
+  1. Method:1 - The selected view is visible and correct.  The plan step histogram
+     element in the SequenceStepsView is highlighted.
   2. Method:2 - The view is replaced with the same view of the next step in the same position with
-  possibly different size.
-  3. Method:3 - The view is replaces with the same fiew of the step that was originally opened.
+  possibly different size.  The plan step histogram element highlighting is on the next step.
+  3. Method:3 - The view is replaces with the same view of the step that was originally opened.
+  The plan step histogram element highlighting is on the original step.
   4. Method:4 - The "Overview Window" for the view is visible and correct.
   5. Method:5 - The view is replaced with the same view of the next step in the same position with
   possibly different size and the "Overview Window" is replaced with an "Overview Window" of the 
-  next step.
+  next step.  The plan step histogram element highlighting is on the next step.
   6. Method:6 - The view is replaced with the same view of the previous step in the same position
   with possibly different size and the "Overview Window" is replaced with an "Overview Window" of
-  the previous step.
+  the previous step.  The plan step histogram element highlighting is on the previous step.
   7. Method:7 - The selected view of the first step is visible and correct.
   8. Method:8 - An error dialog indicating that an attempt was made to move to a step previous to
   the first was made.
@@ -710,6 +714,7 @@ Post-conditions:
   last was made.
 
 Requirements: N/A
+
 
 PLANVIZ-17
 --------------------
@@ -772,6 +777,7 @@ Post-conditions:
 
 Requirements: N/A
 
+
 PLANVIZ-19
 --------------------
 Exercise the Navigator View capabilities.
@@ -812,3 +818,28 @@ Post-conditions:
 Requirements: N/A
 
 
+PLANVIZ-20
+--------------------
+Exercise popup menu facilities of sequence steps views.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. The "test1" project is open, and all partial plan views are being
+     displayed for step<nn> of sequence "test1-sequence1".
+  3. Display all partial plan views for another step.
+
+Method:
+  1. In the SequenceSteps View, select Mouse-Right "Hide test1-sequence1/step Views"
+     on the view background.
+  2. In the SequenceSteps View, select Mouse-Right "Show test1-sequence1/step Views"
+     on the view background.
+  3. In the SequenceSteps View, select Mouse-Right "Close test1-sequence1/step Views"
+     on the view background.
+
+Post-conditions:
+  1. Method:1 - All views vanish, but are listed by clicking on the "Window"
+     menu bar item.
+  2. Method:1 - All views reappear in their same locations.
+  3. Method:1 - All views vanish, and are not listed by clicking on the "Window"
+     menu bar item.
+ 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.10 2004-02-03 20:44:01 taylor Exp $
+// $Id: StepElement.java,v 1.11 2004-02-12 01:26:51 taylor Exp $
 //
 // PlanWorks
 //
@@ -75,6 +75,7 @@ public class StepElement extends HistogramElement {
   private SequenceView sequenceView;
   private String dbType;
   private int planDBSize;
+  private Color dbBgColor;
 
   private int stepNumber;
   private int height;
@@ -101,26 +102,23 @@ public class StepElement extends HistogramElement {
     this.height = height;
     this.dbType = dbType;
     this.planDBSize = planDBSize;
+    this.dbBgColor = dbBgColor;
     this.partialPlanName = partialPlanName;
     stepNumber = Utilities.getStepNumber( partialPlanName);
     this.planSequence = planSequence;
     this.sequenceView = sequenceView;
-
-//     transactionList = planSequence.getTransactionsList( stepNumber);
-//     numTransactions = 0;
-//     if (transactionList != null) {
-//       numTransactions = transactionList.size();
-//       Iterator transItr = transactionList.iterator();
-//       System.err.println( "\n\nStep " + this.stepNumber);
-//       while (transItr.hasNext()) {
-//         PwDBTransaction transaction = (PwDBTransaction) transItr.next();
-//         System.err.println( "   type " + transaction.getType() + " objectId " +
-//                             transaction.getObjectId());
-//       }
-//     }
   } // end constructor
 
 
+  /**
+   * <code>getDbBgColor</code>
+   *
+   * @return - <code>Color</code> - 
+   */
+  public final Color getDbBgColor() {
+    return dbBgColor;
+  }
+    
   /**
    * <code>getToolTipText</code>
    *
@@ -152,6 +150,7 @@ public class StepElement extends HistogramElement {
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
     StepElement stepElement = (StepElement) obj.getTopLevelObject();
+    ((SequenceStepsView) sequenceView).setSelectedStepElement( stepElement);
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
