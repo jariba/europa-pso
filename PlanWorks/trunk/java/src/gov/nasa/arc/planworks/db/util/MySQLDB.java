@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.81 2004-02-05 23:26:46 miatauro Exp $
+// $Id: MySQLDB.java,v 1.82 2004-02-13 00:27:37 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -874,7 +874,7 @@ public class MySQLDB {
   synchronized public static void queryVariables(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet variables =
-        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.EnumDomain, Variable.IntDomainType, Variable.IntDomainLowerBound, Variable.IntDomainUpperBound, Variable.TokenId, Variable.ParameterName, ConstraintVarMap.ConstraintId FROM Variable LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getId().toString()));
+        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.EnumDomain, Variable.IntDomainType, Variable.IntDomainLowerBound, Variable.IntDomainUpperBound, Variable.ParentId, Variable.ParameterName, ConstraintVarMap.ConstraintId FROM Variable LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getId().toString()));
       PwVariableImpl variable = null;
       while(variables.next()) {
         Integer variableId = new Integer(variables.getInt("Variable.VariableId"));
@@ -892,15 +892,14 @@ public class MySQLDB {
                                        variables.getString("Variable.IntDomainUpperBound"));
           }
           variable = new PwVariableImpl(variableId, variables.getString("Variable.VariableType"),
-                                        domain, partialPlan);
+                                        new Integer(variables.getInt("Variable.ParentId")), domain,
+                                        partialPlan);
           partialPlan.addVariable(variableId, variable);
 
           String parameterName = variables.getString("Variable.ParameterName");
           if(!variables.wasNull()) {
             variable.addParameter(parameterName);
           }
-          Integer tokenId = new Integer(variables.getInt("Variable.TokenId"));
-          variable.addToken(tokenId);
         }
         Integer constraintId = new Integer(variables.getInt("ConstraintVarMap.ConstraintId"));
         if(!variables.wasNull()) {
