@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.96 2004-04-22 19:26:19 taylor Exp $
+// $Id: MySQLDB.java,v 1.97 2004-04-30 21:50:35 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +39,7 @@ import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceInstantImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceTransactionImpl;
+import gov.nasa.arc.planworks.db.impl.PwRuleImpl;
 import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
@@ -47,6 +49,7 @@ import gov.nasa.arc.planworks.db.impl.PwVariableQueryImpl;
 import gov.nasa.arc.planworks.util.OneToManyMap;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UniqueSet;
+import gov.nasa.arc.planworks.util.Utilities;
 
 public class MySQLDB {
   
@@ -245,7 +248,13 @@ public class MySQLDB {
    */
 
   synchronized public static void loadFile(final String file, final String tableName) {
-      updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
+    updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
+  }
+
+  synchronized public static void loadFile(final String file, final String tableName, 
+                                           final String columnSeparator, 
+                                           final String entrySeparator) {
+    updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName).concat(" FIELDS TERMINATED BY ").concat(columnSeparator).concat(" LINES TERMINATED BY ").concat(entrySeparator));
   }
 
   /**
@@ -419,7 +428,9 @@ public class MySQLDB {
    */
 
   synchronized public static Long addSequence(final String url, final Integer projectId) {
-    loadFile(url + System.getProperty("file.separator") + "sequence", "Sequence");
+    //loadFile(url + System.getProperty("file.separator") + "sequence", "Sequence");
+    loadFile(url + System.getProperty("file.separator") + "sequence", "Sequence",
+             DbConstants.SEQ_COL_SEP, DbConstants.SEQ_LINE_SEP);
     Long latestSequenceId = latestSequenceId();
     updateDatabase("UPDATE Sequence SET ProjectId=".concat(projectId.toString()).concat(" WHERE SequenceId=").concat(latestSequenceId.toString()));
     return latestSequenceId;
@@ -716,7 +727,7 @@ public class MySQLDB {
     PwDBTransactionImpl retval = null;
     try {
       String [] info = {"", "", ""};
-      retval = new PwDBTransactionImpl(s.getString("TransactionType"),
+      retval = new PwDBTransactionImpl(s.getString("TransactionName"),
                                        new Integer(s.getInt("TransactionId")),
                                        s.getString("Source"),
                                        new Integer(s.getInt("ObjectId")),
@@ -747,7 +758,7 @@ public class MySQLDB {
     Map retval = new HashMap();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, TransactionId, StepNumber, PartialPlanId, TransactionInfo, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY StepNumber, TransactionId"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, TransactionId, StepNumber, PartialPlanId, TransactionInfo, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY StepNumber, TransactionId"));
       while(transactions.next()) {
         PwDBTransactionImpl transaction = instantiateTransaction(transactions);
         retval.put(Long.toString(transactions.getLong("PartialPlanId"))
@@ -764,10 +775,11 @@ public class MySQLDB {
    * @param partialPlan The partial plan object to which the structure should be attached
    */
 
-  synchronized public static void createSlotTokenNodesStructure(PwPartialPlanImpl partialPlan) {
+  synchronized public static void createSlotTokenNodesStructure(PwPartialPlanImpl partialPlan,
+                                                                final Long seqId) {
     try {
       ResultSet tokens = 
-        queryDatabase("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.ExtraData, Token.ParentId FROM Token WHERE Token.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId"));
+        queryDatabase("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.ExtraData, Token.ParentId, RuleTokenMap.RuleId FROM Token LEFT JOIN RuleTokenMap ON RuleTokenMap.SlaveId=Token.TokenId && RuleTokenMap.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.PartialPlanId=").concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId"));
       while(tokens.next()) {
         Integer tokenId = new Integer(tokens.getInt("Token.TokenId"));
         boolean isFreeToken = false;
@@ -789,29 +801,30 @@ public class MySQLDB {
         if(!tokens.wasNull()) {
           tokenRelIds = new String(blob.getBytes(1, (int) blob.length()));
         }
-        
+        String extraInfo = null;
+        blob = tokens.getBlob("Token.ExtraData");
+        if(!tokens.wasNull()) {
+          extraInfo = new String(blob.getBytes(1, (int) blob.length()));
+        }
+
+        PwTokenImpl t = null;
         if(tokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
-          String transInfo = null;
-          blob = tokens.getBlob("Token.ExtraData");
-          if(!tokens.wasNull()) {
-            transInfo = new String(blob.getBytes(1, (int) blob.length()));
-          }
-          new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
-                                        durationVarId, stateVarId, objectVarId, parentId, 
-                                        tokenRelIds, paramVarIds, transInfo, partialPlan);
+          t = new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
+                                            durationVarId, stateVarId, objectVarId, parentId, 
+                                            tokenRelIds, paramVarIds, extraInfo, partialPlan);
         }
         else if(tokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
-          String tokenInfo = null;
-          blob = tokens.getBlob("Token.ExtraData");
-          if(!tokens.wasNull()) {
-            tokenInfo = new String(blob.getBytes(1, (int) blob.length()));
-          }
-          new PwTokenImpl(tokenId, isValueToken, new Integer(tokens.getInt("Token.SlotId")),
-                          predName, startVarId, endVarId, durationVarId, stateVarId, objectVarId,
-                          parentId, tokenRelIds, paramVarIds, tokenInfo, partialPlan);
+          t = new PwTokenImpl(tokenId, isValueToken, new Integer(tokens.getInt("Token.SlotId")),
+                              predName, startVarId, endVarId, durationVarId, stateVarId, 
+                              objectVarId, parentId, tokenRelIds, paramVarIds, extraInfo, 
+                              partialPlan);
+        }
+        int ruleKey = tokens.getInt("RuleTokenMap.RuleId");
+        if(!tokens.wasNull()) {
+          t.setRuleId(new Integer(ruleKey));
         }
       }
-      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.ExtraData FROM Token WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
+      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.ExtraData, RuleTokenMap.RuleId FROM Token LEFT JOIN RuleTokenMap ON RuleTokenMap.SlaveId=Token.TokenId && RuleTokenMap.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.IsFreeToken=1 && Token.PartialPlanId=").concat(partialPlan.getId().toString()));
       while(freeTokens.next()) {
         Integer tokenId = new Integer(freeTokens.getInt("Token.TokenId"));
         boolean isFreeToken = true;
@@ -832,26 +845,26 @@ public class MySQLDB {
         if(!freeTokens.wasNull()) {
           tokenRelIds = new String(blob.getBytes(1, (int) blob.length()));
         }
-
+        String extraInfo = null;
+        blob = freeTokens.getBlob("Token.ExtraData");
+        if(!freeTokens.wasNull()) {
+          extraInfo = new String(blob.getBytes(1, (int) blob.length()));
+        }
+        PwTokenImpl t = null;
         if(freeTokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
-          String transInfo = null;
-          blob = freeTokens.getBlob("Token.ExtraData");
-          if(!freeTokens.wasNull()) {
-            transInfo = new String(blob.getBytes(1, (int) blob.length()));
-          }
-          new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
-                                        durationVarId, stateVarId, objectVarId, DbConstants.NO_ID,
-                                        tokenRelIds, paramVarIds, transInfo, partialPlan);
+          t = new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
+                                            durationVarId, stateVarId, objectVarId,
+                                            DbConstants.NO_ID, tokenRelIds, paramVarIds, extraInfo,
+                                            partialPlan);
         }
         else if(freeTokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
-          String tokenInfo = null;
-          blob = freeTokens.getBlob("Token.ExtraData");
-          if(!freeTokens.wasNull()) {
-            tokenInfo = new String(blob.getBytes(1, (int) blob.length()));
-          }
-          new PwTokenImpl(tokenId, isValueToken, DbConstants.NO_ID, predName, startVarId, endVarId,
-                          durationVarId, stateVarId, objectVarId, DbConstants.NO_ID, tokenRelIds,
-                          paramVarIds, tokenInfo, partialPlan);
+          t = new PwTokenImpl(tokenId, isValueToken, DbConstants.NO_ID, predName, startVarId, 
+                              endVarId, durationVarId, stateVarId, objectVarId, DbConstants.NO_ID,
+                              tokenRelIds, paramVarIds, extraInfo, partialPlan);
+        }
+        int ruleKey = freeTokens.getInt("RuleTokenMap.RuleId");
+        if(!freeTokens.wasNull()) {
+          t.setRuleId(new Integer(ruleKey));
         }
       }
     }
@@ -993,10 +1006,73 @@ public class MySQLDB {
     }
   }
 
+  synchronized public static Map queryRules(final Long sequenceId) {
+    Map retval = new HashMap();
+    try {
+      ResultSet ruleTextInDb = queryDatabase("SELECT RulesText FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
+      ruleTextInDb.first();
+      Blob blob = ruleTextInDb.getBlob("RulesText");
+      if(ruleTextInDb.wasNull()) {
+        return retval;
+      }
+      String [] text = (new String(blob.getBytes(1, (int) blob.length()))).split("\n");
+      OneToManyMap rulesText = new OneToManyMap();
+      String fileName = "";
+      for(int i = 0; i < text.length; i++) {
+        if(text[i].indexOf("--begin ") != -1) {
+          String [] name = text[i].split("\\s", 2);
+          fileName = name[1];
+          continue;
+        }
+        rulesText.put(fileName, text[i]);
+      }
+
+      char startDelim = System.getProperty("model.rule.delimiter").charAt(0);
+      char endDelim = System.getProperty("model.rule.delimiter").charAt(1);
+
+      ResultSet rules = queryDatabase("SELECT SequenceId, RuleId, RuleSource FROM Rules WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY RuleSource"));
+      while(rules.next()) {
+        Blob rblob = rules.getBlob("RuleSource");
+        String source = new String(rblob.getBytes(1, (int) rblob.length()));
+        String [] fileIndex = source.split(",", 2);
+        int startIndex = (Integer.parseInt(fileIndex[1]) - 1);
+        int endIndex = startIndex;
+        List ruleText = rulesText.getList(fileIndex[0]);
+        int delimCounter = 0;
+        String textArg = "";
+        if(startIndex > ruleText.size()) {
+          throw new IllegalStateException("Start index OOB: " + startIndex + " " + ruleText.size());
+        }
+        if(Utilities.countOccurrences(startDelim, (String) ruleText.get(startIndex)) > 0) {
+          for(; endIndex < ruleText.size(); endIndex++) {
+            delimCounter += Utilities.countOccurrences(startDelim,
+                                                       (String) ruleText.get(endIndex));
+            delimCounter -= Utilities.countOccurrences(endDelim,
+                                                       (String) ruleText.get(endIndex));
+            textArg += (String) ruleText.get(endIndex) + "\n";
+            if(delimCounter == 0) {
+              break;
+            }
+          }
+          Integer id = new Integer(rules.getInt("RuleId"));
+          if(Utilities.countOccurrences(startDelim, textArg) != 
+             Utilities.countOccurrences(endDelim, textArg)) {
+            throw new IllegalStateException("Close/end delims for rule don't match");
+          }
+          retval.put(id, new PwRuleImpl(new Long(rules.getInt("SequenceId")), id, textArg));
+        }
+      }
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
+
   synchronized public static List queryTransactionsForStep(final Long seqId, final Long ppId) {
     List retval = new ArrayList();
     try {
-      ResultSet transactions = queryDatabase("SELECT TransactionType, ObjectId, Source, TransactionId, StepNumber, TransactionInfo, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(seqId.toString()).concat(" && PartialPlanId=").concat(ppId.toString()).concat(" ORDER BY StepNumber, TransactionId"));
+      ResultSet transactions = queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, TransactionId, StepNumber, TransactionInfo, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(seqId.toString()).concat(" && PartialPlanId=").concat(ppId.toString()).concat(" ORDER BY StepNumber, TransactionId"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1010,7 +1086,7 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionType LIKE 'CONSTRAINT_%'ORDER BY TransactionId"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionName LIKE 'CONSTRAINT_%'ORDER BY TransactionId"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1025,7 +1101,7 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionType LIKE 'TOKEN_%' ORDER BY TransactionId"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionName LIKE 'TOKEN_%' ORDER BY TransactionId"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1040,7 +1116,7 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionType LIKE 'VARIABLE_%' ORDER BY TransactionId"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionName LIKE 'VARIABLE_%' ORDER BY TransactionId"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1056,7 +1132,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1072,7 +1148,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1088,7 +1164,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1103,7 +1179,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1118,7 +1194,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1133,7 +1209,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionName LIKE '").concat(type).concat("'"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1146,7 +1222,7 @@ public class MySQLDB {
   synchronized public static List queryStepsWithRestrictions(final Long sequenceId) {
     List retval = new UniqueSet();
     try {
-      ResultSet transactions = queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RESTRICTED).concat("'"));
+      ResultSet transactions = queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.TT_RESTRICTION).concat("'"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1160,7 +1236,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet transactions = 
-        queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RELAXED).concat("'"));
+        queryDatabase("SELECT TransactionType, TransactionName, ObjectId, Source, StepNumber, TransactionInfo, TransactionId, PartialPlanId, SequenceId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.TT_RELAXATION).concat("'"));
       while(transactions.next()) {
         retval.add(instantiateTransaction(transactions));
       }
@@ -1174,7 +1250,7 @@ public class MySQLDB {
   synchronized public static List queryStepsWithUnitVariableDecisions(final PwPlanningSequenceImpl seq) {
     List retval = new UniqueSet();
     try {
-      ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
+      ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
       while(transactedSteps.next()) {
 	int stepNum = transactedSteps.getInt("StepNumber");
         int varId = transactedSteps.getInt("ObjectId");
@@ -1198,7 +1274,7 @@ public class MySQLDB {
   synchronized public static List queryStepsWithNonUnitVariableDecisions(final PwPlanningSequenceImpl seq) {
     List retval = new ArrayList();
     try {
-      ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
+      ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
       while(transactedSteps.next()) {
 	int stepNum = transactedSteps.getInt("StepNumber");
         int varId = transactedSteps.getInt("ObjectId");
@@ -1495,10 +1571,9 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet names = 
-        queryDatabase("SELECT DISTINCT TransactionType FROM Transaction WHERE TransactionType LIKE "
-                      + type);
+        queryDatabase("SELECT DISTINCT TransactionName FROM Transaction WHERE TransactionName LIKE " + type);
       while(names.next()) {
-        retval.add(names.getString("TransactionType"));
+        retval.add(names.getString("TransactionName"));
       }
     }
     catch(SQLException sqle) {
