@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceImpl.java,v 1.4 2004-03-23 18:20:47 miatauro Exp $
+// $Id: PwResourceImpl.java,v 1.5 2004-08-14 01:39:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,12 +14,18 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceInstant;
+import gov.nasa.arc.planworks.db.PwResourceTransaction;
+import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.UniqueSet;
 
 
@@ -154,6 +160,36 @@ public class PwResourceImpl extends PwObjectImpl implements PwResource {
     retval.append(horizonStart).append(",").append(horizonEnd).append(",").append(initialCapacity);
     retval.append(",").append(levelLimitMin).append(",").append(levelLimitMax).append("\n");
     return retval.toString();
+  }
+
+  public List getNeighbors() {
+    List classes = new LinkedList();
+    classes.add(PwResourceTransaction.class);
+    classes.add(PwVariable.class);
+    classes.add(PwResource.class);
+    return getNeighbors(classes);
+  }
+
+  public List getNeighbors(List classes) {
+    List retval = new LinkedList();
+    for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
+      Class cclass = (Class) classIt.next();
+      if(cclass.equals(PwResourceTransaction.class))
+        retval.addAll(getTransactionSet());
+      else if(cclass.equals(PwVariable.class))
+        retval.addAll(((PwVariableContainer) this).getVariables());
+      else if(cclass.equals(PwResource.class)) {
+	if (getParent() != null) {
+	  retval.add(getParent());
+	}
+        retval.addAll(getComponentList());
+      }
+    }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, Set ids) {
+    return PwEntityImpl.getNeighbors(this, classes, ids);
   }
 
 } // end class PwResourceImpl

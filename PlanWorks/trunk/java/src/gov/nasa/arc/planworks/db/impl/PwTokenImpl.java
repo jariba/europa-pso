@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.51 2004-08-10 21:17:08 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.52 2004-08-14 01:39:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,6 +32,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwRule;
+import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.util.UniqueSet;
@@ -449,10 +450,12 @@ public class PwTokenImpl implements PwToken {
     classes.add(PwRuleInstance.class);
     classes.add(PwVariable.class);
     classes.add(PwObject.class);
+    classes.add(PwSlot.class);
     return getNeighbors(classes);
   }
 
   public List getNeighbors(List classes) {
+    PwSlot slotParent = null; PwObject objectParent = null;
     List retval = new UniqueSet();
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
@@ -470,9 +473,22 @@ public class PwTokenImpl implements PwToken {
 	}
       } else if(cclass.equals(PwVariable.class)) {
         retval.addAll(getVariablesList());
+      } else if(cclass.equals(PwSlot.class)) {
+	if ((slotId != null) && (! slotId.equals( DbConstants.NO_ID))) {
+	  slotParent = partialPlan.getSlot(slotId);
+	}
       } else if(cclass.equals(PwObject.class)) {
-        retval.add(partialPlan.getObject(getParentId()));
+	if ((getParentId() != null) && (! getParentId().equals( DbConstants.NO_ID))) {
+	  objectParent = partialPlan.getObject(getParentId());
+	}
       }
+    }
+    if (slotParent != null) {
+      retval.add( slotParent);
+    } else if (objectParent != null) {
+      retval.add( objectParent);
+    } else {
+      // free token
     }
     return new ArrayList( retval);
   }

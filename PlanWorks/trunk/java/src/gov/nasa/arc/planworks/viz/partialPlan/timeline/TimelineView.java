@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.63 2004-08-07 01:18:29 taylor Exp $
+// $Id: TimelineView.java,v 1.64 2004-08-14 01:39:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -64,6 +64,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -91,6 +92,7 @@ public class TimelineView extends PartialPlanView {
   private boolean isAutoSnapEnabled;
   private boolean isStepButtonView;
   private Integer focusNodeId;
+  private ProgressMonitorThread progressMonThread;
 
 
   /**
@@ -405,9 +407,10 @@ public class TimelineView extends PartialPlanView {
     if (isRedraw) {
       title = "Redrawing";
     }
-    progressMonitorThread( title + " Timeline View ...", 0, numTimelines,
-                           Thread.currentThread(), this);
-    if (! progressMonitorWait( this)) {
+    progressMonThread =
+      progressMonitorThread( title + " Timeline View ...", 0, numTimelines,
+			     Thread.currentThread(), this);
+    if (! progressMonitorWait( progressMonThread, this)) {
       return false;
     }
     numTimelines = 0;
@@ -439,22 +442,23 @@ public class TimelineView extends PartialPlanView {
         x += timelineNode.getSize().getWidth();
         isValid = createSlotNodes(timeline, timelineNode, x, y, timelineColor);
         if(! isValid) {
-          isProgressMonitorCancel = true;
+	  progressMonThread.setProgressMonitorCancel();
           return isValid;
         }
         y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
-        if (progressMonitor.isCanceled()) {
+        if (progressMonThread.getProgressMonitor().isCanceled()) {
           String msg = "User Canceled Timeline View Rendering";
           System.err.println( msg);
-          isProgressMonitorCancel = true;
+	  progressMonThread.setProgressMonitorCancel();
           return false;
         }
         numTimelines++;
-        progressMonitor.setProgress( numTimelines * ViewConstants.MONITOR_MIN_MAX_SCALING);
+        progressMonThread.getProgressMonitor().setProgress
+	  ( numTimelines * ViewConstants.MONITOR_MIN_MAX_SCALING);
       }
     }
     isValid = createFreeTokenNodes( x, y);
-    isProgressMonitorCancel = true;
+    progressMonThread.setProgressMonitorCancel();
     return isValid;
 
   } // end createTimelineAndSlotNodes

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.14 2004-08-06 00:53:24 miatauro Exp $
+// $Id: PwConstraintImpl.java,v 1.15 2004-08-14 01:39:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -150,7 +150,8 @@ public class PwConstraintImpl implements PwConstraint {
 
   public List getNeighbors() {
     List classes = new LinkedList();
-    classes.add(Object.class);
+    // classes.add(Object.class);
+    classes.add(PwVariable.class);
     return getNeighbors(classes);
   }
 

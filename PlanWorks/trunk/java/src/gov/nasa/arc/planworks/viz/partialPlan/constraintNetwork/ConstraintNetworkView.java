@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.81 2004-08-10 21:17:10 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.82 2004-08-14 01:39:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -74,6 +74,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeys;
 import gov.nasa.arc.planworks.viz.util.MessageDialog;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -134,6 +135,9 @@ public class ConstraintNetworkView extends PartialPlanView {
   private List highlightPathNodesList;
   private Integer variableKey1;
   private Integer variableKey2;
+  private ProgressMonitorThread initPMThread;
+  private ProgressMonitorThread redrawPMThread;
+  private ProgressMonitorThread findPathPMThread;
 
   /**
    * <code>ConstraintNetworkView</code> - constructor -
@@ -345,9 +349,10 @@ public class ConstraintNetworkView extends PartialPlanView {
 
     double maxTokenWidth = 0.;
     int numContainerNodes = containerNodeMap.size() * 2;
-    progressMonitorThread( "Rendering Constraint Network View ...", 0, numContainerNodes,
-                           Thread.currentThread(), this);
-    if (! progressMonitorWait( this)) {
+    initPMThread =
+      progressMonitorThread( "Rendering Constraint Network View ...", 0, numContainerNodes,
+			     Thread.currentThread(), this);
+    if (! progressMonitorWait( initPMThread, this)) {
       closeView( this);
       return;
     }
@@ -360,15 +365,16 @@ public class ConstraintNetworkView extends PartialPlanView {
       if(node.getSize().getWidth() > maxTokenWidth) {
         maxTokenWidth = node.getSize().getWidth();
       }
-      if (progressMonitor.isCanceled()) {
+      if (initPMThread.getProgressMonitor().isCanceled()) {
         String msg = "User Canceled Constraint Network View Rendering";
         System.err.println( msg);
-        isProgressMonitorCancel = true;
+        initPMThread.setProgressMonitorCancel();
         closeView( this);
         return;
       }
       numContainerNodes++;
-      progressMonitor.setProgress( numContainerNodes * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      initPMThread.getProgressMonitor().setProgress( numContainerNodes *
+						     ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
 
     VERTICAL_TOKEN_BAND_X = (maxTokenWidth / 2) + NODE_SPACING;
@@ -399,7 +405,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     isLayoutNeeded = false;
     focusNode = null;
     focusNodeId = null;
-    isProgressMonitorCancel = true;
+    initPMThread.setProgressMonitorCancel();
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
@@ -442,13 +448,14 @@ public class ConstraintNetworkView extends PartialPlanView {
       // setVisible(true | false) depending on keys
       setNodesLinksVisible();
 
-      progressMonitorThread( "Redrawing Constraint Network View ...", 0, 6,
-			     Thread.currentThread(), this);
-      if (! progressMonitorWait( this)) {
+      redrawPMThread = 
+	progressMonitorThread( "Redrawing Constraint Network View ...", 0, 6,
+			       Thread.currentThread(), this);
+      if (! progressMonitorWait( redrawPMThread, this)) {
 	closeView( this);
 	return;
       }
-      progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      redrawPMThread.getProgressMonitor().setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
       // content spec apply/reset do not change layout, only ConstraintNetworkTokenNode/
       // variableNode/constraintNode opening/closing
       if (isLayoutNeeded) {
@@ -470,7 +477,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 			  (stopTimeMSecs - startTimeMSecs) + " msecs.");
       startTimeMSecs = 0L;
       this.setVisible( true);
-      isProgressMonitorCancel = true;
+      redrawPMThread.setProgressMonitorCancel();
       handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     }
   } // end redrawView
@@ -1786,18 +1793,20 @@ public class ConstraintNetworkView extends PartialPlanView {
   private void findVariablePathDoit( final FindVariablePath findVariablePath) {
     final SwingWorker worker = new SwingWorker() {
 	public Object construct() {
-	  progressMonitorThread( "Finding Variable Path ...", 0, 6, Thread.currentThread(),
-				 findVariablePath);
-	  if (! progressMonitorWait( ConstraintNetworkView.this)) {
+	  findPathPMThread =
+	    progressMonitorThread( "Finding Variable Path ...", 0, 6, Thread.currentThread(),
+				   findVariablePath);
+	  if (! progressMonitorWait( findPathPMThread, ConstraintNetworkView.this)) {
 	    System.err.println( "progressMonitorWait failed");
 	    findVariablePath.setVarConstrKeyList( new ArrayList());
 	    return null;
 	  }
-	  progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+	  findPathPMThread.getProgressMonitor().setProgress
+	    ( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
 	  findVariablePath.setVarConstrKeyList( partialPlan.getVariablePath( variableKey1,
 									     variableKey2));
-	  isProgressMonitorCancel = true;
+	  findPathPMThread.setProgressMonitorCancel();
 	  return null;
 	}
       };
@@ -1880,7 +1889,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 	  nodeList.add( constraintNode);
 	} else {
 	  JOptionPane.showMessageDialog
-	    ( PlanWorks.getPlanWorks(), "partial plan key '" + vcKey + " is not handled",
+	    ( PlanWorks.getPlanWorks(), "partial plan key '" + vcKey + "' is not handled",
 	      "Find Variable Path Error", JOptionPane.ERROR_MESSAGE);
 	  break;
 	}

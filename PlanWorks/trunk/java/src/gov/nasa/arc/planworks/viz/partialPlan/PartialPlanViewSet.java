@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.21 2004-07-27 21:58:10 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.22 2004-08-14 01:39:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -110,6 +110,11 @@ public class PartialPlanViewSet extends ViewSet {
 
   private void commonConstructor() {
     synchronized( staticObject) {
+      if (((PwPartialPlan) viewable).isDummyPartialPlan()) {
+	// using dummy partial plan for DBTransactionView when step files are not
+	// in database or on disk
+	return;
+      }
       this.colorStream = new ColorStream();
 
       //this is to ensure that the colors always come out in the right order.
@@ -148,7 +153,9 @@ public class PartialPlanViewSet extends ViewSet {
         //                                    (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
         this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
       } else {
-        this.contentSpecWindow.setLocation( state.getContentSpecWindowLocation());
+	if (state.getContentSpecWindowLocation() != null) {
+	  this.contentSpecWindow.setLocation( state.getContentSpecWindowLocation());
+	}
       }
       this.contentSpecWindow.setVisible(true);
 
@@ -214,7 +221,11 @@ public class PartialPlanViewSet extends ViewSet {
   }
 
   public List getCurrentSpec() {
-    return contentSpec.getCurrentSpec();
+    if (contentSpec != null) {
+      return contentSpec.getCurrentSpec();
+    } else {
+      return null;
+    }
   }
   
   /**

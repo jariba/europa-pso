@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.27 2004-08-06 00:53:27 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.28 2004-08-14 01:39:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,6 +26,7 @@ import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
+import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
@@ -165,7 +166,10 @@ public class PwVariableImpl implements PwVariable {
   public List getNeighbors() {
     List classes = new LinkedList();
     classes.add(PwConstraint.class);
-    classes.add(PwVariableContainer.class);
+    // classes.add(PwVariableContainer.class);
+    classes.add(PwTimeline.class);
+    classes.add(PwToken.class);
+    classes.add(PwObject.class);
     return getNeighbors(classes);
   }
 
@@ -191,8 +195,13 @@ public class PwVariableImpl implements PwVariable {
         retval.add(getParent());
         addedParent = true;
       }
-      else if(!addedParent && cclass.equals(PwRuleInstance.class) &&
-              getParent() instanceof PwRuleInstance) {
+//       else if(!addedParent && cclass.equals(PwRuleInstance.class) &&
+//               getParent() instanceof PwRuleInstance) {
+//         retval.add(getParent());
+//         addedParent = true;
+//       }
+      else if(!addedParent && cclass.equals(PwTimeline.class) &&
+              getParent() instanceof PwTimeline) {
         retval.add(getParent());
         addedParent = true;
       }

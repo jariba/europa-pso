@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.17 2004-08-06 20:05:29 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.18 2004-08-14 01:39:14 taylor Exp $
 //
 // PlanWorks
 //
@@ -64,25 +64,34 @@ public class PartialPlanViewMenu extends JPopupMenu{
    * @param partialPlanName - <code>String</code> - 
    * @param planSequence - <code>PwPlanningSequence</code> - 
    * @param viewListenerList - <code>List</code> - 
+   * @return - <code>int</code> - 
    */
-  public void buildPartialPlanViewMenu( String partialPlanName,
-                                        PwPlanningSequence planSequence,
-                                        List viewListenerList) {
+  public int buildPartialPlanViewMenu( String partialPlanName,
+				       PwPlanningSequence planSequence,
+				       List viewListenerList) {
     if (viewListenerList.size() != PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()) {
       System.err.println( "buildPartialPlanViewMenu: num view listeners not = " +
                           PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
       System.exit( -1);
     }
+    int numItemsAdded = 0;
     Iterator viewNamesItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
     Iterator viewListenerItr = viewListenerList.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
-      PartialPlanViewMenuItem viewItem = 
-        createOpenViewItem( viewName, partialPlanName, planSequence,
-                            (ViewListener) viewListenerItr.next());
-      this.add(viewItem);
+      ViewListener viewListener = (ViewListener) viewListenerItr.next();
+      if (((! viewName.equals( ViewConstants.DB_TRANSACTION_VIEW)) &&
+	  planSequence.doesPartialPlanExist( partialPlanName)) ||
+	  (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW) &&
+	   (planSequence.hasLoadedTransactionFile( partialPlanName) ||
+	    planSequence.isTransactionFileOnDisk()))) {
+	PartialPlanViewMenuItem viewItem = createOpenViewItem( viewName, partialPlanName,
+							       planSequence, viewListener);
+	numItemsAdded++;
+	this.add(viewItem);
+      }
     }
-
+    return numItemsAdded;
   } // end buildPartialPlanViewMenu
 
   public boolean getViewListenerWait01() {
@@ -220,7 +229,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
                           viewName + " not handled");
       System.exit( -1);
     }
-  } // end findIdInFrame
+  } // end findIdInView
 
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.56 2004-08-07 01:18:29 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.57 2004-08-14 01:39:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -70,6 +70,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.TimeScaleView;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -107,6 +108,7 @@ public class TemporalExtentView extends PartialPlanView  {
   private boolean isStepButtonView;
   private Integer focusNodeId;
   private int numOperations;
+  private ProgressMonitorThread progressMonThread;
 
   /**
    * <code>TemporalExtentView</code> - constructor 
@@ -372,22 +374,24 @@ public class TemporalExtentView extends PartialPlanView  {
     if (isRedraw) {
       title = "Redrawing";
     }
-    progressMonitorThread( title + " Temporal Extent View:", 0, numOperations,
-                           Thread.currentThread(), this);
-    if (! progressMonitorWait( this)) {
+    progressMonThread = 
+      progressMonitorThread( title + " Temporal Extent View:", 0, numOperations,
+			     Thread.currentThread(), this);
+    if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);
       return;
     }
     numOperations = 1;
-    progressMonitor.setNote( "Creating nodes ...");
-    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+    progressMonThread.getProgressMonitor().setNote( "Creating nodes ...");
+    progressMonThread.getProgressMonitor().setProgress
+      ( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
     createTemporalNodes( tokenList);
 
-    if (progressMonitor.isCanceled()) {
+    if ( progressMonThread.getProgressMonitor().isCanceled()) {
       String msg = "User Canceled Temporal Extent View Rendering";
       System.err.println( msg);
-      isProgressMonitorCancel = true;
+      progressMonThread.setProgressMonitorCancel();
       closeView( this);
       return;
     }
@@ -395,14 +399,15 @@ public class TemporalExtentView extends PartialPlanView  {
     isContentSpecRendered( ViewConstants.TEMPORAL_EXTENT_VIEW, showDialog);
 
     numOperations++;
-    progressMonitor.setNote( "Allocating layout ...");
-    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+     progressMonThread.getProgressMonitor().setNote( "Allocating layout ...");
+     progressMonThread.getProgressMonitor().setProgress
+       ( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
     layoutTemporalNodes();
     // equalize view widths so scrollbars are equal
     equalizeViewWidths( isRedraw);
 
-    isProgressMonitorCancel = true;
+    progressMonThread.setProgressMonitorCancel();
   } // end createTemporalExtentView
 
   /**
@@ -536,7 +541,7 @@ public class TemporalExtentView extends PartialPlanView  {
           jGoExtentView.getDocument().addObjectAtTail( temporalNode);
         }
       }
-      if (progressMonitor.isCanceled()) {
+      if ( progressMonThread.getProgressMonitor().isCanceled()) {
         cancelRendering();
         return;
       }
@@ -546,7 +551,7 @@ public class TemporalExtentView extends PartialPlanView  {
   private void cancelRendering() {
     String msg = "User Canceled Temporal Extent View Rendering";
     System.err.println( msg);
-    isProgressMonitorCancel = true;
+    progressMonThread.setProgressMonitorCancel();
     closeView( this);
   } // end cancelRendering
 
@@ -575,13 +580,14 @@ public class TemporalExtentView extends PartialPlanView  {
                                      JOptionPane.ERROR_MESSAGE);
       return;
     }
-    if (progressMonitor.isCanceled()) {
+    if (progressMonThread.getProgressMonitor().isCanceled()) {
       cancelRendering();
       return;
     }
     numOperations++;
-    progressMonitor.setNote( "Rendering nodes ...");
-    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+     progressMonThread.getProgressMonitor().setNote( "Rendering nodes ...");
+     progressMonThread.getProgressMonitor().setProgress( numOperations *
+						ViewConstants.MONITOR_MIN_MAX_SCALING);
 
 
     for (Iterator it = extents.iterator(); it.hasNext();) {
@@ -593,7 +599,7 @@ public class TemporalExtentView extends PartialPlanView  {
       }
       // render the node
       temporalNode.configure();
-      if (progressMonitor.isCanceled()) {
+      if (progressMonThread.getProgressMonitor().isCanceled()) {
         cancelRendering();
         return;
       }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.12 2004-08-05 00:24:21 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.13 2004-08-14 01:39:08 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -56,7 +56,7 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-    PlanWorks.projectMenu.setEnabled(false);
+    PlanWorks.getPlanWorks().projectMenu.setEnabled(false);
     addSequence();
     PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);

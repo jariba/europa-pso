@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.49 2004-08-05 00:24:23 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.50 2004-08-14 01:39:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -327,7 +327,8 @@ public class PwProjectImpl extends PwProject {
     if(seq != null) {
       planningSequences.remove(seq);
       System.gc();
-      planningSequences.add(new PwPlanningSequenceImpl(seqName, seq.getId()));
+      // planningSequences.add(new PwPlanningSequenceImpl(seqName, seq.getId()));
+      planningSequences.add(new PwPlanningSequenceImpl(seq.getUrl(), this));
       return seq;
     }
     return null;
@@ -344,7 +345,8 @@ public class PwProjectImpl extends PwProject {
     if(seq != null) {
       planningSequences.remove(seq);
       System.gc();
-      planningSequences.add(new PwPlanningSequenceImpl(seq.getUrl(), seqId));
+      // planningSequences.add(new PwPlanningSequenceImpl(seq.getUrl(), seqId));
+      planningSequences.add(new PwPlanningSequenceImpl(seq.getUrl(), this));
       return seq;
     }
     return null;

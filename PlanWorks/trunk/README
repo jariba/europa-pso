@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.118 2004-08-10 21:17:06 taylor Exp $
+# $Id: README,v 1.119 2004-08-14 01:39:06 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -104,6 +104,15 @@ o The Token Network View has two new background Mouse-Right selection options:
   be inconvenient.  To deal with this, click Mouse-Left in the background to discard
   the selections, drag the nodes to new locations, and then on the background select
   Mouse-Right: "Highlight Current Path".
+
+o The Navigator View has two new background Mouse-Right selection options: 
+  "Find Entity Path" and "Highlight Current Path".  "Find Entity Path" requests 
+  two entity keys and finds a path through tokens, variables, constraints, rule 
+  instances, slots, objects, resources, and timelines.  This node path is saved.  
+  Selected nodes are dragged as a group, which may be inconvenient.  To deal with 
+  this, click Mouse-Left in the background to discard the selections, drag the nodes
+  to new locations, and then on the background select Mouse-Right: "Highlight Current 
+  Path".
 
 
 o GNATS PRs and CRs completed:

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.12 2004-08-07 01:18:28 taylor Exp $
+// $Id: DecisionView.java,v 1.13 2004-08-14 01:39:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -85,6 +85,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.util.FixedHeightPanel;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
@@ -111,6 +112,7 @@ public class DecisionView extends PartialPlanView {
   private FixedHeightPanel stepsPanel;
   private boolean isStepButtonView;
   private Font currentDecisionFont;
+  private ProgressMonitorThread progressMonThread;
 
 
   /**
@@ -227,24 +229,20 @@ public class DecisionView extends PartialPlanView {
       closeView( this);
       return;
     }
-
     this.computeFontMetrics( this);
     currentDecisionFont = new Font( ViewConstants.VIEW_FONT_NAME,
                                     ViewConstants.VIEW_FONT_BOLD_STYLE,
                                     ViewConstants.VIEW_FONT_SIZE);
-    Integer currenDecisionId = null;
-    try {
-      currenDecisionId =
-        planSequence.getCurrentDecisionIdForStep( partialPlan.getStepNumber());
-      decisionTree = new DecisionTree( renderDecisions(), currenDecisionId);
-    } catch ( ResourceNotFoundException rnfExcep) {
-      int index = rnfExcep.getMessage().indexOf( ":");
-      JOptionPane.showMessageDialog
-        (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
-         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-      System.err.println( rnfExcep);
-      rnfExcep.printStackTrace();
+
+    Integer currentDecisionId = getCurrentDecisionIdFromTransactions();
+
+    DefaultMutableTreeNode nodeTree = renderDecisions(); // assign decisionList
+
+    if (currentDecisionId == null) {
+      currentDecisionId = getCurrentDecisionIdFromDecisions();
     }
+
+    decisionTree = new DecisionTree( nodeTree, currentDecisionId);
 
     scrollPane = new JScrollPane( decisionTree);
     add( scrollPane, BorderLayout.NORTH);
@@ -281,7 +279,7 @@ public class DecisionView extends PartialPlanView {
 
     addStepButtons( stepJGoView);
 
-    findAndSelectDecisionId( currenDecisionId);
+    findAndSelectDecisionId( currentDecisionId);
 
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.DECISION_VIEW + " elapsed time: " +
@@ -292,6 +290,38 @@ public class DecisionView extends PartialPlanView {
 
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
+
+  private Integer getCurrentDecisionIdFromTransactions() {
+    Integer currentDecisionId = null;
+    if (planSequence.hasLoadedTransactionFile( partialPlan.getId()) ||
+	planSequence.isTransactionFileOnDisk()) {
+      try {
+	currentDecisionId =
+	  planSequence.getCurrentDecisionIdForStep( partialPlan.getStepNumber());
+      } catch ( ResourceNotFoundException rnfExcep) {
+	int index = rnfExcep.getMessage().indexOf( ":");
+	JOptionPane.showMessageDialog
+	  (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+	   "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+	System.err.println( rnfExcep);
+	rnfExcep.printStackTrace();
+      }
+    }
+    return currentDecisionId;
+      } // end getCurrentDecisionIdFromTransactions
+
+  private Integer getCurrentDecisionIdFromDecisions() {
+    Integer currentDecisionId = null;
+    Iterator decisionItr = decisionList.iterator();
+    while (decisionItr.hasNext()) {
+      PwDecision decision = (PwDecision) decisionItr.next();
+      if (decision.getChoices().size() > 0) {
+	currentDecisionId = decision.getId();
+	break;
+      }
+    }
+    return currentDecisionId;
+  } // end getCurrenDecisionIdFromDecisions
 
   /**
    * <code>redraw</code> - called by Content Spec to apply user's content spec request.
@@ -382,14 +412,15 @@ public class DecisionView extends PartialPlanView {
 
   private DefaultMutableTreeNode renderDecisions() {
     int numOperations = 6;
-    progressMonitorThread( "Rendering Decision View:", 0, numOperations,
-                           Thread.currentThread(), this);
-    if (! progressMonitorWait( this)) {
+    progressMonThread =
+      progressMonitorThread( "Rendering Decision View:", 0, numOperations,
+			     Thread.currentThread(), this);
+    if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);
       return null;
     }
-    progressMonitor.setNote( "Get Decisions ...");
-    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+    progressMonThread.getProgressMonitor().setNote( "Get Decisions ...");
+    progressMonThread.getProgressMonitor().setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
     try {
       decisionList = planSequence.getOpenDecisionsForStep( partialPlan.getStepNumber());
     } catch ( ResourceNotFoundException rnfExcep) {
@@ -404,10 +435,11 @@ public class DecisionView extends PartialPlanView {
       return null;
     }
 
-    progressMonitor.setNote( "Create Tree ...");
-    progressMonitor.setMaximum( decisionList.size());
+    progressMonThread.getProgressMonitor().setNote( "Create Tree ...");
+    progressMonThread.getProgressMonitor().setMaximum( decisionList.size());
     numOperations = 4;
-    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+    progressMonThread.getProgressMonitor().setProgress( numOperations *
+							ViewConstants.MONITOR_MIN_MAX_SCALING);
 
 //     // test data => basic-model-res/step50
 //     decisionList = new ArrayList();
@@ -489,18 +521,19 @@ public class DecisionView extends PartialPlanView {
 //           break;
 //         }
       } // end while choiceList
-      if (progressMonitor.isCanceled()) {
+      if (progressMonThread.getProgressMonitor().isCanceled()) {
         String msg = "User Canceled Decision View Rendering";
         System.err.println( msg);
-        isProgressMonitorCancel = true;
+	progressMonThread.setProgressMonitorCancel();
         closeView( this);
         return null;
       }
       numOperations++;
-      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      progressMonThread.getProgressMonitor().setProgress( numOperations *
+							  ViewConstants.MONITOR_MIN_MAX_SCALING);
     } // end while decisionList
 
-    isProgressMonitorCancel = true;
+    progressMonThread.setProgressMonitorCancel();
     return top;
   } // end renderDecisions
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.25 2004-08-06 00:53:25 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.26 2004-08-14 01:39:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -188,7 +188,9 @@ public class PwObjectImpl implements PwObject {
       else if(cclass.equals(PwVariable.class))
         retval.addAll(getVariables());
       else if(cclass.equals(PwObject.class)) {
-        retval.add(getParent());
+	if (getParent() != null) {
+	  retval.add(getParent());
+	}
         retval.addAll(getComponentList());
       }
     }

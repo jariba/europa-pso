@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNavNode.java,v 1.4 2004-08-05 00:24:28 taylor Exp $
+// $Id: RuleInstanceNavNode.java,v 1.5 2004-08-14 01:39:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -284,7 +284,13 @@ public class RuleInstanceNavNode extends RuleInstanceNode
     return false;
   } // end doMouseClick   
 
-  private boolean addRuleInstanceObjects( final RuleInstanceNavNode ruleInstanceNavNode) {
+  /**
+   * <code>addRuleInstanceObjects</code>
+   *
+   * @param ruleInstanceNavNode - <code>RuleInstanceNavNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean addRuleInstanceObjects( final RuleInstanceNavNode ruleInstanceNavNode) {
     boolean areNodesChanged =
       NavNodeGenerics.addEntityNavNodes( ruleInstanceNavNode, navigatorView, isDebugPrint);
     boolean areLinksChanged = false;

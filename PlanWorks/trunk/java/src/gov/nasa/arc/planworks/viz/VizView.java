@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.36 2004-08-10 21:17:09 taylor Exp $
+// $Id: VizView.java,v 1.37 2004-08-14 01:39:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,8 +18,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,8 +44,6 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
-import gov.nasa.arc.planworks.viz.ViewGenerics;
-import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.partialPlan.CreatePartialPlanViewThread;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -56,7 +52,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
-import gov.nasa.arc.planworks.viz.util.PWProgressMonitor;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
@@ -87,8 +83,6 @@ public class VizView extends JPanel {
   protected VizViewOverview overview;
   protected int zoomFactor;
   protected MDIInternalFrame viewFrame;
-  protected PWProgressMonitor progressMonitor;
-  protected boolean isProgressMonitorCancel;
 
   /**
    * <code>VizView</code> - constructor 
@@ -562,79 +556,17 @@ public class VizView extends JPanel {
    * @param maxValue - <code>int</code> - 
    * @param monitoredThread - <code>Thread</code> - 
    * @param view - <code>JPanel</code> - 
+   * @return - <code>ProgressMonitorThread</code> - 
    */
-  protected void progressMonitorThread( String title, int minValue, int maxValue,
-                                        Thread monitoredThread, JPanel view) {
-    Thread thread = new ProgressMonitorThread( title, minValue, maxValue, monitoredThread,
-                                                view);
+  protected ProgressMonitorThread  progressMonitorThread( String title, int minValue,
+							  int maxValue, Thread monitoredThread,
+							  JPanel view) {
+    ProgressMonitorThread thread =
+      new ProgressMonitorThread( title, minValue, maxValue, monitoredThread, view);
     thread.setPriority(Thread.MAX_PRIORITY);
     thread.start();
+    return thread;
   }
-
-  /**
-   * <code>ProgressMonitorThread</code> - 
-   *
-   */
-  public class ProgressMonitorThread extends Thread {
-
-    private String title;
-    private int minValue;
-    private int maxValue;
-    private Thread monitoredThread;
-    private JPanel view;
-    private boolean isThreadCancel;
-
-    /**
-     * <code>ProgressMonitorThread</code> - constructor 
-     *
-     * @param title - <code>String</code> - 
-     * @param minValue - <code>int</code> - 
-     * @param maxValue - <code>int</code> - 
-     * @param monitoredThread - <code>Thread</code> - 
-     * @param view - <code>JPanel</code> - 
-     */
-    public ProgressMonitorThread( String title, int minValue, int maxValue,
-                                  Thread monitoredThread, JPanel view) {
-      isProgressMonitorCancel = false;
-      isThreadCancel = false;
-      this.title = title;
-      this.minValue = minValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
-      this.maxValue = maxValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
-      this.monitoredThread = monitoredThread;
-      this.view = view;
-    }  // end constructor
-
-    public void setPMThreadCancel() {
-      // System.err.println( "ProgressMonitorThread.setPMThreadCancel");
-      isThreadCancel = true;
-    }
-
-    /**
-     * <code>run</code>
-     *
-     */
-    public void run() {
-      progressMonitor = new PWProgressMonitor( PlanWorks.getPlanWorks(), title, "",
-                                              minValue, maxValue, monitoredThread, view, this);
-      progressMonitor.setMillisToDecideToPopup( 0);
-      progressMonitor.setMillisToPopup( 0);
-      // these two must be set to 0 before calling setProgress, which puts up the dialog
-      progressMonitor.setProgress( 0);
-
-      while ((! isProgressMonitorCancel) && (! isThreadCancel)) {
-        try {
-          Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL * 2);
-        }
-        catch (InterruptedException ie) {}
-        // System.err.println( "ProgressMonitorThread wait for isProgressMonitorCancel = true");
-      }
-      if (progressMonitor != null) {
-	progressMonitor.close();
-	progressMonitor = null;
-      }
-    } // end run
-
-  } // end class ProgressMonitorThread
 
   /**
    * <code>progressMonitorWait</code>
@@ -642,10 +574,10 @@ public class VizView extends JPanel {
    * @param vizView - <code>VizView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean progressMonitorWait( VizView vizView) {
+  protected boolean progressMonitorWait( ProgressMonitorThread pmThread, VizView vizView) {
     int maxCycles = ViewConstants.WAIT_NUM_CYCLES;
     int numCycles = maxCycles;
-    while ((progressMonitor == null) && numCycles != 0) {
+    while ((pmThread.getProgressMonitor() == null) && numCycles != 0) {
       try {
         Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
       }

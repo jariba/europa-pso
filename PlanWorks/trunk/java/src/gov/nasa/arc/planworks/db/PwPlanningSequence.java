@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.38 2004-07-29 01:36:36 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.39 2004-08-14 01:39:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -48,6 +48,44 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>PwModel</code> - 
    */
   public abstract PwModel getModel();
+
+  /**
+   * <code>doesPartialPlanExist</code>
+   *
+   * @param planName - <code>String</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public abstract boolean doesPartialPlanExist( String planName);
+
+  /**
+   * <code>hasLoadedTransactionFile</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean hasLoadedTransactionFile();
+
+  /**
+   * <code>hasLoadedTransactionFile</code>
+   *
+   * @param partialPlanId - <code>Long</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean hasLoadedTransactionFile( Long partialPlanId);
+
+  /**
+   * <code>hasLoadedTransactionFile</code>
+   *
+   * @param partialPlanName - <code>String</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean hasLoadedTransactionFile( String partialPlanName);
+
+  /**
+   * <code>isTransactionFileOnDisk</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isTransactionFileOnDisk();
 
   /**
    * <code>listTransactions</code>

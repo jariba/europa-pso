@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.13 2004-08-05 00:24:27 taylor Exp $
+// $Id: ModelClassNavNode.java,v 1.14 2004-08-14 01:39:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -181,6 +181,7 @@ public class ModelClassNavNode extends ObjectNode implements IncrementalNode, Ov
     List returnList = new ArrayList();
     returnList.addAll( object.getComponentList());
     returnList.addAll( ((PwVariableContainer) object).getVariables());
+    returnList.addAll( object.getTokens());
     return returnList;
   }
 
@@ -263,7 +264,13 @@ public class ModelClassNavNode extends ObjectNode implements IncrementalNode, Ov
     return false;
   } // end doMouseClick   
 
-  private boolean addObjects( final ModelClassNavNode objectNode) {
+  /**
+   * <code>addObjects</code>
+   *
+   * @param objectNode - <code>ModelClassNavNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean addObjects( final ModelClassNavNode objectNode) {
     boolean areNodesChanged =
       NavNodeGenerics.addEntityNavNodes( objectNode, navigatorView, isDebugPrint);
     boolean areLinksChanged = false;

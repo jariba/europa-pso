@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.64 2004-08-10 21:17:11 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.65 2004-08-14 01:39:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -65,6 +65,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeys;
 import gov.nasa.arc.planworks.viz.util.MessageDialog;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -112,6 +113,8 @@ public class TokenNetworkView extends PartialPlanView {
   private List highlightPathNodesList;
   private Integer tokenKey1;
   private Integer tokenKey2;
+  private ProgressMonitorThread findPathPMThread;
+  private ProgressMonitorThread redrawPMThread;
 
   /**
    * <code>TokenNetworkView</code> - constructor - 
@@ -418,14 +421,15 @@ public class TokenNetworkView extends PartialPlanView {
     }
     this.setVisible( false);
 
-    progressMonitorThread( "Redrawing Token Network View ...", 0, 6, Thread.currentThread(),
-			   this);
-    if (! progressMonitorWait( this)) {
+    redrawPMThread = 
+      progressMonitorThread( "Redrawing Token Network View ...", 0, 6, Thread.currentThread(),
+			     this);
+    if (! progressMonitorWait( redrawPMThread, this)) {
       System.err.println( "progressMonitorWait failed");
       closeView( this);
       return;
     }
-    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+    redrawPMThread.getProgressMonitor().setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
     // content spec apply/reset do not change layout, only TokenNode/
     // variableNode/constraintNode opening/closing
 
@@ -435,21 +439,22 @@ public class TokenNetworkView extends PartialPlanView {
       TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
       layout.performLayout();
 
-      if ((focusNode == null) && (highlightPathNodesList != null)) {
-	NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
-      } else if (focusNode != null) {
-	// do not highlight node, if it has been removed
-	NodeGenerics.focusViewOnNode( focusNode, ((IncrementalNode) focusNode).inLayout(),
-				      jGoView);
-      }
       isLayoutNeeded = false;
+    }
+
+    if ((focusNode == null) && (highlightPathNodesList != null)) {
+      NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
+    } else if (focusNode != null) {
+      // do not highlight node, if it has been removed
+      NodeGenerics.focusViewOnNode( focusNode, ((IncrementalNode) focusNode).inLayout(),
+				    jGoView);
     }
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.TOKEN_NETWORK_VIEW + " elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     startTimeMSecs = 0L;
     this.setVisible( true);
-    isProgressMonitorCancel = true;
+    redrawPMThread.setProgressMonitorCancel();
   } // end redrawView
 
   /**
@@ -939,19 +944,20 @@ public class TokenNetworkView extends PartialPlanView {
   private void findTokenPathDoit( final FindTokenPath findTokenPath) {
     final SwingWorker worker = new SwingWorker() {
 	public Object construct() {
-	  System.err.println( "findTokenPathDoit");
-	  progressMonitorThread( "Finding Token Path ...", 0, 6, Thread.currentThread(),
-				 findTokenPath);
-	  if (! progressMonitorWait( TokenNetworkView.this)) {
+	  findPathPMThread = 
+	    progressMonitorThread( "Finding Token Path ...", 0, 6, Thread.currentThread(),
+				   findTokenPath);
+	  if (! progressMonitorWait( findPathPMThread, TokenNetworkView.this)) {
 	    System.err.println( "progressMonitorWait failed");
 	    findTokenPath.setTokenRuleKeyList( new ArrayList());
 	    return null;
 	  }
-	  progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+	   findPathPMThread.getProgressMonitor().setProgress
+	     ( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
 	  findTokenPath.setTokenRuleKeyList( partialPlan.getTokenNetworkPath( tokenKey1,
 	  								      tokenKey2));
-	  isProgressMonitorCancel = true;
+	  findPathPMThread.setProgressMonitorCancel();
 	  return null;
 	}
       };
@@ -990,14 +996,11 @@ public class TokenNetworkView extends PartialPlanView {
       return;
     }
     List nodeList = renderTokenPathNodes( findTokenPath);
-    setLayoutNeeded();
-    setFocusNode( null);
-    highlightPathNodesList = nodeList;
-    redraw();
     outputTokenPathNodes( nodeList);
   } // end createFindTokenPathItemWorker
 
   private List renderTokenPathNodes( FindTokenPath findTokenPath) {
+    boolean isLayoutNeeded = false;
     List nodeList =  new ArrayList();
       Iterator tokenRuleItr = findTokenPath.getTokenRuleKeyList().iterator();
       PwToken token = null; PwRuleInstance ruleInstance = null;
@@ -1008,7 +1011,9 @@ public class TokenNetworkView extends PartialPlanView {
 	  TokenNetworkTokenNode tokenNode = addTokenTokNetNode( token);
 	  nodeList.add( tokenNode);
 	  if (! tokenNode.areNeighborsShown()) {
-	    tokenNode.addTokenObjects( tokenNode);
+	    if (tokenNode.addTokenObjects( tokenNode)) {
+	      isLayoutNeeded = true;
+	    }
 	    tokenNode.setAreNeighborsShown( true);
 	  }
 	} else if ((ruleInstance = partialPlan.getRuleInstance( tokenRuleKey)) != null) {
@@ -1016,11 +1021,19 @@ public class TokenNetworkView extends PartialPlanView {
 	    addRuleInstanceTokNetNode( ruleInstance);
 	  nodeList.add( ruleInstanceNode);
 	  if (! ruleInstanceNode.areNeighborsShown()) {
-	    ruleInstanceNode.addRuleInstanceObjects( ruleInstanceNode);
+	    if (ruleInstanceNode.addRuleInstanceObjects( ruleInstanceNode)) {
+	      isLayoutNeeded = true;
+	    }
 	    ruleInstanceNode.setAreNeighborsShown( true);
 	  }
 	}
       }
+      if (isLayoutNeeded) {
+	setLayoutNeeded();
+      }
+      setFocusNode( null);
+      highlightPathNodesList = nodeList;
+      redraw();
       return nodeList;
   } // end renderTokenPathNodes
 

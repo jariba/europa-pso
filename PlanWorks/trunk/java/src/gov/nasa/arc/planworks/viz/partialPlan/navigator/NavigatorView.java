@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.33 2004-08-05 00:24:28 taylor Exp $
+// $Id: NavigatorView.java,v 1.34 2004-08-14 01:39:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
@@ -51,6 +52,7 @@ import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.StringViewSetKey;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
@@ -65,6 +67,9 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkRuleInstanceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
+import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeys;
+import gov.nasa.arc.planworks.viz.util.MessageDialog;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -89,7 +94,12 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
   private ExtendedBasicNode focusNode;
   private boolean isDebugPrint;
   private String viewSetKey;
-
+  private List highlightPathNodesList;
+  private Integer entityKey1;
+  private Integer entityKey2;
+  private ProgressMonitorThread findPathPMThread;
+  private ProgressMonitorThread redrawPMThread;
+  private boolean didRenderInitialNodeChange;
   /**
    * variable <code>timelineColorMap</code>
    *
@@ -167,12 +177,26 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     commonConstructor();
   } // end constructor
 
+  /**
+   * <code>NavigatorView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param isFindEntityPath - <code>boolean</code> - 
+   */
+  public NavigatorView( final ViewableObject partialPlan, final ViewSet viewSet,
+			final boolean isFindEntityPath) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+  } // end constructor
+
   private void commonConstructor() {
     System.err.println( "Render Navigator View ...");
     this.startTimeMSecs = System.currentTimeMillis();
     // isDebugPrint = true;
     isDebugPrint = false;
     //timelineColorMap = createTimelineColorMap();
+    highlightPathNodesList = null;
+    this.setName( navigatorFrame.getTitle());
 
     navLinkMap = new HashMap();
     entityNavNodeMap = new HashMap();
@@ -296,6 +320,15 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     }
     this.setVisible( false);
 
+    redrawPMThread =
+      progressMonitorThread( "Redrawing Navigator View ...", 0, 6, Thread.currentThread(),
+			   this);
+    if (! progressMonitorWait( redrawPMThread, this)) {
+      System.err.println( "progressMonitorWait failed");
+      closeView( this);
+      return;
+    }
+    redrawPMThread.getProgressMonitor().setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
     // content spec apply/reset do not change layout, only TokenNode/
     // variableNode/constraintNode opening/closing
     setNodesLinksVisible();
@@ -304,13 +337,20 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
       NavigatorViewLayout layout = new NavigatorViewLayout( jGoDocument, startTimeMSecs);
       layout.performLayout();
 
+      isLayoutNeeded = false;
+    }
+
+    if ((focusNode == null) && (highlightPathNodesList != null)) {
+      NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
+    } else if (focusNode != null) {
       // do not highlight node, if it has been removed
       NodeGenerics.focusViewOnNode( focusNode, ((IncrementalNode) focusNode).inLayout(),
 				    jGoView);
-      isLayoutNeeded = false;
     }
+
     startTimeMSecs = 0L;
     this.setVisible( true);
+    redrawPMThread.setProgressMonitorCancel();
   } // end redrawView
 
   /**
@@ -375,16 +415,28 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     return viewSetKey;
   }
 
-  private void renderInitialNode() {
+  private ExtendedBasicNode renderInitialNode( PwEntity entity) {
+    initialEntity = entity;
+    return renderInitialNode();
+  }
+
+  private ExtendedBasicNode renderInitialNode() {
     ExtendedBasicNode node = addEntityNavNode( initialEntity, isDebugPrint);
     IncrementalNode navNode = (IncrementalNode) node;
-    NavNodeGenerics.addEntityNavNodes( navNode, this, isDebugPrint);
-    NavNodeGenerics.addParentToEntityNavLinks( navNode, this, isDebugPrint);
-    NavNodeGenerics.addEntityToChildNavLinks( navNode, this, isDebugPrint);
-
+    boolean  areNodesChanged = NavNodeGenerics.addEntityNavNodes( navNode, this, isDebugPrint);
+    boolean areParentLinksChanged =
+      NavNodeGenerics.addParentToEntityNavLinks( navNode, this, isDebugPrint);
+    boolean areChildLinksChanged =
+      NavNodeGenerics.addEntityToChildNavLinks( navNode, this, isDebugPrint);
+    if (areNodesChanged || areParentLinksChanged || areChildLinksChanged) {
+      didRenderInitialNodeChange = true;
+    } else {
+      didRenderInitialNodeChange = false;
+    }
     int penWidth = this.getOpenJGoPenWidth( this.getZoomFactor());
     node.setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     node.setAreNeighborsShown( true);
+    return node;
   } // end renderInitialNode
 
 
@@ -564,7 +616,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
    */
   protected final TokenNavNode addTokenNavNode( final PwToken token) {
     // TokenNetwork.TokenNode  TemporalExtent.TemporalNode
-    // System.err.println( "addTokenNavNode " + token.getClass());
+    // System.err.println( "addTokenNavNode id " + token.getId() + " " + token.getClass());
     boolean isDraggable = true;
     TokenNavNode tokenNavNode =
       (TokenNavNode) entityNavNodeMap.get( token.getId());
@@ -691,6 +743,31 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
 
 
   /**
+   * <code>FindEntityPath</code> - used as arg to ProgressMonitorThread
+   *
+   */
+  public class FindEntityPath extends NavigatorView {
+
+    private List entityKeyList;
+
+    FindEntityPath( ViewableObject partialPlan, ViewSet viewSet,
+		      boolean isFindEntityPath) {
+      super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet, isFindEntityPath);
+    }
+
+    public List getEntityKeyList() {
+      return entityKeyList;
+    }
+
+    public void setEntityKeyList( List lst) {
+      // System.err.println( "setEntityKeyList " + lst);import gov.nasa.arc.planworks.viz.util.
+      entityKeyList = lst;
+    }
+
+  } // end class FindEntityPath
+
+
+  /**
    * <code>NavigatorJGoView</code> - subclass JGoView to add doBackgroundClick
    *
    */
@@ -750,6 +827,16 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
+    JMenuItem findEntityPathItem = new JMenuItem( "Find Entity Path");
+    createFindEntityPathItem( findEntityPathItem);
+    mouseRightPopup.add( findEntityPathItem);
+
+    if (highlightPathNodesList != null) {
+      JMenuItem highlightPathItem = new JMenuItem( "Highlight Current Path");
+      createHighlightPathItem( highlightPathItem, highlightPathNodesList);
+      mouseRightPopup.add( highlightPathItem);
+    }
+
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
                          viewListenerList, ViewConstants.NAVIGATOR_VIEW);
 
@@ -779,6 +866,275 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
         }
       });
   } // end createOverviewWindowItem
+
+  private FindEntityPath getFindEntityPath() {
+    boolean isFindEntityPath = true;
+    FindEntityPath findEntityPath =  new FindEntityPath( partialPlan, viewSet, isFindEntityPath);
+    findEntityPath.setEntityKeyList( null);
+    findEntityPathDoit( findEntityPath);
+    while (findEntityPath.getEntityKeyList() == null) {
+      try {
+	Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL * 2);
+      } catch (InterruptedException ie) {}
+      // System.err.println("createFindEntityPathItemWorker wait for findEntityPath");
+    }
+    return findEntityPath;
+  } // end getFindEntityPath
+
+  private void findEntityPathDoit( final FindEntityPath findEntityPath) {
+    final SwingWorker worker = new SwingWorker() {
+	public Object construct() {
+	  findPathPMThread =
+	    progressMonitorThread( "Finding Entity Path ...", 0, 6, Thread.currentThread(),
+				   findEntityPath);
+	  if (! progressMonitorWait( findPathPMThread, NavigatorView.this)) {
+	    System.err.println( "progressMonitorWait failed");
+	    findEntityPath.setEntityKeyList( new ArrayList());
+	    return null;
+	  }
+	  findPathPMThread.getProgressMonitor().setProgress
+	    ( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+
+	  findEntityPath.setEntityKeyList( partialPlan.getEntityPath( entityKey1, entityKey2));
+
+	  findPathPMThread.setProgressMonitorCancel();
+	  return null;
+	}
+      };
+    worker.start();  
+  } // end findEntityPath
+
+  private void createFindEntityPathItem( JMenuItem findEntityPathItem) {
+    findEntityPathItem.addActionListener( new ActionListener() {
+	public void actionPerformed( ActionEvent evt) {
+	  final SwingWorker worker = new SwingWorker() {
+	      public Object construct() {
+		createFindEntityPathItemWorker();
+		return null;
+	      }
+	    };
+	  worker.start();
+	}
+      });
+  } // createFindEntityPathItem
+
+  private void createFindEntityPathItemWorker() {
+    AskQueryTwoEntityKeys twoKeysDialog =
+      new AskQueryTwoEntityKeys( "Enter Ids for Find Entity Path", "entity",
+				 "start entity key (int)", "entity",
+				 "end entity key (int)", partialPlan);
+    entityKey1 = twoKeysDialog.getEntityKey1();
+    entityKey2 = twoKeysDialog.getEntityKey2();
+    if ((entityKey1 == null) || (entityKey2 == null)) {
+      return;
+    }
+    FindEntityPath findEntityPath =  getFindEntityPath();
+    if (findEntityPath.getEntityKeyList().size() == 0) {
+      JOptionPane.showMessageDialog
+	( PlanWorks.getPlanWorks(), "no path found for " + entityKey1 + " => " +
+	  entityKey2, "Find Entity Path Error", JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    List nodeList = renderEntityPathNodes( findEntityPath);
+    outputEntityPathNodes( nodeList);
+  } // end createFindEntityPathItemWorker
+
+  private List renderEntityPathNodes( FindEntityPath findEntityPath) {
+    boolean isLayoutNeeded = false;
+    List nodeList =  new ArrayList();
+    Iterator entityItr = findEntityPath.getEntityKeyList().iterator();
+    PwEntity entity = null;
+    boolean isFirstNode = true;
+    while (entityItr.hasNext()) {
+      Integer entityKey = (Integer) entityItr.next();
+      // System.err.println( "key " + entityKey);
+      if ((entity = partialPlan.getToken( entityKey)) != null) {
+	TokenNavNode tokenNode = null;
+	if (isFirstNode) {
+	  isFirstNode = false; tokenNode = (TokenNavNode) renderInitialNode( entity);
+	  if (didRenderInitialNodeChange) { isLayoutNeeded = true; }
+	} else {
+	  PwToken token = (PwToken) entity;
+	  tokenNode = addTokenNavNode( token);
+	  if (! tokenNode.areNeighborsShown()) {
+	    if (tokenNode.addTokenObjects( tokenNode)) { isLayoutNeeded = true; }
+	    tokenNode.setAreNeighborsShown( true);
+	  }
+	}
+	nodeList.add( tokenNode);
+      } else if ((entity = partialPlan.getVariable( entityKey)) != null) {
+	VariableNavNode variableNode = null;
+	if (isFirstNode) {
+	  isFirstNode = false; variableNode = (VariableNavNode) renderInitialNode( entity);
+	  if (didRenderInitialNodeChange) { isLayoutNeeded = true; }
+	} else {
+	  PwVariable variable = (PwVariable) entity;
+	  variableNode = addVariableNavNode( variable);
+	  if (! variableNode.areNeighborsShown()) {
+	    if (variableNode.addVariableObjects( variableNode)) { isLayoutNeeded = true; }
+	    variableNode.setAreNeighborsShown( true);
+	  }
+	}
+	nodeList.add( variableNode);
+      } else if ((entity = partialPlan.getConstraint( entityKey)) != null) {
+	ConstraintNavNode constraintNode = null;
+	if (isFirstNode) {
+	  isFirstNode = false; constraintNode = (ConstraintNavNode) renderInitialNode( entity);
+	  if (didRenderInitialNodeChange) { isLayoutNeeded = true; }
+	} else {
+	  PwConstraint constraint = (PwConstraint) entity;
+	  constraintNode = addConstraintNavNode( constraint);
+	  if (! constraintNode.areNeighborsShown()) {
+	    if (constraintNode.addConstraintObjects( constraintNode)) {
+	      isLayoutNeeded = true;
+	    }
+	    constraintNode.setAreNeighborsShown( true);
+	  }
+	}
+	nodeList.add( constraintNode);
+      } else if ((entity = partialPlan.getRuleInstance( entityKey)) != null) {
+	RuleInstanceNavNode ruleInstanceNode = null;
+	if (isFirstNode) {
+	  isFirstNode = false;
+	  ruleInstanceNode = (RuleInstanceNavNode) renderInitialNode( entity);
+	  if (didRenderInitialNodeChange) { isLayoutNeeded = true; }
+	} else {
+	  PwRuleInstance ruleInstance = (PwRuleInstance) entity;
+	  ruleInstanceNode = addRuleInstanceNavNode( ruleInstance);
+	  if (! ruleInstanceNode.areNeighborsShown()) {
+	    if (ruleInstanceNode.addRuleInstanceObjects( ruleInstanceNode)) {
+	      isLayoutNeeded = true;
+	    }
+	    ruleInstanceNode.setAreNeighborsShown( true);
+	  }
+	}
+	nodeList.add( ruleInstanceNode);
+      } else if ((entity = partialPlan.getSlot( entityKey)) != null) {
+	SlotNavNode slotNode = null;
+	if (isFirstNode) {
+	  isFirstNode = false; slotNode = (SlotNavNode) renderInitialNode( entity);
+	  if (didRenderInitialNodeChange) { isLayoutNeeded = true; }
+	} else {
+	  PwSlot slot = (PwSlot) entity;
+	  slotNode = addSlotNavNode( slot);
+	  if (! slotNode.areNeighborsShown()) {
+	    if (slotNode.addSlotObjects( slotNode)) {
+	      isLayoutNeeded = true;
+	    }
+	    slotNode.setAreNeighborsShown( true);
+	  }
+	}
+	nodeList.add( slotNode);
+      } else if ((entity = partialPlan.getTimeline( entityKey)) != null) {
+	TimelineNavNode timelineNode = null;
+	if (isFirstNode) {
+	  isFirstNode = false; timelineNode = (TimelineNavNode) renderInitialNode( entity);
+	  if (didRenderInitialNodeChange) { isLayoutNeeded = true; }
+	} else {
+	  PwTimeline timeline = (PwTimeline) entity;
+	  timelineNode = addTimelineNavNode( timeline);
+	  if (! timelineNode.areNeighborsShown()) {
+	    if (timelineNode.addTimelineObjects( timelineNode)) {
+	      isLayoutNeeded = true;
+	    }
+	    timelineNode.setAreNeighborsShown( true);
+	  }
+	}
+	nodeList.add( timelineNode);
+      } else if ((entity = partialPlan.getResource( entityKey)) != null) {
+	ResourceNavNode resourceNode = null;
+	if (isFirstNode) {
+	  isFirstNode = false; resourceNode = (ResourceNavNode) renderInitialNode( entity);
+	  if (didRenderInitialNodeChange) { isLayoutNeeded = true; }
+	} else {
+	  PwResource resource = (PwResource) entity;
+	  resourceNode = addResourceNavNode( resource);
+	  if (! resourceNode.areNeighborsShown()) {
+	    if (resourceNode.addResourceObjects( resourceNode)) {
+	      isLayoutNeeded = true;
+	    }
+	    resourceNode.setAreNeighborsShown( true);
+	  }
+	}
+	nodeList.add(resourceNode);
+      } else if ((entity = partialPlan.getObject( entityKey)) != null) {
+	// PwObject must be last
+	ModelClassNavNode objectNode = null;
+	if (isFirstNode) {
+	  isFirstNode = false; objectNode = (ModelClassNavNode) renderInitialNode( entity);
+	  if (didRenderInitialNodeChange) { isLayoutNeeded = true; }
+	} else {
+	  PwObject object = (PwObject) entity;
+	  objectNode = addModelClassNavNode( object);
+	  if (! objectNode.areNeighborsShown()) {
+	    if (objectNode.addObjects( objectNode)) {
+	      isLayoutNeeded = true;
+	    }
+	    objectNode.setAreNeighborsShown( true);
+	  }
+	}
+	nodeList.add( objectNode);
+      } else {
+	System.err.println( "NavigatorView.renderEntityPathNodes: entityKey " +
+			    entityKey + " not handled");
+      }
+    }
+    if (isLayoutNeeded) {
+      // System.err.println( "NavigatorView.renderEntityPathNodes: setLayoutNeeded");
+      setLayoutNeeded();
+    }
+    setFocusNode( null);
+    highlightPathNodesList = nodeList;
+    redraw();
+    return nodeList;
+  } // end renderEntityPathNodes
+
+  private void createHighlightPathItem( final JMenuItem highlightPathItem,
+					final List nodeList) {
+    highlightPathItem.addActionListener( new ActionListener() {
+	public void actionPerformed(ActionEvent evt) {
+	  NodeGenerics.highlightPathNodes( nodeList, jGoView);
+	  outputEntityPathNodes( nodeList);
+	}
+      });
+  } // end createHighlightPathItem
+
+  private void outputEntityPathNodes( List nodeList) {
+    System.err.print( "Found Entity Path ");
+    StringBuffer nodeBuffer = new StringBuffer( "(");
+    nodeBuffer.append( NavigatorView.this.getName()).append( ") => ");
+    Iterator nodeItr = nodeList.iterator();
+    while (nodeItr.hasNext()) {
+      ExtendedBasicNode node = (ExtendedBasicNode) nodeItr.next();
+      Integer nodeId = null;
+      if (node instanceof TokenNavNode) {
+	nodeId = ((TokenNavNode) node).getToken().getId();
+      } else if (node instanceof VariableNavNode) {
+  	nodeId = ((VariableNavNode) node).getVariable().getId();
+      } else if (node instanceof ConstraintNavNode) {
+  	nodeId = ((ConstraintNavNode) node).getConstraint().getId();
+      } else if (node instanceof RuleInstanceNavNode) {
+  	nodeId = ((RuleInstanceNavNode) node).getRuleInstance().getId();
+      } else if (node instanceof SlotNavNode) {
+  	nodeId = ((SlotNavNode) node).getSlot().getId();
+      } else if (node instanceof ModelClassNavNode) {
+  	nodeId = ((ModelClassNavNode) node).getObject().getId();
+      } else if (node instanceof TimelineNavNode) {
+  	nodeId = ((TimelineNavNode) node).getTimeline().getId();
+      } else if (node instanceof ResourceNavNode) {
+  	nodeId = ((ResourceNavNode) node).getResource().getId();
+      } else {
+	System.err.println( "NavigatorView.outputEntityPathNodes: node " +
+			    node.getClass().getName() + " not handled");
+      }
+      nodeBuffer.append( nodeId).append( " ");
+    }
+    System.err.println( nodeBuffer.toString());
+    MessageDialog msgDialog = // non-modal
+      new MessageDialog( PlanWorks.getPlanWorks(), "Found Entity Path",
+			 nodeBuffer.toString());
+  } // end outputEntityPathNodes
+
 
 
 } // end class NavigatorView

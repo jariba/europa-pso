@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.43 2004-08-10 21:17:07 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.44 2004-08-14 01:39:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,6 +25,13 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
  * @version 0.0
  */
 public interface PwPartialPlan extends ViewableObject {
+
+  /**
+   * <code>isDummyPartialPlan</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public abstract boolean isDummyPartialPlan();
 
   /**
    * <code>getUrl</code>
@@ -262,7 +269,8 @@ public interface PwPartialPlan extends ViewableObject {
 
   public abstract List getPath(final Integer sKey, final Integer eKey, final List classes);
   
-  public abstract List getPath(final Integer sKey, final Integer eKey, final List classes, final int maxLength);
+  public abstract List getPath(final Integer sKey, final Integer eKey, final List classes,
+			       final int maxLength);
 
   public abstract List getVariablePath(final Integer sKey, final Integer eKey);
 
@@ -272,6 +280,10 @@ public interface PwPartialPlan extends ViewableObject {
 
   public abstract List getTokenNetworkPath(final Integer sKey, final Integer eKey,
 					   final int maxLength);
+  
+  public abstract List getEntityPath(final Integer sKey, final Integer eKey);
+
+  public abstract List getEntityPath(final Integer sKey, final Integer eKey, final int maxLength);
   
 } // end interface PwPartialPlan
 

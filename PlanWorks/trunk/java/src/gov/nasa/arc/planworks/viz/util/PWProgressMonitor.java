@@ -8,7 +8,7 @@
 // modified by Will Taylor starting 26july04
 // monitoredThread passed in and stopped when cancel is received
 
-// $Id: PWProgressMonitor.java,v 1.5 2004-08-10 21:17:13 taylor Exp $
+// $Id: PWProgressMonitor.java,v 1.6 2004-08-14 01:39:20 taylor Exp $
 
 
 package gov.nasa.arc.planworks.viz.util;
@@ -35,6 +35,7 @@ import javax.swing.UIManager;
 
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
@@ -233,15 +234,19 @@ public class PWProgressMonitor extends Object
 			    ConstraintNetworkView.FindVariablePath findVarPath =
 			      (ConstraintNetworkView.FindVariablePath) view;
 			    findVarPath.setVarConstrKeyList( new ArrayList());
-			    ((ConstraintNetworkView.ProgressMonitorThread) thisThread).
-			      setPMThreadCancel();
+			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
+			  } else if (view instanceof NavigatorView.FindEntityPath) {
+			    System.err.println( "FindEntityPath'");
+			    NavigatorView.FindEntityPath findTokenPath =
+			      (NavigatorView.FindEntityPath) view;
+			    findTokenPath.setEntityKeyList( new ArrayList());
+			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
 			  } else if (view instanceof TokenNetworkView.FindTokenPath) {
 			    System.err.println( "FindTokenPath'");
 			    TokenNetworkView.FindTokenPath findTokenPath =
 			      (TokenNetworkView.FindTokenPath) view;
 			    findTokenPath.setTokenRuleKeyList( new ArrayList());
-			    ((TokenNetworkView.ProgressMonitorThread) thisThread).
-			      setPMThreadCancel();
+			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
 			  } else if (view instanceof VizView) {
 			    VizView vizView = (VizView) view;
 			    vizView.closeView( vizView);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceNavNode.java,v 1.4 2004-08-05 00:24:28 taylor Exp $
+// $Id: ResourceNavNode.java,v 1.5 2004-08-14 01:39:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -200,13 +200,11 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
     if (partialPlanView.getZoomFactor() > 1) {
       tip.append( "<br>key=");
       tip.append( resource.getId().toString());
-      tip.append( "<br>");
     }
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
-      tip.append( "<br>");
     }
-    tip.append( "Mouse-L: ").append( operation);
+    tip.append( "<br>Mouse-L: ").append( operation);
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
@@ -265,7 +263,13 @@ public class ResourceNavNode extends ResourceNode implements IncrementalNode, Ov
     return false;
   } // end doMouseClick   
 
-  private boolean addResourceObjects( final ResourceNavNode resourceNavNode) {
+  /**
+   * <code>addResourceObjects</code>
+   *
+   * @param resourceNavNode - <code>ResourceNavNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean addResourceObjects( final ResourceNavNode resourceNavNode) {
     boolean areNodesChanged =
       NavNodeGenerics.addEntityNavNodes( resourceNavNode, navigatorView, isDebugPrint);
     boolean areLinksChanged = false;

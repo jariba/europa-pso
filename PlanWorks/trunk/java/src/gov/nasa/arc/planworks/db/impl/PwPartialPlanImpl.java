@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.105 2004-08-10 21:17:07 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.106 2004-08-14 01:39:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -71,7 +71,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
   private String url; 
-  private Integer projectId;
+  private boolean isDummyPartialPlan;
   //private Long sequenceId;
   private PwPlanningSequenceImpl sequence;
   private String model;
@@ -125,7 +125,25 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       append(planName).toString();
     contentSpec = new ArrayList();
     this.name = planName;
+    isDummyPartialPlan = false;
     createPartialPlan();
+  }
+
+  /**
+   * <code>PwPartialPlanImpl</code> - constructor - dummy pp called by createPartialPlanView
+   *
+   * @param planName - <code>String</code> - 
+   * @param sequence - <code>PwPlanningSequenceImpl</code> - 
+   */
+  public PwPartialPlanImpl(final String planName, final PwPlanningSequence sequence) {
+    this.sequence = (PwPlanningSequenceImpl) sequence;
+    this.name = planName;
+    this.url = sequence.getUrl() + System.getProperty("file.separator") + planName;
+    this.isDummyPartialPlan = true;
+    this.id = MySQLDB.getPartialPlanIdByStepNum( sequence.getId(),
+						 Integer.parseInt( planName.substring( 4)));
+//     System.err.println( "seqId " + sequence.getId() + " planName " + planName +
+// 			" partialPlan.getId() " + id);
   }
 
   //for testing only
@@ -155,6 +173,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
     id = partialPlanId;
     this.model = model;
+    isDummyPartialPlan = false;
   }
 
   /**
@@ -395,6 +414,16 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
   // IMPLEMENT PwPartialPlan INTERFACE 
     
+
+  /**
+   * <code>isDummyPartialPlan</code> -  dummy partial plan "flag" for DBTransactionView
+   *                              when step files are not in database or on disk
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isDummyPartialPlan() {
+    return isDummyPartialPlan;
+  }
 
   /**
    * <code>getUrl</code> - get URL of partial plan files
@@ -1261,8 +1290,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   // implement ViewableObject
 
   public void setContentSpec(final List spec) {
-    contentSpec.clear();
-    contentSpec.addAll(spec);
+    if (contentSpec != null) {
+      contentSpec.clear();
+      contentSpec.addAll(spec);
+    }
   }
   
   public List getContentSpec() {
@@ -1598,8 +1629,13 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     if(component.contains(ent.getId()))
       return;
     component.addLast(ent.getId());
-    for(Iterator it = ent.getNeighbors(classes).iterator(); it.hasNext();)
-      buildConnectedComponent((PwEntity)it.next(), classes, component);
+    for(Iterator it = ent.getNeighbors(classes).iterator(); it.hasNext();) {
+      PwEntity entity = (PwEntity)it.next();
+      if (isPathDebug) {
+	System.err.println( "buildConnectedComponent expand " + entity.getClass().getName());
+      }
+      buildConnectedComponent( entity, classes, component);
+    }
   }
 
   private boolean getPathRecurse(final PwEntity current, final Integer eKey,
@@ -1647,6 +1683,32 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     LinkedList classes = new LinkedList();
     classes.add(PwToken.class);
     classes.add(PwRuleInstance.class);
+    return getPath(sKey, eKey, classes, maxLength);
+  }
+
+  public List getEntityPath(final Integer sKey, final Integer eKey) {
+    LinkedList classes = new LinkedList();
+    classes.add(PwToken.class);
+    classes.add(PwVariable.class);
+    classes.add(PwConstraint.class);
+    classes.add(PwRuleInstance.class);
+    classes.add(PwSlot.class);
+    classes.add(PwObject.class);
+    classes.add(PwResource.class);
+    classes.add(PwTimeline.class);
+    return getPath(sKey, eKey, classes);
+  }
+  
+  public List getEntityPath(final Integer sKey, final Integer eKey, final int maxLength) {
+    LinkedList classes = new LinkedList();
+    classes.add(PwToken.class);
+    classes.add(PwVariable.class);
+    classes.add(PwConstraint.class);
+    classes.add(PwRuleInstance.class);
+    classes.add(PwSlot.class);
+    classes.add(PwObject.class);
+    classes.add(PwResource.class);
+    classes.add(PwTimeline.class);
     return getPath(sKey, eKey, classes, maxLength);
   }
 

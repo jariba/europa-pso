@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNavNode.java,v 1.12 2004-08-05 00:24:28 taylor Exp $
+// $Id: SlotNavNode.java,v 1.13 2004-08-14 01:39:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -379,7 +379,13 @@ public class SlotNavNode extends ExtendedBasicNode implements IncrementalNode, O
     return false;
   } // end doMouseClick   
 
-  private boolean addSlotObjects( final SlotNavNode slotNavNode) {
+  /**
+   * <code>addSlotObjects</code>
+   *
+   * @param slotNavNode - <code>SlotNavNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean addSlotObjects( final SlotNavNode slotNavNode) {
     boolean areNodesChanged =
       NavNodeGenerics.addEntityNavNodes( slotNavNode, navigatorView, isDebug);
     boolean areLinksChanged = false;
