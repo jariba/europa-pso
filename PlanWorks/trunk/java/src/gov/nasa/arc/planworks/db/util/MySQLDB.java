@@ -341,7 +341,7 @@ public class MySQLDB {
   synchronized public static boolean partialPlanExists(Integer sequenceId, String name) {
     try {
       ResultSet rows =
-        queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()).concat(" && PlanName='").concat(name).concat("'"));
+        queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()).concat(" && PlanName='").concat(name).concat("'"));
       rows.last();
       return rows.getRow() != 0;
     }

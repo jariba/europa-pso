@@ -120,8 +120,6 @@ CREATE TABLE PartialPlan (
   PartialPlanId bigint(20) NOT NULL default '0',
   Model varchar(255) default NULL,
   SequenceId int(11) NOT NULL default '-1',
-  MinKey int(11) NOT NULL default '0',
-  MaxKey int(11) NOT NULL default '0',
   PRIMARY KEY  (PartialPlanId,SequenceId),
   INDEX (PartialPlanId)
 ) TYPE=MyISAM;

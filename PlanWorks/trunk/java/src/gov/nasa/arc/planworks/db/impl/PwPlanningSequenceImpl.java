@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.24 2003-08-19 00:24:27 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.25 2003-08-21 18:38:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -268,7 +268,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     int index = -1;
     if((index = partialPlanNames.indexOf(partialPlanName)) != -1) {
       PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, id);
-      partialPlan.checkPlan();
+      //partialPlan.checkPlan();
       partialPlans.set(index, partialPlan);
       return partialPlan;
     }
