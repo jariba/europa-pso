@@ -4,18 +4,22 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.3 2003-07-16 00:33:15 miatauro Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.4 2003-09-10 00:32:15 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
-import javax.swing.JMenuBar;
+import java.util.ListIterator;
+import javax.swing.JButton;
 import javax.swing.JMenu;
-
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 /**
  * <code>MDIDynamicMenuBar</code> -
  *                      JMenuBar->MDIDynamicMenuBar
@@ -27,15 +31,20 @@ import javax.swing.JMenu;
 
 public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   private ArrayList constantMenus = new ArrayList(3);
+  private ArrayList windows = new ArrayList();
+  private TileCascader tileCascader;
+  private JMenu windowMenu;
     /**
      * creates a new MDIDynamicMenuBar and registers itself with the MDIDesktop
      * @param desktop the MDIDesktop to which the MDIDynamicMenuBar is added.
      */
-  public MDIDynamicMenuBar() {
+  public MDIDynamicMenuBar(TileCascader tileCascader) {
     super();
     for(int i = 0; i < getMenuCount(); i++) {
       constantMenus.add(getMenu(i));
     }
+    this.tileCascader = tileCascader;
+    buildWindowMenu();
     this.setVisible(true);
   }
   /**
@@ -43,7 +52,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
    * @param initialMenus An array of JMenus to display initially.
    * @param constant Determines whether or not the initialMenus are considered constant.
    */
-  public MDIDynamicMenuBar(JMenu [] initialMenus, boolean constant) {
+  public MDIDynamicMenuBar(JMenu [] initialMenus, boolean constant, TileCascader tileCascader) {
     super();
     for(int i = 0; i < initialMenus.length; i++) {
       if(constant) {
@@ -51,15 +60,18 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
       }
       add(initialMenus[i]);
     }
+    this.tileCascader = tileCascader;
+    buildWindowMenu();
     this.setVisible(true);
   }
+
   /**
    * Creates a new MDIDynamicMenuBar with a set of initial constant menus and a set of initial
    * volatile menus.
    * @param constantMenus An array of JMenus to be treated as constant.
    * @param initialMenus An array of JMenus to be treated as volatile.
    */
-  public MDIDynamicMenuBar(JMenu [] constantMenus, JMenu [] initialMenus) {
+  public MDIDynamicMenuBar(JMenu [] constantMenus, JMenu [] initialMenus, TileCascader tileCascader) {
     super();
     this.constantMenus = new ArrayList(constantMenus.length);
     for(int i = 0; i < constantMenus.length; i++) {
@@ -71,6 +83,8 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
         this.add(initialMenus[i]);
       }
     }
+    this.tileCascader = tileCascader;
+    buildWindowMenu();
     this.setVisible(true);
   }
   /**
@@ -91,6 +105,8 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
         add(temp[i]);
       }
     }
+    buildWindowMenu();
+    add(windowMenu);
     //repaint(getVisibleRect());
     validate();
   }
@@ -139,4 +155,70 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
       constantMenus.remove(constantMenus.indexOf(c));
     }
   }
+  public void addWindow(MDIInternalFrame frame) {
+    windows.add(frame);
+  }
+  
+  private void buildWindowMenu() {
+    JMenuItem tileVItem = new JMenuItem("Tile Vertically");
+    JMenuItem tileHItem = new JMenuItem("Tile Horizontally");
+    JMenuItem cascadeItem = new JMenuItem("Cascade");
+    tileHItem.addActionListener(new TileActionListener(tileCascader, false));
+    tileVItem.addActionListener(new TileActionListener(tileCascader, true));
+    cascadeItem.addActionListener(new CascadeActionListener(tileCascader));
+    windowMenu = new JMenu("Window");
+    windowMenu.add(tileHItem);
+    windowMenu.add(tileVItem);
+    windowMenu.add(cascadeItem);
+    windowMenu.addSeparator();
+    ListIterator windowIterator = windows.listIterator();
+    while(windowIterator.hasNext()) {
+      MDIInternalFrame frame = (MDIInternalFrame) windowIterator.next();
+      JMenuItem temp = new JMenuItem(frame.getTitle());
+      temp.addActionListener(new SelectedActionListener(frame));
+      windowMenu.add(temp);
+    }
+  }
+  public void notifyDeleted(MDIFrame frame) {
+    windows.remove(frame);
+    buildWindowMenu();
+  }
+  public void add(JButton button){}
 }
+
+class SelectedActionListener implements ActionListener {
+  private MDIInternalFrame frame;
+  public SelectedActionListener(MDIInternalFrame frame) {
+    this.frame = frame;
+  }
+  public void actionPerformed(ActionEvent e) {
+    try {
+      frame.setSelected(true);
+    }
+    catch(Exception f){}
+  }
+}
+
+class TileActionListener implements ActionListener {
+  private TileCascader tiler;
+  private boolean isHorizontal;
+  public TileActionListener(TileCascader tiler, boolean isHorizontal) {
+    this.tiler = tiler;
+    this.isHorizontal = isHorizontal;
+  }
+  public void actionPerformed(ActionEvent e) {
+    tiler.tileWindows(isHorizontal);
+  }
+}
+
+class CascadeActionListener implements ActionListener {
+  private TileCascader cascader;
+  public CascadeActionListener(TileCascader cascader) {
+    this.cascader = cascader;
+  }
+  public void actionPerformed(ActionEvent e) {
+    cascader.cascadeWindows();
+  }
+}
+
+
