@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.22 2003-08-06 01:20:12 taylor Exp $
+# $Id: build-tags-file.csh,v 1.23 2003-08-20 18:52:35 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -50,6 +50,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/impl/PwVariableImpl.java \
     src/gov/nasa/arc/planworks/db/util/ContentSpec.java \
     src/gov/nasa/arc/planworks/db/util/FileUtils.java \
+    src/gov/nasa/arc/planworks/db/util/MySQLDB.java \
     src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopFrame.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopPane.java \
@@ -65,8 +66,10 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
     src/gov/nasa/arc/planworks/util/FileCopy.java \
     src/gov/nasa/arc/planworks/util/MouseEventOSX.java \
+    src/gov/nasa/arc/planworks/util/OneToManyMap.java \
     src/gov/nasa/arc/planworks/util/ProjectNameDialog.java \
     src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java \
+    src/gov/nasa/arc/planworks/util/UniqueSet.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
@@ -100,12 +103,13 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineGroupBox.java \
     src/gov/nasa/arc/planworks/viz/views/VizView.java \
+    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNetwork.java \
     src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNetworkView.java \
     src/gov/nasa/arc/planworks/viz/views/temporalExtent/TemporalExtentView.java \
     src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java \
     src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkLayout.java
-
+    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TreeRingLayout.java
 
 echo "Writing `pwd`/planWorks.TAGS"

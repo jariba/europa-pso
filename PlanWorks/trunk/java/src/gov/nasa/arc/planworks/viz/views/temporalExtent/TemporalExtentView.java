@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.4 2003-08-12 22:57:13 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.5 2003-08-20 18:52:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.views.temporalExtent;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -149,6 +150,7 @@ public class TemporalExtentView extends VizView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for TemporalExtentView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -179,6 +181,7 @@ public class TemporalExtentView extends VizView {
     long stopTimeMSecs = (new Date()).getTime();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
 

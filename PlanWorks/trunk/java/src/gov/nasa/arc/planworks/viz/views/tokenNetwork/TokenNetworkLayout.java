@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkLayout.java,v 1.1 2003-08-06 01:20:16 taylor Exp $
+// $Id: TokenNetworkLayout.java,v 1.2 2003-08-20 18:52:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,8 @@ import java.util.Date;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
+
+// PlanWorks/java/lib/JGo/JGoLayout.jar
 import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.12 2003-08-12 22:55:35 miatauro Exp $
+// $Id: VizView.java,v 1.13 2003-08-20 18:52:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -202,38 +202,6 @@ public class VizView extends JPanel {
       return false;
     }
   } // end isTokenInContentSpec
-
-  /**
-   * <code>isVariableNodeInContentSpec</code> - 
-   *
-   * @param variableNode - <code>VariableNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean isVariableNodeInContentSpec( VariableNode variableNode) {
-    Iterator tokenNodeItr = variableNode.getTokenNodeList().iterator();
-    while (tokenNodeItr.hasNext()) {
-      if (isTokenInContentSpec( ((TokenNode) tokenNodeItr.next()).getToken())) {
-        return true;
-      }
-    }
-    return false;
-  } // end isVariableNodeInContentSpec
-
-  /**
-   * <code>isConstraintNodeInContentSpec</code>
-   *
-   * @param constraintNode - <code>ConstraintNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean isConstraintNodeInContentSpec( ConstraintNode constraintNode) {
-    Iterator variableNodeItr = constraintNode.getVariableNodeList().iterator();
-    while (variableNodeItr.hasNext()) {
-      if (isVariableNodeInContentSpec( (VariableNode) variableNodeItr.next())) {
-        return true;
-      }
-    }
-    return false;
-  } // end isConstraintNodeInContentSpec
 
   /**
    * <code>expandViewFrame</code> - expand up to size of PlanWorks frame

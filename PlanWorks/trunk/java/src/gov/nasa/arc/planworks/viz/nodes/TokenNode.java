@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.13 2003-08-12 22:54:45 miatauro Exp $
+// $Id: TokenNode.java,v 1.14 2003-08-20 18:52:36 taylor Exp $
 //
 // PlanWorks
 //
@@ -19,6 +19,7 @@ import java.util.List;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
@@ -56,11 +57,12 @@ public class TokenNode extends BasicNode {
   private Point tokenLocation;
   private int objectCnt;
   private boolean isFreeToken;
-  private String viewName;
   private VizView vizView;
   private String predicateName;
   private String nodeLabel;
   private List variableNodeList; // element VariableNode
+  private boolean areNeighborsShown;
+  private int variableLinkCount;
 
   /**
    * <code>TokenNode</code> - constructor 
@@ -70,17 +72,15 @@ public class TokenNode extends BasicNode {
    * @param objectCnt - <code>int</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
-   * @param viewName - <code>String</code> - 
    * @param vizView - <code>VizView</code> - 
    */
   public TokenNode( PwToken token, Point tokenLocation, int objectCnt, boolean isFreeToken,
-                    boolean isDraggable, String viewName, VizView vizView) {
+                    boolean isDraggable, VizView vizView) {
     super();
     this.token = token;
     this.tokenLocation = tokenLocation;
     this.objectCnt = objectCnt;
     this.isFreeToken = isFreeToken;
-    this.viewName = viewName;
     this.vizView = vizView;
     if (token != null) {
       predicateName = token.getPredicate().getName();
@@ -88,11 +88,14 @@ public class TokenNode extends BasicNode {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
     }
     // debug
-    // nodeLabel = predicateName + " " + token.getId().toString();
-    nodeLabel = predicateName;
+    nodeLabel = predicateName + " " + token.getId().toString();
+    // nodeLabel = predicateName;
     
     // System.err.println( "TokenNode: " + nodeLabel);
     variableNodeList = new ArrayList();
+    areNeighborsShown = false;
+    variableLinkCount = 0;
+    
     configure( tokenLocation, isDraggable);
   } // end constructor
 
@@ -117,10 +120,6 @@ public class TokenNode extends BasicNode {
     // do not allow user links
     getPort().setVisible( false);
   } // end configure
-
-  public String toString() {
-    return token.getId().toString();
-  }
 
   /**
    * <code>equals</code>
@@ -178,12 +177,57 @@ public class TokenNode extends BasicNode {
   }
 
   /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String toString() {
+    return token.getId().toString();
+  }
+
+  /**
+   * <code>incrVariableLinkCount</code>
+   *
+   */
+  public void incrVariableLinkCount() {
+    variableLinkCount++;
+  }
+
+  /**
+   * <code>decVariableLinkCount</code>
+   *
+   */
+  public void decVariableLinkCount() {
+    variableLinkCount--;
+  }
+
+  /**
+   * <code>getVariableLinkCount</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getVariableLinkCount() {
+    return variableLinkCount;
+  }
+
+  /**
    * <code>getToolTipText</code>
    *
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-    return token.toString();
+    if (vizView instanceof ConstraintNetworkView) {
+      String opereration = null;
+      if (areNeighborsShown) {
+        opereration = "close";
+      } else {
+        opereration = "open";
+      }
+      return "<html> " + token.toString() +
+        "<br> Mouse-L: " + opereration + " nearest variables</html>";
+    } else {
+      return token.toString();
+    }
   } // end getToolTipText
 
 
@@ -197,15 +241,6 @@ public class TokenNode extends BasicNode {
   }
 
   /**
-   * <code>setVariableNodeList</code>
-   *
-   * @param nodeList - <code>List</code> - of VariableNode
-   */
-  public void setVariableNodeList( List nodeList) {
-    this.variableNodeList = nodeList;
-  }
-
-  /**
    * <code>addVariableNode</code>
    *
    * @param variableNode - <code>VariableNode</code> - 
@@ -215,8 +250,8 @@ public class TokenNode extends BasicNode {
   }
 
   /**
-   * <code>doMouseClick</code> - For Constraint Network View, Mouse-left opens
-   *            tokenNode to show variableNodes and constraintNodes
+   * <code>doMouseClick</code> - For Constraint Network View, Mouse-left opens/closes
+   *            tokenNode to show variableNodes
    *
    * @param modifiers - <code>int</code> - 
    * @param dc - <code>Point</code> - 
@@ -225,39 +260,47 @@ public class TokenNode extends BasicNode {
    * @return - <code>boolean</code> - 
    */
   public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
-    if (viewName.equals( "constraintNetworkView")) {
-      JGoObject obj = view.pickDocObject( dc, false);
-//         System.err.println( "doMouseClick obj class " +
-//                             obj.getTopLevelObject().getClass().getName());
-      TokenNode tokenNode = (TokenNode) obj.getTopLevelObject();
-      System.err.println( "doMouseClick: token predicate name " +
-                          tokenNode.getPredicateName());
-      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-        addTokenNodeVariablesConstraints( tokenNode);
-        return true;
-      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-        removeTokenNodeVariablesConstraints( tokenNode);
+    JGoObject obj = view.pickDocObject( dc, false);
+    //         System.err.println( "doMouseClick obj class " +
+    //                             obj.getTopLevelObject().getClass().getName());
+    TokenNode tokenNode = (TokenNode) obj.getTopLevelObject();
+    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      if (vizView instanceof ConstraintNetworkView) {
+        if (! areNeighborsShown) {
+          System.err.println( "doMouseClick: Mouse-L show variable nodes of " +
+                              tokenNode.getPredicateName());
+          addTokenNodeVariables( this);
+          setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+          areNeighborsShown = true;
+        } else {
+          System.err.println( "doMouseClick: Mouse-L hide variable nodes of " +
+                              tokenNode.getPredicateName());
+          removeTokenNodeVariables( this);
+          setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
+          areNeighborsShown = false;
+        }
         return true;
       }
+    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
     }
     return false;
   } // end doMouseClick   
 
-  private void addTokenNodeVariablesConstraints( TokenNode tokenNode) {
+  private void addTokenNodeVariables( TokenNode tokenNode) {
     ConstraintNetworkView constraintNetworkView =
       (ConstraintNetworkView) tokenNode.getVizView();
-    constraintNetworkView.createVariableAndConstraintNodes( tokenNode);
-    constraintNetworkView.createTokenVariableConstraintLinks( tokenNode);
+    constraintNetworkView.addVariableNodes( tokenNode);
+    constraintNetworkView.addVariableToTokenLinks( tokenNode);
     constraintNetworkView.redraw();
-  } // end addTokenNodeVariablesConstraints
+  } // end addTokenNodeVariables
 
-  private void removeTokenNodeVariablesConstraints( TokenNode tokenNode) {
+  private void removeTokenNodeVariables( TokenNode tokenNode) {
     ConstraintNetworkView constraintNetworkView =
       (ConstraintNetworkView) tokenNode.getVizView();
-    constraintNetworkView.removeTokenVariableConstraintLinks( tokenNode);
-    constraintNetworkView.removeVariableAndConstraintNodes( tokenNode);
+    constraintNetworkView.removeVariableToTokenLinks( tokenNode);
+    constraintNetworkView.removeVariableNodes( tokenNode);
     constraintNetworkView.redraw();
-  } // end addTokenNodeVariablesConstraints
+  } // end adremoveTokenNodeVariables
 
 
 } // end class TokenNode

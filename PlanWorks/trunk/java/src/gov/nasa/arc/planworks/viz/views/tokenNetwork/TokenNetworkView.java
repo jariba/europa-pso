@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.17 2003-08-12 22:57:34 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.18 2003-08-20 18:52:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.views.tokenNetwork;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -139,6 +140,7 @@ public class TokenNetworkView extends VizView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -174,6 +176,7 @@ public class TokenNetworkView extends VizView {
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
 
+    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
 
@@ -395,8 +398,7 @@ public class TokenNetworkView extends VizView {
     while (freeTokenItr.hasNext()) {
       TokenNode freeTokenNode = new TokenNode( (PwToken) freeTokenItr.next(),
                                                new Point( x, y), objectCnt,
-                                               isFreeToken, isDraggable,
-                                               viewName, this);
+                                               isFreeToken, isDraggable, this);
       if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
         x += freeTokenNode.getSize().getWidth() * 0.5;
         freeTokenNode.setLocation( x, y);
@@ -422,7 +424,7 @@ public class TokenNetworkView extends VizView {
         PwToken token = (PwToken) tokenIterator.next();
         TokenNode tokenNode =
           new TokenNode( token, new Point( x, y), objectCnt, isFreeToken,
-                         isDraggable, viewName, this);
+                         isDraggable, this);
         if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
           x += tokenNode.getSize().getWidth() * 0.5;
           tokenNode.setLocation( x, y);
