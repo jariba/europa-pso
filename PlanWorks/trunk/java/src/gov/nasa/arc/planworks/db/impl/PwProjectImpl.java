@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.40 2004-02-10 17:48:42 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.41 2004-02-11 01:08:17 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -170,7 +170,18 @@ public class PwProjectImpl extends PwProject {
       Long sequenceId = (Long) seqIdIterator.next();
       String seqUrl = (String) sequenceIdUrlMap.get(sequenceId);
       System.err.println(sequenceId + " : " + seqUrl);
-      planningSequences.add( new PwPlanningSequenceImpl( seqUrl, sequenceId));
+      try {
+        planningSequences.add(new PwPlanningSequenceImpl(seqUrl, sequenceId));
+      }
+      catch(ResourceNotFoundException rnfe) {
+        if(rnfe.getMessage().indexOf("is not a valid sequence directory") != -1) {
+          System.err.println("Warning: ignoring sequence '" + seqUrl + "'");
+          seqIdIterator.remove();
+        }
+        else {
+          throw rnfe;
+        }
+      }
     }
   } // end  constructor PwProjectImpl.openProject
 

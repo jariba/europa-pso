@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SpecBox.java,v 1.2 2004-01-14 21:27:38 miatauro Exp $
+// $Id: SpecBox.java,v 1.3 2004-02-11 01:09:22 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -124,6 +124,8 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     retval.add(names.get(keyField.getSelectedItem()));
     return retval;
   }
+
+  public String getName() {return name;}
   /**
    * Adds a new <code>ContentSpecElement</code> to the parent <code>GroupBox</code>.  Called when
    * the LogicComboBox is moved from blank to one of the connectives.
@@ -169,13 +171,18 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     return keyField;
   }
 
-  public void setSelectedComboItem(Integer value) {
-    Iterator nameIterator = names.keySet().iterator();
-    while(nameIterator.hasNext()) {
-      String name = (String) nameIterator.next();
-      if(((Integer)names.get(name)).equals(value)) {
+  public void setSelectedComboItem(Object item) {
+    if(item instanceof Integer) {
+      Iterator nameIterator = names.keySet().iterator();
+      while(nameIterator.hasNext()) {
+        String name = (String) nameIterator.next();
+        if(((Integer)names.get(name)).equals(item)) {
         keyField.setSelectedItem(name);
+        }
       }
+    }
+    else if(item instanceof String) {
+      keyField.setSelectedItem(item);
     }
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.16 2004-02-10 17:48:55 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.17 2004-02-11 01:08:38 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -223,6 +223,8 @@ public class PartialPlanContentSpec implements ContentSpec {
    * @param tokenTypes the result of getValue() in TokenTypeBox.
    */
   public void applySpec(final List spec) throws NumberFormatException {
+    if(spec.size() != 6)
+      return;
     if(!specChanged(spec)) {
       return;
     }
