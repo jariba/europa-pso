@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.3 2003-05-15 18:38:45 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.4 2003-05-18 00:02:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -153,11 +153,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   /**
    * <code>addPartialPlan</code>
    *
-   * @param partialPlan - <code>PwPartialPlan</code> - 
-   * @param transactionList - <code>List</code> - of PwTransaction
+   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
+   * @param transactionList - <code>List</code> - of PwTransactionImpl
    * @return - <code>int</code> - length of partial plan set
    */
-  public int addPartialPlan( PwPartialPlan partialPlan, List transactionList) {
+  public int addPartialPlan( PwPartialPlanImpl partialPlan, List transactionList) {
     partialPlans.add( partialPlan);
     transactions.add( transactionList);
     stepCount++;

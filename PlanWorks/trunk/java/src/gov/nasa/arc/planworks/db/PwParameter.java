@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwParameter.java,v 1.1 2003-05-15 22:16:21 taylor Exp $
+// $Id: PwParameter.java,v 1.2 2003-05-18 00:02:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,5 +26,19 @@ import java.util.List;
 public interface PwParameter {
 
 
+  /**
+   * <code>getName</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getName();
+
+  /**
+   * <code>getKey</code>
+   *
+   * @return name - <code>String</code> -
+   */
+  public String getKey();
+	
 
 } // end interface PwParameter

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomainImpl.java,v 1.2 2003-05-16 20:06:19 miatauro Exp $
+// $Id: PwEnumeratedDomainImpl.java,v 1.3 2003-05-18 00:02:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -31,6 +31,11 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
 
   private List enumeration; // element String
 
+  /**
+   * <code>PwEnumeratedDomainImpl</code> - constructor 
+   *
+   * @param enumerationString - <code>String</code> - 
+   */
   public PwEnumeratedDomainImpl( String enumerationString) {
     this.enumeration = new ArrayList();
     StringTokenizer tokenizer = new StringTokenizer( enumerationString);
@@ -39,19 +44,40 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
     }
   } // end constructor
 
-		public List getEnumeration() {
-				return this.enumeration;	
-		}
+  /**
+   * <code>getEnumeration</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getEnumeration() {
+    return this.enumeration;	
+  }
 		
-		public String toString(){
-				StringBuffer enumBuf = new StringBuffer("{");
-				for(int i = 0; i < enumeration.size() - 1; i++) {
-						enumBuf.append((String) enumeration.get(i));
-						enumBuf.append(", ");
-				}
-				enumBuf.append((String) enumeration.get(enumeration.size() - 1));
-				enumBuf.append("}");
-				return enumBuf.toString();
-		}
+  /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String toString(){
+    StringBuffer enumBuf = new StringBuffer( "");
+    boolean isSingleton = (enumeration.size() == 1);
+    if (isSingleton) {
+      enumBuf.append( "{");
+    } else {
+      enumBuf.append( "[");
+    }
+    for (int i = 0; i < enumeration.size() - 1; i++) {
+      enumBuf.append( (String) enumeration.get(i));
+      enumBuf.append( ", ");
+    }
+    enumBuf.append( (String) enumeration.get(enumeration.size() - 1));
+    if (isSingleton) {
+      enumBuf.append( "}");
+    } else {
+      enumBuf.append( "]");
+    }
+    return enumBuf.toString();
+  }
 
 } // end class PwEnumeratedDomainImpl
+

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.3 2003-05-15 18:38:44 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.4 2003-05-18 00:02:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -67,13 +67,5 @@ public interface PwPlanningSequence {
    */
   public PwPartialPlan getPartialPlan( int step) throws IndexOutOfBoundsException;
 
-  /**
-   * <code>addPartialPlan</code>
-   *
-   * @param partialPlan - <code>PwPartialPlan</code> - 
-   * @param transactionList - <code>List</code> - of PwTransaction
-   * @return - <code>int</code> - length of partial plan set
-   */
-  public int addPartialPlan( PwPartialPlan partialPlan, List transactionList);
 
 } // end interface PwPlanningSequence

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomainImpl.java,v 1.2 2003-05-16 20:06:19 miatauro Exp $
+// $Id: PwIntervalDomainImpl.java,v 1.3 2003-05-18 00:02:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -47,21 +47,37 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
     this.upperBound = upperBound;
   } // end constructor
 
-		public String getLowerBound() {
-				return lowerBound;
-		}
-		public String getUpperBound() {
-				return upperBound;
-		}
+  /**
+   * <code>getLowerBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getLowerBound() {
+    return lowerBound;
+  }
+
+  /**
+   * <code>getUpperBound</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getUpperBound() {
+    return upperBound;
+  }
 		
-		public String toString() {
-				StringBuffer boundBuf = new StringBuffer("[");
-				boundBuf.append(lowerBound);
-				boundBuf.append("-");
-				boundBuf.append(upperBound);
-				boundBuf.append("]");
-				return boundBuf.toString();
-		}
+  /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String toString() {
+    StringBuffer boundBuf = new StringBuffer("[");
+    boundBuf.append( lowerBound);
+    boundBuf.append( " ");
+    boundBuf.append( upperBound);
+    boundBuf.append("]");
+    return boundBuf.toString();
+  }
 		
 
 } // end class PwIntervalDomainImpl
