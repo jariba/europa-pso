@@ -116,7 +116,14 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_getPlannerS
   }
 
   // call the getStatus function
-  retStatus  = (*fcn_getStatus)();
+  try {
+    retStatus  = (*fcn_getStatus)();
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in getStatus()");
+    return gov_nasa_arc_planworks_PlannerControlJNI_PLANNER_INITIALLY_INCONSISTANT;
+  }
   printf("Returned from calling the getStatus function\n");
   fflush(stdout);
 
@@ -152,7 +159,14 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_writeStep (
   }
 
   // call the writeStep function
-  nextPlannerStep  = (*fcn_writeStep)(step_num);
+  try {
+    nextPlannerStep  = (*fcn_writeStep)(step_num);
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in writeStep()");
+    return -1;
+  }
   printf("Returned from calling the writeStep function\n");
   fflush(stdout);
 
@@ -189,7 +203,14 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_writeNext (
   }
 
   // call the writeNext function
-  nextPlannerStep  = (*fcn_writeNext)(num_steps);
+  try {
+    nextPlannerStep  = (*fcn_writeNext)(num_steps);
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in writeNext()");
+    return -1;
+  }
   printf("Returned from calling the writeNext function\n");
   fflush(stdout);
 
@@ -226,7 +247,14 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_completePla
   }
 
   // call the completeRun function
-  lastStepCompleted  = (*fcn_completeRun)();
+  try {
+    lastStepCompleted  = (*fcn_completeRun)();
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in completeRun()");
+    return -1;
+  }
   printf("Returned from calling the completeRun function\n");
   printf("PlannerControlJNI_completePlannerRun: Finished \n");
   fflush(stdout);
@@ -263,7 +291,14 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_terminatePl
   }
 
   // call the terminateRun function
-  retStatus  = (*fcn_terminateRun)();
+  try {
+    retStatus  = (*fcn_terminateRun)();
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in terminateRun()");
+    return gov_nasa_arc_planworks_PlannerControlJNI_PLANNER_INITIALLY_INCONSISTANT;
+  }
   printf("Returned from calling the terminateRun function\n");
 
   printf("PlannerControlJNI_terminatePlannerRun: Model unloaded \n");
@@ -301,7 +336,14 @@ JNIEXPORT jstring JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_getDesti
   }
 
   // call the getOutputLocation function
-  outputLocation  = (*fcn_getOutputLocation)();
+  try {
+    outputLocation  = (*fcn_getOutputLocation)();
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in getOutputLocation()");
+    return destPath;
+  }
   printf("Returned from calling the getOutputLocation function\n");
 
   destPath = env->NewStringUTF(outputLocation);
@@ -360,9 +402,16 @@ JNIEXPORT jobjectArray JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_get
     return stringArray;
   }
 
-  numTypes  = (*fcn_getNumTransactions)();
-  typeLength  = (*fcn_getMaxLengthTransactions)();
-  types = (*fcn_getTransactionNameStrs)();
+  try {
+    numTypes  = (*fcn_getNumTransactions)();
+    typeLength  = (*fcn_getMaxLengthTransactions)();
+    types = (*fcn_getTransactionNameStrs)();
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in getTransactionTypes()");
+    return stringArray;
+  }
 
   printf("PlannerControlJNI_getTransactionTypes: found %d types with max length %d\n", numTypes, typeLength);
   fflush(stdout);
@@ -422,9 +471,16 @@ JNIEXPORT jintArray JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_getTra
     return intArray;
   }
 
-  numTypes  = (*fcn_getNumTransactions)();
-  filterState = new int[numTypes];
-  (*fcn_getTransactionFilterStates)(filterState, numTypes);
+  try {
+    numTypes  = (*fcn_getNumTransactions)();
+    filterState = new int[numTypes];
+    (*fcn_getTransactionFilterStates)(filterState, numTypes);
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in getTransactionTypeStates()");
+    return intArray;
+  }
 
   intArray = env->NewIntArray( numTypes);
   jint* intArrayElems = env->GetIntArrayElements( intArray, &isCopy);
@@ -480,7 +536,14 @@ JNIEXPORT void JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_setTransact
     return;
   }
 
-  numTypes  = (*fcn_getNumTransactions)();
+  try {
+    numTypes  = (*fcn_getNumTransactions)();
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in getNumTransactions()");
+    return;
+  }
   if (size != numTypes) {
     clazz = env->FindClass("java/lang/Exception");
     env->ThrowNew(clazz, "Transaction states array is wrong size");
@@ -491,7 +554,14 @@ JNIEXPORT void JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_setTransact
   for (int i = 0; i < size; i++) {
     filterState[i] = intArrayElems[i];
   }
-  (*fcn_setTransactionFilterStates)(filterState, numTypes);
+  try {
+    (*fcn_setTransactionFilterStates)(filterState, numTypes);
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in setTransactionFilterStates()");
+    return;
+  }
 
   if (isCopy == JNI_TRUE) {
     env->ReleaseIntArrayElements( intArray, intArrayElems, 0);
