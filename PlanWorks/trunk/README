@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.96 2004-06-04 23:32:03 taylor Exp $
+# $Id: README,v 1.97 2004-06-05 00:24:07 taylor Exp $
 #
 
 SUMMARY
@@ -29,7 +29,7 @@ o The partial plan DBTransaction View and the Sequence Query result views for
 o The PLASMA PartialPlanWriter now uses a configuration file and one environment
   variable rather than a set of environment vars.  Set the PPW_CONFIG environment
   variable to the path of the configuration file you want.  A sample configuration 
-  file is available at McGann/PlanDatabase/sample-ppw-config.  The GeneralConfigSection 
+  file is available at PLASMA/System/component/sample-ppw-config.  The GeneralConfigSection 
   is for things like allowing the PPW to write automatically, how often it should write,
   where it should write, and how many choices should be written per decision.  The
   TransactionConfigSection is a list of all of the transactions that should be logged.
