@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.8 2003-06-13 21:18:06 taylor Exp $
+// $Id: PlanWorks.java,v 1.9 2003-06-17 22:06:02 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -29,6 +29,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -547,13 +548,21 @@ public class PlanWorks extends MDIDesktopFrame {
 
 
 
-  private void createPartialPlanViewThread( String viewName,
-                                            SeqPartPlanViewMenuItem menuItem) {
-    new CreatePartialPlanViewThread( viewName, menuItem).start();
+  private void createPartialPlanViewThread( final String viewName,
+                                            final SeqPartPlanViewMenuItem menuItem) {
+    (new Thread() {
+        public void run() {
+          try {
+            SwingUtilities.invokeAndWait(new CreatePartialPlanViewThread(viewName, menuItem));
+          }
+          catch(Exception e){}
+        }
+      }
+     ).start();
   }
 
 
-  class CreatePartialPlanViewThread extends Thread {
+  class CreatePartialPlanViewThread implements Runnable {
 
     private String sequenceName;
     private String partialPlanName;
