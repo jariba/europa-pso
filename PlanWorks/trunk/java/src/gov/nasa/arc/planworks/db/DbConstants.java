@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.20 2004-02-05 23:23:32 miatauro Exp $
+// $Id: DbConstants.java,v 1.21 2004-02-25 02:30:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -292,6 +292,9 @@ public interface DbConstants {
   public static final int O_OBJECT = 0;
   public static final int O_TIMELINE = 1;
   public static final int O_RESOURCE = 2;
+
+  public static final Integer NO_ID = new Integer( -1);
+
 } // end interface DbConstants
 
     

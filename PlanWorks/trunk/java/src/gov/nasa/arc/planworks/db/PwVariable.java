@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariable.java,v 1.11 2004-02-13 21:22:28 miatauro Exp $
+// $Id: PwVariable.java,v 1.12 2004-02-25 02:30:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,7 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwVariable {
+public interface PwVariable extends PwEntity {
 
   /**
    * <code>getId</code>

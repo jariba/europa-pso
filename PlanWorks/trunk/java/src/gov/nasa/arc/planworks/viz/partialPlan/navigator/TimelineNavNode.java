@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.5 2004-02-17 22:24:36 miatauro Exp $
+// $Id: TimelineNavNode.java,v 1.6 2004-02-25 02:30:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,9 +14,10 @@ package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
@@ -25,7 +26,6 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
@@ -38,12 +38,15 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TimelineNavNode extends TimelineNode {
+public class TimelineNavNode extends TimelineNode implements NavNode {
+
+  private PwTimeline timeline;
+  private NavigatorView navigatorView;
 
   private boolean areNeighborsShown;
-  private int objectLinkCount;
-  private int slotLinkCount;
+  private int linkCount;
   private boolean inLayout;
+  private boolean isDebugPrint;
 
   /**
    * <code>TimelineNavNode</code> - constructor 
@@ -58,21 +61,74 @@ public class TimelineNavNode extends TimelineNode {
                           final Color backgroundColor, final boolean isDraggable, 
                           final PartialPlanView partialPlanView) { 
     super(timeline, timelineLocation, backgroundColor, isDraggable, partialPlanView);
-
-    isDebug = false;
-    // isDebug = true;
+    this.timeline = timeline;
+    navigatorView = (NavigatorView) partialPlanView;
+    isDebugPrint = false;
+    // isDebugPrint = true;
 
     inLayout = false;
     areNeighborsShown = false;
-    objectLinkCount = 0;
-    slotLinkCount = 0;
+    linkCount = 0;
   } // end constructor
 
-  public boolean inLayout() {
+  /**
+   * <code>getId</code> - implements NavNode
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public final Integer getId() {
+    return timeline.getId();
+  }
+
+  /**
+   * <code>getTypeName</code> - implements NavNode
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getTypeName() {
+    return "timeline";
+  }
+
+  /**
+   * <code>incrLinkCount</code> - implements NavNode
+   *
+   */
+  public final void incrLinkCount() {
+    linkCount++;
+  }
+
+  /**
+   * <code>decLinkCount</code> - implements NavNode
+   *
+   */
+  public final void decLinkCount() {
+    linkCount--;
+  }
+
+  /**
+   * <code>getLinkCount</code> - implements NavNode
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getLinkCount() {
+    return linkCount;
+  }
+
+  /**
+   * <code>inLayout</code> - implements NavNode
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public final boolean inLayout() {
     return inLayout;
   }
 
-  public void setInLayout( boolean value) {
+  /**
+   * <code>setInLayout</code> - implements NavNode
+   *
+   * @param value - <code>boolean</code> - 
+   */
+  public final void setInLayout( final boolean value) {
     int width = 1;
     inLayout = value;
     if (value == false) {
@@ -82,89 +138,59 @@ public class TimelineNavNode extends TimelineNode {
   }
 
   /**
-   * <code>setAreNeighborsShown</code>
+   * <code>resetNode</code> - implements NavNode
+   *
+   * @param isDebug - <code>boolean</code> - 
+   */
+  public final void resetNode( final boolean isDebug) {
+    areNeighborsShown = false;
+    if (isDebug && (linkCount != 0)) {
+      System.err.println( "reset timeline node: " + timeline.getId() +
+                          "; linkCount != 0: " + linkCount);
+    }
+    linkCount = 0;
+  } // end resetNode
+
+  /**
+   * <code>setAreNeighborsShown</code> - implements NavNode
    *
    * @param value - <code>boolean</code> - 
    */
-  public void setAreNeighborsShown( boolean value) {
+  public final void setAreNeighborsShown( final boolean value) {
     areNeighborsShown = value;
   }
 
   /**
-   * <code>incrObjectLinkCount</code>
+   * <code>getParentEntityList</code> - implements NavNode
    *
+   * @return - <code>List</code> - of PwEntity
    */
-  public void incrObjectLinkCount() {
-    objectLinkCount++;
-  }
-
-  /**
-   * <code>decObjectLinkCount</code>
-   *
-   */
-  public void decObjectLinkCount() {
-    objectLinkCount--;
-  }
-
-  /**
-   * <code>getObjectLinkCount</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getObjectLinkCount() {
-    return objectLinkCount;
-  }
-
-  /**
-   * <code>incrSlotLinkCount</code>
-   *
-   */
-  public void incrSlotLinkCount() {
-    slotLinkCount++;
-  }
-
-  /**
-   * <code>decSlotLinkCount</code>
-   *
-   */
-  public void decSlotLinkCount() {
-    slotLinkCount--;
-  }
-
-  /**
-   * <code>getSlotLinkCount</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getSlotLinkCount() {
-    return slotLinkCount;
-  }
-
-  /**
-   * <code>resetNode</code> - when closed 
-   *
-   * @param isDebug - <code>boolean</code> - 
-   */
-  public void resetNode( boolean isDebug) {
-    areNeighborsShown = false;
-    if (isDebug && (objectLinkCount != 0)) {
-      System.err.println( "reset timeline node: " + timeline.getId() +
-                          "; objectLinkCount != 0: " + objectLinkCount);
+  public final List getParentEntityList() {
+    List returnList = new ArrayList();
+    if (timeline.getParent() != null) {
+      returnList.add( timeline.getParent());
     }
-    if (isDebug && (slotLinkCount != 0)) {
-      System.err.println( "reset timeline node: " + timeline.getId() +
-                          "; slotLinkCount != 0: " + slotLinkCount);
-    }
-    objectLinkCount = 0;
-    slotLinkCount = 0;
-  } // end resetNode
+    return returnList;
+  }
+
+  /**
+   * <code>getComponentEntityList</code> - implements NavNode
+   *
+   * @return - <code>List</code> - of PwEntity (PwObject & PwSlot)
+   */
+  public final List getComponentEntityList() {
+    List returnList = new ArrayList();
+    returnList.addAll( timeline.getComponentList());
+    returnList.addAll( timeline.getSlotList());
+    return returnList;
+  }
 
   /**
    * <code>getToolTipText</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getToolTipText() {
+  public final String getToolTipText() {
     String operation = "";
     if (areNeighborsShown) {
       operation = "close";
@@ -173,12 +199,11 @@ public class TimelineNavNode extends TimelineNode {
     }
     StringBuffer tip = new StringBuffer( "<html>timeline<br>");
     if (isDebug) {
-      tip.append( " linkCntObj ").append( String.valueOf( objectLinkCount));
-      tip.append( " linkCntSlot ").append( String.valueOf( slotLinkCount));
+      tip.append( " linkCnt ").append( String.valueOf( linkCount));
       tip.append( "<br>");
     }
     tip.append( "Mouse-L: ").append( operation);
-    tip.append("</html>");
+    tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
 
@@ -188,7 +213,7 @@ public class TimelineNavNode extends TimelineNode {
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
-  public String getToolTipText( boolean isOverview) {
+  public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html>timeline<br>");
     tip.append( timeline.getName());
     tip.append( "<br>key=");
@@ -208,7 +233,8 @@ public class TimelineNavNode extends TimelineNode {
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
+  public final boolean doMouseClick( final int modifiers, final Point dc, final Point vc,
+                                     final JGoView view) {
     JGoObject obj = view.pickDocObject( dc, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
@@ -217,17 +243,14 @@ public class TimelineNavNode extends TimelineNode {
       NavigatorView navigatorView = (NavigatorView) partialPlanView;
       navigatorView.setStartTimeMSecs( System.currentTimeMillis());
       boolean areObjectsChanged = false;
-      boolean areSlotsChanged = false;
       if (! areNeighborsShown) {
-        areObjectsChanged = addTimelineObjects( this, navigatorView);
-        areSlotsChanged = addTimelineSlots( this, navigatorView);
+        areObjectsChanged = addTimelineObjects( this);
         areNeighborsShown = true;
       } else {
-        areObjectsChanged = removeTimelineObjects( this, navigatorView);
-        areSlotsChanged = removeTimelineSlots( this, navigatorView);
+        areObjectsChanged = removeTimelineObjects( this);
         areNeighborsShown = false;
       }
-      if (areObjectsChanged || areSlotsChanged) {
+      if (areObjectsChanged) {
         navigatorView.setLayoutNeeded();
         navigatorView.setFocusNode( this);
         navigatorView.redraw();
@@ -238,14 +261,14 @@ public class TimelineNavNode extends TimelineNode {
     return false;
   } // end doMouseClick   
 
-  private boolean addTimelineObjects( TimelineNavNode timelineNavNode,
-                                      NavigatorView navigatorView) {
-    boolean areNodesChanged = navigatorView.addObjectNavNodes( timelineNavNode);
+  private boolean addTimelineObjects( final TimelineNavNode timelineNavNode) {
+    boolean areNodesChanged =
+      NavNodeGenerics.addEntityNavNodes( timelineNavNode, navigatorView, isDebugPrint);
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      navigatorView.addObjectToTimelineNavLinks( timelineNavNode);
+      NavNodeGenerics.addParentToEntityNavLinks( timelineNavNode, navigatorView, isDebugPrint);
      boolean areChildLinksChanged =
-      navigatorView.addTimelineToObjectNavLinks( timelineNavNode);
+       NavNodeGenerics.addEntityToChildNavLinks( timelineNavNode, navigatorView, isDebugPrint);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
@@ -253,36 +276,22 @@ public class TimelineNavNode extends TimelineNode {
     return (areNodesChanged || areLinksChanged);
   } // end addTimelineObjects
 
-  private boolean removeTimelineObjects( TimelineNavNode timelineNavNode,
-                                         NavigatorView navigatorView) {
+  private boolean removeTimelineObjects( final TimelineNavNode timelineNavNode) {
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
-      navigatorView.removeObjectToTimelineNavLinks( timelineNavNode);
+      NavNodeGenerics.removeParentToEntityNavLinks( timelineNavNode, navigatorView,
+                                                    isDebugPrint);
     boolean areChildLinksChanged =
-      navigatorView.removeTimelineToObjectNavLinks( timelineNavNode);
+      NavNodeGenerics.removeEntityToChildNavLinks( timelineNavNode, navigatorView,
+                                                   isDebugPrint);
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
-    boolean areNodesChanged = navigatorView.removeObjectNavNodes( timelineNavNode);
+    boolean areNodesChanged =
+      NavNodeGenerics.removeEntityNavNodes( timelineNavNode, navigatorView, isDebugPrint);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
   } // end removeTimelineObjects
-
-  private boolean addTimelineSlots( TimelineNavNode timelineNavNode,
-                                    NavigatorView navigatorView) {
-    boolean areNodesChanged = navigatorView.addSlotNavNodes( timelineNavNode);
-    boolean areLinksChanged = navigatorView.addTimelineToSlotNavLinks( timelineNavNode);
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-    return (areNodesChanged || areLinksChanged);
-  } // end addTimelineSlots
-
-  private boolean removeTimelineSlots( TimelineNavNode timelineNavNode,
-                                       NavigatorView navigatorView) {
-    boolean areLinksChanged = navigatorView.removeTimelineToSlotNavLinks( timelineNavNode);
-    boolean areNodesChanged = navigatorView.removeSlotNavNodes( timelineNavNode);
-    setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
-    return (areNodesChanged || areLinksChanged);
-  } // end removeTimelineSlots
 
 
 } // end class TimelineNavNode

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResource.java,v 1.1 2004-02-03 20:43:45 taylor Exp $
+// $Id: PwResource.java,v 1.2 2004-02-25 02:30:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -24,7 +24,7 @@ import gov.nasa.arc.planworks.util.UniqueSet;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwResource {
+public interface PwResource extends PwEntity {
 
 
   /**

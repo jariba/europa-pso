@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlot.java,v 1.8 2004-02-03 22:43:24 miatauro Exp $
+// $Id: PwSlot.java,v 1.9 2004-02-25 02:30:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,7 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwSlot {
+public interface PwSlot extends PwEntity {
 
   /**
    * <code>getId</code>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNavNode.java,v 1.6 2004-02-13 18:56:50 taylor Exp $
+// $Id: SlotNavNode.java,v 1.7 2004-02-25 02:30:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,7 +14,8 @@ package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 
 import java.awt.Color;
 import java.awt.Point;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -29,7 +30,6 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -43,7 +43,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class SlotNavNode extends ExtendedBasicNode {
+public class SlotNavNode extends ExtendedBasicNode implements NavNode {
 
   private PwSlot slot;
   private PwTimeline timeline;
@@ -52,8 +52,7 @@ public class SlotNavNode extends ExtendedBasicNode {
   private String predicateName;
   private boolean isDebug;
   private boolean areNeighborsShown;
-  private int timelineLinkCount;
-  private int tokenLinkCount;
+  private int linkCount;
   private boolean inLayout;
   private boolean isEmptySlot;
 
@@ -66,8 +65,8 @@ public class SlotNavNode extends ExtendedBasicNode {
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public SlotNavNode( PwSlot slot, Point slotLocation, Color backgroundColor,
-                      boolean isDraggable, PartialPlanView partialPlanView) { 
+  public SlotNavNode( final PwSlot slot, final Point slotLocation, final Color backgroundColor,
+                      final boolean isDraggable, final PartialPlanView partialPlanView) { 
     super( ViewConstants.HEXAGON);
     this.slot = slot;
     timeline = partialPlanView.getPartialPlan().getTimeline( slot.getTimelineId());
@@ -94,14 +93,13 @@ public class SlotNavNode extends ExtendedBasicNode {
 
     inLayout = false;
     areNeighborsShown = false;
-    timelineLinkCount = 0;
-    tokenLinkCount = 0;
+    linkCount = 0;
 
     configure( slotLocation, backgroundColor, isDraggable);
   } // end constructor
 
-  private final void configure( Point timelineLocation, Color backgroundColor,
-                                boolean isDraggable) {
+  private final void configure( final Point timelineLocation, final Color backgroundColor,
+                                final boolean isDraggable) {
     setLabelSpot( JGoObject.Center);
     initialize( timelineLocation, nodeLabel);
     setBrush( JGoBrush.makeStockBrush( backgroundColor));  
@@ -121,7 +119,7 @@ public class SlotNavNode extends ExtendedBasicNode {
    * @param node - <code>SlotNavNode</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean equals( SlotNavNode node) {
+  public final boolean equals( final SlotNavNode node) {
     return (this.getSlot().getId().equals( node.getSlot().getId()));
   }
 
@@ -130,25 +128,68 @@ public class SlotNavNode extends ExtendedBasicNode {
    *
    * @return - <code>PwSlot</code> - 
    */
-  public PwSlot getSlot() {
+  public final PwSlot getSlot() {
     return slot;
   }
 
   /**
-   * <code>inLayout</code>
+   * <code>getId</code>
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public final Integer getId() {
+    return slot.getId();
+  }
+
+  /**
+   * <code>getTypeName</code> - implements NavNode
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getTypeName() {
+    return "slot";
+  }
+
+  /**
+   * <code>incrLinkCount</code> - implements NavNode
+   *
+   */
+  public final void incrLinkCount() {
+    linkCount++;
+  }
+
+  /**
+   * <code>decLinkCount</code> - implements NavNode
+   *
+   */
+  public final void decLinkCount() {
+    linkCount--;
+  }
+
+  /**
+   * <code>getLinkCount</code> - implements NavNode
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getLinkCount() {
+    return linkCount;
+  }
+
+  /**
+   * <code>inLayout</code> - implements NavNode
    *
    * @return - <code>boolean</code> - 
    */
-  public boolean inLayout() {
+  public final boolean inLayout() {
     return inLayout;
   }
 
   /**
-   * <code>setInLayout</code>
+   * <code>setInLayout</code> - implements NavNode
    *
    * @param value - <code>boolean</code> - 
    */
-  public void setInLayout( boolean value) {
+  public final void setInLayout( final boolean value) {
     int width = 1;
     inLayout = value;
     if (value == false) {
@@ -160,13 +201,47 @@ public class SlotNavNode extends ExtendedBasicNode {
     }
   }
 
+  /**
+   * <code>resetNode</code> - implements NavNode
+   *
+   * @param isDebug - <code>boolean</code> - 
+   */
+  public final void resetNode( final boolean isDbg) {
+    areNeighborsShown = false;
+    if (isDbg && (linkCount != 0)) {
+      System.err.println( "reset slot node: " + slot.getId() +
+                          "; linkCount != 0: " + linkCount);
+    }
+    linkCount = 0;
+  } // end resetNode
+
  /**
-   * <code>setAreNeighborsShown</code>
+   * <code>setAreNeighborsShown</code> - implements NavNode
    *
    * @param value - <code>boolean</code> - 
    */
-  public void setAreNeighborsShown( boolean value) {
+  public final void setAreNeighborsShown( final boolean value) {
     areNeighborsShown = value;
+  }
+
+  /**
+   * <code>getParentEntityList</code> - implements NavNode
+   *
+   * @return - <code>List</code> - of PwEntity
+   */
+  public final List getParentEntityList() {
+    List returnList = new ArrayList();
+    returnList.add( timeline);
+    return returnList;
+  }
+
+  /**
+   * <code>getComponentEntityList</code> - implements NavNode
+   *
+   * @return - <code>List</code> - of PwEntity
+   */
+  public final List getComponentEntityList() {
+    return slot.getTokenList();
   }
 
   /**
@@ -174,85 +249,16 @@ public class SlotNavNode extends ExtendedBasicNode {
    *
    * @return - <code>String</code> - 
    */
-  public String toString() {
+  public final String toString() {
     return slot.getId().toString();
   }
-
-  /**
-   * <code>incrTimelineLinkCount</code>
-   *
-   */
-  public void incrTimelineLinkCount() {
-    timelineLinkCount++;
-  }
-
-  /**
-   * <code>decTimelineLinkCount</code>
-   *
-   */
-  public void decTimelineLinkCount() {
-    timelineLinkCount--;
-  }
-
-  /**
-   * <code>getTimelineLinkCount</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getTimelineLinkCount() {
-    return timelineLinkCount;
-  }
-
-  /**
-   * <code>incrTokenLinkCount</code>
-   *
-   */
-  public void incrTokenLinkCount() {
-    tokenLinkCount++;
-  }
-
-  /**
-   * <code>decTokenLinkCount</code>
-   *
-   */
-  public void decTokenLinkCount() {
-    tokenLinkCount--;
-  }
-
-  /**
-   * <code>getTokenLinkCount</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getTokenLinkCount() {
-    return tokenLinkCount;
-  }
-
-  /**
-   * <code>resetNode</code> - when closed 
-   *
-   * @param isDebug - <code>boolean</code> - 
-   */
-  public void resetNode( boolean isDebug) {
-    areNeighborsShown = false;
-    if (isDebug && (timelineLinkCount != 0)) {
-      System.err.println( "reset slot node: " + slot.getId() +
-                          "; timelineLinkCount != 0: " + timelineLinkCount);
-    }
-    if (isDebug && (tokenLinkCount != 0)) {
-      System.err.println( "reset slotnode: " + slot.getId() +
-                          "; tokenLinkCount != 0: " + tokenLinkCount);
-    }
-    timelineLinkCount = 0;
-    tokenLinkCount = 0;
-  } // end resetNode
 
   /**
    * <code>getToolTipText</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getToolTipText() {
+  public final String getToolTipText() {
     String operation = "";
     if (areNeighborsShown) {
       operation = "close";
@@ -264,13 +270,12 @@ public class SlotNavNode extends ExtendedBasicNode {
       NodeGenerics.getSlotNodeToolTipText( slot, tip);
     }
     if (isDebug) {
-      tip.append( " linkCntTimeline ").append( String.valueOf( timelineLinkCount));
-      tip.append( " linkCntToken ").append( String.valueOf( tokenLinkCount));
+      tip.append( " linkCnt ").append( String.valueOf( linkCount));
     }
     if (! isEmptySlot) {
       tip.append( "<br> Mouse-L: ").append( operation);
     }
-    tip.append("</html>");
+    tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
 
@@ -280,7 +285,7 @@ public class SlotNavNode extends ExtendedBasicNode {
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
-  public String getToolTipText( boolean isOverview) {
+  public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html>slot<br>");
     tip.append( predicateName);
     tip.append( "<br>key=");
@@ -300,7 +305,8 @@ public class SlotNavNode extends ExtendedBasicNode {
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
+  public final boolean doMouseClick( final int modifiers, final Point dc, final Point vc,
+                                     final JGoView view) {
     JGoObject obj = view.pickDocObject( dc, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
@@ -308,18 +314,15 @@ public class SlotNavNode extends ExtendedBasicNode {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       if (! isEmptySlot) {
         navigatorView.setStartTimeMSecs( System.currentTimeMillis());
-        boolean areTimelinesChanged = false;
-        boolean areTokensChanged = false;
+        boolean areObjectsChanged = false;
         if (! areNeighborsShown) {
-          areTimelinesChanged = addSlotTimelines();
-          areTokensChanged = addSlotTokens();
+          areObjectsChanged = addSlotObjects( this);
           areNeighborsShown = true;
         } else {
-          areTimelinesChanged = removeSlotTimelines();
-          areTokensChanged = removeSlotTokens();
+          areObjectsChanged = removeSlotObjects( this);
           areNeighborsShown = false;
         }
-        if (areTimelinesChanged || areTokensChanged) {
+        if (areObjectsChanged) {
           navigatorView.setLayoutNeeded();
           navigatorView.setFocusNode( this);
           navigatorView.redraw();
@@ -331,266 +334,36 @@ public class SlotNavNode extends ExtendedBasicNode {
     return false;
   } // end doMouseClick   
 
-  private boolean addSlotTimelines() {
-    boolean areNodesChanged = addTimelineNavNodes();
-    boolean areLinksChanged = addTimelineToSlotNavLinks();
+  private boolean addSlotObjects( final SlotNavNode slotNavNode) {
+    boolean areNodesChanged =
+      NavNodeGenerics.addEntityNavNodes( slotNavNode, navigatorView, isDebug);
+    boolean areLinksChanged = false;
+    boolean isParentLinkChanged =
+      NavNodeGenerics.addParentToEntityNavLinks( slotNavNode, navigatorView, isDebug);
+     boolean areChildLinksChanged =
+       NavNodeGenerics.addEntityToChildNavLinks( slotNavNode, navigatorView, isDebug);
+     if (isParentLinkChanged || areChildLinksChanged) {
+       areLinksChanged = true;
+     }
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end addSlotTimelines
+  } // end addSlotObjects
 
-  private boolean removeSlotTimelines() {
-    boolean areLinksChanged = removeTimelineToSlotNavLinks();
-    boolean areNodesChanged = removeTimelineNavNodes();
+  private boolean removeSlotObjects( final SlotNavNode slotNavNode) {
+    boolean areLinksChanged = false;
+    boolean isParentLinkChanged =
+      NavNodeGenerics.removeParentToEntityNavLinks( slotNavNode, navigatorView,
+                                                    isDebug);
+    boolean areChildLinksChanged =
+      NavNodeGenerics.removeEntityToChildNavLinks( slotNavNode, navigatorView,
+                                                   isDebug);
+     if (isParentLinkChanged || areChildLinksChanged) {
+       areLinksChanged = true;
+     }
+    boolean areNodesChanged =
+      NavNodeGenerics.removeEntityNavNodes( slotNavNode, navigatorView, isDebug);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
-  } // end removeSlotTimelines
-
-  private boolean addSlotTokens() {
-    boolean areNodesChanged = addTokenNavNodes();
-    boolean areLinksChanged = addSlotToTokenNavLinks();
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-    return (areNodesChanged || areLinksChanged);
-  } // end addSlotTokens
-
-  private boolean removeSlotTokens() {
-    boolean areLinksChanged = removeSlotToTokenNavLinks();
-    boolean areNodesChanged = removeTokenNavNodes();
-    setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
-    return (areNodesChanged || areLinksChanged);
-  } // end removeSlotTokens
-
-  /**
-   * <code>addTimelineNavNodes</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean addTimelineNavNodes() {
-    boolean areNodesChanged = false, isDraggable = true;
-    ModelClassNavNode objectNavNode =
-      (ModelClassNavNode) navigatorView.objectNavNodeMap.get( timeline.getParentId());
-    TimelineNavNode timelineNavNode =
-      (TimelineNavNode) navigatorView.timelineNavNodeMap.get( timeline.getId());
-    if (timelineNavNode == null) {
-      timelineNavNode =
-        new TimelineNavNode( timeline, 
-                             new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                        ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                             navigatorView.getTimelineColor( timeline.getId()),
-                             isDraggable, navigatorView);
-      navigatorView.timelineNavNodeMap.put( timeline.getId(), timelineNavNode);
-      navigatorView.getJGoDocument().addObjectAtTail( timelineNavNode);
-    }
-    navigatorView.addTimelineNavNode( timelineNavNode);
-    areNodesChanged = true;
-    return areNodesChanged;
-  } // end addTimelineNavNodes
-
-  private boolean removeTimelineNavNodes() {
-    boolean areNodesChanged = false;
-    TimelineNavNode timelineNavNode =
-      (TimelineNavNode) navigatorView.timelineNavNodeMap.get( timeline.getId());
-    if ((timelineNavNode != null) && timelineNavNode.inLayout() &&
-        (timelineNavNode.getObjectLinkCount() == 0) &&
-        (timelineNavNode.getSlotLinkCount() == 0)) {
-      navigatorView.removeTimelineNavNode( timelineNavNode);
-      areNodesChanged = true;
-    }
-    return areNodesChanged;
-  } // end removeTimelineNavNodes
-
-  /**
-   * <code>addTimelineToSlotNavLinks</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean addTimelineToSlotNavLinks() {
-    boolean areLinksChanged = false;
-    TimelineNavNode timelineNavNode =
-      (TimelineNavNode) navigatorView.timelineNavNodeMap.get( timeline.getId());
-    if ((timelineNavNode != null) && timelineNavNode.inLayout()) {
-      if (navigatorView.addNavigatorLink( timelineNavNode, this, this)) {
-        areLinksChanged = true;
-      }
-    }
-    return areLinksChanged;
-  } // addTimelineToSlotNavLinks
-
-  private boolean removeTimelineToSlotNavLinks() {
-    boolean areLinksChanged = false;
-    TimelineNavNode timelineNavNode =
-      (TimelineNavNode) navigatorView.timelineNavNodeMap.get( timeline.getId());
-    if ((timelineNavNode != null) && timelineNavNode.inLayout()) {
-      String linkName = timelineNavNode.getTimeline().getId().toString() + "->" +
-        slot.getId().toString();
-      BasicNodeLink link = (BasicNodeLink) navigatorView.navLinkMap.get( linkName);
-      if ((link != null) && link.inLayout() &&
-          navigatorView.removeTimelineToSlotNavLink( link, timelineNavNode, this)) {
-        areLinksChanged = true;
-      }
-    }
-    return areLinksChanged;
-  } // end removeTimelineToSlotNavLinks
-
-  // *************************************************************************
-
-  /**
-   * <code>addTokenNavNodes</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean addTokenNavNodes() {
-    boolean areNodesChanged = false, isDraggable = true;
-    Iterator tokenIterator = slot.getTokenList().iterator();
-    while (tokenIterator.hasNext()) {
-      PwToken token = (PwToken) tokenIterator.next();
-      TokenNavNode tokenNavNode =
-        (TokenNavNode) navigatorView.tokenNavNodeMap.get( token.getId());
-      if (tokenNavNode == null) {
-        tokenNavNode =
-          new TokenNavNode( token, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                              ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                            navigatorView.getTimelineColor( timeline.getId()),
-                            isDraggable, navigatorView);
-        navigatorView.tokenNavNodeMap.put( token.getId(), tokenNavNode);
-        navigatorView.getJGoDocument().addObjectAtTail( tokenNavNode);
-      }
-      tokenNavNode.addTokenNavNode();
-      areNodesChanged = true;
-    }
-    return areNodesChanged;
-  } // end addTokenNavNodes
-
-  /**
-   * <code>removeTokenNavNodes</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean removeTokenNavNodes() {
-    boolean areNodesChanged = false;
-    Iterator tokenIterator = slot.getTokenList().iterator();
-    while (tokenIterator.hasNext()) {
-      PwToken token = (PwToken) tokenIterator.next();
-      TokenNavNode tokenNavNode =
-        (TokenNavNode) navigatorView.tokenNavNodeMap.get( token.getId());
-      if ((tokenNavNode != null) && tokenNavNode.inLayout() &&
-          (tokenNavNode.getSlotLinkCount() == 0) &&
-          (tokenNavNode.getVariableLinkCount() == 0)) {
-        tokenNavNode.removeTokenNavNode();
-        areNodesChanged = true;
-      }
-    }
-    return areNodesChanged;
-  } // end removeTokenNavNodes
-
-  /**
-   * <code>addSlotToTokenNavLinks</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean addSlotToTokenNavLinks() {
-    boolean areLinksChanged = false;
-    Iterator tokenIterator = slot.getTokenList().iterator();
-    while (tokenIterator.hasNext()) {
-      PwToken token = (PwToken) tokenIterator.next();
-      TokenNavNode tokenNavNode =
-        (TokenNavNode) navigatorView.tokenNavNodeMap.get( token.getId());
-      if ((tokenNavNode != null) && tokenNavNode.inLayout()) {
-        if (navigatorView.addNavigatorLink( this, tokenNavNode, this)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // end addSlotToTokenNavLinks
-
-  /**
-   * <code>addSlotToTokenNavLink</code>
-   *
-   * @param tokenNavNode - <code>TokenNavNode</code> - 
-   * @param sourceNode - <code>ExtendedBasicNode</code> - 
-   * @return - <code>BasicNodeLink</code> - 
-   */
-  protected BasicNodeLink addSlotToTokenNavLink( TokenNavNode tokenNavNode,
-                                                 ExtendedBasicNode sourceNode) {
-    BasicNodeLink returnLink = null;
-    String linkName = slot.getId().toString() + "->" +
-      tokenNavNode.getToken().getId().toString();
-    BasicNodeLink link = (BasicNodeLink) navigatorView.navLinkMap.get( linkName);
-    if (link == null) {
-      link = new BasicNodeLink( this, tokenNavNode, linkName);
-      link.setArrowHeads( false, true);
-      incrTokenLinkCount();
-      tokenNavNode.incrSlotLinkCount();
-      returnLink = link;
-      navigatorView.navLinkMap.put( linkName, link);
-      if (isDebug) {
-        System.err.println( "add slot=>token link " + linkName);
-      }
-    } else {
-      if (! link.inLayout()) {
-        link.setInLayout( true);
-      }
-      link.incrLinkCount();
-      incrTokenLinkCount();
-      tokenNavNode.incrSlotLinkCount();
-      if (isDebug) {
-        System.err.println( "StoTo1 incr link: " + link.toString() + " to " +
-                            link.getLinkCount());
-      }
-    }
-    return returnLink;
-  } // end addSlotToTokenNavLink
-
-  /**
-   * <code>removeSlotToTokenNavLinks</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean removeSlotToTokenNavLinks() {
-    boolean areLinksChanged = false;
-    Iterator tokenIterator = slot.getTokenList().iterator();
-    while (tokenIterator.hasNext()) {
-      PwToken token = (PwToken) tokenIterator.next();
-      TokenNavNode tokenNavNode =
-        (TokenNavNode) navigatorView.tokenNavNodeMap.get( token.getId());
-      if ((tokenNavNode != null) && tokenNavNode.inLayout()) {
-        String linkName = slot.getId().toString() + "->" +
-          tokenNavNode.getToken().getId().toString();
-        BasicNodeLink link = (BasicNodeLink) navigatorView.navLinkMap.get( linkName);
-        if ((link != null) && link.inLayout() &&
-            removeSlotToTokenNavLink( link, tokenNavNode)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // end removeSlotToTokenNavLinks
-
-  /**
-   * <code>removeSlotToTokenNavLink</code>
-   *
-   * @param link - <code>BasicNodeLink</code> - 
-   * @param tokenNavNode - <code>TokenNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean removeSlotToTokenNavLink( BasicNodeLink link,
-                                              TokenNavNode tokenNavNode) {
-    boolean areLinksChanged = false;
-    link.decLinkCount();
-    decTokenLinkCount();
-    tokenNavNode.decSlotLinkCount();
-    if (isDebug) {
-      System.err.println( "StoTo dec link: " + link.toString() + " to " +
-                          link.getLinkCount());
-    }
-    if (link.getLinkCount() == 0) {
-      if (isDebug) {
-        System.err.println( "removeSlotToTokenNavLink: " + link.toString());
-      }
-      link.setInLayout( false);
-      areLinksChanged = true;
-    }
-    return areLinksChanged;
-  } // end removeSlotToTokenNavLink
+  } // end removeSlotObjects
 
 } // end class SlotNavNode

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.11 2004-02-17 22:24:36 miatauro Exp $
+// $Id: NavigatorView.java,v 1.12 2004-02-25 02:30:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,7 +14,6 @@
 package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -37,6 +36,7 @@ import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
+import gov.nasa.arc.planworks.db.PwEntity;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -84,25 +84,36 @@ public class NavigatorView extends PartialPlanView {
   private boolean isLayoutNeeded;
   private ExtendedBasicNode focusNode;
   private boolean isDebugPrint;
+
+  /**
+   * variable <code>timelineColorMap</code>
+   *
+   */
   protected Map timelineColorMap;
-  protected Map objectNavNodeMap;
-  protected Map timelineNavNodeMap;
-  protected Map slotNavNodeMap;
-  protected Map tokenNavNodeMap;
-  protected Map variableNavNodeMap;
-  protected Map constraintNavNodeMap;
+
+  /**
+   * variable <code>entityNavNodeMap</code>
+   *
+   */
+  protected Map entityNavNodeMap; 
+
+  /**
+   * variable <code>navLinkMap</code>
+   *
+   */
   protected Map navLinkMap;
 
   /**
    * <code>NavigatorView</code> - constructor 
    *
-   * @param timelineNode - <code>TimelineNode</code> - 
+   * @param timelineNode - <code>TimelineViewTimelineNode</code> - 
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
-  public NavigatorView( TimelineViewTimelineNode timelineNode, ViewableObject partialPlan,
-                        ViewSet viewSet, MDIInternalFrame navigatorFrame) {
+  public NavigatorView( final TimelineViewTimelineNode timelineNode,
+                        final ViewableObject partialPlan, final ViewSet viewSet,
+                        final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.initialNode = timelineNode;
     this.partialPlan = (PwPartialPlan) partialPlan;
@@ -120,8 +131,8 @@ public class NavigatorView extends PartialPlanView {
    * @param viewSet - <code>ViewSet</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
-  public NavigatorView( SlotNode slotNode, ViewableObject partialPlan,
-                        ViewSet viewSet, MDIInternalFrame navigatorFrame) {
+  public NavigatorView( final SlotNode slotNode, final ViewableObject partialPlan,
+                        final ViewSet viewSet, final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.initialNode = slotNode;
     this.partialPlan = (PwPartialPlan) partialPlan;
@@ -139,8 +150,8 @@ public class NavigatorView extends PartialPlanView {
    * @param viewSet - <code>ViewSet</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
-  public NavigatorView( TokenNode tokenNode, ViewableObject partialPlan,
-                        ViewSet viewSet, MDIInternalFrame navigatorFrame) {
+  public NavigatorView( final TokenNode tokenNode, final ViewableObject partialPlan,
+                        final ViewSet viewSet, final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.initialNode = tokenNode;
     this.partialPlan = (PwPartialPlan) partialPlan;
@@ -158,8 +169,8 @@ public class NavigatorView extends PartialPlanView {
    * @param viewSet - <code>ViewSet</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
-  public NavigatorView( TemporalNode temporalNode, ViewableObject partialPlan,
-                        ViewSet viewSet, MDIInternalFrame navigatorFrame) {
+  public NavigatorView( final TemporalNode temporalNode, final ViewableObject partialPlan,
+                        final ViewSet viewSet, final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.initialNode = temporalNode;
     this.partialPlan = (PwPartialPlan) partialPlan;
@@ -177,8 +188,8 @@ public class NavigatorView extends PartialPlanView {
    * @param viewSet - <code>ViewSet</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
-  public NavigatorView( VariableNode variableNode, ViewableObject partialPlan,
-                        ViewSet viewSet, MDIInternalFrame navigatorFrame) {
+  public NavigatorView( final VariableNode variableNode, final ViewableObject partialPlan,
+                        final ViewSet viewSet, final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.initialNode = variableNode;
     this.partialPlan = (PwPartialPlan) partialPlan;
@@ -196,8 +207,8 @@ public class NavigatorView extends PartialPlanView {
    * @param viewSet - <code>ViewSet</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
-  public NavigatorView( ConstraintNode constraintNode, ViewableObject partialPlan,
-                        ViewSet viewSet, MDIInternalFrame navigatorFrame) {
+  public NavigatorView( final ConstraintNode constraintNode, final ViewableObject partialPlan,
+                        final ViewSet viewSet, final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.initialNode = constraintNode;
     this.partialPlan = (PwPartialPlan) partialPlan;
@@ -215,12 +226,7 @@ public class NavigatorView extends PartialPlanView {
     //timelineColorMap = createTimelineColorMap();
 
     navLinkMap = new HashMap();
-    objectNavNodeMap = new HashMap();
-    timelineNavNodeMap = new HashMap();
-    slotNavNodeMap = new HashMap();
-    tokenNavNodeMap = new HashMap();
-    variableNavNodeMap = new HashMap();
-    constraintNavNodeMap = new HashMap();
+    entityNavNodeMap = new HashMap();
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -235,7 +241,7 @@ public class NavigatorView extends PartialPlanView {
   } // end commonConstructor
 
   Runnable runInit = new Runnable() {
-      public void run() {
+      public final void run() {
         init();
       }
     };
@@ -250,12 +256,12 @@ public class NavigatorView extends PartialPlanView {
    *    called by componentShown method on the JFrame
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
-  public void init() {
+  public final void init() {
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for NavigatorView instance to become displayable
     while (! this.isDisplayable()) {
       try {
-        Thread.currentThread().sleep(50);
+        Thread.currentThread().sleep( 50);
       } catch (InterruptedException excp) {
       }
       // System.err.println( "navigatorView displayable " + this.isDisplayable());
@@ -264,7 +270,7 @@ public class NavigatorView extends PartialPlanView {
 
     jGoDocument = jGoView.getDocument();
 
-    renderInitialNodes();
+    renderInitialNode();
 
     NavigatorViewLayout layout = new NavigatorViewLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
@@ -311,9 +317,9 @@ public class NavigatorView extends PartialPlanView {
    *                       according to the Content Spec enabled ids
    *
    */
-  public void redraw() {
+  public final void redraw() {
     Thread thread = new RedrawViewThread();
-    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.setPriority( Thread.MIN_PRIORITY);
     thread.start();
   }
 
@@ -322,7 +328,7 @@ public class NavigatorView extends PartialPlanView {
     public RedrawViewThread() {
     }  // end constructor
 
-    public void run() {
+    public final void run() {
       redrawView();
     } //end run
 
@@ -364,7 +370,7 @@ public class NavigatorView extends PartialPlanView {
    *
    * @return - <code>JGoDocument</code> - 
    */
-  public JGoDocument getJGoDocument()  {
+  public final JGoDocument getJGoDocument()  {
     return this.jGoDocument;
   }
 
@@ -373,7 +379,7 @@ public class NavigatorView extends PartialPlanView {
    *
    * @param msecs - <code>long</code> - 
    */
-  protected void setStartTimeMSecs( long msecs) {
+  protected final void setStartTimeMSecs( final long msecs) {
     startTimeMSecs = msecs;
   }
 
@@ -381,7 +387,7 @@ public class NavigatorView extends PartialPlanView {
    * <code>setLayoutNeeded</code>
    *
    */
-  public void setLayoutNeeded() {
+  public final void setLayoutNeeded() {
     isLayoutNeeded = true;
   }
 
@@ -390,8 +396,17 @@ public class NavigatorView extends PartialPlanView {
    *
    * @return - <code>boolean</code> - 
    */
-  public boolean isLayoutNeeded() {
-    return isLayoutNeeded ;
+  public final boolean isLayoutNeeded() {
+    return isLayoutNeeded;
+  }
+
+  /**
+   * <code>getPartialPlan</code>
+   *
+   * @return - <code>PwPartialPlan</code> - 
+   */
+  public final PwPartialPlan getPartialPlan() {
+    return partialPlan;
   }
 
   /**
@@ -399,350 +414,247 @@ public class NavigatorView extends PartialPlanView {
    *
    * @param node - <code>ExtendedBasicNode</code> - 
    */
-  public void setFocusNode( ExtendedBasicNode node) {
+  public final void setFocusNode( final ExtendedBasicNode node) {
     this.focusNode = node;
   }
 
-  private void renderInitialNodes() {
+  private void renderInitialNode() {
+    ExtendedBasicNode node = null;
     if (initialNode instanceof TimelineViewTimelineNode) {
-      renderTimelineNode();
+      PwTimeline timeline = ((TimelineViewTimelineNode) initialNode).getTimeline();
+      node = addEntityNavNode( timeline, isDebugPrint);
     } else if (initialNode instanceof SlotNode) {
-      renderSlotNode();
+      // TimelineView.SlotNode
+      PwSlot slot = ((SlotNode) initialNode).getSlot();
+      node = addEntityNavNode( slot, isDebugPrint);
     } else if ((initialNode instanceof TokenNode) ||
                (initialNode instanceof TemporalNode)) {
-      renderTokenNode();
+      PwToken token = null;
+      if (initialNode instanceof TokenNode) {
+        token = ((TokenNode) initialNode).getToken();
+      } else if (initialNode instanceof TemporalNode) {
+        token = ((TemporalNode) initialNode).getToken();
+      }
+      node = addEntityNavNode( token, isDebugPrint);
     } else if (initialNode instanceof VariableNode) {
-      renderVariableNode();
+      PwVariable variable = ((VariableNode) initialNode).getVariable();
+      node = addEntityNavNode( variable, isDebugPrint);
     } else if (initialNode instanceof ConstraintNode) {
-      renderConstraintNode();
+      PwConstraint constraint = ((ConstraintNode) initialNode).getConstraint();
+      node = addEntityNavNode( constraint, isDebugPrint);
     } else {
-      System.err.println( " NavigatorView.renderInitialNodes: " + initialNode +
-                      " not handled");
+      System.err.println( " NavigatorView.renderInitialNode: " + initialNode +
+                          " not handled");
       System.exit( 1);
     }
-  } // end renderInitialNodes
+    NavNode navNode = (NavNode) node;
+    NavNodeGenerics.addEntityNavNodes( navNode, this, isDebugPrint);
+    NavNodeGenerics.addParentToEntityNavLinks( navNode, this, isDebugPrint);
+    NavNodeGenerics.addEntityToChildNavLinks( navNode, this, isDebugPrint);
 
-  private void renderTimelineNode() {
-    // TimelineView.TimelineNode
-    PwTimeline timeline = ((TimelineViewTimelineNode) initialNode).getTimeline();
-    boolean isDraggable = true;
-//     PwObject object = partialPlan.getObject( timeline.getParentId());
-//     ModelClassNavNode objectNavNode = null;
-//     if(object != null) {
-//       objectNavNode = 
-//         new ModelClassNavNode( object, new Point( ViewConstants.TIMELINE_VIEW_X_INIT,
-//                                                   ViewConstants.TIMELINE_VIEW_Y_INIT),
-//                                ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
-//                                isDraggable, this);
-//       objectNavNode.setInLayout( true);
-//       objectNavNodeMap.put( object.getId(), objectNavNode);
-//       jGoDocument.addObjectAtTail( objectNavNode);
-//     }
-    TimelineNavNode timelineNavNode =
-      new TimelineNavNode( timeline, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                                ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                           getTimelineColor( timeline.getId()),
-                           isDraggable, this);
-    timelineNavNode.setInLayout( true);
-    timelineNavNodeMap.put( timeline.getId(), timelineNavNode);
-    jGoDocument.addObjectAtTail( timelineNavNode);
+    node.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "black")));
+    navNode.setAreNeighborsShown( true);
+  } // end renderInitialNode
 
-//     if(objectNavNode != null) {
-//       addNavigatorLink( objectNavNode, timelineNavNode, timelineNavNode);
-//     }
-
-    addObjectNavNodes( timelineNavNode);
-    addObjectToTimelineNavLinks( timelineNavNode);
-    addTimelineToObjectNavLinks( timelineNavNode);
-
-    addSlotNavNodes( timelineNavNode);
-    addTimelineToSlotNavLinks( timelineNavNode);
-
-    timelineNavNode.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-    timelineNavNode.setAreNeighborsShown( true);
-  } // end renderTimelineNode
-
-  private void renderSlotNode() {
-    // TimelineView.SlotNode
-    boolean isDraggable = true;
-    PwSlot slot = ((SlotNode) initialNode).getSlot();
-    PwTimeline timeline = partialPlan.getTimeline( slot.getTimelineId());
-    TimelineNavNode timelineNavNode =
-      new TimelineNavNode( timeline, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                                ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                           getTimelineColor( timeline.getId()),
-                           isDraggable, this);
-    timelineNavNode.setInLayout( true);
-    timelineNavNodeMap.put( timeline.getId(), timelineNavNode);
-    jGoDocument.addObjectAtTail( timelineNavNode);
-
-    SlotNavNode slotNavNode =
-      new SlotNavNode( slot, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                        ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                       getTimelineColor( timeline.getId()),
-                       isDraggable, this);
-    slotNavNode.setInLayout( true);
-    slotNavNodeMap.put( slot.getId(), slotNavNode);
-    jGoDocument.addObjectAtTail( slotNavNode);
-
-    addNavigatorLink( timelineNavNode, slotNavNode, slotNavNode);
-
-    slotNavNode.addTokenNavNodes();
-    slotNavNode.addSlotToTokenNavLinks();
-
-    slotNavNode.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-    slotNavNode.setAreNeighborsShown( true);
-  } // end renderSlotNode
-
-  private void renderTokenNode() {
-    // TokenNetwork.TokenNode  TemporalExtent.TemporalNode
-    boolean isDraggable = true;
-    PwToken token = null;
-    if (initialNode instanceof TokenNode) {
-      token = ((TokenNode) initialNode).getToken();
-    } else if (initialNode instanceof TemporalNode) {
-      token = ((TemporalNode) initialNode).getToken();
-    } else {
-      System.err.println( "NavigatorView.renderTokenNode " + initialNode +
-                          " not handled");
-      System.exit( -1);
-    }
-    SlotNavNode slotNavNode = null;
-    Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
-    if (! token.isFreeToken()) {
-      PwSlot slot = (PwSlot) partialPlan.getSlot( token.getSlotId());
-      PwTimeline timeline = partialPlan.getTimeline( slot.getTimelineId());
-      nodeColor = getTimelineColor( timeline.getId());
-      slotNavNode = new SlotNavNode( slot, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                                      ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                                     nodeColor, isDraggable, this);
-      slotNavNode.setInLayout( true);
-      slotNavNodeMap.put( slot.getId(), slotNavNode);
-      jGoDocument.addObjectAtTail( slotNavNode);
-    }
-
-    TokenNavNode tokenNavNode =
-      new TokenNavNode( token, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                          ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                        nodeColor, isDraggable, this);
-    tokenNavNode.setInLayout( true);
-    tokenNavNodeMap.put( token.getId(), tokenNavNode);
-    jGoDocument.addObjectAtTail( tokenNavNode);
-
-    if (! token.isFreeToken()) {
-      addNavigatorLink( slotNavNode, tokenNavNode, tokenNavNode);
-    }
-
-    tokenNavNode.addVariableNavNodes();
-    tokenNavNode.addTokenToVariableNavLinks();
-
-    tokenNavNode.addMasterNavNodes();
-    tokenNavNode.addMasterToTokenNavLinks();
-    tokenNavNode.addSlaveNavNodes();
-    tokenNavNode.addTokenToSlaveNavLinks();
-
-    tokenNavNode.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-    tokenNavNode.setAreNeighborsShown( true);
-  } // end renderTokenNode
-
-  private  void renderVariableNode() {
-    // ConstraintNetwork.VariableNode
-    boolean isDraggable = true;
-    PwVariable variable = ((VariableNode) initialNode).getVariable();
-    //THIS NEEDS TO CHANGE
-    PwToken token = (PwToken) variable.getParent();
-    Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
-    if (! token.isFreeToken()) {
-      PwTimeline timeline = partialPlan.getTimeline( token.getTimelineId());
-      nodeColor = getTimelineColor( timeline.getId());
-    }
-    TokenNavNode tokenNavNode =
-      new TokenNavNode( token, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                          ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                       nodeColor, isDraggable, this);
-    tokenNavNode.setInLayout( true);
-    tokenNavNodeMap.put( token.getId(), tokenNavNode);
-    jGoDocument.addObjectAtTail( tokenNavNode);
-
-    VariableNavNode variableNavNode =
-      new VariableNavNode( variable, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                                ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                       nodeColor, isDraggable, this);
-    variableNavNode.setInLayout( true);
-    variableNavNodeMap.put( variable.getId(), variableNavNode);
-    jGoDocument.addObjectAtTail( variableNavNode);
-
-    addNavigatorLink( tokenNavNode, variableNavNode, variableNavNode);
-
-    variableNavNode.addConstraintNavNodes();
-    variableNavNode.addVariableToConstraintNavLinks();
-
-    variableNavNode.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-    variableNavNode.setAreNeighborsShown( true);
-  } // end renderVariableNode
-
-  private  void renderConstraintNode() {
-    // ConstraintNetwork.ConstraintNode
-    boolean isDraggable = true;
-    PwConstraint constraint = ((ConstraintNode) initialNode).getConstraint();
-    PwVariable variable = (PwVariable) constraint.getVariablesList().get( 0);
-    //THIS NEEDS TO CHANGE
-    PwToken token = (PwToken) variable.getParent();
-    Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
-    if (! token.isFreeToken()) {
-      PwTimeline timeline = partialPlan.getTimeline( token.getTimelineId());
-      nodeColor = getTimelineColor( timeline.getId());
-    }
-    ConstraintNavNode constraintNavNode =
-      new ConstraintNavNode( constraint, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                                    ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                             nodeColor, isDraggable, this);
-    constraintNavNode.setInLayout( true);
-    constraintNavNodeMap.put( constraint.getId(), constraintNavNode);
-    jGoDocument.addObjectAtTail( constraintNavNode);
-
-    constraintNavNode.addVariableNavNodes();
-    constraintNavNode.addVariableToConstraintNavLinks();
-
-    constraintNavNode.setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-    constraintNavNode.setAreNeighborsShown( true);
-  } // end renderConstraintNode
-
-  // ********************************************************** timelineNavNodes
 
   /**
-   * <code>addTimelineNodes</code>
+   * <code>addEntityNavNode</code>
    *
-   * @param objectNavNode - <code>ModelClassNavNode</code> - 
-   * @return - <code>boolean</code> - 
+   * @param object - <code>PwEntity</code> - 
+   * @param isDebugPrint - <code>boolean</code> - 
+   * @return - <code>ExtendedBasicNode</code> - 
    */
-  public boolean addTimelineNavNodes( ModelClassNavNode objectNavNode) {
-    boolean areNodesChanged = false;
-    List timelineList = objectNavNode.getObject().getComponentList();
+  protected final ExtendedBasicNode addEntityNavNode( final PwEntity object,
+                                                      final boolean isDebugPrint) {
+    ExtendedBasicNode node = null;
+    if (object instanceof PwTimeline) {
+      node = addTimelineNavNode( (PwTimeline) object);
+    } else if (object instanceof PwSlot) {
+      node = addSlotNavNode( (PwSlot) object);
+    } else if (object instanceof PwToken) {
+      node = addTokenNavNode( (PwToken) object);
+    } else if (object instanceof PwVariable) {
+      node = addVariableNavNode( (PwVariable) object);
+    } else if (object instanceof PwConstraint) {
+      node = addConstraintNavNode( (PwConstraint) object);
+    } else if (object instanceof PwObject) {
+      node = addModelClassNavNode( (PwObject) object);
+    } else {
+      System.err.println( "\nNavigatorView.addEntityNavNode " + object + " not handled");
+      try {
+        throw new Exception();
+      } catch (Exception e) { e.printStackTrace(); }
+    }
+    NavNode navNode = (NavNode) node;
+    if (isDebugPrint) {
+      System.err.println( "add " + navNode.getTypeName() + "NavNode " + navNode.getId());
+    }
+    if (! navNode.inLayout()) {
+      navNode.setInLayout( true);
+    }
+    return node;
+  } // end addNavNode
+
+  /**
+   * <code>addModelClassNavNode</code>
+   *
+   * @param object - <code>PwObject</code> - 
+   * @return - <code>ModelClassNavNode</code> - 
+   */
+  protected final ModelClassNavNode addModelClassNavNode( final PwObject object) {
     boolean isDraggable = true;
-    Iterator timelineIterator = timelineList.iterator();
-    while (timelineIterator.hasNext()) {
-      PwTimeline timeline = (PwTimeline) timelineIterator.next();
-      TimelineNavNode timelineNavNode =
-        (TimelineNavNode) timelineNavNodeMap.get( timeline.getId());
-      if (timelineNavNode == null) {
-        timelineNavNode =
-          new TimelineNavNode( timeline, 
+    ModelClassNavNode objectNavNode =
+      (ModelClassNavNode) entityNavNodeMap.get( object.getId());
+    if (objectNavNode == null) {
+      objectNavNode =
+        new ModelClassNavNode( object, 
                                new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                           ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                               getTimelineColor( timeline.getId()),
+                               ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
                                isDraggable, this);
-        timelineNavNodeMap.put( timeline.getId(), timelineNavNode);
-        jGoDocument.addObjectAtTail( timelineNavNode);
-      }
-      addTimelineNavNode( timelineNavNode);
-      areNodesChanged = true;
+      entityNavNodeMap.put( object.getId(), objectNavNode);
+      jGoDocument.addObjectAtTail( objectNavNode);
     }
-    return areNodesChanged;
-  } // end addTimelineNavNodes
+    return objectNavNode;
+  } // end addModelClassNavNode
 
   /**
    * <code>addTimelineNavNode</code>
    *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
+   * @param timeline - <code>PwTimeline</code> - 
+   * @return - <code>TimelineNavNode</code> - 
    */
-  protected void addTimelineNavNode( TimelineNavNode timelineNavNode) {
-    if (isDebugPrint) {
-      System.err.println( "add timelineNavNode " +
-                          timelineNavNode.getTimeline().getId());
+  protected final TimelineNavNode addTimelineNavNode( final PwTimeline timeline) {
+    boolean isDraggable = true;
+    TimelineNavNode timelineNavNode =
+      (TimelineNavNode) entityNavNodeMap.get( timeline.getId());
+    if (timelineNavNode == null) {
+      timelineNavNode =
+        new TimelineNavNode( timeline, 
+                             new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
+                                        ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
+                             getTimelineColor( timeline.getId()),
+                             isDraggable, this);
+      entityNavNodeMap.put( timeline.getId(), timelineNavNode);
+      jGoDocument.addObjectAtTail( timelineNavNode);
     }
-    if (! timelineNavNode.inLayout()) {
-      timelineNavNode.setInLayout( true);
-    }
+    return timelineNavNode;
   } // end addTimelineNavNode
 
   /**
-   * <code>removeTimelineNavNodes</code>
+   * <code>addSlotNavNode</code>
    *
-   * @param objectNavNode - <code>ModelClassNavNode</code> - 
-   * @return - <code>boolean</code> - 
+   * @param slot - <code>PwSlot</code> - 
+   * @return - <code>SlotNavNode</code> - 
    */
-  public boolean removeTimelineNavNodes( ModelClassNavNode objectNavNode) {
-    boolean areNodesChanged = false;
-    List timelineList = objectNavNode.getObject().getComponentList();
-    Iterator timelineIterator = timelineList.iterator();
-    while (timelineIterator.hasNext()) {
-      PwTimeline timeline = (PwTimeline) timelineIterator.next();
-      TimelineNavNode timelineNavNode =
-        (TimelineNavNode) timelineNavNodeMap.get( timeline.getId());
-      if ((timelineNavNode != null) && timelineNavNode.inLayout() &&
-          (timelineNavNode.getObjectLinkCount() == 0) &&
-          (timelineNavNode.getSlotLinkCount() == 0)) {
-        removeTimelineNavNode( timelineNavNode);
-        areNodesChanged = true;
-      }
+  protected final SlotNavNode addSlotNavNode( final PwSlot slot) {
+    boolean isDraggable = true;
+    PwTimeline timeline = partialPlan.getTimeline( slot.getTimelineId());
+
+//     System.err.println( "addSlotNavNode id = " + slot.getId());
+//     System.err.println( "entityNavNodeMap ");
+//     List keyList = new ArrayList( entityNavNodeMap.keySet());
+//     Iterator keyItr = keyList.iterator();
+//     while (keyItr.hasNext()) {
+//       Integer key = (Integer) keyItr.next();
+//       System.err.println( "  key " + key + " " + entityNavNodeMap.get( key).getClass());
+//     }
+
+    SlotNavNode slotNavNode =
+      (SlotNavNode) entityNavNodeMap.get( slot.getId());
+    if (slotNavNode == null) {
+      slotNavNode =
+        new SlotNavNode( slot, 
+                         new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
+                                    ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
+                         getTimelineColor( timeline.getId()),
+                         isDraggable, this);
+      entityNavNodeMap.put( slot.getId(), slotNavNode);
+      jGoDocument.addObjectAtTail( slotNavNode);
     }
-    return areNodesChanged;
-  } // end removeTimelineNavNodes
+    return slotNavNode;
+  } // end addSlotNavNode
 
   /**
-   * <code>removeTimelineNavNode</code>
+   * <code>addTokenNavNode</code>
    *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
+   * @param token - <code>PwToken</code> - 
+   * @return - <code>TokenNavNode</code> - 
    */
-  protected void removeTimelineNavNode( TimelineNavNode timelineNavNode) {
-    if (isDebugPrint) {
-      System.err.println( "remove timelineNavNode " +
-                          timelineNavNode.getTimeline().getId());
+  protected final TokenNavNode addTokenNavNode( final PwToken token) {
+    // TokenNetwork.TokenNode  TemporalExtent.TemporalNode
+    boolean isDraggable = true;
+    TokenNavNode tokenNavNode =
+      (TokenNavNode) entityNavNodeMap.get( token.getId());
+    if (tokenNavNode == null) {
+      tokenNavNode =
+        new TokenNavNode( token, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
+                                            ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
+                          NavNodeGenerics.getTokenColor( token, this), isDraggable, this);
+      entityNavNodeMap.put( token.getId(), tokenNavNode);
+      jGoDocument.addObjectAtTail( tokenNavNode);
     }
-    timelineNavNode.setInLayout( false);
-    timelineNavNode.resetNode( isDebugPrint);
-  } // end removeTimelineNavNode
-
+    return tokenNavNode;
+  } // end addTokenNavNode
 
   /**
-   * <code>addNavigatorLink</code>
+   * <code>addVariableNavNode</code>
+   *
+   * @param variable - <code>PwVariable</code> - 
+   * @return - <code>VariableNavNode</code> - 
+   */
+  protected final VariableNavNode addVariableNavNode( final PwVariable variable) {
+    // ConstraintNetwork.VariableNode
+    boolean isDraggable = true;
+    VariableNavNode variableNavNode =
+      (VariableNavNode) entityNavNodeMap.get( variable.getId());
+    if (variableNavNode == null) {
+      variableNavNode =
+        new VariableNavNode( variable, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
+                                                  ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
+                             NavNodeGenerics.getVariableColor( variable, this), isDraggable,
+                             this);
+      entityNavNodeMap.put( variable.getId(), variableNavNode);
+      jGoDocument.addObjectAtTail( variableNavNode);
+    }
+    return variableNavNode;
+  } // end renderVariableNode
+
+  /**
+   * <code>addConstraintNavNode</code>
+   *
+   * @param constraint - <code>PwConstraint</code> - 
+   * @return - <code>ConstraintNavNode</code> - 
+   */
+  protected final ConstraintNavNode addConstraintNavNode( final PwConstraint constraint) {
+    // ConstraintNetwork.ConstraintNode
+    boolean isDraggable = true;
+    PwVariable variable = (PwVariable) constraint.getVariablesList().get( 0);
+    ConstraintNavNode constraintNavNode =
+      (ConstraintNavNode) entityNavNodeMap.get( constraint.getId());
+    if (constraintNavNode == null) {
+      constraintNavNode =
+        new ConstraintNavNode( constraint, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
+                                                      ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
+                               NavNodeGenerics.getVariableColor( variable, this), isDraggable,
+                               this);
+      entityNavNodeMap.put( constraint.getId(), constraintNavNode);
+      jGoDocument.addObjectAtTail( constraintNavNode);
+    }
+    return constraintNavNode;
+  } // end renderConstraintNode
+
+  /**
+   * <code>addNavigatorLinkNew</code>
    *
    * @param fromNode - <code>ExtendedBasicNode</code> - 
-   * @param toNode - <code>ExtendedBasicNode</code> - 
-   * @param sourceNode - <code>ExtendedBasicNode</code> - 
+   * @param link - <code>BasicNodeLink</code> - 
+   * @param linkType - <code>String</code> - 
    * @return - <code>boolean</code> - 
    */
-  protected boolean addNavigatorLink( ExtendedBasicNode fromNode, ExtendedBasicNode toNode,
-                                      ExtendedBasicNode sourceNode) {
-    BasicNodeLink link = null;
+  protected final boolean addNavigatorLinkNew( final ExtendedBasicNode fromNode,
+                                               final BasicNodeLink link, final String linkType) {
     boolean areLinksChanged = false;
-    String linkType = "";
-    if (fromNode instanceof ModelClassNavNode) {
-      link = addObjectToTimelineNavLink( (ModelClassNavNode) fromNode,
-                                         (TimelineNavNode) toNode, sourceNode);
-      linkType = "OtoTi";
-
-    } else if ((fromNode instanceof TimelineNavNode) &&
-               (toNode instanceof ModelClassNavNode)) {
-      link = addTimelineToObjectNavLink( (TimelineNavNode) fromNode,
-                                         (ModelClassNavNode) toNode, sourceNode);
-      linkType = "TitoO";
-
-    } else if (fromNode instanceof TimelineNavNode) {
-      link = addTimelineToSlotNavLink( (TimelineNavNode) fromNode,
-                                       (SlotNavNode) toNode, sourceNode);
-      linkType = "TitoS";
-
-    } else if (fromNode instanceof SlotNavNode) {
-      link = ((SlotNavNode) fromNode).addSlotToTokenNavLink( (TokenNavNode) toNode,
-                                                             sourceNode);
-      linkType = "StoTo";
-    } else if ((fromNode instanceof TokenNavNode) &&
-               (toNode instanceof TokenNavNode)) {
-      link = ((TokenNavNode) fromNode).addTokenToTokenNavLink( (TokenNavNode) fromNode,
-                                                               (TokenNavNode) toNode,
-                                                               sourceNode);
-      linkType = "TtoT";
-    } else if (fromNode instanceof TokenNavNode) {
-      link = ((TokenNavNode) fromNode).addTokenToVariableNavLink( (VariableNavNode) toNode,
-                                                                  sourceNode);
-      linkType = "TtoV";
-    } else if (fromNode instanceof VariableNavNode) {
-      link = ((VariableNavNode) fromNode).addVariableToConstraintNavLink
-        ( (ConstraintNavNode) toNode, sourceNode);
-      linkType = "VtoC";
-    }
     if (link != null) {
       // links are always behind any nodes
       // jGoDocument.addObjectAtHead( link);
@@ -758,629 +670,22 @@ public class NavigatorView extends PartialPlanView {
       areLinksChanged = true;
     }
     return areLinksChanged;
-  } // end addNavigatorLink
-
-  /**
-   * <code>addObjectToTimelineNavLinks</code>
-   *
-   * @param objectNavNode - <code>ModelClassNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean addObjectToTimelineNavLinks( ModelClassNavNode objectNavNode) {
-    boolean areLinksChanged = false;
-    List timelineList = objectNavNode.getObject().getComponentList();
-    Iterator timelineIterator = timelineList.iterator();
-    while (timelineIterator.hasNext()) {
-      PwTimeline timeline = (PwTimeline) timelineIterator.next();
-      TimelineNavNode timelineNavNode =
-        (TimelineNavNode) timelineNavNodeMap.get( timeline.getId());
-      if ((timelineNavNode != null) && timelineNavNode.inLayout()) {
-        if (addNavigatorLink( objectNavNode, timelineNavNode, objectNavNode)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // end addObjectToTimelineNavLinks
-
-  private BasicNodeLink addObjectToTimelineNavLink( ModelClassNavNode objectNavNode,
-                                                    TimelineNavNode timelineNavNode,
-                                                    ExtendedBasicNode sourceNode) {
-    BasicNodeLink returnLink = null;
-    String linkName = objectNavNode.getObject().getId().toString() + "->" +
-      timelineNavNode.getTimeline().getId().toString();
-    BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
-    if (link == null) {
-      link = new BasicNodeLink( objectNavNode, timelineNavNode, linkName);
-      link.setArrowHeads(false, true);
-      objectNavNode.incrTimelineLinkCount();
-      timelineNavNode.incrObjectLinkCount();
-      returnLink = link;
-      navLinkMap.put( linkName, link);
-      if (isDebugPrint) {
-        System.err.println( "add object=>timeline link " + linkName);
-      }
-    } else {
-      if (! link.inLayout()) {
-        link.setInLayout( true);
-      }
-      link.incrLinkCount();
-      objectNavNode.incrTimelineLinkCount();
-      timelineNavNode.incrObjectLinkCount();
-      if (isDebugPrint) {
-        System.err.println( "OtoTi1 incr link: " + link.toString() + " to " +
-                            link.getLinkCount());
-      }
-    }
-    return returnLink;
-  } // end addObjectToTimelineLink
-
-
-  /**
-   * <code>removeObjectToTimelineNavLinks</code>
-   *
-   * @param objectNavNode - <code>ModelClassNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean removeObjectToTimelineNavLinks( ModelClassNavNode objectNavNode) {
-    boolean areLinksChanged = false;
-    List timelineList = objectNavNode.getObject().getComponentList();
-    Iterator timelineIterator = timelineList.iterator();
-    while (timelineIterator.hasNext()) {
-      PwTimeline timeline = (PwTimeline) timelineIterator.next();
-      TimelineNavNode timelineNavNode =
-        (TimelineNavNode) timelineNavNodeMap.get( timeline.getId());
-      if ((timelineNavNode != null) && timelineNavNode.inLayout()) {
-        String linkName = objectNavNode.getObject().getId().toString() + "->" +
-          timelineNavNode.getTimeline().getId().toString();
-        BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
-        if ((link != null) && link.inLayout() &&
-            removeObjectToTimelineNavLink( link, objectNavNode, timelineNavNode)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // end removeObjectToTimelineLinks
-
-  private boolean removeObjectToTimelineNavLink( BasicNodeLink link,
-                                                 ModelClassNavNode objectNavNode,
-                                                 TimelineNavNode timelineNavNode) {
-    boolean areLinksChanged = false;
-    link.decLinkCount();
-    objectNavNode.decTimelineLinkCount();
-    timelineNavNode.decObjectLinkCount();
-    if (isDebugPrint) {
-      System.err.println( "OtoTi dec link: " + link.toString() + " to " +
-                          link.getLinkCount());
-    }
-    if (link.getLinkCount() == 0) {
-      if (isDebugPrint) {
-        System.err.println( "removeObjectToTimelineNavLink: " + link.toString());
-      }
-      link.setInLayout( false);
-      areLinksChanged = true;
-    }
-    return areLinksChanged;
-  } // end removeObjectToTimelineNavLink
-
-  private boolean removeTimelineToObjectNavLink( BasicNodeLink link,
-                                                 TimelineNavNode timelineNavNode,
-                                                 ModelClassNavNode objectNavNode) {
-    boolean areLinksChanged = false;
-    link.decLinkCount();
-    objectNavNode.decTimelineLinkCount();
-    timelineNavNode.decObjectLinkCount();
-    if (isDebugPrint) {
-      System.err.println( "TitoO dec link: " + link.toString() + " to " +
-                          link.getLinkCount());
-    }
-    if (link.getLinkCount() == 0) {
-      if (isDebugPrint) {
-        System.err.println( "removeTimelineToObjectNavLink: " + link.toString());
-      }
-      link.setInLayout( false);
-      areLinksChanged = true;
-    }
-    return areLinksChanged;
-  } // end removeTimelineToObjectNavLink
-
-  // *********************************************** objectNavNodes
-
-  /**
-   * <code>addObjectNavNodes</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean addObjectNavNodes( TimelineNavNode timelineNavNode) {
-    boolean areNodesChanged = false;
-    List objectList = partialPlan.getObjectList();
-    Iterator objectIterator = objectList.iterator();
-    while (objectIterator.hasNext()) {
-      PwObject object = (PwObject) objectIterator.next();
-      if (object instanceof PwTimeline) {
-        PwTimeline timeline = (PwTimeline) object;
-        if (timeline.getId().equals( timelineNavNode.getTimeline().getId())) {
-          // System.err.println( "parent " + timeline.getParent());
-          // System.err.println( "children " + timeline.getComponentList());
-          PwObject parentObject = timeline.getParent();
-          if (parentObject != null) {
-            addObjectNavNode( parentObject);
-            areNodesChanged = true;
-          }
-          Iterator childObjectItr = timeline.getComponentList().iterator();
-          while (childObjectItr.hasNext()) {
-            PwObject childObject = (PwObject) childObjectItr.next();
-            addObjectNavNode( childObject);
-            areNodesChanged = true;
-          }
-        }
-      }
-    }
-    return areNodesChanged;
-  } // end addObjectNavNodes
-
-  private void addObjectNavNode( PwObject object) {
-    boolean isDraggable = true;
-    ModelClassNavNode objectNavNode =
-      (ModelClassNavNode) objectNavNodeMap.get( object.getId());
-    if (objectNavNode == null) {
-      objectNavNode =
-        new ModelClassNavNode( object, 
-                               new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                          ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                               ColorMap.getColor( ViewConstants.OBJECT_BG_COLOR),
-                               isDraggable, this);
-      objectNavNodeMap.put( object.getId(), objectNavNode);
-      jGoDocument.addObjectAtTail( objectNavNode);
-    }
-    if (isDebugPrint) {
-      System.err.println( "add objectNavNode " +
-                          objectNavNode.getObject().getId());
-    }
-    if (! objectNavNode.inLayout()) {
-      objectNavNode.setInLayout( true);
-    }
-  } // end addObjectNavNode
-
-
-  /**
-   * <code>removeObjectNavNodes</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean removeObjectNavNodes( TimelineNavNode timelineNavNode) {
-    boolean areNodesChanged = false;
-    ModelClassNavNode parentNavNode =
-      (ModelClassNavNode) objectNavNodeMap.get( timelineNavNode.getTimeline().getParentId());
-    if ((parentNavNode != null) && removeObjectNavNode( parentNavNode)) {
-      areNodesChanged = true;
-    }
-    Iterator childObjectItr = timelineNavNode.getTimeline().getComponentList().iterator();
-    while (childObjectItr.hasNext()) {
-      PwObject childObject = (PwObject) childObjectItr.next();
-      ModelClassNavNode childNavNode =
-        (ModelClassNavNode) objectNavNodeMap.get( childObject.getId());
-      if (removeObjectNavNode( childNavNode)) {
-         areNodesChanged = true;
-      }
-    }
-    return areNodesChanged;
-  }
-
-  private boolean removeObjectNavNode( ModelClassNavNode objectNavNode) {
-    boolean areNodesChanged = false;
-    if ((objectNavNode != null) && objectNavNode.inLayout() &&
-        (objectNavNode.getTimelineLinkCount() == 0)) {
-      areNodesChanged = true;
-      if (isDebugPrint) {
-        System.err.println( "remove objectNavNode " + objectNavNode.getObject().getId());
-      }
-      objectNavNode.setInLayout( false);
-      objectNavNode.resetNode( isDebugPrint);
-    }
-    return areNodesChanged;
-  } // end removeObjectNavNode
-
-  /**
-   * <code>addObjectToTimelineNavLinks</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean addObjectToTimelineNavLinks( TimelineNavNode timelineNavNode) {
-    boolean areLinksChanged = false;
-    ModelClassNavNode objectNavNode =
-      (ModelClassNavNode) objectNavNodeMap.get( timelineNavNode.getTimeline().getParentId());
-    if ((objectNavNode != null) && objectNavNode.inLayout()) {
-      if (addNavigatorLink( objectNavNode, timelineNavNode, timelineNavNode)) {
-        areLinksChanged = true;
-      }
-    }
-    return areLinksChanged;
-  } // end addObjectToTimelineNavLinks
-
-
-  /**
-   * <code>addTimelineToObjectNavLinks</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean addTimelineToObjectNavLinks( TimelineNavNode timelineNavNode) {
-    boolean areLinksChanged = false;
-    Iterator childObjectItr = timelineNavNode.getTimeline().getComponentList().iterator();
-    while (childObjectItr.hasNext()) {
-      PwObject childObject = (PwObject) childObjectItr.next();
-      ModelClassNavNode childNavNode =
-        (ModelClassNavNode) objectNavNodeMap.get( childObject.getId());
-      if ((childNavNode != null) && childNavNode.inLayout()) {
-        if (addNavigatorLink( timelineNavNode, childNavNode, timelineNavNode)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // end addTimelineToObjectNavLinks
-
-  private BasicNodeLink addTimelineToObjectNavLink( TimelineNavNode timelineNavNode,
-                                                    ModelClassNavNode objectNavNode,
-                                                    ExtendedBasicNode sourceNode) {
-    BasicNodeLink returnLink = null;
-    String linkName = timelineNavNode.getTimeline().getId().toString() + "->" +
-      objectNavNode.getObject().getId().toString();
-    BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
-    if (link == null) {
-      link = new BasicNodeLink( timelineNavNode, objectNavNode, linkName);
-      link.setArrowHeads(false, true);
-      objectNavNode.incrTimelineLinkCount();
-      timelineNavNode.incrObjectLinkCount();
-      returnLink = link;
-      navLinkMap.put( linkName, link);
-      if (isDebugPrint) {
-        System.err.println( "add timeline=>object link " + linkName);
-      }
-    } else {
-      if (! link.inLayout()) {
-        link.setInLayout( true);
-      }
-      link.incrLinkCount();
-      objectNavNode.incrTimelineLinkCount();
-      timelineNavNode.incrObjectLinkCount();
-      if (isDebugPrint) {
-        System.err.println( "TitoO1 incr link: " + link.toString() + " to " +
-                            link.getLinkCount());
-      }
-    }
-    return returnLink;
-  } // end addTimelineToObjectNavLink
-
-  /**
-   * <code>removeObjectToTimelineNavLinks</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean removeObjectToTimelineNavLinks( TimelineNavNode timelineNavNode) {
-    boolean areLinksChanged = false;
-    ModelClassNavNode objectNavNode =
-      (ModelClassNavNode) objectNavNodeMap.get( timelineNavNode.getTimeline().getParentId());
-    if ((objectNavNode != null) && objectNavNode.inLayout()) {
-      String linkName = objectNavNode.getObject().getId().toString() + "->" +
-        timelineNavNode.getTimeline().getId().toString();
-      BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
-      if ((link != null) && link.inLayout() &&
-          removeObjectToTimelineNavLink( link, objectNavNode, timelineNavNode)) {
-        areLinksChanged = true;
-      }
-    }
-    return areLinksChanged;
-  } // end removeObjectToTimelineNavLinks
-
-
-  /**
-   * <code>removeTimelineToObjectNavLinks</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean removeTimelineToObjectNavLinks( TimelineNavNode timelineNavNode) {
-    boolean areLinksChanged = false;
-    Iterator childObjectItr = timelineNavNode.getTimeline().getComponentList().iterator();
-    while (childObjectItr.hasNext()) {
-      PwObject childObject = (PwObject) childObjectItr.next();
-      ModelClassNavNode childNavNode =
-        (ModelClassNavNode) objectNavNodeMap.get( childObject.getId());
-      if ((childNavNode != null) && childNavNode.inLayout()) {
-        String linkName = timelineNavNode.getTimeline().getId().toString() + "->" +
-          childNavNode.getObject().getId().toString();
-        BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
-        if ((link != null) && link.inLayout() &&
-            removeTimelineToObjectNavLink( link, timelineNavNode, childNavNode)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // end removeTimelineToObjectNavLinks
-
-
-  // ***********************************************slotNavNode
-
-  /**
-   * <code>addSlotNavNodes</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean addSlotNavNodes( TimelineNavNode timelineNavNode) {
-    boolean areNodesChanged = false, isDraggable = true;
-    PwTimeline timeline = timelineNavNode.getTimeline();
-    Iterator slotIterator = timeline.getSlotList().iterator();
-    while (slotIterator.hasNext()) {
-      PwSlot slot = (PwSlot) slotIterator.next();
-      SlotNavNode slotNavNode =
-        (SlotNavNode) slotNavNodeMap.get( slot.getId());
-      if (slotNavNode == null) {
-        slotNavNode =
-          new SlotNavNode( slot, 
-                               new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                          ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                               getTimelineColor( timeline.getId()),
-                               isDraggable, this);
-        slotNavNodeMap.put( slot.getId(), slotNavNode);
-        jGoDocument.addObjectAtTail( slotNavNode);
-      }
-      addSlotNavNode( slotNavNode);
-      areNodesChanged = true;
-    }
-    return areNodesChanged;
-  } // end addSlotNavNodes
-
-  /**
-   * <code>addSlotNavNode</code>
-   *
-   * @param slotNavNode - <code>SlotNavNode</code> - 
-   */
-  protected void addSlotNavNode( SlotNavNode slotNavNode) {
-    if (isDebugPrint) {
-      System.err.println( "add slotNavNode " +
-                          slotNavNode.getSlot().getId());
-    }
-    if (! slotNavNode.inLayout()) {
-      slotNavNode.setInLayout( true);
-    }
-  } // end addSlotNavNode
-
-  /**
-   * <code>removeSlotNavNodes</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean removeSlotNavNodes( TimelineNavNode timelineNavNode) {
-    boolean areNodesChanged = false;
-    PwTimeline timeline = timelineNavNode.getTimeline();
-    Iterator slotIterator = timeline.getSlotList().iterator();
-    while (slotIterator.hasNext()) {
-      PwSlot slot = (PwSlot) slotIterator.next();
-      SlotNavNode slotNavNode =
-        (SlotNavNode) slotNavNodeMap.get( slot.getId());
-      if ((slotNavNode != null) && slotNavNode.inLayout() &&
-          (slotNavNode.getTimelineLinkCount() == 0) &&
-          (slotNavNode.getTokenLinkCount() == 0)) {
-        removeSlotNavNode( slotNavNode);
-        areNodesChanged = true;
-      }
-    }
-    return areNodesChanged;
-  } // end removeSlotNavNodes
-
-  /**
-   * <code>removeSlotNavNode</code>
-   *
-   * @param slotNavNode - <code>SlotNavNode</code> - 
-   */
-  protected void removeSlotNavNode( SlotNavNode slotNavNode) {
-    if (isDebugPrint) {
-      System.err.println( "remove slotNavNode " +
-                          slotNavNode.getSlot().getId());
-    }
-    slotNavNode.setInLayout( false);
-    slotNavNode.resetNode( isDebugPrint);
-  } // end removeSlotNavNode
-
-
-  /**
-   * <code>addTimelineToSlotNavLinks</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean addTimelineToSlotNavLinks( TimelineNavNode timelineNavNode) {
-    boolean areLinksChanged = false;
-    PwTimeline timeline = timelineNavNode.getTimeline();
-    Iterator slotIterator = timeline.getSlotList().iterator();
-    while (slotIterator.hasNext()) {
-      PwSlot slot = (PwSlot) slotIterator.next();
-      SlotNavNode slotNavNode =
-        (SlotNavNode) slotNavNodeMap.get( slot.getId());
-      if ((slotNavNode != null) && slotNavNode.inLayout()) {
-        if (addNavigatorLink( timelineNavNode, slotNavNode, timelineNavNode)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // end addTimelineToSlotNavLinks
-
-  /**
-   * <code>addTimelineToSlotNavLink</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @param slotNavNode - <code>SlotNavNode</code> - 
-   * @param sourceNode - <code>ExtendedBasicNode</code> - 
-   * @return - <code>BasicNodeLink</code> - 
-   */
-  protected BasicNodeLink addTimelineToSlotNavLink( TimelineNavNode timelineNavNode,
-                                                    SlotNavNode slotNavNode,
-                                                    ExtendedBasicNode sourceNode) {
-    BasicNodeLink returnLink = null;
-    String linkName = timelineNavNode.getTimeline().getId().toString() + "->" +
-      slotNavNode.getSlot().getId().toString();
-    BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
-    if (link == null) {
-      link = new BasicNodeLink( timelineNavNode, slotNavNode, linkName);
-      link.setArrowHeads(false, true);
-      timelineNavNode.incrSlotLinkCount();
-      slotNavNode.incrTimelineLinkCount();
-      returnLink = link;
-      navLinkMap.put( linkName, link);
-      if (isDebugPrint) {
-        System.err.println( "add timeline=>slot link " + linkName);
-      }
-    } else {
-      if (! link.inLayout()) {
-        link.setInLayout( true);
-      }
-      link.incrLinkCount();
-      timelineNavNode.incrSlotLinkCount();
-      slotNavNode.incrTimelineLinkCount();
-      if (isDebugPrint) {
-        System.err.println( "TitoS1 incr link: " + link.toString() + " to " +
-                            link.getLinkCount());
-      }
-    }
-    return returnLink;
-  } // end addTimelineToSlotNavLink
-
-  /**
-   * <code>removeTimelineToSlotNavLinks</code>
-   *
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean removeTimelineToSlotNavLinks( TimelineNavNode timelineNavNode) {
-    boolean areLinksChanged = false;
-    PwTimeline timeline = timelineNavNode.getTimeline();
-    Iterator slotIterator = timeline.getSlotList().iterator();
-    while (slotIterator.hasNext()) {
-      PwSlot slot = (PwSlot) slotIterator.next();
-      SlotNavNode slotNavNode =
-        (SlotNavNode) slotNavNodeMap.get( slot.getId());
-      if ((slotNavNode != null) && slotNavNode.inLayout()) {
-        String linkName = timelineNavNode.getTimeline().getId().toString() + "->" +
-          slotNavNode.getSlot().getId().toString();
-        BasicNodeLink link = (BasicNodeLink) navLinkMap.get( linkName);
-        if ((link != null) && link.inLayout() &&
-            removeTimelineToSlotNavLink( link, timelineNavNode, slotNavNode)) {
-          areLinksChanged = true;
-        }
-      }
-    }
-    return areLinksChanged;
-  } // end removeTimelineToSlotNavLinks
-
-  /**
-   * <code>removeTimelineToSlotNavLink</code>
-   *
-   * @param link - <code>BasicNodeLink</code> - 
-   * @param timelineNavNode - <code>TimelineNavNode</code> - 
-   * @param slotNavNode - <code>SlotNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean removeTimelineToSlotNavLink( BasicNodeLink link,
-                                                 TimelineNavNode timelineNavNode,
-                                                 SlotNavNode slotNavNode) {
-    boolean areLinksChanged = false;
-    link.decLinkCount();
-    timelineNavNode.decSlotLinkCount();
-    slotNavNode.decTimelineLinkCount();
-    if (isDebugPrint) {
-      System.err.println( "TitoS dec link: " + link.toString() + " to " +
-                          link.getLinkCount());
-    }
-    if (link.getLinkCount() == 0) {
-      if (isDebugPrint) {
-        System.err.println( "removeTimelineToSlotNavLink: " + link.toString());
-      }
-      link.setInLayout( false);
-      areLinksChanged = true;
-    }
-    return areLinksChanged;
-  } // end removeTimelineToSlotNavLink
+  } // end addNavigatorLinkNew
 
 
   // ***********************************************
 
 
   private void setNodesLinksVisible() {
-    List objectNodeKeyList = new ArrayList( objectNavNodeMap.keySet());
+    List objectNodeKeyList = new ArrayList( entityNavNodeMap.keySet());
     Iterator objectNodeKeyItr = objectNodeKeyList.iterator();
     while (objectNodeKeyItr.hasNext()) {
-      ModelClassNavNode objectNavNode =
-        (ModelClassNavNode) objectNavNodeMap.get( (Integer) objectNodeKeyItr.next());
-      if (objectNavNode.inLayout()) {
+      ExtendedBasicNode objectNavNode =
+        (ExtendedBasicNode) entityNavNodeMap.get( (Integer) objectNodeKeyItr.next());
+      if (((NavNode) objectNavNode).inLayout()) {
         objectNavNode.setVisible( true);
       } else {
         objectNavNode.setVisible( false);
-      }
-    }
-    List timelineNodeKeyList = new ArrayList( timelineNavNodeMap.keySet());
-    Iterator timelineNodeKeyItr = timelineNodeKeyList.iterator();
-    while (timelineNodeKeyItr.hasNext()) {
-      TimelineNavNode timelineNavNode =
-        (TimelineNavNode) timelineNavNodeMap.get( (Integer) timelineNodeKeyItr.next());
-      if (timelineNavNode.inLayout()) {
-        timelineNavNode.setVisible( true);
-      } else {
-        timelineNavNode.setVisible( false);
-      }
-    }
-    List slotNodeKeyList = new ArrayList( slotNavNodeMap.keySet());
-    Iterator slotNodeKeyItr = slotNodeKeyList.iterator();
-    while (slotNodeKeyItr.hasNext()) {
-      SlotNavNode slotNavNode =
-        (SlotNavNode) slotNavNodeMap.get( (Integer) slotNodeKeyItr.next());
-      if (slotNavNode.inLayout()) {
-        slotNavNode.setVisible( true);
-      } else {
-        slotNavNode.setVisible( false);
-      }
-    }
-    List tokenNodeKeyList = new ArrayList( tokenNavNodeMap.keySet());
-    Iterator tokenNodeKeyItr = tokenNodeKeyList.iterator();
-    while (tokenNodeKeyItr.hasNext()) {
-      TokenNavNode tokenNavNode =
-        (TokenNavNode) tokenNavNodeMap.get( (Integer) tokenNodeKeyItr.next());
-      if (tokenNavNode.inLayout()) {
-        tokenNavNode.setVisible( true);
-      } else {
-        tokenNavNode.setVisible( false);
-      }
-    }
-    List variableNodeKeyList = new ArrayList( variableNavNodeMap.keySet());
-    Iterator variableNodeKeyItr = variableNodeKeyList.iterator();
-    while (variableNodeKeyItr.hasNext()) {
-      VariableNavNode variableNavNode =
-        (VariableNavNode) variableNavNodeMap.get( (Integer) variableNodeKeyItr.next());
-      if (variableNavNode.inLayout()) {
-        variableNavNode.setVisible( true);
-      } else {
-        variableNavNode.setVisible( false);
-      }
-    }
-    List constraintNodeKeyList = new ArrayList( constraintNavNodeMap.keySet());
-    Iterator constraintNodeKeyItr = constraintNodeKeyList.iterator();
-    while (constraintNodeKeyItr.hasNext()) {
-      ConstraintNavNode constraintNavNode =
-        (ConstraintNavNode) constraintNavNodeMap.get( (Integer) constraintNodeKeyItr.next());
-      if (constraintNavNode.inLayout()) {
-        constraintNavNode.setVisible( true);
-      } else {
-        constraintNavNode.setVisible( false);
       }
     }
     List navLinkKeyList = new ArrayList( navLinkMap.keySet());
@@ -1400,9 +705,6 @@ public class NavigatorView extends PartialPlanView {
         }
       }
     }
-
-      
-
   } // end setNodesLinksVisible
 
 
@@ -1427,7 +729,8 @@ public class NavigatorView extends PartialPlanView {
      * @param docCoords - <code>Point</code> - 
      * @param viewCoords - <code>Point</code> - 
      */
-    public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
+    public final void doBackgroundClick( final int modifiers, final Point docCoords,
+                                         final Point viewCoords) {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
         // do nothing
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -1437,7 +740,7 @@ public class NavigatorView extends PartialPlanView {
 
   } // end class NavigatorJGoView
 
-  private void mouseRightPopupMenu( Point viewCoords) {
+  private void mouseRightPopupMenu( final Point viewCoords) {
     String partialPlanName = partialPlan.getPartialPlanName();
     PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
@@ -1454,11 +757,11 @@ public class NavigatorView extends PartialPlanView {
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
-  private void createOverviewWindowItem( JMenuItem overviewWindowItem,
+  private void createOverviewWindowItem( final JMenuItem overviewWindowItem,
                                          final NavigatorView navigatorView,
                                          final Point viewCoords) {
     overviewWindowItem.addActionListener( new ActionListener() { 
-        public void actionPerformed( ActionEvent evt) {
+        public final void actionPerformed( final ActionEvent evt) {
           VizViewOverview currentOverview =
             ViewGenerics.openOverviewFrame( PlanWorks.NAVIGATOR_VIEW, partialPlan,
                                             navigatorView, viewSet, jGoView, viewCoords);

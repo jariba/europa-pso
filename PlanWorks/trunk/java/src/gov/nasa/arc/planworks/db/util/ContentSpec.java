@@ -1,3 +1,13 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+// $Id: ContentSpec.java,v 1.17 2004-02-25 02:30:14 taylor Exp $
+//
+// PlanWorks
+//
+
 package gov.nasa.arc.planworks.db.util;
 
 import java.util.List;
