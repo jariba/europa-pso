@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.40 2003-10-16 20:28:41 miatauro Exp $
+# $Id: README,v 1.41 2003-10-16 20:39:14 miatauro Exp $
 #
 
 SUMMARY
@@ -36,6 +36,13 @@ Test use cases have been defined to replace the "planWorksTest" JFCUnit
 test which had become unusable.  A new unit test for the PlanWorks
 data access layer is now in its place and can be run with 
 "ant test".
+
+The current PartialPlanWriter (PlanWorks/cpp/integration/europa/README)
+requires a recent version of EUROPA.  The earliest known working
+version is tagged with the PlanWorks milestone release tag PW_M_8.  
+Note: Registering the PartialPlanWriter as a subscriber in
+simplePlan.cc breaks EUROPA's make tests.  This is being worked
+on.  
 
 Please note that the current database model invalidates all old
 data and will require a rebuilding of the database tables 
