@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.3 2003-09-23 19:28:16 taylor Exp $
+// $Id: SlotNode.java,v 1.4 2003-09-23 20:21:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -99,8 +99,14 @@ public class SlotNode extends TextNode {
                    SlotNode previousSlotNode, boolean isFirstSlot, boolean isLastSlot,
                    Color backgroundColor, TimelineView timelineView) {
     super( nodeLabel);
-    this.predicateName = nodeLabel;
-    this.slot = slot;
+    // node label now contains \nkey=nnn
+    PwToken token = slot.getBaseToken();
+    if (token == null) { // empty slot
+      this.predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
+    } else {
+      this.predicateName = token.getPredicate().getName();
+    }
+    this.slot = slot; 
     this.previousSlotNode = previousSlotNode;
     this.isFirstSlot = isFirstSlot;
     this.isLastSlot = isLastSlot;
