@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.19 2003-07-02 19:13:04 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.20 2003-07-02 21:09:58 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -52,8 +52,9 @@ public class PwProjectImpl extends PwProject {
 
     connectToDataBase();
 
-    ResultSet dbProjectNames = MySQLDB.queryDatabase("SELECT (ProjectName) FROM Project WHERE 1>0");
+    ResultSet dbProjectNames = MySQLDB.queryDatabase("SELECT ProjectName FROM Project");
     while(dbProjectNames.next()) {
+      System.err.println("Got project " + dbProjectNames.getString("ProjectName"));
       projectNames.add(dbProjectNames.getString("ProjectName"));
       projects.add(new PwProjectImpl(dbProjectNames.getString("ProjectName"), true));
     }
@@ -63,8 +64,8 @@ public class PwProjectImpl extends PwProject {
     ResultSet projects = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName='".concat(name).concat("'"));
     projects.last();
     if(projects.getRow() > 0) {
-      throw new DuplicateNameException(projects.getRow() + " projects with name '" + name +
-                                       "were found.");
+      throw new DuplicateNameException("A project named '" + name +
+                                       "' already exists.");
     }
     PwProjectImpl retval = null;
     retval = new PwProjectImpl(name);
@@ -154,7 +155,8 @@ public class PwProjectImpl extends PwProject {
     planningSequences = new ArrayList();
     
     //ResultSet sequences = MySQLDB.queryDatabase("SELECT (Sequence.SequenceURL, Sequence.SequenceId) FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
-    ResultSet sequences = MySQLDB.queryDatabase("SELECT SequenceURL, SequenceId FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
+    ResultSet sequences = MySQLDB.queryDatabase("SELECT Sequence.SequenceURL, ProjectSequenceMap.SequenceId FROM Sequence, ProjectSequenceMap WHERE ProjectSequenceMap.ProjectId=".concat(key.toString()).concat(" && Sequence.SequenceId=ProjectSequenceMap.SequenceId"));
+    //    ResultSet sequences = MySQLDB.queryDatabase("SELECT SequenceURL, SequenceId FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
     while(sequences.next()) {
       planningSequences.add(new PwPlanningSequenceImpl(sequences.getString("SequenceURL"),
                                                        new Integer(sequences.getInt("SequenceId")),

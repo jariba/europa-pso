@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.16 2003-07-02 00:08:54 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.17 2003-07-02 21:10:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -89,6 +89,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
       stepCount++;
     }
     partialPlans = new ArrayList(partialPlanNames.size());
+    ListIterator planNameIterator = partialPlanNames.listIterator();
+    while(planNameIterator.hasNext()) {
+      partialPlans.add(null);
+      addPartialPlan((String) planNameIterator.next());
+    }
   }
 
 
@@ -117,10 +122,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
                                            System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
-    MySQLDB.updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId) VALUES ('".concat(url).concat("', ").concat(project.getKey().toString()).concat(")"));
+    MySQLDB.updateDatabase("INSERT INTO Sequence (SequenceURL) VALUES ('".concat(url).concat("')"));
     ResultSet newKey = MySQLDB.queryDatabase("SELECT MAX(SequenceId) AS SequenceId FROM Sequence");
     newKey.first();
     this.key = new Integer(newKey.getInt("SequenceId"));
+    MySQLDB.updateDatabase("INSERT INTO ProjectSequenceMap (ProjectId, SequenceId) VALUES (".concat(project.getKey().toString()).concat(", ").concat(key.toString()).concat(")"));
     File sequenceDir = new File(url);
     if(!sequenceDir.isDirectory()) {
       throw new ResourceNotFoundException("sequence url '" + url + "' is not a directory.");
