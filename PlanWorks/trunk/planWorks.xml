@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.1 2003-06-08 00:14:07 taylor Exp $ -->
+<!-- $Id: planWorks.xml,v 1.2 2003-06-12 19:57:19 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 <target name="launch" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
@@ -33,6 +33,7 @@
             <jvmarg value="-Ddefault.project.dir=${default.project.dir}"/>
             <jvmarg value="-Dprojects.xml.data.dir=${projects.xml.data.dir}"/>
             <jvmarg value="-Dprojects.xml.data.pathname=${projects.xml.data.pathname}"/>
+            <jvmarg value="-Dxml.dtd.pathname=${xml.dtd.pathname}"/>
             <arg value="${name.application}"/>
 	</java>
 

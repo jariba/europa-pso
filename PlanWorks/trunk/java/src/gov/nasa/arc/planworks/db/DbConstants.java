@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.1 2003-06-11 01:02:11 taylor Exp $
+// $Id: DbConstants.java,v 1.2 2003-06-12 19:57:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -52,5 +52,11 @@ public interface DbConstants {
    */
   public static final PwDomain MINUS_INFINITY_DOMAIN =
     (PwDomain) new PwEnumeratedDomainImpl( "_minus_infinity_");
+
+  /**
+   * constant <code>XML_DTD_FILENAME</code>
+   *
+   */
+  public static final String XML_DTD_FILENAME = "PlanDb.dtd";
 
 } // end interface DbConstants

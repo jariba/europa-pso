@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.7 2003-06-12 00:08:53 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.8 2003-06-12 19:57:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -298,6 +298,7 @@ public class PwProjectImpl extends PwProject {
       PwProjectImpl activeProject = (PwProjectImpl) projectsItr.next();
       if (activeProject.requiresSaving) {
         activeProject.save();
+        activeProject.setRequiresSaving( false);
       }
     }
   } // end saveProjects
@@ -435,6 +436,15 @@ public class PwProjectImpl extends PwProject {
   public boolean requiresSaving() {
     return requiresSaving;
   } // end requiresSaving
+
+  /**
+   * <code>setRequiresSaving</code>
+   *
+   * @param value - <code>boolean</code> - 
+   */
+  public void setRequiresSaving( boolean value) {
+    requiresSaving = value;
+  } // end setRequiresSaving
 
   /**
    * <code>save</code> - save project url, name, & seqDirNames in /xml/proj/<Projectame>.xml

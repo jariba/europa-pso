@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.11 2003-06-11 01:29:49 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.12 2003-06-12 19:57:19 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -12,6 +12,8 @@
   <property name="projects.xml.data.dir" location="${planworks.root}/xml/db/proj"/>
   <property name="projects.xml.data.pathname" 
       location="${planworks.root}/xml/db/proj/projects.xml"/>
+  <property name="xml.dtd.pathname" 
+      location="${planworks.root}/xml/dtd/PlanDb.dtd"/>
   <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
   <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.3 2003-06-12 00:08:53 taylor Exp $
+// $Id: PlanWorks.java,v 1.4 2003-06-12 19:57:20 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -267,6 +267,13 @@ public class PlanWorks extends MDIDesktopFrame {
         currentProject = instantiatedProject;
         JMenu partialPlanMenu = clearSeqPartialPlanViewMenu();
         addSeqPartialPlanViewMenu( instantiatedProject, partialPlanMenu);
+        // cache the project info
+        try {
+          PwProject.saveProjects();
+        } catch (Exception excp) {
+          System.err.println( excp );
+        }
+        // clear the old project's views
         if (viewManager != null) {
           viewManager.clearViewSets();
         }

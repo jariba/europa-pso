@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.9 2003-06-11 01:02:10 taylor Exp $
+# $Id: build-tags-file.csh,v 1.10 2003-06-12 19:57:20 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -50,7 +50,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/impl/PwTransactionImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwVariableImpl.java \
     src/gov/nasa/arc/planworks/db/test/ExistTest.java \
-    src/gov/nasa/arc/planworks/db/test/PwProjectTest.java \
     src/gov/nasa/arc/planworks/db/util/FileUtils.java \
     src/gov/nasa/arc/planworks/db/util/ParsedDomNode.java \
     src/gov/nasa/arc/planworks/db/util/XmlDBeXist.java \
@@ -67,6 +66,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/mdi/MDIWindowButtonBar.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
+    src/gov/nasa/arc/planworks/util/FileCopy.java \
     src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
@@ -78,8 +78,25 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewManager.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewSet.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewSetRemover.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ConstraintBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ConstraintGroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ContentSpecElement.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ContentSpecGroup.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/ContentSpecWindow.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/GroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/KeyEntryBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/LogicComboBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/NegationCheckBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/PredicateBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/PredicateGroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/SpecBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimeIntervalBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimeIntervalGroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineGroupBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/VariableTypeBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/VariableTypeGroupBox.java \
     src/gov/nasa/arc/planworks/viz/views/VizView.java \
-    src/gov/nasa/arc/planworks/viz/views/test/TimelineViewTest.java \
     src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java
 
 
