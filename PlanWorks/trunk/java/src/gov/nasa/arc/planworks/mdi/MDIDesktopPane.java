@@ -4,14 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: MDIDesktopPane.java,v 1.1 2003-06-11 01:09:47 taylor Exp $
+// $Id: MDIDesktopPane.java,v 1.2 2003-06-13 20:22:27 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
 import javax.swing.JDesktopPane;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
-
 
 /**
  * <code>MDIDesktopPane</code> - was internal class of MDIDesktopFrame
@@ -27,16 +26,9 @@ public class MDIDesktopPane extends JDesktopPane {
   public MDIDesktopPane() {
     super();
     setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-    // prevents  UIDefaults.getUI() failed: no ComponentUI class for: javax.swing.JInternalFrame$JDesktopIcon[,0,0,0x0,invalid,hidden,alignmentX=null,alignmentY=null,border=,flags=0,maximumSize=,minimumSize=,preferredSize=]
 
-//     UIDefaults defaults = UIManager.getDefaults();
-//     defaults.put("DesktopIconUI", "EmptyDesktopIconUI");
-    //   setDesktopManager(new MDIDesktopManager());
+     UIDefaults defaults = UIManager.getDefaults();
+     defaults.put("DesktopIconUI", getClass().getPackage().getName() + ".EmptyDesktopIconUI");
   }
-
-  //class MDIDesktopManager extends DesktopManager
-  //{
-  //}
-
 } // end class MDIDesktopPane
 
