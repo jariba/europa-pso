@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.25 2004-01-02 19:06:54 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.26 2004-01-02 21:12:27 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -56,7 +56,7 @@ enum transactionTypes {TOKEN_CREATED = 0, TOKEN_DELETED, TOKEN_INSERTED, TOKEN_F
 const char *sourceTypeNames[3] = {"SYSTEM", "USER", "UNKNOWN"};
 
 #define TAB "\t"
-const String SNULL("NULL");
+const String SNULL("\\N");
 const String CONSTRAINT_TOKEN("constraintToken");
 const String COMMA(",");
 const String SLASH("/");
@@ -218,7 +218,7 @@ void PartialPlanWriter::write(void) {
     return;
   }
 
-  tokenRelationId = /*enumeratedDomainId = intervalDomainId =*/ 1;
+  tokenRelationId = 1;
   if(gettimeofday(&currTime, NULL)) {
     FatalError("Failed to get current time");
   }
@@ -246,29 +246,11 @@ void PartialPlanWriter::write(void) {
     FatalError(strerror(errno));
   }
 
-//   String ppTimeline = partialPlanDest + SLASH + stepnum + TIMELINES;
-//   ofstream timelineOut(ppTimeline.chars());
-//   if(!timelineOut) {
-//     FatalError(strerror(errno));
-//   }
-
-//   String ppSlot = partialPlanDest + SLASH + stepnum + SLOTS;
-//   ofstream slotOut(ppSlot.chars());
-//   if(!slotOut) {
-//     FatalError(strerror(errno));
-//   }
-
   String ppToken = partialPlanDest + SLASH + stepnum + TOKENS;
   ofstream tokenOut(ppToken.chars());
   if(!tokenOut) {
     FatalError(strerror(errno));
   }
-
-//   String ppPVTM = partialPlanDest + SLASH + stepnum + PARAM_VAR_TOKEN_MAP;
-//   ofstream paramVarTokenMapOut(ppPVTM.chars());
-//   if(!paramVarTokenMapOut) {
-//     FatalError(strerror(errno));
-//   }
 
   String ppTokenRelation = partialPlanDest + SLASH + stepnum + TOKEN_RELATIONS;
   ofstream tokenRelationOut(ppTokenRelation.chars());
@@ -281,18 +263,6 @@ void PartialPlanWriter::write(void) {
   if(!variableOut) {
     FatalError(strerror(errno));
   }
-
-//   String ppEnumDomain = partialPlanDest + SLASH + stepnum + ENUMERATED_DOMAINS;
-//   ofstream enumDomainOut(ppEnumDomain.chars());
-//   if(!enumDomainOut) {
-//     FatalError(strerror(errno));
-//   }
-
-//   String ppIntDomain = partialPlanDest + SLASH + stepnum + INTERVAL_DOMAINS;
-//   ofstream intDomainOut(ppIntDomain.chars());
-//   if(!intDomainOut) {
-//     FatalError(strerror(errno));
-//   }
 
   String ppConstraints = partialPlanDest + SLASH + stepnum + CONSTRAINTS;
   ofstream constraintOut(ppConstraints.chars());
@@ -334,7 +304,7 @@ void PartialPlanWriter::write(void) {
 
     outputToken(tokenId, true, partialPlanId, NULL, 0, SNULL, NULL, -1, tokenOut, 
                 tokenRelationOut, 
-                variableOut/*, intDomainOut, enumDomainOut, paramVarTokenMapOut*/);
+                variableOut);
     numTokens++;
     freeTokenIterator.step();
   }
@@ -368,8 +338,6 @@ void PartialPlanWriter::write(void) {
 
     while(!timelineNameIterator.isDone()) {
       AttributeId timelineAttId = timelineNameIterator.item();
-      //timelineOut << timelineId << TAB << objectId->getKey() << TAB << partialPlanId << TAB
-      //            << modelId.getAttributeName(timelineAttId) << endl;
       List<SlotInfo> slotList = tnet->getAllSlots(objectId, timelineAttId);
       ListIterator<SlotInfo> slotIterator = ListIterator<SlotInfo>(slotList);
       while(!slotIterator.isDone()) {
@@ -385,16 +353,13 @@ void PartialPlanWriter::write(void) {
           slotIterator.step();
           continue;
         }
-        //slotOut << slotId->getKey() << TAB << timelineId << TAB << partialPlanId << TAB
-        //        << objectId->getKey() << TAB << slotIndex << endl;
         List<TokenId> tokenList = slotId->listValueTokensCoveringSlot();
         ListIterator<TokenId> tokenIterator = ListIterator<TokenId>(tokenList);
         while(!tokenIterator.isDone()) {
           TokenId tokenId = tokenIterator.item();
           outputToken(tokenId, false, partialPlanId, &objectId, timelineId, 
                       modelId.getAttributeName(timelineAttId), &slotId, slotIndex,
-                      tokenOut, tokenRelationOut, variableOut/*, intDomainOut, enumDomainOut,
-                                                               paramVarTokenMapOut*/);
+                      tokenOut, tokenRelationOut, variableOut);
           numTokens++;
           tokenIterator.step();
         }
@@ -427,14 +392,9 @@ void PartialPlanWriter::write(void) {
     transactionIterator.step();
   }
   objectOut.close();
-  //timelineOut.close();
-  //slotOut.close();
   tokenOut.close();
-  //paramVarTokenMapOut.close();
   tokenRelationOut.close();
   variableOut.close();
-  //enumDomainOut.close();
-  //intDomainOut.close();
   constraintOut.close();
   predOut.close();
   paramOut.close();
