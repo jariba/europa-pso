@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.3 2004-07-27 21:58:02 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.4 2004-08-02 18:54:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -76,7 +76,7 @@ public class ConfigureAndPlugins {
 
   public static void processPlanWorksConfigFile( File configFile) {
     try {
-      System.err.println( "Processing PlaWorks configure file: " +
+      System.err.println( "Processing PlanWorks configure file: " +
                           configFile.getCanonicalPath());
     } catch (IOException ioExcep) {
     }
@@ -85,8 +85,11 @@ public class ConfigureAndPlugins {
     Iterator configNameItr = pluginNameList.iterator();
     Iterator configPathItr = pluginConfigPathList.iterator();
     while (configPathItr.hasNext()) {
-      processConfigFile( new File( (String) configPathItr.next()),
-                         (String) configNameItr.next());
+      File anotherConfigFile = new File( (String) configPathItr.next());
+      String anotherAppName = (String) configNameItr.next();
+      System.err.println( "Processing " + anotherAppName + " configure file: " +
+                          anotherConfigFile);
+      processConfigFile( anotherConfigFile, anotherAppName);
     }
   } // end processPlanWorksConfigFile
 
@@ -98,15 +101,19 @@ public class ConfigureAndPlugins {
       String methodName = null;
       Class [] argTypes = null;
       Object [] args = null;
+      List liveTokens = null;
       while ((line = in.readLine()) != null) {
-//         System.err.println( configFile.getName() + ": " + line);
-        String [] tokens = line.split( "\\s+"); // one or more spaces or a tab
-        List liveTokens = new ArrayList();
+        // System.err.println( configFile.getName() + ": '" + line + "'");
+        String uncommentedLine = line.split( "//", 2)[0];
+        // System.err.println( "uncommentedLine '" + uncommentedLine + "'");
+        if (uncommentedLine.length() == 0) {
+          continue;
+        }
+        String [] tokens = uncommentedLine.split( "\\s+"); // one or more spaces or a tab
+        liveTokens = new ArrayList();
         for (int i = 0; i < tokens.length; i++) {
           String token = (String) tokens[i];
-          if (token.equals( "//")) { // comment
-            break;
-          }
+          // System.err.println( "liveToken '" + token + "'");
           liveTokens.add( token);
         }
         if (liveTokens.size() > 1) {
@@ -136,9 +143,8 @@ public class ConfigureAndPlugins {
             String itemName = (String) returnArray[0];
             numTokensProcessed = ((Integer) returnArray[1]).intValue();
             liveTokens = liveTokens.subList( numTokensProcessed, liveTokens.size());
-            args = new String [] { viewName, (String) liveTokens.get( 0),
-                                   (String) liveTokens.get( 1),
-                                   (String) liveTokens.get( 2)};
+            args = new String [] { viewName, itemName, (String) liveTokens.get( 0),
+                                   (String) liveTokens.get( 1)};
 
 
           } else {
@@ -252,8 +258,8 @@ public class ConfigureAndPlugins {
    */
   public static void mapRightClickForView( String viewName, String itemName, String itemClassName,
                                            String itemMethodName) {
-    System.err.println( "mapViewClass: '" + viewName + "' '" + itemName + "' ' " + itemClassName +
-                        "' '" + itemMethodName);
+    // System.err.println( "mapRightClickForView: '" + viewName + "' '" + itemName +
+    //                     "' '" + itemClassName + "' '" + itemMethodName);
     List rightClickList = new ArrayList();
     rightClickList.add( itemClassName); 
     rightClickList.add( itemMethodName);

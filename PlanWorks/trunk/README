@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.113 2004-07-29 01:36:35 taylor Exp $
+# $Id: README,v 1.114 2004-08-02 18:55:28 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -69,6 +69,7 @@ o Added new Ant target 'createJars' which creates PlanWorksDB.jar and PlanWorksP
 o GNATS PRs and CRs completed:
   #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.
   #2452: Right mouse click popup menu not supported by any nodes in Navigator View.
+  #2514: Comments not being correctly parsed in the PlanWorks config file
 
 
 CVS CHECKOUT

@@ -36,9 +36,9 @@ mapViewClass "Token Network View" gov.nasa.arc.planworks.viz.partialPlan.tokenNe
 
 // Right-Clicks for Views -------------------------------
 
-// mapRightClickForView  <"view name"> <item-name> <item-class-name> <item-method-name>
+// mapRightClickForView  <"view name"> <"item-name"> <item-class-name> <item-method-name>
 
 // Right-Clicks for Nodes -------------------------------
 
-// mapRightClickForNodeForView <"view name"> <item-name> <node-class-name> <item-method-name>
-// mapRightClickForNode <item-name> <node-class-name> <item-method-name>
+// mapRightClickForNodeForView <"view name"> <"item-name"> <node-class-name> <item-method-name>
+// mapRightClickForNode <"item-name"> <node-class-name> <item-method-name>
