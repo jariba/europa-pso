@@ -68,7 +68,7 @@ public class MySQLDB {
       return;
     }
     StringBuffer dbStopString = new StringBuffer(System.getProperty("mysql.bindir"));
-    dbStopString.append("/mysqladmin --user=root --password=root --host=127.0.0.1 --socket=");
+    dbStopString.append("/mysqladmin --user=root --host=127.0.0.1 --socket=");
     dbStopString.append(System.getProperty("mysql.sock")).append(" shutdown");
     Runtime.getRuntime().exec(dbStopString.toString());
   }
