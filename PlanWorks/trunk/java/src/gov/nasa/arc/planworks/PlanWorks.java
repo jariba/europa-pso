@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.24 2003-07-02 23:02:07 taylor Exp $
+// $Id: PlanWorks.java,v 1.25 2003-07-03 00:05:24 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -755,7 +755,7 @@ public class PlanWorks extends MDIDesktopFrame {
         PwPlanningSequence planSequence =
           currentProject.getPlanningSequence( seqUrl);
 
-//         PwPartialPlan partialPlan = planSequence.addPartialPlan( partialPlanName);
+        PwPartialPlan partialPlan = planSequence.addPartialPlan( partialPlanName);
 
         renderView( viewName, sequenceName, partialPlanName, partialPlan);
 
@@ -765,6 +765,20 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
+      } catch (SQLException sqlExcep) {
+        StringBuffer errorOutput =
+          new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
+                                                           indexOf(":") + 1));
+        StackTraceElement [] stackTrace = sqlExcep.getStackTrace();
+        for(int i = 0; i < stackTrace.length; i++) {
+          errorOutput.append(stackTrace[i].getFileName()).append(":");
+          errorOutput.append(stackTrace[i].getLineNumber()).append(" ");
+          errorOutput.append(stackTrace[i].getClassName()).append(".");
+          errorOutput.append(stackTrace[i].getMethodName()).append("\n");
+        }
+        JOptionPane.showMessageDialog
+          (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
+        System.err.println(sqlExcep);
       }
     } //end run
 
