@@ -268,7 +268,7 @@ public class MySQLDB {
     PwDomainImpl domainImpl = null;
     try {
       ResultSet variables =
-        queryDatabase("SELECT VariableId, DomainType, VariableType, DomainId, ParameterId FROM Variable WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
+        queryDatabase("SELECT VariableId, DomainType, VariableType, DomainId FROM Variable WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
       while(variables.next()) {
         Integer variableId = new Integer(variables.getInt("VariableId"));
         Integer domainId = new Integer(variables.getInt("DomainId"));
@@ -283,8 +283,10 @@ public class MySQLDB {
           ResultSet domain = 
             queryDatabase("SELECT Domain FROM EnumeratedDomain WHERE EnumeratedDomainId=".concat(domainId.toString()));
           domain.first();
+          Blob blob = domain.getBlob("Domain");
+          String domainStr = new String(blob.getBytes(1, (int) blob.length()));
           domainImpl = 
-            new PwEnumeratedDomainImpl(new String(domain.getBlob("Domain").getBytes(0, (int)domain.getBlob("Domain").length())));
+            new PwEnumeratedDomainImpl(domainStr);
         }
         else if(domainType.equals("IntervalDomain")) {
           ResultSet domain =
@@ -294,10 +296,16 @@ public class MySQLDB {
             new PwIntervalDomainImpl(domain.getString("IntervalDomainType"),
                                  domain.getString("LowerBound"), domain.getString("UpperBound"));
         }
+        ArrayList parameterIdList = new ArrayList();
+        ResultSet parameterIds =
+          queryDatabase("SELECT ParameterId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(variableId.toString()));
+        while(parameterIds.next()) {
+          parameterIdList.add(new Integer(parameterIds.getInt("ParameterId")));
+        }
         partialPlan.addVariable(variableId, new PwVariableImpl(variableId, 
                                                                variables.getString("VariableType"),
                                                                constraintIdList,
-                                                               new Integer(variables.getInt("ParameterId")),
+                                                               parameterIdList,
                                                                domainImpl, partialPlan));
       }
     }
@@ -388,7 +396,7 @@ public class MySQLDB {
         ResultSet domain =
           queryDatabase("SELECT Domain FROM EnumeratedDomain WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()).concat(" AND EnumeratedDomainId=").concat(variable.getString("DomainId")));
         domain.first();
-        domainImpl = new PwEnumeratedDomainImpl(new String(domain.getBlob("Domain").getBytes(0, (int)domain.getBlob("Domain").length())));
+        domainImpl = new PwEnumeratedDomainImpl(new String(domain.getBlob("Domain").getBytes(1, (int)domain.getBlob("Domain").length())));
       }
       ResultSet constraintIds =
         queryDatabase("SELECT ConstraintId FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()));
@@ -396,9 +404,14 @@ public class MySQLDB {
       while(constraintIds.next()) {
         constraintIdList.add(new Integer(constraintIds.getInt("ConstraintId")));
       }
+      ArrayList parameterIdList = new ArrayList();
+      ResultSet parameterIds =
+        queryDatabase("SELECT ParameterId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()));
+      while(parameterIds.next()) {
+        parameterIdList.add(new Integer(parameterIds.getInt("ParameterId")));
+      }
       variableImpl = new PwVariableImpl(key, variable.getString("VariableType"), constraintIdList,
-                                    new Integer(variable.getInt("ParameterId")), domainImpl, 
-                                    partialPlan);
+                                    parameterIdList, domainImpl, partialPlan);
       return variableImpl;
     }
     catch(SQLException sqle) {

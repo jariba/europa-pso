@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.6 2003-06-26 18:20:06 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.7 2003-07-02 18:30:05 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -34,7 +35,7 @@ public class PwVariableImpl implements PwVariable {
   private Integer key;
   private String type;
   private List constraintIdList; // element String
-  private Integer paramId;
+  private List parameterIdList;
   private PwDomainImpl domain; // PwEnumeratedDomainImpl || PwIntervalDomainImpl
   private PwPartialPlanImpl partialPlan;
 
@@ -49,12 +50,12 @@ public class PwVariableImpl implements PwVariable {
    * @param domain - <code>PwDomainImpl</code> - PwEnumeratedDomainImpl || PwIntervalDomainImpl
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwVariableImpl( Integer key, String type, List constraintIds, Integer paramId,
+  public PwVariableImpl( Integer key, String type, List constraintIds, List parameterIds,
                          PwDomainImpl domain, PwPartialPlanImpl partialPlan) {
     this.key = key;
     this.type = type;
     this.constraintIdList = constraintIds;
-    this.paramId = paramId;
+    this.parameterIdList = parameterIds;
     this.domain = domain;
     this.partialPlan = partialPlan;
   } // end constructor
@@ -79,12 +80,17 @@ public class PwVariableImpl implements PwVariable {
   }
 
   /**
-   * <code>getParameter</code>
+   * <code>getParameterList</code>
    *
-   * @return - <code>PwParameter</code> - 
+   * @return - <code>List of PwParameter</code> - 
    */
-  public PwParameter getParameter() {
-    return partialPlan.getParameter( paramId);
+  public List getParameterList() {
+    List retval = new ArrayList(parameterIdList.size());
+    ListIterator parameterIdIterator = parameterIdList.listIterator();
+    while(parameterIdIterator.hasNext()) {
+      retval.add(partialPlan.getParameter((Integer)parameterIdIterator.next()));
+    }
+    return retval;
   }
 
   /**
