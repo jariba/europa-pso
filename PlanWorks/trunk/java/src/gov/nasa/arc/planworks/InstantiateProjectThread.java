@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.19 2004-09-21 21:37:50 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.20 2005-01-21 22:45:10 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -169,8 +169,9 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
         List nameValueList = new ArrayList();
         nameValueList.add( ConfigureAndPlugins.PROJECT_WORKING_DIR);
         nameValueList.add( workingDir);
-        ConfigureAndPlugins.updateProjectConfigMap( inputName, nameValueList);
-        if (doProgMonitor) {
+        ConfigureAndPlugins.updateProjectConfigMap
+          ( inputName, ConfigureAndPlugins.completeProjectConfigMap( nameValueList));
+       if (doProgMonitor) {
           isProgressMonitorCancel = true;
         }
 

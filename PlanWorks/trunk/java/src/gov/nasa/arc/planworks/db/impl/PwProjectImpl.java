@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.53 2004-09-27 19:19:00 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.54 2005-01-21 22:45:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -58,7 +58,7 @@ public class PwProjectImpl extends PwProject {
     ListIterator dbProjectNameIterator = MySQLDB.getProjectNames().listIterator();
     while(dbProjectNameIterator.hasNext()) {
       String workingDir = null, plannerPath = null, modelName = null, modelPath = null;
-      String modelOutputDestDir = null, modelInitStatePath = null;
+      String modelOutputDestDir = null, modelInitStatePath = null, ruleDelimiters = null;
       String name = (String) dbProjectNameIterator.next();
       if (ConfigureAndPlugins.isProjectInConfigMap( name)) {
 //           workingDir = ConfigureAndPlugins.getProjectConfigValue
@@ -76,12 +76,14 @@ public class PwProjectImpl extends PwProject {
       } else {
         System.err.println( "initProjects: PROJECT_CONFIG_MAP entry created for project '" +
                              name + "'");
+        // give new project default vaulue for all config vars
         List nameValueList = new ArrayList();
         nameValueList.add( ConfigureAndPlugins.PROJECT_WORKING_DIR);
         workingDir = ConfigureAndPlugins.getProjectConfigValue
           ( ConfigureAndPlugins.PROJECT_WORKING_DIR, ConfigureAndPlugins.DEFAULT_PROJECT_NAME);
         nameValueList.add( workingDir);
-        ConfigureAndPlugins.updateProjectConfigMap( name, nameValueList);
+        ConfigureAndPlugins.updateProjectConfigMap
+          ( name, ConfigureAndPlugins.completeProjectConfigMap( nameValueList));
       }
 //       projects.put(name, new PwProjectImpl( name, isProjectInDb, workingDir, plannerPath,
 //                                             modelName, modelPath, modelOutputDestDir,

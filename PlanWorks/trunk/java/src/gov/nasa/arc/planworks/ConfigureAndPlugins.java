@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.9 2004-10-07 20:19:01 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.10 2005-01-21 22:45:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -484,12 +484,58 @@ public class ConfigureAndPlugins {
   } // end getProjectConfigValue
 
   /**
+   * <code>completeProjectConfigMap</code>
+   *
+   * @param nameValueList - <code>List</code> - 
+   * @return - <code>List</code> - 
+   */
+  public static List completeProjectConfigMap(List nameValueList) {
+    String plannerPath = null, modelPath = null, modelOutputDestDir = null;
+    String modelInitStatePath = null, ruleDelimiters = null;
+    if (nameValueList.indexOf(PROJECT_PLANNER_PATH) == -1) {
+        nameValueList.add( PROJECT_PLANNER_PATH);
+        plannerPath = getProjectConfigValue( PROJECT_PLANNER_PATH, DEFAULT_PROJECT_NAME);
+        nameValueList.add( plannerPath);
+    }
+    if (nameValueList.indexOf(PROJECT_MODEL_PATH) == -1) {
+        nameValueList.add( PROJECT_MODEL_PATH);
+        modelPath = getProjectConfigValue( PROJECT_MODEL_PATH, DEFAULT_PROJECT_NAME);
+        nameValueList.add( modelPath);
+    }
+    if (nameValueList.indexOf(PROJECT_MODEL_OUTPUT_DEST_DIR) == -1) {
+        nameValueList.add( PROJECT_MODEL_OUTPUT_DEST_DIR);
+        modelOutputDestDir  = getProjectConfigValue( PROJECT_MODEL_OUTPUT_DEST_DIR,
+                                                     DEFAULT_PROJECT_NAME);
+        nameValueList.add( modelOutputDestDir);
+    }
+    if (nameValueList.indexOf(PROJECT_MODEL_INIT_STATE_PATH) == -1) {
+        nameValueList.add( PROJECT_MODEL_INIT_STATE_PATH);
+        modelInitStatePath = getProjectConfigValue( PROJECT_MODEL_INIT_STATE_PATH,
+                                                    DEFAULT_PROJECT_NAME);
+        nameValueList.add( modelInitStatePath);
+    }
+    if (nameValueList.indexOf(PROJECT_MODEL_RULE_DELIMITERS) == -1) {
+        nameValueList.add( PROJECT_MODEL_RULE_DELIMITERS);
+        ruleDelimiters = getProjectConfigValue
+          ( PROJECT_MODEL_RULE_DELIMITERS,
+            DEFAULT_PROJECT_NAME);
+        nameValueList.add( ruleDelimiters);
+    }
+    return nameValueList;
+  } // end completeProjectConfigMap
+
+  /**
    * <code>updateProjectConfigMap</code>
    *
    * @param projectName - <code>String</code> - 
    * @param nameValueList - <code>List</code> - 
    */
   public static void updateProjectConfigMap( String projectName, List nameValueList) {
+//     if (PlanWorks.PROJECT_CONFIG_MAP.get( projectName) != null) {
+//       System.err.println("updateProjectConfigMap curr nameValueList len " + projectName + " " +
+//                          ((List) PlanWorks.PROJECT_CONFIG_MAP.get( projectName)).size() +
+//                          " new len " + nameValueList.size());
+//     }
     Iterator nameValueItr = nameValueList.iterator();
     while (nameValueItr.hasNext()) {
       String configName = (String) nameValueItr.next();
