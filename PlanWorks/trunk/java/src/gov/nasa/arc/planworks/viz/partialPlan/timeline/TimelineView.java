@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.66 2004-08-26 20:51:26 taylor Exp $
+// $Id: TimelineView.java,v 1.67 2004-09-16 19:01:49 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -519,12 +519,20 @@ public class TimelineView extends PartialPlanView {
 //       for (int i = 1, n = tokenList.size(); i < n; i++) {
 //         isTokenInContentSpec( (PwToken) tokenList.get( i));
 //       }
+//       System.err.println( "createSlotNodes: slot " + slot.getId());
+//       for (int i = 0, n = tokenList.size(); i < n; i++) {
+//         PwToken tmpToken = (PwToken) tokenList.get( i);
+//         System.err.println( "createSlotNodes: token " + tmpToken.getId() + " " +
+//                             tmpToken.toString());
+//       }
       tokenList.remove(slot.getBaseToken());
       for(int i = 0; i < tokenList.size(); i++) {
         isTokenInContentSpec((PwToken) tokenList.get(i));
       }
       boolean isLastSlot = (! slotIterator.hasNext());
       PwToken token = slot.getBaseToken();
+//       System.err.println( "createSlotNodes: base token " + token.getId() + " " +
+//                           token.toString());
       if ((token == null) && (isFirstSlot || isLastSlot)) {
         // discard leading and trailing empty slots (planworks/test/data/emptySlots)
       } else {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.32 2004-09-09 22:45:05 taylor Exp $
+// $Id: NodeGenerics.java,v 1.33 2004-09-16 19:01:49 taylor Exp $
 //
 // PlanWorks
 //
@@ -358,7 +358,8 @@ public class NodeGenerics {
       return;
     }
     List tokenList = slot.getTokenList();
-    tip.append( ((PwToken) tokenList.get( 0)).toString());
+    PwToken baseToken = slot.getBaseToken();
+    tip.append( baseToken.toString());
     tip.append( "<br>token key");
     if (tokenList.size() > 1) {
       tip.append( "s");
@@ -366,7 +367,11 @@ public class NodeGenerics {
     tip.append( "=");
     Iterator tokenItr = slot.getTokenList().iterator();
     while (tokenItr.hasNext()) {
-      tip.append( ((PwToken) tokenItr.next()).getId().toString());
+      PwToken token = (PwToken) tokenItr.next();
+      tip.append( token.getId().toString());
+      if ((tokenList.size() > 1) && token.getId().equals( baseToken.getId())) {
+        tip.append( "(b)");
+      }
       if (tokenItr.hasNext()) {
         tip.append( ", ");
       }
