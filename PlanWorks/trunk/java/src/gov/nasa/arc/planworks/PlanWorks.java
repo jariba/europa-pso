@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.98 2004-05-21 21:38:55 taylor Exp $
+// $Id: PlanWorks.java,v 1.99 2004-05-27 21:01:30 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -751,6 +751,8 @@ public class PlanWorks extends MDIDesktopFrame {
         } else {
           String [] allFileNames = file.list();
           String [] ppFileNames = file.list( new PwSQLFilenameFilter());
+					if(allFileNames == null || ppFileNames == null)
+						return false;
           if ((ppFileNames.length == DbConstants.NUMBER_OF_PP_FILES) ||
               (ppFileNames.length == allFileNames.length)) {
             isValid = false;
