@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.12 2003-06-12 23:49:45 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.13 2003-06-25 16:39:52 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -31,8 +31,9 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTokenRelation;
 import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.db.util.XmlDBeXist;
-import gov.nasa.arc.planworks.db.util.XmlFilenameFilter;
+//import gov.nasa.arc.planworks.db.util.XmlDBeXist;
+//import gov.nasa.arc.planworks.db.util.XmlFilenameFilter;
+import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
 
@@ -46,15 +47,17 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 public class PwPartialPlanImpl implements PwPartialPlan {
 
   private String url; // pathaname of xml file (no extension)
-  private String projectCollectionName; // e.g. test
-  private String sequenceCollectionName; // e.g. monkey
+  //  private String projectCollectionName; // e.g. test
+  //private String sequenceCollectionName; // e.g. monkey
+  private int projectId;
+  private int sequenceId;
 
-  private String userCollectionName; // e.g. /wtaylor
-  private String collectionName; // e.g. /wtaylor/test/monkey (xml files directory)
-  private String xmlFileName; // with no extension
+  //private String userCollectionName; // e.g. /wtaylor
+  //private String collectionName; // e.g. /wtaylor/test/monkey (xml files directory)
+  //private String xmlFileName; // with no extension
 
   private String model;
-  private String key; // PartialPlan key
+  private long key; // PartialPlan key
   private Map objectMap; // key = attribute key, value = PwObjectImpl instance
   private Map timelineMap; // key = attribute key, value = PwTimelineImpl instance
   private Map slotMap; // key = attribute key, value = PwSlotImpl instance

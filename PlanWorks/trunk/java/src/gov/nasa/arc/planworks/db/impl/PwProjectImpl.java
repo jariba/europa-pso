@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.10 2003-06-13 18:51:26 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.11 2003-06-25 16:40:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,7 @@ import java.beans.XMLEncoder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -26,10 +27,10 @@ import java.util.List;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
-import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+//import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.db.util.XmlFileFilter;
-import gov.nasa.arc.planworks.db.util.XmlDBeXist;
-
+//import gov.nasa.arc.planworks.db.util.XmlDBeXist;
+import gov.nasa.arc.planworks.db.util.MySQLDB;
 
 /**
  * <code>PwProjectImpl</code> - Data base API for PlanWorks
@@ -43,7 +44,7 @@ public class PwProjectImpl extends PwProject {
 
 
   private static String userCollectionName;
-  private static String projectCollectionName;
+  //  private static String projectCollectionName;
   private static String projectsXmlDataDir;
   private static String projectsXmlDataPathname;
 
@@ -91,10 +92,73 @@ public class PwProjectImpl extends PwProject {
       throw new ResourceNotFoundException( "initProjects: " + e);
     }
 
-    connectToExistDataBase();
+    connectToDataBase();
 
   } // end initProjects
 
+  private static void connectToDataBase() {
+    System.err.println("Starting MySQL...");
+    long startTime = System.currentTimeMillis();
+    MySQLDB.INSTANCE.startDatabase();
+    startTime = System.currentTimeMillis() - startTime;
+    System.err.println("   ... elapsed time: " + startTime + "ms.");
+    System.err.println("Connecting to MySQL...");
+    long connectTime = System.currentTimeMillis();
+    MySQLDB.INSTANCE.registerDatabase();
+    connectTime = System.currentTimeMillis() - connectTime;
+    System.err.println("   ... elapsed time: " + connectTime + "ms.");
+  } // end connectToExistDataBase
+
+  /**
+   * <code>getProject</code> -
+   *
+   * @param url - <code>String</code> - 
+   * @return - <code>PwProject</code> - 
+   */
+  public static PwProject getProject( String url) throws ResourceNotFoundException {
+    int index = -1;
+    if((index = projectUrls.indexOf(url)) == -1) {
+      throw new ResourceNotFoundException("Project not found for url '" + url + "'");
+    }
+    return (PwProject) projects.get(index);
+  } // end getProject
+
+  /**
+   * <code>listProjects</code>
+   *
+   * @return - <code>List</code> - of String (url)
+   */
+  public static List listProjects() {
+    return projectUrls;
+  }
+
+  /**
+   * <code>saveProjects</code> - save project names & urls in /xml/proj/projects.xml
+   *                             and save project specific info in separate files
+   *
+   */
+  public static void saveProjects() throws Exception {
+    FileOutputStream fileOutputStream =
+      new FileOutputStream( projectsXmlDataPathname);
+    XMLEncoder xmlEncoder = new XMLEncoder( fileOutputStream);
+    xmlEncoder.writeObject( projectNames);
+    xmlEncoder.writeObject( projectUrls);
+    System.err.println( "PwProjectImpl: save projectNames " + projectNames);
+    System.err.println( "PwProjectImpl: save projectUrls " + projectUrls);
+    xmlEncoder.close();
+
+    System.err.println( "saveProjects: " + projects.size());
+    Iterator projectsItr = projects.iterator();
+    while (projectsItr.hasNext()) {
+      PwProjectImpl activeProject = (PwProjectImpl) projectsItr.next();
+      System.err.println( "  project " + activeProject.getName() +
+                          " requiresSaving " + activeProject.requiresSaving);
+      if (activeProject.requiresSaving) {
+        activeProject.save();
+        activeProject.setRequiresSaving( false);
+      }
+    }
+  } // end saveProjects
 
   private String url; // project pathname
   private String name;
@@ -115,8 +179,8 @@ public class PwProjectImpl extends PwProject {
    */
   public PwProjectImpl( String url)  throws DuplicateNameException, ResourceNotFoundException {
     this.url = url; // project pathname
-    name = parseProjectName( url);
-    projectCollectionName = getProjectCollectionName();
+    name = parseProjectName( url);  //gets the project directory from url
+    //    projectCollectionName = getProjectCollectionName();
     projectDataPathname = projectsXmlDataDir + System.getProperty( "file.separator") + name +
       XmlFileFilter.XML_EXTENSION_W_DOT;
     planningSequences = new ArrayList();
@@ -165,7 +229,7 @@ public class PwProjectImpl extends PwProject {
   public PwProjectImpl( String url, boolean isInDb) throws ResourceNotFoundException {
     this.url = url; // project pathname
     name = parseProjectName( url);
-    projectCollectionName = getProjectCollectionName();
+    //projectCollectionName = getProjectCollectionName();
     projectDataPathname = projectsXmlDataDir + System.getProperty( "file.separator") + name +
       XmlFileFilter.XML_EXTENSION_W_DOT;
     planningSequences = new ArrayList();
@@ -261,58 +325,6 @@ public class PwProjectImpl extends PwProject {
   // EXTEND PwProject 
 
   /**
-   * <code>getProject</code> -
-   *
-   * @param url - <code>String</code> - 
-   * @return - <code>PwProject</code> - 
-   */
-  public static PwProject getProject( String url) throws ResourceNotFoundException {
-    for (int i = 0, n = projectUrls.size(); i < n; i++) {
-      if (((String) projectUrls.get( i)).equals( url)) {
-        return (PwProject) projects.get( i);
-      }
-    }
-    throw new ResourceNotFoundException( "Project not found for url '" + url + "'");
-  } // end getProject
-
-  /**
-   * <code>listProjects</code>
-   *
-   * @return - <code>List</code> - of String (url)
-   */
-  public static List listProjects() {
-    return projectUrls;
-  }
-
-  /**
-   * <code>saveProjects</code> - save project names & urls in /xml/proj/projects.xml
-   *                             and save project specific info in separate files
-   *
-   */
-  public static void saveProjects() throws Exception {
-    FileOutputStream fileOutputStream =
-      new FileOutputStream( projectsXmlDataPathname);
-    XMLEncoder xmlEncoder = new XMLEncoder( fileOutputStream);
-    xmlEncoder.writeObject( projectNames);
-    xmlEncoder.writeObject( projectUrls);
-    System.err.println( "PwProjectImpl: save projectNames " + projectNames);
-    System.err.println( "PwProjectImpl: save projectUrls " + projectUrls);
-    xmlEncoder.close();
-
-    System.err.println( "saveProjects: " + projects.size());
-    Iterator projectsItr = projects.iterator();
-    while (projectsItr.hasNext()) {
-      PwProjectImpl activeProject = (PwProjectImpl) projectsItr.next();
-      System.err.println( "  project " + activeProject.getName() +
-                          " requiresSaving " + activeProject.requiresSaving);
-      if (activeProject.requiresSaving) {
-        activeProject.save();
-        activeProject.setRequiresSaving( false);
-      }
-    }
-  } // end saveProjects
-
-  /**
    * <code>getUrl</code> - project pathname for planning sequences. e.g.
    *                       PlanWorks/xml/test
    *
@@ -392,12 +404,12 @@ public class PwProjectImpl extends PwProject {
   } // end getPartialPlanNames
 
   /**
-   * <code>close</code> - remove project from /xml/proj/projects.xml, and
+   * <code>delete</code> - remove project from /xml/proj/projects.xml, and
    *                      remove /xml/proj/<projectName>.xml
    *
    * @exception Exception if an error occurs
    */
-  public void close() throws Exception, ResourceNotFoundException {
+  public void delete() throws Exception, ResourceNotFoundException {
     Iterator projectNamesItr = projectNames.iterator();
     while (projectNamesItr.hasNext()) {
       if (((String) projectNamesItr.next()).equals( name)) {
@@ -428,7 +440,7 @@ public class PwProjectImpl extends PwProject {
     requiresSaving = false;
 
     // remove XML:DB collection
-    StringBuffer projectCollectionNameBuf =
+    /*StringBuffer projectCollectionNameBuf =
       new StringBuffer( System.getProperty( "file.separator"));
     projectCollectionNameBuf.append( System.getProperty( "user")).
       append( System.getProperty( "file.separator"));
@@ -436,6 +448,29 @@ public class PwProjectImpl extends PwProject {
     String projectCollectionName = projectCollectionNameBuf.toString();
     if (XmlDBeXist.INSTANCE.getCollection( projectCollectionName) != null) {
       XmlDBeXist.INSTANCE.removeCollection( projectCollectionName);
+      }*/
+    try {
+      ResultSet projectId = 
+        MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE URL=".concat(url));
+      projectId.first();
+      int projectKey = projectId.getInt("ProjectId");
+      ResultSet sequenceIds = 
+        MySQLDB.queryDatabase("SELECT (SequenceId) FROM Sequence WHERE ProjectId=".concat(Integer.toString(projectKey)));
+      while(sequenceIds.next()) {
+        int sequenceId = sequenceIds.getInt("SequenceId");
+        ResultSet partialPlanIds =
+          MySQLDB.queryDatabase("SELECT (PartialPlanId) FROM PartialPlan WHERE SequenceId=".concat(Integer.toString(sequenceId)));
+        while(partialPlanIds.next()) {
+          long partialPlanId = partialPlanIds.getLong("PartialPlanId");
+          MySQLDB.updateDatabase("DELETE FROM Object, Timeline, Slot, Token, Variable, EnumeratedDomain, IntervalDomain, VConstraint, TokenRelation, ParamVarTokenMap, ConstraintVarMap, Predicate, Parameter WHERE PartialPlanId=".concat(Long.toString(partialPlanId)));
+        }
+        MySQLDB.updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(Integer.toString(sequenceId)));
+      }
+      MySQLDB.updateDatabase("DELETE FROM Project WHERE ProjectId=".concat(Integer.toString(projectKey)));
+    }
+    catch(SQLException sqle) { //are we transactional?  can we roll back?
+      System.err.println(sqle);
+      return;
     }
   } // end close
 
@@ -560,17 +595,6 @@ public class PwProjectImpl extends PwProject {
     this.partialPlanNames = partialPlanNames;
   }
 
-  private static void connectToExistDataBase() {
-    // connect to eXist XPath data base
-    System.err.println( "Registering Data Base ...");
-    long startTimeMSecs = (new Date()).getTime();
-
-    XmlDBeXist.INSTANCE.registerDataBase();
-
-    long stopTimeMSecs = (new Date()).getTime();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
-  } // end connectToExistDataBase
 
 
   private String parseProjectName( String url) throws ResourceNotFoundException {
@@ -583,12 +607,12 @@ public class PwProjectImpl extends PwProject {
     return url.substring( index + 1);
   } // end parseProjectName
 
-
-  private String getProjectCollectionName() {
+  //made obsolete--no collections anymore
+  /*  private String getProjectCollectionName() {
     StringBuffer projectCollectionNameBuf = new StringBuffer( userCollectionName);
     projectCollectionNameBuf.append( System.getProperty( "file.separator")).append( name);
     return projectCollectionNameBuf.toString();
-  }
+    }*/ 
 
 
   private PwProjectImpl restore( String projectDataPathname) throws Exception {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.9 2003-06-12 23:49:45 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.10 2003-06-25 16:40:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -39,7 +39,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 class PwPlanningSequenceImpl implements PwPlanningSequence {
 
   private String projectName;
-  private String url; // e.g. xmlFilesDirectory
+  private String url; //directory containing the partialplan.* files
   private PwModel model;
 
   private int stepCount;
@@ -72,7 +72,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
                                            System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
-
+    /*
     // determine sequences's partial plans (steps)
     String[] xmlFileNames = new File( url).list( new XmlFilenameFilter());
     partialPlanNames = new ArrayList();
@@ -100,7 +100,29 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     }
     for (int i = 0; i < stepCount; i++) {
       partialPlans.add( null);
+      }*/
+    String [] fileNames = new File(url).list(new FilenameFilter ()
+      {
+        public boolean accept(File dir, String name) {
+          return (name.indexOf(".partialPlan") != -1 || name.indexOf(".objects") != -1 ||
+                  name.indexOf(".timelines") != -1 || name.indexOf(".slots") != -1 ||
+                  name.indexOf(".tokens") != -1 || name.indexOf(".variables") != -1 ||
+                  name.indexOf(".predicates") != -1 || name.indexOf(".parameters") != -1 ||
+                  name.indexOf(".enumeratedDomains") != -1 ||
+                  name.indexOf(".intervalDomains") != -1 || name.indexOf(".constraints") != -1 ||
+                  name.indexOf(".tokenRelations") != -1 ||
+                  name.indexOf(".paramVarTokenMap") != -1 ||
+                  name.indexOf(".constraintVarMap") != -1); 
+        }
+      });
+    HashMap temp = new HashMap();
+    for(int i = 0; i < fileNames.length; i++) {
+      String planName = filenames[i].substring(0, filenames.lastIndexOf("."));
+      if(!temp.containsKey(planName)) {
+        temp.put(planName, new Integer(1));
+      }
     }
+    partialPlanNames.addAll(temp.keySet());
     // put these in PwProjectImpl so that its XMLDecode/Encode can access them
     project.addPartialPlanNames( partialPlanNames);
   } // end constructor for CreateProject call
@@ -240,9 +262,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
       if (((String) partialPlanNames.get( index)).equals( partialPlanName)) {
         PwPartialPlan partialPlan =
           new PwPartialPlanImpl( url + System.getProperty( "file.separator") +
-                                 partialPlanName +
-                                 XmlFileFilter.XML_EXTENSION_W_DOT,
-                                 projectName, name);
+                                 partialPlanName, projectName, name);
         partialPlans.set( index, partialPlan);
         return partialPlan;
       }
