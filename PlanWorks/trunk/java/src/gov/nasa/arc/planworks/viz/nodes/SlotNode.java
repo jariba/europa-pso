@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.11 2003-07-03 21:19:47 miatauro Exp $
+// $Id: SlotNode.java,v 1.12 2003-07-03 23:44:14 taylor Exp $
 //
 // PlanWorks
 //
@@ -63,6 +63,7 @@ public class SlotNode extends TextNode {
   private static final boolean IS_TEXT_MULTILINE = false;
   private static final boolean IS_TEXT_EDITABLE = false;
 
+  private PwToken token;
   private String predicateName;
   private PwSlot slot;
   private PwToken previousToken;
@@ -78,7 +79,8 @@ public class SlotNode extends TextNode {
   /**
    * <code>SlotNode</code> - constructor 
    *
-   * @param predicateName - <code>String</code> - 
+   * @param nodeLabel - <code>String</code> - 
+   * @param token - <code>PwToken</code> - 
    * @param slot - <code>PwSlot</code> - 
    * @param slotLocation - <code>Point</code> - 
    * @param previousToken - <code>PwToken</code> - 
@@ -86,11 +88,12 @@ public class SlotNode extends TextNode {
    * @param objectCnt - <code>int</code> - 
    * @param view - <code>TimelineView</code> - 
    */
-  public SlotNode( String predicateName, PwSlot slot, Point slotLocation,
+  public SlotNode( String nodeLabel, PwToken token, PwSlot slot, Point slotLocation,
                    PwToken previousToken, boolean isLastSlot, int objectCnt,
                    TimelineView view) {
-    super( predicateName);
-    this.predicateName = predicateName;
+    super( nodeLabel);
+    this.predicateName = nodeLabel;
+    this.token = token;
     this.slot = slot;
     this.previousToken = previousToken;
     this.isLastSlot = isLastSlot;
@@ -206,6 +209,7 @@ public class SlotNode extends TextNode {
     } else {
       startTimeIntervalDomain = intervalVariable.getDomain();
     }
+    // System.err.println( "startTimeIntervalDomain " + startTimeIntervalDomain.toString());
     Point startLoc = new Point( (int) this.getLocation().getX() - this.getXOffset(),
                                 (int) this.getLocation().getY() +
                                 (int) this.getSize().getHeight());
@@ -263,6 +267,16 @@ public class SlotNode extends TextNode {
                                                 startTimeIntervalDomain.toString()) / 2;
     }
   } // end getXOffset
+
+
+  /**
+   * <code>getToolTipText</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText() {
+    return token.toString();
+  } // end getToolTipText
 
 
 } // end class SlotNode

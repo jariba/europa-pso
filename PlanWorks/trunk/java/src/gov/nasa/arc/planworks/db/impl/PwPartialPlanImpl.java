@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.19 2003-07-03 00:41:22 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.20 2003-07-03 23:44:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -355,7 +355,6 @@ return object;*/
       predicateMap.put( key, predicate);
     }
     return predicate;*/
-    System.err.println( "getPredicate key " + key + " PwPredicate " + predicateMap.get(key));
     return (PwPredicate) predicateMap.get(key);
   } // end getPredicate
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.9 2003-07-03 00:41:22 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.10 2003-07-03 23:44:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import javax.swing.SwingUtilities;
 
+import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwVariable;
@@ -166,6 +167,28 @@ public class PwTokenImpl implements PwToken {
    */
   public Integer getSlotId() {
     return this.slotId;
+  }
+
+  /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String toString() {
+    StringBuffer buffer = new StringBuffer( getPredicate().getName());
+    buffer.append( " ( ");
+    List paramVarsList = getParamVarsList();
+    for (int i = 0; i < paramVarsList.size() - 1; i++) {
+      buffer.append( ((PwDomain) ((PwVariable) paramVarsList.get( i)).
+                      getDomain()).toString());
+      buffer.append( ", ");
+    }
+    if (paramVarsList.size() > 0) {
+      buffer.append( ((PwDomain) ((PwVariable) paramVarsList.
+                                  get( paramVarsList.size() - 1)).getDomain()).toString());
+    }
+    buffer.append( " )");
+    return buffer.toString();
   }
 
 
