@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.108 2004-06-08 21:48:55 pdaley Exp $
+// $Id: MySQLDB.java,v 1.109 2004-06-22 22:41:26 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -19,6 +19,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Collection;
@@ -66,8 +67,7 @@ public class MySQLDB {
   private static Connection conn;
   private static long queryTime;
   public static final MySQLDB INSTANCE = new MySQLDB();
-  private static final Integer NULL = new Integer(0);
-  private static final Integer M1 = new Integer(-1);
+
   private MySQLDB() {
     dbIsStarted = false;
     dbIsConnected = false;
@@ -125,6 +125,7 @@ public class MySQLDB {
     dbStopString.append("/mysqladmin --user=root --host=127.0.0.1 --socket=");
     dbStopString.append(System.getProperty("mysql.sock")).append(" shutdown");
     Runtime.getRuntime().exec(dbStopString.toString());
+    dbIsStarted = false;
   }
   
   /**
@@ -132,6 +133,9 @@ public class MySQLDB {
    */
 
   synchronized public static void registerDatabase() throws IOException {
+    if(dbIsConnected)
+      return;
+
     if(!dbIsStarted) {
       startDatabase();
     }
@@ -164,12 +168,13 @@ public class MySQLDB {
    */
 
   synchronized public static void unregisterDatabase() {
-    if(!dbIsStarted) {
+    if(!dbIsConnected) {
       return;
     }
     try {
       conn.close();
       conn = null;
+      dbIsConnected = false;
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -186,7 +191,7 @@ public class MySQLDB {
     Statement stmt = null;
     ResultSet result = null;
     try {
-      if(conn.isClosed()) {
+      if(!dbIsConnected || conn.isClosed()) {
         registerDatabase();
       }
       long t1 = System.currentTimeMillis();
@@ -215,7 +220,7 @@ public class MySQLDB {
     Statement stmt = null;
     int result = -1;
     try {
-      if(conn.isClosed()) {
+      if(!dbIsConnected || conn.isClosed()) {
         registerDatabase();
       }
       long t1 = System.currentTimeMillis();
@@ -237,6 +242,9 @@ public class MySQLDB {
   synchronized public static void analyzeDatabase() {
     Statement stmt = null;
     try {
+      if(!dbIsConnected || conn.isClosed()) {
+        registerDatabase();
+      }
       stmt = conn.createStatement();
       for(int i = 0; i < DbConstants.PW_DB_TABLES.length; i++) {
         stmt.execute("ANALYZE TABLE " + DbConstants.PW_DB_TABLES[i]);
@@ -245,6 +253,9 @@ public class MySQLDB {
     catch(SQLException sqle) {
       System.err.println(sqle);
       sqle.printStackTrace();
+    }
+    catch(IOException ioe) {
+      ioe.printStackTrace();
     }
   }
 
@@ -401,6 +412,19 @@ public class MySQLDB {
     return false;
   }
 
+  synchronized public static boolean transactionsInDatabase(final Long seqId) {
+    try {
+      ResultSet rows =
+        queryDatabase("SELECT COUNT(DISTINCT TransactionId) as Result FROM Transaction WHERE SequenceId=".concat(seqId.toString()));
+      rows.last();
+      return rows.getInt("Result") > 0;
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return false;
+  }
+
   synchronized public static List queryPlanNamesInDatabase(final Long sequenceId) {
     List retval = new ArrayList();
     try {
@@ -411,6 +435,20 @@ public class MySQLDB {
       }
     }
     catch(SQLException sqle) {}
+    return retval;
+  }
+
+  synchronized public static List queryPlanIdsInDatabase(final Long seqId) {
+    List retval = new ArrayList();
+    try {
+      ResultSet rows =
+        queryDatabase("SELECT PartialPlanId from PartialPlan WHERE SequenceId=".concat(seqId.toString()));
+      while(rows.next())
+        retval.add(new Long(rows.getLong("PartialPlanId")));
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
     return retval;
   }
 
@@ -657,6 +695,20 @@ public class MySQLDB {
     return retval;
   }
 
+  synchronized public static String getPartialPlanNameById(final Long seqId,
+                                                           final Long ppId) {
+    String retval = null;
+    try {
+      ResultSet name = queryDatabase("SELECT StepNum FROM PartialPlanStats WHERE SequenceId=".concat(seqId.toString()).concat(" && PartialPlanId=").concat(ppId.toString()));
+      if(name.last())
+        retval = "step" + name.getInt("StepNum");
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
+
   synchronized public static List queryPartialPlanNames(final Long sequenceId) {
     List retval = new ArrayList();
     try {
@@ -801,83 +853,115 @@ public class MySQLDB {
   synchronized public static void createSlotTokenNodesStructure(PwPartialPlanImpl partialPlan,
                                                                 final Long seqId) {
     try {
-      ResultSet tokens = 
-        queryDatabase("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, Token.ParentId, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.PartialPlanId=").concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId"));
+      StringBuffer queryStr = new StringBuffer("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, Token.ParentId, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=");
+      queryStr.append(seqId.toString()).append(" WHERE Token.PartialPlanId=").append(partialPlan.getId().toString());
+      queryStr.append(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId");
+
+      ResultSet tokens = queryDatabase(queryStr.toString());
       while(tokens.next()) {
-        Integer tokenId = new Integer(tokens.getInt("Token.TokenId"));
+        //Integer tokenId = new Integer(tokens.getInt("Token.TokenId"));
+        Integer tokenId = new Integer(tokens.getInt("TokenId"));
         boolean isFreeToken = false;
-        boolean isValueToken = tokens.getBoolean("Token.IsValueToken");
-        Integer startVarId = new Integer(tokens.getInt("Token.StartVarId"));
-        Integer endVarId = new Integer(tokens.getInt("Token.EndVarId"));
-        Integer stateVarId = new Integer(tokens.getInt("Token.StateVarId"));
-        Integer durationVarId = new Integer(tokens.getInt("Token.DurationVarId"));
-        Integer objectVarId = new Integer(tokens.getInt("Token.ObjectVarId"));
-        Integer parentId = new Integer(tokens.getInt("Token.ParentId"));
-        Integer ruleInstanceId = new Integer(tokens.getInt("RuleInstance.RuleInstanceId"));
-        String predName = tokens.getString("Token.PredicateName");
+        //boolean isValueToken = tokens.getBoolean("Token.IsValueToken");
+        boolean isValueToken = tokens.getBoolean("IsValueToken");
+        //Integer startVarId = new Integer(tokens.getInt("Token.StartVarId"));
+        Integer startVarId = new Integer(tokens.getInt("StartVarId"));
+        //Integer endVarId = new Integer(tokens.getInt("Token.EndVarId"));
+        Integer endVarId = new Integer(tokens.getInt("EndVarId"));
+        //Integer stateVarId = new Integer(tokens.getInt("Token.StateVarId"));
+        Integer stateVarId = new Integer(tokens.getInt("StateVarId"));
+        //Integer durationVarId = new Integer(tokens.getInt("Token.DurationVarId"));
+        Integer durationVarId = new Integer(tokens.getInt("DurationVarId"));
+        //Integer objectVarId = new Integer(tokens.getInt("Token.ObjectVarId"));
+        Integer objectVarId = new Integer(tokens.getInt("ObjectVarId"));
+        //Integer parentId = new Integer(tokens.getInt("Token.ParentId"));
+        Integer parentId = new Integer(tokens.getInt("ParentId"));
+        //Integer ruleInstanceId = new Integer(tokens.getInt("RuleInstance.RuleInstanceId"));
+        Integer ruleInstanceId = new Integer(tokens.getInt("RuleInstanceId"));
+        //String predName = tokens.getString("Token.PredicateName");
+        String predName = tokens.getString("PredicateName");
         String paramVarIds = null;
-        Blob blob = tokens.getBlob("Token.ParamVarIds");
+        //Blob blob = tokens.getBlob("Token.ParamVarIds");
+        Blob blob = tokens.getBlob("ParamVarIds");
         if(!tokens.wasNull()) {
           paramVarIds = new String(blob.getBytes(1, (int) blob.length()));
         }
         String extraInfo = null;
-        blob = tokens.getBlob("Token.ExtraData");
+        //blob = tokens.getBlob("Token.ExtraData");
+        blob = tokens.getBlob("ExtraData");
         if(!tokens.wasNull()) {
           extraInfo = new String(blob.getBytes(1, (int) blob.length()));
         }
 
         PwTokenImpl t = null;
-        if(tokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
+        //if(tokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
+        if(tokens.getInt("TokenType") == DbConstants.T_TRANSACTION) {
           t = new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
                                             durationVarId, stateVarId, objectVarId, parentId, 
                                             ruleInstanceId, paramVarIds, extraInfo, partialPlan);
         }
-        else if(tokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
-          t = new PwTokenImpl(tokenId, isValueToken, new Integer(tokens.getInt("Token.SlotId")),
+        //else if(tokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
+        else if(tokens.getInt("TokenType") == DbConstants.T_INTERVAL) {
+          t = new PwTokenImpl(tokenId, isValueToken, new Integer(tokens.getInt("SlotId")), //new Integer(tokens.getInt("Token.SlotId")),
                               predName, startVarId, endVarId, durationVarId, stateVarId, 
                               objectVarId, parentId, ruleInstanceId, paramVarIds, extraInfo, 
                               partialPlan);
         }
-        int ruleKey = tokens.getInt("RuleInstance.RuleId");
+        //int ruleKey = tokens.getInt("RuleInstance.RuleId");
+        int ruleKey = tokens.getInt("RuleId");
         if(!tokens.wasNull()) {
           t.setRuleId(new Integer(ruleKey));
         }
       }
       ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.IsFreeToken=1 && Token.PartialPlanId=").concat(partialPlan.getId().toString()));
       while(freeTokens.next()) {
-        Integer tokenId = new Integer(freeTokens.getInt("Token.TokenId"));
+        //Integer tokenId = new Integer(freeTokens.getInt("Token.TokenId"));
+        Integer tokenId = new Integer(freeTokens.getInt("TokenId"));
         boolean isFreeToken = true;
-        boolean isValueToken = freeTokens.getBoolean("Token.IsValueToken");
-        Integer startVarId = new Integer(freeTokens.getInt("Token.StartVarId"));
-        Integer endVarId = new Integer(freeTokens.getInt("Token.EndVarId"));
-        Integer stateVarId = new Integer(freeTokens.getInt("Token.StateVarId"));
-        Integer durationVarId = new Integer(freeTokens.getInt("Token.DurationVarId"));
-        Integer objectVarId = new Integer(freeTokens.getInt("Token.ObjectVarId"));
-        Integer ruleInstanceId = new Integer(freeTokens.getInt("RuleInstance.RuleInstanceId"));
-        String predName = freeTokens.getString("Token.PredicateName");
+        //boolean isValueToken = freeTokens.getBoolean("Token.IsValueToken");
+        boolean isValueToken = freeTokens.getBoolean("IsValueToken");
+        //Integer startVarId = new Integer(freeTokens.getInt("Token.StartVarId"));
+        Integer startVarId = new Integer(freeTokens.getInt("StartVarId"));
+        //Integer endVarId = new Integer(freeTokens.getInt("Token.EndVarId"));
+        Integer endVarId = new Integer(freeTokens.getInt("EndVarId"));
+        //Integer stateVarId = new Integer(freeTokens.getInt("Token.StateVarId"));
+        Integer stateVarId = new Integer(freeTokens.getInt("StateVarId"));
+        //Integer durationVarId = new Integer(freeTokens.getInt("Token.DurationVarId"));
+        Integer durationVarId = new Integer(freeTokens.getInt("DurationVarId"));
+        //Integer objectVarId = new Integer(freeTokens.getInt("Token.ObjectVarId"));
+        Integer objectVarId = new Integer(freeTokens.getInt("ObjectVarId"));
+        //Integer ruleInstanceId = new Integer(freeTokens.getInt("RuleInstance.RuleInstanceId"));
+        Integer ruleInstanceId = new Integer(freeTokens.getInt("RuleInstanceId"));
+        //String predName = freeTokens.getString("Token.PredicateName");
+        String predName = freeTokens.getString("PredicateName");
         String paramVarIds = null;
-        Blob blob = freeTokens.getBlob("Token.ParamVarIds");
+        //Blob blob = freeTokens.getBlob("Token.ParamVarIds");
+        Blob blob = freeTokens.getBlob("ParamVarIds");
         if(!freeTokens.wasNull()) {
           paramVarIds = new String(blob.getBytes(1, (int) blob.length()));
         }
         String extraInfo = null;
-        blob = freeTokens.getBlob("Token.ExtraData");
+        //blob = freeTokens.getBlob("Token.ExtraData");
+        blob = freeTokens.getBlob("ExtraData");
         if(!freeTokens.wasNull()) {
           extraInfo = new String(blob.getBytes(1, (int) blob.length()));
         }
         PwTokenImpl t = null;
-        if(freeTokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
+        //if(freeTokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
+        if(freeTokens.getInt("TokenType") == DbConstants.T_TRANSACTION) {
           t = new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
                                             durationVarId, stateVarId, objectVarId,
                                             DbConstants.NO_ID, ruleInstanceId, paramVarIds, extraInfo,
                                             partialPlan);
         }
-        else if(freeTokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
+        //else if(freeTokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
+        else if(freeTokens.getInt("TokenType") == DbConstants.T_INTERVAL) {
           t = new PwTokenImpl(tokenId, isValueToken, DbConstants.NO_ID, predName, startVarId, 
                               endVarId, durationVarId, stateVarId, objectVarId, DbConstants.NO_ID,
                               ruleInstanceId, paramVarIds, extraInfo, partialPlan);
         }
-        int ruleKey = freeTokens.getInt("RuleInstance.RuleId");
+        //int ruleKey = freeTokens.getInt("RuleInstance.RuleId");
+        int ruleKey = freeTokens.getInt("RuleId");
         if(!freeTokens.wasNull()) {
           t.setRuleId(new Integer(ruleKey));
         }
@@ -1028,7 +1112,8 @@ public class MySQLDB {
     Map retval = new HashMap();
     try {
       ResultSet ruleTextInDb = queryDatabase("SELECT RulesText FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
-      ruleTextInDb.first();
+      if(!ruleTextInDb.first())
+        return retval;
       Blob blob = ruleTextInDb.getBlob("RulesText");
       if(ruleTextInDb.wasNull()) {
         return retval;
@@ -1714,23 +1799,6 @@ public class MySQLDB {
 			ioe.printStackTrace();
 		}
 	}
-
- 	synchronized public static List queryTests(String projectName) {
- 		List retval = new ArrayList();
- 		try {
- 			ResultSet testSet = queryDatabase("SELECT Tests FROM Project WHERE ProjectName='".concat(projectName).concat("'"));
- 			Blob blob = testSet.getBlob("Tests");
- 			String tests = new String(blob.getBytes(1, (int) blob.length()));
- 			StringTokenizer strTok = new StringTokenizer(tests, DbConstants.SEQ_COL_SEP);
- 			while(strTok.hasMoreTokens()) {
- 				retval.add(strTok.nextToken());
- 			}
- 		}
- 		catch(SQLException sqle) {
- 			sqle.printStackTrace();
- 		}
- 		return retval;
- 	}
 
   synchronized public static List queryPartialPlanIds(Long seqId) {
     List retval = new ArrayList();
