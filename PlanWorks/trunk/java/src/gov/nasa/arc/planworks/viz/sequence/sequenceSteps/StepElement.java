@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.8 2003-11-13 23:21:17 taylor Exp $
+// $Id: StepElement.java,v 1.9 2003-11-18 23:54:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -47,6 +47,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.HistogramElement;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
@@ -154,7 +155,7 @@ public class StepElement extends HistogramElement {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      NodeGenerics.partialPlanViewsPopupMenu( stepNumber, planSequence, sequenceView,
+      ViewGenerics.partialPlanViewsPopupMenu( stepNumber, planSequence, sequenceView,
                                               viewCoords);
       return true;
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.9 2003-11-13 23:21:17 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.10 2003-11-18 23:54:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -124,15 +124,6 @@ public class PartialPlanViewSet extends ViewSet {
    */
   public void setSecondaryTokens( List tokenList) {
     secondaryTokens = tokenList;
-  }
-
-  /**
-   * <code>getViews</code> - make views accessible to ContentSpecWindow
-   *
-   * @return - <code>HashMap</code> - 
-   */
-  public HashMap getViews() {
-    return views;
   }
 
   /**

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.11 2003-11-13 23:21:16 taylor Exp $
+// $Id: NodeGenerics.java,v 1.12 2003-11-18 23:54:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -17,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
@@ -33,18 +31,11 @@ import com.nwoods.jgo.examples.TextNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
-import gov.nasa.arc.planworks.db.PwPartialPlan;
-import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.VizView;
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 
 
@@ -321,6 +312,7 @@ public class NodeGenerics {
    *
    * @param name - <code>String</code> - 
    * @param headerNode - <code>TextNode</code> - 
+   * @param vizView - <code>vizView</code> - 
    * @return - <code>String</code> - 
    */
   public static String trimName( String name, TextNode headerNode, VizView vizView) {
@@ -338,40 +330,6 @@ public class NodeGenerics {
     return name;
   } // end trimName
 
-  /**
-   * <code>partialPlanViewsPopupMenu</code> - open/hide/close views or open a particular one
-   *
-   * @param stepNumber - <code>int</code> - 
-   * @param planSequence - <code>PwPlanningSequence</code> - 
-   * @param viewCoords - <code>Point</code> - 
-   */
-  public static void partialPlanViewsPopupMenu( int stepNumber, PwPlanningSequence planSequence,
-                                                VizView vizView, Point viewCoords) {
-    JPopupMenu mouseRightPopup = new PartialPlanViewMenu();
-    String partialPlanName = "step" + String.valueOf( stepNumber);
-    JMenuItem header = new JMenuItem( partialPlanName);
-    mouseRightPopup.add( header);
-    mouseRightPopup.addSeparator();
-
-    ((PartialPlanViewMenu) mouseRightPopup).
-      buildPartialPlanViewMenu( partialPlanName, planSequence);
-    PwPartialPlan partialPlanIfLoaded = null;
-    try {
-      partialPlanIfLoaded = planSequence.getPartialPlanIfLoaded( partialPlanName);
-    } catch (ResourceNotFoundException rnfExcep) {
-      int index = rnfExcep.getMessage().indexOf( ":");
-      JOptionPane.showMessageDialog
-        (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
-         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-      System.err.println( rnfExcep);
-      rnfExcep.printStackTrace();
-    }
-    vizView.createAllViewItems( partialPlanIfLoaded, partialPlanName,
-                                planSequence, mouseRightPopup);
-
-    showPopupMenu( mouseRightPopup, vizView, viewCoords);
-
-  } // end partialPlanViewsPopupMenu
 
 
 } // end class NodeGenerics
