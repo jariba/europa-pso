@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.33 2003-10-03 00:02:08 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.34 2003-10-03 21:24:00 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -35,6 +35,7 @@ import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.FileCopy;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UniqueSet;
+import gov.nasa.arc.planworks.util.OneToManyMap;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
@@ -79,7 +80,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     this.model = model;
     stepCount = 0;
     //partialPlanNames = new ArrayList();
-    transactions = new ArrayList();
+    //transactions = new ArrayList();
+    transactions = new OneToManyMap();
 
     int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
@@ -125,7 +127,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     this.projectName = project.getName();
     this.model = model;
     //partialPlanNames = new ArrayList();
-    transactions = new ArrayList();
+    //transactions = new ArrayList();
+    transactions = new OneToManyMap();
 
     partialPlans = new HashMap();
 
@@ -242,8 +245,9 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
    * @return - <code>List</code> - of PwTransaction
    */
   public List listTransactions( int step) throws IndexOutOfBoundsException {
-    if ((step >= 0) && (step < transactions.size())) {
-      return (List) transactions.get( step);
+    if ((step >= 0) && (step < stepCount)) {
+	//return (List) transactions.get( step);
+	return (List) transactions.get("step" + step);
     } else {
       throw new IndexOutOfBoundsException( "step " + step + ", not >= 0 and < " +
                                            transactions.size());
