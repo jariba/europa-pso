@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.22 2004-03-27 01:05:18 miatauro Exp $
+// $Id: SequenceStepsView.java,v 1.23 2004-04-09 20:47:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -122,6 +122,7 @@ public class SequenceStepsView extends SequenceView {
   private List stepElementList;
   private List stepRepresentedList;
   private List statusIndicatorList;
+  private List stepNumberList;
 
   /**
    * variable <code>selectedStepElement</code>
@@ -174,6 +175,7 @@ public class SequenceStepsView extends SequenceView {
     this.viewSet = (SequenceViewSet) viewSet;
     statusIndicatorList = new ArrayList();
     stepRepresentedList = new ArrayList();
+    stepNumberList = new ArrayList();
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
     stepElementList = new ArrayList();
@@ -269,6 +271,9 @@ public class SequenceStepsView extends SequenceView {
     //document.deleteContents();
     for (Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
       document.removeObject( (JGoObject) it.next());
+    }
+    for(Iterator it = stepNumberList.listIterator(); it.hasNext();) {
+      document.removeObject((JGoObject) it.next());
     }
     statusIndicatorList.clear();
     
@@ -368,6 +373,16 @@ public class SequenceStepsView extends SequenceView {
       
       String partialPlanName = "step".concat( String.valueOf( stepNumber));
       int [] planDbSizes = (int[]) sizeItr.next();
+      if(stepRepresentedList.contains(partialPlanName)) {
+        ArrayList elementList = (ArrayList) stepElementList.get(stepNumber);
+        for(int i = 0; i < 3; i++) {
+          int height = Math.max(1, (int) (planDbSizes[i] * heightScaleFactor));
+          StepElement elem = (StepElement) elementList.get(i);
+          elem.setHeight(height);
+          elem.setLocation(x, y);
+          y += height;
+        }
+      }
       if(!stepRepresentedList.contains( partialPlanName)) {
         int height = Math.max( 1, (int) (planDbSizes[0] * heightScaleFactor));
         List elementList = new ArrayList();
@@ -396,15 +411,24 @@ public class SequenceStepsView extends SequenceView {
 
         stepElementList.add( elementList);
         // display step number for every 10th step
-        if ((stepNumber % 10) == 0) {
-          JGoText textObject = new JGoText( new Point( x, y + 4), String.valueOf( stepNumber));
-          textObject.setResizable( false);
-          textObject.setEditable( false);
-          textObject.setDraggable( false);
-          textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
-          document.addObjectAtTail( textObject);
-        }
+//         if ((stepNumber % 10) == 0) {
+//           JGoText textObject = new JGoText( new Point( x, y + 4), String.valueOf( stepNumber));
+//           textObject.setResizable( false);
+//           textObject.setEditable( false);
+//           textObject.setDraggable( false);
+//           textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
+//           document.addObjectAtTail( textObject);
+//        }
         stepRepresentedList.add( partialPlanName);
+      }
+      if ((stepNumber % 10) == 0) {
+        JGoText textObject = new JGoText( new Point( x, y + 4), String.valueOf( stepNumber));
+        textObject.setResizable( false);
+        textObject.setEditable( false);
+        textObject.setDraggable( false);
+        textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
+        stepNumberList.add(textObject);
+        document.addObjectAtTail( textObject);
       }
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
       stepNumber++;
