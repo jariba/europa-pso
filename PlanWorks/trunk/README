@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.59 2003-12-20 01:54:47 taylor Exp $
+# $Id: README,v 1.60 2003-12-29 21:20:46 miatauro Exp $
 #
 
 SUMMARY
@@ -32,7 +32,7 @@ o  GNATS PRs and CRs completed:
    #2190: Align boxes in Temporal extent view with earliest start.
    #2194: Rename Content Specification to Content Filter.
    #2199: Provide actual parameter names.
-
+   #2193: Provide stepping forward and backward capability for all views.
 
 CVS CHECKOUT
 ============
