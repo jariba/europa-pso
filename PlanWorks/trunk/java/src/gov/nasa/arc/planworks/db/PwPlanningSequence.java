@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.12 2003-08-19 00:23:56 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.13 2003-08-28 20:45:06 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -99,5 +99,7 @@ public interface PwPlanningSequence {
    */
   public abstract PwPartialPlan getPartialPlan( String planName)
     throws ResourceNotFoundException;
+
+  public abstract void delete() throws ResourceNotFoundException;
 
 } // end interface PwPlanningSequence

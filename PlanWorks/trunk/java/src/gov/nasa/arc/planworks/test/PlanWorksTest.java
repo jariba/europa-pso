@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.10 2003-08-26 01:37:11 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.11 2003-08-28 20:46:54 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -590,7 +590,7 @@ public class PlanWorksTest extends JFCTestCase{
       numTemporalNodes++;
     }
     assertTrue("Incorrect number of temporal nodes in Temporal Extent View",
-               numTemporalNodes == 15);
+               numTemporalNodes == 19);
   } // end validateFreeTokensTemporalExtent
 
   private void validateEmptySlotsTimelines(TimelineView timelineView) {
@@ -733,8 +733,8 @@ public class PlanWorksTest extends JFCTestCase{
         timelineNodeCnt++;
       }
     }
-    assertTrue("Content spec not specing correctly: incorrect number of timelines.",
-               timelineNodeCnt == 2);
+    assertTrue("Content spec not specing correctly: incorrect number of timelines: " +
+               timelineNodeCnt, timelineNodeCnt == 2);
     Object [] temp = visibleTimelines.toArray();
     TimelineNode [] timelines = new TimelineNode[temp.length];
     System.arraycopy(temp, 0, timelines, 0, temp.length);
@@ -798,17 +798,20 @@ public class PlanWorksTest extends JFCTestCase{
     assertNotNull("Failed to get negation check box.", negationBox);
     keyBox.setSelectedIndex(1);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
+    Thread.sleep(50);
     while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
       Thread.sleep(50);
     }
     timelineNodeCnt = 0;
     for(int i = 0; i < timelineNodes.size(); i++) {
       if(((TimelineNode)timelineNodes.get(i)).isVisible()) {
+        System.err.println("TIMELINE " + ((TimelineNode)timelineNodes.get(i)).getTimelineName() +
+                           " is visible!");
         timelineNodeCnt++;
       }
     }
-    assertTrue("Content spec not speccing correctly.  Incorrect number of timeline nodes.",
-               timelineNodeCnt == 1);
+    assertTrue("Content spec not speccing correctly.  Incorrect number of timeline nodes: " +
+               timelineNodeCnt, timelineNodeCnt == 1);
     timeline = (TimelineNode) timelineNodes.toArray()[0];
     assertTrue("Content spec specified incorrect timeline.", 
                timeline.getTimelineName().indexOf("Monkey1 : LOCATION_SV") != -1);
@@ -829,8 +832,8 @@ public class PlanWorksTest extends JFCTestCase{
         timelineNodeCnt++;
       }
     }
-    assertTrue("Content spec not speccing correctly.  Incorrect number of timeline nodes.", 
-               timelineNodeCnt == 3);
+    assertTrue("Content spec not speccing correctly.  Incorrect number of timeline nodes: " +
+               timelineNodeCnt, timelineNodeCnt == 3);
     for(int i = 0; i < timelineNodes.size(); i++) {
       slotNodeIterator = ((TimelineNode)timelineNodes.get(i)).getSlotNodeList().listIterator();
       while(slotNodeIterator.hasNext()) {

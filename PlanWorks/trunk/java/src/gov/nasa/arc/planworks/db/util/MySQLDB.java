@@ -26,7 +26,7 @@ import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
-
+import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
 public class MySQLDB {
   
@@ -315,6 +315,17 @@ public class MySQLDB {
     catch(SQLException sqle){}
     return false;
   }
+
+  synchronized public static boolean sequenceExists(Integer id) {
+    try {
+      ResultSet rows =
+        queryDatabase("SELECT * FROM Sequence WHERE SequenceId=".concat(id.toString()));
+      rows.last();
+      return rows.getRow() != 0;
+    }
+    catch(SQLException sqle){}
+    return false;
+  }
   
   /**
    * Determine the existence of a partial plan by its sequence Id and name.
@@ -440,37 +451,47 @@ public class MySQLDB {
    * @param id
    */
 
-  synchronized public static void deleteProject(Integer id) {
+  synchronized public static void deleteProject(Integer id) throws ResourceNotFoundException {
     try {
       ResultSet sequenceIds = 
         queryDatabase("SELECT SequenceId FROM Sequence WHERE ProjectId=".concat(id.toString()));
       while(sequenceIds.next()) {
         Integer sequenceId = new Integer(sequenceIds.getInt("SequenceId"));
-        ResultSet partialPlanIds =
-          queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
-        while(partialPlanIds.next()) {
-          Long partialPlanId = new Long(partialPlanIds.getLong("PartialPlanId"));
-          updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM Timeline WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM Slot WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM EnumeratedDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM IntervalDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM VConstraint WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM TokenRelation WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM Predicate WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          updateDatabase("DELETE FROM Parameter WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        }
-        updateDatabase("DELETE FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
-        updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
+        deletePlanningSequence(id);
       }
       updateDatabase("DELETE FROM Project WHERE ProjectId=".concat(id.toString()));
     }
     catch(SQLException sqle) {
     }
+  }
+
+  synchronized public static void deletePlanningSequence(Integer sequenceId) throws ResourceNotFoundException{
+    if(!sequenceExists(sequenceId)) {
+      throw new ResourceNotFoundException("Sequence with id " + sequenceId + " not in database.");
+    }
+    try {
+      ResultSet partialPlanIds =
+        queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
+      while(partialPlanIds.next()) {
+        Long partialPlanId = new Long(partialPlanIds.getLong("PartialPlanId"));
+        updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM Timeline WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM Slot WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM EnumeratedDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM IntervalDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM VConstraint WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM TokenRelation WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM Predicate WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        updateDatabase("DELETE FROM Parameter WHERE PartialPlanId=".concat(partialPlanId.toString()));
+      }
+      updateDatabase("DELETE FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
+      updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
+    }
+    catch(SQLException sqle){}
   }
 
   /**
@@ -558,7 +579,7 @@ public class MySQLDB {
     try {
       long t1 = System.currentTimeMillis();
       ResultSet timelineSlotTokens = 
-        queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline LEFT JOIN Slot ON Slot.TimelineId=Timeline.TimelineId && Slot.PartialPlanId=Timeline.PartialPlanId LEFT JOIN Token ON Token.PartialPlanId=Slot.PartialPlanId && Token.SlotId=Slot.SlotId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Token.PartialPlanId && ParamVarTokenMap.TokenId=Token.TokenId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Timeline.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" ORDER BY Timeline.TimelineId, Slot.SlotIndex, Token.TokenId, ParamVarTokenMap.ParameterId"));
+        queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline LEFT JOIN Slot ON Slot.TimelineId=Timeline.TimelineId && Slot.PartialPlanId=Timeline.PartialPlanId LEFT JOIN Token ON Token.PartialPlanId=Slot.PartialPlanId && Token.SlotId=Slot.SlotId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Token.PartialPlanId && ParamVarTokenMap.TokenId=Token.TokenId LEFT JOIN TokenRelation ON TokenRelation.PartialPlanId=Token.PartialPlanId && (TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId) WHERE Timeline.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" ORDER BY Timeline.ObjectId, Timeline.TimelineId, Slot.SlotIndex, Token.TokenId, ParamVarTokenMap.ParameterId"));
       System.err.println("Time spent in token query: " + (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
       PwObjectImpl object = null;

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.25 2003-08-19 00:22:11 miatauro Exp $ -->
+<!-- $Id: build.xml,v 1.26 2003-08-28 20:43:37 miatauro Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -21,11 +21,11 @@
   <property name="jgo.layout.home"  value="${planworks.root}/java/lib/JGo"/>
   <property name="splash.image" value="${planworks.root}/lib/images/monkeybananas.png"/>
   <!-- property name="jgo.layout.home"  value="/home/wtaylor/pub/JGo50"/ -->
-
   <property name="default.project.name" value="monkey"/>
   <property name="planworks.test.data.dir" value="${planworks.root}/java/src/gov/nasa/arc/planworks/test/data"/>
   <property name="default.sequence.dir" value="${planworks.test.data.dir}/monkey/seq0"/>
   <property environment="env"/>
+  <property name="europa.home" value="${env.EUROPA_HOME}"/>
 
   <target name="planWorksDbInstall" depends="chk_solaris_2,chk_linux_2,chk_macosx_2"
     description="-- create all necessary databases and tables">
@@ -54,6 +54,12 @@
       description="-- JFCunit test (compile, cleanDb dependencies)">
     <ant dir="./java/src/gov/nasa/arc/planworks/test" 
        antfile="planworks-test.xml"/>
+  </target>
+
+  <target name="hurtPlanWorks" depends="chk_jvm_2, cleanDb"
+      description="-- Big JFCUnit test (compile, cleandb dependencies)">
+    <ant dir="./java/src/gov/nasa/arc/planworks/test" 
+         antfile="planworks-test.xml" target="hurtTest"/>
   </target>
 
   <target name="cleanCls" depends="chk_jvm_2"

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.30 2003-08-26 01:37:13 taylor Exp $
+// $Id: TimelineView.java,v 1.31 2003-08-28 20:47:46 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -246,6 +246,7 @@ public class TimelineView extends VizView {
     return freeTokenNodeList;
   }
   private void createTimelineAndSlotNodes() {
+    timelineNodeList = null;
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
     List objectList = partialPlan.getObjectList();
