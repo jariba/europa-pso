@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.12 2004-03-09 20:19:46 miatauro Exp $
+// $Id: ResourceProfile.java,v 1.13 2004-03-20 01:00:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -182,8 +182,8 @@ public class ResourceProfile extends BasicNode {
     levelScaleWidth = resourceProfileView.getLevelScaleViewWidth() -
       ViewConstants.RESOURCE_LEVEL_SCALE_WIDTH_OFFSET;
     ResourceView.renderBordersUpper
-      ( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
-        resourceProfileView.getJGoRulerView().scaleTime( latestEndTime), currentYLoc,
+      ( resourceProfileView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
+        resourceProfileView.getJGoRulerView().scaleTimeNoZoom( latestEndTime), currentYLoc,
         resourceProfileView.getJGoExtentDocument());
     ResourceView.renderBordersUpper
       ( 0, levelScaleWidth, currentYLoc, resourceProfileView.getJGoLevelScaleDocument());
@@ -216,8 +216,8 @@ public class ResourceProfile extends BasicNode {
 
     currentYLoc += (int) (2 * ResourceView.Y_MARGIN);
     ResourceView.renderBordersLower
-      ( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
-        resourceProfileView.getJGoRulerView().scaleTime( latestEndTime), currentYLoc,
+      ( resourceProfileView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
+        resourceProfileView.getJGoRulerView().scaleTimeNoZoom( latestEndTime), currentYLoc,
         resourceProfileView.getJGoExtentDocument());
     ResourceView.renderBordersLower
       ( 0, levelScaleWidth, currentYLoc, resourceProfileView.getJGoLevelScaleDocument());
@@ -271,10 +271,10 @@ public class ResourceProfile extends BasicNode {
 
       JGoStroke tickLevelLine = new JGoStroke();
       tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
-                              scaleTime( earliestStartTime),
+                              scaleTimeNoZoom( earliestStartTime),
                               scaleResourceLevel( (double) level));
       tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
-                              scaleTime( latestEndTime),
+                              scaleTimeNoZoom( latestEndTime),
                               scaleResourceLevel( (double) level));
       tickLevelLine.setDraggable( false); tickLevelLine.setResizable( false);
       tickLevelLine.setSelectable( false);
@@ -306,10 +306,10 @@ public class ResourceProfile extends BasicNode {
   private void renderLimits() {
     JGoStroke levelLimitMaxLine = new ProfileLine( levelLimitMax);
     levelLimitMaxLine.addPoint( resourceProfileView.getJGoRulerView().
-                                scaleTime( earliestStartTime),
+                                scaleTimeNoZoom( earliestStartTime),
                                 scaleResourceLevel( levelLimitMax));
     levelLimitMaxLine.addPoint( resourceProfileView.getJGoRulerView().
-                                scaleTime( latestEndTime),
+                                scaleTimeNoZoom( latestEndTime),
                                 scaleResourceLevel( levelLimitMax));
     // System.err.println( " pointY " + scaleResourceLevel( initialCapacity));
     levelLimitMaxLine.setDraggable( false); levelLimitMaxLine.setResizable( false);
@@ -319,10 +319,10 @@ public class ResourceProfile extends BasicNode {
 
     JGoStroke levelLimitMinLine = new ProfileLine( levelLimitMin);
     levelLimitMinLine.addPoint( resourceProfileView.getJGoRulerView().
-                                scaleTime( earliestStartTime),
+                                scaleTimeNoZoom( earliestStartTime),
                                 scaleResourceLevel( levelLimitMin));
     levelLimitMinLine.addPoint( resourceProfileView.getJGoRulerView().
-                                scaleTime( latestEndTime),
+                                scaleTimeNoZoom( latestEndTime),
                                 scaleResourceLevel( levelLimitMin));
     // System.err.println( " pointY " + scaleResourceLevel( initialCapacity));
     levelLimitMinLine.setDraggable( false); levelLimitMinLine.setResizable( false);
@@ -337,14 +337,14 @@ public class ResourceProfile extends BasicNode {
     Iterator instantItr = instantList.iterator();
     double lastLevelMax = initialCapacity;
     double lastLevelMin = initialCapacity;
-    int xLeft = resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime);
+    int xLeft = resourceProfileView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime);
     int yLeftMaxLine = scaleResourceLevel( lastLevelMax);
     int yLeftMinLine = scaleResourceLevel( lastLevelMin);
     int xRight, yRightMaxLine, yRightMinLine;
     while (instantItr.hasNext()) {
       PwResourceInstant instant = (PwResourceInstant) instantItr.next();
       int time = instant.getTime();
-      xRight = resourceProfileView.getJGoRulerView().scaleTime( time);
+      xRight = resourceProfileView.getJGoRulerView().scaleTimeNoZoom( time);
       yRightMaxLine =  scaleResourceLevel( lastLevelMax);
       yRightMinLine =  scaleResourceLevel( lastLevelMin);
       addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, lastLevelMax, "max");
@@ -364,7 +364,7 @@ public class ResourceProfile extends BasicNode {
       lastLevelMax = currentLevelMax; lastLevelMin = currentLevelMin; 
     }
     
-    xRight = resourceProfileView.getJGoRulerView().scaleTime( latestEndTime);
+    xRight = resourceProfileView.getJGoRulerView().scaleTimeNoZoom( latestEndTime);
     yRightMaxLine =  scaleResourceLevel( lastLevelMax);
     yRightMinLine =  scaleResourceLevel( lastLevelMin);
     addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, lastLevelMax, "max");

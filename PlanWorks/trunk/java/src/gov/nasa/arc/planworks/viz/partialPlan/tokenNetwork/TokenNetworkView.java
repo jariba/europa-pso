@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.35 2004-03-17 01:45:23 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.36 2004-03-20 01:00:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -163,7 +163,7 @@ public class TokenNetworkView extends PartialPlanView {
     
     addStepButtons( jGoView);
     if (! isStepButtonView) {
-      expandViewFrameForStepButtons( viewFrame);
+      expandViewFrameForStepButtons( viewFrame, jGoView);
     }
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
@@ -200,7 +200,7 @@ public class TokenNetworkView extends PartialPlanView {
       addStepButtons( jGoView);
       // causes bottom view edge to creep off screen
 //       if (! isStepButtonView) {
-//         expandViewFrameForStepButtons( viewFrame);
+//         expandViewFrameForStepButtons( viewFrame, jGoView);
 //       }
     } //end run
 

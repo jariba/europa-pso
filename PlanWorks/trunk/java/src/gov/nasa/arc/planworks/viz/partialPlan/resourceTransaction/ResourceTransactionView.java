@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.13 2004-03-09 19:59:30 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.14 2004-03-20 01:00:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -628,7 +628,7 @@ public class ResourceTransactionView extends ResourceView  {
       // jGoExtentView.validate();
     } 
     timeScaleMark = new TimeScaleMark( xLoc);
-    timeScaleMark.addPoint( xLoc, startYLoc);
+    timeScaleMark.addPoint( xLoc, 0);
     timeScaleMark.addPoint( xLoc, currentYLoc + 2);
     this.getJGoExtentDocument().addObjectAtTail( timeScaleMark);
   } // end createTimeMark

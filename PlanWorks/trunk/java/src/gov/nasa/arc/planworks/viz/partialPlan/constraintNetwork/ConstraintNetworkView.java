@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.51 2004-03-17 01:45:21 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.52 2004-03-20 01:00:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -297,7 +297,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     }
     addStepButtons( jGoView);
     if (! isStepButtonView) {
-      expandViewFrameForStepButtons( viewFrame);
+      expandViewFrameForStepButtons( viewFrame, jGoView);
     }
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +

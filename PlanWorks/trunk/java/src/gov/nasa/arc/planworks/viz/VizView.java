@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.13 2004-03-17 01:45:20 taylor Exp $
+// $Id: VizView.java,v 1.14 2004-03-20 01:00:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -50,6 +50,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -413,12 +414,14 @@ public class VizView extends JPanel {
       ((ConstraintNetworkView.ConstraintJGoView) jGoView).resetOpenNodes();
       ((ConstraintNetworkView) partialPlanView).setLayoutNeeded();
       isRedraw = true;
+    } else if (jGoView instanceof TemporalExtentView.ExtentView) {
+       isRedraw = true;
     } else if (jGoView instanceof NavigatorView.NavigatorJGoView) {
       ((NavigatorView.NavigatorJGoView) jGoView).resetOpenNodes();
       ((NavigatorView) partialPlanView).setLayoutNeeded();
       isRedraw = true;
       hasStepButtons = false;
-    } else if ( jGoView instanceof SequenceStepsView.SequenceStepsJGoView) {
+    } else if (jGoView instanceof SequenceStepsView.SequenceStepsJGoView) {
        hasStepButtons = false;
     }
     // keep backword/forward buttons the same size

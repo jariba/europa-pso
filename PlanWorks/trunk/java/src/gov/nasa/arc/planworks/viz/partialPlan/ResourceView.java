@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.4 2004-03-10 02:21:21 taylor Exp $
+// $Id: ResourceView.java,v 1.5 2004-03-20 01:00:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -139,7 +139,6 @@ public abstract class ResourceView extends PartialPlanView  {
   private int slotLabelMinLength;
   private int maxSlots;
   private int startXLoc;
-  private int xOrigin;
   private float timeScale;
   private int levelScaleViewWidth;
   private int fillerWidth;
@@ -189,7 +188,8 @@ public abstract class ResourceView extends PartialPlanView  {
     
     // startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startXLoc = 1;
-    startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
+    // startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
+    startYLoc = 2;
     timeScaleMark = null;
     maxYExtent = 0;
     maxExtentViewHeightPoint = null;
@@ -304,7 +304,7 @@ public abstract class ResourceView extends PartialPlanView  {
     this.setVisible( true);
 
     boolean doFreeTokens = false;
-      xOrigin = jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+      jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
       jGoRulerView.createTimeScale();
 
     boolean isRedraw = false, isScrollBarAdjustment = false;
@@ -334,7 +334,7 @@ public abstract class ResourceView extends PartialPlanView  {
 
     int maxStepButtonY = addStepButtons( jGoExtentView);
     if (! isStepButtonView) {
-      expandViewFrameForStepButtons( viewFrame);
+      expandViewFrameForStepButtons( viewFrame, jGoExtentView);
     }
 
     // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
@@ -376,7 +376,7 @@ public abstract class ResourceView extends PartialPlanView  {
       int maxStepButtonY = addStepButtons( jGoExtentView);
       // causes bottom view edge to creep off screen
 //       if (! isStepButtonView) {
-//         expandViewFrameForStepButtons( viewFrame);
+//         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
 //       }
       // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
       // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
@@ -472,7 +472,7 @@ public abstract class ResourceView extends PartialPlanView  {
    * @return - <code>double</code> - 
    */
   public final double getTimeScale() {
-    return jGoRulerView.getTimeScale();
+    return jGoRulerView.getTimeScaleNoZoom();
   }
 
   /**
@@ -908,7 +908,7 @@ public abstract class ResourceView extends PartialPlanView  {
      * @return - <code>String</code> - 
      */
     public final String getToolTipText() {
-      return String.valueOf( jGoRulerView.scaleXLoc( xLoc));
+      return String.valueOf( jGoRulerView.scaleXLocNoZoom( xLoc));
     }
 
   } // end class TimeScaleMark

@@ -212,10 +212,10 @@ public interface ViewConstants {
   public static final int TEMPORAL_MIN_MAX_SLOTS = 8;
 
   /**
-   * constant <code>TEMPORAL_LARGE_LABEL_RANGE</code>
+   * constant <code>TEMPORAL_TICK_DELTA_X_MIN</code>
    *
    */
-  public static final int TEMPORAL_LARGE_LABEL_RANGE = 1000000;
+  public static final int TEMPORAL_TICK_DELTA_X_MIN = 30;
 
   /**
    * constant <code>JGO_DOC_BORDER_WIDTH</code>
