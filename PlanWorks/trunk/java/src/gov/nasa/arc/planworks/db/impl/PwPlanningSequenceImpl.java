@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.80 2004-05-04 01:27:12 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.81 2004-05-11 22:44:54 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -66,7 +66,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   private String projectName;
   private String url; //directory containing the partialplan directories
   private PwModel model;
-
+	private boolean hasLoadedTransactionFile;
   private int stepCount;
   private Map transactions;
   private String name;
@@ -88,6 +88,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    */
   public PwPlanningSequenceImpl( final String url, final Long id)
     throws ResourceNotFoundException {
+		hasLoadedTransactionFile = false;
     this.url = url;
     this.id = id;
     this.model = null;
@@ -124,6 +125,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   //for testing only
   public PwPlanningSequenceImpl( final String url, final Long id, final boolean forTesting) 
   throws ResourceNotFoundException {
+		hasLoadedTransactionFile = false;
     this.url = url;
     this.id = id;
     this.model = null;
@@ -154,6 +156,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    */ 
   public PwPlanningSequenceImpl( final String url, final PwProjectImpl project)
     throws ResourceNotFoundException {
+		hasLoadedTransactionFile = false;
     this.url = url;
     this.model = null;
     partialPlans = new HashMap();
@@ -180,7 +183,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     if(!url.equals(dbUrl)) {
       urlsDontMatchDialog(url, dbUrl);
     }
-    loadTransactionFile();
+    //loadTransactionFile();
     loadStatsFile();
     loadRulesFile();
     loadRulesMapFile();
@@ -214,8 +217,14 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   }
 
   private void loadTransactionFile() {
+		if(hasLoadedTransactionFile) {
+			return;
+		}
+		long t1 = System.currentTimeMillis();
     MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_TRANSACTIONS,
                      DbConstants.TBL_TRANSACTION);
+		System.err.println("Loading transaction file took " + (System.currentTimeMillis() - t1));
+		hasLoadedTransactionFile = true;
   }
 
   private void loadStatsFile() {
@@ -235,6 +244,9 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
 
   private void loadTransactions() {
     long t1 = System.currentTimeMillis();
+		if(!hasLoadedTransactionFile) {
+			loadTransactionFile();
+		}
     int currTransactions = 0;
     if(transactions != null) {
       currTransactions = transactions.keySet().size();
@@ -486,14 +498,17 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   // end implement ViewableObject
 
   public List getTransactionsForConstraint(final Integer id) {
+		loadTransactionFile();
     return MySQLDB.queryTransactionsForConstraint(this.id, id);
   }
 
   public List getTransactionsForToken(final Integer id) {
+		loadTransactionFile();
     return MySQLDB.queryTransactionsForToken(this.id, id);
   }
  
   public List getTransactionsForVariable(final Integer id) {
+		loadTransactionFile();
     return MySQLDB.queryTransactionsForVariable(this.id, id);
   }
   
@@ -523,46 +538,56 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   
   public List getStepsWhereTokenTransacted(final Integer id, final String type) 
     throws IllegalArgumentException {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithTokenTransaction(this.id, id, type);
   }
 
   public List getStepsWhereVariableTransacted(final Integer id, final String type) 
     throws IllegalArgumentException  {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithVariableTransaction(this.id, id, type);
   }
 
   public List getStepsWhereConstraintTransacted(final Integer id, final String type) 
     throws IllegalArgumentException  {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type);
   }
 
   public List getStepsWhereTokenTransacted(final String type) throws IllegalArgumentException {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithTokenTransaction(this.id, type);
   }
 
   public List getStepsWhereVariableTransacted(final String type) 
     throws IllegalArgumentException  {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithVariableTransaction(this.id, type);
   }
 
   public List getStepsWhereConstraintTransacted(final String type) 
     throws IllegalArgumentException  {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithConstraintTransaction(this.id, type);
   }
 
   public List getStepsWithRestrictions() {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithRestrictions(id);
   }
 
   public List getStepsWithRelaxations() {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithRelaxations(id);
   }
 
   public List getStepsWithUnitVariableBindingDecisions() {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithUnitVariableDecisions(this);
   }
 
   public List getStepsWithNonUnitVariableBindingDecisions() {
+		loadTransactionFile();
     return MySQLDB.queryStepsWithNonUnitVariableDecisions(this);
   }
 
@@ -650,12 +675,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   }
 
   public void refresh() {
-    System.err.println("Loading transaction file...");
-    loadTransactionFile();
+    //System.err.println("Loading transaction file...");
+    //loadTransactionFile();
     System.err.println("Loading stats file...");
     loadStatsFile();
-    System.err.println("Loading transactions...");
-    loadTransactions();
+    //System.err.println("Loading transactions...");
+    //loadTransactions();
     System.err.println("Loading rule information...");
     loadRulesMapFile();
     System.err.println("Loading new partial plan info...");
