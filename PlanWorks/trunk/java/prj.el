@@ -1,4 +1,4 @@
-;;; $Id: prj.el,v 1.8 2004-03-16 02:24:08 taylor Exp $
+;;; $Id: prj.el,v 1.9 2004-03-31 22:27:05 taylor Exp $
 ;;;
 ;;; JAVA_HOME ANT_HOME JDE_HOME & PLANWORKS_HOME must be set properly
 ;;;
@@ -57,7 +57,6 @@
  '(jde-db-set-initial-breakpoint nil)
  '(jde-db-source-directories (list (concat (getenv "PLANWORKS_HOME") "/java/src")
                                    (concat (getenv "JAVA_HOME") "/src")))
- '(jde-compiler (list "javac" (concat (getenv "JAVA_HOME") "/bin/javac")))
  '(jde-db-startup-commands nil)
  '(jde-debugger (quote ("JDEbug")))
  '(jde-gen-cflow-enable nil)
