@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.90 2004-03-04 20:50:43 miatauro Exp $
+// $Id: MySQLDB.java,v 1.91 2004-03-09 20:25:18 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -656,14 +656,6 @@ public class MySQLDB {
           if(!objects.wasNull()) {
             resInfo = new String(blob.getBytes(1, (int) blob.length()));
           }
-          System.err.println("instantiating resource: \n" +
-                             "id: " + objectId + "\n" + 
-                             "parent: " + parentId + "\n" + 
-                             "name: " + name + "\n" + 
-                             "children: " + childObjectIds + "\n" +
-                             "resource info: " + resInfo + "\n" +
-                             "variables: " + variableIds + "\n" +
-                             "tokens: " + tokenIds);
           partialPlan.addResource(objectId, new PwResourceImpl(objectId, type, parentId, name,
                                                                childObjectIds, resInfo, 
                                                                variableIds, tokenIds, partialPlan));
@@ -1381,9 +1373,9 @@ public class MySQLDB {
         retval.add(new Integer(ids.getInt("SlotId")));
       }
       ResultSet empties =
-        queryDatabase("SELECT EmptySlotInfo FROM Object WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ObjectId=").concat(tId.toString()));
+        queryDatabase("SELECT ExtraInfo FROM Object WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ObjectId=").concat(tId.toString()));
       empties.last();
-      Blob emptySlots = empties.getBlob("EmptySlotInfo");
+      Blob emptySlots = empties.getBlob("ExtraInfo");
       if(!empties.wasNull()) {
         String slotIds = new String(emptySlots.getBytes(1, (int) emptySlots.length()));
         StringTokenizer strTok = new StringTokenizer(slotIds, ",");

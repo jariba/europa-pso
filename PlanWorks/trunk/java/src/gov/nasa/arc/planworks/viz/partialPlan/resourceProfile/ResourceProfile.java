@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.11 2004-03-09 19:59:29 taylor Exp $
+// $Id: ResourceProfile.java,v 1.12 2004-03-09 20:19:46 miatauro Exp $
 //
 // PlanWorks
 //
@@ -375,7 +375,7 @@ public class ResourceProfile extends BasicNode {
                                double level, String type) {
     JGoStroke lineSegment = null;
     if (yLeft == yRight) { // horizontal segment
-      lineSegment = new ProfileLine( level);
+      lineSegment = new ProfileLine( level, type);
       lineSegment.addPoint( xLeft, yLeft);
       lineSegment.addPoint( xRight, yRight);
     } else { // vertical segment
@@ -417,14 +417,21 @@ public class ResourceProfile extends BasicNode {
   public class ProfileLine extends JGoStroke {
 
     private double quantity;
+    private String type;
 
+    public ProfileLine(final double quantity) {
+      super();
+      this.quantity = quantity;
+      this.type = null;
+    }
     /**
      * <code>ProfileLine</code> - constructor 
      *
      */
-    public ProfileLine( double quantity) {
+    public ProfileLine( final double quantity, final String type) {
       super();
       this.quantity = quantity;
+      this.type = type;
     }
 
     /**
@@ -433,9 +440,12 @@ public class ResourceProfile extends BasicNode {
      * @return - <code>String</code> - 
      */
     public final String getToolTipText() {
-      StringBuffer toolTip = new StringBuffer( "quantitiy = ");
-      toolTip.append( new Double( quantity).toString());
-      return toolTip.toString();
+      String retval = "";
+      if(type != null) {
+        retval += type + " ";
+      }
+      retval += "quantity = " + Double.toString(quantity);
+      return retval;
     } // end getToolTipText
 
     /**
