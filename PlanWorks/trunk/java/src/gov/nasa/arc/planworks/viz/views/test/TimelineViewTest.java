@@ -46,16 +46,38 @@ public class TimelineViewTest extends JFCTestCase {
     assertNotNull("Failed to get frame from set", frame);
     JMenuBar menuBar = frame.getJMenuBar();
     assertNotNull("Failed to get menu bar from frame", menuBar);
+    JMenu projectMenu = null;
     JMenu renderMenu = null;
     MenuElement [] elements = menuBar.getSubElements();
     for(int i = 0; i < elements.length; i++) {
       if(((JMenu)elements[i]).getText().equals("Render")) {
         renderMenu = (JMenu) elements[i];
       }
+      else if(((JMenu)elements[i]).getText().equals("Project")) {
+        projectMenu = (JMenu) elements[i];
+      }
     }
-     assertNotNull("Failed to get menu.", renderMenu);
+    assertNotNull("Failed to get menu", projectMenu);
+    assertTrue("Failed to get \"Project\" menu.", projectMenu.getText().equals("Project"));
+    JMenuItem createItem = null;
+    for(int i = 0; i < projectMenu.getItemCount(); i++) {
+      if(projectMenu.getItem(i).getText().equals("Create")) {
+        createItem = projectMenu.getItem(i);
+      }
+    }
+    assertNotNull("Failed to get \"Create\" item.", createItem);
+    assertTrue("Failed to get \"Create\" item.", createItem.getText().equals("Create"));
+    helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
+    helper.enterClickAndLeave(new MouseEventData(this, createItem));
+    assertNotNull("Failed to get menu.", renderMenu);
     assertTrue("Failed to get \"Render\" menu.", renderMenu.getText().equals("Render"));
-    JMenuItem renderItem = renderMenu.getItem(0);
+    JMenuItem renderItem = null;
+    for(int i = 0; i < renderMenu.getItemCount(); i++) {
+      if(renderMenu.getItem(i).getText().equals("Timeline View")) {
+        renderItem = renderMenu.getItem(i);
+      }
+    }
+    assertNotNull("Failed to get any menu item.", renderItem);
     assertTrue("Failed to get \"Timeline View\" item.", 
                renderItem.getText().equals("Timeline View"));
     helper.enterClickAndLeave(new MouseEventData(this, renderMenu));
