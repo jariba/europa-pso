@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.14 2003-09-05 19:11:20 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.15 2003-09-15 23:47:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -102,8 +102,6 @@ public class ConstraintNetworkView extends VizView {
   private List constraintNodeList; // element ConstraintNode
   private List constraintLinkList; // element BasicNodeLink
   private List variableLinkList; // element BasicNodeLink
-  private int maxViewWidth;
-  private int maxViewHeight;
   private boolean isDebugPrint;
   private boolean isLayoutNeeded;
 
@@ -131,8 +129,6 @@ public class ConstraintNetworkView extends VizView {
     constraintNodeList = new ArrayList();
     constraintLinkList = new ArrayList();
     variableLinkList = new ArrayList();
-    maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
-    maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
 
     // isDebugPrint = true;
     isDebugPrint = false;
@@ -140,7 +136,7 @@ public class ConstraintNetworkView extends VizView {
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
     jGoView = new JGoView();
-    jGoView.setBackground( ColorMap.getColor( "lightGray"));
+    jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
     jGoView.setVisible( true);
@@ -197,8 +193,12 @@ public class ConstraintNetworkView extends VizView {
     ConstraintNetworkLayout layout =
       new ConstraintNetworkLayout( document, network, startTimeMSecs);
     layout.performLayout();
-    computeExpandedViewFrame();
-    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
+    expandViewFrame( viewSet, viewName,
+                     (int) jGoView.getDocumentSize().getWidth(),
+                     // JGo Layout computes a very large value for doc height
+                     // (int) jGoView.getDocumentSize().getHeight());
+                     PlanWorks.INTERNAL_FRAME_HEIGHT);
+
     isLayoutNeeded = false;
 
     long stopTimeMSecs = (new Date()).getTime();
@@ -254,19 +254,6 @@ public class ConstraintNetworkView extends VizView {
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end redrawView
 
-
-  private void computeExpandedViewFrame() {
-    Iterator tokenNodeIterator = tokenNodeList.iterator();
-    while (tokenNodeIterator.hasNext()) {
-      TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-      int maxWidth = (int) tokenNode.getLocation().getX() +
-        (int) tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;
-      maxViewWidth = Math.max( maxWidth, maxViewWidth);
-      int maxHeight = (int) tokenNode.getLocation().getY() +
-        ViewConstants.TIMELINE_VIEW_Y_INIT;
-      maxViewHeight = Math.max( maxHeight, maxViewHeight);
-    }
-  } // end computeExpandedViewFrame
 
   /**
    * <code>getJGoDocument</code>

@@ -11,24 +11,38 @@
 
 package gov.nasa.arc.planworks.viz;
 
+import java.awt.Color;
 import java.awt.Font;
-import java.util.ArrayList;
-import java.util.List;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoText;
 
+import gov.nasa.arc.planworks.util.ColorMap;
 
 
+/**
+ * Describe interface <code>ViewConstants</code> here.
+ *
+ * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
+ *        NASA Ames Research Center - Code IC
+ * @version 0.0
+ */
 public interface ViewConstants {
 
   /**
-   * constant <code>orderedViewNames - String []</code>
+   * constant <code>ORDERED_VIEW_NAMES - String []</code>
    *
    */
-  public static final String[] orderedViewNames = 
+  public static final String[] ORDERED_VIEW_NAMES = 
     new String [] { "constraintNetworkView", "temporalExtentView", "temporalNetworkView",
                     "timelineView", "tokenNetworkView" };
+
+  /**
+   * constant <code>VIEW_BACKGROUND_COLOR - java.awt.Color</code> 
+   *
+   */
+  public static final Color VIEW_BACKGROUND_COLOR = ColorMap.getColor( "lightGray");
+
 
   // views.timeline.TimelineView
 
@@ -45,10 +59,16 @@ public interface ViewConstants {
   public static final int TIMELINE_VIEW_Y_INIT = 10;
 
   /**
+   * constant <code>TIMELINE_VIEW_X_DELTA</code>
+   *
+   */
+  public static final int TIMELINE_VIEW_X_DELTA = 50;
+
+  /**
    * constant <code>TIMELINE_VIEW_Y_DELTA</code>
    *
    */
-  public static final int TIMELINE_VIEW_Y_DELTA = 50;
+  public static final int TIMELINE_VIEW_Y_DELTA = 60;
 
   /**
    * constant <code>TIMELINE_VIEW_FONT_SIZE</code>
@@ -85,11 +105,6 @@ public interface ViewConstants {
    *
    */
   public static final int TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN = 7;
-
-
-
-  // nodes.TimelineNode
-  // nodes.SlotNode
 
   /**
    * constant <code>TIMELINE_VIEW_INSET_SIZE</code>
@@ -230,6 +245,12 @@ public interface ViewConstants {
    *
    */
   public static final int TEMPORAL_LARGE_LABEL_RANGE = 1000000;
+
+  /**
+   * constant <code>JGO_DOC_BORDER_WIDTH</code>
+   *
+   */
+  public static final int JGO_DOC_BORDER_WIDTH = 5;
 
 
   // cannot figure out how to get this from MDIInternalFrame

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.25 2003-09-11 00:25:48 taylor Exp $
+# $Id: build-tags-file.csh,v 1.26 2003-09-15 23:47:17 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -67,6 +67,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
     src/gov/nasa/arc/planworks/util/Algorithms.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
+    src/gov/nasa/arc/planworks/util/ColorStream.java \
     src/gov/nasa/arc/planworks/util/DirectoryChooser.java \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
     src/gov/nasa/arc/planworks/util/Extent.java \
