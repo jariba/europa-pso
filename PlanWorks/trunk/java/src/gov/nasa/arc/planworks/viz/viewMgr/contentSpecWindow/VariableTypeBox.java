@@ -97,6 +97,12 @@ public class VariableTypeBox extends JPanel implements ContentSpecElement
     parent.validate();
     parent.repaint();
   }
+  public void reset()
+  {
+    logicBox.setSelectedItem("");
+    negationBox.setSelected(false);
+    typeBox.setSelectedItem("");
+  }
   class LogicBoxListener implements ItemListener
   {
     private VariableTypeBox box;

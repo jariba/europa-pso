@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.7 2003-06-12 23:52:39 miatauro Exp $
+// $Id: ContentSpec.java,v 1.8 2003-06-13 18:35:15 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -462,6 +462,17 @@ public class ContentSpec {
           currentSpec.or(partialSpec);
         }
         partialSpec.clear();
+      }
+    }
+    List nodeList = XmlDBeXist.queryCollection(collectionName, "/PartialPlan/@key | /PartialPlan/Object/@key");
+    ListIterator nodeListIterator = nodeList.listIterator();
+    while(nodeListIterator.hasNext()) {
+      ParsedDomNode node = (ParsedDomNode) nodeListIterator.next();
+      if(node.getNodeName().equals("key")) {
+        int index = keyToIndex(node.getNodeValue());
+        if(index > 0) {
+          currentSpec.set(index);
+        }
       }
     }
     redrawNotifier.notifyRedraw();
