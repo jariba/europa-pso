@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.6 2004-03-04 21:30:27 taylor Exp $
+// $Id: ResourceProfile.java,v 1.7 2004-03-06 02:22:35 taylor Exp $
 //
 // PlanWorks
 //
@@ -42,13 +42,12 @@ import gov.nasa.arc.planworks.db.PwResourceInstant;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
-import gov.nasa.arc.planworks.util.Extent;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
@@ -58,12 +57,10 @@ import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ResourceProfile extends BasicNode implements Extent {
+public class ResourceProfile extends BasicNode {
 
-  private static final int RESOURCE_NAME_Y_OFFSET = 2;
   private static final int NUM_LEVEL_SCALE_TICKS = 6;
   private static final int LEVEL_SCALE_TICK_WIDTH = 10;
-  private static final double ONE_HALF_MULTIPLIER = 0.5;
 
   private PwResource resource;
   private int earliestStartTime;
@@ -78,13 +75,11 @@ public class ResourceProfile extends BasicNode implements Extent {
 
   private String nodeLabel;
   private int nodeLabelWidth;
-  private int cellRow; // for layout algorithm
   private String resourceId;
-  private int extentYTop;
-  private int extentYBottom;
-  private int profileYOrigin;
   private double levelScaleScaling;
   private int levelScaleWidth;
+  private int profileYOrigin;
+  private int extentYBottom;
   private double levelMax; // actual levels
   private double levelMin;
   private double levelLimitMin; // level limits - can be exceeded
@@ -115,7 +110,8 @@ public class ResourceProfile extends BasicNode implements Extent {
 
     nodeLabel = resource.getName();
     nodeLabelWidth = ResourceProfile.getNodeLabelWidth( nodeLabel, resourceProfileView);
-    cellRow = Algorithms.NO_ROW;
+
+    configure();
   } // end constructor
 
 
@@ -180,15 +176,27 @@ public class ResourceProfile extends BasicNode implements Extent {
    */
   public final void configure() {
     // put the label in the LevelScaleView, rather than the ExtentView
-
-    renderBorders( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
-                   resourceProfileView.getJGoRulerView().scaleTime( latestEndTime),
-                   resourceProfileView.getJGoExtentDocument());
+    int currentYLoc = resourceProfileView.getCurrentYLoc();
+    profileYOrigin = currentYLoc;
+    // System.err.println( "profileYOrigin " + profileYOrigin);
     levelScaleWidth = resourceProfileView.getLevelScaleViewWidth() -
       ViewConstants.RESOURCE_LEVEL_SCALE_WIDTH_OFFSET;
-    renderBorders( 0, levelScaleWidth, resourceProfileView.getJGoLevelScaleDocument());
+    ResourceView.renderBordersUpper
+      ( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
+        resourceProfileView.getJGoRulerView().scaleTime( latestEndTime), currentYLoc,
+        resourceProfileView.getJGoExtentDocument());
+    ResourceView.renderBordersUpper
+      ( 0, levelScaleWidth, currentYLoc, resourceProfileView.getJGoLevelScaleDocument());
+    ResourceView.renderResourceName( resource, resourceProfileView.getLevelScaleViewWidth() -
+                                     nodeLabelWidth, currentYLoc,
+                                     resourceProfileView.getJGoLevelScaleDocument(),
+                                     resourceProfileView);
 
-    renderResourceName();
+    currentYLoc = currentYLoc + ViewConstants.RESOURCE_PROFILE_MAX_Y_OFFSET +
+      (int) (2 * ResourceView.Y_MARGIN);
+    int extentYTop = currentYLoc;
+    currentYLoc = currentYLoc + ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT;
+    extentYBottom = currentYLoc;
 
     levelLimitMin = resource.getLevelLimitMin();
     levelLimitMax = resource.getLevelLimitMax();
@@ -196,9 +204,9 @@ public class ResourceProfile extends BasicNode implements Extent {
     levelMin = (int) minMax[0];
     levelMax = (int) minMax[1];
     levelScaleScaling = (extentYBottom - extentYTop) / (levelMax - levelMin);
-    // System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
-    // System.err.println( " levelMin " + levelMin + " levelMax " +
-    //                     levelMax + " levelScaleScaling " + levelScaleScaling);
+//     System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
+//     System.err.println( " levelMin " + levelMin + " levelMax " +
+//                         levelMax + " levelScaleScaling " + levelScaleScaling);
 
     renderLevelScaleLinesAndTicks();
 
@@ -206,9 +214,17 @@ public class ResourceProfile extends BasicNode implements Extent {
 
     renderLevels();
 
+    currentYLoc += (int) (2 * ResourceView.Y_MARGIN);
+    ResourceView.renderBordersLower
+      ( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
+        resourceProfileView.getJGoRulerView().scaleTime( latestEndTime), currentYLoc,
+        resourceProfileView.getJGoExtentDocument());
+    ResourceView.renderBordersLower
+      ( 0, levelScaleWidth, currentYLoc, resourceProfileView.getJGoLevelScaleDocument());
+
+    currentYLoc += ViewConstants.RESOURCE_PROFILE_MIN_Y_OFFSET;
+    resourceProfileView.setCurrentYLoc( currentYLoc);
   } // end configure
-
-
 
   /**
    * <code>getResource</code>
@@ -229,24 +245,6 @@ public class ResourceProfile extends BasicNode implements Extent {
   }
 
   /**
-   * <code>getExtentYTop</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getExtentYTop() {
-    return extentYTop;
-  }
-
-  /**
-   * <code>getExtentYBottom</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getExtentYBottom() {
-    return extentYBottom;
-  }
-
-  /**
    * <code>getProfileYOrigin</code>
    *
    * @return - <code>int</code> - 
@@ -254,48 +252,6 @@ public class ResourceProfile extends BasicNode implements Extent {
   public final int getProfileYOrigin() {
     return profileYOrigin;
   }
-
-  private void renderBorders( final int xLeft, final int xRight,
-                              final JGoDocument jGoDocument) {
-    profileYOrigin = scaleY( 0);
-    JGoStroke divider = new JGoStroke();
-    divider.addPoint( xLeft, profileYOrigin);
-    divider.addPoint( xRight, profileYOrigin);
-    divider.setDraggable( false); divider.setResizable( false);
-    divider.setSelectable( false);
-    divider.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "black")));
-    jGoDocument.addObjectAtTail( divider);
-
-    extentYTop = scaleY( ViewConstants.RESOURCE_PROFILE_MAX_Y_OFFSET);
-    JGoStroke extentTop = new JGoStroke();
-    extentTop.addPoint( xLeft, extentYTop);
-    extentTop.addPoint( xRight, extentYTop);
-    extentTop.setDraggable( false); extentTop.setResizable( false);
-    extentTop.setSelectable( false);
-    extentTop.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "green3")));
-    jGoDocument.addObjectAtTail( extentTop);
-
-    extentYBottom = scaleY( ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT -
-                            ViewConstants.RESOURCE_PROFILE_MIN_Y_OFFSET);
-    JGoStroke extentBottom = new JGoStroke();
-    extentBottom.addPoint( xLeft, extentYBottom);
-    extentBottom.addPoint( xRight, extentYBottom);
-    extentBottom.setDraggable( false); extentBottom.setResizable( false);
-    extentBottom.setSelectable( false);
-    extentBottom.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "green3")));
-    jGoDocument.addObjectAtTail( extentBottom);
-  } // end renderBorders
-
-  private void renderResourceName() {
-    int xTop = resourceProfileView.getLevelScaleViewWidth() - nodeLabelWidth +
-      (int) (ViewConstants.TIMELINE_VIEW_INSET_SIZE * ONE_HALF_MULTIPLIER);
-    Point nameLoc = new Point( xTop, scaleY( RESOURCE_NAME_Y_OFFSET));
-    ResourceNameNode nameNode = new ResourceNameNode( nameLoc, resource);
-    nameNode.setResizable( false); nameNode.setEditable( false);
-    nameNode.setDraggable( false); nameNode.setSelectable( false);
-    nameNode.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
-    resourceProfileView.getJGoLevelScaleDocument().addObjectAtTail( nameNode);
-  } // end renderResourceName
 
   private void renderLevelScaleLinesAndTicks() {
     int tickDelta = ((int) levelMax - (int) levelMin) / NUM_LEVEL_SCALE_TICKS;
@@ -335,7 +291,8 @@ public class ResourceProfile extends BasicNode implements Extent {
       Point labelLoc =
         new Point( levelScaleWidth - LEVEL_SCALE_TICK_WIDTH - 2 -
                    SwingUtilities.computeStringWidth( levelScaleFontMetrics, label),
-                   scaleResourceLevel( (double) level + tickDelta * ONE_HALF_MULTIPLIER));
+                   scaleResourceLevel( (double) level +
+                                       tickDelta * ResourceView.ONE_HALF_MULTIPLIER));
       JGoText labelObject = new JGoText( labelLoc, label);
       labelObject.setResizable( false); labelObject.setEditable( false);
       labelObject.setDraggable( false); labelObject.setSelectable( false);
@@ -391,6 +348,8 @@ public class ResourceProfile extends BasicNode implements Extent {
       int time = instant.getTime();
       double currentLevelMax = instant.getLevelMax();
       double currentLevelMin = instant.getLevelMin();
+      System.err.println( "renderLevels time " + time + " currentLevelMax " +
+                          currentLevelMax + " currentLevelMin " + currentLevelMin);
       levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
                              scaleResourceLevel( lastLevelMax));
       levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
@@ -420,41 +379,40 @@ public class ResourceProfile extends BasicNode implements Extent {
     return (extentYBottom - (int) ((level - levelMin) * levelScaleScaling));
   }
 
-//   /**
-//    * <code>getToolTipText</code>
-//    *
-//    * @return - <code>String</code> - 
-//    */
-//   public final String getToolTipText() {
-//     StringBuffer tip = new StringBuffer( "<html>key = ");
-//     tip.append( resource.getId().toString());
-//     tip.append( "</html>");
-//     return tip.toString();
-//   } // end getToolTipText
+  /**
+   * <code>getToolTipText</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getToolTipText() {
+    StringBuffer tip = new StringBuffer( "<html>key = ");
+    tip.append( resource.getId().toString());
+    tip.append( "</html>");
+    return tip.toString();
+  } // end getToolTipText
 
 
-//   /**
-//    * <code>getToolTipText</code> - when over 1/8 scale overview resource node
-//    *
-//    * @param isOverview - <code>boolean</code> - 
-//    * @return - <code>String</code> - 
-//    */
-//   public final String getToolTipText( final boolean isOverview) {
-//     StringBuffer tip = new StringBuffer( "<html> ");
-//     tip.append( resource.getName());
-//     tip.append( "<br>key=");
-//     tip.append( resource.getId().toString());
-//     tip.append( "</html>");
-//     return tip.toString();
-//   } // end getToolTipText
-
+  /**
+   * <code>getToolTipText</code> - when over 1/8 scale overview resource node
+   *
+   * @param isOverview - <code>boolean</code> - 
+   * @return - <code>String</code> - 
+   */
+  public final String getToolTipText( final boolean isOverview) {
+    StringBuffer tip = new StringBuffer( "<html> ");
+    tip.append( resource.getName());
+    tip.append( "<br>key=");
+    tip.append( resource.getId().toString());
+    tip.append( "</html>");
+    return tip.toString();
+  } // end getToolTipText
 
 
   /**
    * <code>ProfileLine</code> - render profile as a line
    *
    */
-  public  class ProfileLine extends JGoStroke {
+  public class ProfileLine extends JGoStroke {
 
     /**
      * <code>ProfileLine</code> - constructor 
@@ -473,20 +431,15 @@ public class ResourceProfile extends BasicNode implements Extent {
       return null;
     } // end getToolTipText
 
-  /**
-   * <code>getToolTipText</code> - when over 1/8 scale overview resource node
-   *
-   * @param isOverview - <code>boolean</code> - 
-   * @return - <code>String</code> - 
-   */
-  public final String getToolTipText( final boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html> ");
-    tip.append( resource.getName());
-    tip.append( "<br>key=");
-    tip.append( resource.getId().toString());
-    tip.append( "</html>");
-    return tip.toString();
-  } // end getToolTipText
+    /**
+     * <code>getToolTipText</code>
+     *
+     * @param isOverview - <code>boolean</code> - 
+     * @return - <code>String</code> - 
+     */
+    public final String getToolTipText( final boolean isOverview) {
+      return null;
+    } // end getToolTipText
 
     /**
      * <code>doMouseClick</code> - 
@@ -506,71 +459,13 @@ public class ResourceProfile extends BasicNode implements Extent {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
         // do nothing
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-        //       mouseRightPopupMenu( viewCoords);
-        //       return true;
+        // mouseRightPopupMenu( viewCoords);
+        // return true;
       }
       return false;
     } // end doMouseClick   
 
   } // end class ProfileLine
-
-
-  /**
-   * <code>getStart</code> - implements Extent
-   *
-   *           allow for label width as well as time extent
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getStart() {
-    int xStart = resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime);
-//     if (resourceId.equals( "185") || resourceId.equals( "978")) {
-//       System.err.println( "xStart: " + predicateName + " xStart " +
-//                           String.valueOf( (xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE)));
-//     }
-    return xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE;
-  }
-
-  /**
-   * <code>getEnd</code> - implements Extent
-   *
-   *           allow for label width as well as time extent
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getEnd() {
-    int xStart = resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime);
-    int xEnd = resourceProfileView.getJGoRulerView().scaleTime( latestEndTime);
-    int xStartPlusLabel = xStart;
-//     if (resourceId.equals( "185") || resourceId.equals( "978")) {
-//       System.err.println( "xEnd: " + predicateName + " xEnd " +
-//                           String.valueOf( (xEnd + ViewConstants.TIMELINE_VIEW_INSET_SIZE)) +
-//                           " xStartPlusLabel " +
-//                           String.valueOf( (xStartPlusLabel +
-//                                           ViewConstants.TIMELINE_VIEW_INSET_SIZE)));
-//       System.err.println( "isShowLabels " + isShowLabels + " nodeLabelWidth " +
-//                           String.valueOf( nodeLabelWidth));
-//     }
-    return Math.max( xEnd, xStartPlusLabel) + ViewConstants.TIMELINE_VIEW_INSET_SIZE;
-  }
-
-  /**
-   * <code>getRow</code> - implements Extent
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getRow() {
-    return cellRow;
-  }
-
-  /**
-   * <code>setRow</code> - implements Extent
-   *
-   * @param row - <code>int</code> - 
-   */
-  public final void setRow( final int row) {
-    cellRow = row;
-  }
 
   /**
    * <code>toString</code>
@@ -599,12 +494,6 @@ public class ResourceProfile extends BasicNode implements Extent {
   public final int hashCode() {
     return resource.getId().intValue();
   }
-
-  private int scaleY( final int cellDelta) {
-    return resourceProfileView.getStartYLoc() +
-      (int) (cellRow * ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT) + cellDelta;
-  }
-
 
  
   /**
@@ -671,4 +560,26 @@ public class ResourceProfile extends BasicNode implements Extent {
 
 
   
-  
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

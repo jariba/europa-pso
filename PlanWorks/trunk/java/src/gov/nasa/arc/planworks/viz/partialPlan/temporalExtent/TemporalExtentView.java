@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.34 2004-03-03 02:14:25 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.35 2004-03-06 02:22:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -366,11 +366,11 @@ public class TemporalExtentView extends PartialPlanView  {
     Color backgroundColor = null;
     while (tokenIterator.hasNext()) {
       PwToken token = (PwToken) tokenIterator.next();
-      if (token.isSlotted() && (! token.isBaseToken())) {
-        // non-slotted, non-base tokens - not displayed, put in displayedTokenIds
-        isTokenInContentSpec( token);
-        continue;
-      }
+//       if (token.isSlotted() && (! token.isBaseToken())) {
+//         // non-slotted, non-base tokens - not displayed, put in displayedTokenIds
+//         isTokenInContentSpec( token);
+//         continue;
+//       }
       boolean isFreeToken = false;
       PwSlot slot = null;
       if (! token.isFree()) { // slotted base tokens, resourceTransactions, other tokens
@@ -818,22 +818,32 @@ public class TemporalExtentView extends PartialPlanView  {
     while (temporalNodeListItr.hasNext()) {
       temporalNode = (TemporalNode) temporalNodeListItr.next();
       if (temporalNode.getToken() != null) {
-        if (temporalNode.getSlot() != null) {
-          // check overloaded tokens, since only base tokens are rendered
-          Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
-          while (tokenListItr.hasNext()) {
-            PwToken token = (PwToken) tokenListItr.next();
-            if ((tokenToFind != null) && token.getId().equals( tokenToFind.getId())) {
-              isTokenFound = true;
-              break foundMatch;
-            }
-          }
-        } else if ((tokenToFind != null) &&
-                   temporalNode.getToken().getId().equals( tokenToFind.getId())) {
-          // free token
+
+
+        if ((tokenToFind != null) &&
+            temporalNode.getToken().getId().equals( tokenToFind.getId())) {
           isTokenFound = true;
           break;          
         }
+
+//         if (temporalNode.getSlot() != null) {
+//           // check overloaded tokens, since only base tokens are rendered
+//           Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
+//           while (tokenListItr.hasNext()) {
+//             PwToken token = (PwToken) tokenListItr.next();
+//             if ((tokenToFind != null) && token.getId().equals( tokenToFind.getId())) {
+//               isTokenFound = true;
+//               break foundMatch;
+//             }
+//           }
+//         } else if ((tokenToFind != null) &&
+//                    temporalNode.getToken().getId().equals( tokenToFind.getId())) {
+//           // free token
+//           isTokenFound = true;
+//           break;          
+//         }
+
+
       } else if ((slotToFind != null) &&
                  temporalNode.getSlot().getId().equals( slotToFind.getId()))  {
         // empty slot

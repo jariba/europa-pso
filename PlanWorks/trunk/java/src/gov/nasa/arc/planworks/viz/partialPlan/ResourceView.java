@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.1 2004-03-04 21:30:27 taylor Exp $
+// $Id: ResourceView.java,v 1.2 2004-03-06 02:22:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -41,6 +41,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -59,6 +60,19 @@ public abstract class ResourceView extends PartialPlanView  {
    */
   public static final int LEVEL_SCALE_FONT_SIZE = 8;
 
+  /**
+   * constant <code>Y_MARGIN</code>
+   *
+   */
+  public static final int Y_MARGIN = 4;
+
+  /**
+   * constant <code>ONE_HALF_MULTIPLIER</code>
+   *
+   */
+  public static final double ONE_HALF_MULTIPLIER = 0.5;
+
+  private static final int RESOURCE_NAME_Y_OFFSET = 2;
   private static final int SLEEP_FOR_50MS = 50;
 
   /**
@@ -86,12 +100,6 @@ public abstract class ResourceView extends PartialPlanView  {
   protected TimeScaleView jGoRulerView;
 
   /**
-   * variable <code>maxCellRow</code>
-   *
-   */
-  protected int maxCellRow;
-
-  /**
    * variable <code>timeScaleMark</code>
    *
    */
@@ -108,6 +116,12 @@ public abstract class ResourceView extends PartialPlanView  {
    *
    */
   protected static Point docCoords;
+
+  /**
+   * variable <code>currentYLoc</code>
+   *
+   */
+  protected int currentYLoc;
 
 
   private long startTimeMSecs;
@@ -168,7 +182,6 @@ public abstract class ResourceView extends PartialPlanView  {
     // startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startXLoc = 1;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
-    maxCellRow = 0;
     timeScaleMark = null;
     maxYExtent = 0;
     maxExtentViewHeightPoint = null;
@@ -565,15 +578,13 @@ public abstract class ResourceView extends PartialPlanView  {
 
   private void equalizeViewHeights( final int maxWidth, final int maxStepButtonY) {
     // always put mark at max y location, so on redraw jGoRulerView does not expand
-    int maxY = Math.max( startYLoc + ((maxCellRow + 1) *
-                                      ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT) + 2,
-                         maxStepButtonY);
+    int maxY = Math.max( currentYLoc, maxStepButtonY);
 //     System.err.println( "equalizeViewWidths maxWidth " + maxWidth + " maxY " + maxY);
     if (maxY > maxYExtent) {
       maxYExtent = maxY;
       if (maxExtentViewHeightPoint != null) {
         jGoExtentView.getDocument().removeObject( maxExtentViewHeightPoint);
-      }
+      } 
       maxExtentViewHeightPoint = new JGoStroke();
       maxExtentViewHeightPoint.addPoint( maxWidth, maxYExtent);
       maxExtentViewHeightPoint.addPoint( maxWidth - ViewConstants.TIMELINE_VIEW_X_INIT,
@@ -864,6 +875,78 @@ public abstract class ResourceView extends PartialPlanView  {
     }
 
   } // end class TimeScaleMark
+
+
+  /**
+   * <code>renderBordersUpper</code>
+   *
+   * @param xLeft - <code>int</code> - 
+   * @param xRight - <code>int</code> - 
+   * @param yLoc - <code>int</code> - 
+   * @param jGoDocument - <code>JGoDocument</code> - 
+   * @return - <code>int</code> - 
+   */
+  public static int renderBordersUpper( final int xLeft, final int xRight,
+                                        final int yLoc, final JGoDocument jGoDocument) {
+    JGoStroke divider = new JGoStroke();
+    divider.addPoint( xLeft, yLoc);
+    divider.addPoint( xRight, yLoc);
+    divider.setDraggable( false); divider.setResizable( false);
+    divider.setSelectable( false);
+    divider.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "black")));
+    jGoDocument.addObjectAtTail( divider);
+
+    int extentYTop = yLoc + ViewConstants.RESOURCE_PROFILE_MAX_Y_OFFSET;
+    JGoStroke extentTop = new JGoStroke();
+    extentTop.addPoint( xLeft, extentYTop);
+    extentTop.addPoint( xRight, extentYTop);
+    extentTop.setDraggable( false); extentTop.setResizable( false);
+    extentTop.setSelectable( false);
+    extentTop.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "green3")));
+    jGoDocument.addObjectAtTail( extentTop);
+    return extentYTop;
+  } // end renderBordersUpper
+
+  /**
+   * <code>renderBordersLower</code>
+   *
+   * @param xLeft - <code>int</code> - 
+   * @param xRight - <code>int</code> - 
+   * @param yLoc - <code>int</code> - 
+   * @param jGoDocument - <code>JGoDocument</code> - 
+   */
+  public static void renderBordersLower( final int xLeft, final int xRight,
+                                         final int yLoc, final JGoDocument jGoDocument) {
+    int extentYBottom = yLoc;
+    JGoStroke extentBottom = new JGoStroke();
+    extentBottom.addPoint( xLeft, extentYBottom);
+    extentBottom.addPoint( xRight, extentYBottom);
+    extentBottom.setDraggable( false); extentBottom.setResizable( false);
+    extentBottom.setSelectable( false);
+    extentBottom.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "green3")));
+    jGoDocument.addObjectAtTail( extentBottom);
+  } // end renderBordersLower
+
+  /**
+   * <code>renderResourceName</code>
+   *
+   * @param yLoc - <code>int</code> - 
+   * @param jGoDocument - <code>JGoDocument</code> - 
+   */
+  public static void renderResourceName( final PwResource resource, final int nameXOffset,
+                                         final int yLoc, final JGoDocument jGoDocument,
+                                         ResourceView resourceView) {
+    int xTop = nameXOffset + (int) (ViewConstants.TIMELINE_VIEW_INSET_SIZE *
+                                    ONE_HALF_MULTIPLIER);
+    Point nameLoc = new Point( xTop, yLoc + RESOURCE_NAME_Y_OFFSET);
+    ResourceNameNode nameNode = new ResourceNameNode( nameLoc, resource, resourceView);
+    nameNode.setResizable( false); nameNode.setEditable( false);
+    nameNode.setDraggable( false);
+    // allow Mouse-Right handler
+    // nameNode.setSelectable( false);
+    nameNode.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
+    jGoDocument.addObjectAtTail( nameNode);
+  } // end renderResourceName
 
 
 } // end class ResourceView

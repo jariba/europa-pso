@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.8 2004-03-04 21:30:28 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.9 2004-03-06 02:22:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -65,13 +65,6 @@ public class ResourceTransactionView extends ResourceView  {
   private static final int SLEEP_FOR_50MS = 50;
 
   private List resourceTransactionSetList; // element ResourceTransactionSet
-
-  /**
-   * variable <code>currentYLoc</code>
-   *
-   */
-  protected int currentYLoc;
-
 
   /**
    * <code>ResourceTransactionView</code> - constructor 
@@ -171,6 +164,24 @@ public class ResourceTransactionView extends ResourceView  {
     return resourceTransactionSetList;
   }
 
+  /**
+   * <code>getCurrentYLoc</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getCurrentYLoc() {
+    return currentYLoc;
+  }
+
+  /**
+   * <code>setCurrentYLoc</code>
+   *
+   * @param yLoc - <code>int</code> - 
+   */
+  public final void setCurrentYLoc( int yLoc) {
+    currentYLoc = yLoc;
+  }
+
 //   private List createDummyData( final boolean isNameOnly) {
 //     int startTime = 0, endTime = 0;
 //     if (! isNameOnly) {
@@ -248,7 +259,7 @@ public class ResourceTransactionView extends ResourceView  {
 
   private void createResourceTransactionSets() {
     boolean isNamesOnly = false;
-    // resourceList will come from partialPlan
+    currentYLoc = 0;
     List resourceList = partialPlan.getResourceList(); //createDummyData( isNamesOnly);
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {

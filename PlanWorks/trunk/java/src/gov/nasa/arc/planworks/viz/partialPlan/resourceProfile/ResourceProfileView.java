@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.10 2004-03-04 21:30:27 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.11 2004-03-06 02:22:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -63,7 +63,6 @@ public class ResourceProfileView extends ResourceView  {
 
   private List resourceProfileList; // element ResourceProfile
 
-
   /**
    * <code>ResourceProfileView</code> - constructor 
    *
@@ -121,6 +120,24 @@ public class ResourceProfileView extends ResourceView  {
   }
 
   /**
+   * <code>getCurrentYLoc</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getCurrentYLoc() {
+    return currentYLoc;
+  }
+
+  /**
+   * <code>setCurrentYLoc</code>
+   *
+   * @param yLoc - <code>int</code> - 
+   */
+  public final void setCurrentYLoc( int yLoc) {
+    currentYLoc = yLoc;
+  }
+
+  /**
    * <code>computeMaxResourceLabelWidth</code>
    *
    * @return - <code>int</code> - 
@@ -161,11 +178,10 @@ public class ResourceProfileView extends ResourceView  {
     }
     resourceProfileList = new UniqueSet();
     createResourceProfiles();
-    boolean showDialog = true;
+    // boolean showDialog = true;
     // isContentSpecRendered( PlanWorks.RESOURCE_PROFILE_VIEW, showDialog);
 
-    layoutResourceProfiles();
-  } // end createResourceProfileView
+  } // end renderResourceExtent
 
 //   private List createDummyData( final boolean isNameOnly) {
 //     int startTime = 0, endTime = 0;
@@ -214,6 +230,7 @@ public class ResourceProfileView extends ResourceView  {
 
   private void createResourceProfiles() {
     boolean isNamesOnly = false;
+    currentYLoc = 0;
     List resourceList = partialPlan.getResourceList();
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
@@ -227,43 +244,6 @@ public class ResourceProfileView extends ResourceView  {
     }
 
   } // end createResourceProfiles
-
-  private void layoutResourceProfiles() {
-    /*List extents = new ArrayList();
-    Iterator resourceProfileIterator = resourceProfileList.iterator();
-    while (resourceProfileIterator.hasNext()) {
-      ResourceProfile resourceProfile = (ResourceProfile) resourceProfileIterator.next();
-      extents.add( resourceProfile);
-      }*/
-    List extents = new ArrayList(resourceProfileList);
-    // do the layout -- compute cellRow for each node
-    List results =
-      Algorithms.allocateRows
-      ( jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleStart()),
-        jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleEnd()), extents);
-//     List results =
-//       Algorithms.betterAllocateRows
-//       ( jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleStart()),
-//         jGoRulerView.scaleTime( (double) jGoRulerView.getTimeScaleEnd()), extents);
-    if (resourceProfileList.size() != results.size()) {
-      String message = String.valueOf( resourceProfileList.size() - results.size()) +
-        " nodes not successfully allocated";
-      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                     "Resource Profile View Layout Exception",
-                                     JOptionPane.ERROR_MESSAGE);
-      return;
-    }
-    for (Iterator it = extents.iterator(); it.hasNext();) {
-      ResourceProfile resourceProfile = (ResourceProfile) it.next();
-      // System.err.println( resourceProfile.getName() + " cellRow " + resourceProfile.getRow());
-      if (resourceProfile.getRow() > maxCellRow) {
-        maxCellRow = resourceProfile.getRow();
-      }
-      // render the profile
-      resourceProfile.configure();
-    }
-  } // end layoutResourceProfiles
-
 
 //   private void iterateOverNodes() {
 //     int numResourceProfiles = resourceProfileList.size();
@@ -543,9 +523,7 @@ public class ResourceProfileView extends ResourceView  {
     } 
     timeScaleMark = new TimeScaleMark( xLoc);
     timeScaleMark.addPoint( xLoc, startYLoc);
-    timeScaleMark.addPoint( xLoc, startYLoc +
-                            ((maxCellRow + 1) *
-                             ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT) + 2);
+    timeScaleMark.addPoint( xLoc, currentYLoc + 2);
     this.getJGoExtentDocument().addObjectAtTail( timeScaleMark);
   } // end createTimeMark
 
