@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.1 2003-10-18 01:27:55 taylor Exp $
+// $Id: StepQueryView.java,v 1.2 2003-10-21 21:51:30 taylor Exp $
 //
 // PlanWorks
 //
@@ -152,7 +152,7 @@ public class StepQueryView extends SequenceView {
       ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta,
         (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
                sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight()) +
-        delta);
+        (delta * 2));
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");

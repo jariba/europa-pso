@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.68 2003-10-16 21:40:39 taylor Exp $
+// $Id: PlanWorks.java,v 1.69 2003-10-21 21:51:30 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -351,22 +351,26 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end setProjectMenuEnabled
 
-  private String getSequenceMenuItemName( String seqName, JMenu seqPartialPlanViewMenu) {
+  private String getSequenceMenuItemName( String seqName, JMenu planSequenceViewMenu) {
     int nameCount = 0;
-    for (int i = 0; i < seqPartialPlanViewMenu.getItemCount(); i++) {
-      JMenuItem item = seqPartialPlanViewMenu.getItem(i);
+    // System.err.println( "getSequenceMenuItemName: seqName " + seqName);
+    // check for e.g. monkey1066690986042
+    seqName = seqName.substring( 0, seqName.length() - DbConstants.LONG_INT_LENGTH);
+    for (int i = 0; i < planSequenceViewMenu.getItemCount(); i++) {
+      JMenuItem item = planSequenceViewMenu.getItem(i);
       String itemName = item.getText();
       int index = itemName.indexOf(" (");
       if (index != -1) {
         itemName = itemName.substring(0, index);
       }
-      if (itemName.equals(seqName)) {
+      if (itemName.equals( seqName)) {
         nameCount++;
       }
     }
     if (nameCount > 0) {
       seqName = seqName.concat(" (").concat(Integer.toString(nameCount)).concat(")");
     }
+    // System.err.println( "   seqName " + seqName);
     return seqName;
   } // end getSequenceMenuItemName
 
