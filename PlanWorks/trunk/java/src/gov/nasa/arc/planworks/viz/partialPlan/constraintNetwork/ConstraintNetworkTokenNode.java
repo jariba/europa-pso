@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.2 2003-09-30 21:14:55 taylor Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.3 2003-10-21 14:22:07 miatauro Exp $
 //
 // PlanWorks
 //
@@ -18,7 +18,10 @@ import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
@@ -36,6 +39,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
@@ -54,9 +58,12 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
  */
 public class ConstraintNetworkTokenNode extends TokenNode {
 
+  private Map connectedTokenNodeMap;
   private List variableNodeList; // element VariableNode
   private boolean areNeighborsShown;
+  private boolean hasDiscoveredLinks;
   private int variableLinkCount;
+  private int connectedTokenNodeCount;
 
 
   /**
@@ -77,7 +84,10 @@ public class ConstraintNetworkTokenNode extends TokenNode {
            partialPlanView);
     variableNodeList = new ArrayList();
     areNeighborsShown = false;
+    hasDiscoveredLinks = false;
     variableLinkCount = 0;
+    connectedTokenNodeCount = 0;
+    connectedTokenNodeMap = new HashMap();
   } // end constructor
 
   /**
@@ -202,6 +212,57 @@ public class ConstraintNetworkTokenNode extends TokenNode {
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
   } // end adremoveTokenNodeVariables
 
+  public void discoverLinkage() {
+    ListIterator varIterator = variableNodeList.listIterator();
+    while(varIterator.hasNext()) {
+      VariableNode varNode = (VariableNode) varIterator.next();
+      ListIterator constraintIterator = varNode.getConstraintNodeList().listIterator();
+      while(constraintIterator.hasNext()) {
+	ConstraintNode conNode = (ConstraintNode) constraintIterator.next();
+	ListIterator constrainedVarIterator = conNode.getVariableNodeList().listIterator();
+	while(constrainedVarIterator.hasNext()) {
+	  VariableNode constrainedVarNode = (VariableNode) constrainedVarIterator.next();
+	  if(constrainedVarNode.equals(varNode)) {
+	    continue;
+	  }
+	  ListIterator tokenNodeIterator = constrainedVarNode.getTokenNodeList().listIterator();
+	  while(tokenNodeIterator.hasNext()) {
+	    ConstraintNetworkTokenNode tokenNode = (ConstraintNetworkTokenNode) tokenNodeIterator.next();
+	    if(tokenNode.equals(this)) {
+	      continue;
+	    }
+	    if(!connectedTokenNodeMap.containsKey(tokenNode)) {
+	      connectedTokenNodeMap.put(tokenNode, new Integer(0));
+	    }
+	    connectedTokenNodeMap.put(tokenNode, 
+				      new Integer(((Integer)connectedTokenNodeMap.get(tokenNode)).intValue() + 1));
+	    connectedTokenNodeCount++;
+	  }
+	}
+      }
+    }
+    hasDiscoveredLinks = true;
+  }
 
+  public int getTokenLinkCount() {
+    if(!hasDiscoveredLinks) {
+      discoverLinkage();
+    }
+    return connectedTokenNodeCount;
+  }
 
+  public int getTokenLinkCount(ConstraintNetworkTokenNode other) {
+    Integer retval = (Integer) connectedTokenNodeMap.get(other);
+    if(retval == null) {
+      return 0;
+    }
+    return retval.intValue();
+  }
+
+  public List getConnectedTokenNodes() {
+    if(!hasDiscoveredLinks) {
+      discoverLinkage();
+    }
+    return new ArrayList(connectedTokenNodeMap.keySet());
+  }
 } // end class ConstraintNetworkTokenNode
