@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.28 2004-08-14 01:39:12 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.29 2004-08-21 00:31:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -178,19 +178,21 @@ public class PwVariableImpl implements PwVariable {
     boolean addedParent = false;
     for(Iterator it = classes.iterator(); it.hasNext();) {
       Class cclass = (Class) it.next();
-      if(cclass.equals(PwConstraint.class)) {
+      if(PwConstraint.class.isAssignableFrom( cclass)) {
         retval.addAll(getConstraintList());
       }
       else if(!addedParent && cclass.equals(PwVariableContainer.class)) {
         retval.add(getParent());
         addedParent = true;
       }
-      else if(!addedParent && cclass.equals(PwToken.class) &&
+      // else if(!addedParent && cclass.equals(PwToken.class) &&
+      else if(!addedParent && PwToken.class.isAssignableFrom( cclass) &&
               getParent() instanceof PwToken) {
         retval.add(getParent());
         addedParent = true;
       }
-      else if(!addedParent && cclass.equals(PwObject.class) &&
+      // else if(!addedParent && cclass.equals(PwObject.class) &&
+      else if(!addedParent && PwObject.class.isAssignableFrom( cclass) &&
               getParent() instanceof PwObject) {
         retval.add(getParent());
         addedParent = true;
@@ -200,11 +202,11 @@ public class PwVariableImpl implements PwVariable {
 //         retval.add(getParent());
 //         addedParent = true;
 //       }
-      else if(!addedParent && cclass.equals(PwTimeline.class) &&
-              getParent() instanceof PwTimeline) {
-        retval.add(getParent());
-        addedParent = true;
-      }
+//       else if(!addedParent && cclass.equals(PwTimeline.class) &&
+//               getParent() instanceof PwTimeline) {
+//         retval.add(getParent());
+//         addedParent = true;
+//       }
     }
     return retval;
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.52 2004-08-14 01:39:11 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.53 2004-08-21 00:31:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,7 +13,6 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
-import java.awt.FontMetrics;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -23,18 +22,16 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.StringTokenizer;
-import javax.swing.SwingUtilities;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwPredicate;
+import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwRule;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.util.UniqueSet;
 
 /**
@@ -451,15 +448,17 @@ public class PwTokenImpl implements PwToken {
     classes.add(PwVariable.class);
     classes.add(PwObject.class);
     classes.add(PwSlot.class);
+    classes.add(PwResource.class);
     return getNeighbors(classes);
   }
 
   public List getNeighbors(List classes) {
     PwSlot slotParent = null; PwObject objectParent = null;
+    PwResource resourceParent = null;
     List retval = new UniqueSet();
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
-      if(cclass.equals(PwRuleInstance.class)) {
+      if(PwRuleInstance.class.isAssignableFrom( cclass)) {
 	if ((getRuleInstanceId() != null) && (getRuleInstanceId().intValue() > 0)) {
 	  retval.add(partialPlan.getRuleInstance(getRuleInstanceId()));
 	}
@@ -471,11 +470,15 @@ public class PwTokenImpl implements PwToken {
 	    retval.add( partialPlan.getRuleInstance( ruleInstanceId));
 	  }
 	}
-      } else if(cclass.equals(PwVariable.class)) {
+      } else if(PwVariable.class.isAssignableFrom( cclass)) {
         retval.addAll(getVariablesList());
       } else if(cclass.equals(PwSlot.class)) {
 	if ((slotId != null) && (! slotId.equals( DbConstants.NO_ID))) {
 	  slotParent = partialPlan.getSlot(slotId);
+	}
+      } else if(cclass.equals(PwResource.class)) {
+	if ((getParentId() != null) && (! getParentId().equals( DbConstants.NO_ID))) {
+	  resourceParent = partialPlan.getResource(getParentId());
 	}
       } else if(cclass.equals(PwObject.class)) {
 	if ((getParentId() != null) && (! getParentId().equals( DbConstants.NO_ID))) {
@@ -485,6 +488,8 @@ public class PwTokenImpl implements PwToken {
     }
     if (slotParent != null) {
       retval.add( slotParent);
+    } else if (resourceParent != null) {
+      retval.add( resourceParent);
     } else if (objectParent != null) {
       retval.add( objectParent);
     } else {

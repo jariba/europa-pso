@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.21 2004-08-07 01:18:28 taylor Exp $
+// $Id: VariableNode.java,v 1.22 2004-08-21 00:31:55 taylor Exp $
 //
 // PlanWorks
 //
@@ -490,18 +490,24 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
    */
   protected void addVariableNodeContainersAndConstraints
     ( final VariableNode variableNode, final ConstraintNetworkView constraintNetworkView) {
+    addVariableNodeContainersAndConstraints( variableNode, constraintNetworkView, true);
+  } // end addVariableNodeTokensAndConstraints
+
+  protected void addVariableNodeContainersAndConstraints
+    ( final VariableNode variableNode, final ConstraintNetworkView constraintNetworkView,
+      final boolean doRedraw) {
     constraintNetworkView.setStartTimeMSecs( System.currentTimeMillis());
     boolean areNodesChanged = constraintNetworkView.addConstraintNodes( variableNode);
     boolean areLinksChanged =
       constraintNetworkView.addContainerAndConstraintToVariableLinks( variableNode);
-    if (areNodesChanged || areLinksChanged) {
+    if (doRedraw && (areNodesChanged || areLinksChanged)) {
       constraintNetworkView.setLayoutNeeded();
       constraintNetworkView.setFocusNode( variableNode);
       constraintNetworkView.redraw();
     }
     int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
-  } // end addVariableNodeTokensAndConstraints
+  }
 
   private void removeVariableNodeContainersAndConstraints
     ( final VariableNode variableNode, final ConstraintNetworkView constraintNetworkView) {

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.80 2004-08-14 01:39:06 taylor Exp $
+# $Id: build-tags-file.csh,v 1.81 2004-08-21 00:31:50 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -171,6 +171,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/VariableContainerNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/FindEntityPathAdapter.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenu.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenuItem.java \
@@ -241,11 +242,17 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/util/AskNodeByKey.java \
     src/gov/nasa/arc/planworks/viz/util/AskQueryEntityKey.java \
     src/gov/nasa/arc/planworks/viz/util/AskQueryTwoEntityKeys.java \
+    src/gov/nasa/arc/planworks/viz/util/AskQueryTwoEntityKeysClasses.java \
+    src/gov/nasa/arc/planworks/viz/util/ClassBox.java \
+    src/gov/nasa/arc/planworks/viz/util/ClassGroupBox.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionComparatorAscending.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionComparatorDescending.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionTable.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionTableModel.java \
+    src/gov/nasa/arc/planworks/viz/util/EntityKeysBox.java \
+    src/gov/nasa/arc/planworks/viz/util/FindEntityPath.java \
     src/gov/nasa/arc/planworks/viz/util/FixedHeightPanel.java \
+    src/gov/nasa/arc/planworks/viz/util/MaxLengthBox.java \
     src/gov/nasa/arc/planworks/viz/util/MessageDialog.java \
     src/gov/nasa/arc/planworks/viz/util/ProgressMonitorThread.java \
     src/gov/nasa/arc/planworks/viz/util/PWProgressMonitor.java \

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.65 2004-08-14 01:39:19 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.66 2004-08-21 00:31:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,6 +46,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.SwingWorker;
@@ -59,12 +61,13 @@ import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.FindEntityPathAdapter;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
-import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeys;
-import gov.nasa.arc.planworks.viz.util.MessageDialog;
+import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeysClasses;
+import gov.nasa.arc.planworks.viz.util.FindEntityPath;
 import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -77,7 +80,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TokenNetworkView extends PartialPlanView {
+public class TokenNetworkView extends PartialPlanView implements FindEntityPathAdapter {
 
   /**
    * variable <code>timelineColorMap</code>
@@ -111,8 +114,6 @@ public class TokenNetworkView extends PartialPlanView {
   private boolean isDebugPrint;
   private PartialPlanViewState state;
   private List highlightPathNodesList;
-  private Integer tokenKey1;
-  private Integer tokenKey2;
   private ProgressMonitorThread findPathPMThread;
   private ProgressMonitorThread redrawPMThread;
 
@@ -422,7 +423,7 @@ public class TokenNetworkView extends PartialPlanView {
     this.setVisible( false);
 
     redrawPMThread = 
-      progressMonitorThread( "Redrawing Token Network View ...", 0, 6, Thread.currentThread(),
+      createProgressMonitorThread( "Redrawing Token Network View ...", 0, 6, Thread.currentThread(),
 			     this);
     if (! progressMonitorWait( redrawPMThread, this)) {
       System.err.println( "progressMonitorWait failed");
@@ -800,9 +801,9 @@ public class TokenNetworkView extends PartialPlanView {
     createNodeByKeyItem( nodeByKeyItem);
     mouseRightPopup.add( nodeByKeyItem);
 
-    JMenuItem findTokenPathItem = new JMenuItem( "Find Token Path");
-    createFindTokenPathItem( findTokenPathItem);
-    mouseRightPopup.add( findTokenPathItem);
+    JMenuItem findEntityPathItem = new JMenuItem( "Find Entity Path");
+    createFindEntityPathItem( findEntityPathItem);
+    mouseRightPopup.add( findEntityPathItem);
 
     if (highlightPathNodesList != null) {
       JMenuItem highlightPathItem = new JMenuItem( "Highlight Current Path");
@@ -895,120 +896,114 @@ public class TokenNetworkView extends PartialPlanView {
 	      Iterator rootTokenItr = rootTokens.iterator();
 	      while (rootTokenItr.hasNext()) {
 		PwToken rootToken = (PwToken) rootTokenItr.next();
-		tokenKey1 = rootToken.getId();
-		tokenKey2 = entityToFind.getId();
-		FindTokenPath findTokenPath =  getFindTokenPath();
-		if (findTokenPath.getTokenRuleKeyList().size() != 0) {
-		  List nodeList = renderTokenPathNodes( findTokenPath);
-		  setLayoutNeeded();
-		  setFocusNode( (ExtendedBasicNode) nodeList.get( nodeList.size() - 1));
-		  redraw();
-		  return;
-		}
-	      }
-	      if (entityIsToken) {
-		String message = "Token " + tokenToFind.getPredicateName() +
-		  " (key=" + tokenToFind.getId().toString() + ") not found.";
-		JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-					       "Token Not Found in TokenNetworkView",
-					       JOptionPane.ERROR_MESSAGE);
-		System.err.println( message);
-	      } else {
-		String message = "RuleInstance 'rule " + ruleInstanceToFind.getRuleId() +
-		  "' (key=" + ruleInstanceToFind.getId().toString() + ") not found.";
-		JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-					       "RuleInstance Not Found in TokenNetworkView",
-					       JOptionPane.ERROR_MESSAGE);
-		System.err.println( message);
-	      }
+                boolean doPathExists = false;
+                List pathClasses = ViewConstants.TOKEN_NETWORK_VIEW_ENTITY_CLASSES;
+                int maxPathLength = Integer.MAX_VALUE;
+                MDIInternalFrame dialogWindowFrame = null;
+                if (partialPlan.pathExists( rootToken, entityToFind.getId(), pathClasses)) {
+                  isFound = true;
+                  invokeFindEntityPathClasses( rootToken.getId(), entityToFind.getId(),
+                                               pathClasses, doPathExists, maxPathLength,
+                                               dialogWindowFrame);
+                  break;
+                }
+              }
+              if (! isFound) {
+                if (entityIsToken) {
+                  String message = "Token " + tokenToFind.getPredicateName() +
+                    " (key=" + tokenToFind.getId().toString() + ") not found.";
+                  JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                                 "Token Not Found in TokenNetworkView",
+                                                 JOptionPane.ERROR_MESSAGE);
+                  System.err.println( message);
+                } else {
+                  String message = "RuleInstance 'rule " + ruleInstanceToFind.getRuleId() +
+                    "' (key=" + ruleInstanceToFind.getId().toString() + ") not found.";
+                  JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                                 "RuleInstance Not Found in TokenNetworkView",
+                                                 JOptionPane.ERROR_MESSAGE);
+                  System.err.println( message);
+                }
+              }
 	    }
           }
         }
       });
   } // end createNodeByKeyItem
 
-  private FindTokenPath getFindTokenPath() {
-    boolean isFindTokenPath = true;
-    FindTokenPath findTokenPath =  new FindTokenPath( partialPlan, viewSet, isFindTokenPath);
-    findTokenPath.setTokenRuleKeyList( null);
-    findTokenPathDoit( findTokenPath);
-    while (findTokenPath.getTokenRuleKeyList() == null) {
-      try {
-	Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL * 2);
-      } catch (InterruptedException ie) {}
-      // System.err.println("createFindTokenPathItemWorker wait for findTokenPath");
-    }
-    return findTokenPath;
-  }
-
-  private void findTokenPathDoit( final FindTokenPath findTokenPath) {
-    final SwingWorker worker = new SwingWorker() {
-	public Object construct() {
-	  findPathPMThread = 
-	    progressMonitorThread( "Finding Token Path ...", 0, 6, Thread.currentThread(),
-				   findTokenPath);
-	  if (! progressMonitorWait( findPathPMThread, TokenNetworkView.this)) {
-	    System.err.println( "progressMonitorWait failed");
-	    findTokenPath.setTokenRuleKeyList( new ArrayList());
-	    return null;
-	  }
-	   findPathPMThread.getProgressMonitor().setProgress
-	     ( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
-
-	  findTokenPath.setTokenRuleKeyList( partialPlan.getTokenNetworkPath( tokenKey1,
-	  								      tokenKey2));
-	  findPathPMThread.setProgressMonitorCancel();
-	  return null;
-	}
-      };
-    worker.start();  
-  } // end findTokenPath
-
-  private void createFindTokenPathItem( JMenuItem findTokenPathItem) {
-    findTokenPathItem.addActionListener( new ActionListener() {
+  private void createFindEntityPathItem( JMenuItem findEntityPathItem) {
+    findEntityPathItem.addActionListener( new ActionListener() {
 	public void actionPerformed( ActionEvent evt) {
-	  final SwingWorker worker = new SwingWorker() {
-	      public Object construct() {
-		createFindTokenPathItemWorker();
-		return null;
-	      }
-	    };
-	  worker.start();
+          MDIInternalFrame twoEntityKeysWindow = 
+            PlanWorks.getPlanWorks().createFrame( "Find Path in " + viewFrame.getTitle(),
+                                                  getViewSet(), true, true, false, false);
+          Container contentPane = twoEntityKeysWindow.getContentPane();
+          AskQueryTwoEntityKeysClasses twoEntityKeysContent =
+            new AskQueryTwoEntityKeysClasses( twoEntityKeysWindow, partialPlan,
+                                              TokenNetworkView.this);
+          contentPane.add( twoEntityKeysContent);
+          twoEntityKeysWindow.pack();
 	}
       });
-  } // createFindTokenPathItem
+  } // createFindEntityPathItem
 
-  private void createFindTokenPathItemWorker() {
-    AskQueryTwoEntityKeys twoKeysDialog =
-      new AskQueryTwoEntityKeys( "Enter Ids for Find Token Path", "token",
-				 "start token key (int)", "token",
-				 "end token key (int)", partialPlan);
-    tokenKey1 = twoKeysDialog.getEntityKey1();
-    tokenKey2 = twoKeysDialog.getEntityKey2();
-    if ((tokenKey1 == null) || (tokenKey2 == null)) {
+  /**
+   * <code>invokeFindEntityPathClasses</code>
+   *
+   * @param entityKey1 - <code>Integer</code> - 
+   * @param entityKey2 - <code>Integer</code> - 
+   * @param pathClasses - <code>List</code> - 
+   * @param doPathExists - <code>boolean</code> - 
+   * @param maxPathLength - <code>int</code> - 
+   * @param dialogWindowFrame - <code>MDIInternalFrame</code> - 
+   */
+  public void invokeFindEntityPathClasses( final Integer entityKey1,
+                                           final Integer entityKey2,
+                                           final List pathClasses,
+                                           final boolean doPathExists,
+                                           final int maxPathLength,
+                                           final MDIInternalFrame dialogWindowFrame) {
+//     System.err.println( "invoke entityKey1 " + entityKey1);
+//     System.err.println( "invoke entityKey2 " + entityKey2);
+//     for (int i = 0, n = pathClasses.size(); i < n; i++) {
+//       System.err.println( "invoke pathClass i=" + i + " " +
+//                           ((Class) pathClasses.get( i)).getName());
+//     }
+//     System.err.println( "invoke doPathExists " + doPathExists);
+//     System.err.println( "invoke maxPathLength " + maxPathLength);
+    if ((entityKey1 == null) || (entityKey2 == null) || (pathClasses == null)) {
       return;
     }
-    FindTokenPath findTokenPath =  getFindTokenPath();
-    if (findTokenPath.getTokenRuleKeyList().size() == 0) {
-      JOptionPane.showMessageDialog
-	( PlanWorks.getPlanWorks(), "no path found for " + tokenKey1 + " => " +
-	  tokenKey2, "Find Token Path Error", JOptionPane.ERROR_MESSAGE);
-      return;
-    }
-    List nodeList = renderTokenPathNodes( findTokenPath);
-    outputTokenPathNodes( nodeList);
-  } // end createFindTokenPathItemWorker
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          FindEntityPath findEntityPath =
+            new FindEntityPath( entityKey1, entityKey2, pathClasses, doPathExists,
+                                maxPathLength, partialPlan, TokenNetworkView.this,
+                                dialogWindowFrame);
+          findEntityPath.invokeAndWait();
+         return null;
+        }
+      };
+    worker.start();
+  } // end invokeFindEntityPathClasses
 
-  private List renderTokenPathNodes( FindTokenPath findTokenPath) {
+  /**
+   * <code>renderEntityPathNodes</code>
+   *
+   * @param findEntityPath - <code>FindEntityPath</code> - 
+   * @return - <code>List</code> - 
+   */
+  public List renderEntityPathNodes( final FindEntityPath findEntityPath) {
     boolean isLayoutNeeded = false;
     List nodeList =  new ArrayList();
-      Iterator tokenRuleItr = findTokenPath.getTokenRuleKeyList().iterator();
+      Iterator tokenRuleItr = findEntityPath.getEntityKeyList().iterator();
       PwToken token = null; PwRuleInstance ruleInstance = null;
       while (tokenRuleItr.hasNext()) {
 	Integer tokenRuleKey = (Integer) tokenRuleItr.next();
 	// System.err.println( "key " + tokenRuleKey);
 	if ((token = partialPlan.getToken( tokenRuleKey)) != null) {
-	  TokenNetworkTokenNode tokenNode = addTokenTokNetNode( token);
+	  TokenNetworkTokenNode tokenNode =
+            (TokenNetworkTokenNode) addEntityTokNetNode( token, isDebugPrint);
 	  nodeList.add( tokenNode);
 	  if (! tokenNode.areNeighborsShown()) {
 	    if (tokenNode.addTokenObjects( tokenNode)) {
@@ -1018,7 +1013,7 @@ public class TokenNetworkView extends PartialPlanView {
 	  }
 	} else if ((ruleInstance = partialPlan.getRuleInstance( tokenRuleKey)) != null) {
 	  TokenNetworkRuleInstanceNode ruleInstanceNode =
-	    addRuleInstanceTokNetNode( ruleInstance);
+            (TokenNetworkRuleInstanceNode) addEntityTokNetNode( ruleInstance, isDebugPrint);
 	  nodeList.add( ruleInstanceNode);
 	  if (! ruleInstanceNode.areNeighborsShown()) {
 	    if (ruleInstanceNode.addRuleInstanceObjects( ruleInstanceNode)) {
@@ -1035,38 +1030,17 @@ public class TokenNetworkView extends PartialPlanView {
       highlightPathNodesList = nodeList;
       redraw();
       return nodeList;
-  } // end renderTokenPathNodes
+  } // end renderEntityPathNodes
 
   private void createHighlightPathItem( final JMenuItem highlightPathItem,
 					final List nodeList) {
     highlightPathItem.addActionListener( new ActionListener() {
 	public void actionPerformed(ActionEvent evt) {
 	  NodeGenerics.highlightPathNodes( nodeList, jGoView);
-	  outputTokenPathNodes( nodeList);
+	  FindEntityPath.outputEntityPathNodes( nodeList, TokenNetworkView.this);
 	}
       });
   } // end createHighlightPathItem
-
-  private void outputTokenPathNodes( List nodeList) {
-    System.err.print( "Found Token Path ");
-    StringBuffer nodeBuffer = new StringBuffer( "(");
-    nodeBuffer.append( TokenNetworkView.this.getName()).append( ") => ");
-    Iterator nodeItr = nodeList.iterator();
-    while (nodeItr.hasNext()) {
-      ExtendedBasicNode node = (ExtendedBasicNode) nodeItr.next();
-      Integer nodeId = null;
-      if (node instanceof TokenNetworkTokenNode) {
-	nodeId = ((TokenNetworkTokenNode) node).getToken().getId();
-      } else if (node instanceof TokenNetworkRuleInstanceNode) {
-	nodeId = ((TokenNetworkRuleInstanceNode) node).getRuleInstance().getId();
-      }
-      nodeBuffer.append( nodeId).append( " ");
-    }
-    System.err.println( nodeBuffer.toString());
-    MessageDialog msgDialog = // non-modal
-      new MessageDialog( PlanWorks.getPlanWorks(), "Found Token Path",
-			 nodeBuffer.toString());
-  } // end outputTokenPathNodes
 
   /**
    * <code>findAndSelectToken</code>

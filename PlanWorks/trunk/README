@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.121 2004-08-16 22:01:01 taylor Exp $
+# $Id: README,v 1.122 2004-08-21 00:31:50 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -89,31 +89,20 @@ o PLASMA can now be run with interactive control over which step's partial plan 
   not work for any combination of qualifications.  gdb 5.0 requires no namespace 
   qualification of any sort (it seems to completely ignore namespaces).
 
-o The Constraint Network View has two new background Mouse-Right selection options: 
-  "Find Variable Path" and "Highlight Current Path".  "Find Variable Path" requests 
-  two variable keys and finds a path through variables and constraints which connects
-  them.  This node path is saved.  Selected nodes are dragged as a group, which may
-  be inconvenient.  To deal with this, click Mouse-Left in the background to discard
+o The Constraint Network View, the Token Network View, and the Navigator View have
+  two new background Mouse-Right selection options: "Find Entity Path" and
+  "Highlight Current Path".  "Find Entity Path" requests two entity keys, class 
+  node types to search, and an optional maximum path length.  "Find Path" finds a 
+  path through the classes specified, rendering the selected nodes and highlighting them.  
+  This dialog also offers "Does Path Exist" which determines whether a path exists, 
+  without finding the nodes.  Selected nodes are dragged as a group, which may be 
+  inconvenient.  To deal with this, click Mouse-Left in the background to discard 
   the selections, drag the nodes to new locations, and then on the background select
   Mouse-Right: "Highlight Current Path".
 
-o The Token Network View has two new background Mouse-Right selection options: 
-  "Find Token Path" and "Highlight Current Path".  "Find Token Path" requests 
-  two token keys and finds a path through tokens and rule instances which connects
-  them.  This node path is saved.  Selected nodes are dragged as a group, which may
-  be inconvenient.  To deal with this, click Mouse-Left in the background to discard
-  the selections, drag the nodes to new locations, and then on the background select
-  Mouse-Right: "Highlight Current Path".
-
-o The Navigator View has three new background Mouse-Right selection options: 
-  "Find Entity Path", "Highlight Current Path", and "Find by Key".  "Find Entity Path" 
-  requests two entity keys and finds a path through tokens, variables, constraints, rule 
-  instances, slots, objects, resources, and timelines.  This node path is saved.  
-  Selected nodes are dragged as a group, which may be inconvenient.  To deal with 
-  this, click Mouse-Left in the background to discard the selections, drag the nodes
-  to new locations, and then on the background select Mouse-Right: "Highlight Current 
-  Path".  "Find By Key" requests a single entity key and finds that node, opening it
-  and its neighbors, if necessary.
+o The Navigator View has a new background Mouse-Right selection options: "Find by Key",
+  which requests a single entity key and finds that node, opening it and its neighbors,
+  if necessary.
 
 
 o GNATS PRs and CRs completed:

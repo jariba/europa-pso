@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.25 2004-08-14 01:39:18 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.26 2004-08-21 00:31:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -210,7 +210,7 @@ public class ResourceProfileView extends ResourceView  {
     currentYLoc = 0;
     List resourceList = partialPlan.getResourceList();
     progressMonThread =
-      progressMonitorThread( "Rendering Resource Profile View ...", 0, resourceList.size(),
+      createProgressMonitorThread( "Rendering Resource Profile View ...", 0, resourceList.size(),
 			     Thread.currentThread(), this);
     if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);

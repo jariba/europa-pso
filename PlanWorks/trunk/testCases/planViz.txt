@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.56 2004-08-16 22:01:02 taylor Exp $
+// $Id: planViz.txt,v 1.57 2004-08-21 00:32:01 taylor Exp $
 //
 // PlanWorks
 //
@@ -434,11 +434,11 @@ Method:
  16. In the Token Network, Mouse-Right click on the background and select
      "Close Rule Instance Views".
  17. In the Constraint Network, Mouse-Right click on the background and select
-     "Find Variable Path", enter two variable keys, and click "OK".
+     "Find Entity Path", enter two variable keys, and click "OK".
  18. In the Constraint Network, Mouse-Left click on the background, and then
      Mouse-Right click on the background and select "Highlight Current Path".
  19. In the Token Network, Mouse-Right click on the background and select
-     "Find Token Path", enter two token keys, and click "OK".
+     "Find Entity Path", enter two token keys, and click "OK".
  20. In the Token Network, Mouse-Left click on the background, and then
      Mouse-Right click on the background and select "Highlight Current Path".
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.64 2004-08-14 01:39:19 taylor Exp $
+// $Id: TimelineView.java,v 1.65 2004-08-21 00:31:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -408,7 +408,7 @@ public class TimelineView extends PartialPlanView {
       title = "Redrawing";
     }
     progressMonThread =
-      progressMonitorThread( title + " Timeline View ...", 0, numTimelines,
+      createProgressMonitorThread( title + " Timeline View ...", 0, numTimelines,
 			     Thread.currentThread(), this);
     if (! progressMonitorWait( progressMonThread, this)) {
       return false;

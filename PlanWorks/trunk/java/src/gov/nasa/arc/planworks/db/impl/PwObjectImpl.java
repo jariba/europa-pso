@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.26 2004-08-14 01:39:09 taylor Exp $
+// $Id: PwObjectImpl.java,v 1.27 2004-08-21 00:31:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -183,11 +183,13 @@ public class PwObjectImpl implements PwObject {
     List retval = new LinkedList();
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
-      if(cclass.equals(PwToken.class))
+      // if(cclass.equals(PwToken.class))
+      if (PwToken.class.isAssignableFrom( cclass))
         retval.addAll(getTokens());
-      else if(cclass.equals(PwVariable.class))
+      else if(PwVariable.class.isAssignableFrom( cclass))
         retval.addAll(getVariables());
-      else if(cclass.equals(PwObject.class)) {
+      //else if(cclass.equals(PwObject.class)) {
+      else if(PwObject.class.isAssignableFrom( cclass)) {
 	if (getParent() != null) {
 	  retval.add(getParent());
 	}

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.39 2004-08-16 18:40:13 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.40 2004-08-21 00:31:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -267,7 +267,7 @@ public class SequenceStepsView extends SequenceView {
 
     numOperations = planSequence.getPlanDBSizeList().size() * 2;
     initPMThread =
-      progressMonitorThread( "Rendering Sequence Steps View ...", 0, numOperations,
+      createProgressMonitorThread( "Rendering Sequence Steps View ...", 0, numOperations,
 			     Thread.currentThread(), this);
     if (! progressMonitorWait( initPMThread, this)) {
       closeView( this);
@@ -351,7 +351,7 @@ public class SequenceStepsView extends SequenceView {
     
       numOperations = planSequence.getPlanDBSizeList().size();
       redrawPMThread =
-	progressMonitorThread( "Redrawing Sequence Steps View ...", 0, numOperations,
+	createProgressMonitorThread( "Redrawing Sequence Steps View ...", 0, numOperations,
 			       Thread.currentThread(), this);
       numOperations = 0;
       if (! progressMonitorWait( redrawPMThread, this)) {

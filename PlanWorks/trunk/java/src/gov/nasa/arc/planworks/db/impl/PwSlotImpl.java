@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.31 2004-08-14 01:39:11 taylor Exp $
+// $Id: PwSlotImpl.java,v 1.32 2004-08-21 00:31:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -174,9 +174,9 @@ public class PwSlotImpl implements PwSlot {
     List retval = new LinkedList();
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
-      if(cclass.equals(PwToken.class)) {
+      if(PwToken.class.isAssignableFrom( cclass)) {
         retval.addAll( getTokenList());
-      } else if (cclass.equals(PwTimeline.class)) {
+      } else if (PwTimeline.class.isAssignableFrom( cclass)) {
 	retval.add( partialPlan.getTimeline( timelineId));
       }
     }

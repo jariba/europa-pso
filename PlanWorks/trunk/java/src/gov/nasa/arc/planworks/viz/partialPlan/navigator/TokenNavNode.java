@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.15 2004-08-14 01:39:17 taylor Exp $
+// $Id: TokenNavNode.java,v 1.16 2004-08-21 00:31:56 taylor Exp $
 //
 // PlanWorks
 //
@@ -32,6 +32,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
@@ -62,8 +63,9 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
 
   private PwToken token;
   private PwSlot slot;
-  private PartialPlanView partialPlanView;
   private PwObject object;
+  private PwResource resource;
+  private PartialPlanView partialPlanView;
   private PwPartialPlan partialPlan;
   private NavigatorView navigatorView;
   private String nodeLabel;
@@ -89,12 +91,15 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     partialPlan = partialPlanView.getPartialPlan();
     slot = null; object = null;
     if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.NO_ID)) {
-      slot = (PwSlot) partialPlan.getSlot( token.getSlotId());
+      slot = partialPlan.getSlot( token.getSlotId());
+    }
+    if (token.getParentId() != null && !token.getParentId().equals(DbConstants.NO_ID)) {
+      resource = partialPlan.getResource( token.getParentId());
     }
     if (token.getParentId() != null && !token.getParentId().equals(DbConstants.NO_ID)) {
       object = partialPlan.getObject( token.getParentId());
     }
-//     if ((token.getSlotId() == null) &&
+    //     if ((token.getSlotId() == null) &&
 //         (token.getTimelineId() == null)) {
 //       // free token
 //     }
@@ -216,6 +221,8 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     List returnList = new ArrayList();
     if (slot != null) {
       returnList.add( slot);
+    } else if (resource != null) {
+      returnList.add( resource);
     } else if (object != null) {
       returnList.add( object);
     } else {

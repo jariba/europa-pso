@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceImpl.java,v 1.5 2004-08-14 01:39:11 taylor Exp $
+// $Id: PwResourceImpl.java,v 1.6 2004-08-21 00:31:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -174,11 +174,11 @@ public class PwResourceImpl extends PwObjectImpl implements PwResource {
     List retval = new LinkedList();
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
-      if(cclass.equals(PwResourceTransaction.class))
+      if(PwResourceTransaction.class.isAssignableFrom( cclass))
         retval.addAll(getTransactionSet());
-      else if(cclass.equals(PwVariable.class))
+      else if(PwVariable.class.isAssignableFrom( cclass))
         retval.addAll(((PwVariableContainer) this).getVariables());
-      else if(cclass.equals(PwResource.class)) {
+      else if(PwResource.class.isAssignableFrom( cclass)) {
 	if (getParent() != null) {
 	  retval.add(getParent());
 	}
