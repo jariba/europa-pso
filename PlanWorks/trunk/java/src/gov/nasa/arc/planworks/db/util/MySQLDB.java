@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.63 2003-11-11 02:44:51 taylor Exp $
+// $Id: MySQLDB.java,v 1.64 2003-11-13 18:09:34 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -498,30 +498,34 @@ public class MySQLDB {
       ResultSet partialPlanIds =
         queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
       StringBuffer whereClause = new StringBuffer(" WHERE PartialPlanId IN (");
+      int nppIds = 0;
       while(partialPlanIds.next()) {
         whereClause.append(partialPlanIds.getLong("PartialPlanId"));
         if(!partialPlanIds.isLast()) {
           whereClause.append(", ");
         }
+        nppIds++;
       }
       whereClause.append(")");
-      updateDatabase("DELETE FROM Object".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM Timeline".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM Slot".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM Token".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM Variable".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM EnumeratedDomain".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM IntervalDomain".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM VConstraint".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM TokenRelation".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM ParamVarTokenMap".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM ConstraintVarMap".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM Predicate".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM Parameter".concat(whereClause.toString()));
-      updateDatabase("DELETE FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()));
-      updateDatabase("DELETE FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
-      updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
-      analyzeDatabase();
+      if(nppIds != 0) {
+        updateDatabase("DELETE FROM Object".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM Timeline".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM Slot".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM Token".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM Variable".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM EnumeratedDomain".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM IntervalDomain".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM VConstraint".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM TokenRelation".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM ParamVarTokenMap".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM ConstraintVarMap".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM Predicate".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM Parameter".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()));
+        updateDatabase("DELETE FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
+        updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
+        analyzeDatabase();
+      }
     }
     catch(SQLException sqle){}
   }
