@@ -13,9 +13,9 @@
   <property name="eXistRoot"  value="lib/eXist"/>
   <property name="jGoRoot"  value="lib/JGo"/>
   <property environment="env"/>
-  <property name="junit.home" location="${env.JUNIT_HOME}"/>
-  <property name="jfcunit.home" location="${env.JFCUNIT_HOME}"/>
-  <property name="jakarta.regexp.home" location="${env.JAKARTA_REGEXP_HOME}"/>
+  <property name="junit.home" value="lib/junit3.8.1"/>
+  <property name="jfcunit.home" value="lib/jfcunit"/>
+  <property name="jakarta.regexp.home" value="lib/jakarta-regexp-1.2"/>
 
   <target name="init">
     <!-- Create the time stamp -->
