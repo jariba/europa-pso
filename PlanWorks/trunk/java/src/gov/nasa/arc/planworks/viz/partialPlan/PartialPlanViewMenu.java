@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.18 2004-08-14 01:39:14 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.19 2004-09-21 22:19:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -223,7 +223,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
         timelineView.findAndSelectTimeline( partialPlan.getTimeline( idToFind));
     } else if (viewName.equals( ViewConstants.TOKEN_NETWORK_VIEW)) {
       TokenNetworkView tokenNetworkView= ViewGenerics.getTokenNetworkView( viewFrame);
-      tokenNetworkView.findAndSelectToken( partialPlan.getToken( idToFind), isByKey);
+      tokenNetworkView.findAndSelectNode( idToFind, isByKey);
     } else {
       System.err.println( " CreatePartialPlanViewThread.findIdInFrame viewName " +
                           viewName + " not handled");
