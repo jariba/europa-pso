@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.61 2004-05-28 20:21:22 taylor Exp $
+// $Id: ViewSet.java,v 1.62 2004-06-02 19:13:06 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -101,7 +101,6 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     if(views.containsKey(viewClass)) {
       return getViewByClass(viewClass);
     }
-    Constructor [] constructors = viewClass.getDeclaredConstructors();
     String frameViewName = viewClassName.substring( viewClassName.lastIndexOf( ".") + 1);
     MDIInternalFrame viewFrame = desktopFrame.createFrame( frameViewName + " of " +
                                                            viewable.getName(),
@@ -112,32 +111,28 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     VizView view = null;
     try {
       if (viewListener == null) {
-        view = (VizView) constructors[0].newInstance(constructorArgs);
+
+				Class [] constructorArgClasses = {Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"),
+																					Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet")};
+				view = (VizView) viewClass.getDeclaredConstructor(constructorArgClasses).newInstance(constructorArgs);
       } else {
         Object [] testConstructorArgs = new Object[3];
         testConstructorArgs[0] = viewable;
         testConstructorArgs[1] = this;
         testConstructorArgs[2] = viewListener;
-        if (viewClassName.equals( PlanWorks.getViewClassName
-                                  ( ViewConstants.DB_TRANSACTION_VIEW))) {
-          view = (VizView) constructors[1].newInstance( testConstructorArgs);
-        } else if (viewable instanceof PwPartialPlan) {
-          view = (VizView) constructors[2].newInstance( testConstructorArgs);
-        } else if (viewable instanceof PwPlanningSequence) {
-          view = (VizView) constructors[1].newInstance( testConstructorArgs);
-        } else {
-          System.err.println( "ViewSet.openView " + viewable + " not handled");
-          System.exit(1);
-        }
+				Class [] argClasses = {Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"),
+                               Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet"),
+                               Class.forName("gov.nasa.arc.planworks.viz.ViewListener")};
+				view = (VizView) viewClass.getDeclaredConstructor(argClasses).newInstance(testConstructorArgs);
       }
     } 
     catch (InvocationTargetException ite) {
-	ite.getCause().printStackTrace();
-	System.exit(-1);
+			ite.getCause().printStackTrace();
+			System.exit(-1);
     }
     catch (Exception excp) {
-	excp.printStackTrace();
-	System.exit(1);
+			excp.printStackTrace();
+			System.exit(1);
     }
     contentPane.add(view);
     return viewFrame;
