@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.60 2004-05-04 01:27:23 taylor Exp $
+// $Id: ViewSet.java,v 1.61 2004-05-28 20:21:22 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -418,5 +418,56 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   public MDIInternalFrame getView(Object key) {
     return (MDIInternalFrame) views.get(key);
   }
+
+    /**
+   * <code>doesViewFrameExist</code> - check for String view key or Class view key
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean doesViewFrameExist( String viewName) {
+    String windowName = viewName.replaceAll( " ", "");
+    // System.err.println( "doesViewFrameExist '" + windowName + "'");
+    List windowKeyList = new ArrayList( getViews().keySet());
+    Iterator windowListItr = windowKeyList.iterator();
+    while (windowListItr.hasNext()) {
+      Object windowKey = (Object) windowListItr.next();
+      // System.err.println( "windowKey " + windowKey);
+      if ((windowKey instanceof String) &&
+          (((String) windowKey).indexOf( windowName) >= 0)) {
+        return true;
+      } else if ((windowKey instanceof Class) &&
+          (((Class) windowKey).getName().indexOf( windowName) >= 0)) {
+        return true;
+      }
+    }
+    return false;
+  } // end doesViewFrameExist
+
+  /**
+   * <code>getViewFrame</code> valid for views in VIEW_CLASS_NAME_MAP
+   *
+   * @param viewName - <code>String</code> - 
+   * @return - <code>MDIInternalFrame</code> - 
+   */
+  public MDIInternalFrame getViewFrame( String viewName) {
+    String viewClassName = PlanWorks.getPlanWorks().getViewClassName( viewName);
+    if (viewClassName != null) {
+      try {
+        //       System.err.println( "viewName '" + viewName + "' viewFrame " +
+        //                           getView( Class.forName( PlanWorks.getPlanWorks().
+        //                                                   getViewClassName( viewName))));
+        //       Iterator keyItr = getViews().keySet().iterator();
+        //       while (keyItr.hasNext()) {
+        //         System.err.println( "viewSet key " + keyItr.next());
+        //       }
+        return getView( Class.forName( viewClassName));
+      } catch (ClassNotFoundException excp) {
+        excp.printStackTrace();
+        System.exit( 1);
+      }
+    }
+    return null;
+  } // end getViewFrame
+
 }
 

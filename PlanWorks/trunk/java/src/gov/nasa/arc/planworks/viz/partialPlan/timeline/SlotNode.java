@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.21 2004-05-21 21:39:08 taylor Exp $
+// $Id: SlotNode.java,v 1.22 2004-05-28 20:21:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -390,7 +390,7 @@ public class SlotNode extends TextNode {
               timelineView.openNavigatorViewFrame( viewSetKey);
             Container contentPane = navigatorFrame.getContentPane();
             PwPartialPlan partialPlan = timelineView.getPartialPlan();
-            contentPane.add( new NavigatorView( SlotNode.this, partialPlan,
+            contentPane.add( new NavigatorView( SlotNode.this.getSlot(), partialPlan,
                                                 timelineView.getViewSet(),
                                                 viewSetKey, navigatorFrame));
           }

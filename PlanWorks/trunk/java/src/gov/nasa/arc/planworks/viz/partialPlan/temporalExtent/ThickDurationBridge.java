@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ThickDurationBridge.java,v 1.5 2004-05-21 21:39:08 taylor Exp $
+// $Id: ThickDurationBridge.java,v 1.6 2004-05-28 20:21:21 taylor Exp $
 //
 // PlanWorks
 //
@@ -152,7 +152,7 @@ public class ThickDurationBridge extends JGoRectangle {
             temporalExtentView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = temporalExtentView.getPartialPlan();
-          contentPane.add( new NavigatorView( temporalNode, partialPlan,
+          contentPane.add( new NavigatorView( temporalNode.getToken(), partialPlan,
                                               temporalExtentView.getViewSet(),
                                               viewSetKey, navigatorFrame));
         }

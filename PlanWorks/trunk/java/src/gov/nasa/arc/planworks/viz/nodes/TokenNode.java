@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.40 2004-05-21 21:39:04 taylor Exp $
+// $Id: TokenNode.java,v 1.41 2004-05-28 20:21:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -254,7 +254,7 @@ public class TokenNode extends BasicNode {
           MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
-          contentPane.add( new NavigatorView( TokenNode.this, partialPlan,
+          contentPane.add( new NavigatorView( TokenNode.this.getToken(), partialPlan,
                                               partialPlanView.getViewSet(), viewSetKey,
                                               navigatorFrame));
         }

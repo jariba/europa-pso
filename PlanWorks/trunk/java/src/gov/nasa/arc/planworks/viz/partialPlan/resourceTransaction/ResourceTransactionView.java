@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.18 2004-05-21 21:39:07 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.19 2004-05-28 20:21:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -375,7 +375,7 @@ public class ResourceTransactionView extends ResourceView  {
     mouseRightPopup.add( raiseContentSpecItem);
     
     String timeMarkTitle = "Set Time Scale Line";
-    if (doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
+    if (viewSet.doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
       timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Profile");
     }
     JMenuItem timeMarkItem = new JMenuItem( timeMarkTitle);
@@ -395,7 +395,7 @@ public class ResourceTransactionView extends ResourceView  {
       mouseRightPopup.add( activeResourceTransItem);
     }
 
-    if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
+    if (viewSet.doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -590,7 +590,7 @@ public class ResourceTransactionView extends ResourceView  {
           createTimeMark( xLoc);
 
           // draw mark in ResourceProfileView & scroll to same resource
-          if (doesViewFrameExist( ViewConstants.RESOURCE_PROFILE_VIEW)) {
+          if (viewSet.doesViewFrameExist( ViewConstants.RESOURCE_PROFILE_VIEW)) {
             ViewListener viewListener = null;
            MDIInternalFrame resourceProfileFrame =
               viewSet.openView( PlanWorks. getViewClassName

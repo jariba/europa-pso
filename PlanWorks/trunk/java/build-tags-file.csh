@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.67 2004-05-21 21:38:54 taylor Exp $
+# $Id: build-tags-file.csh,v 1.68 2004-05-28 20:21:13 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -30,8 +30,10 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/PlanWorks.java \
     src/gov/nasa/arc/planworks/SequenceViewMenuItem.java \
     src/gov/nasa/arc/planworks/db/DbConstants.java \
+    src/gov/nasa/arc/planworks/db/PwChoice.java \
     src/gov/nasa/arc/planworks/db/PwConstraint.java \
     src/gov/nasa/arc/planworks/db/PwDBTransaction.java \
+    src/gov/nasa/arc/planworks/db/PwDecision.java \
     src/gov/nasa/arc/planworks/db/PwDomain.java \
     src/gov/nasa/arc/planworks/db/PwEntity.java \
     src/gov/nasa/arc/planworks/db/PwEnumeratedDomain.java \
@@ -56,8 +58,10 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/PwVariable.java \
     src/gov/nasa/arc/planworks/db/PwVariableContainer.java \
     src/gov/nasa/arc/planworks/db/PwVariableQuery.java \
+    src/gov/nasa/arc/planworks/db/impl/PwChoiceImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwConstraintImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwDBTransactionImpl.java \
+    src/gov/nasa/arc/planworks/db/impl/PwDecisionImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwDomainImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwEnumeratedDomainImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwIntervalDomainImpl.java \
@@ -168,6 +172,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableContainerBoundingBox.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/dbTransaction/DBTransactionView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/decision/DecisionView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ConstraintNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ModelClassNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorView.java \

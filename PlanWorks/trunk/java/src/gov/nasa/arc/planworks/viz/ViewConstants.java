@@ -314,6 +314,7 @@ public abstract class ViewConstants {
   public static final String NAVIGATOR_VIEW            = "Navigator View";
   public static final String RESOURCE_PROFILE_VIEW     = "Resource Profile View";
   public static final String RESOURCE_TRANSACTION_VIEW = "Resource Transaction View";
+  public static final String DECISION_VIEW             = "Decision View";
   public static List PARTIAL_PLAN_VIEW_LIST = null;
 
   public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
@@ -334,12 +335,13 @@ public abstract class ViewConstants {
 
     PARTIAL_PLAN_VIEW_LIST = new ArrayList();
     PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( DB_TRANSACTION_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( DECISION_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_TRANSACTION_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( DB_TRANSACTION_VIEW);
     // not in list, since it is created from nodes in views, not from other views
     // PARTIAL_PLAN_VIEW_LIST.add( NAVIGATOR_VIEW);
 
@@ -352,6 +354,7 @@ public abstract class ViewConstants {
 
   }
 
-
+  public static final int DECISION_TREE_VIEW_WIDTH = 400;
+  public static final int DECISION_TREE_VIEW_HEIGHT = 300;
 
 } // end ViewConstants

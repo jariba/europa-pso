@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.51 2004-05-21 21:39:09 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.52 2004-05-28 20:21:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -495,7 +495,7 @@ public class TokenNetworkView extends PartialPlanView {
 
     this.createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
-    if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
+    if (viewSet.doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -535,7 +535,13 @@ public class TokenNetworkView extends PartialPlanView {
       });
   } // end createNodeByKeyItem
 
-  private void findAndSelectToken( final PwToken tokenToFind, final boolean isByKey) {
+  /**
+   * <code>findAndSelectToken</code>
+   *
+   * @param tokenToFind - <code>PwToken</code> - 
+   * @param isByKey - <code>boolean</code> - 
+   */
+  public void findAndSelectToken( final PwToken tokenToFind, final boolean isByKey) {
     boolean isTokenFound = false;
     boolean isHighlightNode = true;
     List tokenNodeList = new ArrayList( tokenNodeMap.values());

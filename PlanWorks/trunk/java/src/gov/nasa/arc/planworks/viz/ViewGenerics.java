@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.17 2004-05-21 21:39:02 taylor Exp $
+// $Id: ViewGenerics.java,v 1.18 2004-05-28 20:21:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -403,11 +403,11 @@ public class ViewGenerics {
   } // end getTimelineView
 
   private final TimelineView _getTimelineView(MDIInternalFrame frame) {
-    Component [] components = frame.getContentPane().getComponents();
-    System.err.println( "getComponentCount " + frame.getContentPane().getComponentCount());
-    for (int i = 0, n = frame.getContentPane().getComponentCount(); i < n; i++) {
-      System.err.println( "components i " + i + " " + components[i]);
-    }
+//     Component [] components = frame.getContentPane().getComponents();
+//     System.err.println( "getComponentCount " + frame.getContentPane().getComponentCount());
+//     for (int i = 0, n = frame.getContentPane().getComponentCount(); i < n; i++) {
+//       System.err.println( "components i " + i + " " + components[i]);
+//     }
     return (TimelineView) CollectionUtils.findFirst
       ( new TimelineViewFinder(), frame.getContentPane().getComponents());
   }

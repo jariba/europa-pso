@@ -1,3 +1,12 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: ConstraintNetworkObjectNode.java,v 1.9 2004-05-28 20:21:19 taylor Exp $
+//
+
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.awt.Color;

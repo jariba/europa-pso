@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.19 2004-05-21 21:39:07 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.20 2004-05-28 20:21:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -267,7 +267,7 @@ public class ResourceProfileView extends ResourceView  {
     mouseRightPopup.add( raiseContentSpecItem);
 
     String timeMarkTitle = "Set Time Scale Line";
-    if (doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
+    if (viewSet.doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
       timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Transactions");
     }
     JMenuItem timeMarkItem = new JMenuItem( timeMarkTitle);
@@ -287,7 +287,7 @@ public class ResourceProfileView extends ResourceView  {
       mouseRightPopup.add( activeResourceByTransItem);
     }
 
-    if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
+    if (viewSet.doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -321,7 +321,14 @@ public class ResourceProfileView extends ResourceView  {
       });
   } // end createActiveResourceItem
 
-  private PwResource findActiveResourceByTrans( final PwResourceTransaction activeResourceTransaction) {
+  /**
+   * <code>findActiveResourceByTrans</code>
+   *
+   * @param activeResourceTransaction - <code>PwResourceTransaction</code> - 
+   * @return - <code>PwResource</code> - 
+   */
+  public PwResource findActiveResourceByTrans
+    ( final PwResourceTransaction activeResourceTransaction) {
     Iterator resourceItr = partialPlan.getResourceList().iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
@@ -440,7 +447,7 @@ public class ResourceProfileView extends ResourceView  {
           createTimeMark( xLoc);
 
           // draw mark in ResourceTransactionView & scroll to same resource
-          if (doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
+          if (viewSet.doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
             ViewListener viewListener = null;
             MDIInternalFrame resourceTransFrame =
               viewSet.openView( PlanWorks.getViewClassName

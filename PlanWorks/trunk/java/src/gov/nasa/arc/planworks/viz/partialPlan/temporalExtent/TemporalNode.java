@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.21 2004-05-21 21:39:07 taylor Exp $
+// $Id: TemporalNode.java,v 1.22 2004-05-28 20:21:21 taylor Exp $
 //
 // PlanWorks
 //
@@ -711,7 +711,7 @@ public class TemporalNode extends BasicNode implements Extent {
             temporalExtentView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = temporalExtentView.getPartialPlan();
-          contentPane.add( new NavigatorView( TemporalNode.this, partialPlan,
+          contentPane.add( new NavigatorView( TemporalNode.this.getToken(), partialPlan,
                                               temporalExtentView.getViewSet(),
                                               viewSetKey, navigatorFrame));
         }

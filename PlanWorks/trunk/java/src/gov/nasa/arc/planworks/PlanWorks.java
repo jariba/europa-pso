@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.99 2004-05-27 21:01:30 miatauro Exp $
+// $Id: PlanWorks.java,v 1.100 2004-05-28 20:21:14 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -135,6 +135,9 @@ public class PlanWorks extends MDIDesktopFrame {
 //     VIEW_CLASS_NAME_MAP.put
 //       ( ViewConstants.NAVIGATOR_VIEW,
 //         "gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView");
+    VIEW_CLASS_NAME_MAP.put
+      ( ViewConstants.DECISION_VIEW,
+        "gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView");
 
     VIEW_CLASS_NAME_MAP.put
       ( ViewConstants.SEQUENCE_STEPS_VIEW,

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceNameNode.java,v 1.5 2004-05-21 21:39:04 taylor Exp $
+// $Id: ResourceNameNode.java,v 1.6 2004-05-28 20:21:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -111,9 +111,9 @@ public class ResourceNameNode extends JGoText {
           MDIInternalFrame navigatorFrame = resourceView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = resourceView.getPartialPlan();
-          contentPane.add( new NavigatorView( ResourceNameNode.this, partialPlan,
-                                              resourceView.getViewSet(), viewSetKey,
-                                              navigatorFrame));
+          contentPane.add( new NavigatorView( ResourceNameNode.this.getResource(),
+                                              partialPlan, resourceView.getViewSet(),
+                                              viewSetKey, navigatorFrame));
         }
       });
     mouseRightPopup.add( navigatorItem);

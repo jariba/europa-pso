@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.62 2004-05-21 21:39:05 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.63 2004-05-28 20:21:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1504,7 +1504,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       constraintNetworkView.createZoomItem( jGoView, zoomFactor, mouseRightPopup,
                                             ConstraintNetworkView.this);
 
-      if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
+      if (viewSet.doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
         mouseRightPopup.addSeparator();
         JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
         createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -1537,34 +1537,46 @@ public class ConstraintNetworkView extends PartialPlanView {
             Integer nodeKey = nodeByKeyDialog.getNodeKey();
             if (nodeKey != null) {
               // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
-
-              PwToken tokenToFind = partialPlan.getToken( nodeKey);
-              if (tokenToFind != null) {
-                boolean isByKey = true;
-                findAndSelectContainer( tokenToFind, isByKey);
-              } 
-              else {
-                PwVariable variableToFind = partialPlan.getVariable( nodeKey);
-                if (variableToFind != null) {
-                  findAndSelectVariable( variableToFind);
-                } 
-                else {
-                  PwConstraint constraintToFind = partialPlan.getConstraint( nodeKey);
-                  if (constraintToFind != null) {
-                    findAndSelectConstraint( constraintToFind);
-                  }
-                  else {
-                    PwObject objToFind = partialPlan.getObject(nodeKey);
-                    if(objToFind != null) {
-                      findAndSelectContainer(objToFind, true);
-                    }
-                  }
-                }
-              }
+              findAndSelectNodeKey( nodeKey);
             }
           }
         });
     } // end createNodeByKeyItem
+
+
+    /**
+     * <code>findAndSelectNodeKey</code> - called from CreatePartialPlanViewThread
+     *
+     * @param nodeKey - <code>Integer</code> - 
+     */
+    public void findAndSelectNodeKey( Integer nodeKey) {
+      PwToken tokenToFind = partialPlan.getToken( nodeKey);
+      if (tokenToFind != null) {
+        boolean isByKey = true;
+        findAndSelectContainer( tokenToFind, isByKey);
+      } 
+      else {
+        PwVariable variableToFind = partialPlan.getVariable( nodeKey);
+        if (variableToFind != null) {
+          findAndSelectVariable( variableToFind);
+        } 
+        else {
+          PwConstraint constraintToFind = partialPlan.getConstraint( nodeKey);
+          if (constraintToFind != null) {
+            findAndSelectConstraint( constraintToFind);
+          }
+          else {
+            PwObject objToFind = partialPlan.getObject(nodeKey);
+            if(objToFind != null) {
+              findAndSelectContainer(objToFind, true);
+            } else {
+              System.err.println( "ConstaintNetworkView.findAndSelectNodeKey: nodeKey " +
+                                  nodeKey.toString() + " not found");
+            }
+          }
+        }
+      }
+    } // end findAndSelectNodeKey
 
     private void createChangeLayoutItem(JMenuItem changeLayoutItem) {
       changeLayoutItem.addActionListener( new ActionListener() {
