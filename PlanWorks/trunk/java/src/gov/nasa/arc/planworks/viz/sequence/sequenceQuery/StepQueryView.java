@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.15 2004-09-27 23:27:27 taylor Exp $
+// $Id: StepQueryView.java,v 1.16 2004-10-13 23:49:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -67,6 +67,7 @@ public class StepQueryView extends SequenceView {
   private JTable stepTable;
   private int objectKeyColumnIndx;
   private int stepNumberColumnIndx;
+  private QueryHeaderView headerJGoView;
 
 
   /**
@@ -143,7 +144,7 @@ public class StepQueryView extends SequenceView {
     }
     this.computeFontMetrics( this);
 
-    QueryHeaderView  headerJGoView = new QueryHeaderView( query);
+    headerJGoView = new QueryHeaderView( query);
     headerJGoView.validate();
     headerJGoView.setVisible( true);
 
@@ -192,6 +193,23 @@ public class StepQueryView extends SequenceView {
     handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
+  /**
+   * <code>getStepList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getStepList() {
+    return stepList;
+  }
+
+  /**
+   * <code>getHeaderJGoView</code>
+   *
+   * @return - <code>QueryHeaderView</code> - 
+   */
+  public QueryHeaderView getHeaderJGoView() {
+    return headerJGoView;
+  }
 
   private TableSorter createTableModelAndSorter() {
     // " With " queries & non " With " queries with null key show ENTITY_KEY in table,
@@ -354,30 +372,34 @@ public class StepQueryView extends SequenceView {
   }
 
 
-  class QueryHeaderView extends TransactionHeaderView {
+  /**
+   * <code>QueryHeaderView</code> - 
+   *
+   */
+  public class QueryHeaderView extends TransactionHeaderView {
 
     public QueryHeaderView( final String query) {
       super( query);
     }
 
-  /**
-   * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
-   *
-   * @param modifiers - <code>int</code> - 
-   * @param docCoords - <code>Point</code> - 
-   * @param viewCoords - <code>Point</code> - 
-   */
-  public final void doBackgroundClick( final int modifiers, final Point docCoords,
-                                       final Point viewCoords) {
-    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      // do nothing
-    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      if ((query.indexOf( " With ") >= 0) ||
-          ((query.indexOf( " With ") == -1) && key.equals( ""))) {
-        mouseRightPopupMenu( viewCoords);
+    /**
+     * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
+     *
+     * @param modifiers - <code>int</code> - 
+     * @param docCoords - <code>Point</code> - 
+     * @param viewCoords - <code>Point</code> - 
+     */
+    public final void doBackgroundClick( final int modifiers, final Point docCoords,
+                                         final Point viewCoords) {
+      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+        // do nothing
+      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        if ((query.indexOf( " With ") >= 0) ||
+            ((query.indexOf( " With ") == -1) && key.equals( ""))) {
+          mouseRightPopupMenu( viewCoords);
+        }
       }
-    }
-  } // end doBackgroundClick 
+    } // end doBackgroundClick 
 
     private void mouseRightPopupMenu( final Point viewCoords) {
       JPopupMenu mouseRightPopup = new JPopupMenu();

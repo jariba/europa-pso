@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryView.java,v 1.12 2004-09-27 23:27:27 taylor Exp $
+// $Id: TokenQueryView.java,v 1.13 2004-10-13 23:49:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -66,6 +66,7 @@ public class TokenQueryView extends SequenceView {
   private JTable freeTokenTable;
   private int objectKeyColumnIndx;
   private int stepNumberColumnIndx;
+  private QueryHeaderView headerJGoView;
 
 
   /**
@@ -140,7 +141,7 @@ public class TokenQueryView extends SequenceView {
     }
     this.computeFontMetrics( this);
 
-    QueryHeaderView headerJGoView = new QueryHeaderView( query);
+    headerJGoView = new QueryHeaderView( query);
     headerJGoView.validate();
     headerJGoView.setVisible( true);
 
@@ -210,7 +211,26 @@ public class TokenQueryView extends SequenceView {
       handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
     } // end init
 
-  class QueryHeaderView extends TransactionHeaderView {
+  /**
+   * <code>getFreeTokenList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getFreeTokenList() {
+    return freeTokenList;
+  }
+
+  /**
+   * <code>getHeaderJGoView</code>
+   *
+   * @return - <code>QueryHeaderView</code> - 
+   */
+  public QueryHeaderView getHeaderJGoView() {
+    return headerJGoView;
+  }
+
+
+  public class QueryHeaderView extends TransactionHeaderView {
 
     public QueryHeaderView( final String query) {
       super( query);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest12.java,v 1.3 2004-10-09 00:28:16 taylor Exp $
+// $Id: PlanWorksGUITest12.java,v 1.4 2004-10-13 23:49:20 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -24,29 +24,17 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import junit.extensions.jfcunit.JFCTestHelper;
-import junit.extensions.jfcunit.eventdata.JTableHeaderMouseEventData;
 import junit.extensions.jfcunit.eventdata.MouseEventData;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.ThreadListener;
-import gov.nasa.arc.planworks.db.PwConstraint;
-import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
-import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwSlot;
-import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
-import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
@@ -55,7 +43,6 @@ import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
-import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
@@ -65,9 +52,6 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
-import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
-import gov.nasa.arc.planworks.viz.util.TableSorter;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.GroupBox;

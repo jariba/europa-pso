@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest06to09.java,v 1.1 2004-10-01 20:04:32 taylor Exp $
+// $Id: PlanWorksGUITest06to09.java,v 1.2 2004-10-13 23:49:19 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -364,8 +364,8 @@ public class PlanWorksGUITest06to09 {
     PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
     PwToken token = (PwToken) partialPlan.getTokenList().get( 0);
     String fieldName = "Key";
-      PWTestHelper.setSequenceQueryField( seqQueryWindow, fieldName,
-                                          token.getId().toString(), helper, guiTest);
+    PWTestHelper.setSequenceQueryField( seqQueryWindow, fieldName,
+                                        token.getId().toString(), helper, guiTest);
     viewListener01.reset();
     PWTestHelper.applySequenceQuery( seqQueryWindow, viewListener01,
                                      SequenceQueryWindow.APPLY_QUERY_BUTTON, helper, guiTest);

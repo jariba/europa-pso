@@ -4,153 +4,38 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.29 2004-10-09 00:28:15 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.30 2004-10-13 23:49:17 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.DefaultKeyboardFocusManager;
 import java.awt.Point;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-import java.util.StringTokenizer;
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
-// PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoStroke;
-// PlanWorks/java/lib/JGo/Classier.jar
-import com.nwoods.jgo.examples.Overview;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.JFCTestHelper;
-import junit.extensions.jfcunit.TestHelper;
-import junit.extensions.jfcunit.eventdata.JFCEventManager;
-import junit.extensions.jfcunit.eventdata.JMenuMouseEventData;
-import junit.extensions.jfcunit.eventdata.JTableHeaderMouseEventData;
-import junit.extensions.jfcunit.eventdata.KeyEventData;
-import junit.extensions.jfcunit.eventdata.MouseEventData;
-import junit.extensions.jfcunit.eventdata.StringEventData;
-import junit.extensions.jfcunit.finder.ComponentFinder;
 import junit.extensions.jfcunit.finder.Finder;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestSuite; 
-import junit.textui.TestRunner;
 
 import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.ThreadListener;
-import gov.nasa.arc.planworks.db.DbConstants;
-import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
-import gov.nasa.arc.planworks.db.PwDecision;
 import gov.nasa.arc.planworks.db.PwPartialPlan;    
-import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.db.PwResourceTransaction;
-import gov.nasa.arc.planworks.db.PwRuleInstance;
-import gov.nasa.arc.planworks.db.PwSlot;
-import gov.nasa.arc.planworks.db.PwTimeline;
-import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.db.PwVariableContainer;
-import gov.nasa.arc.planworks.db.util.ContentSpec;
-import gov.nasa.arc.planworks.db.util.FileUtils;
-import gov.nasa.arc.planworks.db.util.MySQLDB;
-import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
-import gov.nasa.arc.planworks.util.CollectionUtils;
-import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
-import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkResourceNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkRuleInstanceNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
-import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
-import gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView;
-import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
-import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
-import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
-import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
-import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
-import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNodeDurationBridge;
-import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNodeTimeMark;
-import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
-import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
-import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
-import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineTokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkRuleInstanceNode;
-import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkTokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
-import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
-import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
-import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
-import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
-import gov.nasa.arc.planworks.viz.util.DBTransactionTableModel;
-import gov.nasa.arc.planworks.viz.util.TableSorter;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.GroupBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.LogicComboBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.MergeBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.NegationCheckBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.PredicateBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.PredicateGroupBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TimeIntervalBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TimeIntervalGroupBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TimelineBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TimelineGroupBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TokenTypeBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.UniqueKeyBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.UniqueKeyGroupBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
 /**
  * <code>PlanWorksGUITest</code> - PlanWorks/testCases/planViz.txt contains the script
@@ -367,7 +252,10 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       PlanWorksGUITest11.planViz11( sequenceUrls, planWorks, helper, this);
       PlanWorksGUITest12.planViz12( sequenceUrls, planWorks, helper, this);
       // to do
-      // PlanWorksGUITest13 - PlanWorksGUITest25
+      // PlanWorksGUITest13.planViz13 - Methods 8-15
+      PlanWorksGUITest13.planViz13( sequenceUrls, planWorks, helper, this);
+      // to do
+      // PlanWorksGUITest14 - PlanWorksGUITest25
 
       PWTestHelper.exitPlanWorks( helper, this);
 
