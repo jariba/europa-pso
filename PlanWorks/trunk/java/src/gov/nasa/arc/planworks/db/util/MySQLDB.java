@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.50 2003-10-16 19:43:56 miatauro Exp $
+// $Id: MySQLDB.java,v 1.51 2003-10-16 23:43:23 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -952,7 +952,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet steps =
-        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionType='").concat(type).concat("'"));
+        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(tokenId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
       while(steps.next()) {
         retval.add(new Integer(steps.getInt("StepNumber")));
       }
@@ -967,7 +967,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet steps =
-        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionType='").concat(type).concat("'"));
+        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(varId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
       while(steps.next()) {
         retval.add(new Integer(steps.getInt("StepNumber")));
       }
@@ -983,7 +983,7 @@ public class MySQLDB {
     List retval = new UniqueSet();
     try {
       ResultSet steps =
-        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionType='").concat(type).concat("'"));
+        queryDatabase("SELECT StepNumber FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
       while(steps.next()) {
         retval.add(new Integer(steps.getInt("StepNumber")));
       }
