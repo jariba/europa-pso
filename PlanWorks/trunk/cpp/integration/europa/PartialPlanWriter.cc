@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.11 2003-10-28 22:13:03 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.12 2003-11-06 21:51:05 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include "PartialPlanWriter.hh"
+#include "Id.hh"
 #include "Token.hh"
 #include "Constraint.hh"
 #include "Object.hh"
@@ -67,6 +68,7 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
   transactionId = 0;
   transactionList = new List<Transaction>();
   writeCounter = 0;
+  numTransactions = 0;
 
   char *spw = getenv(envStepsPerWrite);
   if(spw == NULL) {
@@ -81,174 +83,149 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
   char *altDest = getenv(envAltWriteDest);
   if(altDest != NULL) {
     dest = String(altDest);
-    if(rindex(altDest, '/') == NULL) {
-      dest += String("/");
-    }
   }
-};
 
-void PartialPlanWriter::write(void) {
-  struct timeval currTime;
-  long long int partialPlanId;
+  char *destBuf = new char[PATH_MAX];
+  dest = String(realpath(dest.chars(), destBuf));
+  delete [] destBuf;
+
+  if(dest.getChar(dest.getLength()) != '/') {
+    dest += String("/");
+  }
+
+  FILE *sequenceOut;
   char timestr[16];
-  FILE *partialPlanOut, *objectOut, *timelineOut, *slotOut, *tokenOut, *variableOut, 
-    *tokenRelationOut, *enumDomainOut, *intDomainOut, *constraintOut, *predOut, *paramOut,
-    *paramVarTokenMapOut, *constraintVarMapOut, *transactionOut;
-
-  tokenRelationId = enumeratedDomainId = intervalDomainId = 1;
-  if(gettimeofday(&currTime, NULL)) {
-    FatalError("Failed to get current time");
-  }
-  partialPlanId = (((long long int)currTime.tv_sec) * 1000) + (currTime.tv_usec / 1000);
-  //if(nstep == 0) {
-  //  sequenceId = partialPlanId;
-  //}
   sprintf(timestr, "%lld", sequenceId);
-  ModelId modelId = tnet->getModelId();
+  modelId = tnet->getModelId();
   String modelName = modelId.getModelName();
   {
     char *tempIndex = rindex(modelName.chars(), '/');
     if(tempIndex != NULL) {
-      *tempIndex++;
+      tempIndex++;
       char *temp = new char[strlen(tempIndex)+1];
       strcpy(temp, tempIndex);
       modelName = temp;
       delete [] temp;
     }
-  }    
-  char *seqname;
-  if(nstep == 0) {
-    seqname = (char *) modelName.chars();
-    char *extStart = rindex(seqname, '.');
-    *extStart = '\0';
-    if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
-      cerr << "Failed to make directory " << dest << endl;
-      FatalError(strerror(errno));
-    }
-    dest += seqname;
-    dest += timestr;
-    if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
-      cerr << "Failed to make directory " << dest << endl;
-      FatalError(strerror(errno));
-    }
   }
-  String stepnum = String("step") + String(nstep);
+  char *seqname = (char *) modelName.chars();
+  char *extStart = rindex(seqname, '.');
+  *extStart = '\0';
   if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+    cerr << "Failed to make directory " << dest << endl;
     FatalError(strerror(errno));
   }
+  dest += seqname;
+  dest += timestr;
+  if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+    cerr << "Failed to make directory " << dest << endl;
+    FatalError(strerror(errno));
+  }
+  String ppStats = dest + String("/partialPlanStats");
+  String ppTransactions = dest + String("/transactions");
+  String sequenceStr = dest + String("/sequence");
+  if(!(sequenceOut = fopen(sequenceStr.chars(), "w"))) {
+    cerr << "Failed to open " << sequenceStr << endl;
+    FatalError(strerror(errno));
+  }
+  fprintf(sequenceOut, "%s\t%lld", dest.chars(), sequenceId);
+  fclose(sequenceOut);
+
+  if(!(transactionOut = fopen(ppTransactions.chars(), "w"))) {
+    FatalError(strerror(errno));
+  }
+  if(!(statsOut = fopen(ppStats.chars(), "w"))) {
+    FatalError(strerror(errno));
+  }
+};
+
+PartialPlanWriter::~PartialPlanWriter(void) {
+  fclose(transactionOut);
+  fclose(statsOut);
+}
+
+void PartialPlanWriter::write(void) {
+  struct timeval currTime;
+  long long int partialPlanId;
+  //char timestr[16];
+  numTokens = numVariables = numConstraints = 0;
+  FILE *partialPlanOut, *objectOut, *timelineOut, *slotOut, *tokenOut, *variableOut, 
+    *tokenRelationOut, *enumDomainOut, *intDomainOut, *constraintOut, *predOut, *paramOut,
+    *paramVarTokenMapOut, *constraintVarMapOut;
+  
+  tokenRelationId = enumeratedDomainId = intervalDomainId = 1;
+  if(gettimeofday(&currTime, NULL)) {
+    FatalError("Failed to get current time");
+  }
+  partialPlanId = (((long long int)currTime.tv_sec) * 1000) + (currTime.tv_usec / 1000);
+
+  String stepnum = String("step") + String(nstep);
+
   String partialPlanDest = dest + String("/") + stepnum;
   if(mkdir(partialPlanDest.chars(), 0777) && errno != EEXIST) {
     FatalError(strerror(errno));
   }
   String ppPartialPlan = partialPlanDest + String("/") + stepnum + String(".partialPlan");
-  if(unlink(ppPartialPlan.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(partialPlanOut = fopen(ppPartialPlan.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   fprintf(partialPlanOut, "%s\t%lld\t%s\t%lld", stepnum.chars(), partialPlanId,
-          modelName.chars(), sequenceId);
+          tnet->getModelId().getModelName().chars(), sequenceId);
   fclose(partialPlanOut);
 
   String ppObject = partialPlanDest + String("/") + stepnum + String(".objects");
-  if(unlink(ppObject.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(objectOut = fopen(ppObject.chars(), "w"))) {
    FatalError(strerror(errno));
   }
   String ppTimeline = partialPlanDest + String("/") + stepnum + String(".timelines");
-  if(unlink(ppTimeline.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(timelineOut = fopen(ppTimeline.chars(), "w"))) {
    FatalError(strerror(errno));
   }
   String ppSlot = partialPlanDest + String("/") + stepnum + String(".slots");
-  if(unlink(ppSlot.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(slotOut = fopen(ppSlot.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppToken = partialPlanDest + String("/") + stepnum + String(".tokens");
-  if(unlink(ppToken.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(tokenOut = fopen(ppToken.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppPVTM = partialPlanDest + String("/") + stepnum + String(".paramVarTokenMap");
-  if(unlink(ppPVTM.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(paramVarTokenMapOut = fopen(ppPVTM.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppTokenRelation = partialPlanDest + String("/") + stepnum + String(".tokenRelations");
-  if(unlink(ppTokenRelation.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(tokenRelationOut = fopen(ppTokenRelation.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppVariables = partialPlanDest + String("/") + stepnum + String(".variables");
-  if(unlink(ppVariables.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(variableOut = fopen(ppVariables.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppEnumDomain = partialPlanDest + String("/") + stepnum + String(".enumeratedDomains");
-  if(unlink(ppEnumDomain.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(enumDomainOut = fopen(ppEnumDomain.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppIntDomain = partialPlanDest + String("/") + stepnum + String(".intervalDomains");
-  if(unlink(ppIntDomain.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(intDomainOut = fopen(ppIntDomain.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppConstraints = partialPlanDest + String("/") + stepnum + String(".constraints");
-  if(unlink(ppConstraints.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(constraintOut = fopen(ppConstraints.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppCVM = partialPlanDest + String("/") + stepnum + String(".constraintVarMap");
-  if(unlink(ppCVM.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(constraintVarMapOut = fopen(ppCVM.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppPredicates = partialPlanDest + String("/") + stepnum + String(".predicates");
-  if(unlink(ppPredicates.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(predOut = fopen(ppPredicates.chars(), "w"))) {
     FatalError(strerror(errno));
   }
   String ppParameters = partialPlanDest + String("/") + stepnum + String(".parameters");
-  if(unlink(ppParameters.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
   if(!(paramOut = fopen(ppParameters.chars(), "w"))) {
     FatalError(strerror(errno));
   }
-  String ppTransactions = partialPlanDest + String("/") + stepnum + String(".transactions");
-  if(unlink(ppTransactions.chars()) && errno != ENOENT) {
-    FatalError(strerror(errno));
-  }
-  if(!(transactionOut = fopen(ppTransactions.chars(), "w"))) {
-    FatalError(strerror(errno));
-  }
+
   /*List<VarId> globalVars = tnet->getGlobalVars();
   ListIterator<VarId> globalVarIterator = ListIterator<VarId>(globalVars);
   while(!globalVarIterator.isDone()) {
@@ -258,10 +235,12 @@ void PartialPlanWriter::write(void) {
     }*/
   List<TokenId> allTokens = tnet->getAllTokens();
   List<TokenId> freeTokenList = tnet->getFreeValueTokens();
+  numTokens = allTokens.getSize();
+  
   ListIterator<TokenId> freeTokenIterator = ListIterator<TokenId>(freeTokenList);
   while(!freeTokenIterator.isDone()) {
     TokenId tokenId = freeTokenIterator.item();
-    outputToken(tokenId, true, partialPlanId, &modelId, NULL, 0, NULL, tokenOut, tokenRelationOut, 
+    outputToken(tokenId, true, partialPlanId, NULL, 0, NULL, tokenOut, tokenRelationOut, 
                 variableOut, intDomainOut, enumDomainOut, paramVarTokenMapOut);
     allTokens.deleteIfEqual(tokenId);
     freeTokenIterator.step();
@@ -278,7 +257,7 @@ void PartialPlanWriter::write(void) {
       ListIterator<PredicateId> predicateIterator = ListIterator<PredicateId>(predicates);
       while(!predicateIterator.isDone()) {
         PredicateId predicate = predicateIterator.item();
-        outputPredicate(predicate, modelId, partialPlanId, predOut, paramOut);
+        outputPredicate(predicate, partialPlanId, predOut, paramOut);
         predicateIterator.step();
       }
       attributeIterator.step();
@@ -321,7 +300,7 @@ void PartialPlanWriter::write(void) {
         while(!tokenIterator.isDone()) {
           TokenId tokenId = tokenIterator.item();
           allTokens.deleteIfEqual(tokenId);
-          outputToken(tokenId, false, partialPlanId, &modelId, &objectId, timelineId, &slotId,
+          outputToken(tokenId, false, partialPlanId, &objectId, timelineId, &slotId,
                       tokenOut, tokenRelationOut, variableOut, intDomainOut, enumDomainOut,
                       paramVarTokenMapOut);
           tokenIterator.step();
@@ -346,6 +325,7 @@ void PartialPlanWriter::write(void) {
 
 
   List<ConstraintId> constraints = tnet->getConstraints();
+  numConstraints = constraints.getSize();
   ListIterator<ConstraintId> constraintIterator = ListIterator<ConstraintId>(constraints);
 
   while(!constraintIterator.isDone()) {
@@ -354,13 +334,16 @@ void PartialPlanWriter::write(void) {
     constraintIterator.step();
   }
 
+  fprintf(statsOut, "%lld\t%lld\t%d\t%d\t%d\t%d\t%d\n", sequenceId, partialPlanId, nstep, numTokens,
+          numVariables, numConstraints, numTransactions);
+
   ListIterator<Transaction> transactionIterator = ListIterator<Transaction>(*transactionList);
   while(!transactionIterator.isDone()) {
     Transaction &transaction = (Transaction &) transactionIterator.item();
     transaction.write(transactionOut, partialPlanId);
     transactionIterator.step();
   }
-  fclose(transactionOut);
+  //fclose(transactionOut);
   fclose(objectOut);
   fclose(timelineOut);
   fclose(slotOut);
@@ -377,9 +360,8 @@ void PartialPlanWriter::write(void) {
   nstep++;
 }
 
-void PartialPlanWriter::outputPredicate(PredicateId &predicate, const ModelId &modelId, 
-                                        const long long int partialPlanId, FILE *predOut, 
-                                        FILE *paramOut) {
+void PartialPlanWriter::outputPredicate(PredicateId &predicate, const long long int partialPlanId, 
+                                        FILE *predOut, FILE *paramOut) {
   fprintf(predOut, "%d\t%s\t%lld\n", predicate.getKey(), 
           modelId.getPredicateName(predicate).chars(), partialPlanId);
   Vector<Symbol> params = modelId.getPredicateArgumentNames(predicate);
@@ -394,12 +376,10 @@ void PartialPlanWriter::outputPredicate(PredicateId &predicate, const ModelId &m
 }
 
 void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree, 
-                                    const long long int partialPlanId, const ModelId *modelId,
-                                    const ObjectId *objectId, const int timelineId, 
-                                    const SlotId *slotId, FILE *tokenOut, 
-                                    FILE *tokenRelationOut, FILE *variableOut, 
-                                    FILE *intDomainOut, FILE *enumDomainOut,
-                                    FILE *paramVarTokenMapOut) {
+                                    const long long int partialPlanId, const ObjectId *objectId,
+                                    const int timelineId, const SlotId *slotId, FILE *tokenOut,
+                                    FILE *tokenRelationOut, FILE *variableOut, FILE *intDomainOut,
+                                    FILE *enumDomainOut, FILE *paramVarTokenMapOut) {
   PredicateId predicateId = tokenId->getPredicate();
   if(isFree) {
     fprintf(tokenOut, "%d\tNULL\t%lld\t1\t1\t%d\t%d\t%d\t%d\t%d\tNULL\tNULL\t%d\n",
@@ -438,7 +418,8 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
     outputVariable(variableId, "PARAMETER_VAR", partialPlanId, tokenId, variableOut,
                    intDomainOut, enumDomainOut);
     fprintf(paramVarTokenMapOut, "%d\t%d\t%d\t%lld\n", variableId->getKey(),
-            tokenId->getKey(), paramIndex++, partialPlanId);
+            tokenId->getKey(), paramIndex, partialPlanId);
+    paramIndex++;
     paramVarIterator.step();
   }
 }
@@ -447,8 +428,8 @@ void PartialPlanWriter::outputVariable(const VarId &variable, const char *type,
                                        const long long int partialPlanId, const TokenId &tokenId,
                                        FILE *variableOut, FILE *intervalDomainOut,
                                        FILE *enumeratedDomainOut) {
+  numVariables++;
   Domain domain = tnet->getVariableDomain(variable);
-  
   fprintf(variableOut, "%d\t%lld\t%d\t", variable->getKey(), partialPlanId, tokenId->getKey());
   if(domain.isDynamic()) {
     //should this be otherwise?
@@ -625,30 +606,8 @@ void PartialPlanWriter::outputConstraint(const ConstraintId &constraintId,
                                          const long long int partialPlanId, FILE *constraintOut, 
                                          FILE *constraintVarMapOut) {
   String temporality, name;
-  if(tnet->isTemporalVariableConstraint(constraintId)) {
-    temporality = String("TEMPORAL");
-    name = String("variableTempConstr");
-  }
-  else if(tnet->isTemporalBoundConstraint(constraintId)) {
-    temporality = String("TEMPORAL");
-    name = String("unaryTempConstr");
-  }
-  else if(tnet->isTemporalRelationConstraint(constraintId)) {
-    temporality = String("TEMPORAL");
-    name = String("fixedTempConstr");
-  }
-  else if(tnet->isArgumentBoundConstraint(constraintId)) {
-    temporality = String("ATEMPORAL");
-    name = String("unaryConstr");
-  } 
-  else if(tnet->isArgumentEqualsConstraint(constraintId)) {
-    temporality = String("ATEMPORAL");
-    name = String("equalityConstr");
-  }
-  else if(tnet->isExpertConstraint(constraintId)) {
-    temporality = String("ATEMPORAL");
-    name = tnet->getExpertConstraintName(constraintId);
-  }
+  name = getNameForConstraint(constraintId);
+  temporality = getTemporalityForConstraint(constraintId);
   fprintf(constraintOut, "%d\t%lld\t%s\t%s\n", constraintId->getKey(), partialPlanId,
           name.chars(), temporality.chars());
   List<VarId> constrainedVars = tnet->getConstraintScope(constraintId);
@@ -660,80 +619,149 @@ void PartialPlanWriter::outputConstraint(const ConstraintId &constraintId,
   }
 }
 
+const String &PartialPlanWriter::getNameForConstraint(const ConstraintId &constraintId) {
+  String retval = String("");
+  if(tnet->isTemporalVariableConstraint(constraintId)) {
+    retval = String("variableTempConstr");
+  }
+  else if(tnet->isTemporalBoundConstraint(constraintId)) {
+    retval = String("unaryTempConstr");
+  }
+  else if(tnet->isTemporalRelationConstraint(constraintId)) {
+    retval = String("fixedTempConstr");
+  }
+  else if(tnet->isArgumentBoundConstraint(constraintId)) {
+    retval = String("unaryConstr");
+  }
+  else if(tnet->isArgumentEqualsConstraint(constraintId)) {
+    retval = String("equlityConstr");
+  }
+  else if(tnet->isExpertConstraint(constraintId)) {
+    retval = tnet->getExpertConstraintName(constraintId);
+  }
+  else {
+    retval = String("bugConstr");
+    cerr << "FOO: " << constraintId << " " << retval << endl;
+  }
+  if(retval.chars() == NULL) {
+    retval = String("bugConstr");
+    cerr << "FOO: " << constraintId << " " << retval << endl;
+  }
+  return retval;
+}
+
+const String &PartialPlanWriter::getTemporalityForConstraint(const ConstraintId &constraintId) {
+  String retval("");
+  if(tnet->isTemporalVariableConstraint(constraintId) || 
+     tnet->isTemporalBoundConstraint(constraintId) || 
+     tnet->isTemporalRelationConstraint(constraintId) ) {
+    retval = String("TEMPORAL");
+  }
+  else {
+    retval = String("ATEMPORAL");
+  }
+  return retval;
+}
+
 void PartialPlanWriter::notifyOfNewToken(TokenId tokenId) {
   if(stepsPerWrite) {
+    String info = modelId.getPredicateName(tokenId->getPredicate());
     transactionList->append(Transaction(TOKEN_CREATED, tokenId->getKey(), UNKNOWN, transactionId++,
-                                        sequenceId, nstep));
+                                        sequenceId, nstep, info));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifyTokenIsInserted(TokenId tokenId) { //signals plan step
-  //write();
-  //transactionList->makeEmpty();
   if(stepsPerWrite) {
+    String info = modelId.getPredicateName(tokenId->getPredicate());
     transactionList->append(Transaction(TOKEN_INSERTED, tokenId->getKey(), UNKNOWN, transactionId++,
-                                        sequenceId, nstep));
+                                        sequenceId, nstep, info));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifyTokenIsNotInserted(TokenId tokenId) {
   if(stepsPerWrite) {
+    String info = modelId.getPredicateName(tokenId->getPredicate());
     transactionList->append(Transaction(TOKEN_FREED, tokenId->getKey(), UNKNOWN, transactionId++,
-                                        sequenceId, nstep));
+                                        sequenceId, nstep, info));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifyAfterTokenIsNotInserted(TokenId tokenId) {
-//  transactionList
 }
 
 void PartialPlanWriter::notifyOfDeletedToken(TokenId tokenId) {
-  //write();
-  //transactionList->makeEmpty();
   if(stepsPerWrite) {
+    String info = modelId.getPredicateName(tokenId->getPredicate());
     transactionList->append(Transaction(TOKEN_DELETED, tokenId->getKey(), UNKNOWN, transactionId++,
-                                        sequenceId, nstep));
+                                        sequenceId, nstep, info));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifyOfNewVariable(VarId varId) {
   if(stepsPerWrite) {
+    if(varId->getParentToken().isNoId()) {
+      return;
+    }
     transactionList->append(Transaction(VAR_CREATED, varId->getKey(), UNKNOWN, transactionId++,
-                                        sequenceId, nstep));
+                                        sequenceId, nstep, getVarInfo(varId)));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifySpecifiedDomainChanged(VarId varId) { //signals plan step
-  //write();
-  //transactionList->makeEmpty();
   if(stepsPerWrite) {
+    if(varId->getParentToken().isNoId()) {
+      return;
+    }
     transactionList->append(Transaction(VAR_DOMAIN_SPECIFIED, varId->getKey(), UNKNOWN,
-                                        transactionId++, sequenceId, nstep));
+                                        transactionId++, sequenceId, nstep, getVarInfo(varId)));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifySpecifiedDomainReset(VarId varId) {
   if(stepsPerWrite) {
+    if(varId->getParentToken().isNoId()) {
+      return;
+    }
     transactionList->append(Transaction(VAR_DOMAIN_RESET, varId->getKey(), USER, transactionId++, 
-					sequenceId, nstep));
+					sequenceId, nstep, getVarInfo(varId)));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifyDerivedDomainChanged(VarId varId) {
   if(stepsPerWrite) {
+    if(varId->getParentToken().isNoId()) {
+      return;
+    }
     transactionList->append(Transaction(VAR_DOMAIN_RESTRICTED, varId->getKey(), UNKNOWN, 
-                                        transactionId++, sequenceId, nstep));
+                                        transactionId++, sequenceId, nstep, getVarInfo(varId)));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifyOfDeletedVariable(VarId varId) {
   if(stepsPerWrite) {
+    if(varId->getParentToken().isNoId()) {
+      return;
+    }
     transactionList->append(Transaction(VAR_DELETED, varId->getKey(), UNKNOWN, transactionId++,
-                                        sequenceId, nstep));
+                                        sequenceId, nstep, getVarInfo(varId)));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifyConstraintInserted(ConstraintId& constrId) {
   if(stepsPerWrite) {
     transactionList->append(Transaction(CONSTRAINT_CREATED, constrId->getKey(), UNKNOWN, 
-                                        transactionId++, sequenceId, nstep));
+                                        transactionId++, sequenceId, nstep, 
+                                        getNameForConstraint(constrId)));
+    numTransactions++;
   }
 }
 void PartialPlanWriter::notifyConstraintRemoved(ConstraintId& constrId) {
   if(stepsPerWrite) {
     transactionList->append(Transaction(CONSTRAINT_DELETED, constrId->getKey(), UNKNOWN,
-                                        transactionId++, sequenceId, nstep));
+                                        transactionId++, sequenceId, nstep,
+                                        getNameForConstraint(constrId)));
+    numTransactions++;
   }
 }
 
@@ -743,13 +771,66 @@ void PartialPlanWriter::notifyFlushed(void) {
     write();
     transactionList->makeEmpty();
     writeCounter = 0;
+    numTransactions = 0;
   }
+}
+
+String PartialPlanWriter::getVarInfo(const VarId &varId) {
+  TokenId parentToken = varId->getParentToken();
+  String type("");
+  String paramName("");
+
+  Vector<Symbol> params;
+  List<VarId> paramVarList;
+  ListIterator<VarId> paramVarIterator;
+  int index = 1;
+
+  switch(varId->getType()) {
+  case Variable::objectVariable:
+    type = String("OBJECT_VAR");
+    break;
+  case Variable::rejectVariable:
+    type = String("REJECT_VAR");
+    break;
+  case Variable::startVariable:
+    type = String("START_VAR");
+    break;
+  case Variable::endVariable:
+    type = String("END_VAR");
+    break;
+  case Variable::durationVariable:
+    type = String("DURATION_VAR");
+    break;
+  case Variable::compatGuardVariable:
+  case Variable::parameterVariable:
+    type = String("PARAMETER_VAR");
+    params = modelId.getPredicateArgumentNames(parentToken->getPredicate());
+    paramVarList = parentToken->getParameterVariables();
+    paramVarIterator = ListIterator<VarId>(paramVarList);
+    while(!paramVarIterator.isDone()) {
+      if(varId == paramVarIterator.item()) {
+        paramName = params.getItemRef(index);
+        break;
+      }
+      index++;
+      paramVarIterator.step();
+    }
+    break;
+  case Variable::globalVariable:
+  case Variable::noVariable:
+  default:
+    break;
+  }
+
+  String retval = type + String(",") + modelId.getPredicateName(parentToken->getPredicate()) + 
+    String(",") + paramName;
+  return retval;
 }
 
 void Transaction::write(FILE *out, long long int partialPlanId) {
   if(transactionType == -1) {
     FatalError("Attempted to write invalid transaction.");
   }
-  fprintf(out, "%s\t%d\t%s\t%d\t%d\t%lld\t%lld\n", transactionTypeNames[transactionType], objectKey,
-          sourceTypeNames[source], id, stepNum, sequenceId, partialPlanId);
+  fprintf(out, "%s\t%d\t%s\t%d\t%d\t%lld\t%lld\t%s\n", transactionTypeNames[transactionType], 
+          objectKey, sourceTypeNames[source], id, stepNum, sequenceId, partialPlanId, info.chars());
 }

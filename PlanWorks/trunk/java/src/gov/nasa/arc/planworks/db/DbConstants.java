@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.13 2003-10-21 21:51:30 taylor Exp $
+// $Id: DbConstants.java,v 1.14 2003-11-06 21:52:20 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -131,7 +131,13 @@ public interface DbConstants {
    */
   public static final String PP_CONSTRAINT_VAR_MAP_EXT = "constraintVarMap";
 
-  public static final String PP_TRANSACTIONS_EXT = "transactions";
+  public static final String SEQ_PP_STATS = "partialPlanStats";
+
+  public static final String SEQ_FILE = "sequence";
+  
+  public static final String SEQ_TRANSACTIONS = "transactions";
+
+  //public static final String PP_TRANSACTIONS_EXT = "transactions";
 
   /**
    * constant <code>PARTIAL_PLAN_FILE_EXTS</code> - array of Strings
@@ -145,7 +151,7 @@ public interface DbConstants {
         PP_PREDICATES_EXT, PP_PARAMETERS_EXT,
         PP_ENUMERATED_DOMAINS_EXT, PP_INTERVAL_DOMAINS_EXT,
         PP_CONSTRAINTS_EXT, PP_TOKEN_RELATIONS_EXT,
-        PP_PARAM_VAR_TOKEN_MAP_EXT, PP_CONSTRAINT_VAR_MAP_EXT, PP_TRANSACTIONS_EXT };
+        PP_PARAM_VAR_TOKEN_MAP_EXT, PP_CONSTRAINT_VAR_MAP_EXT/*, PP_TRANSACTIONS_EXT */};
 
   /**
    * constant <code>NUMBER_OF_PP_FILES</code>
@@ -154,6 +160,11 @@ public interface DbConstants {
   public static final int NUMBER_OF_PP_FILES = PARTIAL_PLAN_FILE_EXTS.length;
 
 
+  public static final String [] SEQUENCE_FILES =  new String [] { SEQ_PP_STATS, SEQ_FILE, 
+                                                                  SEQ_TRANSACTIONS};
+
+  public static final int NUMBER_OF_SEQ_FILES = SEQUENCE_FILES.length;
+    
   /**
    * constant <code>SOURCE_USER</code> - String - transaction source type
    *
