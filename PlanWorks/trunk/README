@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.26 2003-09-15 23:47:17 taylor Exp $
+# $Id: README,v 1.27 2003-09-16 16:46:06 miatauro Exp $
 #
 
 SUMMARY
@@ -82,6 +82,10 @@ the "mysql", "mysqld", and "mysqladmin" executables from the
 bin directory into PlanWorks/lib/mysql/bin, then follow
 the instructions below.  If you're on any other system, the above advice
 still holds, but you're on your own beyond that.
+Alternately, if you have an existing MySQL binary installation and wish to use that,
+you can do so by editing build.xml, setting the property "mysql.custom.bindir" to point 
+to the directory containing the binaries, then commenting out the line in which the property
+"mysql.bindir" is set for your operating system in the chk_[linux|solaris]_2 targets.
 If you run 'ant planWorksTest', you have to hit C-c to exit the testing
 after it prints its report.  Also, it is strongly recommended that you run
 'ant cleanDb' after the tests to make sure the test data is purged from
