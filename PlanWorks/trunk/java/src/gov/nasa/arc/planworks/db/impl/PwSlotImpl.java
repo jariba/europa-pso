@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.6 2003-05-20 18:25:35 taylor Exp $
+// $Id: PwSlotImpl.java,v 1.7 2003-06-02 17:49:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,19 +32,16 @@ public class PwSlotImpl implements PwSlot {
   private String key;
   private List tokenIdList; // element String
   private PwPartialPlanImpl partialPlan;
-  private String collectionName;
 
   /**
    * <code>PwSlotImpl</code> - constructor 
    *
    * @param key - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
-   * @param collectionName - <code>String</code> - 
    */
-  public PwSlotImpl( String key, PwPartialPlanImpl partialPlan, String collectionName) {
+  public PwSlotImpl( String key, PwPartialPlanImpl partialPlan) {
     this.key = key;
     this.partialPlan = partialPlan;
-    this.collectionName = collectionName;
     tokenIdList = new ArrayList();
   } // end constructor
 
@@ -66,8 +63,7 @@ public class PwSlotImpl implements PwSlot {
   public List getTokenList() {
     List retval = new ArrayList( tokenIdList.size());
     for (int i = 0; i < tokenIdList.size(); i++)
-      retval.add( partialPlan.getToken( (String)tokenIdList.get( i),
-                                        collectionName));
+      retval.add( partialPlan.getToken( (String)tokenIdList.get( i)));
     return retval;
   }
 
@@ -75,13 +71,11 @@ public class PwSlotImpl implements PwSlot {
    * <code>addToken</code>
    *
    * @param attributeList - <code>List</code> - 
-   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
-   * @param collectionName - <code>String</code> - 
    * @return - <code>PwTokenImpl</code> - 
    */
   public PwTokenImpl addToken( List attributeList) {
     String tokenKey = (String) attributeList.get( 0);
-    PwTokenImpl token = new PwTokenImpl( attributeList, partialPlan, collectionName);
+    PwTokenImpl token = new PwTokenImpl( attributeList, partialPlan);
     tokenIdList.add( tokenKey);
     partialPlan.getTokenMap().put( tokenKey, token);
     return token;

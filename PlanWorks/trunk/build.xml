@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.7 2003-06-02 17:49:57 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.8 2003-06-02 17:52:12 taylor Exp $ -->
 <project name="PlanWorks" default="projectTest" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -7,7 +7,7 @@
 
   <property name="planworks.root" value="${basedir}"/>
 
-  <target name="existTest"  depends="check_jvm_2"
+  <target name="existTest"  depends="check_jvm_2, cleanDb"
     description="-- prototyping test (compile dependency)">
     <ant dir="./test" antfile="exist-test.xml"/>
   </target>
@@ -17,7 +17,7 @@
     <ant dir="./test" antfile="project-test.xml"/>
   </target>
 
-  <target name="timelineViewTest" depends="check_jvm_2" 
+  <target name="timelineViewTest" depends="check_jvm_2, cleanDb" 
       description="-- JFCunit test (compile dependency)">
     <ant dir="./java/src/gov/nasa/arc/planworks/viz/views/test" 
        antfile="timeline-view-test.xml"/>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.3 2003-05-20 18:25:35 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.4 2003-06-02 17:49:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -37,7 +37,6 @@ public class PwVariableImpl implements PwVariable {
   private String paramId;
   private PwDomainImpl domain; // PwEnumeratedDomainImpl || PwIntervalDomainImpl
   private PwPartialPlanImpl partialPlan;
-  private String collectionName;
 
 
   /**
@@ -49,11 +48,9 @@ public class PwVariableImpl implements PwVariable {
    * @param paramId - <code>String</code> - 
    * @param domain - <code>PwDomainImpl</code> - PwEnumeratedDomainImpl || PwIntervalDomainImpl
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
-   * @param collectionName - <code>String</code> - 
    */
   public PwVariableImpl( String key, String type, String constraintIds, String paramId,
-                         PwDomainImpl domain, PwPartialPlanImpl partialPlan,
-                         String collectionName) {
+                         PwDomainImpl domain, PwPartialPlanImpl partialPlan) {
     this.key = key;
     this.type = type;
     this.constraintIdList = new ArrayList();
@@ -64,7 +61,6 @@ public class PwVariableImpl implements PwVariable {
     this.paramId = paramId;
     this.domain = domain;
     this.partialPlan = partialPlan;
-    this.collectionName = collectionName;
   } // end constructor
 
 
@@ -83,7 +79,7 @@ public class PwVariableImpl implements PwVariable {
    * @return - <code>PwParameter</code> - 
    */
   public PwParameter getParameter() {
-    return partialPlan.getParameter( paramId, collectionName);
+    return partialPlan.getParameter( paramId);
   }
 
   /**
@@ -94,8 +90,7 @@ public class PwVariableImpl implements PwVariable {
   public List getConstraintList() {
     List retval = new ArrayList( constraintIdList.size());
     for (int i = 0; i < constraintIdList.size(); i++) {
-      retval.add( partialPlan.getConstraint( (String) constraintIdList.get( i),
-                                             collectionName));
+      retval.add( partialPlan.getConstraint( (String) constraintIdList.get( i)));
     }
     return retval;
   }

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: exist-test.xml,v 1.7 2003-05-27 21:24:48 taylor Exp $ -->
+<!-- $Id: exist-test.xml,v 1.8 2003-06-02 17:50:00 taylor Exp $ -->
 <project name="exist-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
         <!-- planworks.root is an inherited property from PlanWorks/build.xml -->
@@ -20,11 +20,6 @@
                 <pathelement location="${exist.home}/exist.jar"/>
                 <fileset dir="${exist.home}/lib/core" includes="*.jar"/>
 	</path>
-	<delete>
-		<fileset dir="${planworks.root}/xml/db/data" includes="*.dbx"/>
-		<fileset dir="${planworks.root}/xml/db/logs" includes="*.log"/>
-		<fileset dir="${planworks.root}/xml/db/logs" includes="*.log*"/>
-	</delete>
 
 	<java dir="${planworks.root}/java/src" 
                 classname="gov.nasa.arc.planworks.db.test.ExistTest" fork="true">

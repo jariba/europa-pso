@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.6 2003-05-21 23:48:35 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.7 2003-06-02 17:49:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -49,7 +49,6 @@ public class PwTokenImpl implements PwToken {
   private String slotId;
   
   private PwPartialPlanImpl partialPlan;
-  private String collectionName;
 
 
   /**
@@ -57,10 +56,8 @@ public class PwTokenImpl implements PwToken {
    *
    * @param attributeList - <code>List</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
-   * @param collectionName - <code>String</code> - 
    */
-  public PwTokenImpl( List attributeList, PwPartialPlanImpl partialPlan,
-                      String collectionName) {
+  public PwTokenImpl( List attributeList, PwPartialPlanImpl partialPlan) {
     if (attributeList.size() != XmlDBeXist.NUM_TOKEN_ATTRIBUTES) {
       System.err.println( "Token constructor: attribute list does not contain 11 items" +
                           " => " + attributeList);
@@ -69,7 +66,6 @@ public class PwTokenImpl implements PwToken {
       } catch (Exception e) { e.printStackTrace(); }
       System.exit( 0);
     }
-    this.collectionName = collectionName;
     this.partialPlan = partialPlan;
     for (int i = 0, n = attributeList.size(); i < n; i++) {
       switch ( i) {
@@ -115,7 +111,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>PwPredicate</code> - 
    */
   public PwPredicate getPredicate() {
-    return partialPlan.getPredicate( predicateId, collectionName);
+    return partialPlan.getPredicate( predicateId);
   }
 
   /**
@@ -124,7 +120,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>PwVariable</code> - 
    */
   public PwVariable getStartVariable() {
-    return partialPlan.getVariable( startVarId, collectionName);
+    return partialPlan.getVariable( startVarId);
   }
 		
   /**
@@ -133,7 +129,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>PwVariable</code> - 
    */
   public PwVariable getEndVariable() {
-    return partialPlan.getVariable( endVarId, collectionName);
+    return partialPlan.getVariable( endVarId);
   }
 
   /**
@@ -142,7 +138,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>PwVariable</code> - 
    */
   public PwVariable getDurationVariable() {
-    return partialPlan.getVariable( durationVarId, collectionName);
+    return partialPlan.getVariable( durationVarId);
   }
 
   /**
@@ -151,7 +147,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>PwVariable</code> - 
    */
   public PwVariable getObjectVariable() {
-    return partialPlan.getVariable( objectVarId, collectionName);
+    return partialPlan.getVariable( objectVarId);
   }
 
   /**
@@ -160,7 +156,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>PwVariable</code> - 
    */
   public PwVariable getRejectVariable() {
-    return partialPlan.getVariable( rejectVarId, collectionName);
+    return partialPlan.getVariable( rejectVarId);
   }
 
   /**
@@ -171,8 +167,7 @@ public class PwTokenImpl implements PwToken {
   public List getTokenRelationsList() {
     List retval = new ArrayList( tokenRelationIds.size());
     for (int i = 0; i < tokenRelationIds.size(); i++) {
-      retval.add( partialPlan.getTokenRelation( (String) tokenRelationIds.get( i),
-                                                collectionName));
+      retval.add( partialPlan.getTokenRelation( (String) tokenRelationIds.get( i)));
     }
     return retval;
   }
@@ -185,8 +180,7 @@ public class PwTokenImpl implements PwToken {
   public List getParamVarsList() {
     List retval = new ArrayList( paramVarIds.size());
     for (int i = 0; i < paramVarIds.size(); i++) {
-      retval.add( partialPlan.getVariable( (String) paramVarIds.get( i),
-                                           collectionName));
+      retval.add( partialPlan.getVariable( (String) paramVarIds.get( i)));
     }
     return retval;
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectTest.java,v 1.7 2003-05-27 21:24:47 taylor Exp $
+// $Id: PwProjectTest.java,v 1.1 2003-06-02 17:49:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -12,7 +12,7 @@
 //         derived from skunkworks/planViz/java/src/.../PlanViz.java
 //
 
-package gov.nasa.arc.planworks.proj.test;
+package gov.nasa.arc.planworks.db.test;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -45,7 +45,6 @@ import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.util.FileUtils;
-import gov.nasa.arc.planworks.proj.PwProjectMgmt;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
@@ -99,9 +98,6 @@ public class PwProjectTest extends JFrame {
   private Container contentPane;
   private VizView timelineView;
   private PwPartialPlan partialPlan;
-
-  private JTabbedPane tabbedPane;
-
   private PwProject project;
 
   /**
@@ -124,8 +120,8 @@ public class PwProjectTest extends JFrame {
     // PwPartialPlan partialPlan = getTestPartialPlan();
 
     // PwProjectMgmt.createProject
-    String url = System.getProperty( "planworks.root") + "/xml/test";
-    partialPlan = createTestPartialPlan( url);
+    // String url = System.getProperty( "planworks.root") + "/xml/test";
+    // partialPlan = createTestPartialPlan( url);
     // System.out.println( "Test partialPlan " + partialPlan);
 
     contentPane = getContentPane();
@@ -133,6 +129,12 @@ public class PwProjectTest extends JFrame {
 
     buildMenuBar();
 
+    try {
+      PwProject.initProjects();
+    } catch (ResourceNotFoundException rnfExcep1) {
+      System.err.println( rnfExcep1);
+      System.exit( 1);
+    }
   } // end constructor
 
 
@@ -158,12 +160,12 @@ public class PwProjectTest extends JFrame {
     // ONE PROJECT FOR NOW, WITH ONE SEQUENCE, WITH ONE PARTIAL PLAN
     // PlanWorks/xml/test/monkey/monkey.xml
 
-    // PwProjectMgmt.openProject
+    // PwProject.openProject
     // PwPartialPlan partialPlan = getTestPartialPlan();
 
-    // PwProjectMgmt.createProject
-    String url = System.getProperty( "planworks.root") + "/xml/test";
-    partialPlan = createTestPartialPlan( url);
+    // PwProject.createProject
+   //  String url = System.getProperty( "planworks.root") + "/xml/test";
+    // partialPlan = createTestPartialPlan( url);
     // System.out.println( "Test partialPlan " + partialPlan);
 
     contentPane = getContentPane();
@@ -171,22 +173,27 @@ public class PwProjectTest extends JFrame {
 
     buildMenuBar();
 
-    // project.save();
-
-    // project.restore();
-
-  } // end constructor
+    try {
+      PwProject.initProjects();
+    } catch (ResourceNotFoundException rnfExcep1) {
+      System.err.println( rnfExcep1);
+      System.exit( 1);
+    }
+  } // end constructor 
 
 
   private PwPartialPlan createTestPartialPlan( String url) {
     project = null; PwPlanningSequence planSeq = null;
     PwPartialPlan partialPlan = null;
+    System.out.println( "Create Project: " + url);
     try {
-      project = PwProjectMgmt.createProject( url);
+      project = PwProject.createProject( url);
     } catch (ResourceNotFoundException rnfExcep1) {
-      rnfExcep1.printStackTrace();
+      System.err.println( rnfExcep1);
+      return null;
     } catch (DuplicateNameException dupExcep) {
-      dupExcep.printStackTrace();
+      System.err.println( dupExcep);
+      return null;
     }
     List sequenceList = project.listPlanningSequences();
     Iterator seqIterator = sequenceList.iterator();
@@ -211,19 +218,19 @@ public class PwProjectTest extends JFrame {
     return partialPlan;
   } // end createTestPartialPlan
 
-  private PwPartialPlan getTestPartialPlan() {
-    String projectName = "", sequenceName = "";
-    PwProject project = null; PwPlanningSequence planSeq = null;
+  private PwPartialPlan openTestPartialPlans() {
+    String projectUrl = "", sequenceName = "";
+    project = null; PwPlanningSequence planSeq = null;
     PwPartialPlan partialPlan = null;
     // ONE PROJECT HARD-CODED FOR NOW, WITH ONE SEQUENCE, WITH ONE PARTIAL PLAN
     // PlanWorks/xml/test/monkey/monkey.xml
-    List projectList = PwProjectMgmt.listProjects();
-    Iterator projIterator = projectList.iterator();
+    List projectUrls = PwProject.listProjects();
+    Iterator projIterator = projectUrls.iterator();
     while (projIterator.hasNext()) {
-      projectName = (String) projIterator.next();
-      System.out.println( "Project: " + projectName);
+      projectUrl = (String) projIterator.next();
+      System.out.println( "Open Project: " + projectUrl);
       try {
-        project = PwProjectMgmt.openProject( projectName);
+        project = PwProject.openProject( projectUrl);
       } catch (ResourceNotFoundException rnfExcep1) {
         // System.err.println( "Project " + projectName + " not found: " + rnfExcep1);
         rnfExcep1.printStackTrace();
@@ -255,7 +262,18 @@ public class PwProjectTest extends JFrame {
       }
     }
     return partialPlan;
-  } // end getTestPartialPlan
+  } // end openTestPartialPlans
+
+
+  private void closeProject() {
+    try {
+      this.project.close();
+    } catch (Exception e) {
+      System.err.println( e);
+      System.exit( 1);
+    }
+  } // end closeProject
+
 
   private final void buildMenuBar() {
     JMenuBar menuBar = new JMenuBar();
@@ -267,16 +285,55 @@ public class PwProjectTest extends JFrame {
         } });
     fileMenu.add( exitItem);
 
+    JMenu projectMenu = new JMenu( "Project");
+    JMenuItem createProjectItem = new JMenuItem( "Create");
+    JMenuItem create1ProjectItem = new JMenuItem( "Create1");
+    JMenuItem openProjectItem = new JMenuItem( "Open");
+    JMenuItem closeProjectItem = new JMenuItem( "Close");
+    JMenuItem saveProjectItem = new JMenuItem( "Save");
+    createProjectItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent e) {
+          String url = System.getProperty( "planworks.root") + "/xml/test";
+         PwProjectTest.this. partialPlan =
+           PwProjectTest.this.createTestPartialPlan( url);
+        }});
+    projectMenu.add( createProjectItem);
+    create1ProjectItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent e) {
+          String url = System.getProperty( "planworks.root") + "/xml/test1";
+         PwProjectTest.this. partialPlan =
+           PwProjectTest.this.createTestPartialPlan( url);
+        }});
+    projectMenu.add( create1ProjectItem);
+    openProjectItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent e) {
+         PwProjectTest.this. partialPlan =
+           PwProjectTest.this.openTestPartialPlans();
+        }});
+    projectMenu.add( openProjectItem);
+    closeProjectItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent e) {
+          PwProjectTest.this.closeProject();
+        }});
+    projectMenu.add( closeProjectItem);
+    saveProjectItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          try {
+            PwProjectTest.this.project.save();
+          } catch (Exception excp) {
+            System.err.println( excp ); System.exit( 0); }}});
+    projectMenu.add( saveProjectItem);
+
     JMenu renderMenu = new JMenu( "Render");
     JMenuItem renderTimelineViewItem = new JMenuItem( "Timeline View");
     renderTimelineViewItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent e) {
           PwProjectTest.this.renderTimelineView();
-        }
-      });
+        }});
     renderMenu.add( renderTimelineViewItem);
 
     menuBar.add( fileMenu);
+    menuBar.add( projectMenu);
     menuBar.add( renderMenu);
     setJMenuBar( menuBar);
   } // end buildMenuBar
@@ -284,17 +341,19 @@ public class PwProjectTest extends JFrame {
 
   private void renderTimelineView() {
     // System.err.println( "renderTimelineView");
-    long startTimeMSecs = (new Date()).getTime();
+    if (partialPlan != null) {
+      long startTimeMSecs = (new Date()).getTime();
 
-    timelineView = new TimelineView( partialPlan);
-    contentPane.add( timelineView);
-    contentPane.validate(); // IMPORTANT
+      timelineView = new TimelineView( partialPlan);
+      contentPane.add( timelineView);
+      contentPane.validate(); // IMPORTANT
 
-    long stopTimeMSecs = (new Date()).getTime();
-    String timeString = "Render Timeline View \n   ... elapsed time: " +
-      //       writeTime( (stopTimeMSecs - startTimeMSecs)) + " seconds.";
-      (stopTimeMSecs - startTimeMSecs) + " msecs.";
-    System.err.println( timeString);
+      long stopTimeMSecs = (new Date()).getTime();
+      String timeString = "Render Timeline View \n   ... elapsed time: " +
+        //       writeTime( (stopTimeMSecs - startTimeMSecs)) + " seconds.";
+        (stopTimeMSecs - startTimeMSecs) + " msecs.";
+      System.err.println( timeString);
+    }
   } // end renderTimelineView
 
 
