@@ -39,6 +39,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame
 		    catch(PropertyVetoException pve){}
 		}
 	    });
+        button.setToolTipText("Window " + n);
 	windowBar.add(button);
 	addInternalFrameListener(new MDIInternalFrameListener(this, windowBar,
 							      menuBar));
@@ -61,6 +62,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame
 		    catch(PropertyVetoException pve){}
 		}
 	    });
+        button.setToolTipText(title);
 	windowBar.add(button);
 	addInternalFrameListener(new MDIInternalFrameListener(this, windowBar,
 							      menuBar));
@@ -84,6 +86,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame
 		    catch(PropertyVetoException pve){}
 		}
 	    });
+        button.setToolTipText(title);
 	windowBar.add(button);
 	addInternalFrameListener(new MDIInternalFrameListener(this, windowBar,
 							      menuBar));
@@ -107,6 +110,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame
 		    catch(PropertyVetoException pve){}
 		}
 	    });
+        button.setToolTipText(title);
 	windowBar.add(button);
 	addInternalFrameListener(new MDIInternalFrameListener(this, windowBar,
 							      menuBar));
@@ -132,6 +136,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame
 		    catch(PropertyVetoException pve){}
 		}
 	    });
+        button.setToolTipText(title);
 	windowBar.add(button);
 	addInternalFrameListener(new MDIInternalFrameListener(this, windowBar,
 							      menuBar));
@@ -157,6 +162,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame
 		    catch(PropertyVetoException pve){}
 		}
 	    });
+        button.setToolTipText(title);
 	windowBar.add(button);
 	addInternalFrameListener(new MDIInternalFrameListener(this, windowBar,
 							      menuBar));
