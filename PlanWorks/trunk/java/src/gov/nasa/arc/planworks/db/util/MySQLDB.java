@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.103 2004-05-21 21:38:56 taylor Exp $
+// $Id: MySQLDB.java,v 1.104 2004-05-21 22:25:15 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
+import gov.nasa.arc.planworks.db.impl.PwDecisionImpl;
 import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
 import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
@@ -564,6 +565,7 @@ public class MySQLDB {
         updateDatabase("DELETE FROM TokenRelation".concat(whereClause.toString()));
         updateDatabase("DELETE FROM ConstraintVarMap".concat(whereClause.toString()));
         updateDatabase("DELETE FROM ResourceInstants".concat(whereClause.toString()));
+				updateDatabase("DELETE FROM Decision".concat(whereClause.toString()));
         updateDatabase("DELETE FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
       }
       updateDatabase("DELETE FROM PartialPlanStats WHERE SequenceId=".concat(sequenceId.toString()));
@@ -1088,6 +1090,24 @@ public class MySQLDB {
     }
     return retval;
   }
+
+	synchronized public static List queryOpenDecisionsForStep(final Long ppId) {
+		List retval = new ArrayList();
+		try {
+			ResultSet decs = 
+				queryDatabase("SELECT DecisionId, DecisionType, EntityId, IsUnit, Choices FROM Decision WHERE PartialPlanId=".concat(ppId.toString()));
+			while(decs.next()) {
+				Blob blob = decs.getBlob("Choices");
+				String choices = new String(blob.getBytes(1, (int) blob.length()));
+				retval.add(new PwDecisionImpl(ppId, new Integer(decs.getInt("DecisionId")), decs.getInt("DecisionType"),
+																			new Integer(decs.getInt("EntityId")), decs.getBoolean("IsUnit"), choices));
+			}
+		}
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		}
+		return retval;
+	}
 
   synchronized public static List queryTransactionsForStep(final Long seqId, final Long ppId) {
     List retval = new ArrayList();
@@ -1656,22 +1676,22 @@ public class MySQLDB {
 		}
 	}
 
-// 	public static List queryTests(String projectName) {
-// 		List retval = new ArrayList();
-// 		try {
-// 			ResultSet testSet = queryDatabase("SELECT Tests FROM Project WHERE ProjectName='".concat(projectName).concat("'"));
-// 			Blob blob = testSet.getBlob("Tests");
-// 			String tests = new String(blob.getBytes(1, (int) blob.length()));
-// 			StringTokenizer strTok = new StringTokenizer(tests, DbConstants.SEQ_COL_SEP);
-// 			while(strTok.hasMoreTokens()) {
-// 				retval.add(strTok.nextToken());
-// 			}
-// 		}
-// 		catch(SQLException sqle) {
-// 			sqle.printStackTrace();
-// 		}
-// 		return retval;
-// 	}
+ 	public static List queryTests(String projectName) {
+ 		List retval = new ArrayList();
+ 		try {
+ 			ResultSet testSet = queryDatabase("SELECT Tests FROM Project WHERE ProjectName='".concat(projectName).concat("'"));
+ 			Blob blob = testSet.getBlob("Tests");
+ 			String tests = new String(blob.getBytes(1, (int) blob.length()));
+ 			StringTokenizer strTok = new StringTokenizer(tests, DbConstants.SEQ_COL_SEP);
+ 			while(strTok.hasMoreTokens()) {
+ 				retval.add(strTok.nextToken());
+ 			}
+ 		}
+ 		catch(SQLException sqle) {
+ 			sqle.printStackTrace();
+ 		}
+ 		return retval;
+ 	}
 }
 
 class EntityIdComparator implements Comparator {
