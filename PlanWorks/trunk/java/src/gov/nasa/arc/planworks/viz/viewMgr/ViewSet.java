@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.24 2003-09-05 16:52:56 miatauro Exp $
+// $Id: ViewSet.java,v 1.25 2003-09-09 20:40:51 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -57,7 +57,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
    * @param remover the interface which is responsible for removing entire ViewSets.
    */
   public ViewSet(MDIDesktopFrame desktopFrame, PwPartialPlan partialPlan, String planName, 
-                 ViewSetRemover remover) throws SQLException{
+                 ViewSetRemover remover) {
     this.views = new HashMap();
     this.partialPlan = partialPlan;
     this.planName = planName;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.12 2003-08-12 21:35:05 miatauro Exp $
+// $Id: ViewManager.java,v 1.13 2003-09-09 20:40:50 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -50,7 +50,7 @@ public class ViewManager implements ViewSetRemover {
    * @return MDIInternalFrame the frame containing the newly created or selected view.
    */
   public MDIInternalFrame openTimelineView(PwPartialPlan partialPlan, String planName,
-                                           long startTimeMSecs) throws SQLException {
+                                           long startTimeMSecs) {
     if(!viewSets.containsKey(partialPlan)) {
       viewSets.put(partialPlan, new ViewSet(desktopFrame, partialPlan, planName, this));
     }
@@ -65,7 +65,7 @@ public class ViewManager implements ViewSetRemover {
    * @return MDIInternalFrame the frame containing the newly created or selected view.
    */
   public MDIInternalFrame openTokenNetworkView(PwPartialPlan partialPlan, String planName,
-                                               long startTimeMSecs) throws SQLException {
+                                               long startTimeMSecs) {
     if(!viewSets.containsKey(partialPlan)) {
       viewSets.put(partialPlan, new ViewSet(desktopFrame, partialPlan, planName, this));
     }
@@ -80,7 +80,7 @@ public class ViewManager implements ViewSetRemover {
    * @return MDIInternalFrame the frame containing the newly created or selected view.
    */
   public MDIInternalFrame openTemporalExtentView(PwPartialPlan partialPlan, String planName,
-                                                 long startTimeMSecs) throws SQLException {
+                                                 long startTimeMSecs) {
     if(!viewSets.containsKey(partialPlan)) {
       viewSets.put(partialPlan, new ViewSet(desktopFrame, partialPlan, planName, this));
     }
@@ -95,7 +95,7 @@ public class ViewManager implements ViewSetRemover {
    * @return MDIInternalFrame the frame containing the newly created or selected view.
    */
   public MDIInternalFrame openConstraintNetworkView(PwPartialPlan partialPlan, String planName,
-                                                    long startTimeMSecs) throws SQLException {
+                                                    long startTimeMSecs) {
     if(!viewSets.containsKey(partialPlan)) {
       viewSets.put(partialPlan, new ViewSet(desktopFrame, partialPlan, planName, this));
     }

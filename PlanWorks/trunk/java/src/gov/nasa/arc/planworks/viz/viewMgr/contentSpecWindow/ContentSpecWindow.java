@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.15 2003-09-05 16:53:05 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.16 2003-09-09 20:41:02 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -59,7 +59,7 @@ public class ContentSpecWindow extends JPanel {
    * @param contentSpec The ContentSpec with which this window is associated.  Instantiated in
    *                    ViewSet
    */
-  public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec) throws SQLException {
+  public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec) {
     this.contentSpec = contentSpec;
     queryTestExists = false;
 

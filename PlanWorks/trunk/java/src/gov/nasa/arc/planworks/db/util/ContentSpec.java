@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.6 2003-08-19 00:24:53 miatauro Exp $
+// $Id: ContentSpec.java,v 1.7 2003-09-09 20:40:29 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -70,8 +70,7 @@ public class ContentSpec {
    * @param <code>redrawNotifier</code> an interface to inform views that they need to re-draw
    */
 
-  public ContentSpec(PwPartialPlan partialPlan, RedrawNotifier redrawNotifier) 
-    throws SQLException {
+  public ContentSpec(PwPartialPlan partialPlan, RedrawNotifier redrawNotifier) {
     this.partialPlanId = partialPlan.getId();
     this.partialPlan = partialPlan;
     this.redrawNotifier = redrawNotifier;
@@ -81,7 +80,7 @@ public class ContentSpec {
   /**
    * Sets all tokens valid
    */
-  public void resetSpec() throws SQLException {
+  public void resetSpec() {
     validTokenIds.clear();
     queryValidTokens();
     redrawNotifier.notifyRedraw();
@@ -91,10 +90,14 @@ public class ContentSpec {
    * Get all token ids
    */
 
-  private void queryValidTokens() throws SQLException {
-    ResultSet validTokens = MySQLDB.queryDatabase(TOKENID_QUERY.concat(partialPlanId.toString()));
-    while(validTokens.next()) {
-      validTokenIds.add(new Integer(validTokens.getInt(TOKENID)));
+  private void queryValidTokens() {
+    try {
+      ResultSet validTokens = MySQLDB.queryDatabase(TOKENID_QUERY.concat(partialPlanId.toString()));
+      while(validTokens.next()) {
+        validTokenIds.add(new Integer(validTokens.getInt(TOKENID)));
+      }
+    }
+    catch(SQLException sqle) {
     }
   }
 
@@ -121,92 +124,96 @@ public class ContentSpec {
    * @param timeInterval the result of getValues() in TimeIntervalGroupBox.
    */
   public void applySpec(List timeline, List predicate, List timeInterval) 
-    throws NumberFormatException, SQLException {
-    StringBuffer tokenQuery = new StringBuffer(TOKENID_QUERY);
-    tokenQuery.append(partialPlanId.toString()).append(" ");
-    if(timeline != null) {
-      tokenQuery.append(AND_PTIMELINEID);
-      if(((String)timeline.get(0)).indexOf(NOT) != -1) {
-        tokenQuery.append(NEG);
-      }
-      tokenQuery.append(EQ);
-      tokenQuery.append(((Integer)timeline.get(1)).toString()).append(" ");
-      for(int i = 2; i < timeline.size(); i++) {
-        String connective = (String) timeline.get(i);
-        if(connective.indexOf(AND) != -1) {
-          tokenQuery.append(AND_TIMELINEID);
-        }
-        else {
-          tokenQuery.append(OR_TIMELINEID);
-        }
-        if(connective.indexOf(NOT) != -1) {
+    throws NumberFormatException {
+    try {
+      StringBuffer tokenQuery = new StringBuffer(TOKENID_QUERY);
+      tokenQuery.append(partialPlanId.toString()).append(" ");
+      if(timeline != null) {
+        tokenQuery.append(AND_PTIMELINEID);
+        if(((String)timeline.get(0)).indexOf(NOT) != -1) {
           tokenQuery.append(NEG);
         }
-        i++;
-        tokenQuery.append(EQ).append(((Integer)timeline.get(i)).toString()).append(" ");
-      }
-      tokenQuery.append(") ");
-    }
-    if(predicate != null) {
-      tokenQuery.append(AND_PPREDICATEID);
-      if(((String)predicate.get(0)).indexOf(NOT) != -1) {
-        tokenQuery.append(NEG);
-      }
-      tokenQuery.append(EQ);
-      tokenQuery.append(((Integer)predicate.get(1)).toString()).append(" ");
-      for(int i = 2; i < predicate.size(); i++) {
-        String connective = (String) predicate.get(i);
-        if(connective.indexOf(AND) != -1) {
-          tokenQuery.append(AND_PREDICATEID);
+        tokenQuery.append(EQ);
+        tokenQuery.append(((Integer)timeline.get(1)).toString()).append(" ");
+        for(int i = 2; i < timeline.size(); i++) {
+          String connective = (String) timeline.get(i);
+          if(connective.indexOf(AND) != -1) {
+            tokenQuery.append(AND_TIMELINEID);
+          }
+          else {
+            tokenQuery.append(OR_TIMELINEID);
+          }
+          if(connective.indexOf(NOT) != -1) {
+            tokenQuery.append(NEG);
+          }
+          i++;
+          tokenQuery.append(EQ).append(((Integer)timeline.get(i)).toString()).append(" ");
         }
-        else {
-          tokenQuery.append(OR_PREDICATEID);
-        }
-        if(connective.indexOf(NOT) != -1) {
+        tokenQuery.append(") ");
+      }
+      if(predicate != null) {
+        tokenQuery.append(AND_PPREDICATEID);
+        if(((String)predicate.get(0)).indexOf(NOT) != -1) {
           tokenQuery.append(NEG);
         }
-        i++;
-        tokenQuery.append(EQ).append(((Integer)predicate.get(i)).toString()).append(" ");
+        tokenQuery.append(EQ);
+        tokenQuery.append(((Integer)predicate.get(1)).toString()).append(" ");
+        for(int i = 2; i < predicate.size(); i++) {
+          String connective = (String) predicate.get(i);
+          if(connective.indexOf(AND) != -1) {
+            tokenQuery.append(AND_PREDICATEID);
+          }
+          else {
+            tokenQuery.append(OR_PREDICATEID);
+          }
+          if(connective.indexOf(NOT) != -1) {
+            tokenQuery.append(NEG);
+          }
+          i++;
+          tokenQuery.append(EQ).append(((Integer)predicate.get(i)).toString()).append(" ");
+        }
+        tokenQuery.append(") ");
       }
-      tokenQuery.append(") ");
-    }
-    tokenQuery.append(";");
-    ResultSet tokenIds = MySQLDB.queryDatabase(tokenQuery.toString());
-    validTokenIds.clear();
-    while(tokenIds.next()) {
-      validTokenIds.add(new Integer(tokenIds.getInt(TOKENID)));
-    }
-    if(timeInterval != null) {
-      ListIterator tokenIdIterator = validTokenIds.listIterator();
-      while(tokenIdIterator.hasNext()) {
-        Integer tokenId = (Integer) tokenIdIterator.next();
-        Integer earliestStart = partialPlan.getToken(tokenId).getEarliestStart();
-        Integer latestEnd = partialPlan.getToken(tokenId).getLatestEnd();
-        boolean leftIsTrue = false;
+      tokenQuery.append(";");
+      ResultSet tokenIds = MySQLDB.queryDatabase(tokenQuery.toString());
+      validTokenIds.clear();
+      while(tokenIds.next()) {
+        validTokenIds.add(new Integer(tokenIds.getInt(TOKENID)));
+      }
+      if(timeInterval != null) {
+        ListIterator tokenIdIterator = validTokenIds.listIterator();
+        while(tokenIdIterator.hasNext()) {
+          Integer tokenId = (Integer) tokenIdIterator.next();
+          Integer earliestStart = partialPlan.getToken(tokenId).getEarliestStart();
+          Integer latestEnd = partialPlan.getToken(tokenId).getLatestEnd();
+          boolean leftIsTrue = false;
 
-        for(int i = 0; i < timeInterval.size(); i += 3) {
-          String connective = (String) timeInterval.get(i);
-          Integer start = (Integer) timeInterval.get(i+1);
-          Integer end = (Integer) timeInterval.get(i+2);
-          if(connective.indexOf(AND) > -1) {
-            if(!leftIsTrue) {
-              break;
+          for(int i = 0; i < timeInterval.size(); i += 3) {
+            String connective = (String) timeInterval.get(i);
+            Integer start = (Integer) timeInterval.get(i+1);
+            Integer end = (Integer) timeInterval.get(i+2);
+            if(connective.indexOf(AND) > -1) {
+              if(!leftIsTrue) {
+                break;
+              }
+              leftIsTrue = evaluateTimeInterval(connective, start, end, earliestStart, latestEnd);
+              if(!leftIsTrue) {
+                break;
+              }
             }
-            leftIsTrue = evaluateTimeInterval(connective, start, end, earliestStart, latestEnd);
-            if(!leftIsTrue) {
-              break;
+            else if(connective.indexOf(OR) > -1) {
+              leftIsTrue = 
+                (evaluateTimeInterval(connective, start, end, earliestStart, latestEnd) || 
+                 leftIsTrue);
             }
           }
-          else if(connective.indexOf(OR) > -1) {
-            leftIsTrue = 
-              (evaluateTimeInterval(connective, start, end, earliestStart, latestEnd) || 
-               leftIsTrue);
+          if(!leftIsTrue) {
+            tokenIdIterator.remove();
           }
-        }
-        if(!leftIsTrue) {
-          tokenIdIterator.remove();
         }
       }
+    }
+    catch(SQLException sqle) {
     }
     redrawNotifier.notifyRedraw();
   }
@@ -243,16 +250,19 @@ public class ContentSpec {
    * @return Map name => Id
    */
 
-  public Map getPredicateNames() throws SQLException {
+  public Map getPredicateNames() {
     HashMap predicates = new HashMap();
     
     System.err.println("Getting predicate names...");
-    ResultSet predicateNames = 
-      MySQLDB.queryDatabase(PREDICATENAME_QUERY.concat(partialPlanId.toString()));
-    while(predicateNames.next()) {
-      predicates.put(predicateNames.getString(PREDICATENAME), 
+    try {
+      ResultSet predicateNames = 
+        MySQLDB.queryDatabase(PREDICATENAME_QUERY.concat(partialPlanId.toString()));
+      while(predicateNames.next()) {
+        predicates.put(predicateNames.getString(PREDICATENAME), 
                        new Integer(predicateNames.getInt(PREDICATEID)));
+      }
     }
+    catch(SQLException sqle) {}
     return predicates;
   }
 
@@ -262,17 +272,20 @@ public class ContentSpec {
    * @return Map name => Id
    */
 
-  public Map getTimelineNames() throws SQLException {
+  public Map getTimelineNames() {
     HashMap timelines = new HashMap();
     System.err.println("Getting timeline names...");
-    ResultSet timelineNames =
-      MySQLDB.queryDatabase(TIMELINENAME_QUERY.concat(partialPlanId.toString()));
-    String objName = null;
-    while(timelineNames.next()) {
-      objName = (timelineNames.getString(OBJECTNAME) == null ? objName : 
-                 timelineNames.getString(OBJECTNAME));
-      timelines.put("".concat(objName).concat(":").concat(timelineNames.getString(TIMELINENAME)), new Integer(timelineNames.getInt(TIMELINEID)));
+    try {
+      ResultSet timelineNames =
+        MySQLDB.queryDatabase(TIMELINENAME_QUERY.concat(partialPlanId.toString()));
+      String objName = null;
+      while(timelineNames.next()) {
+        objName = (timelineNames.getString(OBJECTNAME) == null ? objName : 
+                   timelineNames.getString(OBJECTNAME));
+        timelines.put("".concat(objName).concat(":").concat(timelineNames.getString(TIMELINENAME)), new Integer(timelineNames.getInt(TIMELINEID)));
+      }
     }
+    catch(SQLException sqle) {}
     return timelines;
   }
 }

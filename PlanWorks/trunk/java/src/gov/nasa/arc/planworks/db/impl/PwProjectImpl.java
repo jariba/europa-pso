@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.31 2003-09-05 16:51:11 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.32 2003-09-09 20:40:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -57,7 +57,7 @@ public class PwProjectImpl extends PwProject {
    *
    */
   synchronized public static void initProjects() 
-    throws ResourceNotFoundException, SQLException, IOException {
+    throws ResourceNotFoundException, IOException {
     projects = new HashMap();
     connectToDataBase();
 
@@ -77,7 +77,7 @@ public class PwProjectImpl extends PwProject {
    * @exception DuplicateNameException - if the a probect by the given name exists in the database
    */
 
-  public static PwProject createProject(String name) throws DuplicateNameException, SQLException {
+  public static PwProject createProject(String name) throws DuplicateNameException {
     if(MySQLDB.projectExists(name)) {
       throw new DuplicateNameException("A project named '" + name + "' already exists.");
     }
@@ -144,7 +144,7 @@ public class PwProjectImpl extends PwProject {
    * @param name - <code>String</code> - 
    * @exception DuplicateNameException if an error occurs
    */
-  public PwProjectImpl( String name)  throws DuplicateNameException, SQLException {
+  public PwProjectImpl( String name)  throws DuplicateNameException {
     this.name = name;
     id = new Integer(-1);
     planningSequences = new ArrayList();
@@ -160,7 +160,7 @@ public class PwProjectImpl extends PwProject {
    * @exception ResourceNotFoundException if an error occurs
    */
   public PwProjectImpl( String name, boolean isInDb) 
-    throws ResourceNotFoundException, SQLException {
+    throws ResourceNotFoundException {
     this.name = name;
     
     id = MySQLDB.getProjectIdByName(name);
@@ -237,7 +237,7 @@ public class PwProjectImpl extends PwProject {
   } // end getPlanningSequence
 
   public PwPlanningSequence addPlanningSequence(String url) 
-    throws DuplicateNameException, ResourceNotFoundException, SQLException {
+    throws DuplicateNameException, ResourceNotFoundException {
     PwPlanningSequenceImpl retval = null;
     if(MySQLDB.sequenceExists(url)) {
       throw new DuplicateNameException("Sequence at " + url + " already in database.");
