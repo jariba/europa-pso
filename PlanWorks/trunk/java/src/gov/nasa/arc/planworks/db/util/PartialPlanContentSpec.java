@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.15 2004-02-05 23:26:47 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.16 2004-02-10 17:48:55 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -103,6 +103,12 @@ public class PartialPlanContentSpec implements ContentSpec {
   public void resetSpec() {
     validTokenIds.clear();
     currentSpec.clear();
+    currentSpec.add( null); // timeline
+    currentSpec.add( null); // predicate
+    currentSpec.add( null); // time interval
+    currentSpec.add( new Boolean( false)); // merge
+    currentSpec.add( new Integer( ALL)); // tokenTypes
+    currentSpec.add(null);
     queryValidTokens();
     redrawNotifier.notifyRedraw();
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.39 2004-02-03 19:22:17 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.40 2004-02-10 17:48:42 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -275,7 +275,7 @@ public class PwProjectImpl extends PwProject {
         return;
       }
     }
-    throw new ResourceNotFoundException("Sequence " + seqName + " not in projet.");
+    //throw new ResourceNotFoundException("Sequence " + seqName + " not in projet.");
   }
 
   public void deletePlanningSequence(final Long seqId) throws ResourceNotFoundException {
@@ -288,7 +288,6 @@ public class PwProjectImpl extends PwProject {
         return;
       }
     }
-    throw new ResourceNotFoundException("Sequence " + seqId + " not in project.");
   }
   /**
    * <code>delete</code> - remove this project from list of projects and database
