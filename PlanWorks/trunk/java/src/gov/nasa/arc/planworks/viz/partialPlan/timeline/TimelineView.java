@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.22 2003-12-30 00:39:12 miatauro Exp $
+// $Id: TimelineView.java,v 1.23 2003-12-31 01:02:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -30,6 +30,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoListPosition;
 import com.nwoods.jgo.JGoObject;
@@ -78,6 +79,8 @@ public class TimelineView extends PartialPlanView {
   private List freeTokenNodeList; // element TokenNode
   private List tmpTimelineNodeList; // element TimelineNode
   private int slotLabelMinLength;
+  private JGoArea mouseOverNode;
+  private boolean isAutoSnapEnabled;
 
   /**
    * <code>TimelineView</code> - constructor - 
@@ -95,6 +98,8 @@ public class TimelineView extends PartialPlanView {
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
+    mouseOverNode = null;
+    isAutoSnapEnabled = false;
 
     jGoView = new TimelineJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
@@ -242,6 +247,33 @@ public class TimelineView extends PartialPlanView {
     return freeTokenNodeList;
   }
 
+  /**
+   * <code>getMouseOverNode</code> - node over which the mouse is moving - SlotNode/TokenNode
+   *
+   * @return - <code>JGoArea</code> - 
+   */
+  public JGoArea getMouseOverNode() {
+    return mouseOverNode;
+  }
+
+  /**
+   * <code>setMouseOverNode</code>
+   *
+   * @param mouseOverNode - <code>JGoArea</code> - 
+   */
+  public void setMouseOverNode( JGoArea mouseOverNode) {
+    this.mouseOverNode = mouseOverNode;
+  }
+
+  /**
+   * <code>isAutoSnapEnabled</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isAutoSnapEnabled() {
+    return isAutoSnapEnabled;
+  }
+
   private void createTimelineAndSlotNodes() {
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
@@ -290,8 +322,9 @@ public class TimelineView extends PartialPlanView {
         // increment by half the label width, since x is center, not left edge
         x = x +  SwingUtilities.computeStringWidth( this.fontMetrics,
                                                     freeToken.getPredicate().getName()) / 2;
-        TokenNode freeTokenNode = new TokenNode( freeToken, slot, new Point( x, y),
-                                                 backgroundColor, isFreeToken, isDraggable, this);
+        TimelineTokenNode freeTokenNode =
+          new TimelineTokenNode( freeToken, slot, new Point( x, y), backgroundColor,
+                                 isFreeToken, isDraggable, this);
         freeTokenNodeList.add( freeTokenNode);
         jGoDocument.addObjectAtTail( freeTokenNode);
         x = x + (int) freeTokenNode.getSize().getWidth();
@@ -624,7 +657,20 @@ public class TimelineView extends PartialPlanView {
     PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
-    createSteppingItems(mouseRightPopup);
+    String className =
+        (String) PlanWorks.viewClassNameMap.get( PlanWorks.TEMPORAL_EXTENT_VIEW);
+    if (viewSet.viewExists( className)) {
+      if (! isAutoSnapEnabled) {
+        JMenuItem enableAutoSnapItem = new JMenuItem( "Enable Auto Snap");
+        createEnableAutoSnapItem( enableAutoSnapItem);
+        mouseRightPopup.add( enableAutoSnapItem);
+      } else {
+        JMenuItem disableAutoSnapItem = new JMenuItem( "Disable Auto Snap");
+        createDisableAutoSnapItem( disableAutoSnapItem);
+        mouseRightPopup.add( disableAutoSnapItem);
+      }
+      mouseRightPopup.addSeparator();
+    }
 
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
     createNodeByKeyItem( nodeByKeyItem);
@@ -650,6 +696,21 @@ public class TimelineView extends PartialPlanView {
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
+  private void createEnableAutoSnapItem( JMenuItem enableAutoSnapItem) {
+    enableAutoSnapItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          isAutoSnapEnabled = true;
+        }
+      });
+  } // end createNodeByKeyItem
+
+  private void createDisableAutoSnapItem( JMenuItem disableAutoSnapItem) {
+    disableAutoSnapItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          isAutoSnapEnabled = false;
+        }
+      });
+  } // end createNodeByKeyItem
 
   private void createNodeByKeyItem( JMenuItem nodeByKeyItem) {
     nodeByKeyItem.addActionListener( new ActionListener() {
@@ -673,7 +734,6 @@ public class TimelineView extends PartialPlanView {
         }
       });
   } // end createNodeByKeyItem
-
 
   private void createActiveTokenItem( JMenuItem activeTokenItem) {
     activeTokenItem.addActionListener( new ActionListener() {

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.22 2003-12-30 01:16:50 miatauro Exp $
+// $Id: planViz.txt,v 1.23 2003-12-31 01:02:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -389,6 +389,9 @@ Method:
      rectangle to cause the "observed" view to scroll.  Use Mouse-Left clicks
      on areas outside the rectangle to cause the "observed" view to jump to
      a new location.  Do this for all partial plan views, except Transaction.
+ 14. In the Timeline View, Mouse-Right click on the background and select
+     "Enable Auto Snap". Then move the mouse cursor over slotted tokens, free
+     tokens, and empty slots.
 
 Post-conditions:
   1. Method:2 - In turn, each of the views should re-oriented itself to
@@ -421,13 +424,15 @@ Post-conditions:
      the "Open", "Hide", and "Close" selections.
  12. Method:13 - The "observed" views should respond properly to operatins on
      the overview windows.
+ 13. Method:14 - The Temporal Extent View's focus with green highlight will
+     follow the movement of the mouse cursor over the Timeline View's nodes.
 
 Requirements: TBD
 
 
 PLANVIZ-12
 --------------------
-Use the Content Specification to filter which tokens are displayed on the 
+Use the Content Filter dialog to filter which tokens are displayed on the 
 partial plan views.
 
 Pre-conditions:
@@ -435,23 +440,23 @@ Pre-conditions:
   2. The "test1" project is open, and all partial plan views, except
      Transaction View, are being displayed for step<nn> in a "tiled" layout 
      arrangement.  Create overviw windows for each partial plan view to
-     aid to monitoring the effects of Content Spec application.
+     aid to monitoring the effects of Content Filter application.
   3. The Constraint Network View has been expanded for at least two tokens,
      and all their variable and constraint nodes.
 
 Method:
-  1. Select a "Predicate" from the Content Spec.  Apply it.
+  1. Select a "Predicate" from the Content Filter.  Apply it.
   2. Check "NOT" for the selected predicate.  Apply it.
   3. Select "AND" from the combo box to the left of the "Predicate", 
      select another predicate, and check "NOT" for it, as well.  Apply it.
   4. Change the "AND" to an "OR" and uncheck the "NOT" boxes for the
      two predicates.  Apply it.
   5. Reset the spec.
-  6. Select a "Timeline" from the Content Spec.  Apply it.
+  6. Select a "Timeline" from the Content Filter.  Apply it.
   7. Utilize "AND", "OR", and "NOT", as with "Predicate", for variations
      of Timeline selection.
   8. Reset the spec.
-  9. Enter Time Interval "Start" and "End" values in the Content Spec.  Apply it.
+  9. Enter Time Interval "Start" and "End" values in the Content Filter.  Apply it.
  10. Utilize "AND", "OR", and "NOT", as with "Predicate", for variations
      of Time Interval selection.
  11. Reset the spec.
@@ -465,7 +470,7 @@ Method:
      to "exclude" for the first key.  Uncheck the "NOT" for the
      selected timeline.  Apply it.
  17. Reset the spec.
- 18. Click Mouse-Right on a background area of the Content Spec dialog,
+ 18. Click Mouse-Right on a background area of the Content Filter dialog,
      and choose either opening an individual partial plan view or all
      the partial plan views.
 
@@ -509,6 +514,7 @@ Requirements: 4.1.1, 4.1.2.a, 4.1.2.b, 4.1.2.c, 4.1.3, 4.1.4, 4.1.5,
 PLANVIZ-13
 --------------------
 Use the Sequence Query dialog to display windows with sequence query information.
+Querying of free tokens and unbound variables is handled by PLANVIZ-18.
 
 Pre-conditions:
   1. PlanWorks is running.

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.21 2003-12-30 00:38:47 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.22 2003-12-31 01:02:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1361,8 +1361,6 @@ public class ConstraintNetworkView extends PartialPlanView {
       String partialPlanName = partialPlan.getPartialPlanName();
       PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
       JPopupMenu mouseRightPopup = new JPopupMenu();
-
-      createSteppingItems(mouseRightPopup);
 
       JMenuItem tokenByKeyItem = new JMenuItem( "Find by Key");
       createNodeByKeyItem( tokenByKeyItem);

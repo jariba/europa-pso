@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ParamNode.java,v 1.1 2003-12-12 01:23:06 taylor Exp $
+// $Id: ParamNode.java,v 1.2 2003-12-31 01:02:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -160,7 +160,7 @@ public class ParamNode extends BasicNode {
 
       // mouseRightPopupMenu( viewCoords);
 
-      return true;
+      // return true;
     }
     return false;
   } // end doMouseClick   

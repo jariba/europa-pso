@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.4 2003-11-20 19:11:24 taylor Exp $
+// $Id: SlotNode.java,v 1.5 2003-12-31 01:02:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,6 +24,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoText;
@@ -39,8 +40,11 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 
 
 /**
@@ -324,7 +328,7 @@ public class SlotNode extends TextNode {
       tip.append( " </html>");
       return tip.toString();
     } else {
-      return "";
+      return null;
     }
   } // end getToolTipText
 
@@ -378,10 +382,10 @@ public class SlotNode extends TextNode {
 //         // position = jGoSelection.getNextObjectPos( position);
 //         position = jGoSelection.getFirstObjectPos();
 //       }
-      return true;
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       mouseRightPopupMenu( viewCoords);
+      return true;
     }
     return false;
   } // end doMouseClick   
@@ -411,6 +415,42 @@ public class SlotNode extends TextNode {
       NodeGenerics.showPopupMenu( mouseRightPopup, timelineView, viewCoords);
     }
   } // end mouseRightPopupMenu
+
+  /**
+   * <code>doUncapturedMouseMove</code>
+   *
+   * @param modifiers - <code>int</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   * @param view - <code>JGoView</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean doUncapturedMouseMove( int modifiers, Point docCoords, Point viewCoords,
+                               JGoView view) {
+    JGoObject obj = view.pickDocObject( docCoords, false);
+    SlotNode slotNode = (SlotNode) obj.getTopLevelObject();
+    JGoArea currentMouseOverNode = timelineView.getMouseOverNode();
+    if ((currentMouseOverNode == null) ||
+        ((currentMouseOverNode != null) &&
+         ((currentMouseOverNode instanceof TokenNode) ||
+          ((currentMouseOverNode instanceof SlotNode) &&
+           (! ((SlotNode) currentMouseOverNode).getSlot().getId().equals
+            ( slotNode.getSlot().getId())))))) {
+      timelineView.setMouseOverNode( slotNode);
+      String className =
+        (String) PlanWorks.viewClassNameMap.get( PlanWorks.TEMPORAL_EXTENT_VIEW);
+      if (timelineView.isAutoSnapEnabled() &&
+          timelineView.getViewSet().viewExists( className)) {
+        TemporalExtentView temporalExtentView =
+          ViewGenerics.getTemporalExtentView( timelineView.getViewSet().openView( className));
+        boolean isByKey = false;
+        temporalExtentView.findAndSelectToken( token, slot, isByKey);
+      }
+      return true;
+    } else {
+      return false;
+    }
+  } // end doUncapturedMouseMove
 
 
 } // end class SlotNode

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.13 2003-12-30 21:09:58 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.14 2003-12-31 01:02:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -465,7 +465,7 @@ public class PartialPlanView extends VizView {
         }
       });
   } // end createRaiseContentSpecItem
-  public void createSteppingItems(JPopupMenu menu) {
-  }
+
+
 } // end class PartialPlanView
 

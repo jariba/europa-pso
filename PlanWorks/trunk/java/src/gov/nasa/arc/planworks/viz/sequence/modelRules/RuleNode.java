@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleNode.java,v 1.1 2003-12-12 01:23:07 taylor Exp $
+// $Id: RuleNode.java,v 1.2 2003-12-31 01:02:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -175,7 +175,7 @@ public class RuleNode extends BasicNodeWDiamond {
 
       // mouseRightPopupMenu( viewCoords);
 
-      return true;
+      // return true;
     }
     return false;
   } // end doMouseClick   

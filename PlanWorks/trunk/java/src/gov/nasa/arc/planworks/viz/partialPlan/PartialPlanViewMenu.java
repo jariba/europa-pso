@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.6 2003-12-12 01:23:05 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.7 2003-12-31 01:02:21 taylor Exp $
 //
 // PlanWorks
 //
@@ -165,8 +165,14 @@ public class PartialPlanViewMenu extends JPopupMenu{
   } // end createOpenViewItem
 
 
-  private void createPartialPlanViewThread( String viewName,
-                                            PartialPlanViewMenuItem menuItem) {
+  /**
+   * <code>createPartialPlanViewThread</code>
+   *
+   * @param viewName - <code>String</code> - 
+   * @param menuItem - <code>PartialPlanViewMenuItem</code> - 
+   */
+  public static void createPartialPlanViewThread( String viewName,
+                                                  PartialPlanViewMenuItem menuItem) {
     Thread thread = new CreatePartialPlanViewThread(viewName, menuItem);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.50 2003-12-20 02:01:18 taylor Exp $
+# $Id: build-tags-file.csh,v 1.51 2003-12-31 01:02:20 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -147,6 +147,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/ThickDurationBridge.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/SlotNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenLink.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java \
