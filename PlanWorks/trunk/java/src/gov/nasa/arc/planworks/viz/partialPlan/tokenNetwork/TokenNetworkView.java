@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.40 2004-03-27 00:30:46 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.41 2004-03-27 01:04:42 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -35,7 +35,7 @@ import javax.swing.SwingUtilities;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoView;
 
-import org.jgraph.graph.ParentMap;
+//import org.jgraph.graph.ParentMap;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.39 2004-03-27 00:30:46 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.40 2004-03-27 01:04:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,8 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.awt.FontMetrics;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +40,16 @@ import gov.nasa.arc.planworks.util.UniqueSet;
  * @version 0.0
  */
 public class PwTokenImpl implements PwToken {
+
+  private static SecureRandom rand;
+
+  static {
+    rand = null;
+    try{rand = SecureRandom.getInstance("SHA1PRNG");}
+    catch(NoSuchAlgorithmException nsae) {nsae.printStackTrace(); System.exit(-1);}
+    rand.setSeed(SecureRandom.getSeed(20));
+  }
+
 
   protected Integer id;
   protected boolean isValueToken;
@@ -100,6 +112,8 @@ public class PwTokenImpl implements PwToken {
       PwSlotImpl slot = timeline.addSlot(slotId);
       slot.addToken(this);
     }
+
+    ruleId = new Integer(rand.nextInt(20));
     partialPlan.addToken(id, this);
   }
 

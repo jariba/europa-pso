@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.79 2004-03-23 18:20:45 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.80 2004-03-27 01:04:23 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -35,6 +35,7 @@ import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceInstant;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
+import gov.nasa.arc.planworks.db.PwRule;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -1192,5 +1193,9 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     retval.append("\t").append(id).append("\t").append(model).append("\t");
     retval.append(sequence.getId()).append("\n");
     return retval.toString();
+  }
+
+  public PwRule getRule(Integer rId) {
+    return sequence.getRule(rId);
   }
 } // end class PwPartialPlanImpl

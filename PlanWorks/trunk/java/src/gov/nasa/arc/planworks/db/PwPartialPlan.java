@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.32 2004-03-09 01:48:27 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.33 2004-03-27 01:04:05 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -235,6 +235,6 @@ public interface PwPartialPlan extends ViewableObject {
    */
   public abstract List getSlaveTokenIds( final Integer tokenId);
 
-
+  public PwRule getRule(Integer rId);
 } // end interface PwPartialPlan
 

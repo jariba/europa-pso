@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.21 2004-03-24 02:31:05 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.22 2004-03-27 01:05:18 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -361,13 +361,10 @@ public class SequenceStepsView extends SequenceView {
     int x = ViewConstants.STEP_VIEW_X_INIT;
     int stepNumber = 0;
     Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
-    long time = 0L;
     while (sizeItr.hasNext()) {
       int y = ViewConstants.STEP_VIEW_Y_INIT;
       
-      long temp = System.currentTimeMillis();
       addStepStatusIndicator( stepNumber, x, document);
-      time += System.currentTimeMillis() - temp;
       
       String partialPlanName = "step".concat( String.valueOf( stepNumber));
       int [] planDbSizes = (int[]) sizeItr.next();
@@ -412,7 +409,6 @@ public class SequenceStepsView extends SequenceView {
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
       stepNumber++;
     }
-    System.err.println( "Spent " + time + " msecs in addStepStatusIndicator");
   } // end renderHistogram
 
   private void addStepStatusIndicator( final int stepNum, final int x, final JGoDocument doc) {
@@ -422,17 +418,9 @@ public class SequenceStepsView extends SequenceView {
     statusIndicator.setDraggable( false);
     statusIndicator.setResizable( false);
     statusIndicator.setSelectable( false);
-    Color color = null;
-    if (planSequence.isPartialPlanInDb( stepNum)) {
-      color = ColorMap.getColor( "green3");
-    }
-    else if(planSequence.isPartialPlanInFilesystem( stepNum)) {
-      color = ColorMap.getColor( "yellow");
-    }
-    else {
-      color = ColorMap.getColor( "red");
-    }
-    //setPen(new JGoPen(type, width, color));
+    Color color = (planSequence.isPartialPlanInDb(stepNum) ? ColorMap.getColor("green3") :
+                   (planSequence.isPartialPlanInFilesystem(stepNum) ? ColorMap.getColor("yellow") :
+                    ColorMap.getColor("red")));
     statusIndicator.setPen( JGoPen.Null);
     statusIndicator.setBrush( JGoBrush.makeStockBrush( color));
     doc.addObjectAtTail( statusIndicator);
