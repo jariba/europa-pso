@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.51 2004-09-03 00:35:34 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.52 2004-09-10 20:02:32 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -54,25 +54,25 @@ public class PwProjectImpl extends PwProject {
     projects = new HashMap();
     connectToDataBase();
 
-    boolean isProjectInDb = false;
+    boolean isProjectInDb = true;
     ListIterator dbProjectNameIterator = MySQLDB.getProjectNames().listIterator();
     while(dbProjectNameIterator.hasNext()) {
       String workingDir = null, plannerPath = null, modelName = null, modelPath = null;
       String modelOutputDestDir = null, modelInitStatePath = null;
       String name = (String) dbProjectNameIterator.next();
       if (ConfigureAndPlugins.isProjectInConfigMap( name)) {
-          workingDir = ConfigureAndPlugins.getProjectConfigValue
-            ( ConfigureAndPlugins.PROJECT_WORKING_DIR, name);
-          plannerPath = ConfigureAndPlugins.getProjectConfigValue
-            ( ConfigureAndPlugins.PROJECT_PLANNER_PATH, name);
-          modelName = ConfigureAndPlugins.getProjectConfigValue
-            ( ConfigureAndPlugins.PROJECT_MODEL_NAME, name);
-          modelPath = ConfigureAndPlugins.getProjectConfigValue
-            ( ConfigureAndPlugins.PROJECT_MODEL_PATH, name);
-          modelOutputDestDir = ConfigureAndPlugins.getProjectConfigValue
-            ( ConfigureAndPlugins.PROJECT_MODEL_OUTPUT_DEST_DIR, name);
-          modelInitStatePath = ConfigureAndPlugins.getProjectConfigValue
-            ( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH, name);
+//           workingDir = ConfigureAndPlugins.getProjectConfigValue
+//             ( ConfigureAndPlugins.PROJECT_WORKING_DIR, name);
+//           plannerPath = ConfigureAndPlugins.getProjectConfigValue
+//             ( ConfigureAndPlugins.PROJECT_PLANNER_PATH, name);
+//           modelName = ConfigureAndPlugins.getProjectConfigValue
+//             ( ConfigureAndPlugins.PROJECT_MODEL_NAME, name);
+//           modelPath = ConfigureAndPlugins.getProjectConfigValue
+//             ( ConfigureAndPlugins.PROJECT_MODEL_PATH, name);
+//           modelOutputDestDir = ConfigureAndPlugins.getProjectConfigValue
+//             ( ConfigureAndPlugins.PROJECT_MODEL_OUTPUT_DEST_DIR, name);
+//           modelInitStatePath = ConfigureAndPlugins.getProjectConfigValue
+//             ( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH, name);
       } else {
         System.err.println( "initProjects: PROJECT_CONFIG_MAP entry created for project '" +
                              name + "'");
@@ -83,8 +83,10 @@ public class PwProjectImpl extends PwProject {
         nameValueList.add( workingDir);
         ConfigureAndPlugins.updateProjectConfigMap( name, nameValueList);
       }
-      projects.put(name, new PwProjectImpl( name, true, workingDir, plannerPath, modelName,
-                                            modelPath, modelOutputDestDir, modelInitStatePath));
+//       projects.put(name, new PwProjectImpl( name, isProjectInDb, workingDir, plannerPath,
+//                                             modelName, modelPath, modelOutputDestDir,
+//                                             modelInitStatePath));
+      projects.put(name, new PwProjectImpl( name, isProjectInDb));
     }
   } // end initProjects
 
@@ -92,17 +94,18 @@ public class PwProjectImpl extends PwProject {
    * <code>createProject</code> - create named project not in database
    *
    * @param name - <code>String</code> - 
-   * @param workingDir - <code>String</code> - 
+//    * @param workingDir - <code>String</code> - 
    * @return - <code>PwProject</code> - 
    * @exception DuplicateNameException if an error occurs
    */
-  public static PwProject createProject( final String name, final String workingDir)
-    throws DuplicateNameException {
+//   public static PwProject createProject( final String name, final String workingDir)
+  public static PwProject createProject( final String name) throws DuplicateNameException {
     if(MySQLDB.projectExists(name)) {
       throw new DuplicateNameException("A project named '" + name + "' already exists.");
     }
     PwProjectImpl retval = null;
-    retval = new PwProjectImpl( name, workingDir);
+//     retval = new PwProjectImpl( name, workingDir);
+    retval = new PwProjectImpl( name);
     projects.put(name, retval);
 
     MySQLDB.addProject(name);
@@ -156,12 +159,12 @@ public class PwProjectImpl extends PwProject {
   private List planningSequences; // element PwPlanningSequence
   private Map sequenceIdUrlMap;
   // set from projects config file
-  private String workingDir;
-  private String plannerPath;
-  private String modelName;
-  private String modelPath;
-  private String modelOutputDestDir;
-  private String modelInitStatePath;
+//   private String workingDir;
+//   private String plannerPath;
+//   private String modelName;
+//   private String modelPath;
+//   private String modelOutputDestDir;
+//   private String modelInitStatePath;
   private boolean jniAdapterLoaded;
   
   //for use in testing only!
@@ -178,17 +181,18 @@ public class PwProjectImpl extends PwProject {
    *                  called from PwProject.createProject
    *
    * @param name - <code>String</code> - 
-   * @param workingDir - <code>String</code> - 
+//    * @param workingDir - <code>String</code> - 
    */
-  public PwProjectImpl( final String name, final String workingDir) {
+//   public PwProjectImpl( final String name, final String workingDir) {
+  public PwProjectImpl( final String name) {
     this.name = name;
     id = new Integer(-1);
-    this.workingDir = workingDir;
-    this.plannerPath = null;
-    this.modelName = null;
-    this.modelPath = null;
-    this.modelOutputDestDir = null;
-    this.modelInitStatePath = null;
+//     this.workingDir = workingDir;
+//     this.plannerPath = null;
+//     this.modelName = null;
+//     this.modelPath = null;
+//     this.modelOutputDestDir = null;
+//     this.modelInitStatePath = null;
     jniAdapterLoaded = false;
     planningSequences = new ArrayList();
     //sequenceIdUrlMap = new HashMap();
@@ -201,25 +205,26 @@ public class PwProjectImpl extends PwProject {
    *
    * @param name - <code>String</code> project name
    * @param isInDb - <code>boolean</code> -  boolean used to differentiate between constructors
-   * @param workingDir - <code>String</code> - 
-   * @param plannerPath - <code>String</code> - 
-   * @param modelName - <code>String</code> - 
-   * @param modelPath - <code>String</code> - 
-   * @param modelOutputDestDir - <code>String</code> - 
-   * @param modelInitStatePath - <code>String</code> - 
+//    * @param workingDir - <code>String</code> - 
+//    * @param plannerPath - <code>String</code> - 
+//    * @param modelName - <code>String</code> - 
+//    * @param modelPath - <code>String</code> - 
+//    * @param modelOutputDestDir - <code>String</code> - 
+//    * @param modelInitStatePath - <code>String</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwProjectImpl( final String name, final boolean isInDb, final String workingDir,
-                        final String plannerPath, final String modelName, final String modelPath,
-                        final String modelOutputDestDir, final String modelInitStatePath) 
+//   public PwProjectImpl( final String name, final boolean isInDb, final String workingDir,
+//                         final String plannerPath, final String modelName, final String modelPath,
+//                         final String modelOutputDestDir, final String modelInitStatePath) 
+  public PwProjectImpl( final String name, final boolean isInDb) 
     throws ResourceNotFoundException {
     this.name = name;
-    this.workingDir = workingDir;
-    this.plannerPath = plannerPath;
-    this.modelName = modelName;
-    this.modelPath = modelPath;
-    this.modelOutputDestDir = modelOutputDestDir;
-    this.modelInitStatePath = modelInitStatePath;
+//     this.workingDir = workingDir;
+//     this.plannerPath = plannerPath;
+//     this.modelName = modelName;
+//     this.modelPath = modelPath;
+//     this.modelOutputDestDir = modelOutputDestDir;
+//     this.modelInitStatePath = modelInitStatePath;
     jniAdapterLoaded = false;
     
     id = MySQLDB.getProjectIdByName(name);
@@ -289,54 +294,54 @@ public class PwProjectImpl extends PwProject {
    *
    * @return - <code>String</code> - 
    */
-  public String getWorkingDir() {
-    return workingDir;
-  }
+//   public String getWorkingDir() {
+//     return workingDir;
+//   }
 
   /**
    * <code>getPlannerPath</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getPlannerPath() {
-    return plannerPath;
-  }
+//   public String getPlannerPath() {
+//     return plannerPath;
+//   }
 
   /**
    * <code>getModelName</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getModelName() {
-    return modelName;
-  }
+//   public String getModelName() {
+//     return modelName;
+//   }
 
   /**
    * <code>getModelPath</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getModelPath() {
-    return modelPath;
-  }
+//   public String getModelPath() {
+//     return modelPath;
+//   }
 
   /**
    * <code>getModelOutputDestDir</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getModelOutputDestDir() {
-    return modelOutputDestDir;
-  }
+//   public String getModelOutputDestDir() {
+//     return modelOutputDestDir;
+//   }
 
   /**
    * <code>getModelInitStatePath</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getModelInitStatePath() {
-    return modelInitStatePath;
-  }
+//   public String getModelInitStatePath() {
+//     return modelInitStatePath;
+//   }
 
   /**
    * <code>listPlanningSequences</code>

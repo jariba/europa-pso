@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.15 2004-09-03 00:35:30 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.16 2004-09-10 20:02:30 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -74,8 +74,9 @@ public class AddSequenceThread extends ThreadWithProgressMonitor {
     boolean isSequenceAdded = false;
     while (! isSequenceAdded) {
       try {
-        File workingDir =
-          new File( PlanWorks.getPlanWorks().getCurrentProject().getWorkingDir());
+        File workingDir = new File( ConfigureAndPlugins.getProjectConfigValue
+                                    ( ConfigureAndPlugins.PROJECT_WORKING_DIR,
+                                      PlanWorks.getPlanWorks().getCurrentProjectName()));
         List selectedAndInvalidUrls =
           PlanWorks.getPlanWorks().askSequenceDirectory( workingDir);
         List selectedSequenceUrls = (List) selectedAndInvalidUrls.get( 0);

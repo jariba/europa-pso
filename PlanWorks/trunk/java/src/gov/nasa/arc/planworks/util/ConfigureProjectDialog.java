@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.2 2004-09-10 01:33:58 taylor Exp $
+// $Id: ConfigureProjectDialog.java,v 1.3 2004-09-10 20:02:32 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -84,8 +84,8 @@ public class ConfigureProjectDialog extends JDialog {
     plannerPathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton plannerPathBrowseButton = new JButton( browseTitle);
     plannerPathBrowseButton.addActionListener( new PlannerPathButtonListener());
-    final JLabel modelNameLabel = new JLabel( "model name");
-    modelNameField = new JTextField( NAME_FIELD_WIDTH);
+//     final JLabel modelNameLabel = new JLabel( "model name");
+//     modelNameField = new JTextField( NAME_FIELD_WIDTH);
     final JLabel modelPathLabel = new JLabel( "model path");
     modelPathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelPathBrowseButton = new JButton( browseTitle);
@@ -110,8 +110,8 @@ public class ConfigureProjectDialog extends JDialog {
       plannerPath = new File( ConfigureAndPlugins.getProjectConfigValue
                               ( ConfigureAndPlugins.PROJECT_PLANNER_PATH,
                                 currentProjectName)).getCanonicalPath();
-      modelName = ConfigureAndPlugins.getProjectConfigValue
-        ( ConfigureAndPlugins.PROJECT_MODEL_NAME, currentProjectName);
+//       modelName = ConfigureAndPlugins.getProjectConfigValue
+//         ( ConfigureAndPlugins.PROJECT_MODEL_NAME, currentProjectName);
       modelPath = new File( ConfigureAndPlugins.getProjectConfigValue
                             ( ConfigureAndPlugins.PROJECT_MODEL_PATH,
                               currentProjectName)).getCanonicalPath();
@@ -125,7 +125,7 @@ public class ConfigureProjectDialog extends JDialog {
     }
     workingDirField.setText( workingDir);
     plannerPathField.setText( plannerPath);
-    modelNameField.setText( modelName);
+//     modelNameField.setText( modelName);
     modelPathField.setText( modelPath);
     modelOutputDestDirField.setText( modelOutputDestDir);
     modelInitStatePathField.setText( modelInitStatePath);
@@ -171,13 +171,13 @@ public class ConfigureProjectDialog extends JDialog {
     gridBag.setConstraints( plannerPathBrowseButton, c);
     dialogPanel.add( plannerPathBrowseButton);
 
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints( modelNameLabel, c);
-    dialogPanel.add( modelNameLabel);
-    c.gridy++;
-    gridBag.setConstraints( modelNameField, c);
-    dialogPanel.add( modelNameField);
+//     c.gridx = 0;
+//     c.gridy++;
+//     gridBag.setConstraints( modelNameLabel, c);
+//     dialogPanel.add( modelNameLabel);
+//     c.gridy++;
+//     gridBag.setConstraints( modelNameField, c);
+//     dialogPanel.add( modelNameField);
 
     c.gridx = 0;
     c.gridy++;
@@ -384,7 +384,7 @@ public class ConfigureProjectDialog extends JDialog {
       }
     }
 
-    modelName = modelNameField.getText().trim();
+//     modelName = modelNameField.getText().trim();
 
     String modelPathTemp = modelPathField.getText().trim();
     if (! modelPath.equals( modelPathTemp)) {
@@ -454,9 +454,9 @@ public class ConfigureProjectDialog extends JDialog {
    *
    * @return - <code>String</code> - 
    */
-  public String getModelName() {
-    return modelName;
-  }
+//   public String getModelName() {
+//     return modelName;
+//   }
 
   /**
    * <code>getModelPath</code>
