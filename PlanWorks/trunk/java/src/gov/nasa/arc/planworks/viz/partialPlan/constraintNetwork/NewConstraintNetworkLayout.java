@@ -22,8 +22,12 @@ public class NewConstraintNetworkLayout {
     //horizontalLayout = false;
     orderedTokenNodes = new ArrayList();
     tokenBoundingBoxes = new ArrayList(tokenNodes.size());
-
     List tempTokenNodes = new ArrayList(tokenNodes);
+
+    if(tokenNodes.isEmpty() || tokenNodes.size() == 0 || tempTokenNodes.isEmpty() || 
+       tempTokenNodes.size() == 0) {
+      return;
+    }
 
     long t2 = System.currentTimeMillis();
     Collections.sort(tempTokenNodes, new TokenLinkCountComparator());
@@ -32,7 +36,9 @@ public class NewConstraintNetworkLayout {
       System.err.println("Attempted to lay out constraint network with no token nodes!");
       return;
     }
-    while(((ConstraintNetworkTokenNode) tempTokenNodes.get(tempTokenNodes.size() - 1)).getTokenLinkCount() == 0) {
+    while(tempTokenNodes.size() > 0 && 
+          ((ConstraintNetworkTokenNode) tempTokenNodes.get(tempTokenNodes.size() - 1)).
+          getTokenLinkCount() == 0) {
       orderedTokenNodes.add(tempTokenNodes.remove(tempTokenNodes.size() - 1));
     }
 
