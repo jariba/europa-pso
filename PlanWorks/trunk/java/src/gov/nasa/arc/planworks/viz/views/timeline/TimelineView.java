@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.25 2003-07-24 22:40:31 miatauro Exp $
+// $Id: TimelineView.java,v 1.26 2003-07-30 00:38:42 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -65,6 +65,7 @@ public class TimelineView extends VizView {
   private long startTimeMSecs;
   private ViewSet viewSet;
   private JGoView jGoView;
+  private String viewName;
   private JGoDocument jGoDocument;
   private JGoSelection jGoSelection;
   // timelineNodeList & tmpTimelineNodeList used by JFCUnit test case
@@ -92,6 +93,7 @@ public class TimelineView extends VizView {
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
+    viewName = "timelineView";
     this.timelineNodeList = new ArrayList();
     this.freeTokenNodeList = new ArrayList();
     this.tmpTimelineNodeList = new ArrayList();
@@ -151,7 +153,7 @@ public class TimelineView extends VizView {
     createTimelineAndSlotNodes();
     // setVisible( true | false) depending on ContentSpec
     setNodesVisible();
-    expandViewFrame();
+    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
 
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
@@ -172,16 +174,8 @@ public class TimelineView extends VizView {
   public void redraw() {
     // setVisible(true | false) depending on keys
     setNodesVisible();
-    expandViewFrame();
+    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
   } // end redraw
-
-
-  private void expandViewFrame() {
-    MDIInternalFrame viewFrame = viewSet.openTimelineView( 0L);
-    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
-                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
-  } // end expandViewFrame
-
 
   /**
    * <code>getJGoDocument</code>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.20 2003-07-24 20:57:11 taylor Exp $
+// $Id: ViewSet.java,v 1.21 2003-07-30 00:38:41 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -23,6 +23,7 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIWindowBar;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
@@ -127,6 +128,25 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
     return temporalExtentViewFrame;
   }
 
+  /**
+   * Opens a new ConstraintNetworkView, stuffs it in an MDIInternalFrame, adds it to the hash
+   * of frames, then returns it.  If a ConstraintNetworkView already exists for this partial
+   * plan, returns that.
+   * @return MDIInternalFrame the frame containing the vew.
+   */
+  public MDIInternalFrame openConstraintNetworkView( long startTimeMSecs) {
+    if(viewExists("constraintNetworkView")) {
+      return (MDIInternalFrame) views.get("constraintNetworkView");
+    }
+    MDIInternalFrame constraintNetworkViewFrame = 
+      desktopFrame.createFrame("Constraint Network view of ".concat(planName), this, true, true,
+                               true, true);
+    views.put("constraintNetworkView", constraintNetworkViewFrame);
+    Container contentPane = constraintNetworkViewFrame.getContentPane();
+    contentPane.add(new ConstraintNetworkView(partialPlan, startTimeMSecs, this));
+    return constraintNetworkViewFrame;
+  }
+
   //  public void addViewFrame(MDIInternalFrame viewFrame) {
   // if(!views.contains(viewFrame)) {
   //   views.add(viewFrame);
@@ -147,6 +167,8 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
           views.remove("tokenNetworkView");
         } else if(contentPane.getComponent(i) instanceof TemporalExtentView) {
           views.remove("temporalExtentView");
+        } else if(contentPane.getComponent(i) instanceof ConstraintNetworkView) {
+          views.remove("constraintNetworkView");
         }
       }
     }

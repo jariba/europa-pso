@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.35 2003-07-24 20:57:10 taylor Exp $
+// $Id: PlanWorks.java,v 1.36 2003-07-30 00:38:40 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -398,12 +398,14 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
         isProjectCreated = false; 
       } catch(Exception e) {
-        int index = e.getMessage().indexOf(":");
-        JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage().substring(index+1),
+//         int index = e.getMessage().indexOf(":");
+//         JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage().substring(index+1),
+//                                       "Exception", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage(),
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
         isProjectCreated = false;
-        }
+      }
     }
     return project;
   } // end createProject
@@ -906,9 +908,13 @@ public class PlanWorks extends MDIDesktopFrame {
               partialPlanName, startTimeMSecs);        
           finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
         } else if (viewName.equals( "constraintNetworkView")) {
-          JOptionPane.showMessageDialog
-            (PlanWorks.this, viewName, "View Not Supported", 
-             JOptionPane.INFORMATION_MESSAGE);
+          if (! viewExists) {
+            System.err.println( "Rendering Constraint Network View ...");
+          }
+          viewFrame = viewManager.openConstraintNetworkView
+            ( partialPlan, sequenceName + System.getProperty( "file.separator") +
+              partialPlanName, startTimeMSecs);        
+          finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
         } else if (viewName.equals( "temporalNetworkView")) {
           JOptionPane.showMessageDialog
             (PlanWorks.this, viewName, "View Not Supported", 

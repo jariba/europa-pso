@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.14 2003-07-30 00:38:42 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.1 2003-07-30 00:38:41 taylor Exp $
 //
 // PlanWorks -- 
 //
-// Will Taylor -- started 19June03
+// Will Taylor -- started 28July03
 //
 
-package gov.nasa.arc.planworks.viz.views.tokenNetwork;
+package gov.nasa.arc.planworks.viz.views.constraintNetwork;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -34,53 +34,63 @@ import com.nwoods.jgo.JGoLayer;
 import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
+// PlanWorks/java/lib/JGo/Classier.jar
+import com.nwoods.jgo.examples.BasicNode;
+
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwTokenRelation;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.TokenLink;
+import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
+import gov.nasa.arc.planworks.viz.nodes.ConstraintNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.nodes.VariableNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
 
 
 /**
- * <code>TokenNetworkView</code> - render a partial plan's tokens, their
- *                                 parents and children
- *                JPanel->VizView->TokenNetworkView
+ * <code>ConstraintNetworkView</code> - render a partial plan's network of
+ *                                      constraints
+ *                JPanel->VizView->ConstraintNetworkView
  *                JComponent->JGoView
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TokenNetworkView extends VizView {
+public class ConstraintNetworkView extends VizView {
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private JGoView jGoView;
   private String viewName;
+  private JGoView jGoView;
   private JGoDocument jGoDocument;
   // private JGoLayer hiddenLayer;
   private Font font;
   private FontMetrics fontMetrics;
   // nodeList & tmpNodeList used by JFCUnit test case
-  private List nodeList; // element TokenNode
+  private List nodeList; // elements TokenNode, VariableNode & ConstraintNode
   private List tmpNodeList; // element TokenNode
+  private List variableNodeList; // element VariableNode
+  private List constraintNodeList; // element ConstraintNode
   private List linkList; // element TokenLink
-  private Map relationships; // master, slave, self relationships
-  private List linkNameList; // element String
+  private Map relationships; // token, variable, constraint relationships
+  private List constraintLinkNameList; // element String
+  private List variableLinkNameList; // element String
   private int maxViewWidth;
   private int maxViewHeight;
 
   /**
-   * <code>TokenNetworkView</code> - constructor - called by ViewSet.openTokenNetworkView.
+   * <code>ConstraintNetworkView</code> - constructor -
+   *                                      called by ViewSet.openConstraintNetworkView.
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
@@ -88,22 +98,23 @@ public class TokenNetworkView extends VizView {
    * @param startTimeMSecs - <code>long</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    */
-  public TokenNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
+  public ConstraintNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
                            ViewSet viewSet) {
     super( partialPlan);
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
-    viewName = "tokenNetworkView";
-    this.nodeList = null;
-    this.tmpNodeList = new ArrayList();
-    this.linkList = new ArrayList();
-    this.relationships = new HashMap();
-    this.linkNameList = new ArrayList();
+    viewName = "constraintNetworkView";
+    nodeList = null;
+    tmpNodeList = new ArrayList();
+    variableNodeList = new ArrayList();
+    constraintNodeList = new ArrayList();
+    linkList = new ArrayList();
+    relationships = new HashMap();
+    constraintLinkNameList = new ArrayList();
+    variableLinkNameList = new ArrayList();
     maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
     maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
-
-    buildTokenParentChildRelationships();
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -147,7 +158,7 @@ public class TokenNetworkView extends VizView {
         Thread.currentThread().sleep(50);
       } catch (InterruptedException excp) {
       }
-      // System.err.println( "tokenNetworkView displayable " + this.isDisplayable());
+      // System.err.println( "constraintNetworkView displayable " + this.isDisplayable());
     }
     Graphics graphics = ((JPanel) this).getGraphics();
     fontMetrics = graphics.getFontMetrics( font);
@@ -195,7 +206,7 @@ public class TokenNetworkView extends VizView {
       int maxHeight = (int) tokenNode.getLocation().getY() +
         ViewConstants.TIMELINE_VIEW_Y_INIT;
       maxViewHeight = Math.max( maxHeight, maxViewHeight);
-    } 
+    }
   } // end computeExpandedViewFrame
 
   /**
@@ -224,126 +235,6 @@ public class TokenNetworkView extends VizView {
     return fontMetrics;
   }
 
-  private void buildTokenParentChildRelationships() {
-    initRelationships();
-    buildRelationships();
-    System.err.println( "Token Network View: count: " + relationships.keySet().size());
-//     Iterator keyIterator = relationships.keySet().iterator();
-//     while (keyIterator.hasNext()) {
-//       System.err.println( relationships.get( (Integer) keyIterator.next()));
-//     }
-  } // end buildTokenParentChildRelationships 
-
-
-  private void initRelationships() {
-    Iterator objectIterator = partialPlan.getObjectList().iterator();
-    while (objectIterator.hasNext()) {
-      PwObject object = (PwObject) objectIterator.next();
-      Iterator timelineIterator = object.getTimelineList().iterator();
-      while (timelineIterator.hasNext()) {
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        Iterator slotIterator = timeline.getSlotList().iterator();
-        while (slotIterator.hasNext()) {
-          PwSlot slot = (PwSlot) slotIterator.next();
-          Iterator tokenIterator = slot.getTokenList().iterator();
-          while (tokenIterator.hasNext()) {
-            PwToken token = (PwToken) tokenIterator.next();
-            if (token != null) { // empty slot
-              relationships.put( token.getKey(), new TokenRelations( token));
-            }
-          }
-        }
-      }
-    } 
-  } // end initRelationships
-
-
-  class TokenRelations {
-
-    private PwToken token;
-    private List masterTokenIds; // element Integer
-    private List slaveTokenIds; // element Integer
-
-    public TokenRelations( PwToken token) {
-      this.token = token;
-      masterTokenIds = new ArrayList();
-      slaveTokenIds = new ArrayList();
-    } // end constructor
-
-    public List getMasterTokenIds () {
-      return masterTokenIds;
-    }
-
-    public void addMasterTokenId( Integer id) {
-      masterTokenIds.add( id);
-    }
-
-    public List getSlaveTokenIds () {
-      return slaveTokenIds;
-    }
-
-    public void addSlaveTokenId( Integer id) {
-      slaveTokenIds.add( id);
-    }
-
-    public String toString() {
-      StringBuffer buffer = new StringBuffer( "tokenKey: " +
-                                              String.valueOf( token.getKey()));
-      buffer.append( "\n  masterTokenIds: " + masterTokenIds);
-      buffer.append( "\n  slaveTokenIds: " + slaveTokenIds);
-      return buffer.toString();
-    }
-
-  } // end class TokenRelations
-
-
-  private void buildRelationships() {
-    // process each token relation only once
-    List tokenRelationKeys = new ArrayList();
-    Iterator objectIterator = partialPlan.getObjectList().iterator();
-    while (objectIterator.hasNext()) {
-      PwObject object = (PwObject) objectIterator.next();
-      Iterator timelineIterator = object.getTimelineList().iterator();
-      while (timelineIterator.hasNext()) {
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        Iterator slotIterator = timeline.getSlotList().iterator();
-        while (slotIterator.hasNext()) {
-          PwSlot slot = (PwSlot) slotIterator.next();
-          Iterator tokenIterator = slot.getTokenList().iterator();
-          while (tokenIterator.hasNext()) {
-            PwToken token = (PwToken) tokenIterator.next();
-            if (token != null) { // empty slot
-             Integer tokenId = token.getKey();
-             TokenRelations tokenRelations =
-                (TokenRelations) relationships.get( tokenId);
-              Iterator tokenRelationIterator = token.getTokenRelationsList().iterator();
-              while (tokenRelationIterator.hasNext()) {
-                PwTokenRelation tokenRelation =
-                  (PwTokenRelation) tokenRelationIterator.next();
-                Integer key = tokenRelation.getKey();
-                // buildTokenParentChildRelationships printout is complete with
-                // this commented out -- same links are drawn
-//                 if (tokenRelationKeys.indexOf( key) == -1) {
-//                   tokenRelationKeys.add( key);
-                  Integer masterTokenId = tokenRelation.getTokenAId();
-                  Integer slaveTokenId = tokenRelation.getTokenBId();
-                  if (masterTokenId.equals( tokenId)) {
-                    tokenRelations.addSlaveTokenId( slaveTokenId);
-                  }
-                  if (slaveTokenId.equals( tokenId)) {
-                    tokenRelations.addMasterTokenId( masterTokenId);
-                  }
-//                 }
-              }
-              relationships.put( tokenId, tokenRelations);
-            }
-          }
-        }
-      }
-    } 
-  } // end buildRelationships
-
-
   private void createTokenNodes() {
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT * 2;
     List objectList = partialPlan.getObjectList();
@@ -367,8 +258,8 @@ public class TokenNetworkView extends VizView {
     Iterator freeTokenItr = freeTokenList.iterator();
     boolean isFreeToken = true; objectCnt = -1;
     while (freeTokenItr.hasNext()) {
-      TokenNode freeTokenNode = new TokenNode( (PwToken) freeTokenItr.next(),
-                                               new Point( x, y), objectCnt,
+      PwToken token = (PwToken) freeTokenItr.next();
+      TokenNode freeTokenNode = new TokenNode( token, new Point( x, y), objectCnt,
                                                isFreeToken, this);
       if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
         x += freeTokenNode.getSize().getWidth() * 0.5;
@@ -376,11 +267,14 @@ public class TokenNetworkView extends VizView {
       }
       tmpNodeList.add( freeTokenNode);
       jGoDocument.addObjectAtTail( freeTokenNode);
+
+      createVariableAndConstraintNodes( token, freeTokenNode, objectCnt, x, y);
       x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
     }
-    createTokenParentChildRelationships();
+
+    createTokenVariableConstraintRelationships();
     nodeList = tmpNodeList;
-  } // end createTokenParentChildNodes
+  } // end createTokenNodes
 
   private void createTokenNodesOfTimeline( PwTimeline timeline, int x, int y,
                                            int objectCnt) {
@@ -399,32 +293,78 @@ public class TokenNetworkView extends VizView {
         }
         tmpNodeList.add( tokenNode);
         jGoDocument.addObjectAtTail( tokenNode);
+
+        createVariableAndConstraintNodes( token, tokenNode, objectCnt, x, y);
         x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
       }
     }
-  } // end createTokenNodes
+  } // end createTokenNodesOfTimeline
 
-  private void createTokenParentChildRelationships() {
+  private void createVariableAndConstraintNodes( PwToken token, TokenNode tokenNode,
+                                                 int objectCnt, int x, int y) {
+    int xVar = x, yVar = y + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+    Iterator variableItr = token.getVariablesList().iterator();
+    while (variableItr.hasNext()) {
+      PwVariable variable = (PwVariable) variableItr.next();
+      if (variable != null) {
+        VariableNode variableNode = getVariableNode( variable.getKey());
+        if (variableNode == null) {
+          variableNode = new VariableNode( variable, tokenNode, new Point( xVar, yVar),
+                                           objectCnt, this);
+          variableNodeList.add( variableNode);
+          jGoDocument.addObjectAtTail( variableNode);
+        } else {
+          variableNode.addTokenNode( tokenNode);
+        }
+        tokenNode.addVariableNode( variableNode);
+
+        int xCon = xVar, yCon = yVar + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        // System.err.println( "variable " + variable.getKey());
+        // System.err.println( "  constraintList " + variable.getConstraintList());
+        Iterator constraintItr = variable.getConstraintList().iterator();
+        while (constraintItr.hasNext()) {
+          PwConstraint constraint = (PwConstraint) constraintItr.next();
+          if (constraint != null) {
+            ConstraintNode constraintNode = getConstraintNode( constraint.getKey());
+            if (constraintNode == null) {
+              constraintNode =
+                new ConstraintNode( constraint, variableNode, new Point( xCon, yCon),
+                                    objectCnt, this);
+              constraintNodeList.add( constraintNode);
+              jGoDocument.addObjectAtTail( constraintNode);
+            }  else {
+              constraintNode.addVariableNode( variableNode);
+            }
+            variableNode.addConstraintNode( constraintNode);
+            xCon += constraintNode.getSize().getWidth() * 1.5;
+            constraintNode.setLocation( xCon, yCon);
+          }
+        }
+        xVar += variableNode.getSize().getWidth() * 1.5;
+        variableNode.setLocation( xVar, yVar);
+      }
+    }
+  } // end createVariableAndConstraintNodes
+
+  private void createTokenVariableConstraintRelationships() {
     Iterator tokenNodeIterator = tmpNodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-      Integer tokenKey = tokenNode.getToken().getKey();
-      TokenRelations tokenRelations =
-        (TokenRelations) relationships.get( tokenKey);
-      if(tokenRelations != null) {
-        Iterator masterTokenItr = tokenRelations.getMasterTokenIds().iterator();
-        while (masterTokenItr.hasNext()) {
-          Integer masterTokenId = (Integer) masterTokenItr.next();
-          createTokenLink( getTokenNode( masterTokenId), tokenNode, "master");
-        }
-        Iterator slaveTokenItr = tokenRelations.getSlaveTokenIds().iterator();
-        while (slaveTokenItr.hasNext()) {
-          Integer slaveTokenId = (Integer) slaveTokenItr.next();
-          createTokenLink( tokenNode, getTokenNode( slaveTokenId), "slave");
+      System.err.println( "tokenNode " + tokenNode.getToken().getKey());
+      Iterator variableItr = tokenNode.getVariableNodeList().iterator();
+      while (variableItr.hasNext()) {
+        VariableNode variableNode = (VariableNode) variableItr.next();
+        System.err.println( "  variableNode " + variableNode.getVariable().getKey());
+        createConstraintLink( variableNode, tokenNode, "variable");
+        Iterator constraintNodeItr = variableNode.getConstraintNodeList().iterator();
+        while (constraintNodeItr.hasNext()) {
+          ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
+          System.err.println( "    constraintNode " + constraintNode.getConstraint().getKey());
+          createConstraintLink( constraintNode, variableNode, "constraint");
         }
       }
     }
-  } // end createTokenParentChildRelationships
+  } // end createTokenVariableConstraintRelationships
 
   private TokenNode getTokenNode( Integer nodeId) {
     TokenNode tokenNode = null;
@@ -435,74 +375,128 @@ public class TokenNetworkView extends VizView {
         return tokenNode;
       }
     }
-    return tokenNode;
+    return null;
   } // end getTokenNode
 
- 
-  private void createTokenLink( TokenNode fromTokenNode, TokenNode toTokenNode,
-                                String type) {
-    String linkName = fromTokenNode.getToken().getKey().toString() + "->" +
-      toTokenNode.getToken().getKey().toString();
-    Iterator linkItr = linkNameList.iterator();
-    while (linkItr.hasNext()) {
-      if (linkName.equals( (String) linkItr.next())) {
-        // System.err.println( "discard " + linkName + " type " + type);
-        return;
+  private VariableNode getVariableNode( Integer nodeId) {
+    VariableNode variableNode = null;
+    Iterator variableNodeItr = variableNodeList.iterator();
+    while (variableNodeItr.hasNext()) {
+      variableNode = (VariableNode) variableNodeItr.next();
+      if (nodeId.equals( variableNode.getVariable().getKey())) {
+        return variableNode;
       }
     }
-    TokenLink link = new TokenLink( fromTokenNode, toTokenNode);
+    return null;
+  } // end getVariableNode
+
+  private ConstraintNode getConstraintNode( Integer nodeId) {
+    ConstraintNode constraintNode = null;
+    Iterator constraintNodeItr = constraintNodeList.iterator();
+    while (constraintNodeItr.hasNext()) {
+      constraintNode = (ConstraintNode) constraintNodeItr.next();
+      if (nodeId.equals( constraintNode.getConstraint().getKey())) {
+        return constraintNode;
+      }
+    }
+    return null;
+  } // end getConstraintNode
+ 
+  private void createConstraintLink( BasicNode fromNode, BasicNode toNode,
+                                     String fromNodeType) {
+    if (fromNodeType.equals( "constraint")) {
+      String linkName =
+        ((ConstraintNode) fromNode).getConstraint().getKey().toString() + "->" +
+        ((VariableNode) toNode).getVariable().getKey().toString();
+      Iterator linkItr = constraintLinkNameList.iterator();
+      while (linkItr.hasNext()) {
+        if (linkName.equals( (String) linkItr.next())) {
+          System.err.println( "discard " + linkName + " fromNodeType " + fromNodeType);
+          return;
+        }
+      }
+      constraintLinkNameList.add( linkName);
+    }
+    if (fromNodeType.equals( "variable")) {
+      String linkName =
+        ((VariableNode) fromNode).getVariable().getKey().toString() + "->" +
+        ((TokenNode) toNode).getToken().getKey().toString();
+      Iterator linkItr = variableLinkNameList.iterator();
+      while (linkItr.hasNext()) {
+        if (linkName.equals( (String) linkItr.next())) {
+          System.err.println( "discard " + linkName + " fromNodeType " + fromNodeType);
+          return;
+        }
+      }
+      variableLinkNameList.add( linkName);
+    }
+    BasicNodeLink link = new BasicNodeLink( fromNode, toNode);
     linkList.add( link);
-    // master/slave & meets/met-by are on the same link ???
-//     if (type.equals( "master")) {
-//       link.setMidLabel( new JGoText( "meets"));
-//     } else if (type.equals( "slave")) {
-//       link.setMidLabel( new JGoText( "met-by"));
-//     } else {
-//       System.err.println( "createTokenLink: type " + type + " not handled");
-//     }
-//     ((JGoText) link.getMidLabel()).setBkColor( ColorMap.getColor( "lightGray"));
-
-//     System.err.println( fromTokenNode.getPredicateName() + " " +
-//                         fromTokenNode.getToken().getKey().toString() + " => " +
-//                         toTokenNode.getPredicateName() + " " +
-//                         toTokenNode.getToken().getKey().toString() + " " + type);
     jGoDocument.addObjectAtTail( link);
-    linkNameList.add( linkName);
-  } // end createTokenLink
-
+  } // end createConstraintLink
 
   private void setNodesVisible() {
-    // print content spec
-    // System.err.println( "Token Network View - contentSpec");
+    // System.err.println( "Constraint Network View - contentSpec");
     // viewSet.printSpec();
     validTokenIds = viewSet.getValidTokenIds();
     displayedTokenIds = new ArrayList();
     Iterator tokenNodeIterator = nodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
+      Iterator variablesItr = tokenNode.getVariableNodeList().iterator();
       if (isTokenInContentSpec( tokenNode.getToken())) {
         tokenNode.setVisible( true);
+        while (variablesItr.hasNext()) {
+          VariableNode variableNode = (VariableNode) variablesItr.next();
+          variableNode.setVisible( true);
+          Iterator varConItr = variableNode.getConstraintNodeList().iterator();
+          while (varConItr.hasNext()) {
+            ((ConstraintNode) varConItr.next()).setVisible( true);
+          }
+        }
       } else {
         tokenNode.setVisible( false);
+        while (variablesItr.hasNext()) {
+          VariableNode variableNode = (VariableNode) variablesItr.next();
+          variableNode.setVisible( false);
+          Iterator varConItr = variableNode.getConstraintNodeList().iterator();
+          while (varConItr.hasNext()) {
+            ((ConstraintNode) varConItr.next()).setVisible( false);
+          }
+        }
       }
     }
+
     Iterator tokenLinkIterator = linkList.iterator();
     while (tokenLinkIterator.hasNext()) {
-      TokenLink tokenLink = (TokenLink) tokenLinkIterator.next();
-      if (isTokenInContentSpec( tokenLink.getFromToken()) &&
-          isTokenInContentSpec( tokenLink.getToToken())) {
-        tokenLink.setVisible( true);
-      } else {
-        tokenLink.setVisible( false);
+      BasicNodeLink link = (BasicNodeLink) tokenLinkIterator.next();
+      BasicNode toNode = link.getToNode();
+      if (toNode instanceof TokenNode) {
+        if (isTokenInContentSpec( ((TokenNode) toNode).getToken())) {
+          link.setVisible( true);
+        } else {
+          link.setVisible( false);
+        }
+      } else if (toNode instanceof VariableNode) {
+        Iterator varTokenItr = ((VariableNode) toNode).getTokenNodeList().iterator();
+        while (varTokenItr.hasNext()) {
+          TokenNode varTokenNode = (TokenNode) varTokenItr.next();
+          if (isTokenInContentSpec( varTokenNode.getToken())) {
+            link.setVisible( true);
+            break;
+          } else {
+            link.setVisible( false);
+          }
+        }
       }
     }
     boolean showDialog = true;
-    isContentSpecRendered( "Token Network View", showDialog);
+    isContentSpecRendered( "Constraint Network View", showDialog);
   } // end setNodesVisible
 
 
 
-} // end class TokenNetworkView
+} // end class ConstraintNetworkView
 
 
 

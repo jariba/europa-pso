@@ -216,13 +216,26 @@ public interface ViewConstants {
    * constant <code>MDI_FRAME_DECORATION_HEIGHT</code>
    *
    */
-  public static final int MDI_FRAME_DECORATION_HEIGHT = 65;
+  public static final int MDI_FRAME_DECORATION_HEIGHT = 70;
 
   // cannot figure out how to get this from MDIInternalFrame
   /**
    * constant <code>MDI_FRAME_DECORATION_WIDTH</code>
    *
    */
-  public static final int MDI_FRAME_DECORATION_WIDTH = 30;
+  public static final int MDI_FRAME_DECORATION_WIDTH = 35;
+
+  /**
+   * constant <code>FRAME_DECORATION_HEIGHT</code>
+   *
+   */
+  public static final int FRAME_DECORATION_HEIGHT = 75;
+
+  /**
+   * constant <code>FRAME_DECORATION_WIDTH</code>
+   *
+   */
+  public static final int FRAME_DECORATION_WIDTH = 8;
+
 
 } // end ViewConstants
