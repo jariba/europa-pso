@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.60 2004-10-13 23:49:01 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.61 2005-02-15 23:04:45 miatauro Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -11,6 +11,7 @@
   <property name="planworks.root" value="${basedir}"/>
   <property name="planworks.config" value="${basedir}/planWorks.config"/>
   <property name="projects.config" value="${basedir}/projects.config"/>
+  <property name="mysql.port" value="3306"/>
   <property name="mysql.basedir" value="${planworks.root}/lib/mysql"/>
   <property name="mysql.datadir" value="${mysql.basedir}/data"/>
   <property name="mysql.log" value="${mysql.basedir}/log/mysql.log"/>
@@ -24,7 +25,7 @@
 
   <!-- Change the path below to the required MySQL bin path if you're using your own, then
        comment out the appropriate assignment in the chk_[linux|solaris]_2 targets -->
-  <!--property name="mysql.custom.bindir" location="${env.HOME}/workspace/mysql/mysql-max-4.1.1-alpha-pc-linux-i686/bin"/-->
+  <property name="mysql.custom.bindir" location="${env.HOME}/workspace/mysql/mysql-max-4.1.1-alpha-pc-linux-i686/bin"/>
 
   <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
   <property name="jgo.home"  value="${planworks.root}/java/lib/JGo"/>
@@ -55,6 +56,7 @@
         <arg value="${mysql.log.err}"/>
         <arg value="${mysql.sock}"/>
         <arg value="${mysql.tmpdir}"/>
+        <arg value="${mysql.port}"/>
       </exec>
   </target>
 
@@ -104,6 +106,7 @@
         <arg value="${mysql.log.err}"/>
         <arg value="${mysql.sock}"/>
         <arg value="${mysql.tmpdir}"/>
+        <arg value="${mysql.port}"/>
       </exec>
   </target>
 
@@ -147,7 +150,7 @@
   <target name="chk_linux_2" depends="chk_linux_1" if="os.linux">
     <property name="os" value="linux"/>
 <!--Comment out the following line if you're on Linux and set your own MySQL bindir-->
-    <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
+    <!--property name="mysql.bindir" value="${mysql.basedir}/bin"/-->
 <!--This works because properties are immutable, so this line is ignored.-->
     <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
   </target>

@@ -156,7 +156,7 @@ c_m=""
 
 echo "Installing all prepared tables"
 echo "$1 $2 $3"
-eval "$1/mysqld --bootstrap --skip-grant-tables --basedir=$2 --datadir=$3 --skip-innodb --skip-bdb " << END_OF_DATA
+eval "$1/mysqld --bootstrap --skip-grant-tables --basedir=$2 --datadir=$3 --port=$8 --skip-innodb --skip-bdb " << END_OF_DATA
 use mysql;
 $c_m
 
@@ -177,13 +177,13 @@ $c_c
 END_OF_DATA
 
 echo "Starting database..."
-eval "$1/mysqld --basedir=$2 --skip-bdb --datadir=$3 --log=$4 --log-error=$5 --skip-symlink --socket=$6 --tmpdir=$7 &"
+eval "$1/mysqld --basedir=$2 --skip-bdb --datadir=$3 --log=$4 --log-error=$5 --skip-symlink --socket=$6 --tmpdir=$7 --port=$8 &"
 sleep 1
 echo "Creating PlanWorks database..."
-eval "$1/mysql --user=root --socket=$6 --execute=\"CREATE DATABASE IF NOT EXISTS PlanWorks\""
+eval "$1/mysql --user=root --socket=$6 --port=$8 --execute=\"CREATE DATABASE IF NOT EXISTS PlanWorks\""
 sleep 1
 echo "Creating PlanWorks tables..."
-eval "$1/mysql --user=root --database=PlanWorks --socket=$6 < PlanWorksTables"
+eval "$1/mysql --user=root --database=PlanWorks --socket=$6 --port=$8 < PlanWorksTables"
 sleep 1
 echo "Shutting down database..."
-eval "$1/mysqladmin --user=root --socket=$6 shutdown"
+eval "$1/mysqladmin --user=root --socket=$6 --port=$8 shutdown"
