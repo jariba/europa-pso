@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.40 2003-09-16 19:29:14 taylor Exp $
+// $Id: TimelineView.java,v 1.41 2003-09-16 19:53:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -335,7 +335,7 @@ public class TimelineView extends VizView {
         // check for empty slots - always show them
         if ((token == null) ||
             (token != null) && isTokenInContentSpec( token)) {
-          String slotNodeLabel = getSlotNodeLabel( token, slot, isLastSlot);
+          String slotNodeLabel = getSlotNodeLabel( token, slot, isFirstSlot);
           slotNode = new SlotNode( slotNodeLabel, slot, new Point( x, y), previousSlotNode,
                                    isFirstSlot, isLastSlot, backgroundColor, this);
           timelineNode.addToSlotNodeList( slotNode);
@@ -445,9 +445,10 @@ public class TimelineView extends VizView {
    *
    * @param token - <code>PwToken</code> - 
    * @param slot - <code>PwSlot</code> - 
+   * @param  isFirstSlot - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
-  public String getSlotNodeLabel( PwToken token, PwSlot slot, boolean isLastSlot) {
+  public String getSlotNodeLabel( PwToken token, PwSlot slot, boolean isFirstSlot) {
     StringBuffer label = null;
     if (token == null) { // empty slot
       label = new StringBuffer( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
@@ -456,9 +457,14 @@ public class TimelineView extends VizView {
       label.append( " (").append( String.valueOf( slot.getTokenList().size()));
       label.append( ")");
     }
-    if (label.length() < slotLabelMinLength) {
+    int labelMinLength = slotLabelMinLength;
+    // assuming start interval is {1234}, rather than [1234 1235], comment next lines
+//     if (isFirstSlot) { // because of left alignment to left edge of slot
+//       labelMinLength *= 1.5;
+//     }
+    if (label.length() < labelMinLength) {
       boolean prepend = true;
-      for (int i = 0, n = slotLabelMinLength - label.length(); i < n; i++) {
+      for (int i = 0, n = labelMinLength - label.length(); i < n; i++) {
         if (prepend) {
           label.insert( 0, " ");
         } else {

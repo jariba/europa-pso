@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.25 2003-09-16 19:29:13 taylor Exp $
+// $Id: SlotNode.java,v 1.26 2003-09-16 19:53:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -424,8 +424,12 @@ public class SlotNode extends TextNode {
     // offset time interval labels, so they do not overlap previous & current slot nodes
   private int getXOffset( boolean isStartLoc) {
     if (isStartLoc) {
-      return SwingUtilities.computeStringWidth( view.getFontMetrics(),
-                                                startTimeIntervalDomain.toString()) / 2;
+      if (isFirstSlot) {
+        return 0;
+      } else {
+        return SwingUtilities.computeStringWidth( view.getFontMetrics(),
+                                                  startTimeIntervalDomain.toString()) / 2;
+      }
     } else {
         return SwingUtilities.computeStringWidth( view.getFontMetrics(),
                                                   endTimeIntervalDomain.toString()) / 2;
