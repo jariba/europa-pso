@@ -233,6 +233,7 @@ CREATE TABLE Project (
 CREATE TABLE Sequence (
   SequenceURL varchar(255) NOT NULL default 'ErrorURL',
   SequenceId bigint(20) NOT NULL default '0',
+  RulesText longblob default NULL,
   ProjectId int(11) NOT NULL default '-1',
   SequenceOrdering int(11) NOT NULL auto_increment,
   PRIMARY KEY  (SequenceId),
@@ -352,7 +353,8 @@ CREATE TABLE Variable (
 --VariableType,PredicateName,ParameterName,DomainType,DerivedDomain,DomainType,SpecifiedDomain
 
 CREATE TABLE Transaction (
-  TransactionType varchar(255) NOT NULL, 
+  TransactionName varchar(255) NOT NULL, 
+  TransactionType varchar(255) NOT NULL,
   ObjectId int(11) NOT NULL default '0',
   Source enum('USER','SYSTEM','UNKNOWN') NOT NULL default 'UNKNOWN',
   TransactionId int(11) NOT NULL default '0',
@@ -394,6 +396,24 @@ CREATE TABLE ResourceInstants (
   Transactions blob default NULL,
   PRIMARY KEY (PartialPlanId, ResourceId, InstantId),
   INDEX (TimePoint)
+) TYPE=MyISAM;
+
+CREATE TABLE Rules (
+  SequenceId bigint(20) NOT NULL default '0',
+  RuleId int(11) NOT NULL default '0',
+  RuleSource blob NOT NULL,
+  PRIMARY KEY(SequenceId, RuleId)
+) TYPE=MyISAM;
+
+CREATE TABLE RuleTokenMap (
+  SequenceId bigint(20) NOT NULL default '0',
+  PartialPlanId bigint(20) NOT NULL default '0',
+  RuleId int(11) NOT NULL default '0',
+  MasterId int(11) NOT NULL default '0',
+  SlaveId int(11) NOT NULL default '0',
+  PRIMARY KEY(SlaveId),
+  INDEX (SequenceId), INDEX (PartialPlanId),
+  INDEX (RuleId), INDEX(MasterId)
 ) TYPE=MyISAM;
 
 --------------060506080005040106060505--
