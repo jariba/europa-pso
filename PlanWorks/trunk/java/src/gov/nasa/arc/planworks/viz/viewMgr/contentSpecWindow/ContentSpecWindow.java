@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.10 2003-07-14 20:52:19 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.11 2003-07-14 22:17:53 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -45,7 +45,7 @@ public class ContentSpecWindow extends JPanel {
   protected PredicateGroupBox predicateGroup;
   protected TimeIntervalGroupBox timeIntervalGroup;
   protected TimelineGroupBox timelineGroup;
-  protected VariableTypeGroupBox variableTypeGroup;
+  //protected VariableTypeGroupBox variableTypeGroup;
   //private McLaughlanGroupBox mcLaughlanGroup
 
   protected ContentSpec contentSpec;
