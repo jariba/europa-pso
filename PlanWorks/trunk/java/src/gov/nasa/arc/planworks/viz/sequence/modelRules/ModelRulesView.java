@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ModelRulesView.java,v 1.3 2004-02-03 20:44:00 taylor Exp $
+// $Id: ModelRulesView.java,v 1.4 2004-03-27 00:30:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -251,53 +251,6 @@ public class ModelRulesView extends SequenceView {
     Color backgroundColor = ColorMap.getColor( "chartreuse1");
       // ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
 
-    Iterator ruleItr = model.listRules().iterator();
-    while (ruleItr.hasNext()) {
-      PwRule rule = (PwRule) ruleItr.next();
-      String fromPredicate = rule.getFromPredicate();
-      String fromPredicateObject = rule.getFromPredicateObject();
-      String fromPredicateAttribute = rule.getFromPredicateAttribute();
-      List fromPredicateParams = rule.getFromPredicateParams();
-      List fromPredicateParamValues = rule.getFromPredicateParamValues();
-      if (fromPredicateParams.size() == 0) {
-        fromPredicateParams.add( "noParams");
-      }
-      String toPredicate = rule.getToPredicate();
-      String toPredicateObject = rule.getToPredicateObject();
-      String toPredicateAttribute = rule.getToPredicateAttribute();
-      List toPredicateParams = rule.getToPredicateParams();
-      List toPredicateParamValues = rule.getToPredicateParamValues();
-      String ruleType = rule.getType();
-//       System.err.println( "ModelRulesView: fromPredicate " + fromPredicate +
-//                           " toPredicate " + toPredicate + " ruleType " + ruleType);
-      PredicateNode fromPredicateNode =
-        createPredicateNode( fromPredicate, fromPredicateObject, fromPredicateAttribute,
-                             fromPredicateParams, fromPredicateParamValues,
-                             new Point( x, y), backgroundColor, rule);
-
-      if (! fromPredicateNode.isExisting()) {
-        x = (int) ( fromPredicateNode.getLocation().getX() +
-                    (fromPredicateNode.getSize().getWidth() / 2));
-        fromPredicateNode.setLocation( x, (int) fromPredicateNode.getLocation().getY());
-        x += (fromPredicateNode.getSize().getWidth() / 2) +
-          (ViewConstants.TIMELINE_VIEW_X_DELTA * 2);
-      }
-      PredicateNode toPredicateNode =
-        createPredicateNode( toPredicate,toPredicateObject, toPredicateAttribute,
-                             toPredicateParams, toPredicateParamValues,
-                             new Point( x, y), backgroundColor, rule);
-      if (! toPredicateNode.isExisting()) {
-        x = (int) ( toPredicateNode.getLocation().getX() +
-                    (toPredicateNode.getSize().getWidth() / 2));
-        toPredicateNode.setLocation( x, (int) toPredicateNode.getLocation().getY());
-        x += (toPredicateNode.getSize().getWidth() / 2) +
-          (ViewConstants.TIMELINE_VIEW_X_DELTA * 2);
-      }
-
-//       createRuleLinkTriplets( fromPredicateNode, toPredicateNode, fromPredicateParams,
-//                               fromPredicateParamValues, ruleType);
-      createRuleLink( fromPredicateNode, toPredicateNode, ruleType);
-    }
   } // end createPredicateNodes
 
 

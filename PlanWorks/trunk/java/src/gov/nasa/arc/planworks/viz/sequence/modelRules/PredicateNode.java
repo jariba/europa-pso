@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PredicateNode.java,v 1.3 2003-12-31 01:02:25 taylor Exp $
+// $Id: PredicateNode.java,v 1.4 2004-03-27 00:30:47 taylor Exp $
 //
 // PlanWorks
 //
@@ -192,8 +192,6 @@ public class PredicateNode extends BasicNode {
     tip = addPredicateNameAndParams( tip);
     tip.append( "<br>guards: ");
     tip.append( "<br>duration: [");
-    tip.append( rule.getDurationStart()).append( " ");
-    tip.append( rule.getDurationEnd()).append( "]</html>");
     return tip.toString();
   } // end getToolTipText
 
