@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.25 2004-01-09 20:42:42 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.26 2004-01-12 19:24:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -336,7 +336,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         //network.validateConstraintNetwork();
       }
       newLayout.performLayout();
-      newLayout.performLayout(); //<----- BIG FAT HACK!!!!
+      //newLayout.performLayout(); //<----- BIG FAT HACK!!!!
       // do not highlight node, if it has been removed
       boolean isHighlightNode = ((focusNode instanceof ConstraintNetworkTokenNode) ||
                                  ((focusNode instanceof VariableNode) &&

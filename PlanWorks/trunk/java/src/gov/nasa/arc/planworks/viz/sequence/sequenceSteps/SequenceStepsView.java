@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.15 2003-12-12 01:23:07 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.16 2004-01-12 19:25:54 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -171,7 +171,6 @@ public class SequenceStepsView extends SequenceView {
     expandViewFrame( viewSet.openView( this.getClass().getName()),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
-
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
