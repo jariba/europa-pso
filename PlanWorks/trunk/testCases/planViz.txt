@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.20 2003-12-20 01:54:52 taylor Exp $
+// $Id: planViz.txt,v 1.21 2003-12-22 20:51:26 miatauro Exp $
 //
 // PlanWorks
 //
@@ -701,7 +701,7 @@ Pre-conditions:
   1. PlanWorks is running.
   2. A project containing a sequence is open.
   3. A second, unopen project exists in the database.
-  3. The "Sequence Steps View" is visible and correct.
+  4. The "Sequence Steps View" is visible and correct.
 
 Method:
   1. Right-click on a step.
@@ -723,3 +723,33 @@ Post-conditions:
   3. Method:5 - The "Sequence Steps View" is visible and correct.
   4. Method:11 - The "Sequence Steps View" is closed along with all associated open Partial Plan
   Views and the "Planning Sequence" menu contains sequences associated with the opened project.
+
+Requirements: N/A
+
+PLANVIZ-18
+--------------------
+Test querying of unbound variables and free tokens.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. A project containing a sequence is open.
+  3. The "Sequence Steps View" for the sequence is open.
+  4. The "Sequence Query" window is visible.
+
+Method:
+  1. Select the "Free Tokens" option from the first combo box.
+  2. Input a valid step into the text box.
+  3. Click "Apply Query".
+  4. Open the "Timeline View" for the chosen step and confirm that the Ids given in the query
+  results match those in the view.
+  5. Select the "Unbound Variables" option from the first combo box.
+  6. Input a valid step into the text box.
+  7. Click "Apply Query".
+  8. Open the "Constraint Network View" for the chosen step and confirm that the Ids given in the
+  query results match those in the view
+  
+Post-conditions:
+  1. Method:3 - A "QueryResults" window is visible with tokens itemized.
+  2. Method:7 - A "QueryResults" window is visible with variables itemized.
+
+Requirements: N/A

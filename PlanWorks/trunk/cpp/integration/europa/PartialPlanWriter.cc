@@ -4,9 +4,10 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.20 2003-12-18 21:19:32 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.21 2003-12-22 20:56:18 miatauro Exp $
 //
 #include <cstring>
+#include <string>
 #include <errno.h>
 #include <iostream>
 #include <stdio.h>
@@ -138,46 +139,41 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
       FatalError(strerror(errno));
     }
   }
-  dest = String(destBuf);
+  dest = destBuf;
   delete [] destBuf;
 
-  if(dest.getChar(dest.getLength()) != '/') {
-    dest += SLASH;
-  }
+  if (dest.getChar(dest.getLength()) != '/')
+    dest += "/";
 
+  //!!should be changed to an ofstream --wedgingt@ptolemy.arc.nasa.gov 2003 Dec 12
   FILE *sequenceOut;
-  char timestr[16];
-  sprintf(timestr, "%lld", sequenceId);
+  char timestr[21]; //!!should use sizeof(sequenceID) and log base 10; see String.cc --wedgingt 2003 Dec 12
+  sprintf(timestr, "%lld", sequenceId); //!!see String.cc --wedgingt 2003 Dec 12
   modelId = tnet->getModelId();
-  String modelName = modelId.getModelName();
+  std::string modelName = modelId.getModelName().chars();
   {
-    char *tempIndex = rindex(modelName.chars(), '/');
-    if(tempIndex != NULL) {
-      tempIndex++;
-      char *temp = new char[strlen(tempIndex)+1];
-      strcpy(temp, tempIndex);
-      modelName = temp;
-      delete [] temp;
-    }
+    std::string::size_type tempIndex = modelName.rfind('/');
+    if (tempIndex > 0 && tempIndex < modelName.length())
+      modelName = modelName.substr(tempIndex);
   }
-  char *seqname = (char *) modelName.chars();
-  char *extStart = rindex(seqname, '.');
-  *extStart = '\0';
-  if(stepsPerWrite) {
-    if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+  std::string seqname = modelName;
+  std::string::size_type extStart = seqname.find('.');
+  seqname = seqname.substr(0, extStart);
+  if (stepsPerWrite) {
+    if (mkdir(dest.chars(), 0777) && errno != EEXIST) {
       cerr << "Failed to make directory " << dest << endl;
       FatalError(strerror(errno));
     }
-    dest += seqname;
+    dest += seqname.data();
     dest += timestr;
-    if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+    if (mkdir(dest.chars(), 0777) && errno != EEXIST) {
       cerr << "Failed to make directory " << dest << endl;
       FatalError(strerror(errno));
     }
     String ppStats = dest + PARTIAL_PLAN_STATS;
     String ppTransactions = dest + TRANSACTIONS;
     String sequenceStr = dest + SEQUENCE;
-    if(!(sequenceOut = fopen(sequenceStr.chars(), "w"))) {
+    if (!(sequenceOut = fopen(sequenceStr.chars(), "w"))) {
       cerr << "Failed to open " << sequenceStr << endl;
       FatalError(strerror(errno));
     }
@@ -594,7 +590,7 @@ String PartialPlanWriter::getEnumString(const Domain &domain) {
   while(!enumIterator.isDone()) {
     Value value = enumIterator.item();
     if(value.isObject()) {
-      retval += String(value.getObjectValue()->getKey());
+      retval += value.getObjectValue()->getName();
     }
     else if(value.isLabel()) {
       retval += domain.getSort().getMemberName(value);
@@ -699,6 +695,7 @@ void PartialPlanWriter::notifyTokenIsInserted(TokenId tokenId) { //signals plan 
     numTransactions++;
   }
 }
+
 void PartialPlanWriter::notifyTokenIsNotInserted(TokenId tokenId) {
   if(stepsPerWrite) {
     String info;
@@ -709,7 +706,8 @@ void PartialPlanWriter::notifyTokenIsNotInserted(TokenId tokenId) {
     numTransactions++;
   }
 }
-void PartialPlanWriter::notifyAfterTokenIsNotInserted(TokenId tokenId) {
+
+void PartialPlanWriter::notifyAfterTokenIsNotInserted(TokenId /* tokenId */ ) {
 }
 
 void PartialPlanWriter::notifyOfDeletedToken(TokenId tokenId) {
@@ -793,7 +791,8 @@ void PartialPlanWriter::notifyDerivedDomainChanged(VarId varId) {
     numTransactions++;
   }
 }
-void PartialPlanWriter::notifyOfDeletedVariable(VarId varId) {
+
+void PartialPlanWriter::notifyOfDeletedVariable(VarId /* varId */ ) {
 //   if(stepsPerWrite) {
 //     if(varId->getParentToken().isNoId()) {
 //       return;
@@ -803,6 +802,7 @@ void PartialPlanWriter::notifyOfDeletedVariable(VarId varId) {
 //     numTransactions++;
 //   }
 }
+
 void PartialPlanWriter::notifyConstraintInserted(ConstraintId& constrId) {
   if(stepsPerWrite) {
     transactionList->append(Transaction(CONSTRAINT_CREATED, constrId->getKey(), UNKNOWN, 
