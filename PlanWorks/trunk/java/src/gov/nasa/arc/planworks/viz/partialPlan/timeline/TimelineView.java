@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.37 2004-02-11 02:29:31 taylor Exp $
+// $Id: TimelineView.java,v 1.38 2004-02-12 21:42:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -70,6 +70,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  * @version 0.0
  */
 public class TimelineView extends PartialPlanView {
+
+  private static final double LABEL_MIN_LEN_FIRST_SLOT_FACTOR = 1.25;
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
@@ -526,12 +528,18 @@ public class TimelineView extends PartialPlanView {
       label.append( ")");
     }
     int labelMinLength = slotLabelMinLength;
-    // assuming start interval is {1234}, rather than [1234 1235], comment next lines
-//     if (isFirstSlot) { // because of left alignment to left edge of slot
-//       labelMinLength *= 1.5;
-//     }
+    PwDomain startTimeIntervalDomain = slot.getStartTime();
+    if ((! startTimeIntervalDomain.getLowerBound().equals
+         ( startTimeIntervalDomain.getUpperBound())) && isFirstSlot) {
+      // start interval is [1234 1235], rather than {1234},
+      // first slot has left alignment to left edge of slot
+      labelMinLength = (int) (labelMinLength * LABEL_MIN_LEN_FIRST_SLOT_FACTOR);
+    }
     int nodeLength = Math.max( label.length(), keyValue.length());
-    if (nodeLength < labelMinLength) {
+//     System.err.println( "getSlotNodeLabel nodeLength " + nodeLength +
+//                         " labelMinLength " + labelMinLength);
+//     System.err.println( "getSlotNodeLabel label B '" + label + "'");
+    if (nodeLength < labelMinLength) { 
       boolean prepend = true;
       for (int i = 0, n = labelMinLength - nodeLength; i < n; i++) {
         if (prepend) {
@@ -542,6 +550,7 @@ public class TimelineView extends PartialPlanView {
         prepend = (! prepend);
       }
     }
+//     System.err.println( "getSlotNodeLabel label A '" + label + "'");
     return label.toString() + keyValue;
   } // end getSlotNodeLabel
 

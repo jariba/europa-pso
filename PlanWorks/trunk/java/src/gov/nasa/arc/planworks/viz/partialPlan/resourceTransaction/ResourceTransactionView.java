@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.2 2004-02-11 02:29:31 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.3 2004-02-12 21:42:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -740,12 +740,11 @@ public class ResourceTransactionView extends PartialPlanView  {
      * @return - <code>Dimension</code> - 
      */
     public final Dimension getPreferredSize() {
-      if ((jGoLevelScaleView.getVerticalScrollBar() == null) ||
-          (jGoRulerView.getHorizontalScrollBar() == null)) {
+      if (jGoRulerView == null) {
         return new Dimension
-          ( (int) jGoLevelScaleView.getDocumentSize().getWidth(),
-            (int) (ResourceTransactionView.this.getSize().getHeight() -
-                   jGoRulerView.getDocumentSize().getHeight()));
+          ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
+                   jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
+            (int) ResourceTransactionView.this.getSize().getHeight());
       } else {
         return new Dimension
           ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
