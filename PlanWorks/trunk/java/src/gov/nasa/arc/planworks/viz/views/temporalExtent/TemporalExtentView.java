@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.13 2003-09-05 16:53:31 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.14 2003-09-05 19:11:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -211,7 +211,6 @@ public class TemporalExtentView extends VizView {
   private void redrawView() {
     // setVisible(true | false) depending on ids
     setNodesVisible();
-    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
   } // end redrawView
 
   /**
@@ -376,10 +375,16 @@ public class TemporalExtentView extends VizView {
     //System.err.println( "Temporal Extent View time scale: " + timeScaleStart + " " +
     //                   timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
     int timeScaleRange = timeScaleEnd - timeScaleStart;
-    timeDelta = 5;
+    timeDelta = 1;
     int maxIterationCnt = 25, iterationCnt = 0;
     while ((timeDelta * maxSlots) < timeScaleRange) {
-      timeDelta *= 2;
+      if (timeDelta == 1) {
+        timeDelta = 2;
+      } else if (timeDelta == 2) {
+        timeDelta = 5;
+      } else {
+        timeDelta *= 2;
+      }
 //       System.err.println( "range " + timeScaleRange + " maxSlots " +
 //                           maxSlots + " timeDelta " + timeDelta);
       iterationCnt++;

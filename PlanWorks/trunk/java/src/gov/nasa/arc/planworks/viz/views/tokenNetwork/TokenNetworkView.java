@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.21 2003-08-29 01:21:40 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.22 2003-09-05 19:11:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -198,7 +198,6 @@ public class TokenNetworkView extends VizView {
   private void redrawView() {
     // setVisible(true | false) depending on ids
     setNodesVisible();
-    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
   } // end redrawView
 
 
@@ -266,7 +265,7 @@ public class TokenNetworkView extends VizView {
   private void buildTokenParentChildRelationships() {
     initRelationships();
     buildRelationships();
-    System.err.println( "Token Network View: count: " + relationships.keySet().size());
+//     System.err.println( "Token Network View: count: " + relationships.keySet().size());
 //     Iterator keyIterator = relationships.keySet().iterator();
 //     while (keyIterator.hasNext()) {
 //       System.err.println( relationships.get( (Integer) keyIterator.next()));

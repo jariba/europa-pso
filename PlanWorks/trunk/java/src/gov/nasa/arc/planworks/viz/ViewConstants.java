@@ -217,13 +217,13 @@ public interface ViewConstants {
    * constant <code>TEMPORAL_MIN_END_X_LOC</code>
    *
    */
-  public static final int TEMPORAL_MIN_END_X_LOC = 500;
+  public static final int TEMPORAL_MIN_END_X_LOC = 250;
 
   /**
    * constant <code>TEMPORAL_MIN_MAX_SLOTS</code>
    *
    */
-  public static final int TEMPORAL_MIN_MAX_SLOTS = 15;
+  public static final int TEMPORAL_MIN_MAX_SLOTS = 8;
 
   /**
    * constant <code>TEMPORAL_LARGE_LABEL_RANGE</code>
