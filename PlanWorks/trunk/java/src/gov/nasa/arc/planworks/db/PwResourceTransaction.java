@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceTransaction.java,v 1.1 2004-02-03 20:43:45 taylor Exp $
+// $Id: PwResourceTransaction.java,v 1.2 2004-02-27 18:04:14 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -22,15 +22,7 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwResourceTransaction {
-
-
-  /**
-   * <code>getId</code>
-   *
-   * @return id - <code>Integer</code> -
-   */
-  public abstract Integer getId();
+public interface PwResourceTransaction extends PwToken {
 
   /**
    * <code>getInterval</code>

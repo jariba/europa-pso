@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.20 2004-02-17 19:01:17 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.21 2004-02-27 18:04:39 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -43,8 +43,9 @@ public class PwTimelineImpl extends PwObjectImpl implements PwTimeline {
    */
   public PwTimelineImpl(final Integer id, final int type, final Integer parentId, 
                         final String name, final String childObjectIds, final String emptySlotInfo,
-                        final String variableIds, final PwPartialPlanImpl partialPlan) {
-    super(id, type, parentId, name, childObjectIds, variableIds, partialPlan);
+                        final String variableIds, final String tokenIds,
+                        final PwPartialPlanImpl partialPlan) {
+    super(id, type, parentId, name, childObjectIds, variableIds, tokenIds, partialPlan);
     this.emptySlotInfo = emptySlotInfo;
     slotIdList = new ArrayList();
     hasCreatedEmptySlots = hasCalculatedSlotTimes = false;
@@ -70,6 +71,9 @@ public class PwTimelineImpl extends PwObjectImpl implements PwTimeline {
    * @return slot - <code>PwSlotImpl</code> - 
    */
   public PwSlotImpl addSlot( final Integer id) {
+    if(slotIdList.contains(id)) {
+      return (PwSlotImpl) partialPlan.getSlot(id);
+    }
     PwSlotImpl slot = new PwSlotImpl( id, this.id, partialPlan);
     slotIdList.add( id);
     partialPlan.addSlot( id, slot);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.18 2004-02-13 21:22:28 miatauro Exp $
+// $Id: PwToken.java,v 1.19 2004-02-27 18:04:15 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -128,7 +128,7 @@ public interface PwToken extends PwVariableContainer {
    * @return - <code>Integer</code> -
    */
 
-  public abstract Integer getTimelineId();
+  public abstract Integer getParentId();
 
   /**
    * <code>getEarliestStart</code>

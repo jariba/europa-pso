@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.3 2004-02-10 02:35:55 taylor Exp $
+// $Id: ResourceProfile.java,v 1.4 2004-02-27 18:06:06 miatauro Exp $
 //
 // PlanWorks
 //
@@ -141,19 +141,29 @@ public class ResourceProfile extends BasicNode implements Extent {
   public final void configure() {
     // put the label in the LevelScaleView, rather than the ExtentView
 
+    System.err.println("5.3.3.2.1");
     renderBorders( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
                    resourceProfileView.getJGoRulerView().scaleTime( latestEndTime),
                    resourceProfileView.getJGoExtentDocument());
+    System.err.println("5.3.3.2.2");
     levelScaleWidth = resourceProfileView.getLevelScaleViewWidth() -
       ViewConstants.RESOURCE_LEVEL_SCALE_WIDTH_OFFSET;
     renderBorders( 0, levelScaleWidth, resourceProfileView.getJGoLevelScaleDocument());
+    System.err.println("5.3.3.2.3");
+
     renderResourceName();
-    
+    System.err.println("5.3.3.2.4");
+
     levelLimitMin = resource.getLevelLimitMin();
     levelLimitMax = resource.getLevelLimitMax();
+    levelMax = levelLimitMax;
+    levelMin = levelLimitMin;
+    System.err.println("5.3.3.2.5");
 
     List instantList = resource.getInstantList();
     Iterator instantItr = instantList.iterator();
+    System.err.println("5.3.3.2.6: " + instantList.size());
+
     while (instantItr.hasNext()) {
       PwResourceInstant instant = (PwResourceInstant) instantItr.next();
       if (instant.getLevelMax() > levelMax) {
@@ -163,14 +173,22 @@ public class ResourceProfile extends BasicNode implements Extent {
         levelMin = instant.getLevelMin();
       }
     }
+    System.err.println("5.3.3.2.7");
+
     levelScaleScaling = (extentYBottom - extentYTop) / (levelMax - levelMin);
     // System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
     // System.err.println( " levelMin " + levelMin + " levelMax " +
     //                     levelMax + " levelScaleScaling " + levelScaleScaling);
 
     renderLevelScaleLinesAndTicks();
+    System.err.println("5.3.3.2.8");
+
     renderLimits();
+    System.err.println("5.3.3.2.9");
+
     renderLevels();
+    System.err.println("5.3.3.2.10");
+
   } // end configure
 
 
@@ -262,8 +280,8 @@ public class ResourceProfile extends BasicNode implements Extent {
 
   private void renderLevelScaleLinesAndTicks() {
     int tickDelta = (int) ((levelMax - levelMin) / NUM_LEVEL_SCALE_TICKS);
-//     System.err.println( "renderLevelScale: max " + levelMax + " min " + levelMin +
-//                         " tickDelta " + tickDelta);
+     System.err.println( "renderLevelScale: max " + levelMax + " min " + levelMin +
+                         " tickDelta " + tickDelta);
     int level = (int) levelMin;
     while (level <= levelMax) {
 //       System.err.println( "  level " + level);
@@ -348,13 +366,7 @@ public class ResourceProfile extends BasicNode implements Extent {
                            scaleResourceLevel( lastLevelMin));
     while (instantItr.hasNext()) {
       PwResourceInstant instant = (PwResourceInstant) instantItr.next();
-      if (instant.getTime().getLowerBoundInt() != instant.getTime().getUpperBoundInt()) {
-        System.err.println( "ResourceProfile.renderLevelsAndLimits: time point is not " +
-                            "a singleton " + instant.getTime().getLowerBoundInt() +
-                            " " + instant.getTime().getUpperBoundInt());
-        System.exit( -1);
-      }
-      int time = instant.getTime().getLowerBoundInt();
+      int time = instant.getTime();
       double currentLevelMax = instant.getLevelMax();
       double currentLevelMin = instant.getLevelMin();
       levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),

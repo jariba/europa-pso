@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.74 2004-02-13 22:29:29 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.75 2004-02-27 18:04:37 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -32,6 +32,9 @@ import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwPredicate;
+import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.db.PwResourceInstant;
+import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -62,6 +65,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   private Long id; // PartialPlan id
   private Map objectMap; // key = attribute id, value = PwObjectImpl instance
   private Map timelineMap; // key = attribute id, value = PwTimelineImpl instance
+  private Map resourceMap; // key = attribute id, value = PwResourceImpl instance
   private Map slotMap; // key = attribute id, value = PwSlotImpl instance
   private Map tokenMap; // key = attribute id, value = PwTokenImpl instance
   private Map constraintMap; // key = attribute id, value = PwConstraintImpl instance
@@ -70,6 +74,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   private Map variableMap; // key = attribute id, value = PwVariableImpl instance
   private List contentSpec;
   private Map tokenMasterSlaveMap; // key = tokenId, value TokenRelations instance
+  private Map instantMap; //just add water.  key = tokenId, value = PwResourceInstantImpl instance
+  private Map resTransactionMap; //key = transactionId, value = PwResourceTransactionImpl instance
 
   /**
    * <code>PwPartialPlanImpl</code> - initialize storage structures then call createPartialPlan()
@@ -92,9 +98,11 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     constraintMap = new HashMap();
     //predicateMap = new HashMap();
     tokenRelationMap = new HashMap(); 
+    resourceMap = new HashMap();
+    resTransactionMap = new HashMap();
     variableMap = new HashMap();
     tokenMasterSlaveMap = new HashMap();
-
+    instantMap = new HashMap();
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
     contentSpec = new ArrayList();
     this.name = planName;
@@ -134,7 +142,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     cleanConstraints();
     //cleanTransactions();
-    //checkPlan();
+    checkPlan();
   } // end createPartialPlan
 
   //  private void loadFiles(File planDir) throws ResourceNotFoundException {
@@ -156,6 +164,9 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       if(tableName.equals("Constraint")) {
         tableName = "VConstraint";
       }
+      if(tableName.equals("Instant")) {
+        tableName = "ResourceInstants";
+      }
       MySQLDB.loadFile(planDir.getAbsolutePath().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
     }
   }
@@ -170,6 +181,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
     MySQLDB.queryTokenRelations( this);
     MySQLDB.queryVariables( this);
+    MySQLDB.queryResourceInstants(this);
     Iterator objIterator = objectMap.values().iterator();
     while(objIterator.hasNext()) {
       PwObject obj = (PwObject) objIterator.next();
@@ -244,6 +256,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   public List getObjectList() {
     List retval = new ArrayList();
     retval.addAll(objectMap.values());
+    return retval;
+  }
+
+  public List getResourceList() {
+    List retval = new ArrayList();
+    retval.addAll(resourceMap.values());
     return retval;
   }
 
@@ -346,6 +364,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   } // end getTokenRelation
 
 
+  public PwResourceInstant getInstant(final Integer id) {
+    return (PwResourceInstant) instantMap.get(id);
+  }
+
   /**
    * <code>getVariable</code> - get variable by id
    *
@@ -356,6 +378,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return (PwVariable) variableMap.get(id);
   } // end getVariable
 
+
+  public PwResourceTransaction getTransaction(final Integer id) {
+    return (PwResourceTransaction) resTransactionMap.get(id);
+  }
 
   // END IMPLEMENT PwPartialPlan INTERFACE 
     
@@ -417,11 +443,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param timeline - <code>PwTimelineImpl</code> - 
    */
   public void addTimeline( final Integer id, final PwTimelineImpl timeline) {
-    if(timelineMap.containsKey(id)) {
-      return;
+    if(!objectMap.containsKey(id)) {
+      objectMap.put(id, timeline);
     }
-    objectMap.put(id, timeline);
-    timelineMap.put( id, timeline);
+    if(!timelineMap.containsKey(id)) {
+      timelineMap.put( id, timeline);
+    }
   }
 
   /**
@@ -460,6 +487,30 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       return;
     }
     variableMap.put( id, variable);
+  }
+
+  public void addResource(final Integer id, final PwResourceImpl resource) {
+    if(!objectMap.containsKey(id)) {
+      objectMap.put(id, resource);
+    }
+    if(!resourceMap.containsKey(id)) {
+      resourceMap.put(id, resource);
+    }
+  }
+
+  public void addResourceInstant(final Integer id, final PwResourceInstantImpl instant) {
+    if(!instantMap.containsKey(id)) {
+      instantMap.put(id, instant);
+    }
+  }
+
+  public void addResourceTransaction(final Integer id, final PwResourceTransactionImpl trans) {
+    if(!tokenMap.containsKey(id)) {
+      tokenMap.put(id, trans);
+    }
+    if(!resTransactionMap.containsKey(id)) {
+      resTransactionMap.put(id, trans);
+    }
   }
 
   /**
@@ -525,11 +576,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
          variable.getType().equals(DbConstants.END_VAR) ||
          variable.getType().equals(DbConstants.DURATION_VAR) ||
          variable.getType().equals(DbConstants.OBJECT_VAR) ||
-         variable.getType().equals(DbConstants.STATE_VAR)) {
-        if(variable.getParameterNameList().size() != 0) {
+         variable.getType().equals(DbConstants.STATE_VAR) ||
+         variable.getType().equals(DbConstants.MEMBER_VAR)) {
+        if(variable.getParameterNameList().size() != 0 &&
+           variable.getParameterNameList().size() != 1) {
           System.err.println(variable.getType() + " " + variable.getId() +
                              " has parameter list of size " + 
                              variable.getParameterNameList().size());
+          System.err.println(variable.getParameterNameList());
           retval = false;
         }
       }
@@ -619,13 +673,13 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         //                     token.getObjectId());
         //  retval = false;
         //}
-        if(token.getTimelineId() == null) {
+        if(token.getParentId() == null) {
           System.err.println("Slotted token " + token.getId() + " has null timelineId.");
           retval = false;
         }
-        else if(!timelineMap.containsKey(token.getTimelineId())) {
+        else if(!timelineMap.containsKey(token.getParentId())) {
           System.err.println("Slotted token " + token.getId() + " has nonexistant timelineId " +
-                             token.getTimelineId());
+                             token.getParentId());
           retval = false;
         }
         if(token.getSlotId() == null) {

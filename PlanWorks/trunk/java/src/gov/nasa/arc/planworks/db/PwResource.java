@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResource.java,v 1.2 2004-02-25 02:30:13 taylor Exp $
+// $Id: PwResource.java,v 1.3 2004-02-27 18:04:14 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -81,7 +81,7 @@ public interface PwResource extends PwEntity {
    *
    * @return <code>UniqueSet</code> - of PwResourceTransaction
    */
-  public abstract UniqueSet getTransactionSet();
+  public abstract List getTransactionSet();
 
   /**
    * <code>getInstantList</code>

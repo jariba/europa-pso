@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.30 2004-02-19 21:56:48 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.31 2004-02-27 18:04:40 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -47,7 +47,7 @@ public class PwTokenImpl implements PwToken {
   private Integer durationVarId;
   private Integer objectVarId;
   private Integer stateVarId;
-  private Integer timelineId;
+  private Integer parentId;
   private List tokenRelationIds; // element Integer
   private List paramVarIds; // element Integer
   private Integer slotId;
@@ -58,31 +58,10 @@ public class PwTokenImpl implements PwToken {
   public PwTokenImpl(final Integer id, final boolean isValueToken, final Integer slotId, 
                      final String predicateName, final Integer startVarId, final Integer endVarId, 
                      final Integer durationVarId, final Integer stateVarId, 
-                     final Integer objectVarId, final Integer timelineId, 
-                     final List tokenRelationIds, final List paramVarIds, 
+                     final Integer objectVarId, final Integer parentId, 
+                     final String tokenRelationIds, final String paramVarIds, 
                      final PwPartialPlanImpl partialPlan)
   {
-    this.id = id;
-    this.isValueToken = isValueToken;
-    this.slotId = slotId;
-    //this.predicateId = predicateId;
-    this.predicateName = predicateName;
-    this.startVarId = startVarId;
-    this.endVarId = endVarId;
-    this.durationVarId = durationVarId;
-    this.objectVarId = objectVarId;
-    this.stateVarId = stateVarId;
-    this.tokenRelationIds = new UniqueSet(tokenRelationIds);
-    this.paramVarIds = new UniqueSet(paramVarIds);
-    this.partialPlan = partialPlan;
-    this.timelineId = timelineId;
-  }
-
-  public PwTokenImpl(final Integer id, final boolean isValueToken, final Integer slotId, 
-                     final String predicateName, final Integer startVarId, final Integer endVarId, 
-                     final Integer durationVarId, final Integer stateVarId,
-                     final Integer objectVarId, final Integer timelineId, 
-                     final PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.isValueToken = isValueToken;
     this.slotId = slotId;
@@ -96,9 +75,30 @@ public class PwTokenImpl implements PwToken {
     this.tokenRelationIds = new UniqueSet();
     this.paramVarIds = new UniqueSet();
     this.partialPlan = partialPlan;
-    this.timelineId = timelineId;
+    this.parentId = parentId;
+
+    if(paramVarIds != null) {
+      StringTokenizer strTok = new StringTokenizer(paramVarIds, ":");
+      while(strTok.hasMoreTokens()) {
+        this.paramVarIds.add(Integer.valueOf(strTok.nextToken()));
+      }
+    }
+    if(tokenRelationIds != null) {
+      StringTokenizer strTok = new StringTokenizer(tokenRelationIds, ":");
+      while(strTok.hasMoreTokens()) {
+        this.tokenRelationIds.add(Integer.valueOf(strTok.nextToken()));
+      }
+    }
+
+    PwObjectImpl parent = (PwObjectImpl) partialPlan.getObject(parentId);
+    if(parent instanceof PwTimelineImpl) {
+      PwTimelineImpl timeline = (PwTimelineImpl) parent;
+      PwSlotImpl slot = timeline.addSlot(slotId);
+      slot.addToken(this);
+    }
+    partialPlan.addToken(id, this);
   }
-  
+
   /**
    * <code>getId</code>
    *
@@ -113,8 +113,8 @@ public class PwTokenImpl implements PwToken {
    *
    * @return <code>Integer</code>
    */
-  public Integer getTimelineId() {
-    return timelineId;
+  public Integer getParentId() {
+    return parentId;
   }
   
   /**
@@ -287,7 +287,7 @@ public class PwTokenImpl implements PwToken {
   }
 
   public boolean isFreeToken() {
-    return this.slotId == null;
+    return this.slotId == null || slotId.equals(DbConstants.noId);
   }
   /**
    * <code>toString</code>

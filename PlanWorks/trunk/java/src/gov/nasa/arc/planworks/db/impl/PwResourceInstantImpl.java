@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstantImpl.java,v 1.1 2004-02-03 20:43:47 taylor Exp $
+// $Id: PwResourceInstantImpl.java,v 1.2 2004-02-27 18:04:38 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -13,8 +13,15 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.StringTokenizer;
+
 import gov.nasa.arc.planworks.db.PwIntervalDomain;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResourceInstant;
+import gov.nasa.arc.planworks.db.PwResourceTransaction;
 
 
 /**
@@ -28,16 +35,28 @@ import gov.nasa.arc.planworks.db.PwResourceInstant;
 public class PwResourceInstantImpl implements PwResourceInstant {
 
   private Integer id;
-  private PwIntervalDomain time;
+  private int time;
   private double levelMin;
   private double levelMax;
+  private List transactionIds;
+  private PwPartialPlan partialPlan;
 
-  public PwResourceInstantImpl( Integer id, PwIntervalDomain time, double levelMin,
-                                double levelMax) {
+  public PwResourceInstantImpl( final Integer id,  final int time, final double levelMin,
+                                final double levelMax, final String transactions,
+                                final PwPartialPlan partialPlan) {
     this.id = id;
     this.time = time;
     this.levelMin = levelMin;
     this.levelMax = levelMax;
+    this.partialPlan = partialPlan;
+    
+    transactionIds = new ArrayList();
+    if(transactions != null) {
+      StringTokenizer strTok = new StringTokenizer(transactions, ",");
+      while(strTok.hasMoreTokens()) {
+        transactionIds.add(Integer.valueOf(strTok.nextToken()));
+      }
+    }
   }
 
   /**
@@ -54,7 +73,7 @@ public class PwResourceInstantImpl implements PwResourceInstant {
    *
    * @return - <code>PwIntervalDomain</code> - 
    */
-  public PwIntervalDomain getTime() {
+  public int getTime() {
     return time;
   }
 
@@ -76,5 +95,15 @@ public class PwResourceInstantImpl implements PwResourceInstant {
     return levelMax;
   }
 
-  
+  public List getTransactions() {
+    List retval = new ArrayList(transactionIds.size());
+    ListIterator idIterator = transactionIds.listIterator();
+    while(idIterator.hasNext()) {
+      PwResourceTransaction trans = partialPlan.getTransaction((Integer)idIterator.next());
+      if(trans != null) {
+        retval.add(trans);
+      }
+    }
+    return retval;
+  }
 } // end class PwResourceInstantImpl

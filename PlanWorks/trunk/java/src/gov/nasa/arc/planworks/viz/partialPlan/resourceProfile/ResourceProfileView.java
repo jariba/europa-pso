@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.6 2004-02-12 21:42:41 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.7 2004-02-27 18:06:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -269,6 +269,7 @@ public class ResourceProfileView extends PartialPlanView  {
       }
       // System.err.println( "timelineView displayable " + this.isDisplayable());
     }
+    System.err.println("1");
     this.computeFontMetrics( this);
 
     // resource names font
@@ -279,6 +280,8 @@ public class ResourceProfileView extends PartialPlanView  {
     levelScaleFontMetrics = graphics.getFontMetrics( levelScaleFont);
     graphics.dispose();
 
+    System.err.println("2");
+
     levelScaleViewWidth = computeMaxResourceLabelWidth();
     fillerWidth = levelScaleViewWidth + ViewConstants.JGO_SCROLL_BAR_WIDTH;
 
@@ -286,18 +289,30 @@ public class ResourceProfileView extends PartialPlanView  {
 
     createLevelScaleAndExtentPanel();
 
+    System.err.println("3");
+
     createFillerAndRulerPanel();
    
+    System.err.println("4");
+
     this.setVisible( true);
 
     boolean doFreeTokens = false;
       xOrigin = jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
       jGoRulerView.createTimeScale();
 
+    System.err.println("5");
+
     boolean isRedraw = false, isScrollBarAdjustment = false;
     renderResourceExtent();
 
+    System.err.println("6");
+
+
     viewFrame = viewSet.openView( this.getClass().getName());
+
+    System.err.println("7");
+
     if (! isStepButtonView) {
       expandViewFrame( viewFrame,
                        (int) (Math.max( jGoExtentView.getDocumentSize().getWidth(),
@@ -310,6 +325,9 @@ public class ResourceProfileView extends PartialPlanView  {
       // force re-display
       this.validate();
     }
+
+    System.err.println("8");
+
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
@@ -319,9 +337,13 @@ public class ResourceProfileView extends PartialPlanView  {
       expandViewFrameForStepButtons( viewFrame);
     }
 
+    System.err.println("9");
+
     // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
     // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
     equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
+
+    System.err.println("10");
 
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
@@ -368,20 +390,21 @@ public class ResourceProfileView extends PartialPlanView  {
 
   private void renderResourceExtent() {
     jGoExtentView.getDocument().deleteContents();
-
+    System.err.println("5.1");
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     if (resourceProfileList != null) {
       resourceProfileList.clear();
     }
     resourceProfileList = new UniqueSet();
-
+    System.err.println("5.2");
     createResourceProfiles();
-
+    System.err.println("5.3");
     boolean showDialog = true;
     // isContentSpecRendered( PlanWorks.RESOURCE_PROFILE_VIEW, showDialog);
 
     layoutResourceProfiles();
+    System.err.println("5.4");
   } // end createResourceProfileView
 
   /**
@@ -474,55 +497,55 @@ public class ResourceProfileView extends PartialPlanView  {
     return jGoRulerView;
   }
 
-  private List createDummyData( final boolean isNameOnly) {
-    int startTime = 0, endTime = 0;
-    if (! isNameOnly) {
-      startTime = getTimeScaleStart();
-      endTime = getTimeScaleEnd();
-    }
-    List resourceList = new ArrayList();
-    List resourceInstantList = new ArrayList();
-    PwIntervalDomain instantDomain =
-      (PwIntervalDomain) new PwIntervalDomainImpl ( "type", "10", "10");
-    resourceInstantList.add
-      ( new PwResourceInstantImpl( new Integer( 99011), instantDomain, 4., 6.));
-    resourceInstantList.add
-      ( new PwResourceInstantImpl( new Integer( 99012),
-                                   new PwIntervalDomainImpl( "type", "20", "20"), 10., 14.));
-    resourceInstantList.add
-      ( new PwResourceInstantImpl( new Integer( 99013),
-                                   new PwIntervalDomainImpl( "type", "30", "30"), -2., 0.));
-    resourceInstantList.add
-      ( new PwResourceInstantImpl( new Integer( 99014),
-                                   new PwIntervalDomainImpl( "type", "50", "50"), 2., 4.));
-    PwResource dummyResource =
-      new PwResourceImpl( new Integer( 9901), "Resource1", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
-    resourceList.add( dummyResource);
-    dummyResource =
-      new PwResourceImpl( new Integer( 9902), "Resource2", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
-    resourceList.add( dummyResource);
-    dummyResource =
-      new PwResourceImpl( new Integer( 9903), "ResourceThree", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
-    resourceList.add( dummyResource);
-    dummyResource =
-      new PwResourceImpl( new Integer( 9904), "ResourceFour", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
-    resourceList.add( dummyResource);
-    dummyResource =
-      new PwResourceImpl( new Integer( 9905), "ResourceFive", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
-    resourceList.add( dummyResource);
-    return resourceList;
-  } // end createDummyData
+//   private List createDummyData( final boolean isNameOnly) {
+//     int startTime = 0, endTime = 0;
+//     if (! isNameOnly) {
+//       startTime = getTimeScaleStart();
+//       endTime = getTimeScaleEnd();
+//     }
+//     List resourceList = new ArrayList();
+//     List resourceInstantList = new ArrayList();
+//     PwIntervalDomain instantDomain =
+//       (PwIntervalDomain) new PwIntervalDomainImpl ( "type", "10", "10");
+//     resourceInstantList.add
+//       ( new PwResourceInstantImpl( new Integer( 99011), instantDomain, 4., 6.));
+//     resourceInstantList.add
+//       ( new PwResourceInstantImpl( new Integer( 99012),
+//                                    new PwIntervalDomainImpl( "type", "20", "20"), 10., 14.));
+//     resourceInstantList.add
+//       ( new PwResourceInstantImpl( new Integer( 99013),
+//                                    new PwIntervalDomainImpl( "type", "30", "30"), -2., 0.));
+//     resourceInstantList.add
+//       ( new PwResourceInstantImpl( new Integer( 99014),
+//                                    new PwIntervalDomainImpl( "type", "50", "50"), 2., 4.));
+//     PwResource dummyResource =
+//       new PwResourceImpl( new Integer( 9901), "Resource1", 4., 0., 12., startTime, endTime,
+//                           new UniqueSet(), resourceInstantList);
+//     resourceList.add( dummyResource);
+//     dummyResource =
+//       new PwResourceImpl( new Integer( 9902), "Resource2", 4., 0., 12., startTime, endTime,
+//                           new UniqueSet(), resourceInstantList);
+//     resourceList.add( dummyResource);
+//     dummyResource =
+//       new PwResourceImpl( new Integer( 9903), "ResourceThree", 4., 0., 12., startTime, endTime,
+//                           new UniqueSet(), resourceInstantList);
+//     resourceList.add( dummyResource);
+//     dummyResource =
+//       new PwResourceImpl( new Integer( 9904), "ResourceFour", 4., 0., 12., startTime, endTime,
+//                           new UniqueSet(), resourceInstantList);
+//     resourceList.add( dummyResource);
+//     dummyResource =
+//       new PwResourceImpl( new Integer( 9905), "ResourceFive", 4., 0., 12., startTime, endTime,
+//                           new UniqueSet(), resourceInstantList);
+//     resourceList.add( dummyResource);
+//     return resourceList;
+//   } // end createDummyData
 
 
   private void createResourceProfiles() {
     boolean isNamesOnly = false;
     // resourceList will come from partialPlan
-    List resourceList = createDummyData( isNamesOnly);
+    List resourceList = partialPlan.getResourceList();
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
@@ -540,7 +563,7 @@ public class ResourceProfileView extends PartialPlanView  {
     boolean isNamesOnly = true;
     int maxWidth = ViewConstants.JGO_SCROLL_BAR_WIDTH * 2;
     // resourceList will come from partialPlan
-    List resourceList = createDummyData( isNamesOnly);
+    List resourceList = partialPlan.getResourceList();//createDummyData( isNamesOnly);
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
@@ -561,10 +584,12 @@ public class ResourceProfileView extends PartialPlanView  {
       }*/
     List extents = new ArrayList(resourceProfileList);
     // do the layout -- compute cellRow for each node
+    System.err.println("5.3.1");
     List results =
       Algorithms.allocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
                                jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
                                extents);
+    System.err.println("5.3.2");
 //     List results =
 //       Algorithms.betterAllocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
 //                                      jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
@@ -577,15 +602,20 @@ public class ResourceProfileView extends PartialPlanView  {
                                      JOptionPane.ERROR_MESSAGE);
       return;
     }
+    System.err.println("5.3.3: " + extents.size());
     for (Iterator it = extents.iterator(); it.hasNext();) {
       ResourceProfile resourceProfile = (ResourceProfile) it.next();
+      System.err.println("5.3.3.1");
       // System.err.println( resourceProfile.getName() + " cellRow " + resourceProfile.getRow());
       if (resourceProfile.getRow() > maxCellRow) {
         maxCellRow = resourceProfile.getRow();
       }
+      System.err.println("5.3.3.2");
       // render the profile
       resourceProfile.configure();
+      System.err.println("5.3.3.3");
     }
+    System.err.println("5.3.4");
   } // end layoutResourceProfiles
 
 

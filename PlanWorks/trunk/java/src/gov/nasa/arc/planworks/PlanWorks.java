@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.85 2004-02-13 02:37:06 taylor Exp $
+// $Id: PlanWorks.java,v 1.86 2004-02-27 18:03:48 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -125,13 +125,13 @@ public class PlanWorks extends MDIDesktopFrame {
       ( DB_TRANSACTION_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView");
     // not fully implemented yet
-//     VIEW_CLASS_NAME_MAP.put
-//       ( RESOURCE_PROFILE_VIEW,
-//         "gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView");
+     VIEW_CLASS_NAME_MAP.put
+       ( RESOURCE_PROFILE_VIEW,
+         "gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView");
     // not fully implemented yet
-//     VIEW_CLASS_NAME_MAP.put
-//       ( RESOURCE_TRANSACTION_VIEW,
-//         "gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView");
+     VIEW_CLASS_NAME_MAP.put
+       ( RESOURCE_TRANSACTION_VIEW,
+         "gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView");
     // not in map, since it is created from nodes in views, not from other views
 //     VIEW_CLASS_NAME_MAP.put
 //       ( NAVIGATOR_VIEW,
@@ -152,9 +152,9 @@ public class PlanWorks extends MDIDesktopFrame {
     PARTIAL_PLAN_VIEW_LIST = new ArrayList();
     PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
     // not fully implemented yet
-    // PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
     // not fully implemented yet
-    // PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_TRANSACTION_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_TRANSACTION_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);

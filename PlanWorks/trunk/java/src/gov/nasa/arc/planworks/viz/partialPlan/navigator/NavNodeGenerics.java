@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.1 2004-02-26 18:07:22 taylor Exp $
+// $Id: NavNodeGenerics.java,v 1.2 2004-02-27 18:05:41 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -16,6 +16,7 @@ package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 import java.awt.Color;
 import java.util.Iterator;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwEntity;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -431,17 +432,14 @@ public final class NavNodeGenerics {
    */
   public static Color getTokenColor( final PwToken token, final NavigatorView navigatorView) {
     Color tokenColor = ColorMap.getColor( "black");
-    PwTimeline timeline = null;
     PwPartialPlan partialPlan = navigatorView.getPartialPlan();
     // System.err.println( "getTokenColor getSlotId " + token.getSlotId());
     // System.err.println( "getTokenColor getTimelineId() " + token.getTimelineId());
-    if (token.getSlotId() != null) {
+    if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.noId)) {
       PwSlot slot = partialPlan.getSlot( token.getSlotId());
-      timeline = partialPlan.getTimeline( slot.getTimelineId());
-      tokenColor = navigatorView.getTimelineColor( timeline.getId());
-    } else if (token.getTimelineId() != null) {
-      timeline = partialPlan.getTimeline( token.getTimelineId());
-      tokenColor = navigatorView.getTimelineColor( timeline.getId());
+      tokenColor = navigatorView.getTimelineColor( slot.getTimelineId());
+    } else if (token.getParentId() != null && !token.getParentId().equals(DbConstants.noId)) {
+      tokenColor = navigatorView.getTimelineColor( token.getParentId());
     } else {
       tokenColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     }
