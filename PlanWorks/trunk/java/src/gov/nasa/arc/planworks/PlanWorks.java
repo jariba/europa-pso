@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.105 2004-07-15 21:24:45 taylor Exp $
+// $Id: PlanWorks.java,v 1.106 2004-07-16 22:54:44 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -743,11 +743,11 @@ public class PlanWorks extends MDIDesktopFrame {
         public final void actionPerformed( final ActionEvent e) {
           String dirChoice = sequenceDirChooser.getCurrentDirectory().getAbsolutePath();
           File [] seqDirs = sequenceDirChooser.getSelectedFiles();
-          // System.err.println( "PlanWorks sequence parent directory" + dirChoice);
-          // System.err.println( "sequenceDirectories");
-          // for (int i = 0, n = seqDirs.length; i < n; i++) {
-          //   System.err.println( "i " + i + " " + seqDirs[i].getName());
-          // }
+//           System.err.println( "PlanWorks sequence parent directory" + dirChoice);
+//           System.err.println( "sequenceDirectories");
+//           for (int i = 0, n = seqDirs.length; i < n; i++) {
+//             System.err.println( "i " + i + " " + seqDirs[i].getName());
+//           }
           if ((dirChoice != null) && (dirChoice.length() > 0) &&
               (new File( dirChoice)).isDirectory() &&
               (seqDirs.length != 0)) {
@@ -828,9 +828,11 @@ public class PlanWorks extends MDIDesktopFrame {
       int returnVal =
         PlanWorks.planWorks.sequenceDirChooser.showDialog( PlanWorks.planWorks, "");
       if (returnVal == JFileChooser.APPROVE_OPTION) {
+        FileUtils.validateMultiSequenceDirectory( PlanWorks.planWorks.getSequenceDirChooser());
         String currentSelectedDir =
           PlanWorks.planWorks.getSequenceDirChooser().getCurrentDirectory().
           getAbsolutePath();
+        // System.err.println( "currentSelectedDir " + currentSelectedDir);
         File [] selectedFiles =
           PlanWorks.planWorks.sequenceDirChooser.getSelectedFiles();
         for (int i = 0, n = selectedFiles.length; i < n; i++) {
@@ -999,7 +1001,8 @@ public class PlanWorks extends MDIDesktopFrame {
     private JTextField sequenceUrl;
     private JTextField testFile;
     private JTextField testName;
-    public TestButtonListener(JTextField project, JTextField sequence, JTextField testFile, JTextField testName) {
+    public TestButtonListener(JTextField project, JTextField sequence, JTextField testFile,
+                              JTextField testName) {
       this.projectName = project;
       this.sequenceUrl = sequence;
       this.testFile = testFile;

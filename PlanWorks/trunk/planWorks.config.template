@@ -25,6 +25,16 @@ mapViewClass "Timeline View" gov.nasa.arc.planworks.viz.partialPlan.timeline.Tim
 mapViewClass "Token Network View" gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView
 
 
+// Entities => Nodes -------------------------------
 
-// Entities=>Nodes -------------------------------
+// mapEntityToNodeForView <view-name> <entity-class-name> <node-class-name>
+// mapEntityToNode <entity-class-name> <node-class-name>
 
+// Right-Clicks for Views -------------------------------
+
+// mapRightClickForView  <view-name> <item-name> <item-class-name> <item-method-name>
+
+// Right-Clicks for Nodes -------------------------------
+
+// mapRightClickForNodeForView <view-name> <item-name> <node-class-name> <item-method-name>
+// mapRightClickForNode <item-name> <node-class-name> <item-method-name>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.7 2004-07-08 21:33:24 taylor Exp $
+// $Id: DecisionView.java,v 1.8 2004-07-16 22:54:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -481,7 +481,7 @@ public class DecisionView extends PartialPlanView {
           public void mousePressed( MouseEvent evt) {
             int selRow = DecisionTree.this.getRowForLocation( evt.getX(), evt.getY());
             TreePath selPath = DecisionTree.this.getPathForLocation( evt.getX(), evt.getY());
-            System.err.println( "DecisionView.mousePressed selRow " + selRow);
+            // System.err.println( "DecisionView.mousePressed selRow " + selRow);
             if (selRow != -1) {
               if (evt.getClickCount() == 1) {
                 if (MouseEventOSX.isMouseRightClick( evt.getModifiers(), PlanWorks.isMacOSX())) {

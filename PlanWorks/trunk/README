@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.110 2004-07-15 21:24:43 taylor Exp $
+# $Id: README,v 1.111 2004-07-16 22:54:43 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -55,9 +55,13 @@ o The first version of the Test Definition Language has been completed. The
 
 o PlanWorksGUITest now supports tests 1-11 of 24, defined in testCases/planViz.txt
 
-o  GNATS PRs and CRs completed:
-   #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.
-   #2452: Right mouse click popup menu not supported by any nodes in Navigator View.
+o The sequence directory chooser now supports the selection of a directory,
+  whose children are all sequence directories, so that user multiple directory 
+  selection is not necessary.
+
+o GNATS PRs and CRs completed:
+  #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.
+  #2452: Right mouse click popup menu not supported by any nodes in Navigator View.
 
 
 CVS CHECKOUT
