@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PredicateGroupBox.java,v 1.1 2003-10-01 23:54:02 taylor Exp $
+// $Id: PredicateGroupBox.java,v 1.2 2003-10-09 17:23:31 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -23,10 +23,13 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
  */
 
 public class PredicateGroupBox extends GroupBox {
-  //private Map predicateNames;
+  private Map predicateNames;
   public PredicateGroupBox(MDIInternalFrame window, Map predicateNames) {
     super(window);
-    //this.predicatNames = predicateNames;
+    build(predicateNames);
+  }
+  private void build(Map predicateNames) {
+    this.predicateNames = predicateNames;
     GridBagLayout gridBag = (GridBagLayout) getLayout();
     GridBagConstraints c = new GridBagConstraints();
     
@@ -42,5 +45,9 @@ public class PredicateGroupBox extends GroupBox {
     c.gridy++;
     gridBag.setConstraints(box2, c);
     this.add((ContentSpecElement)box2);
+  }
+  public void reset() {
+    super.reset();
+    build(predicateNames);
   }
 }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: UniqueKeyBox.java,v 1.1 2003-10-08 01:30:24 miatauro Exp $
+// $Id: UniqueKeyBox.java,v 1.2 2003-10-09 17:23:32 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -94,7 +94,8 @@ public class UniqueKeyBox extends JPanel implements ContentSpecElement {
     parent.validate(); 
   }
 
-  protected void removeUniqueKeyBox() {
+  synchronized protected void removeUniqueKeyBox() {
+    System.err.println("Number of unique key boxes: " + numBoxes);
     if(numBoxes == 1) {
       return;
     }
@@ -103,6 +104,7 @@ public class UniqueKeyBox extends JPanel implements ContentSpecElement {
     parent.validate();
     parent.repaint();
     numBoxes--;
+    System.err.println("New number of unique key boxes: " + numBoxes);
   }
 
   public List getValue() throws NullPointerException, IllegalArgumentException {

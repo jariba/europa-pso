@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: GroupBox.java,v 1.1 2003-10-01 23:54:01 taylor Exp $
+// $Id: GroupBox.java,v 1.2 2003-10-09 17:23:30 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -102,8 +102,13 @@ public class GroupBox extends JPanel implements ContentSpecGroup {
    * Clears the values of the contained elements.
    */
   public void reset() {
-    for(int i = 0; i < elements.size(); i++) {
-      ((ContentSpecElement)elements.get(i)).reset();
+    while(elements.size() != 0) {
+      remove((ContentSpecElement) elements.get(0));
     }
+    /*
+    for(int i = 0; i < elements.size(); i++) {
+      System.err.println(elements.size() + " Resetting " + elements.get(i));
+      ((ContentSpecElement)elements.get(i)).reset();
+      }*/
   }
 }
