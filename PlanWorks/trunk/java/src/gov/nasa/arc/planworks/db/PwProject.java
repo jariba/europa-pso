@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.11 2003-06-26 19:50:42 miatauro Exp $
+// $Id: PwProject.java,v 1.12 2003-07-01 00:27:17 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -55,7 +55,8 @@ public abstract class PwProject {
    */
   public static PwProject createProject( String url)
     throws DuplicateNameException, ResourceNotFoundException, SQLException {
-    return (new PwProjectImpl( url));
+    //return (new PwProjectImpl( url));
+    return PwProjectImpl.createProject(url);
   }
 
   /**
