@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.7 2004-05-08 01:44:14 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.8 2004-05-13 20:24:10 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -76,7 +76,7 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
   } // end run
 
   private void createPartialPlanView() { 
-    PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis());
+    PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), viewName);
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);

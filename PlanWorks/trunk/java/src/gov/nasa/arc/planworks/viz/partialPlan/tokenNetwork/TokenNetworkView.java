@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.49 2004-05-08 01:44:17 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.50 2004-05-13 20:24:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -245,7 +245,8 @@ public class TokenNetworkView extends PartialPlanView {
       startTimeMSecs = System.currentTimeMillis();
       this.setVisible( false);
     } else {
-      startTimeMSecs = PlanWorks.getPlanWorks().getViewRenderingStartTime();
+      startTimeMSecs =
+        PlanWorks.getPlanWorks().getViewRenderingStartTime( ViewConstants.TOKEN_NETWORK_VIEW);
     }
     jGoView.getDocument().deleteContents();
 
@@ -314,6 +315,25 @@ public class TokenNetworkView extends PartialPlanView {
    */
   public final void setMouseOverLink( final TokenLink mouseOverLink) {
     this.mouseOverLink = mouseOverLink;
+  }
+
+  /**
+   * <code>getTokenNodeKeyList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public final List getTokenNodeKeyList() {
+    return new ArrayList( tokenNodeMap.keySet());
+  }
+
+  /**
+   * <code>getTokenNode</code>
+   *
+   * @param id - <code>Integer</code> - 
+   * @return - <code>TokenNode</code> - 
+   */
+  public final TokenNode getTokenNode( Integer id) {
+    return (TokenNode) tokenNodeMap.get( id);
   }
 
   private void createTokenNodes() {

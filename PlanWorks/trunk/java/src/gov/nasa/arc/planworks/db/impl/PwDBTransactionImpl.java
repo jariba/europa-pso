@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransactionImpl.java,v 1.4 2004-05-08 01:44:10 taylor Exp $
+// $Id: PwDBTransactionImpl.java,v 1.5 2004-05-13 20:24:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -52,6 +52,16 @@ public class PwDBTransactionImpl implements PwDBTransaction {
     info = new String [] {"", "", ""};
   } // end constructor
 
+
+  /**
+   * <code>equals</code>
+   *
+   * @param transaction - <code>PwDBTransaction</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean equals( PwDBTransaction transaction) {
+    return transactionId.equals( transaction.getId());
+  }
 
   /**
    * <code>getName</code>

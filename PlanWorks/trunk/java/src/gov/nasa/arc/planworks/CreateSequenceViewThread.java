@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.9 2004-05-08 01:44:09 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.10 2004-05-13 20:24:03 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -19,6 +19,7 @@ import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 
 
@@ -67,10 +68,11 @@ public class CreateSequenceViewThread extends CreateViewThread {
       System.err.println( "CreateSequenceViewThread: InvocationTargetException");
       ite.printStackTrace();
     }
-  } // run
+  } // end run
 
   private void createSequenceView() {
-    PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis());
+    PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), viewName);
+    ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
@@ -92,6 +94,7 @@ public class CreateSequenceViewThread extends CreateViewThread {
          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
       System.err.println( rnfExcep);
       rnfExcep.printStackTrace();
+      ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
     }
 
     PlanWorks.getPlanWorks().projectMenu.setEnabled( true);

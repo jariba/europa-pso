@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenuItem.java,v 1.3 2004-04-22 19:26:23 taylor Exp $
+// $Id: PartialPlanViewMenuItem.java,v 1.4 2004-05-13 20:24:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -41,6 +41,7 @@ public class PartialPlanViewMenuItem extends SequenceViewMenuItem {
                                   final ViewListener viewListener) {
     super( viewName, seqUrl, seqName, viewListener);
     this.partialPlanName = partialPlanName;
+    this.setToolTipText( null);
   }
 
   /**

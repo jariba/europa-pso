@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.39 2004-05-07 19:51:43 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.40 2004-05-13 20:24:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -772,17 +772,17 @@ public class PartialPlanView extends VizView {
     return ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineId);
   }
 
-	public boolean displayableWait() {
-		int waitTime = 10;
-		while(!this.isDisplayable() && waitTime != 0) {
-			try {
-				Thread.currentThread().sleep(50);
-			}
-			catch(InterruptedException ie) {}
-				waitTime--;
-		}
-		return waitTime != 0;
-	}
+  public boolean displayableWait() {
+    int waitTime = 10;
+    while(!this.isDisplayable() && waitTime != 0) {
+      try {
+        Thread.currentThread().sleep(50);
+      }
+      catch(InterruptedException ie) {}
+      waitTime--;
+    }
+    return waitTime != 0;
+  }
 		
 } // end class PartialPlanView
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.15 2004-05-12 00:14:11 miatauro Exp $
+// $Id: ViewGenerics.java,v 1.16 2004-05-13 20:24:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -79,10 +79,6 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class ViewGenerics {
 
-  public static final String VIEW_TITLE = "View for ";
-  public static final String OVERVIEW_TITLE = "Overview for ";
-  public static final String RULE_VIEW_TITLE = "RuleView for ";
-
   private static final int RULE_VIEW_WIDTH = 400;
   private static final int RULE_VIEW_HEIGHT = 100;
   private static final ViewGenerics generics = new ViewGenerics();
@@ -146,7 +142,7 @@ public class ViewGenerics {
                                                    VizView vizView, ViewSet viewSet,
                                                    JGoView jGoView, Point viewCoords) {
     String overviewTitle = Utilities.trimView( viewName).replaceAll( " ", "") +
-      OVERVIEW_TITLE + viewable.getName();
+      ViewConstants.OVERVIEW_TITLE + viewable.getName();
     // System.err.println( "openOverviewFrame( String, " + overviewTitle);
     return openOverviewFrameCommon( overviewTitle, viewable, vizView, viewSet, jGoView,
                                      viewCoords);
@@ -168,7 +164,8 @@ public class ViewGenerics {
                                                    VizView vizView, ViewSet viewSet,
                                                    JGoView jGoView, Point viewCoords) {
     String overviewTitle = viewFrame.getTitle();
-    overviewTitle = overviewTitle.replaceAll( VIEW_TITLE, OVERVIEW_TITLE);
+    overviewTitle = overviewTitle.replaceAll( ViewConstants.VIEW_TITLE,
+                                              ViewConstants.OVERVIEW_TITLE);
     // System.err.println( "openOverviewFrame( MDIInternalFrame, " + overviewTitle);
     return openOverviewFrameCommon( overviewTitle, viewable, vizView, viewSet, jGoView,
                                      viewCoords);
@@ -209,6 +206,8 @@ public class ViewGenerics {
       overview.setDragDropEnabled( false);
       overview.validate();
       overview.setVisible( true);
+      // for PWTestHelper.findComponentByName
+      overview.setName( overviewTitle);
       contentPane.add( overview);
 
       overviewFrame.setLocation( viewCoords);
@@ -251,9 +250,18 @@ public class ViewGenerics {
    * <code>setRedrawCursor</code>
    *
    * @param frame - <code>MDIInternalFrame</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
    */
   public static void setRedrawCursor( MDIInternalFrame frame) {
+    ((Component) frame.getRootPane()).setCursor
+      ( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR));
+  } // end setRedrawCursor
+
+  /**
+   * <code>setRedrawCursor</code>
+   *
+   * @param frame - <code>MDIDesktopFrame</code> - 
+   */
+  public static void setRedrawCursor( MDIDesktopFrame frame) {
     ((Component) frame.getRootPane()).setCursor
       ( Cursor.getPredefinedCursor( Cursor.WAIT_CURSOR));
   } // end setRedrawCursor
@@ -264,6 +272,16 @@ public class ViewGenerics {
    * @param frame - <code>MDIInternalFrame</code> - 
    */
   public static void resetRedrawCursor( MDIInternalFrame frame) {
+    ((Component) frame.getRootPane()).setCursor
+      ( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR));
+  } // end resetRedrawCursor
+
+  /**
+   * <code>resetRedrawCursor</code>
+   *
+   * @param frame - <code>MDIDesktopFrame</code> - 
+   */
+  public static void resetRedrawCursor( MDIDesktopFrame frame) {
     ((Component) frame.getRootPane()).setCursor
       ( Cursor.getPredefinedCursor( Cursor.DEFAULT_CURSOR));
   } // end resetRedrawCursor
@@ -280,7 +298,7 @@ public class ViewGenerics {
   public static VizViewRuleView openRuleViewFrame( PwPartialPlan partialPlan,
                                                    TokenNetworkView tokenNetworkView,
                                                    ViewSet viewSet, Point viewCoords) {
-    String ruleViewTitle = RULE_VIEW_TITLE + partialPlan.getName();
+    String ruleViewTitle = ViewConstants.RULE_VIEW_TITLE + partialPlan.getName();
     MDIInternalFrame ruleViewFrame = (MDIInternalFrame) viewSet.getView( ruleViewTitle);
     VizViewRuleView ruleView = null;
     // System.err.println( "openRuleViewFrame " + ruleViewFrame);
@@ -468,7 +486,7 @@ public class ViewGenerics {
     //List nameList = MySQLDB.queryConstraintTransactionNames();
     //nameList.addAll( MySQLDB.queryTokenTransactionNames());
     //nameList.addAll( MySQLDB.queryVariableTransactionNames());
-		List nameList = MySQLDB.queryTransactionNameList();
+    List nameList = MySQLDB.queryTransactionNameList();
     StringBuffer transactionNameHeader =
       new StringBuffer( ViewConstants.DB_TRANSACTION_NAME_HEADER);
     int minLength = ViewConstants.DB_TRANSACTION_NAME_HEADER.length();

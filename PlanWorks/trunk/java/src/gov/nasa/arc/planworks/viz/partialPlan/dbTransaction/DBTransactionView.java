@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.5 2004-05-08 01:44:14 taylor Exp $
+// $Id: DBTransactionView.java,v 1.6 2004-05-13 20:24:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -184,7 +184,8 @@ public class DBTransactionView extends PartialPlanView {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.DB_TRANSACTION_VIEW + " elapsed time: " +
                         (stopTimeMSecs -
-                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime
+                         ( ViewConstants.DB_TRANSACTION_VIEW)) + " msecs.");
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.3 2004-05-08 01:44:11 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.4 2004-05-13 20:24:06 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -254,14 +254,14 @@ public abstract class PWSetupHelper {
       Integer objectId = new Integer( guiTest.incEntityIdInt());
       StringBuffer componentIds = new StringBuffer();
       boolean isFirst = true;
-      String emptySlotInfo = (new Integer( guiTest.incEntityIdInt())).toString() +
-        "," + String.valueOf( EMPTY_SLOT_INDEX);
       for (int j = 0; j < NUM_TIMELINES; j++) {
         int timelineIdInt = guiTest.incEntityIdInt();
         if (isFirst) { isFirst = false; } else { componentIds.append( ","); }
         componentIds.append( timelineIdInt);
         Integer timelineId = new Integer( timelineIdInt);
         String tokenIds = null;
+        String emptySlotInfo = (new Integer( guiTest.incEntityIdInt())).toString() +
+          "," + String.valueOf( EMPTY_SLOT_INDEX);
         PwTimelineImpl timeline =
           addTimeline( timelineId, DbConstants.O_TIMELINE, objectId,
                        "timeline" + String.valueOf( timelineIdInt), "", emptySlotInfo, "", 
@@ -434,6 +434,7 @@ public abstract class PWSetupHelper {
                    stepNum, guiTest);
       Integer paramVarId = new Integer( guiTest.incEntityIdInt());
       String paramVarIds = String.valueOf( paramVarId) + ":";
+      parameterNames = new ArrayList(); parameterNames.add( "param1");
       addVariable( paramVarId, DbConstants.PARAMETER_VAR, constraintIds,
                    parameterNames, tokenId,
                    new PwEnumeratedDomainImpl( "parameter"), partialPlan, planSequence,
@@ -581,6 +582,9 @@ public abstract class PWSetupHelper {
                                                   parentId, domain, partialPlan);
     partialPlan.addVariable( id, variable);
     String [] info = new String [] { type, "variable" + id.toString(), "" };
+    if (type.equals( DbConstants.PARAMETER_VAR)) {
+      info[2] = (String) parameterNames.get( 0);
+    }
     addTransaction( DbConstants.VARIABLE_CREATED, new Integer( guiTest.incEntityIdInt()),
                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
                     partialPlan.getId(), info, planSequence);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.96 2004-05-08 01:44:09 taylor Exp $
+// $Id: PlanWorks.java,v 1.97 2004-05-13 20:24:04 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -198,7 +198,7 @@ public class PlanWorks extends MDIDesktopFrame {
   private DirectoryChooser sequenceDirChooser; // not final, since PlanWorksGUITest
                                                // creates multiple instances
   //protected final PlannerCommandLineDialog executeDialog;
-  private long viewRenderingStartTime;
+  private long [] viewRenderingStartTime;
 
   protected PwProject currentProject;
   protected String currentProjectName;
@@ -267,6 +267,7 @@ public class PlanWorks extends MDIDesktopFrame {
       }
     }
     supportedViewNames = Utilities.sortStringKeySet( VIEW_CLASS_NAME_MAP);
+    viewRenderingStartTime = new long [supportedViewNames.size()];
     this.setVisible( true);
     if(usingSplash) {
       this.toBack();
@@ -436,19 +437,21 @@ public class PlanWorks extends MDIDesktopFrame {
   /**
    * <code>getViewRenderingStartTime</code>
    *
+   * @param viewName - <code>String</code> - 
    * @return - <code>long</code> - 
    */
-  public final long getViewRenderingStartTime() {
-    return viewRenderingStartTime;
+  public final long getViewRenderingStartTime( String viewName) {
+    return viewRenderingStartTime[supportedViewNames.indexOf( viewName)];
   }
 
   /**
    * <code>setViewRenderingStartTime</code>
    *
    * @param time - <code>long</code> - 
+   * @param viewName - <code>String</code> - 
    */
-  public final void setViewRenderingStartTime( long time) {
-     viewRenderingStartTime = time;
+  public final void setViewRenderingStartTime( long time, String viewName) {
+     viewRenderingStartTime[supportedViewNames.indexOf( viewName)] = time;
   }
 
  /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.7 2004-05-08 01:44:12 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.8 2004-05-13 20:24:06 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -23,6 +23,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.StringTokenizer;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -36,6 +37,8 @@ import javax.swing.JTextField;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoStroke;
+// PlanWorks/java/lib/JGo/Classier.jar
+import com.nwoods.jgo.examples.Overview;
 
 import junit.extensions.jfcunit.JFCTestCase;
 import junit.extensions.jfcunit.JFCTestHelper;
@@ -53,21 +56,33 @@ import junit.textui.TestRunner;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwConstraint;
+import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
+import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.BooleanFunctor;
+import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.DBTransactionContentView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.VizViewOverview;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.QueryResultField;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
@@ -77,12 +92,15 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
-import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
+import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNodeDurationBridge;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNodeTimeMark;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
@@ -258,7 +276,8 @@ public class PlanWorksGUITest extends JFCTestCase {
     PWTestHelper.addSequencesToProject( helper, this, planWorks);
     // post condition 1
     assertTrueVerbose("PlanWorks title does not contain " + PWTestHelper.PROJECT1,
-                      PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1), "not ");
+                      PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1),
+                      "not ");
 
     // post condition 2
     PWTestHelper.getPlanSequenceMenu();
@@ -412,13 +431,15 @@ public class PlanWorksGUITest extends JFCTestCase {
     // post planViz03 deleteProject condition 1
     assertFalseVerbose( "PlanWorks title does not contain '" + PWTestHelper.PROJECT1 +
                         "'after Project->Delete",
-                        PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1), "not ");
+                        PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1),
+                        "not ");
 
     // post planViz03 deleteProject condition 2
     JMenuItem deleteItem =
       PWTestHelper.findMenuItem( PlanWorks.PROJECT_MENU, PlanWorks.DELETE_MENU_ITEM,
                                  helper, this);
-    assertTrueVerbose( "'Project->Delete' is not disabled", (deleteItem.isEnabled() == false), "not ");
+    assertTrueVerbose( "'Project->Delete' is not disabled", (deleteItem.isEnabled() == false),
+                       "not ");
     assertNotNullVerbose( "'Project->Delete' not found:", deleteItem, "not ");
     helper.enterClickAndLeave( new MouseEventData( this, deleteItem));
 
@@ -445,12 +466,14 @@ public class PlanWorksGUITest extends JFCTestCase {
     PWTestHelper.addSequencesToProject( helper, this, planWorks);
     assertTrueVerbose( "PlanWorks title does not contain '" + PWTestHelper.PROJECT2 +
                        "' after 2nd Project->Create",
-                       PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT2), "not ");
+                       PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT2),
+                       "not ");
 
     PWTestHelper.openProject( PWTestHelper.PROJECT1, helper, this, planWorks);
     // try{Thread.sleep(2000);}catch(Exception e){}
     assertTrueVerbose( "PlanWorks title does not contain '" + PWTestHelper.PROJECT1,
-                       PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1), "not ");
+                       PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1),
+                       "not ");
 
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
     PWTestHelper.deleteProject( PWTestHelper.PROJECT2, helper, this);
@@ -853,7 +876,8 @@ public class PlanWorksGUITest extends JFCTestCase {
 
   public void planViz10() throws Exception {
     int stepNumber = 1, seqUrlIndex = 4;
-     String sequenceDirectory =  System.getProperty( "planworks.test.data.dir") +
+    List viewList = new ArrayList();
+    String sequenceDirectory =  System.getProperty( "planworks.test.data.dir") +
       System.getProperty( "file.separator") + PWTestHelper.GUI_TEST_DIR;
     File [] sequenceFileArray = new File [1];
     sequenceFileArray[0] = new File( sequenceDirectory +
@@ -886,6 +910,7 @@ public class PlanWorksGUITest extends JFCTestCase {
       ( ConstraintNetworkView.class, constraintNetworkViewName, Finder.OP_EQUALS);
     assertNotNullVerbose( constraintNetworkViewName + " not found", constraintNetworkView,
                           "not ");
+    viewList.add( constraintNetworkView);
 
     ViewListener viewListener02 = new ViewListenerWait02( this);
     viewMenuItemName = "Open " + ViewConstants.TEMPORAL_EXTENT_VIEW;
@@ -899,6 +924,7 @@ public class PlanWorksGUITest extends JFCTestCase {
       (TemporalExtentView) PWTestHelper.findComponentByName
       ( TemporalExtentView.class, temporalExtentViewName, Finder.OP_EQUALS);
     assertNotNullVerbose( temporalExtentViewName + " not found", temporalExtentView, "not ");
+    viewList.add( temporalExtentView);
 
     ViewListener viewListener03 = new ViewListenerWait03( this);
     viewMenuItemName = "Open " + ViewConstants.TIMELINE_VIEW;
@@ -912,6 +938,7 @@ public class PlanWorksGUITest extends JFCTestCase {
       (TimelineView) PWTestHelper.findComponentByName
       ( TimelineView.class, timelineViewName, Finder.OP_EQUALS);
     assertNotNullVerbose( timelineViewName + " not found", timelineView, "not ");
+    viewList.add( timelineView);
 
     ViewListener viewListener04 = new ViewListenerWait04( this);
     viewMenuItemName = "Open " + ViewConstants.TOKEN_NETWORK_VIEW;
@@ -925,6 +952,7 @@ public class PlanWorksGUITest extends JFCTestCase {
       (TokenNetworkView) PWTestHelper.findComponentByName
       ( TokenNetworkView.class, tokenNetworkViewName, Finder.OP_EQUALS);
     assertNotNullVerbose( tokenNetworkViewName + " not found", tokenNetworkView, "not ");
+    viewList.add( tokenNetworkView);
 
     ViewListener viewListener05 = new ViewListenerWait05( this);
     viewMenuItemName = "Open " + ViewConstants.DB_TRANSACTION_VIEW;
@@ -938,14 +966,63 @@ public class PlanWorksGUITest extends JFCTestCase {
       (DBTransactionView) PWTestHelper.findComponentByName
       ( DBTransactionView.class, dbTransactionViewName, Finder.OP_EQUALS);
     assertNotNullVerbose( dbTransactionViewName + " not found", dbTransactionView, "not ");
+    viewList.add( dbTransactionView);
 
-    planViz10CNet( constraintNetworkView, stepNumber, seqUrlIndex);
+    PwPlanningSequence planSeq =
+      planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
+    PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
 
-    planViz10TExt( temporalExtentView, stepNumber, seqUrlIndex);
+    planViz10CNet( constraintNetworkView, stepNumber, planSeq, partialPlan);
 
+    planViz10TempExt( temporalExtentView, stepNumber, planSeq, partialPlan);
 
+    planViz10Timeline( timelineView, stepNumber, planSeq, partialPlan);
 
-    // try{Thread.sleep(6000);}catch(Exception e){}
+    planViz10TokNet( tokenNetworkView, stepNumber, planSeq, partialPlan);
+
+    planViz10DBTrans( dbTransactionView, stepNumber, planSeq, partialPlan);
+
+    viewMenuItemName = "Hide All Views";
+    PWTestHelper.seqStepsViewStepItemSelection
+      ( seqStepsView, stepNumber, viewMenuItemName, viewListener01, helper, this);
+    // try{Thread.sleep(2000);}catch(Exception e){}
+    Iterator viewItr = viewList.iterator();
+    while (viewItr.hasNext()) {
+      MDIInternalFrame frame = ((PartialPlanView) viewItr.next()).getViewFrame();
+      assertTrueVerbose( frame.getTitle() + " is not iconified", (frame.isIcon() == true),
+                         " not");
+    }
+
+    viewMenuItemName = "Show All Views";
+    PWTestHelper.seqStepsViewStepItemSelection
+      ( seqStepsView, stepNumber, viewMenuItemName, viewListener01, helper, this);
+    // try{Thread.sleep(2000);}catch(Exception e){}
+    viewItr = viewList.iterator();
+    while (viewItr.hasNext()) {
+      MDIInternalFrame frame = ((PartialPlanView) viewItr.next()).getViewFrame();
+      assertTrueVerbose( frame.getTitle() + " is not shown", (frame.isIcon() == false),
+                         " not");
+    }
+
+    viewMenuItemName = "Close All Views";
+    PWTestHelper.seqStepsViewStepItemSelection
+      ( seqStepsView, stepNumber, viewMenuItemName, viewListener01, helper, this);
+    // viewSet is set to null, if there are no views
+    ViewSet viewSet = PlanWorks.getPlanWorks().getViewManager().getViewSet( partialPlan);
+    assertNullVerbose( "Partial Plan view set is not null", viewSet, " not");
+
+    PWTestHelper.viewBackgroundItemSelection( seqStepsView, "Overview Window", helper, this);
+    String overviewViewName =
+      Utilities.trimView( ViewConstants.SEQUENCE_STEPS_VIEW).replaceAll( " ", "") +
+      ViewConstants.OVERVIEW_TITLE + planSeq.getName();
+    VizViewOverview seqStepsOverview =
+      (VizViewOverview) PWTestHelper.findComponentByName
+      ( VizViewOverview.class, overviewViewName, Finder.OP_EQUALS);
+    assertNotNullVerbose( overviewViewName + " not found", seqStepsOverview, "not ");
+
+    Overview.OverviewRectangle rectangle = seqStepsOverview.getOverviewRect();
+    System.err.println( "OverviewRectangle location " + rectangle.getLocation());
+    // try{Thread.sleep(4000);}catch(Exception e){}
 
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
 
@@ -953,10 +1030,8 @@ public class PlanWorksGUITest extends JFCTestCase {
   } // end planViz10
 
   public void planViz10CNet( ConstraintNetworkView constraintNetworkView, int stepNumber,
-                             int seqUrlIndex) throws Exception {
-    PwPlanningSequence planSeq =
-      planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
-    PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
+                             PwPlanningSequence planSeq,  PwPartialPlan partialPlan)
+    throws Exception {
     ViewGenerics.raiseFrame( constraintNetworkView.getViewFrame());
     // open interval token, resource, variable, and constraint nodes in ConstraintNetworkView
     int numTokensOpened = 3, numResourcesOpened = 1, numResTransactionsOpened = 1;
@@ -1384,11 +1459,9 @@ public class PlanWorksGUITest extends JFCTestCase {
   } // end planViz10CNet
 
  
-  public void planViz10TExt( TemporalExtentView temporalExtentView, int stepNumber,
-                             int seqUrlIndex) throws Exception {
-    PwPlanningSequence planSeq =
-      planWorks.getCurrentProject().getPlanningSequence( (String) sequenceUrls.get( seqUrlIndex));
-    PwPartialPlan partialPlan = planSeq.getPartialPlan( stepNumber);
+  public void planViz10TempExt( TemporalExtentView temporalExtentView, int stepNumber,
+                                PwPlanningSequence planSeq,  PwPartialPlan partialPlan)
+    throws Exception {
     ViewGenerics.raiseFrame( temporalExtentView.getViewFrame());
     // try{Thread.sleep(6000);}catch(Exception e){}
     TemporalNode baseTokenNode = null;
@@ -1511,19 +1584,22 @@ public class PlanWorksGUITest extends JFCTestCase {
       if (markOrBridge instanceof TemporalNodeTimeMark) {
         TemporalNodeTimeMark timeMark = (TemporalNodeTimeMark) markOrBridge;
         if (timeMark.getType() == TemporalNode.EARLIEST_START_TIME_MARK) {
-          earliestStartTime = timeMark.getTime();
+          earliestStartTime = Integer.parseInt( timeMark.getToolTipText());
         } else if (timeMark.getType() == TemporalNode.LATEST_START_TIME_MARK) {
-          latestStartTime = timeMark.getTime();
+          latestStartTime = Integer.parseInt( timeMark.getToolTipText());
         } else if (timeMark.getType() == TemporalNode.EARLIEST_END_TIME_MARK) {
-          earliestEndTime = timeMark.getTime();
+          earliestEndTime = Integer.parseInt( timeMark.getToolTipText());
         } else if (timeMark.getType() == TemporalNode.LATEST_END_TIME_MARK) {
-          latestEndTime = timeMark.getTime();
+          latestEndTime = Integer.parseInt( timeMark.getToolTipText());
         }
         markBridgeCnt++;
       } else if (markOrBridge instanceof TemporalNodeDurationBridge) {
         TemporalNodeDurationBridge bridge = (TemporalNodeDurationBridge) markOrBridge;
-        minDurationTime = bridge.getMinDurationTime();
-        maxDurationTime = bridge.getMaxDurationTime();
+        String durationString = bridge.getToolTipText();
+        durationString = durationString.substring( 1, durationString.length() - 1);
+        StringTokenizer durationTokens = new StringTokenizer( durationString, ",");
+        minDurationTime = Integer.parseInt( durationTokens.nextToken().replaceAll( " ", ""));
+        maxDurationTime = Integer.parseInt( durationTokens.nextToken().replaceAll( " ", ""));
         markBridgeCnt++;
       }
     }
@@ -1531,20 +1607,461 @@ public class PlanWorksGUITest extends JFCTestCase {
       ( "TemporalExtentView baseTokenNode does not show four time marks " +
         " and duration bridge", (markBridgeCnt == 5), "not ");
     assertTrueVerbose
-      ( "TemporalExtentView baseTokenNode latestStartTime not >= earliestStartTime",
+      ( "TemporalExtentView baseTokenNode latestStartTime (" + latestStartTime +
+        ") not >= earliestStartTime (" + earliestStartTime + ")",
         (latestStartTime >= earliestStartTime), "not ");
     assertTrueVerbose
-      ( "TemporalExtentView baseTokenNode latestEndTime not >= earliestEndTime",
+      ( "TemporalExtentView baseTokenNode latestEndTime (" + latestEndTime +
+        ") not >= earliestEndTime (" + earliestEndTime + ")",
         (latestEndTime >= earliestEndTime), "not ");
     assertTrueVerbose
-      ( "TemporalExtentView baseTokenNode maxDuration not consistent with " +
+      ( "TemporalExtentView baseTokenNode maxDurationTime (" + maxDurationTime +
+        ") not consistent with " +
         "start/end times", (maxDurationTime == (latestEndTime - earliestStartTime)),
         "not ");
     assertTrueVerbose
-      ( "TemporalExtentView baseTokenNode minDuration not consistent with " +
-        "start/end times", (minDurationTime == (earliestEndTime - latestStartTime)),
-        "not ");
-  } // end planViz10TExt
+      ( "TemporalExtentView baseTokenNode minDurationTime (" + minDurationTime +
+        ")  not consistent with " + "start/end times",
+        (minDurationTime == (earliestEndTime - latestStartTime)), "not ");
+  } // end planViz10TempExt
+
+  public void planViz10Timeline( TimelineView timelineView, int stepNumber,
+                                 PwPlanningSequence planSeq,  PwPartialPlan partialPlan)
+    throws Exception {
+    ViewGenerics.raiseFrame( timelineView.getViewFrame());
+    // try{Thread.sleep(6000);}catch(Exception e){}
+    TimelineViewTimelineNode theTimelineNode = null;
+    TimelineTokenNode theFreeTokenNode = null;
+    SlotNode theSlotNode = null;
+    SlotNode theEmptySlotNode = null;
+    int numTimelineNodes = 0, numSlotNodes = 0, numFreeTokenNodes = 0;
+    Iterator timelineNodeItr = timelineView.getTimelineNodeList().iterator();
+    while (timelineNodeItr.hasNext()) {
+      TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineNodeItr.next();
+      if (theTimelineNode == null) {
+        theTimelineNode = timelineNode;
+      }
+      numTimelineNodes++;
+      Iterator slotNodeItr = timelineNode.getSlotNodeList().iterator();
+      while (slotNodeItr.hasNext()) {
+        SlotNode slotNode = (SlotNode) slotNodeItr.next();
+        if ((theSlotNode == null) && (slotNode.getSlot().getTokenList().size() > 0)) {
+          theSlotNode = slotNode;
+        }
+        if ((theEmptySlotNode == null) && (slotNode.getSlot().getTokenList().size() == 0)) {
+          theEmptySlotNode = slotNode;
+        }
+        numSlotNodes++;
+      }
+    }
+    Iterator freeTokenNodeItr = timelineView.getFreeTokenNodeList().iterator();
+    while (freeTokenNodeItr.hasNext()) {
+      TimelineTokenNode freeTokenNode = (TimelineTokenNode) freeTokenNodeItr.next();
+      if (theFreeTokenNode == null) {
+        theFreeTokenNode = freeTokenNode;
+      }
+      numFreeTokenNodes++;
+    }
+    assertNotNullVerbose( "Did not find TimelineView timelineNode (TimelineViewTimelineNode)",
+                          theTimelineNode, "not ");
+    assertNotNullVerbose( "Did not find TimelineView slotNode (SlotNode)",
+                          theSlotNode, "not ");
+    assertNotNullVerbose( "Did not find TimelineView emptySlotNode (SlotNode)",
+                          theEmptySlotNode, "not ");
+    assertNotNullVerbose( "Did not find TimelineView freeTokenNode (TimelineViewTokenNode)",
+                          theFreeTokenNode, "not ");
+    assertTrueVerbose( "Number of partial plan timelines (" +
+                       partialPlan.getTimelineList().size() +
+                       ") not equal to number of TimelineView timeline nodes ("
+                       + numTimelineNodes + ")",
+                       (partialPlan.getTimelineList().size() == numTimelineNodes), "not ");
+    assertTrueVerbose( "Number of partial plan slots (" + partialPlan.getSlotList().size() +
+                       ") not equal to number of TimelineView slot nodes (" + numSlotNodes + ")",
+                       (partialPlan.getSlotList().size() == numSlotNodes), "not ");
+    assertTrueVerbose( "Number of partial plan free tokens (" +
+                       partialPlan.getFreeTokenList().size() +
+                       ") not equal to number of TimelineView free token nodes (" +
+                       + numFreeTokenNodes + ")",
+                       (partialPlan.getFreeTokenList().size() == numFreeTokenNodes), "not ");
+
+//     System.err.println( "theTimelineNode labelText " + theTimelineNode.getText());
+//     System.err.println( "theTimelineNode toolTipText " + theTimelineNode.getToolTipText());
+    String labelText = theTimelineNode.getText();
+    String toolTipText = theTimelineNode.getToolTipText();
+    String nameString = theTimelineNode.getTimeline().getParent().getName() + " : " +
+      theTimelineNode.getTimeline().getName();
+    String nameSubString = theTimelineNode.getTimeline().getName();
+    String keySubString = "key=" + theTimelineNode.getTimeline().getId().toString();
+    assertTrueVerbose( "TimelineView timelineNode (" +
+                       theTimelineNode.getTimeline().getId().toString() +
+                       ") label does not contain '" +
+                       nameString + "'", (labelText.indexOf( nameString) >= 0), "not ");
+    assertTrueVerbose( "TimelineView timelineNode (" +
+                       theTimelineNode.getTimeline().getId().toString() +
+                       ") label does not contain '" +
+                       keySubString + "'", (labelText.indexOf( keySubString) >= 0), "not ");
+    assertTrueVerbose( "TimelineView timelineNode (" +
+                       theTimelineNode.getTimeline().getId().toString() +
+                       ") tool tip does not contain '" +
+                       nameSubString + "'", (toolTipText.indexOf( nameSubString) >= 0), "not ");
+
+//     System.err.println( "theSlotNode labelText " + theSlotNode.getText());
+//     System.err.println( "theSlotNode toolTipText " + theSlotNode.getToolTipText());
+    labelText = theSlotNode.getText();
+    toolTipText = theSlotNode.getToolTipText();
+    nameSubString = theSlotNode.getPredicateName() + " (" +
+      theSlotNode.getSlot().getTokenList().size() + ")";
+    keySubString = "slot key=" + theSlotNode.getSlot().getId().toString();
+    StringBuffer toolTipStrBuf = new StringBuffer( "");
+    NodeGenerics.getSlotNodeToolTipText( theSlotNode.getSlot(), toolTipStrBuf);
+    String toolTipStr = toolTipStrBuf.toString();
+    toolTipStr = toolTipStr.replaceAll( "<html> ", "");
+    toolTipStr = toolTipStr.replaceAll( " </html>", "");
+    assertTrueVerbose( "TimelineView slotNode (" +
+                       theSlotNode.getSlot().getId().toString() +
+                       ") label does not contain '" +
+                       nameSubString + "'", (labelText.indexOf( nameSubString) >= 0),
+                       "not ");
+    assertTrueVerbose( "TimelineView slotNode (" +
+                       theSlotNode.getSlot().getId().toString() +
+                       ") label does not contain '" +  keySubString + "'",
+                       (labelText.indexOf( keySubString) >= 0), "not ");
+     assertTrueVerbose( "TimelineView slotNode (" +
+                       theSlotNode.getSlot().getId().toString() +
+                       ") tooltip does not contain '" +  toolTipStr + "'",
+                       (toolTipText.indexOf( toolTipStr) >= 0), "not ");
+
+//     System.err.println( "theEmptySlotNode labelText " + theEmptySlotNode.getText());
+//     System.err.println( "theEmptySlotNode toolTipText " + theEmptySlotNode.getToolTipText());
+    labelText = theEmptySlotNode.getText();
+    toolTipText = theEmptySlotNode.getToolTipText();
+    nameString = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
+    keySubString = "key=" + theEmptySlotNode.getSlot().getId().toString();
+    assertTrueVerbose( "TimelineView empty slotNode (" +
+                       theEmptySlotNode.getSlot().getId().toString() +
+                       ") label does not contain '" +
+                       nameString + "'", (labelText.indexOf( nameString) >= 0), "not ");
+    assertTrueVerbose( "TimelineView empty slotNode (" +
+                       theEmptySlotNode.getSlot().getId().toString() +
+                       ") label does not contain '" +  keySubString + "'",
+                       (labelText.indexOf( keySubString) >= 0), "not ");
+    // no tool tip
+
+//     System.err.println( "theFreeTokenNode labelText " + theFreeTokenNode.getText());
+//     System.err.println( "theFreeTokenNode toolTipText " + theFreeTokenNode.getToolTipText());
+    labelText = theFreeTokenNode.getText();
+    toolTipText = theFreeTokenNode.getToolTipText();
+    nameString = theFreeTokenNode.getToken().getPredicateName();
+    keySubString = "key=" + theFreeTokenNode.getToken().getId().toString();
+    toolTipStr = theFreeTokenNode.getToken().toString();
+    assertTrueVerbose( "TimelineView freeTokenNode (" +
+                       theFreeTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" +
+                       nameString + "'", (labelText.indexOf( nameString) >= 0), "not ");
+    assertTrueVerbose( "TimelineView freeTokenNode (" +
+                       theFreeTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" +  keySubString + "'",
+                       (labelText.indexOf( keySubString) >= 0), "not ");
+     assertTrueVerbose( "TimelineView freeTokenNode (" +
+                       theFreeTokenNode.getToken().getId().toString() +
+                       ") tooltip does not contain '" +  toolTipStr + "'",
+                       (toolTipText.indexOf( toolTipStr) >= 0), "not ");
+  } // end planViz10Timeline
+
+
+  private void planViz10TokNet( TokenNetworkView tokenNetworkView, int stepNumber,
+                                PwPlanningSequence planSeq,  PwPartialPlan partialPlan)
+    throws Exception {
+    ViewGenerics.raiseFrame( tokenNetworkView.getViewFrame());
+    // try{Thread.sleep(6000);}catch(Exception e){}
+    TokenNode slottedTokenNode = null, freeTokenNode = null, resTransactionNode = null;
+    int numSlottedTokenNodes = 0, numFreeTokenNodes = 0, numResTransactionNodes = 0;
+    Iterator tokenNodeKeyItr = tokenNetworkView.getTokenNodeKeyList().iterator();
+    while (tokenNodeKeyItr.hasNext()) {
+      TokenNode tokenNode = tokenNetworkView.getTokenNode( (Integer) tokenNodeKeyItr.next());
+      if (tokenNode.getToken() instanceof PwResourceTransaction) {
+        if (resTransactionNode == null) {
+          resTransactionNode = tokenNode;
+        }
+        numResTransactionNodes++;
+      } else if (tokenNode.getToken() instanceof PwToken) {
+        PwToken token = (PwToken) tokenNode.getToken();
+        if (token.isSlotted()) {
+          if (slottedTokenNode == null) {
+            slottedTokenNode = tokenNode;
+          }
+          numSlottedTokenNodes++;
+        }
+        if (token.isFree()) {
+          if (freeTokenNode == null) {
+            freeTokenNode = tokenNode;
+          }
+          numFreeTokenNodes++;
+        }
+      }
+    }
+//     System.err.println( "numSlottedTokenNodes " + numSlottedTokenNodes +
+//                         "numFreeTokenNodes " + numFreeTokenNodes +
+//                         " numResTransactionNodes " + numResTransactionNodes);
+//     System.err.println( "pp tokenCnt " + partialPlan.getTokenList().size() +
+//                         " pp resTrans " + partialPlan.getResTransactionList().size());
+    assertNotNullVerbose( "Did not find TokenNetworkView slotted TokenNode (TokenNode)",
+                          slottedTokenNode, "not ");
+    assertNotNullVerbose( "Did not find TokenNetworkView free TokenNode (TokenNode)",
+                          freeTokenNode, "not ");
+    assertNotNullVerbose( "Did not find TokenNetworkView resTransactionNode (TokenNode)",
+                          resTransactionNode, "not ");
+    assertTrueVerbose( "Number of partial plan interval tokens and resource transactions (" +
+                       partialPlan.getTokenList().size() +
+                       ") not equal to number of TokenNetworkView slotted token, " +
+                       "free token, and resource transaction nodes (" +
+                       (numSlottedTokenNodes + numFreeTokenNodes + numResTransactionNodes) +
+                       ")", (partialPlan.getTokenList().size() ==
+                             (numSlottedTokenNodes + numFreeTokenNodes +
+                              numResTransactionNodes)), "not ");
+    assertTrueVerbose
+      ( "Number of partial plan slotted interval tokens (" +
+        (partialPlan.getTokenList().size() - partialPlan.getFreeTokenList().size() -
+         partialPlan.getResTransactionList().size()) +
+        ") not equal to number of TokenNetworkView slotted interval token nodes (" +
+        numSlottedTokenNodes + ")", ((partialPlan.getTokenList().size() -
+                                      partialPlan.getFreeTokenList().size() -
+                                      partialPlan.getResTransactionList().size()) ==
+                                     numSlottedTokenNodes), "not ");
+    assertTrueVerbose
+      ( "Number of partial plan free interval tokens (" +
+        partialPlan.getFreeTokenList().size() +
+        ") not equal to number of TokenNetworkView slotted interval token nodes (" +
+        numFreeTokenNodes + ")", (partialPlan.getFreeTokenList().size() ==
+                                     numFreeTokenNodes), "not ");
+    assertTrueVerbose( "Number of partial plan resource transactions (" +
+                       partialPlan.getResTransactionList().size() +
+                       ") not equal to number of TokenNetworkView resource transaction nodes (" +
+                       numResTransactionNodes + ")",
+                       partialPlan.getResTransactionList().size() ==
+                       numResTransactionNodes, "not ");
+ 
+    System.err.println( "slottedTokenNode labelText " + slottedTokenNode.getText());
+    System.err.println( "slottedTokenNode toolTipText " + slottedTokenNode.getToolTipText());
+    String labelText = slottedTokenNode.getText();
+    String toolTipText = slottedTokenNode.getToolTipText();
+    String predArgsString = slottedTokenNode.getToken().toString();
+    String predString = slottedTokenNode.getToken().getPredicateName();
+    String keyString = "key=" + slottedTokenNode.getToken().getId().toString();
+    String slotKeyString = "slot key=" + slottedTokenNode.getToken().getSlotId().toString();
+    assertTrueVerbose( "TokenNetworkView slotted token node (" +
+                       slottedTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" +
+                       predString + "'", (labelText.indexOf( predString) >= 0), "not ");
+    assertTrueVerbose( "TokenNetworkView slotted token node (" +
+                       slottedTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" +
+                       keyString + "'", (labelText.indexOf( keyString) >= 0), "not ");
+    assertTrueVerbose( "TokenNetworkView slotted token node (" +
+                       slottedTokenNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" +
+                       predArgsString + "'", (toolTipText.indexOf( predArgsString) >= 0),
+                       "not ");
+    assertTrueVerbose( "TokenNetworkView slotted token node (" +
+                       slottedTokenNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" +
+                       slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
+                       "not ");
+
+    System.err.println( "freeTokenNode labelText " + freeTokenNode.getText());
+    System.err.println( "freeTokenNode toolTipText " + freeTokenNode.getToolTipText());
+    labelText = freeTokenNode.getText();
+    toolTipText = freeTokenNode.getToolTipText();
+    predArgsString = freeTokenNode.getToken().toString();
+    predString = freeTokenNode.getToken().getPredicateName();
+    keyString = "key=" + freeTokenNode.getToken().getId().toString();
+    slotKeyString = "slot key=";
+    assertTrueVerbose( "TokenNetworkView free token node (" +
+                       freeTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" +
+                       predString + "'", (labelText.indexOf( predString) >= 0), "not ");
+    assertTrueVerbose( "TokenNetworkView free token node (" +
+                       freeTokenNode.getToken().getId().toString() +
+                       ") label does not contain '" +
+                       keyString + "'", (labelText.indexOf( keyString) >= 0), "not ");
+    assertTrueVerbose( "TokenNetworkView free token node (" +
+                       freeTokenNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" +
+                       predArgsString + "'", (toolTipText.indexOf( predArgsString) >= 0),
+                       "not ");
+    assertFalseVerbose( "TokenNetworkView free token node (" +
+                       freeTokenNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" +
+                       slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
+                       "not ");
+
+    System.err.println( "resTransactionNode labelText " + resTransactionNode.getText());
+    System.err.println( "resTransactionNode toolTipText " + resTransactionNode.getToolTipText());
+    labelText = resTransactionNode.getText();
+    toolTipText = resTransactionNode.getToolTipText();
+    predArgsString = resTransactionNode.getToken().toString();
+    predString = resTransactionNode.getToken().getPredicateName();
+    keyString = "key=" + resTransactionNode.getToken().getId().toString();
+    slotKeyString = "slot key=";
+    assertTrueVerbose( "TokenNetworkView resource transaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") label does not contain '" +
+                       predString + "'", (labelText.indexOf( predString) >= 0), "not ");
+    assertTrueVerbose( "TokenNetworkView resource transaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") label does not contain '" +
+                       keyString + "'", (labelText.indexOf( keyString) >= 0), "not ");
+    assertTrueVerbose( "TokenNetworkView resource transaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" +
+                       predArgsString + "'", (toolTipText.indexOf( predArgsString) >= 0),
+                       "not ");
+    assertFalseVerbose( "TokenNetworkView resource transaction node (" +
+                       resTransactionNode.getToken().getId().toString() +
+                       ") tool tip does not contain '" +
+                       slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
+                       "not ");
+  } // end planViz10TokNet
+
+  private void planViz10DBTrans( DBTransactionView dbTransactionView, int stepNumber,
+                                 PwPlanningSequence planSeq,  PwPartialPlan partialPlan)
+    throws Exception {
+    ViewGenerics.raiseFrame( dbTransactionView.getViewFrame());
+    // try{Thread.sleep(6000);}catch(Exception e){}
+    List transactionList = planSeq.getTransactionsList( partialPlan.getId());
+    int numTransactions = transactionList.size();
+    DBTransactionContentView contentView = dbTransactionView.getDBTransactionContentView();
+    int numTransactionEntries = contentView.getTransactionEntryList().size();
+    assertTrueVerbose
+      ( "Number of partial plan step " + stepNumber + " db transactions (" + numTransactions +
+        ") not equal to number of DBTransactionView entries (" +
+        numTransactionEntries + ")", (numTransactions == numTransactionEntries), "not ");
+    List transactionNameList = MySQLDB.queryTransactionNameList();
+    List transEntryList = contentView.getTransactionEntryList();
+    String transName = null, fieldObjName = null;
+    String variableNamePrefix = DbConstants.VARIABLE_ALL_TYPES.substring
+      ( 0, DbConstants.VARIABLE_ALL_TYPES.length() - 1);
+    for (int entryIdx = 0; entryIdx < numTransactionEntries; entryIdx++) {
+      List transEntry = (List) transEntryList.get( entryIdx);
+      for (int fieldIdx = 0, n = transEntry.size(); fieldIdx < n; fieldIdx++) {
+        QueryResultField transField = (QueryResultField) transEntry.get( fieldIdx);
+        if (transField.getFieldName().equals
+            ( ViewConstants.DB_TRANSACTION_KEY_HEADER)) {
+          Integer fieldTransId =
+            new Integer( Integer.parseInt( transField.getFieldText().replaceAll( " ", "")));
+          PwDBTransaction ppTrans =
+            (PwDBTransaction) CollectionUtils.findFirst
+            ( new PwDBTransactionFunctor( fieldTransId), transactionList);
+//           assertNotNullVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+//                                 transField.getFieldName() + "' " + fieldTransId +
+//                                 " not found", ppTrans, " not");
+          assertNotNull( "Transaction entry " + (entryIdx + 1) + " '" +
+                         transField.getFieldName() + "' " + fieldTransId +
+                         " not found", ppTrans);
+        } else if (transField.getFieldName().equals
+                   ( ViewConstants.DB_TRANSACTION_NAME_HEADER)) {
+          transName = transField.getFieldText().replaceAll( " ", "");
+          boolean isValidName = transactionNameList.contains( transName);
+//           assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+//                              transField.getFieldName() + "' '" +
+//                              transName + "' not found", isValidName, " not");
+          assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
+                      transField.getFieldName() + "' '" +
+                      transName + "' not found", isValidName);
+        } else if (transField.getFieldName().equals
+                   ( ViewConstants.DB_TRANSACTION_SOURCE_HEADER)) {
+          String transSource = transField.getFieldText().replaceAll( " ", "");
+          boolean isValidSource =
+            DbConstants.SOURCE_USER.equals( transSource) ||
+            DbConstants.SOURCE_SYSTEM.equals( transSource) ||
+            DbConstants.SOURCE_UNKNOWN.equals( transSource);
+//           assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+//                              transField.getFieldName() + "' '" +
+//                              transSource + "' not found", isValidSource, " not");
+          assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
+                      transField.getFieldName() + "' '" +
+                      transSource + "' not found", isValidSource);
+        } else if (transField.getFieldName().equals
+                   ( ViewConstants.DB_TRANSACTION_OBJECT_KEY_HEADER)) {
+          Integer objectId =
+            new Integer( Integer.parseInt( transField.getFieldText().replaceAll( " ", "")));
+          PwToken tokenObject = partialPlan.getToken( objectId);
+          PwConstraint constraintObject = partialPlan.getConstraint( objectId);
+          PwVariable variableObject = partialPlan.getVariable( objectId);
+//           assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+//                              transField.getFieldName() + "' '" + objectId + "' not found",
+//                              ((tokenObject != null) || (constraintObject != null) ||
+//                               (variableObject != null)), " not");
+          assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
+                      transField.getFieldName() + "' '" + objectId + "' not found",
+                      ((tokenObject != null) || (constraintObject != null) ||
+                       (variableObject != null)));
+
+        } else if (transField.getFieldName().equals
+                   ( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
+          int fieldStepNumber =
+            Integer.parseInt( transField.getFieldText().replaceAll( " ", ""));
+//           assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+//                              transField.getFieldName() + "' '" + fieldStepNumber +
+//                              "' not found", (fieldStepNumber == stepNumber), " not");
+          assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
+                      transField.getFieldName() + "' '" + fieldStepNumber +
+                      "' not found", (fieldStepNumber == stepNumber));
+        } else if (transField.getFieldName().equals
+                   ( ViewConstants.DB_TRANSACTION_PREDICATE_HEADER)) {
+          String fieldPredicate = transField.getFieldText().replaceAll( " ", "");
+          if (transName.indexOf( variableNamePrefix) >= 0) {
+//             assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+//                                transField.getFieldName() + "' '" + fieldPredicate +
+//                                "' not non-empty", (! fieldPredicate.equals( "")), " not");
+            assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
+                        transField.getFieldName() + "' '" + fieldPredicate +
+                        "' not non-empty", (! fieldPredicate.equals( "")));
+          } else {
+//             assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+//                                transField.getFieldName() + "' '" + fieldPredicate +
+//                                "' not empty", fieldPredicate.equals( ""), " not");
+            assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
+                        transField.getFieldName() + "' '" + fieldPredicate +
+                        "' not empty", fieldPredicate.equals( ""));
+          }
+        } else if (transField.getFieldName().equals
+                   ( ViewConstants.DB_TRANSACTION_OBJ_NAME_HEADER)) {
+          fieldObjName = transField.getFieldText().replaceAll( " ", "");
+        } else if (transField.getFieldName().equals
+                   ( ViewConstants.DB_TRANSACTION_PARAMETER_HEADER)) {
+          String fieldParamName = transField.getFieldText().replaceAll( " ", "");
+          if ((transName.indexOf( variableNamePrefix) >= 0) &&
+              fieldObjName.equals( DbConstants.PARAMETER_VAR)) {
+//             assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+//                                transField.getFieldName() + "' '" + fieldParamName +
+//                                "' not non-empty", (! fieldParamName.equals( "")), " not");
+            assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
+                        transField.getFieldName() + "' '" + fieldParamName +
+                        "' not non-empty", (! fieldParamName.equals( "")));
+          } else {
+//             assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+//                                transField.getFieldName() + "' '" + fieldParamName +
+//                                "' not empty", fieldParamName.equals( ""), " not");
+            assertTrue( "Transaction entry " + (entryIdx + 1) + " '" +
+                        transField.getFieldName() + "' '" + fieldParamName +
+                        "' not empty", fieldParamName.equals( ""));
+          }
+        } else {
+          assertTrueVerbose( "Transaction entry " + (entryIdx + 1) + " '" +
+                             transField.getFieldName() + "' not handled", false, " not");
+        }
+      }
+    }
+  } // end planViz10DBTrans
+
+  class PwDBTransactionFunctor implements BooleanFunctor {
+    private Integer transId;
+    public PwDBTransactionFunctor(Integer transId){ this.transId = transId; }
+    public boolean func(Object o){return ((PwDBTransaction)o).getId().equals(transId) ;}
+  }
+
+
 
   private void assertTrueVerbose( String failureMsg, boolean condition, String replacement)
     throws AssertionFailedError {
@@ -1558,16 +2075,26 @@ public class PlanWorksGUITest extends JFCTestCase {
   private void assertFalseVerbose( String failureMsg, boolean condition, String replacement)
     throws AssertionFailedError {
     if (! condition) {
-      System.err.println( "AssertFalse: " + failureMsg);
+      System.err.println( "AssertFalse: " + failureMsg.replaceAll( replacement, ""));
     } else {
-      throw new AssertionFailedError( failureMsg.replaceAll( replacement, ""));
+      throw new AssertionFailedError( failureMsg);
     }
   } // end assertFalseVerbose
 
   private void assertNotNullVerbose( String failureMsg, Object object, String replacement)
-                                     throws AssertionFailedError{
+    throws AssertionFailedError{
     if (object != null) {
       System.err.println( "AssertNotNull: " + failureMsg.replaceAll( replacement, ""));
+    } else {
+      throw new AssertionFailedError( failureMsg);
+    }
+  } // end assertTrueVerbose
+
+
+  private void assertNullVerbose( String failureMsg, Object object, String replacement)
+    throws AssertionFailedError{
+    if (object == null) {
+      System.err.println( "AssertNull: " + failureMsg.replaceAll( replacement, ""));
     } else {
       throw new AssertionFailedError( failureMsg);
     }

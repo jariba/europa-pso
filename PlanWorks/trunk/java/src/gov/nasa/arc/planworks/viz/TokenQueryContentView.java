@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryContentView.java,v 1.1 2003-12-20 01:54:49 taylor Exp $
+// $Id: TokenQueryContentView.java,v 1.2 2004-05-13 20:24:08 taylor Exp $
 //
 // PlanWorks
 //
@@ -115,16 +115,18 @@ public class TokenQueryContentView extends JGoView {
       x = 0;
       PwTokenQuery token = (PwTokenQuery) tokenItr.next();
       QueryResultField stepNumField =
-        new QueryResultField( token.getStepNumber().toString(), new Point( x, y),
-                       JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
+        new QueryResultField( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
+                              token.getStepNumber().toString(), new Point( x, y),
+                              JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
       jGoDocument.addObjectAtTail( stepNumField);
       stepNumField.setSize( (int) headerJGoView.getStepNumNode().getSize().getWidth(),
                             (int) stepNumField.getSize().getHeight());
       x += headerJGoView.getStepNumNode().getSize().getWidth(); 
 
       keyField =
-        new QueryResultField( token.getId().toString(),
-                       new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+        new QueryResultField( ViewConstants.DB_TRANSACTION_OBJECT_KEY_HEADER,
+                              token.getId().toString(),
+                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( keyField);
       keyField.setSize( (int) headerJGoView.getKeyNode().getSize().getWidth(),
                          (int) keyField.getSize().getHeight());
@@ -135,8 +137,9 @@ public class TokenQueryContentView extends JGoView {
         NodeGenerics.trimName( token.getPredicateName(),
                                headerJGoView.getPredicateNameNode(), vizView);
       QueryResultField predicateNameField =
-        new QueryResultField( predicateName,
-                       new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+        new QueryResultField( ViewConstants.DB_TRANSACTION_PREDICATE_HEADER,
+                              predicateName,
+                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( predicateNameField);
       predicateNameField.setSize( (int) headerJGoView.getPredicateNameNode().getSize().getWidth(),
                          (int) predicateNameField.getSize().getHeight());

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.87 2004-05-08 01:44:10 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.88 2004-05-13 20:24:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -320,6 +320,17 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   }
 
   /**
+   * <code>getSlotList</code>
+   *
+   * @return - <code>List</code> - of PwSlotImpl
+   */
+  public List getSlotList() {
+    List retval = new ArrayList();
+    retval.addAll(slotMap.values());
+    return retval;
+  }
+
+  /**
    * <code>getTokenRelationList</code>
    *
    * @return - <code>List</code> - of PwTokenRelationImpl
@@ -351,9 +362,9 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    *
    * @return - <code>List</code> - of PwToken 
    */
-
   public List getFreeTokenList() {
-    return new ArrayList(CollectionUtils.cGrep(new FreeTokenFunctor(), tokenMap.values()));
+    return new ArrayList(CollectionUtils.cGrep(new FreeTokenFunctor(),
+                                               new ArrayList( tokenMap.values())));
   }
 
   class SlottedTokenFunctor implements BooleanFunctor {
@@ -362,7 +373,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   }
 
   public List getSlottedTokenList() {
-    return new ArrayList(CollectionUtils.cGrep(new SlottedTokenFunctor(), tokenMap.values()));
+    return new ArrayList(CollectionUtils.cGrep(new SlottedTokenFunctor(),
+                                               new ArrayList( tokenMap.values())));
   }
 
   public List getTokenList() {

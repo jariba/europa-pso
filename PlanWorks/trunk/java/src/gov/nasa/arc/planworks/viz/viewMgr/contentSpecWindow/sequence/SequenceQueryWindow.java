@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.27 2004-05-11 22:46:41 miatauro Exp $
+// $Id: SequenceQueryWindow.java,v 1.28 2004-05-13 20:24:14 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -93,13 +93,13 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   public static final List DB_TRANSACTION_QUERIES;
 
   //public static final List CONSTRAINT_TRANSACTION_TYPES;
-	public static Set CONSTRAINT_TRANSACTION_TYPES;
+  public static Set CONSTRAINT_TRANSACTION_TYPES;
   public static final String CONSTRAINT_TRANSACTION_TYPE_ALL = "CONSTRAINT_ALL";
   //public static final List TOKEN_TRANSACTION_TYPES;
-	public static Set TOKEN_TRANSACTION_TYPES;
+  public static Set TOKEN_TRANSACTION_TYPES;
   public static final String TOKEN_TRANSACTION_TYPE_ALL = "TOKEN_ALL";
   //public static final List VARIABLE_TRANSACTION_TYPES;
-	public static Set VARIABLE_TRANSACTION_TYPES;
+  public static Set VARIABLE_TRANSACTION_TYPES;
   public static final String VARIABLE_TRANSACTION_TYPE_ALL = "VARIABLE_ALL";
 
   public static final String FREE_TOKENS_AT_STEP = "At ...";
@@ -196,8 +196,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
    */
   public SequenceQueryWindow( MDIInternalFrame sequenceQueryFrame, MDIDesktopFrame desktopFrame,
                               ViewableObject viewable, ViewSet viewSet) {
-		MySQLDB.queryTransactionNames((PwPlanningSequence) viewable, CONSTRAINT_TRANSACTION_TYPES, TOKEN_TRANSACTION_TYPES, 
-																	VARIABLE_TRANSACTION_TYPES);
+    MySQLDB.queryTransactionNames((PwPlanningSequence) viewable, CONSTRAINT_TRANSACTION_TYPES,
+                                  TOKEN_TRANSACTION_TYPES, VARIABLE_TRANSACTION_TYPES);
     this.sequenceQueryFrame = sequenceQueryFrame;
     // for PWTestHelper.findComponentByName
     this.setName( sequenceQueryFrame.getTitle());

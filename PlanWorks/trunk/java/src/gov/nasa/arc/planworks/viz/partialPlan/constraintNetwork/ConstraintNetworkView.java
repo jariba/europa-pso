@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.60 2004-05-08 01:44:14 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.61 2004-05-13 20:24:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -330,7 +330,8 @@ public class ConstraintNetworkView extends PartialPlanView {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.CONSTRAINT_NETWORK_VIEW + " elapsed time: " +
                         (stopTimeMSecs -
-                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime
+                         ( ViewConstants.CONSTRAINT_NETWORK_VIEW)) + " msecs.");
     startTimeMSecs = 0L;
     isLayoutNeeded = false;
     focusNode = null;
