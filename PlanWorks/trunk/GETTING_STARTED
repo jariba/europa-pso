@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.26 2004-01-16 19:05:33 taylor Exp $
+# $Id: GETTING_STARTED,v 1.27 2004-01-17 01:22:50 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -78,13 +78,13 @@ create them as needed.  All views, except for Transaction View,
 also offer "Raise Content Filter", which will set focus on the appropriate
 partial plan Content Filter window.  In addition, all partial plan view's  
 Mouse-Right pop-ups offer the user "Close All Views", "Hide All Views", 
-and "Open All Views".
+"Open All Views", and "Show All Views".
 
 Applying a Content Filter specification will cause the views to be redrawn 
 with only the filtered predicates and their dependencies.
 
-Every view has two buttons in the lower left corner which, when clicked, will cause the view to 
-display either the next or previous step.
+Every view has two buttons in the lower left corner which, when clicked,
+will cause the view to display either the next or previous step.
 
 There are five active views:
 
@@ -251,6 +251,10 @@ value; and "In Range ...", which asks for "StartStep" and "EndStep" values.
 "Free Tokens":  "At Step ..." which asks for a sequence step.
 
 "Unbound Variables": "At Step ..." which asks for a sequence step.
+
+"All Decisions": "At Step ..." which asks for a sequence step,
+and brings up two results windows, one for free tokens and one for 
+unbound variables.
 
 "Apply Query" will cause the query to be performed and a window "Query 
 Results for ..." to be created to display the query results.  

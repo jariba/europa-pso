@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.66 2004-01-16 19:05:33 taylor Exp $
+# $Id: README,v 1.67 2004-01-17 01:22:51 taylor Exp $
 #
 
 SUMMARY
@@ -23,6 +23,9 @@ o For all nodes, except empty slots, in the Constraint Network, the Temporal
   Extent, the Timeline, and the Token Network views, there is a 
   Mouse-Right selection "Open Navigator View" which allows navigation
   through all relationships in the partial plan data base.
+
+o "Show All Views", the logical inverse of "Hide All Views", is now
+   available in all situations where "Hide All Views" occurs.
 
 o  GNATS PRs and CRs completed:
    #2192: Snap to Earliest Start/Latest end in Temporal extent view.

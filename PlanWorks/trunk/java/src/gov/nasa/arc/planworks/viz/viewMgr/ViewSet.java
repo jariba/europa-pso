@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.53 2004-01-09 20:44:07 miatauro Exp $
+// $Id: ViewSet.java,v 1.54 2004-01-17 01:22:55 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -296,6 +296,25 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
         }
         if (contentSpecWindow != null) {
           contentSpecWindow.setIcon(true);
+        }
+      }
+    catch(PropertyVetoException pve){}
+  }
+
+  /**
+   * Shows all of the iconified views in the ViewSet.
+   *
+   *     viewFrame.setIconifiable( true); must be set
+   */
+  public void show() {
+    Object [] viewSet = views.values().toArray();
+    try
+      {
+        for(int i = 0; i < viewSet.length; i++) {
+          ((MDIInternalFrame)viewSet[i]).setIcon( false);
+        }
+        if (contentSpecWindow != null) {
+          contentSpecWindow.setIcon( false);
         }
       }
     catch(PropertyVetoException pve){}

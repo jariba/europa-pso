@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.3 2004-01-16 19:05:37 taylor Exp $
+// $Id: NavigatorView.java,v 1.4 2004-01-17 01:22:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1232,6 +1232,17 @@ public class NavigatorView extends PartialPlanView {
         variableNavNode.setVisible( true);
       } else {
         variableNavNode.setVisible( false);
+      }
+    }
+    List constraintNodeKeyList = new ArrayList( constraintNavNodeMap.keySet());
+    Iterator constraintNodeKeyItr = constraintNodeKeyList.iterator();
+    while (constraintNodeKeyItr.hasNext()) {
+      ConstraintNavNode constraintNavNode =
+        (ConstraintNavNode) constraintNavNodeMap.get( (Integer) constraintNodeKeyItr.next());
+      if (constraintNavNode.inLayout()) {
+        constraintNavNode.setVisible( true);
+      } else {
+        constraintNavNode.setVisible( false);
       }
     }
     List navLinkKeyList = new ArrayList( navLinkMap.keySet());

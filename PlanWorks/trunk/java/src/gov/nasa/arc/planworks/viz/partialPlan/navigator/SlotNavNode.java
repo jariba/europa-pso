@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNavNode.java,v 1.3 2004-01-16 19:05:38 taylor Exp $
+// $Id: SlotNavNode.java,v 1.4 2004-01-17 01:22:53 taylor Exp $
 //
 // PlanWorks
 //
@@ -260,7 +260,9 @@ public class SlotNavNode extends ExtendedBasicNode {
       operation = "open";
     }
     StringBuffer tip = new StringBuffer( "<html> ");
-    NodeGenerics.getSlotNodeToolTipText( slot, tip);
+    if (! isEmptySlot) {
+      NodeGenerics.getSlotNodeToolTipText( slot, tip);
+    }
     if (isDebug) {
       tip.append( " linkCntTimeline ").append( String.valueOf( timelineLinkCount));
       tip.append( " linkCntToken ").append( String.valueOf( tokenLinkCount));

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ThickDurationBridge.java,v 1.2 2004-01-02 18:58:59 taylor Exp $
+// $Id: ThickDurationBridge.java,v 1.3 2004-01-17 01:22:54 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,15 +13,29 @@
 package gov.nasa.arc.planworks.viz.partialPlan.temporalExtent;
 
 import java.awt.Color;
+import java.awt.Container;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
+import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoRectangle;
+import com.nwoods.jgo.JGoView;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
@@ -37,26 +51,19 @@ public class ThickDurationBridge extends JGoRectangle {
   private int minDurationTime;
   private int maxDurationTime;
   private String [] labelLines;
+  private TemporalNode temporalNode;
+  private TemporalExtentView temporalExtentView;
 
-  /**
-   * <code>ThickDurationBridge</code> - constructor 
-   *
-   * @param minDurationTime - <code>int</code> - 
-   * @param maxDurationTime - <code>int</code> - 
-   * @param x - <code>int</code> - 
-   * @param y - <code>int</code> - 
-   * @param width - <code>int</code> - 
-   * @param height - <code>int</code> - 
-   * @param backgroundColor - <code>Color</code> - 
-   * @param labelLines - <code>String[]</code> - 
-   */
   public ThickDurationBridge( int minDurationTime, int maxDurationTime, int x, int y,
                               int width, int height, Color backgroundColor,
-                              String [] labelLines) {
+                              String [] labelLines, TemporalNode temporalNode,
+                              TemporalExtentView temporalExtentView) {
     super( new Rectangle( x, y, width, height));
     this.minDurationTime = minDurationTime;
     this.maxDurationTime = maxDurationTime;
-    this.labelLines = labelLines;
+    this.labelLines = labelLines; 
+    this.temporalNode = temporalNode;
+    this.temporalExtentView = temporalExtentView;
     setDraggable( false);
     setResizable(false);
     setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "black")));
@@ -108,6 +115,49 @@ public class ThickDurationBridge extends JGoRectangle {
     buffer.append( labelLines[1]).append( "</html>");
     return buffer.toString();
   } // end getToolTipText
+
+  /**
+   * <code>doMouseClick</code> - 
+   *
+   * @param modifiers - <code>int</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   * @param view - <code>JGoView</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
+                               JGoView view) {
+    JGoObject obj = view.pickDocObject( docCoords, false);
+    //         System.err.println( "doMouseClick obj class " +
+    //                             obj.getTopLevelObject().getClass().getName());
+    ThickDurationBridge thickBridge = (ThickDurationBridge) obj.getTopLevelObject();
+    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      // nothing
+    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( viewCoords);
+      return true;
+    }
+    return false;
+  } // end doMouseClick   
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          MDIInternalFrame navigatorFrame = temporalExtentView.openNavigatorViewFrame();
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = temporalExtentView.getPartialPlan();
+          contentPane.add( new NavigatorView( temporalNode, partialPlan,
+                                              temporalExtentView.getViewSet(),
+                                              navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, temporalExtentView, viewCoords);
+  } // end mouseRightPopupMenu
 
 } // end class ThickDurationBridge
                                

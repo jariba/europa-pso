@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.25 2004-01-05 23:34:20 taylor Exp $
+// $Id: planViz.txt,v 1.26 2004-01-17 01:22:56 taylor Exp $
 //
 // PlanWorks
 //
@@ -397,8 +397,9 @@ Method:
      use Mouse-Right "Raise Content Filter" to set focus on the ContentFilter
      window.
  12. For a selected plan sequence step, open only one partial plan view, and
-     use Mouse-Right "Open All Views", then "Hide All Views", and finally
-     "Close All Views".  Do this for each of the partial plan views.
+     choose Mouse-Right "Hide All Views", then "Show All Views", then
+     "Open All Views", and finally "Close All Views".  Do this for each of 
+     the partial plan views.
  13. In each partial plan view, use Mouse-Right "Overview Window" to open a
      1/8th scale overview of the entire "observed" view.  Drag the scoping
      rectangle to cause the "observed" view to scroll.  Use Mouse-Left clicks
@@ -438,7 +439,7 @@ Post-conditions:
  10. Method:11 - The selected view or window will be raised to the top of the
      internal frame, and will have focus.
  11. Method:12 - the partial plan step's views will respond appropriately to
-     the "Open", "Hide", and "Close" selections.
+     the "Hide", "Show", "Open" and "Close" selections.
  12. Method:13 - The "observed" views should respond properly to operatins on
      the overview windows.
  13. Method:14 - The Temporal Extent View's focus with green highlight will
@@ -770,3 +771,44 @@ Post-conditions:
   2. Method:7 - A "QueryResults" window is visible with variables itemized.
 
 Requirements: N/A
+
+PLANVIZ-19
+--------------------
+Exercise the Navigator View capabilities.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. A project containing a sequence is open.
+  3. The "Sequence Steps View" for the sequence is open.
+  4. For any sequence step, select Mouse-Right "Open All Views".
+  5. Delete the "TransactionView" window.
+
+Method:
+  1. In the Timeline View, Mouse-Right "Open Navigator View" on a
+     timeline node.  Further expand the relationships of the timeline node.
+  2. In the Timeline View, Mouse-Right "Open Navigator View" on a
+     non-empty slot node.  Further expand the relationships of the slot node.
+  3. In the Timeline View, Mouse-Right "Open Navigator View" on a
+     free token node.  Further expand the relationships of the free token node.
+  4. In the Temporal Extent View, Mouse-Right "Open Navigator View" on both
+     a token node and a free token node.  Further expand the relationships
+     of the token nodes.
+  5. In the Token Network View, Mouse-Right "Open Navigator View" on both
+     a token node and a free token node.  Further expand the relationships
+     of the token nodes.
+  6. In the Constraint Network View, Mouse-Right "Open Navigator View" on both
+     a token node and a free token node.  Further expand the relationships
+     of the token nodes.
+  7. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
+     variable node.  Further expand the relationships of the variable node.
+  8. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
+     constraint node.  Further expand the relationships of the constraint node.
+
+
+Post-conditions:
+  1. Use the other views to verify the relationships
+     rendered on the Navigator Views.
+
+Requirements: N/A
+
+

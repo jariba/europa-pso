@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.8 2003-12-11 22:25:08 miatauro Exp $
+// $Id: VizView.java,v 1.9 2004-01-17 01:22:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -197,8 +198,10 @@ public class VizView extends JPanel {
                                   PwPlanningSequence planSequence,
                                   JPopupMenu mouseRightPopup) { 
     mouseRightPopup.addSeparator();
+
+    PartialPlanViewSet partialPlanViewSet = null;
     if (partialPlanIfLoaded != null) {
-      PartialPlanViewSet partialPlanViewSet =
+      partialPlanViewSet =
         (PartialPlanViewSet) viewSet.getViewManager().getViewSet( partialPlanIfLoaded);
       if (partialPlanViewSet != null) {
         JMenuItem closeAllItem = new JMenuItem( "Close All Views");
@@ -214,6 +217,12 @@ public class VizView extends JPanel {
     JMenuItem openAllItem = new JMenuItem( "Open All Views");
     createOpenAllItem( openAllItem, partialPlanIfLoaded, partialPlanName, planSequence);
     mouseRightPopup.add( openAllItem);
+
+    if (partialPlanIfLoaded != null) {
+      JMenuItem showAllItem = new JMenuItem( "Show All Views");
+      createShowAllItem( showAllItem, partialPlanViewSet);
+      mouseRightPopup.add( showAllItem);
+    }    
   } // end createAllViewItems
 
   private void createCloseAllItem( JMenuItem closeAllItem,
@@ -234,6 +243,15 @@ public class VizView extends JPanel {
       });
   } // end createHideAllItem
  
+  private void createShowAllItem( JMenuItem showAllItem,
+                                  final PartialPlanViewSet partialPlanViewSet) {
+    showAllItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          partialPlanViewSet.show();
+        }
+      });
+  } // end createShowAllItem
+ 
   private void createOpenAllItem( JMenuItem openAllItem,
                                   final PwPartialPlan partialPlanIfLoaded,
                                   final String partialPlanName,
@@ -251,6 +269,31 @@ public class VizView extends JPanel {
             Thread thread = new CreatePartialPlanViewThread( viewName, viewItem, isInvokeAndWait);
             thread.setPriority(Thread.MIN_PRIORITY);
             thread.start();
+          }
+          // de-iconify any Navigator Views
+          if (partialPlanIfLoaded != null) {
+            PartialPlanViewSet partialPlanViewSet =
+              (PartialPlanViewSet) viewSet.getViewManager().getViewSet( partialPlanIfLoaded);
+            String navigatorWindowName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
+            List windowKeyList = new ArrayList( partialPlanViewSet.getViews().keySet());
+            Iterator windowListItr = windowKeyList.iterator();
+            while (windowListItr.hasNext()) {
+              Object windowKey = (Object) windowListItr.next();
+              System.err.println( " windowKey " + windowKey.toString());
+              if (windowKey instanceof String) {
+                String navigatorWindowKey = (String) windowKey;
+                if (navigatorWindowKey.indexOf( navigatorWindowName) >= 0) {
+                  MDIInternalFrame viewFrame = 
+                    (MDIInternalFrame) partialPlanViewSet.getViews().get( navigatorWindowKey);
+                  try {
+                    viewFrame.setIcon( false);
+                    viewFrame.setSelected( false);
+                    viewFrame.setSelected( true);
+                  } catch ( PropertyVetoException pve){
+                  }
+                }
+              }
+            }
           }
         }
       });

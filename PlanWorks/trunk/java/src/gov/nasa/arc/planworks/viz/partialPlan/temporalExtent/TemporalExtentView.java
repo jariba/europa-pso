@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.26 2004-01-14 21:26:18 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.27 2004-01-17 01:22:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -979,6 +979,12 @@ public class TemporalExtentView extends PartialPlanView  {
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
+    if (areThereNavigatorWindows()) {
+      mouseRightPopup.addSeparator();
+      JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
+      createCloseNavigatorWindowsItem( closeWindowsItem);
+      mouseRightPopup.add( closeWindowsItem);
+    }
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);

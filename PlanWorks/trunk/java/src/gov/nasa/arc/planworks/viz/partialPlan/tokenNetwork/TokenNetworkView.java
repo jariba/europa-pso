@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.24 2004-01-16 19:05:40 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.25 2004-01-17 01:22:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -425,6 +425,12 @@ public class TokenNetworkView extends PartialPlanView {
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
+    if (areThereNavigatorWindows()) {
+      mouseRightPopup.addSeparator();
+      JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
+      createCloseNavigatorWindowsItem( closeWindowsItem);
+      mouseRightPopup.add( closeWindowsItem);
+    }
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
