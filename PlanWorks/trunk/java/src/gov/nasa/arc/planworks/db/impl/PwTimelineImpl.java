@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.10 2003-07-09 16:51:35 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.11 2003-07-14 21:56:29 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -79,6 +79,7 @@ public class PwTimelineImpl implements PwTimeline {
   public List getSlotList() {
     List retval = new ArrayList( slotIdList.size());
     for (int i = 0; i < slotIdList.size(); i++) {
+      System.err.println( "PwTimwlineImpl.getSlotList " + (Integer) slotIdList.get(i));
       retval.add( partialPlan.getSlot( (Integer) slotIdList.get(i)));
     }
     return retval;
@@ -92,6 +93,7 @@ public class PwTimelineImpl implements PwTimeline {
    */
   public PwSlotImpl addSlot( Integer key) {
     PwSlotImpl slot = new PwSlotImpl( key, partialPlan);
+    System.err.println( "PwTimwlineImpl.addSlot " + key);
     slotIdList.add( key);
     partialPlan.addSlot( key, slot);
     return slot;
