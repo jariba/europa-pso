@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.11 2003-07-16 01:15:43 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.12 2003-07-17 17:22:43 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -185,6 +185,14 @@ public class TokenNetworkView extends VizView {
    */
   public JGoDocument getJGoDocument()  {
     return this.jGoDocument;
+  }
+
+  public List getNodeList() {
+    return nodeList;
+  }
+
+  public List getLinkList() {
+    return linkList;
   }
 
   /**

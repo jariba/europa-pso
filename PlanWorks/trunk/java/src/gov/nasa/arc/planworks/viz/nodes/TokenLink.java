@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenLink.java,v 1.1 2003-07-02 17:42:48 taylor Exp $
+// $Id: TokenLink.java,v 1.2 2003-07-17 17:21:51 miatauro Exp $
 //
 // PlanWorks
 //
@@ -54,6 +54,10 @@ public class TokenLink extends JGoLabeledLink {
     return this.fromTokenNode.getToken();
   }
 
+  public TokenNode getFromTokenNode() {
+    return this.fromTokenNode;
+  }
+
   /**
    * <code>getToToken</code>
    *
@@ -63,5 +67,7 @@ public class TokenLink extends JGoLabeledLink {
     return this.toTokenNode.getToken();
   }
 
-  
+  public TokenNode getToTokenNode() {
+    return this.toTokenNode;
+  }
 } // end class TokenLink
