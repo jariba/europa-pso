@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.32 2004-06-21 22:42:58 taylor Exp $
+// $Id: DbConstants.java,v 1.33 2004-07-12 18:11:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -46,6 +46,10 @@ public interface DbConstants {
    *
    */
   public static final int MINUS_INFINITY_INT = Integer.MIN_VALUE;
+
+  public static final String PLUS_INFINITY_UNIC = "\u221E";
+  
+  public static final String MINUS_INFINITY_UNIC = "-\u221E";
 
   /**
    * constant <code>PP_PARTIAL_PLAN_EXT</code>

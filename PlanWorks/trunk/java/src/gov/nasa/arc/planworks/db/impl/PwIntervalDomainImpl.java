@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomainImpl.java,v 1.9 2004-03-23 18:20:44 miatauro Exp $
+// $Id: PwIntervalDomainImpl.java,v 1.10 2004-07-12 18:13:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -120,10 +120,22 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
     } else {
       boundBuf.append( "[");
     }
-    boundBuf.append( lowerBound);
+    //boundBuf.append( lowerBound);
+    if(lowerBound.equals(DbConstants.PLUS_INFINITY))
+      boundBuf.append(DbConstants.PLUS_INFINITY_UNIC);
+    else if(lowerBound.equals(DbConstants.MINUS_INFINITY))
+      boundBuf.append(DbConstants.MINUS_INFINITY_UNIC);
+    else
+      boundBuf.append(lowerBound);
+
     if (! isSingleton) {
       boundBuf.append( " ");
-      boundBuf.append( upperBound);
+      if(upperBound.equals(DbConstants.PLUS_INFINITY))
+        boundBuf.append(DbConstants.PLUS_INFINITY_UNIC);
+      else if(upperBound.equals(DbConstants.MINUS_INFINITY))
+        boundBuf.append(DbConstants.MINUS_INFINITY_UNIC);
+      else
+        boundBuf.append( upperBound);
     }
     if (isSingleton) {
       boundBuf.append( "}");
