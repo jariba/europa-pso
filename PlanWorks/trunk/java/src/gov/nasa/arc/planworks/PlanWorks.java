@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.75 2003-12-03 02:29:49 taylor Exp $
+// $Id: PlanWorks.java,v 1.76 2003-12-05 00:33:16 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -511,7 +511,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end getPlanSequence
 
 
-  protected void addPlanSeqViewMenu( PwProject project, JMenu planSeqMenu) {
+  public void addPlanSeqViewMenu( PwProject project, JMenu planSeqMenu) {
     // Create Dynamic Cascading Seq/PartialPlan/View Menu
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
     if (planSeqMenu == null) {
