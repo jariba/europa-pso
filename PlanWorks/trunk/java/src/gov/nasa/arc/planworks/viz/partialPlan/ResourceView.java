@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.15 2004-06-10 01:36:01 taylor Exp $
+// $Id: ResourceView.java,v 1.16 2004-06-16 22:09:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -303,9 +303,9 @@ public abstract class ResourceView extends PartialPlanView  {
   public final void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for ResourceView instance to become displayable
-		if(!displayableWait()) {
-			return;
-		}
+    if (! ViewGenerics.displayableWait( ResourceView.this)) {
+      return;
+    }
 
     this.computeFontMetrics( this);
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNode.java,v 1.3 2004-06-15 19:26:46 taylor Exp $
+// $Id: RuleInstanceNode.java,v 1.4 2004-06-16 22:09:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -101,6 +101,32 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
     configure( ruleLocation, backgroundColor, isDraggable);
   } // end constructor
 
+  /**
+   * <code>RuleInstanceNode</code> - constructor - for NodeShapes
+   *
+   * @param name - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
+   * @param ruleLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   */
+  public RuleInstanceNode( final String name, final Integer id, final Point ruleLocation,
+                           final Color backgroundColor) { 
+    super( ViewConstants.ELLIPSE);
+    this.ruleInstance = null;
+    this.fromTokenNode = null;
+    this.toTokenNodeList = null;
+    this.partialPlanView = null;
+
+    this.backgroundColor = backgroundColor;
+    boolean isDraggable = false;
+    StringBuffer labelBuf = new StringBuffer( name);
+    labelBuf.append( "\nkey=");
+    labelBuf.append( id.toString());
+    nodeLabel = labelBuf.toString();
+
+    configure( ruleLocation, backgroundColor, isDraggable);
+  } // end constructor
+
   private final void configure( final Point ruleLocation, final Color backgroundColor,
                                final  boolean isDraggable) {
     setLabelSpot( JGoObject.Center);
@@ -137,6 +163,9 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
+    if (ruleInstance == null) {
+      return null;
+    }
     if (partialPlanView.getZoomFactor() > 1) {
       StringBuffer tip = new StringBuffer( "<html> ");
       tip.append( "rule ");
@@ -217,6 +246,9 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    */
   public boolean doMouseClick( final int modifiers, final Point docCoords,
                                      final Point viewCoords, final JGoView view) {
+    if (ruleInstance == null) {
+      return false;
+    }
     JGoObject obj = view.pickDocObject( docCoords, false);
 //     System.err.println( "RuleInstanceNode: doMouseClick obj class " +
 //                         obj.getTopLevelObject().getClass().getName());

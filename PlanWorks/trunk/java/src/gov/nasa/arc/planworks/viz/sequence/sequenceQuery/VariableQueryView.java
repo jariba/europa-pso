@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableQueryView.java,v 1.8 2004-05-21 21:47:17 taylor Exp $
+// $Id: VariableQueryView.java,v 1.9 2004-06-16 22:09:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -132,13 +132,9 @@ public class VariableQueryView extends SequenceView {
    */
   public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
-    // wait for TimelineView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep( 50);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "timelineView displayable " + this.isDisplayable());
+    // wait for VariableQueryView instance to become displayable
+    if (! ViewGenerics.displayableWait( VariableQueryView.this)) {
+      return;
     }
     this.computeFontMetrics( this);
 

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.103 2004-06-15 19:26:45 taylor Exp $
+# $Id: README,v 1.104 2004-06-16 22:09:03 taylor Exp $
 #
 
 SUMMARY
@@ -30,6 +30,10 @@ o The Token Network View handling of rules has been revised:
 o Rule Instance nodes, which have variables, now appear rendered as ovals in the
   Constraint Network View.  Rule Instance nodes are now included in the Navigator
   View.
+
+o "Help->Node Shapes" has been added to the PlanWorks menubar.  It will create a
+  top-level window, separate from the PlanWorks desktop, which shows the shapes
+  of the different nodes rendered in the partial plan views.
 
 o  GNATS PRs and CRs completed:
 

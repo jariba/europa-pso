@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.56 2004-06-14 22:11:26 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.57 2004-06-16 22:09:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -168,7 +168,7 @@ public class TokenNetworkView extends PartialPlanView {
   public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
-    if (! displayableWait()) {
+    if (! ViewGenerics.displayableWait( TokenNetworkView.this)) {
       return;
     }
     this.computeFontMetrics( this);

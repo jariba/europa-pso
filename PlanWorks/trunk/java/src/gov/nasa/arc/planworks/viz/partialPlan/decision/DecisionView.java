@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.4 2004-06-04 23:09:00 taylor Exp $
+// $Id: DecisionView.java,v 1.5 2004-06-16 22:09:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -199,7 +199,7 @@ public class DecisionView extends PartialPlanView {
   public final void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for DecisionView instance to become displayable
-    if(!displayableWait()) {
+    if (! ViewGenerics.displayableWait( DecisionView.this)) {
       return;
     }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.101 2004-06-10 01:35:57 taylor Exp $
+// $Id: PlanWorks.java,v 1.102 2004-06-16 22:09:07 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -93,6 +94,9 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String WINDOW_MENU = "Window";
   public static final String TILE_WINDOWS_MENU_ITEM = "Tile Windows";
   public static final String CASCADE_WINDOWS_MENU_ITEM = "Cascade Windows";
+
+  public static final String HELP_MENU = "Help";
+  public static final String NODE_SHAPES_MENU_ITEM = "Node Shapes";
 
   static {
     GraphicsDevice [] devices = 
@@ -196,6 +200,7 @@ public class PlanWorks extends MDIDesktopFrame {
                                                // creates multiple instances
   //protected final PlannerCommandLineDialog executeDialog;
   private long [] viewRenderingStartTime;
+  private JFrame nodeShapesFrame;
 
   protected PwProject currentProject;
   protected String currentProjectName;
@@ -235,9 +240,7 @@ public class PlanWorks extends MDIDesktopFrame {
 
   private void planWorksCommon() {
     projectMenu.setEnabled(false);
-    currentProjectName = "";
-    currentProject = null;
-    viewManager = null;
+    currentProjectName = ""; currentProject = null; viewManager = null;
     createDirectoryChooser();
     // Closes from title bar 
     addWindowListener( new WindowAdapter() {
@@ -269,7 +272,6 @@ public class PlanWorks extends MDIDesktopFrame {
     if(usingSplash) {
       this.toBack();
     }
-
     setProjectMenuEnabled(CREATE_MENU_ITEM, true);
     setProjectMenuEnabled( ADDSEQ_MENU_ITEM, false);
     setProjectMenuEnabled(DELSEQ_MENU_ITEM, false);
@@ -286,7 +288,6 @@ public class PlanWorks extends MDIDesktopFrame {
     if(usingSplash) {
       this.toFront();
     }
-
     ToolTipManager toolTipManager = ToolTipManager.sharedInstance();
 //     System.err.println( "PlanWorks.toolTipManager InitialDelay " +
 //                         toolTipManager.getInitialDelay() + " DismissDelay " +
@@ -298,7 +299,8 @@ public class PlanWorks extends MDIDesktopFrame {
     toolTipManager.setReshowDelay( 100); // default 500
     //executeDialog = new PlannerCommandLineDialog(this);
     //executeDialog.hide();
-  } // end constructor 
+    this.nodeShapesFrame = null;
+  } // end planWorksCommon
 
   private PlanWorks getPlanWorksInternal() {
     return planWorks;
@@ -360,6 +362,24 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public final PwProject getCurrentProject() {
     return currentProject;
+  }
+
+  /**
+   * <code>getNodeShapesFrame</code>
+   *
+   * @return - <code>JFrame</code> - 
+   */
+  public final JFrame getNodeShapesFrame() {
+    return nodeShapesFrame;
+  }
+
+  /**
+   * <code>setNodeShapesFrame</code>
+   *
+   * @param frame - <code>JFrame</code> - 
+   */
+  public final void setNodeShapesFrame( final JFrame frame) {
+    nodeShapesFrame = frame;
   }
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.68 2004-06-14 22:11:25 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.69 2004-06-16 22:09:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -280,9 +280,9 @@ public class ConstraintNetworkView extends PartialPlanView {
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for ConstraintNetworkView instance to become displayable
-		if(!displayableWait()) {
-			return;
-		}
+    if (! ViewGenerics.displayableWait( ConstraintNetworkView.this)) {
+      return;
+    }
 
     this.computeFontMetrics( this);
 

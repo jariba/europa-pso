@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.57 2004-06-03 17:33:37 taylor Exp $
+// $Id: TimelineView.java,v 1.58 2004-06-16 22:09:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -190,7 +190,7 @@ public class TimelineView extends PartialPlanView {
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
-    if(!displayableWait()) {
+    if (! ViewGenerics.displayableWait( TimelineView.this)) {
       return;
     }
 

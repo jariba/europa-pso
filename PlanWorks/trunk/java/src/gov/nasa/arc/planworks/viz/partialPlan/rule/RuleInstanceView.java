@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceView.java,v 1.2 2004-06-10 19:11:07 taylor Exp $
+// $Id: RuleInstanceView.java,v 1.3 2004-06-16 22:09:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -33,6 +33,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.StringViewSetKey;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
@@ -109,12 +110,8 @@ public class RuleInstanceView extends PartialPlanView implements StringViewSetKe
    */
   public final void init() {
     // wait for NavigatorView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep( 50);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "navigatorView displayable " + this.isDisplayable());
+    if (! ViewGenerics.displayableWait( RuleInstanceView.this)) {
+      return;
     }
     this.computeFontMetrics( this);
 

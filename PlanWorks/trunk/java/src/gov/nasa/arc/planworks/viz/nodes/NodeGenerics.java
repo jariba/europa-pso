@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.27 2004-06-14 22:11:24 taylor Exp $
+// $Id: NodeGenerics.java,v 1.28 2004-06-16 22:09:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -291,6 +291,9 @@ public class NodeGenerics {
    * @param tip - <code>StringBuffer</code> - 
    */
   public static void getSlotNodeToolTipText( PwSlot slot, StringBuffer tip) {
+    if (slot == null) {
+      return;
+    }
     List tokenList = slot.getTokenList();
     tip.append( ((PwToken) tokenList.get( 0)).toString());
     tip.append( "<br>token key");
@@ -316,6 +319,9 @@ public class NodeGenerics {
   public static void getVariableNodeToolTipText( PwVariable variable,
                                                  PartialPlanView partialPlanView,
                                                  StringBuffer tip) {
+    if (variable == null) {
+      return;
+    }
     String typeName = variable.getType();
 //     System.err.println( "getVariableNodeToolTipText id " + variable.getId().toString() +
 //                         " typeName '" + typeName + "'");

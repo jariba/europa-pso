@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.50 2004-06-03 17:33:37 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.51 2004-06-16 22:09:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -231,9 +231,9 @@ public class TemporalExtentView extends PartialPlanView  {
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TemporalExtentView instance to become displayable
-		if(!displayableWait()) {
-			return;
-		}
+    if (! ViewGenerics.displayableWait( TemporalExtentView.this)) {
+      return;
+    }
 
     this.computeFontMetrics( this);
 

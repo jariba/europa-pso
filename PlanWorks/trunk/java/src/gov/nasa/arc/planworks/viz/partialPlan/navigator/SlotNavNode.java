@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNavNode.java,v 1.10 2004-06-10 01:36:04 taylor Exp $
+// $Id: SlotNavNode.java,v 1.11 2004-06-16 22:09:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -93,6 +93,35 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
     nodeLabel = labelBuf.toString();
     // System.err.println( "SlotNavNode: " + nodeLabel);
 
+    inLayout = false;
+    setAreNeighborsShown( false);
+    linkCount = 0;
+
+    configure( slotLocation, backgroundColor, isDraggable);
+  } // end constructor
+
+  /**
+   * <code>SlotNavNode</code> - constructor - for NodeShapes
+   *
+   * @param name - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
+   * @param slotLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   */
+  public SlotNavNode( final String name, final Integer id, final Point slotLocation,
+                      final Color backgroundColor) { 
+    super( ViewConstants.HEXAGON);
+    this.slot = null;
+
+    isDebug = false;
+    // isDebug = true;
+    StringBuffer labelBuf = null;
+    labelBuf = new StringBuffer( name);
+    isEmptySlot = false;
+    labelBuf.append( "\nkey=").append( id.toString());
+    nodeLabel = labelBuf.toString();
+    // System.err.println( "SlotNavNode: " + nodeLabel);
+    boolean isDraggable = false;
     inLayout = false;
     setAreNeighborsShown( false);
     linkCount = 0;
@@ -255,6 +284,9 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
    * @return - <code>String</code> - 
    */
   public final String getToolTipText() {
+    if (slot == null) {
+      return null;
+    }
     String operation = "";
     if (areNeighborsShown()) {
       operation = "close";
@@ -316,6 +348,9 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
    */
   public final boolean doMouseClick( final int modifiers, final Point dc, final Point vc,
                                      final JGoView view) {
+    if (slot == null) {
+      return false;
+    }
     JGoObject obj = view.pickDocObject( dc, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());

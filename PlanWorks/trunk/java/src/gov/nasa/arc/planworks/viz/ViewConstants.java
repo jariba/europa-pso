@@ -359,4 +359,8 @@ public abstract class ViewConstants {
   public static final int DECISION_TREE_VIEW_WIDTH = 400;
   public static final int DECISION_TREE_VIEW_HEIGHT = 300;
 
+  public static final String NODE_SHAPES_FRAME = "PlanWorks Node Shapes";
+  public static final int NODE_SHAPES_FRAME_WIDTH = 550;
+  public static final int NODE_SHAPES_FRAME_HEIGHT = 300;
+
 } // end ViewConstants

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.31 2004-06-10 01:36:11 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.32 2004-06-16 22:09:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -241,13 +241,9 @@ public class SequenceStepsView extends SequenceView {
    */
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
-    // wait for ConstraintNetworkView instance to become displayable
-    while (! this.isDisplayable()) {
-      try {
-        Thread.currentThread().sleep( 50);
-      } catch (InterruptedException excp) {
-      }
-      // System.err.println( "constraintNetworkView displayable " + this.isDisplayable());
+    // wait for SequenceStepsView instance to become displayable
+    if (! ViewGenerics.displayableWait( SequenceStepsView.this)) {
+      return;
     }
 
     this.computeFontMetrics( this);

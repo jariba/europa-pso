@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNode.java,v 1.17 2004-05-28 20:21:17 taylor Exp $
+// $Id: TimelineNode.java,v 1.18 2004-06-16 22:09:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -28,8 +28,18 @@ public class TimelineNode extends ExtendedBasicNode {
   protected String nodeLabel;
   protected boolean isDebug;
   protected Color backgroundColor;
-    public TimelineNode( PwTimeline timeline, Point timelineLocation, Color backgroundColor,
-                            boolean isDraggable, PartialPlanView partialPlanView) { 
+
+  /**
+   * <code>TimelineNode</code> - constructor 
+   *
+   * @param timeline - <code>PwTimeline</code> - 
+   * @param timelineLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   * @param isDraggable - <code>boolean</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   */
+  public TimelineNode( PwTimeline timeline, Point timelineLocation, Color backgroundColor,
+                       boolean isDraggable, PartialPlanView partialPlanView) { 
     super( ViewConstants.RIGHT_TRAPEZOID);
     this.timeline = timeline;
     this.partialPlanView = partialPlanView;
@@ -38,6 +48,30 @@ public class TimelineNode extends ExtendedBasicNode {
     // isDebug = true;
     StringBuffer labelBuf = new StringBuffer( timeline.getName());
     labelBuf.append( "\nkey=").append( timeline.getId().toString());
+    nodeLabel = labelBuf.toString();
+    // System.err.println( "TimelineNavNode: " + nodeLabel);
+
+    configure( timelineLocation, backgroundColor, isDraggable);
+  } // end constructor
+
+  /**
+   * <code>TimelineNode</code> - constructor - for NodeShapes
+   *
+   * @param name - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
+   * @param timelineLocation - <code>Point</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   */
+  public TimelineNode( String name, Integer id,Point timelineLocation, Color backgroundColor) {
+    super( ViewConstants.RIGHT_TRAPEZOID);
+    this.timeline = null;
+    this.partialPlanView = null;
+    this.backgroundColor = backgroundColor;
+    boolean isDraggable = false;
+    isDebug = false;
+    // isDebug = true;
+    StringBuffer labelBuf = new StringBuffer( name);
+    labelBuf.append( "\nkey=").append( id.toString());
     nodeLabel = labelBuf.toString();
     // System.err.println( "TimelineNavNode: " + nodeLabel);
 
