@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.4 2004-02-05 23:25:54 miatauro Exp $
+// $Id: TimelineViewTimelineNode.java,v 1.1 2004-02-17 22:22:04 miatauro Exp $
 //
 // PlanWorks
 //
@@ -55,7 +55,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  *        NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TimelineNode extends TextNode {
+public class TimelineViewTimelineNode extends TextNode {
 
   // top left bottom right
   private static final Insets NODE_INSETS =
@@ -82,9 +82,9 @@ public class TimelineNode extends TextNode {
    * @param backgroundColor - <code>Color</code> - 
    * @param timelineView - <code>TimelineView</code> - 
    */
-  public TimelineNode( String timelineName, PwTimeline timeline, PwObject object,
-                       Point timelineLocation, Color backgroundColor,
-                       TimelineView timelineView) {
+  public TimelineViewTimelineNode( final String timelineName, final PwTimeline timeline, 
+                                   final PwObject object, final Point timelineLocation, 
+                                   final Color backgroundColor, final TimelineView timelineView) {
     super( timelineName);
     this.timelineName = timelineName;
     this.timeline = timeline;
@@ -99,9 +99,10 @@ public class TimelineNode extends TextNode {
   } // end constructor
 
 
-  public TimelineNode(String timelineName, PwTimeline timeline, Point timelineLocation, 
-                      Color backgroundColor, TimelineView timelineView) {
-        super( timelineName);
+  public TimelineViewTimelineNode(final String timelineName, final PwTimeline timeline, 
+                                  final Point timelineLocation, final Color backgroundColor, 
+                                  final TimelineView timelineView) {
+    super( timelineName);
     this.timelineName = timelineName;
     this.timeline = timeline;
     this.object = null;
@@ -205,7 +206,7 @@ public class TimelineNode extends TextNode {
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
                                JGoView view) {
     JGoObject obj = view.pickDocObject( docCoords, false);
-    TimelineNode timelineNode = (TimelineNode) obj.getTopLevelObject();
+    TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -223,7 +224,7 @@ public class TimelineNode extends TextNode {
           MDIInternalFrame navigatorFrame = timelineView.openNavigatorViewFrame();
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = timelineView.getPartialPlan();
-          contentPane.add( new NavigatorView( TimelineNode.this, partialPlan,
+          contentPane.add( new NavigatorView( TimelineViewTimelineNode.this, partialPlan,
                                               timelineView.getViewSet(),
                                               navigatorFrame));
         }

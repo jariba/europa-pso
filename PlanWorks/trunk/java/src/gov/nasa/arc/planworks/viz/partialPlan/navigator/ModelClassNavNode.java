@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.6 2004-02-13 18:56:48 taylor Exp $
+// $Id: ModelClassNavNode.java,v 1.7 2004-02-17 22:24:35 miatauro Exp $
 //
 // PlanWorks
 //
@@ -26,7 +26,7 @@ import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.ObjectNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
@@ -38,15 +38,10 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ModelClassNavNode extends ExtendedBasicNode {
+public class ModelClassNavNode extends ObjectNode {
 
-  private PwObject object;
-  private PartialPlanView partialPlanView;
-  private String nodeLabel;
-  private boolean isDebug;
   private boolean areNeighborsShown;
   private int timelineLinkCount;
-  private Color backgroundColor;
   private boolean inLayout;
   private boolean hasSingleTimeline;
 
@@ -59,12 +54,10 @@ public class ModelClassNavNode extends ExtendedBasicNode {
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public ModelClassNavNode( PwObject object, Point objectLocation, Color backgroundColor,
-                            boolean isDraggable, PartialPlanView partialPlanView) { 
-    super( ViewConstants.LEFT_TRAPEZOID);
-    this.object = object;
-    this.backgroundColor = backgroundColor;
-    this.partialPlanView = partialPlanView;
+  public ModelClassNavNode( final PwObject object, final Point objectLocation, 
+                            final Color backgroundColor, final boolean isDraggable, 
+                            final PartialPlanView partialPlanView) { 
+    super(object, objectLocation, backgroundColor, isDraggable, partialPlanView);
 
     isDebug = false;
     // isDebug = true;
@@ -81,61 +74,10 @@ public class ModelClassNavNode extends ExtendedBasicNode {
     areNeighborsShown = false;
     timelineLinkCount = 0;
 
-    configure( objectLocation, backgroundColor, isDraggable);
-
-  } // end constructor
-
-  private final void configure( Point objectLocation, Color backgroundColor,
-                                boolean isDraggable) {
-    setLabelSpot( JGoObject.Center);
-    initialize( objectLocation, nodeLabel);
-    setBrush( JGoBrush.makeStockBrush( backgroundColor));  
-    getLabel().setEditable( false);
-    setDraggable( isDraggable);
-    // do not allow user links
-    getPort().setVisible( false);
-    getLabel().setMultiline( true);
-    if (hasSingleTimeline) {
-      setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    if(hasSingleTimeline) {
+      setPen(new JGoPen(JGoPen.SOLID, 2, ColorMap.getColor("black")));
     }
-  } // end configure
-
-  /**
-   * <code>equals</code>
-   *
-   * @param node - <code>ModelClassNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean equals( ModelClassNavNode node) {
-    return (this.getObject().getId().equals( node.getObject().getId()));
-  }
-
-  /**
-   * <code>getObject</code>
-   *
-   * @return - <code>PwObject</code> - 
-   */
-  public PwObject getObject() {
-    return object;
-  }
-
-  /**
-   * <code>getPartialPlanView</code>
-   *
-   * @return - <code>PartialPlanView</code> - 
-   */
-  public PartialPlanView getPartialPlanView() {
-    return partialPlanView;
-  }
-
-  /**
-   * <code>getBackgroundColor</code>
-   *
-   * @return - <code>Color</code> - 
-   */
-  public Color getBackgroundColor() {
-    return backgroundColor;
-  }
+  } // end constructor
 
   /**
    * <code>inLayout</code>
@@ -161,15 +103,6 @@ public class ModelClassNavNode extends ExtendedBasicNode {
       setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
       areNeighborsShown = false;
     }
-  }
-
-  /**
-   * <code>toString</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public String toString() {
-    return object.getId().toString();
   }
 
   /**

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.4 2004-02-13 18:56:50 taylor Exp $
+// $Id: TimelineNavNode.java,v 1.5 2004-02-17 22:24:36 miatauro Exp $
 //
 // PlanWorks
 //
@@ -26,7 +26,7 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
@@ -38,12 +38,8 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TimelineNavNode extends ExtendedBasicNode {
+public class TimelineNavNode extends TimelineNode {
 
-  private PwTimeline timeline;
-  private PartialPlanView partialPlanView;
-  private String nodeLabel;
-  private boolean isDebug;
   private boolean areNeighborsShown;
   private int objectLinkCount;
   private int slotLinkCount;
@@ -58,81 +54,24 @@ public class TimelineNavNode extends ExtendedBasicNode {
    * @param isDraggable - <code>boolean</code> - 
    * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public TimelineNavNode( PwTimeline timeline, Point timelineLocation, Color backgroundColor,
-                            boolean isDraggable, PartialPlanView partialPlanView) { 
-    super( ViewConstants.RIGHT_TRAPEZOID);
-    this.timeline = timeline;
-    this.partialPlanView = partialPlanView;
+  public TimelineNavNode( final PwTimeline timeline, final Point timelineLocation, 
+                          final Color backgroundColor, final boolean isDraggable, 
+                          final PartialPlanView partialPlanView) { 
+    super(timeline, timelineLocation, backgroundColor, isDraggable, partialPlanView);
 
     isDebug = false;
     // isDebug = true;
-    StringBuffer labelBuf = new StringBuffer( timeline.getName());
-    labelBuf.append( "\nkey=").append( timeline.getId().toString());
-    nodeLabel = labelBuf.toString();
-    // System.err.println( "TimelineNavNode: " + nodeLabel);
 
     inLayout = false;
     areNeighborsShown = false;
     objectLinkCount = 0;
     slotLinkCount = 0;
-
-    configure( timelineLocation, backgroundColor, isDraggable);
   } // end constructor
 
-  private final void configure( Point timelineLocation, Color backgroundColor,
-                                boolean isDraggable) {
-    setLabelSpot( JGoObject.Center);
-    initialize( timelineLocation, nodeLabel);
-    setBrush( JGoBrush.makeStockBrush( backgroundColor));  
-    getLabel().setEditable( false);
-    setDraggable( isDraggable);
-    // do not allow user links
-    getPort().setVisible( false);
-    getLabel().setMultiline( true);
-  } // end configure
-
-  /**
-   * <code>equals</code>
-   *
-   * @param node - <code>TimelineNavNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean equals( TimelineNavNode node) {
-    return (this.getTimeline().getId().equals( node.getTimeline().getId()));
-  }
-
-  /**
-   * <code>getTimeline</code>
-   *
-   * @return - <code>PwTimeline</code> - 
-   */
-  public PwTimeline getTimeline() {
-    return timeline;
-  }
-
-  /**
-   * <code>getPartialPlanView</code>
-   *
-   * @return - <code>PartialPlanView</code> - 
-   */
-  public PartialPlanView getPartialPlanView() {
-    return partialPlanView;
-  }
-
-  /**
-   * <code>inLayout</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
   public boolean inLayout() {
     return inLayout;
   }
 
-  /**
-   * <code>setInLayout</code>
-   *
-   * @param value - <code>boolean</code> - 
-   */
   public void setInLayout( boolean value) {
     int width = 1;
     inLayout = value;
@@ -149,15 +88,6 @@ public class TimelineNavNode extends ExtendedBasicNode {
    */
   public void setAreNeighborsShown( boolean value) {
     areNeighborsShown = value;
-  }
-
-  /**
-   * <code>toString</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public String toString() {
-    return timeline.getId().toString();
   }
 
   /**
