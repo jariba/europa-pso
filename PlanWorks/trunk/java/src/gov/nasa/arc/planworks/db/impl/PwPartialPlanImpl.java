@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.16 2003-06-30 18:30:59 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.17 2003-07-02 00:08:53 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -72,11 +72,11 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   private Map tokenRelationMap; // key = attribute key, value = PwTokenRelationImpl instance
   private Map variableMap; // key = attribute key, value = PwVariableImpl instance
 
-  private List objectIdList; // PwObjectImpl keys
   private int minKey, maxKey;
 
   public PwPartialPlanImpl(String url, String planName, Integer sequenceKey)  
     throws ResourceNotFoundException, SQLException {
+    System.err.println("In PwPartialPlanImpl");
     objectMap = new HashMap();
     timelineMap = new HashMap();
     slotMap = new HashMap();
@@ -86,18 +86,18 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     predicateMap = new HashMap();
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
-    objectIdList = new ArrayList();
-    this.url = (new StringBuffer(url)).append(System.getProperty("file.spearator")).append(planName).toString();
+    this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
     this.name = planName;
     createPartialPlan(sequenceKey);
   }
 
   private void createPartialPlan(Integer sequenceKey) throws ResourceNotFoundException, SQLException  {
-    System.err.println( "Creating PwPartialPlan  ...");
+    System.err.println( "Creating PwPartialPlan  ..." + url);
     long startTimeMSecs = System.currentTimeMillis();
     ResultSet existingPartialPlan =
-      MySQLDB.queryDatabase("SELECT (PartialPlanId, MinKey, MaxKey) FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" AND PlanName='").concat(name).concat("'"));
-    if(existingPartialPlan.getFetchSize() < 1) {
+      MySQLDB.queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
+    existingPartialPlan.last();
+    if(existingPartialPlan.getRow() < 1) {
       String [] fileNames = new File(url).list(new FilenameFilter () {
           public boolean accept(File dir, String name) {
             return (name.indexOf(".partialPlan") != -1 || name.indexOf(".objects") != -1 ||
@@ -114,23 +114,33 @@ public class PwPartialPlanImpl implements PwPartialPlan {
       for(int i = 0; i < fileNames.length; i++) {
         String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".")+1);
         tableName = tableName.substring(0,1).toUpperCase().concat(tableName.substring(1));
-        MySQLDB.updateDatabase("LOAD DATA INFILE '".concat(url).concat(System.getProperty("file.separator")).concat(fileNames[i]).concat("' INTO TABLE ").concat(tableName));
+        if(tableName.lastIndexOf("s") == tableName.length()-1) {
+          tableName = tableName.substring(0, tableName.length()-1);
+        }
+        if(tableName.equals("Constraint")) {
+          tableName = "VConstraint";
+        }
+        System.err.println("Loading " + fileNames[i] + " into " + tableName);
+        MySQLDB.updateDatabase("LOAD DATA INFILE '".concat(url).concat(System.getProperty("file.separator")).concat(fileNames[i]).concat("' IGNORE INTO TABLE ").concat(tableName));
       }
+      MySQLDB.updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceKey.toString()).concat(" WHERE PlanName='").concat(name).concat("'"));
       existingPartialPlan =
-        MySQLDB.queryDatabase("SELECT (PartialPlanId, MinKey, MaxKey) FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" AND PlanName='").concat(name).concat("'"));
+        MySQLDB.queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
     }
-
+    existingPartialPlan.first();
+    System.err.println("Got partial plan key " + existingPartialPlan.getLong("PartialPlanId"));
     key = new Long(existingPartialPlan.getLong("PartialPlanId"));
     minKey = existingPartialPlan.getInt("MinKey");
     maxKey = existingPartialPlan.getInt("MaxKey");
     ResultSet dbObject =
-      MySQLDB.queryDatabase("SELECT (ObjectName, ObjectId) FROM Object WHERE PartialPlanId=".concat(key.toString()));
+      MySQLDB.queryDatabase("SELECT ObjectName, ObjectId FROM Object WHERE PartialPlanId=".concat(key.toString()));
     while(dbObject.next()) {
       Integer objectKey = new Integer(dbObject.getInt("ObjectId"));
       objectMap.put(objectKey, new PwObjectImpl(objectKey, dbObject.getString("ObjectName"),this));
     }
     dbObject.close();
     model = MySQLDB.INSTANCE.queryPartialPlanModelByKey(key);
+    System.err.println("Creating Timeline/Slot/Token structure");
     MySQLDB.INSTANCE.createTimelineSlotTokenNodesStructure(this);
     System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
     long start2TimeMSecs = (new Date()).getTime();
@@ -146,6 +156,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
   private final void fillElementMaps() {
 
+    
     MySQLDB.INSTANCE.queryConstraints( this);
     
     // parameters are inside predicates
@@ -174,7 +185,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @return - <code>List</code> - of String
    */
   public List getObjectIdList() {
-    return objectIdList;
+    Object [] temp = objectMap.keySet().toArray();
+    Integer [] objectIds = new Integer[temp.length];
+    System.arraycopy(temp, 0, objectIds, 0, temp.length);
+    ArrayList retval = new ArrayList();
+    for(int i = 0; i < objectIds.length; i++) {
+      retval.add(objectIds[i]);
+    }
+    return retval;
   }
 
   /**
@@ -218,10 +236,8 @@ public class PwPartialPlanImpl implements PwPartialPlan {
    * @return - <code>List</code> - of PwObject
    */
   public List getObjectList() {
-    List retval = new ArrayList( objectIdList.size());
-    for (int i = 0; i < objectIdList.size(); i++) {
-      retval.add( this.getObject(  (Integer)objectIdList.get(i)));
-    }
+    List retval = new ArrayList();
+    retval.addAll(objectMap.values());
     return retval;
   }
   /**
