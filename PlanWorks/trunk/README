@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.61 2003-12-29 23:22:03 taylor Exp $
+# $Id: README,v 1.62 2003-12-30 21:08:48 miatauro Exp $
 #
 
 SUMMARY
@@ -33,7 +33,7 @@ o  GNATS PRs and CRs completed:
    #2193: Provide stepping forward and backward capability for all views.
    #2194: Rename Content Specification to Content Filter.
    #2199: Provide actual parameter names.
-
+   #2206: Need ability to turn off auto outputing writing when using the planwriter.
 
 CVS CHECKOUT
 ============
