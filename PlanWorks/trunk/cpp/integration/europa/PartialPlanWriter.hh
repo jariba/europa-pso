@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.4 2003-09-05 16:50:19 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.5 2003-09-30 17:12:38 miatauro Exp $
 //
 #include "TokenNetwork.hh"
 #include "ConstraintNetwork.hh"
@@ -15,10 +15,11 @@ using namespace Europa;
 
 class PartialPlanWriter {
 public:
-  PartialPlanWriter(TokenNetwork *ptnet, String &pdest)  { this->tnet = ptnet; this->dest = pdest; this->nstep = 0; this->izero = Value(0); this->rzero = Value(0.);};
+  PartialPlanWriter(TokenNetwork *ptnet, String &pdest)  { this->tnet = ptnet; this->dest = pdest; this->nstep = 0; this->izero = Value(0); this->rzero = Value(0.); this->sequenceId = 0ll;};
   void write();
 private:
   int nstep;
+  long long int sequenceId;
   int tokenRelationId;
   int enumeratedDomainId;
   int intervalDomainId;

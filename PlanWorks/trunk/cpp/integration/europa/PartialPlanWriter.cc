@@ -4,17 +4,17 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.4 2003-09-19 20:57:23 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.5 2003-09-30 17:12:37 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
 #include <iostream>
 #include <stdio.h>
 #include <strings.h>
-#include <strings.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <unistd.h>
 #include "PartialPlanWriter.hh"
 #include "Token.hh"
 #include "Constraint.hh"
@@ -34,6 +34,7 @@ using namespace Europa;
 void PartialPlanWriter::write(void) {
   struct timeval currTime;
   long long int partialPlanId;
+  char timestr[16];
   FILE *partialPlanOut, *objectOut, *timelineOut, *slotOut, *tokenOut, *variableOut, 
     *tokenRelationOut, *enumDomainOut, *intDomainOut, *constraintOut, *predOut, *paramOut,
     *paramVarTokenMapOut, *constraintVarMapOut;
@@ -43,11 +44,23 @@ void PartialPlanWriter::write(void) {
     handleError(generalUnknownError, "Failed to get current time", fatalError,);
   }
   partialPlanId = (((long long int)currTime.tv_sec) * 1000) + (currTime.tv_usec / 1000);
+  if(nstep == 0) {
+    sequenceId = partialPlanId;
+  }
+  sprintf(timestr, "%lld", sequenceId);
   ModelId modelId = tnet->getModelId();
   String modelName = modelId.getModelName();
+  {
+    char *temp = rindex(modelName.chars(), '/');
+    if(temp != NULL) {
+      *temp++;
+      modelName = temp;
+    }
+  }    
   char *seqname;
   if(nstep == 0) {
     seqname = (char *) modelName.chars();
+    fprintf(stderr, "%s", seqname);
     char *extStart = rindex(seqname, '.');
     *extStart = '\0';
     if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
@@ -55,6 +68,7 @@ void PartialPlanWriter::write(void) {
       handleError(generalUnknownError, strerror(errno), fatalError,);
     }
     dest += seqname;
+    dest += timestr;
     if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
       cerr << "Failed to make directory " << dest << endl;
       handleError(generalUnknownError, strerror(errno), fatalError,);
@@ -69,6 +83,9 @@ void PartialPlanWriter::write(void) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppPartialPlan = partialPlanDest + String("/") + stepnum + String(".partialPlan");
+  if(unlink(ppPartialPlan.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(partialPlanOut = fopen(ppPartialPlan.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
@@ -77,54 +94,93 @@ void PartialPlanWriter::write(void) {
   fclose(partialPlanOut);
 
   String ppObject = partialPlanDest + String("/") + stepnum + String(".objects");
+  if(unlink(ppObject.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(objectOut = fopen(ppObject.chars(), "w"))) {
    handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppTimeline = partialPlanDest + String("/") + stepnum + String(".timelines");
+  if(unlink(ppTimeline.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(timelineOut = fopen(ppTimeline.chars(), "w"))) {
    handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppSlot = partialPlanDest + String("/") + stepnum + String(".slots");
+  if(unlink(ppSlot.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(slotOut = fopen(ppSlot.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppToken = partialPlanDest + String("/") + stepnum + String(".tokens");
+  if(unlink(ppToken.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(tokenOut = fopen(ppToken.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppPVTM = partialPlanDest + String("/") + stepnum + String(".paramVarTokenMap");
+  if(unlink(ppPVTM.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(paramVarTokenMapOut = fopen(ppPVTM.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppTokenRelation = partialPlanDest + String("/") + stepnum + String(".tokenRelations");
+  if(unlink(ppTokenRelation.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(tokenRelationOut = fopen(ppTokenRelation.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppVariables = partialPlanDest + String("/") + stepnum + String(".variables");
+  if(unlink(ppVariables.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(variableOut = fopen(ppVariables.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppEnumDomain = partialPlanDest + String("/") + stepnum + String(".enumeratedDomains");
+  if(unlink(ppEnumDomain.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(enumDomainOut = fopen(ppEnumDomain.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppIntDomain = partialPlanDest + String("/") + stepnum + String(".intervalDomains");
+  if(unlink(ppIntDomain.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(intDomainOut = fopen(ppIntDomain.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppConstraints = partialPlanDest + String("/") + stepnum + String(".constraints");
+  if(unlink(ppConstraints.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(constraintOut = fopen(ppConstraints.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppCVM = partialPlanDest + String("/") + stepnum + String(".constraintVarMap");
+  if(unlink(ppCVM.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(constraintVarMapOut = fopen(ppCVM.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppPredicates = partialPlanDest + String("/") + stepnum + String(".predicates");
+  if(unlink(ppPredicates.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(predOut = fopen(ppPredicates.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
   String ppParameters = partialPlanDest + String("/") + stepnum + String(".parameters");
+  if(unlink(ppParameters.chars()) && errno != ENOENT) {
+    handleError(generalUnknownError, strerror(errno), fatalError,);
+  }
   if(!(paramOut = fopen(ppParameters.chars(), "w"))) {
     handleError(generalUnknownError, strerror(errno), fatalError,);
   }
