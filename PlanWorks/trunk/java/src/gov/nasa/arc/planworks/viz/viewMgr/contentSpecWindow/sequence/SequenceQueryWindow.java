@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.23 2004-04-22 19:26:28 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.24 2004-04-30 21:52:06 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -137,6 +137,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
 //     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESTRICTED);
 //     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_SPECIFIED);
     VARIABLE_TRANSACTION_TYPES = MySQLDB.queryVariableTransactionNames();
+    VARIABLE_TRANSACTION_TYPES.add("VARIABLE_RESTRICTED");
+    VARIABLE_TRANSACTION_TYPES.add("VARIABLE_RELAXED");
     FREE_TOKEN_QUERIES = new ArrayList();
     FREE_TOKEN_QUERIES.add( FREE_TOKENS_AT_STEP);
     UNBOUND_VARIABLE_QUERIES = new ArrayList();
@@ -660,8 +662,16 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         String variableKeyString = getKeyString( "Variable");
         transactionType = (String) queryWindow.variableTransComboBox.getSelectedItem();
         String queryTransactionType = transactionType;
+        //FIXME: cheesy hack to get restrictions/relaxations in the steps query.
+        //change query method to be more flexible with types and names
         if (transactionType.equals( "VARIABLE_ALL")) {
           queryTransactionType = DbConstants.VARIABLE_ALL_TYPES;
+        }
+        else if(transactionType.equals("VARIABLE_RESTRICTED")) {
+          queryTransactionType = "%' && TransactionType='RESTRICTION";
+        }
+        else if(transactionType.equals("VARIABLE_RELAXED")) {
+          queryTransactionType = "%' && TransactionType='RELAXATION";
         }
         if (! variableKeyString.equals( "")) {
           stepList = ((PwPlanningSequence) queryWindow.viewable).
