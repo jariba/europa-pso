@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.12 2003-06-19 19:54:44 miatauro Exp $
+// $Id: ViewSet.java,v 1.13 2003-06-25 17:04:05 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -17,8 +17,9 @@ import java.util.Iterator;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
-import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
+import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 
 /**
@@ -81,6 +82,25 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
     return timelineViewFrame;
   }
 
+  /**
+   * Opens a new TokenNetworkView, stuffs it in an MDIInternalFrame, adds it to the hash
+   * of frames, then returns it.  If a TokenNetworkView already exists for this partial
+   * plan, returns that.
+   * @return MDIInternalFrame the frame containing the vew.
+   */
+  public MDIInternalFrame openTokenNetworkView() {
+    if(viewExists("tokenNetworkView")) {
+      return (MDIInternalFrame) views.get("tokenNetworkView");
+    }
+    MDIInternalFrame tokenNetworkViewFrame = 
+      desktopFrame.createFrame("Token Network view of ".concat(planName), true, true,
+                               true, true);
+    views.put("tokenNetworkView", tokenNetworkViewFrame);
+    Container contentPane = tokenNetworkViewFrame.getContentPane();
+    contentPane.add(new TokenNetworkView(partialPlan, this));
+    return tokenNetworkViewFrame;
+  }
+
   //  public void addViewFrame(MDIInternalFrame viewFrame) {
   // if(!views.contains(viewFrame)) {
   //   views.add(viewFrame);
@@ -97,6 +117,8 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
       for(int i = 0; i < contentPane.getComponentCount(); i++) {
         if(contentPane.getComponent(i) instanceof TimelineView) {
           views.remove("timelineView");
+        } else if(contentPane.getComponent(i) instanceof TokenNetworkView) {
+          views.remove("tokenNetworkView");
         }
       }
     }

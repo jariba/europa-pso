@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.7 2003-06-19 00:31:20 taylor Exp $
+// $Id: SlotNode.java,v 1.8 2003-06-25 17:04:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -65,10 +65,9 @@ public class SlotNode extends TextNode {
 
   private String predicateName;
   private PwSlot slot;
-  private Point slotLocation;
   private PwToken previousToken;
   private boolean isLastSlot;
-  private FontMetrics fontMetrics;
+  private int objectCnt;
   private TimelineView view;
 
   private PwDomain startTimeIntervalDomain;
@@ -83,25 +82,29 @@ public class SlotNode extends TextNode {
    * @param slotLocation - <code>Point</code> - 
    * @param previousToken - <code>PwToken</code> - 
    * @param isLastSlot - <code>boolean</code> - 
+   * @param objectCnt - <code>int</code> - 
    * @param view - <code>TimelineView</code> - 
    */
   public SlotNode( String predicateName, PwSlot slot, Point slotLocation,
-                   PwToken previousToken, boolean isLastSlot, TimelineView view) {
+                   PwToken previousToken, boolean isLastSlot, int objectCnt,
+                   TimelineView view) {
     super( predicateName);
     this.predicateName = predicateName;
     this.slot = slot;
-    this.slotLocation = slotLocation;
     this.previousToken = previousToken;
     this.isLastSlot = isLastSlot;
+    this.objectCnt = objectCnt;
     this.view = view;
     // System.err.println( "SlotNode: predicateName " + predicateName);
-    configure();
+    configure( slotLocation);
   } // end constructor
 
 
-  private final void configure() {
-    // bgcolor of TextNode rectangle
-    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( "lightGray")));  
+  private final void configure( Point slotLocation) {
+    String backGroundColor = ((objectCnt % 2) == 0) ?
+      ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
+      ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
+    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
     setDraggable( false);
     // do not allow links
@@ -126,15 +129,6 @@ public class SlotNode extends TextNode {
    */
   public String getPredicateName() {
     return predicateName;
-  }
-
-  /**
-   * <code>getSlotLocation</code>
-   *
-   * @return - <code>Point</code> - 
-   */
-  public Point getSlotLocation() {
-    return slotLocation;
   }
 
   /**
@@ -236,9 +230,10 @@ public class SlotNode extends TextNode {
                                       ViewConstants.TIMELINE_VIEW_IS_TEXT_MULTILINE,
                                       ViewConstants.TIMELINE_VIEW_IS_TEXT_EDITABLE);
     textObject.setResizable( false);
-    textObject.setEditOnSingleClick( false);
+    textObject.setEditable( false);
+    textObject.setDraggable( false);
     textObject.setBkColor( ColorMap.getColor( "lightGray"));
-    view.addJGoObjectPosition( view.getJGoDocument().addObjectAtTail( textObject));
+    view.getJGoDocument().addObjectAtTail( textObject);
     return textObject;
   } // end renderText
 

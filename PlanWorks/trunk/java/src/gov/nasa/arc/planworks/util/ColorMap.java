@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ColorMap.java,v 1.1 2003-05-20 18:25:35 taylor Exp $
+// $Id: ColorMap.java,v 1.2 2003-06-25 17:04:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -45,6 +45,7 @@ public class ColorMap {
     x11Colors.put( "black", new Color( 0, 0, 0));
     x11Colors.put( "blue", new Color( 0, 0, 255));
     x11Colors.put( "chartreuse1", new Color( 127, 255, 0));
+    x11Colors.put( "cornflowerBlue", new Color( 100, 149, 237));
     x11Colors.put( "cyan", new Color( 0, 255, 255));
     x11Colors.put( "darkSeaGreen1", new Color( 193, 255, 193));
     x11Colors.put( "deepSkyBlue", new Color( 0, 191, 255));
@@ -57,6 +58,7 @@ public class ColorMap {
     x11Colors.put( "magenta", new Color( 255, 0, 255));
     x11Colors.put( "mediumBlue", new Color( 0, 0, 205));
     x11Colors.put( "mediumOrchid4", new Color( 122, 55, 139));
+    x11Colors.put( "paleGreen", new Color( 152, 251, 152));
     x11Colors.put( "pink", new Color( 255, 192, 203));
     x11Colors.put( "plum", new Color( 221, 160, 221));
     x11Colors.put( "purple", new Color( 160, 32, 240));

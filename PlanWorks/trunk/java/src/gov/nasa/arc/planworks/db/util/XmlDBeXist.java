@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.12 2003-06-19 20:11:05 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.13 2003-06-25 17:04:04 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -938,7 +938,7 @@ public class XmlDBeXist {
         }
       } else if ((nodeType == END_ELEMENT_NODE) && nodeName.equals( CONSTRAINT_ELEMENT)) {
         partialPlan.addConstraint( key,
-                                    new PwConstraintImpl( name, key, type, nodeValue,
+                                    new PwConstraintImpl( name, key, type, variableIds,
                                                           partialPlan));
       }
     }

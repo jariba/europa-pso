@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.8 2003-06-12 23:49:45 taylor Exp $
+// $Id: PwObjectImpl.java,v 1.9 2003-06-25 17:04:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -28,19 +28,19 @@ import gov.nasa.arc.planworks.db.PwObject;
  */
 public class PwObjectImpl implements PwObject {
 
-  private String key;
+  private int key;
   private String name;
-  private List timelineIdList; 
+  private List timelineIdList; // element Integer
   private PwPartialPlanImpl partialPlan;
 
   /**
    * <code>PwObjectImpl</code> - constructor 
    *
-   * @param key - <code>String</code> - 
+   * @param key - <code>int</code> - 
    * @param name - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwObjectImpl( String key, String name, PwPartialPlanImpl partialPlan) {
+  public PwObjectImpl( int key, String name, PwPartialPlanImpl partialPlan) {
     this.key = key;
     this.name = name;
     this.partialPlan = partialPlan;
@@ -52,11 +52,11 @@ public class PwObjectImpl implements PwObject {
    * <code>addTimeline</code>
    *
    * @param name - <code>String</code> - 
-   * @param key - <code>String</code> - 
+   * @param key - <code>int</code> - 
    * @return timeline - <code>PwTimelineImpl</code> - 
    */
-  public PwTimelineImpl addTimeline( String name, String key) {
-    timelineIdList.add( key);
+  public PwTimelineImpl addTimeline( String name, int key) {
+    timelineIdList.add( new Integer( key));
     PwTimelineImpl timeline = new PwTimelineImpl( name, key, partialPlan);
     partialPlan.addTimeline( key, timeline);
     return timeline;
@@ -65,9 +65,9 @@ public class PwObjectImpl implements PwObject {
   /**
    * <code>getKey</code>
    *
-   * @return key - <code>String</code> -
+   * @return key - <code>int</code> -
    */
-  public String getKey() {
+  public int getKey() {
     return this.key;
   }
 
@@ -89,7 +89,7 @@ public class PwObjectImpl implements PwObject {
   public List getTimelineList() {
     List retval = new ArrayList(timelineIdList.size());
     for (int i = 0; i < timelineIdList.size(); i++) {
-      retval.add ( partialPlan.getTimeline( (String) timelineIdList.get(i)));
+      retval.add ( partialPlan.getTimeline( ((Integer) timelineIdList.get(i)).intValue()));
     }
     return retval;
   }

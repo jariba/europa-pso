@@ -4,16 +4,16 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.6 2003-06-19 20:57:31 taylor Exp $
+# $Id: README,v 1.7 2003-06-25 17:04:03 taylor Exp $
 #
 
 SUMMARY
 =======
 Milestone 2 integates the Multiple Document Interface (MDI) for window
 management, project management (creating, saving, opening and deleting),
-and introduces the Content Specification functionality for filtering partial
-plan rendering in the user selected views, which is currently restricted
-to the Timeline View.
+the plan generator, and the Content Specification functionality for 
+filtering partial plan rendering in the user selected views, which is 
+currently restricted to the Timeline View.
 
 
 CVS CHECKOUT
@@ -74,3 +74,10 @@ used by PlanWorks/java/prj.el -- JDE configuration file
 Other files used by  Emacs/XEmacs/JDE:
   PlanWorks/java/build-tags-file.csh
   PlanWorks/java/planWorks.TAGS
+
+
+PRs & CRs completed for PW_M_3
+==============================
+#1841: Suggestion: group timelines for the same object
+       Use alternating colors for grouping
+#1844: Suggestion: consider making interval endpoints immovable

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenRelationImpl.java,v 1.3 2003-06-02 17:49:59 taylor Exp $
+// $Id: PwTokenRelationImpl.java,v 1.4 2003-06-25 17:04:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -63,6 +63,24 @@ public class PwTokenRelationImpl implements PwTokenRelation {
     return key;
   }
 	
+  /**
+   * <code>getMasterTokenId</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getMasterTokenId() {
+    return masterTokenId;
+  }
+ 
+  /**
+   * <code>getSlaveTokenId</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getSlaveTokenId() {
+    return slaveTokenId;
+  }
+
   /**
    * <code>getMasterToken</code>
    *

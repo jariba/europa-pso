@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObject.java,v 1.4 2003-06-11 01:02:11 taylor Exp $
+// $Id: PwObject.java,v 1.5 2003-06-25 17:04:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -29,9 +29,9 @@ public interface PwObject {
   /**
    * <code>getKey</code>
    *
-   * @return key - <code>String</code> -
+   * @return key - <code>int</code> -
    */
-  public abstract String getKey();
+  public abstract int getKey();
 
   /**
    * <code>getName</code>
