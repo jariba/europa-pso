@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.102 2004-06-16 22:09:07 taylor Exp $
+// $Id: PlanWorks.java,v 1.103 2004-06-22 22:37:47 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -13,6 +13,8 @@ import java.awt.Container;
 import java.awt.DisplayMode;
 import java.awt.GraphicsEnvironment;
 import java.awt.GraphicsDevice;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -28,12 +30,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileFilter;
 
@@ -43,6 +48,9 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
+import gov.nasa.arc.planworks.dbg.testLang.TestLangHelper;
+import gov.nasa.arc.planworks.dbg.testLang.TestLangParseException;
+import gov.nasa.arc.planworks.dbg.testLang.TestLangRuntimeException;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
@@ -86,6 +94,9 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String NEWSEQ_MENU_ITEM = "New Sequence ...";
   public static final String ADDSEQ_MENU_ITEM = "Add Sequence ...";
   public static final String DELSEQ_MENU_ITEM = "Delete Sequence ...";
+
+  public static final String RUNTEST_MENU_ITEM = "Run Test ...";
+
   public static final String CREATE = "create";
   public static final String OPEN = "open";
 
@@ -533,6 +544,9 @@ public class PlanWorks extends MDIDesktopFrame {
     //JMenuItem newSequenceItem = new JMenuItem( NEWSEQ_MENU_ITEM);
     JMenuItem addSequenceItem = new JMenuItem( ADDSEQ_MENU_ITEM);
     JMenuItem deleteSequenceItem = new JMenuItem(DELSEQ_MENU_ITEM);
+
+    JMenuItem runTestItem = new JMenuItem(RUNTEST_MENU_ITEM);
+
     createProjectItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent e) {
           while(PlanWorks.planWorks == null) {
@@ -572,6 +586,14 @@ public class PlanWorks extends MDIDesktopFrame {
         }
       });
     projectMenu.add(deleteSequenceItem);
+
+    runTestItem.addActionListener(new ActionListener() {
+        public final void actionPerformed(final ActionEvent e) {
+          PlanWorks.planWorks.runTestWindow();
+        }
+      });
+    projectMenu.add(runTestItem);
+
 
     jMenuArray[0] = fileMenu;
     jMenuArray[1] = projectMenu;
@@ -872,6 +894,137 @@ public class PlanWorks extends MDIDesktopFrame {
     }
     return isSequenceAdded;
   } // end addPlanningSequences
+
+  
+  private void runTestWindow() {
+    JFrame frame = new JFrame("Test Runner");
+
+    GridBagLayout gridBag = new GridBagLayout();
+    GridBagConstraints c = new GridBagConstraints();
+
+    c.weightx = 0;
+    c.weighty = 0;
+    c.gridx = 0;
+    c.gridy = 0;
+
+    Container contentPane = frame.getContentPane();
+    contentPane.setLayout(gridBag);
+
+    JLabel projectLabel = new JLabel("Project ");
+    gridBag.setConstraints(projectLabel, c);
+    contentPane.add(projectLabel);
+
+    JTextField projectField = new JTextField(10);
+    c.gridx++;
+    gridBag.setConstraints(projectField, c);
+    contentPane.add(projectField);
+
+    projectField.setText("test");
+
+    JLabel sequenceLabel = new JLabel("Sequence ");
+    c.gridx = 0;
+    c.gridy++;
+    gridBag.setConstraints(sequenceLabel, c);
+    contentPane.add(sequenceLabel);
+    
+    JTextField sequenceField = new JTextField(30);
+    c.gridx++;
+    gridBag.setConstraints(sequenceField, c);
+    contentPane.add(sequenceField);
+    
+    JButton sequenceBrowseButton = new JButton("Browse");
+    sequenceBrowseButton.addActionListener(new BrowseButtonListener(sequenceField));
+    c.gridx++;
+    gridBag.setConstraints(sequenceBrowseButton, c);
+    contentPane.add(sequenceBrowseButton);
+
+    JLabel testFileLabel = new JLabel("Test file ");
+    c.gridx = 0;
+    c.gridy++;
+    gridBag.setConstraints(testFileLabel, c);
+    contentPane.add(testFileLabel);
+    
+    JTextField testFileField = new JTextField(30);
+    c.gridx++;
+    gridBag.setConstraints(testFileField, c);
+    contentPane.add(testFileField);
+    
+    JButton testFileBrowseButton = new JButton("Browse");
+    testFileBrowseButton.addActionListener(new BrowseButtonListener(testFileField));
+    c.gridx++;
+    gridBag.setConstraints(testFileBrowseButton, c);
+    contentPane.add(testFileBrowseButton);
+
+    JLabel testNameLabel = new JLabel("Test name ");
+    c.gridx = 0;
+    c.gridy++;
+    gridBag.setConstraints(testNameLabel, c);
+    contentPane.add(testNameLabel);
+
+    JTextField testNameField = new JTextField(10);
+    c.gridx++;
+    gridBag.setConstraints(testNameField, c);
+    contentPane.add(testNameField);
+    
+    JButton runButton = new JButton("Run test");
+    runButton.addActionListener(new TestButtonListener(projectField, sequenceField, testFileField,
+                                                       testNameField));
+    c.gridx = 0;
+    c.gridy++;
+    gridBag.setConstraints(runButton, c);
+    contentPane.add(runButton);
+    frame.pack();
+    frame.setVisible(true);
+  }
+
+  class BrowseButtonListener implements ActionListener {
+    private JTextField field;
+    public BrowseButtonListener(JTextField field) {
+      this.field = field;
+    }
+    public void actionPerformed(ActionEvent ae) {
+      JFileChooser chooser = new JFileChooser();
+      chooser.setMultiSelectionEnabled(false);
+      chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+      int retval = chooser.showOpenDialog(PlanWorks.planWorks);
+      if(retval == JFileChooser.APPROVE_OPTION)
+        field.setText(chooser.getSelectedFile().getAbsolutePath());
+    }
+  }
+
+  class TestButtonListener implements ActionListener {
+    private JTextField projectName;
+    private JTextField sequenceUrl;
+    private JTextField testFile;
+    private JTextField testName;
+    public TestButtonListener(JTextField project, JTextField sequence, JTextField testFile, JTextField testName) {
+      this.projectName = project;
+      this.sequenceUrl = sequence;
+      this.testFile = testFile;
+      this.testName = testName;
+    }
+    public void actionPerformed(ActionEvent ae) {
+      try {
+        if(testName.getText().trim().equals("")) {
+          TestLangHelper.runTests(projectName.getText().trim(),
+                                  sequenceUrl.getText().trim(),
+                                  testFile.getText().trim());
+        }
+        else {
+          TestLangHelper.runTests(projectName.getText().trim(),
+                                  sequenceUrl.getText().trim(),
+                                  testFile.getText().trim(),
+                                  testName.getText().trim());
+        }
+      }
+      catch(TestLangParseException tlpe) {
+        tlpe.printStackTrace();
+      }
+      catch(TestLangRuntimeException tlre) {
+        tlre.printStackTrace();
+      }
+    }
+  }
 
   /**
    * <code>isMacOSX</code>
