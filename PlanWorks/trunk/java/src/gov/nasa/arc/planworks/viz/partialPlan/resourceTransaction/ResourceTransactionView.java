@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.19 2004-05-28 20:21:21 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.20 2004-07-08 21:33:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -364,7 +364,7 @@ public class ResourceTransactionView extends ResourceView  {
     mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         ViewConstants.RESOURCE_TRANSACTION_VIEW);
+                         viewListenerList, ViewConstants.RESOURCE_TRANSACTION_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -401,7 +401,8 @@ public class ResourceTransactionView extends ResourceView  {
       createCloseNavigatorWindowsItem( closeWindowsItem);
       mouseRightPopup.add( closeWindowsItem);
     }
-    createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
+    createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
+                        mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

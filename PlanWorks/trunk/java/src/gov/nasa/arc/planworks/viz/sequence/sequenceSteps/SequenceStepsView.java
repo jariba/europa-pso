@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.32 2004-06-16 22:09:19 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.33 2004-07-08 21:33:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -635,12 +635,9 @@ public class SequenceStepsView extends SequenceView {
                                   final SequenceStepsView sequenceStepsView) {
     refreshItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent evt) {
-          System.err.println( "Refreshing planning sequence...");
           planSequence.refresh();
-          System.err.println( "Redrawing sequence steps view...");
           heightScaleFactor = computeHeightScaleFactor();
           redraw();
-          System.err.println( "   ... Done.");
         }
       });
   }

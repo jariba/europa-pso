@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.12 2004-06-04 23:32:04 taylor Exp $
+# $Id: README.release,v 1.13 2004-07-08 21:33:20 taylor Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
@@ -19,9 +19,9 @@ o Update PlanWorks/GETTING_STARTED
 o Update PlanWorks/testCases/planViz.txt
 
 o Run "ant test" to execute the BackendTest, the MySQLDBTest,
-  the PlanWorksUtilsTest, and the PlanWorksGUITest (1-10 of 24 planViz.txt tests)
+  the PlanWorksUtilsTest, and the PlanWorksGUITest (1-11 of 24 planViz.txt tests)
 
-o Perform test cases outlined in PlanWorks/testCases/planViz.txt (11-24)
+o Perform test cases outlined in PlanWorks/testCases/planViz.txt (12-24)
 
 o With a freshly checked-out PLASMA (cvs co PLASMA), run
   "cd PLASMA/System; jam nddl-planner-tests".  View generated sequences in PlanWorks.

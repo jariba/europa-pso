@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.108 2004-06-29 00:47:15 taylor Exp $
+# $Id: README,v 1.109 2004-07-08 21:33:20 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -49,6 +49,8 @@ o "Help->Node Shapes" has been added to the PlanWorks menubar.  It will create a
 o The first version of the Test Definition Language has been completed. The
   specification is located at PlanWorks/doc/TestLangSpec.txt.  It can be
   accessed through Project->Run Test
+
+o PlanWorksGUITest now supports tests 1-11 of 24, defined in testCases/planViz.txt
 
 o  GNATS PRs and CRs completed:
    #2424: RuleInstance: Should be able to view from any RuleInstance node in any view.

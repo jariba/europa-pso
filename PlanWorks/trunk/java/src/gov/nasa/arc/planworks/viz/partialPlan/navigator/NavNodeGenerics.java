@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.7 2004-06-15 19:26:47 taylor Exp $
+// $Id: NavNodeGenerics.java,v 1.8 2004-07-08 21:33:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,6 +42,7 @@ import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 public final class NavNodeGenerics {
 
   public static final String OBJECT_TO_OBJECT_LINK_TYPE = "OtoO";
+  public static final String OBJECT_TO_RESOURCE_LINK_TYPE = "OtoR";
   public static final String OBJECT_TO_TIMELINE_LINK_TYPE = "OtoTi";
   public static final String OBJECT_TO_VARIABLE_LINK_TYPE = "OtoV";
   public static final String TIMELINE_TO_OBJECT_LINK_TYPE = "TitoO";
@@ -365,6 +366,9 @@ public final class NavNodeGenerics {
     } else if ((fromNavNode instanceof ModelClassNavNode) &&
                (toNavNode instanceof TimelineNavNode)) {
       return OBJECT_TO_TIMELINE_LINK_TYPE;
+    } else if ((fromNavNode instanceof ModelClassNavNode) &&
+               (toNavNode instanceof ResourceNavNode)) {
+      return OBJECT_TO_RESOURCE_LINK_TYPE;
     } else if ((fromNavNode instanceof TimelineNavNode) &&
                (toNavNode instanceof ModelClassNavNode)) {
       return TIMELINE_TO_OBJECT_LINK_TYPE;

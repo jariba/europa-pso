@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.11 2004-06-29 00:47:16 taylor Exp $
+// $Id: DBTransactionView.java,v 1.12 2004-07-08 21:33:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -280,6 +280,15 @@ public class DBTransactionView extends PartialPlanView {
   }
 
   /**
+   * <code>getContentScrollPane</code>
+   *
+   * @return - <code>JScrollPane</code> - 
+   */
+  public final JScrollPane getContentScrollPane() {
+    return contentScrollPane;
+  }
+
+  /**
    * <code>DBTransactionHeaderView</code> - 
    *
    */
@@ -323,10 +332,12 @@ public class DBTransactionView extends PartialPlanView {
 
       DBTransactionView.this.createOpenViewItems( partialPlan, partialPlanName,
                                                   planSequence, mouseRightPopup,
+                                                  viewListenerList,
                                                   ViewConstants.DB_TRANSACTION_VIEW);
     
       DBTransactionView.this.createAllViewItems( partialPlan, partialPlanName,
-                                                 planSequence, mouseRightPopup);
+                                                 planSequence, viewListenerList,
+                                                 mouseRightPopup);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     } // end mouseRightPopupMenu

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.58 2004-06-21 22:43:03 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.59 2004-07-08 21:33:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -530,7 +530,7 @@ public class TokenNetworkView extends PartialPlanView {
     mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         ViewConstants.TOKEN_NETWORK_VIEW);
+                         viewListenerList, ViewConstants.TOKEN_NETWORK_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -563,7 +563,8 @@ public class TokenNetworkView extends PartialPlanView {
       mouseRightPopup.add( closeRuleWindowsItem);
     }
 
-    createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
+    createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
+                        mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.15 2004-05-21 21:39:01 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.16 2004-07-08 21:33:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -114,7 +114,6 @@ public class TransactionHeaderView extends JGoView {
           Integer entityKey = transByKeyDialog.getEntityKey();
           if (entityKey != null) {
             int rowIndx = transByKeyDialog.getEntityListIndex();
-            System.err.println( "createTransByKeyItem: entityKey " + entityKey.toString());
             if ((contentScrollPane != null) && (contentTable != null) && (colIndx != -1)) {
               int newPosition = contentTable.getRowHeight() * rowIndx;
               contentScrollPane.getVerticalScrollBar().setValue( newPosition);
@@ -122,6 +121,8 @@ public class TransactionHeaderView extends JGoView {
               contentTable.getColumnModel().
                 getSelectionModel().setSelectionInterval( colIndx, colIndx);
               contentTable.getSelectionModel().setSelectionInterval( rowIndx, rowIndx);
+              System.err.println( "transByKeyItem: entityKey " + entityKey.toString() +
+                                  " found");
             }
           }
         }

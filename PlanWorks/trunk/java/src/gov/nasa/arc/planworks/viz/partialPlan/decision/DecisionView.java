@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.6 2004-06-29 00:47:17 taylor Exp $
+// $Id: DecisionView.java,v 1.7 2004-07-08 21:33:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -346,6 +346,15 @@ public class DecisionView extends PartialPlanView {
     return currentDecisionFont;
   }
 
+  /**
+   * <code>getDecisionTree</code>
+   *
+   * @return - <code>JTree</code> - 
+   */
+  public final JTree getDecisionTree() {
+    return decisionTree;
+  }
+
   private DefaultMutableTreeNode renderDecisions() {
     try {
       decisionList = planSequence.getOpenDecisionsForStep( partialPlan.getStepNumber());
@@ -448,7 +457,7 @@ public class DecisionView extends PartialPlanView {
   } // end renderDecisions
 
 
-  class DecisionTree extends JTree {
+  public class DecisionTree extends JTree {
 
     private Integer currentDecisionId;
 
@@ -472,6 +481,7 @@ public class DecisionView extends PartialPlanView {
           public void mousePressed( MouseEvent evt) {
             int selRow = DecisionTree.this.getRowForLocation( evt.getX(), evt.getY());
             TreePath selPath = DecisionTree.this.getPathForLocation( evt.getX(), evt.getY());
+            System.err.println( "DecisionView.mousePressed selRow " + selRow);
             if (selRow != -1) {
               if (evt.getClickCount() == 1) {
                 if (MouseEventOSX.isMouseRightClick( evt.getModifiers(), PlanWorks.isMacOSX())) {
@@ -595,15 +605,17 @@ public class DecisionView extends PartialPlanView {
       createFindByKeyItem( findByKeyItem);
       mouseRightPopup.add( findByKeyItem);
 
-      createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                           ViewConstants.DECISION_VIEW);
+      createOpenViewItems( partialPlan, partialPlanName, planSequence, 
+                           mouseRightPopup, viewListenerList, ViewConstants.DECISION_VIEW);
       if (viewSet.doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
         mouseRightPopup.addSeparator();
         JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
         createCloseNavigatorWindowsItem( closeWindowsItem);
         mouseRightPopup.add( closeWindowsItem);
       }
-      createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
+
+      createAllViewItems( partialPlan, partialPlanName, planSequence,
+                          viewListenerList, mouseRightPopup);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     } // end mouseRightPopupMenu

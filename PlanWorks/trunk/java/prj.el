@@ -1,4 +1,4 @@
-;;; $Id: prj.el,v 1.10 2004-04-22 19:26:13 taylor Exp $
+;;; $Id: prj.el,v 1.11 2004-07-08 21:33:20 taylor Exp $
 ;;;
 ;;; JAVA_HOME ANT_HOME JDE_HOME & PLANWORKS_HOME must be set properly
 ;;;
@@ -6,7 +6,7 @@
 ;;;
 (jde-project-file-version "1.0")
 (jde-set-variables
- '(jde-ant-args (concat "-emacs -Ddeprecation -Djavac=" (getenv "JAVA_HOME")
+ '(jde-ant-args (concat "-emacs -Djavac=" (getenv "JAVA_HOME")
                         "/bin/javac -Djar=" (getenv "JAVA_HOME") "/bin/jar compile"))
  '(jde-ant-buildfile (concat (getenv "PLANWORKS_HOME") "/build.xml"))
  '(jde-ant-complete-target nil)
@@ -33,11 +33,13 @@
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/JGo.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/JGoLayout.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/Classier.jar")
-         (concat (getenv "PLANWORKS_HOME") "/java/lib/jfcunit/junit.jar")
-         (concat (getenv "PLANWORKS_HOME") "/java/lib/jfcunit/jfcunit.jar")
-         (concat (getenv "PLANWORKS_HOME") "/java/lib/jfcunit/jakarta-regexp.jar")
+         (concat (getenv "PLANWORKS_HOME") "/java/lib/JFCUnit/junit.jar")
+         (concat (getenv "PLANWORKS_HOME") "/java/lib/JFCUnit/jfcunit.jar")
+         (concat (getenv "PLANWORKS_HOME") "/java/lib/JFCUnit/jakarta-regexp.jar")
          ))
+ ;; either -g or -deprecation, not both
  '(jde-compile-option-command-line-args (quote ("-g")))
+;; '(jde-compile-option-command-line-args (quote ("-deprecation")))
  '(jde-compile-option-directory (concat (getenv "PLANWORKS_HOME") "/java/classes"))
  '(jde-compile-option-sourcepath (list (concat (getenv "PLANWORKS_HOME") "/java/src")
                                        (concat (getenv "JAVA_HOME") "/src")))
@@ -69,9 +71,9 @@
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/JGo.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/JGoLayout.jar")
          (concat (getenv "PLANWORKS_HOME") "/java/lib/JGo/Classier.jar")
-         (concat (getenv "PLANWORKS_HOME") "/java/lib/jfcunit/junit.jar")
-         (concat (getenv "PLANWORKS_HOME") "/java/lib/jfcunit/jfcunit.jar")
-         (concat (getenv "PLANWORKS_HOME") "/java/lib/jfcunit/jakarta-regexp.jar")
+         (concat (getenv "PLANWORKS_HOME") "/java/lib/JFCUnit/junit.jar")
+         (concat (getenv "PLANWORKS_HOME") "/java/lib/JFCUnit/jfcunit.jar")
+         (concat (getenv "PLANWORKS_HOME") "/java/lib/JFCUnit/jakarta-regexp.jar")
          ))
  ;; Do you prefer to have java.io.* imports or separate import for each 
  ;; used class - now it is set for importing classes separately

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.30 2004-06-29 00:47:17 taylor Exp $
+// $Id: NavigatorView.java,v 1.31 2004-07-08 21:33:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -746,7 +746,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         ViewConstants.NAVIGATOR_VIEW);
+                         viewListenerList, ViewConstants.NAVIGATOR_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -754,7 +754,8 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
 
     this.createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
-    createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
+    createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
+                        mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.20 2004-05-28 20:21:20 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.21 2004-07-08 21:33:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -256,7 +256,7 @@ public class ResourceProfileView extends ResourceView  {
     mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         ViewConstants.RESOURCE_PROFILE_VIEW);
+                         viewListenerList, ViewConstants.RESOURCE_PROFILE_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -293,7 +293,8 @@ public class ResourceProfileView extends ResourceView  {
       createCloseNavigatorWindowsItem( closeWindowsItem);
       mouseRightPopup.add( closeWindowsItem);
     }
-    createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
+    createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
+                        mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

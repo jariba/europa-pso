@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNode.java,v 1.7 2004-06-29 00:47:16 taylor Exp $
+// $Id: RuleInstanceNode.java,v 1.8 2004-07-08 21:33:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -39,6 +39,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
@@ -68,6 +69,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
   private List toTokenNodeList; // element TokenNode
   private String nodeLabel;
   private Color backgroundColor;
+  private ViewListener viewListener;
 
   /**
    * <code>RuleInstanceNode</code> - constructor 
@@ -89,6 +91,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
     this.fromTokenNode = fromTokenNode;
     this.toTokenNodeList = toTokenNodeList;
     this.partialPlanView = partialPlanView;
+    viewListener = null;
 
     this.backgroundColor = backgroundColor;
 
@@ -248,6 +251,22 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
   }
 
   /**
+   * <code>doMouseClickWithListener</code> - called from PlanWorksGUITest
+   *
+   * @param modifiers - <code>int</code> - 
+   * @param docCoords - <code>Point</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   * @param view - <code>JGoView</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public void doMouseClickWithListener( final int modifiers, final Point docCoords,
+                                        final Point viewCoords, final JGoView view,
+                                        final ViewListener viewListener) {
+    this.viewListener = viewListener;
+    doMouseClick( modifiers, docCoords, viewCoords, view);
+  } // end doMouseClickWithListener
+
+  /**
    * <code>doMouseClick</code>
    *
    * @param modifiers - <code>int</code> - 
@@ -257,7 +276,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    * @return - <code>boolean</code> - 
    */
   public boolean doMouseClick( final int modifiers, final Point docCoords,
-                                     final Point viewCoords, final JGoView view) {
+                               final Point viewCoords, final JGoView view) {
     if (ruleInstance == null) {
       return false;
     }
@@ -268,7 +287,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       // do nothing
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      mouseRightPopupMenu( ruleInstanceNode, viewCoords);
+      mouseRightPopupMenu( ruleInstanceNode, viewCoords, viewListener);
       return true;
     }
     return false;
@@ -281,7 +300,8 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    * @param viewCoords - <code>Point</code> - 
    */
   public final void mouseRightPopupMenu( final RuleInstanceNode ruleInstanceNode,
-                                         final Point viewCoords) {
+                                         final Point viewCoords,
+                                         final ViewListener viewListener) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
     if (ruleInstanceNode.getRuleInstance().getVariables().size() > 0) {
@@ -306,8 +326,8 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
       });
     mouseRightPopup.add( navigatorItem);
 
-    mouseRightPopup.add( ViewGenerics.createRuleInstanceViewItem( RuleInstanceNode.this,
-                                                                  partialPlanView));
+    mouseRightPopup.add( ViewGenerics.createRuleInstanceViewItem
+                         ( RuleInstanceNode.this, partialPlanView, viewListener));
 
     ViewGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
   } // end mouseRightPopupMenu

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.21 2004-06-21 22:43:00 taylor Exp $
+// $Id: ViewGenerics.java,v 1.22 2004-07-08 21:33:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -560,7 +560,8 @@ public class ViewGenerics {
   }
 
   public static JMenuItem createRuleInstanceViewItem( final RuleInstanceNode ruleInstanceNode,
-                                                      final PartialPlanView partialPlanView) {
+                                                      final PartialPlanView partialPlanView,
+                                                      final ViewListener viewListener) {
     JMenuItem ruleInstanceViewItem = new JMenuItem( "Open Rule Instance View");
     ruleInstanceViewItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent evt) {
@@ -584,7 +585,8 @@ public class ViewGenerics {
             PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
             contentPane.add( new RuleInstanceView( ruleInstanceNode, partialPlan,
                                                    partialPlanView.getViewSet(),
-                                                   viewSetKey, ruleInstanceViewFrame));
+                                                   viewSetKey, ruleInstanceViewFrame,
+                                                   viewListener));
           } else {
             ViewGenerics.raiseFrame( ruleInstanceViewFrame);
           }

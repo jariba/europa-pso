@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.29 2004-06-23 21:36:36 pdaley Exp $
+// $Id: VizView.java,v 1.30 2004-07-08 21:33:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -250,6 +250,7 @@ public class VizView extends JPanel {
     for (int i = 0, n = ViewConstants.PARTIAL_PLAN_VIEW_LIST.size(); i < n; i++) {
       viewListenerList.add( null);
     }
+     PartialPlanView partialPlanView = null;
     createAllViewItems( partialPlanIfLoaded, partialPlanName, planSequence,
                         viewListenerList, mouseRightPopup);
   } // end createAllViewItems 
@@ -261,7 +262,7 @@ public class VizView extends JPanel {
    * @param partialPlanName - <code>String</code> - 
    * @param planSequence - <code>PwPlanningSequence</code> - 
    * @param viewListenerList - <code>List</code> - 
-   * @param planSequence - <code>PwPlanningSequence</code> - 
+   * @param mouseRightPopup - <code>JPopupMenu</code> - 
    */
   public void createAllViewItems( PwPartialPlan partialPlanIfLoaded,
                                   String partialPlanName,
@@ -348,7 +349,7 @@ public class VizView extends JPanel {
     openAllItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           if (viewListenerList.size() != ViewConstants.PARTIAL_PLAN_VIEW_LIST.size()) {
-            System.err.println( "createOpenAllItem: num view listeners not = " +
+            System.err.println( "VizView.createOpenAllItem: num view listeners not = " +
                                 ViewConstants.PARTIAL_PLAN_VIEW_LIST.size());
             System.exit( -1);
           }
@@ -358,9 +359,10 @@ public class VizView extends JPanel {
           Iterator viewListenerItr = viewListenerList.iterator();
           while (viewListItr.hasNext()) {
             final String viewName = (String) viewListItr.next();
+            ViewListener viewListener = (ViewListener) viewListenerItr.next();
             final PartialPlanViewMenuItem viewItem =
               new PartialPlanViewMenuItem( viewName, seqUrl, seqName, partialPlanName,
-                                           (ViewListener) viewListenerItr.next());
+                                           viewListener);
             Thread thread = new CreatePartialPlanViewThread( viewName, viewItem);
             thread.setPriority(Thread.MIN_PRIORITY);
             thread.start();
