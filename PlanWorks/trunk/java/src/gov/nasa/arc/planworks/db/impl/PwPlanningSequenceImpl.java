@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.96 2004-08-10 22:41:10 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.97 2004-08-10 23:16:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -165,16 +165,21 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     } 
     name = url.substring( index + 1);
     contentSpec = new ArrayList();
-    File sequenceDir = new File(url);
-    if(!sequenceDir.isDirectory()) {
-      throw new ResourceNotFoundException("sequence url '" + url + "' is not a directory.");
+
+    if (! MySQLDB.sequenceExists( url)) { 
+      File sequenceDir = new File(url);
+      if(!sequenceDir.isDirectory()) {
+	throw new ResourceNotFoundException("sequence url '" + url + "' is not a directory.");
+      }
+      String error = null;
+      if((error = validateSequenceDirectory(url)) != null) {
+	throw new ResourceNotFoundException("url '" + url +
+					    "' is not a valid sequence directory: " + error);
+      }
+      this.id = MySQLDB.addSequence(url, project.getId());
+    } else {
+      this.id = MySQLDB.getSequenceId( url);
     }
-    String error = null;
-    if((error = validateSequenceDirectory(url)) != null) {
-      throw new ResourceNotFoundException("url '" + url + "' is not a valid sequence directory: "
-                                          + error);
-    }
-    this.id = MySQLDB.addSequence(url, project.getId());
     String dbUrl = MySQLDB.getSequenceUrl(id);
     if(!url.equals(dbUrl)) {
       urlsDontMatchDialog(url, dbUrl);
@@ -636,12 +641,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     return MySQLDB.queryStepsWithRelaxations(id);
   }
 
-  public List getStepsWithUnitDecisions() {
+  public List getStepsWithUnitVariableBindingDecisions() {
 		loadTransactionFile();
     return MySQLDB.queryStepsWithUnitDecisions(this);
   }
 
-  public List getStepsWithNonUnitDecisions() {
+  public List getStepsWithNonUnitVariableBindingDecisions() {
 		loadTransactionFile();
     return MySQLDB.queryStepsWithNonUnitDecisions(this);
   }
