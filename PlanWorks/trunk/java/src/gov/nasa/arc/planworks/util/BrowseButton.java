@@ -17,28 +17,32 @@ public class BrowseButton extends JButton {
     this.dest = dest;
     addActionListener(new BrowseButtonListener(this));
   }
-  public BrowseButton(JTextField dest, boolean multiSelect, int chooserMode) 
+  public BrowseButton(JTextField dest, boolean multiSelect, int chooserMode, String chooserTitle) 
     throws IllegalArgumentException {
     super("Browse ...");
     this.dest = dest;
-    addActionListener(new BrowseButtonListener(this, multiSelect, chooserMode));
+    addActionListener(new BrowseButtonListener(this, multiSelect, chooserMode, chooserTitle));
   }
   class BrowseButtonListener implements ActionListener {
     private BrowseButton button;
     boolean multiSelect;
     int chooserMode;
+    String chooserTitle;
     public BrowseButtonListener(BrowseButton button) {
       this.button = button;
       multiSelect = true;
       chooserMode = JFileChooser.FILES_AND_DIRECTORIES;
     }
-    public BrowseButtonListener(BrowseButton button, boolean multiSelect, int chooserMode) {
+    public BrowseButtonListener(BrowseButton button, boolean multiSelect, int chooserMode,
+                                String chooserTitle) {
       this(button);
       this.multiSelect = multiSelect;
       this.chooserMode = chooserMode;
+      this.chooserTitle = chooserTitle;
     }
     public void actionPerformed(ActionEvent e) {
       DirectoryChooser chooser = new DirectoryChooser();
+      chooser.setDialogTitle( chooserTitle);
       chooser.setMultiSelectionEnabled(multiSelect);
       chooser.setFileSelectionMode(chooserMode);
       chooser.getOkButton().addActionListener(new ChooseButtonListener(chooser, button));
