@@ -8,7 +8,7 @@
 // modified by Will Taylor starting 26july04
 // monitoredThread passed in and stopped when cancel is received
 
-// $Id: PWProgressMonitor.java,v 1.7 2004-08-21 00:32:00 taylor Exp $
+// $Id: PWProgressMonitor.java,v 1.8 2004-08-23 22:51:42 taylor Exp $
 
 
 package gov.nasa.arc.planworks.viz.util;
@@ -246,22 +246,20 @@ public class PWProgressMonitor extends Object
 			// added will taylor
                         if ((monitoredThread != null) && (view != null)) { 
                           System.err.print( "PWProgressMonitor stopped thread for '");
-			  if (view instanceof ConstraintNetworkView.FindVariablePath) {
-			    System.err.println( "FindVariablePath'");
-			    ConstraintNetworkView.FindVariablePath findVarPath =
-			      (ConstraintNetworkView.FindVariablePath) view;
-			    findVarPath.setVarConstrKeyList( new ArrayList());
+			  if ((view instanceof ConstraintNetworkView) &&
+                                     (findEntityPath != null)) {
+			    System.err.println( "FindEntityPath' (ConstraintNetworkView)");
+			    findEntityPath.setEntityKeyList( new ArrayList());
 			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
 			  } else if ((view instanceof NavigatorView) &&
                                      (findEntityPath != null)) {
 			    System.err.println( "FindEntityPath' (NavigatorView)");
 			    findEntityPath.setEntityKeyList( new ArrayList());
 			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
-			  } else if (view instanceof TokenNetworkView.FindTokenPath) {
-			    System.err.println( "FindTokenPath'");
-			    TokenNetworkView.FindTokenPath findTokenPath =
-			      (TokenNetworkView.FindTokenPath) view;
-			    findTokenPath.setTokenRuleKeyList( new ArrayList());
+			  } else if ((view instanceof TokenNetworkView) &&
+                                     (findEntityPath != null)) {
+			    System.err.println( "FindTokenPath' (TokenNetworkView)");
+			    findEntityPath.setEntityKeyList( new ArrayList());
 			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
 			  } else if (view instanceof VizView) {
 			    VizView vizView = (VizView) view;

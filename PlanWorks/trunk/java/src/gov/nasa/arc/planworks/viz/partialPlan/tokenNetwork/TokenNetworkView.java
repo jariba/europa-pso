@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.67 2004-08-23 22:07:41 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.68 2004-08-23 22:51:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -194,18 +194,6 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
         }
     };
     worker.start();  
-  } // end constructor
-
-  /**
-   * <code>TokenNetworkView</code> - constructor 
-   *
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param isFindTokenPath - <code>boolean</code> - 
-   */
-  public TokenNetworkView( ViewableObject partialPlan, ViewSet viewSet,
-			   boolean isFindTokenPath) {
-    super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
   } // end constructor
 
   private void tokenNetworkViewInit( final ViewSet viewSet) {
