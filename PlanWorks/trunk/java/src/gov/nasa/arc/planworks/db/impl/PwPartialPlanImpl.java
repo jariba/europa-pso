@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.99 2004-08-05 00:24:23 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.100 2004-08-05 00:40:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -265,6 +265,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     if (doProgMonitor) {
       isProgressMonitorCancel = true;
     }
+    for(Iterator it = getVariablePath(new Integer(920), new Integer(667)).iterator(); it.hasNext();) {
+      System.err.println(it.next());
+    }
+
   } // end createPartialPlan
 
   private void checkProgressMonitor() throws CreatePartialPlanException {
@@ -1511,5 +1515,15 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     return numCycles != 0;
   } // end progressMonitorWait
+
+  public List getVariablePath(final Integer sKey, final Integer eKey) {
+    List retval = new ArrayList();
+    retval.add(new Integer(920));
+    retval.add(new Integer(926));
+    retval.add(new Integer(778));
+    retval.add(new Integer(1011));
+    retval.add(new Integer(667));
+    return retval;
+  }
 
 } // end class PwPartialPlanImpl
