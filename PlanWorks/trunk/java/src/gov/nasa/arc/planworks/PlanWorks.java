@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.43 2003-08-28 20:44:49 miatauro Exp $
+// $Id: PlanWorks.java,v 1.44 2003-08-29 21:57:24 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -740,8 +740,10 @@ public class PlanWorks extends MDIDesktopFrame {
             ListIterator partialPlanIterator = seq.listPartialPlans().listIterator();
             while(partialPlanIterator.hasNext()) {
               PwPartialPlan plan = (PwPartialPlan) partialPlanIterator.next();
-              viewManager.getViewSet(plan).close();
-              viewManager.removeViewSet(plan);
+              if(viewManager.getViewSet(plan) != null) {
+                viewManager.getViewSet(plan).close();
+                viewManager.removeViewSet(plan);
+              }
             }
             seq.delete();
             MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
