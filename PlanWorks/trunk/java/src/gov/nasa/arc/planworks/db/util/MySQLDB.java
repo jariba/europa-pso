@@ -16,6 +16,7 @@ import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwObjectImpl;
+import gov.nasa.arc.planworks.db.impl.PwParameterImpl;
 import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
 import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
 import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
@@ -291,7 +292,7 @@ public class MySQLDB {
                                                          partialPlan);
         partialPlan.addPredicate(predicateId, predicate);
         ResultSet parameters =
-          queryDatabase("SELECT ParameterId, ParameterName FROM Parameter WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
+          queryDatabase("SELECT ParameterId, ParameterName FROM Parameter WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" && PredicateId=").concat(predicateId.toString()));
         while(parameters.next()) {
           Integer parameterId = new Integer(parameters.getInt("ParameterId"));
           partialPlan.addParameter(parameterId,
