@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.13 2003-06-25 17:04:05 taylor Exp $
+// $Id: ViewSet.java,v 1.14 2003-06-30 21:06:53 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -13,9 +13,12 @@ import java.beans.PropertyVetoException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import javax.swing.JButton;
 
+import gov.nasa.arc.planworks.mdi.MDIFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
+import gov.nasa.arc.planworks.mdi.MDIWindowBar;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
@@ -29,7 +32,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
  */
 
 //maybe the hashmap should be changed.  is that much flexibility really necessary?
-public class ViewSet implements RedrawNotifier, ContentSpecChecker {
+//the MDIWindowBar is just for the notifyDeleted method
+public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar {
   private MDIDesktopFrame desktopFrame;
   private HashMap views;
   private ContentSpec contentSpec;
@@ -53,12 +57,12 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
     this.planName = planName;
     this.remover = remover;
     this.desktopFrame = desktopFrame;
-    this.contentSpec = new ContentSpec(partialPlan.getCollectionName(), this);
+    this.contentSpec = new ContentSpec(partialPlan, this);
     //change the arguments to something more sensible
     System.err.println(planName);
     this.contentSpecWindow = 
-      desktopFrame.createFrame("Content specification for ".concat(planName), true, true, true,
-                               true);
+      desktopFrame.createFrame("Content specification for ".concat(planName), this, false, false,
+                               false, true);
     Container contentPane = this.contentSpecWindow.getContentPane();
     contentPane.add(new ContentSpecWindow(this.contentSpecWindow, contentSpec));
     this.contentSpecWindow.pack();
@@ -123,6 +127,8 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
       }
     }
     if(views.isEmpty()) {
+      try {contentSpecWindow.setClosed(true);}
+      catch(PropertyVetoException pve){}
       remover.removeViewSet(partialPlan);
     }
   }
@@ -176,5 +182,11 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
    */
   public boolean viewExists(String viewName) {
     return views.containsKey(viewName);
+  }
+  
+  public void notifyDeleted(MDIFrame frame) {
+    removeViewFrame((MDIInternalFrame) frame);
+  }
+  public void add(JButton button) {
   }
 }
