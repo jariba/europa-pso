@@ -67,8 +67,9 @@ wait between writing out the data for a partial plan.  From a
 PlanWorks point of view, none of the intermediate steps were
 actually discrete steps, just part of the transition from the
 last written step to the current one. A value of 0 will
-prevent the PartialPlanWriter from writing at all (and thus
-incurring the overhead of writing to disk).
+prevent the PartialPlanWriter from logging transactions and 
+writing at all (and thus incurring the overhead of writing to 
+disk).
 
 PPW_WRITE_DEST
 
@@ -77,6 +78,12 @@ PartialPlanWriter writes without having to recompile your
 planner.  This variable does precisely that.  It will override
 any destination value passed to the PartialPlanWriter
 constructor.
+
+PPW_DONT_WRITE
+
+If you don't want the PartialPlanWriter to write when it thinks
+it should, set this to a non-zero numeric value.  This will 
+disable writing, but not logging.
 
 A note about the new output format:  Every planning sequence
 is now output in it's own unique directory with a millisecond

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.23 2003-12-29 19:20:15 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.24 2003-12-30 01:40:59 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -39,6 +39,8 @@ using namespace Europa;
 const char *envStepsPerWrite = "PPW_WRITE_NSTEPS";
 
 const char *envAltWriteDest = "PPW_WRITE_DEST";
+
+const char *envPPWNoWrite = "PPW_DONT_WRITE";
 
 const char *transactionTypeNames[13] = {"TOKEN_CREATED", "TOKEN_DELETED", "TOKEN_INSERTED",
                                         "TOKEN_FREED", "VARIABLE_CREATED", "VARIABLE_DELETED",
@@ -133,6 +135,14 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
   char *altDest = getenv(envAltWriteDest);
   if(altDest != NULL) {
     dest = String(altDest);
+  }
+
+  char *dontWrite = getenv(envPPWNoWrite);
+  if(dontWrite == NULL) {
+    noWrite = 0;
+  }
+  else {
+    noWrite = (int) strtol(dontWrite, (char **) NULL, 10);
   }
 
   char *destBuf = new char[PATH_MAX];
@@ -831,7 +841,7 @@ void PartialPlanWriter::notifyConstraintRemoved(ConstraintId& constrId) {
 
 void PartialPlanWriter::notifyFlushed(void) {
   writeCounter++;
-  if(writeCounter == stepsPerWrite) {
+  if(writeCounter == stepsPerWrite && noWrite == 0) {
     write();
     transactionList->makeEmpty();
     writeCounter = 0;
