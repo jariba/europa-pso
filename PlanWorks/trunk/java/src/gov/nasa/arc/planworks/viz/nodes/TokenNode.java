@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.35 2004-02-19 21:57:14 miatauro Exp $
+// $Id: TokenNode.java,v 1.36 2004-02-20 18:16:20 miatauro Exp $
 //
 // PlanWorks
 //
@@ -59,7 +59,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TokenNode extends BasicNode implements VariableContainerNode {
+public class TokenNode extends BasicNode {
 
   protected PwToken token;
   protected PwSlot slot;
@@ -171,26 +171,7 @@ public class TokenNode extends BasicNode implements VariableContainerNode {
     return token.getId().toString();
   }
 
-  public PwVariableContainer getContainer() {
-    return token;
-  }
-
-  public List getVariableNodes() {
-    return new ArrayList();
-  }
-
-  public int getContainerLinkCount(){return 0;}
-  public int getContainerLinkCount(VariableContainerNode other){return 0;}
-  public List getConnectedContainerNodes(){return new ArrayList();}
-  public boolean areNeighborsShown(){return false;}
-  public void setAreNeighborsShown(boolean v){}
-  public void discoverLinkage(){}
-  public void connectNodes(Map m){}
   public Color getColor(){return backgroundColor;}
-  public void addVariableNode(Object v){}
-  public void incrVariableLinkCount(){}
-  public void decVariableLinkCount(){}
-  public void addContainerNodeVariables(Object p, Object v){}
 
   /**
    * <code>getToolTipText</code>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.15 2004-02-19 21:57:51 miatauro Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.16 2004-02-20 18:16:44 miatauro Exp $
 //
 // PlanWorks
 //
@@ -63,7 +63,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ConstraintNetworkTokenNode extends TokenNode {
+public class ConstraintNetworkTokenNode extends TokenNode implements VariableContainerNode {
 
   private PwSlot slot;
   private Map connectedContainerMap;
@@ -176,6 +176,10 @@ public class ConstraintNetworkTokenNode extends TokenNode {
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
+
+  public PwVariableContainer getContainer() {
+    return token;
+  }
 
   /**
    * <code>getVariableNodeList</code>

@@ -21,7 +21,7 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
-public class ObjectNode extends ExtendedBasicNode implements VariableContainerNode {
+public class ObjectNode extends ExtendedBasicNode {
   protected PwObject object;
   protected PartialPlanView partialPlanView;
   protected String nodeLabel;
@@ -89,23 +89,5 @@ public class ObjectNode extends ExtendedBasicNode implements VariableContainerNo
     return object.getId().toString();
   }
 
-  public PwVariableContainer getContainer() {
-    return object;
-  }
-
-  public List getVariableNodes(){return new ArrayList();}
-
-  public int getContainerLinkCount(){return 0;}
-  public int getContainerLinkCount(VariableContainerNode other){return 0;}
-  public List getConnectedContainerNodes(){return new ArrayList();}
-  public boolean areNeighborsShown(){return false;}
-  public void setAreNeighborsShown(boolean v){}
-  public void discoverLinkage(){};
-  public void connectNodes(Map m){};
   public Color getColor() {return backgroundColor;}
-  public void addVariableNode(Object v){}
-  public void incrVariableLinkCount(){}
-  public void decVariableLinkCount(){}
-  public void addContainerNodeVariables(Object p, Object v){}
-
 }
