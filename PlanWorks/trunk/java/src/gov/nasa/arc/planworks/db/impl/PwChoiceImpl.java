@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwChoiceImpl.java,v 1.3 2004-06-03 17:33:35 taylor Exp $
+// $Id: PwChoiceImpl.java,v 1.4 2004-07-16 22:54:44 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
@@ -24,7 +24,7 @@ public class PwChoiceImpl implements PwChoice {
   private PwDomain dom;
 
   public PwChoiceImpl(String info) {
-    // System.err.println( "PwChoiceImpl info " + info);
+    // System.err.println( "PwChoiceImpl info '" + info + "'");
     StringTokenizer strTok = new StringTokenizer(info, ",");
     id = Integer.valueOf(strTok.nextToken());
     type = Integer.parseInt(strTok.nextToken());
@@ -34,7 +34,9 @@ public class PwChoiceImpl implements PwChoice {
       break;
     case DbConstants.C_VALUE:
       tokenId = Integer.valueOf(strTok.nextToken());
-      value = Double.parseDouble(strTok.nextToken());
+      if (tokenId.intValue() != -1) {
+        value = Double.parseDouble(strTok.nextToken());
+      }
       break;
     case DbConstants.C_DOMAIN:
       String type = strTok.nextToken();

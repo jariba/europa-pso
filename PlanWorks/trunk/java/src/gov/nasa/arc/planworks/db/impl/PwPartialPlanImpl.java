@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.94 2004-07-13 21:33:52 pdaley Exp $
+// $Id: PwPartialPlanImpl.java,v 1.95 2004-07-16 22:54:44 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -152,32 +152,58 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    */
 
   private void createPartialPlan() throws ResourceNotFoundException {
+    boolean printTime = true;
+    // boolean printTime = false;
     System.err.println( "Create PartialPlan ...");
     long startTimeMSecs = System.currentTimeMillis();
     long loadTime = 0L;
     HashMap existingPartialPlan = null;
     id = MySQLDB.getPartialPlanIdByName(sequence.getId(), name);
+    long t1 = 0L, t2 = 0L, t3 = 0L, t4 = 0L, t5 = 0L;
+    if (printTime) {
+      t2 = System.currentTimeMillis();
+    }
     if(id == null) {
       File planDir = new File(sequence.getUrl() + System.getProperty("file.separator") +
                               name);
       loadFiles(planDir);
+      if (printTime) {
+        t1 = System.currentTimeMillis();
+        System.err.println( "   ... loadFiles elapsed time: " + (t1 - startTimeMSecs) + " msecs.");
+      }
       MySQLDB.analyzeDatabase();
+      if (printTime) {
+        t2 = System.currentTimeMillis();
+        System.err.println( "   ... analyzeDatabase elapsed time: " + (t2 - t1) + " msecs.");
+      }
       id = MySQLDB.getPartialPlanIdByName(sequence.getId(), name);
     }
     MySQLDB.createObjects(this);
+    if (printTime) {
+      t3 = System.currentTimeMillis();
+      System.err.println( "   ... createObjects elapsed time: " + (t3 - t2) + " msecs.");
+    }
     model = MySQLDB.queryPartialPlanModelById(id);
     MySQLDB.createSlotTokenNodesStructure(this, sequence.getId());
-
-    System.err.println( "   Fill PartialPlan element maps ...");
+    if (printTime) {
+      t4 = System.currentTimeMillis();
+      System.err.println( "   ... createSlotTokenNodesStructure elapsed time: " +
+                          (t4 - t3) + " msecs.");
+    }
     long start2TimeMSecs = System.currentTimeMillis();
     fillElementMaps();
     long stop2TimeMSecs = System.currentTimeMillis();
-    System.err.println( "      ... elapsed time: " +
+    System.err.println( "   ... Fill PartialPlan element maps elapsed time: " +
                         (stop2TimeMSecs - start2TimeMSecs) + " msecs.");
-    long stopTimeMSecs = System.currentTimeMillis();
     cleanConstraints();
+    if (printTime) {
+      t5 = System.currentTimeMillis();
+      System.err.println( "   ... cleanConstraints elapsed time: " +
+                          (t5 - stop2TimeMSecs) + " msecs.");
+    }
     //checkPlan();  //for checkPlan debug only -- normally runs from Backend Test
-    System.err.println( "   ... elapsed time: " +
+    long stopTimeMSecs = System.currentTimeMillis();
+    System.err.println( "   ... Create PartialPlan elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end createPartialPlan
 
@@ -203,7 +229,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       if(tableName.equals("Instant")) {
         tableName = "ResourceInstants";
       }
-      MySQLDB.loadFile(planDir.getAbsolutePath().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
+      MySQLDB.loadFile(planDir.getAbsolutePath().concat(System.getProperty("file.separator")).
+                       concat(fileNames[i]), tableName);
     }
   }
 

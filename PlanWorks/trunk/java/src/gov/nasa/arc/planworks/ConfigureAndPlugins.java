@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.1 2004-07-15 21:24:45 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.2 2004-07-16 22:54:44 taylor Exp $
 //
 // PlanWorks
 //
@@ -99,7 +99,7 @@ public class ConfigureAndPlugins {
       Object [] args = null;
       while ((line = in.readLine()) != null) {
 //         System.err.println( configFile.getName() + ": " + line);
-        String [] tokens = line.split( " ");
+        String [] tokens = line.split( "\\s+"); // one or more spaces or a tab
         List liveTokens = new ArrayList();
         for (int i = 0; i < tokens.length; i++) {
           String token = (String) tokens[i];

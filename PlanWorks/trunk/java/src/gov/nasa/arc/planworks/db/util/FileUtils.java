@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.14 2004-04-30 21:50:34 miatauro Exp $
+// $Id: FileUtils.java,v 1.15 2004-07-16 22:54:45 taylor Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
+import gov.nasa.arc.planworks.util.DirectoryChooser;
 
 /**
  * FileUtils - 
@@ -67,6 +69,68 @@ public abstract class FileUtils {
   } // end canonicalPath
 
   /**
+   * <code>validateMultiSequenceDirectory</code>
+   *
+   * @param sequenceDirChooser - <code>DirectoryChooser</code> - 
+   */
+  public static void validateMultiSequenceDirectory(final DirectoryChooser sequenceDirChooser) {
+    String currentSelectedDir =
+      PlanWorks.getPlanWorks().getSequenceDirChooser().getCurrentDirectory().
+      getAbsolutePath();
+    File [] selectedFiles = sequenceDirChooser.getSelectedFiles();
+    if (selectedFiles.length == 0) {
+      // invalid dir -- it will be caught by validateSequenceDirectory
+      return;
+    } else if (selectedFiles.length > 1) {
+      // this is a user multi-choice selection - it will be handled by askSequenceDirectory
+      return;
+    } else {
+      // this is one dir -- it may be a single sequence dir or the parent dir of multiple
+      // sequence dirs
+      String firstSelectedPath = currentSelectedDir + System.getProperty( "file.separator") +
+        selectedFiles[0].getName();
+      if (validateSequenceDirectory( firstSelectedPath) == null) {
+        //  single sequence dir
+        return;
+      } else {
+        // determine if child dirs are each sequence dirs
+        List seqDirs  = new ArrayList();
+        String [] fileNames = new File( firstSelectedPath).list();
+        String msg = null;
+        if(fileNames.length == 0) {
+          // No files or directories in directory -- will be caught by validateSequenceDirectory
+          return ;
+        }
+        int seenFilesCnt = 0, seenDisCnt = 0;
+        for (int i = 0; i < fileNames.length; i++) {
+          String fileName = fileNames[i];
+          if (fileName.equals( "CVS")) {
+            // do nothing
+          } else {
+            if ((new File( firstSelectedPath + System.getProperty( "file.separator") +
+                           fileName)).isDirectory()) {
+              // System.err.println( "Sequence multi dir " + sequenceMultiDirectory +
+              //                    " => seqDirName: " + fileName);
+              seqDirs.add( fileName);
+            } else {
+              seenFilesCnt++;
+            }
+          }
+        }
+        if (seenFilesCnt == 0) {
+          // parent dir of multiple sequence dirs
+          sequenceDirChooser.setCurrentDirectory( new File( firstSelectedPath));
+          File [] seqDirArray = new File [seqDirs.size()];
+          for (int i = 0, n = seqDirs.size(); i < n; i++) {
+            seqDirArray[i] = new File( (String) seqDirs.get( i));
+          }
+          sequenceDirChooser.setSelectedFiles( seqDirArray);
+        }
+      }
+    }
+  } // end validateMultiSequenceDirectory
+
+  /**
    * <code>validateSequenceDirectory</code>
    *
    * @param sequenceDirectory - <code>String</code> - 
@@ -78,7 +142,7 @@ public abstract class FileUtils {
     String [] fileNames = new File( sequenceDirectory).list();
     String msg = null;
     if(fileNames.length == 0) {
-      msg = sequenceDirectory + "\n\n    No files in directory.";
+      msg = sequenceDirectory + "\n    No files or directories in directory.";
       System.err.println( msg);
       return msg;
     }
@@ -101,14 +165,14 @@ public abstract class FileUtils {
       }
     }
     if (seenSequenceFiles != DbConstants.NUMBER_OF_SEQ_FILES) {
-      msg = sequenceDirectory + "\n\n    " + seenSequenceFiles +
-        " sequence files in directory -- " + DbConstants.NUMBER_OF_SEQ_FILES +
-        " are required.";
+      msg = sequenceDirectory + "\n    " + seenSequenceFiles +
+        " sequence files in directory --\n    " +
+        DbConstants.NUMBER_OF_SEQ_FILES + " are required.";
       System.err.println( msg);
       return msg;
     }
     if (partialPlanDirs.size() == 0) {
-      msg = sequenceDirectory + "\n\n    No partial plans in directory.";
+      msg = sequenceDirectory + "\n    No partial plans in directory.";
       System.err.println( msg);
       return msg;
     }
@@ -118,7 +182,7 @@ public abstract class FileUtils {
         partialPlanDirs.get( i);
       fileNames = new File(partialPlanPath).list(new PwSQLFilenameFilter());
       if (fileNames.length != DbConstants.NUMBER_OF_PP_FILES) { 
-         msg = partialPlanPath + "\n\n    Has " + fileNames.length +
+         msg = partialPlanPath + "\n    Has " + fileNames.length +
            " files -- " + DbConstants.NUMBER_OF_PP_FILES + " are required.";
         System.err.println( msg);
         return msg;

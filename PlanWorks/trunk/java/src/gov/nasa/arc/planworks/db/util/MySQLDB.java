@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.111 2004-07-13 21:33:53 pdaley Exp $
+// $Id: MySQLDB.java,v 1.112 2004-07-16 22:54:45 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -852,12 +852,23 @@ public class MySQLDB {
 
   synchronized public static void createSlotTokenNodesStructure(PwPartialPlanImpl partialPlan,
                                                                 final Long seqId) {
+    boolean printTime = true;
+    // boolean printTime = false;
     try {
+      long t1 = 0L, t2 = 0L, t3 = 0L, t4 = 0L, t5 = 0L;
+      if (printTime) {
+        t1 = System.currentTimeMillis();
+      }
       StringBuffer queryStr = new StringBuffer("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, Token.ParentId, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=");
       queryStr.append(seqId.toString()).append(" WHERE Token.PartialPlanId=").append(partialPlan.getId().toString());
       queryStr.append(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId");
 
       ResultSet tokens = queryDatabase(queryStr.toString());
+      if (printTime) {
+        t2 = System.currentTimeMillis();
+        System.err.println( "   ... queryDatabase slotted tokens elapsed time: " +
+                            (t2 - t1) + " msecs.");
+      }
       while(tokens.next()) {
         //Integer tokenId = new Integer(tokens.getInt("Token.TokenId"));
         Integer tokenId = new Integer(tokens.getInt("TokenId"));
@@ -913,7 +924,16 @@ public class MySQLDB {
           t.setRuleId(new Integer(ruleKey));
         }
       }
+      if (printTime) {
+        t3 = System.currentTimeMillis();
+        System.err.println( "   ... create slotted tokens elapsed time: " + (t3 - t2) + " msecs.");
+      }
       ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 && RuleInstance.SequenceId=".concat(seqId.toString()).concat(" WHERE Token.IsFreeToken=1 && Token.PartialPlanId=").concat(partialPlan.getId().toString()));
+      if (printTime) {
+        t4 = System.currentTimeMillis();
+        System.err.println( "   ... queryDatabase free tokens elapsed time: " +
+                            (t4 - t3) + " msecs.");
+      }
       while(freeTokens.next()) {
         //Integer tokenId = new Integer(freeTokens.getInt("Token.TokenId"));
         Integer tokenId = new Integer(freeTokens.getInt("TokenId"));
@@ -965,6 +985,10 @@ public class MySQLDB {
         if(!freeTokens.wasNull()) {
           t.setRuleId(new Integer(ruleKey));
         }
+      }
+      if (printTime) {
+        t5 = System.currentTimeMillis();
+        System.err.println( "   ... create free tokens elapsed time: " + (t5 - t4) + " msecs.");
       }
     }
     catch(SQLException sqle) {

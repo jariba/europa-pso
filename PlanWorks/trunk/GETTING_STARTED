@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.51 2004-06-21 22:42:57 taylor Exp $
+# $Id: GETTING_STARTED,v 1.52 2004-07-16 22:54:43 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -14,11 +14,12 @@ a project name.
 
 Clicking "OK" on the "Create Project" dialog brings up the "Select Planning
 Sequence Directory(ies)" chooser.  The sequence directory chooser (also
- invoked by "Project->Add Sequence") supports multiple selection of sequence 
+invoked by "Project->Add Sequence") supports multiple selection of sequence 
 directories, by using Ctrl-Mouse-Left for the second and subsequent selections.  
-Mouse-left is used for the for selection and Mouse-Left-Double is used to 
-open directories.  When selection is complete, click on "OK".  The selected 
-sequence(s) are then loaded into the MySQL data base.  Pull-down menu 
+Mouse-left is used for the first selection and Mouse-Left-Double is used to 
+open directories.  A single selection can be made on a directory, whose children 
+are all sequence directories.  When selection is complete, click on "OK".  The 
+selected sequence(s) are then loaded into the MySQL data base.  Pull-down menu 
 "Planning Sequence" will be created, which is a cascading menu of loaded 
 "sequence names".
 
