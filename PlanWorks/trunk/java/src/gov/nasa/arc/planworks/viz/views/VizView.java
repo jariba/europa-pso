@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.1 2003-05-20 18:25:36 taylor Exp $
+// $Id: VizView.java,v 1.2 2003-05-21 23:48:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -29,7 +29,6 @@ public class VizView extends JPanel {
 
   protected PwPartialPlan partialPlan;
   protected String collectionName;
-
 
   /**
    * <code>VizView</code> - constructor 

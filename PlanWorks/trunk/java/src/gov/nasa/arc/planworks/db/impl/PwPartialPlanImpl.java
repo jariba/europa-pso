@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.6 2003-05-20 18:25:34 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.7 2003-05-21 23:48:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -124,6 +124,8 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   private void createPartialPlan() {
+    long startTimeMSecs = (new Date()).getTime();
+
     List partialPlanKeys = XmlDBeXist.INSTANCE.queryPartialPlanKeys( collectionName);
     // should only be one with collection structure of
     // /db/wtaylor/test/monkey/step000
@@ -149,6 +151,11 @@ public class PwPartialPlanImpl implements PwPartialPlan {
       fillElementMaps();
 
     }
+    long stopTimeMSecs = (new Date()).getTime();
+    String timeString = "Create PwPartialPlan from Collection \n   ... elapsed time: " +
+      //       writeTime( (stopTimeMSecs - startTimeMSecs)) + " seconds.";
+      (stopTimeMSecs - startTimeMSecs) + " msecs.";
+    System.err.println( timeString);
   } // end createPartialPlan
 
 

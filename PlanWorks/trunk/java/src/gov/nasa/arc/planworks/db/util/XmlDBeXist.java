@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.5 2003-05-20 18:25:35 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.6 2003-05-21 23:48:35 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -432,7 +432,7 @@ public class XmlDBeXist {
                             ROOT_COLLECTION_NAME + collectionName + " not found");
         return (new ArrayList());
       }
-      System.err.println( "Query: " + query);
+      // System.err.println( "Query: " + query);
       XPathQueryService queryService =
         (XPathQueryService) collection.getService( "XPathQueryService", "1.0");
       queryService.setProperty( "pretty", "true");
