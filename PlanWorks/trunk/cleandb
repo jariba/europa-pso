@@ -12,4 +12,5 @@ DELETE FROM Transaction;
 DELETE FROM ResourceInstants;
 DELETE FROM Rules;
 DELETE FROM RuleInstance;
+DELETE FROM RuleInstanceSlaveMap;
 DELETE FROM Decision;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.91 2004-07-13 21:33:52 pdaley Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.92 2004-07-23 16:18:34 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -615,12 +615,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
 
   public List getStepsWithUnitVariableBindingDecisions() {
 		loadTransactionFile();
-    return MySQLDB.queryStepsWithUnitVariableDecisions(this);
+    return MySQLDB.queryStepsWithUnitDecisions(this);
   }
 
   public List getStepsWithNonUnitVariableBindingDecisions() {
 		loadTransactionFile();
-    return MySQLDB.queryStepsWithNonUnitVariableDecisions(this);
+    return MySQLDB.queryStepsWithNonUnitDecisions(this);
   }
 
   /**

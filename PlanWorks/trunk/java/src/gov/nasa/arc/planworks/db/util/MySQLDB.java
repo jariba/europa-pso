@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.114 2004-07-20 17:42:07 miatauro Exp $
+// $Id: MySQLDB.java,v 1.115 2004-07-23 16:18:35 pdaley Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -597,6 +597,7 @@ public class MySQLDB {
         updateDatabase("DELETE FROM Variable".concat(whereClause.toString()));
         updateDatabase("DELETE FROM VConstraint".concat(whereClause.toString()));
         updateDatabase("DELETE FROM RuleInstance".concat(whereClause.toString()));
+        updateDatabase("DELETE FROM RuleInstanceSlaveMap".concat(whereClause.toString()));
         updateDatabase("DELETE FROM ConstraintVarMap".concat(whereClause.toString()));
         updateDatabase("DELETE FROM ResourceInstants".concat(whereClause.toString()));
 				updateDatabase("DELETE FROM Decision".concat(whereClause.toString()));
@@ -858,9 +859,9 @@ public class MySQLDB {
       if (printTime) {
         t1 = System.currentTimeMillis();
       }
-      StringBuffer queryStr = new StringBuffer("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, Token.ParentId, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON " );
-      queryStr.append("RuleInstance.PartialPlanId=Token.PartialPlanId");
-      queryStr.append(" && FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0");
+      StringBuffer queryStr = new StringBuffer("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, Token.ParentId, RuleInstanceSlaveMap.RuleInstanceId FROM Token LEFT JOIN RuleInstanceSlaveMap ON " );
+      queryStr.append("RuleInstanceSlaveMap.PartialPlanId=Token.PartialPlanId");
+      queryStr.append(" && Token.TokenId  = RuleInstanceSlaveMap.SlaveTokenId");
       queryStr.append(" WHERE Token.PartialPlanId=").append(partialPlan.getId().toString());
       queryStr.append(" && Token.IsFreeToken=0 ORDER BY Token.ParentId, Token.SlotIndex, Token.TokenId");
       ResultSet tokens = queryDatabase(queryStr.toString());
@@ -887,7 +888,7 @@ public class MySQLDB {
         Integer objectVarId = new Integer(tokens.getInt("ObjectVarId"));
         //Integer parentId = new Integer(tokens.getInt("Token.ParentId"));
         Integer parentId = new Integer(tokens.getInt("ParentId"));
-        //Integer ruleInstanceId = new Integer(tokens.getInt("RuleInstance.RuleInstanceId"));
+        //Integer ruleInstanceId = new Integer(tokens.getInt("RuleInstanceSlaveMap.RuleInstanceId"));
         Integer ruleInstanceId = new Integer(tokens.getInt("RuleInstanceId"));
         //String predName = tokens.getString("Token.PredicateName");
         String predName = tokens.getString("PredicateName");
@@ -918,11 +919,6 @@ public class MySQLDB {
                               objectVarId, parentId, ruleInstanceId, paramVarIds, extraInfo, 
                               partialPlan);
         }
-        //int ruleKey = tokens.getInt("RuleInstance.RuleId");
-        int ruleKey = tokens.getInt("RuleId");
-        if(!tokens.wasNull()) {
-          t.setRuleId(new Integer(ruleKey));
-        }
       }
       if (printTime) {
         t3 = System.currentTimeMillis();
@@ -930,7 +926,7 @@ public class MySQLDB {
       }
       unregisterDatabase();
       registerDatabase();
-      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, RuleInstance.RuleInstanceId, RuleInstance.RuleId FROM Token LEFT JOIN RuleInstance ON RuleInstance.PartialPlanId=Token.PartialPlanId && FIND_IN_SET(Token.TokenId, RuleInstance.SlaveTokenIds) > 0 WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
+      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.ExtraData, RuleInstanceSlaveMap.RuleInstanceId FROM Token LEFT JOIN RuleInstanceSlaveMap ON RuleInstanceSlaveMap.PartialPlanId=Token.PartialPlanId && Token.TokenId = RuleInstanceSlaveMap.SlaveTokenId WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
       if (printTime) {
         t4 = System.currentTimeMillis();
         System.err.println( "   ... queryDatabase free tokens elapsed time: " +
@@ -952,7 +948,7 @@ public class MySQLDB {
         Integer durationVarId = new Integer(freeTokens.getInt("DurationVarId"));
         //Integer objectVarId = new Integer(freeTokens.getInt("Token.ObjectVarId"));
         Integer objectVarId = new Integer(freeTokens.getInt("ObjectVarId"));
-        //Integer ruleInstanceId = new Integer(freeTokens.getInt("RuleInstance.RuleInstanceId"));
+        //Integer ruleInstanceId = new Integer(freeTokens.getInt("RuleInstanceSlaveMap.RuleInstanceId"));
         Integer ruleInstanceId = new Integer(freeTokens.getInt("RuleInstanceId"));
         //String predName = freeTokens.getString("Token.PredicateName");
         String predName = freeTokens.getString("PredicateName");
@@ -981,11 +977,6 @@ public class MySQLDB {
           t = new PwTokenImpl(tokenId, isValueToken, DbConstants.NO_ID, predName, startVarId, 
                               endVarId, durationVarId, stateVarId, objectVarId, DbConstants.NO_ID,
                               ruleInstanceId, paramVarIds, extraInfo, partialPlan);
-        }
-        //int ruleKey = freeTokens.getInt("RuleInstance.RuleId");
-        int ruleKey = freeTokens.getInt("RuleId");
-        if(!freeTokens.wasNull()) {
-          t.setRuleId(new Integer(ruleKey));
         }
       }
       if (printTime) {

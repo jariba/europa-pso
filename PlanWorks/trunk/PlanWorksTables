@@ -403,6 +403,13 @@ CREATE TABLE RuleInstance (
   INDEX (RuleId), INDEX(MasterTokenId)
 ) TYPE=MyISAM;
 
+CREATE TABLE RuleInstanceSlaveMap (
+  RuleInstanceId int(11) NOT NULL default '0',
+  SlaveTokenId int(11) NOT NULL default '0',
+  PartialPlanId bigint(20) unsigned NOT NULL default '0',
+  PRIMARY KEY  (PartialPlanId,RuleInstanceId,SlaveTokenId)
+) TYPE=MyISAM;
+
 CREATE TABLE Decision (
   PartialPlanId bigint(20) NOT NULL default '0',
   DecisionId int(11) NOT NULL default '0',

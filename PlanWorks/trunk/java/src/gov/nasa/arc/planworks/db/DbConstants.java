@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.33 2004-07-12 18:11:50 miatauro Exp $
+// $Id: DbConstants.java,v 1.34 2004-07-23 16:18:33 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -88,6 +88,12 @@ public interface DbConstants {
   public static final String PP_RULE_INSTANCE_EXT = "ruleInstances";
 
   /**
+   * constant <code>PP_RULE_INSTANCE_SLAVE_MAP_EXT</code>
+   *
+   */
+  public static final String PP_RULE_INSTANCE_SLAVE_MAP_EXT = "ruleInstanceSlaveMap";
+
+  /**
    * constant <code>PP_CONSTRAINT_VAR_MAP_EXT</code>
    *
    */
@@ -124,7 +130,8 @@ public interface DbConstants {
   public static final String [] PARTIAL_PLAN_FILE_EXTS =
     new String []
       { PP_PARTIAL_PLAN_EXT, PP_OBJECTS_EXT, PP_TOKENS_EXT, PP_VARIABLES_EXT, PP_CONSTRAINTS_EXT, 
-        PP_RULE_INSTANCE_EXT, PP_CONSTRAINT_VAR_MAP_EXT, PP_RESOURCE_INSTANTS_EXT, PP_DECISIONS_EXT};
+        PP_RULE_INSTANCE_EXT, PP_RULE_INSTANCE_SLAVE_MAP_EXT, PP_CONSTRAINT_VAR_MAP_EXT, 
+        PP_RESOURCE_INSTANTS_EXT, PP_DECISIONS_EXT};
 
   /**
    * constant <code>NUMBER_OF_PP_FILES</code>
@@ -387,6 +394,7 @@ public interface DbConstants {
   public static final String TBL_SEQUENCE = "Sequence";
   public static final String TBL_TOKEN = "Token";
   public static final String TBL_RULE_INSTANCE = "RuleInstance";
+  public static final String TBL_RULE_INSTANCE_SLAVE_MAP = "RuleInstanceSlaveMap";
   public static final String TBL_VARIABLE = "Variable";
   public static final String TBL_TRANSACTION = "Transaction";
   public static final String TBL_INSTANTS = "ResourceInstants";
@@ -395,7 +403,8 @@ public interface DbConstants {
   public static final String TBL_DECISION = "Decision";
 
   public static final String [] PW_DB_TABLES = new String [] {
-    TBL_PARTIALPLAN, TBL_OBJECT, TBL_TOKEN, TBL_VARIABLE, TBL_CONSTRAINT, TBL_RULE_INSTANCE,
+    TBL_PARTIALPLAN, TBL_OBJECT, TBL_TOKEN, TBL_VARIABLE, TBL_CONSTRAINT, TBL_RULE_INSTANCE, 
+    TBL_RULE_INSTANCE_SLAVE_MAP,
     TBL_CONSTVARMAP, TBL_INSTANTS, TBL_DECISION, TBL_PROJECT, TBL_SEQUENCE, TBL_PP_STATS, 
     TBL_TRANSACTION, TBL_RULES};
 
