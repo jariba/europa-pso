@@ -4,48 +4,40 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.1 2003-10-16 21:40:42 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.2 2003-10-18 01:27:55 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.db.PwTransaction;
-// import gov.nasa.arc.planworks.db.util.ContentSpec;
+import gov.nasa.arc.planworks.db.util.ContentSpec;
 // import gov.nasa.arc.planworks.db.util.SequenceContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
-
+import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
+import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
+import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
 
 /**
  * <code>SequenceQueryWindow</code> -
@@ -107,36 +99,45 @@ public class SequenceQueryWindow extends JPanel {
     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_SPECIFIED);
   }
 
-  protected MDIInternalFrame window;
+  protected MDIInternalFrame sequenceQueryFrame;
   protected MDIDesktopFrame desktopFrame;
   protected ViewableObject viewable;
+  protected ViewSet viewSet;
   protected GridBagConstraints constraints;
-  protected List querySpec;
   protected MajorTypeComboBox majorTypeBox;
   protected MinorTypeComboBox minorTypeBox;
   protected GridBagLayout queryGridBag;
   protected GridBagConstraints queryConstraints;
   protected JPanel queryPanel;
+  protected String transactionType;
   protected JTextField integerField;
+  protected String keyString;
   protected JTextField intStartField;
+  protected String startStepString;
   protected JTextField intEndField;
+  protected String endStepString;
   protected ConstraintTransComboBox constraintTransComboBox;
   protected TokenTransComboBox tokenTransComboBox;
   protected VariableTransComboBox variableTransComboBox;
+  protected int queryResultFrameCnt;
 
 
   /**
    * <code>SequenceQueryWindow</code> - constructor 
    *
-   * @param window - <code>MDIInternalFrame</code> - 
-   * @param contentSpec - <code>ContentSpec</code> - 
+   * @param sequenceQueryFrame - <code>MDIInternalFrame</code> - 
+   * @param desktopFrame - <code>MDIDesktopFrame</code> - 
+   * @param viewable - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
    */
-  public SequenceQueryWindow(MDIInternalFrame window, MDIDesktopFrame desktopFrame,
-                             ViewableObject viewable) {
-    this.window = window;
+  public SequenceQueryWindow( MDIInternalFrame sequenceQueryFrame, MDIDesktopFrame desktopFrame,
+                              ViewableObject viewable, ViewSet viewSet) {
+    this.sequenceQueryFrame = sequenceQueryFrame;
     this.desktopFrame = desktopFrame;
     this.viewable = viewable;
-    
+    this.viewSet = (SequenceViewSet) viewSet;
+    queryResultFrameCnt = 0;
+
     GridBagLayout gridBag = new GridBagLayout();
     constraints = new GridBagConstraints();
     setLayout(gridBag);
@@ -191,22 +192,32 @@ public class SequenceQueryWindow extends JPanel {
     gridBag.setConstraints(buttonPanel, constraints);
     add( buttonPanel);
 
-    querySpec = new ArrayList();
-    buildFromSpec();
-  }
-
-  private void buildFromSpec() {
-    if (querySpec.size() == 0) {
-      return;
-    }
   }
 
   private void refresh() {
     validate();
     repaint();
-    window.pack();
+    sequenceQueryFrame.pack();
   }
-               
+
+  /**
+   * <code>getSequenceQueryFrame</code>
+   *
+   * @return - <code>MDIInternalFrame</code> - 
+   */
+  public MDIInternalFrame getSequenceQueryFrame() {
+    return sequenceQueryFrame;
+  }
+
+  /**
+   * <code>getQueryResultFrameCnt</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getQueryResultFrameCnt() {
+    return queryResultFrameCnt;
+  }
+
   /**
    * <code>QueryListener</code> -
    *                       ActionListener->QueryListener
@@ -223,6 +234,8 @@ public class SequenceQueryWindow extends JPanel {
     public void actionPerformed(ActionEvent ae) {
       String stepsQuery = "", transactionsQuery = "";
       if (ae.getActionCommand().equals("Apply Query")) {
+        long startTimeMSecs = System.currentTimeMillis();
+        System.err.println( "Querying and Rendering Sequence Query View ...");
         if (((String) queryWindow.majorTypeBox.getSelectedItem()).
             equals( QUERY_FOR_STEPS)) {
           List stepList = null;
@@ -248,8 +261,7 @@ public class SequenceQueryWindow extends JPanel {
                 getStepsWithUnitDecisions();
             }
             if (stepList != null) {
-              System.err.println( "  stepList " + stepList);
-              // create window to show stepList
+              renderStepQueryFrame( stepsQuery, stepList, startTimeMSecs);
             }
           }
         } else if (((String) queryWindow.majorTypeBox.getSelectedItem()).
@@ -267,14 +279,7 @@ public class SequenceQueryWindow extends JPanel {
               transactionList =  getTransactionsInRange();
             }
             if (transactionList != null) {
-              System.err.println( "  transactionList " + transactionList);
-              Iterator transItr = transactionList.iterator();
-              while (transItr.hasNext()) {
-                PwTransaction trans = (PwTransaction) transItr.next();
-                System.err.println( "id " + trans.getId() + " step " + trans.getStepNumber() +
-                                    " objId " + trans.getObjectId());
-              }
-              // create window to show transactionList
+              renderTransactionQueryFrame( transactionsQuery, transactionList, startTimeMSecs);
             }
           }
         }
@@ -300,32 +305,73 @@ public class SequenceQueryWindow extends JPanel {
       }
     } // end actionPerformed
 
-    private String getIdString( String type) {
-      String idString = (String) queryWindow.integerField.getText();
-      if (idString.equals( "")) {
+    private void renderStepQueryFrame( String stepsQuery, List stepList,
+                                       long startTimeMSecs) {
+      MDIInternalFrame stepQueryFrame =
+        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_TITLE +
+                                  "Results for " + viewable.getName(),
+                                  viewSet, true, true, false, true);
+      Container contentPane = stepQueryFrame.getContentPane();
+      StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_STEPS);
+      queryStringBuf.append( " ").append( stepsQuery);
+      if (stepsQuery.indexOf( "Where") >= 0) {
+        queryStringBuf.append( " Key ").append( keyString);
+        queryStringBuf.append( " ").append( transactionType);
+      }
+      contentPane.add( new StepQueryView
+                       ( stepList, queryStringBuf.toString(), viewable,
+                         viewSet, SequenceQueryWindow.this, stepQueryFrame,
+                         startTimeMSecs));
+      queryResultFrameCnt++;
+    } // end renderStepQueryFrame
+
+    private void renderTransactionQueryFrame( String transactionsQuery,
+                                              List transactionList, long startTimeMSecs) {
+      MDIInternalFrame transactionQueryFrame =
+        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_TITLE +
+                                  "Results for " + viewable.getName(),
+                                  viewSet, true, true, false, true);
+      Container contentPane = transactionQueryFrame.getContentPane();
+      StringBuffer queryStringBuf = new StringBuffer( QUERY_FOR_TRANSACTIONS);
+      queryStringBuf.append( " ").append( transactionsQuery);
+      if (transactionsQuery.equals( TRANSACTIONS_IN_RANGE)) {
+        queryStringBuf.append( " StartStep ").append( startStepString);
+        queryStringBuf.append( " EndStep ").append( endStepString);
+      } else {
+        queryStringBuf.append( " Key ").append( keyString);
+      }
+      contentPane.add( new TransactionQueryView
+                       ( transactionList, queryStringBuf.toString(), viewable,
+                         viewSet, SequenceQueryWindow.this, transactionQueryFrame,
+                         startTimeMSecs));
+      queryResultFrameCnt++;
+    } // end renderTransactionQueryFrame
+
+
+    private String getKeyString( String type) {
+      keyString = (String) queryWindow.integerField.getText();
+      if (keyString.equals( "")) {
         JOptionPane.showMessageDialog
-          (PlanWorks.planWorks, type + " Id is required",
+          (PlanWorks.planWorks, type + " Key is required",
            "Invalid Query", JOptionPane.ERROR_MESSAGE);
         return null;
       }
-      return idString;
-    } // end getIdString
+      return keyString;
+    } // end getKeyString
 
     private List getStepsWhereConstraintTransacted() {
       List stepList = null;
       try {
-        String constraintIdString = getIdString( "Constraint");
-        String transactionType =
-          (String) queryWindow.constraintTransComboBox.getSelectedItem();
-        if (transactionType.equals( "All")) {
-          return null;
-        } else {
-          stepList = ((PwPlanningSequence) queryWindow.viewable).
-            getStepsWhereConstraintTransacted( new Integer( constraintIdString),
-                                               transactionType);
-        }
-      }
-      catch (IllegalArgumentException e) {
+        String constraintKeyString = getKeyString( "Constraint");
+        transactionType = (String) queryWindow.constraintTransComboBox.getSelectedItem();
+        String queryTransactionType = transactionType;
+        if (transactionType.equals( "ALL")) {
+          queryTransactionType = "%";
+        } 
+        stepList = ((PwPlanningSequence) queryWindow.viewable).
+          getStepsWhereConstraintTransacted( new Integer( constraintKeyString),
+                                             queryTransactionType);
+      } catch (IllegalArgumentException e) {
         return null;
       }
       return stepList;
@@ -334,16 +380,15 @@ public class SequenceQueryWindow extends JPanel {
     private List getStepsWhereTokenTransacted() {
       List stepList = null;
       try {
-        String tokenIdString = getIdString( "Token");
-        String transactionType = (String) queryWindow.tokenTransComboBox.getSelectedItem();
-        if (transactionType.equals( "All")) {
-          return null;
-        } else {
-          stepList = ((PwPlanningSequence) queryWindow.viewable).
-            getStepsWhereTokenTransacted( new Integer( tokenIdString), transactionType);
-        }
-      }
-      catch (IllegalArgumentException e) {
+        String tokenKeyString = getKeyString( "Token");
+        transactionType = (String) queryWindow.tokenTransComboBox.getSelectedItem();
+        String queryTransactionType = transactionType;
+        if (transactionType.equals( "ALL")) {
+          queryTransactionType = "%";
+        } 
+        stepList = ((PwPlanningSequence) queryWindow.viewable).
+          getStepsWhereTokenTransacted( new Integer( tokenKeyString), queryTransactionType);
+      } catch (IllegalArgumentException e) {
         return null;
       }
       return stepList;
@@ -352,16 +397,16 @@ public class SequenceQueryWindow extends JPanel {
     private List getStepsWhereVariableTransacted() {
       List stepList = null;
       try {
-        String variableIdString = getIdString( "Variable");
-        String transactionType = (String) queryWindow.variableTransComboBox.getSelectedItem();
-        if (transactionType.equals( "All")) {
-          return null;
-        } else {
-          stepList = ((PwPlanningSequence) queryWindow.viewable).
-            getStepsWhereVariableTransacted( new Integer( variableIdString), transactionType);
-        }
-      }
-      catch (IllegalArgumentException e) {
+        String variableKeyString = getKeyString( "Variable");
+        transactionType = (String) queryWindow.variableTransComboBox.getSelectedItem();
+        String queryTransactionType = transactionType;
+        if (transactionType.equals( "ALL")) {
+          queryTransactionType = "%";
+        } 
+        stepList = ((PwPlanningSequence) queryWindow.viewable).
+          getStepsWhereVariableTransacted( new Integer( variableKeyString),
+                                           queryTransactionType);
+      } catch (IllegalArgumentException e) {
         return null;
       }
       return stepList;
@@ -370,11 +415,10 @@ public class SequenceQueryWindow extends JPanel {
     private List getTransactionsForConstraint() {
       List transactionList = null;
       try {
-        String constraintIdString = getIdString( "Constraint");
+        String constraintKeyString = getKeyString( "Constraint");
         transactionList = ((PwPlanningSequence) queryWindow.viewable).
-          getTransactionsForConstraint( new Integer( constraintIdString));
-      }
-      catch (IllegalArgumentException e) {
+          getTransactionsForConstraint( new Integer( constraintKeyString));
+      } catch (IllegalArgumentException e) {
         return null;
       }
       return transactionList;
@@ -383,11 +427,10 @@ public class SequenceQueryWindow extends JPanel {
     private List getTransactionsForToken() {
       List transactionList = null;
       try {
-        String tokenIdString = getIdString( "Token");
+        String tokenKeyString = getKeyString( "Token");
         transactionList = ((PwPlanningSequence) queryWindow.viewable).
-          getTransactionsForToken( new Integer( tokenIdString));
-      }
-      catch (IllegalArgumentException e) {
+          getTransactionsForToken( new Integer( tokenKeyString));
+      } catch (IllegalArgumentException e) {
         return null;
       }
       return transactionList;
@@ -396,11 +439,10 @@ public class SequenceQueryWindow extends JPanel {
     private List getTransactionsForVariable() {
       List transactionList = null;
       try {
-        String variableIdString = getIdString( "Variable");
+        String variableKeyString = getKeyString( "Variable");
         transactionList = ((PwPlanningSequence) queryWindow.viewable).
-          getTransactionsForVariable( new Integer( variableIdString));
-      }
-      catch (IllegalArgumentException e) {
+          getTransactionsForVariable( new Integer( variableKeyString));
+      } catch (IllegalArgumentException e) {
         return null;
       }
       return transactionList;
@@ -409,14 +451,14 @@ public class SequenceQueryWindow extends JPanel {
     private List getTransactionsInRange() {
       List transactionList = null;
       try {
-        String startStepString = (String) queryWindow.intStartField.getText();
+        startStepString = (String) queryWindow.intStartField.getText();
         if (startStepString.equals( "")) {
           JOptionPane.showMessageDialog
             (PlanWorks.planWorks, " StartStep is required",
              "Invalid Query", JOptionPane.ERROR_MESSAGE);
           return null;
         }
-        String endStepString = (String) queryWindow.intEndField.getText();
+        endStepString = (String) queryWindow.intEndField.getText();
         if (endStepString.equals( "")) {
           JOptionPane.showMessageDialog
             (PlanWorks.planWorks, " EndStep is required",
@@ -426,8 +468,7 @@ public class SequenceQueryWindow extends JPanel {
         transactionList = ((PwPlanningSequence) queryWindow.viewable).
           getTransactionsInRange( Integer.parseInt( startStepString),
                                   Integer.parseInt( endStepString));
-      }
-      catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException e) {
         return null;
       }
       return transactionList;
@@ -459,7 +500,7 @@ public class SequenceQueryWindow extends JPanel {
   class ConstraintTransComboBox extends JComboBox {
 
     public ConstraintTransComboBox() {
-      addItem( "All");
+      addItem( "ALL");
       Iterator typesItr = CONSTRAINT_TRANSACTION_TYPES.iterator();
       while (typesItr.hasNext()) {
         addItem( (String) typesItr.next());
@@ -472,7 +513,7 @@ public class SequenceQueryWindow extends JPanel {
   class TokenTransComboBox extends JComboBox {
 
     public TokenTransComboBox() {
-      addItem( "All");
+      addItem( "ALL");
       Iterator typesItr = TOKEN_TRANSACTION_TYPES.iterator();
       while (typesItr.hasNext()) {
         addItem( (String) typesItr.next());
@@ -485,7 +526,7 @@ public class SequenceQueryWindow extends JPanel {
   class VariableTransComboBox extends JComboBox {
 
     public VariableTransComboBox() {
-      addItem( "All");
+      addItem( "ALL");
       Iterator typesItr = VARIABLE_TRANSACTION_TYPES.iterator();
       while (typesItr.hasNext()) {
         addItem( (String) typesItr.next());
@@ -507,10 +548,9 @@ public class SequenceQueryWindow extends JPanel {
     }
 
     public void itemStateChanged(ItemEvent ie) {
-      if(ie.getStateChange() == ItemEvent.DESELECTED) {
-	itemStateChangedFrom = (String) ie.getItem();
-      }
-      else if (ie.getStateChange() == ItemEvent.SELECTED) {
+      if (ie.getStateChange() == ItemEvent.DESELECTED) {
+        itemStateChangedFrom = (String) ie.getItem();
+      } else if (ie.getStateChange() == ItemEvent.SELECTED) {
         if (itemStateChangedFrom.equals("") && 
             ((String) ie.getItem()).equals( QUERY_FOR_STEPS)) {
           Iterator stepsItr = STEP_QUERIES.iterator();
@@ -543,10 +583,9 @@ public class SequenceQueryWindow extends JPanel {
     }
 
     public void itemStateChanged(ItemEvent ie) {
-      if(ie.getStateChange() == ItemEvent.DESELECTED) {
+      if (ie.getStateChange() == ItemEvent.DESELECTED) {
         itemStateChangedFrom = (String) ie.getItem();
-      }
-      else if (ie.getStateChange() == ItemEvent.SELECTED) {
+      } else if (ie.getStateChange() == ItemEvent.SELECTED) {
         if (itemStateChangedFrom.equals("") && 
             ((String) ie.getItem()).equals( STEPS_WHERE_CONSTRAINT_TRANSACTED)) {
           extendQueryForStepsWhereConstraintTransacted();
@@ -575,10 +614,10 @@ public class SequenceQueryWindow extends JPanel {
     } // end itemStateChanged
 
     private void addIntegerField() {
-      JLabel idLabel = new JLabel( "Id");
+      JLabel keyLabel = new JLabel( "Key");
       queryConstraints.gridx++;
-      queryGridBag.setConstraints( idLabel, queryConstraints);
-      queryPanel.add( idLabel);
+      queryGridBag.setConstraints( keyLabel, queryConstraints);
+      queryPanel.add( keyLabel);
       integerField = new JTextField( 5);
       queryConstraints.gridx++;
       queryGridBag.setConstraints( integerField, queryConstraints);

@@ -1,6 +1,8 @@
-;;; $Id: prj.el,v 1.4 2003-09-10 00:23:09 taylor Exp $
+;;; $Id: prj.el,v 1.5 2003-10-18 01:27:54 taylor Exp $
 ;;;
 ;;; JAVA_HOME ANT_HOME JDE_HOME & PLANWORKS_HOME must be set properly
+;;;
+;;; M-x byte-compile-file
 ;;;
 (jde-project-file-version "1.0")
 (jde-set-variables

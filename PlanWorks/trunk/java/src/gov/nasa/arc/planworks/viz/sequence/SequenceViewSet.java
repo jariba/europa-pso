@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.7 2003-10-16 21:40:42 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.8 2003-10-18 01:27:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -50,7 +50,7 @@ public class SequenceViewSet extends ViewSet {
 //     this.contentSpec = new SequenceContentSpec( viewable, this);
 //     ((PwPlanningSequence) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
     contentPane.add( new SequenceQueryWindow( this.contentSpecWindow, desktopFrame,
-                                              viewable));
+                                              viewable, this));
     this.contentSpecWindow.pack();
 
     int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.45 2003-10-18 00:01:08 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.46 2003-10-18 01:27:54 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -468,7 +468,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   
   public List getStepsWhereTokenTransacted(Integer id, String type) throws IllegalArgumentException {
     if(!type.equals(DbConstants.TOKEN_CREATED) && !type.equals(DbConstants.TOKEN_DELETED) &&
-       !type.equals(DbConstants.TOKEN_FREED) && !type.equals(DbConstants.TOKEN_INSERTED)) {
+       !type.equals(DbConstants.TOKEN_FREED) && !type.equals(DbConstants.TOKEN_INSERTED)&&
+       !type.equals(DbConstants.TOKEN_ALL_TYPES)) {
       throw new IllegalArgumentException("transaction type");
     }
     return MySQLDB.queryStepsWithTokenTransaction(this.id, id, type);
@@ -481,7 +482,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
        !type.equals(DbConstants.VARIABLE_DOMAIN_RELAXED) && 
        !type.equals(DbConstants.VARIABLE_DOMAIN_RESET) &&  
        !type.equals(DbConstants.VARIABLE_DOMAIN_RESTRICTED) &&
-       !type.equals(DbConstants.VARIABLE_DOMAIN_SPECIFIED)){
+       !type.equals(DbConstants.VARIABLE_DOMAIN_SPECIFIED) &&
+       !type.equals(DbConstants.VARIABLE_ALL_TYPES)) {
       throw new IllegalArgumentException("transaction type");
     }
     return MySQLDB.queryStepsWithVariableTransaction(this.id, id, type);
@@ -490,7 +492,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   public List getStepsWhereConstraintTransacted(Integer id, String type) 
     throws IllegalArgumentException  {
     if(!type.equals(DbConstants.CONSTRAINT_CREATED) && 
-       !type.equals(DbConstants.CONSTRAINT_DELETED)) { 
+       !type.equals(DbConstants.CONSTRAINT_DELETED) &&
+       !type.equals(DbConstants.CONSTRAINT_ALL_TYPES)) { 
       throw new IllegalArgumentException("transaction type");
     }
     return MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type);
