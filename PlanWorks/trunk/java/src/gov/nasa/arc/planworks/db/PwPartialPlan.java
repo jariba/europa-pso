@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.6 2003-06-08 00:14:07 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.7 2003-06-11 01:02:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,21 +33,21 @@ public interface PwPartialPlan {
    *
    * @return - <code>String</code> - 
    */
-  public String getUrl();
+  public abstract String getUrl();
 
   /**
    * <code>getCollectionName</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getCollectionName();
+  public abstract String getCollectionName();
 
   /**
    * <code>getObjectList</code>
    *
    * @return - <code>List</code> - of PwObject
    */
-  public List getObjectList();
+  public abstract List getObjectList();
 
 
   /**
@@ -56,7 +56,7 @@ public interface PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwObject</code> - 
    */
-  public PwObject getObject( String key);
+  public abstract PwObject getObject( String key);
 
 
   /**
@@ -65,7 +65,7 @@ public interface PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwTimeline</code> - 
    */
-  public PwTimeline getTimeline( String key);
+  public abstract PwTimeline getTimeline( String key);
 
 
   /**
@@ -74,7 +74,7 @@ public interface PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwSlot</code> - 
    */
-  public PwSlot getSlot( String key);
+  public abstract PwSlot getSlot( String key);
 
 
   /**
@@ -83,7 +83,7 @@ public interface PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwToken</code> - 
    */
-  public PwToken getToken( String key);
+  public abstract PwToken getToken( String key);
 
 
   /**
@@ -92,7 +92,7 @@ public interface PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwConstraint</code> - 
    */
-  public PwConstraint getConstraint( String key);
+  public abstract PwConstraint getConstraint( String key);
 
 
   /**
@@ -101,7 +101,7 @@ public interface PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwParameter</code> - 
    */
-  public PwParameter getParameter( String key);
+  public abstract PwParameter getParameter( String key);
 
 
   /**
@@ -110,7 +110,7 @@ public interface PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwPredicate</code> - 
    */
-  public PwPredicate getPredicate( String key);
+  public abstract PwPredicate getPredicate( String key);
 
 
   /**
@@ -119,7 +119,7 @@ public interface PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwTokenRelation</code> - 
    */
-  public PwTokenRelation getTokenRelation( String key);
+  public abstract PwTokenRelation getTokenRelation( String key);
 
 
   /**
@@ -128,6 +128,6 @@ public interface PwPartialPlan {
    * @param key - <code>String</code> - 
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getVariable( String key);
+  public abstract PwVariable getVariable( String key);
 
 } // end interface PwPartialPlan

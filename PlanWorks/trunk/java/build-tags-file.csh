@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.8 2003-06-08 00:14:07 taylor Exp $
+# $Id: build-tags-file.csh,v 1.9 2003-06-11 01:02:10 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -14,6 +14,7 @@ endif
 etags $etags_flag planWorks.TAGS \
     lib/eXist/src/org/exist/xmldb/DatabaseImpl.java \
     src/gov/nasa/arc/planworks/PlanWorks.java \
+    src/gov/nasa/arc/planworks/db/DbConstants.java \
     src/gov/nasa/arc/planworks/db/PwConstraint.java \
     src/gov/nasa/arc/planworks/db/PwDomain.java \
     src/gov/nasa/arc/planworks/db/PwEnumeratedDomain.java \
@@ -51,6 +52,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/test/ExistTest.java \
     src/gov/nasa/arc/planworks/db/test/PwProjectTest.java \
     src/gov/nasa/arc/planworks/db/util/FileUtils.java \
+    src/gov/nasa/arc/planworks/db/util/ParsedDomNode.java \
     src/gov/nasa/arc/planworks/db/util/XmlDBeXist.java \
     src/gov/nasa/arc/planworks/db/util/XmlFileFilter.java \
     src/gov/nasa/arc/planworks/db/util/XmlFilenameFilter.java \
@@ -70,6 +72,12 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
     src/gov/nasa/arc/planworks/viz/nodes/SlotNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpec.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/RedrawNotifier.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/ViewManager.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/ViewSet.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/ViewSetRemover.java \
     src/gov/nasa/arc/planworks/viz/views/VizView.java \
     src/gov/nasa/arc/planworks/viz/views/test/TimelineViewTest.java \
     src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java

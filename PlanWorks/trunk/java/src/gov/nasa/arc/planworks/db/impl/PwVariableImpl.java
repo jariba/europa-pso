@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.4 2003-06-02 17:49:59 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.5 2003-06-11 01:02:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -63,6 +63,15 @@ public class PwVariableImpl implements PwVariable {
     this.partialPlan = partialPlan;
   } // end constructor
 
+
+  /**
+   * <code>getKey</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getKey()  {
+    return this.key;
+  }
 
   /**
    * <code>getDomain</code>

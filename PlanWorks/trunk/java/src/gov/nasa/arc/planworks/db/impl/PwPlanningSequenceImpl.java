@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.6 2003-06-08 00:14:08 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.7 2003-06-11 01:02:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -21,6 +21,7 @@ import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwTransaction;
+import gov.nasa.arc.planworks.db.util.XmlFileFilter;
 import gov.nasa.arc.planworks.db.util.XmlFilenameFilter;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
@@ -122,7 +123,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
 
 
 
-  // IMPLEMENT INTERFACE ////////////////
+  // IMPLEMENT INTERFACE 
 
 
   /**
@@ -190,7 +191,23 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
       throw new IndexOutOfBoundsException( "step " + step + ", not >= 0 and < " +
                                            partialPlans.size());
     }
-  } // end getPartialPlan
+  } // end getPartialPlan( int)
+
+  /**
+   * <code>getPartialPlan</code>
+   *
+   * @param planName - <code>String</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   */
+  public PwPartialPlan getPartialPlan( String planName) throws ResourceNotFoundException {
+    for (int index = 0, n = partialPlanNames.size(); index < n; index++) {
+      if (((String) partialPlanNames.get( index)).equals( planName)) {
+        return (PwPartialPlan) partialPlans.get( index);
+      }
+    }
+    throw new ResourceNotFoundException( "plan name '" + planName +
+                                         "'not found in url " + url);
+  } // end getPartialPlan( String)
 
   /**
    * <code>addPartialPlan</code> -
@@ -205,7 +222,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     for (int index = 0, n = partialPlanNames.size(); index < n; index++) {
       if (((String) partialPlanNames.get( index)).equals( partialPlanName)) {
         PwPartialPlan partialPlan =
-          new PwPartialPlanImpl( url + "/" + partialPlanName + ".xml",
+          new PwPartialPlanImpl( url + "/" + partialPlanName +
+                                 XmlFileFilter.XML_EXTENSION_W_DOT,
                                  projectName, name);
         partialPlans.set( index, partialPlan);
         return partialPlan;
@@ -215,7 +233,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   } // end addPartialPlan
 
 
-  // END INTERFACE IMPLEMENTATION ///////////////////
+  // END INTERFACE IMPLEMENTATION 
 
 
 

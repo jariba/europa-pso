@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomain.java,v 1.2 2003-05-18 00:02:24 taylor Exp $
+// $Id: PwIntervalDomain.java,v 1.3 2003-06-11 01:02:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -30,21 +30,21 @@ public interface PwIntervalDomain {
    *
    * @return - <code>String</code> - 
    */
-  public String getLowerBound();
+  public abstract String getLowerBound();
 
   /**
    * <code>getUpperBound</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getUpperBound();
+  public abstract String getUpperBound();
 		
   /**
    * <code>toString</code>
    *
    * @return - <code>String</code> - 
    */
-  public String toString();
+  public abstract String toString();
 
 
 } // end interface PwIntervalDomain

@@ -11,23 +11,38 @@ public class DatabaseImpl DatabaseImpl59,2234
     public String getProperty(DatabaseImpl.getProperty222,8465
     public void setProperty(DatabaseImpl.setProperty232,8828
 
-src/gov/nasa/arc/planworks/PlanWorks.java,1109
-public class PlanWorks PlanWorks50,1531
-  public PlanWorks(PlanWorks.PlanWorks92,2432
-  private static JMenu[] buildConstantMenus(PlanWorks.buildConstantMenus146,4450
-  private void createProjectThread(PlanWorks.createProjectThread208,6986
-  class CreateProjectThread PlanWorks.CreateProjectThread212,7069
-    public CreateProjectThread(PlanWorks.CreateProjectThread.CreateProjectThread214,7115
-    public void run(PlanWorks.CreateProjectThread.run217,7177
-  private PwProject createProject(PlanWorks.createProject242,8041
-  private JMenu buildSeqPartialPlanMenu(PlanWorks.buildSeqPartialPlanMenu284,9602
-  private void openProject(PlanWorks.openProject340,11977
-  private void deleteProject(PlanWorks.deleteProject345,12034
-  class ParseProjectUrl PlanWorks.ParseProjectUrl358,12404
-    public ParseProjectUrl PlanWorks.ParseProjectUrl.ParseProjectUrl370,12691
-    private void addInputListener(PlanWorks.ParseProjectUrl.addInputListener422,14595
-    public String getTypedText(PlanWorks.ParseProjectUrl.getTypedText458,15973
-  public static void main PlanWorks.main471,16181
+src/gov/nasa/arc/planworks/PlanWorks.java,2239
+public class PlanWorks PlanWorks56,1853
+  public PlanWorks(PlanWorks.PlanWorks111,3058
+  private static void setProjectMenuEnabled(PlanWorks.setProjectMenuEnabled160,4903
+  private static JMenu[] buildConstantMenus(PlanWorks.buildConstantMenus170,5237
+  private void instantiateProjectThread(PlanWorks.instantiateProjectThread223,7375
+  class InstantiateProjectThread PlanWorks.InstantiateProjectThread227,7485
+    public InstantiateProjectThread(PlanWorks.InstantiateProjectThread.InstantiateProjectThread231,7562
+    public void run(PlanWorks.InstantiateProjectThread.run235,7665
+  private PwProject createProject(PlanWorks.createProject265,8724
+  private PwProject openProject(PlanWorks.openProject309,10401
+  private void deleteProject(PlanWorks.deleteProject345,11913
+  private void addSeqPartialPlanViewMenu(PlanWorks.addSeqPartialPlanViewMenu379,13249
+  private JMenu buildSeqPartialPlanViewMenu(PlanWorks.buildSeqPartialPlanViewMenu393,13774
+  private void buildViewSubMenu(PlanWorks.buildViewSubMenu418,14898
+  private void createPartialPlanViewThread(PlanWorks.createPartialPlanViewThread469,17394
+  class CreatePartialPlanViewThread PlanWorks.CreatePartialPlanViewThread475,17607
+    public CreatePartialPlanViewThread(PlanWorks.CreatePartialPlanViewThread.CreatePartialPlanViewThread482,17799
+    public void run(PlanWorks.CreatePartialPlanViewThread.run488,18065
+    private void renderView(PlanWorks.CreatePartialPlanViewThread.renderView508,18892
+  class SeqPartPlanViewMenuItem PlanWorks.SeqPartPlanViewMenuItem564,21354
+    public SeqPartPlanViewMenuItem(PlanWorks.SeqPartPlanViewMenuItem.SeqPartPlanViewMenuItem569,21477
+    public String getSequenceName(PlanWorks.SeqPartPlanViewMenuItem.getSequenceName575,21684
+    public String getPartialPlanName(PlanWorks.SeqPartPlanViewMenuItem.getPartialPlanName579,21756
+  class ParseProjectUrl PlanWorks.ParseProjectUrl586,21877
+    public ParseProjectUrl PlanWorks.ParseProjectUrl.ParseProjectUrl598,22164
+    private void addInputListener(PlanWorks.ParseProjectUrl.addInputListener650,24068
+    public String getTypedText(PlanWorks.ParseProjectUrl.getTypedText686,25446
+  public static void main PlanWorks.main699,25654
+
+src/gov/nasa/arc/planworks/db/DbConstants.java,49
+public interface DbConstants DbConstants26,585
 
 src/gov/nasa/arc/planworks/db/PwConstraint.java,51
 public interface PwConstraint PwConstraint26,557
@@ -53,21 +68,22 @@ public interface PwParameter PwParameter26,555
 src/gov/nasa/arc/planworks/db/PwPartialPlan.java,53
 public interface PwPartialPlan PwPartialPlan26,559
 
-src/gov/nasa/arc/planworks/db/PwPlanningSequence.java,139
+src/gov/nasa/arc/planworks/db/PwPlanningSequence.java,148
 public interface PwPlanningSequence PwPlanningSequence28,632
-  public List listTransactions(PwPlanningSequence.listTransactions66,1302
+  public abstract List listTransactions(PwPlanningSequence.listTransactions66,1338
 
 src/gov/nasa/arc/planworks/db/PwPredicate.java,49
 public interface PwPredicate PwPredicate26,555
 
-src/gov/nasa/arc/planworks/db/PwProject.java,486
+src/gov/nasa/arc/planworks/db/PwProject.java,553
 public abstract class PwProject PwProject29,725
   public static void initProjects(PwProject.initProjects37,931
   public static PwProject createProject(PwProject.createProject47,1172
   public static PwProject openProject(PwProject.openProject58,1460
-  public static List listProjects(PwProject.listProjects69,1727
-  public static void saveProjects(PwProject.saveProjects78,1995
-  public abstract PwPlanningSequence getPlanningSequence(PwProject.getPlanningSequence112,2889
+  public static PwProject getProject(PwProject.getProject70,1809
+  public static List listProjects(PwProject.listProjects79,2008
+  public static void saveProjects(PwProject.saveProjects88,2276
+  public abstract PwPlanningSequence getPlanningSequence(PwProject.getPlanningSequence122,3156
 
 src/gov/nasa/arc/planworks/db/PwSlot.java,39
 public interface PwSlot PwSlot26,545
@@ -133,40 +149,42 @@ public class PwParameterImpl PwParameterImpl30,677
   public String getName(PwParameterImpl.getName51,1125
   public String getKey(PwParameterImpl.getKey60,1259
 
-src/gov/nasa/arc/planworks/db/impl/PwPartialPlanImpl.java,1516
+src/gov/nasa/arc/planworks/db/impl/PwPartialPlanImpl.java,1574
 public class PwPartialPlanImpl PwPartialPlanImpl46,1342
-  public PwPartialPlanImpl(PwPartialPlanImpl.PwPartialPlanImpl80,2965
-  private void createPartialPlan(PwPartialPlanImpl.createPartialPlan130,4901
-  private final void fillElementMaps(PwPartialPlanImpl.fillElementMaps166,6513
-  public List getObjectIdList(PwPartialPlanImpl.getObjectIdList214,8377
-  public PwObjectImpl getObjectImpl(PwPartialPlanImpl.getObjectImpl224,8575
-  public void addParameter(PwPartialPlanImpl.addParameter234,8823
-  public Map getTimelineMap(PwPartialPlanImpl.getTimelineMap243,9041
-  public Map getSlotMap(PwPartialPlanImpl.getSlotMap252,9183
-  public Map getTokenMap(PwPartialPlanImpl.getTokenMap261,9318
-  public String getCollectionName(PwPartialPlanImpl.getCollectionName274,9517
-  public List getObjectList(PwPartialPlanImpl.getObjectList283,9685
-  public PwObject getObject(PwPartialPlanImpl.getObject296,10068
-  public PwTimeline getTimeline(PwPartialPlanImpl.getTimeline312,10502
-  public PwSlot getSlot(PwPartialPlanImpl.getSlot328,10954
-  public PwToken getToken(PwPartialPlanImpl.getToken344,11356
-  public PwConstraint getConstraint(PwPartialPlanImpl.getConstraint360,11781
-  public PwParameter getParameter(PwPartialPlanImpl.getParameter376,12266
-  public PwPredicate getPredicate(PwPartialPlanImpl.getPredicate392,12741
-  public PwTokenRelation getTokenRelation(PwPartialPlanImpl.getTokenRelation408,13221
-  public PwVariable getVariable(PwPartialPlanImpl.getVariable424,13743
+  public PwPartialPlanImpl(PwPartialPlanImpl.PwPartialPlanImpl79,2935
+  private void createPartialPlan(PwPartialPlanImpl.createPartialPlan130,4933
+  private final void fillElementMaps(PwPartialPlanImpl.fillElementMaps164,6486
+  public List getObjectIdList(PwPartialPlanImpl.getObjectIdList212,8440
+  public PwObjectImpl getObjectImpl(PwPartialPlanImpl.getObjectImpl222,8638
+  public void addParameter(PwPartialPlanImpl.addParameter232,8886
+  public Map getTimelineMap(PwPartialPlanImpl.getTimelineMap241,9104
+  public Map getSlotMap(PwPartialPlanImpl.getSlotMap250,9246
+  public Map getTokenMap(PwPartialPlanImpl.getTokenMap259,9381
+  public String getUrl(PwPartialPlanImpl.getUrl272,9563
+  public String getCollectionName(PwPartialPlanImpl.getCollectionName281,9702
+  public List getObjectList(PwPartialPlanImpl.getObjectList290,9870
+  public PwObject getObject(PwPartialPlanImpl.getObject303,10253
+  public PwTimeline getTimeline(PwPartialPlanImpl.getTimeline319,10696
+  public PwSlot getSlot(PwPartialPlanImpl.getSlot335,11157
+  public PwToken getToken(PwPartialPlanImpl.getToken351,11568
+  public PwConstraint getConstraint(PwPartialPlanImpl.getConstraint367,12002
+  public PwParameter getParameter(PwPartialPlanImpl.getParameter383,12496
+  public PwPredicate getPredicate(PwPartialPlanImpl.getPredicate399,12980
+  public PwTokenRelation getTokenRelation(PwPartialPlanImpl.getTokenRelation415,13469
+  public PwVariable getVariable(PwPartialPlanImpl.getVariable432,14008
 
-src/gov/nasa/arc/planworks/db/impl/PwPlanningSequenceImpl.java,738
-class PwPlanningSequenceImpl PwPlanningSequenceImpl35,942
-  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl55,1599
-  public int getStepCount(PwPlanningSequenceImpl.getStepCount93,3005
-  public String getUrl(PwPlanningSequenceImpl.getUrl102,3142
-  public String getName(PwPlanningSequenceImpl.getName111,3271
-  public PwModel getModel(PwPlanningSequenceImpl.getModel120,3412
-  public String getSequenceName(PwPlanningSequenceImpl.getSequenceName129,3553
-  public List listTransactions(PwPlanningSequenceImpl.listTransactions139,3762
-  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan155,4329
-  public int addPartialPlan(PwPlanningSequenceImpl.addPartialPlan171,4957
+src/gov/nasa/arc/planworks/db/impl/PwPlanningSequenceImpl.java,842
+class PwPlanningSequenceImpl PwPlanningSequenceImpl36,995
+  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl56,1703
+  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl102,3470
+  public int getStepCount(PwPlanningSequenceImpl.getStepCount134,4427
+  public String getUrl(PwPlanningSequenceImpl.getUrl143,4564
+  public String getName(PwPlanningSequenceImpl.getName152,4693
+  public PwModel getModel(PwPlanningSequenceImpl.getModel161,4826
+  public List listTransactions(PwPlanningSequenceImpl.listTransactions171,5022
+  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan187,5589
+  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan202,6122
+  public PwPartialPlan addPartialPlan(PwPlanningSequenceImpl.addPartialPlan220,6890
 
 src/gov/nasa/arc/planworks/db/impl/PwPredicateImpl.java,380
 public class PwPredicateImpl PwPredicateImpl30,677
@@ -176,35 +194,41 @@ public class PwPredicateImpl PwPredicateImpl30,677
   public List getParameterList(PwPredicateImpl.getParameterList74,1678
   public PwParameterImpl addParameter(PwPredicateImpl.addParameter89,2114
 
-src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java,1943
-public class PwProjectImpl PwProjectImpl41,1128
-  public static void initProjects(PwProjectImpl.initProjects58,1700
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl116,4070
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl163,6014
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl201,7623
-  public List getProjectNames(PwProjectImpl.getProjectNames211,7847
-  public void setProjectNames(PwProjectImpl.setProjectNames221,8114
-  public List getProjectUrls(PwProjectImpl.getProjectUrls231,8399
-  public void setProjectUrls(PwProjectImpl.setProjectUrls241,8662
-  public static List listProjects(PwProjectImpl.listProjects253,8891
-  public static void saveProjects(PwProjectImpl.saveProjects262,9142
-  public String getUrl(PwProjectImpl.getUrl287,10057
-  public String getProjectName(PwProjectImpl.getProjectName297,10298
-  public List listPlanningSequences(PwProjectImpl.listPlanningSequences308,10663
-  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence323,11143
-  public void close(PwProjectImpl.close342,11874
-  public boolean requiresSaving(PwProjectImpl.requiresSaving377,13135
-  public void save(PwProjectImpl.save386,13380
-  public void setUrl(PwProjectImpl.setUrl409,14125
-  public void setProjectName(PwProjectImpl.setProjectName419,14389
-  public List getPlanningSequences(PwProjectImpl.getPlanningSequences429,14678
-  public void setPlanningSequences(PwProjectImpl.setPlanningSequences439,14957
-  public List getSeqDirNames(PwProjectImpl.getSeqDirNames449,15254
-  public void setSeqDirNames(PwProjectImpl.setSeqDirNames459,15517
-  private static void connectToExistDataBase(PwProjectImpl.connectToExistDataBase463,15608
-  private String parseProjectName(PwProjectImpl.parseProjectName477,16113
-  private String getProjectCollectionName(PwProjectImpl.getProjectCollectionName487,16473
-  private PwProjectImpl restore(PwProjectImpl.restore494,16720
+src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java,2391
+public class PwProjectImpl PwProjectImpl42,1181
+  public static void initProjects(PwProjectImpl.initProjects59,1753
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl112,3860
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl159,5750
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl201,7486
+  public List getProjectNames(PwProjectImpl.getProjectNames211,7710
+  public void setProjectNames(PwProjectImpl.setProjectNames221,7977
+  public List getProjectUrls(PwProjectImpl.getProjectUrls231,8262
+  public void setProjectUrls(PwProjectImpl.setProjectUrls241,8525
+  public void addPartialPlanNames(PwProjectImpl.addPartialPlanNames250,8712
+  public static PwProject getProject(PwProjectImpl.getProject263,8953
+  public static List listProjects(PwProjectImpl.listProjects277,9318
+  public static void saveProjects(PwProjectImpl.saveProjects286,9569
+  public String getUrl(PwProjectImpl.getUrl311,10484
+  public String getName(PwProjectImpl.getName321,10718
+  public List listPlanningSequences(PwProjectImpl.listPlanningSequences332,11062
+  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence347,11542
+  public List getPlanningSequenceNames(PwProjectImpl.getPlanningSequenceNames365,12183
+  public List getPartialPlanNames(PwProjectImpl.getPartialPlanNames375,12408
+  public void close(PwProjectImpl.close390,12888
+  public boolean requiresSaving(PwProjectImpl.requiresSaving432,14393
+  public void save(PwProjectImpl.save441,14638
+  public void setUrl(PwProjectImpl.setUrl465,15377
+  public void setName(PwProjectImpl.setName475,15627
+  public List getPlanningSequences(PwProjectImpl.getPlanningSequences485,15888
+  public void setPlanningSequences(PwProjectImpl.setPlanningSequences495,16167
+  public List getSeqDirNames(PwProjectImpl.getSeqDirNames505,16473
+  public void setSeqDirNames(PwProjectImpl.setSeqDirNames515,16745
+  public List getPartialPlanNames(PwProjectImpl.getPartialPlanNames525,17045
+  public void setPartialPlanNames(PwProjectImpl.setPartialPlanNames535,17342
+  private static void connectToExistDataBase(PwProjectImpl.connectToExistDataBase539,17453
+  private String parseProjectName(PwProjectImpl.parseProjectName552,17898
+  private String getProjectCollectionName(PwProjectImpl.getProjectCollectionName562,18258
+  private PwProjectImpl restore(PwProjectImpl.restore569,18498
 
 src/gov/nasa/arc/planworks/db/impl/PwSlotImpl.java,262
 public class PwSlotImpl PwSlotImpl30,662
@@ -280,49 +304,57 @@ public class FileUtils FileUtils25,507
   public static String getExtension(FileUtils.getExtension33,658
   public static String getCanonicalPath(FileUtils.getCanonicalPath50,1091
 
-src/gov/nasa/arc/planworks/db/util/XmlDBeXist.java,2536
-public class XmlDBeXist XmlDBeXist66,2298
-  private XmlDBeXist(XmlDBeXist.XmlDBeXist244,10681
-  public static void registerDataBase(XmlDBeXist.registerDataBase254,10877
-  public static void closeDataBase(XmlDBeXist.closeDataBase307,12995
-  public static Collection createCollection(XmlDBeXist.createCollection324,13487
-  public static void removeCollection(XmlDBeXist.removeCollection390,16615
-  private static void removeCollectionResources(XmlDBeXist.removeCollectionResources423,18119
-  public static void addXMLFileToCollection(XmlDBeXist.addXMLFileToCollection458,19533
-  public static void changeCurrentCollection(XmlDBeXist.changeCurrentCollection496,21137
-  public static List queryCollection(XmlDBeXist.queryCollection538,22771
-  private static void parseDomNode(XmlDBeXist.parseDomNode578,24464
-  public static void printDomNodeTriplets(XmlDBeXist.printDomNodeTriplets617,26100
-  static class ParsedDomNode XmlDBeXist.ParsedDomNode637,26930
-    ParsedDomNode(XmlDBeXist.ParsedDomNode.ParsedDomNode643,27050
-    public Short getNodeType(XmlDBeXist.ParsedDomNode.getNodeType655,27341
-    public String getNodeName(XmlDBeXist.ParsedDomNode.getNodeName664,27504
-    public String getNodeValue(XmlDBeXist.ParsedDomNode.getNodeValue673,27670
-  private static final String getNodeTypeString(XmlDBeXist.getNodeTypeString680,27775
-  public static List queryPartialPlanKeys(XmlDBeXist.queryPartialPlanKeys720,29132
-  public static String queryAttributeValue(XmlDBeXist.queryAttributeValue739,29975
-  public static List queryAttributeValueOfElements(XmlDBeXist.queryAttributeValueOfElements764,30945
-  public static String queryPartialPlanModelByKey(XmlDBeXist.queryPartialPlanModelByKey790,32029
-  public static List queryPartialPlanObjectsByKey(XmlDBeXist.queryPartialPlanObjectsByKey805,32686
-  private static List queryTimelinesSlotsTokens(XmlDBeXist.queryTimelinesSlotsTokens825,33637
-  public static void createTimelineSlotTokenNodesStructure(XmlDBeXist.createTimelineSlotTokenNodesStructure842,34188
-  public static PwVariableImpl queryVariableByKey(XmlDBeXist.queryVariableByKey904,37147
-  public static PwPredicateImpl queryPredicateByKey(XmlDBeXist.queryPredicateByKey969,40282
-  public static PwConstraintImpl queryConstraintByKey(XmlDBeXist.queryConstraintByKey1015,42489
-  public static PwTokenRelationImpl queryTokenRelationByKey(XmlDBeXist.queryTokenRelationByKey1057,44503
-  public static List queryElementKeysByType(XmlDBeXist.queryElementKeysByType1096,46373
+src/gov/nasa/arc/planworks/db/util/ParsedDomNode.java,294
+public class ParsedDomNode ParsedDomNode3,41
+  public ParsedDomNode(ParsedDomNode.ParsedDomNode9,157
+    public Short getNodeType(ParsedDomNode.getNodeType21,439
+  public String getNodeName(ParsedDomNode.getNodeName30,594
+  public String getNodeValue(ParsedDomNode.getNodeValue39,748
+
+src/gov/nasa/arc/planworks/db/util/XmlDBeXist.java,2613
+public class XmlDBeXist XmlDBeXist67,2336
+  private XmlDBeXist(XmlDBeXist.XmlDBeXist245,10719
+  public static void registerDataBase(XmlDBeXist.registerDataBase255,10915
+  public static void closeDataBase(XmlDBeXist.closeDataBase308,13039
+  public static Collection createCollection(XmlDBeXist.createCollection325,13532
+  public static void removeCollection(XmlDBeXist.removeCollection391,16662
+  private static void removeCollectionResources(XmlDBeXist.removeCollectionResources424,18167
+  public static void addXMLFileToCollection(XmlDBeXist.addXMLFileToCollection459,19582
+  public static void changeCurrentCollection(XmlDBeXist.changeCurrentCollection497,21187
+  public static Collection getCollection(XmlDBeXist.getCollection538,22797
+  public static List queryCollection(XmlDBeXist.queryCollection558,23515
+  private static void parseDomNode(XmlDBeXist.parseDomNode598,25253
+  public static void printDomNodeTriplets(XmlDBeXist.printDomNodeTriplets637,26889
+  static class ParsedDomNode XmlDBeXist.ParsedDomNode657,27719
+    ParsedDomNode(XmlDBeXist.ParsedDomNode.ParsedDomNode664,28005
+    public Short getNodeType(XmlDBeXist.ParsedDomNode.getNodeType676,28296
+    public String getNodeName(XmlDBeXist.ParsedDomNode.getNodeName685,28459
+    public String getNodeValue(XmlDBeXist.ParsedDomNode.getNodeValue694,28625
+  private static final String getNodeTypeString(XmlDBeXist.getNodeTypeString701,28730
+  public static List queryPartialPlanKeys(XmlDBeXist.queryPartialPlanKeys741,30087
+  public static String queryAttributeValue(XmlDBeXist.queryAttributeValue760,30930
+  public static List queryAttributeValueOfElements(XmlDBeXist.queryAttributeValueOfElements785,31900
+  public static String queryPartialPlanModelByKey(XmlDBeXist.queryPartialPlanModelByKey811,32984
+  public static List queryPartialPlanObjectsByKey(XmlDBeXist.queryPartialPlanObjectsByKey826,33641
+  private static List queryTimelinesSlotsTokens(XmlDBeXist.queryTimelinesSlotsTokens846,34592
+  public static void createTimelineSlotTokenNodesStructure(XmlDBeXist.createTimelineSlotTokenNodesStructure863,35143
+  public static PwVariableImpl queryVariableByKey(XmlDBeXist.queryVariableByKey926,38173
+  public static PwPredicateImpl queryPredicateByKey(XmlDBeXist.queryPredicateByKey991,41308
+  public static PwConstraintImpl queryConstraintByKey(XmlDBeXist.queryConstraintByKey1037,43515
+  public static PwTokenRelationImpl queryTokenRelationByKey(XmlDBeXist.queryTokenRelationByKey1079,45529
+  public static List queryElementKeysByType(XmlDBeXist.queryElementKeysByType1118,47399
 
 src/gov/nasa/arc/planworks/db/util/XmlFileFilter.java,231
 public class XmlFileFilter XmlFileFilter26,614
-  public XmlFileFilter(XmlFileFilter.XmlFileFilter38,836
-  public boolean accept(XmlFileFilter.accept49,1149
-  public String getDescription(XmlFileFilter.getDescription59,1465
+  public XmlFileFilter(XmlFileFilter.XmlFileFilter44,970
+  public boolean accept(XmlFileFilter.accept55,1283
+  public String getDescription(XmlFileFilter.getDescription65,1599
 
 src/gov/nasa/arc/planworks/db/util/XmlFilenameFilter.java,261
 public class XmlFilenameFilter XmlFilenameFilter26,617
-  public XmlFilenameFilter(XmlFilenameFilter.XmlFilenameFilter38,854
-    public boolean accept(XmlFilenameFilter.accept50,1217
-  public String getDescription(XmlFilenameFilter.getDescription63,1714
+  public XmlFilenameFilter(XmlFilenameFilter.XmlFilenameFilter32,731
+    public boolean accept(XmlFilenameFilter.accept44,1096
+  public String getDescription(XmlFilenameFilter.getDescription57,1593
 
 src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java,195
 public class EmptyDesktopIconUI EmptyDesktopIconUI39,1225
@@ -376,11 +408,11 @@ public class MDIInternalFrame MDIInternalFrame17,522
 	public MDIInternalFrameListener(MDIInternalFrame.MDIInternalFrameListener.MDIInternalFrameListener214,5719
 	public void internalFrameClosing(MDIInternalFrame.MDIInternalFrameListener.internalFrameClosing221,5907
 	public void internalFrameActivated(MDIInternalFrame.MDIInternalFrameListener.internalFrameActivated239,6339
-	public void internalFrameClosed(MDIInternalFrame.MDIInternalFrameListener.internalFrameClosed245,6525
-	public void internalFrameDeactivated(MDIInternalFrame.MDIInternalFrameListener.internalFrameDeactivated249,6623
-	public void internalFrameDeiconified(MDIInternalFrame.MDIInternalFrameListener.internalFrameDeiconified252,6689
-	public void internalFrameIconified(MDIInternalFrame.MDIInternalFrameListener.internalFrameIconified255,6755
-	public void internalFrameOpened(MDIInternalFrame.MDIInternalFrameListener.internalFrameOpened258,6819
+	public void internalFrameClosed(MDIInternalFrame.MDIInternalFrameListener.internalFrameClosed245,6535
+	public void internalFrameDeactivated(MDIInternalFrame.MDIInternalFrameListener.internalFrameDeactivated249,6633
+	public void internalFrameDeiconified(MDIInternalFrame.MDIInternalFrameListener.internalFrameDeiconified252,6699
+	public void internalFrameIconified(MDIInternalFrame.MDIInternalFrameListener.internalFrameIconified255,6765
+	public void internalFrameOpened(MDIInternalFrame.MDIInternalFrameListener.internalFrameOpened258,6829
 
 src/gov/nasa/arc/planworks/mdi/MDIMenu.java,38
 public interface MDIMenuMDIMenu3,37
@@ -432,16 +464,16 @@ src/gov/nasa/arc/planworks/viz/ViewConstants.java,53
 public interface ViewConstants ViewConstants21,360
 
 src/gov/nasa/arc/planworks/viz/nodes/SlotNode.java,658
-public class SlotNode SlotNode61,1711
-  public SlotNode(SlotNode.SlotNode96,2960
-  private final void configure(SlotNode.configure110,3454
-  public String getPredicateName(SlotNode.getPredicateName134,4085
-  public Point getSlotLocation(SlotNode.getSlotLocation143,4241
-  public String getStartTimeIntervalString(SlotNode.getStartTimeIntervalString152,4406
-  public String getEndTimeIntervalString(SlotNode.getEndTimeIntervalString161,4603
-  private void renderTimeIntervals(SlotNode.renderTimeIntervals168,4864
-  private JGoText renderIntervalText(SlotNode.renderIntervalText199,6327
-  private int getXOffset(SlotNode.getXOffset226,7827
+public class SlotNode SlotNode62,1757
+  public SlotNode(SlotNode.SlotNode97,2981
+  private final void configure(SlotNode.configure111,3475
+  public String getPredicateName(SlotNode.getPredicateName136,4146
+  public Point getSlotLocation(SlotNode.getSlotLocation145,4302
+  public String getStartTimeIntervalString(SlotNode.getStartTimeIntervalString154,4467
+  public String getEndTimeIntervalString(SlotNode.getEndTimeIntervalString163,4664
+  private void renderTimeIntervals(SlotNode.renderTimeIntervals170,4925
+  private JGoText renderIntervalText(SlotNode.renderIntervalText225,7186
+  private int getXOffset(SlotNode.getXOffset252,8693
 
 src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java,459
 public class TimelineNode TimelineNode52,1389
@@ -452,9 +484,41 @@ public class TimelineNode TimelineNode52,1389
   public List getSlotNodeList(TimelineNode.getSlotNodeList126,3466
   public void addToSlotNodeList(TimelineNode.addToSlotNodeList135,3631
 
-src/gov/nasa/arc/planworks/viz/views/VizView.java,78
+src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpec.java,336
+public class ContentSpec ContentSpec12,317
+  public ContentSpec(ContentSpec.ContentSpec39,1611
+  public void resetSpec(ContentSpec.resetSpec58,2297
+  public boolean isInContentSpec(ContentSpec.isInContentSpec61,2381
+  private int keyToIndex(ContentSpec.keyToIndex72,2721
+  public void applySpec(ContentSpec.applySpec76,2958
+
+src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java,61
+public interface ContentSpecChecker ContentSpecChecker3,45
+
+src/gov/nasa/arc/planworks/viz/viewMgr/RedrawNotifier.java,53
+public interface RedrawNotifier RedrawNotifier3,45
+
+src/gov/nasa/arc/planworks/viz/viewMgr/ViewManager.java,241
+public class ViewManager ViewManager10,287
+  public ViewManager(ViewManager.ViewManager13,408
+  public MDIInternalFrame openTimelineView(ViewManager.openTimelineView17,533
+  public void removeViewSet(ViewManager.removeViewSet33,1242
+
+src/gov/nasa/arc/planworks/viz/viewMgr/ViewSet.java,341
+public class ViewSet ViewSet14,419
+  public ViewSet(ViewSet.ViewSet21,686
+  public MDIInternalFrame openTimelineView(ViewSet.openTimelineView31,1063
+  public void removeViewFrame(ViewSet.removeViewFrame47,1661
+  public void notifyRedraw(ViewSet.notifyRedraw60,2093
+  public boolean isInContentSpec(ViewSet.isInContentSpec73,2593
+
+src/gov/nasa/arc/planworks/viz/viewMgr/ViewSetRemover.java,53
+public interface ViewSetRemover ViewSetRemover5,94
+
+src/gov/nasa/arc/planworks/viz/views/VizView.java,122
 public class VizView VizView28,593
   public VizView(VizView.VizView38,821
+  public void redraw(VizView.redraw44,981
 
 src/gov/nasa/arc/planworks/viz/views/test/TimelineViewTest.java,350
 public class TimelineViewTest TimelineViewTest31,999
@@ -464,15 +528,17 @@ public class TimelineViewTest TimelineViewTest31,999
   public void testMain(TimelineViewTest.testMain49,1334
   public static void main(TimelineViewTest.main141,5808
 
-src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java,763
-public class TimelineView TimelineView60,1742
-  public TimelineView(TimelineView.TimelineView71,1994
-  public void init(TimelineView.init105,3132
-  public JGoView getJGoView(TimelineView.getJGoView126,3595
-  public FontMetrics getFontMetrics(TimelineView.getFontMetrics135,3751
-  public int getSlotLabelMinLength(TimelineView.getSlotLabelMinLength144,3913
-  public void setSlotLabelMinLength(TimelineView.setSlotLabelMinLength153,4089
-  public List getTimelineNodeList(TimelineView.getTimelineNodeList162,4295
-  private void createTimelineAndSlotNodes(TimelineView.createTimelineAndSlotNodes166,4367
-  private String getSlotNodeLabel(TimelineView.getSlotNodeLabel214,6653
-  public void iterateOverNodes(TimelineView.iterateOverNodes236,7341
+src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java,903
+public class TimelineView TimelineView61,1773
+  public TimelineView(TimelineView.TimelineView72,2025
+  public void init(TimelineView.init107,3191
+  public void redraw(TimelineView.redraw131,3860
+  public JGoView getJGoView(TimelineView.getJGoView143,3979
+  public FontMetrics getFontMetrics(TimelineView.getFontMetrics152,4135
+  public int getSlotLabelMinLength(TimelineView.getSlotLabelMinLength161,4297
+  public void setSlotLabelMinLength(TimelineView.setSlotLabelMinLength170,4473
+  public List getTimelineNodeList(TimelineView.getTimelineNodeList179,4679
+  private void createTimelineAndSlotNodes(TimelineView.createTimelineAndSlotNodes183,4751
+  private int computeTimelineNodesWidth(TimelineView.computeTimelineNodesWidth238,7347
+  private String getSlotNodeLabel(TimelineView.getSlotNodeLabel257,8215
+  public void iterateOverNodes(TimelineView.iterateOverNodes279,8903

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.2 2003-05-21 23:48:37 taylor Exp $
+// $Id: VizView.java,v 1.3 2003-06-11 01:02:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -40,6 +40,14 @@ public class VizView extends JPanel {
     this.partialPlan = partialPlan;
     this.collectionName = partialPlan.getCollectionName();
   }
+
+  /**
+   * <code>redraw</code> - each subclass of VizView will implement redraw()
+   *
+   */
+  public void redraw() {
+  }
+
 
 } // end class VizView
 

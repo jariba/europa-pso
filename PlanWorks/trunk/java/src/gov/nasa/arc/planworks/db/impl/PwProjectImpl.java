@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.5 2003-06-08 00:14:08 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.6 2003-06-11 01:02:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -27,6 +27,7 @@ import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.db.util.XmlFileFilter;
 import gov.nasa.arc.planworks.db.util.XmlDBeXist;
 
 
@@ -112,7 +113,8 @@ public class PwProjectImpl extends PwProject {
     this.url = url; // project pathname
     name = parseProjectName( url);
     projectCollectionName = getProjectCollectionName();
-    projectDataPathname = projectsXmlDataDir + "/" + name + ".xml";
+    projectDataPathname = projectsXmlDataDir + "/" + name +
+      XmlFileFilter.XML_EXTENSION_W_DOT;
     planningSequences = new ArrayList();
     seqDirNames = new ArrayList();
     partialPlanNames = new ArrayList();
@@ -158,7 +160,8 @@ public class PwProjectImpl extends PwProject {
     this.url = url; // project pathname
     name = parseProjectName( url);
     projectCollectionName = getProjectCollectionName();
-    projectDataPathname = projectsXmlDataDir + "/" + name + ".xml";
+    projectDataPathname = projectsXmlDataDir + "/" + name +
+      XmlFileFilter.XML_EXTENSION_W_DOT;
     planningSequences = new ArrayList();
     seqDirNames = new ArrayList();
     requiresSaving = false;
@@ -535,15 +538,14 @@ public class PwProjectImpl extends PwProject {
 
   private static void connectToExistDataBase() {
     // connect to eXist XPath data base
+    System.err.println( "Registering Data Base ...");
     long startTimeMSecs = (new Date()).getTime();
 
     XmlDBeXist.INSTANCE.registerDataBase();
 
     long stopTimeMSecs = (new Date()).getTime();
-    String timeString = "Register Data Base \n   ... elapsed time: " +
-      //       writeTime( (stopTimeMSecs - startTimeMSecs)) + " seconds.";
-      (stopTimeMSecs - startTimeMSecs) + " msecs.";
-    System.err.println( timeString);
+    System.err.println( "   ... elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end connectToExistDataBase
 
 
