@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.2 2004-03-06 02:22:34 taylor Exp $
+// $Id: ResourceView.java,v 1.3 2004-03-07 01:49:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -22,6 +22,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -31,6 +33,7 @@ import javax.swing.SwingUtilities;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoPen;
+import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoView;
 
@@ -123,6 +126,11 @@ public abstract class ResourceView extends PartialPlanView  {
    */
   protected int currentYLoc;
 
+  /**
+   * variable <code>resourceNameNodeList</code> of ResourceNameNode
+   *
+   */
+  protected List resourceNameNodeList;  
 
   private long startTimeMSecs;
   private MDIInternalFrame viewFrame;
@@ -187,6 +195,7 @@ public abstract class ResourceView extends PartialPlanView  {
     maxExtentViewHeightPoint = null;
     maxLevelViewHeightPoint = null;
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
+    resourceNameNodeList = new ArrayList();
     // create panels/views after fontMetrics available
    } // end resourceProfileViewInit
 
@@ -422,6 +431,24 @@ public abstract class ResourceView extends PartialPlanView  {
   }
 
   /**
+   * <code>getJGoExtentViewSelection</code>
+   *
+   * @return - <code>JGoSelection</code> - 
+   */
+  public final JGoSelection getJGoExtentViewSelection() {
+    return this.jGoExtentView.getSelection();
+  }
+
+  /**
+   * <code>getJGoLevelScaleViewSelection</code>
+   *
+   * @return - <code>JGoSelection</code> - 
+   */
+  public final JGoSelection getJGoLevelScaleViewSelection() {
+    return this.jGoLevelScaleView.getSelection();
+  }
+
+  /**
    * <code>getJGoLevelScaleDocument</code> - the level scale view document
    *
    * @return - <code>JGoDocument</code> - 
@@ -482,6 +509,15 @@ public abstract class ResourceView extends PartialPlanView  {
    */
   public final TimeScaleView getJGoRulerView() {
     return jGoRulerView;
+  }
+
+  /**
+   * <code>addResourceNameNode</code>
+   *
+   * @param node - <code>ResourceNameNode</code> - 
+   */
+  public final void addResourceNameNode( ResourceNameNode node) {
+    resourceNameNodeList.add( node);
   }
 
   /**
@@ -946,6 +982,7 @@ public abstract class ResourceView extends PartialPlanView  {
     // nameNode.setSelectable( false);
     nameNode.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoDocument.addObjectAtTail( nameNode);
+    resourceView.addResourceNameNode( nameNode);
   } // end renderResourceName
 
 

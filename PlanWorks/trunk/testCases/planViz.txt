@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.28 2004-03-04 21:30:28 taylor Exp $
+// $Id: planViz.txt,v 1.29 2004-03-07 01:49:30 taylor Exp $
 //
 // PlanWorks
 //
@@ -883,8 +883,11 @@ Method:
      "Set Active Token". On the Resource Profile View, and then on the Resource
      Transaction View, Mouse-Right on the "extent" background and select "Snap to
      Active Resource" on the Resource Profile View, and "Snap to Active Resource
-     Transaction"
-
+     Transaction".
+  9. On both the Resource Profile View and the Resource Transaction View, click
+     Mouse-Right on a resource name and select "Open Navigator View".
+ 10. On the Resource Transaction View, click Mouse-Right on a transaction node
+     and select "Open Navigator View".
 
 Post-conditions:
   1. Method:1 - The SequenceStepsView of test-seq-1 appears.
@@ -907,6 +910,10 @@ Post-conditions:
   8. Method:8 - In both cases, the view scrolls to expose the appropriate resource
      (Resource Profile View) or appropriate resource transaction (Resource Transaction 
      View).
+  9. Method:9 - In both cases, a Navigator View appers, displaying the selected
+     resource node with its parent and children nodes, as appropriate.
+ 10. Method:10 - A Navigator View appers, displaying the selected resource transaction 
+     node with its parent and children nodes, as appropriate.
 
 
 

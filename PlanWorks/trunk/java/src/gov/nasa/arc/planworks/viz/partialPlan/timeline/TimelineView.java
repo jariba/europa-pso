@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.42 2004-03-03 02:14:26 taylor Exp $
+// $Id: TimelineView.java,v 1.43 2004-03-07 01:49:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -679,9 +679,11 @@ public class TimelineView extends PartialPlanView {
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
     
-    JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
-    createActiveTokenItem( activeTokenItem);
-    mouseRightPopup.add( activeTokenItem);
+    if (((PartialPlanViewSet) this.getViewSet()).getActiveToken() != null) {
+      JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
+      createActiveTokenItem( activeTokenItem);
+      mouseRightPopup.add( activeTokenItem);
+    }
 
     if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.15 2004-03-06 02:22:35 taylor Exp $
+// $Id: NavigatorView.java,v 1.16 2004-03-07 01:49:28 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -63,6 +63,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
@@ -231,6 +232,18 @@ public class NavigatorView extends PartialPlanView {
                         final ViewSet viewSet, final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.initialNode = tokenNode;
+    this.partialPlan = (PwPartialPlan) partialPlan;
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    this.navigatorFrame = navigatorFrame;
+
+    commonConstructor();
+  } // end constructor
+
+  public NavigatorView( final ResourceTransactionNode resourceTransactionNode,
+                        final ViewableObject partialPlan, final ViewSet viewSet,
+                        final MDIInternalFrame navigatorFrame) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    this.initialNode = resourceTransactionNode;
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.viewSet = (PartialPlanViewSet) viewSet;
     this.navigatorFrame = navigatorFrame;
@@ -523,12 +536,15 @@ public class NavigatorView extends PartialPlanView {
       PwSlot slot = ((SlotNode) initialNode).getSlot();
       node = addEntityNavNode( slot, isDebugPrint);
     } else if ((initialNode instanceof TokenNode) ||
-               (initialNode instanceof TemporalNode)) {
+               (initialNode instanceof TemporalNode) ||
+               (initialNode instanceof ResourceTransactionNode)) {
       PwToken token = null;
       if (initialNode instanceof TokenNode) {
         token = ((TokenNode) initialNode).getToken();
       } else if (initialNode instanceof TemporalNode) {
         token = ((TemporalNode) initialNode).getToken();
+      } else if (initialNode instanceof ResourceTransactionNode) {
+        token = ((ResourceTransactionNode) initialNode).getTransaction();
       }
       node = addEntityNavNode( token, isDebugPrint);
     } else if (initialNode instanceof VariableNode) {

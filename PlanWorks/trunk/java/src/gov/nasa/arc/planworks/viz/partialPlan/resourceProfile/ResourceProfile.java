@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.7 2004-03-06 02:22:35 taylor Exp $
+// $Id: ResourceProfile.java,v 1.8 2004-03-07 01:49:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -495,65 +495,6 @@ public class ResourceProfile extends BasicNode {
     return resource.getId().intValue();
   }
 
- 
-  /**
-   * <code>doMouseClick</code> - Mouse-Right: Set Active Resource
-   *
-   * @param modifiers - <code>int</code> - 
-   * @param docCoords - <code>Point</code> - 
-   * @param viewCoords - <code>Point</code> - 
-   * @param view - <code>JGoView</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public final boolean doMouseClick( final int modifiers, final Point docCoords,
-                                     final Point viewCoords, final JGoView view) {
-    JGoObject obj = view.pickDocObject( docCoords, false);
-    //         System.err.println( "doMouseClick obj class " +
-    //                             obj.getTopLevelObject().getClass().getName());
-    ResourceProfile resourceProfile = (ResourceProfile) obj.getTopLevelObject();
-    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      // do nothing
-    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-//       mouseRightPopupMenu( viewCoords);
-//       return true;
-    }
-    return false;
-  } // end doMouseClick   
-
-  private void mouseRightPopupMenu( final Point viewCoords) {
-    JPopupMenu mouseRightPopup = new JPopupMenu();
-
-    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
-    navigatorItem.addActionListener( new ActionListener() {
-        public final void actionPerformed( final ActionEvent evt) {
-          MDIInternalFrame navigatorFrame = resourceProfileView.openNavigatorViewFrame();
-          Container contentPane = navigatorFrame.getContentPane();
-          PwPartialPlan partialPlan = resourceProfileView.getPartialPlan();
-//           contentPane.add( new NavigatorView( ResourceProfile.this, partialPlan,
-//                                               resourceProfileView.getViewSet(),
-//                                               navigatorFrame));
-        }
-      });
-    mouseRightPopup.add( navigatorItem);
-
-    JMenuItem activeResourceItem = new JMenuItem( "Set Active Resource");
-    final PwResource activeResource = ResourceProfile.this.getResource();
-    // check for empty slots
-    if (activeResource != null) {
-      activeResourceItem.addActionListener( new ActionListener() {
-          public final void actionPerformed( final ActionEvent evt) {
-            ((PartialPlanViewSet) resourceProfileView.getViewSet()).
-              setActiveResource( activeResource);
-            System.err.println( "ResourceProfile setActiveResource: " +
-                                activeResource.getName() +
-                                " (key=" + activeResource.getId().toString() + ")");
-          }
-        });
-      mouseRightPopup.add( activeResourceItem);
-
-      NodeGenerics.showPopupMenu( mouseRightPopup, resourceProfileView, viewCoords);
-    }
-  } // end mouseRightPopupMenu
 
 
 } // end class ResourceProfile
