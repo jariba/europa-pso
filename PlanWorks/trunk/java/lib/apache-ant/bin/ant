@@ -15,9 +15,9 @@
 #   limitations under the License.
 
 # load system-wide ant configuration
-if [ -f "/etc/ant.conf" ] ; then
-  . /etc/ant.conf
-fi
+#if [ -f "/etc/ant.conf" ] ; then
+#  . /etc/ant.conf
+#fi
 
 # provide default values for people who don't use RPMs
 if [ -z "$rpm_mode" ] ; then
