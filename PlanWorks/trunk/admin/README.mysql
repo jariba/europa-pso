@@ -42,9 +42,4 @@ select * from Sequence;
 
 UPDATE PLANWORKS TABLES
 -----------------------
-cd lib/mysql/data/mysql
-/bin/rm *
-cd ..
-/bin/rm -rf PlanWorks
-cd ../../..
 ant planWorksDbInstall
