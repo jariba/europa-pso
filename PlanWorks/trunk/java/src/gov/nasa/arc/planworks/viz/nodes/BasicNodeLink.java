@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodeLink.java,v 1.9 2004-09-28 18:54:46 taylor Exp $
+// $Id: BasicNodeLink.java,v 1.10 2004-09-28 23:33:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,30 +46,6 @@ public class BasicNodeLink extends JGoLabeledLink {
    * @param fromNode - <code>BasicNode</code> - 
    * @param toNode - <code>BasicNode</code> - 
    * @param linkName - <code>String</code> - 
-   */
-  public BasicNodeLink( BasicNode fromNode, BasicNode toNode, String linkName) {
-    super( fromNode.getPort(), toNode.getPort());
-    this.fromNode = fromNode;
-    this.toNode = toNode;
-    this.linkName = linkName;
-    this.linkType = "";
-    inLayout = false;
-    resetLink( false);
-
-    isDebug = false;
-    // isDebug = true;
-
-    this.setArrowHeads( true, false); // fromArrowHead toArrowHead
-    // do no allow user to select and move links
-    this.setRelinkable( false);
-  } // end constructor
-
-  /**
-   * <code>BasicNodeLink</code> - constructor 
-   *
-   * @param fromNode - <code>BasicNode</code> - 
-   * @param toNode - <code>BasicNode</code> - 
-   * @param linkName - <code>String</code> - 
    * @param linkType - <code>String</code> - 
    */
   public BasicNodeLink( BasicNode fromNode, BasicNode toNode, String linkName,
@@ -85,6 +61,8 @@ public class BasicNodeLink extends JGoLabeledLink {
     isDebug = false;
     // isDebug = true;
 
+    // this setting is for ConstraintNetworkView -- TokenNetworkView and
+    // NavigatorView reverse the direction of arrow heads, locally
     this.setArrowHeads( true, false); // fromArrowHead toArrowHead
     // do no allow user to select and move links
     this.setRelinkable( false);

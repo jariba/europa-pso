@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.91 2004-09-28 20:45:07 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.92 2004-09-28 23:33:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -741,7 +741,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
         BasicNodeLink link;
         if((link = getVariableLink(linkName)) == null) {
           link = new BasicNodeLink(varNode, (BasicNode) parentNode, linkName,
-                                   getLinkType( varNode, (BasicNode) parentNode));
+                                   getLinkType( (BasicNode) parentNode, varNode));
           variableLinkMap.put(link.getLinkName(), link);
           document.addObjectAtHead(link);
           //document.insertObjectBefore(document.findObject(tokenNode), link);
@@ -776,7 +776,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
         String linkName = constr.getId() + "->" + var.getId();
         if((link = getConstraintLink(linkName)) == null) {
           link = new BasicNodeLink(constrNode, varNode, linkName,
-                                   getLinkType( constrNode, varNode));
+                                   getLinkType( varNode, constrNode));
           document.addObjectAtHead(link);
           //document.insertObjectBefore(document.findObject(varNode), link);
         }
@@ -818,14 +818,14 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
         BasicNodeLink link1, link2;
         if((link1 = getConstraintLink(link1Name)) == null) {
           link1 = new BasicNodeLink(constrNode, varNode, link1Name,
-                                    getLinkType( constrNode, varNode));
+                                    getLinkType( varNode, constrNode));
           constraintLinkMap.put(link1Name, link1);
           //document.insertObjectBefore(document.findObject(tokenNode), link1);
           document.addObjectAtHead(link1);
         }
         if((link2 = getVariableLink(link2Name)) == null) {
           link2 = new BasicNodeLink(varNode, (BasicNode) parentNode, link2Name,
-                                    getLinkType( varNode, (BasicNode) parentNode));
+                                    getLinkType( (BasicNode) parentNode, varNode));
           variableLinkMap.put(link2Name, link2);
           document.addObjectAtHead(link2);
           //document.insertObjectBefore(document.findObject(tokenNode), link2);
