@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.44 2003-10-07 17:11:31 miatauro Exp $
+// $Id: MySQLDB.java,v 1.45 2003-10-07 20:19:23 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -82,7 +82,10 @@ public class MySQLDB {
             //System.err.println("Shutting down database.");
             //System.err.println("Total time spent in queries: " + queryTime + "ms");
             try{MySQLDB.stopDatabase();}
-            catch(Exception e){System.err.println("FAILED TO STOP DATABASE: " + e);}
+            catch(Exception e) {
+              System.err.println("FAILED TO STOP DATABASE: " + e);
+              System.err.println("Database may be corrupted.");
+            }
           }
         }
       });

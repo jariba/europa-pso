@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksBigTest.java,v 1.10 2003-10-01 23:53:55 taylor Exp $
+// $Id: PlanWorksBigTest.java,v 1.11 2003-10-07 20:19:37 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -245,7 +245,7 @@ public class PlanWorksBigTest extends JFCTestCase {
       seqIsDone = true;
     }
     assertNotNull("Failed to get planning sequence " + url, seq);
-    ListIterator ppNameIterator = seq.listPartialPlanNames().listIterator();
+    ListIterator ppNameIterator = seq.getPartialPlanNamesList().listIterator();
     while(ppNameIterator.hasNext()) {
       PwPartialPlan plan = seq.getPartialPlan((String)ppNameIterator.next());
       ViewManager viewManager = null;
