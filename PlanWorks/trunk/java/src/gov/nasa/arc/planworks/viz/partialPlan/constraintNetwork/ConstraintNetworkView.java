@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.7 2003-10-21 14:22:07 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.8 2003-10-23 23:02:11 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -83,6 +83,16 @@ public class ConstraintNetworkView extends PartialPlanView {
 
   private static final int SET_VISIBLE = 1;
   private static final int VIEW_HEIGHT = 250;
+
+  public static final double HORIZONTAL_CONSTRAINT_BAND_Y = 50.;
+  public static final double HORIZONTAL_VARIABLE_BAND_Y = 100.;
+  public static final double HORIZONTAL_TOKEN_BAND_Y = 150.;
+  
+  public static final double VERTICAL_CONSTRAINT_BAND_X = 0.;
+  public static final double VERTICAL_VARIABLE_BAND_X = 0.;
+  public static final double VERTICAL_TOKEN_BAND_X = 0.;
+
+  public static final double NODE_SPACING = 10.;
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
@@ -182,6 +192,9 @@ public class ConstraintNetworkView extends PartialPlanView {
     while(tokenIterator.hasNext()) {
       ((ConstraintNetworkTokenNode)tokenIterator.next()).discoverLinkage();
     }
+
+    NewConstraintNetworkLayout newLayout = 
+      new NewConstraintNetworkLayout(tokenNodeList, variableNodeList, constraintNodeList);
 
     ConstraintNetworkLayout layout =
       new ConstraintNetworkLayout( document, network, startTimeMSecs);
