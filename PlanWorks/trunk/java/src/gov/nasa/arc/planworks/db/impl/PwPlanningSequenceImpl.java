@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.15 2003-06-30 22:22:36 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.16 2003-07-02 00:08:54 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwModel;
@@ -63,6 +64,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   //from new PwProject(blah, true);
   public PwPlanningSequenceImpl( String url, Integer key, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException, SQLException {
+    System.err.println("In PwPlanningSequenceImpl");
     this.url = url;
     this.key = key;
     this.projectName = project.getName();
@@ -79,14 +81,14 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     } 
     name = url.substring( index + 1);
     
-    ResultSet partialPlans = 
-      MySQLDB.queryDatabase("SELECT (PlanName) FROM PartialPlan WHERE SequenceId=".concat(key.toString()));
-    while(partialPlans.next()) {
-      partialPlanNames.add(partialPlans.getString("PlanName"));
+    ResultSet dbPartialPlans = 
+      MySQLDB.queryDatabase("SELECT PlanName FROM PartialPlan WHERE SequenceId=".concat(key.toString()));
+    while(dbPartialPlans.next()) {
+      partialPlanNames.add(dbPartialPlans.getString("PlanName"));
       //partialPlans.add(new PwPartialPlan(new Long(partialPlans.getLong("PartialPlanId"))));
       stepCount++;
     }
-    this.partialPlans = new ArrayList(partialPlanNames.size());
+    partialPlans = new ArrayList(partialPlanNames.size());
   }
 
 
@@ -101,7 +103,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    */ 
   //from addPlanningSequence(url)
   public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
-    throws ResourceNotFoundException {
+    throws ResourceNotFoundException, SQLException {
     this.url = url;
     this.projectName = project.getName();
     this.model = model;
@@ -115,7 +117,10 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
                                            System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
-    
+    MySQLDB.updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId) VALUES ('".concat(url).concat("', ").concat(project.getKey().toString()).concat(")"));
+    ResultSet newKey = MySQLDB.queryDatabase("SELECT MAX(SequenceId) AS SequenceId FROM Sequence");
+    newKey.first();
+    this.key = new Integer(newKey.getInt("SequenceId"));
     File sequenceDir = new File(url);
     if(!sequenceDir.isDirectory()) {
       throw new ResourceNotFoundException("sequence url '" + url + "' is not a directory.");
@@ -147,6 +152,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     }
     partialPlanNames.addAll(temp.keySet());
     this.partialPlans = new ArrayList(partialPlanNames.size());
+    ListIterator partialPlanIterator = partialPlanNames.listIterator();
+    while(partialPlanIterator.hasNext()) {
+      partialPlans.add(null);
+      addPartialPlan((String)partialPlanIterator.next());
+    }
     // put these in PwProjectImpl so that its XMLDecode/Encode can access them
     //project.addPartialPlanNames( partialPlanNames);
   } // end constructor for OpenProject call
@@ -255,6 +265,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    */
   public PwPartialPlan addPartialPlan(String partialPlanName) 
     throws ResourceNotFoundException, SQLException {
+    System.err.println("In addPartialPlan");
     int index = -1;
     if((index = partialPlanNames.indexOf(partialPlanName)) != -1) {
       PwPartialPlan partialPlan =

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.16 2003-07-01 00:27:06 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.17 2003-07-02 00:08:54 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.db.impl;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -59,13 +60,9 @@ public class PwProjectImpl extends PwProject {
   } // end initProjects
 
   public static PwProject createProject(String name) throws DuplicateNameException, SQLException {
-    System.err.println("in createProject");
     PwProjectImpl retval = null;
-    System.err.println("Creating new project...");
     retval = new PwProjectImpl(name);
-    System.err.println("Informing database...");
-    MySQLDB.updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("');"));
-    System.err.println("Getting new key...");
+    MySQLDB.updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("')"));
     ResultSet newKey = MySQLDB.queryDatabase("SELECT MAX(ProjectId) AS ProjectId from Project");
     newKey.first();
     retval.setKey(new Integer(newKey.getInt("ProjectId")));
@@ -121,8 +118,9 @@ public class PwProjectImpl extends PwProject {
    */
   public PwProjectImpl( String name)  throws DuplicateNameException, SQLException {
     ResultSet projects = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName='".concat(name).concat("'"));
-    if(projects.getFetchSize() != 0) {
-      throw new DuplicateNameException(projects.getFetchSize() + " projects with name '" + name +
+    projects.last();
+    if(projects.getRow() > 1) {
+      throw new DuplicateNameException(projects.getRow() + " projects with name '" + name +
                                        "were found.");
     }
     this.name = name;
@@ -152,12 +150,11 @@ public class PwProjectImpl extends PwProject {
     dbProject.beforeFirst();
     
     dbProject.first();
-    System.err.println("Project key: " + dbProject.getInt("ProjectId"));
     key = new Integer(dbProject.getInt("ProjectId"));
     planningSequences = new ArrayList();
     
     //ResultSet sequences = MySQLDB.queryDatabase("SELECT (Sequence.SequenceURL, Sequence.SequenceId) FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
-    ResultSet sequences = MySQLDB.queryDatabase("SELECT 'SequenceURL', 'SequenceId' FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
+    ResultSet sequences = MySQLDB.queryDatabase("SELECT SequenceURL, SequenceId FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
     while(sequences.next()) {
       planningSequences.add(new PwPlanningSequenceImpl(sequences.getString("SequenceURL"),
                                                        new Integer(sequences.getInt("SequenceId")),
@@ -165,7 +162,6 @@ public class PwProjectImpl extends PwProject {
     }
 
     // this project is already in projectNames & projectUrls
-    System.out.println(projects + " : " + this);
     projects.add( this);
   } // end  constructor PwProjectImpl.openProject
 
@@ -221,7 +217,8 @@ public class PwProjectImpl extends PwProject {
     throw new ResourceNotFoundException( "getPlanningSequence could not find " + url);
   } // end getPlanningSequence
 
-  public PwPlanningSequence addPlanningSequence(String url) throws ResourceNotFoundException {
+  public PwPlanningSequence addPlanningSequence(String url) 
+    throws ResourceNotFoundException, SQLException {
     PwPlanningSequenceImpl retval = null;
     planningSequences.add(retval = new PwPlanningSequenceImpl(url, this, new PwModelImpl()));
     return retval;
@@ -254,6 +251,7 @@ public class PwProjectImpl extends PwProject {
     }
     catch(SQLException sqle) { //are we transactional?  can we roll back?
       System.err.println(sqle);
+      sqle.printStackTrace();
       return;
     }
   } // end close
