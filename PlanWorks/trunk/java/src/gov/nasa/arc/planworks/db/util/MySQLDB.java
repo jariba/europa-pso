@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.88 2004-03-02 22:00:22 miatauro Exp $
+// $Id: MySQLDB.java,v 1.89 2004-03-02 22:29:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -231,14 +231,6 @@ public class MySQLDB {
       for(int i = 0; i < DbConstants.PW_DB_TABLES.length; i++) {
         stmt.execute("ANALYZE TABLE " + DbConstants.PW_DB_TABLES[i]);
       }
-//       stmt.execute("ANALYZE TABLE PartialPlan");
-//       stmt.execute("ANALYZE TABLE Object");
-//       stmt.execute("ANALYZE TABLE Token");
-//       stmt.execute("ANALYZE TABLE Variable");
-//       stmt.execute("ANALYZE TABLE VConstraint");
-//       stmt.execute("ANALYZE TABLE ConstraintVarMap");
-//       stmt.execute("ANALYZE TABLE TokenRelation");
-//       stmt.execute("ANALYZE TABLE Transaction");
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -254,16 +246,7 @@ public class MySQLDB {
    */
 
   synchronized public static void loadFile(final String file, final String tableName) {
-//     try {
-//       Statement stmt = conn.createStatement();
-//       stmt.execute("ALTER TABLE ".concat(tableName).concat(" DISABLE KEYS"));
       updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
- //      stmt.execute("ALTER TABLE ".concat(tableName).concat(" ENABLE KEYS"));
-//     }
-//     catch(SQLException sqle) {
-//       System.err.println(sqle);
-//       sqle.printStackTrace();
-//     }
   }
 
   /**
@@ -1419,7 +1402,6 @@ public class MySQLDB {
     List retval = new ArrayList();
     try {
       ResultSet ids =
-        //        queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()).concat(" && (TokenAId=").concat(tId.toString()).concat(" || TokenBId=").concat(tId.toString()).concat(")"));
         queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()).concat(" && TokenBId=").concat(tId.toString()));
 
       while(ids.next()) {
