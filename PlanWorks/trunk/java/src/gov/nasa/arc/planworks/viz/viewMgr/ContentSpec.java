@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.19 2003-07-31 21:52:59 miatauro Exp $
+// $Id: ContentSpec.java,v 1.20 2003-08-01 16:59:14 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -166,36 +166,29 @@ public class ContentSpec {
       ListIterator tokenIdIterator = validTokenIds.listIterator();
       while(tokenIdIterator.hasNext()) {
         Integer tokenId = (Integer) tokenIdIterator.next();
-        String connective = (String) timeInterval.get(0);
-        Integer start = (Integer) timeInterval.get(1);
-        Integer end = (Integer) timeInterval.get(2);
         Integer earliestStart = partialPlan.getToken(tokenId).getEarliestStart();
         Integer latestEnd = partialPlan.getToken(tokenId).getLatestEnd();
-
         boolean leftIsTrue = false;
 
         for(int i = 0; i < timeInterval.size(); i += 3) {
-          
+          String connective = (String) timeInterval.get(i);
+          Integer start = (Integer) timeInterval.get(i+1);
+          Integer end = (Integer) timeInterval.get(i+2);
           if(connective.indexOf("and") > -1) {
-            System.err.println("AND!");
             if(!leftIsTrue) {
-              System.err.println("left side is false.  breaking.");
               break;
             }
             leftIsTrue = evaluateTimeInterval(connective, start, end, earliestStart, latestEnd);
             if(!leftIsTrue) {
-              System.err.println("extended left side is false.  breaking.");
               break;
             }
           }
           else if(connective.indexOf("or") > -1) {
-            System.err.println("OR!");
             leftIsTrue = 
               (evaluateTimeInterval(connective, start, end, earliestStart, latestEnd) || 
                leftIsTrue);
           }
         }
-        System.err.println(leftIsTrue);
         if(!leftIsTrue) {
           tokenIdIterator.remove();
         }
@@ -207,6 +200,7 @@ public class ContentSpec {
   private boolean evaluateTimeInterval(String connective, Integer start, Integer end, 
                                        Integer earliestStart, Integer latestEnd) {
     boolean negation = (connective.indexOf("not") > -1);
+    System.err.println(negation);
     if(earliestStart.compareTo(start) >= 0 && earliestStart.compareTo(end) <= 0) {
       return true ^ negation;
     }
@@ -216,7 +210,7 @@ public class ContentSpec {
     if(earliestStart.compareTo(start) <= 0 && latestEnd.compareTo(end) >= 0) {
       return true ^ negation;
     }
-    return false;
+    return false ^ negation;
   }
 
   public Map getPredicateNames() throws SQLException {
