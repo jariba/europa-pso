@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.5 2003-12-19 18:30:32 taylor Exp $
+// $Id: VariableNode.java,v 1.6 2003-12-22 20:51:58 miatauro Exp $
 //
 // PlanWorks
 //
@@ -17,6 +17,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -177,19 +178,30 @@ public class VariableNode extends BasicNode {
       String typeName = variable.getType();
       tip.append( typeName);
       if (typeName.equals( DbConstants.OBJECT_VAR)) {
-        String objectName = "_not_found_";
-        Integer objectId =
-          Integer.valueOf( ((PwEnumeratedDomain) variable.getDomain()).getLowerBound());
-        Iterator objectIterator = partialPlanView.getPartialPlan().getObjectList().iterator();
-        while (objectIterator.hasNext()) {
-          PwObject object = (PwObject) objectIterator.next();
-          if (object.getId().equals( objectId)) {
-            objectName = object.getName();
-            break;
+        //String objectName = "_not_found_";
+        //Integer objectId =
+        //  Integer.valueOf( ((PwEnumeratedDomain) variable.getDomain()).getLowerBound());
+        //Iterator objectIterator = partialPlanView.getPartialPlan().getObjectList().iterator();
+        //while (objectIterator.hasNext()) {
+        //  PwObject object = (PwObject) objectIterator.next();
+        //  if (object.getId().equals( objectId)) {
+        //    objectName = object.getName();
+        //    break;
+        //  }
+        //}
+        //tip.append ( ": ");
+        //tip.append( objectName);
+        tip.append("<br>");
+        ListIterator objectNameIterator = 
+          ((PwEnumeratedDomain) variable.getDomain()).getEnumeration().listIterator();;
+        while(objectNameIterator.hasNext()) {
+          String name = (String) objectNameIterator.next();
+          tip.append(name).append(": ");
+          tip.append(partialPlanView.getPartialPlan().getObjectIdByName(name));
+          if(objectNameIterator.hasNext()) {
+            tip.append(", ");
           }
         }
-        tip.append ( ": ");
-        tip.append( objectName);
       } else if (typeName.equals( DbConstants.PARAMETER_VAR)) {
         tip.append ( ": ");
 //         System.err.println( "key " + variable.getId().toString() + " paramId " +

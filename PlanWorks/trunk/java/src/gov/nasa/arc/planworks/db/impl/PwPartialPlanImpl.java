@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.61 2003-12-20 01:54:48 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.62 2003-12-22 20:52:46 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -977,5 +977,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return url.substring( 0, url.lastIndexOf( System.getProperty( "file.separator")));
   }
   
-
+  public Integer getObjectIdByName(String name) {
+    Iterator objectIterator = objectMap.values().iterator();
+    while(objectIterator.hasNext()) {
+      PwObject object = (PwObject) objectIterator.next();
+      if(object.getName().equals(name)) {
+        return object.getId();
+      }
+    }
+    return null;
+  }
 } // end class PwPartialPlanImpl

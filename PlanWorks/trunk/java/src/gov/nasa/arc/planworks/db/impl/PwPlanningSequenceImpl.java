@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.66 2003-12-20 01:54:48 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.67 2003-12-22 20:52:38 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -591,7 +591,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    */
   public List getUnboundVariablesAtStep( int stepNum) {
     boolean isUnbound = true;
-    return getVariablesById( MySQLDB.queryUnboundVariablesAtStep( stepNum, this), isUnbound);
+    return MySQLDB.queryUnboundVariablesAtStep(stepNum, this);
+    //return getVariablesById( MySQLDB.queryUnboundVariablesAtStep( stepNum, this), isUnbound);
   }
 
   private List getVariablesById( List listOfListOfIds, boolean isUnbound) {
