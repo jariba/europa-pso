@@ -193,7 +193,7 @@ public class MySQLDB {
             while(tokens.next()) {
               Integer tokenId = new Integer(tokens.getInt("TokenId"));
               ResultSet paramVarIds =
-                queryDatabase("SELECT VariableId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND TokenId=").concat(tokenId.toString()));
+                queryDatabase("SELECT VariableId, ParameterId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND TokenId=").concat(tokenId.toString()).concat(" ORDER BY ParameterId"));
               ArrayList variableIdList = new ArrayList();
               while(paramVarIds.next()) {
                 variableIdList.add(new Integer(paramVarIds.getInt("VariableId")));
