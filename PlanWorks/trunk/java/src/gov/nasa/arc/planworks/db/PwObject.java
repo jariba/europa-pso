@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObject.java,v 1.8 2004-02-05 23:23:32 miatauro Exp $
+// $Id: PwObject.java,v 1.9 2004-02-13 21:22:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,7 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwObject {
+public interface PwObject extends PwVariableContainer {
 
 
   /**

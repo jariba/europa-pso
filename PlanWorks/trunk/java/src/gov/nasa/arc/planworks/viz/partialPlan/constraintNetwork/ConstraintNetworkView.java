@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.37 2004-02-13 00:49:42 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.38 2004-02-13 21:23:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -577,6 +577,9 @@ public class ConstraintNetworkView extends PartialPlanView {
     while(varIterator.hasNext()) {
       PwVariable var = (PwVariable) varIterator.next();
       //THIS IS THE FIRST BIT THAT NEEDS TO CHANGE
+      if(!(var.getParent() instanceof PwToken)) {
+        continue;
+      }
       PwToken token = (PwToken) var.getParent();
       ConstraintNetworkTokenNode tokenNode = getTokenNode(token.getId());
       if(var != null) {
@@ -1530,13 +1533,41 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
       if (! isVariableFound) {
         // Content Spec filtering may cause this to happen
-        String message = "Variable " + variableToFind.getDomain().toString() +
-          " (key=" + variableToFind.getId().toString() + ") not found.";
-        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                       "Variable Not Found in ConstraintNetworkView",
-                                       JOptionPane.ERROR_MESSAGE);
-        System.err.println( message);
+        if(variableToFind.getParent() instanceof PwObject) {
+          String message = "Variable " + variableToFind.getDomain().toString() +
+            " (key=" + variableToFind.getId().toString() + ") not found.";
+          JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                         "Variable Not Found in ConstraintNetworkView",
+                                         JOptionPane.ERROR_MESSAGE);
+          System.err.println( message);
+          return;
+        }
+        Integer tokenId = variableToFind.getParent().getId();
+        Iterator tokenIterator = constraintNetworkView.getTokenNodeList().iterator();
+      varNodeFind:
+        while(tokenIterator.hasNext()) {
+          ConstraintNetworkTokenNode parent = (ConstraintNetworkTokenNode) tokenIterator.next();
+          if(parent.getToken().getId().equals(tokenId)) {
+            parent.addTokenNodeVariables(parent, constraintNetworkView);
+            parent.setAreNeighborsShown(true);
+            Iterator varIterator = parent.getVariableNodeList().iterator();
+            while(varIterator.hasNext()) {
+              VariableNode variableNode = (VariableNode) varIterator.next();
+              if(variableNode.getVariable().getId().equals(variableToFind.getId())) {
+                constraintNetworkView.setFocusNode(variableNode);
+                NodeGenerics.focusViewOnNode(variableNode, isHighlightNode, this);
+                break varNodeFind;
+              }
+            }
+          }
+        }
       }
+      String message = "Variable " + variableToFind.getDomain().toString() +
+        " (key=" + variableToFind.getId().toString() + ") not found.";
+      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                     "Variable Not Found in ConstraintNetworkView",
+                                     JOptionPane.ERROR_MESSAGE);
+      System.err.println( message);
     } // end findAndSelectVariable
 
     private void findAndSelectConstraint( PwConstraint constraintToFind) {

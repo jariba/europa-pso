@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.17 2004-02-05 23:23:54 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.18 2004-02-13 21:22:55 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -124,41 +124,7 @@ public class PwObjectImpl implements PwObject {
   }
 
   public int getObjectType(){return type;}
-  /**
-   * <code>getTimelineList</code> -
-   *
-   * @return timelineList - <code>List</code> - of PwTimelineImpl
-   */
-//   public List getTimelineList() {
-//     List retval = new ArrayList(timelineIdList.size());
-//     for (int i = 0; i < timelineIdList.size(); i++) {
-//       retval.add ( partialPlan.getTimeline((Integer) timelineIdList.get(i)));
-//     }
-//     return retval;
-//   }
-  
-//   public void createEmptySlots() {
-//     if(emptySlotInfo == null || haveCreatedSlots) {
-//       return;
-//     }
-//     StringTokenizer slotTok = new StringTokenizer(emptySlotInfo, ":");
-//     while(slotTok.hasMoreTokens()) {
-//       StringTokenizer infoTok = new StringTokenizer(slotTok.nextToken(), ",");
-//       Integer tId = new Integer(infoTok.nextToken());
-//       Integer sId = new Integer(infoTok.nextToken());
-//       int index = Integer.parseInt(infoTok.nextToken());
-//       ((PwTimelineImpl)partialPlan.getTimeline(tId)).createEmptySlot(sId, index);
-//     }
-//     haveCreatedSlots = true;
-//   }
 
-//   public void calculateSlotTimes() {
-//     if(haveCalculatedSlotTimes) {
-//       return;
-//     }
-//     ListIterator timelineIterator = getTimelineList().listIterator();
-//     while(timelineIterator.hasNext()) {
-//       ((PwTimelineImpl)timelineIterator.next()).calculateSlotTimes();
-//     }
-//   }
+  public List getVariablesList(){return new ArrayList();}
+
 } // end class PwObjectImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.17 2004-02-05 23:23:33 miatauro Exp $
+// $Id: PwToken.java,v 1.18 2004-02-13 21:22:28 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -24,7 +24,7 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwToken {
+public interface PwToken extends PwVariableContainer {
 
 
   /**
