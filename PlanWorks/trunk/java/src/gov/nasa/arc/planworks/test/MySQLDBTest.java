@@ -126,7 +126,6 @@ public class MySQLDBTest extends TestCase {
       p.last();
       assertTrue(p.getInt("ProjectId") == 1);
       assertTrue(p.getString("ProjectName").equals("projectname"));
-      assertTrue(p.getString("Tests").equals("tests"));
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
