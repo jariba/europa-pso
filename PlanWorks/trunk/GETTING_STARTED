@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.38 2004-03-24 02:31:03 taylor Exp $
+# $Id: GETTING_STARTED,v 1.39 2004-03-25 01:01:53 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -110,29 +110,37 @@ will cause the view to display either the next or previous step.  The
 highlighted step in the SequenceStepsView will track the current step
 number.
 
-There are five active views:
+There are seven active views:
 
 Constraint Network View
 -----------------------
-An incrementally built directed graph of tokens, variables, and constraints.
-Because of its complexity, initially only the token nodes are displayed.  
-They are "opened" by mouse clicks which lay out the token's variable nodes. 
-Clicking on variable nodes "opens" them to show or link to their nearest 
-neighbors (constraints or tokens).  Similarly, clicking on constraint nodes 
-"opens" their nearest neighbors.  Clicking on an "open" node (bold border), 
-"closes" that nodes nearest neighbor nodes/links, provided the link counts
-are 1.  Then the node becomes "closed" and has an unbold border.
-The active node ("opened" or "closed" by Mouse-Left click) is positioned in
-the center of the view after layout.
+An incrementally built directed graph of objects, resources, timelines, 
+interval tokens, resource transactions, their variables, and their constraints.
+Because of its complexity, initially only the variable container nodes 
+(objects, resources, timelines, interval tokens, and resource transactions)
+are displayed.  They are "opened" by mouse clicks which lay out the variable 
+container's variable nodes.  Clicking on variable nodes "opens" them to show 
+or link to their nearest neighbors (constraints or variable containers).  
+Similarly, clicking on constraint nodes "opens" their nearest neighbors.  
+Clicking on an "open" node (bold border), "closes" that nodes nearest neighbor 
+nodes/links, provided the link counts are 1.  Then the node becomes "closed" 
+and has an unbold border.  The active node ("opened" or "closed" by Mouse-Left 
+click) is positioned in the center of the view after layout, and highlighted
+by a bright green rectangle.
 
-Mouse cursor over token nodes displays "predicateName( parameterValues)"
-on the first line, its slot key value on the second line, and 
-"Mouse-L: open nearest variables" on the third line.  Mouse cursor over 
-variable nodes displays "variableType" on the first line (plus "variableName"
-for PARAMETER_VAR and OBJECT_VAR types), and "Mouse-L: open nearest token 
-links/constraints" on the second line.  Mouse cursor over constraint nodes 
-displays "constraintType" on the first line, and "Mouse-L: open nearest 
-token variables" on the second line. 
+Mouse cursor over all variable container nodes, except for interval tokens and
+resource transactions, displays the node name, and Mouse-L: open" on the second 
+line.  Mouse cursor over interval token nodes displays "predicateName( 
+parameterValues)" on the first line, its slot key value on the second line, and 
+"Mouse-L: open" on the third line.  Mouse cursor over resource transaction nodes 
+displays the resource name and its change amount on the first line, and "Mouse-L: 
+open" on the third line.  Mouse cursor over variable nodes displays "variableType" 
+on the first line, and "Mouse-L: open" on the second line.  Mouse cursor over 
+constraint nodes displays "constraintType" on the first line, and "Mouse-L: open" 
+on the second line.  Clicking Mouse-Left on a node link will make visible two 
+small hollow squares, one at the "root" of the link, and the other at the tip 
+of the arrow.
+
 
 Resource Profile View
 ---------------------
@@ -220,6 +228,9 @@ Lays out the plan's token relations in directed graphs whose root nodes are the
 "supreme" master tokens.  The Token Network View is freshly layed out after 
 a  Content Filter specification is applied.  Mouse cursor over token nodes displays 
 "predicateName( parameterValues)", and the second line displays its slot key.
+Clicking Mouse-Left on a node link will make visible two small hollow squares,
+one at the "root" of the link, and the other at the tip of the arrow.
+
 
 DB Transaction View
 ----------------

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.38 2004-03-24 02:31:05 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.39 2004-03-25 01:01:54 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -340,7 +340,9 @@ public class TokenNetworkView extends PartialPlanView {
     TokenLink link = new TokenLink( fromTokenNode, toTokenNode,
                                     getOpenJGoPenWidth( getZoomFactor()));
     tokenLinkMap.put( linkName, link);
-    jGoDocument.addObjectAtTail( link);
+    // jGoDocument.addObjectAtTail( link);
+    // put links behind nodes
+    jGoDocument.addObjectAtHead( link);
   } // end createTokenLink
 
   /**
