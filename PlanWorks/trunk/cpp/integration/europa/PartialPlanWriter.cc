@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.33 2004-03-02 17:45:36 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.34 2004-03-23 22:53:26 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -38,6 +38,10 @@
 #include "List.hh"
 #include "error.hh"
 #include "PConstraint.hh"
+
+#ifdef _EUROPA_FAST_VERSION_
+#error 'The PartialPlanWriter fails if EUROPA is compiled FAST.'
+#endif
 
 using namespace std;
 using namespace Europa;
@@ -309,9 +313,8 @@ void PartialPlanWriter::write(void) {
   while(!freeTokenIterator.isDone()) {
     TokenId tokenId = freeTokenIterator.item();
 
-    outputToken(tokenId, true, partialPlanId, NULL, 0, SNULL, NULL, -1, tokenOut, 
-                tokenRelationOut, 
-                variableOut);
+    outputToken(tokenId, true, partialPlanId, NULL, 0, SNULL, NULL, -1, -1, tokenOut, 
+                tokenRelationOut, variableOut);
     numTokens++;
     freeTokenIterator.step();
   }
@@ -356,12 +359,14 @@ void PartialPlanWriter::write(void) {
         }
         List<TokenId> tokenList = slotId->listValueTokensCoveringSlot();
         ListIterator<TokenId> tokenIterator = ListIterator<TokenId>(tokenList);
+        int slotOrder = 0;
         while(!tokenIterator.isDone()) {
           TokenId tokenId = tokenIterator.item();
           outputToken(tokenId, false, partialPlanId, &objectId, timelineId, 
-                      modelId.getAttributeName(timelineAttId), &slotId, slotIndex,
+                      modelId.getAttributeName(timelineAttId), &slotId, slotIndex, slotOrder,
                       tokenOut, tokenRelationOut, variableOut);
           numTokens++;
+          slotOrder++;
           tokenIterator.step();
         }
         slotIndex++;
@@ -404,9 +409,9 @@ void PartialPlanWriter::write(void) {
 }
 
 void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree, 
-                                    const long long int partialPlanId, const ObjectId *objectId,
+                                    const long long int partialPlanId, const ObjectId * /*objectId*/,
                                     const int timelineId, const String &timelineName, 
-                                    const SlotId *slotId, const int slotIndex,
+                                    const SlotId *slotId, const int slotIndex, const int slotOrder,
                                     ofstream &tokenOut, ofstream &tokenRelationOut, 
                                     ofstream &variableOut) {
   PredicateId predicateId = tokenId->getPredicate();
@@ -477,7 +482,7 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
   else {
     tokenOut << paramVarIds << TAB;
   }
-  tokenOut << SNULL << endl;
+  tokenOut << slotOrder << endl;
 }
 
 void PartialPlanWriter::outputVariable(const VarId &variable, const char *type, 

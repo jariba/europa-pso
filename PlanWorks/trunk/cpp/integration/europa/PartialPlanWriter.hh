@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.21 2004-03-02 17:45:37 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.22 2004-03-23 22:53:27 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H
@@ -79,7 +79,7 @@ private:
   void outputVariable(const VarId &, const char *, const long long int, const TokenId &, 
                       const Symbol &, std::ofstream &);
   void outputToken(const TokenId &, const bool, const long long int, const ObjectId *, 
-                   const int,  const String &, const SlotId *, const int,
+                   const int,  const String &, const SlotId *, const int, const int,
                    std::ofstream &, std::ofstream &, std::ofstream &);
   void outputConstraint(const ConstraintId &, const long long int, std::ofstream &, std::ofstream &);
   String getBoundString(const Domain &, const Value &);
