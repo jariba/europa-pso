@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.115 2004-09-24 22:39:58 taylor Exp $
+// $Id: PlanWorks.java,v 1.116 2004-09-24 23:04:16 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -826,9 +826,10 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public final DirectoryChooser createSequenceDirChooser( File currentDirectory) {
     boolean isMultiSelectionEnabled = true;
+    boolean isParentCurrentDir = false;
     final DirectoryChooser sequenceDirChooser =
       new DirectoryChooser( "Select Planning Sequence Directory(ies)",
-                            isMultiSelectionEnabled, currentDirectory);
+                            isMultiSelectionEnabled, isParentCurrentDir, currentDirectory);
     sequenceDirChooser.setFileFilter( new SequenceDirectoryFilter());
     sequenceDirChooser.setApproveButtonToolTipText( "Accept selected directory(ies)");
     return sequenceDirChooser; 
@@ -842,8 +843,10 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public final DirectoryChooser createDirectoryChooser( File currentDirectory) {
     boolean isMultiSelectionEnabled = false;
+    boolean isParentCurrentDir = true;
     final DirectoryChooser dirChooser =
-      new DirectoryChooser( "Select Directory", isMultiSelectionEnabled, currentDirectory);
+      new DirectoryChooser( "Select Directory", isMultiSelectionEnabled,
+                            isParentCurrentDir, currentDirectory);
     dirChooser.setApproveButtonToolTipText( "Accept selected directory");
     return dirChooser;
   } // end createDirectoryChooser

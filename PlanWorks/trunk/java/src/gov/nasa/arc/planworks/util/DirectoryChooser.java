@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DirectoryChooser.java,v 1.6 2004-09-24 22:39:59 taylor Exp $
+// $Id: DirectoryChooser.java,v 1.7 2004-09-24 23:04:16 taylor Exp $
 //
 //
 // Will Taylor -- started 26mar03
@@ -40,17 +40,12 @@ public class DirectoryChooser extends JFileChooser {
     commonConstructor( title, isMultiSelectionEnabled);
   }
     
-  /**
-   * <code>DirectoryChooser</code> - constructor 
-   *
-   * @param title - <code>String</code> - 
-   * @param isMultiSelectionEnabled - <code>boolean</code> - 
-   * @param currentDirectory - <code>File</code> - 
-   */
   public DirectoryChooser( String title, boolean isMultiSelectionEnabled,
-                           File currentDirectory) {
-    super();
-    this.setCurrentDirectory( currentDirectory.getParentFile());
+                           boolean isParentCurrentDir, File currentDirectory) {
+    super( currentDirectory);
+    if (isParentCurrentDir) {
+      this.setCurrentDirectory( currentDirectory.getParentFile());
+    }
     commonConstructor( title, isMultiSelectionEnabled);
   }
 
