@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.11 2003-12-03 02:29:51 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.12 2003-12-10 21:30:39 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -234,7 +234,6 @@ public class SequenceStepsView extends SequenceView {
     return fontMetrics;
   }
 
-  
   private float computeHeightScaleFactor() {
     int maxDbSize = 0;
     Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
@@ -356,9 +355,27 @@ public class SequenceStepsView extends SequenceView {
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
     mouseRightPopup.add( overviewWindowItem);
 
+    JMenuItem refreshItem = new JMenuItem("Refresh");
+    createRefreshItem(refreshItem, this);
+    mouseRightPopup.add(refreshItem);
+
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
+
+  private void createRefreshItem(JMenuItem refreshItem, 
+                                 final SequenceStepsView sequenceStepsView) {
+    refreshItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          System.err.println("Refreshing planning sequence...");
+          planSequence.refresh();
+          System.err.println("Redrawing view...");
+          heightScaleFactor = computeHeightScaleFactor();
+          redraw();
+          System.err.println("Done.");
+        }
+      });
+  }
 
   private void createOverviewWindowItem( JMenuItem overviewWindowItem,
                                          final SequenceStepsView sequenceStepsView,

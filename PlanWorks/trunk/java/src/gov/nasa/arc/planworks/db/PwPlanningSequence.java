@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.25 2003-12-03 02:29:50 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.26 2003-12-10 21:29:22 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -295,5 +295,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>List</code> - 
    */
   public List getPlanDBSizeList();
+
+  public void refresh();
 
 } // end interface PwPlanningSequence
