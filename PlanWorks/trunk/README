@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.125 2004-09-03 00:35:12 taylor Exp $
+# $Id: README,v 1.126 2004-09-09 22:45:03 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -20,6 +20,9 @@ o "Project->Configure" and "Project->New Sequence" have been added to support
   integration with PLASMA.  The "Planner Controller" window allows the user
   to run plans in PLASMA and view the results in PlanWorks.
 
+o Background Mouse-Right "Find Entity Path" in the Token Network, Constraint
+  Network, and Navigator views, now highlights the appropriate links, as well
+  as the nodes.
 
 o GNATS PRs and CRs completed:
 

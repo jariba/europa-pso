@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.39 2004-08-26 20:51:25 taylor Exp $
+// $Id: VizView.java,v 1.40 2004-09-09 22:45:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -181,8 +181,9 @@ public class VizView extends JPanel {
    */
   public void closeView( VizView view ) {
     try {
-      ViewListener viewListener = null;
-      viewSet.openView( view.getClass().getName(), viewListener).setClosed( true);
+//       ViewListener viewListener = null;
+//       viewSet.openView( view.getClass().getName(), viewListener).setClosed( true);
+      viewFrame.setClosed( true);
     } catch (PropertyVetoException excp) {
     }
   } // end closeView

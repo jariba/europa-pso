@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FindEntityPath.java,v 1.2 2004-08-25 18:41:04 taylor Exp $
+// $Id: FindEntityPath.java,v 1.3 2004-09-09 22:45:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -194,15 +194,14 @@ public class FindEntityPath {
     final SwingWorker worker = new SwingWorker() {
 	public Object construct() {
           String progressLabel = null;
-           if (doPathExists) {
-             progressLabel = "Determining Path Existence ...";
-           } else {
-             progressLabel = "Finding Entity Path ...";
-           }
-	  findPathPMThread =
-	    partialPlanView.createProgressMonitorThread( progressLabel, 0, 6,
-                                                   Thread.currentThread(), partialPlanView,
-                                                   FindEntityPath.this);
+          if (doPathExists) {
+            progressLabel = "Determining Path Existence ...";
+          } else {
+            progressLabel = "Finding Entity Path ...";
+          }
+	  findPathPMThread = partialPlanView.createProgressMonitorThread
+            ( progressLabel, 0, 6, Thread.currentThread(), partialPlanView,
+              FindEntityPath.this);
 	  if (! partialPlanView.progressMonitorWait( findPathPMThread, partialPlanView)) {
 	    System.err.println( "FindEntityPath.progressMonitorWait failed");
 	    entityKeyList = new ArrayList();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.42 2004-09-08 20:59:51 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.43 2004-09-09 22:45:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -119,6 +119,8 @@ public class SequenceStepsView extends SequenceView {
    */
   public static final Color DB_CONSTRAINTS_BG_COLOR = ColorMap.getColor( "lightYellow");
 
+  private static final int WINDOW_WIDTH = 400;
+  private static final int WINDOW_HEIGHT= 150;
   private static final int MIN_NUM_STEPS_TO_CALL_EXPAND_FRAME = 30;
 
   private long startTimeMSecs;
@@ -299,6 +301,9 @@ public class SequenceStepsView extends SequenceView {
         expandViewFrame( viewFrame,
                          (int) jGoView.getDocumentSize().getWidth(),
                          (int) jGoView.getDocumentSize().getHeight());
+      } else {
+        viewFrame.setSize( (int) Math.max( viewFrame.getSize().getWidth(), WINDOW_WIDTH),
+                           (int) Math.max( viewFrame.getSize().getHeight(), WINDOW_HEIGHT));
       }
       long stopTimeMSecs = System.currentTimeMillis();
       System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +

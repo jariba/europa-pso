@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.31 2004-08-10 21:17:09 taylor Exp $
+// $Id: NodeGenerics.java,v 1.32 2004-09-09 22:45:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -26,6 +27,7 @@ import com.nwoods.jgo.JGoSelection;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoView;
 
@@ -40,8 +42,10 @@ import gov.nasa.arc.planworks.db.PwEnumeratedDomain;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
@@ -245,6 +249,44 @@ public class NodeGenerics {
   } // end highlightPathNodes
 
   /**
+   * <code>highlightPathLinks</code>
+   *
+   * @param linkList - <code>List</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   * @param jGoView - <code>JGoView</code> - 
+   */
+  public static void highlightPathLinks( List linkList, PartialPlanView partialPlanView,
+                                         JGoView jGoView) {
+    // clear old selection
+    NodeGenerics.unhighlightPathLinks( partialPlanView);
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    Iterator linkItr = linkList.iterator();
+    while (linkItr.hasNext()) {
+      BasicNodeLink link = (BasicNodeLink) linkItr.next();
+      link.setPen( new JGoPen( JGoPen.SOLID, penWidth, jGoView.getSecondarySelectionColor()));
+    }
+    partialPlanView.setHighlightLinksList( linkList);
+  } // end highlightPathLinks
+
+  /**
+   * <code>unhighlightPathLinks</code>
+   *
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   */
+  public static void unhighlightPathLinks( PartialPlanView partialPlanView) {
+    List oldLinkList = partialPlanView.getHighlightLinksList();
+    if (oldLinkList != null) {
+      int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor()) - 1;
+      Iterator oldLinkItr = oldLinkList.iterator();
+      while (oldLinkItr.hasNext()) {
+        BasicNodeLink oldLink = (BasicNodeLink) oldLinkItr.next();
+        oldLink.setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
+      }
+    }
+    partialPlanView.setHighlightLinksList( null);
+  } // end unhighlightPathLinks
+
+  /**
    * <code>mapTokensToTokenNodes</code> - given a list of tokens and token nodes,
    *                           return a subset of the token node list, which match
    *                           the token list
@@ -367,6 +409,32 @@ public class NodeGenerics {
     }
   } // end getVariableNodeToolTipText
 
+  /**
+   * <code>getLinkFromNodes</code>
+   *
+   * @param node1 - <code>IncrementalNode</code> - 
+   * @param node2 - <code>IncrementalNode</code> - 
+   * @param linkMap - <code>Map</code> - 
+   * @return - <code>BasicNodeLink</code> - 
+   */
+  public static BasicNodeLink getLinkFromNodes( IncrementalNode node1, IncrementalNode node2,
+                                                Map linkMap) {
+    BasicNodeLink link = null;
+    // System.err.println( "node1 " + node1);
+    // System.err.println( "node2 " + node2);
+    String linkName = node1.getId().toString() + "->" + node2.getId().toString();
+    link = (BasicNodeLink) linkMap.get( linkName);
+    if (link == null) {
+      linkName = node2.getId().toString() + "->" + node1.getId().toString();
+      link = (BasicNodeLink) linkMap.get( linkName);
+    }
+    if (link == null) {
+      System.err.println( "getLinkFromNodes: no link found between key=" +
+                          node1.getId().toString() + " and key=" +
+                          node2.getId().toString());
+    }
+    return link;
+  } // end getLinkFromNodes
 
 } // end class NodeGenerics
 

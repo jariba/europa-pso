@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.83 2004-09-03 00:35:14 taylor Exp $
+# $Id: build-tags-file.csh,v 1.84 2004-09-09 22:45:03 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -97,12 +97,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/dbg/testLang/Domain.java \
     src/gov/nasa/arc/planworks/dbg/testLang/EnumeratedDomain.java \
     src/gov/nasa/arc/planworks/dbg/testLang/IntervalDomain.java \
-    src/gov/nasa/arc/planworks/dbg/testLang/TestLangHelper.java \
     src/gov/nasa/arc/planworks/dbg/testLang/TestLangInterpreter.java \
     src/gov/nasa/arc/planworks/dbg/testLang/TestLangLexer.java \
     src/gov/nasa/arc/planworks/dbg/testLang/TestLangParser.java \
-    src/gov/nasa/arc/planworks/dbg/testLang/TestLangParseException.java \
-    src/gov/nasa/arc/planworks/dbg/testLang/TestLangRuntimeException.java \
     src/gov/nasa/arc/planworks/dbg/testLang/TestLangTokenTypes.java \
     src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopFrame.java \
