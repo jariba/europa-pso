@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.5 2004-02-25 02:30:16 taylor Exp $
+// $Id: TokenNavNode.java,v 1.6 2004-02-26 19:02:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -29,6 +29,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -231,7 +232,8 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
    */
   public final List getComponentEntityList() {
     List returnList = new ArrayList();
-    returnList.addAll( token.getVariablesList());
+    // returnList.addAll( token.getVariablesList());
+    returnList.addAll( ((PwVariableContainer) token).getVariables());
     Iterator slaveIdItr = partialPlan.getSlaveTokenIds( token.getId()).iterator();
     while (slaveIdItr.hasNext()) {
       returnList.add( partialPlan.getToken( (Integer) slaveIdItr.next()));
@@ -296,7 +298,7 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
    * @return - <code>String</code> - 
    */
   public final String getToolTipText( final boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html>token<br>");
+    StringBuffer tip = new StringBuffer( "<html>");
     tip.append( token.getPredicateName());
     tip.append( "<br>key=");
     tip.append( token.getId().toString());

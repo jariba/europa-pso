@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.27 2004-02-12 01:26:50 taylor Exp $
+// $Id: PartialPlanView.java,v 1.28 2004-02-26 19:01:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -88,6 +88,8 @@ public class PartialPlanView extends VizView {
   private StepButton backwardButton;
   private StepButton forwardButton;
 
+  private Map navigatorFrameNameMap;
+
   /**
    * <code>PartialPlanView</code> - constructor 
    *
@@ -99,6 +101,7 @@ public class PartialPlanView extends VizView {
     this.partialPlan = partialPlan;
     validTokenIds = null;
     displayedTokenIds = null;
+    navigatorFrameNameMap = new HashMap();
   }
 
   /**
@@ -610,9 +613,10 @@ public class PartialPlanView extends VizView {
   public MDIInternalFrame openNavigatorViewFrame() {
     ((PartialPlanViewSet) viewSet).incrNavigatorFrameCnt();
     String viewName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
-    MDIInternalFrame navigatorFrame =
-      ((MDIDesktopFrame) PlanWorks.getPlanWorks()).createFrame( viewName + " for " +
-                                                                partialPlan.getName(),
+    String rootNavigatorViewName = viewName + " for " + partialPlan.getName();
+    String navigatorViewName = getNavigatorViewName( rootNavigatorViewName);
+      MDIInternalFrame navigatorFrame = 
+      ((MDIDesktopFrame) PlanWorks.getPlanWorks()).createFrame( navigatorViewName,
                                                                 viewSet, true, true,
                                                                 true, true);
     viewSet.getViews().put( new String( viewName +
@@ -620,6 +624,22 @@ public class PartialPlanView extends VizView {
                             navigatorFrame);
     return navigatorFrame;
   } // end openNavigatorViewFrame
+
+  private String getNavigatorViewName( final String rootNavigatorViewName) {
+    String navigatorViewName = rootNavigatorViewName;
+    Integer viewNameCnt = (Integer) navigatorFrameNameMap.get( rootNavigatorViewName);
+    if (viewNameCnt == null) {
+      navigatorFrameNameMap.put( rootNavigatorViewName, new Integer( 0));
+    } else {
+      int newCnt = viewNameCnt.intValue() + 1;
+      viewNameCnt = new Integer( newCnt);
+      navigatorFrameNameMap.put( rootNavigatorViewName, viewNameCnt);
+      navigatorViewName =
+        navigatorViewName.concat(" (").concat( viewNameCnt.toString()).concat(")");
+    }
+    System.err.println( "navigatorViewName " + navigatorViewName);
+    return navigatorViewName;
+  } // end getNavigatorViewName
 
   /**
    * <code>doesViewFrameExist</code> - check for String view key or Class view key

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.8 2004-02-25 02:30:14 taylor Exp $
+// $Id: ModelClassNavNode.java,v 1.9 2004-02-26 19:02:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,6 +24,7 @@ import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwObject;
+import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.nodes.ObjectNode;
@@ -197,7 +198,10 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
    * @return - <code>List</code> - of PwEntity
    */
   public final List getComponentEntityList() {
-    return object.getComponentList();
+    List returnList = new ArrayList();
+    returnList.addAll( object.getComponentList());
+    returnList.addAll( ((PwVariableContainer) object).getVariables());
+    return returnList;
   }
 
   /**
@@ -230,7 +234,7 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
    * @return - <code>String</code> - 
    */
   public final String getToolTipText( final boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html>object<br>");
+    StringBuffer tip = new StringBuffer( "<html>");
     tip.append( object.getName());
     tip.append( "<br>key=");
     tip.append( object.getId().toString());

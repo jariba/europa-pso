@@ -2,6 +2,7 @@ package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -28,22 +29,27 @@ import com.nwoods.jgo.examples.BasicNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
+
 
 public class ConstraintNetworkTimelineNode extends TimelineNode implements VariableContainerNode{
 
@@ -55,11 +61,13 @@ public class ConstraintNetworkTimelineNode extends TimelineNode implements Varia
   private int variableLinkCount;
   private int connectedContainerCount;
   private Color backgroundColor;
+  private PartialPlanView partialPlanView;
 
   public ConstraintNetworkTimelineNode(PwTimeline tl, Point tlLocation, Color backgroundColor,
                                        boolean isDraggable, PartialPlanView partialPlanView) {
     super(tl, tlLocation, backgroundColor, isDraggable, partialPlanView);
     this.backgroundColor = backgroundColor;
+    this.partialPlanView = partialPlanView;
     variableNodeList = new UniqueSet();
     areNeighborsShown = false;
     hasDiscoveredLinks = false;
@@ -90,7 +98,8 @@ public class ConstraintNetworkTimelineNode extends TimelineNode implements Varia
       operation = "open";
     }
     if (timeline != null) {
-      tip.append( timeline.toString());
+      // tip.append( timeline.toString());
+      tip.append( "timeline");
     } else {
       tip.append( "This is a bug");
     }
@@ -153,11 +162,31 @@ public class ConstraintNetworkTimelineNode extends TimelineNode implements Varia
       }
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      super.doMouseClick( modifiers, docCoords, viewCoords, view);
+      // super.doMouseClick( modifiers, docCoords, viewCoords, view);
+      mouseRightPopupMenu( viewCoords);
       return true;
     }
     return false;
   } // end doMouseClick 
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame();
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
+          contentPane.add( new NavigatorView( ConstraintNetworkTimelineNode.this,
+                                              partialPlan, partialPlanView.getViewSet(),
+                                              navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
+  } // end mouseRightPopupMenu
 
   public void addContainerNodeVariables(Object n, Object v) {
     addContainerNodeVariables((VariableContainerNode) n, (ConstraintNetworkView) v);

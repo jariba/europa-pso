@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNavNode.java,v 1.7 2004-02-25 02:30:15 taylor Exp $
+// $Id: SlotNavNode.java,v 1.8 2004-02-26 19:02:01 taylor Exp $
 //
 // PlanWorks
 //
@@ -286,7 +286,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode {
    * @return - <code>String</code> - 
    */
   public final String getToolTipText( final boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html>slot<br>");
+    StringBuffer tip = new StringBuffer( "<html>");
     tip.append( predicateName);
     tip.append( "<br>key=");
     tip.append( slot.getId().toString());
