@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.22 2004-01-09 20:43:33 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.23 2004-01-14 21:27:04 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -669,7 +669,7 @@ public class TokenNetworkView extends PartialPlanView {
       if ((tokenNode.getToken() != null) &&
           (tokenNode.getToken().getId().equals( tokenToFind.getId()))) {
         System.err.println( "TokenNetworkView found token: " +
-                            tokenToFind.getPredicate().getName() +
+                            tokenToFind.getPredicateName() +
                             " (key=" + tokenToFind.getId().toString() + ")");
         NodeGenerics.focusViewOnNode( tokenNode, isHighlightNode, jGoView);
         isTokenFound = true;
@@ -685,7 +685,7 @@ public class TokenNetworkView extends PartialPlanView {
     }
     if (! isTokenFound) {
       // Content Spec filtering may cause this to happen
-      String message = "Token " + tokenToFind.getPredicate().getName() +
+      String message = "Token " + tokenToFind.getPredicateName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Token Not Found in TokenNetworkView",

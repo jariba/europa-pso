@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.16 2003-12-31 21:04:46 taylor Exp $
+// $Id: PwVariableImpl.java,v 1.17 2004-01-14 21:22:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -40,7 +40,7 @@ public class PwVariableImpl implements PwVariable {
   private Integer id;
   private String type;
   private UniqueSet constraintIdList; // element String
-  private UniqueSet parameterIdList;
+  private UniqueSet parameterNameList;
   private UniqueSet tokenIdList;
   private PwDomainImpl domain; // PwEnumeratedDomainImpl || PwIntervalDomainImpl
   private PwPartialPlanImpl partialPlan;
@@ -56,12 +56,12 @@ public class PwVariableImpl implements PwVariable {
    * @param domain - <code>PwDomainImpl</code> - PwEnumeratedDomainImpl || PwIntervalDomainImpl
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwVariableImpl( Integer id, String type, List constraintIds, List parameterIds,
+  public PwVariableImpl( Integer id, String type, List constraintIds, List parameterNames,
                          List tokenIds, PwDomainImpl domain, PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.type = type;
     this.constraintIdList = new UniqueSet(constraintIds);
-    this.parameterIdList = new UniqueSet(parameterIds);
+    this.parameterNameList = new UniqueSet(parameterNames);
     this.tokenIdList = new UniqueSet(tokenIds);
     this.domain = domain;
     this.partialPlan = partialPlan;
@@ -72,7 +72,7 @@ public class PwVariableImpl implements PwVariable {
     this.id = id;
     this.type = type;
     this.constraintIdList = new UniqueSet();
-    this.parameterIdList = new UniqueSet();
+    this.parameterNameList = new UniqueSet();
     this.tokenIdList = new UniqueSet();
     this.domain = domain;
     this.partialPlan = partialPlan;
@@ -105,31 +105,35 @@ public class PwVariableImpl implements PwVariable {
     return this.domain;
   }
 
+
+  public List getParameterNameList() {
+    return new ArrayList(parameterNameList);
+  }
   /**
    * <code>getParameterList</code>
    *
    * @return - <code>List of PwParameter</code> - 
    */
-  public List getParameterList() {
-    List retval = new ArrayList(parameterIdList.size());
-    ListIterator tokenIdIterator = tokenIdList.listIterator();
-    ListIterator paramIdIterator = parameterIdList.listIterator();
-    // System.err.println( "PwVariableImpl.getParameterList: type " + type + " tokenIdList " +
-    //                     tokenIdList + " parameterIdList " + parameterIdList);
-    if (type.equals(DbConstants.START_VAR) ||
-        type.equals(DbConstants.END_VAR) ||
-        type.equals(DbConstants.DURATION_VAR) ||
-        type.equals(DbConstants.OBJECT_VAR) ||
-        type.equals(DbConstants.REJECT_VAR)) {
-      return parameterIdList;
-    }
-    while(tokenIdIterator.hasNext()) {
-      Integer tokenId = (Integer) tokenIdIterator.next();
-      Integer paramId = (Integer) paramIdIterator.next();
-      retval.add(partialPlan.getToken(tokenId).getPredicate().getParameter(paramId));
-    }
-    return retval;
-  }
+//   public List getParameterList() {
+//     List retval = new ArrayList(parameterIdList.size());
+//     ListIterator tokenIdIterator = tokenIdList.listIterator();
+//     ListIterator paramIdIterator = parameterIdList.listIterator();
+//     // System.err.println( "PwVariableImpl.getParameterList: type " + type + " tokenIdList " +
+//     //                     tokenIdList + " parameterIdList " + parameterIdList);
+//     if (type.equals(DbConstants.START_VAR) ||
+//         type.equals(DbConstants.END_VAR) ||
+//         type.equals(DbConstants.DURATION_VAR) ||
+//         type.equals(DbConstants.OBJECT_VAR) ||
+//         type.equals(DbConstants.REJECT_VAR)) {
+//       return parameterIdList;
+//     }
+//     while(tokenIdIterator.hasNext()) {
+//       Integer tokenId = (Integer) tokenIdIterator.next();
+//       Integer paramId = (Integer) paramIdIterator.next();
+//       retval.add(partialPlan.getToken(tokenId).getPredicate().getParameter(paramId));
+//     }
+//     return retval;
+//   }
 
   /**
    * <code>getConstraintList</code>
@@ -165,8 +169,8 @@ public class PwVariableImpl implements PwVariable {
     constraintIdList.add(constraintId);
   }
 
-  public void addParameter(Integer parameterId) {
-    parameterIdList.add(parameterId);
+  public void addParameter(String paramName) {
+    parameterNameList.add(paramName);
   }
 
   public void addToken(Integer tokenId) {

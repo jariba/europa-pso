@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.28 2004-01-12 22:37:44 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.29 2004-01-14 21:25:55 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -1479,7 +1479,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         if ((tokenNode.getToken() != null) &&
             (tokenNode.getToken().getId().equals( tokenToFind.getId()))) {
           System.err.println( "ConstraintNetworkView found token: " +
-                              tokenToFind.getPredicate().getName() +
+                              tokenToFind.getPredicateName() +
                               " (key=" + tokenToFind.getId().toString() + ")");
           NodeGenerics.focusViewOnNode( tokenNode, isHighlightNode, this);
           isTokenFound = true;
@@ -1494,7 +1494,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
       if (! isTokenFound) {
         // Content Spec filtering may cause this to happen
-        String message = "Token " + tokenToFind.getPredicate().getName() +
+        String message = "Token " + tokenToFind.getPredicateName() +
           " (key=" + tokenToFind.getId().toString() + ") not found.";
         JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                        "Token Not Found in ConstraintNetworkView",

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.27 2004-01-12 19:46:34 taylor Exp $
+// $Id: TimelineView.java,v 1.28 2004-01-14 21:26:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -335,7 +335,7 @@ public class TimelineView extends PartialPlanView {
       if (isTokenInContentSpec( freeToken))  {
         // increment by half the label width, since x is center, not left edge
         x = x +  SwingUtilities.computeStringWidth( this.fontMetrics,
-                                                    freeToken.getPredicate().getName()) / 2;
+                                                    freeToken.getPredicateName()) / 2;
         TimelineTokenNode freeTokenNode =
           new TimelineTokenNode( freeToken, slot, new Point( x, y), backgroundColor,
                                  isFreeToken, isDraggable, this);
@@ -489,7 +489,7 @@ public class TimelineView extends PartialPlanView {
     if (token == null) { // empty slot
       label = new StringBuffer( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
     } else {
-      label = new StringBuffer( token.getPredicate().getName());
+      label = new StringBuffer( token.getPredicateName());
       label.append( " (").append( String.valueOf( slot.getTokenList().size()));
       label.append( ")");
     }
@@ -781,7 +781,7 @@ public class TimelineView extends PartialPlanView {
           PwToken token = (PwToken) tokenItr.next();
           if (token.getId().equals( tokenToFind.getId())) {
             System.err.println( "TimelineView found token: " +
-                                tokenToFind.getPredicate().getName() +
+                                tokenToFind.getPredicateName() +
                                 " (key=" + tokenToFind.getId().toString() + ")");
             NodeGenerics.focusViewOnNode( slotNode, isHighlightNode, jGoView);
             // secondary nodes do not apply here
@@ -797,7 +797,7 @@ public class TimelineView extends PartialPlanView {
         TokenNode freeTokenNode = (TokenNode) freeTokenNodeItr.next();
         if (freeTokenNode.getToken().getId().equals( tokenToFind.getId())) {
           System.err.println( "TimelineView found token: " +
-                              tokenToFind.getPredicate().getName() +                   
+                              tokenToFind.getPredicateName() +                   
                               " (key=" + tokenToFind.getId().toString() + ")");
           NodeGenerics.focusViewOnNode( freeTokenNode, isHighlightNode, jGoView);
           // secondary nodes do not apply here
@@ -808,7 +808,7 @@ public class TimelineView extends PartialPlanView {
     }
     if (! isTokenFound) {
       // Content Spec filtering may cause this to happen
-      String message = "Token " + tokenToFind.getPredicate().getName() +
+      String message = "Token " + tokenToFind.getPredicateName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Token Not Found in TimelineView",

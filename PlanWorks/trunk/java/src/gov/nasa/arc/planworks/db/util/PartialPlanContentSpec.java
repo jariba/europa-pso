@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.12 2004-01-09 23:09:20 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.13 2004-01-14 21:22:58 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -41,8 +41,8 @@ public class PartialPlanContentSpec implements ContentSpec {
   private RedrawNotifier redrawNotifier;
 
   private static final String AND = "and";
-  private static final String AND_PPREDICATEID = "&& (PredicateId";
-  private static final String AND_PREDICATEID = "&& PredicateId";
+  private static final String AND_PPREDICATENAME = "&& (PredicateName";
+  private static final String AND_PREDICATENAME = "&& PredicateName";
   private static final String AND_PTIMELINEID = "&& (TimelineId";
   private static final String AND_TIMELINEID = "&& TimelineId";
   private static final String EQ = "=";
@@ -51,11 +51,11 @@ public class PartialPlanContentSpec implements ContentSpec {
   private static final String OBJECTNAME = "Object.ObjectName";
   private static final String OR = "or";
   private static final String OR_TIMELINEID = "|| TimelineId";
-  private static final String OR_PREDICATEID = "|| PredicateId";
+  private static final String OR_PREDICATENAME = "|| PredicateName";
   private static final String PREDICATEID = "PredicateId";
   private static final String PREDICATENAME = "PredicateName";
   private static final String PREDICATENAME_QUERY =
-    "SELECT PredicateName, PredicateId FROM Predicate WHERE PartialPlanId=";
+    "SELECT DISTINCT PredicateName FROM Token WHERE PartialPlanId=";
   private static final String TIMELINEID = "Token.TimelineId";
   private static final String TIMELINENAME = "Token.TimelineName";
   private static final String TIMELINENAME_QUERY =
@@ -172,7 +172,7 @@ public class PartialPlanContentSpec implements ContentSpec {
       StringBuffer predicateStr = new StringBuffer();
       for(int i = 0; i < predicate.size(); i += 2) {
         predicateStr.append((String)predicate.get(i)).append(" ");
-        predicateStr.append(((Integer)predicate.get(i+1)).toString()).append(" ");
+        predicateStr.append((String)predicate.get(i+1)).append(" ");
       }
       System.err.println(predicateStr.toString());
     }
@@ -223,7 +223,7 @@ public class PartialPlanContentSpec implements ContentSpec {
     int tokenTypes = ((Integer)spec.get(4)).intValue();
     List uniqueKeys = (List) spec.get(5);
     currentSpec = spec;
-
+    //printSpecLists(spec);
     try {
       StringBuffer tokenQuery = new StringBuffer(TOKENID_QUERY);
       tokenQuery.append(partialPlanId.toString()).append(" ");
@@ -251,30 +251,31 @@ public class PartialPlanContentSpec implements ContentSpec {
         tokenQuery.append(") ");
       }
       if(predicate != null && predicate.size() != 0) {
-        tokenQuery.append(AND_PPREDICATEID);
+        tokenQuery.append(AND_PPREDICATENAME);
         if(((String)predicate.get(0)).indexOf(NOT) != -1) {
           tokenQuery.append(NEG);
         }
         tokenQuery.append(EQ);
-        tokenQuery.append(((Integer)predicate.get(1)).toString()).append(" ");
+        //tokenQuery.append(((Integer)predicate.get(1)).toString()).append(" ");
+        tokenQuery.append("'").append(predicate.get(1)).append("' ");
         for(int i = 2; i < predicate.size(); i++) {
           String connective = (String) predicate.get(i);
           if(connective.indexOf(AND) != -1) {
-            tokenQuery.append(AND_PREDICATEID);
+            tokenQuery.append(AND_PREDICATENAME);
           }
           else {
-            tokenQuery.append(OR_PREDICATEID);
+            tokenQuery.append(OR_PREDICATENAME);
           }
           if(connective.indexOf(NOT) != -1) {
             tokenQuery.append(NEG);
           }
           i++;
-          tokenQuery.append(EQ).append(((Integer)predicate.get(i)).toString()).append(" ");
+          tokenQuery.append(EQ).append("'").append(predicate.get(i)).append("' ");
         }
         tokenQuery.append(") ");
       }
       tokenQuery.append(";");
-      // System.err.println( "applySpec " + tokenQuery.toString());
+      //System.err.println( "applySpec " + tokenQuery.toString());
       ResultSet tokenIds = MySQLDB.queryDatabase(tokenQuery.toString());
       validTokenIds.clear();
       while(tokenIds.next()) {
@@ -399,15 +400,15 @@ public class PartialPlanContentSpec implements ContentSpec {
    */
 
   public Map getPredicateNames() {
-    HashMap predicates = new HashMap();
+    Map predicates = new HashMap();
     
     System.err.println("Getting predicate names...");
     try {
       ResultSet predicateNames = 
         MySQLDB.queryDatabase(PREDICATENAME_QUERY.concat(partialPlanId.toString()));
       while(predicateNames.next()) {
-        predicates.put(predicateNames.getString(PREDICATENAME), 
-                       new Integer(predicateNames.getInt(PREDICATEID)));
+        predicates.put(predicateNames.getString(PREDICATENAME),
+                       predicateNames.getString(PREDICATENAME));
       }
     }
     catch(SQLException sqle) {}

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.11 2004-01-09 23:10:28 miatauro Exp $
+// $Id: TemporalNode.java,v 1.12 2004-01-14 21:26:18 miatauro Exp $
 //
 // PlanWorks
 //
@@ -186,7 +186,7 @@ public class TemporalNode extends BasicNode implements Extent {
     String [] labelLines = new String [2];
     String predicateName = null, nodeLabel2 = null;
     if (token != null) {
-      predicateName = token.getPredicate().getName();
+      predicateName = token.getPredicateName();
       nodeLabel2 = "key=" + token.getId().toString();
     } else {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
@@ -665,7 +665,7 @@ public class TemporalNode extends BasicNode implements Extent {
             ((PartialPlanViewSet) temporalExtentView.getViewSet()).setActiveToken( activeToken);
             ((PartialPlanViewSet) temporalExtentView.getViewSet()).setSecondaryTokens( null);
             System.err.println( "TemporalNode setActiveToken: " +
-                                activeToken.getPredicate().getName() +
+                                activeToken.getPredicateName() +
                                 " (key=" + activeToken.getId().toString() + ")");
           }
         });

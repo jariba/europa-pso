@@ -4,10 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PredicateBox.java,v 1.1 2003-10-01 23:54:02 taylor Exp $
+// $Id: PredicateBox.java,v 1.2 2004-01-14 21:27:37 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
+import java.util.List;
 import java.util.Map;
 
 /**

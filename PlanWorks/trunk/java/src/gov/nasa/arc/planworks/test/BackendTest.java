@@ -113,7 +113,7 @@ public class BackendTest extends TestCase {
       List objectIdList = (List) ids.get(DbConstants.TBL_OBJECT);
       List tokenIdList = (List) ids.get(DbConstants.TBL_TOKEN);
       List variableIdList = (List) ids.get(DbConstants.TBL_VARIABLE);
-      List predicateIdList = (List) ids.get(DbConstants.TBL_PREDICATE);
+      //List predicateIdList = (List) ids.get(DbConstants.TBL_PREDICATE);
 
       List objectList = temp[i].getObjectList();
       ListIterator objectIterator = objectList.listIterator();
@@ -149,8 +149,8 @@ public class BackendTest extends TestCase {
                   tokenIterator.remove();
                   tokenIdList.remove(token.getId());
                 }
-                assertTrue("Instantiated predicate not in db.", 
-                           predicateIdList.contains(token.getPredicate().getId()));
+                //assertTrue("Instantiated predicate not in db.", 
+                //           predicateIdList.contains(token.getPredicate().getId()));
 
                 if(variableIdList.contains(token.getStartVariable().getId())) {
                   variableIdList.remove(token.getStartVariable().getId());
@@ -227,8 +227,8 @@ public class BackendTest extends TestCase {
           freeTokenIterator.remove();
           tokenIdList.remove(token.getId());
         }
-        assertTrue("Instantiated predicate not in db.",
-                   predicateIdList.contains(token.getPredicate().getId()));
+        //assertTrue("Instantiated predicate not in db.",
+        //           predicateIdList.contains(token.getPredicate().getId()));
         if(variableIdList.contains(token.getStartVariable().getId())) {
           variableIdList.remove(token.getStartVariable().getId());
         }
