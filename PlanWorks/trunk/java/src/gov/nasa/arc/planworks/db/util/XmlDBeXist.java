@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.11 2003-06-12 23:49:46 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.12 2003-06-19 20:11:05 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -522,7 +522,7 @@ public class XmlDBeXist {
    *
    * @param collectionName - <code>String</code> - 
    */
-  public static void changeCurrentCollection( String collectionName) {
+  private static void changeCurrentCollection( String collectionName) {
     if (collectionName.startsWith( ROOT_COLLECTION_NAME)) {
       // remove /db if specified
       collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
@@ -745,7 +745,7 @@ public class XmlDBeXist {
    * @param collectionName - <code>String</code> - 
    * @return attributeValues - <code>List of String</code> - 
    */
-  public static String queryAttributeValue( String query, String collectionName) {
+  private static String queryAttributeValue( String query, String collectionName) {
     List contentList = queryCollection( collectionName, query);
     String attributeValue = "";
     for (int i = 0, n = contentList.size(); i < n; i++) {
@@ -770,7 +770,7 @@ public class XmlDBeXist {
    * @param collectionName - <code>String</code> - 
    * @return - <code>List</code> - 
    */
-  public static List queryAttributeValueOfElements( String query, String attributeName,
+  private static List queryAttributeValueOfElements( String query, String attributeName,
                                                     String collectionName) {
     List contentList = queryCollection( collectionName, query);
     List attributeValues = new ArrayList();
