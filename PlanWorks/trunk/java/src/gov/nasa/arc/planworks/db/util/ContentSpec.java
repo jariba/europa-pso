@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.1 2003-08-01 18:10:26 miatauro Exp $
+// $Id: ContentSpec.java,v 1.2 2003-08-01 18:20:34 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.viz.viewMgr.RedrawNotifier;
 //import org.w3c.dom.Node;
 
 /*
