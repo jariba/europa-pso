@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.9 2003-08-26 01:37:12 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.10 2003-08-29 01:21:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -101,7 +101,6 @@ public class ConstraintNetworkView extends VizView {
   private List constraintNodeList; // element ConstraintNode
   private List constraintLinkList; // element BasicNodeLink
   private List variableLinkList; // element BasicNodeLink
-  private List overloadedTokensIdList; // element Integer
   private int maxViewWidth;
   private int maxViewHeight;
   private boolean isDebugPrint;
@@ -131,7 +130,6 @@ public class ConstraintNetworkView extends VizView {
     constraintNodeList = new ArrayList();
     constraintLinkList = new ArrayList();
     variableLinkList = new ArrayList();
-    overloadedTokensIdList = new ArrayList();
     maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
     maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
 
@@ -144,10 +142,6 @@ public class ConstraintNetworkView extends VizView {
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
     jGoView.setVisible( true);
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-    jGoView.setFont( font);
     this.setVisible( true);
 
     // print content spec
@@ -183,6 +177,11 @@ public class ConstraintNetworkView extends VizView {
       // System.err.println( "constraintNetworkView displayable " + this.isDisplayable());
     }
     Graphics graphics = ((JPanel) this).getGraphics();
+    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
+                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
+                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+    // does nothing
+    // jGoView.setFont( font);
     fontMetrics = graphics.getFontMetrics( font);
     graphics.dispose();
 
@@ -349,26 +348,22 @@ public class ConstraintNetworkView extends VizView {
       int tokenCnt = 0;
       while (tokenIterator.hasNext()) {
         PwToken token = (PwToken) tokenIterator.next();
-        if (tokenCnt == 0) { // only create node for base token
-          TokenNode tokenNode =
-            new TokenNode( token, new Point( x, y), objectCnt, isFreeToken,
-                           isDraggable, this);
-          if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
-            x += tokenNode.getSize().getWidth() * 0.5;
-            tokenNode.setLocation( x, y);
-          }
-          tmpTokenNodeList.add( tokenNode);
-          // nodes are always in front of any links
-          document.addObjectAtTail( tokenNode);
-          network.addConstraintNode( tokenNode);
-          
-          createVariableAndConstraintNodes( tokenNode, isFreeToken);
-          createTokenVariableConstraintLinks( tokenNode);
-
-          x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
-        } else {
-          overloadedTokensIdList.add( token.getId());
+        TokenNode tokenNode =
+          new TokenNode( token, new Point( x, y), objectCnt, isFreeToken,
+                         isDraggable, this);
+        if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
+          x += tokenNode.getSize().getWidth() * 0.5;
+          tokenNode.setLocation( x, y);
         }
+        tmpTokenNodeList.add( tokenNode);
+        // nodes are always in front of any links
+        document.addObjectAtTail( tokenNode);
+        network.addConstraintNode( tokenNode);
+          
+        createVariableAndConstraintNodes( tokenNode, isFreeToken);
+        createTokenVariableConstraintLinks( tokenNode);
+
+        x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
         tokenCnt++;
       }
     }
@@ -1104,13 +1099,6 @@ public class ConstraintNetworkView extends VizView {
     // viewSet.printSpec();
     validTokenIds = viewSet.getValidTokenIds();
     displayedTokenIds = new ArrayList();
-    Iterator overloadedTokensItr = overloadedTokensIdList.iterator();
-    while (overloadedTokensItr.hasNext()) {
-      Integer id = (Integer) overloadedTokensItr.next();
-      if (validTokenIds.indexOf( id) >= 0) {
-        displayedTokenIds.add( id);
-      }
-    }
     Iterator constraintNodeItr = constraintNodeList.iterator();
     while (constraintNodeItr.hasNext()) {
       ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();

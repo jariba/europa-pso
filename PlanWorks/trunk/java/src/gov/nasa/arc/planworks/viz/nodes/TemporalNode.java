@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.6 2003-08-28 23:31:39 miatauro Exp $
+// $Id: TemporalNode.java,v 1.7 2003-08-29 01:21:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.viz.nodes;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -63,15 +64,19 @@ public class TemporalNode extends BasicNode implements Extent {
   private int latestStartTime;
   private int earliestEndTime;
   private int latestEndTime;
-  private PwDomain durationIntervalDomain;
+  private int earliestDurationTime;
+  private int latestDurationTime;
   private int objectCnt;
   private boolean isFreeToken;
   private TemporalExtentView view;
   private boolean isEarliestStartMinusInf;
+  private boolean isLatestStartPlusInf;
+  private boolean isEarliestEndMinusInf;
   private boolean isLatestEndPlusInf;
 
   private String predicateName;
   private String nodeLabel;
+  private int nodeLabelWidth;
   private List markAndBridgeList; // elements JGoPolygon & JGoStroke
   private int cellRow; // for layout algorithm
 
@@ -82,14 +87,16 @@ public class TemporalNode extends BasicNode implements Extent {
    * @param slot - <code>PwSlot</code> - 
    * @param startTimeIntervalDomain - <code>PwDomain</code> - 
    * @param endTimeIntervalDomain - <code>PwDomain</code> -  
-   * @param durationIntervalDomain - <code>PwDomain</code> -  
+   * @param earliestDurationString - <code>String</code> -  
+   * @param latestDurationString - <code>String</code> -  
    * @param objectCnt - <code>int</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param view - <code>TemporalExtentView</code> - 
    */
   public TemporalNode( PwToken token, PwSlot slot, PwDomain startTimeIntervalDomain,
-                       PwDomain endTimeIntervalDomain, PwDomain durationIntervalDomain,
-                       int objectCnt, boolean isFreeToken, TemporalExtentView view) {
+                       PwDomain endTimeIntervalDomain, String earliestDurationString,
+                       String latestDurationString, int objectCnt, boolean isFreeToken,
+                       TemporalExtentView view) {
     super();
     this.token = token;
     this.slot = slot;
@@ -100,7 +107,17 @@ public class TemporalNode extends BasicNode implements Extent {
       earliestStartTime = view.getTimeScaleStart();
     }
     latestStartTime = startTimeIntervalDomain.getUpperBoundInt();
+    isLatestStartPlusInf = false;
+    if (latestStartTime == PwDomain.PLUS_INFINITY_INT) {
+      isLatestStartPlusInf = true;
+      latestStartTime = view.getTimeScaleEnd();
+    }
     earliestEndTime = endTimeIntervalDomain.getLowerBoundInt();
+    isEarliestEndMinusInf = false;
+    if (earliestEndTime == PwDomain.MINUS_INFINITY_INT) {
+      isEarliestEndMinusInf = true;
+      earliestEndTime = view.getTimeScaleStart();
+    }
     latestEndTime = endTimeIntervalDomain.getUpperBoundInt();
     isLatestEndPlusInf = false;
     if (latestEndTime == PwDomain.PLUS_INFINITY_INT) {
@@ -114,7 +131,17 @@ public class TemporalNode extends BasicNode implements Extent {
 //     System.err.println( "Temporal Node: " + tokenId + " eS " +
 //                         earliestStartTime + " lS " + latestStartTime + " eE " +
 //                         earliestEndTime + " lE " + latestEndTime);
-    this.durationIntervalDomain = durationIntervalDomain;
+    if (earliestDurationString.equals( PwDomain.MINUS_INFINITY)) {
+      earliestDurationTime = PwDomain.MINUS_INFINITY_INT;
+    } else {
+      earliestDurationTime = Integer.parseInt( earliestDurationString);
+    }
+    if (latestDurationString.equals( PwDomain.PLUS_INFINITY)) {
+      latestDurationTime = PwDomain.PLUS_INFINITY_INT;
+    } else {
+      latestDurationTime = Integer.parseInt( latestDurationString);
+    }
+
     this.objectCnt = objectCnt;
     this.isFreeToken = isFreeToken;
     this.view = view;
@@ -126,6 +153,9 @@ public class TemporalNode extends BasicNode implements Extent {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
       nodeLabel = predicateName;
     }
+    nodeLabelWidth =
+      SwingUtilities.computeStringWidth( view.getFontMetrics(), nodeLabel) +
+      (ViewConstants.TIMELINE_VIEW_INSET_SIZE * 2);
     markAndBridgeList = new ArrayList();
     cellRow = Algorithms.NO_ROW;
   } // end constructor
@@ -163,16 +193,25 @@ public class TemporalNode extends BasicNode implements Extent {
     int yLoc = scaleY() + ViewConstants.TEMPORAL_NODE_Y_START_OFFSET;
     // if (isFreeToken) {
     if (isEarliestStartMinusInf) {
-      renderMinusInfinityMark( view.getTimeScaleStart(), yLoc);
+      renderMinusInfinityMark( earliestStartTime, yLoc);
     } else {
       renderStartMark( earliestStartTime, yLoc);
     }
-    renderStartMark( latestStartTime, yLoc);
+    if (isLatestStartPlusInf) {
+      renderPlusInfinityMark( latestStartTime, yLoc);
+    } else {
+      renderStartMark( latestStartTime, yLoc);
+    }
+
     yLoc = scaleY() + ViewConstants.TEMPORAL_NODE_Y_END_OFFSET;
-    renderEndMark( earliestEndTime, yLoc);
+    if (isEarliestEndMinusInf) {
+      renderMinusInfinityMark( earliestEndTime, yLoc);
+    } else {
+      renderEndMark( earliestEndTime, yLoc);
+    }
     // if (isFreeToken) {
     if (isLatestEndPlusInf) {
-      renderPlusInfinityMark( view.getTimeScaleEnd(), yLoc);
+      renderPlusInfinityMark( latestEndTime, yLoc);
     } else {
       renderEndMark( latestEndTime, yLoc);
     }
@@ -180,7 +219,8 @@ public class TemporalNode extends BasicNode implements Extent {
 //       renderBridge( view.getTimeScaleStart(), view.getTimeScaleEnd(), yLoc,
 //                     durationIntervalDomain);
 //     } else {
-      renderBridge( earliestStartTime, latestEndTime, yLoc, durationIntervalDomain);
+      renderBridge( earliestStartTime, latestEndTime, yLoc, earliestDurationTime,
+                    latestDurationTime);
 //     }
   } // end configure
 
@@ -243,9 +283,13 @@ public class TemporalNode extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getStart() {
-    //return Math.min( view.scaleTime( earliestStartTime),
-    //                 (int) (getLocation().getX() - getSize().getWidth() * 0.5));
-    return earliestStartTime;
+    int xStart = view.scaleTime( earliestStartTime);
+    int xMiddle = xStart + ((view.scaleTime( latestEndTime) - xStart) / 2);
+//     System.err.println( "getStart: " + predicateName + " xStart " +
+//                         String.valueOf( xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE) +
+//                         " labelStart " + String.valueOf( xMiddle - nodeLabelWidth));
+    return Math.min( xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE,
+                     xMiddle - nodeLabelWidth);
   }
 
   /**
@@ -256,9 +300,14 @@ public class TemporalNode extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getEnd() {
-    //return Math.max( view.scaleTime( latestEndTime),
-    //                 (int) (getLocation().getX() + getSize().getWidth() * 0.5));
-    return latestEndTime;
+    int xStart = view.scaleTime( earliestStartTime);
+    int xEnd = view.scaleTime( latestEndTime);
+    int xMiddle = xStart + ((xEnd - xStart) / 2);
+//     System.err.println( "getEnd: " + predicateName + " xEnd " +
+//                         String.valueOf( xEnd + ViewConstants.TIMELINE_VIEW_INSET_SIZE) +
+//                         " labelEnd " + String.valueOf( xMiddle + nodeLabelWidth));
+    return Math.max( xEnd + ViewConstants.TIMELINE_VIEW_INSET_SIZE,
+                     xMiddle + nodeLabelWidth);
   }
 
   /**
@@ -291,6 +340,7 @@ public class TemporalNode extends BasicNode implements Extent {
     downwardMark.setDraggable( false);
     downwardMark.setResizable(false);
     int xDown = view.scaleTime( time);
+    // System.err.println( "renderStartMark: time " + time + " xDown " + xDown);
     downwardMark.addPoint( xDown - ViewConstants.TEMPORAL_NODE_X_DELTA, y);
     downwardMark.addPoint( xDown + ViewConstants.TEMPORAL_NODE_X_DELTA, y);
     downwardMark.addPoint( xDown, y + ViewConstants.TEMPORAL_NODE_Y_DELTA);
@@ -307,6 +357,8 @@ public class TemporalNode extends BasicNode implements Extent {
     minusInfinityMark.setDraggable( false);
     minusInfinityMark.setResizable(false);
     int xMinusInfinity = view.scaleTime( time);
+    // System.err.println( "renderMinusInfinityMark: time " + time + " xMinusInfinity " +
+    //                     xMinusInfinity);
     minusInfinityMark.addPoint( xMinusInfinity, y);
     minusInfinityMark.addPoint( xMinusInfinity, y + ViewConstants.TEMPORAL_NODE_Y_DELTA);
     minusInfinityMark.addPoint( xMinusInfinity - (ViewConstants.TEMPORAL_NODE_X_DELTA * 2),
@@ -323,6 +375,7 @@ public class TemporalNode extends BasicNode implements Extent {
     upwardMark.setDraggable( false);
     upwardMark.setResizable(false);
     int xUp = view.scaleTime( time);
+    // System.err.println( "renderEndMark: time " + time + " xUp " + xUp);
     upwardMark.addPoint( xUp, y);
     upwardMark.addPoint( xUp + ViewConstants.TEMPORAL_NODE_X_DELTA,
                          y + ViewConstants.TEMPORAL_NODE_Y_DELTA);
@@ -339,7 +392,10 @@ public class TemporalNode extends BasicNode implements Extent {
       new TemporalNodeTimeMark( PwDomain.PLUS_INFINITY_INT);
     plusInfinityMark.setDraggable( false);
     plusInfinityMark.setResizable(false);
-    int xPlusInfinity = view.scaleTime( time);
+    // offset to the right to prevent overlap with earliestEndMark
+    int xPlusInfinity = view.scaleTime( time) + ViewConstants.TEMPORAL_NODE_X_DELTA;
+    // System.err.println( "renderPlusInfinityMark: time " + time + " xPlusInfinity " +
+    //                     xPlusInfinity);
     plusInfinityMark.addPoint( xPlusInfinity, y);
     plusInfinityMark.addPoint( xPlusInfinity + (ViewConstants.TEMPORAL_NODE_X_DELTA * 2),
                                 y + (ViewConstants.TEMPORAL_NODE_Y_DELTA / 2));
@@ -352,16 +408,19 @@ public class TemporalNode extends BasicNode implements Extent {
 
 
   private void renderBridge( int startTime, int endTime, int y,
-                             PwDomain durationIntervalDomain) {
+                             int earliestDurationTime, int latestDurationTime) {
     int lineWidth = 1;
     TemporalNodeDurationBridge bridge =
-      new TemporalNodeDurationBridge( durationIntervalDomain.getLowerBoundInt(),
-                                      durationIntervalDomain.getUpperBoundInt());
+      new TemporalNodeDurationBridge( earliestDurationTime, latestDurationTime);
     bridge.setDraggable( false);
     bridge.setResizable(false);
     bridge.setPen( new JGoPen( JGoPen.SOLID, lineWidth, ColorMap.getColor( "black")));
     bridge.addPoint( view.scaleTime( startTime), y);
-    bridge.addPoint( view.scaleTime( endTime), y);
+    int xEndTime = view.scaleTime( endTime);
+    if (isLatestEndPlusInf) {
+      xEndTime += ViewConstants.TEMPORAL_NODE_X_DELTA;
+    }
+    bridge.addPoint( xEndTime, y);
     markAndBridgeList.add( bridge);
     view.getJGoDocument().addObjectAtTail( bridge);
   } // end renderBridge

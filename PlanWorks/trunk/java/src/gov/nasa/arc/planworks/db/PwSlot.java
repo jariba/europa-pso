@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlot.java,v 1.5 2003-08-12 22:53:34 miatauro Exp $
+// $Id: PwSlot.java,v 1.6 2003-08-29 01:21:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -39,6 +39,11 @@ public interface PwSlot {
    */
   public abstract List getTokenList();
 	
-
+  /**
+   * <code>getBaseToken</code>
+   *
+   * @return - <code>PwToken</code> - 
+   */
+  public abstract PwToken getBaseToken();
 
 } // end interface PwSlot

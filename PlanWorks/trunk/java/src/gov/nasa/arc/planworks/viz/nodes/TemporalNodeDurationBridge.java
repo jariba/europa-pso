@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNodeDurationBridge.java,v 1.1 2003-08-26 01:37:12 taylor Exp $
+// $Id: TemporalNodeDurationBridge.java,v 1.2 2003-08-29 01:21:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,6 +14,8 @@ package gov.nasa.arc.planworks.viz.nodes;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoStroke;
+
+import gov.nasa.arc.planworks.db.PwDomain;
 
 
 /**
@@ -45,10 +47,19 @@ public class TemporalNodeDurationBridge extends JGoStroke {
    */
   public String getToolTipText() {
     StringBuffer buffer = new StringBuffer( "[");
-    buffer.append( String.valueOf( minDurationTime));
-    buffer.append( ", ").append( String.valueOf( maxDurationTime));
+    if (minDurationTime == PwDomain.MINUS_INFINITY_INT) {
+      buffer.append( "-Infinity");
+    } else {
+      buffer.append( String.valueOf( minDurationTime));
+    }
+    if (maxDurationTime == PwDomain.PLUS_INFINITY_INT) {
+      buffer.append( ", ").append( "Infinity");
+    } else {
+      buffer.append( ", ").append( String.valueOf( maxDurationTime));
+    }
     return  buffer.append( "]").toString();
   }
 
 } // end class TemporalNodeDurationBridge
                                
+    

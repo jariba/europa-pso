@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.16 2003-08-22 21:39:50 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.17 2003-08-29 01:21:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwSlot;
+import gov.nasa.arc.planworks.db.PwToken;
 
 
 /**
@@ -101,6 +102,12 @@ public class PwSlotImpl implements PwSlot {
     return token;
   } // end addToken
 
+  /**
+   * <code>addToken</code>
+   *
+   * @param token - <code>PwTokenImpl</code> - 
+   * @return - <code>PwTokenImpl</code> - 
+   */
   public PwTokenImpl addToken(PwTokenImpl token) {
     if(!tokenIdList.contains(token.getId())) {
       tokenIdList.add(token.getId());
@@ -108,5 +115,20 @@ public class PwSlotImpl implements PwSlot {
     partialPlan.addToken(token.getId(), token);
     return token;
   }
+
+  /**
+   * <code>getBaseToken</code>
+   *
+   * @return - <code>PwToken</code> - 
+   */
+  public PwToken getBaseToken() {
+    PwToken token = null;
+    List tokenList = getTokenList();
+    if (tokenList.size() > 0) {
+      token = (PwToken) tokenList.get( 0);
+    }
+    return token;
+  }
+
 
 } // end class PwSlotImpl

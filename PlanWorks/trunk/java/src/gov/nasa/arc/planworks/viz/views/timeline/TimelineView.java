@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.31 2003-08-28 20:47:46 miatauro Exp $
+// $Id: TimelineView.java,v 1.32 2003-08-29 01:21:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -37,6 +38,7 @@ import com.nwoods.jgo.JGoView;
 
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
@@ -108,10 +110,6 @@ public class TimelineView extends VizView {
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
     jGoView.setVisible( true);
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-    jGoView.setFont( font);
     this.setVisible( true);
 
     SwingUtilities.invokeLater( runInit);
@@ -144,8 +142,14 @@ public class TimelineView extends VizView {
       // System.err.println( "timelineView displayable " + this.isDisplayable());
     }
     Graphics graphics = ((JPanel) this).getGraphics();
+    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
+                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
+                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
     fontMetrics = graphics.getFontMetrics( font);
     graphics.dispose();
+
+    // does not do anything
+    // jGoView.setFont( font);
 
     jGoDocument = jGoView.getDocument();
 
@@ -260,7 +264,6 @@ public class TimelineView extends VizView {
       Iterator timelineIterator = timelineList.iterator();
       while (timelineIterator.hasNext()) {
         x = ViewConstants.TIMELINE_VIEW_X_INIT;
-        slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
         String timelineName = timeline.getName();
         String timelineNodeName = objectName + " : " + timelineName;
@@ -272,7 +275,7 @@ public class TimelineView extends VizView {
         jGoDocument.addObjectAtTail( timelineNode);
         timelineNode.setSize( timelineNodeWidth,
                               (int) timelineNode.getSize().getHeight());
-        x += timelineNode.getSize().getWidth();
+        x += timelineNode.getSize().getWidth(); // - ViewConstants.TIMELINE_VIEW_X_INIT / 4;
 
         createSlotNodes( timeline, timelineNode, x, y, objectCnt);
 
@@ -293,31 +296,33 @@ public class TimelineView extends VizView {
                                                isFreeToken, isDraggable, this);
       freeTokenNodeList.add( freeTokenNode);
       jGoDocument.addObjectAtTail( freeTokenNode);
-      x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;
+      x += freeTokenNode.getSize().getWidth() + 2 * ViewConstants.TIMELINE_VIEW_X_INIT;
     }
     timelineNodeList = tmpTimelineNodeList;
   } // end createTimelineAndSlotNodes
 
   private void createSlotNodes( PwTimeline timeline, TimelineNode timelineNode,
                                 int x, int y, int objectCnt) {
+    computeTimeIntervalLabelSize( timeline);
+
     List slotList = timeline.getSlotList();
     Iterator slotIterator = slotList.iterator();
     PwToken previousToken = null;
     SlotNode slotNode = null;
+    boolean isFirstSlot = true, alwaysReturnEnd = false;
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
-      PwToken token = null;
-      if (slot.getTokenList().size() > 0) {
-        token = (PwToken) slot.getTokenList().get( 0);
-      }
-      String slotNodeLabel = getSlotNodeLabel( token);
+      PwToken token = slot.getBaseToken();
       boolean isLastSlot = (! slotIterator.hasNext());
+      String slotNodeLabel = getSlotNodeLabel( token, slot, isLastSlot);
       slotNode = new SlotNode( slotNodeLabel, slot, new Point( x, y), previousToken,
-                               isLastSlot, objectCnt, this);
+                               isFirstSlot, isLastSlot, objectCnt, this);
       timelineNode.addToSlotNodeList( slotNode);
       // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
       jGoDocument.addObjectAtTail( slotNode);
       previousToken = token;
+      isFirstSlot = false;
+      //      x += expandedWidth; // - ViewConstants.TIMELINE_VIEW_X_INIT / 4;
       x += slotNode.getSize().getWidth();
     }
     int maxHeight = y + ViewConstants.TIMELINE_VIEW_Y_INIT;
@@ -325,6 +330,7 @@ public class TimelineView extends VizView {
       maxViewHeight = maxHeight;
     }
     JGoText endIntervalTextObject = slotNode.getEndTimeIntervalObject();
+    // if last slot is empty, use label object
     if (endIntervalTextObject != null) {
       int maxWidth = (int) endIntervalTextObject.getLocation().getX() +
         (int) endIntervalTextObject.getSize().getWidth() +
@@ -332,8 +338,69 @@ public class TimelineView extends VizView {
       if (maxWidth > maxViewWidth) {
         maxViewWidth = maxWidth;
       }
+    } else {
+      int maxWidth = (int) slotNode.getLocation().getX() +
+        (int) slotNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;
+      if (maxWidth > maxViewWidth) {
+        maxViewWidth = maxWidth;
+      }      
     }
   } // end createSlotNodes
+
+
+  // perform two integrity checks:
+  //   1) two successive empty slots must not occur
+  //   2) earliest start times must be monotonically increasing
+  // while computing time interval max label size
+  private void computeTimeIntervalLabelSize( PwTimeline timeline) {
+    slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
+    List slotList = timeline.getSlotList();
+    Iterator slotIterator = slotList.iterator();
+    PwToken previousToken = null;
+    SlotNode slotNode = null;
+    boolean alwaysReturnEnd = true, foundEmptySlot = false;
+    int earliestStartTime = PwDomain.MINUS_INFINITY_INT;
+    while (slotIterator.hasNext()) {
+      PwSlot slot = (PwSlot) slotIterator.next();
+      PwToken token = slot.getBaseToken();
+      if (token == null) {
+        if (foundEmptySlot) {
+          String message = "Two successive empty slots found in timeline '" +
+            timeline.getName() + "' (id = " + timeline.getId() + ")";
+          JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                         "Timeline View Exception",
+                                         JOptionPane.ERROR_MESSAGE);
+          System.err.println( message);
+          System.exit( 1);
+        } else {
+          foundEmptySlot = true;
+        }
+      } else {
+        foundEmptySlot = false;
+      }
+      boolean isLastSlot = (! slotIterator.hasNext());
+      PwDomain[] intervalArray =
+        SlotNode.getStartEndIntervals( slot, previousToken, isLastSlot, alwaysReturnEnd);
+      PwDomain startTimeIntervalDomain = intervalArray[0];
+      PwDomain endTimeIntervalDomain = intervalArray[1];
+      if ((endTimeIntervalDomain != null) &&
+          (endTimeIntervalDomain.toString().length() > slotLabelMinLength)) {
+        slotLabelMinLength = endTimeIntervalDomain.toString().length();
+      }
+      if (startTimeIntervalDomain.getLowerBoundInt() >= earliestStartTime) {
+        earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
+      } else {
+        String message = "Earliest start times are not monotonically increasing " +
+          "in timeline '" + timeline.getName() + "' (id = " + timeline.getId() + ")";
+        JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                       "Timeline View Exception",
+                                       JOptionPane.ERROR_MESSAGE);
+        System.err.println( message);
+        System.exit( 1);
+      }
+      previousToken = token;
+    }
+  } // end computeTimeIntervalLabelSize
 
 
   // make all timeline nodes the same width
@@ -357,32 +424,34 @@ public class TimelineView extends VizView {
   /**
    * <code>getSlotNodeLabel</code>
    *
-   * pad labels with blanks up to min size -- initally that of "empty" label
-   * then base it on  length of time interval string
-   *
    * @param token - <code>PwToken</code> - 
+   * @param slot - <code>PwSlot</code> - 
    * @return - <code>String</code> - 
    */
-  public String getSlotNodeLabel( PwToken token) {
-    String predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
-    // check for non-empty slot
-    if (token != null) {
-      predicateName = token.getPredicate().getName();
+  public String getSlotNodeLabel( PwToken token, PwSlot slot, boolean isLastSlot) {
+    StringBuffer label = null;
+    if (token == null) { // empty slot
+      label = new StringBuffer( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
+    } else {
+      label = new StringBuffer( token.getPredicate().getName());
+      label.append( " (").append( String.valueOf( slot.getTokenList().size()));
+      label.append( ")");
     }
-    StringBuffer label = new StringBuffer( predicateName);
-    if (predicateName.length() < slotLabelMinLength) {
-      boolean prepend = true;
-      for (int i = 0, n = slotLabelMinLength - predicateName.length(); i < n; i++) {
-        if (prepend) {
-          label.insert( 0, " ");
-        } else {
-          label.append( " ");
+    if (isLastSlot && (token == null)) {
+      // do not expand final empty slot nodes
+    } else {
+      if (label.length() < slotLabelMinLength) {
+        boolean prepend = true;
+        for (int i = 0, n = slotLabelMinLength - label.length(); i < n; i++) {
+          if (prepend) {
+            label.insert( 0, " ");
+          } else {
+            label.append( " ");
+          }
+          prepend = (! prepend);
         }
-        prepend = (! prepend);
       }
     }
-    // System.err.println( "getSlotNodeLabel: " + predicateName + " label '" +
-    //                     label.toString() + "'");
     return label.toString();
   } // end getSlotNodeLabel
 
@@ -408,11 +477,6 @@ public class TimelineView extends VizView {
       int numSlotNodes = slotList.size();
       for (int i = 0, n = slotList.size(); i < n; i++) {
         SlotNode slotNode = (SlotNode) slotList.get( i);
-        List timeLabels = slotNode.getTimeIntervalLabels();
-        //if(timeLabels.size() == 1) {
-        //  System.err.println("Labels: " + timeLabels + " " + 
-        //                     ((JGoText)timeLabels.get(0)).getText());
-        //}
         if (isSlotInContentSpec( slotNode.getSlot())) {
           slotNode.setVisible( true);
 
@@ -423,9 +487,9 @@ public class TimelineView extends VizView {
 //           System.err.println( "setNodesVisible: object " + slotNode);
 //           jGoSelection.showHandles( slotNode);
 
-          ((JGoText) timeLabels.get( 0)).setVisible( true);
-          if (i == n - 1 && timeLabels.size() > 1) {
-            ((JGoText) timeLabels.get( 1)).setVisible( true);
+          slotNode.getStartTimeIntervalObject().setVisible( true);
+          if ((i == n - 1) && (slotNode.getEndTimeIntervalObject() != null)) {
+            slotNode.getEndTimeIntervalObject().setVisible( true);
           }
         } else {
           // System.err.println("Setting slot " + slotNode.getSlot().getId() + " invisible");
@@ -437,12 +501,12 @@ public class TimelineView extends VizView {
             if (isSlotInContentSpec( prevSlotNode.getSlot())) {
               visibleValue = true;
             }
-            ((JGoText) timeLabels.get( 0)).setVisible( visibleValue);
-            if (i == n - 1 && timeLabels.size() > 1) {
-              ((JGoText) timeLabels.get( 1)).setVisible( false);
+            slotNode.getStartTimeIntervalObject().setVisible( visibleValue);
+            if ((i == n - 1) && (slotNode.getEndTimeIntervalObject() != null)) {
+              slotNode.getEndTimeIntervalObject().setVisible( false);
             }
           } else {
-            ((JGoText) timeLabels.get( 0)).setVisible( false);
+            slotNode.getStartTimeIntervalObject().setVisible( false);
           }
         }
       }
