@@ -1136,10 +1136,11 @@ class Token
     //predicateId = PlanGen.keyManager.getRandomPredicateId();
     List paramIds = PlanGen.keyManager.getPredicate(predicateId).getParamIds();
     paramVarIds = new ArrayList(paramIds.size());
-    for(int i = 0; i < paramIds.size(); i++)
-      paramVarIds.add((new Variable(PlanGenState.getRandInRange(0, 10000), 
-                                    PlanGenState.getRandInRange(0, 10000), "PARAMETER_VAR", 
+    for(int i = 0; i < paramIds.size(); i++) {
+      int paramValue = PlanGenState.getRandInRange(0, 10000);
+      paramVarIds.add((new Variable(paramValue, paramValue, "PARAMETER_VAR", 
                                     (String)paramIds.get(i))).getId());
+    }
     if(rangeLo == PlanGenState.horizonLo)
       startVarId = (new Variable(rangeLo, rangeLo, "START_VAR")).getId();
     else
@@ -1160,8 +1161,8 @@ class Token
     List paramIds = PlanGen.keyManager.getPredicate(predicateId).getParamIds();
     paramVarIds = new ArrayList(paramIds.size());
     for(int i = 0; i < paramIds.size(); i++) {
-      paramVarIds.add((new Variable(PlanGenState.getRandInRange(0, 10000),
-                                    PlanGenState.getRandInRange(0, 10000), "PARAMETER_VAR",
+      int paramValue = PlanGenState.getRandInRange(0, 10000);
+      paramVarIds.add((new Variable(paramValue, paramValue, "PARAMETER_VAR",
                                     (String) paramIds.get(i))).getId());
     }
     int startLo = PlanGenState.getRandInRange(PlanGenState.horizonLo, PlanGenState.horizonHi);
@@ -1203,7 +1204,16 @@ class Token
     else
       for(int i = 0; i < tokenRelationIds.size(); i++)
         xmlBuf.append((String)tokenRelationIds.get(i)).append(" ");
-    xmlBuf.append("\" paramVarIds=\"").append(PlanGen.keyManager.defParamVar).append("\" slotId=\"");
+    xmlBuf.append("\" paramVarIds=\"");
+    if(paramVarIds.size() == 0) {
+      xmlBuf.append(PlanGen.keyManager.defParamVar);
+    }
+    else {
+      for(int i = 0; i < paramVarIds.size(); i++) {
+        xmlBuf.append((String)paramVarIds.get(i)).append(" ");
+      }
+    }
+    xmlBuf.append("\" slotId=\"");
     if(slotId == null)
       xmlBuf.append(PlanGen.keyManager.defSlot);
     else

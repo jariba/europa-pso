@@ -1,5 +1,8 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -205,7 +208,7 @@ class PlanGenXMLParser extends DefaultHandler {
       outputFile = new File(partialPlanDir.toString().concat(System.getProperty("file.separator")).concat(partialPlanName).concat(".paramVarTokenMap"));
       outputFile.createNewFile();
       outputWriter = new FileWriter(outputFile);
-      String paramVarTokenMap = pvtm.toDbString();
+      String paramVarTokenMap = pvtm.toDbString(tokens, parameters);
       outputWriter.write(paramVarTokenMap, 0, paramVarTokenMap.length());
       outputWriter.close();
       System.err.println("Outputting the partial plan...");
@@ -421,7 +424,7 @@ class PlanGenXMLParser extends DefaultHandler {
           while(strTok.hasMoreTokens()) {
             Integer pvk = new Integer(strTok.nextToken().substring(1));
             if(pvk.compareTo(new Integer(0)) != -1) {
-              pvtm.relateTokenVariable(id, pvk);
+              pvtm.relateVariableToToken(id, pvk);
             }
           }
         }
@@ -478,7 +481,6 @@ class PlanGenXMLParser extends DefaultHandler {
           if(pid == null) {
             continue;
           }
-          pvtm.relateVariableParam(id, pid);
         }
       }
       currVariable = new DbVariable(id, type, currPartialPlan.getId());
@@ -689,40 +691,43 @@ class DbSlot {
 }
 
 class DbParamVarTokenMap {
-  private ArrayList tokens;
-  private ArrayList variables;
-  private ArrayList parameters;
   private Long ppId;
+  private HashMap tokensToVariables;
   public DbParamVarTokenMap(Long ppId) {
     this.ppId = ppId;
-    tokens = new ArrayList();
-    variables = new ArrayList();
-    parameters = new ArrayList();
+    tokensToVariables = new HashMap();
   }
-  public void relateTokenVariable(Integer tokenId, Integer variableId) {
-    if(tokens.indexOf(tokenId) == -1) {
-      tokens.add(tokenId);
+  public void relateVariableToToken(Integer tokenId, Integer variableId) {
+    if(!tokensToVariables.containsKey(tokenId)) {
+      tokensToVariables.put(tokenId, new ArrayList());
     }
-    variables.ensureCapacity(tokens.size());
-    variables.set(tokens.indexOf(tokenId), variableId);
+    ((ArrayList)tokensToVariables.get(tokenId)).add(variableId);
   }
-  public void relateVariableParam(Integer variableId, Integer paramId) {
-    if(variables.indexOf(variableId) == -1) {
-      variables.add(variableId);
-    }
-    int oldSize = parameters.size();
-    parameters.ensureCapacity(variables.size());
-    for(int i = oldSize; i < variables.size(); i++) {
-      parameters.add(null);
-    }
-    parameters.set(variables.indexOf(variableId), paramId);
-  }
-  public String toDbString() {
+  public String toDbString(List tokens, List parameters) {
     StringBuffer retval = new StringBuffer();
-    for(int i = 0, n = tokens.size(); i < n; i++) {
-      retval.append(variables.get(i).toString()).append("\t").append(tokens.get(i).toString());
-      retval.append("\t").append(parameters.get(i)).append("\t").append(ppId.toString());
-      retval.append("\n");
+    //variable, token, parameter, partialPlan
+    Iterator tokenIterator = tokensToVariables.keySet().iterator();
+    while(tokenIterator.hasNext()) {
+      Integer tokenId = (Integer) tokenIterator.next();
+      Integer predicateId = null;
+      List variableIds = (List) tokensToVariables.get(tokenId);
+      ArrayList predicateIds = new ArrayList();
+      for(int i = 0; i < tokens.size(); i++) {
+        if(((DbToken)tokens.get(i)).getId().equals(tokenId)) {
+          predicateId = ((DbToken)tokens.get(i)).getPredicateId();
+        }
+      }
+      for(int i = 0; i < parameters.size(); i++) {
+        if(((DbParameter)parameters.get(i)).isOnPredicate(predicateId)) {
+          predicateIds.add(((DbParameter)parameters.get(i)).getId());
+        }
+      }
+      for(int i = 0; i < variableIds.size(); i++) {
+        retval.append(((Integer)variableIds.get(i)).toString()).append("\t");
+        retval.append(tokenId.toString()).append("\t");
+        retval.append(((Integer)predicateIds.get(i)).toString()).append("\t");
+        retval.append(ppId.toString()).append("\n");
+      }
     }
     return retval.toString();
   }
@@ -785,6 +790,12 @@ class DbToken {
     this.tid = tid;
     this.ppId = ppId;
     this.objectVar = objectVar;
+  }
+  public Integer getId() {
+    return id;
+  }
+  public Integer getPredicateId() {
+    return predicate;
   }
   public String toDbString() {
     StringBuffer retval = new StringBuffer(id.toString());
@@ -1003,5 +1014,11 @@ class DbParameter {
     retval.append("\t").append(pid.toString()).append("\t").append(ppId.toString());
     retval.append("\t").append(name).append("\n");
     return retval.toString();
+  }
+  public boolean isOnPredicate(Integer predicateId) {
+    return pid.equals(predicateId);
+  }
+  public Integer getId(){
+    return id;
   }
 }
