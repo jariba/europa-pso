@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.67 2003-11-18 22:15:34 miatauro Exp $
+// $Id: MySQLDB.java,v 1.68 2003-11-26 01:24:50 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1154,12 +1154,13 @@ public class MySQLDB {
     int [] data;
     try {
       ResultSet steps = 
-        queryDatabase("SELECT PartialPlanId, NumTokens, NumVariables, NumConstraints FROM PartialPlanStats WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
+        queryDatabase("SELECT PartialPlanId, NumTokens, NumVariables, NumConstraints FROM PartialPlanStats WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY StepNum"));
       while(steps.next()) {
         data = new int[3];
         data[0] = steps.getInt("NumTokens");
         data[1] = steps.getInt("NumVariables");
         data[2] = steps.getInt("NumConstraints");
+        System.err.println("{" + data[0] + ", " + data[1] + ", " + data[2] + "}");
         retval.add(data);
       }
     }

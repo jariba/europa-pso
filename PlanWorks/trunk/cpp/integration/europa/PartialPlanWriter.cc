@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.16 2003-11-18 22:14:43 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.17 2003-11-26 01:22:55 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -20,6 +20,7 @@
 #include "Id.hh"
 #include "Token.hh"
 #include "Constraint.hh"
+#include "ConstraintNetwork.hh"
 #include "Object.hh"
 #include "Timeline.hh"
 #include "Slot.hh"
@@ -131,7 +132,13 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
   }
 
   char *destBuf = new char[PATH_MAX];
-  dest = String(realpath(dest.chars(), destBuf));
+  if(realpath(dest.chars(), destBuf) == NULL) {
+    if(mkdir(dest.chars(), 0777) && errno != EEXIST) {
+      cerr << "Failed to make directory " << dest << endl;
+      FatalError(strerror(errno));
+    }
+  }
+  dest = String(destBuf);
   delete [] destBuf;
 
   if(dest.getChar(dest.getLength()) != '/') {
@@ -204,6 +211,7 @@ void PartialPlanWriter::write(void) {
   }
   partialPlanId = (((long long int)currTime.tv_sec) * 1000) + (currTime.tv_usec / 1000);
 
+  fprintf(stderr, "Writing step %d\n", nstep);
   String stepnum = STEP + String(nstep);
 
   String partialPlanDest = dest + SLASH + stepnum;
@@ -278,16 +286,17 @@ void PartialPlanWriter::write(void) {
                    enumDomainOut);
     globalVarIterator.step();
     }*/
-  List<TokenId> allTokens = tnet->getAllTokens();
+  //List<TokenId> allTokens = tnet->getAllTokens();
   List<TokenId> freeTokenList = tnet->getFreeValueTokens();
-  numTokens = allTokens.getSize();
-  
+  //numTokens = allTokens.getSize();
+
   ListIterator<TokenId> freeTokenIterator = ListIterator<TokenId>(freeTokenList);
   while(!freeTokenIterator.isDone()) {
     TokenId tokenId = freeTokenIterator.item();
     outputToken(tokenId, true, partialPlanId, NULL, 0, NULL, tokenOut, tokenRelationOut, 
                 variableOut, intDomainOut, enumDomainOut, paramVarTokenMapOut);
-    allTokens.deleteIfEqual(tokenId);
+    numTokens++;
+    //allTokens.deleteIfEqual(tokenId);
     freeTokenIterator.step();
   }
   List<ModelClassId> modelClassList = modelId.getAllModelClasses();
@@ -344,10 +353,11 @@ void PartialPlanWriter::write(void) {
         ListIterator<TokenId> tokenIterator = ListIterator<TokenId>(tokenList);
         while(!tokenIterator.isDone()) {
           TokenId tokenId = tokenIterator.item();
-          allTokens.deleteIfEqual(tokenId);
+          //allTokens.deleteIfEqual(tokenId);
           outputToken(tokenId, false, partialPlanId, &objectId, timelineId, &slotId,
                       tokenOut, tokenRelationOut, variableOut, intDomainOut, enumDomainOut,
                       paramVarTokenMapOut);
+          numTokens++;
           tokenIterator.step();
         }
         slotIndex++;
@@ -474,7 +484,8 @@ void PartialPlanWriter::outputVariable(const VarId &variable, const char *type,
                                        FILE *variableOut, FILE *intervalDomainOut,
                                        FILE *enumeratedDomainOut) {
   numVariables++;
-  Domain domain = tnet->getVariableDomain(variable);
+  //Domain domain = tnet->getVariableDomain(variable);
+  Domain domain = variable->getCurrentDomain();
   fprintf(variableOut, "%d\t%lld\t%d\t", variable->getKey(), partialPlanId, tokenId->getKey());
   if(domain.isDynamic() || domain.isEnumerated()) {
     fprintf(variableOut, "EnumeratedDomain\t%d\t%s\n", enumeratedDomainId, type);
@@ -617,6 +628,7 @@ void PartialPlanWriter::outputConstraint(const ConstraintId &constraintId,
 
 const String PartialPlanWriter::getNameForConstraint(const ConstraintId &constraintId) {
   String retval("");
+  //  switch(tnet->get
   if(tnet->isTemporalVariableConstraint(constraintId)) {
     retval = VAR_TEMP_CONSTR;
   }
@@ -865,7 +877,8 @@ String PartialPlanWriter::getVarInfo(const VarId &varId) {
     }
   retval += COMMA + paramName + COMMA;
   
-  Domain derivedDomain = varId->getDerivedDomain();
+  //Domain derivedDomain = varId->getDerivedDomain();
+  Domain derivedDomain = varId->getCurrentDomain();
   Domain specifiedDomain = varId->getSpecifiedDomain();
 
   if(derivedDomain.isDynamic() || derivedDomain.isEnumerated()) {
