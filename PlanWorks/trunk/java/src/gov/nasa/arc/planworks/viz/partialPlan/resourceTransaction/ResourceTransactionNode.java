@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionNode.java,v 1.1 2004-03-07 01:49:29 taylor Exp $
+// $Id: ResourceTransactionNode.java,v 1.2 2004-03-08 19:30:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -28,9 +28,11 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
+import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
@@ -44,57 +46,57 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  */
 public  class ResourceTransactionNode extends JGoRectangle {  
 
-    private PwResourceTransaction transaction;
-    private ResourceView resourceView;
+  private PwResourceTransaction transaction;
+  private ResourceView resourceView;
 
-    /**
-     * <code>ResourceTransactionNode</code> - constructor 
-     *
-     * @param transaction - <code>PwResourceTransaction</code> - 
-     * @param location - <code>Point</code> - 
-     * @param size - <code>Dimension</code> - 
-     */
-    public ResourceTransactionNode( PwResourceTransaction transaction, Point location,
-                              Dimension size, ResourceView resourceView) {
-      super( location, size);
-      this.transaction = transaction;
-      this.resourceView = resourceView;
+  /**
+   * <code>ResourceTransactionNode</code> - constructor 
+   *
+   * @param transaction - <code>PwResourceTransaction</code> - 
+   * @param location - <code>Point</code> - 
+   * @param size - <code>Dimension</code> - 
+   */
+  public ResourceTransactionNode( PwResourceTransaction transaction, Point location,
+                                  Dimension size, ResourceView resourceView) {
+    super( location, size);
+    this.transaction = transaction;
+    this.resourceView = resourceView;
+  }
+
+  /**
+   * <code>getTransaction</code>
+   *
+   * @return - <code>PwResourceTransaction</code> - 
+   */
+  public PwResourceTransaction getTransaction() {
+    return transaction;
+  }
+
+  /**
+   * <code>getToolTipText</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getToolTipText() {
+    StringBuffer tip = new StringBuffer( "<html>");
+    tip.append( transaction.getInterval().toString());
+    tip.append( ": ");
+    double maxDelta = transaction.getQuantityMax();
+    if (maxDelta > 0) {
+      tip.append( "+");
     }
-
-    /**
-     * <code>getTransaction</code>
-     *
-     * @return - <code>PwResourceTransaction</code> - 
-     */
-    public PwResourceTransaction getTransaction() {
-      return transaction;
+    tip.append( new Double( maxDelta).toString());
+    tip.append( ", ");
+    double minDelta = transaction.getQuantityMin();
+    if (minDelta > 0) {
+      tip.append( "+");
     }
-
-    /**
-     * <code>getToolTipText</code>
-     *
-     * @return - <code>String</code> - 
-     */
-    public final String getToolTipText() {
-      StringBuffer tip = new StringBuffer( "<html>");
-      tip.append( transaction.getInterval().toString());
-      tip.append( ": ");
-      double maxDelta = transaction.getQuantityMax();
-      if (maxDelta > 0) {
-        tip.append( "+");
-      }
-      tip.append( new Double( maxDelta).toString());
-      tip.append( ", ");
-      double minDelta = transaction.getQuantityMin();
-      if (minDelta > 0) {
-        tip.append( "+");
-      }
-      tip.append( new Double( minDelta).toString());
-      tip.append( "<br>key = ");
-      tip.append( transaction.getId().toString());
-      tip.append( "</html>");
-      return tip.toString();
-    } // end getToolTipText
+    tip.append( new Double( minDelta).toString());
+    tip.append( "<br>key = ");
+    tip.append( transaction.getId().toString());
+    tip.append( "</html>");
+    return tip.toString();
+  } // end getToolTipText
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview resource node
@@ -119,40 +121,53 @@ public  class ResourceTransactionNode extends JGoRectangle {
      * @param view - <code>JGoView</code> - 
      * @return - <code>boolean</code> - 
      */
-    public final boolean doMouseClick( final int modifiers, final Point docCoords,
-                                       final Point viewCoords, final JGoView view) {
-      JGoObject obj = view.pickDocObject( docCoords, false);
-      //         System.err.println( "doMouseClick obj class " +
-      //                             obj.getTopLevelObject().getClass().getName());
-      ResourceTransactionNode resourceTransactionNode =
-        (ResourceTransactionNode) obj.getTopLevelObject();
-      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-        // do nothing
-      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-        mouseRightPopupMenu( viewCoords);
-        return true;
-      }
-      return false;
-    } // end doMouseClick   
+  public final boolean doMouseClick( final int modifiers, final Point docCoords,
+                                     final Point viewCoords, final JGoView view) {
+    JGoObject obj = view.pickDocObject( docCoords, false);
+    //         System.err.println( "doMouseClick obj class " +
+    //                             obj.getTopLevelObject().getClass().getName());
+    ResourceTransactionNode resourceTransactionNode =
+      (ResourceTransactionNode) obj.getTopLevelObject();
+    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      // do nothing
+    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( viewCoords);
+      return true;
+    }
+    return false;
+  } // end doMouseClick   
 
-    private void mouseRightPopupMenu( final Point viewCoords) {
-      JPopupMenu mouseRightPopup = new JPopupMenu();
+  private void mouseRightPopupMenu( final Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
 
-      JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
-      navigatorItem.addActionListener( new ActionListener() {
-          public final void actionPerformed( final ActionEvent evt) {
-            MDIInternalFrame navigatorFrame = resourceView.openNavigatorViewFrame();
-            Container contentPane = navigatorFrame.getContentPane();
-            PwPartialPlan partialPlan = resourceView.getPartialPlan();
-            contentPane.add( new NavigatorView( ResourceTransactionNode.this, partialPlan,
-                                                resourceView.getViewSet(),
-                                                navigatorFrame));
-          }
-        });
-      mouseRightPopup.add( navigatorItem);
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          MDIInternalFrame navigatorFrame = resourceView.openNavigatorViewFrame();
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = resourceView.getPartialPlan();
+          contentPane.add( new NavigatorView( ResourceTransactionNode.this, partialPlan,
+                                              resourceView.getViewSet(),
+                                              navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
 
-      NodeGenerics.showPopupMenu( mouseRightPopup, resourceView, viewCoords);
-    } // end mouseRightPopupMenu
+    JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
+    activeTokenItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          PwToken activeToken = (PwToken) ResourceTransactionNode.this.getTransaction();
+          ((PartialPlanViewSet) resourceView.getViewSet()).setActiveToken( activeToken);
+          ((PartialPlanViewSet) resourceView.getViewSet()).setSecondaryTokens( null);
+          System.err.println( "ResourceTransactionNode setActiveToken: " +
+                              activeToken.getPredicateName() +
+                              " (key=" + activeToken.getId().toString() + ")");
+        }
+      });
+    mouseRightPopup.add( activeTokenItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, resourceView, viewCoords);
+  } // end mouseRightPopupMenu
 
 
-  } // end class ResourceTransactionNode
+} // end class ResourceTransactionNode

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.31 2004-03-07 01:49:25 taylor Exp $
+# $Id: GETTING_STARTED,v 1.32 2004-03-08 19:30:16 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -118,6 +118,13 @@ Resource Profile View
 Lays out each resource's min/max profiles and min/max limits with the x-axis 
 being time and the y-axes being the resource quantity.
 
+The Mouse-Right selection "Snap to Active Resource" will find and scroll into
+view the appropriate Resource, providing the "active" resource has been set
+by the Resource Transaction View. The Mouse-Right selection "Snap to Active 
+Resource by Transaction" will find and scroll into view the appropriate Resource, 
+providing the "active" token is a Resource Transaction, rather than an Interval
+Token.
+
 Resource Transaction View
 -------------------------
 Lays each resource's transactions stacked vertically by their time intervals
@@ -126,20 +133,26 @@ interval and the min/max change values, along with the transaction's key value.
 The x-axis is time and the y-axes are dynamic, depending on how many stacked 
 transactions are rendered.
 
+The Mouse-Right selection "Snap to Active Resource" will find and scroll into
+view the appropriate Resource, providing the "active" resource has been set
+by the Resource Profile View.  Mouse-Right on the resource transaction nodes 
+offers the selections "Open Navigator View", and "Set Active Token".  The 
+Mouse-Right selection "Snap to Active Resource Transaction" will find and
+scroll into view the appropriate Resource Transaction, providing the "active"
+token is a Resource Transaction, rather than an Interval Token.
+
 Resource Views Mouse Operations
 --------------------------------
 Mouse over the resource names pops up a tool tip with the resource's key value.
-Mouse-Right on the resource names and on the resource transaction nodes offers 
-the selection "Open Navigator View".
+Mouse-Right on the resource names offers the selections "Open Navigator View", 
+and "Set Active Resource".
 
 Mouse-Right on their "extent" backgrounds allows the setting of a vertical 
-time mark.  If both views are active for the same partial plan, the time mark 
-is rendered on the companion view, which is scrolled so the time mark is in 
-the view port.  The Mouse-Right selection "Snap to Active Resource Transaction" 
-(on the ResourceTransactionView) and "Snap to Active Resource" (on the 
-ResourceProfileView) will find and scroll into view the appropriate Resource 
-or Resource Transaction, providing the "active" token is a Resource Transaction, 
-rather than an Interval Token.
+time mark ("Set Time Scale Line").  If both views are active for the same 
+partial plan, the time mark is also rendered on the companion view, which is 
+scrolled so the time mark is in the view port ("Set Time Scale Line/Snap to 
+"Resoruce {Profile | Transactions}").
+
 
 Temporal Extent View
 --------------------

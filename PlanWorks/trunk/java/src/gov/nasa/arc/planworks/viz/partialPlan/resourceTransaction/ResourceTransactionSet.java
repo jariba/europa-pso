@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.8 2004-03-07 01:49:29 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.9 2004-03-08 19:30:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -274,52 +274,6 @@ public class ResourceTransactionSet extends BasicNode {
     return resource.getId().intValue();
   }
 
-
- 
-  /**
-   * <code>doMouseClick</code> - Mouse-Right: Set Active Resource
-   *
-   * @param modifiers - <code>int</code> - 
-   * @param docCoords - <code>Point</code> - 
-   * @param viewCoords - <code>Point</code> - 
-   * @param view - <code>JGoView</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public final boolean doMouseClick( final int modifiers, final Point docCoords,
-                                     final Point viewCoords, final JGoView view) {
-    JGoObject obj = view.pickDocObject( docCoords, false);
-    //         System.err.println( "doMouseClick obj class " +
-    //                             obj.getTopLevelObject().getClass().getName());
-    ResourceTransactionSet resourceTransactionSet =
-      (ResourceTransactionSet) obj.getTopLevelObject();
-    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      // do nothing
-    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-//       mouseRightPopupMenu( viewCoords);
-//       return true;
-    }
-    return false;
-  } // end doMouseClick   
-
-  private void mouseRightPopupMenu( final Point viewCoords) {
-    JPopupMenu mouseRightPopup = new JPopupMenu();
-
-    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
-    navigatorItem.addActionListener( new ActionListener() {
-        public final void actionPerformed( final ActionEvent evt) {
-          MDIInternalFrame navigatorFrame = resourceTransactionView.openNavigatorViewFrame();
-          Container contentPane = navigatorFrame.getContentPane();
-          PwPartialPlan partialPlan = resourceTransactionView.getPartialPlan();
-          //           contentPane.add( new NavigatorView( ResourceTransactionSet.this, partialPlan,
-          //                                               resourceTransactionView.getViewSet(),
-          //                                               navigatorFrame));
-        }
-      });
-    mouseRightPopup.add( navigatorItem);
-
-
-    NodeGenerics.showPopupMenu( mouseRightPopup, resourceTransactionView, viewCoords);
-  } // end mouseRightPopupMenu
 
 
 } // end class ResourceTransactionSet

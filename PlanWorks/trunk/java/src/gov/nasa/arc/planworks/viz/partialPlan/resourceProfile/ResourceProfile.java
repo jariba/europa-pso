@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.8 2004-03-07 01:49:28 taylor Exp $
+// $Id: ResourceProfile.java,v 1.9 2004-03-08 19:30:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -379,33 +379,6 @@ public class ResourceProfile extends BasicNode {
     return (extentYBottom - (int) ((level - levelMin) * levelScaleScaling));
   }
 
-  /**
-   * <code>getToolTipText</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public final String getToolTipText() {
-    StringBuffer tip = new StringBuffer( "<html>key = ");
-    tip.append( resource.getId().toString());
-    tip.append( "</html>");
-    return tip.toString();
-  } // end getToolTipText
-
-
-  /**
-   * <code>getToolTipText</code> - when over 1/8 scale overview resource node
-   *
-   * @param isOverview - <code>boolean</code> - 
-   * @return - <code>String</code> - 
-   */
-  public final String getToolTipText( final boolean isOverview) {
-    StringBuffer tip = new StringBuffer( "<html> ");
-    tip.append( resource.getName());
-    tip.append( "<br>key=");
-    tip.append( resource.getId().toString());
-    tip.append( "</html>");
-    return tip.toString();
-  } // end getToolTipText
 
 
   /**
@@ -438,7 +411,12 @@ public class ResourceProfile extends BasicNode {
      * @return - <code>String</code> - 
      */
     public final String getToolTipText( final boolean isOverview) {
-      return null;
+    StringBuffer tip = new StringBuffer( "<html> ");
+    tip.append( resource.getName());
+    tip.append( "<br>key=");
+    tip.append( resource.getId().toString());
+    tip.append( "</html>");
+    return tip.toString();
     } // end getToolTipText
 
     /**

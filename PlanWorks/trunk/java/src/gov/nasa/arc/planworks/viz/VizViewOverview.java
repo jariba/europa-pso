@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.9 2004-02-26 19:01:59 taylor Exp $
+// $Id: VizViewOverview.java,v 1.10 2004-03-08 19:30:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -35,7 +35,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.VariableNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.ConstraintNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfile;
-import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionSet;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.ThickDurationBridge;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
@@ -187,8 +187,8 @@ public class VizViewOverview extends Overview {
 
       } else if (obj instanceof ResourceProfile.ProfileLine) {
         tip = ((ResourceProfile.ProfileLine) obj).getToolTipText( isOverview);
-      } else if (obj instanceof ResourceTransactionSet.TransactionObject) {
-        tip = ((ResourceTransactionSet.TransactionObject) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ResourceTransactionNode) {
+        tip = ((ResourceTransactionNode) obj).getToolTipText( isOverview);
       } else {
         tip = obj.getToolTipText();
       }
