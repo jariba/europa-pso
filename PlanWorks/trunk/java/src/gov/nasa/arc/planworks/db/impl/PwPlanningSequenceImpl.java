@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.34 2003-10-03 21:24:00 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.35 2003-10-04 01:15:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -54,13 +54,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
   private PwModel model;
 
   private int stepCount;
-  //private List partialPlans; // List of of PwPartialPlan
-  //private List transactions; // List of List of PwTransaction
-  private Map transactions;
+  private Map transactions; // stepNumber Map of List of PwTransaction
   private String name;
   //private List partialPlanNames; // List of String
   private List contentSpec;
-  private Map partialPlans;
+  private Map partialPlans; // partialPlanName Map of PwPartialPlan
 
   /**
    * <code>PwPlanningSequenceImpl</code> - constructor - for CreateProject
@@ -253,6 +251,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
                                            transactions.size());
     }
   } // end listTransactions
+
 
   /**
    * <code>listPartialPlans</code>

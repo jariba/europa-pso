@@ -38,6 +38,8 @@ public interface ViewConstants {
 
   public static final int INTERNAL_FRAME_X_DELTA = 100;
 
+  public static final int INTERNAL_FRAME_X_DELTA_DIV_4 = 25;
+
   public static final int INTERNAL_FRAME_Y_DELTA = 75;
 
   // views.timeline.TimelineView

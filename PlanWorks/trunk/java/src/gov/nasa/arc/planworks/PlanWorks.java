@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.61 2003-10-01 23:53:55 taylor Exp $
+// $Id: PlanWorks.java,v 1.62 2003-10-04 01:15:56 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -662,11 +662,11 @@ public class PlanWorks extends MDIDesktopFrame {
         public void actionPerformed(ActionEvent e) {
           String dirChoice = sequenceDirChooser.getCurrentDirectory().getAbsolutePath();
           File [] seqDirs = sequenceDirChooser.getSelectedFiles();
-          //System.err.println( "sequence parent directory" + dirChoice);
-          //System.err.println( "sequenceDirectories");
-          //for (int i = 0, n = seqDirs.length; i < n; i++) {
-          //  System.err.println( "  " + seqDirs[i].getName());
-          //}
+//           System.err.println( "PlanWorks sequence parent directory" + dirChoice);
+//           System.err.println( "sequenceDirectories");
+//           for (int i = 0, n = seqDirs.length; i < n; i++) {
+//             System.err.println( "  " + seqDirs[i].getName());
+//           }
           if ((dirChoice != null) && (dirChoice.length() > 0) &&
               (new File( dirChoice)).isDirectory() &&
               (seqDirs.length != 0)) {

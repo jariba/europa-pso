@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.1 2003-10-01 23:53:54 taylor Exp $
+// $Id: CreateViewThread.java,v 1.2 2003-10-04 01:15:56 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -95,9 +95,11 @@ public class CreateViewThread extends Thread {
         }
         viewIndex++;
       }
-      viewFrame.setLocation( ViewConstants.INTERNAL_FRAME_X_DELTA * viewIndex,
+      int delta = viewManager.getContentSpecWindowCnt() *
+        ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4;
+      viewFrame.setLocation( (ViewConstants.INTERNAL_FRAME_X_DELTA * viewIndex) + delta,
                              contentSpecFrameHeight +
-                             ViewConstants.INTERNAL_FRAME_Y_DELTA * viewIndex);
+                             ViewConstants.INTERNAL_FRAME_Y_DELTA * viewIndex + delta);
       viewFrame.setVisible( true);
     }
     // make associated menus appear & bring window to the front
