@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.60 2003-11-25 17:25:56 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.61 2003-11-26 01:24:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,12 +27,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwTransaction;
+import gov.nasa.arc.planworks.db.util.PwSequenceFilenameFilter;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.FileCopy;
@@ -79,7 +83,12 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     this.id = id;
     this.model = model;
     stepCount = 0;
-
+    
+    String error = null;;
+    if((error = validateSequenceDirectory(url)) != null) {
+      throw new ResourceNotFoundException("url '" + url + "' is not a valid sequence directory: "
+                                          + error);
+    }
     int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
       throw new ResourceNotFoundException( "sequence url '" + url +
@@ -112,9 +121,9 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     throws ResourceNotFoundException {
     this.url = url;
     this.model = model;
-
+    
     partialPlans = new HashMap();
-
+    
     int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
       throw new ResourceNotFoundException( "sequence url '" + url +
@@ -127,7 +136,11 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     if(!sequenceDir.isDirectory()) {
       throw new ResourceNotFoundException("sequence url '" + url + "' is not a directory.");
     }
-
+    String error = null;
+    if((error = validateSequenceDirectory(url)) != null) {
+      throw new ResourceNotFoundException("url '" + url + "' is not a valid sequence directory: "
+                                          + error);
+    }
     this.id = MySQLDB.addSequence(url, project.getId());
     loadTransactionFile();
     loadStatsFile();
@@ -551,6 +564,55 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       Integer s1 = new Integer( ((String) o1).substring( 4));
       Integer s2 = new Integer( ((String) o2).substring( 4));
       return s1.equals(s2);
+    }
+  }
+  private String validateSequenceDirectory(String url) {
+    File sequenceDir = new File(url);
+    if(!sequenceDir.isDirectory()) {
+      return "Not a directory.";
+    }
+    File [] files = sequenceDir.listFiles(new PwSequenceFilenameFilter());
+    if(files.length < DbConstants.NUMBER_OF_SEQ_FILES) {
+      return "Sequence file(s) missing.";
+    }
+    if(files.length == DbConstants.NUMBER_OF_SEQ_FILES) {
+      return "No step directories.";
+    }
+    Arrays.sort(files, new StepDirectoryComparator());
+    for(int i = 0; i < files.length; i++) {
+      System.err.println(files[i].getName());
+      if(files[i].isDirectory()) {
+        if(!files[i].getName().equals("step" + i)) {
+          return "Skipped step " + i;
+        }
+      }
+    }
+    return null;
+  }
+  private static final Pattern stepPattern = Pattern.compile("step(\\d+)");
+  
+  class StepDirectoryComparator implements Comparator {
+    public StepDirectoryComparator() {
+    }
+    public int compare(Object o1, Object o2) {
+      String n1 = ((File) o1).getName();
+      String n2 = ((File) o2).getName();
+      Matcher m1 = stepPattern.matcher(n1);
+      Matcher m2 = stepPattern.matcher(n2);
+      if(!m1.matches()) {
+        if(!m2.matches()) {
+          return n1.compareTo(n2);
+        }
+        return 1;
+      }
+      else if(!m2.matches()) {
+        return -1;
+      }
+      return Integer.parseInt(n1.substring(m1.start(1))) - 
+        Integer.parseInt(n2.substring(m2.start(1)));
+    }
+    public boolean equals(Object other) {
+      return false;
     }
   }
 }

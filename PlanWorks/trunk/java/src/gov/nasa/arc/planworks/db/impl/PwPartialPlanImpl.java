@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.58 2003-11-25 01:40:38 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.59 2003-11-26 01:24:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -131,7 +131,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     cleanConstraints();
-    cleanTransactions();
+    //cleanTransactions();
     //checkPlan();
   } // end createPartialPlan
 

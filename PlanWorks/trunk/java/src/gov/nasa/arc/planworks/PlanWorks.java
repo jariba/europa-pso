@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.72 2003-11-06 00:02:17 taylor Exp $
+// $Id: PlanWorks.java,v 1.73 2003-11-26 01:23:42 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -52,6 +52,7 @@ import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.SplashWindow;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
+import gov.nasa.arc.planworks.util.PlannerCommandLineDialog;
 import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
@@ -78,6 +79,7 @@ public class PlanWorks extends MDIDesktopFrame {
   protected static final String CREATE_MENU_ITEM = "Create ...";
   protected static final String OPEN_MENU_ITEM = "Open ...";
   protected static final String DELETE_MENU_ITEM = "Delete ...";
+  protected static final String NEWSEQ_MENU_ITEM = "New Sequence ...";
   protected static final String ADDSEQ_MENU_ITEM = "Add Sequence ...";
   protected static final String DELSEQ_MENU_ITEM = "Delete Sequence ...";
   protected static final String CREATE = "create";
@@ -189,6 +191,7 @@ public class PlanWorks extends MDIDesktopFrame {
   public Map sequenceStepsViewMap;
 
   protected final DirectoryChooser sequenceDirChooser;
+  protected final PlannerCommandLineDialog executeDialog;
   protected static String sequenceParentDirectory; // pathname
   protected static File [] sequenceDirectories; // directory name
 
@@ -282,6 +285,8 @@ public class PlanWorks extends MDIDesktopFrame {
     toolTipManager.setInitialDelay( 100); // default 750
     // toolTipManager.setDismissDelay( 8000); // default 4000
     toolTipManager.setReshowDelay( 100); // default 500
+    executeDialog = new PlannerCommandLineDialog(this);
+    executeDialog.hide();
   } // end constructor 
 
 
@@ -405,6 +410,7 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenuItem createProjectItem = new JMenuItem( CREATE_MENU_ITEM);
     JMenuItem openProjectItem = new JMenuItem( OPEN_MENU_ITEM);
     JMenuItem deleteProjectItem = new JMenuItem( DELETE_MENU_ITEM);
+    JMenuItem newSequenceItem = new JMenuItem( NEWSEQ_MENU_ITEM);
     JMenuItem addSequenceItem = new JMenuItem( ADDSEQ_MENU_ITEM);
     JMenuItem deleteSequenceItem = new JMenuItem(DELSEQ_MENU_ITEM);
     createProjectItem.addActionListener( new ActionListener() {
@@ -430,6 +436,11 @@ public class PlanWorks extends MDIDesktopFrame {
         }});
     projectMenu.add( deleteProjectItem);
     projectMenu.addSeparator();
+    newSequenceItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          PlanWorks.planWorks.newSequenceThread();
+        }});
+    projectMenu.add(newSequenceItem);
     addSequenceItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent e) {
           PlanWorks.planWorks.addSequenceThread();
@@ -454,6 +465,10 @@ public class PlanWorks extends MDIDesktopFrame {
 
   private void deleteProjectThread() {
     new DeleteProjectThread().start();
+  }
+
+  private void newSequenceThread() {
+    new NewSequenceThread().start();
   }
 
   private void addSequenceThread() {
@@ -663,7 +678,6 @@ public class PlanWorks extends MDIDesktopFrame {
     }
     
     planWorks = new PlanWorks( buildConstantMenus());
-
   } // end main
 
   private class SeqNameComparator implements Comparator {
