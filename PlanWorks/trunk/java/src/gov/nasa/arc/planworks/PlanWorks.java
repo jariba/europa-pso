@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.117 2004-09-27 19:18:58 taylor Exp $
+// $Id: PlanWorks.java,v 1.118 2005-01-12 00:29:13 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -261,15 +261,6 @@ public class PlanWorks extends MDIDesktopFrame {
         public final void windowClosing( final WindowEvent e) {
           System.exit( 0);
         }});
-    if (isMaxScreen) {
-      Rectangle maxRectangle =
-        GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-      this.setSize( (int) maxRectangle.getWidth(), (int) maxRectangle.getHeight());
-      this.setLocation( 0, 0);
-    } else {
-      this.setSize( DESKTOP_FRAME_WIDTH, DESKTOP_FRAME_HEIGHT);
-      this.setLocation( FRAME_X_LOCATION, FRAME_Y_LOCATION);
-    }
     Container contentPane = getContentPane();
     for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
       // System.err.println( "i " + i + " " +
@@ -324,6 +315,16 @@ public class PlanWorks extends MDIDesktopFrame {
     newSequenceThreadListener = null;
     addSequenceThreadListener = null;
     deleteSequenceThreadListener = null;
+    // do this last, rather than in the middle -- so that location, size are actually set
+    if (isMaxScreen) {
+      Rectangle maxRectangle =
+        GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+      this.setSize( (int) maxRectangle.getWidth(), (int) maxRectangle.getHeight());
+      this.setLocation( 0, 0);
+    } else {
+      this.setSize( DESKTOP_FRAME_WIDTH, DESKTOP_FRAME_HEIGHT);
+      this.setLocation( FRAME_X_LOCATION, FRAME_Y_LOCATION);
+    }
   } // end planWorksCommon
 
   private PlanWorks getPlanWorksInternal() {
