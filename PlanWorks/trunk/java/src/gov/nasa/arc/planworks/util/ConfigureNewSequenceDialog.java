@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.1 2004-09-03 00:35:37 taylor Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.2 2004-09-10 01:33:58 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -201,9 +201,8 @@ public class ConfigureNewSequenceDialog extends JDialog {
       fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
       int retval = fileChooser.showOpenDialog( PlanWorks.getPlanWorks());
       if (retval == JFileChooser.APPROVE_OPTION) {
-        String currentSelectedDir = fileChooser.getSelectedFile().getAbsolutePath();
-        modelPath = currentSelectedDir;
-        modelPathField.setText( modelPath);
+        String currentSelectedFile = fileChooser.getSelectedFile().getAbsolutePath();
+        modelPathField.setText( currentSelectedFile);
       }
     }
   } // end class ModelPathButtonListener
@@ -217,8 +216,7 @@ public class ConfigureNewSequenceDialog extends JDialog {
       int returnVal = dirChooser.showDialog( PlanWorks.getPlanWorks(), "");
       if (returnVal == JFileChooser.APPROVE_OPTION) {
         String currentSelectedDir = dirChooser.getCurrentDirectory().getAbsolutePath();
-        modelOutputDestDir = currentSelectedDir;
-        modelOutputDestDirField.setText( modelOutputDestDir);
+        modelOutputDestDirField.setText( currentSelectedDir);
       }
     }
   } // end class ModelOutputDestDirButtonListener
@@ -233,9 +231,8 @@ public class ConfigureNewSequenceDialog extends JDialog {
       fileChooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
       int retval = fileChooser.showOpenDialog( PlanWorks.getPlanWorks());
       if (retval == JFileChooser.APPROVE_OPTION) {
-        String currentSelectedDir = fileChooser.getSelectedFile().getAbsolutePath();
-        modelInitStatePath = currentSelectedDir;
-        modelInitStatePathField.setText( modelInitStatePath);
+        String currentSelectedFile = fileChooser.getSelectedFile().getAbsolutePath();
+        modelInitStatePathField.setText( currentSelectedFile);
       }
     }
   } // end class ModelInitStatePathButtonListener
@@ -260,12 +257,7 @@ public class ConfigureNewSequenceDialog extends JDialog {
             optionPane.setValue( JOptionPane.UNINITIALIZED_VALUE);
 
             if (value.equals( btnString1)) {
-              modelName = modelNameField.getText();
-              modelPath = modelPathField.getText();
-              modelOutputDestDir = modelOutputDestDirField.getText();
-              modelInitStatePath = modelInitStatePathField.getText();
-              if ((! doesPathExist( modelPath)) ||  (! doesPathExist( modelOutputDestDir)) ||
-                  (! doesPathExist( modelInitStatePath))) {
+              if (handleTextFieldValues()) {
                 return;
               }
               // we're done; dismiss the dialog
@@ -281,6 +273,40 @@ public class ConfigureNewSequenceDialog extends JDialog {
         }
       });
   } // end addInputListener
+
+  private boolean handleTextFieldValues() {
+    boolean haveSeenError = false;
+    modelName = modelNameField.getText().trim();
+
+    String modelPathTemp = modelPathField.getText().trim();
+    if (! modelPath.equals( modelPathTemp)) {
+      if (! doesPathExist( modelPathTemp)) {
+        haveSeenError = true;
+      } else {
+        modelPath = modelPathTemp;
+      }
+    }
+
+    String modelInitStatePathTemp = modelInitStatePathField.getText().trim();
+    if (! modelInitStatePath.equals( modelInitStatePathTemp)) {
+      if (! doesPathExist( modelInitStatePathTemp)) {
+        haveSeenError = true;
+      } else {
+        modelInitStatePath = modelInitStatePathTemp;
+      }
+    }
+
+    String modelOutputDestDirTemp = modelOutputDestDirField.getText().trim();
+    if (! modelOutputDestDir.equals( modelOutputDestDirTemp)) {
+      if (! doesPathExist( modelOutputDestDirTemp)) {
+        haveSeenError = true;
+      } else {
+        modelOutputDestDir = modelOutputDestDirTemp;
+      }
+    }
+
+    return haveSeenError;
+  } // end handleTextFieldValues
 
   private boolean doesPathExist( String path) {
     boolean doesExist = true;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ProjectNameDialog.java,v 1.6 2004-09-03 00:35:39 taylor Exp $
+// $Id: ProjectNameDialog.java,v 1.7 2004-09-10 01:33:58 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -142,8 +142,7 @@ public class ProjectNameDialog extends JDialog {
           int returnVal = dirChooser.showDialog( PlanWorks.getPlanWorks(), "");
           if (returnVal == JFileChooser.APPROVE_OPTION) {
             String currentSelectedDir = dirChooser.getCurrentDirectory().getAbsolutePath();
-            workingDir = currentSelectedDir;
-            workingDirField.setText( workingDir);
+            workingDirField.setText( currentSelectedDir);
           }
         }
       });
@@ -178,6 +177,7 @@ public class ProjectNameDialog extends JDialog {
             optionPane.setValue( JOptionPane.UNINITIALIZED_VALUE);
 
             if (value.equals( btnString1)) {
+              boolean haveSeenError = false;
               projectName = projectNameField.getText();
               if (projectName.equals( ConfigureAndPlugins.DEFAULT_PROJECT_NAME)) {
                 JOptionPane.showMessageDialog
@@ -185,13 +185,21 @@ public class ProjectNameDialog extends JDialog {
                    "Choose another project name, other than '" +
                    ConfigureAndPlugins.DEFAULT_PROJECT_NAME + "'",
                    "Invalid Name", JOptionPane.ERROR_MESSAGE);
-                return;
+                haveSeenError = true;
               }
-              if (! (new File( workingDir)).exists()) {
-                JOptionPane.showMessageDialog
-                  ( PlanWorks.getPlanWorks(),
-                   "Path does not exist: '" + workingDir + "'",
-                   "Invalid Path", JOptionPane.ERROR_MESSAGE);
+              String workingDirTemp = workingDirField.getText().trim();
+              if (! workingDir.equals( workingDirTemp)) {
+                if (! (new File( workingDirTemp)).exists()) {
+                  JOptionPane.showMessageDialog
+                    ( PlanWorks.getPlanWorks(),
+                      "Path does not exist: '" + workingDirTemp + "'",
+                      "Invalid Path", JOptionPane.ERROR_MESSAGE);
+                  haveSeenError = true;
+                } else {
+                  workingDir = workingDirTemp;
+                }
+              }
+              if (haveSeenError) {
                 return;
               }
               // we're done; dismiss the dialog
