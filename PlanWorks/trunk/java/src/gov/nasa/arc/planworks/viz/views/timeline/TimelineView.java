@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.24 2003-07-24 20:57:11 taylor Exp $
+// $Id: TimelineView.java,v 1.25 2003-07-24 22:40:31 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -51,7 +51,6 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.util.ViewRenderingException;
 
-
 /**
  * <code>TimelineView</code> - render a partial plan's timelines and slots
  *                JPanel->VizView->TimelineView
@@ -89,6 +88,7 @@ public class TimelineView extends VizView {
    */
   public TimelineView( PwPartialPlan partialPlan, long startTimeMSecs, ViewSet viewSet) {
     super( partialPlan);
+
     this.partialPlan = partialPlan;
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
