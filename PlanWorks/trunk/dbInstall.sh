@@ -150,6 +150,8 @@ c_m=""
 echo "Installing all prepared tables"
 eval "$1/mysqld --bootstrap --skip-grant-tables --basedir=$2 --datadir=$3 --skip-innodb --skip-bdb " << END_OF_DATA
 use mysql;
+$c_m
+
 $c_d
 $i_d
 
