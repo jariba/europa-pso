@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.19 2004-02-13 00:25:18 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.20 2004-02-13 21:22:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -22,6 +22,7 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.UniqueSet;
 
 /**
@@ -124,10 +125,10 @@ public class PwVariableImpl implements PwVariable {
     return retval;
   }
 
-  public Object getParent() {
-    Object retval = partialPlan.getToken(parentId);
+  public PwVariableContainer getParent() {
+    PwVariableContainer retval = (PwVariableContainer) partialPlan.getToken(parentId);
     if(retval == null) {
-      retval = partialPlan.getObject(parentId);
+      retval = (PwVariableContainer) partialPlan.getObject(parentId);
     }
     return retval;
   }
