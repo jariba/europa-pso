@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.49 2003-12-19 18:55:38 miatauro Exp $
+// $Id: ViewSet.java,v 1.50 2003-12-20 00:47:03 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import javax.swing.JButton;
 
 import gov.nasa.arc.planworks.PlanWorks;
@@ -27,6 +28,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIWindowBar;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.util.Utilities;
@@ -37,6 +39,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
+import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
 
 /**
@@ -51,7 +54,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   protected HashMap views;
   //private List views;
   //private PwPartialPlan partialPlan;
-  private ViewableObject viewable;
+  protected ViewableObject viewable;
   private ViewSetRemover remover;
   //private String planName;
   private Object [] constructorArgs;
@@ -166,8 +169,20 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       if (contentSpec != null) {
         viewable.setContentSpec(contentSpec.getCurrentSpec());
       }
+      if(this instanceof SequenceViewSet) {
+        List partialPlans = ((PwPlanningSequence) viewable).getPartialPlansList();
+        ListIterator planIterator = partialPlans.listIterator();
+        while(planIterator.hasNext()) {
+          ViewableObject partialPlan = (ViewableObject) planIterator.next();
+          ViewSet set = getViewManager().getViewSet(partialPlan);
+          if(set != null) {
+            set.close();
+            getViewManager().removeViewSet(partialPlan);
+          }
+        }
+      }
     }
-  }
+  }  
   /**
    * Notifies all open views of a change in the ContentSpec, and therefore a need to redraw.
    */

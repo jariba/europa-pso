@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.4 2003-12-12 01:23:05 taylor Exp $
+// $Id: VizViewOverview.java,v 1.5 2003-12-20 00:45:50 miatauro Exp $
 //
 // PlanWorks
 //
@@ -52,6 +52,7 @@ public class VizViewOverview extends Overview {
     super();
     this.overviewTitle = overviewTitle;
     this.vizView = vizView;
+    vizView.setOverview(this);
   }
 
   /**

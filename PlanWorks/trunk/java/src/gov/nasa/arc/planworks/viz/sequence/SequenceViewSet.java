@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.10 2003-11-18 23:54:15 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.11 2003-12-20 00:46:20 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,8 @@ package gov.nasa.arc.planworks.viz.sequence;
 
 import java.awt.Container;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -69,7 +71,20 @@ public class SequenceViewSet extends ViewSet {
     this.contentSpecWindow.setLocation( delta, delta);
     this.contentSpecWindow.setVisible(true);
   }
-
+  public void close() {
+    super.close();
+    List partialPlans = ((PwPlanningSequence) viewable).getPartialPlansList();
+    ListIterator planIterator = partialPlans.listIterator();
+    while(planIterator.hasNext()) {
+      ViewableObject partialPlan = (ViewableObject) planIterator.next();
+      ViewSet set = getViewManager().getViewSet(partialPlan);
+      System.err.println(partialPlan);
+      if(set != null) {
+        set.close();
+        getViewManager().removeViewSet(partialPlan);
+      }
+    }
+  }
 
 } // end class SequenceViewSet
 
