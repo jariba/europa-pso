@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.6 2003-06-13 18:51:26 taylor Exp $
+// $Id: PwProject.java,v 1.7 2003-06-17 22:19:02 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -29,12 +29,11 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 public abstract class PwProject {
 
 
-
-
   /**
    * <code>initProjects</code> - register loaded XML files data base (eXist)
    *                             restore loaded projects configuration info
-   *                             and inflate projects
+   *                             and inflate projects, reading XML formatted
+   *                             saved project information.
    *
    * @exception ResourceNotFoundException if an error occurs
    */
@@ -43,7 +42,9 @@ public abstract class PwProject {
   }
 
   /**
-   * <code>createProject</code>
+   * <code>createProject</code> - using user supplied url, load XML formatted
+   *                              partial plans into XML:DB data base, show user
+   *                              cascading pulldown menuf for their selection
    *
    * @param url - <code>String</code> - 
    * @return - <code>PwProject</code> - 
