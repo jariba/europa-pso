@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.4 2003-06-11 00:32:11 miatauro Exp $
+// $Id: ViewSet.java,v 1.5 2003-06-11 17:20:09 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -37,7 +37,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
   }
 
   public MDIInternalFrame openTimelineView() {
-    if(views.containsKey("timelineView")) {
+    if(viewExists("timelineView")) {
       return (MDIInternalFrame) views.get("timelineView");
     }
     MDIInternalFrame timelineViewFrame = desktopFrame.createFrame(planName,true, true, true, true);
@@ -83,5 +83,15 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
   }
   public void printSpec() {
     contentSpec.printSpec();
+  }
+  public void close() {
+    Collection viewSet = views.values();
+    Iterator viewIterator = viewSet.iterator();
+    while(viewIterator.hasNext()) {
+      ((MDIInternalFrame)viewIterator.next()).setClosed(true);
+    }
+  }
+  public boolean viewExists(String viewName) {
+    return views.containsKey(viewName);
   }
 }
