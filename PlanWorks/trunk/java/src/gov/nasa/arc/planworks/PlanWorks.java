@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.64 2003-10-07 20:18:45 miatauro Exp $
+// $Id: PlanWorks.java,v 1.65 2003-10-08 19:10:28 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -90,8 +90,10 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String TEMPORAL_NETWORK_VIEW   = "Temporal Network View";
   public static final String TIMELINE_VIEW           = "Timeline View";
   public static final String TOKEN_NETWORK_VIEW      = "Token Network View";
+  public static final List PARTIAL_PLAN_VIEW_LIST;
 
-  public static final String SEQUENCE_STEPS_VIEW    = "Sequence Steps View";
+  public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
+  public static final List SEQUENCE_VIEW_LIST;
 
   static {
     GraphicsDevice [] devices = 
@@ -124,6 +126,14 @@ public class PlanWorks extends MDIDesktopFrame {
     viewClassNameMap.put
       ( SEQUENCE_STEPS_VIEW,
         "gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView");
+
+    PARTIAL_PLAN_VIEW_LIST = new ArrayList();
+    PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
+    SEQUENCE_VIEW_LIST = new ArrayList();
+    SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);
   }
 
   /**

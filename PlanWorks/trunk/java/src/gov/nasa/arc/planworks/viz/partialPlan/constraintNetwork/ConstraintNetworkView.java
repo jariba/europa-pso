@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.4 2003-09-30 19:18:56 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.5 2003-10-08 19:10:28 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -53,6 +53,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.AskTokenByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -1279,6 +1280,9 @@ public class ConstraintNetworkView extends PartialPlanView {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem tokenByKeyItem = new JMenuItem( "Find Token by Key");
+    createTokenByKeyItem( tokenByKeyItem);
+    mouseRightPopup.add( tokenByKeyItem);
     JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
@@ -1291,45 +1295,66 @@ public class ConstraintNetworkView extends PartialPlanView {
         public void actionPerformed( ActionEvent evt) {
           PwToken activeToken =
             ((PartialPlanViewSet) ConstraintNetworkView.this.getViewSet()).getActiveToken();
-          boolean isTokenFound = false;
           if (activeToken != null) {
-            Iterator tokenNodeListItr = tokenNodeList.iterator();
-            while (tokenNodeListItr.hasNext()) {
-              TokenNode tokenNode = (TokenNode) tokenNodeListItr.next();
-              if ((tokenNode.getToken() != null) &&
-                  (tokenNode.getToken().getId().equals( activeToken.getId()))) {
-                System.err.println( "ConstraintNetworkView snapToActiveToken: " +
-                                    activeToken.getPredicate().getName());
-                NodeGenerics.focusViewOnNode( tokenNode, jGoView);
-                isTokenFound = true;
-                break;
-              }
-            }
-            if (isTokenFound) {
-              NodeGenerics.selectSecondaryNodes
-                ( NodeGenerics.mapTokensToTokenNodes
-                  (((PartialPlanViewSet) ConstraintNetworkView.this.getViewSet()).
-                   getSecondaryTokens(), tokenNodeList),
-                  jGoView);
-            } else {
-              String message = "active token '" + activeToken.getPredicate().getName() +
-                "' not found in ConstraintNetworkView";
-              JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
-                                             "Active Token Not Found",
-                                             JOptionPane.ERROR_MESSAGE);
-              System.err.println( message);
-              System.exit( 1);
-            }
+            boolean isByKey = false;
+            findAndSelectToken( activeToken, isByKey);
           }
         }
       });
   } // end createActiveTokenItem
 
+  private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
+    tokenByKeyItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          AskTokenByKey tokenByKeyDialog = new AskTokenByKey( partialPlan);
+          Integer tokenKey = tokenByKeyDialog.getTokenKey();
+          if (tokenKey != null) {
+            // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());
+            PwToken tokenToFind = partialPlan.getToken( tokenKey);
+            boolean isByKey = true;
+            findAndSelectToken( tokenToFind, isByKey);
+          }
+        }
+      });
+  } // end createTokenByKeyItem
+
+  private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
+    boolean isTokenFound = false;
+    Iterator tokenNodeListItr = tokenNodeList.iterator();
+    while (tokenNodeListItr.hasNext()) {
+      TokenNode tokenNode = (TokenNode) tokenNodeListItr.next();
+      if ((tokenNode.getToken() != null) &&
+          (tokenNode.getToken().getId().equals( tokenToFind.getId()))) {
+        System.err.println( "ConstraintNetworkView found token: " +
+                            tokenToFind.getPredicate().getName() +
+                            " (key=" + tokenToFind.getId().toString() + ")");
+        NodeGenerics.focusViewOnNode( tokenNode, jGoView);
+        isTokenFound = true;
+        break;
+      }
+    }
+    if (isTokenFound && (! isByKey)) {
+      NodeGenerics.selectSecondaryNodes
+        ( NodeGenerics.mapTokensToTokenNodes
+          (((PartialPlanViewSet) ConstraintNetworkView.this.getViewSet()).
+           getSecondaryTokens(), tokenNodeList),
+          jGoView);
+    }
+    if (! isTokenFound) {
+      String message = "Token " + tokenToFind.getPredicate().getName() +
+        " (key=" + tokenToFind.getId().toString() + ") not found.";
+      JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                     "Token Not Found in ConstraintNetworkView",
+                                     JOptionPane.ERROR_MESSAGE);
+      System.err.println( message);
+      System.exit( 1);
+    }
+  } // end findAndSelectToken
+
+
+
 
 } // end class ConstraintNetworkView
-
-
-
 
 
 

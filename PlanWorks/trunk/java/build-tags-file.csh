@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.34 2003-10-07 02:13:33 taylor Exp $
+# $Id: build-tags-file.csh,v 1.35 2003-10-08 19:10:27 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -116,7 +116,10 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TimelineBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TimelineGroupBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TokenTypeBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/UniqueKeyBox.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/UniqueKeyGroupBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/sequence/ContentSpecWindow.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/AskTokenByKey.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodeLink.java \

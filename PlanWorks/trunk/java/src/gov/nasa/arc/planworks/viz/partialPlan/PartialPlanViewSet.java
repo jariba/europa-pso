@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.4 2003-10-04 01:16:12 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.5 2003-10-08 19:10:28 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -65,8 +65,10 @@ public class PartialPlanViewSet extends ViewSet {
     ((PwPartialPlan) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
     contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec));
     this.contentSpecWindow.pack();
-    int delta = ((ViewManager) remover).getContentSpecWindowCnt() *
-      ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4;
+    int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
+                                 ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+                          (int) ((PlanWorks.planWorks.getSize().getHeight() -
+                                  ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
     this.contentSpecWindow.setLocation( delta, delta);
     this.contentSpecWindow.setVisible(true);
   }

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.1 2003-09-25 23:52:46 taylor Exp $
+// $Id: SlotNode.java,v 1.2 2003-10-08 19:10:29 taylor Exp $
 //
 // PlanWorks
 //
@@ -355,8 +355,8 @@ public class SlotNode extends TextNode {
       JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
       activeTokenItem.addActionListener( new ActionListener() {
           public void actionPerformed( ActionEvent evt) {
-            ((PartialPlanViewSet) timelineView.getViewSet()).
-              setActiveToken( SlotNode.this.getSlot().getBaseToken());
+            PwToken activeToken = SlotNode.this.getSlot().getBaseToken();
+            ((PartialPlanViewSet) timelineView.getViewSet()).setActiveToken( activeToken);
             List secondaryTokens = SlotNode.this.getSlot().getTokenList();
             secondaryTokens.remove( 0);
             if (secondaryTokens.size() == 0) {
@@ -365,7 +365,8 @@ public class SlotNode extends TextNode {
             ((PartialPlanViewSet) timelineView.getViewSet()).
               setSecondaryTokens( secondaryTokens);
             System.err.println( "SlotNode setActiveToken " +
-                                SlotNode.this.getSlot().getBaseToken().getPredicate().getName());
+                                activeToken.getPredicate().getName() +
+                                " (key=" + activeToken.getId().toString() + ")");
           }
         });
       mouseRightPopup.add( activeTokenItem);

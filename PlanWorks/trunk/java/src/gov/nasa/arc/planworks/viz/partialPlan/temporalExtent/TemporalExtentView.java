@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.6 2003-10-07 02:13:34 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.7 2003-10-08 19:10:28 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -61,6 +61,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.AskTokenByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -386,17 +387,21 @@ public class TemporalExtentView extends PartialPlanView  {
 
   private void collectTimeScaleMetrics( PwDomain startTimeIntervalDomain,
                                         PwDomain endTimeIntervalDomain, PwToken token) {
-    int earliestTime = 0;
+    int leftMarginTime = 0;
     if (startTimeIntervalDomain != null) {
 //       System.err.println( "collectTimeScaleMetrics earliest " +
 //                           startTimeIntervalDomain.getLowerBound() + " latest " +
 //                           startTimeIntervalDomain.getUpperBound());
-      earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+      int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+      leftMarginTime = earliestTime;
       if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
           (earliestTime < timeScaleStart)) {
           timeScaleStart = earliestTime;
       }
       int latestTime = startTimeIntervalDomain.getUpperBoundInt();
+      if (leftMarginTime == DbConstants.MINUS_INFINITY_INT) {
+        leftMarginTime = latestTime;
+      }
       if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
           (latestTime != DbConstants.MINUS_INFINITY_INT) &&
           (latestTime < timeScaleStart)) {
@@ -412,14 +417,14 @@ public class TemporalExtentView extends PartialPlanView  {
         if (latestTime > timeScaleEnd) {
           timeScaleEnd = latestTime;
         }
-        if (earliestTime != DbConstants.MINUS_INFINITY_INT) {
+        if (leftMarginTime != DbConstants.MINUS_INFINITY_INT) {
           int nodeLabelWidth = 
             TemporalNode.getNodeLabelWidth( TemporalNode.createNodeLabel( token), this);
-          leftMarginAdjust.add( new LeftMarginAdjust( earliestTime, latestTime,
+          leftMarginAdjust.add( new LeftMarginAdjust( leftMarginTime, latestTime,
                                                       nodeLabelWidth));
         }
       }
-      earliestTime = endTimeIntervalDomain.getLowerBoundInt();
+      int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
       if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
           (earliestTime != DbConstants.PLUS_INFINITY_INT) &&
           (earliestTime > timeScaleEnd)) {
@@ -436,17 +441,21 @@ public class TemporalExtentView extends PartialPlanView  {
       PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
       PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
 
-      int earliestTime = 0;
+      int leftMarginTime = 0;
       if (startTimeIntervalDomain != null) {
 //         System.err.println( "collectFreeTokenMetrics earliest " +
 //                             startTimeIntervalDomain.getLowerBound() + " latest " +
 //                             startTimeIntervalDomain.getUpperBound());
-        earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+        int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+        leftMarginTime = earliestTime;
         if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
             (earliestTime < timeScaleStart)) {
             timeScaleStart = earliestTime;
         }
         int latestTime = startTimeIntervalDomain.getUpperBoundInt();
+        if (leftMarginTime == DbConstants.MINUS_INFINITY_INT) {
+          leftMarginTime = latestTime;
+        }
         if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
             (latestTime < timeScaleStart)) {
           timeScaleStart = latestTime;
@@ -461,14 +470,14 @@ public class TemporalExtentView extends PartialPlanView  {
           if (latestTime > timeScaleEnd) {
             timeScaleEnd = latestTime;
           }
-          if (earliestTime != DbConstants.MINUS_INFINITY_INT) {
+          if (leftMarginTime != DbConstants.MINUS_INFINITY_INT) {
             int nodeLabelWidth = 
               TemporalNode.getNodeLabelWidth( TemporalNode.createNodeLabel( token), this);
-            leftMarginAdjust.add( new LeftMarginAdjust( earliestTime, latestTime,
+            leftMarginAdjust.add( new LeftMarginAdjust( leftMarginTime, latestTime,
                                                         nodeLabelWidth));
           }
         }
-        earliestTime = endTimeIntervalDomain.getLowerBoundInt();
+        int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
         if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
             (earliestTime > timeScaleEnd)) {
           timeScaleEnd = earliestTime;
@@ -536,7 +545,7 @@ public class TemporalExtentView extends PartialPlanView  {
         }
       }
     }
-    xOrigin += maxMarginAdjust;
+    xOrigin = Math.max( xOrigin, maxMarginAdjust);
   } // end computeTimeScaleMetrics
 
   private void createTimeScale() {
@@ -966,6 +975,10 @@ public class TemporalExtentView extends PartialPlanView  {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem tokenByKeyItem = new JMenuItem( "Find Token by Key");
+    createTokenByKeyItem( tokenByKeyItem);
+    mouseRightPopup.add( tokenByKeyItem);
+
     JMenuItem timeMarkItem = new JMenuItem( "Set Time Scale Line");
     createTimeMarkItem( timeMarkItem);
     mouseRightPopup.add( timeMarkItem);
@@ -983,46 +996,70 @@ public class TemporalExtentView extends PartialPlanView  {
         public void actionPerformed( ActionEvent evt) {
           PwToken activeToken =
             ((PartialPlanViewSet) TemporalExtentView.this.getViewSet()).getActiveToken();
-          boolean isTokenFound = false;
           if (activeToken != null) {
-            Iterator temporalNodeListItr = temporalNodeList.iterator();
-            foundMatch:
-            while (temporalNodeListItr.hasNext()) {
-              TemporalNode temporalNode = (TemporalNode) temporalNodeListItr.next();
-              if (temporalNode.getToken() != null) {
-                // check overloaded tokens, since only base tokens are rendered
-                Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
-                while (tokenListItr.hasNext()) {
-                  if (((PwToken) tokenListItr.next()).getId().equals( activeToken.getId())) {
-                    System.err.println( "TemporalExtentView snapToActiveToken: " +
-                                        activeToken.getPredicate().getName());
-                    NodeGenerics.focusViewOnNode( temporalNode, jGoExtentView);
-                    isTokenFound = true;
-                    break foundMatch;
-                  }
-                }
-              }
-            }
-            if (isTokenFound) {
-                // only base tokens are rendered
-//               NodeGenerics.selectSecondaryNodes
-//                 ( NodeGenerics.mapTokensToTokenNodes
-//                   (TemporalExtentView.this.getViewSet().getSecondaryTokens(),
-//                    temporalNodeList),
-//                   jGoExtentView);
-            } else {
-              String message = "active token '" + activeToken.getPredicate().getName() +
-                "' not found in TemporalExtentView";
-              JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
-                                             "Active Token Not Found",
-                                             JOptionPane.ERROR_MESSAGE);
-              System.err.println( message);
-              System.exit( 1);
-            }
+            boolean isByKey = false;
+            findAndSelectToken( activeToken, isByKey);
           }
         }
       });
   } // end createActiveTokenItem
+
+
+  private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
+    tokenByKeyItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          AskTokenByKey tokenByKeyDialog = new AskTokenByKey( partialPlan);
+          Integer tokenKey = tokenByKeyDialog.getTokenKey();
+          if (tokenKey != null) {
+            // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());
+            PwToken tokenToFind = partialPlan.getToken( tokenKey);
+            boolean isByKey = true;
+            findAndSelectToken( tokenToFind, isByKey);
+          }
+        }
+      });
+  } // end createTokenByKeyItem
+
+
+  private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
+    boolean isTokenFound = false;
+    Iterator temporalNodeListItr = temporalNodeList.iterator();
+    foundMatch:
+    while (temporalNodeListItr.hasNext()) {
+      TemporalNode temporalNode = (TemporalNode) temporalNodeListItr.next();
+      if (temporalNode.getToken() != null) {
+        // check overloaded tokens, since only base tokens are rendered
+        Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
+        while (tokenListItr.hasNext()) {
+          if (((PwToken) tokenListItr.next()).getId().equals( tokenToFind.getId())) {
+            System.err.println( "TemporalExtentView found token: " +
+                                tokenToFind.getPredicate().getName() +
+                                " (key=" + tokenToFind.getId().toString() + ")");
+            NodeGenerics.focusViewOnNode( temporalNode, jGoExtentView);
+            isTokenFound = true;
+            break foundMatch;
+          }
+        }
+      }
+    }
+    if (isTokenFound && (! isByKey)) {
+      // only base tokens are rendered in this view
+      // NodeGenerics.selectSecondaryNodes
+      //   ( NodeGenerics.mapTokensToTokenNodes
+      //     (((PartialPlanViewSet) TemporalExtentView.this.getViewSet()).
+      //      getSecondaryTokens(), nodeList),
+      //     jGoView);
+    }
+    if (! isTokenFound) {
+      String message = "Token " + tokenToFind.getPredicate().getName() +
+        " (key=" + tokenToFind.getId().toString() + ") not found.";
+      JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                     "Token Not Found in TemporalExtentView",
+                                     JOptionPane.ERROR_MESSAGE);
+      System.err.println( message);
+      System.exit( 1);
+    }
+  } // end findAndSelectToken
 
 
   private void createTimeMarkItem( JMenuItem timeMarkItem) {

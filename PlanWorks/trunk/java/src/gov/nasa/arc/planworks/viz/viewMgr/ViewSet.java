@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.39 2003-10-08 01:29:49 miatauro Exp $
+// $Id: ViewSet.java,v 1.40 2003-10-08 19:10:29 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -110,16 +110,16 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     Container contentPane = viewFrame.getContentPane();
     VizView view = null;
     try {
-	System.err.println("Class " + viewClassName + " has " + constructors.length +
-                           " constructor(s).");
-	System.err.println("First constructor has " + constructors[0].getParameterTypes().length +
-			   " arguments.");
-	for(int i = 0; i < constructors[0].getParameterTypes().length; i++) {
-	    System.err.println((constructors[0].getParameterTypes())[i].getName());
-	}
-	System.err.println("---------------");
-	System.err.println(constructorArgs[0].getClass().getName());
-	System.err.println(constructorArgs[1].getClass().getName());
+// 	System.err.println("Class " + viewClassName + " has " + constructors.length +
+//                            " constructor(s).");
+// 	System.err.println("First constructor has " + constructors[0].getParameterTypes().length +
+// 			   " arguments.");
+// 	for(int i = 0; i < constructors[0].getParameterTypes().length; i++) {
+// 	    System.err.println((constructors[0].getParameterTypes())[i].getName());
+// 	}
+// 	System.err.println("---------------");
+// 	System.err.println(constructorArgs[0].getClass().getName());
+// 	System.err.println(constructorArgs[1].getClass().getName());
       view = (VizView) constructors[0].newInstance(constructorArgs);
     } 
     catch (InvocationTargetException ite) {

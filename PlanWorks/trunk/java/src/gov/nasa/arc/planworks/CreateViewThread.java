@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.2 2003-10-04 01:15:56 taylor Exp $
+// $Id: CreateViewThread.java,v 1.3 2003-10-08 19:10:27 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -11,6 +11,7 @@ package gov.nasa.arc.planworks;
 
 import java.beans.PropertyVetoException;
 import java.util.Iterator;
+import java.util.List;
 import javax.swing.JOptionPane;
 
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -85,9 +86,22 @@ public class CreateViewThread extends Thread {
         }
         viewSet = PlanWorks.planWorks.viewManager.getViewSet( viewable);
       }
+      int planWorksFrameHeight = (int) PlanWorks.planWorks.getSize().getHeight();
       int contentSpecFrameHeight =
         (int) viewSet.getContentSpecWindow().getSize().getHeight();
-      Iterator viewItr = PlanWorks.planWorks.supportedViewNames.iterator();
+      // locate view's upper left corner in top half of space below content spec
+      int yFrameAvailable = (int) ((planWorksFrameHeight - contentSpecFrameHeight -
+                                    ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.50);
+      int yFrameDelta = 0;
+      List viewList = null;
+      if (viewable instanceof PwPartialPlan) {
+        yFrameDelta = (int) (yFrameAvailable / PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
+        viewList = PlanWorks.PARTIAL_PLAN_VIEW_LIST;
+      } else if (viewable instanceof PwPlanningSequence) {
+        yFrameDelta = (int) (yFrameAvailable / PlanWorks.SEQUENCE_VIEW_LIST.size());
+        viewList = PlanWorks.SEQUENCE_VIEW_LIST;
+      }
+      Iterator viewItr = viewList.iterator();
       int viewIndex = 0;
       while (viewItr.hasNext()) {
         if (viewItr.next().equals( viewName)) {
@@ -95,11 +109,11 @@ public class CreateViewThread extends Thread {
         }
         viewIndex++;
       }
-      int delta = viewManager.getContentSpecWindowCnt() *
-        ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4;
+      int delta = Math.min( ((viewManager.getContentSpecWindowCnt() - 1) *
+                             ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+                            (yFrameAvailable - ViewConstants.MDI_FRAME_DECORATION_HEIGHT));
       viewFrame.setLocation( (ViewConstants.INTERNAL_FRAME_X_DELTA * viewIndex) + delta,
-                             contentSpecFrameHeight +
-                             ViewConstants.INTERNAL_FRAME_Y_DELTA * viewIndex + delta);
+                             contentSpecFrameHeight + yFrameDelta * viewIndex + delta);
       viewFrame.setVisible( true);
     }
     // make associated menus appear & bring window to the front
