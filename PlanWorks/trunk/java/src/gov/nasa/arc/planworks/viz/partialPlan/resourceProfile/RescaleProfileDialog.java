@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: RescaleProfileDialog.java,v 1.1 2004-09-14 22:59:40 taylor Exp $
+// $Id: RescaleProfileDialog.java,v 1.2 2004-09-15 22:26:49 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.resourceProfile;
 
@@ -12,6 +12,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 import java.beans.PropertyChangeEvent; 
 import java.beans.PropertyChangeListener;
 import javax.swing.JDialog;
@@ -65,11 +66,13 @@ public class RescaleProfileDialog extends JDialog {
    * @param resourceProfileView - <code>ResourceProfileView</code> - 
    * @param initialTimeScaleEnd - <code>double</code> - 
    * @param unaryResource - <code>PwResource</code> - 
+   * @param profileScalingList - <code>List</code> - 
    */
   public RescaleProfileDialog ( final PlanWorks planWorks, final PwResource resource,
                                 final ResourceProfileView resourceProfileView,
                                 final double initialTimeScaleEnd,
-                                final PwResource unaryResource) {
+                                final PwResource unaryResource,
+                                final List profileScalingList) {
     // modal dialog - blocks other activity
     super( planWorks, true);
     setTitle( "Rescale '" + resource.getName() + "' Resource Profile");
@@ -91,10 +94,17 @@ public class RescaleProfileDialog extends JDialog {
     minXField = new JTextField( DIMENSION_FIELD_WIDTH);
 
     // current values
-    maxYField .setText( "");
-    minYField .setText( "");
-    maxXField .setText( "");
-    minXField .setText( "");
+    if ( unaryResource == null) {
+      maxYField .setText( String.valueOf( levelMax));
+      minYField .setText( String.valueOf( levelMin));
+      maxXField .setText( String.valueOf( timeMax));
+      minXField .setText( String.valueOf( timeMin));
+    } else {
+      maxYField .setText( ((Double) profileScalingList.get( 0)).toString());
+      minYField .setText( ((Double) profileScalingList.get( 1)).toString());
+      maxXField .setText( ((Double) profileScalingList.get( 2)).toString());
+      minXField .setText( ((Double) profileScalingList.get( 3)).toString());
+    }
     okButton = "OK";
     resetButton = "Reset";
     cancelButton = "Cancel";

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.13 2004-09-14 22:59:40 taylor Exp $
+// $Id: TimeScaleView.java,v 1.14 2004-09-15 22:26:48 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,6 @@ import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
-
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -51,7 +50,6 @@ public class TimeScaleView extends JGoView  {
 
   private static final int TICK_Y_INCREMENT = 4;
   private static final int TIME_DELTA_INTERATION_CNT = 25;
-  private static final int TIME_DELTA_INCREMENT_LARGE = 5;
   private static final int TIME_SCALE_END_DEFAULT = 100;
 
   private int startXLoc;
@@ -316,13 +314,7 @@ public class TimeScaleView extends JGoView  {
     timeDelta = 1;
     int maxIterationCnt = TIME_DELTA_INTERATION_CNT, iterationCnt = 0;
     while ((timeDelta * maxSlots) < timeScaleRange) {
-      if (timeDelta == 1) {
-        timeDelta = 2;
-      } else if (timeDelta == 2) {
-        timeDelta = TIME_DELTA_INCREMENT_LARGE;
-      } else {
-        timeDelta *= 2;
-      }
+      timeDelta *= 2 * zoomFactor;
 //       System.err.println( "range " + timeScaleRange + " maxSlots " +
 //                           maxSlots + " timeDelta " + timeDelta);
       iterationCnt++;
@@ -332,28 +324,27 @@ public class TimeScaleView extends JGoView  {
       }
     }
     tickTime = 0;
-    int xOrigin = (int) (startXLoc / (double) zoomFactor);
+    double xOrigin = (double) (startXLoc / (double) zoomFactor);
     int scaleStart = timeScaleStart;
     if ((scaleStart < 0) && ((scaleStart % timeDelta) == 0)) {
       scaleStart -= 1;
     }
     while (scaleStart < tickTime) {
       tickTime -= timeDelta;
-      xOrigin += (int) (timeScale * timeDelta);
+      xOrigin += (double) (timeScale * timeDelta);
 //       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
 //                           " xOrigin " + xOrigin);
     }
     while (scaleStart > tickTime) {
       tickTime += timeDelta;
-      xOrigin -= (int) (timeScale * timeDelta);
+      xOrigin -= (double) (timeScale * timeDelta);
 //       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
 //                           " xOrigin " + xOrigin);
     }
     if (zoomFactor == 1) {
-      xOriginNoZoom = xOrigin;
+      xOriginNoZoom = (int) xOrigin;
     }
-    xOriginWithZoom = xOrigin;
-
+    xOriginWithZoom = (int) xOrigin;
 //     System.err.println( "zoomFactor " + zoomFactor + " xOriginNoZoom " + xOriginNoZoom +
 //                         " xOriginWithZoom " + xOriginWithZoom);
   } // end computeTimeScaleMetrics
@@ -390,8 +381,8 @@ public class TimeScaleView extends JGoView  {
     // System.err.println( "createTimeScale: xLoc start " + xLoc);
     int yRuler = startYLoc;
     int yLabelUpper = yRuler, yLabelLower = yRuler;
-    if (((int) scaleTimeWithZoom( (double) timeDelta)) <
-        ViewConstants.TEMPORAL_TICK_DELTA_X_MIN) { 
+    if ((((int) scaleTimeWithZoom( (double) timeDelta)) <
+         ViewConstants.TEMPORAL_TICK_DELTA_X_MIN) || (partialPlanView.getZoomFactor() > 1)) {
       yLabelLower = yRuler + (int) (ViewConstants.TIMELINE_VIEW_Y_INIT * 1.25);
     }
     int yLabel = yLabelUpper;
