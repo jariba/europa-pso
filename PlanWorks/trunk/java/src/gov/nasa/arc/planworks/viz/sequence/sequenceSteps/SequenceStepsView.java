@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.41 2004-09-03 00:35:41 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.42 2004-09-08 20:59:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -118,6 +118,8 @@ public class SequenceStepsView extends SequenceView {
    *
    */
   public static final Color DB_CONSTRAINTS_BG_COLOR = ColorMap.getColor( "lightYellow");
+
+  private static final int MIN_NUM_STEPS_TO_CALL_EXPAND_FRAME = 30;
 
   private long startTimeMSecs;
   private PwPlanningSequence planSequence;
@@ -292,8 +294,8 @@ public class SequenceStepsView extends SequenceView {
 	initPMThread.setProgressMonitorCancel();
         return;
       }
-      // PlannerController creates a view with no steps -- do not squish it
-      if (planSequence.getPlanDBSizeList().size() > 0) {
+      // PlannerController creates a view with small number of steps -- do not squish it
+      if (planSequence.getPlanDBSizeList().size() > MIN_NUM_STEPS_TO_CALL_EXPAND_FRAME) {
         expandViewFrame( viewFrame,
                          (int) jGoView.getDocumentSize().getWidth(),
                          (int) jGoView.getDocumentSize().getHeight());
@@ -368,9 +370,12 @@ public class SequenceStepsView extends SequenceView {
        return;
       }
 
-      expandViewFrame( viewFrame,
-                       (int) jGoView.getDocumentSize().getWidth(),
-                       (int) jGoView.getDocumentSize().getHeight());
+      // PlannerController creates a view with small number of steps -- do not squish it
+      if (planSequence.getPlanDBSizeList().size() > MIN_NUM_STEPS_TO_CALL_EXPAND_FRAME) {
+        expandViewFrame( viewFrame,
+                         (int) jGoView.getDocumentSize().getWidth(),
+                         (int) jGoView.getDocumentSize().getHeight());
+      }
 
     } finally {
       ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());

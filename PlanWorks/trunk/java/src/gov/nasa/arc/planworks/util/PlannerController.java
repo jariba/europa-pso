@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlannerController.java,v 1.1 2004-09-03 00:35:39 taylor Exp $
+// $Id: PlannerController.java,v 1.2 2004-09-08 20:59:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -34,6 +34,7 @@ import gov.nasa.arc.planworks.PlannerControlJNI;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 
@@ -183,11 +184,36 @@ public class PlannerController extends JPanel {
            "Illegal Argument Error", JOptionPane.ERROR_MESSAGE);
 
       } else {
-        PlannerControlJNI.writeStep( writeStepStep);
-        // sequenceStepsView.refreshView();
+        Thread thread = new WriteStepJNIThread( writeStepStep, sequenceStepsView);
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
       }
     }
   } // end class WriteStepButtonListener
+
+
+  class WriteStepJNIThread extends Thread {
+    private int writeStepStep;
+    private SequenceStepsView sequenceStepsView;
+
+    public WriteStepJNIThread( int writeStepStep, SequenceStepsView sequenceStepsView) {
+      this.writeStepStep = writeStepStep;
+      this.sequenceStepsView = sequenceStepsView;
+    }
+
+    public void run() {
+      final SwingWorker worker = new SwingWorker() {
+          public Object construct() {
+            System.err.println( "WriteStepJNIThread( " + writeStepStep + " ) started");
+            PlannerControlJNI.writeStep( writeStepStep); 
+            sequenceStepsView.refreshView();
+            return null;
+          }
+        };
+      worker.start();  
+    } // end run
+
+  } // end class WriteStepThread
 
 
   class WriteNextStepsButtonListener implements ActionListener {
@@ -212,11 +238,36 @@ public class PlannerController extends JPanel {
            "Illegal Argument Error", JOptionPane.ERROR_MESSAGE);
 
       } else {
-        PlannerControlJNI.writeNext( writeNextSteps);
-        // sequenceStepsView.refreshView();
+        Thread thread = new WriteNextStepsJNIThread( writeNextSteps, sequenceStepsView);
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
       }
     }
   } // end class WriteNextStepsButtonListener
+
+
+  class WriteNextStepsJNIThread extends Thread {
+    private int writeNextSteps;
+    private SequenceStepsView sequenceStepsView;
+
+    public WriteNextStepsJNIThread( int writeNextSteps, SequenceStepsView sequenceStepsView) {
+      this.writeNextSteps = writeNextSteps;
+      this.sequenceStepsView = sequenceStepsView;
+    }
+
+    public void run() {
+      final SwingWorker worker = new SwingWorker() {
+          public Object construct() {
+            System.err.println( "WriteNextStepsJNIThread( " + writeNextSteps + " ) started");
+            PlannerControlJNI.writeNext( writeNextSteps);
+            sequenceStepsView.refreshView();
+            return null;
+          }
+        };
+      worker.start();  
+    } // end run
+
+  } // end class WriteNextStepsThread
 
 
   class CompleteButtonListener implements ActionListener {
@@ -228,16 +279,49 @@ public class PlannerController extends JPanel {
       this.plannerControllerFrame = plannerControllerFrame;
     }
     public void actionPerformed(ActionEvent ae) {
-      PlannerControlJNI.completePlannerRun();
-      // sequenceStepsView.refreshView();
-      // PlannerControlJNI.getPlannerStatus
-      // wait for PLANNER_TIMEOUT_REACHED or PLANNER_FOUND_PLAN
-      // then PlannerControlJNI.terminatePlannerRun()
-      // then plannerControllerFrame.dispose();
-      PlannerControlJNI.terminatePlannerRun();
-      plannerControllerFrame.dispose();
+        Thread thread = new CompleteJNIThread( sequenceStepsView, plannerControllerFrame);
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
     }
   } // end class WriteNextStepsButtonListener
+
+
+  class CompleteJNIThread extends Thread {
+    private SequenceStepsView sequenceStepsView;
+    private MDIInternalFrame plannerControllerFrame;
+
+    public CompleteJNIThread( SequenceStepsView sequenceStepsView,
+                              MDIInternalFrame plannerControllerFrame) {
+      this.sequenceStepsView = sequenceStepsView;
+      this.plannerControllerFrame = plannerControllerFrame;
+    }
+
+    public void run() {
+      final SwingWorker worker = new SwingWorker() {
+          public Object construct() {
+            System.err.println( "CompleteJNIThread() started");
+            PlannerControlJNI.completePlannerRun();
+            int plannerStatus = -1;
+            while ((plannerStatus != PlannerControlJNI.PLANNER_TIMEOUT_REACHED) &&
+                   (plannerStatus != PlannerControlJNI.PLANNER_FOUND_PLAN)) {
+              try {
+                Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
+              }
+              catch (InterruptedException ie) {}
+              System.err.println( "CompleteJNIThread waiting for PLANNER_FOUND_PLAN or " +
+                                  "PLANNER_TIMEOUT_REACHED");
+              plannerStatus = PlannerControlJNI.getPlannerStatus();
+            }
+            sequenceStepsView.refreshView();
+            PlannerControlJNI.terminatePlannerRun();
+            plannerControllerFrame.dispose();
+            return null;
+          }
+        };
+      worker.start();  
+    } // end run
+
+  } // end class CompleteThread
 
 
   class TerminateButtonListener implements ActionListener {
@@ -248,28 +332,35 @@ public class PlannerController extends JPanel {
       this.sequenceStepsView = sequenceStepsView;
       this.plannerControllerFrame = plannerControllerFrame;
     }
-    public void actionPerformed(ActionEvent ae) {
-      PlannerControlJNI.terminatePlannerRun();
-      plannerControllerFrame.dispose();
+    public void actionPerformed( ActionEvent ae) {
+      Thread thread = new TerminateJNIThread( plannerControllerFrame);
+      thread.setPriority( Thread.MIN_PRIORITY);
+      thread.start();
     }
   } // end class WriteNextStepsButtonListener
 
 
-//   class ButtonListener implements ActionListener {
+  class TerminateJNIThread extends Thread {
+    private MDIInternalFrame plannerControllerFrame;
 
-//     private PlannerController plannerControllerFrame;
+    public TerminateJNIThread( MDIInternalFrame plannerControllerFrame) {
+      this.plannerControllerFrame = plannerControllerFrame;
+    }
 
-//     public ButtonListener( PlannerController plannerControllerFrame) {
-//       this.plannerControllerFrame = plannerControllerFrame;
-//     }
+    public void run() {
+      final SwingWorker worker = new SwingWorker() {
+          public Object construct() {
+            System.err.println( "TerminateJNIThread() started");
+            PlannerControlJNI.terminatePlannerRun();
+            plannerControllerFrame.dispose();
+            return null;
+          }
+        };
+      worker.start();  
+    } // end run
 
-//     public void actionPerformed( ActionEvent ae) {
-//       if (ae.getActionCommand().equals( "Terminate")) {
-//         plannerControllerFrame.dispose();
-//         return;
-//       }
-//     }
-//   } // end class ButtonListener
+  } // end class TerminateThread
+
 
   
 

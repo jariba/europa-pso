@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.5 2004-09-03 00:35:30 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.6 2004-09-08 20:59:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -477,6 +477,7 @@ public class ConfigureAndPlugins {
       }
     }
     PlanWorks.PROJECT_CONFIG_MAP.put( projectName, nameValueList);
+    writeProjectConfigMap();
   } // end updateProjectConfigMap
 
   /**
@@ -485,6 +486,10 @@ public class ConfigureAndPlugins {
    */
   public static void writeProjectConfigMap() {
     File configFile = new File( System.getProperty( "projects.config"));
+    try {
+      System.err.println( "Writing Projects configure file: " + configFile.getCanonicalPath());
+    } catch (IOException ioExcep) {
+    }
     try {
       BufferedWriter out = new BufferedWriter( new FileWriter( configFile));
       String line = null;

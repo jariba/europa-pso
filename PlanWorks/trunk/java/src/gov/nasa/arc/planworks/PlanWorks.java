@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.112 2004-09-03 00:35:32 taylor Exp $
+// $Id: PlanWorks.java,v 1.113 2004-09-08 20:59:50 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -259,13 +259,6 @@ public class PlanWorks extends MDIDesktopFrame {
     // Closes from title bar 
     addWindowListener( new WindowAdapter() {
         public final void windowClosing( final WindowEvent e) {
-          try {
-            System.err.println( "Writing Projects configure file: " +
-                                (new File( System.getProperty( "projects.config"))).
-                                getCanonicalPath());
-          } catch (IOException ioExcep) {
-          }
-          ConfigureAndPlugins.writeProjectConfigMap();
           System.exit( 0);
         }});
     if (isMaxScreen) {
@@ -600,13 +593,6 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenuItem exitItem = new JMenuItem( EXIT_MENU_ITEM);
     exitItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent e) {
-          try {
-            System.err.println( "Writing Projects configure file: " +
-                                (new File( System.getProperty( "projects.config"))).
-                                getCanonicalPath());
-          } catch (IOException ioExcep) {
-          }
-          ConfigureAndPlugins.writeProjectConfigMap();
           System.exit(0);
         } });
     fileMenu.add( exitItem);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.5 2004-09-03 00:35:32 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.6 2004-09-08 20:59:50 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -125,31 +125,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
         ( ViewConstants.SEQUENCE_STEPS_VIEW, seqViewMenuItem);
       setConfigureParameters( currentProject);
       PwPlanningSequence planSequence = currentProject.getPlanningSequence( seqUrl);
-      ViewManager viewManager = PlanWorks.getPlanWorks().viewManager;
-      ViewSet viewSet = null;
-      while ((viewSet = viewManager.getViewSet( planSequence)) == null) {
-        try {
-          Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
-        }
-        catch (InterruptedException ie) {}
-        // System.err.println( "NewSequenceThread.newSequence: wait for viewSet != null");
-      }
-      String sequenceStepsViewClassName =
-        (String) PlanWorks.VIEW_CLASS_NAME_MAP.get( ViewConstants.SEQUENCE_STEPS_VIEW);
-      MDIInternalFrame sequenceStepsFrame = null;
-      while (sequenceStepsFrame == null) {
-        try {
-          Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
-        }
-        catch (InterruptedException ie) {}
-        try {
-          sequenceStepsFrame = viewSet.getView( Class.forName( sequenceStepsViewClassName));
-        } catch (ClassNotFoundException excp) {
-          excp.printStackTrace();
-          System.exit(1);
-        }
-        // System.err.println( "NewSequenceThread.newSequence: wait for sequenceStepsFrame != null");
-      }
+      ViewSet viewSet = getViewSetWithWait( planSequence);
+      MDIInternalFrame sequenceStepsFrame = getSequenceStepsFrameWithWait( viewSet);
       sequenceStepsFrame.setSize
         ( (int) Math.max( sequenceStepsFrame.getSize().getWidth(), WINDOW_WIDTH),
           (int) Math.max( sequenceStepsFrame.getSize().getHeight(), WINDOW_HEIGHT));
@@ -183,6 +160,48 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       return;
     }
   } // end newSequence
+
+  private ViewSet getViewSetWithWait( PwPlanningSequence planSequence) {
+    ViewManager viewManager = PlanWorks.getPlanWorks().viewManager;
+    ViewSet viewSet = null;
+    while ((viewSet = viewManager.getViewSet( planSequence)) == null) {
+      try {
+        Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
+      }
+      catch (InterruptedException ie) {}
+      // System.err.println( "getViewSetWithWait.newSequence: wait for viewSet != null");
+    }
+    return viewSet;
+  } // end getViewSetWithWait
+
+  private MDIInternalFrame getSequenceStepsFrameWithWait( ViewSet viewSet) {
+    MDIInternalFrame sequenceStepsFrame = null;
+    String sequenceStepsViewClassName =
+      (String) PlanWorks.VIEW_CLASS_NAME_MAP.get( ViewConstants.SEQUENCE_STEPS_VIEW);
+    while (sequenceStepsFrame == null) {
+      try {
+        Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
+      }
+      catch (InterruptedException ie) {}
+      try {
+        sequenceStepsFrame = viewSet.getView( Class.forName( sequenceStepsViewClassName));
+      } catch (ClassNotFoundException excp) {
+        excp.printStackTrace();
+        System.exit(1);
+      }
+      // System.err.println( "getSequenceStepsFrameWithWait: wait for sequenceStepsFrame != null");
+    }
+    int componentCnt = sequenceStepsFrame.getContentPane().getComponentCount();
+    while (componentCnt == 0) {
+      try {
+        Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
+      }
+      catch (InterruptedException ie) {}
+      componentCnt = sequenceStepsFrame.getContentPane().getComponentCount();
+      // System.err.println( "getSequenceStepsFrameWithWait: wait for component cnt != 0");
+    }
+    return sequenceStepsFrame;
+  } // end getSequenceStepsFrameWithWait
 
   private boolean getConfigureParameters() {
     ConfigureNewSequenceDialog configureDialog =
