@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.28 2004-01-05 17:24:27 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.29 2004-01-13 21:56:01 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -368,6 +368,7 @@ void PartialPlanWriter::write(void) {
           if(slotId->getNextSlotId() != SlotId::noId()) {
             objectOut << timelineId << COMMA << slotId->getKey() << COMMA << slotIndex << COLON;
           }
+          slotIndex++;
           slotIterator.step();
           continue;
         }
