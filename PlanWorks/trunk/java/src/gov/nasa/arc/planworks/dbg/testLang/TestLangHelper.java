@@ -29,6 +29,7 @@ import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.dbg.testLang.TestLangParseException;
 import gov.nasa.arc.planworks.dbg.testLang.TestLangRuntimeException;
 import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
@@ -1352,8 +1353,9 @@ public class TestLangHelper implements TestLangTokenTypes {
       Long ppId = (Long) it.next();
       try{seq.getPartialPlan(ppId);}
       catch(ResourceNotFoundException rnfe){throw new TestLangRuntimeException(rnfe);}
+      catch(CreatePartialPlanException cppe){throw new TestLangRuntimeException(cppe);}
     }
-  }
+  } 
 
   private void ensureTransactionsInDatabase() throws TestLangRuntimeException {
     if(MySQLDB.transactionsInDatabase(seqId))

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.34 2004-07-23 16:18:33 pdaley Exp $
+// $Id: DbConstants.java,v 1.35 2004-07-27 21:58:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -447,6 +447,7 @@ public interface DbConstants {
   public static final int C_CLOSE = 3;
 
   public static final Integer NO_ID = new Integer( -1);
+
 } // end interface DbConstants
 
     

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.12 2004-07-08 21:33:24 taylor Exp $
+// $Id: DBTransactionView.java,v 1.13 2004-07-27 21:58:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,6 +14,7 @@ package gov.nasa.arc.planworks.viz.partialPlan.dbTransaction;
 
 import java.awt.BorderLayout;
 import java.awt.Point;
+import java.beans.PropertyVetoException;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.BoxLayout;
@@ -33,10 +34,12 @@ import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.TransactionHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
@@ -82,9 +85,16 @@ public class DBTransactionView extends PartialPlanView {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.viewSet = (PartialPlanViewSet) viewSet;
     isStepButtonView = false;
-    dBTransactionViewInit( partialPlan);
+    dBTransactionViewInit();
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   public DBTransactionView( final ViewableObject partialPlan,  final ViewSet viewSet,
@@ -92,10 +102,17 @@ public class DBTransactionView extends PartialPlanView {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.viewSet = (PartialPlanViewSet) viewSet;
     isStepButtonView = true;
-    dBTransactionViewInit( partialPlan);
+    dBTransactionViewInit();
     setState(s);
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   /**
@@ -110,23 +127,22 @@ public class DBTransactionView extends PartialPlanView {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.viewSet = (PartialPlanViewSet) viewSet;
     isStepButtonView = false;
-    dBTransactionViewInit( partialPlan);
+    dBTransactionViewInit();
     if (viewListener != null) {
       addViewListener( viewListener);
     }
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
-  private void dBTransactionViewInit( final ViewableObject partialPlan) {
-    planSequence = PlanWorks.getPlanWorks().getPlanSequence( this.partialPlan);
-
-    dbTransactionList = planSequence.getTransactionsList( this.partialPlan.getId());
-    Collections.sort( dbTransactionList,
-                      new DBTransactionComparatorAscending
-                      ( ViewConstants.DB_TRANSACTION_KEY_HEADER));
-
-    stepNumber = this.partialPlan.getStepNumber();
+  private void dBTransactionViewInit() {
     ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
@@ -143,11 +159,11 @@ public class DBTransactionView extends PartialPlanView {
     }
   } // end setState
 
-  Runnable runInit = new Runnable() {
-      public final void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public final void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -157,16 +173,38 @@ public class DBTransactionView extends PartialPlanView {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     if (! ViewGenerics.displayableWait( DBTransactionView.this)) {
+      closeView( this);
       return;
     }
     this.computeFontMetrics( this);
 
+    int numOperations = 6;
+    progressMonitorThread( "Rendering DB Transaction View:", 0, numOperations,
+                           Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      closeView( this);
+      return;
+    }
+    progressMonitor.setNote( "Get Transactions ...");
+    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+ 
+    planSequence = PlanWorks.getPlanWorks().getPlanSequence( this.partialPlan);
+    dbTransactionList = planSequence.getTransactionsList( this.partialPlan.getId());
+    Collections.sort( dbTransactionList,
+                      new DBTransactionComparatorAscending
+                      ( ViewConstants.DB_TRANSACTION_KEY_HEADER));
+    stepNumber = this.partialPlan.getStepNumber();
+
+    progressMonitor.setNote( "Create Table ...");
+    progressMonitor.setMaximum( dbTransactionList.size());
+    numOperations = 4;
+    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     String query = null;
     headerJGoView = new DBTransactionHeaderView( query);
     headerJGoView.validate();
@@ -199,6 +237,15 @@ public class DBTransactionView extends PartialPlanView {
       data[row][4] = transaction.getInfo()[0];
       data[row][5] = transaction.getInfo()[1];
       data[row][6] = transaction.getInfo()[2];
+      if (progressMonitor.isCanceled()) {
+        String msg = "User Canceled DB Transaction View Rendering";
+        System.err.println( msg);
+        isProgressMonitorCancel = true;
+        closeView( this);
+        return;
+      }
+      numOperations++;
+      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
     objectKeyColumnIndx = 3;
     int stepNumberColumnIndx = -1;
@@ -249,6 +296,7 @@ public class DBTransactionView extends PartialPlanView {
                         (stopTimeMSecs -
                          PlanWorks.getPlanWorks().getViewRenderingStartTime
                          ( ViewConstants.DB_TRANSACTION_VIEW)) + " msecs.");
+    progressMonitor.close();
     handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 

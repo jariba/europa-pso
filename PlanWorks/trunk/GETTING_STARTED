@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.52 2004-07-16 22:54:43 taylor Exp $
+# $Id: GETTING_STARTED,v 1.53 2004-07-27 21:58:00 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -40,8 +40,8 @@ the selected sequence from the current project, and the MySQL data base.
 
 Overviews of Plan Sequence and Partial Plan Views
 =================================================
-The Sequence Steps view, and the partial plan views, except for Transaction 
-View, have a Mouse-Right popup named "Overview Window" which opens a 1/8th 
+The Sequence Steps view, and the partial plan views, except for DB Transaction 
+and Decision, have a Mouse-Right popup named "Overview Window" which opens a 1/8th 
 scaled view of the entire "observed" view.  There is a rectangle in the 
 overview which can be dragged to cause the "observed" view to be scrolled 
 to new locations.  Mouse-Left clicking in the overview outside of the 
@@ -427,4 +427,9 @@ indivual selection of any active window ordered thusly:
     views, including the NavigatorView.
 
 
+Function Management
+===================
+"Progress monitors" are created for functions which can be cpu intensive, such
+as creating partial plans and rendering views.  The user has the option to "Cancel" 
+these operations, if desired.
 

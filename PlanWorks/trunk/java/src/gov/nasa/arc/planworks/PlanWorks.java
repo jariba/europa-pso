@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.106 2004-07-16 22:54:44 taylor Exp $
+// $Id: PlanWorks.java,v 1.107 2004-07-27 21:58:03 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -81,6 +81,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 public class PlanWorks extends MDIDesktopFrame {
 
   public static Map VIEW_CLASS_NAME_MAP;
+  public static Map VIEW_MOUSE_RIGHT_MAP;
   public static List PARTIAL_PLAN_VIEW_LIST;
 
   private static final int DESKTOP_FRAME_WIDTH;// = 900;
@@ -128,6 +129,7 @@ public class PlanWorks extends MDIDesktopFrame {
     // System.err.println( FRAME_X_LOCATION + " " + FRAME_Y_LOCATION);
 
     VIEW_CLASS_NAME_MAP = new HashMap();
+    VIEW_MOUSE_RIGHT_MAP = new HashMap();
     PARTIAL_PLAN_VIEW_LIST = new ArrayList();
 
     VIEW_CLASS_NAME_MAP.put
@@ -891,8 +893,11 @@ public class PlanWorks extends MDIDesktopFrame {
         }
       }
       if (isValidSequence) {
+        long start = System.currentTimeMillis();
         System.err.println( "project.addPlanningSequence " + sequenceUrl);
         project.addPlanningSequence( sequenceUrl);
+        System.err.println( "   ... addPlanningSequence elapsed time: " +
+                            (System.currentTimeMillis() - start) + " msecs.");
         isSequenceAdded = true;
       }
     }

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.13 2004-06-10 01:36:05 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.14 2004-07-27 21:58:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -307,7 +307,7 @@ public class ResourceTransactionSet extends BasicNode {
       ( resourceTransactionView.getJGoRulerView().
         scaleTimeNoZoom( (double) resourceTransactionView.getTimeScaleStart()),
         resourceTransactionView.getJGoRulerView().
-        scaleTimeNoZoom( (double) resourceTransactionView.getTimeScaleEnd()), extents);
+        scaleTimeNoZoom( (double) resourceTransactionView.getTimeScaleEnd()),extents);
 //     List results =
 //       Algorithms.betterAllocateRows
 //       ( resourceTransactionView.getJGoRulerView().

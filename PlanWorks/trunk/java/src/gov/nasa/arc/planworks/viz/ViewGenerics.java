@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.22 2004-07-08 21:33:23 taylor Exp $
+// $Id: ViewGenerics.java,v 1.23 2004-07-27 21:58:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -22,6 +22,8 @@ import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +43,7 @@ import com.nwoods.jgo.JGoView;
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.Overview;
 
+import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -55,6 +58,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.JarClassLoader;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.Utilities;
@@ -89,8 +93,6 @@ public class ViewGenerics {
 
   private static final int RULE_VIEW_WIDTH = 400;
   private static final int RULE_VIEW_HEIGHT = 100;
-  private static final int DISP_WAIT_INTERVAL = 50; //in milliseconds
-  private static final int DISP_WAIT_NUM_CYCLES = 10; 
 
   private static final ViewGenerics generics = new ViewGenerics();
 
@@ -548,17 +550,33 @@ public class ViewGenerics {
    * @return - <code>boolean</code> - 
    */
   public static boolean displayableWait( Component component) {
-    int numCycles = DISP_WAIT_NUM_CYCLES;
+    int numCycles = ViewConstants.WAIT_NUM_CYCLES;
     while (! component.isDisplayable() && numCycles != 0) {
       try {
-        Thread.currentThread().sleep( DISP_WAIT_INTERVAL);
+        Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
       }
       catch (InterruptedException ie) {}
       numCycles--;
     }
+    if (numCycles == 0) {
+      System.err.println( "displayableWait failed after " +
+                          (ViewConstants.WAIT_INTERVAL * ViewConstants.WAIT_NUM_CYCLES) +
+                          " msec for " + component.getClass().getName());
+      try {
+        throw new Exception();
+      } catch (Exception e) { e.printStackTrace(); }
+    }
     return numCycles != 0;
-  }
+  } // end displayableWait
 
+  /**
+   * <code>createRuleInstanceViewItem</code>
+   *
+   * @param ruleInstanceNode - <code>RuleInstanceNode</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   * @return - <code>JMenuItem</code> - 
+   */
   public static JMenuItem createRuleInstanceViewItem( final RuleInstanceNode ruleInstanceNode,
                                                       final PartialPlanView partialPlanView,
                                                       final ViewListener viewListener) {
@@ -594,6 +612,77 @@ public class ViewGenerics {
       });
     return ruleInstanceViewItem;
   } // end createRuleInstanceViewItem
+
+  /**
+   * <code>createConfigPopupItems</code>
+   *
+   * @param viewName - <code>String</code> - 
+   * @param view - <code>PartialPlanView</code> - 
+   * @param mouseRightPopup - <code>JPopupMenu</code> - 
+   */
+  public static void createConfigPopupItems( String viewName, final VizView view,
+                                             final JPopupMenu mouseRightPopup) {
+    boolean isFirst = true;
+    List viewPopupSpecs = new ArrayList();
+    Iterator popupSpecsItr = PlanWorks.VIEW_MOUSE_RIGHT_MAP.keySet().iterator();
+    while (popupSpecsItr.hasNext()) {
+      String viewNameItemName = (String) popupSpecsItr.next();
+      System.err.println( "createConfigPopupItems: viewName " + viewName +
+                          " viewNameItemName " + viewNameItemName);
+      if (viewNameItemName.indexOf( viewName) >= 0) {
+        int index = viewNameItemName.indexOf( ":");
+        final String itemName = viewNameItemName.substring( index + 1);
+        List classMethodNameList = (List) PlanWorks.VIEW_MOUSE_RIGHT_MAP.get( viewNameItemName);
+        final String className = (String) classMethodNameList.get( 0);
+        final String methodName = (String) classMethodNameList.get( 1);
+        if (isFirst) {
+          isFirst = false;
+          mouseRightPopup.addSeparator();
+          mouseRightPopup.addSeparator();
+        }
+        JMenuItem menuItem = new JMenuItem( itemName);
+        menuItem.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent evt) {
+              boolean resolveIt = true;
+              Iterator pluginNameItr = ConfigureAndPlugins.PLUG_IN_LOADER_MAP.keySet().iterator();
+              while (pluginNameItr.hasNext()) {
+                try {
+                  JarClassLoader classLoader =
+                    (JarClassLoader) ConfigureAndPlugins.PLUG_IN_LOADER_MAP.
+                    get( (String) pluginNameItr.next());
+                  Class classObject = classLoader.loadClassAndResolveIt( className);
+                  // System.err.println( "classObject name " + classObject.getName());
+                  Method method =
+                    classObject.getMethod
+                    ( methodName,
+                      new Class[] {  Class.forName( "java.lang.String"),
+                                     Class.forName( "javax.swing.JPopupMenu"),
+                                     Class.forName( "gov.nasa.arc.planworks.viz.VizView")});
+                  method.setAccessible( true);
+                  try {
+                    Object [] args = new Object [] { itemName, mouseRightPopup, view};
+                    method.invoke( null, args); 
+                  } catch (IllegalAccessException e) {
+                    // This should not happen, as we have disabled access checks
+                  }
+                  break;
+                } catch (ClassNotFoundException cnfExcep) {
+                  cnfExcep.printStackTrace();
+                  // System.exit( -1);
+                } catch (NoSuchMethodException nsmExcep) {
+                  nsmExcep.printStackTrace();
+                  // System.exit( -1);
+                } catch (InvocationTargetException itExcep) {
+                  itExcep.printStackTrace();
+                  // System.exit( -1);
+                }
+              }
+            }
+          });
+        mouseRightPopup.add( menuItem);
+      }
+    }
+  } // end createConfigPopupItems
 
 
 } // end class ViewGenerics 

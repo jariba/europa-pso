@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.115 2004-07-23 16:18:35 pdaley Exp $
+// $Id: MySQLDB.java,v 1.116 2004-07-27 21:58:05 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -92,6 +92,11 @@ public class MySQLDB {
     dbStartString.append("--socket=").append(System.getProperty("mysql.sock"));
     dbStartString.append(" --tmpdir=").append(System.getProperty("mysql.tmpdir"));
     dbStartString.append(" --key_buffer_size=64M --join_buffer_size=16M --query_cache_size=16M ");
+
+    // log query whose time is > long_query_time in seconds
+//     dbStartString.append(" --set-variable=long_query_time=4 ");
+//     dbStartString.append(" --log-slow-queries=/home/wtaylor/junk/mysql-queries.log ");
+
     dbStartString.append(" -O bulk_insert_buffer_size=16M");
     //System.err.println("Starting db with: " + dbStartString.toString());
     Runtime.getRuntime().exec(dbStartString.toString());

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.20 2004-06-10 01:36:01 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.21 2004-07-27 21:58:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -65,6 +65,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentS
  */
 public class PartialPlanViewSet extends ViewSet {
 
+  private static Object staticObject = new Object();
+
   private ColorStream colorStream;
   private PwToken activeToken; // in timeline view, the base token
   private List secondaryTokens; // in timeline view, the overloaded tokens
@@ -107,50 +109,52 @@ public class PartialPlanViewSet extends ViewSet {
   }
 
   private void commonConstructor() {
-    this.colorStream = new ColorStream();
+    synchronized( staticObject) {
+      this.colorStream = new ColorStream();
 
-    //this is to ensure that the colors always come out in the right order.
-    //it works because objectIds are stored in a TreeMap
-    Iterator objIt = ((PwPartialPlan)viewable).getObjectList().iterator();
-    while(objIt.hasNext()) {
-      colorStream.getColor(((PwObject)objIt.next()).getId());
+      //this is to ensure that the colors always come out in the right order.
+      //it works because objectIds are stored in a TreeMap
+      Iterator objIt = ((PwPartialPlan)viewable).getObjectList().iterator();
+      while(objIt.hasNext()) {
+        colorStream.getColor(((PwObject)objIt.next()).getId());
+      }
+
+      this.activeResource = null;
+      Point windowLocation = null;
+      if (this.contentSpecWindow != null) {
+        windowLocation = this.contentSpecWindow.getLocation();
+      }
+      this.contentSpecWindow = desktopFrame.createFrame( ViewConstants.CONTENT_SPEC_TITLE +
+                                                         " for " + viewable.getName(),
+                                                         this, true, false, false, true);
+      Container contentPane = this.contentSpecWindow.getContentPane();
+      this.contentSpec = new PartialPlanContentSpec( viewable, this);
+      ((PwPartialPlan) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
+      contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec, this));
+      this.contentSpecWindow.pack();
+
+      if (state == null) { // do not relocate for step buttons creation
+        String seqUrl = ((PwPartialPlan) viewable).getSequenceUrl();
+        int sequenceStepsViewHeight =
+          (int) ((PlanWorks.getPlanWorks().
+                  getSequenceStepsViewFrame( seqUrl).getSize().getHeight() * 0.5) +
+                 (ViewConstants.MDI_FRAME_DECORATION_HEIGHT / 2.0));
+        int delta = 0;
+        // do not use deltas -- causes windows to slip off screen
+        //       int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
+        //                                    ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+        //                             (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
+        //                                    sequenceStepsViewHeight -
+        //                                    (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
+        this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
+      } else {
+        this.contentSpecWindow.setLocation( state.getContentSpecWindowLocation());
+      }
+      this.contentSpecWindow.setVisible(true);
+
+      navigatorFrameCnt = 0;
+      ruleFrameCnt = 0;
     }
-
-    this.activeResource = null;
-    Point windowLocation = null;
-    if (this.contentSpecWindow != null) {
-      windowLocation = this.contentSpecWindow.getLocation();
-    }
-    this.contentSpecWindow = desktopFrame.createFrame( ViewConstants.CONTENT_SPEC_TITLE +
-                                                       " for " + viewable.getName(),
-                                                       this, true, false, false, true);
-    Container contentPane = this.contentSpecWindow.getContentPane();
-    this.contentSpec = new PartialPlanContentSpec( viewable, this);
-    ((PwPartialPlan) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
-    contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec, this));
-    this.contentSpecWindow.pack();
-
-    if (state == null) { // do not relocate for step buttons creation
-      String seqUrl = ((PwPartialPlan) viewable).getSequenceUrl();
-      int sequenceStepsViewHeight =
-        (int) ((PlanWorks.getPlanWorks().
-               getSequenceStepsViewFrame( seqUrl).getSize().getHeight() * 0.5) +
-               (ViewConstants.MDI_FRAME_DECORATION_HEIGHT / 2.0));
-      int delta = 0;
-      // do not use deltas -- causes windows to slip off screen
-//       int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
-//                                    ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-//                             (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
-//                                    sequenceStepsViewHeight -
-//                                    (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
-      this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
-    } else {
-      this.contentSpecWindow.setLocation( state.getContentSpecWindowLocation());
-    }
-    this.contentSpecWindow.setVisible(true);
-
-    navigatorFrameCnt = 0;
-    ruleFrameCnt = 0;
   } // end commonConstructor
 
   public MDIInternalFrame openView(String viewClassName, ViewListener viewListener) {

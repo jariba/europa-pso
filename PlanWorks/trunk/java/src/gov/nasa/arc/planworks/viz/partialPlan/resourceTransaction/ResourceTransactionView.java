@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.20 2004-07-08 21:33:26 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.21 2004-07-27 21:58:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;    
 import java.util.List;
@@ -44,6 +45,7 @@ import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
@@ -169,7 +171,7 @@ public class ResourceTransactionView extends ResourceView  {
 
     createResourceTransactionSets();
 
-    boolean showDialog = true;
+    // boolean showDialog = true;
     // isContentSpecRendered( PlanWorks.RESOURCE_TRANSACTION_VIEW, showDialog);
 
   } // end createResourceTransactionView
@@ -280,16 +282,32 @@ public class ResourceTransactionView extends ResourceView  {
     boolean isNamesOnly = false;
     currentYLoc = 0;
     List resourceList = partialPlan.getResourceList(); //createDummyData( isNamesOnly);
+    progressMonitorThread( "Rendering Resource Transaction View ...", 0, resourceList.size(),
+                           Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      closeView( this);
+      return;
+    }
+    int numResources = 0;
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
       ResourceTransactionSet resourceTransactionSet =
-        new ResourceTransactionSet( resource, ViewConstants.FREE_TOKEN_BG_COLOR, this);
+        new ResourceTransactionSet( resource, ViewConstants.RESOURCE_TRANSACTION_BG_COLOR, this);
       // System.err.println( "resourceTransactionSet " + resourceTransactionSet);
       this.getJGoExtentDocument().addObjectAtTail( resourceTransactionSet);
       resourceTransactionSetList.add( resourceTransactionSet);
+      if (progressMonitor.isCanceled()) {
+        String msg = "User Canceled Resource Transaction View Rendering";
+        System.err.println( msg);
+        isProgressMonitorCancel = true;
+        closeView( this);
+        return;
+      }
+      numResources++;
+      progressMonitor.setProgress( numResources * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-
+    progressMonitor.close();
   } // end createResourceTransactionSets
 
 

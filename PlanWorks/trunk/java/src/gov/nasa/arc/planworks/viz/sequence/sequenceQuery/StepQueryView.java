@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.11 2004-06-16 22:09:18 taylor Exp $
+// $Id: StepQueryView.java,v 1.12 2004-07-27 21:58:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -29,6 +29,7 @@ import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.TransactionHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -106,15 +107,22 @@ public class StepQueryView extends SequenceView {
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
  
-  Runnable runInit = new Runnable() {
-      public final void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public final void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -124,12 +132,13 @@ public class StepQueryView extends SequenceView {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for StepQueryView instance to become displayable
     if (! ViewGenerics.displayableWait( StepQueryView.this)) {
+      closeView( this);
       return;
     }
     this.computeFontMetrics( this);
@@ -177,7 +186,7 @@ public class StepQueryView extends SequenceView {
                             stepTable.getRowHeight()));
 
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... '" + this.getName() + "'elapsed time: " +
+    System.err.println( "   ... '" + this.getName() + "' elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init

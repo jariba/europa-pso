@@ -1,4 +1,4 @@
-// $Id: JarClassLoader.java,v 1.1 2004-07-15 21:24:47 taylor Exp $
+// $Id: JarClassLoader.java,v 1.2 2004-07-27 21:58:07 taylor Exp $
 //
 // http://java.sun.com/docs/books/tutorial/jar/api/example-1dot2/JarClassLoader.java
 
@@ -74,5 +74,23 @@ public class JarClassLoader extends URLClassLoader {
 	    // This should not happen, as we have disabled access checks
 	}
     }
+
+  /**
+   * <code>loadClassAndResolveIt</code>
+   *
+   * @param className - <code>String</code> - 
+   * @return - <code>Class</code> - 
+   */
+  public Class loadClassAndResolveIt( String className) {
+    boolean resolveIt = true;
+    Class loadedClass = null;
+    try {
+      loadedClass = loadClass( className, resolveIt);
+    } catch (ClassNotFoundException cnfExcep) {
+      cnfExcep.printStackTrace();
+      System.exit( -1);
+    }
+    return loadedClass;
+  }
 
 }

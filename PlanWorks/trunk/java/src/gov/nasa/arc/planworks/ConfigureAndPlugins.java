@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.2 2004-07-16 22:54:44 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.3 2004-07-27 21:58:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -52,7 +52,8 @@ public class ConfigureAndPlugins {
 
   private static final String CONFIGURE_CLASS_NAME = "gov.nasa.arc.planworks.ConfigureAndPlugins";
   private static final String MAP_PLUG_IN_METHOD_NAME = "mapPlugIn";
-  private static final String MAP_VIEW_CLASS_METHOD_NAME = "mapViewClass";
+  private static final String MAP_VIEW_CLASS_NAME = "mapViewClass";
+  private static final String MAP_RIGHT_CLICK_FOR_VIEW = "mapRightClickForView";
 
   public static Map PLUG_IN_JAR_MAP;
   public static Map PLUG_IN_LOADER_MAP;
@@ -114,12 +115,30 @@ public class ConfigureAndPlugins {
             argTypes = new Class [] { Class.forName( "java.lang.String"),
                                       Class.forName( "java.lang.String") };
             args = new String [] { (String) liveTokens.get( 1), (String) liveTokens.get( 2) };
-          } else if (methodName.equals( MAP_VIEW_CLASS_METHOD_NAME)) {
+          } else if (methodName.equals( MAP_VIEW_CLASS_NAME)) {
             argTypes = new Class [] { Class.forName( "java.lang.String"),
                                       Class.forName( "java.lang.String") };
-            String viewName = collectViewNameParts( liveTokens);
-            args = new String [] { viewName, (String) liveTokens.get( liveTokens.size() - 1)};
-
+            Object [] returnArray = collectQuotedNameParts( liveTokens);
+            String viewName = (String) returnArray[0];
+            int numTokensProcessed = ((Integer) returnArray[1]).intValue();
+            liveTokens = liveTokens.subList( numTokensProcessed, liveTokens.size());
+            args = new String [] { viewName, (String) liveTokens.get( 0)};
+          } else if (methodName.equals( MAP_RIGHT_CLICK_FOR_VIEW)) {
+            argTypes = new Class [] { Class.forName( "java.lang.String"),
+                                      Class.forName( "java.lang.String"),
+                                      Class.forName( "java.lang.String"),
+                                      Class.forName( "java.lang.String") };
+            Object [] returnArray = collectQuotedNameParts( liveTokens);
+            String viewName = (String) returnArray[0];
+            int numTokensProcessed = ((Integer) returnArray[1]).intValue();
+            liveTokens = liveTokens.subList( numTokensProcessed, liveTokens.size());
+            returnArray = collectQuotedNameParts( liveTokens);
+            String itemName = (String) returnArray[0];
+            numTokensProcessed = ((Integer) returnArray[1]).intValue();
+            liveTokens = liveTokens.subList( numTokensProcessed, liveTokens.size());
+            args = new String [] { viewName, (String) liveTokens.get( 0),
+                                   (String) liveTokens.get( 1),
+                                   (String) liveTokens.get( 2)};
 
 
           } else {
@@ -151,23 +170,28 @@ public class ConfigureAndPlugins {
     }
   } // end processConfigFile
 
-  private static String collectViewNameParts( List liveTokens) {
+  private static Object [] collectQuotedNameParts( List liveTokens) {
+    Object [] returnArray = new Object [2];
+    int numTokensProcessed = 0;
     StringBuffer viewName = new StringBuffer( "");
     Iterator liveTokensItr = liveTokens.iterator();
-    boolean isViewName = false;
+    boolean isQuotedName = false;
     while (liveTokensItr.hasNext()) {
       String token = (String) liveTokensItr.next();
+      numTokensProcessed++;
       if (token.charAt( 0) == '\"') {
-        isViewName = true;
+        isQuotedName = true;
         viewName.append( token.substring( 1)).append( " ");
-      } else if (isViewName && (token.charAt( token.length() - 1) == '\"')) {
+      } else if (isQuotedName && (token.charAt( token.length() - 1) == '\"')) {
         viewName.append( token.substring( 0, token.length() - 1));
         break;
-      } else if (isViewName) {
+      } else if (isQuotedName) {
         viewName.append( token).append( " ");
       }
     }
-    return viewName.toString();
+    returnArray[0] = viewName.toString();
+    returnArray[1] = new Integer( numTokensProcessed);
+    return returnArray;
   } // end collectViewNameParts
 
   /**
@@ -219,11 +243,30 @@ public class ConfigureAndPlugins {
   } // end mapViewClass
 
   /**
+   * <code>mapRightClickForView</code>
+   *
+   * @param viewName - <code>String</code> - 
+   * @param itemName - <code>String</code> - 
+   * @param itemClassName - <code>String</code> - 
+   * @param itemMethodName - <code>String</code> - 
+   */
+  public static void mapRightClickForView( String viewName, String itemName, String itemClassName,
+                                           String itemMethodName) {
+    System.err.println( "mapViewClass: '" + viewName + "' '" + itemName + "' ' " + itemClassName +
+                        "' '" + itemMethodName);
+    List rightClickList = new ArrayList();
+    rightClickList.add( itemClassName); 
+    rightClickList.add( itemMethodName);
+    PlanWorks.VIEW_MOUSE_RIGHT_MAP.put( viewName + ":" + itemName, rightClickList);
+  } // end mapRightClickForView
+
+  /**
    * <code>invokeLoadPlugin</code>
    *
    * @param pluginMenuItem - <code>JMenuItem</code> - 
    */
   public static void invokeLoadPlugin( JMenu pluginMenu) {
+    boolean resolveIt = true;
     try { 
       Iterator pluginNameItr = PLUG_IN_JAR_MAP.keySet().iterator();
       while (pluginNameItr.hasNext()) {
@@ -231,7 +274,7 @@ public class ConfigureAndPlugins {
         JarClassLoader classLoader = (JarClassLoader) PLUG_IN_LOADER_MAP.get( pluginName);
         String pluginClassName = (String) PLUG_IN_CLASS_MAP.get( pluginName);
         Object [] args = new Object [] { pluginMenu };
-        Class classObject = classLoader.loadClass( pluginClassName);
+        Class classObject = classLoader.loadClassAndResolveIt( pluginClassName);
         // System.err.println( "classObject name " + classObject.getName());
         Method method =
           classObject.getMethod( "loadPlugin",

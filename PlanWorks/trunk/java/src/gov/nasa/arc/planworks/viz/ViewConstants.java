@@ -53,9 +53,10 @@ public abstract class ViewConstants {
   /**
    * constant <code>PRIMARY_SELECTION_COLOR</code> -
    *                   same as jGoView.getDefaultPrimarySelectionColor()
-   *
    */
   public static final Color PRIMARY_SELECTION_COLOR = ColorMap.getColor( "green");
+
+  public static final Color RESOURCE_TRANSACTION_BG_COLOR = ColorMap.getColor( "lightGray");
 
   public static final int INTERNAL_FRAME_X_DELTA = 100;
 
@@ -347,5 +348,11 @@ public abstract class ViewConstants {
   public static final String NODE_SHAPES_FRAME = "PlanWorks Node Shapes";
   public static final int NODE_SHAPES_FRAME_WIDTH = 550;
   public static final int NODE_SHAPES_FRAME_HEIGHT = 325;
+
+  public static final int WAIT_NUM_CYCLES = 10; 
+  public static final int WAIT_INTERVAL = 50; //in milliseconds
+
+  public static final int MONITOR_MIN_MAX_SCALING = 100;
+
 
 } // end ViewConstants

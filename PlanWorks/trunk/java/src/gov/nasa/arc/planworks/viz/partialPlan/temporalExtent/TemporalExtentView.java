@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.53 2004-07-08 21:33:26 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.54 2004-07-27 21:58:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -22,6 +22,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,10 +57,12 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
@@ -103,11 +106,11 @@ public class TemporalExtentView extends PartialPlanView  {
   private int temporalDisplayMode;
   private boolean isStepButtonView;
   private Integer focusNodeId;
-
+  private int numOperations;
 
   /**
    * <code>TemporalExtentView</code> - constructor 
-   *                             Use SwingUtilities.invokeLater( runInit) to
+   *                             Use SwingWorker to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>ViewableObject</code> - 
@@ -118,7 +121,14 @@ public class TemporalExtentView extends PartialPlanView  {
     temporalExtentViewInit(viewSet);
     isStepButtonView = false;
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   /**
@@ -134,7 +144,14 @@ public class TemporalExtentView extends PartialPlanView  {
     temporalExtentViewInit(viewSet);
     isStepButtonView = true;
     setState(s);
-    SwingUtilities.invokeLater(runInit);
+    // SwingUtilities.invokeLater(runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   }
 
   /**
@@ -153,7 +170,14 @@ public class TemporalExtentView extends PartialPlanView  {
       addViewListener( viewListener);
     }
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   private void temporalExtentViewInit(ViewSet viewSet) {
@@ -220,11 +244,11 @@ public class TemporalExtentView extends PartialPlanView  {
     temporalDisplayMode = state.displayMode();
   } // end setState
 
-  Runnable runInit = new Runnable() {
-      public void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -235,12 +259,13 @@ public class TemporalExtentView extends PartialPlanView  {
    *    "Cannot measure text until a JGoExtentView exists and is part of a visible window".
    *     int extentScrollExtent = jGoExtentView.getHorizontalScrollBar().getSize().getWidth();
    *    called by componentShown method on the JFrame
-   *    JGoExtentView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoExtentView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TemporalExtentView instance to become displayable
     if (! ViewGenerics.displayableWait( TemporalExtentView.this)) {
+      closeView( this);
       return;
     }
 
@@ -341,15 +366,39 @@ public class TemporalExtentView extends PartialPlanView  {
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     temporalNodeList = new UniqueSet();
+    List tokenList = partialPlan.getTokenList();
+    numOperations = 4;
+    progressMonitorThread( "Rendering Temporal Extent View:", 0, numOperations,
+                           Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      closeView( this);
+      return;
+    }
+    numOperations = 1;
+    progressMonitor.setNote( "Creating nodes ...");
+    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
-    createTemporalNodes();
+    createTemporalNodes( tokenList);
+
+    if (progressMonitor.isCanceled()) {
+      String msg = "User Canceled Temporal Extent View Rendering";
+      System.err.println( msg);
+      isProgressMonitorCancel = true;
+      closeView( this);
+      return;
+    }
     boolean showDialog = true;
     isContentSpecRendered( ViewConstants.TEMPORAL_EXTENT_VIEW, showDialog);
+
+    numOperations++;
+    progressMonitor.setNote( "Allocating layout ...");
+    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
 
     layoutTemporalNodes();
     // equalize view widths so scrollbars are equal
     equalizeViewWidths( isRedraw);
 
+    progressMonitor.close();
   } // end createTemporalExtentView
 
   /**
@@ -442,8 +491,7 @@ public class TemporalExtentView extends PartialPlanView  {
     return timeScaleMark;
   }
 
-  private void createTemporalNodes() {
-    List tokenList = partialPlan.getTokenList();
+  private void createTemporalNodes( List tokenList) {
     Iterator tokenIterator = tokenList.iterator();
     Color backgroundColor = null;
     while (tokenIterator.hasNext()) {
@@ -484,8 +532,19 @@ public class TemporalExtentView extends PartialPlanView  {
           jGoExtentView.getDocument().addObjectAtTail( temporalNode);
         }
       }
+      if (progressMonitor.isCanceled()) {
+        cancelRendering();
+        return;
+      }
     }
   } // end createTemporalNodes
+
+  private void cancelRendering() {
+    String msg = "User Canceled Temporal Extent View Rendering";
+    System.err.println( msg);
+    isProgressMonitorCancel = true;
+    closeView( this);
+  } // end cancelRendering
 
   private void layoutTemporalNodes() {
     /*List extents = new ArrayList();
@@ -512,6 +571,15 @@ public class TemporalExtentView extends PartialPlanView  {
                                      JOptionPane.ERROR_MESSAGE);
       return;
     }
+    if (progressMonitor.isCanceled()) {
+      cancelRendering();
+      return;
+    }
+    numOperations++;
+    progressMonitor.setNote( "Rendering nodes ...");
+    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+
+
     for (Iterator it = extents.iterator(); it.hasNext();) {
       TemporalNode temporalNode = (TemporalNode) it.next();
       // System.err.println( temporalNode.getPredicateName() + " cellRow " +
@@ -521,6 +589,10 @@ public class TemporalExtentView extends PartialPlanView  {
       }
       // render the node
       temporalNode.configure();
+      if (progressMonitor.isCanceled()) {
+        cancelRendering();
+        return;
+      }
     }
   } // end layoutTemporalNodes
 

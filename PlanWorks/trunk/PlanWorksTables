@@ -158,7 +158,7 @@ CREATE TABLE ConstraintVarMap (
   VariableId int(11) NOT NULL default '0',
   PartialPlanId bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (PartialPlanId,ConstraintId,VariableId),
-  INDEX (ConstraintId), INDEX(VariableId)
+  INDEX (ConstraintId), INDEX(VariableId), INDEX (PartialPlanId)
 ) TYPE=MyISAM;
 
 --
@@ -203,7 +203,7 @@ CREATE TABLE PartialPlan (
   Model varchar(255) default NULL,
   SequenceId bigint(20) NOT NULL default '0',
   PRIMARY KEY (PartialPlanId),
-  INDEX (SequenceId)
+  INDEX (PlanName), INDEX (SequenceId)
 ) TYPE=MyISAM;
 
 --
@@ -275,7 +275,8 @@ CREATE TABLE Token (
   PRIMARY KEY  (PartialPlanId,TokenId),
   INDEX (TokenId), INDEX (SlotId), INDEX (SlotIndex), INDEX (StartVarId), 
   INDEX (EndVarId), INDEX (DurationVarId), INDEX (StateVarId), 
-  INDEX (PredicateName), INDEX (ParentId), INDEX (ObjectVarId)
+  INDEX (PredicateName), INDEX (ParentId), INDEX (ObjectVarId),
+  INDEX (IsFreeToken)
 ) TYPE=MyISAM;
 
 --
@@ -318,7 +319,7 @@ CREATE TABLE Variable (
   VariableType varchar(255) NOT NULL,
   PRIMARY KEY  (PartialPlanId,VariableId),
   INDEX (VariableId), INDEX (VariableType), INDEX (ParentId), INDEX (DomainType), 
-  INDEX (ParameterName)
+  INDEX (ParameterName), INDEX (PartialPlanId)
 ) TYPE=MyISAM;
 
 --
@@ -343,7 +344,7 @@ CREATE TABLE Transaction (
   PartialPlanId bigint(20) NOT NULL default '0',
   TransactionInfo blob NOT NULL,
   PRIMARY KEY (PartialPlanId,TransactionId),
-  INDEX (SequenceId), INDEX (StepNumber)
+  INDEX (SequenceId), INDEX (StepNumber), INDEX (TransactionName)
 ) TYPE=MyISAM;
 
 --
@@ -363,7 +364,9 @@ CREATE TABLE PartialPlanStats (
   NumConstraints int(11) NOT NULL default '0',
   NumTransactions int(11) NOT NULL default '0',
   PRIMARY KEY (SequenceId, PartialPlanId),
-  INDEX (StepNum)
+  INDEX (StepNum), 
+  INDEX (NumTokens), INDEX (NumVariables), INDEX (NumConstraints),
+  INDEX ( NumTransactions)
 ) TYPE=MyISAM;
 
 --

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.60 2004-07-08 21:33:26 taylor Exp $
+// $Id: TimelineView.java,v 1.61 2004-07-27 21:58:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -52,9 +52,11 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
@@ -90,9 +92,10 @@ public class TimelineView extends PartialPlanView {
   private boolean isStepButtonView;
   private Integer focusNodeId;
 
+
   /**
    * <code>TimelineView</code> - constructor - 
-   *                             Use SwingUtilities.invokeLater( runInit) to
+   *                             Use SwingWorker to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>ViewableObject</code> - 
@@ -102,7 +105,14 @@ public class TimelineView extends PartialPlanView {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     timelineViewInit( (PwPartialPlan) partialPlan, viewSet);
     isStepButtonView = false;
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
   /**
@@ -118,7 +128,14 @@ public class TimelineView extends PartialPlanView {
     timelineViewInit( (PwPartialPlan) partialPlan, viewSet);
     isStepButtonView = true;
     setState(s);
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   }
 
   /**
@@ -136,7 +153,14 @@ public class TimelineView extends PartialPlanView {
     if (viewListener != null) {
       addViewListener( viewListener);
     }
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   }
 
   private void timelineViewInit(ViewableObject partialPlan, ViewSet viewSet) {
@@ -173,11 +197,11 @@ public class TimelineView extends PartialPlanView {
     zoomView( jGoView, isSetState, this);
   } // end setState
 
-  Runnable runInit = new Runnable() {
-      public void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -187,12 +211,13 @@ public class TimelineView extends PartialPlanView {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public void init() {
     handleEvent(ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     if (! ViewGenerics.displayableWait( TimelineView.this)) {
+      closeView( this);
       return;
     }
 
@@ -224,13 +249,9 @@ public class TimelineView extends PartialPlanView {
                            ( ViewConstants.TIMELINE_VIEW)) + " msecs.");
       startTimeMSecs = 0L;
     } else {
-      try {
-        ViewListener viewListener = null;
-        viewSet.openView( this.getClass().getName(), viewListener).setClosed( true);
-      } catch (PropertyVetoException excp) {
-      }
+      closeView( this);
+      return;
     }
-
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
@@ -293,7 +314,7 @@ public class TimelineView extends PartialPlanView {
       isContentSpecRendered( ViewConstants.TIMELINE_VIEW, showDialog);
     }
     return isValid;
-  } // end createTemporalExtentView
+  } // end renderTimelineAndSlotNodes
 
   /**
    * <code>getJGoView</code> - 
@@ -368,11 +389,26 @@ public class TimelineView extends PartialPlanView {
   }
 
   private boolean createTimelineAndSlotNodes() {
+    int numTimelines = 0;
+    List objectList = partialPlan.getObjectList();
+    Iterator objectIterator = objectList.iterator();
+    while (objectIterator.hasNext()) {
+      PwObject object = (PwObject) objectIterator.next();
+      if (object.getObjectType() == DbConstants.O_TIMELINE) {
+        numTimelines++;
+      }
+    }
+    numTimelines++; // for free tokens
+    progressMonitorThread( "Rendering Timeline View ...", 0, numTimelines,
+                           Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      return false;
+    }
+    numTimelines = 0;
     boolean isValid = true;
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
-    List objectList = partialPlan.getObjectList();
-    Iterator objectIterator = objectList.iterator();
+    objectIterator = objectList.iterator();
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
       if(object.getObjectType() == DbConstants.O_TIMELINE) {
@@ -396,18 +432,29 @@ public class TimelineView extends PartialPlanView {
         jGoDocument.addObjectAtTail(timelineNode);
         x += timelineNode.getSize().getWidth();
         isValid = createSlotNodes(timeline, timelineNode, x, y, timelineColor);
-        if(!isValid) {
+        if(! isValid) {
+          isProgressMonitorCancel = true;
           return isValid;
         }
         y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        if (progressMonitor.isCanceled()) {
+          String msg = "User Canceled Timeline View Rendering";
+          System.err.println( msg);
+          isProgressMonitorCancel = true;
+          return false;
+        }
+        numTimelines++;
+        progressMonitor.setProgress( numTimelines * ViewConstants.MONITOR_MIN_MAX_SCALING);
       }
     }
-
-    return createFreeTokenNodes( x, y, isValid);
+    isValid = createFreeTokenNodes( x, y);
+    isProgressMonitorCancel = true;
+    return isValid;
 
   } // end createTimelineAndSlotNodes
 
-  private boolean createFreeTokenNodes( int x, int y, boolean isValid) {
+  private boolean createFreeTokenNodes( int x, int y) {
+    boolean isValid = true;
     y += ViewConstants.TIMELINE_VIEW_Y_INIT;
     List tokenList = partialPlan.getTokenList();
     Iterator tokenIterator = tokenList.iterator();
@@ -772,6 +819,8 @@ public class TimelineView extends PartialPlanView {
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
                         mouseRightPopup);
+
+    ViewGenerics.createConfigPopupItems( ViewConstants.TIMELINE_VIEW, this, mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.74 2004-07-15 21:24:44 taylor Exp $
+# $Id: build-tags-file.csh,v 1.75 2004-07-27 21:58:01 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -31,6 +31,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/PlanWorks.java \
     src/gov/nasa/arc/planworks/PlanWorksPlugin.java \
     src/gov/nasa/arc/planworks/SequenceViewMenuItem.java \
+    src/gov/nasa/arc/planworks/ThreadWithProgressMonitor.java \
     src/gov/nasa/arc/planworks/db/DbConstants.java \
     src/gov/nasa/arc/planworks/db/PwChoice.java \
     src/gov/nasa/arc/planworks/db/PwConstraint.java \
@@ -111,6 +112,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/mdi/MDIWindowButtonBar.java \
     src/gov/nasa/arc/planworks/mdi/SplashWindow.java \
     src/gov/nasa/arc/planworks/mdi/TileCascader.java \
+    src/gov/nasa/arc/planworks/plugin/PluginEvent.java \
+    src/gov/nasa/arc/planworks/plugin/PluginListener.java \
     src/gov/nasa/arc/planworks/test/BackendTest.java \
     src/gov/nasa/arc/planworks/test/IdSource.java \
     src/gov/nasa/arc/planworks/test/MySQLDBTest.java \
@@ -126,6 +129,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/CollectionUtils.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/ColorStream.java \
+    src/gov/nasa/arc/planworks/util/CreatePartialPlanException.java \
     src/gov/nasa/arc/planworks/util/DirectoryChooser.java \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
     src/gov/nasa/arc/planworks/util/Extent.java \
@@ -135,9 +139,11 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/MouseEventOSX.java \
     src/gov/nasa/arc/planworks/util/OneToManyMap.java \
     src/gov/nasa/arc/planworks/util/PlannerCommandLineDialog.java \
+    src/gov/nasa/arc/planworks/util/ProgressMonitorException.java \
     src/gov/nasa/arc/planworks/util/ProjectNameDialog.java \
     src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java \
     src/gov/nasa/arc/planworks/util/StringNameComparator.java \
+    src/gov/nasa/arc/planworks/util/SwingWorker.java \
     src/gov/nasa/arc/planworks/util/UnaryFunctor.java \
     src/gov/nasa/arc/planworks/util/UniqueSet.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \
@@ -236,6 +242,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionTable.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionTableModel.java \
     src/gov/nasa/arc/planworks/viz/util/FixedHeightPanel.java \
+    src/gov/nasa/arc/planworks/viz/util/PWProgressMonitor.java \
     src/gov/nasa/arc/planworks/viz/util/SortStringComparator.java \
     src/gov/nasa/arc/planworks/viz/util/StepButton.java \
     src/gov/nasa/arc/planworks/viz/util/TableSorter.java \

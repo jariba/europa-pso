@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableQueryView.java,v 1.9 2004-06-16 22:09:18 taylor Exp $
+// $Id: VariableQueryView.java,v 1.10 2004-07-27 21:58:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -30,8 +30,10 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwVariableQuery;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.TransactionHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -110,15 +112,22 @@ public class VariableQueryView extends SequenceView {
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
  
-  Runnable runInit = new Runnable() {
-      public void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -128,12 +137,13 @@ public class VariableQueryView extends SequenceView {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for VariableQueryView instance to become displayable
     if (! ViewGenerics.displayableWait( VariableQueryView.this)) {
+      closeView( this);
       return;
     }
     this.computeFontMetrics( this);
@@ -164,6 +174,11 @@ public class VariableQueryView extends SequenceView {
          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
       System.err.println( rnfExcep);
       rnfExcep.printStackTrace();
+      closeView( this);
+      return;
+    } catch (CreatePartialPlanException cppExcep) {
+      closeView( this);
+      return;
     }
     Object[][] data = new Object [variableList.size()] [columnNames.length];
     for (int row = 0, nRows = variableList.size(); row < nRows; row++) {
@@ -208,7 +223,7 @@ public class VariableQueryView extends SequenceView {
                             variableTable.getRowCount() * variableTable.getRowHeight()));
 
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... '" + this.getName() + "'elapsed time: " +
+    System.err.println( "   ... '" + this.getName() + "' elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init

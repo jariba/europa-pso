@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.9 2004-05-28 20:21:18 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.10 2004-07-27 21:58:10 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -23,7 +23,9 @@ import gov.nasa.arc.planworks.CreateViewThread;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewListener;
 
 
@@ -35,6 +37,8 @@ import gov.nasa.arc.planworks.viz.ViewListener;
  * @version 0.0 
  */
 public class CreatePartialPlanViewThread extends CreateViewThread {
+
+  private static Object staticObject = new Object();
 
   private String partialPlanName;
   private PwPartialPlan partialPlan;
@@ -59,47 +63,58 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
    * <code>run</code>
    *
    */
-  public final void run() {
-    try {
-      SwingUtilities.invokeAndWait( new Runnable() {
-          public final void run() {
-            createPartialPlanView();
-          }
-        });
-    } catch (InterruptedException ie) {
-      System.err.println( "CreatePartialPlanViewThread: InterruptedException");
-      ie.printStackTrace();
-    } catch (InvocationTargetException ite) {
-      System.err.println( "CreatePartialPlanViewThread: InvocationTargetException");
-      ite.printStackTrace();
-    }
+  public synchronized final void run() {
+//     try {
+//       SwingUtilities.invokeAndWait( new Runnable() {
+//           public final void run() {
+//             createPartialPlanView();
+//           }
+//         });
+//     } catch (InterruptedException ie) {
+//       System.err.println( "CreatePartialPlanViewThread: InterruptedException");
+//       ie.printStackTrace();
+//     } catch (InvocationTargetException ite) {
+//       System.err.println( "CreatePartialPlanViewThread: InvocationTargetException");
+//       ite.printStackTrace();
+//     }
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          createPartialPlanView();
+          return null;
+        }
+    };
+    worker.start();  
   } // end run
 
-  private void createPartialPlanView() { 
-    PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), viewName);
-    MDIDynamicMenuBar dynamicMenuBar =
-      (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
-    JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-    PlanWorks.getProjectMenu().setEnabled( false);
+  private void createPartialPlanView() {
+    synchronized( staticObject) {
+      PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), viewName);
+      MDIDynamicMenuBar dynamicMenuBar =
+        (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
+      JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
+      PlanWorks.getProjectMenu().setEnabled( false);
 
-    try {
-      PwPlanningSequence planSequence =
-        PlanWorks.getPlanWorks().getCurrentProject().getPlanningSequence( seqUrl);
+      try {
+        PwPlanningSequence planSequence =
+          PlanWorks.getPlanWorks().getCurrentProject().getPlanningSequence( seqUrl);
         
-      PwPartialPlan partialPlan = planSequence.getPartialPlan( partialPlanName);
-      renderView( sequenceName + System.getProperty( "file.separator") + partialPlanName,
-                  partialPlan, viewListener);
-    } catch (ResourceNotFoundException rnfExcep) {
-      int index = rnfExcep.getMessage().indexOf( ":");
-      JOptionPane.showMessageDialog
-        ( PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
-         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-      System.err.println( rnfExcep);
-      // rnfExcep.printStackTrace();
-    }
+        PwPartialPlan partialPlan = planSequence.getPartialPlan( partialPlanName);
+        renderView( sequenceName + System.getProperty( "file.separator") + partialPlanName,
+                    partialPlan, viewListener);
+      } catch (ResourceNotFoundException rnfExcep) {
+        int index = rnfExcep.getMessage().indexOf( ":");
+        JOptionPane.showMessageDialog
+          ( PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+        System.err.println( rnfExcep);
+        // rnfExcep.printStackTrace();
+      } catch (CreatePartialPlanException cppExcep) {
+        // user clicked Cancel on ProgressMonitor - renderView will not be called
+      }
 
-    PlanWorks.getPlanWorks().getProjectMenu().setEnabled( true);
-    dynamicMenuBar.enableMenu( planSeqMenu);
+      PlanWorks.getPlanWorks().getProjectMenu().setEnabled( true);
+      dynamicMenuBar.enableMenu( planSeqMenu);
+    }
   } // end createPartialPlanView
 
 } // end class CreatePartialPlanViewThread

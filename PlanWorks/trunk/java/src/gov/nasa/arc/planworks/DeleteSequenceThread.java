@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteSequenceThread.java,v 1.8 2004-03-03 02:14:20 taylor Exp $
+// $Id: DeleteSequenceThread.java,v 1.9 2004-07-27 21:58:03 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -23,6 +23,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
 /**
@@ -32,7 +33,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0 
  */
-public class DeleteSequenceThread extends Thread {
+public class DeleteSequenceThread extends ThreadWithProgressMonitor {
 
   /**
    * <code>DeleteSequenceThread</code> - constructor 
@@ -51,10 +52,18 @@ public class DeleteSequenceThread extends Thread {
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
     PlanWorks.getPlanWorks().projectMenu.setEnabled(false);
 
+    progressMonitorThread( "Deleting sequence ...", 0, 6);
+    if (! progressMonitorWait()) {
+      return;
+    }
+    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+
     deleteSequence();
 
     PlanWorks.getPlanWorks().projectMenu.setEnabled(true);
     dynamicMenuBar.enableMenu( planSeqMenu);
+
+    isProgressMonitorCancel = true;
   }
 
   private void deleteSequence() {

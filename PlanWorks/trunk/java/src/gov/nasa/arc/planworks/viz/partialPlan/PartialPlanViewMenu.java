@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.15 2004-07-15 21:24:48 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.16 2004-07-27 21:58:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,19 +14,18 @@ package gov.nasa.arc.planworks.viz.partialPlan;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 
+import gov.nasa.arc.planworks.CreateViewThread;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
@@ -283,6 +282,9 @@ public class PartialPlanViewMenu extends JPopupMenu{
     } catch (ResourceNotFoundException rnfExcep) {
       System.err.println( rnfExcep);
       rnfExcep.printStackTrace();
+      return null;
+    } catch (CreatePartialPlanException cppExcep) {
+      return null;
     }
 
     viewItem.addActionListener( new CreateOpenViewListener( this, viewName, partialPlan,
@@ -297,9 +299,9 @@ public class PartialPlanViewMenu extends JPopupMenu{
    * @param viewName - <code>String</code> - 
    * @param menuItem - <code>PartialPlanViewMenuItem</code> - 
    */
-  public void createPartialPlanViewThread( String viewName,
-                                                  PartialPlanViewMenuItem menuItem) {
-    Thread thread = new CreatePartialPlanViewThread(viewName, menuItem);
+  public void createPartialPlanViewThread( final String viewName,
+                                           final PartialPlanViewMenuItem menuItem) {
+    final CreateViewThread thread = new CreatePartialPlanViewThread(viewName, menuItem);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
   } // end createPartialPlanViewThread
@@ -335,7 +337,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
       findIdInView( idToFind, viewName, partialPlan, viewSet, viewExists);
     } // end run
 
-  } // end class FindIdInViewThread
+  } // end class CreateFindIdInViewThread
 
 
 

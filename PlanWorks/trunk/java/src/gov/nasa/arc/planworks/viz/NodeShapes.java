@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeShapes.java,v 1.2 2004-06-21 22:43:00 taylor Exp $
+// $Id: NodeShapes.java,v 1.3 2004-07-27 21:58:08 taylor Exp $
 //
 // PlanWorks
 //
@@ -28,6 +28,7 @@ import com.nwoods.jgo.JGoText;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ObjectNode;
@@ -77,15 +78,22 @@ public  class NodeShapes extends JPanel {
           PlanWorks.getPlanWorks().setNodeShapesFrame( null);
         }});
 
-    SwingUtilities.invokeLater( runInit);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
   } // end constructor
 
  
-  Runnable runInit = new Runnable() {
-      public void run() {
-        init();
-      }
-    };
+//   Runnable runInit = new Runnable() {
+//       public void run() {
+//         init();
+//       }
+//     };
 
   /**
    * <code>init</code> - wait for instance to become displayable, determine
@@ -94,7 +102,7 @@ public  class NodeShapes extends JPanel {
    *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
-   *    JGoView.setVisible( true) must be completed -- use runInit in constructor
+   *    JGoView.setVisible( true) must be completed -- use SwingWorker in constructor
    */
   public void init() {
     // wait to become displayable

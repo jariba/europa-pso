@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.92 2004-07-23 16:18:34 pdaley Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.93 2004-07-27 21:58:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.FileCopy;
 import gov.nasa.arc.planworks.util.FunctorFactory;
+import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.util.OneToManyMap;
@@ -333,9 +334,11 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    * @param step - <code>int</code> - 
    * @return - <code>PwPartialPlan</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
+   * @exception ResourceNotFoundException if an error occurs
+   * @exception CreatePartialPlanException if the user interrupts the plan creation
    */
-  public PwPartialPlan getPartialPlan( final int step) throws IndexOutOfBoundsException, 
-  ResourceNotFoundException {
+  public PwPartialPlan getPartialPlan( final int step)
+    throws IndexOutOfBoundsException, ResourceNotFoundException, CreatePartialPlanException {
     if(step >= 0 && step < stepCount) {
       String name = "step" + step;
       if(!partialPlans.containsKey(name)) {
@@ -356,8 +359,10 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    * @param planName - <code>String</code> - 
    * @return - <code>PwPartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
+   * @exception CreatePartialPlanException if the user interrupts the plan creation
    */
-  public PwPartialPlan getPartialPlan( final String planName) throws ResourceNotFoundException {
+  public synchronized PwPartialPlan getPartialPlan( final String planName)
+    throws ResourceNotFoundException, CreatePartialPlanException {
     if(!partialPlans.containsKey(planName)) {
       throw new ResourceNotFoundException("plan name '" + planName + "' not found in url " + url);
     }
@@ -368,7 +373,16 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     return retval;
   } // end getPartialPlan( String)
 
-  public PwPartialPlan getPartialPlan(final Long ppId) throws ResourceNotFoundException {
+  /**
+   * <code>getPartialPlan</code>
+   *
+   * @param ppId - <code>Long</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   * @exception CreatePartialPlanException if the user interrupts the plan creation
+   */
+  public synchronized PwPartialPlan getPartialPlan(final Long ppId)
+    throws ResourceNotFoundException, CreatePartialPlanException {
     for(Iterator it = partialPlans.values().iterator(); it.hasNext();) {
       PwPartialPlan pp = (PwPartialPlan) it.next();
       if(pp != null && pp.getId().equals(ppId))
@@ -377,21 +391,59 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     return addPartialPlan(ppId);
   }
 
-  public PwPartialPlan getNextPartialPlan(final int step) throws ResourceNotFoundException, 
-  IndexOutOfBoundsException {
+  /**
+   * <code>getNextPartialPlan</code>
+   *
+   * @param step - <code>int</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   * @exception IndexOutOfBoundsException if an error occurs
+   * @exception CreatePartialPlanException if an error occurs
+   */
+  public PwPartialPlan getNextPartialPlan(final int step)
+    throws ResourceNotFoundException, IndexOutOfBoundsException, CreatePartialPlanException {
     return getPartialPlan(step+1);
   }
-  public PwPartialPlan getNextPartialPlan(final String planName) throws ResourceNotFoundException,
-  IndexOutOfBoundsException {
+
+  /**
+   * <code>getNextPartialPlan</code>
+   *
+   * @param planName - <code>String</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   * @exception IndexOutOfBoundsException if an error occurs
+   * @exception CreatePartialPlanException if an error occurs
+   */
+  public PwPartialPlan getNextPartialPlan(final String planName)
+    throws ResourceNotFoundException, IndexOutOfBoundsException, CreatePartialPlanException {
     return getPartialPlan(Integer.parseInt(planName.substring(4)) + 1);
   }
   
-  public PwPartialPlan getPrevPartialPlan(final int step) throws ResourceNotFoundException,
-  IndexOutOfBoundsException {
+  /**
+   * <code>getPrevPartialPlan</code>
+   *
+   * @param step - <code>int</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   * @exception IndexOutOfBoundsException if an error occurs
+   * @exception CreatePartialPlanException if an error occurs
+   */
+  public PwPartialPlan getPrevPartialPlan(final int step)
+    throws ResourceNotFoundException, IndexOutOfBoundsException, CreatePartialPlanException {
     return getPartialPlan(step-1);
   }
-  public PwPartialPlan getPrevPartialPlan(final String planName) throws ResourceNotFoundException, 
-  IndexOutOfBoundsException {
+
+  /**
+   * <code>getPrevPartialPlan</code>
+   *
+   * @param planName - <code>String</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   * @exception IndexOutOfBoundsException if an error occurs
+   * @exception CreatePartialPlanException if an error occurs
+   */
+  public PwPartialPlan getPrevPartialPlan(final String planName)
+    throws ResourceNotFoundException, IndexOutOfBoundsException, CreatePartialPlanException {
     return getPartialPlan(Integer.parseInt(planName.substring(4)) - 1);
   }
 
@@ -408,16 +460,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     planNamesInFilesystem.add(partialPlan.getName());
   }
   
-  /**
-   * <code>addPartialPlan</code> -
-   *          maintain PwPartialPlanImpl instance ordering of partialPlanNames
-   *
-   * @param partialPlanName - <code>String</code> - 
-   * @return - <code>PwPartialPlan</code> - 
-   * @exception ResourceNotFoundException if an error occurs
-   */
   private PwPartialPlan addPartialPlan(final String partialPlanName) 
-    throws ResourceNotFoundException {
+    throws ResourceNotFoundException, CreatePartialPlanException {
     if(partialPlans.containsKey(partialPlanName)) {
       try {
         PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, this);
@@ -436,7 +480,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
                                         " in sequence " + name);
   }
 
-  private PwPartialPlan addPartialPlan(final Long ppId) throws ResourceNotFoundException {
+  private PwPartialPlan addPartialPlan(final Long ppId)
+    throws ResourceNotFoundException, CreatePartialPlanException {
       String planName = MySQLDB.getPartialPlanNameById(id, ppId);
       if(planName == null) {
         planNamesInFilesystem.remove(planName);
@@ -517,7 +562,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
 
   // end implement ViewableObject
 
-  public List getOpenDecisionsForStep(final int stepNum) throws ResourceNotFoundException {
+  public List getOpenDecisionsForStep(final int stepNum)
+    throws ResourceNotFoundException, CreatePartialPlanException {
     loadPartialPlanFiles("step" + stepNum);
     return MySQLDB.queryOpenDecisionsForStep( MySQLDB.getPartialPlanIdByStepNum(id, stepNum),
                                               getPartialPlan( stepNum));
