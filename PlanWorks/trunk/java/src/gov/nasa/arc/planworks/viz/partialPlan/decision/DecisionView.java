@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.2 2004-05-29 00:31:39 taylor Exp $
+// $Id: DecisionView.java,v 1.3 2004-06-03 17:33:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,6 +44,11 @@ import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
+
+// PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoView;
+import com.nwoods.jgo.JGoPen;
+import com.nwoods.jgo.JGoStroke;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -75,6 +81,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
+import gov.nasa.arc.planworks.viz.util.FixedHeightPanel;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
@@ -91,11 +98,17 @@ public class DecisionView extends PartialPlanView {
   private static final int ROW_SEPARATOR_HEIGHT = 6;
 
   private PwPartialPlan partialPlan;
+  private PwPlanningSequence planSequence;
   private long startTimeMSecs;
   private ViewSet viewSet;
   private List decisionList; // element PwDecision
   private JTree decisionTree;
   private JScrollPane scrollPane;
+  private JGoView stepJGoView;
+  private FixedHeightPanel stepsPanel;
+  private boolean isStepButtonView;
+  private Font currentDecisionFont;
+
 
   /**
    * <code>DecisionView</code> - constructor - 
@@ -107,6 +120,7 @@ public class DecisionView extends PartialPlanView {
    */
   public DecisionView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    isStepButtonView = false;
     decisionViewInit( (PwPartialPlan) partialPlan, viewSet);
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -122,6 +136,7 @@ public class DecisionView extends PartialPlanView {
   public DecisionView(ViewableObject partialPlan, ViewSet viewSet,
                       PartialPlanViewState s) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    isStepButtonView = true;
     decisionViewInit( (PwPartialPlan) partialPlan, viewSet);
     setState(s);
     SwingUtilities.invokeLater( runInit);
@@ -137,6 +152,7 @@ public class DecisionView extends PartialPlanView {
   public DecisionView( ViewableObject partialPlan, ViewSet viewSet,
                        ViewListener viewListener) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    isStepButtonView = false;
     decisionViewInit( (PwPartialPlan) partialPlan, viewSet);
     if (viewListener != null) {
       addViewListener( viewListener);
@@ -147,11 +163,13 @@ public class DecisionView extends PartialPlanView {
   private void decisionViewInit(ViewableObject partialPlan, ViewSet viewSet) {
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.viewSet = (PartialPlanViewSet) viewSet;
+    planSequence = PlanWorks.getPlanWorks().getPlanSequence( this.partialPlan);
     decisionList = null;
     ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
+    viewName = ViewConstants.DECISION_VIEW;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
   }
@@ -186,17 +204,59 @@ public class DecisionView extends PartialPlanView {
     }
 
     this.computeFontMetrics( this);
-
-    decisionTree = new DecisionTree( renderDecisions());
+    currentDecisionFont = new Font( ViewConstants.VIEW_FONT_NAME,
+                                    ViewConstants.VIEW_FONT_BOLD_STYLE,
+                                    ViewConstants.VIEW_FONT_SIZE);
+    Integer currenDecisionId = null;
+    try {
+      currenDecisionId =
+        planSequence.getCurrentDecisionIdForStep( partialPlan.getStepNumber());
+      decisionTree = new DecisionTree( renderDecisions(), currenDecisionId);
+    } catch ( ResourceNotFoundException rnfExcep) {
+      int index = rnfExcep.getMessage().indexOf( ":");
+      JOptionPane.showMessageDialog
+        (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+      System.err.println( rnfExcep);
+      rnfExcep.printStackTrace();
+    }
 
     scrollPane = new JScrollPane( decisionTree);
     add( scrollPane, BorderLayout.NORTH);
+
+    stepJGoView = new JGoView();
+    stepJGoView.setHorizontalScrollBar( null);
+    stepJGoView.setVerticalScrollBar( null);
+    stepJGoView.validate();
+    stepJGoView.setVisible( true);
+
+    stepsPanel = new FixedHeightPanel( stepJGoView, this);
+    stepsPanel.setLayout( new BoxLayout( stepsPanel, BoxLayout.Y_AXIS));
+
+    // force step icon to be in ~center of fixed height panel
+    JGoStroke fixedHeightLine = new JGoStroke();
+    fixedHeightLine.addPoint( ViewConstants.TIMELINE_VIEW_X_INIT,
+                              ViewConstants.TIMELINE_VIEW_Y_INIT);
+    fixedHeightLine.addPoint( (ViewConstants.TIMELINE_VIEW_X_INIT * 4),
+                              (ViewConstants.TIMELINE_VIEW_Y_INIT * 3));
+    fixedHeightLine.setPen( new JGoPen( JGoPen.SOLID, 1, ViewConstants.VIEW_BACKGROUND_COLOR));
+    // fixedHeightLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "black")));
+    stepJGoView.getDocument().addObjectAtTail( fixedHeightLine);
+
+    stepJGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
+    stepsPanel.add( stepJGoView, BorderLayout.NORTH);
+
+    add( stepsPanel, BorderLayout.NORTH);
+
     this.setVisible( true);
 
-//     System.err.println( "row cnt " + decisionTree.getRowCount() +
-//                         " height " + decisionTree.getRowHeight());
     expandViewFrame( viewFrame, ViewConstants.DECISION_TREE_VIEW_WIDTH,
-                     ViewConstants.DECISION_TREE_VIEW_HEIGHT);
+                     (int) (ViewConstants.DECISION_TREE_VIEW_HEIGHT +
+                            stepJGoView.getDocumentSize().getHeight()));
+
+    addStepButtons( stepJGoView);
+
+    findAndSelectDecisionId( currenDecisionId);
 
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.DECISION_VIEW + " elapsed time: " +
@@ -209,6 +269,67 @@ public class DecisionView extends PartialPlanView {
   } // end init
 
   /**
+   * <code>redraw</code> - called by Content Spec to apply user's content spec request.
+   *                       setVisible(true | false)
+   *                       according to the Content Spec enabled ids
+   *
+   */
+  public void redraw() {
+    Thread thread = new RedrawViewThread();
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+  }
+
+  class RedrawViewThread extends Thread {
+
+    public RedrawViewThread() {
+    }  // end constructor
+
+    public void run() {
+      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+      System.err.println( "Redrawing Decision View ...");
+      if (startTimeMSecs == 0L) {
+        startTimeMSecs = System.currentTimeMillis();
+      }
+      Integer currenDecisionId = null;
+      try {
+        ViewGenerics.setRedrawCursor( viewFrame);
+
+        DecisionView.this.getLayout().removeLayoutComponent( scrollPane);
+
+        try {
+          currenDecisionId =
+            planSequence.getCurrentDecisionIdForStep( partialPlan.getStepNumber());
+          decisionTree = new DecisionTree( renderDecisions(), currenDecisionId);
+        } catch ( ResourceNotFoundException rnfExcep) {
+          int index = rnfExcep.getMessage().indexOf( ":");
+          JOptionPane.showMessageDialog
+            (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+             "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+          System.err.println( rnfExcep);
+          rnfExcep.printStackTrace();
+        }
+        scrollPane = new JScrollPane( decisionTree);
+        DecisionView.this.add( scrollPane, BorderLayout.NORTH);
+        DecisionView.this.repaint();
+
+      } finally {
+        ViewGenerics.resetRedrawCursor( viewFrame);
+      }
+
+      findAndSelectDecisionId( currenDecisionId);
+
+      long stopTimeMSecs = System.currentTimeMillis();
+      System.err.println( "   ... " + ViewConstants.DECISION_VIEW + " elapsed time: " +
+                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
+      startTimeMSecs = 0L;
+      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
+    } //end run
+
+  } // end class RedrawViewThread
+
+
+  /**
    * <code>getDecisionList</code> - constructor 
    *
    */
@@ -216,9 +337,17 @@ public class DecisionView extends PartialPlanView {
     return decisionList;
   }
 
+  /**
+   * <code>getCurrentDecisionFont</code>
+   *
+   * @return - <code>Font</code> - 
+   */
+  public final Font getCurrentDecisionFont() {
+    return currentDecisionFont;
+  }
+
   private DefaultMutableTreeNode renderDecisions() {
     try {
-      PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
       decisionList = planSequence.getOpenDecisionsForStep( partialPlan.getStepNumber());
     } catch ( ResourceNotFoundException rnfExcep) {
       int index = rnfExcep.getMessage().indexOf( ":");
@@ -313,8 +442,12 @@ public class DecisionView extends PartialPlanView {
 
   class DecisionTree extends JTree {
 
-    public DecisionTree( DefaultMutableTreeNode rootNode) {
+    private Integer currentDecisionId;
+
+    public DecisionTree( DefaultMutableTreeNode rootNode, Integer currentDecisionId) {
       super( rootNode);
+      this.currentDecisionId = currentDecisionId;
+
       setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
       setForeground( ColorMap.getColor( "black"));
       setFont( DecisionView.this.getFont());
@@ -355,6 +488,10 @@ public class DecisionView extends PartialPlanView {
         };
       addMouseListener( mouseListener);
     } // end constructor
+
+    public Integer getCurrentDecisionId() {
+      return currentDecisionId;
+    }
 
     public void doSingleClick( int selRow, TreePath selPath, Point viewCoords) {
       // System.err.println( "doSingleClick row " + selRow + " path " + selPath);
@@ -479,6 +616,22 @@ public class DecisionView extends PartialPlanView {
 
   } // end class DecisionTree
 
+  private void findAndSelectDecisionId( Integer decisionId) {
+    Iterator decisionItr = decisionList.iterator();
+    while (decisionItr.hasNext()) {
+      PwDecision decisionToFind = (PwDecision) decisionItr.next();
+      if (decisionToFind.getId().equals( decisionId)) {
+        findAndSelectDecision( decisionToFind);
+        return;
+      }
+    }
+    String message = "Current Decision (key=" + decisionId.toString() + ") not found.";
+    JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                   "Current Decision Not Found in DecisionView",
+                                   JOptionPane.ERROR_MESSAGE);
+    System.err.println( message);
+  } // end findAndSelectDecisionId
+
   private void findAndSelectDecision( PwDecision decisionToFind) {
     int maxRows = decisionTree.getRowCount();
     int foundRow = -1;
@@ -523,6 +676,22 @@ public class DecisionView extends PartialPlanView {
                                                    boolean expanded, boolean leaf,
                                                    int row, boolean hasFocus) {
       super.getTreeCellRendererComponent( tree, value, selected, expanded, leaf, row, hasFocus);
+
+      if (value instanceof DecisionView.DecisionNode) {
+//         System.err.println( "CurrentDecisionId " +
+//                             ((DecisionView.DecisionTree) tree).getCurrentDecisionId() +
+//                             " valueId " +
+//                             ((DecisionView.DecisionNode) value).getDecision().getId());
+        if (((DecisionView.DecisionTree) tree).getCurrentDecisionId().equals
+            ( ((DecisionView.DecisionNode) value).getDecision().getId())) {
+          setFont( DecisionView.this.getCurrentDecisionFont());
+        } else {
+          setFont( DecisionView.this.getFont());
+        }
+      } else if (value instanceof DefaultMutableTreeNode) {
+        // skip root node
+      }
+
       setBackgroundNonSelectionColor( ViewConstants.VIEW_BACKGROUND_COLOR);
       setBorderSelectionColor( ViewConstants.PRIMARY_SELECTION_COLOR);
       String toolTip = null;

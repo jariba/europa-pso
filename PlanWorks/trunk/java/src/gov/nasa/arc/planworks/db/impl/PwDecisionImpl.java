@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDecisionImpl.java,v 1.3 2004-05-28 20:21:15 taylor Exp $
+// $Id: PwDecisionImpl.java,v 1.4 2004-06-03 17:33:35 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
@@ -43,6 +43,8 @@ public class PwDecisionImpl implements PwDecision {
   public final boolean isUnit(){return unit;}
   public final List getChoices(){return new ArrayList(choiceList);}
   public final void makeChoices(final String choiceStr) {
+    // System.err.println( "PwDecisionImpl: " + this.toString());
+    // System.err.println( "PwDecisionImpl: choiceStr " + choiceStr);
     String [] choices = choiceStr.split("\\x1e");
     for(int i = 0; i < choices.length; i++) {
       choiceList.add(new PwChoiceImpl(choices[i]));

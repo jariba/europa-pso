@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.13 2004-05-21 21:39:05 taylor Exp $
+// $Id: ResourceView.java,v 1.14 2004-06-03 17:33:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -148,7 +148,6 @@ public abstract class ResourceView extends PartialPlanView  {
   private JGoStroke maxLevelViewHeightPoint;
   private Font levelScaleFont;
   private boolean isStepButtonView;
-  private String viewName;
 
   /**
    * <code>ResourceView</code> - constructor 

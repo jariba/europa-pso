@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.64 2004-05-29 00:31:38 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.65 2004-06-03 17:33:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -189,6 +189,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
+    viewName = ViewConstants.CONSTRAINT_NETWORK_VIEW;
     //isDebugPrint = true;
     isDebugPrint = false;
 

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.92 2004-05-29 00:31:37 taylor Exp $
+# $Id: README,v 1.93 2004-06-03 17:33:34 taylor Exp $
 #
 
 SUMMARY
@@ -38,6 +38,9 @@ o The Decision View has been added which lists the current plan decision and pen
   viewed in other appropriate views by choosing from Mouse-Right click selections
   on decision and choice entity key values.  A Mouse-Right click on the background 
   offers the user "Find Decision by Key" and opening other views, as choices.
+
+o Previously, the DB Transaction View was not "steppable".  It now is, as are all the
+  other partial plan views.
 
 o  GNATS PRs and CRs completed:
    #2332: Need resizable column width in DB transaction view.

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.41 2004-05-28 20:21:18 taylor Exp $
+// $Id: PartialPlanView.java,v 1.42 2004-06-03 17:33:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -83,6 +83,7 @@ public class PartialPlanView extends VizView {
   protected PwPartialPlan partialPlan;
   protected List validTokenIds;
   protected List displayedTokenIds;
+  protected String viewName; 
 
   private StepButton backwardButton;
   private StepButton forwardButton;
@@ -110,6 +111,7 @@ public class PartialPlanView extends VizView {
     horizontalAdjustmentListener = null;
     verticalAdjustmentListener = null;
     buttonViewListener = null;
+    viewName = null;
   }
 
   /**
@@ -156,6 +158,15 @@ public class PartialPlanView extends VizView {
    */
   public final StepButton getForwardButton() {
     return forwardButton;
+  }
+
+  /**
+   * <code>getViewName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getViewName() {
+    return viewName;
   }
 
   /**
@@ -307,7 +318,7 @@ public class PartialPlanView extends VizView {
     backwardButton.getLabel().setMultiline( true);
     backwardButton.setText( backwardLabelText);
     backwardButton.setLocation((int)(viewRect.getX() + backwardButton.getSize().getWidth()),
-                               (int)(viewRect.getY() + viewRect.getHeight() - 
+                                (int)(viewRect.getY() + viewRect.getHeight() - 
                                      backwardButton.getSize().getHeight()));
 
     Point forwardButtonPt = new Point((int)(viewRect.getX() + 
@@ -325,11 +336,14 @@ public class PartialPlanView extends VizView {
     //view.addObjectAtTail(backwardButton);
     //view.addObjectAtTail(forwardButton);
 
-     view.getHorizontalScrollBar().
-       addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
-     view.getVerticalScrollBar().
-       addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
-
+    if (view.getHorizontalScrollBar() != null) {
+      view.getHorizontalScrollBar().
+        addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
+    }
+    if (view.getVerticalScrollBar() != null) {
+      view.getVerticalScrollBar().
+        addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
+    }
     view.addViewListener(new ButtonViewListener(view, backwardButton, forwardButton));
     backwardButton.addActionListener(new StepButtonListener(-1, view, this));
     forwardButton.addActionListener(new StepButtonListener(1, view, this));
@@ -337,8 +351,12 @@ public class PartialPlanView extends VizView {
   }
 
   public void removeStepButtons( JGoView view) {
-    view.getHorizontalScrollBar().removeAdjustmentListener( horizontalAdjustmentListener);
-    view.getVerticalScrollBar().removeAdjustmentListener( verticalAdjustmentListener);
+    if (view.getHorizontalScrollBar() != null) {
+      view.getHorizontalScrollBar().removeAdjustmentListener( horizontalAdjustmentListener);
+    }
+    if (view.getVerticalScrollBar() != null) {
+      view.getVerticalScrollBar().removeAdjustmentListener( verticalAdjustmentListener);
+    }
     view.removeViewListener( buttonViewListener);
     view.getDocument().removeObject( backwardButton);
     view.getDocument().removeObject( forwardButton);
@@ -404,10 +422,12 @@ public class PartialPlanView extends VizView {
       Point specWindowLocation = new Point( viewSet.getContentSpecWindow().getLocation());
       PartialPlanViewState partialPlanViewState = PartialPlanView.this.getState();
       partialPlanViewState.setContentSpecWindowLocation( specWindowLocation);
+      PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), 
+                                                          pView.getViewName());
       MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),
                                                             partialPlanViewState);
       try {
-        moveSequenceStepsViewHighlight( nextStep);
+        moveSequenceStepsViewHighlight( nextStep, pView.getViewName());
       } catch (ViewRenderingException excp) {
         System.err.println( excp);
         int index = excp.getMessage().indexOf( ":");
@@ -480,11 +500,12 @@ public class PartialPlanView extends VizView {
   } // end  class StepButtonListener 
 
 
-  private void moveSequenceStepsViewHighlight( PwPartialPlan nextStep)
+  private void moveSequenceStepsViewHighlight( PwPartialPlan nextStep, String viewName)
     throws ViewRenderingException {
     int currentStepNumber = getPartialPlan().getStepNumber();
     int nextStepNumber = nextStep.getStepNumber();
-    System.err.println("Stepping " + currentStepNumber + " -> " + nextStepNumber);
+    System.err.println("Stepping " + viewName + " " + currentStepNumber + " -> " +
+                       nextStepNumber + " ...");
     MDIInternalFrame seqStepsViewFrame =
       PlanWorks.getPlanWorks().getSequenceStepsViewFrame( getPartialPlan().getSequenceUrl());
     SequenceStepsView sequenceStepsView = null;

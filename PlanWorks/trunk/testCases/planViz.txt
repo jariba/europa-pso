@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.44 2004-05-29 00:31:39 taylor Exp $
+// $Id: planViz.txt,v 1.45 2004-06-03 17:33:38 taylor Exp $
 //
 // PlanWorks
 //
@@ -1039,7 +1039,7 @@ Method:
   3. On the Sequence Steps View, select Mouse-Right "Step Backward step nn 
      Active Views".
   4. On the Sequence Steps View, over the original step, select Mouse-Right
-     "Open All Views".  Delete the DBTransaction View.
+     "Open All Views".  
   5. On the Sequence Steps View, select Mouse-Right "Step Forward step nn 
      Active Views".
   6. On the Sequence Steps View, select Mouse-Right "Step Backward step nn 
@@ -1054,8 +1054,7 @@ Post-conditions:
   3. Method:3 - The view is replaces with the same view of the step that was 
      originally opened.  The plan step histogram element highlighting is on the 
      original step.
-  4. Method:4 - The other six partial plan views appear for the selected step.  Then
-     the DBTransaction View is removed.
+  4. Method:4 - The other six partial plan views appear for the selected step. 
   5. Method:5 - The six views are replaced with the same views for the next step 
      in the same positions with possibly different sizes. The plan step histogram 
      element highlighting is on the next step.
@@ -1082,11 +1081,24 @@ Method:
   2. Display "test-seq-1/step<nn>" Decision View by clicking Mouse-Right 
      on the "step<nn>" element of the "SequenceStepsView of test-seq-1", and 
      selecting "Decision View".
+  3. Step the Decision View to a step which has a current decision with choices.
+     Open the choice list.
+  4. Mouse-Right on the decision node "Object|Resource|Object|Token|Variable key=nnn"
+     and choose all available view options, one after another.
+  5. Mouse-Right on the choice node "Token key=nnn" and choose all available view
+     options, one after another.
 
 Post-conditions:
   1. Method:1 - The SequenceStepsView of test-seq-1 appears.
-  2. Method:2 - The Decision View appears with tree display of the step's decisions.
-  3. Method:3 - 
+  2. Method:2 - The Decision View appears with tree display of the step's decisions,
+     the current decision in bold font, highlighted, and scrolled to be viewable.
+  3. Method:3 - The current decision choice list should show one of four possible
+     choices: Token ("Token key=nnn"), Value ("Token key=nnn; activate|merge, etc",
+     Domain ("{10 20 30} | [15 25]"), or Close ("Close").
+  4. Method:4 - The selected views should open and scroll to the appropriate
+     highlighted nodes for the decision key value to be viewed.
+  5. Method:5 - The selected views should open and scroll to the appropriate
+     highlighted nodes for the choice key value to be viewed.
 
-
+Requirements: N/A
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.34 2004-05-21 22:30:30 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.35 2004-06-03 17:33:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -166,9 +166,11 @@ public interface PwPlanningSequence extends ViewableObject {
   
   // end extend ViewableObject
 
-	public List getOpenDecisionsForStep(final int stepnum) throws ResourceNotFoundException;
+  public List getOpenDecisionsForStep(final int stepnum) throws ResourceNotFoundException;
 
-  /**
+  public Integer getCurrentDecisionIdForStep(final int stepNum) throws ResourceNotFoundException;
+
+    /**
    * <code>getTransactionsForConstraint</code>
    *
    * @param id - <code>Integer</code> - 

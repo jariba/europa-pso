@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.49 2004-05-28 20:21:21 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.50 2004-06-03 17:33:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -162,6 +162,7 @@ public class TemporalExtentView extends PartialPlanView  {
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
+    viewName = ViewConstants.TEMPORAL_EXTENT_VIEW;
    
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     

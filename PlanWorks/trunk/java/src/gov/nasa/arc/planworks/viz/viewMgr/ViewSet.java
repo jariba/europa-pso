@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.62 2004-06-02 19:13:06 miatauro Exp $
+// $Id: ViewSet.java,v 1.63 2004-06-03 17:33:38 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -111,19 +111,21 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     VizView view = null;
     try {
       if (viewListener == null) {
-
-				Class [] constructorArgClasses = {Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"),
-																					Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet")};
-				view = (VizView) viewClass.getDeclaredConstructor(constructorArgClasses).newInstance(constructorArgs);
+        Class [] constructorArgClasses =
+          {Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"),
+           Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet")};
+        view = (VizView) viewClass.getDeclaredConstructor(constructorArgClasses).
+          newInstance(constructorArgs);
       } else {
         Object [] testConstructorArgs = new Object[3];
         testConstructorArgs[0] = viewable;
         testConstructorArgs[1] = this;
         testConstructorArgs[2] = viewListener;
-				Class [] argClasses = {Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"),
+        Class [] argClasses = {Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"),
                                Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet"),
                                Class.forName("gov.nasa.arc.planworks.viz.ViewListener")};
-				view = (VizView) viewClass.getDeclaredConstructor(argClasses).newInstance(testConstructorArgs);
+        view = (VizView) viewClass.getDeclaredConstructor(argClasses).
+          newInstance(testConstructorArgs);
       }
     } 
     catch (InvocationTargetException ite) {
