@@ -4,12 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.6 2003-10-02 23:14:53 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.7 2003-10-16 20:29:06 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <strings.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -30,6 +31,10 @@
 
 using namespace std;
 using namespace Europa;
+
+const char *envStepsPerWrite = "PPW_WRITE_NSTEPS";
+
+const char *envAltWriteDest = "PPW_WRITE_DEST";
 
 const char *transactionTypeNames[13] = {"TOKEN_CREATED", "TOKEN_DELETED", "TOKEN_INSERTED",
                                         "TOKEN_FREED", "VARIABLE_CREATED", "VARIABLE_DELETED",
@@ -61,6 +66,22 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
   sequenceId = (((long long int)currTime.tv_sec) * 1000) + (currTime.tv_usec / 1000);
   transactionId = 0;
   transactionList = new List<Transaction>();
+  writeCounter = 0;
+
+  char *spw = getenv(envStepsPerWrite);
+  if(spw == NULL) {
+    stepsPerWrite = 1;
+  }
+  else {
+    stepsPerWrite = (int) strtol(spw, (char **) NULL, 10);
+    if((stepsPerWrite == 0 && errno == EINVAL) || stepsPerWrite == INT_MAX) {
+      FatalError(strerror(errno));
+    }
+  }
+  char *altDest = getenv(envAltWriteDest);
+  if(altDest != NULL) {
+    dest = String(altDest);
+  }
 };
 
 void PartialPlanWriter::write(void) {
@@ -633,18 +654,24 @@ void PartialPlanWriter::outputConstraint(const ConstraintId &constraintId,
 }
 
 void PartialPlanWriter::notifyOfNewToken(TokenId tokenId) {
-  transactionList->append(Transaction(TOKEN_CREATED, tokenId->getKey(), UNKNOWN, transactionId++,
-                                     sequenceId));
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(TOKEN_CREATED, tokenId->getKey(), UNKNOWN, transactionId++,
+                                        sequenceId, nstep));
+  }
 }
 void PartialPlanWriter::notifyTokenIsInserted(TokenId tokenId) { //signals plan step
-  write();
-  transactionList->makeEmpty();
-  transactionList->append(Transaction(TOKEN_INSERTED, tokenId->getKey(), UNKNOWN, transactionId++,
-                                      sequenceId));
+  //write();
+  //transactionList->makeEmpty();
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(TOKEN_INSERTED, tokenId->getKey(), UNKNOWN, transactionId++,
+                                        sequenceId, nstep));
+  }
 }
 void PartialPlanWriter::notifyTokenIsNotInserted(TokenId tokenId) {
-  transactionList->append(Transaction(TOKEN_FREED, tokenId->getKey(), UNKNOWN, transactionId++,
-                                     sequenceId));
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(TOKEN_FREED, tokenId->getKey(), UNKNOWN, transactionId++,
+                                        sequenceId, nstep));
+  }
 }
 void PartialPlanWriter::notifyAfterTokenIsNotInserted(TokenId tokenId) {
 //  transactionList
@@ -653,40 +680,63 @@ void PartialPlanWriter::notifyAfterTokenIsNotInserted(TokenId tokenId) {
 void PartialPlanWriter::notifyOfDeletedToken(TokenId tokenId) {
   //write();
   //transactionList->makeEmpty();
-  transactionList->append(Transaction(TOKEN_DELETED, tokenId->getKey(), UNKNOWN, transactionId++,
-                                     sequenceId));
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(TOKEN_DELETED, tokenId->getKey(), UNKNOWN, transactionId++,
+                                        sequenceId, nstep));
+  }
 }
 void PartialPlanWriter::notifyOfNewVariable(VarId varId) {
-  transactionList->append(Transaction(VAR_CREATED, varId->getKey(), UNKNOWN, transactionId++,
-                                     sequenceId));
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(VAR_CREATED, varId->getKey(), UNKNOWN, transactionId++,
+                                        sequenceId, nstep));
+  }
 }
 void PartialPlanWriter::notifySpecifiedDomainChanged(VarId varId) { //signals plan step
-  write();
-  transactionList->makeEmpty();
-  transactionList->append(Transaction(VAR_DOMAIN_SPECIFIED, varId->getKey(), UNKNOWN,
-                                     transactionId++, sequenceId));
+  //write();
+  //transactionList->makeEmpty();
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(VAR_DOMAIN_SPECIFIED, varId->getKey(), UNKNOWN,
+                                        transactionId++, sequenceId, nstep));
+  }
 }
 void PartialPlanWriter::notifyDerivedDomainChanged(VarId varId) {
-  transactionList->append(Transaction(VAR_DOMAIN_RESTRICTED, varId->getKey(), UNKNOWN, 
-                                     transactionId++, sequenceId));
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(VAR_DOMAIN_RESTRICTED, varId->getKey(), UNKNOWN, 
+                                        transactionId++, sequenceId, nstep));
+  }
 }
 void PartialPlanWriter::notifyOfDeletedVariable(VarId varId) {
-  transactionList->append(Transaction(VAR_DELETED, varId->getKey(), UNKNOWN, transactionId++,
-                                     sequenceId));
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(VAR_DELETED, varId->getKey(), UNKNOWN, transactionId++,
+                                        sequenceId, nstep));
+  }
 }
 void PartialPlanWriter::notifyConstraintInserted(ConstraintId& constrId) {
-  transactionList->append(Transaction(CONSTRAINT_CREATED, constrId->getKey(), UNKNOWN, 
-                                     transactionId++, sequenceId));
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(CONSTRAINT_CREATED, constrId->getKey(), UNKNOWN, 
+                                        transactionId++, sequenceId, nstep));
+  }
 }
 void PartialPlanWriter::notifyConstraintRemoved(ConstraintId& constrId) {
-  transactionList->append(Transaction(CONSTRAINT_DELETED, constrId->getKey(), UNKNOWN,
-                                     transactionId++, sequenceId));
+  if(stepsPerWrite) {
+    transactionList->append(Transaction(CONSTRAINT_DELETED, constrId->getKey(), UNKNOWN,
+                                        transactionId++, sequenceId, nstep));
+  }
+}
+
+void PartialPlanWriter::notifyFlushed(void) {
+  writeCounter++;
+  if(writeCounter == stepsPerWrite) {
+    write();
+    transactionList->makeEmpty();
+    writeCounter = 0;
+  }
 }
 
 void Transaction::write(FILE *out, long long int partialPlanId) {
   if(transactionType == -1) {
     FatalError("Attempted to write invalid transaction.");
   }
-  fprintf(out, "%s\t%d\t%s\t%d\t%lld\t%lld\n", transactionTypeNames[transactionType], objectKey,
-          sourceTypeNames[source], id, sequenceId, partialPlanId);
+  fprintf(out, "%s\t%d\t%s\t%d\t%d\t%lld\t%lld\n", transactionTypeNames[transactionType], objectKey,
+          sourceTypeNames[source], id, stepNum, sequenceId, partialPlanId);
 }
