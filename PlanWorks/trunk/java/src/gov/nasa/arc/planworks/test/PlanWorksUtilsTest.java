@@ -2,7 +2,11 @@ package gov.nasa.arc.planworks.test;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.*;
 
@@ -16,23 +20,30 @@ public class PlanWorksUtilsTest extends TestCase {
   }
   public static TestSuite suite() {
     final TestSuite suite = new TestSuite();
-    suite.addTest(new PlanWorksUtilsTest("testCollectionUtils"));
+    suite.addTest(new PlanWorksUtilsTest("testCollectionMaps"));
+    suite.addTest(new PlanWorksUtilsTest("testCollectionGreps"));
+    suite.addTest(new PlanWorksUtilsTest("testMapUtils"));
+    suite.addTest(new PlanWorksUtilsTest("testListUtils"));
     return suite;
   }
   public PlanWorksUtilsTest(String testType) {
     super(testType);
   }
-  public void testCollectionUtils() {
-//     Integer [] array = new Integer[4];
-//     for(int i = 0; i < array.length; i++) {
-//       array[i] = new Integer(i);
-//     }
-//     Integer [] mappedArray = (Integer []) CollectionUtils.aMap(new IncrementFunctor(), array);
-//     assertTrue("Mapped array isn't the same length", array.length == mappedArray.length);
-//     for(int i = 0; i < mappedArray.length; i++) {
-//       assertTrue("Mapped array value isn't incremented.",
-//                  mappedArray[i].intValue() == array[i].intValue() + 1);
-//     }
+  public void testCollectionMaps() {
+    Integer [] array = new Integer[4];
+    for(int i = 0; i < array.length; i++) {
+      array[i] = new Integer(i);
+    }
+
+    Object [] mappedArray = CollectionUtils.aMap(new IncrementFunctor(), array);
+    assertTrue("Mapped array isn't the same length", array.length == mappedArray.length);
+    for(int i = 0; i < mappedArray.length; i++) {
+      assertTrue("Mapped array value isn't of correct type: " + 
+                 mappedArray[i].getClass().getName(),
+                 mappedArray[i] instanceof Integer);
+      assertTrue("Mapped array value isn't incremented.",
+                 ((Integer)mappedArray[i]).intValue() == array[i].intValue() + 1);
+    }
     
     List list = new ArrayList();
     for(int i = 0; i < 4; i++) {
@@ -50,44 +61,172 @@ public class PlanWorksUtilsTest extends TestCase {
                  ((Integer)list.get(i)).intValue() + 1);
     }
     
-//     mappedArray = (Integer []) CollectionUtils.aInPlaceMap(new IncrementFunctor(), array);
+    int beforeLength = array.length;
+    CollectionUtils.aInPlaceMap(new IncrementFunctor(), array);
     
-//     assertTrue("In-place mapped array isn't the same size.", mappedArray.length == array.length);
-//     for(int i = 0; i < array.length; i++) {
-//       assertTrue("In-place mapped array isn't equal.",
-//                  mappedArray[i].equals(array[i]));
-//       assertTrue("In-place mapped array wasn't incremented.", array[i].intValue() == i + 1);
-//     }
-
-    mappedList = CollectionUtils.lInPlaceMap(new IncrementFunctor(), list);
-    assertTrue("In-place mapped list isn't the same length", list.size() == mappedList.size());
-    assertTrue("List was emptied!", list.size() != 0);
-    assertTrue("Mapped list as emptied!", mappedList.size() != 0);
-    for(int i = 0; i < mappedList.size(); i++) {
-      assertTrue("In-place mapped list isn't equal.",
-                 ((Integer)mappedList.get(i)).equals(list.get(i)));
-      assertTrue("In-place mapped list wasn't incremented.",
-                 ((Integer)list.get(i)).intValue() == i + 1);
+    assertTrue("In-place mapped array isn't the same size.", beforeLength == array.length);
+    for(int i = 0; i < array.length; i++) {
+      assertTrue("In-place mapped array wasn't incremented.", array[i].intValue() == i + 1);
     }
 
-    int compInt = 2;
-    mappedList = CollectionUtils.lGrep(new GreaterThanFunctor(compInt), list);
+    List inPlaceList = new ArrayList(list.size());
+    for(int i = 0; i < list.size(); i++) {
+      inPlaceList.add(new InPlaceInteger(i));
+    }
+    CollectionUtils.lInPlaceMap(new InPlaceIncrementFunctor(), inPlaceList);
+    assertTrue("List was emptied!", inPlaceList.size() != 0);
+    assertTrue("List size was changed!", inPlaceList.size() == list.size());
+    for(int i = 0; i < inPlaceList.size(); i++) {
+      assertTrue("In-place mapped list wasn't incremented.",
+                 ((InPlaceInteger)inPlaceList.get(i)).intValue() == i + 1);
+    }
+  }
+
+  public void testCollectionGreps() {
+    Integer [] array = new Integer[4];
+    for(int i = 0; i < array.length; i++) {
+      array[i] = new Integer(i);
+    }
+    
+    List list = new ArrayList();
+    for(int i = 0; i < 4; i++) {
+      list.add(new Integer(i));
+    }
+
+    int compInt = 1;
+
+    Object [] greppedArray = CollectionUtils.aGrep(new GreaterThanFunctor(compInt), array);
+    assertTrue("Array was emptied!", array.length != 0);
+    assertTrue("grepped array was emptied!", greppedArray.length != 0);
+    assertTrue("grep-array failed to eliminate elements.", greppedArray.length < array.length);
+    for(int i = 0; i < greppedArray.length; i++) {
+      assertTrue("grep-array has wrong type.", greppedArray[i] instanceof Integer);
+      assertTrue("grep-array failed to eliminate correct elements.",
+                 ((Integer) greppedArray[i]).intValue() > compInt);
+    }
+
+    List greppedList = CollectionUtils.lGrep(new GreaterThanFunctor(compInt), list);
     assertTrue("List was emptied!", list.size() != 0);
-    assertTrue("grepped-list was emptied!", mappedList.size() != 0);
-    assertTrue("Grep-list failed to eliminate elements.", list.size() > mappedList.size());
-    for(int i = 0; i < mappedList.size(); i++) {
+    assertTrue("grepped-list was emptied!", greppedList.size() != 0);
+    assertTrue("Grep-list failed to eliminate elements.", list.size() > greppedList.size());
+    for(int i = 0; i < greppedList.size(); i++) {
+      assertTrue("grep-list has wrong type.", greppedList.get(i) instanceof Integer);
       assertTrue("Grep-list failed to eliminate correct elements.",
-                 ((Integer)mappedList.get(i)).intValue() > compInt);
+                 ((Integer)greppedList.get(i)).intValue() > compInt);
     }
 
     int startSize = list.size();
-    mappedList = CollectionUtils.lInPlaceGrep(new GreaterThanFunctor(compInt), list);
+    CollectionUtils.lInPlaceGrep(new GreaterThanFunctor(compInt), list);
     assertTrue("List was emptied!", list.size() != 0);
-    assertTrue("grepped-list was emptied!", mappedList.size() != 0);
     assertTrue("In-place grep list failed to eliminate elements.", list.size() < startSize);
     for(int i = 0; i < list.size(); i++) {
       assertTrue("In-place grep list failed to eliminate correct elements.",
                  ((Integer)list.get(i)).intValue() > compInt);
+    }
+  }
+
+  //testMapUtils
+  public void testMapUtils() {
+    Map testMap = new HashMap();
+    testMap.put("foo", null);
+    testMap.put("bar", "mumble");
+    testMap.put("baz", new Integer(0));
+    testMap.put("quux", "wango");
+    testMap.put("argle", null);
+    List testList = Arrays.asList(new Object [] {"foo", "bar", "quux", "argle", "bargle"});
+
+    List vals = CollectionUtils.validValues(testMap);
+    assertTrue("ValidValues returned incorrect number of values: " + vals.size(),
+               vals.size() == 3);
+    assertTrue("ValidValues returned incorrect values: " + vals,
+               vals.contains("mumble") && vals.contains(new Integer(0)) && vals.contains("wango"));
+
+    for(Iterator i = vals.iterator(); i.hasNext();) {
+      assertTrue("ValidValues returned a null value: " + vals, i.next() != null);
+    }
+
+    List keys = CollectionUtils.validKeys(testMap, testList);
+    assertTrue("ValidKeys returned incorrect number of keys: " + keys.size(),
+               keys.size() == 2);
+    assertTrue("ValidKeys returned incorrect keys: " + keys,
+               keys.contains("bar") && keys.contains("quux"));
+
+    for(Iterator i = keys.iterator(); i.hasNext();) {
+      Object o = i.next();
+      assertTrue("ValidKeys returned an invalid key: " + o, testMap.get(o) != null);
+    }
+    
+    vals = CollectionUtils.validValues(testMap, testList);
+    assertTrue("ValidValues returned incorrect number of values: " + vals.size(),
+               vals.size() == 2);
+    assertTrue("ValidValues returned incorrect values: " + vals,
+               vals.contains("mumble") && vals.contains("wango"));
+    for(Iterator i = vals.iterator(); i.hasNext();) {
+      assertTrue("ValidValues returned a null value: " + vals, i.next() != null);
+    }
+  }
+  //testListUtils
+  public void testListUtils() {
+    Object [] testArray = {"foo", "bar", "baz", "quux", "mumble", "wango"};
+    List testList = Arrays.asList(testArray);
+    
+    Object test = CollectionUtils.findFirst(new FindSuccessFunctor(), testArray);
+    assertTrue("Array find first failed unexpectedly: " + test, 
+               test != null && test.equals("quux"));
+    boolean in = false;
+    for(int i = 0; i < testArray.length; i++) {
+      if(testArray[i].equals(test)) {
+        in = true;
+      }
+    }
+    assertTrue("Array find found element not in array: " + test, in);
+
+    test = CollectionUtils.findFirst(new FindFailureFunctor(), testArray);
+    assertTrue("Array find first failed to fail expectedly: " + test, test == null);
+    
+
+    test = CollectionUtils.findFirst(new FindSuccessFunctor(), testList);
+    assertTrue("List find first failed unexpectedly: " + test,
+               test != null && test.equals("quux"));
+    in = false;
+    for(Iterator i = testList.iterator(); i.hasNext();) {
+      in = in || i.next().equals(test);
+    }
+    assertTrue("List find first found element not in list: " + test, in);
+
+    test = CollectionUtils.findFirst(new FindFailureFunctor(), testList);
+    assertTrue("List find first failed to fail expectedly: " + test, test == null);
+  }
+
+  class InPlaceInteger {
+    private Integer intVal;
+    public InPlaceInteger() {intVal = new Integer(0);}
+    public InPlaceInteger(int n) {intVal = new Integer(n);}
+    public int intValue() {return intVal.intValue();}
+    public void set(int n) {
+      intVal = new Integer(n);
+    }
+  }
+
+  class FindSuccessFunctor implements BooleanFunctor {
+    public FindSuccessFunctor(){}
+    public final boolean func(final Object o) {
+      return o.equals("quux");
+    }
+  }
+
+  class FindFailureFunctor implements BooleanFunctor {
+    public FindFailureFunctor(){}
+    public final boolean func(final Object o) {
+      return o.equals(new Integer(2));
+    }
+  }
+
+  class InPlaceIncrementFunctor implements UnaryFunctor {
+    public InPlaceIncrementFunctor(){}
+    public final Object func(final Object o) {
+      ((InPlaceInteger)o).set(((InPlaceInteger)o).intValue() + 1);
+      return o;
     }
   }
   
