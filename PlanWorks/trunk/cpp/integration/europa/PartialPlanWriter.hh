@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.15 2003-12-30 01:41:00 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.16 2004-01-02 19:06:55 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H
@@ -70,7 +70,7 @@ public:
   void notifyFlushed(void);
   void write();
 private:
-  int nstep, tokenRelationId, enumeratedDomainId, intervalDomainId, transactionId, stepsPerWrite;
+  int nstep, tokenRelationId, /*enumeratedDomainId, intervalDomainId,*/ transactionId, stepsPerWrite;
   int writeCounter, numTransactions, numTokens, numVariables, numConstraints, noWrite;
   long long int sequenceId;
   String dest;
@@ -81,15 +81,15 @@ private:
   std::ofstream *transactionOut, *statsOut;
   ModelId modelId;
   void outputVariable(const VarId &, const char *, const long long int, const TokenId &, 
-                      std::ofstream &, std::ofstream &, std::ofstream &);
+                      int paramId, std::ofstream &/*, std::ofstream &, std::ofstream &*/);
   void outputToken(const TokenId &, const bool, const long long int, const ObjectId *, 
-                   const int,  const SlotId *, std::ofstream &, std::ofstream &, std::ofstream &, std::ofstream &, 
-                   std::ofstream &, std::ofstream &);
+                   const int,  const String &timelineName, const SlotId *, const int,
+                   std::ofstream &, std::ofstream &, std::ofstream &);
   void outputPredicate(PredicateId &, const long long int partialPlanId, 
                        std::ofstream &, std::ofstream &);
   void outputConstraint(const ConstraintId &, const long long int, std::ofstream &, std::ofstream &);
-  void outputIntervalDomain(const Domain &, const long long int, std::ofstream &);
-  void outputEnumDomain(const Domain &, const long long int, std::ofstream &);
+  //void outputIntervalDomain(const Domain &, const long long int, std::ofstream &);
+  //void outputEnumDomain(const Domain &, const long long int, std::ofstream &);
   String getBoundString(const Domain &, const Value &);
   String getEnumString(const Domain &);
   const String getNameForConstraint(const ConstraintId &);

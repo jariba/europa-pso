@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.25 2003-10-25 00:58:09 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.26 2004-01-02 19:05:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -214,7 +214,8 @@ public class PwTokenImpl implements PwToken {
   /**
    * <code>getTokenRelationIdsList</code>
    *
-   * @return - <code>List</code> - of Integer
+   * @return - <code>List</code> - of Integer.  Id for token relation establishing this token as
+   * a slave
    */
   public List getTokenRelationIdsList() {
     return new ArrayList(tokenRelationIds);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.51 2003-12-29 22:01:37 miatauro Exp $
+// $Id: ViewSet.java,v 1.52 2004-01-02 19:06:28 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -31,6 +31,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
+import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
@@ -189,6 +190,15 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
        this instanceof SequenceViewSet) {
       close();
       getViewManager().removeViewSet(viewable);
+//       try {
+//         PlanWorks.planWorks.currentProject.
+//           removePlanningSequence(((PwPlanningSequence)viewable).getId());
+//         System.gc();
+//       }
+//       catch(ResourceNotFoundException rnfe) {
+//         rnfe.printStackTrace();
+//         System.exit(-1);
+//       }
     }
   }  
   /**

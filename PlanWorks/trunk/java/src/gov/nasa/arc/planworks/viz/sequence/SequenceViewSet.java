@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.11 2003-12-20 00:46:20 miatauro Exp $
+// $Id: SequenceViewSet.java,v 1.12 2004-01-02 19:06:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -78,8 +78,7 @@ public class SequenceViewSet extends ViewSet {
     while(planIterator.hasNext()) {
       ViewableObject partialPlan = (ViewableObject) planIterator.next();
       ViewSet set = getViewManager().getViewSet(partialPlan);
-      System.err.println(partialPlan);
-      if(set != null) {
+       if(set != null) {
         set.close();
         getViewManager().removeViewSet(partialPlan);
       }

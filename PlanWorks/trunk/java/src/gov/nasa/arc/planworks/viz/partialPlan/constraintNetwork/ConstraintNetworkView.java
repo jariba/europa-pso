@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.22 2003-12-31 01:02:21 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.23 2004-01-02 19:05:54 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -193,6 +193,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 
     double maxTokenWidth = 0.;
     ListIterator tokenIterator = tokenNodeList.listIterator();
+    long t1 = System.currentTimeMillis();
     while(tokenIterator.hasNext()) {
       ConstraintNetworkTokenNode node = (ConstraintNetworkTokenNode) tokenIterator.next();
       node.discoverLinkage();
@@ -200,7 +201,8 @@ public class ConstraintNetworkView extends PartialPlanView {
         maxTokenWidth = node.getSize().getWidth();
       }
     }
-
+    System.err.println("Discovering token node linkage took " + 
+                       (System.currentTimeMillis() - t1) + "ms");
     VERTICAL_TOKEN_BAND_X = (maxTokenWidth / 2) + NODE_SPACING;
     VERTICAL_VARIABLE_BAND_X = VERTICAL_TOKEN_BAND_X + VERTICAL_BAND_DISTANCE;
     VERTICAL_CONSTRAINT_BAND_X = VERTICAL_VARIABLE_BAND_X + VERTICAL_BAND_DISTANCE;

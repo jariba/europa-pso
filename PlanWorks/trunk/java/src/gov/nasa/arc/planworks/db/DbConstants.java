@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.17 2003-12-19 18:40:36 taylor Exp $
+// $Id: DbConstants.java,v 1.18 2004-01-02 19:04:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -63,13 +63,13 @@ public interface DbConstants {
    * constant <code>PP_TIMELINES_EXT</code>
    *
    */
-  public static final String PP_TIMELINES_EXT = "timelines";
+  //public static final String PP_TIMELINES_EXT = "timelines";
 
   /**
    * constant <code>PP_SLOTS_EXT</code>
    *
    */
-  public static final String PP_SLOTS_EXT = "slots";
+  //public static final String PP_SLOTS_EXT = "slots";
 
   /**
    * constant <code>PP_TOKENS_EXT</code>
@@ -99,13 +99,13 @@ public interface DbConstants {
    * constant <code>PP_ENUMERATED_DOMAINS_EXT</code>
    *
    */
-  public static final String PP_ENUMERATED_DOMAINS_EXT = "enumeratedDomains";
+  //public static final String PP_ENUMERATED_DOMAINS_EXT = "enumeratedDomains";
 
   /**
    * constant <code>PP_INTERVAL_DOMAINS_EXT</code>
    *
    */
-  public static final String PP_INTERVAL_DOMAINS_EXT = "intervalDomains";
+  //public static final String PP_INTERVAL_DOMAINS_EXT = "intervalDomains";
 
   /**
    * constant <code>PP_CONSTRAINTS_EXT</code>
@@ -123,7 +123,7 @@ public interface DbConstants {
    * constant <code>PP_PARAM_VAR_TOKEN_MAP_EXT</code>
    *
    */
-  public static final String PP_PARAM_VAR_TOKEN_MAP_EXT = "paramVarTokenMap";
+  //public static final String PP_PARAM_VAR_TOKEN_MAP_EXT = "paramVarTokenMap";
 
   /**
    * constant <code>PP_CONSTRAINT_VAR_MAP_EXT</code>
@@ -146,12 +146,12 @@ public interface DbConstants {
   public static final String [] PARTIAL_PLAN_FILE_EXTS =
     new String []
       { PP_PARTIAL_PLAN_EXT, PP_OBJECTS_EXT,
-        PP_TIMELINES_EXT, PP_SLOTS_EXT,
+        //PP_TIMELINES_EXT, PP_SLOTS_EXT,
         PP_TOKENS_EXT, PP_VARIABLES_EXT,
         PP_PREDICATES_EXT, PP_PARAMETERS_EXT,
-        PP_ENUMERATED_DOMAINS_EXT, PP_INTERVAL_DOMAINS_EXT,
+        //PP_ENUMERATED_DOMAINS_EXT, PP_INTERVAL_DOMAINS_EXT,
         PP_CONSTRAINTS_EXT, PP_TOKEN_RELATIONS_EXT,
-        PP_PARAM_VAR_TOKEN_MAP_EXT, PP_CONSTRAINT_VAR_MAP_EXT/*, PP_TRANSACTIONS_EXT */};
+        /*PP_PARAM_VAR_TOKEN_MAP_EXT,*/ PP_CONSTRAINT_VAR_MAP_EXT/*, PP_TRANSACTIONS_EXT */};
 
   /**
    * constant <code>NUMBER_OF_PP_FILES</code>
@@ -295,25 +295,25 @@ public interface DbConstants {
 
   public static final String TBL_CONSTRAINT = "VConstraint";
   public static final String TBL_CONSTVARMAP = "ConstraintVarMap";
-  public static final String TBL_ENUMDOMAIN = "EnumeratedDomain";
-  public static final String TBL_INTDOMAIN = "IntervalDomain";
+  //public static final String TBL_ENUMDOMAIN = "EnumeratedDomain";
+  //public static final String TBL_INTDOMAIN = "IntervalDomain";
   public static final String TBL_OBJECT = "Object";
-  public static final String TBL_PARAMVARTOKMAP = "ParamVarTokenMap";
+  //public static final String TBL_PARAMVARTOKMAP = "ParamVarTokenMap";
   public static final String TBL_PARAMETER = "Parameter";
   public static final String TBL_PARTIALPLAN = "PartialPlan";
   public static final String TBL_PREDICATE = "Predicate";
   public static final String TBL_PROJECT = "Project";
   public static final String TBL_SEQUENCE = "Sequence";
-  public static final String TBL_SLOT = "Slot";
-  public static final String TBL_TIMELINE = "Timeline";
+  //public static final String TBL_SLOT = "Slot";
+  //public static final String TBL_TIMELINE = "Timeline";
   public static final String TBL_TOKEN = "Token";
   public static final String TBL_TOKENREL = "TokenRelation";
   public static final String TBL_VARIABLE = "Variable";
   public static final String TBL_TRANSACTION = "Transaction";
 
   public static final String [] PW_DB_TABLES = new String [] {
-    TBL_PARTIALPLAN, TBL_OBJECT, TBL_TIMELINE, TBL_SLOT, TBL_TOKEN, TBL_VARIABLE, TBL_PREDICATE,
-    TBL_PARAMETER, TBL_ENUMDOMAIN, TBL_INTDOMAIN, TBL_CONSTRAINT, TBL_TOKENREL, TBL_PARAMVARTOKMAP,
+    TBL_PARTIALPLAN, TBL_OBJECT, /*TBL_TIMELINE, TBL_SLOT,*/ TBL_TOKEN, TBL_VARIABLE, TBL_PREDICATE,
+    TBL_PARAMETER, /*TBL_ENUMDOMAIN, TBL_INTDOMAIN,*/ TBL_CONSTRAINT, TBL_TOKENREL, /*TBL_PARAMVARTOKMAP,*/
     TBL_CONSTVARMAP, TBL_TRANSACTION, TBL_SEQUENCE, TBL_PROJECT};
 
   // number of numeric characters in a type long value

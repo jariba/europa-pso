@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.13 2003-08-26 01:37:11 taylor Exp $
+// $Id: PwToken.java,v 1.14 2004-01-02 19:04:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -79,7 +79,8 @@ public interface PwToken {
   /**
    * <code>getTokenRelationIdsList</code>
    *
-   * @return - <code>List</code> - of Integer
+   * @return - <code>List</code> - of Integer.  Id for token relation establishing this token
+   * as a slave.
    */
   public abstract List getTokenRelationIdsList();
 
