@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.26 2003-07-03 21:18:38 miatauro Exp $
+// $Id: PlanWorks.java,v 1.27 2003-07-07 17:30:24 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -101,10 +101,10 @@ public class PlanWorks extends MDIDesktopFrame {
   public static String name;
 
   /**
-   * variable <code>osName</code> - make it accessible to JFCUnit tests
+   * variable <code>osType</code> - make it accessible to JFCUnit tests
    *
    */
-  public static String osName;
+  public static String osType;
 
   /**
    * variable <code>planWorksRoot</code> - make it accessible to JFCUnit tests
@@ -915,6 +915,15 @@ public class PlanWorks extends MDIDesktopFrame {
   }
 
   /**
+   * <code>isMacOSX</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public static boolean isMacOSX() {
+    return (osType.equals( "darwin"));
+  }
+
+  /**
    * <code>main</code> - pass in JFrame name
    *
    * @param args - <code>String[]</code> - 
@@ -930,7 +939,8 @@ public class PlanWorks extends MDIDesktopFrame {
         System.exit(-1);
       }
     }
-    osName = System.getProperty("os.name");
+    osType = System.getProperty("os.type");
+    // System.err.println( "osType " + osType);
     planWorksRoot = System.getProperty( "planworks.root");
     defaultProjectName = "";
     defaultSequenceDirectory = "";

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.7 2003-07-01 01:27:22 taylor Exp $ -->
+<!-- $Id: planWorks.xml,v 1.8 2003-07-07 17:30:23 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 <target name="launch" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
@@ -25,6 +25,7 @@
             <jvmarg value="-Xmx${arg_gcMax}m"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
             <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dos.type=${env.OSTYPE}"/>
 	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
 	    <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
 	    <jvmarg value="-Dmysql.log=${mysql.log}"/>

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.12 2003-07-03 23:44:14 taylor Exp $
+// $Id: SlotNode.java,v 1.13 2003-07-07 17:30:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -20,11 +20,14 @@ import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
+import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoText;
+import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.TextNode;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPredicate;
@@ -32,6 +35,7 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 
@@ -277,6 +281,34 @@ public class SlotNode extends TextNode {
   public String getToolTipText() {
     return token.toString();
   } // end getToolTipText
+
+  /**
+   * <code>doMouseClick</code>
+   *
+   * @param modifiers - <code>int</code> - 
+   * @param dc - <code>Point</code> - 
+   * @param vc - <code>Point</code> - 
+   * @param view - <code>JGoView</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean doMouseClick( int modifiers, Point dc, Point vc, JGoView view) {
+    JGoObject obj = view.pickDocObject( dc, false);
+    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      System.err.println( "doMouseClick obj class " +
+                          obj.getTopLevelObject().getClass().getName());
+      SlotNode slotNode = (SlotNode) obj.getTopLevelObject();
+      System.err.println( "doMouseClick: slot predicate " + slotNode.getText());
+
+      // to select other objects: selectObject( obj);
+
+      return true;
+
+    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+      // 
+    }
+    return false;
+  } // end doMouseClick   
+
 
 
 } // end class SlotNode
