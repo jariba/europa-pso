@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.36 2004-02-13 00:26:06 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.37 2004-02-13 00:49:42 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -577,7 +577,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     while(varIterator.hasNext()) {
       PwVariable var = (PwVariable) varIterator.next();
       //THIS IS THE FIRST BIT THAT NEEDS TO CHANGE
-      PwToken token = (PwToken) var.getTokenList().get(0);
+      PwToken token = (PwToken) var.getParent();
       ConstraintNetworkTokenNode tokenNode = getTokenNode(token.getId());
       if(var != null) {
         VariableNode varNode;

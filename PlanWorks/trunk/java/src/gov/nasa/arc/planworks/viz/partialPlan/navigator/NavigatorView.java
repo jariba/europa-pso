@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.7 2004-02-13 00:26:26 miatauro Exp $
+// $Id: NavigatorView.java,v 1.8 2004-02-13 00:50:14 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -546,7 +546,7 @@ public class NavigatorView extends PartialPlanView {
     boolean isDraggable = true;
     PwVariable variable = ((VariableNode) initialNode).getVariable();
     //THIS NEEDS TO CHANGE
-    PwToken token = (PwToken) variable.getTokenList().get( 0);
+    PwToken token = (PwToken) variable.getParent();
     Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     if (! token.isFreeToken()) {
       PwTimeline timeline = partialPlan.getTimeline( token.getTimelineId());
@@ -583,7 +583,7 @@ public class NavigatorView extends PartialPlanView {
     PwConstraint constraint = ((ConstraintNode) initialNode).getConstraint();
     PwVariable variable = (PwVariable) constraint.getVariablesList().get( 0);
     //THIS NEEDS TO CHANGE
-    PwToken token = (PwToken) variable.getTokenList().get( 0);
+    PwToken token = (PwToken) variable.getParent();
     Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     if (! token.isFreeToken()) {
       PwTimeline timeline = partialPlan.getTimeline( token.getTimelineId());

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.3 2004-02-13 00:26:27 miatauro Exp $
+// $Id: VariableNavNode.java,v 1.4 2004-02-13 00:50:15 miatauro Exp $
 //
 // PlanWorks
 //
@@ -72,8 +72,8 @@ public class VariableNavNode extends ExtendedBasicNode {
     super( ViewConstants.ELLIPSE);
     this.variable = variable;
     //THIS NEEDS TO CHANGE
-    tokenList =  variable.getTokenList();
-    token = (PwToken) tokenList.get( 0);
+    //tokenList =  variable.getTokenList();
+    token = (PwToken) variable.getParent();
     navigatorView = (NavigatorView) partialPlanView;
 
     isDebug = false;
@@ -372,29 +372,29 @@ public class VariableNavNode extends ExtendedBasicNode {
    */
   protected boolean addTokenNavNodes() {
     boolean areNodesChanged = false, isDraggable = true;
-    Iterator tokenItr = tokenList.iterator();
-    while (tokenItr.hasNext()) {
-      PwToken token = (PwToken) tokenItr.next();
-      TokenNavNode tokenNavNode =
-        (TokenNavNode) navigatorView.tokenNavNodeMap.get( token.getId());
-      if (tokenNavNode == null) {
-        Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
-        if (! token.isFreeToken()) {
-          PwTimeline timeline =
-            navigatorView.getPartialPlan().getTimeline( token.getTimelineId());
-          nodeColor = navigatorView.getTimelineColor( timeline.getId());
-        }
-        tokenNavNode =
-          new TokenNavNode( token, 
-                            new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
-                                       ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                            nodeColor, isDraggable, navigatorView);
-        navigatorView.tokenNavNodeMap.put( token.getId(), tokenNavNode);
-        navigatorView.getJGoDocument().addObjectAtTail( tokenNavNode);
+    //Iterator tokenItr = tokenList.iterator();
+    //while (tokenItr.hasNext()) {
+    //PwToken token = (PwToken) tokenItr.next();
+    TokenNavNode tokenNavNode =
+      (TokenNavNode) navigatorView.tokenNavNodeMap.get( token.getId());
+    if (tokenNavNode == null) {
+      Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+      if (! token.isFreeToken()) {
+        PwTimeline timeline =
+          navigatorView.getPartialPlan().getTimeline( token.getTimelineId());
+        nodeColor = navigatorView.getTimelineColor( timeline.getId());
       }
-      tokenNavNode.addTokenNavNode();
-      areNodesChanged = true;
+      tokenNavNode =
+        new TokenNavNode( token, 
+                          new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
+                                     ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
+                          nodeColor, isDraggable, navigatorView);
+      navigatorView.tokenNavNodeMap.put( token.getId(), tokenNavNode);
+      navigatorView.getJGoDocument().addObjectAtTail( tokenNavNode);
     }
+    tokenNavNode.addTokenNavNode();
+    areNodesChanged = true;
+    //}
     return areNodesChanged;
   } // end addTokenNavNodes
 
