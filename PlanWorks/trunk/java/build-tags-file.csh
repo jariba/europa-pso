@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.41 2003-10-25 00:58:09 taylor Exp $
+# $Id: build-tags-file.csh,v 1.42 2003-10-28 18:01:24 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -103,6 +103,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/StepField.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TransactionField.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TransactionHeaderNode.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/RedrawNotifier.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewableObject.java \
@@ -160,7 +161,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/StepQueryView.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TransactionQueryView.java \
-    src/gov/nasa/arc/planworks/viz/util/TransactionIdComparator.java
+    src/gov/nasa/arc/planworks/viz/util/TransactionComparatorAscending.java \
+    src/gov/nasa/arc/planworks/viz/util/TransactionComparatorDescending.java
 
 
 echo "Writing `pwd`/planWorks.TAGS"

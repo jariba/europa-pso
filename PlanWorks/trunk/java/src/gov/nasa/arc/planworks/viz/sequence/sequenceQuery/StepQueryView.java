@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.2 2003-10-21 21:51:30 taylor Exp $
+// $Id: StepQueryView.java,v 1.3 2003-10-28 18:01:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -37,6 +37,7 @@ import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
+import gov.nasa.arc.planworks.viz.util.TransactionComparatorAscending;
 
 
 /**
@@ -78,6 +79,9 @@ public class StepQueryView extends SequenceView {
                         MDIInternalFrame stepQueryFrame, long startTimeMSecs) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.stepList = stepList;
+    Collections.sort( stepList,
+                      new TransactionComparatorAscending
+                      ( ViewConstants.TRANSACTION_STEP_NUM_HEADER));
     this.query = query;
     this.planSequence = (PwPlanningSequence) planSequence;
     this.viewSet = (SequenceViewSet) viewSet;
@@ -120,14 +124,14 @@ public class StepQueryView extends SequenceView {
 
     stepHeaderPanel = new StepHeaderPanel();
     stepHeaderPanel.setLayout( new BoxLayout( stepHeaderPanel, BoxLayout.Y_AXIS));
-    headerJGoView = new StepHeaderView( this, query);
+    headerJGoView = new StepHeaderView( stepList, query, this);
     headerJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     headerJGoView.validate();
     headerJGoView.setVisible( true);
     stepHeaderPanel.add( headerJGoView, BorderLayout.NORTH);
     add( stepHeaderPanel, BorderLayout.NORTH);
 
-    contentJGoView = new StepContentView( stepList, headerJGoView,
+    contentJGoView = new StepContentView( stepList, query, headerJGoView,
                                                  planSequence, this);
     contentJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     add( contentJGoView, BorderLayout.SOUTH);
@@ -158,6 +162,15 @@ public class StepQueryView extends SequenceView {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end init
 
+
+  /**
+   * <code>getStepContentView</code>
+   *
+   * @return - <code>StepContentView</code> - 
+   */
+  public StepContentView getStepContentView() {
+    return contentJGoView;
+  }
 
   /**
    * <code>ScrollBarListener</code> - keep both headerJGoView & contentJGoView aligned,

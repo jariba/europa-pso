@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.5 2003-10-25 00:58:18 taylor Exp $
+// $Id: TransactionContentView.java,v 1.6 2003-10-28 18:01:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -78,7 +78,36 @@ public class TransactionContentView extends JGoView {
     renderTransactionContent();
   }
 
+  /**
+   * <code>redraw</code>
+   *
+   */
+  public void redraw() {
+    new RedrawViewThread().start();
+  }
+
+  class RedrawViewThread extends Thread {
+
+    public RedrawViewThread() {
+    }  // end constructor
+
+    public void run() {
+      renderTransactionContent();
+    } //end run
+
+  } // end class RedrawViewThread
+
+  /**
+   * <code>getTransactionList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getTransactionList() {
+    return transactionList;
+  }
+
   private void renderTransactionContent() {
+    getDocument().deleteContents();
     Color bgColor = ViewConstants.VIEW_BACKGROUND_COLOR;
     int x = 0, y = 5;
     Iterator transItr = transactionList.iterator();

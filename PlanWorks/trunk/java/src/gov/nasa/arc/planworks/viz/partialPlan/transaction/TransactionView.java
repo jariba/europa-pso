@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionView.java,v 1.4 2003-10-25 00:58:19 taylor Exp $
+// $Id: TransactionView.java,v 1.5 2003-10-28 18:01:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -40,7 +40,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-import gov.nasa.arc.planworks.viz.util.TransactionIdComparator;
+import gov.nasa.arc.planworks.viz.util.TransactionComparatorAscending;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
@@ -97,7 +97,9 @@ public class TransactionView extends PartialPlanView {
     }
 
     transactionList = planSequence.getTransactionsList( this.partialPlan.getId());
-    Collections.sort( transactionList, new TransactionIdComparator());
+    Collections.sort( transactionList,
+                      new TransactionComparatorAscending
+                      ( ViewConstants.TRANSACTION_KEY_HEADER));
 
     stepNumber = this.partialPlan.getStepNumber();
 

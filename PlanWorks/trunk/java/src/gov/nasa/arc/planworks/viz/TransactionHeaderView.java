@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.5 2003-10-25 00:58:18 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.6 2003-10-28 18:01:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,12 +12,12 @@
 
 package gov.nasa.arc.planworks.viz;
 
-import java.util.List;
 import java.awt.Color;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
@@ -35,7 +35,9 @@ import com.nwoods.jgo.examples.TextNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.TransactionHeaderNode;
 import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
 
@@ -56,32 +58,24 @@ public class TransactionHeaderView extends JGoView {
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE);
 
-  private static final String KEY_HEADER =        "TX_KEY "; 
-  private static final String TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
-  private static final String SOURCE_HEADER =     " SOURCE  ";   
-  private static final String OBJECT_KEY_HEADER = "OBJ_KEY";
-  private static final String STEP_NUM_HEADER =   "  STEP  ";
-  private static final String OBJ_NAME_HEADER =   "     OBJ_NAME     ";
-  private static final String PREDICATE_HEADER =  "  PREDICATE_NAME  ";
-  private static final String PARAMETER_HEADER =  "  PARAMETER_NAME  ";
-
   private List transactionList; // element PwTransaction
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
-  private TextNode keyNode;
-  private TextNode typeNode;
-  private TextNode sourceNode;
-  private TextNode objectKeyNode;
-  private TextNode stepNumNode;
-  private TextNode objectNameNode;
-  private TextNode predicateNode;
-  private TextNode parameterNode;
+  private TransactionHeaderNode keyNode;
+  private TransactionHeaderNode typeNode;
+  private TransactionHeaderNode sourceNode;
+  private TransactionHeaderNode objectKeyNode;
+  private TransactionHeaderNode stepNumNode;
+  private TransactionHeaderNode objectNameNode;
+  private TransactionHeaderNode predicateNode;
+  private TransactionHeaderNode parameterNode;
 
   /**
    * <code>TransactionHeaderView</code> - constructor 
    *
-   * @param vizView - <code>VizView</code> - 
+   * @param transactionList - <code>List</code> - 
    * @param query - <code>String</code> - 
+   * @param vizView - <code>VizView</code> - 
    */
   public TransactionHeaderView( List transactionList, String query, VizView vizView) {
     super();
@@ -106,42 +100,46 @@ public class TransactionHeaderView extends JGoView {
       jGoDocument.addObjectAtTail( queryNode);
       y += (int) queryNode.getSize().getHeight() + 2;
     }
-    keyNode = new TextNode( KEY_HEADER);
+    keyNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_KEY_HEADER, vizView);
     configureTextNode( keyNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( keyNode);
     x += keyNode.getSize().getWidth();
 
-    typeNode = new TextNode( TYPE_HEADER);
+    typeNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_TYPE_HEADER, vizView);
     configureTextNode( typeNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( typeNode);
     x += typeNode.getSize().getWidth();
 
-    sourceNode = new TextNode( SOURCE_HEADER);
+    sourceNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_SOURCE_HEADER, vizView);
     configureTextNode( sourceNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( sourceNode);
     x += sourceNode.getSize().getWidth();
 
-    objectKeyNode = new TextNode( OBJECT_KEY_HEADER);
+    objectKeyNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_OBJECT_KEY_HEADER,
+                                               vizView);
     configureTextNode( objectKeyNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( objectKeyNode);
     x += objectKeyNode.getSize().getWidth();
 
-    stepNumNode = new TextNode( STEP_NUM_HEADER);
+    stepNumNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_STEP_NUM_HEADER, vizView);
     configureTextNode( stepNumNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( stepNumNode);
     x += stepNumNode.getSize().getWidth();
 
-    objectNameNode = new TextNode( OBJ_NAME_HEADER);
+    objectNameNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_OBJ_NAME_HEADER,
+                                                vizView);
     configureTextNode( objectNameNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( objectNameNode);
     x += objectNameNode.getSize().getWidth();
 
-    predicateNode = new TextNode( PREDICATE_HEADER);
+    predicateNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_PREDICATE_HEADER,
+                                               vizView);
     configureTextNode( predicateNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( predicateNode);
     x += predicateNode.getSize().getWidth();
 
-    parameterNode = new TextNode( PARAMETER_HEADER);
+    parameterNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_PARAMETER_HEADER,
+                                               vizView);
     configureTextNode( parameterNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( parameterNode);
     x += parameterNode.getSize().getWidth();
@@ -169,7 +167,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of keyNode
    */
-  protected TextNode getKeyNode() {
+  protected TransactionHeaderNode getKeyNode() {
     return this.keyNode;
   }
 
@@ -178,7 +176,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of typeNode
    */
-  protected TextNode getTypeNode()  {
+  protected TransactionHeaderNode getTypeNode()  {
     return this.typeNode;
   }
 
@@ -187,7 +185,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of sourceNode
    */
-  protected TextNode getSourceNode()  {
+  protected TransactionHeaderNode getSourceNode()  {
     return this.sourceNode;
   }
 
@@ -196,7 +194,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of objectKeyNode
    */
-  protected TextNode getObjectKeyNode()  {
+  protected TransactionHeaderNode getObjectKeyNode()  {
     return this.objectKeyNode;
   }
 
@@ -205,7 +203,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of stepNumNode
    */
-  protected TextNode getStepNumNode()  {
+  protected TransactionHeaderNode getStepNumNode()  {
     return this.stepNumNode;
   }
 
@@ -214,7 +212,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of objectNameNode
    */
-  protected TextNode getObjectNameNode()  {
+  protected TransactionHeaderNode getObjectNameNode()  {
     return this.objectNameNode;
   }
 
@@ -223,7 +221,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of predicateNode
    */
-  protected TextNode getPredicateNode()  {
+  protected TransactionHeaderNode getPredicateNode()  {
     return this.predicateNode;
   }
 
@@ -232,7 +230,7 @@ public class TransactionHeaderView extends JGoView {
    *
    * @return the value of parameterNode
    */
-  protected TextNode getParameterNode()  {
+  protected TransactionHeaderNode getParameterNode()  {
     return this.parameterNode;
   }
 

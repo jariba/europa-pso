@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.27 2003-10-25 00:58:18 taylor Exp $
+// $Id: TokenNode.java,v 1.28 2003-10-28 18:01:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -175,8 +175,7 @@ public class TokenNode extends BasicNode {
 
 
   /**
-   * <code>doMouseClick</code> - For Constraint Network View, Mouse-Left opens/closes
-   *            tokenNode to show variableNodes.  Mouse-Right: Set Active Token
+   * <code>doMouseClick</code> - Mouse-Right: Set Active Token
    *
    * @param modifiers - <code>int</code> - 
    * @param dc - <code>Point</code> - 
