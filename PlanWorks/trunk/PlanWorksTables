@@ -451,6 +451,9 @@ CREATE TABLE Variable (
 -- Table structure for table 'Transaction'
 --
 
+-- TransactionInfo has format:
+--VariableType,PredicateName,ParameterName,DomainType,DerivedDomain,DomainType,SpecifiedDomain
+
 CREATE TABLE Transaction (
   TransactionType enum('TOKEN_CREATED','TOKEN_DELETED','TOKEN_INSERTED','TOKEN_FREED','VARIABLE_CREATED','VARIABLE_DELETED','VARIABLE_DOMAIN_RELAXED','VARIABLE_DOMAIN_RESTRICTED','VARIABLE_DOMAIN_SPECIFIED','VARIABLE_DOMAIN_RESET','VARIABLE_DOMAIN_EMPTIED','CONSTRAINT_CREATED','CONSTRAINT_DELETED') NOT NULL,
   ObjectId int(11) NOT NULL default '0',

@@ -33,6 +33,13 @@ to make sure that the PartialPlanWriter writes out the final
 state of your plan, just call planWriter->write() when
 planning is complete.
 
+NOTE: If you register the PartialPlanWriter as a subscriber before the
+initial plan state is constructed, it will output information about the
+process of that construction, which can cause propagation and extra
+output, if you happen to be using EUROPA's (the ddl model parser in
+particular) output for testing.  To output the initial state, just call
+PartialPlanWriter::write() immediately after registering it.
+
 You also must modify the makefile to include the path
 to the PartialPlanWriter's header and object file.  For
 SimplePlanner, just add
