@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.17 2004-01-09 23:11:59 miatauro Exp $
+// $Id: SequenceQueryWindow.java,v 1.18 2004-01-12 19:26:13 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -385,12 +385,20 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         else if(((String) queryWindow.majorTypeBox.getSelectedItem()).
                 equals(QUERY_FOR_ALL_DECISIONS)) {
           String decisionQuery = (String) queryWindow.minorTypeBox.getSelectedItem();
-          List decisionList = getDecisionsAtStep();
-          if(decisionList != null) {
+          //List decisionList = getDecisionsAtStep();
+          List variableList = getUnboundVariablesAtStep();
+          List tokenList = getFreeTokensAtStep();
+          if(variableList != null) {
             System.err.println("   Query elapsed time: " +
                                (System.currentTimeMillis() - startTimeMSecs) + " msecs.");
             ensureSequenceStepsViewExists();
-            renderDecisionQueryFrame(decisionQuery, decisionList, startTimeMSecs);
+            renderUnboundVariableQueryFrame(decisionQuery, variableList, startTimeMSecs);
+          }
+          if(tokenList != null) {
+            System.err.println("   Query elapsed time: " +
+                               (System.currentTimeMillis() - startTimeMSecs) + " msecs.");
+            ensureSequenceStepsViewExists();
+            renderFreeTokenQueryFrame(decisionQuery, tokenList, startTimeMSecs);
           }
         }
       } else if (ae.getActionCommand().equals("Reset Query")) {
@@ -816,7 +824,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       addItem( QUERY_FOR_TRANSACTIONS);
       addItem( QUERY_FOR_FREE_TOKENS);
       addItem( QUERY_FOR_UNBOUND_VARIABLES);
-      //addItem(QUERY_FOR_ALL_DECISIONS);
+      addItem(QUERY_FOR_ALL_DECISIONS);
       setSize(58, 44);
     }
   }

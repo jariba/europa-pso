@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.21 2004-01-09 20:40:25 miatauro Exp $ -->
+<!-- $Id: planWorks.xml,v 1.22 2004-01-12 19:24:12 miatauro Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -43,6 +43,7 @@
             <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
             <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
 	    <jvmarg value="-Dsplash.image=${splash.image}"/>
+            <jvmarg value="-server"/>
             <arg value="${name.application}"/>
             <arg value="${boolean.isMaxScreen}"/>
 	</java>

@@ -1,5 +1,6 @@
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -20,12 +21,12 @@ import java.util.ListIterator;
 */
 public class TokenBoundingBox {
   private ConstraintNetworkTokenNode tokenNode;
-  private LinkedList variableBoundingBoxes;
+  private ArrayList variableBoundingBoxes;
   private NewConstraintNetworkLayout layout;
   public TokenBoundingBox(NewConstraintNetworkLayout layout, ConstraintNetworkTokenNode tokenNode) {
     this.tokenNode = tokenNode;
     this.layout = layout;
-    variableBoundingBoxes = new LinkedList();
+    variableBoundingBoxes = new ArrayList(tokenNode.getVariableNodeList().size());
     ListIterator variableIterator = tokenNode.getVariableNodeList().listIterator();
     while(variableIterator.hasNext()) {
       variableBoundingBoxes.add(new VariableBoundingBox((VariableNode) variableIterator.next(), 
@@ -36,7 +37,7 @@ public class TokenBoundingBox {
                           List variables) {
     this.tokenNode = tokenNode;
     this.layout = layout;
-    variableBoundingBoxes = new LinkedList();
+    variableBoundingBoxes = new ArrayList();
     ListIterator variableIterator = variables.listIterator();
     while(variableIterator.hasNext()) {
       variableBoundingBoxes.add(new VariableBoundingBox((VariableNode)variableIterator.next(),
@@ -45,9 +46,16 @@ public class TokenBoundingBox {
   }
   public void addVariable(VariableNode variable) {
     VariableBoundingBox temp = new VariableBoundingBox(variable, layout);
-    if(!variableBoundingBoxes.contains(temp)) {
-      variableBoundingBoxes.add(temp);
+    //apparently this isn't calling .equals() correctly.  have to do it by hand...
+    //     if(!variableBoundingBoxes.contains(temp)) {
+    //       variableBoundingBoxes.add(temp);
+    //     }
+    for(int i = 0; i < variableBoundingBoxes.size(); i++) {
+      if(((VariableBoundingBox)variableBoundingBoxes.get(i)).equals(temp)) {
+        return;
+      }
     }
+    variableBoundingBoxes.add(temp);
   }
   public boolean isVisible() { return tokenNode.isVisible();}
   
@@ -134,6 +142,14 @@ public class TokenBoundingBox {
       System.err.println("Too many bounding boxes in token " + tokenNode);
       System.err.println("box:  " + variableBoundingBoxes);
       System.err.println("node: " + tokenNode.getVariableNodeList());
+      for(int i = 0; i < variableBoundingBoxes.size(); i++) {
+        for(int j = i + 1; j < variableBoundingBoxes.size(); j++) {
+          if(((VariableBoundingBox)variableBoundingBoxes.get(i)).
+             equals((VariableBoundingBox)variableBoundingBoxes.get(j))) {
+            variableBoundingBoxes.remove(j);
+          }
+        }
+      }
       return;
     }
     if(variableBoundingBoxes.size() < tokenNode.getVariableNodeList().size()) {

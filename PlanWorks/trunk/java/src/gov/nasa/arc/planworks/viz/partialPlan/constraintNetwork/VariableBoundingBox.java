@@ -1,5 +1,6 @@
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -21,26 +22,32 @@ import java.util.ListIterator;
 
 public class VariableBoundingBox {
   private VariableNode varNode;
-  private LinkedList constraintNodes;
+  private ArrayList constraintNodes;
   private NewConstraintNetworkLayout layout;
   private boolean visited;
   public VariableBoundingBox(VariableNode varNode, NewConstraintNetworkLayout layout) {
     this.varNode = varNode;
     this.layout = layout;
     visited = false;
-    constraintNodes = new LinkedList(varNode.getConstraintNodeList());
+    constraintNodes = new ArrayList(varNode.getConstraintNodeList());
   }
   public VariableBoundingBox(VariableNode varNode, List constraints, 
                              NewConstraintNetworkLayout layout) {
     this.varNode = varNode;
     this.layout = layout;
     visited = false;
-    this.constraintNodes = new LinkedList(constraints);
+    this.constraintNodes = new ArrayList(constraints);
   }
   public void addConstraint(ConstraintNode constraint) {
-    if(!constraintNodes.contains(constraint)) {
-      constraintNodes.addLast(constraint);
+//     if(!constraintNodes.contains(constraint)) {
+//       constraintNodes.addLast(constraint);
+//     }
+    for(int i = 0; i < constraintNodes.size(); i++) {
+      if(((ConstraintNode)constraintNodes.get(i)).equals(constraint)) {
+        return;
+      }
     }
+    constraintNodes.add(constraint);
   }
   public boolean isVisible() { return varNode.isVisible();}
 
@@ -174,6 +181,14 @@ public class VariableBoundingBox {
       System.err.println("Too many constraint nodes in var node " + varNode);
       System.err.println("box:  " + constraintNodes.size());
       System.err.println("node: " + varNode.getConstraintNodeList());
+      for(int i = 0; i < constraintNodes.size(); i++) {
+        for(int j = i+1; j < constraintNodes.size(); j++) {
+          if(((ConstraintNode)constraintNodes.get(i)).
+             equals((ConstraintNode)constraintNodes.get(j))) {
+            constraintNodes.remove(j);
+          }
+        }
+      }
     }
     if(constraintNodes.size() < varNode.getConstraintNodeList().size()) {
       //constraintNodes = new LinkedList(varNode.getConstraintNodeList());
