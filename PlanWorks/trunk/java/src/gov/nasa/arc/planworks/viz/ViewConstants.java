@@ -34,8 +34,12 @@ public interface ViewConstants {
    *
    */
   public static final String[] ORDERED_VIEW_NAMES = 
-    new String [] { "constraintNetworkView", "temporalExtentView", "temporalNetworkView",
-                    "timelineView", "tokenNetworkView" };
+      //new String [] { "constraintNetworkView", "temporalExtentView", "temporalNetworkView",
+      //              "timelineView", "tokenNetworkView" };
+      new String [] {"gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView",
+		     "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView",
+		     "gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView",
+		     "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView"};
 
   /**
    * constant <code>VIEW_BACKGROUND_COLOR - java.awt.Color</code> 

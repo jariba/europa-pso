@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.1 2003-09-25 23:52:47 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.2 2003-09-26 22:47:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -52,7 +52,8 @@ import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
-
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 /**
  * <code>TokenNetworkView</code> - render a partial plan's tokens, their
@@ -89,13 +90,12 @@ public class TokenNetworkView extends PartialPlanView {
    * @param startTimeMSecs - <code>long</code> - 
    * @param viewSet - <code>PartialPlanViewSet</code> - 
    */
-  public TokenNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
-                           PartialPlanViewSet viewSet) {
-    super( partialPlan, viewSet);
-    this.partialPlan = partialPlan;
-    this.startTimeMSecs = startTimeMSecs;
-    this.viewSet = viewSet;
-    viewName = "tokenNetworkView";
+  public TokenNetworkView( ViewableObject partialPlan,  ViewSet viewSet) {
+    super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
+    this.partialPlan = (PwPartialPlan) partialPlan;
+    this.startTimeMSecs = System.currentTimeMillis();
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    viewName = (String) PlanWorks.viewNameMap.get(PlanWorks.TOKEN_NETWORK_VIEW);
     this.nodeList = null;
     this.tmpNodeList = new ArrayList();
     this.linkList = new ArrayList();

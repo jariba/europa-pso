@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.1 2003-09-25 23:52:45 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.2 2003-09-26 22:47:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -56,7 +56,8 @@ import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
-
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 /**
  * <code>ConstraintNetworkView</code> - render a partial plan's network of
@@ -114,13 +115,12 @@ public class ConstraintNetworkView extends PartialPlanView {
    * @param startTimeMSecs - <code>long</code> - 
    * @param viewSet - <code>PartialPlanViewSet</code> - 
    */
-  public ConstraintNetworkView( PwPartialPlan partialPlan, long startTimeMSecs,
-                           PartialPlanViewSet viewSet) {
-    super( partialPlan, viewSet);
-    this.partialPlan = partialPlan;
-    this.startTimeMSecs = startTimeMSecs;
-    this.viewSet = viewSet;
-    viewName = "constraintNetworkView";
+  public ConstraintNetworkView( ViewableObject partialPlan, ViewSet viewSet) {
+    super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
+    this.partialPlan = (PwPartialPlan) partialPlan;
+    this.startTimeMSecs = System.currentTimeMillis();
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    viewName = (String) PlanWorks.viewNameMap.get(PlanWorks.CONSTRAINT_NETWORK_VIEW);
     tokenNodeList = null;
     tmpTokenNodeList = new ArrayList();
     variableNodeList = new ArrayList();

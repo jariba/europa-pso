@@ -4,13 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.33 2003-09-25 23:52:47 taylor Exp $
+// $Id: ViewSet.java,v 1.34 2003-09-26 22:47:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
 import java.awt.Container;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,8 +78,8 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     //this.contentSpec = new ContentSpec(viewable, this);
     this.contentSpec = null;
     constructorArgs = new Object[2];
-    constructorArgs[0] = this;
-    constructorArgs[1] = viewable;
+    constructorArgs[0] = (ViewableObject) viewable;
+    constructorArgs[1] = this;
     //this.contentSpecWindow = 
     //  desktopFrame.createFrame("Content specification for " + viewable.getName(), this, true, false,
     //                          false, true);
@@ -95,6 +96,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     try {
       viewClass = Class.forName(viewName);
     } catch (ClassNotFoundException excp) {
+	excp.printStackTrace();
       System.exit(1);
     }
     if(views.containsKey(viewClass)) {
@@ -108,9 +110,24 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     Container contentPane = viewFrame.getContentPane();
     VizView view = null;
     try {
+	System.err.println("Class " + viewName + " has " + constructors.length + " constructors.");
+	System.err.println("First constructor has " + constructors[0].getParameterTypes().length +
+			   " arguments.");
+	for(int i = 0; i < constructors[0].getParameterTypes().length; i++) {
+	    System.err.println((constructors[0].getParameterTypes())[i].getName());
+	}
+	System.err.println("---------------");
+	System.err.println(constructorArgs[0].getClass().getName());
+	System.err.println(constructorArgs[1].getClass().getName());
       view = (VizView) constructors[0].newInstance(constructorArgs);
-    } catch (Exception excp) {
-      System.exit(1);
+    } 
+    catch (InvocationTargetException ite) {
+	ite.getCause().printStackTrace();
+	System.exit(-1);
+    }
+    catch (Exception excp) {
+	excp.printStackTrace();
+	System.exit(1);
     }
     contentPane.add(view);
     return viewFrame;
@@ -280,6 +297,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     try {
       return views.containsKey(Class.forName(viewName));
     } catch (ClassNotFoundException excp) {
+	excp.printStackTrace();
       System.exit(1);
     }
     return false;
