@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.25 2004-09-03 00:35:40 taylor Exp $
+// $Id: ViewGenerics.java,v 1.26 2004-09-08 20:59:51 taylor Exp $
 //
 // PlanWorks
 //
@@ -533,6 +533,12 @@ public class ViewGenerics {
   } // end getRuleView
 
   private final SequenceStepsView _getSequenceStepsView(MDIInternalFrame frame) {
+//     Component [] components = frame.getContentPane().getComponents();
+//     System.err.println( "_getSequenceStepsView num components " +
+//                         frame.getContentPane().getComponentCount());
+//     for (int i = 0, n = frame.getContentPane().getComponentCount(); i < n; i++) {
+//       System.err.println( "_getSequenceStepsView " + components[i].getClass().getName());
+//     }
     return (SequenceStepsView) CollectionUtils.findFirst
       ( new SequenceStepsViewFinder(), frame.getContentPane().getComponents());
   }
