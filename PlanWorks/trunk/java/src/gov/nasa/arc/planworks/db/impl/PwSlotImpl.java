@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.9 2003-06-26 18:19:49 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.10 2003-07-03 00:41:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -79,7 +79,7 @@ public class PwSlotImpl implements PwSlot {
                               List tokenRelationIds, List paramVarIds) {
     PwTokenImpl token = new PwTokenImpl(key, isValueToken, slotId, predicateId, startVarId, 
                                         endVarId, durationVarId, objectVarId, rejectVarId, 
-                                        tokenRelationIds, paramVarIds);
+                                        tokenRelationIds, paramVarIds, partialPlan);
     tokenIdList.add( key);
     partialPlan.addToken( key, token);
     return token;
