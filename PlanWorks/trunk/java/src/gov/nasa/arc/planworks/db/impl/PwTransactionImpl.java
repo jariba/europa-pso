@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTransactionImpl.java,v 1.3 2003-10-02 23:24:21 taylor Exp $
+// $Id: PwTransactionImpl.java,v 1.4 2003-10-28 22:13:52 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -31,6 +31,7 @@ public class PwTransactionImpl implements PwTransaction {
   private String type;
   private Integer transactionId;
   private String source;
+  private String [] info;
   private Integer objectId;
   private Integer stepNumber;
   private Long sequenceId;
@@ -46,6 +47,7 @@ public class PwTransactionImpl implements PwTransaction {
     this.stepNumber = stepNumber;
     this.sequenceId = sequenceId;
     this.partialPlanId = partialPlanId;
+    info = new String [] {"", "", ""};
   } // end constructor
 
 
@@ -111,6 +113,11 @@ public class PwTransactionImpl implements PwTransaction {
   public Long getPartialPlanId() {
     return partialPlanId;
   }
+  public void setInfo(String [] info) {
+    System.arraycopy(info, 0, this.info, 0, info.length);
+  }
 
-
+  public String [] getInfo() {
+    return info;
+  }
 } // end class PwTransactionImpl

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepContentView.java,v 1.5 2003-10-28 20:41:59 taylor Exp $
+// $Id: StepContentView.java,v 1.6 2003-10-28 22:14:11 miatauro Exp $
 //
 // PlanWorks
 //
@@ -144,7 +144,7 @@ public class StepContentView extends JGoView {
       }
 
       String objectName =
-        NodeGenerics.trimName( transaction.getInfo[0], headerJGoView.getObjectNameNode(),
+        NodeGenerics.trimName( transaction.getInfo()[0], headerJGoView.getObjectNameNode(),
                                vizView);
       StepField objectNameField =
         new StepField( objectName, new Point( x, y),
@@ -155,7 +155,7 @@ public class StepContentView extends JGoView {
       x += headerJGoView.getObjectNameNode().getSize().getWidth();
 
       String predicateName =
-        NodeGenerics.trimName( transaction.getInfo[1], headerJGoView.getPredicateNode(),
+        NodeGenerics.trimName( transaction.getInfo()[1], headerJGoView.getPredicateNode(),
                                vizView);
       StepField predicateField =
         new StepField( predicateName, new Point( x, y),
@@ -166,7 +166,7 @@ public class StepContentView extends JGoView {
       x += headerJGoView.getPredicateNode().getSize().getWidth();
 
       String parameterName =
-         NodeGenerics.trimName( transaction.getInfo[2], headerJGoView.getParameterNode(),
+         NodeGenerics.trimName( transaction.getInfo()[2], headerJGoView.getParameterNode(),
                                 vizView);
       StepField parameterField =
         new StepField( parameterName, new Point( x, y),

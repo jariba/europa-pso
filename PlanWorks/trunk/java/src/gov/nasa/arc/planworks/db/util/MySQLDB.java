@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.57 2003-10-25 00:58:09 taylor Exp $
+// $Id: MySQLDB.java,v 1.58 2003-10-28 22:15:17 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -16,6 +16,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -609,23 +611,53 @@ public class MySQLDB {
     try {
       ResultSet transactions =
         queryDatabase("SELECT TransactionType, ObjectId, Source, StepNumber, TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId, TransactionId"));
-      //int index = 0;
+      String [] info = new String [] {"", "", ""};
       while(transactions.next()) {
         Long partialPlanId = new Long(transactions.getLong("PartialPlanId"));
         Integer transactionId = new Integer(transactions.getInt("TransactionId"));
-        retval.put(partialPlanId.toString() + transactionId.toString(),
-                   new PwTransactionImpl(transactions.getString("TransactionType"),
-                                         transactionId, transactions.getString("Source"),
-                                         new Integer(transactions.getInt("ObjectId")),
-                                         new Integer(transactions.getInt("StepNumber")),
-                                         sequenceId, partialPlanId));
-        //trans.add(new PwTransactionImpl(transactions.getString("TransactionType"),
-        //                                transactionId, transactions.getString("Source"),
-        //                               new Integer(transactions.getInt("ObjectId")),
-        //                               new Integer(transactions.getInt("StepNumber")),
-        //                              sequenceId, partialPlanId));
-        //planToTransMap.put(partialPlanId, new Integer(index));
-        //index++;
+        PwTransactionImpl transaction = 
+          new PwTransactionImpl(transactions.getString("TransactionType"),
+                                transactionId, transactions.getString("Source"),
+                                new Integer(transactions.getInt("ObjectId")),
+                                new Integer(transactions.getInt("StepNumber")),
+                                sequenceId, partialPlanId);
+        if(transaction.getType().indexOf("TOKEN") != -1) {
+          ResultSet transactionInfo = 
+            queryDatabase("SELECT Token.TokenId, Token.PartialPlanId, Predicate.PredicateName FROM Token LEFT JOIN Predicate ON Predicate.PartialPlanId=Token.PartialPlanId && Predicate.PredicateId=Token.PredicateId WHERE Token.PartialPlanId=".concat(partialPlanId.toString()).concat(" && Token.TokenId=").concat(transaction.getObjectId().toString()).concat(" ORDER BY Token.PartialPlanId, Token.TokenId"));
+          transactionInfo.last();
+          info[0] = transactionInfo.getString("Predicate.PredicateName");
+          info[1] = "";
+          info[2] = "";
+          transaction.setInfo(info);
+        }
+        else if(transaction.getType().indexOf("VARIABLE") != -1) {
+          ResultSet transactionInfo = 
+            queryDatabase("SELECT Variable.VariableId , Variable.PartialPlanId , Variable.VariableType, Predicate.PredicateName, Predicate.PredicateId, Parameter.ParameterName, Token.PredicateId, ParamVarTokenMap.ParameterId FROM Variable LEFT JOIN Token ON Token.PartialPlanId=Variable.PartialPlanId && Token.TokenId=Variable.TokenId LEFT JOIN Predicate ON Predicate.PartialPlanId=Variable.PartialPlanId && Predicate.PredicateId=Token.PredicateId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId LEFT JOIN Parameter ON Parameter.PartialPlanId=Variable.PartialPlanId && Parameter.PredicateId=Predicate.PredicateId && Parameter.ParameterId=ParamVarTokenMap.ParameterId WHERE Variable.PartialPlanId=".concat(partialPlanId.toString()).concat(" && Variable.VariableId=").concat(transaction.getObjectId().toString()).concat(" ORDER BY Variable.PartialPlanId, Variable.VariableId"));
+          transactionInfo.last();
+          info[0] = transactionInfo.getString("Variable.VariableType");
+          info[1] = transactionInfo.getString("Predicate.PredicateName");
+          if(transactionInfo.wasNull()) {
+            info[1] = "";
+          }
+          info[2] = transactionInfo.getString("Parameter.ParameterName");
+          if(transactionInfo.wasNull()) {
+            info[2] = "";
+          }
+          transaction.setInfo(info);
+        }
+        else if(transaction.getType().indexOf("CONSTRAINT") != -1) {
+          ResultSet transactionInfo =
+            queryDatabase("SELECT ConstraintVarMap.VariableId, ConstraintVarMap.ConstraintId, ConstraintVarMap.PartialPlanId, VConstraint.ConstraintName, Variable.VariableType FROM ConstraintVarMap LEFT JOIN VConstraint ON VConstraint.PartialPlanId=ConstraintVarMap.PartialPlanId && VConstraint.ConstraintId=ConstraintVarMap.ConstraintId LEFT JOIN Variable ON Variable.PartialPlanId=ConstraintVarMap.PartialPlanId && Variable.VariableId=ConstraintVarMap.VariableId WHERE ConstraintVarMap.PartialPlanId=".concat(partialPlanId.toString()).concat(" && ConstraintVarMap.ConstraintId=").concat(transaction.getObjectId().toString()).concat(" ORDER BY ConstraintVarMap.PartialPlanId, ConstraintVarMap.ConstraintId"));
+          transactionInfo.last();
+          info[0] = transactionInfo.getString("VConstraint.ConstraintName");
+          info[1] = transactionInfo.getString("Variable.VariableType");
+          info[2] = "";
+          transaction.setInfo(info);
+        }
+        else {
+          System.err.println("Invalid transaction type " + transaction.getType());
+        }
+        retval.put(partialPlanId.toString() + transactionId.toString(), transaction);
       }
     }
     catch(SQLException sqle) {}
@@ -1380,5 +1412,22 @@ public class MySQLDB {
     catch(SQLException sqle) {
     }
     return retval;
+  }
+}
+
+class ObjectIdComparator implements Comparator {
+  public ObjectIdComparator() {
+  }
+  public boolean equals(Object o) {
+    return false;
+  }
+  public int compare(Object o1, Object o2) {
+    PwTransactionImpl t1 = (PwTransactionImpl) o1;
+    PwTransactionImpl t2 = (PwTransactionImpl) o2;
+    int cmp1 = t1.getPartialPlanId().compareTo(t2.getPartialPlanId());
+    if(cmp1 == 0) {
+      return t1.getObjectId().compareTo(t2.getObjectId());
+    }
+    return t1.getPartialPlanId().compareTo(t2.getPartialPlanId());
   }
 }

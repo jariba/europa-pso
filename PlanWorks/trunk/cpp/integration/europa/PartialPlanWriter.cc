@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.10 2003-10-23 17:54:32 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.11 2003-10-28 22:13:03 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -81,6 +81,9 @@ PartialPlanWriter::PartialPlanWriter(TokenNetwork *ptnet, String &pdest) {
   char *altDest = getenv(envAltWriteDest);
   if(altDest != NULL) {
     dest = String(altDest);
+    if(rindex(altDest, '/') == NULL) {
+      dest += String("/");
+    }
   }
 };
 
@@ -417,22 +420,22 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
     fprintf(tokenRelationOut, "%lld\t%d\t%d\tCAUSAL\t%d\n", partialPlanId, 
             tokenId->getMasterToken()->getKey(), tokenId->getKey(), tokenRelationId++);
   }
-  outputVariable(tokenId->getStartVariable(), "START_VAR", partialPlanId, variableOut,
+  outputVariable(tokenId->getStartVariable(), "START_VAR", partialPlanId, tokenId, variableOut,
                  intDomainOut, enumDomainOut);
-  outputVariable(tokenId->getEndVariable(), "END_VAR", partialPlanId, variableOut,
+  outputVariable(tokenId->getEndVariable(), "END_VAR", partialPlanId, tokenId, variableOut,
                  intDomainOut, enumDomainOut);
-  outputVariable(tokenId->getDurationVariable(), "DURATION_VAR", partialPlanId,
+  outputVariable(tokenId->getDurationVariable(), "DURATION_VAR", partialPlanId, tokenId, 
                  variableOut, intDomainOut, enumDomainOut);
-  outputVariable(tokenId->getRejectVariable(), "REJECT_VAR", partialPlanId, variableOut,
+  outputVariable(tokenId->getRejectVariable(), "REJECT_VAR", partialPlanId, tokenId, variableOut,
                  intDomainOut, enumDomainOut);
-  outputVariable(tokenId->getObjectVariable(), "OBJECT_VAR", partialPlanId, variableOut,
+  outputVariable(tokenId->getObjectVariable(), "OBJECT_VAR", partialPlanId, tokenId, variableOut,
                  intDomainOut, enumDomainOut);
   List<VarId> paramVarList = tokenId->getParameterVariables();
   ListIterator<VarId> paramVarIterator = ListIterator<VarId>(paramVarList);
   int paramIndex = 0;
   while(!paramVarIterator.isDone()) {
     VarId variableId = paramVarIterator.item();
-    outputVariable(variableId, "PARAMETER_VAR", partialPlanId, variableOut,
+    outputVariable(variableId, "PARAMETER_VAR", partialPlanId, tokenId, variableOut,
                    intDomainOut, enumDomainOut);
     fprintf(paramVarTokenMapOut, "%d\t%d\t%d\t%lld\n", variableId->getKey(),
             tokenId->getKey(), paramIndex++, partialPlanId);
@@ -441,11 +444,12 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
 }
 
 void PartialPlanWriter::outputVariable(const VarId &variable, const char *type, 
-                                       const long long int partialPlanId, FILE *variableOut,
-                                       FILE *intervalDomainOut, FILE *enumeratedDomainOut) {
+                                       const long long int partialPlanId, const TokenId &tokenId,
+                                       FILE *variableOut, FILE *intervalDomainOut,
+                                       FILE *enumeratedDomainOut) {
   Domain domain = tnet->getVariableDomain(variable);
   
-  fprintf(variableOut, "%d\t%lld\t", variable->getKey(), partialPlanId);
+  fprintf(variableOut, "%d\t%lld\t%d\t", variable->getKey(), partialPlanId, tokenId->getKey());
   if(domain.isDynamic()) {
     //should this be otherwise?
     fprintf(variableOut, "EnumeratedDomain\t%d\t%s\n", enumeratedDomainId, type);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.7 2003-10-28 20:41:59 taylor Exp $
+// $Id: TransactionContentView.java,v 1.8 2003-10-28 22:14:11 miatauro Exp $
 //
 // PlanWorks
 //
@@ -158,7 +158,7 @@ public class TransactionContentView extends JGoView {
 
       // String objectName = getObjectName( transaction.getObjectId());
       String objectName =
-        NodeGenerics.trimName( transaction.getInfo[0], headerJGoView.getObjectNameNode(),
+        NodeGenerics.trimName( transaction.getInfo()[0], headerJGoView.getObjectNameNode(),
                                vizView);
       TransactionField objectNameField =
         new TransactionField( objectName, new Point( x, y),
@@ -170,7 +170,7 @@ public class TransactionContentView extends JGoView {
 
         // new TransactionField( getPredicateName( transaction.getObjectId()),
       String predicateName =
-        NodeGenerics.trimName( transaction.getInfo[1], headerJGoView.getPredicateNode(),
+        NodeGenerics.trimName( transaction.getInfo()[1], headerJGoView.getPredicateNode(),
                                vizView);
       TransactionField predicateField =
         new TransactionField( predicateName, new Point( x, y),
@@ -182,7 +182,7 @@ public class TransactionContentView extends JGoView {
 
         // new TransactionField( getParameterName( transaction.getObjectId(), objectName),
       String parameterName =
-         NodeGenerics.trimName( transaction.getInfo[2], headerJGoView.getParameterNode(),
+         NodeGenerics.trimName( transaction.getInfo()[2], headerJGoView.getParameterNode(),
                                 vizView);
       TransactionField parameterField =
         new TransactionField( parameterName, new Point( x, y),
