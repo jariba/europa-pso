@@ -93,6 +93,7 @@ public class NewConstraintNetworkLayout {
   }
 
   public void performLayout() {
+    long t1 = System.currentTimeMillis();
     ListIterator varBoxIterator = variableBoundingBoxes.listIterator();
     while(varBoxIterator.hasNext()) {
       ((VariableBoundingBox)varBoxIterator.next()).clearVisited();
@@ -103,6 +104,7 @@ public class NewConstraintNetworkLayout {
     else {
       performVerticalLayout();
     }
+    System.err.println("New layout took " + (System.currentTimeMillis() - t1) + "ms");
   }
   private void performHorizontalLayout() {
     ListIterator tokenBoxIterator = tokenBoundingBoxes.listIterator();
@@ -117,6 +119,7 @@ public class NewConstraintNetworkLayout {
       VariableBoundingBox box = (VariableBoundingBox) variableBoxIterator.next();
       if(box.isVisible() && !box.wasVisited()) {
         xpos += box.getWidth();
+        System.err.println("Positioning box at " + xpos);
         box.positionNodes(xpos);
       }
     }

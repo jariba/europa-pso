@@ -60,7 +60,8 @@ public class TokenBoundingBox {
         while(variableBoxIterator.hasNext()) {
           varBoxesHeight += ((VariableBoundingBox)variableBoxIterator.next()).getHeight();
         }
-        retval = Math.max(tokenNode.getSize().getHeight(), varBoxesHeight);
+        retval = Math.max(tokenNode.getSize().getHeight() + ConstraintNetworkView.NODE_SPACING,
+                          varBoxesHeight + ConstraintNetworkView.NODE_SPACING);
       }
     }
     return retval;
@@ -72,9 +73,10 @@ public class TokenBoundingBox {
         ListIterator variableBoxIterator = variableBoundingBoxes.listIterator();
         double varBoxesWidth = 0.;
         while(variableBoxIterator.hasNext()) {
-          varBoxesWidth += ((VariableBoundingBox)variableBoxIterator.next()).getHeight();
+          varBoxesWidth += ((VariableBoundingBox)variableBoxIterator.next()).getWidth();
         }
-        retval = Math.max(tokenNode.getSize().getWidth(), varBoxesWidth);
+        retval = Math.max(tokenNode.getSize().getWidth() + ConstraintNetworkView.NODE_SPACING,
+                          varBoxesWidth + ConstraintNetworkView.NODE_SPACING);
       }
     }
     else {
@@ -115,8 +117,8 @@ public class TokenBoundingBox {
     ListIterator varBoxIterator = variableBoundingBoxes.listIterator();
     while(varBoxIterator.hasNext()) {
       VariableBoundingBox varBox = (VariableBoundingBox) varBoxIterator.next();
-      lastBoxWidth += varBox.getWidth();
       varBox.positionNodes(boxX - lastBoxWidth);
+      lastBoxWidth += varBox.getWidth();
       varBox.setVisited();
     }
   }
