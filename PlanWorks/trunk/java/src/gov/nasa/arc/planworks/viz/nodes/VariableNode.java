@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.3 2003-08-06 01:20:15 taylor Exp $
+// $Id: VariableNode.java,v 1.4 2003-08-12 22:54:45 miatauro Exp $
 //
 // PlanWorks
 //
@@ -78,7 +78,7 @@ public class VariableNode extends BasicNode {
     constraintNodeList = new ArrayList();
     variableTokenLinkList = new ArrayList();
     // debug
-    // nodeLabel = variable.getType().substring( 0, 1) + "_" + variable.getKey().toString();
+    // nodeLabel = variable.getType().substring( 0, 1) + "_" + variable.getId().toString();
     nodeLabel = variable.getDomain().toString();
     // System.err.println( "VariableNode: " + nodeLabel);
 
@@ -108,7 +108,7 @@ public class VariableNode extends BasicNode {
    * @return - <code>boolean</code> - 
    */
   public boolean equals( VariableNode node) {
-    return (this.getVariable().getKey().equals( node.getVariable().getKey()));
+    return (this.getVariable().getId().equals( node.getVariable().getId()));
   }
 
   /**

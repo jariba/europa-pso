@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.4 2003-08-06 01:20:14 taylor Exp $
+// $Id: ConstraintNode.java,v 1.5 2003-08-12 22:54:44 miatauro Exp $
 //
 // PlanWorks
 //
@@ -190,7 +190,7 @@ public class ConstraintNode extends BasicNode {
    * @return - <code>boolean</code> - 
    */
   public boolean equals( ConstraintNode node) {
-    return (this.getConstraint().getKey().equals( node.getConstraint().getKey()));
+    return (this.getConstraint().getId().equals( node.getConstraint().getId()));
   }
 
   /**

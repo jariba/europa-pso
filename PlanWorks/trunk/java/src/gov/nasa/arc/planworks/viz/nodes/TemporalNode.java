@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.2 2003-07-30 18:09:26 taylor Exp $
+// $Id: TemporalNode.java,v 1.3 2003-08-12 22:54:45 miatauro Exp $
 //
 // PlanWorks
 //
@@ -104,7 +104,7 @@ public class TemporalNode extends BasicNode implements Extent {
     this.view = view;
     if (token != null) {
       predicateName = token.getPredicate().getName();
-      // nodeLabel = predicateName + " " + token.getKey().toString();
+      // nodeLabel = predicateName + " " + token.getId().toString();
       nodeLabel = predicateName;
     } else {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;

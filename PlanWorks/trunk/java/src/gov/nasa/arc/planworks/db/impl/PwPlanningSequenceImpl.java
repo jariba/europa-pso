@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.22 2003-08-07 01:16:49 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.23 2003-08-12 22:54:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -43,7 +43,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  */
 class PwPlanningSequenceImpl implements PwPlanningSequence {
 
-  private Integer key;
+  private Integer id;
   private String projectName;
   private String url; //directory containing the partialplan directories
   private PwModel model;
@@ -63,11 +63,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * @exception ResourceNotFoundException if an error occurs
    */
   //from new PwProject(blah, true);
-  public PwPlanningSequenceImpl( String url, Integer key, PwProjectImpl project, PwModelImpl model)
+  public PwPlanningSequenceImpl( String url, Integer id, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException, SQLException {
     System.err.println("In PwPlanningSequenceImpl(String, Integer, PwProjectImpl, PwModelImpl");
     this.url = url;
-    this.key = key;
+    this.id = id;
     this.projectName = project.getName();
     this.model = model;
     stepCount = 0;
@@ -82,8 +82,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     } 
     name = url.substring( index + 1);
     
-    List planNames = MySQLDB.getPlanNamesInSequence(key);
-    partialPlanNames.addAll(MySQLDB.getPlanNamesInSequence(key));
+    List planNames = MySQLDB.getPlanNamesInSequence(id);
+    partialPlanNames.addAll(MySQLDB.getPlanNamesInSequence(id));
     stepCount = partialPlanNames.size();
     partialPlans = new ArrayList(partialPlanNames.size());
     ListIterator planNameIterator = partialPlanNames.listIterator();
@@ -121,8 +121,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     } 
     name = url.substring( index + 1);
     
-    MySQLDB.addSequence(url, project.getKey());
-    this.key = MySQLDB.latestSequenceKey();
+    MySQLDB.addSequence(url, project.getId());
+    this.id = MySQLDB.latestSequenceId();
     File sequenceDir = new File(url);
     if(!sequenceDir.isDirectory()) {
       throw new ResourceNotFoundException("sequence url '" + url + "' is not a directory.");
@@ -257,7 +257,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     int index = -1;
     if((index = partialPlanNames.indexOf(partialPlanName)) != -1) {
       PwPartialPlan partialPlan =
-        new PwPartialPlanImpl(url, partialPlanName, key);
+        new PwPartialPlanImpl(url, partialPlanName, id);
       partialPlans.set(index, partialPlan);
       return partialPlan;
     }

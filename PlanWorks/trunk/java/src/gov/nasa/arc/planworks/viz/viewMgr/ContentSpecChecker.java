@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecChecker.java,v 1.5 2003-07-08 23:19:54 miatauro Exp $
+// $Id: ContentSpecChecker.java,v 1.6 2003-08-12 22:55:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -16,11 +16,5 @@ import java.util.List;
  */
 
 public interface ContentSpecChecker {
-  /**
-   * Checks whether or not a key is in the current specification.
-   * @param key The key being checked.
-   * @return boolean The truth value of the statement "The key is in the specification."
-   */
-  public boolean isInContentSpec(Integer key);
   public List getValidTokenIds();
 }

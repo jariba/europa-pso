@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicate.java,v 1.4 2003-06-26 18:18:37 miatauro Exp $
+// $Id: PwPredicate.java,v 1.5 2003-08-12 22:53:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -33,11 +33,11 @@ public interface PwPredicate {
   public abstract String getName();
 
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
    * @return name - <code>int</code> -
    */
-  public abstract Integer getKey();
+  public abstract Integer getId();
 	
   /**
    * <code>getParameterList</code>

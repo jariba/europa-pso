@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.27 2003-08-12 21:33:17 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.28 2003-08-12 22:54:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -78,7 +78,7 @@ public class PwProjectImpl extends PwProject {
     projects.put(name, retval);
 
     MySQLDB.addProject(name);
-    retval.setKey(MySQLDB.latestProjectKey());
+    retval.setId(MySQLDB.latestProjectId());
     return retval;
   }
   private static void connectToDataBase() throws SQLException, IOException {
@@ -118,7 +118,7 @@ public class PwProjectImpl extends PwProject {
   }
 
   private String name;
-  private Integer key;
+  private Integer id;
   private List planningSequences; // element PwPlanningSequence
 
   /**
@@ -131,7 +131,7 @@ public class PwProjectImpl extends PwProject {
    */
   public PwProjectImpl( String name)  throws DuplicateNameException, SQLException {
     this.name = name;
-    key = new Integer(-1);
+    id = new Integer(-1);
     planningSequences = new ArrayList();
   } // end  constructor PwProjectImpl.createProject
 
@@ -150,12 +150,12 @@ public class PwProjectImpl extends PwProject {
     throws ResourceNotFoundException, SQLException {
     this.name = name;
     
-    key = MySQLDB.getProjectIdByName(name);
-    if(key == null) {
+    id = MySQLDB.getProjectIdByName(name);
+    if(id == null) {
       throw new ResourceNotFoundException("Project " + name + " not found in database.");
     }
     planningSequences = new ArrayList();
-    HashMap sequences = MySQLDB.getSequences(key);
+    HashMap sequences = MySQLDB.getSequences(id);
     Iterator seqIdIterator = sequences.keySet().iterator();
     while(seqIdIterator.hasNext()) {
       Integer sequenceId = (Integer) seqIdIterator.next();
@@ -166,12 +166,12 @@ public class PwProjectImpl extends PwProject {
     //projects.add(name, this);
   } // end  constructor PwProjectImpl.openProject
 
-  public Integer getKey() {
-    return key;
+  public Integer getId() {
+    return id;
   }
   
-  protected void setKey(Integer key) {
-    this.key = key;
+  protected void setId(Integer id) {
+    this.id = id;
   }
 
   /**
@@ -236,6 +236,6 @@ public class PwProjectImpl extends PwProject {
    */
   public void delete() throws Exception, ResourceNotFoundException {
     projects.remove(name);
-    MySQLDB.deleteProject(key);
+    MySQLDB.deleteProject(id);
   } // end delete
 } // end class PwProjectImpl

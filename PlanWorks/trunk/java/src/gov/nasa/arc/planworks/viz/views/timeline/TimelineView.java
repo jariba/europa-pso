@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.27 2003-08-06 01:20:15 taylor Exp $
+// $Id: TimelineView.java,v 1.28 2003-08-12 22:57:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -166,11 +166,11 @@ public class TimelineView extends VizView {
   /**
    * <code>redraw</code> - called by Content Spec to apply user's content spec request.
    *                       setVisible(true | false)
-   *                       according to the Content Spec enabled keys
+   *                       according to the Content Spec enabled ids
    *
    */
   public void redraw() {
-    // setVisible(true | false) depending on keys
+    // setVisible(true | false) depending on ids
     setNodesVisible();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
   } // end redraw
@@ -369,7 +369,7 @@ public class TimelineView extends VizView {
     validTokenIds = viewSet.getValidTokenIds();
     displayedTokenIds = new ArrayList();
     Iterator timelineIterator = timelineNodeList.iterator();
-    Integer key = null;
+    Integer id = null;
     while (timelineIterator.hasNext()) {
       TimelineNode timelineNode = (TimelineNode) timelineIterator.next();
       if (isTimelineInContentSpec( timelineNode.getTimeline())) {
@@ -401,7 +401,7 @@ public class TimelineView extends VizView {
             ((JGoText) timeLabels.get( 1)).setVisible( true);
           }
         } else {
-          // System.err.println("Setting slot " + slotNode.getSlot().getKey() + " invisible");
+          // System.err.println("Setting slot " + slotNode.getSlot().getId() + " invisible");
           slotNode.setVisible( false);
           boolean visibleValue = false;
           // display interval time label, if previous slot is not being displayed
@@ -429,7 +429,7 @@ public class TimelineView extends VizView {
     Iterator freeTokenNodeItr = freeTokenNodeList.iterator();
     while (freeTokenNodeItr.hasNext()) {
       TokenNode node = (TokenNode) freeTokenNodeItr.next();
-      // System.err.println( "setFreeTokensVisible " + node.getToken().getKey());
+      // System.err.println( "setFreeTokensVisible " + node.getToken().getId());
       if (isTokenInContentSpec( node.getToken())) {
         node.setVisible( true);
       } else {

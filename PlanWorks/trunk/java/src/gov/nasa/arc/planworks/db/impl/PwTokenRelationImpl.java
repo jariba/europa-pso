@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenRelationImpl.java,v 1.5 2003-06-26 18:20:07 miatauro Exp $
+// $Id: PwTokenRelationImpl.java,v 1.6 2003-08-12 22:54:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -31,7 +31,7 @@ import gov.nasa.arc.planworks.db.PwTokenRelation;
  */
 public class PwTokenRelationImpl implements PwTokenRelation {
 
-  private Integer key;
+  private Integer id;
   private Integer tokenAId;
   private Integer tokenBId;
   private String type;
@@ -42,15 +42,15 @@ public class PwTokenRelationImpl implements PwTokenRelation {
   /**
    * <code>PwTokenRelationImpl</code> - constructor 
    *
-   * @param key - <code>Integer</code> - 
+   * @param id - <code>Integer</code> - 
    * @param tokenAId - <code>Integer</code> - 
    * @param tokenBId - <code>Integer</code> - 
    * @param type - <code>String</code> -
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwTokenRelationImpl( Integer key, Integer tokenAId, Integer tokenBId, String type,
+  public PwTokenRelationImpl( Integer id, Integer tokenAId, Integer tokenBId, String type,
                               PwPartialPlanImpl partialPlan) {
-    this.key = key;
+    this.id = id;
     this.tokenAId = tokenAId;
     this.tokenBId = tokenBId;
     this.type = type;
@@ -58,12 +58,12 @@ public class PwTokenRelationImpl implements PwTokenRelation {
   } // end constructor
 
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
    * @return name - <code>Integer</code> -
    */
-  public Integer getKey() {
-    return key;
+  public Integer getId() {
+    return id;
   }
 	
   /**

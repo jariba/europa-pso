@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicateImpl.java,v 1.7 2003-06-26 18:19:50 miatauro Exp $
+// $Id: PwPredicateImpl.java,v 1.8 2003-08-12 22:54:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,7 +30,7 @@ import gov.nasa.arc.planworks.db.PwPredicate;
 public class PwPredicateImpl implements PwPredicate {
 
   private String name;
-  private Integer key;
+  private Integer id;
   private List parameterIdList; // element String
   private PwPartialPlanImpl partialPlan;
 
@@ -38,12 +38,12 @@ public class PwPredicateImpl implements PwPredicate {
    * <code>PwPredicateImpl</code> - constructor 
    *
    * @param name - <code>String</code> - 
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwPredicateImpl( Integer key, String name, PwPartialPlanImpl partialPlan) {
+  public PwPredicateImpl( Integer id, String name, PwPartialPlanImpl partialPlan) {
     this.name = name;
-    this.key = key;
+    this.id = id;
     this.parameterIdList = new ArrayList();
     this.partialPlan = partialPlan;
   } // end constructor
@@ -58,12 +58,12 @@ public class PwPredicateImpl implements PwPredicate {
   }
 
   /**
-   * <code>getKey</code>
+   * <code>getId</code>
    *
    * @return name - <code>String</code> -
    */
-  public Integer getKey() {
-    return key;
+  public Integer getId() {
+    return id;
   }
 	
   /**
@@ -83,12 +83,12 @@ public class PwPredicateImpl implements PwPredicate {
    * <code>addParameter</code>
    *
    * @param name - <code>String</code> - 
-   * @param key - <code>String</code> - 
+   * @param id - <code>String</code> - 
    * @return - <code>PwParameterImpl</code> - 
    */
-  public PwParameterImpl addParameter( Integer key, String name) {
-    PwParameterImpl parameter = new PwParameterImpl(key, name);
-    parameterIdList.add( key);
+  public PwParameterImpl addParameter( Integer id, String name) {
+    PwParameterImpl parameter = new PwParameterImpl(id, name);
+    parameterIdList.add( id);
     return parameter;
   } // end addParameter
 

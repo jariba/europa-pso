@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.11 2003-07-30 17:21:35 taylor Exp $
+// $Id: VizView.java,v 1.12 2003-08-12 22:55:35 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -84,16 +84,16 @@ public class VizView extends JPanel {
     boolean error = false;
 
     while (validIterator.hasNext()) {
-      Integer key = (Integer) validIterator.next();
-      if (displayedTokenIds.indexOf( key) == -1) {
-        unDisplayedIds.add( key);
+      Integer id = (Integer) validIterator.next();
+      if (displayedTokenIds.indexOf( id) == -1) {
+        unDisplayedIds.add( id);
       }
     }
     Iterator displayedIterator = displayedTokenIds.iterator();
     while(displayedIterator.hasNext()) {
-      Integer key = (Integer) displayedIterator.next();
-      if(validTokenIds.indexOf(key) == -1) {
-        extraDisplayedIds.add(key);
+      Integer id = (Integer) displayedIterator.next();
+      if(validTokenIds.indexOf(id) == -1) {
+        extraDisplayedIds.add(id);
       }
     }
     message.append("\n");
@@ -137,10 +137,10 @@ public class VizView extends JPanel {
         Iterator tokenIterator = tokenList.iterator();
         while (tokenIterator.hasNext()) {
           PwToken token = (PwToken) tokenIterator.next();
-          Integer key = token.getKey();
-          if (validTokenIds.indexOf( key) >= 0) {
-            if (displayedTokenIds.indexOf( key) == -1) {
-              displayedTokenIds.add( key);
+          Integer id = token.getId();
+          if (validTokenIds.indexOf( id) >= 0) {
+            if (displayedTokenIds.indexOf( id) == -1) {
+              displayedTokenIds.add( id);
             }
             return true;
           }
@@ -167,11 +167,11 @@ public class VizView extends JPanel {
       Iterator tokenIterator = tokenList.iterator();
       while (tokenIterator.hasNext()) {
         PwToken token = (PwToken) tokenIterator.next();
-        Integer key = token.getKey();
-        if (validTokenIds.indexOf( key) >= 0) {
+        Integer id = token.getId();
+        if (validTokenIds.indexOf( id) >= 0) {
           foundMatch = true;
-          if (displayedTokenIds.indexOf( key) == -1) {
-            displayedTokenIds.add( key);
+          if (displayedTokenIds.indexOf( id) == -1) {
+            displayedTokenIds.add( id);
           }
         }
       }
@@ -192,10 +192,10 @@ public class VizView extends JPanel {
    * @return - <code>boolean</code> - 
    */
   protected boolean isTokenInContentSpec( PwToken token) {
-    Integer key = token.getKey();
-    if (validTokenIds.indexOf( key) >= 0) {
-      if (displayedTokenIds.indexOf( key) == -1) {
-        displayedTokenIds.add( key);
+    Integer id = token.getId();
+    if (validTokenIds.indexOf( id) >= 0) {
+      if (displayedTokenIds.indexOf( id) == -1) {
+        displayedTokenIds.add( id);
       }
       return true;
     } else {
