@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.64 2004-01-02 18:58:57 taylor Exp $
+# $Id: README,v 1.65 2004-01-13 18:11:49 miatauro Exp $
 #
 
 SUMMARY
@@ -12,9 +12,14 @@ SUMMARY
 o In the Temporal Extent View, Mouse-Right on the background now offers
   "Show Earliest" and "Show Latest", as options to "Show Intervals".
 
+o A query for all decisions at a step has been added to the "SequenceQuery" window.
+
+o Speedups in database querying and Constraint Network View rendering.
+
 o  GNATS PRs and CRs completed:
    #2192: Snap to Earliest Start/Latest end in Temporal extent view.
-
+   #2205: Bad behavior when you try to switch to another project.
+   #2206: Need ability to turn off auto outputing writing when using the planwriter.
 
 CVS CHECKOUT
 ============
