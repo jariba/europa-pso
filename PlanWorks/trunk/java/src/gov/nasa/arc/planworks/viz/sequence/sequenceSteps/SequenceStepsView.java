@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.12 2003-12-10 21:30:39 miatauro Exp $
+// $Id: SequenceStepsView.java,v 1.13 2003-12-11 22:01:59 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -202,6 +202,10 @@ public class SequenceStepsView extends SequenceView {
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     document.deleteContents();
     renderHistogram();
+
+    expandViewFrame( viewSet.openView( this.getClass().getName()),
+                     (int) jGoView.getDocumentSize().getWidth(),
+                     (int) jGoView.getDocumentSize().getHeight());
 
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end redrawView

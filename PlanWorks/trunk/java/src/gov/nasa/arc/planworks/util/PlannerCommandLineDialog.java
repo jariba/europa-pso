@@ -15,8 +15,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
@@ -24,12 +26,15 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.ExecutePlannerThread;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
+import gov.nasa.arc.planworks.util.BrowseButton;
+import gov.nasa.arc.planworks.util.DirectoryChooser;
 
 public class PlannerCommandLineDialog extends JDialog {
   private JTextField commandLine;
   private JTextField stepsPerWrite;
   private JTextField writeDest;
   private JTextField sleepSeconds;
+  private JTextField plannerPath;
   public PlannerCommandLineDialog(Frame owner) {
     super(owner, "New Sequence Command Line", true);
 
@@ -73,6 +78,27 @@ public class PlannerCommandLineDialog extends JDialog {
     gridBag.setConstraints(writeDest, c);
     contentPane.add(writeDest);
 
+    BrowseButton destButton = new BrowseButton(writeDest, false, JFileChooser.DIRECTORIES_ONLY);
+    c.gridx++;
+    gridBag.setConstraints(destButton, c);
+    contentPane.add(destButton);
+
+    JLabel pp = new JLabel("Planner path ");
+    c.gridx = 0;
+    c.gridy++;
+    gridBag.setConstraints(pp, c);
+    contentPane.add(pp);
+    
+    plannerPath = new JTextField(30);
+    c.gridx++;
+    gridBag.setConstraints(plannerPath, c);
+    contentPane.add(plannerPath);
+
+    BrowseButton pathButton = new BrowseButton(plannerPath, false, JFileChooser.DIRECTORIES_ONLY);
+    c.gridx++;
+    gridBag.setConstraints(pathButton, c);
+    contentPane.add(pathButton);
+
     JLabel cl = new JLabel("Command line ");
     c.gridx = 0;
     c.gridy++;
@@ -106,19 +132,23 @@ public class PlannerCommandLineDialog extends JDialog {
   }
 
   public String getCommandLine() {
-    return commandLine.getText();
+    return commandLine.getText().trim();
   }
   
   public String getWriteDest() {
-    return writeDest.getText();
+    return writeDest.getText().trim();
   }
   
-  public String getStepsPerWrite() {
-    return stepsPerWrite.getText();
+  public String getPlannerPath() {
+    return plannerPath.getText().trim();
   }
 
-  public int getWaitMillis() {
-    return Integer.parseInt(sleepSeconds.getText().trim()) * 1000;
+  public String getStepsPerWrite() {
+    return stepsPerWrite.getText().trim();
+  }
+
+  public String getWaitSecs() {
+    return sleepSeconds.getText().trim();
   }
   class ExecuteButtonListener implements ActionListener {
     PlannerCommandLineDialog dialog;
@@ -126,18 +156,74 @@ public class PlannerCommandLineDialog extends JDialog {
       this.dialog = dialog;
     }
     public void actionPerformed(ActionEvent e) {
-      if(!(new File(dialog.getWriteDest())).exists()) {
-        //create directory dialog
+      int nsteps;
+      long waitMillis;
+      try {
+        nsteps = Integer.parseInt(dialog.getStepsPerWrite());
       }
-      if(!(new File(dialog.getWriteDest())).isDirectory()) {
-        //execption dialog, then return to above
+      catch(NumberFormatException nfe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, "'Steps per write' is not a number",
+                                      "NumberFormatException", JOptionPane.ERROR_MESSAGE);
+        return;
       }
-      ExecutePlannerThread thread = new ExecutePlannerThread(dialog.getCommandLine(), 
+      try {
+        waitMillis = Long.parseLong(dialog.getWaitSecs()) * 1000;
+      }
+      catch(NumberFormatException nfe) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, "'Seconds to wait' is not a number",
+                                      "NumberFormatException", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      File writeDir = new File(dialog.getWriteDest());
+      if(!writeDir.exists()) {
+        int option = JOptionPane.showConfirmDialog(PlanWorks.planWorks,
+                                                   "'" + writeDir.getAbsolutePath() + 
+                                                   "' doesn't exist.  Create?");
+        if(option == JOptionPane.YES_OPTION) {
+          try {
+            if(!writeDir.mkdir()) {
+              JOptionPane.showMessageDialog(PlanWorks.planWorks, 
+                                            "Failed to create " + writeDir.getAbsolutePath(),
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+              return;
+            }
+          }
+          catch(SecurityException se) {
+            JOptionPane.showMessageDialog(PlanWorks.planWorks,
+                                          "Failed to create " + writeDir.getAbsolutePath() + 
+                                          ": " + se.getMessage(), "SecurityException", 
+                                          JOptionPane.ERROR_MESSAGE);
+          }
+        }
+        else {
+          return;
+        }
+      }
+      if(!writeDir.canWrite()) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, 
+                                      "Permission denied: can't write to " + 
+                                      writeDir.getAbsolutePath(),
+                                      "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      File planDir = new File(dialog.getPlannerPath());
+      if(!planDir.exists()) {
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, 
+                                      "Error: " + writeDir.getAbsolutePath() + " does not exist",
+                                      "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+
+      ExecutePlannerThread thread = new ExecutePlannerThread(planDir.getAbsolutePath() +
+                                                             System.getProperty("file.separator")+
+                                                             dialog.getCommandLine(), 
                                                              dialog.getWriteDest(),
                                                              dialog.getStepsPerWrite());
       thread.setPriority(Thread.MIN_PRIORITY);
       thread.start();
-      try {Thread.sleep(dialog.getWaitMillis());}
+      try {Thread.sleep(waitMillis);}
       catch(Exception ex){System.err.println(ex); System.exit(-1);}
       try {
         String url = getNewSequenceUrl(dialog.getWriteDest(),

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.69 2003-12-03 01:49:22 miatauro Exp $
+// $Id: MySQLDB.java,v 1.70 2003-12-11 22:00:54 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -124,7 +124,7 @@ public class MySQLDB {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
       for(int triedConnections = 0; triedConnections <= 10; triedConnections++) {
         try {
-          conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=root");
+          conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=root&autoReconnect=true");
         }
         catch(Exception e) {
           if(triedConnections == 10) {
