@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.30 2004-02-03 19:21:45 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.31 2004-03-23 18:20:04 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -28,6 +28,9 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
  */
 public interface PwPlanningSequence extends ViewableObject {
 
+  public static final String EVT_PP_ADDED = "PartialPlan Added";
+
+  public static final String EVT_PP_REMOVED = "PartialPlan Removed";
 
   /**
    * <code>getStepCount</code>
@@ -324,5 +327,13 @@ public interface PwPlanningSequence extends ViewableObject {
   public List getPlanDBSizeList();
 
   public void refresh();
+
+  public boolean isPartialPlanLoaded(final int step);
+  public boolean isPartialPlanInDb(final int step);
+  public boolean isPartialPlanInFilesystem(final int step);
+
+  public void addListener(PwListener l);
+  public void removeListener(PwListener l);
+  public void handleEvent(String evtName);
 
 } // end interface PwPlanningSequence

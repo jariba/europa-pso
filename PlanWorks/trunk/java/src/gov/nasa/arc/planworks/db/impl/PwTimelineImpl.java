@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.22 2004-03-12 23:19:53 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.23 2004-03-23 18:20:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -121,5 +121,46 @@ public class PwTimelineImpl extends PwObjectImpl implements PwTimeline {
       }
       hasCalculatedSlotTimes = true;
     }
+  }
+
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(id.toString());
+    retval.append("\t").append(type).append("\t").append(parentId).append("\t");
+    retval.append(partialPlan.getId()).append("\t").append(name).append("\t");
+    if(!componentIdList.isEmpty()) {
+      for(ListIterator it = componentIdList.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    if(!variableIdList.isEmpty()) {
+      for(ListIterator it = variableIdList.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    if(!tokenIdList.isEmpty()) {
+      for(ListIterator it = tokenIdList.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    if(emptySlotInfo == null) {
+      retval.append("\\N");
+    }
+    else {
+      retval.append(emptySlotInfo);
+      }
+    retval.append("\n");
+    return retval.toString();
   }
 } // end class PwTimelineImpl

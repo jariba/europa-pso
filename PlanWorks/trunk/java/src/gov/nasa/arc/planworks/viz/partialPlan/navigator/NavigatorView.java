@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.19 2004-03-17 01:45:22 taylor Exp $
+// $Id: NavigatorView.java,v 1.20 2004-03-23 18:23:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -322,12 +322,12 @@ public class NavigatorView extends PartialPlanView {
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
     jGoView = new NavigatorJGoView( this);
+    jGoView.addViewListener(createViewListener());
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
-
     SwingUtilities.invokeLater( runInit);
   } // end commonConstructor
 
@@ -360,7 +360,7 @@ public class NavigatorView extends PartialPlanView {
     this.computeFontMetrics( this);
 
     jGoDocument = jGoView.getDocument();
-
+    jGoDocument.addDocumentListener(createDocListener());
     renderInitialNode();
 
     NavigatorViewLayout layout = new NavigatorViewLayout( jGoDocument, startTimeMSecs);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstantImpl.java,v 1.5 2004-03-12 23:19:52 miatauro Exp $
+// $Id: PwResourceInstantImpl.java,v 1.6 2004-03-23 18:20:48 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -101,5 +101,16 @@ public class PwResourceInstantImpl implements PwResourceInstant {
 
   public String toString() {
     return "Instant " + id + " at " + time + ": [" + levelMin + "-" + levelMax + "]";
+  }
+
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(partialPlan.getId().toString());
+    retval.append("\t").append(id).append("\t").append(time).append("\t").append(levelMin);
+    retval.append("\t").append(levelMax).append("\t");
+    for(ListIterator it = transactionIds.listIterator(); it.hasNext();) {
+      retval.append(it.next()).append(",");
+    }
+    retval.append("\n");
+    return retval.toString();
   }
 } // end class PwResourceInstantImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomain.java,v 1.5 2003-08-26 01:37:10 taylor Exp $
+// $Id: PwEnumeratedDomain.java,v 1.6 2004-03-23 18:20:00 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,7 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwEnumeratedDomain {
+public interface PwEnumeratedDomain extends PwDomain {
 
   /**
    * <code>getEnumeration</code>
@@ -31,41 +31,5 @@ public interface PwEnumeratedDomain {
    * @return - <code>List</code> - of String
    */
   public abstract List getEnumeration();
-
-  /**
-   * <code>getLowerBound</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public abstract String getLowerBound();
-
-  /**
-   * <code>getUpperBound</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public abstract String getUpperBound();
-		
-  /**
-   * <code>getLowerBoundInt</code> - required because PwIntervalDomainImpl needs it
-   *
-   * @return - <code>int</code> - 
-   */
-  public abstract int getLowerBoundInt();
-
-  /**
-   * <code>getUpperBoundInt</code> - required because PwIntervalDomainImpl needs it
-   *
-   * @return - <code>int</code> - 
-   */
-  public abstract int getUpperBoundInt();
-		
-  /**
-   * <code>toString</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public abstract String toString();
-
 
 } // end interface PwEnumeratedDomain

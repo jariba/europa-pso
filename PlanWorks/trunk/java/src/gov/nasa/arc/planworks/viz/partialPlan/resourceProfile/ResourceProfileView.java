@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.14 2004-03-20 01:00:40 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.15 2004-03-23 18:23:41 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -185,51 +185,6 @@ public class ResourceProfileView extends ResourceView  {
 
   } // end renderResourceExtent
 
-//   private List createDummyData( final boolean isNameOnly) {
-//     int startTime = 0, endTime = 0;
-//     if (! isNameOnly) {
-//       startTime = getTimeScaleStart();
-//       endTime = getTimeScaleEnd();
-//     }
-//     List resourceList = new ArrayList();
-//     List resourceInstantList = new ArrayList();
-//     PwIntervalDomain instantDomain =
-//       (PwIntervalDomain) new PwIntervalDomainImpl ( "type", "10", "10");
-//     resourceInstantList.add
-//       ( new PwResourceInstantImpl( new Integer( 99011), instantDomain, 4., 6.));
-//     resourceInstantList.add
-//       ( new PwResourceInstantImpl( new Integer( 99012),
-//                                    new PwIntervalDomainImpl( "type", "20", "20"), 10., 14.));
-//     resourceInstantList.add
-//       ( new PwResourceInstantImpl( new Integer( 99013),
-//                                    new PwIntervalDomainImpl( "type", "30", "30"), -2., 0.));
-//     resourceInstantList.add
-//       ( new PwResourceInstantImpl( new Integer( 99014),
-//                                    new PwIntervalDomainImpl( "type", "50", "50"), 2., 4.));
-//     PwResource dummyResource =
-//       new PwResourceImpl( new Integer( 9901), "Resource1", 4., 0., 12., startTime, endTime,
-//                           new UniqueSet(), resourceInstantList);
-//     resourceList.add( dummyResource);
-//     dummyResource =
-//       new PwResourceImpl( new Integer( 9902), "Resource2", 4., 0., 12., startTime, endTime,
-//                           new UniqueSet(), resourceInstantList);
-//     resourceList.add( dummyResource);
-//     dummyResource =
-//       new PwResourceImpl( new Integer( 9903), "ResourceThree", 4., 0., 12., startTime, endTime,
-//                           new UniqueSet(), resourceInstantList);
-//     resourceList.add( dummyResource);
-//     dummyResource =
-//       new PwResourceImpl( new Integer( 9904), "ResourceFour", 4., 0., 12., startTime, endTime,
-//                           new UniqueSet(), resourceInstantList);
-//     resourceList.add( dummyResource);
-//     dummyResource =
-//       new PwResourceImpl( new Integer( 9905), "ResourceFive", 4., 0., 12., startTime, endTime,
-//                           new UniqueSet(), resourceInstantList);
-//     resourceList.add( dummyResource);
-//     return resourceList;
-//   } // end createDummyData
-
-
   private void createResourceProfiles() {
     boolean isNamesOnly = false;
     currentYLoc = 0;
@@ -246,39 +201,6 @@ public class ResourceProfileView extends ResourceView  {
     }
 
   } // end createResourceProfiles
-
-//   private void iterateOverNodes() {
-//     int numResourceProfiles = resourceProfileList.size();
-//     //System.err.println( "iterateOverNodes: numResourceProfiles " + numResourceProfiles);
-//     Iterator resourceIterator = resourceProfileList.iterator();
-//     while (resourceIterator.hasNext()) {
-//       ResourceProfile resourceProfile = (ResourceProfile) resourceIterator.next();
-//       System.err.println( "name '" + resourceProfile.getPredicateName() + "' location " +
-//                           resourceProfile.getLocation());
-//     }
-//   } // end iterateOverNodes
-
-
-//   private void iterateOverJGoDocument() {
-//     JGoListPosition position = jGoExtentView.getDocument().getFirstObjectPos();
-//     int cnt = 0;
-//     while (position != null) {
-//       JGoObject object = jGoExtentView.getDocument().getObjectAtPos( position);
-//       position = jGoExtentView.getDocument().getNextObjectPosAtTop( position);
-//       System.err.println( "iterateOverJGoDoc: className " + object.getClass().getName() +
-//                           " object loc " + object.getLocation() + " object size " +
-//                           object.getSize());
-// //       if (object instanceof ResourceProfile) {
-// //         ResourceProfile resourceProfile = (ResourceProfile) object; 
-
-// //       }
-// //       cnt += 1;
-// //       if (cnt > 100) {
-// //         break;
-// //       }
-//     }
-//     //System.err.println( "iterateOverJGoDoc: cnt " + cnt); 
-//   } // end iterateOverJGoDocument 
 
   /**
    * <code>findNearestResource</code>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransaction.java,v 1.1 2004-02-03 20:43:44 taylor Exp $
+// $Id: PwDBTransaction.java,v 1.2 2004-03-23 18:19:59 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -21,7 +21,7 @@ package gov.nasa.arc.planworks.db;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwDBTransaction {
+public interface PwDBTransaction extends PwEntity {
 
   /**
    * <code>getType</code>

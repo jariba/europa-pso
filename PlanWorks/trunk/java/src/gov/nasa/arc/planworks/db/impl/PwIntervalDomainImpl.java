@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomainImpl.java,v 1.8 2004-02-03 19:22:15 miatauro Exp $
+// $Id: PwIntervalDomainImpl.java,v 1.9 2004-03-23 18:20:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -49,6 +49,8 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
     this.lowerBound = lowerBound;
     this.upperBound = upperBound;
   } // end constructor
+
+  public String getType(){return type;}
 
   /**
    * <code>getLowerBound</code>

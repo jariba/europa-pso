@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.92 2004-03-10 02:21:20 taylor Exp $
+// $Id: MySQLDB.java,v 1.93 2004-03-23 18:21:11 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -336,6 +336,22 @@ public class MySQLDB {
     catch(SQLException sqle){}
     return false;
   }
+
+  synchronized public static String getSequenceUrl(final Long id) {
+    String retval = null;
+    try {
+      ResultSet rows = 
+        queryDatabase("SELECT SequenceURL FROM Sequence WHERE SequenceId=".concat(id.toString()));
+      rows.last();
+      retval = rows.getString("SequenceURL");
+    }
+    catch(SQLException sqle) {}
+    return retval;
+  }
+
+  synchronized public static void setSequenceUrl(final Long id, final String url) {
+      updateDatabase("UPDATE Sequence SET SequenceURL='".concat(url).concat("' WHERE SequenceId=").concat(id.toString()));
+  }
   
   /**
    * Determine the existence of a partial plan by its sequence Id and name.
@@ -354,6 +370,19 @@ public class MySQLDB {
     }
     catch(SQLException sqle){}
     return false;
+  }
+
+  synchronized public static List queryPlanNamesInDatabase(final Long sequenceId) {
+    List retval = new ArrayList();
+    try {
+      ResultSet rows = 
+        queryDatabase("SELECT PlanName from PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
+      while(rows.next()) {
+        retval.add(rows.getString("PlanName"));
+      }
+    }
+    catch(SQLException sqle) {}
+    return retval;
   }
 
   /**
@@ -669,6 +698,19 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
+  }
+
+  synchronized public static int countTransactions(final Long sequenceId) {
+    int retval = 0;
+    try {
+      ResultSet transactions = 
+        queryDatabase("SELECT COUNT(*) FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()));
+      transactions.last();
+      retval = transactions.getInt("COUNT(*)");
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
   }
 
   synchronized public static Map queryTransactions(final Long sequenceId) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.78 2004-03-12 23:19:50 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.79 2004-03-23 18:20:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -145,7 +145,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     cleanConstraints();
-    //cleanTransactions();
     // checkPlan();
   } // end createPartialPlan
 
@@ -586,11 +585,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       }
     }
   }
-
-  private void cleanTransactions() {
-    sequence.cleanTransactions(this);
-  }
-
+  
   /**
    * <code>checkPlan</code> - verify that the PwPartialPlan structure is internally consistent.
    */
@@ -1192,5 +1187,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return ((TokenRelations) tokenMasterSlaveMap.get( tokenId)).getSlaveTokenIds();
   }
 
-
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(name);
+    retval.append("\t").append(id).append("\t").append(model).append("\t");
+    retval.append(sequence.getId()).append("\n");
+    return retval.toString();
+  }
 } // end class PwPartialPlanImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransactionImpl.java,v 1.1 2004-02-03 20:43:46 taylor Exp $
+// $Id: PwDBTransactionImpl.java,v 1.2 2004-03-23 18:20:43 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -121,4 +121,17 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   public String [] getInfo() {
     return info;
   }
+  
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(type);
+    retval.append("\t").append(objectId).append("\t").append(source).append("\t");
+    retval.append(transactionId).append("\t").append(stepNumber).append("\t").append(sequenceId);
+    retval.append("\t").append(partialPlanId).append("\t");
+    for(int i = 0; i < info.length; i++) {
+      retval.append(info[i]).append(",");
+    }
+    retval.append("\n");
+    return retval.toString();
+  }
+
 } // end class PwDBTransactionImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.36 2004-03-12 23:19:53 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.37 2004-03-23 18:20:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.awt.FontMetrics;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.StringTokenizer;
 import javax.swing.SwingUtilities;
 
@@ -38,21 +39,21 @@ import gov.nasa.arc.planworks.util.UniqueSet;
  */
 public class PwTokenImpl implements PwToken {
 
-  private Integer id;
-  private boolean isValueToken;
+  protected Integer id;
+  protected boolean isValueToken;
   //private Integer predicateId;
-  private String predicateName;
-  private Integer startVarId;
-  private Integer endVarId;
-  private Integer durationVarId;
-  private Integer objectVarId;
-  private Integer stateVarId;
-  private Integer parentId;
-  private List tokenRelationIds; // element Integer
-  private List paramVarIds; // element Integer
+  protected String predicateName;
+  protected Integer startVarId;
+  protected Integer endVarId;
+  protected Integer durationVarId;
+  protected Integer objectVarId;
+  protected Integer stateVarId;
+  protected Integer parentId;
+  protected List tokenRelationIds; // element Integer
+  protected List paramVarIds; // element Integer
   private Integer slotId;
   private int slotIndex;
-  private PwPartialPlanImpl partialPlan;
+  protected PwPartialPlanImpl partialPlan;
 
 
   public PwTokenImpl(final Integer id, final boolean isValueToken, final Integer slotId, 
@@ -353,6 +354,64 @@ public class PwTokenImpl implements PwToken {
    */
   public void addTokenRelation(final Integer tokenRelationId) {
     tokenRelationIds.add(tokenRelationId);
+  }
+
+  public boolean equals(Object o) {
+    return ((PwToken)o).getId().equals(id);
+  }
+
+  public String toOutputString() {
+    StringBuffer retval = new StringBuffer(id.toString());
+    retval.append("\t").append(DbConstants.T_INTERVAL).append("\t");
+    if(slotId != null) {
+      retval.append(slotId).append("\t").append(slotIndex).append("\t");
+    }
+    else {
+      retval.append("\\N").append("\t").append("\\N").append("\t");
+    }
+    if(isFree()) {
+      retval.append("1").append("\t");
+    }
+    else {
+      retval.append("0").append("\t");
+    }
+    if(isValueToken) {
+      retval.append("1").append("\t");
+    }
+    else {
+      retval.append("0").append("\t");
+    }
+    retval.append(startVarId).append("\t").append(endVarId).append("\t").append(durationVarId);
+    retval.append(stateVarId).append("\t").append(predicateName).append("\t").append(parentId);
+    retval.append("\t").append(partialPlan.getObject(parentId).getName()).append("\t");
+    retval.append(objectVarId).append("\t");
+    if(!tokenRelationIds.isEmpty()) {
+      for(ListIterator it = tokenRelationIds.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    if(!paramVarIds.isEmpty()) {
+      for(ListIterator it = paramVarIds.listIterator(); it.hasNext();) {
+        retval.append(it.next()).append(",");
+      }
+    }
+    else {
+      retval.append("\\N");
+    }
+    retval.append("\t");
+    
+    if(isSlotted()) {
+      retval.append(partialPlan.getSlot(slotId).getTokenList().indexOf(this));
+    }
+    else {
+      retval.append("-1");
+    }
+    retval.append("\n");
+    return retval.toString();
   }
 
 } // end class PwTokenImpl

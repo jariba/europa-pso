@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomainImpl.java,v 1.4 2003-10-18 00:01:07 miatauro Exp $
+// $Id: PwDomainImpl.java,v 1.5 2004-03-23 18:20:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -24,10 +24,9 @@ import gov.nasa.arc.planworks.db.PwDomain;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class PwDomainImpl implements PwDomain {
+public abstract class PwDomainImpl implements PwDomain {
 
-  public PwDomainImpl() {
-  } // end constructor
+  public Integer getId(){return new Integer(-1);}
 
   /**
    * <code>getLowerBound</code>
@@ -78,5 +77,5 @@ public class PwDomainImpl implements PwDomain {
     return "";
   }
 
-
+  public String toOutputString(){return "";}
 } // end class PwDomainImpl

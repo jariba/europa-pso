@@ -20,6 +20,6 @@ public class NewSequenceThread extends Thread {
   }
 
   private void newSequence() {
-    PlanWorks.getPlanWorks().executeDialog.show();
+    //PlanWorks.getPlanWorks().executeDialog.show();
   }
 }

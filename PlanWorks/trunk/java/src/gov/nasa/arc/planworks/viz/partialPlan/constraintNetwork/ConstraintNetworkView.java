@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.52 2004-03-20 01:00:39 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.53 2004-03-23 18:23:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
+import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoView;
@@ -57,6 +58,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
@@ -168,6 +170,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
     jGoView = new ConstraintJGoView( this);
+    jGoView.addViewListener(createViewListener());
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -245,6 +248,7 @@ public class ConstraintNetworkView extends PartialPlanView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    handleEvent(EVT_BEGUN_DRAWING);
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for ConstraintNetworkView instance to become displayable
     while (! this.isDisplayable()) {
@@ -257,6 +261,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     this.computeFontMetrics( this);
 
     document = jGoView.getDocument();
+    document.addDocumentListener(createDocListener());
     createVerticalScrollBarMaintainer();
 
     long t1 = System.currentTimeMillis();
@@ -307,6 +312,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     focusNode = null;
 
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
+    handleEvent(EVT_ENDED_DRAWING);
   } // end init
 
 
@@ -332,6 +338,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   } // end class RedrawViewThread
 
   private void redrawView() {
+    handleEvent(EVT_BEGUN_DRAWING);
     jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // prevent user from seeing intermediate layouts
     this.setVisible( false);
@@ -364,6 +371,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     startTimeMSecs = 0L;
     this.setVisible( true);
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
+    handleEvent(EVT_ENDED_DRAWING);
   } // end redrawView
 
 
@@ -508,29 +516,21 @@ public class ConstraintNetworkView extends PartialPlanView {
     while(objectIterator.hasNext()) {
       PwObject obj = (PwObject) objectIterator.next();
       if(!obj.getVariables().isEmpty()) {
-        Color backgroundColor = null;
+        Color backgroundColor = getTimelineColor(obj.getId());
+        VariableContainerNode node = null;
         if(obj instanceof PwTimeline) {
-          backgroundColor = getTimelineColor(obj.getId());
-          ConstraintNetworkTimelineNode timelineNode =
-            new ConstraintNetworkTimelineNode((PwTimeline) obj, new Point(x, y), backgroundColor,
-                                              isDraggable, this);
-          containerNodeMap.put(obj.getId(), timelineNode);
-          document.addObjectAtTail(timelineNode);
+          node = new ConstraintNetworkTimelineNode((PwTimeline) obj, new Point(x, y),
+                                                   backgroundColor, isDraggable, this);
         }
         else if(obj instanceof PwResource) {
-          backgroundColor = getTimelineColor(obj.getId());
-          ConstraintNetworkResourceNode resourceNode =
-            new ConstraintNetworkResourceNode((PwResource) obj, new Point(x, y), backgroundColor,
-                                              isDraggable, this);
-          containerNodeMap.put(obj.getId(), resourceNode);
-          document.addObjectAtTail(resourceNode);
+          node = new ConstraintNetworkResourceNode((PwResource) obj, new Point(x, y),
+                                                   backgroundColor, isDraggable, this);
         }
         else {
-          ConstraintNetworkObjectNode objNode =
-            new ConstraintNetworkObjectNode(obj, new Point(x, y), isDraggable, this);
-          containerNodeMap.put(obj.getId(), objNode);
-          document.addObjectAtTail(objNode);
+          node = new ConstraintNetworkObjectNode(obj, new Point(x, y), isDraggable, this);
         }
+        containerNodeMap.put(obj.getId(), node);
+        document.addObjectAtTail((JGoObject)node);
       }
     }
   }
@@ -1752,7 +1752,6 @@ public class ConstraintNetworkView extends PartialPlanView {
 
 
   } // end class ConstraintJGoView
-
 } // end class ConstraintNetworkView
 
 
