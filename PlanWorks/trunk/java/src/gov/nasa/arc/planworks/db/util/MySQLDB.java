@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.120 2004-09-27 19:19:01 taylor Exp $
+// $Id: MySQLDB.java,v 1.121 2005-02-15 23:05:35 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -91,6 +91,7 @@ public class MySQLDB {
     dbStartString.append(System.getProperty("mysql.log.err")).append(" --skip-symlink ");
     dbStartString.append("--socket=").append(System.getProperty("mysql.sock"));
     dbStartString.append(" --tmpdir=").append(System.getProperty("mysql.tmpdir"));
+    dbStartString.append(" --port=").append(System.getProperty("mysql.port"));
     dbStartString.append(" --key_buffer_size=64M --join_buffer_size=16M --query_cache_size=16M ");
 
     // log query whose time is > long_query_time in seconds
@@ -128,7 +129,8 @@ public class MySQLDB {
     }
     StringBuffer dbStopString = new StringBuffer(System.getProperty("mysql.bindir"));
     dbStopString.append("/mysqladmin --user=root --host=127.0.0.1 --socket=");
-    dbStopString.append(System.getProperty("mysql.sock")).append(" shutdown");
+    dbStopString.append(System.getProperty("mysql.sock"));
+    dbStopString.append(" --port=").append(System.getProperty("mysql.port")).append(" shutdown");
     Runtime.getRuntime().exec(dbStopString.toString());
     dbIsStarted = false;
   }
@@ -151,10 +153,12 @@ public class MySQLDB {
       
     try {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
+      StringBuffer connStr = new StringBuffer("jdbc:mysql://localhost:");
+      connStr.append(System.getProperty("mysql.port")).append("/PlanWorks?user=root&autoReconnect=true");
       for(int triedConnections = 0; triedConnections <= 10 && !dbIsConnected; triedConnections++) {
         try {
           System.err.println("   ... connecting to database");
-          conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=root&autoReconnect=true");
+          conn = DriverManager.getConnection(connStr.toString());
           dbIsConnected = true;
         }
         catch(Exception e) {
