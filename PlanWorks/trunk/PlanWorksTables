@@ -325,7 +325,7 @@ CREATE TABLE Variable (
   IntDomainType enum('INTEGER_SORT','REAL_SORT'),
   IntDomainLowerBound varchar(255),
   IntDomainUpperBound varchar(255),
-  VariableType enum('START_VAR','END_VAR','DURATION_VAR','OBJECT_VAR','PARAMETER_VAR','REJECT_VAR','GLOBAL_VAR') NOT NULL,
+  VariableType varchar(255) NOT NULL,
   PRIMARY KEY  (PartialPlanId,VariableId),
   INDEX (VariableId), INDEX (VariableType), INDEX (TokenId), INDEX (DomainType), 
   INDEX (ParameterName)
