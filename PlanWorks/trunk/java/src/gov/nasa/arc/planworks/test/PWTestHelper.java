@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.1 2004-04-06 01:31:42 taylor Exp $
+// $Id: PWTestHelper.java,v 1.2 2004-04-06 21:27:49 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -27,7 +27,7 @@ public abstract class PWTestHelper {
 
   public static final String GUI_TEST_DIR = "GUITest";
 
-  public static List buildTestData( PlanWorks planWorks) {
+  public static List buildTestData( int numSequences, int numSteps, PlanWorks planWorks) {
     String guiSequencesUrl = System.getProperty( "planworks.test.data.dir") +
       System.getProperty( "file.separator") + GUI_TEST_DIR;
     File guiSequencesUrlFile = new File( guiSequencesUrl);
@@ -45,8 +45,9 @@ public abstract class PWTestHelper {
                           "' failed"); System.exit( -1);
     }
     List sequenceUrls = new ArrayList();
-    int numSteps = 1;
-    sequenceUrls.add( createSequence( guiSequencesUrl, numSteps));
+    for (int i = 0; i < numSequences; i++) {
+      sequenceUrls.add( createSequence( guiSequencesUrl, numSteps));
+    }
     return sequenceUrls;
   } // end buildTestData
 
