@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.116 2004-07-27 21:58:05 taylor Exp $
+// $Id: MySQLDB.java,v 1.117 2004-08-10 22:41:26 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1873,6 +1873,32 @@ public class MySQLDB {
       while(ppIds.next()) {
         retval.add(new Long(ppIds.getLong("PartialPlanId")));
       }
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
+
+  synchronized public static boolean statsInDb(Long seqId) {
+    boolean retval = false;
+    try {
+      ResultSet count = queryDatabase("SELECT COUNT(*) AS number FROM PartialPlanStats WHERE SequenceId=".concat(seqId.toString()));
+      count.last();
+      retval = count.getInt("number") != 0;
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
+
+  synchronized public static boolean rulesInDb(Long seqId) {
+    boolean retval = false;
+    try {
+      ResultSet count = queryDatabase("SELECT COUNT(*) AS number FROM Rules WHERE SequenceId=".concat(seqId.toString()));
+      count.last();
+      retval = count.getInt("number") != 0;
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
