@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.15 2003-09-02 00:52:10 taylor Exp $
+// $Id: VizView.java,v 1.16 2003-09-02 21:49:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -46,8 +46,6 @@ public class VizView extends JPanel {
   protected PwPartialPlan partialPlan;
   protected List validTokenIds;
   protected List displayedTokenIds;
-  protected PwDomain startHorizonInterval;
-  protected PwDomain endHorizonInterval;
 
 
   /**
@@ -60,10 +58,6 @@ public class VizView extends JPanel {
     this.partialPlan = partialPlan;
     validTokenIds = null;
     displayedTokenIds = null;
-    startHorizonInterval = partialPlan.getStartHorizonInterval();
-    endHorizonInterval = partialPlan.getEndHorizonInterval();
-    System.err.println( "VizView startHorizonInterval: " + startHorizonInterval.toString());
-    System.err.println( "VizView endHorizonInterval: " + endHorizonInterval.toString());
     
     JGoText.setDefaultFontFaceName("Monospaced");
     JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
@@ -71,24 +65,6 @@ public class VizView extends JPanel {
     // Utilities.printFontNames();
   }
 
-  /**
-   * <code>getStartHorizonInterval</code>
-   *
-   * @return - <code>PwDomain</code> - 
-   */
-  public PwDomain getStartHorizonInterval() {
-    return startHorizonInterval;
-  }
-
-  /**
-   * <code>getEndHorizonInterval</code>
-   *
-   * @return - <code>PwDomain</code> - 
-   */
-  public PwDomain getEndHorizonInterval() {
-    return endHorizonInterval;
-  }
-  
   /**
    * <code>redraw</code> - each subclass of VizView will implement redraw()
    *

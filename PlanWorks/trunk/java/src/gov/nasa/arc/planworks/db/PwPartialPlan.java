@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.15 2003-09-02 00:52:09 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.16 2003-09-02 21:49:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -135,19 +135,6 @@ public interface PwPartialPlan {
    */
   public abstract PwVariable getVariable( Integer id);
 
-  /**
-   * <code>getStartHorizonInterval</code>
-   *
-   * @return - <code>PwDomain</code> - 
-   */
-  public abstract PwDomain getStartHorizonInterval();
-
-  /**
-   * <code>getEndHorizonInterval</code>
-   *
-   * @return - <code>PwDomain</code> - 
-   */
-  public abstract PwDomain getEndHorizonInterval();
 
   
 } // end interface PwPartialPlan

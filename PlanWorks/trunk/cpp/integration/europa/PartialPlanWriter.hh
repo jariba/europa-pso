@@ -7,7 +7,7 @@ using namespace Europa;
 
 class PartialPlanWriter {
 public:
-  PartialPlanWriter(TokenNetwork *tnet, String &dest)  { this->tnet = tnet; this->dest = dest; this->nstep = 0; this->izero = Value(0); this->rzero = Value(0.);};
+  PartialPlanWriter(TokenNetwork *ptnet, String &pdest)  { this->tnet = ptnet; this->dest = pdest; this->nstep = 0; this->izero = Value(0); this->rzero = Value(0.);};
   void write();
 private:
   int nstep;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.33 2003-09-02 00:52:10 taylor Exp $
+// $Id: TimelineView.java,v 1.34 2003-09-02 21:49:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -314,15 +314,19 @@ public class TimelineView extends VizView {
       PwSlot slot = (PwSlot) slotIterator.next();
       PwToken token = slot.getBaseToken();
       boolean isLastSlot = (! slotIterator.hasNext());
-      String slotNodeLabel = getSlotNodeLabel( token, slot, isLastSlot);
-      slotNode = new SlotNode( slotNodeLabel, slot, new Point( x, y), previousToken,
-                               isFirstSlot, isLastSlot, objectCnt, this);
-      timelineNode.addToSlotNodeList( slotNode);
-      // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
-      jGoDocument.addObjectAtTail( slotNode);
-      previousToken = token;
+      if ((token == null) && (isFirstSlot || isLastSlot)) {
+        // discard leading and trailing empty slots
+      } else {
+        String slotNodeLabel = getSlotNodeLabel( token, slot, isLastSlot);
+        slotNode = new SlotNode( slotNodeLabel, slot, new Point( x, y), previousToken,
+                                 isFirstSlot, isLastSlot, objectCnt, this);
+        timelineNode.addToSlotNodeList( slotNode);
+        // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
+        jGoDocument.addObjectAtTail( slotNode);
+        previousToken = token;
+        x += slotNode.getSize().getWidth();
+      }
       isFirstSlot = false;
-      x += slotNode.getSize().getWidth();
     }
     int maxHeight = y + ViewConstants.TIMELINE_VIEW_Y_INIT;
     if (maxHeight > maxViewHeight) {
@@ -394,16 +398,18 @@ public class TimelineView extends VizView {
 //                           earliestStartTime );
 //       System.err.println( "computeTimeIntervalLabelSize: end " +
 //                           endTimeIntervalDomain.toString());
-      if (startTimeIntervalDomain.getLowerBoundInt() >= earliestStartTime) {
-        earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
-      } else {
-        String message = "Earliest start times are not monotonically increasing " +
-          "in timeline '" + timeline.getName() + "' (id = " + timeline.getId() + ")";
-        JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
-                                       "Timeline View Exception",
-                                       JOptionPane.ERROR_MESSAGE);
-        System.err.println( message);
-        System.exit( 1);
+      if (startTimeIntervalDomain != null) {
+        if (startTimeIntervalDomain.getLowerBoundInt() >= earliestStartTime) {
+          earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
+        } else {
+          String message = "Earliest start times are not monotonically increasing " +
+            "in timeline '" + timeline.getName() + "' (id = " + timeline.getId() + ")";
+          JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
+                                         "Timeline View Exception",
+                                         JOptionPane.ERROR_MESSAGE);
+          System.err.println( message);
+          System.exit( 1);
+        }
       }
       previousToken = token;
     }

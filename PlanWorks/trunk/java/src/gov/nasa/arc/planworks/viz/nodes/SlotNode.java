@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.22 2003-09-02 00:52:10 taylor Exp $
+// $Id: SlotNode.java,v 1.23 2003-09-02 21:49:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -228,12 +228,12 @@ public class SlotNode extends TextNode {
     PwToken baseToken = slot.getBaseToken();
     PwDomain intervalDomain = null, lastIntervalDomain = null;
     if (baseToken == null) { // empty slot
-      if (previousToken == null) { // first slot is empty
-        intervalDomain = view.getStartHorizonInterval();
-      } else if (isLastSlot == true) { // this is also the last slot
-        intervalVariable = previousToken.getEndVariable();
-        lastIntervalDomain = view.getEndHorizonInterval();
-      } else {
+      if ((previousToken == null) || // first slot
+          (isLastSlot == true)) { // last slot
+        intervalArray[0] = null;
+        intervalArray[1] = null;
+        return intervalArray;
+     } else {
         // empty slot between filled slots
         intervalVariable = previousToken.getEndVariable();
       }
