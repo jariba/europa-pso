@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.76 2004-08-05 03:30:17 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.77 2004-08-05 03:38:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1728,6 +1728,12 @@ public class ConstraintNetworkView extends PartialPlanView {
 	  // System.err.println( "createFindVariablePathItem: variableKey1 " +
 	  // 		      variableKey1 + " variableKey2 " + variableKey2);
 	  List varConstrKeyList = partialPlan.getVariablePath( variableKey1, variableKey2);
+	  if (varConstrKeyList.size() == 0) {
+	    JOptionPane.showMessageDialog
+	      ( PlanWorks.getPlanWorks(), "no path found",
+		"Find Variable Path Error", JOptionPane.ERROR_MESSAGE);
+	    return;
+	  }
 	  List nodeList = new ArrayList();
 	  Iterator vcItr = varConstrKeyList.iterator();
 	  boolean doRedraw = false, isVariableOpened = true;
