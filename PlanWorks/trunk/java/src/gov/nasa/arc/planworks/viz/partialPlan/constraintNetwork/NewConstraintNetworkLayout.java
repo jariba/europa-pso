@@ -20,6 +20,7 @@ public class NewConstraintNetworkLayout {
   private List variableBoundingBoxes;
   private boolean horizontalLayout;
   public NewConstraintNetworkLayout(List tokenNodes, List variableNodes, List constraintNodes) {
+    long t1 = System.currentTimeMillis();
     horizontalLayout = true;
     //horizontalLayout = false;
     this.variableNodes = variableNodes;
@@ -29,47 +30,39 @@ public class NewConstraintNetworkLayout {
     variableBoundingBoxes = new ArrayList(variableNodes.size());
 
     List tempTokenNodes = new ArrayList(tokenNodes);
+
+    long t2 = System.currentTimeMillis();
     Collections.sort(tempTokenNodes, new TokenLinkCountComparator());
+    System.err.println("Spent " + (System.currentTimeMillis() - t2) + "ms in first sort.");
+
+    while(((ConstraintNetworkTokenNode) tempTokenNodes.get(tempTokenNodes.size() - 1)).getTokenLinkCount() == 0) {
+      orderedTokenNodes.add(tempTokenNodes.remove(tempTokenNodes.size() - 1));
+    }
 
     while(!tempTokenNodes.isEmpty()) {
       List connectedComponent = new UniqueSet();
-      ConstraintNetworkTokenNode firstNode = (ConstraintNetworkTokenNode) tempTokenNodes.remove(0);
-      connectedComponent.add(firstNode);
-      List connections = firstNode.getConnectedTokenNodes();
-      while(!connections.isEmpty()) {
-        ConstraintNetworkTokenNode connectedNode =
-          (ConstraintNetworkTokenNode) connections.remove(0);
-        if(connectedComponent.contains(connectedNode)) {
-          continue;
-        }
-        connectedComponent.add(connectedNode);
-        tempTokenNodes.remove(connectedNode);
-        List subConnections = connectedNode.getConnectedTokenNodes();
-        subConnections.removeAll(connections);
-        subConnections.removeAll(connectedComponent);
-        connections.addAll(subConnections);
+      ConstraintNetworkTokenNode firstNode = (ConstraintNetworkTokenNode) tempTokenNodes.get(0);
+      if(firstNode.getTokenLinkCount() == 0) {
+        orderedTokenNodes.add(firstNode);
+        continue;
       }
-      Collections.sort(connectedComponent, new TokenLinkCountComparator());
+      assembleConnectedComponent(connectedComponent, tempTokenNodes, firstNode);
+
+      //Collections.sort(connectedComponent, new TokenLinkCountComparator());
       LinkedList subOrdering = new LinkedList();
-      while(!connectedComponent.isEmpty()) {
-        ConstraintNetworkTokenNode maxNode = 
-          (ConstraintNetworkTokenNode) connectedComponent.remove(0);
-        List temp = new ArrayList(connectedComponent);
-        Collections.sort(temp, new SpecificTokenLinkCountComparator(maxNode));
-        subOrdering.add(maxNode);
-        boolean switcher = false;
-        ListIterator tempIterator = temp.listIterator();
-        while(tempIterator.hasNext()) {
-          ConstraintNetworkTokenNode fooNode = (ConstraintNetworkTokenNode) tempIterator.next();
-          if(switcher) {
-            subOrdering.addFirst(fooNode);
-          }
-          else {
-            subOrdering.addLast(fooNode);
-          }
-          switcher ^= true;
-          connectedComponent.remove(fooNode);
+      firstNode = (ConstraintNetworkTokenNode) connectedComponent.remove(0);
+      Collections.sort(connectedComponent, new SpecificTokenLinkCountComparator(firstNode));
+      subOrdering.add(firstNode);
+      boolean switcher = false;
+      ListIterator connCompIterator = connectedComponent.listIterator();
+      while(connCompIterator.hasNext()) {
+        if(switcher) {
+          subOrdering.addFirst(connCompIterator.next());
         }
+        else {
+          subOrdering.addLast(connCompIterator.next());
+        }
+        switcher ^= true;
       }
       orderedTokenNodes.addAll(subOrdering);
     }
@@ -81,7 +74,23 @@ public class NewConstraintNetworkLayout {
       variableBoundingBoxes.addAll(box.getVariableBoxes());
       tokenBoundingBoxes.add(box);
     }
+    System.err.println("Constraint network init took " + (System.currentTimeMillis() - t1) +
+                       "ms");
     //performLayout();
+  }
+
+  private void assembleConnectedComponent(List component, List tokenNodes, 
+                                          ConstraintNetworkTokenNode node) {
+    if(tokenNodes.isEmpty() || !tokenNodes.contains(node)) {
+      return;
+    }
+    component.add(node);
+    tokenNodes.remove(node);
+    ListIterator connectedNodeIterator = node.getConnectedTokenNodes().listIterator();
+    while(connectedNodeIterator.hasNext()) {
+      assembleConnectedComponent(component, tokenNodes, 
+                                 (ConstraintNetworkTokenNode) connectedNodeIterator.next());
+    }
   }
   public void setLayoutHorizontal() {
     horizontalLayout = true;
@@ -162,7 +171,6 @@ public class NewConstraintNetworkLayout {
       ConstraintNetworkTokenNode n1 = (ConstraintNetworkTokenNode) o1;
       ConstraintNetworkTokenNode n2 = (ConstraintNetworkTokenNode) o2;
       return n2.getTokenLinkCount(node) - n1.getTokenLinkCount(node);
-
     }
     public boolean equals(Object o){return false;}
   }
