@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.40 2003-09-09 20:40:11 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.41 2003-09-11 00:25:48 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -160,7 +160,8 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
     MySQLDB.queryVariables( this);
 
-    System.err.println( "Partial Plan ids:");
+    System.err.println( "Partial Plan: " + url);
+    System.err.println( "Ids:");
     System.err.println( "  objects        " + objectMap.keySet().size());
     System.err.println( "  timelines      " + timelineMap.keySet().size());
     System.err.println( "  slots          " + slotMap.keySet().size());

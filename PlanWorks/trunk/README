@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.23 2003-09-10 00:23:09 taylor Exp $
+# $Id: README,v 1.24 2003-09-11 00:25:47 taylor Exp $
 #
 
 SUMMARY
@@ -22,10 +22,12 @@ File "PlanWorks/GETTING_STARTED" has been added to assist new users.
 
 o  PRs and CRs completed:
    #2044: Need a minimal getting started guide.
+   #2048: In large plans, may lose the time scale with current approach.
+   #2049: Project vertical line on clicks for Temporal Extent View.
+   #2051: Need better window management - how about a tiling option?
    #2053: Post error message if trying to add sequence from other project.
    #2055: Bug creating project.
    #2057: Floating data left over filtering timeline view.
-
 
 
 CVS CHECKOUT
