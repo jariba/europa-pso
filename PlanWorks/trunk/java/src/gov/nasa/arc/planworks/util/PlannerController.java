@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlannerController.java,v 1.3 2004-09-08 23:38:42 taylor Exp $
+// $Id: PlannerController.java,v 1.4 2004-11-23 23:08:13 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameListener;
+import javax.swing.event.InternalFrameEvent;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.JInternalFrame;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -61,6 +65,7 @@ public class PlannerController extends JPanel {
   private int writeStepStep;
   private JTextField writeNextStepsField;
   private int writeNextSteps;
+  private JLabel currentStatusLabel;
   private JLabel currentStepLabel;
 
   public PlannerController( final PwPlanningSequence planSequence,
@@ -73,31 +78,35 @@ public class PlannerController extends JPanel {
     this.sequenceStepsView = sequenceStepsView;
 
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
+    /*
+     * Unload the planner model if user closes window
+     */
+    plannerControllerFrame.addInternalFrameListener( new InternalFrameAdapter() {
+      public void internalFrameClosing(InternalFrameEvent we) {
+        PlannerControlJNI.terminatePlannerRun();
+      }});
 
-    currentStepLabel = new JLabel( "current step is " +
+    currentStatusLabel = new JLabel( "Planner: Ready  ");
+    currentStepLabel = new JLabel( "Current step: " +
                                    (planSequence.getPlanDBSizeList().size() - 1));
 
-    final JLabel writeStepLabel1 = new JLabel( "write step");
+    final JLabel writeStepLabel1 = new JLabel( "Skip to step number   ");
     writeStepField = new JTextField( STEP_FIELD_WIDTH);
     writeStepField.setText( "");
-    final JLabel writeStepLabel2 = new JLabel( "       ");
     final JButton writeStepButton = new JButton( "Go");
     writeStepButton.addActionListener( new WriteStepButtonListener( sequenceStepsView));
 
-    final JLabel writeNextStepsLabel1 = new JLabel( "write next");
+    final JLabel writeNextStepsLabel1 = new JLabel( "Write next N steps  ");
     writeNextStepsField = new JTextField( STEP_FIELD_WIDTH);
     writeNextStepsField.setText( "");
-    final JLabel writeNextStepsLabel2 = new JLabel( " steps ");
     final JButton writeNextStepsButton = new JButton( "Go");
     writeNextStepsButton.addActionListener( new WriteNextStepsButtonListener( sequenceStepsView));
 
-    final JButton completeButton = new JButton( "Complete");
+    final JButton completeButton = new JButton( "Write Final Step");
     completeButton.addActionListener( new CompleteButtonListener( sequenceStepsView,
                                                                   plannerControllerFrame));
 
-    final JLabel separationLabel = new JLabel( "       ");
-
-    final JButton terminateButton = new JButton( "Terminate");
+    final JButton terminateButton = new JButton( "Terminate Planner");
     terminateButton.addActionListener( new TerminateButtonListener( sequenceStepsView,
                                                                     plannerControllerFrame));
 
@@ -110,50 +119,52 @@ public class PlannerController extends JPanel {
     c.gridx = 0;
     c.gridy = 0;
 
-    c.gridx = 0;
-    c.gridy++;
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.WEST;
+    gridBag.setConstraints( currentStatusLabel, c);
+    add( currentStatusLabel);
+
+    c.gridx = 2;
     c.gridwidth = GridBagConstraints.REMAINDER;
     gridBag.setConstraints( currentStepLabel, c);
     add( currentStepLabel);
 
+    c.gridx = 0;
     c.gridy++;
-    c.gridwidth = 1;
+    c.gridwidth = 2;
     gridBag.setConstraints( writeStepLabel1, c);
     add( writeStepLabel1);
-    c.gridx++;
+    c.gridx = 2;
+    c.gridwidth = 1;
     gridBag.setConstraints( writeStepField, c);
     add( writeStepField);
     c.gridx++;
-    gridBag.setConstraints( writeStepLabel2, c);
-    add( writeStepLabel2);
-    c.gridx++;
+    c.anchor = GridBagConstraints.CENTER;
     gridBag.setConstraints( writeStepButton, c);
     add( writeStepButton);
 
     c.gridx = 0;
     c.gridy++;
+    c.gridwidth = 2;
+    c.anchor = GridBagConstraints.WEST;
     gridBag.setConstraints( writeNextStepsLabel1, c);
     add( writeNextStepsLabel1);
-    c.gridx++;
+    c.gridx = 2;
+    c.gridwidth = 1;
     gridBag.setConstraints( writeNextStepsField, c);
     add( writeNextStepsField);
     c.gridx++;
-    gridBag.setConstraints( writeNextStepsLabel2, c);
-    add( writeNextStepsLabel2);
-    c.gridx++;
+    c.anchor = GridBagConstraints.CENTER;
     gridBag.setConstraints( writeNextStepsButton, c);
     add( writeNextStepsButton);
 
     c.gridx = 0;
     c.gridy++;
+    c.gridwidth = 2;
     gridBag.setConstraints( completeButton, c);
     add( completeButton);
 
-    c.gridx++;
-    gridBag.setConstraints( separationLabel, c);
-    add( separationLabel);
-
-    c.gridx++;
+    c.gridx = 2;
     gridBag.setConstraints( terminateButton, c);
     add( terminateButton);
 
@@ -214,11 +225,30 @@ public class PlannerController extends JPanel {
     public void run() {
       final SwingWorker worker = new SwingWorker() {
           public Object construct() {
+            currentStatusLabel.setText( "Planner: Running");
             System.err.println( "WriteStepJNIThread( " + writeStepStep + " ) started");
-            PlannerControlJNI.writeStep( writeStepStep);
+            try {
+               PlannerControlJNI.writeStep( writeStepStep);
+            } catch (Exception excp) {
+               PlannerControlJNI.terminatePlannerRun();
+               plannerControllerFrame.dispose();
+               notifyPlannerException();    
+            }
             writeStepField.setText( "");
-            currentStepLabel.setText( "current step is " + writeStepStep);
+            currentStepLabel.setText( "Current step: " + writeStepStep);
+            currentStatusLabel.setText( "Planner: Ready  ");
             sequenceStepsView.refreshView();
+            /*
+             * if planner should finish, terminate, close window and notify user
+             */
+            int plannerStatus = PlannerControlJNI.getPlannerStatus();
+            if ((plannerStatus == PlannerControlJNI.PLANNER_TIMEOUT_REACHED) ||
+                (plannerStatus == PlannerControlJNI.PLANNER_SEARCH_EXHAUSTED) ||
+                (plannerStatus == PlannerControlJNI.PLANNER_FOUND_PLAN)) {
+               PlannerControlJNI.terminatePlannerRun();
+               plannerControllerFrame.dispose();
+               notifyPlannerStatus( plannerStatus);    
+            }
             return null;
           }
         };
@@ -270,11 +300,30 @@ public class PlannerController extends JPanel {
     public void run() {
       final SwingWorker worker = new SwingWorker() {
           public Object construct() {
+            currentStatusLabel.setText( "Planner: Running");
             System.err.println( "WriteNextStepsJNIThread( " + writeNextSteps + " ) started");
             int currentStepNum = planSequence.getPlanDBSizeList().size() - 1;
-            PlannerControlJNI.writeNext( writeNextSteps);
-            currentStepLabel.setText( "current step is " + (currentStepNum + writeNextSteps));
+            try {
+               PlannerControlJNI.writeNext( writeNextSteps);
+            } catch (Exception excp) {
+               PlannerControlJNI.terminatePlannerRun();
+               plannerControllerFrame.dispose();
+               notifyPlannerException();    
+            }
+            currentStatusLabel.setText( "Planner: Ready  ");
+            currentStepLabel.setText( "Current step: " + (currentStepNum + writeNextSteps));
             sequenceStepsView.refreshView();
+            /*
+             * if planner should finish, terminate, close window and notify user
+             */
+            int plannerStatus = PlannerControlJNI.getPlannerStatus();
+            if ((plannerStatus == PlannerControlJNI.PLANNER_TIMEOUT_REACHED) ||
+                (plannerStatus == PlannerControlJNI.PLANNER_SEARCH_EXHAUSTED) ||
+                (plannerStatus == PlannerControlJNI.PLANNER_FOUND_PLAN)) {
+               PlannerControlJNI.terminatePlannerRun();
+               plannerControllerFrame.dispose();
+               notifyPlannerStatus( plannerStatus);    
+            }
             return null;
           }
         };
@@ -313,22 +362,31 @@ public class PlannerController extends JPanel {
     public void run() {
       final SwingWorker worker = new SwingWorker() {
           public Object construct() {
+            currentStatusLabel.setText( "Planner: Running");
             System.err.println( "CompleteJNIThread() started");
-            PlannerControlJNI.completePlannerRun();
+            try {
+               PlannerControlJNI.completePlannerRun();
+            } catch (Exception excp) {
+               PlannerControlJNI.terminatePlannerRun();
+               plannerControllerFrame.dispose();
+               notifyPlannerException();    
+            }
             int plannerStatus = -1;
             while ((plannerStatus != PlannerControlJNI.PLANNER_TIMEOUT_REACHED) &&
+                   (plannerStatus != PlannerControlJNI.PLANNER_SEARCH_EXHAUSTED) &&
                    (plannerStatus != PlannerControlJNI.PLANNER_FOUND_PLAN)) {
               try {
                 Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
               }
               catch (InterruptedException ie) {}
-              System.err.println( "CompleteJNIThread waiting for PLANNER_FOUND_PLAN or " +
-                                  "PLANNER_TIMEOUT_REACHED");
+              System.err.println( "CompleteJNIThread waiting for FOUND_PLAN or " +
+                                  "SEARCH_EXHAUSTED or TIMEOUT_REACHED");
               plannerStatus = PlannerControlJNI.getPlannerStatus();
             }
             sequenceStepsView.refreshView();
             PlannerControlJNI.terminatePlannerRun();
             plannerControllerFrame.dispose();
+            notifyPlannerStatus( plannerStatus);    
             return null;
           }
         };
@@ -351,7 +409,7 @@ public class PlannerController extends JPanel {
       thread.setPriority( Thread.MIN_PRIORITY);
       thread.start();
     }
-  } // end class WriteNextStepsButtonListener
+  } // end class TerminateButtonListener
 
 
   class TerminateJNIThread extends Thread {
@@ -376,7 +434,29 @@ public class PlannerController extends JPanel {
   } // end class TerminateThread
 
 
-  
+  private void notifyPlannerStatus( int plannerStatus) {    
+    String plannerStatusMessage;
+    if (plannerStatus == PlannerControlJNI.PLANNER_TIMEOUT_REACHED) {
+      plannerStatusMessage = "Timeout reached. Failed finding plan.";
+    } else if (plannerStatus == PlannerControlJNI.PLANNER_FOUND_PLAN) {
+      plannerStatusMessage = "Found a plan.";
+    } else if (plannerStatus == PlannerControlJNI.PLANNER_SEARCH_EXHAUSTED) {
+      plannerStatusMessage = "Search Exhausted. Failed finding plan.";
+    } else if (plannerStatus == PlannerControlJNI.PLANNER_IN_PROGRESS) {
+      plannerStatusMessage = "Planner in progress.";
+    } else {
+      plannerStatusMessage = "Planner initially inconsistant.";
+    }
+    JOptionPane.showMessageDialog
+      ( PlanWorks.getPlanWorks(), plannerStatusMessage,
+        "Planner Status", JOptionPane.INFORMATION_MESSAGE);
+  }
+
+  private void notifyPlannerException() {    
+    JOptionPane.showMessageDialog
+      ( PlanWorks.getPlanWorks(), "An exception occured in the planner.",
+        "Planner Exception", JOptionPane.INFORMATION_MESSAGE);
+  }
 
 } // end class PlannerController
 
