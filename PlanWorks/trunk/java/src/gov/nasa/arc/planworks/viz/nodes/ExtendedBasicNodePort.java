@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNodePort.java,v 1.7 2004-06-10 01:36:00 taylor Exp $
+// $Id: ExtendedBasicNodePort.java,v 1.8 2004-06-10 19:11:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -34,6 +34,7 @@ import com.nwoods.jgo.examples.BasicNode;
 import com.nwoods.jgo.examples.BasicNodePort;
 
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.ConstraintNavNode;
@@ -43,7 +44,6 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.VariableNavNode;
-import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.RuleInstanceNode;
 
 
 /**

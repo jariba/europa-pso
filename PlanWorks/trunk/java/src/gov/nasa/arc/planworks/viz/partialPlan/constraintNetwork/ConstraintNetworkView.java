@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.66 2004-06-10 01:36:02 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.67 2004-06-10 19:11:06 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -49,6 +49,7 @@ import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -190,7 +191,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
     viewName = ViewConstants.CONSTRAINT_NETWORK_VIEW;
-    //isDebugPrint = true;
+    // isDebugPrint = true;
     isDebugPrint = false;
 
     //isDebugTraverse = true;
@@ -561,7 +562,19 @@ public class ConstraintNetworkView extends PartialPlanView {
         document.addObjectAtTail((JGoObject)node);
       }
     }
-  }
+    ListIterator ruleInstanceItr = partialPlan.getRuleInstanceList().listIterator();
+    while (ruleInstanceItr.hasNext()) {
+      PwRuleInstance ruleInstance = (PwRuleInstance) ruleInstanceItr.next();
+      if (! ruleInstance.getVariables().isEmpty()) {
+        Color backgroundColor = ViewConstants.RULE_INSTANCE_BG_COLOR;
+        VariableContainerNode node =
+          new ConstraintNetworkRuleInstanceNode( ruleInstance, new Point(x, y),
+                                                 backgroundColor, isDraggable, this);
+        containerNodeMap.put( ruleInstance.getId(), node);
+        document.addObjectAtTail( (JGoObject) node);
+      }
+    }
+  } // end createContainerNodes
 
   private void createVarsAndLinksForContainer(VariableContainerNode parentNode) {
     boolean isDraggable = true;
@@ -642,8 +655,6 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
       PwVariableContainer parent = (PwVariableContainer) var.getParent();
       VariableContainerNode parentNode = getContainerNode(parent.getId());
-      System.err.println( "createVarNodesAndLinksForConstr parent " + parent);
-      System.err.println( "  parentNode " + parentNode);
       if(var != null) {
         VariableNode varNode;
         if((varNode = getVariableNode(var.getId())) == null) {
@@ -1330,6 +1341,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       if (parentNode instanceof ConstraintNetworkObjectNode ||
           parentNode instanceof ConstraintNetworkTimelineNode ||
           parentNode instanceof ConstraintNetworkResourceNode ||
+          parentNode instanceof ConstraintNetworkRuleInstanceNode ||
           isTokenInContentSpec( (PwToken) parentNode.getContainer())) {
         parentNode.setVisible( true);
         Iterator variablesItr = parentNode.getVariableNodes().iterator();

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.100 2004-06-10 01:40:47 taylor Exp $
+# $Id: README,v 1.101 2004-06-10 19:11:04 taylor Exp $
 #
 
 SUMMARY
@@ -13,7 +13,7 @@ o If you are using PlanWorks with PLASMA, this revision requires PLASMA
   from the CVS head.  The PartialPlanWriter has been modified to capture
   rule instances.
 
-o The Token Network View handling of ruleshas been revised:
+o The Token Network View handling of rules has been revised:
   - Mouse-Right: "Rule Window" on the view background has been removed;
   - links between token nodes are no longer mouse sensitive;
   - rule instance nodes, rendered as ovals, with the instance key and the
