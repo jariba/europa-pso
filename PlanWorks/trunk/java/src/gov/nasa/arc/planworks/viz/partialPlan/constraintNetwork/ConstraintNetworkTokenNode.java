@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.1 2003-09-30 19:18:56 taylor Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.2 2003-09-30 21:14:55 taylor Exp $
 //
 // PlanWorks
 //
@@ -153,8 +153,8 @@ public class ConstraintNetworkTokenNode extends TokenNode {
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
                                JGoView view) {
     JGoObject obj = view.pickDocObject( docCoords, false);
-    //         System.err.println( "doMouseClick obj class " +
-    //                             obj.getTopLevelObject().getClass().getName());
+    // System.err.println( "ConstraintNetworkTokenNode: doMouseClick obj class " +
+    //                     obj.getTopLevelObject().getClass().getName());
     ConstraintNetworkTokenNode tokenNode =
       (ConstraintNetworkTokenNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
@@ -164,7 +164,7 @@ public class ConstraintNetworkTokenNode extends TokenNode {
         addTokenNodeVariables( this);
         areNeighborsShown = true;
       } else {
-        //System.err.println( "doMouseClick: Mouse-L hide variable nodes of " +
+        // System.err.println( "doMouseClick: Mouse-L hide variable nodes of " +
         //                    tokenNode.getPredicateName());
         removeTokenNodeVariables( this);
         areNeighborsShown = false;
@@ -172,7 +172,8 @@ public class ConstraintNetworkTokenNode extends TokenNode {
       ((ConstraintNetworkView) partialPlanView).setFocusNode( tokenNode);
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      // handled by super
+      super.doMouseClick( modifiers, docCoords, viewCoords, view);
+      return true;
     }
     return false;
   } // end doMouseClick   

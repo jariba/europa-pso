@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.24 2003-09-30 19:18:55 taylor Exp $
+// $Id: TokenNode.java,v 1.25 2003-09-30 21:14:55 taylor Exp $
 //
 // PlanWorks
 //
@@ -173,8 +173,8 @@ public class TokenNode extends BasicNode {
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
                                JGoView view) {
     JGoObject obj = view.pickDocObject( docCoords, false);
-    //         System.err.println( "doMouseClick obj class " +
-    //                             obj.getTopLevelObject().getClass().getName());
+    // System.err.println( "TokenNode: doMouseClick obj class " +
+    //                     obj.getTopLevelObject().getClass().getName());
     TokenNode tokenNode = (TokenNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       // do nothing
