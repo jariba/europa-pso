@@ -235,8 +235,9 @@ CREATE TABLE Sequence (
   SequenceId bigint(20) NOT NULL default '0',
   ProjectId int(11) NOT NULL default '-1',
   SequenceOrdering int(11) NOT NULL auto_increment,
-  PRIMARY KEY  (SequenceOrdering),
-  INDEX (SequenceId)
+  PRIMARY KEY  (SequenceId),
+  KEY(SequenceURL),
+  KEY(SequenceOrdering),
 ) TYPE=MyISAM;
 
 --
