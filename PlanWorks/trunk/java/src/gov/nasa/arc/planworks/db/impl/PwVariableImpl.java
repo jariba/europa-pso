@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.15 2003-12-16 23:18:29 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.16 2003-12-31 21:04:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwVariable;
@@ -113,6 +114,15 @@ public class PwVariableImpl implements PwVariable {
     List retval = new ArrayList(parameterIdList.size());
     ListIterator tokenIdIterator = tokenIdList.listIterator();
     ListIterator paramIdIterator = parameterIdList.listIterator();
+    // System.err.println( "PwVariableImpl.getParameterList: type " + type + " tokenIdList " +
+    //                     tokenIdList + " parameterIdList " + parameterIdList);
+    if (type.equals(DbConstants.START_VAR) ||
+        type.equals(DbConstants.END_VAR) ||
+        type.equals(DbConstants.DURATION_VAR) ||
+        type.equals(DbConstants.OBJECT_VAR) ||
+        type.equals(DbConstants.REJECT_VAR)) {
+      return parameterIdList;
+    }
     while(tokenIdIterator.hasNext()) {
       Integer tokenId = (Integer) tokenIdIterator.next();
       Integer paramId = (Integer) paramIdIterator.next();
