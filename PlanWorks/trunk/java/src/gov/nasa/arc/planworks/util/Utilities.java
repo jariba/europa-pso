@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.9 2004-02-03 19:24:01 miatauro Exp $
+// $Id: Utilities.java,v 1.10 2004-04-30 21:51:29 miatauro Exp $
 //
 // PlanWorks
 //
@@ -153,4 +153,14 @@ public class Utilities {
   }
 
 
+  public static int countOccurrences(char item, String str) {
+    int retval = 0;
+    char [] chars = str.toCharArray();
+    for(int i = 0; i < chars.length; i++) {
+      if(chars[i] == item) {
+        retval++;
+      }
+    }
+    return retval;
+  }
 } // end class Utilities
