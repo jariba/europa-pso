@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionNode.java,v 1.2 2004-03-08 19:30:17 taylor Exp $
+// $Id: ResourceTransactionNode.java,v 1.3 2004-03-09 19:59:30 taylor Exp $
 //
 // PlanWorks
 //
@@ -30,11 +30,13 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.Extent;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
 /**
@@ -44,10 +46,14 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  *             NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public  class ResourceTransactionNode extends JGoRectangle {  
+public  class ResourceTransactionNode extends JGoRectangle implements Extent {  
 
   private PwResourceTransaction transaction;
+  private Point location;
+  private Dimension size;
   private ResourceView resourceView;
+  private ResourceTransactionSet resourceTransactionSet;
+  private int cellRow; // for layout algorithm
 
   /**
    * <code>ResourceTransactionNode</code> - constructor 
@@ -57,11 +63,24 @@ public  class ResourceTransactionNode extends JGoRectangle {
    * @param size - <code>Dimension</code> - 
    */
   public ResourceTransactionNode( PwResourceTransaction transaction, Point location,
-                                  Dimension size, ResourceView resourceView) {
+                                  Dimension size, ResourceView resourceView,
+                                  ResourceTransactionSet resourceTransactionSet) {
     super( location, size);
     this.transaction = transaction;
+    this.location = location;
+    this.size = size;
     this.resourceView = resourceView;
+    this.resourceTransactionSet = resourceTransactionSet;
   }
+
+  // called by ResourceTransactionSet.layoutTransactionNodes
+  public void configure() {
+    Point layoutLocation =
+      new Point( (int) this.getLocation().getX(),
+                 ResourceTransactionSet.scaleY
+                 ( cellRow, ((ResourceTransactionView) resourceView).getCurrentYLoc()));
+    this.setLocation( layoutLocation);
+  } // configure
 
   /**
    * <code>getTransaction</code>
@@ -70,6 +89,44 @@ public  class ResourceTransactionNode extends JGoRectangle {
    */
   public PwResourceTransaction getTransaction() {
     return transaction;
+  }
+
+  /**
+   * <code>getStart</code> - implements Extent
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getStart() {
+    int xStart = (int) location.getX();
+    return xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE;
+  }
+
+  /**
+   * <code>getEnd</code> - implements Extent
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getEnd() {
+    int xEnd = (int) (location.getX() + size.getWidth());
+    return xEnd + ViewConstants.TIMELINE_VIEW_INSET_SIZE;
+  }
+
+  /**
+   * <code>getRow</code> - implements Extent
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getRow() {
+    return cellRow;
+  }
+
+  /**
+   * <code>setRow</code> - implements Extent
+   *
+   * @param row - <code>int</code> - 
+   */
+  public void setRow( int row) {
+    cellRow = row;
   }
 
   /**

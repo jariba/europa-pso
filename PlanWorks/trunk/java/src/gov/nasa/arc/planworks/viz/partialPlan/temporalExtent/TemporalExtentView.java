@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.37 2004-03-09 01:48:29 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.38 2004-03-09 19:59:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -298,7 +298,7 @@ public class TemporalExtentView extends PartialPlanView  {
   } // end createTemporalExtentView
 
   /**
-   * <code>getJGoDocument</code> - the temporal extent view document
+   * <code>getJGoDocument</code> - 
    *
    * @return - <code>JGoDocument</code> - 
    */

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.10 2004-03-09 01:48:29 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.11 2004-03-09 19:59:30 taylor Exp $
 //
 // PlanWorks
 //
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
@@ -39,6 +40,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -70,6 +72,7 @@ public class ResourceTransactionSet extends BasicNode {
   private int transactionSetYOrigin;
   private int levelScaleWidth;
   private List transactionNodeList;
+  private int maxCellRow;
 
   /**
    * <code>ResourceTransactionSet</code> - constructor 
@@ -95,6 +98,7 @@ public class ResourceTransactionSet extends BasicNode {
     nodeLabelWidth =
       ResourceTransactionSet.getNodeLabelWidth( nodeLabel, resourceTransactionView);
     transactionNodeList = new ArrayList();
+    maxCellRow = 0;
 
     configure();
   } // end constructor
@@ -143,9 +147,9 @@ public class ResourceTransactionSet extends BasicNode {
       ResourceView.Y_MARGIN;
     resourceTransactionView.setCurrentYLoc( currentYLoc);
 
-    currentYLoc = renderTransactions( currentYLoc);
+    renderTransactions( currentYLoc);
 
-    currentYLoc += ResourceView.Y_MARGIN;
+    currentYLoc += ResourceTransactionSet.scaleY( maxCellRow + 1, 0);
 
     ResourceView.renderBordersLower
       ( resourceTransactionView.getJGoRulerView().scaleTime( earliestStartTime),
@@ -195,9 +199,8 @@ public class ResourceTransactionSet extends BasicNode {
     return transactionSetYOrigin;
   }
 
-  private int renderTransactions( int currentYLoc) {
+  private void renderTransactions( int currentYLoc) {
     List transactionSet = resource.getTransactionSet();
-    currentYLoc += 2;
     Iterator transSetItr = transactionSet.iterator();
     while (transSetItr.hasNext()) {
       Object t = transSetItr.next();
@@ -222,16 +225,16 @@ public class ResourceTransactionSet extends BasicNode {
         new ResourceTransactionNode( transaction,
                                      new Point( transStartX, currentYLoc),
                                      new Dimension( Math.max( transEndX - transStartX, 2),
-                                                    yDelta), resourceTransactionView);
+                                                    yDelta), resourceTransactionView, this);
       transactionNode.setResizable( false); transactionNode.setDraggable( false);
       // allow Mouse-Right menu
       // transactionNode.setSelectable( false);
       resourceTransactionView.getJGoExtentDocument().addObjectAtTail( transactionNode);
-      currentYLoc += yDelta;
       transactionNodeList.add( transactionNode);
     }
-    currentYLoc += 2;
-    return currentYLoc;
+
+    layoutTransactionNodes();
+
   } // end renderTransactions
 
 
@@ -274,7 +277,58 @@ public class ResourceTransactionSet extends BasicNode {
     return resource.getId().intValue();
   }
 
+  /**
+   * <code>scaleY</code>
+   *
+   * @param cellRow - <code>int</code> - 
+   * @return - <code>int</code> - 
+   */
+  public static int scaleY( int cellRow, int yOrigin) {
+    return (yOrigin + (int) (cellRow * (ViewConstants.RESOURCE_TRANSACTION_HEIGHT +
+                                        ResourceView.Y_MARGIN)));
+  }
 
+  private void layoutTransactionNodes() {
+    /*List extents = new ArrayList();
+    Iterator temporalNodeIterator = temporalNodeList.iterator();
+    while (temporalNodeIterator.hasNext()) {
+      TemporalNode temporalNode = (TemporalNode) temporalNodeIterator.next();
+      extents.add( temporalNode);
+      }*/
+    List extents = new ArrayList( transactionNodeList);
+    // do the layout -- compute cellRow for each node
+    List results =
+      Algorithms.allocateRows
+      ( resourceTransactionView.getJGoRulerView().
+        scaleTime( (double) resourceTransactionView.getTimeScaleStart()),
+        resourceTransactionView.getJGoRulerView().
+        scaleTime( (double) resourceTransactionView.getTimeScaleEnd()), extents);
+//     List results =
+//       Algorithms.betterAllocateRows
+//       ( resourceTransactionView.getJGoRulerView().
+//         scaleTime( (double) resourceTransactionView.getTimeScaleStart()),
+//         resourceTransactionView.getJGoRulerView().
+//         scaleTime( (double) resourceTransactionView.getTimeScaleEnd()), extents);
+    if (transactionNodeList.size() != results.size()) {
+      String message = String.valueOf( transactionNodeList.size() - results.size()) +
+        " nodes not successfully allocated";
+      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
+                                     "Resource Transaction View Layout Exception",
+                                     JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    for (Iterator it = extents.iterator(); it.hasNext();) {
+      ResourceTransactionNode transactionNode = (ResourceTransactionNode) it.next();
+//       System.err.println( "id  " + transactionNode.getTransaction().getId().toString() +
+//                           " cellRow " + transactionNode.getRow());
+      if (transactionNode.getRow() > maxCellRow) {
+        maxCellRow = transactionNode.getRow();
+      }
+      // render the node
+      transactionNode.configure();
+    }
+//     System.err.println( "maxCellRow " + maxCellRow);
+  } // end  layoutTransactionNodes
 
 } // end class ResourceTransactionSet
 
