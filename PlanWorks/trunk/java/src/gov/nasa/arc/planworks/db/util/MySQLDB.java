@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.86 2004-02-27 18:04:59 miatauro Exp $
+// $Id: MySQLDB.java,v 1.87 2004-03-02 21:45:30 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -778,9 +778,14 @@ public class MySQLDB {
                                         tokenRelIds, paramVarIds, transInfo, partialPlan);
         }
         else if(tokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
+          String tokenInfo = null;
+          blob = tokens.getBlob("Token.ExtraData");
+          if(!tokens.wasNull()) {
+            tokenInfo = new String(blob.getBytes(1, (int) blob.length()));
+          }
           new PwTokenImpl(tokenId, isValueToken, new Integer(tokens.getInt("Token.SlotId")),
                           predName, startVarId, endVarId, durationVarId, stateVarId, objectVarId,
-                          parentId, tokenRelIds, paramVarIds, partialPlan);
+                          parentId, tokenRelIds, paramVarIds, tokenInfo, partialPlan);
         }
       }
       ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.TokenType, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.ExtraData FROM Token WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
@@ -808,15 +813,22 @@ public class MySQLDB {
         if(freeTokens.getInt("Token.TokenType") == DbConstants.T_TRANSACTION) {
           String transInfo = null;
           blob = freeTokens.getBlob("Token.ExtraData");
-          transInfo = new String(blob.getBytes(1, (int) blob.length()));
+          if(!freeTokens.wasNull()) {
+            transInfo = new String(blob.getBytes(1, (int) blob.length()));
+          }
           new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
                                         durationVarId, stateVarId, objectVarId, DbConstants.noId,
                                         tokenRelIds, paramVarIds, transInfo, partialPlan);
         }
         else if(freeTokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
+          String tokenInfo = null;
+          blob = freeTokens.getBlob("Token.ExtraData");
+          if(!freeTokens.wasNull()) {
+            tokenInfo = new String(blob.getBytes(1, (int) blob.length()));
+          }
           new PwTokenImpl(tokenId, isValueToken, DbConstants.noId, predName, startVarId, endVarId,
                           durationVarId, stateVarId, objectVarId, DbConstants.noId, tokenRelIds,
-                          paramVarIds, partialPlan);
+                          paramVarIds, tokenInfo, partialPlan);
         }
       }
     }

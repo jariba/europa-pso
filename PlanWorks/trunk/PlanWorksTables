@@ -249,6 +249,8 @@ CREATE TABLE Sequence (
 --TokenType currently IntervalToken = 0, ResourceTransaction = 1
 --If TokenType == ResourceTransaction
 --ExtraData format QuantityMin:QuantityMax
+--If TokenType == IntervalToken && !IsFreeToken
+--ExtraData format SlotOrder
 
 CREATE TABLE Token (
   TokenId int(11) NOT NULL default '0',
