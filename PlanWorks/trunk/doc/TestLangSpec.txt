@@ -1,0 +1,155 @@
+The purpose of the test definition language (TDL) is to provide a mechanism by
+which a developer can define the attributes of and the behaviors during
+the planning process that constitute correct planning to allow for
+verification of a planner, a model, or the automatic behavior of a plan
+database.
+The largest unit of the test language is the Test, which amounts to
+a conjunction across the assertions and Tests within the Test.  A single failed 
+assertion results in a failed Test.
+An assertion is a single boolean statement that examines a particular aspect
+of a plan or the planning behavior and asserts something about it. Assertions 
+are composed of domain- and singleton-valued functions (described below) and a
+boolean operator.
+The boolean operators given are '<', '>', '>=', '<=', '=', '!=', 'in', 'out', 
+and 'intersects'.  The following table describes the precise semantics (I apologize if 
+you aren't using a fixed-width font) 
+Note 1: a 'Domain' can be either an enumeration or interval.  In the case of a 
+singleton domain, the least value of the domain == the greatest value or the 
+enumeration contains exactly one element.)
+Note 2: any operation or operand combination that is not explicitly stated here is
+undefined and will result in a test exception.
+
+op    LHS          RHS          Semantics
+-------------------------------------------------------------
+<     Domain       Domain       Greatest value (GV) of LHS
+                                is less than least value (LV)
+                                of RHS
+>     Domain       Domain       LV of LHS is greater than GV
+                                of RHS
+=     Interval     Interval     LV of LHS equals LV of RHS
+                                and GV of LHS equals GV of RHS
+      Enumeration  Enumeration  Size of LHS equals size of RHS
+                                and for every element in LHS,
+                                there is an equal element in
+                                RHS
+
+Note: '<=' and '>=' have the same semantics as '<' and '>', with the additional
+allowances of the '=' semantics, '!=' is  simply the negation of '='
+
+in    Enumeration  Enumeration  For every element in LHS, there is
+                                an equal element in RHS
+      Enumeration  Interval     Every element in LHS is greater than
+                                or equal to LV of RHS and less than or
+                                equal to GV of RHS
+      Interval     Interval     LV of LHS is greater than or equal to
+                                LV of RHS and GV of LHS is less than
+                                or equal to GV of RHS
+intersects
+      Enumeration  Enumeration  There exists an element of LHS
+                                which is equal to an element of
+                                RHS
+      Enumeration  Interval     There exists an element of LHS
+                                with is greater than or equal to
+                                LV of RHS and less than or equal
+                                to GV of RHS
+      Interval     Interval     LV or GV of LHS is greater than or equal to
+                                LV of RHS and less than or equal to
+                                GV of RHS or LV of LHS is less than
+                                LV of RHS and GV of LHS is greater
+                                than GV of RHS
+Note: 'intersects' is symmetric
+Note: 'out' is simply the negation of 'in'
+
+The domain-valued functions are 'Tokens()', 'Objects()', and 'Transactions()',
+each of which take a set of predicate assertions and return the set of entities
+for which the predicate assertions hold. The values used in predicate assertions
+can be explicitly defined values or domains or they can be values from other 
+functions.  The type of the predicate (singleton or list) is inferred at run time
+and all boolean operators have the same semantics as above.
+All of the domain-valued functions return enumerated domains.
+
+Note: A Token is essentially a temporally flexible assertion about the state of
+an Object, an Object is something which can have a state, and a Transaction is 
+any logged activity performed by the plan database or planner.
+
+The following predicates are available within the Tokens() domain-valued
+function:
+- step      The step in which the Token(s) exist(s) (Singleton)
+- start     The start time of a Token  (Domain)
+- end       The end time of a Token (Domain)
+- duration  The duration of a Token (Domain)
+- status    The status of a Token (Domain)
+- predicate The name of the predicate (the state the Token represents)(Singleton)
+- object    The object or objects to which the token can be attached (Domain)
+- variable  The parameter variable with a given name. (Domain)
+Note: the variable statement's syntax is as follows:
+variable(name_statement value_statement)
+where the name_statement is as the name predicate of an 'Objects' or 
+'Transactions' assertion and value_statement is any assertion about the domain
+of the variable.
+
+The following predicates are available within the Objects() domain-valued
+function:
+- step      The step in which the Object(s) exist(s) (Singleton)
+- name      The name of the Object (Singleton)
+
+The following predicates are available within the Transactions() list-valued
+function:
+- step      The step in which the Transaction was executed (Singleton)
+- name      The name of the Transaction (Singleton)
+- object    The entity that transacted or that was transacted upon 
+           (Singleton)
+- type      The type of Transaction (Singleton)
+
+There are two singleton-valued functions, 'Count()' and 'Entity().  'Count' 
+takes an enumerated domain and returns the size of the domain.  'Entity' takes
+an integer index and an enumerated domain, returning the indexth element of the
+domain.
+
+All assertions must be enclosed by a 'Test' directive, which consists of a name
+and a set of assertions or other 'Test' directives.
+An example follows:
+
+Test('ExampleTest',
+  Count(Transactions(name = 'RETRACT_DECISION_STARTED')) > 0;
+  Count(Transactions(name = 'VARIABLE_DOMAIN_RELAXED' step = 87)) = 83;
+  Count(Transactions(type = 'RELAXATION' step = 87)) = 84;
+  Count(Transactions(type in {'RESTRICTION', 'RELAXATION'} step = 87)) = 162;
+  Count(Transactions(type out {'RESTRICTION', 'RELAXATION'} step = 87)) = 48;
+  Count(Tokens(step = 87)) = 65;
+  Count(Tokens(step = 87 predicate = 'Target.Tracked')) = 4;
+  Count(Tokens(step = 31)) > Count(Tokens(step = 30));
+  Tokens(step = 30) in Tokens(step = 31);
+  Tokens(step = 31) = Tokens(step = 32);
+  Tokens(step = 31 predicate = 'Target.Tracked') = Tokens(step = 32 predicate = 'Target.Tracked');
+  Count(Tokens(step = 87 start >= 3)) > 0;
+  Count(Tokens(step = 87 end = [11..500])) = 3;
+  Test('SubExampleTest',
+    Count(Tokens(step = 96)) = 65;
+    Test('SubSubExampleTest',
+      Count(Tokens(step = 34)) != 0;
+    );
+  );
+  Test('SubExampleTest2',
+    Count(Tokens(step = 96)) = 65;
+    Test('SubSubExampleTest2',
+      Count(Tokens(step = 34)) != 0;
+      Test('SubSubSubExampleTest2',
+        Count(Tokens(step = 13)) in [0..10000];
+      );
+    );
+  );
+  Test('DepthTest1',
+    Test('DepthTest2',
+      Test('DepthTest3',
+        Test('DepthTest4',
+          Test('DepthTest5',
+            Test('DepthTest6',
+              1 != 0;
+            );
+          );
+        );
+      );
+    );
+  );
+);
