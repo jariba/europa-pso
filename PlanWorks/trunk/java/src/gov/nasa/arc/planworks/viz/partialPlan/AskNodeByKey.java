@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.6 2004-05-28 20:21:18 taylor Exp $
+// $Id: AskNodeByKey.java,v 1.7 2004-05-29 00:31:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,15 +19,19 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent; 
 import java.beans.PropertyChangeListener; 
+import java.util.Iterator;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwDecision;
+import gov.nasa.arc.planworks.db.PwEntity;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
@@ -47,6 +51,7 @@ public class AskNodeByKey extends JDialog {
 
   private PartialPlanView partialPlanView;
   private Integer nodeKey;
+  private PwEntity entity;
 
   private String typedText = null;
   private JOptionPane optionPane;
@@ -66,6 +71,8 @@ public class AskNodeByKey extends JDialog {
     // modal dialog - blocks other activity
     super( PlanWorks.getPlanWorks(), true);
     this.partialPlanView = partialPlanView;
+    nodeKey = null;
+    entity = null;
 
     setTitle( dialogTitle);
     final String msgString1 = textFieldLabel;
@@ -117,6 +124,15 @@ public class AskNodeByKey extends JDialog {
    */
   public Integer getNodeKey() {
     return nodeKey;
+  }
+
+  /**
+   * <code>getEntity</code> - for DecisionView and PwDecision
+   *
+   * @return entity - <code>PwEntity</code> - 
+   */
+  public PwEntity getEntity() {
+    return entity;
   }
 
   private void addInputListener() {
@@ -200,6 +216,15 @@ public class AskNodeByKey extends JDialog {
       if ((partialPlan.getResource( nodeKey) != null) ||
           (partialPlan.getResourceTransaction( nodeKey) != null)) {
         return true;
+      }
+    } else if (partialPlanView instanceof DecisionView) {
+      Iterator decisionItr = ((DecisionView) partialPlanView).getDecisionList().iterator();
+      while (decisionItr.hasNext()) {
+        PwEntity decision = (PwDecision) decisionItr.next();
+        if (decision.getId().equals( nodeKey)) {
+          entity = decision;
+          return true;
+        }
       }
     } else {
       System.err.println( "AskNodeByKey.isNodeKeyValid: " + partialPlanView +

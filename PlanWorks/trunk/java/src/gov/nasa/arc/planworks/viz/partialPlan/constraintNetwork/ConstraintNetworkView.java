@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.63 2004-05-28 20:21:19 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.64 2004-05-29 00:31:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -636,7 +636,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     ListIterator varIterator = constr.getVariablesList().listIterator();
     while(varIterator.hasNext()) {
       PwVariable var = (PwVariable) varIterator.next();
-      if(!(var.getParent() instanceof PwToken)) {
+      if(!(var.getParent() instanceof PwVariableContainer)) {
         continue;
       }
       PwVariableContainer parent = (PwVariableContainer) var.getParent();

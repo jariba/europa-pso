@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.44 2004-05-28 20:21:12 taylor Exp $
+# $Id: GETTING_STARTED,v 1.45 2004-05-29 00:31:37 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -110,7 +110,7 @@ will cause the view to display either the next or previous step.  The
 highlighted step in the SequenceStepsView will track the current step
 number.
 
-There are seven active views:
+There are nine active views:
 
 Constraint Network View
 -----------------------
@@ -141,6 +141,34 @@ on the second line.  Clicking Mouse-Left on a node link will make visible two
 small hollow squares, one at the "root" of the link, and the other at the tip 
 of the arrow.
 
+Decision View
+-------------
+Lists the current plan decision and pending decisions in a "tree" format.  Decisions
+with choices are "openable".  Objects, resources, timelines, interval tokens,
+resource transactions, and variables can be viewed in other appropriate views by
+choosing from Mouse-Right clicks on decsion and choice entity key values.  A Mouse-
+Right click on the background offers the user "Find Decision by Key" and opening other
+views, as choices.
+
+DB Transaction View
+----------------
+Lists the transactions for this partial plan step.  Each entry includes the
+transaction key (TX_KEY), the TRANSACTION_NAME, the transaction source
+(SOURCE), the entity key (ENTITY_KEY), the step number (STEP), and the entity name
+(ENTITY_NAME).  Entries with TRANSACTION_NAMEs of VARIABLE_* have values for 
+PARENT_NAME.  Entries with TRANSACTION_NAMEs of VARIABLE_* and 
+ENTITY_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
+
+Mouse-Right click on the background, between the window title and the table
+column headers, offers "Find Transaction By Obj_Key".  Entering an ENTITY_KEY 
+value will cause the lower portion of the Transaction view to scroll up to show 
+the transaction entry with the selected ENTITY_KEY value.  The ENTITY_KEY value 
+will be highlighted.  Mouse-Left clicks on the column header nodes offer sorting 
+based on that columns's values: Mouse-Left clicks cycle through sortAscending, 
+sortDescending, & noSort - while clearing other column sorts; Control-Mouse-Left 
+clicks cycle through sortAscending, sortDescending, & noSort - while not clearing 
+other column sorts.  The table column widths can be resized by dragging the column 
+header boundaries.
 
 Resource Profile View
 ---------------------
@@ -235,26 +263,6 @@ Mouse-Right selection "Rule Window" brings up a window, such that when it exists
 moving the mouse over the view's token node links will present in the "Rule View 
 for <sequence-name>/step<nn>" window, the "from" and "to" token predicates and 
 parameter lists, their keys, and the model rule which is responsible.
-
-DB Transaction View
-----------------
-Lists the transactions for this partial plan step.  Each entry includes the
-transaction key (TX_KEY), the TRANSACTION_NAME, the transaction source
-(SOURCE), the entity key (ENTITY_KEY), the step number (STEP), and the entity name
-(ENTITY_NAME).  Entries with TRANSACTION_NAMEs of VARIABLE_* have values for 
-PARENT_NAME.  Entries with TRANSACTION_NAMEs of VARIABLE_* and 
-ENTITY_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
-
-Mouse-Right click on the background, between the window title and the table
-column headers, offers "Find Transaction By Obj_Key".  Entering an ENTITY_KEY 
-value will cause the lower portion of the Transaction view to scroll up to show 
-the transaction entry with the selected ENTITY_KEY value.  The ENTITY_KEY value 
-will be highlighted.  Mouse-Left clicks on the column header nodes offer sorting 
-based on that columns's values: Mouse-Left clicks cycle through sortAscending, 
-sortDescending, & noSort - while clearing other column sorts; Control-Mouse-Left 
-clicks cycle through sortAscending, sortDescending, & noSort - while not clearing 
-other column sorts.  The table column widths can be resized by dragging the column 
-header boundaries.
 
 
 Node Focus in Views
