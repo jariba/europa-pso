@@ -4,13 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineViewTest.java,v 1.11 2003-06-17 22:19:02 taylor Exp $
+// $Id: TimelineViewTest.java,v 1.12 2003-06-18 22:55:02 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.views.test;
 
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -53,100 +54,72 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TimelineViewTest extends JFCTestCase {
+public class TimelineViewTest extends JFCTestCase{
 
   private JFrame frame;
-  private static PlanWorks planWorks;
-  private boolean firstEntry = false;
-  // private JFCTestHelper helper;
-  private TestHelper helper;
-  /** The thread the modal dialog will execute on */
-  private Thread modalThread = null;
-  /** Any exception thrown by the modal dialog */
-  private Exception lastException = null;
-  /** True if the application exited normally. */
-  private boolean normalExit = false;
-  /** Flag. True if the application has been started */
-  private volatile boolean started = false;
-  /** modal dialog */
-  private ParseProjectUrl createProjectDialog;
+  private PlanWorks planWorks;
+  private String testType;
 
-  public TimelineViewTest(String test) {
+  /**
+   * <code>TimelineViewTest</code> - constructor 
+   *
+   * @param test - <code>String</code> - 
+   * @param testType - <code>String</code> - 
+   */
+  public TimelineViewTest(String test, String testType) {
     super(test);
+    this.testType = testType;
   }
-  
+
+  /**
+   * <code>setUp</code> - start PlanWorks
+   *
+   * @exception Exception if an error occurs
+   */
   public void setUp() throws Exception {
-    // System.err.println( "setUp entered");
-    if (started == true) {
-      return;
-    }
+    System.err.println( "\nsetUp entered testType " + testType + "\n");
     helper = new JFCTestHelper();
-    lastException = null;
-    modalThread = new Thread(new Runnable() {
-        public void run() {
-          try {
-            lastException = null;
-            // System.err.println( "setUp: started " + started);
-            started = true;
-            // create dialog
-            ParseProjectUrl createProjectDialog =
-              new ParseProjectUrl( PlanWorks.planWorks);
-            // System.err.println( "setUp: normalExit");
-            normalExit = true;
-          } catch (Exception e) {
-            lastException = e;
-          }
-        }
-      }, "ModalThread");
-    modalThread.start();
-    Thread.currentThread().yield();
 
-    // Wait for the thread to start
-    while (!started) {
-      Thread.currentThread().sleep(50);
+    try {
+      PwProject.initProjects();
+    } catch (ResourceNotFoundException rnfExcep) {
+      System.err.println( rnfExcep);
+      System.exit( -1);
     }
+    planWorks = new PlanWorks( PlanWorks.buildConstantMenus());
+    PlanWorks.setPlanWorks( planWorks);
 
+    if (testType.equals( "create") || testType.equals( "open")) {
+      // CreateProjectTestCase
+      // OpenProjectTestCase
+    } else {
+      throw new Exception( "setup: testType " + testType + " not handled");
+    }
     // Give a little extra time for the painting/construction
     Thread.currentThread().sleep(500);
     flushAWT();
-    // checkException();
   }
   
 
   /**
-   * Interrupt the modalThread if it is still running.
-   * Then shutdown the fixtures used.
+   * <code>tearDown</code>
    *
-   * @throws Exception may be thrown.
+   * @exception Exception if an error occurs
    */
   public void tearDown() throws Exception {
-    if (lastException != null) {
-      throw lastException;
-    }
-    if (modalThread.isAlive()) {
-      modalThread.interrupt();
-    }
-    modalThread = null;
+    // System.err.println( "\ntearDown entered\n");
     helper.cleanUp(this);
     super.tearDown();
     System.exit(0);
   }
   
-    /**
-     * Check for the occurance of a Exception on the
-     * modalThread. Rethrow the exception if one was generated.
-     *
-     * @throws Exception may be thrown.
-     */
-  private void checkException() throws Exception {
-    System.err.println( "checkException");
-    if (lastException != null) {
-      throw lastException;
-    }
-  }
-
-  public void testMain() throws Exception {
-    // System.err.println( "testMain entered");
+  /**
+   * <code>testCreateProject</code>
+   *
+   * @exception Exception if an error occurs
+   */
+  public void testCreateProject() throws Exception {
+    System.err.println( "\n\nCreateProjectTestCase\n\n");
     awtSleep();
     Set windows = helper.getWindows();
     assertEquals("PlanWorks window failed to open", 1, windows.size());
@@ -174,17 +147,35 @@ public class TimelineViewTest extends JFCTestCase {
     helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
     helper.enterClickAndLeave(new MouseEventData(this, createItem));
 
-    // click enter on CreateProject dialog, which creates Partial Plan menu
-    JMenu partialPlanMenu = testUrlEnter();
+    String [] seqAndPlanNames = selectTimelineView();
 
+    TimelineView timelineView = getTimelineView( seqAndPlanNames);
+
+    validateTimelines( timelineView);
+
+//     while ( true) {
+//       try {
+//         Thread.currentThread().sleep(50);
+//       } catch (InterruptedException excp) {
+//       }
+//     }
+    exitPlanWorks( menuBar);
+  } // end testCreateProject
+
+  private String [] selectTimelineView() throws Exception {
+    // click enter on CreateProject dialog, which creates Partial Plan menu
+    awtSleep();
+    JMenu partialPlanMenu = null;
+    partialPlanMenu = urlEnter();
+    assertNotNull( "Failed to get partialPlanMenu", partialPlanMenu);
+    helper.enterClickAndLeave(new MouseEventData(this, partialPlanMenu));
+    Thread.sleep( 1000);
     // System.err.println( "\n\nGot to here 1\n\n");
     JMenu sequenceMenu = null;
     JMenu partialPlanSubMenu = null;
     JMenuItem timelineViewItem = null;
     String sequenceName = null;
     String partialPlanName = null;
-    helper.enterClickAndLeave(new MouseEventData(this, partialPlanMenu));
-    Thread.sleep( 1000);
     found: for (int i = 0; i < partialPlanMenu.getItemCount(); i++) {
       if (partialPlanMenu.getItem(i).getText().equals("monkey")) {
         sequenceMenu = (JMenu) partialPlanMenu.getItem(i);
@@ -214,11 +205,87 @@ public class TimelineViewTest extends JFCTestCase {
     assertNotNull("Failed to get any menu item.", timelineViewItem);
     assertTrue("Failed to get \"Timeline\" submenu item.", 
                timelineViewItem.getText().equals("Timeline"));
-
     // System.err.println( "\n\nGot to here 2\n\n");
-
     // helper.mousePressed(timelineViewItem, EventDataConstants.DEFAULT_MOUSE_MODIFIERS, 1, false);
+    return new String [] { sequenceName, partialPlanName };
+  } // end selectTimelineView
 
+
+  private JMenu urlEnter() throws Exception {
+    if (testType.equals( "create")) {
+      List dialogs = new ArrayList();
+      while (dialogs.size() == 0) {
+        // System.err.println( "wait for create dialog");
+        try {
+          Thread.currentThread().sleep(50);
+        } catch (InterruptedException excp) {
+        }
+        dialogs = TestHelper.getShowingDialogs("Create Project");
+      }
+      assertEquals("Dialog not found:", 1, dialogs.size());
+      Container planWorksDialog = (Container) dialogs.get(0);
+      // JTextField field = null;
+      // field = (JTextField) TestHelper.findComponent(JTextField.class, jfcunitDialog, 0);
+      // assertNotNull("Could not find \"Enter\" field", field);
+      // helper.sendString(new StringEventData(this, field, "Harry Potter"));
+      // helper.sendKeyAction(new KeyEventData(this, field, KeyEvent.VK_ENTER));
+      // Cancel button -- cancel 2nd dialog created by PlanWorks
+      JButton button = null;
+      button = (JButton) TestHelper.findComponent(JButton.class, planWorksDialog, 0);
+      assertNotNull("Could not find \"Enter\" button", button);
+      helper.enterClickAndLeave(new MouseEventData(this, button));
+    } else if (testType.equals( "open")) {
+      List dialogs = new ArrayList();
+      while (dialogs.size() == 0) {
+        // System.err.println( "wait for open dialog");
+        try {
+          Thread.currentThread().sleep(50);
+        } catch (InterruptedException excp) {
+        }
+        dialogs = TestHelper.getShowingDialogs("Open Project");
+      }
+      assertEquals("Dialog not found:", 1, dialogs.size());
+      Container planWorksDialog = (Container) dialogs.get(0);
+
+      JButton okButton = null;
+      for (int i = 0, n = 10; i < n; i++) {
+        JButton button = (JButton) TestHelper.findComponent(JButton.class, planWorksDialog, i);
+        if (button.getText().equals( "OK")) {
+          okButton = button;
+          break;
+        }
+      }
+      assertNotNull("Could not find \"OK\" button", okButton);
+      helper.enterClickAndLeave(new MouseEventData(this, okButton));
+    } else {
+      throw new Exception( "urlEnter: testType " + testType + " not handled");
+    }
+
+    JMenu partialPlanMenu = null;
+    JMenuBar menuBar = frame.getJMenuBar();
+    // wait for TimelineView instance to become displayable
+    while (partialPlanMenu == null) {
+      // System.err.println( "partialPlanMenu still null");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      MenuElement [] elements = menuBar.getSubElements();
+      for (int i = 0; i < elements.length; i++) {
+        if (((JMenu)elements[i]).getText().equals("Partial Plan")) {
+          partialPlanMenu = (JMenu) elements[i];
+        }
+      }
+    }
+    assertNotNull("Failed to get \"Partial Plan\" menu.", partialPlanMenu);
+    assertTrue("Failed to get \"Partial Plan\" menu.",
+               partialPlanMenu.getText().equals("Partial Plan"));
+    return partialPlanMenu;
+  } // end urlEnter
+
+  private TimelineView getTimelineView( String [] seqAndPlanNames) throws Exception {
+    String sequenceName = seqAndPlanNames[0];
+    String partialPlanName = seqAndPlanNames[1];
     String projectUrl = planWorks.getCurrentProjectUrl();
     String sequenceUrl = projectUrl + System.getProperty( "file.separator") +
       sequenceName;
@@ -257,117 +324,129 @@ public class TimelineViewTest extends JFCTestCase {
       }
     }
     assertNotNull("Failed to get TimelineView object.", timelineView);
+    return timelineView;
+  } // end getTimelineView
 
+  private void validateTimelines( TimelineView timelineView) {
     List timelineNodes = timelineView.getTimelineNodeList();
     ListIterator timelineNodeIterator = timelineNodes.listIterator();
     while(timelineNodeIterator.hasNext()){
-        TimelineNode timelineNode = (TimelineNode) timelineNodeIterator.next();
-        String timelineName = timelineNode.getTimelineName();
-        List slotNodes = timelineNode.getSlotNodeList();
-        ListIterator slotNodeIterator = slotNodes.listIterator();
-        if(timelineName.indexOf("Monkey1 : LOCATION_SV") != -1) {
-          while(slotNodeIterator.hasNext()) {
-            SlotNode slotNode = (SlotNode) slotNodeIterator.next();
-            String slotName = slotNode.getPredicateName();
-            if(slotName.indexOf("At") == -1 && slotName.indexOf("Going") == -1) {
-              assertTrue("Invalid slot name for LOCATION_SV timeline.", false);
-            }
+      TimelineNode timelineNode = (TimelineNode) timelineNodeIterator.next();
+      String timelineName = timelineNode.getTimelineName();
+      List slotNodes = timelineNode.getSlotNodeList();
+      ListIterator slotNodeIterator = slotNodes.listIterator();
+      if(timelineName.indexOf("Monkey1 : LOCATION_SV") != -1) {
+        while(slotNodeIterator.hasNext()) {
+          SlotNode slotNode = (SlotNode) slotNodeIterator.next();
+          String slotName = slotNode.getPredicateName();
+          if(slotName.indexOf("At") == -1 && slotName.indexOf("Going") == -1) {
+            assertTrue("Invalid slot name for LOCATION_SV timeline.", false);
           }
         }
-        else if(timelineName.indexOf("Monkey1 : ALTITUDE_SV") != -1){
-          while(slotNodeIterator.hasNext()) {
-            SlotNode slotNode = (SlotNode) slotNodeIterator.next();
-            String slotName = slotNode.getPredicateName();
-            if(slotName.indexOf("LOW") == -1 && slotName.indexOf("CLIMBING") == -1 && 
-               slotName.indexOf("HIGH") == -1 && slotName.indexOf("CLIMBING_DOWN") == -1) {
-              assertTrue("Invalid slot name for ALTITUDE_SV", false);
-            }
+      }
+      else if(timelineName.indexOf("Monkey1 : ALTITUDE_SV") != -1){
+        while(slotNodeIterator.hasNext()) {
+          SlotNode slotNode = (SlotNode) slotNodeIterator.next();
+          String slotName = slotNode.getPredicateName();
+          if(slotName.indexOf("LOW") == -1 && slotName.indexOf("CLIMBING") == -1 && 
+             slotName.indexOf("HIGH") == -1 && slotName.indexOf("CLIMBING_DOWN") == -1) {
+            assertTrue("Invalid slot name for ALTITUDE_SV", false);
           }
         }
-        else if(timelineName.indexOf("Monkey1 : BANANA_SV") != -1){
-          while(slotNodeIterator.hasNext()) {
-            SlotNode slotNode = (SlotNode) slotNodeIterator.next();
-            String slotName = slotNode.getPredicateName();
-            if(slotName.indexOf("NOT_HAVE_BANANA") == -1 && 
-               slotName.indexOf("GRABBING_BANANA") == -1 && 
-               slotName.indexOf("HAVE_BANANA") == -1) {
-              assertTrue("Invalid slot name for BANANA_SV", false);
-            }
+      }
+      else if(timelineName.indexOf("Monkey1 : BANANA_SV") != -1){
+        while(slotNodeIterator.hasNext()) {
+          SlotNode slotNode = (SlotNode) slotNodeIterator.next();
+          String slotName = slotNode.getPredicateName();
+          if(slotName.indexOf("NOT_HAVE_BANANA") == -1 && 
+             slotName.indexOf("GRABBING_BANANA") == -1 && 
+             slotName.indexOf("HAVE_BANANA") == -1) {
+            assertTrue("Invalid slot name for BANANA_SV", false);
           }
         }
-        else {
-          assertTrue("Invalid timeline name.", false);
-        }
+      }
+      else {
+        assertTrue("Invalid timeline name.", false);
+      }
     }
+  } // end validateTimelines
+
+  private void exitPlanWorks( JMenuBar menuBar) throws Exception {
+    // exit from CreateProject Test
+    JMenu fileMenu = null;
+    MenuElement [] elements = menuBar.getSubElements();
+    for(int i = 0; i < elements.length; i++) {
+      if(((JMenu)elements[i]).getText().equals("File")) {
+        fileMenu = (JMenu) elements[i];
+      }
+    }
+    assertNotNull("Failed to get \"File\" menu", fileMenu);
+    assertTrue("Failed to get \"File\" menu.", fileMenu.getText().equals("File"));
+    JMenuItem exitItem = null;
+    for(int i = 0; i < fileMenu.getItemCount(); i++) {
+      if(fileMenu.getItem(i).getText().equals("Exit")) {
+        exitItem = fileMenu.getItem(i);
+      }
+    }
+    assertNotNull("Failed to get \"Exit\" item.", exitItem);
+    assertTrue("Failed to get \"Exit\" item.", exitItem.getText().equals("Exit"));
+    helper.enterClickAndLeave(new MouseEventData(this, fileMenu));
+    helper.enterClickAndLeave(new MouseEventData(this, exitItem));
+  } // end exitPlanWorks
+
+
+  // all methods with names starting with test are executed automatically by Junit
+  public void testOpenProject() throws Exception {
+    System.err.println( "\n\nOpenProjectTestCase\n\n");
+    awtSleep();
+    Set windows = helper.getWindows();
+    assertEquals("PlanWorks window failed to open", 1, windows.size());
+    frame = (JFrame)(windows.toArray())[0];
+    assertNotNull("Failed to get frame from set", frame);
+    JMenuBar menuBar = frame.getJMenuBar();
+    assertNotNull("Failed to get menu bar from frame", menuBar);
+    JMenu projectMenu = null;
+    MenuElement [] elements = menuBar.getSubElements();
+    for(int i = 0; i < elements.length; i++) {
+      if(((JMenu)elements[i]).getText().equals("Project")) {
+        projectMenu = (JMenu) elements[i];
+      }
+    }
+    assertNotNull("Failed to get \"Project\" menu", projectMenu);
+    assertTrue("Failed to get \"Project\" menu.", projectMenu.getText().equals("Project"));
+    JMenuItem openItem = null;
+    for(int i = 0; i < projectMenu.getItemCount(); i++) {
+      if(projectMenu.getItem(i).getText().equals("Open ...")) {
+        openItem = projectMenu.getItem(i);
+      }
+    }
+    assertNotNull("Failed to get \"Open ...\" item.", openItem);
+    assertTrue("Failed to get \"Open ...\" item.", openItem.getText().equals("Open ..."));
+    helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
+    helper.enterClickAndLeave(new MouseEventData(this, openItem));
+
+    String [] seqAndPlanNames = selectTimelineView();
+
+    TimelineView timelineView = getTimelineView( seqAndPlanNames);
+
+    validateTimelines( timelineView);
+
 //     while ( true) {
 //       try {
 //         Thread.currentThread().sleep(50);
 //       } catch (InterruptedException excp) {
 //       }
 //     }
+    exitPlanWorks( menuBar);
+  } // end testOpenProject
+
+
+  public static TestSuite suite() {
+    TestSuite testSuite = new TestSuite();
+    testSuite.addTest( new TimelineViewTest( "testCreateProject", "create"));
+    testSuite.addTest( new TimelineViewTest( "testOpenProject", "open"));
+    return testSuite;
   }
-
-  /**
-   * Since the modal was fired by another thread. The
-   * test thread is left free to drive the modal dialog.
-   *
-   * @throws Exception may be thrown.
-   */
-  public JMenu testUrlEnter() throws Exception {
-    // System.err.println( "testUrlEnter entered");
-    // prevents "Test runs: 2, ...
-    if (firstEntry == false) {
-      firstEntry = true;
-    } else {
-      return null;
-    }
-    List dialogs = TestHelper.getShowingDialogs("Create Project");
-    assertEquals("Dialog not found:", 2, dialogs.size());
-
-    Container planWorksDialog = (Container) dialogs.get(0);
-    Container jfcunitDialog = (Container) dialogs.get(1);
-    // System.err.println( "zeroPane " + zeroPane.getClass().getName());
-
-    // Enter button - use dialog created by TimelineTestView
-    JTextField field = null;
-    field = (JTextField) TestHelper.findComponent(JTextField.class, jfcunitDialog, 0);
-    assertNotNull("Could not find \"Enter\" field", field);
-    // helper.sendString(new StringEventData(this, field, "Harry Potter"));
-    helper.sendKeyAction(new KeyEventData(this, field, KeyEvent.VK_ENTER));
-    // Cancel button -- cancel 2nd dialog created by PlanWorks
-    JButton button = null;
-    button = (JButton) TestHelper.findComponent(JButton.class, planWorksDialog, 1);
-    assertNotNull("Could not find \"Cancel\" button", field);
-
-    helper.enterClickAndLeave(new MouseEventData(this, button));
-
-    // assertTrue("Unsuccessful exit:", normalExit);
-    // checkException();
-
-    // System.err.println( "\n\nGot to here 0\n\n");
-    JMenu partialPlanMenu = null;
-    JMenuBar menuBar = frame.getJMenuBar();
-    // wait for TimelineView instance to become displayable
-    while (partialPlanMenu == null) {
-      // System.err.println( "partialPlanMenu still null");
-      try {
-        Thread.currentThread().sleep(50);
-      } catch (InterruptedException excp) {
-      }
-      MenuElement [] elements = menuBar.getSubElements();
-      for (int i = 0; i < elements.length; i++) {
-        if (((JMenu)elements[i]).getText().equals("Partial Plan")) {
-          partialPlanMenu = (JMenu) elements[i];
-        }
-      }
-    }
-    assertNotNull("Failed to get \"Partial Plan\" menu.", partialPlanMenu);
-    assertTrue("Failed to get \"Partial Plan\" menu.",
-               partialPlanMenu.getText().equals("Partial Plan"));
-    return partialPlanMenu;
-  }
-
-
 
   public static void main( String[] args) {
     PlanWorks.name = "";
@@ -385,18 +464,7 @@ public class TimelineViewTest extends JFCTestCase {
     PlanWorks.userCollectionName = System.getProperty( "file.separator") +
       System.getProperty( "user");
 
-    try {
-      PwProject.initProjects();
-    } catch (ResourceNotFoundException rnfExcep) {
-      System.err.println( rnfExcep);
-      System.exit( -1);
-    }
-
-    planWorks = new PlanWorks( PlanWorks.buildConstantMenus());
-    PlanWorks.planWorks = planWorks;
-
-    TestRunner.run( TimelineViewTest.class);
-    // testMain();
+    TestRunner.run( suite());
   }
 }
  
