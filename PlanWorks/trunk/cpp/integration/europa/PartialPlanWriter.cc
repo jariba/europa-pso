@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.13 2003-11-13 15:34:24 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.14 2003-11-13 17:46:44 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -641,11 +641,9 @@ const String PartialPlanWriter::getNameForConstraint(const ConstraintId &constra
   }
   else {
     retval = String("bugConstr");
-    cerr << "FOO: " << constraintId << " " << retval << endl;
   }
   if(retval.chars() == NULL) {
     retval = String("bugConstr");
-    cerr << "FOO: " << constraintId << " " << retval << endl;
   }
   return retval;
 }
