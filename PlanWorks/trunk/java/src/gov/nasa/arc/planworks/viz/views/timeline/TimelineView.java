@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.8 2003-06-19 00:31:20 taylor Exp $
+// $Id: TimelineView.java,v 1.9 2003-06-19 17:50:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -57,8 +57,9 @@ public class TimelineView extends VizView {
   private ViewSet viewSet;
   private JGoView jGoView;
   private JGoDocument jGoDocument;
-
+  // timelineNodeList & tmpTimelineNodeList used by JFCUnit test case
   private List timelineNodeList; // element TimelineNode
+  private List tmpTimelineNodeList; // element TimelineNode
   private Font font;
   private FontMetrics fontMetrics;
   private int slotLabelMinLength;
@@ -77,7 +78,8 @@ public class TimelineView extends VizView {
     super( partialPlan);
     this.partialPlan = partialPlan;
     this.viewSet = viewSet;
-    this.timelineNodeList = new ArrayList();
+    this.timelineNodeList = null;
+    this.tmpTimelineNodeList = new ArrayList();
     this.jGoObjectPositionList = new ArrayList();
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
@@ -147,6 +149,8 @@ public class TimelineView extends VizView {
    *
    */
   public void redraw() {
+    this.timelineNodeList = null;
+    this.tmpTimelineNodeList = new ArrayList();
     // remove old objects from jGoDocument
     Iterator objectPositionItr = jGoObjectPositionList.iterator();
     while (objectPositionItr.hasNext()) {
@@ -251,7 +255,7 @@ public class TimelineView extends VizView {
             String timelineNodeName = objectName + " : " + timelineName;
             timelineNode =
               new TimelineNode( timelineNodeName, timeline, new Point( x, y), this);
-            timelineNodeList.add( timelineNode);
+            tmpTimelineNodeList.add( timelineNode);
             // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
             jGoObjectPositionList.add( jGoDocument.addObjectAtTail( timelineNode));
             timelineNode.setSize( timelineNodeWidth,
@@ -265,6 +269,7 @@ public class TimelineView extends VizView {
         }
       }
     }
+    timelineNodeList = tmpTimelineNodeList;
   } // end createTimelineAndSlotNodes
 
   private void createSlotNodes( PwTimeline timeline, TimelineNode timelineNode,
