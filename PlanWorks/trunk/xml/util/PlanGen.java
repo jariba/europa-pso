@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 public class PlanGen
 {
@@ -528,6 +529,7 @@ abstract class PlanGenState
     get a double such that 0 <= double <= LP10GH.  I then add (low - 1) so my number is now
     (low - 1) <= double <= LP10GH + (low - 1), then get it mod hi, which ensures 
     (lo - 1) <= double <= (hi - 1), then add 1.  i love mod.*/
+  /*what i once thought was clever, wasn't so much, so i'm going a different way*/
   public static int getRandInRange(int low, int hi)
   {
     if(low == hi)
@@ -538,8 +540,20 @@ abstract class PlanGenState
         hi ^= low;
         low ^= hi;
       }
-    return (int) ((Math.round(Math.random() * Math.pow(10, Integer.toString(hi).length()+1)) + 
-                   (low - 1)) % hi) + 1;
+    /*
+      boolean lowIsZero = low == 0;
+      if(lowIsZero) {
+      low++;
+      hi++;
+      }
+      int retval = 
+      (int) ((Math.round(Math.random() * Math.pow(10, Integer.toString(hi).length()+1)) + 
+      (low - 1)) % hi) + 1;
+      if(lowIsZero) {
+      retval--;
+      }
+      return retval;*/
+    return (((int)(Math.random() * Math.pow(10, Integer.toString(hi).length()+1))) % (hi - low + 1)) + low;
   }
 
   private static void testNumOrRange(boolean range, int num, int rangeLo, int rangeHi)
@@ -555,7 +569,7 @@ abstract class PlanGenState
   public static void usage()
   {
     System.out.println("Usage:");
-    System.out.println("java PlanGen [--usage | --dest <destination> --horizon <low> <high> --nseq <num>\n[--nsteps <num> | --steprange <low> <high>]\n[--nobjs <num> | --objrange <low> <high>]\n[--ntimelines <num> | --timelinerange <low> <high>]\n[--nslots <num> | --slotrange <low> <high>]\n[--ntokens <num> | --tokenrange <low> <high>]\n[--nfreetokens <num> | --freetokenrange <low> <high>]\n[--npredicates <num> --predicaterange <low> <high>]\n[--nparams <num> | --paramrange <low> <high>]\n[--ntokenrelations <num> | --tokenrelationrange <low> <high>]\n");
+    System.out.println("java PlanGen [--usage | --dest <destination> --horizon <low> <high> --nseq <num>\n[--nsteps <num> | --steprange <low> <high>]\n[--nobjs <num> | --objrange <low> <high>]\n[--ntimelines <num> | --timelinerange <low> <high>]\n[--nslots <num> | --slotrange <low> <high>]\n[--ntokens <num> | --tokenrange <low> <high>]\n[--nfreetokens <num> | --freetokenrange <low> <high>]\n[--npredicates <num> --predicaterange <low> <high>]\n[--nparams <num> | --paramrange <low> <high>]\n");
     System.out.println("OPTIONS:\n");
     System.out.println("--usage");
     System.out.println("  Prints this message and exits.");
@@ -582,8 +596,6 @@ abstract class PlanGenState
     System.out.println("  Specifies the number of predicates to generate per planning step.");
     System.out.println("--nparams <num> or --paramrange <low> <high>");
     System.out.println("  Specifies the number of parameters that each predicate has.");
-    System.out.println("--ntokenrelations <num> or --tokenrelationrange <low> <high>");
-    System.out.println("  Specifies the number of token relations to generate per planning step.");
     System.exit(0);
   }
   public static void printState()
@@ -642,8 +654,8 @@ class KeyManager
   public static final String defToken1 = "K-4";
   public static final String defToken2 = "K-5";
   public static final String defTokenRelation = "K-6";
-  public static final String defDurationVar = "K-7";
-  public static final String defRejectVar = "K-8";
+  public static final String defDurationVar = "K1";
+  public static final String defRejectVar = "K2";
   public static final String defStartVar = "K-9";
   public static final String defEndVar = "K-10";
   public static final String defParamVar = "K-11";
@@ -652,7 +664,7 @@ class KeyManager
   public static final String defParameter = "K-14";
   public KeyManager()
   {
-    key = 0;
+    key = 3;
     partialPlans = new HashMap();
     tokens = new HashMap();
     objects = new HashMap();
@@ -666,7 +678,7 @@ class KeyManager
   }
   public void reset()
   {
-    key = 0;
+    key = 3;
     partialPlans.clear();
     tokens.clear();
     objects.clear();
@@ -762,6 +774,9 @@ class KeyManager
   {
     return objects.values();
   }
+  public Set getAllObjectIds() {
+    return objects.keySet();
+  }
   public Timeline getTimeline(String key)
   {
     return (Timeline) timelines.get(key);
@@ -830,39 +845,54 @@ class PartialPlan
                        PlanGenState.getRandInRange(PlanGenState.predicateRangeLo, 
                                                    PlanGenState.predicateRangeHi) :
                        PlanGenState.npredicates);
+    System.err.println("Generating predicates...");
     for(int i = 0; i < npredicates; i++)
       new Predicate(i);
 
     int nobjs = PlanGenState.nobjs;
     if(PlanGenState.objRange)
       nobjs = PlanGenState.getRandInRange(PlanGenState.objRangeLo, PlanGenState.objRangeHi);
-    //i love anonymous objects
+
+    System.err.println("Generating objects...");
     for(int i = 0; i < nobjs; i++)
       new PwObject(i);
 
-    Object [] tokenIds = PlanGen.keyManager.getAllTokenIds().toArray();
-    if(tokenIds.length > 1)
-      {
-        int ntokenRelations = (PlanGenState.tokenRelationRange ?
-                               PlanGenState.getRandInRange(PlanGenState.tokenRelationRangeLo,
-                                                           PlanGenState.tokenRelationRangeHi) :
-                               PlanGenState.ntokenRelations);
-        for(int i = 0; i < ntokenRelations; i++)
-          {
-            int index1 = PlanGenState.getRandInRange(0, tokenIds.length-1);
-            int index2 = PlanGenState.getRandInRange(0, tokenIds.length-1);
-            while(index2 == index1)
-              index2 = PlanGenState.getRandInRange(0, tokenIds.length-1);
-            new TokenRelation((String) tokenIds[index1], (String) tokenIds[index2]);
-          }
-      }
-    
     int nfreeTokens = PlanGenState.nfreeTokens;
     if(PlanGenState.freeTokenRange)
       nfreeTokens = PlanGenState.getRandInRange(PlanGenState.freeTokenRangeLo, 
                                                 PlanGenState.freeTokenRangeHi);
+    System.err.println("Generating free tokens...");
     for(int i = 0; i < nfreeTokens; i++)
       freeTokenIds.add((new Token(i, true)).getId());
+    
+    Vector availableMasters = new Vector(PlanGen.keyManager.getAllTokenIds());
+    Vector availableSlaves = new Vector(availableMasters);
+    if(availableMasters.size() > 1)
+      {
+        System.err.println("Generating token relations...");
+        while(availableMasters.size() != 0 && availableSlaves.size() != 0) {
+          int masterIndex = PlanGenState.getRandInRange(0, availableMasters.size()-1);
+          String masterKey = (String) availableMasters.get(masterIndex);
+          if(PlanGen.keyManager.getToken(masterKey).isFreeToken()) {
+            availableMasters.removeElementAt(masterIndex);
+            continue;
+          }
+          availableSlaves.remove(masterKey);
+          availableMasters.remove(masterKey);
+          int numSlaves = PlanGenState.getRandInRange(1, (availableSlaves.size() > 3 ? 4 :
+                                                          availableSlaves.size()));
+          String [] slaveKeys = new String [numSlaves];
+          for(int i = 0; i < numSlaves; i++) {
+            slaveKeys[i] = (String) availableSlaves.get(PlanGenState.getRandInRange(0,
+                                                                                    availableSlaves.size()-1));
+            availableSlaves.remove(slaveKeys[i]);
+          }
+          for(int i = 0; i < numSlaves; i++) {
+            new TokenRelation(masterKey, slaveKeys[i]);
+          }
+          availableSlaves.add(masterKey);
+        }
+      }
   }
   public void writeXML(String outfile)
   {
@@ -953,8 +983,9 @@ class PwObject //conor ought to *love* this...
                       PlanGenState.getRandInRange(PlanGenState.timelineRangeLo, 
                                                   PlanGenState.timelineRangeHi) : 
                       PlanGenState.ntimelines);
+    System.err.println("Generating timelines...");
     for(int i = 0; i < ntimelines; i++)
-      timelineIds.add((new Timeline(i)).getId());
+      timelineIds.add((new Timeline(i, key)).getId());
     /*Object [] tokenIds = PlanGen.keyManager.getAllTokenIds().toArray();
     if(tokenIds.length > 1)
       {
@@ -982,7 +1013,7 @@ class Timeline
 {
   private String key, name;
   private ArrayList slotIds;
-  public Timeline(int num)
+  public Timeline(int num, String objKey)
   {
     name = (new StringBuffer("Timeline ")).append(num).toString();
     key = PlanGen.keyManager.getKeyForTimeline(this);
@@ -991,7 +1022,7 @@ class Timeline
                                                                        PlanGenState.slotRangeHi) :
                   PlanGenState.nslots);
     for(int i = 0; i < nslots; i++)
-      slotIds.add((new Slot(i, nslots)).getId());
+      slotIds.add((new Slot(i, nslots, objKey)).getId());
     //i could/should make this prettier
     for(int i = 1; i < slotIds.size()-1; i++)
       {
@@ -999,10 +1030,12 @@ class Timeline
         String tokenB = PlanGen.keyManager.getSlot((String)slotIds.get(i+1)).getFirstTokenId();
         if(tokenA == null)
           {
-            if(tokenB == null)
-              i++;
             continue;
           }
+        if(tokenB == null) {
+          i++;
+          continue;
+        }
         new Constraint(PlanGen.keyManager.getToken(tokenA).getEndVarId(),
                        PlanGen.keyManager.getToken(tokenB).getStartVarId(),
                        "le", "TEMPORAL");
@@ -1023,7 +1056,7 @@ class Slot
 {
   private String key;
   private ArrayList tokenIds;
-  public Slot(int num, int nslots)
+  public Slot(int num, int nslots, String objKey)
   {
     key = PlanGen.keyManager.getKeyForSlot(this);
     tokenIds = new ArrayList();
@@ -1040,7 +1073,7 @@ class Slot
     ArrayList endVariableIds = new ArrayList();
     for(int i = 0; i < ntokens; i++)
       {
-        Token token = new Token(i, timeRangeLo, timeRangeHi, key);
+        Token token = new Token(i, timeRangeLo, timeRangeHi, key, objKey);
         tokenIds.add(token.getId());
         startVariableIds.add(token.getStartVarId());
         endVariableIds.add(token.getEndVarId());
@@ -1050,7 +1083,12 @@ class Slot
                        "eq", "TEMPORAL");
   }
   public String getId(){return key;}
-  public String getFirstTokenId(){return (String)tokenIds.get(0);}
+  public String getFirstTokenId() {
+    if(tokenIds.size() == 0) {
+      return null;
+    }
+    return (String)tokenIds.get(0);
+  }
   public String toXML()
   {
     StringBuffer xmlBuf = (new StringBuffer("      <Slot key=\"")).append(key).append("\">\n");
@@ -1063,10 +1101,10 @@ class Slot
 
 class Token
 {
-  private String key, startVarId, endVarId, slotId, predicateId;
+  private String key, startVarId, endVarId, slotId, predicateId, objectVarId;
   private ArrayList tokenRelationIds, paramVarIds;
   boolean bornFree = false;
-  public Token(int num, int rangeLo, int rangeHi, String slotKey)
+  public Token(int num, int rangeLo, int rangeHi, String slotKey, String objKey)
   {
     key = PlanGen.keyManager.getKeyForToken(this);
     slotId = slotKey;
@@ -1087,38 +1125,55 @@ class Token
       endVarId = (new Variable(rangeHi, rangeHi, "END_VAR")).getId();
     else
       endVarId = (new Variable(rangeHi - 1, rangeHi, "END_VAR")).getId();
+    objectVarId = (new Variable(objKey, "OBJECT_VAR")).getId();
   }
   public Token(int num, boolean free)
   {
     key = PlanGen.keyManager.getKeyForToken(this);
-    slotId = startVarId = endVarId = null;
+    slotId = null;
     tokenRelationIds = new ArrayList();
+    paramVarIds = new ArrayList();
+    predicateId = PlanGen.keyManager.getRandomPredicateId();
+    List paramIds = PlanGen.keyManager.getPredicate(predicateId).getParamIds();
+    paramVarIds = new ArrayList(paramIds.size());
+    for(int i = 0; i < paramIds.size(); i++) {
+      paramVarIds.add((new Variable(PlanGenState.getRandInRange(0, 10000),
+                                    PlanGenState.getRandInRange(0, 10000), "PARAMETER_VAR",
+                                    (String) paramIds.get(i))).getId());
+    }
+    int startLo = PlanGenState.getRandInRange(PlanGenState.horizonLo, PlanGenState.horizonHi);
+    int startHi = PlanGenState.getRandInRange(startLo, startLo + 10);
+    int endLo = PlanGenState.getRandInRange(startLo, PlanGenState.horizonHi);
+    int endHi = PlanGenState.getRandInRange(endLo, PlanGenState.horizonHi);
+    startVarId = (new Variable(startLo, startHi, "START_VAR")).getId();
+    endVarId = (new Variable(endLo, endHi, "END_VAR")).getId();
+    StringBuffer objVarEnum = new StringBuffer();
+    Iterator objIdIterator = PlanGen.keyManager.getAllObjectIds().iterator();
+    while(objIdIterator.hasNext()) {
+      objVarEnum.append((String)objIdIterator.next());
+      if(objIdIterator.hasNext()) {
+        objVarEnum.append(", ");
+      }
+    }
+    objectVarId = (new Variable(objVarEnum.toString(), "OBJECT_VAR")).getId();
     bornFree = true;
   }
   public String getStartVarId(){return startVarId;}
   public String getEndVarId(){return endVarId;}
   public String getId(){return key;}
+  public boolean isFreeToken(){return bornFree;}
   public void addRelation(String key)
   {
     tokenRelationIds.add(key);
   }
   public String toXML()
   {
-    StringBuffer xmlBuf = (new StringBuffer("        <Token key=\"")).append(key).append("\" isValueToken=\"Y\" predicateId=\"").append(PlanGen.keyManager.defPredicate).append("\" startVarId=\"");
-    if(startVarId == null)
-      xmlBuf.append(PlanGen.keyManager.defStartVar);
-    else
-      xmlBuf.append(startVarId);
+    StringBuffer xmlBuf = (new StringBuffer("        <Token key=\"")).append(key).append("\" isValueToken=\"Y\" predicateId=\"").append(predicateId).append("\" startVarId=\"");
+    xmlBuf.append(startVarId);
     xmlBuf.append("\" endVarId=\"");
-    if(endVarId == null)
-      xmlBuf.append(PlanGen.keyManager.defEndVar);
-    else
-      xmlBuf.append(endVarId);
+    xmlBuf.append(endVarId);
     xmlBuf.append("\" durationVarId=\"").append(PlanGen.keyManager.defDurationVar).append("\" objectVarId=\"");
-    if(bornFree)
-      xmlBuf.append(PlanGen.keyManager.defObject);
-    else
-      xmlBuf.append(PwObject.currObject);
+    xmlBuf.append(objectVarId);
     xmlBuf.append("\" rejectVarId=\"").append(PlanGen.keyManager.defRejectVar).append("\" tokenRelationIds=\"");
     if(tokenRelationIds.size() == 0)
       xmlBuf.append(PlanGen.keyManager.defTokenRelation);
@@ -1138,7 +1193,7 @@ class Token
 class Variable
 {
   private int low, hi;
-  private String key, paramId, type;
+  private String key, paramId, type, enumeration;
   private ArrayList constraintIds;
   public Variable(int low, int hi, String type)
   {
@@ -1148,11 +1203,21 @@ class Variable
     this.type = type;
     constraintIds = new ArrayList();
     paramId = null;
+    enumeration = null;
   }
   public Variable(int low, int hi, String type, String paramId)
   {
     this(low, hi, type);
     this.paramId = paramId;
+  }
+  public Variable(String enumeration, String type) {
+    key = PlanGen.keyManager.getKeyForVariable(this);
+    this.low = -1;
+    this.hi = -2;
+    this.paramId = null;
+    this.type = type;
+    this.enumeration = enumeration;
+    constraintIds = new ArrayList();
   }
   public void addConstraint(String key)
   {
@@ -1177,6 +1242,9 @@ class Variable
       xmlBuf.append(paramId).append("\">\n");
     if(hi == low)
       xmlBuf.append("    <EnumeratedDomain><![CDATA[").append(low).append("]]></EnumeratedDomain>\n");
+    else if(hi < 0 && low < 0) {
+      xmlBuf.append("    <EnumeratedDomain><![CDATA[").append(enumeration).append("]]></EnumeratedDomain>\n");
+    }
     else
       xmlBuf.append("    <IntervalDomain type=\"INTEGER_SORT\" lowerBound=\"").append(low).append("\" upperBound=\"").append(hi).append("\" />\n");
     xmlBuf.append("  </Variable>\n");
