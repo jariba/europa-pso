@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.17 2003-09-29 23:52:11 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.18 2003-09-30 00:16:03 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -432,7 +432,7 @@ public class PlanWorksTest extends JFCTestCase{
     Thread.sleep( 3000);
     viewFrame =
       viewManager.openView( partialPlan,
-                            (String) PlanWorks.viewNameToViewClassMap.
+                            (String) PlanWorks.viewClassNameMap.
                             get( PlanWorks.TIMELINE_VIEW));
     assertNotNull("Failed to get timeline view MDI internal frame.", viewFrame);
 
@@ -480,7 +480,7 @@ public class PlanWorksTest extends JFCTestCase{
     Thread.sleep( 3000);
     viewFrame =
       viewManager.openView( partialPlan,
-                            (String) PlanWorks.viewNameToViewClassMap.
+                            (String) PlanWorks.viewClassNameMap.
                             get( PlanWorks.TOKEN_NETWORK_VIEW));
     assertNotNull("Failed to get tokenNetwork view MDI internal frame.", viewFrame);
 
@@ -511,7 +511,7 @@ public class PlanWorksTest extends JFCTestCase{
     Thread.sleep( 3000);
     viewFrame =
       viewManager.openView( partialPlan, 
-                            (String) PlanWorks.viewNameToViewClassMap.
+                            (String) PlanWorks.viewClassNameMap.
                             get( PlanWorks.TEMPORAL_EXTENT_VIEW));
     assertNotNull("Failed to get temporalExtent view MDI internal frame.", viewFrame);
 
@@ -543,7 +543,7 @@ public class PlanWorksTest extends JFCTestCase{
     Thread.sleep( 3000);
     viewFrame =
       viewManager.openView( partialPlan,
-                            (String) PlanWorks.viewNameToViewClassMap.
+                            (String) PlanWorks.viewClassNameMap.
                             get( PlanWorks.CONSTRAINT_NETWORK_VIEW));
     assertNotNull("Failed to get constraintNetwork view MDI internal frame.", viewFrame);
 
