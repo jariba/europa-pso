@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.8 2003-07-15 00:33:52 taylor Exp $
+// $Id: VizView.java,v 1.9 2003-07-15 16:13:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -172,7 +172,6 @@ public class VizView extends JPanel {
         return false;
       }
     } else {
-      // empty slot -- display
       return true;
     }
   } // end isSlotInContentSpec

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.20 2003-07-15 00:33:52 taylor Exp $
+// $Id: TimelineView.java,v 1.21 2003-07-15 16:12:43 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -353,6 +353,10 @@ public class TimelineView extends VizView {
       for (int i = 0, n = slotList.size(); i < n; i++) {
         SlotNode slotNode = (SlotNode) slotList.get( i);
         List timeLabels = slotNode.getTimeIntervalLabels();
+        //if(timeLabels.size() == 1) {
+        //  System.err.println("Labels: " + timeLabels + " " + 
+        //                     ((JGoText)timeLabels.get(0)).getText());
+        //}
         if (isSlotInContentSpec( slotNode.getSlot())) {
           slotNode.setVisible( true);
 
@@ -364,10 +368,11 @@ public class TimelineView extends VizView {
 //           jGoSelection.showHandles( slotNode);
 
           ((JGoText) timeLabels.get( 0)).setVisible( true);
-          if (i == n - 1) {
+          if (i == n - 1 && timeLabels.size() > 1) {
             ((JGoText) timeLabels.get( 1)).setVisible( true);
           }
         } else {
+          System.err.println("Setting slot " + slotNode.getSlot().getKey() + " invisible");
           slotNode.setVisible( false);
           boolean visibleValue = false;
           // display interval time label, if previous slot is not being displayed
@@ -377,7 +382,7 @@ public class TimelineView extends VizView {
               visibleValue = true;
             }
             ((JGoText) timeLabels.get( 0)).setVisible( visibleValue);
-            if (i == n - 1) {
+            if (i == n - 1 && timeLabels.size() > 1) {
               ((JGoText) timeLabels.get( 1)).setVisible( false);
             }
           } else {

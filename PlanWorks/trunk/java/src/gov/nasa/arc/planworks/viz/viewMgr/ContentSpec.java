@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.17 2003-07-14 20:52:02 miatauro Exp $
+// $Id: ContentSpec.java,v 1.18 2003-07-15 16:12:09 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -157,7 +157,6 @@ public class ContentSpec {
     while(tokenIds.next()) {
       validTokenIds.add(new Integer(tokenIds.getInt("TokenId")));
     }
-    printSpec();
     redrawNotifier.notifyRedraw();
   }
   public Map getPredicateNames() throws SQLException {
