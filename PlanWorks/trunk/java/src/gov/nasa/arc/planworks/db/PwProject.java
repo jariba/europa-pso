@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.5 2003-06-08 00:14:08 taylor Exp $
+// $Id: PwProject.java,v 1.6 2003-06-13 18:51:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -29,10 +29,14 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 public abstract class PwProject {
 
 
+
+
   /**
    * <code>initProjects</code> - register loaded XML files data base (eXist)
    *                             restore loaded projects configuration info
+   *                             and inflate projects
    *
+   * @exception ResourceNotFoundException if an error occurs
    */
   public static void initProjects() throws ResourceNotFoundException {
     PwProjectImpl.initProjects();
@@ -43,6 +47,8 @@ public abstract class PwProject {
    *
    * @param url - <code>String</code> - 
    * @return - <code>PwProject</code> - 
+   * @exception DuplicateNameException if an error occurs
+   * @exception ResourceNotFoundException if an error occurs
    */
   public static PwProject createProject( String url)
     throws DuplicateNameException, ResourceNotFoundException {
@@ -50,24 +56,14 @@ public abstract class PwProject {
   }
 
   /**
-   * <code>openProject</code>
+   * <code>getProject</code> - get project instance after it is Created, or
+   *                           Opened (restored)
    *
    * @param url - <code>String</code> - 
    * @return - <code>PwProject</code> - 
+   * @exception ResourceNotFoundException if an error occurs
    */
-  public static PwProject openProject( String url)
-    throws ResourceNotFoundException {
-    boolean isInDb = true;
-    return (new PwProjectImpl( url, isInDb));
-  }
-
-  /**
-   * <code>getProject</code> - get project instance after it is Created or Opened
-   *
-   * @param url - <code>String</code> - 
-   * @return - <code>PwProject</code> - 
-   */
-  public static PwProject getProject( String url) {
+  public static PwProject getProject( String url)  throws ResourceNotFoundException {
     return PwProjectImpl.getProject( url);
   }
 
@@ -84,6 +80,7 @@ public abstract class PwProject {
    * <code>saveProjects</code> - save project names & urls in /xml/proj/projects.xml
    *                             and save project specific info in separate files
    *
+   * @exception Exception if an error occurs
    */
   public static void saveProjects() throws Exception {
     PwProjectImpl.saveProjects();
@@ -142,6 +139,7 @@ public abstract class PwProject {
    *                      remove /xml/proj/<projectName>.xml
    *
    * @exception Exception if an error occurs
+   * @exception ResourceNotFoundException if an error occurs
    */
   public abstract void close() throws Exception, ResourceNotFoundException;
 
