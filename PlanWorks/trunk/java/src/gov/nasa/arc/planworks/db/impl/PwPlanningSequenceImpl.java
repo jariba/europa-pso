@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.7 2003-06-11 01:02:12 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.8 2003-06-12 19:57:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,15 +14,18 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwTransaction;
 import gov.nasa.arc.planworks.db.util.XmlFileFilter;
 import gov.nasa.arc.planworks.db.util.XmlFilenameFilter;
+import gov.nasa.arc.planworks.util.FileCopy;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
 
@@ -81,6 +84,17 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     if (xmlFileNames.length == 0) {
       throw new ResourceNotFoundException( "sequence url '" + url +
                                            "' does not have any xml files");
+    }
+    // ensure that DTD file is in this directory
+    File dtdFile = new File( url + "/" + DbConstants.XML_DTD_FILENAME);
+    if (! dtdFile.exists()) {
+      try {
+        FileCopy.copy( System.getProperty( "xml.dtd.pathname"), dtdFile.getPath());
+      } catch (IOException e) {
+         throw new ResourceNotFoundException( "copying " +
+                                              System.getProperty( "xml.dtd.pathname") +
+                                              " to " + dtdFile.getPath() + " failed");
+      }
     }
     for (int i = 0; i < stepCount; i++) {
       partialPlans.add( null);
