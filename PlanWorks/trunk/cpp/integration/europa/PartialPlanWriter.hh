@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.13 2003-11-18 22:14:44 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.14 2003-12-23 01:04:34 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H
@@ -15,21 +15,26 @@
 #include "Subscriber.hh"
 #include "TokenNetwork.hh"
 //#include <stl.h>
-#include <stdio.h>
+//#include <stdio.h>
+#include <fstream>
 
 using namespace Europa;
 
 class Transaction {
 public:
+
   //Transaction(enum transactionTypes type, int key, enum sourceTypes source, int id,
   //            long long int seqid) 
-  Transaction(int type, int key, int source, int id, long long int seqid, int nstep, 
-              const String &info)
-  {transactionType = type; objectKey = key; this->source = source; this->id = id;
-  sequenceId = seqid; stepNum = nstep; this->info = info; }
-  Transaction() 
-  {transactionType = -1; objectKey = -1; source = -1; id = -1; sequenceId = -1; info = String();}
-  Transaction(Transaction &other) {
+
+  Transaction(int type, int key, int source2, int id2, long long int seqid, int nstep, 
+              const String &info2)
+    : transactionType(type), objectKey(key), source(source2), id(id2),
+      stepNum(nstep), sequenceId(seqid), info(info2) { }
+
+  Transaction() : transactionType(-1), objectKey(-1), source(-1), id(-1),
+                  sequenceId(-1) { }
+
+  Transaction(const Transaction &other) {
     transactionType = other.transactionType;
     objectKey = other.objectKey;
     source = other.source;
@@ -37,7 +42,9 @@ public:
     sequenceId = other.sequenceId;
     info = other.info;
   }
-  void write(FILE *, long long int);
+
+  void write(ofstream &, long long int);
+
 private:
   int transactionType, objectKey, source, id, stepNum;
   long long int sequenceId;
@@ -71,17 +78,19 @@ private:
   TokenNetwork *tnet;
   Value izero, rzero;
   List<Transaction> *transactionList;
-  FILE *transactionOut, *statsOut;
+  //FILE *transactionOut, *statsOut;
+  ofstream *transactionOut, *statsOut;
   ModelId modelId;
-  void outputVariable(const VarId &, const char *, const long long int, const TokenId &, FILE *,
-                      FILE *, FILE *);
+  void outputVariable(const VarId &, const char *, const long long int, const TokenId &, 
+                      ofstream &, ofstream &, ofstream &);
   void outputToken(const TokenId &, const bool, const long long int, const ObjectId *, 
-                   const int,  const SlotId *, FILE *, FILE *, FILE *, FILE *, FILE *, FILE *);
+                   const int,  const SlotId *, ofstream &, ofstream &, ofstream &, ofstream &, 
+                   ofstream &, ofstream &);
   void outputPredicate(PredicateId &, const long long int partialPlanId, 
-                       FILE *, FILE *);
-  void outputConstraint(const ConstraintId &, const long long int, FILE *, FILE *);
-  void outputIntervalDomain(const Domain &, const long long int, FILE *);
-  void outputEnumDomain(const Domain &, const long long int, FILE *);
+                       ofstream &, ofstream &);
+  void outputConstraint(const ConstraintId &, const long long int, ofstream &, ofstream &);
+  void outputIntervalDomain(const Domain &, const long long int, ofstream &);
+  void outputEnumDomain(const Domain &, const long long int, ofstream &);
   String getBoundString(const Domain &, const Value &);
   String getEnumString(const Domain &);
   const String getNameForConstraint(const ConstraintId &);
