@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import gov.nasa.arc.planworks.util.UniqueSet;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
+import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
+//import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 
@@ -37,22 +38,22 @@ public class NewConstraintNetworkLayout {
       return;
     }
     while(tempTokenNodes.size() > 0 && 
-          ((ConstraintNetworkTokenNode) tempTokenNodes.get(tempTokenNodes.size() - 1)).
-          getTokenLinkCount() == 0) {
+          ((VariableContainerNode) tempTokenNodes.get(tempTokenNodes.size() - 1)).
+          getContainerLinkCount() == 0) {
       orderedTokenNodes.add(tempTokenNodes.remove(tempTokenNodes.size() - 1));
     }
 
     while(!tempTokenNodes.isEmpty()) {
       List connectedComponent = new UniqueSet();
-      ConstraintNetworkTokenNode firstNode = (ConstraintNetworkTokenNode) tempTokenNodes.get(0);
-      if(firstNode.getTokenLinkCount() == 0) {
+      VariableContainerNode firstNode = (VariableContainerNode) tempTokenNodes.get(0);
+      if(firstNode.getContainerLinkCount() == 0) {
         orderedTokenNodes.add(firstNode);
         continue;
       }
       assembleConnectedComponent(connectedComponent, tempTokenNodes, firstNode);
 
       LinkedList subOrdering = new LinkedList();
-      firstNode = (ConstraintNetworkTokenNode) connectedComponent.remove(0);
+      firstNode = (VariableContainerNode) connectedComponent.remove(0);
       Collections.sort(connectedComponent, new SpecificTokenLinkCountComparator(firstNode));
       subOrdering.add(firstNode);
       boolean switcher = false;
@@ -71,8 +72,9 @@ public class NewConstraintNetworkLayout {
 
     ListIterator orderedIterator = orderedTokenNodes.listIterator();
     while(orderedIterator.hasNext()) {
-      ConstraintNetworkTokenNode node = (ConstraintNetworkTokenNode) orderedIterator.next();
-      TokenBoundingBox box = new TokenBoundingBox(this, node);
+      VariableContainerNode node = (VariableContainerNode) orderedIterator.next();
+      VariableContainerBoundingBox box = 
+        new VariableContainerBoundingBox(this, node);
       tokenBoundingBoxes.add(box);
     }
     System.err.println("Constraint network init took " + (System.currentTimeMillis() - t1) +
@@ -80,16 +82,16 @@ public class NewConstraintNetworkLayout {
   }
 
   private void assembleConnectedComponent(List component, List tokenNodes, 
-                                          ConstraintNetworkTokenNode node) {
+                                          VariableContainerNode node) {
     if(tokenNodes.isEmpty() || !tokenNodes.contains(node)) {
       return;
     }
     component.add(node);
     tokenNodes.remove(node);
-    ListIterator connectedNodeIterator = node.getConnectedTokenNodes().listIterator();
+    ListIterator connectedNodeIterator = node.getConnectedContainerNodes().listIterator();
     while(connectedNodeIterator.hasNext()) {
       assembleConnectedComponent(component, tokenNodes, 
-                                 (ConstraintNetworkTokenNode) connectedNodeIterator.next());
+                                 (VariableContainerNode) connectedNodeIterator.next());
     }
   }
   public void setLayoutHorizontal() {
@@ -116,7 +118,7 @@ public class NewConstraintNetworkLayout {
     ListIterator tokenBoxIterator = tokenBoundingBoxes.listIterator();
     double xpos = 0.;
     while(tokenBoxIterator.hasNext()) {
-      TokenBoundingBox box = (TokenBoundingBox) tokenBoxIterator.next();
+      VariableContainerBoundingBox box = (VariableContainerBoundingBox) tokenBoxIterator.next();
       xpos += box.getWidth();
       box.positionNodes(xpos);
     }
@@ -125,7 +127,7 @@ public class NewConstraintNetworkLayout {
     ListIterator tokenBoxIterator = tokenBoundingBoxes.listIterator();
     double ypos = 0.;
     while(tokenBoxIterator.hasNext()) {
-      TokenBoundingBox box = (TokenBoundingBox) tokenBoxIterator.next();
+      VariableContainerBoundingBox box = (VariableContainerBoundingBox) tokenBoxIterator.next();
       ypos += box.getHeight();
       box.positionNodes(ypos);
     }
@@ -135,22 +137,22 @@ public class NewConstraintNetworkLayout {
     public TokenLinkCountComparator() {
     }
     public int compare(Object o1, Object o2) {
-      ConstraintNetworkTokenNode n1 = (ConstraintNetworkTokenNode) o1;
-      ConstraintNetworkTokenNode n2 = (ConstraintNetworkTokenNode) o2;
-      return n2.getTokenLinkCount() - n1.getTokenLinkCount();
+      VariableContainerNode n1 = (VariableContainerNode) o1;
+      VariableContainerNode n2 = (VariableContainerNode) o2;
+      return n2.getContainerLinkCount() - n1.getContainerLinkCount();
     }
     public boolean equals(Object o){return false;}
   }
   
   class SpecificTokenLinkCountComparator implements Comparator {
-    private ConstraintNetworkTokenNode node;
-    public SpecificTokenLinkCountComparator(ConstraintNetworkTokenNode node) {
+    private VariableContainerNode node;
+    public SpecificTokenLinkCountComparator(VariableContainerNode node) {
       this.node = node;
     }
     public int compare(Object o1, Object o2) {
-      ConstraintNetworkTokenNode n1 = (ConstraintNetworkTokenNode) o1;
-      ConstraintNetworkTokenNode n2 = (ConstraintNetworkTokenNode) o2;
-      return n2.getTokenLinkCount(node) - n1.getTokenLinkCount(node);
+      VariableContainerNode n1 = (VariableContainerNode) o1;
+      VariableContainerNode n2 = (VariableContainerNode) o2;
+      return n2.getContainerLinkCount(node) - n1.getContainerLinkCount(node);
     }
     public boolean equals(Object o){return false;}
   }

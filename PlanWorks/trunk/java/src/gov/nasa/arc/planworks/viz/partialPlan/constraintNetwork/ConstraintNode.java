@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.10 2004-01-16 19:05:36 taylor Exp $
+// $Id: ConstraintNode.java,v 1.11 2004-02-17 23:29:17 miatauro Exp $
 //
 // PlanWorks
 //
@@ -298,7 +298,7 @@ public class ConstraintNode extends ExtendedBasicNode {
    *
    * @return - <code>List</code> - of VariableNode
    */
-  public List getVariableNodeList() {
+  public List getVariableNodes() {
     return variableNodeList;
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.40 2004-02-17 19:01:46 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.41 2004-02-17 23:29:16 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -647,11 +647,11 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public boolean addVariableNodes( ConstraintNetworkTokenNode tokenNode) { 
     boolean areNodesChanged = false;
-    if(tokenNode.getVariableNodeList().isEmpty() || 
-       tokenNode.getToken().getVariablesList().size() != tokenNode.getVariableNodeList().size()) {
+    if(tokenNode.getVariableNodes().isEmpty() || 
+       tokenNode.getToken().getVariablesList().size() != tokenNode.getVariableNodes().size()) {
       createVarsAndLinksForToken(tokenNode);
     }
-    Iterator variableNodeItr = tokenNode.getVariableNodeList().iterator();
+    Iterator variableNodeItr = tokenNode.getVariableNodes().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
       if (! variableNode.inLayout()) {
@@ -708,7 +708,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   public boolean addVariableNodes( ConstraintNode constraintNode) {
     boolean areNodesChanged = false;
     createVarNodesAndLinksForConstr(constraintNode);
-    Iterator variableNodeItr = constraintNode.getVariableNodeList().iterator();
+    Iterator variableNodeItr = constraintNode.getVariableNodes().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
       if (! variableNode.inLayout()) {
@@ -733,7 +733,7 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public boolean addVariableToTokenLinks( ConstraintNetworkTokenNode tokenNode) {
     boolean areLinksChanged = false;
-    Iterator variableNodeItr = tokenNode.getVariableNodeList().iterator();
+    Iterator variableNodeItr = tokenNode.getVariableNodes().iterator();
     // System.err.println( "addVariableToTokenLinks: tokenNode " +
     //                     tokenNode.getToken().getId());
     while (variableNodeItr.hasNext()) {
@@ -789,7 +789,7 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public boolean addConstraintToVariableLinks( ConstraintNode constraintNode) {
     boolean areLinksChanged = false;
-    Iterator variableNodeItr = constraintNode.getVariableNodeList().iterator();
+    Iterator variableNodeItr = constraintNode.getVariableNodes().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
       // System.err.println( "  variableNode " + variableNode.getVariable().getId());
@@ -944,8 +944,8 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public boolean removeVariableNodes( ConstraintNetworkTokenNode tokenNode) {
     boolean areNodesChanged = false;
-    Iterator variableNodeItr = tokenNode.getVariableNodeList().iterator();
-    variableNodeItr = tokenNode.getVariableNodeList().iterator();
+    Iterator variableNodeItr = tokenNode.getVariableNodes().iterator();
+    variableNodeItr = tokenNode.getVariableNodes().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
       if (variableNode.inLayout() && (variableNode.getLinkCount() == 0)) {
@@ -988,7 +988,7 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public boolean removeVariableNodes( ConstraintNode constraintNode) {
     boolean areNodesChanged = false;
-    Iterator variableNodeItr = constraintNode.getVariableNodeList().iterator();
+    Iterator variableNodeItr = constraintNode.getVariableNodes().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
       if (variableNode.inLayout() && (variableNode.getLinkCount() == 0)) {
@@ -1060,7 +1060,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   public boolean removeVariableToTokenLinks( ConstraintNetworkTokenNode tokenNode) {
     // System.err.println( "tokenNode " + tokenNode.getToken().getId());
     boolean areLinksChanged = false;
-    Iterator variableItr = tokenNode.getVariableNodeList().iterator();
+    Iterator variableItr = tokenNode.getVariableNodes().iterator();
     while (variableItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableItr.next();
       Iterator varTokLinkItr = variableNode.getVariableTokenLinkList().iterator();
@@ -1136,7 +1136,7 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public boolean removeConstraintToVariableLinks( ConstraintNode constraintNode) {
     boolean areLinksChanged = false;
-    Iterator variableNodeItr = constraintNode.getVariableNodeList().iterator();
+    Iterator variableNodeItr = constraintNode.getVariableNodes().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
       Iterator conVarLinkItr = constraintNode.getConstraintVariableLinkList().iterator();
@@ -1225,7 +1225,7 @@ public class ConstraintNetworkView extends PartialPlanView {
                           constraintNode.getConstraint().getId() +
                           " from variable " + fromVariableNode.getVariable().getId());
     }
-    Iterator conVarItr = constraintNode.getVariableNodeList().iterator();
+    Iterator conVarItr = constraintNode.getVariableNodes().iterator();
     while (conVarItr.hasNext()) {
       VariableNode conVariableNode = (VariableNode) conVarItr.next();
       if ((! conVariableNode.hasBeenVisited()) &&
@@ -1265,7 +1265,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         (ConstraintNetworkTokenNode) tokenNodeIterator.next();
       if (isTokenInContentSpec( tokenNode.getToken())) {
         tokenNode.setVisible( true);
-        Iterator variablesItr = tokenNode.getVariableNodeList().iterator();
+        Iterator variablesItr = tokenNode.getVariableNodes().iterator();
         while (variablesItr.hasNext()) {
           VariableNode variableNode = (VariableNode) variablesItr.next();
           boolean isVariableLinkedToToken =
@@ -1549,7 +1549,7 @@ public class ConstraintNetworkView extends PartialPlanView {
           if(parent.getToken().getId().equals(tokenId)) {
             parent.addTokenNodeVariables(parent, constraintNetworkView);
             parent.setAreNeighborsShown(true);
-            Iterator varIterator = parent.getVariableNodeList().iterator();
+            Iterator varIterator = parent.getVariableNodes().iterator();
             while(varIterator.hasNext()) {
               VariableNode variableNode = (VariableNode) varIterator.next();
               if(variableNode.getVariable().getId().equals(variableToFind.getId())) {
@@ -1585,7 +1585,7 @@ public class ConstraintNetworkView extends PartialPlanView {
             variableNode = getVariableNodeInLayout( constraintNode);
             if (variableNode == null) {
               variableNode = 
-                (VariableNode) constraintNode.getVariableNodeList().get( 0);
+                (VariableNode) constraintNode.getVariableNodes().get( 0);
             }
             System.err.println( "ConstraintNetworkView found variable: " +
                                 variableNode.getVariable().getDomain().toString() +
@@ -1640,7 +1640,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     } // end getOpenTokenNode
 
     private VariableNode getVariableNodeInLayout( ConstraintNode constraintNode) {
-      Iterator variableNodeItr = constraintNode.getVariableNodeList().iterator();
+      Iterator variableNodeItr = constraintNode.getVariableNodes().iterator();
       while (variableNodeItr.hasNext()) {
         VariableNode variableNode = (VariableNode) variableNodeItr.next();
         if (variableNode.inLayout()) {

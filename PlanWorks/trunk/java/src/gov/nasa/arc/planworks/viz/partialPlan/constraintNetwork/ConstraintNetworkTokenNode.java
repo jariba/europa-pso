@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.13 2004-02-13 21:23:27 miatauro Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.14 2004-02-17 23:29:16 miatauro Exp $
 //
 // PlanWorks
 //
@@ -179,7 +179,7 @@ public class ConstraintNetworkTokenNode extends TokenNode {
    *
    * @return - <code>List</code> - of VariableNode
    */
-  public List getVariableNodeList() {
+  public List getVariableNodes() {
     return variableNodeList;
   }
 
