@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.63 2003-10-07 02:13:33 taylor Exp $
+// $Id: PlanWorks.java,v 1.64 2003-10-07 20:18:45 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -473,7 +473,7 @@ public class PlanWorks extends MDIDesktopFrame {
       seqMenu.addSeparator();
       try {
         Iterator ppNamesItr =
-          project.getPlanningSequence( seqUrl).listPartialPlanNames().iterator();
+          project.getPlanningSequence( seqUrl).getPartialPlanNamesList().iterator();
         while (ppNamesItr.hasNext()) {
           String partialPlanName = (String) ppNamesItr.next();
           //System.err.println( "    partialPlanName " + partialPlanName);

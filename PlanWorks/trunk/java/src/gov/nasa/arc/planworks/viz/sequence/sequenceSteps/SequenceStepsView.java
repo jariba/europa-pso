@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.3 2003-10-07 02:13:35 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.4 2003-10-07 20:19:55 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -226,10 +226,10 @@ public class SequenceStepsView extends SequenceView {
 
   private void renderHistogram() {
     System.err.println( "stepCount " + planSequence.getStepCount());
-    System.err.println( "stepNumbers " + planSequence.listPartialPlanNames());
+    System.err.println( "stepNumbers " + planSequence.getPartialPlanNamesList());
     
     int x = ViewConstants.STEP_VIEW_X_INIT, y = ViewConstants.STEP_VIEW_Y_INIT;
-    Iterator stepItr = planSequence.listPartialPlanNames().iterator();
+    Iterator stepItr = planSequence.getPartialPlanNamesList().iterator();
     while (stepItr.hasNext()) {
       String partialPlanName = (String) stepItr.next();
       int stepNumber = Integer.parseInt( partialPlanName.substring( 4)); // discard prefix "step"
@@ -237,7 +237,7 @@ public class SequenceStepsView extends SequenceView {
       List transactionList = null;
       try {
         partialPlan = planSequence.getPartialPlan( partialPlanName);
-        transactionList = planSequence.listTransactions( stepNumber);
+        transactionList = planSequence.getTransactionsList( stepNumber);
         System.err.println( "stepNum " + stepNumber);
         if (transactionList != null) {
           System.err.println( "transactionList size " + transactionList.size());
