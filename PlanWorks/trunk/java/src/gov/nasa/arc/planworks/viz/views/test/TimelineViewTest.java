@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: TimelineViewTest.java,v 1.8 2003-06-02 18:57:04 miatauro Exp $
+//
 package gov.nasa.arc.planworks.viz.views.test;
 
 import java.awt.Color;
