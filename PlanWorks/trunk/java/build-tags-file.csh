@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.55 2004-02-03 20:43:41 taylor Exp $
+# $Id: build-tags-file.csh,v 1.56 2004-02-10 02:35:51 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -131,6 +131,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
     src/gov/nasa/arc/planworks/viz/nodes/QueryResultField.java \
+    src/gov/nasa/arc/planworks/viz/nodes/ResourceNameNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenQueryHeaderNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/VariableQueryHeaderNode.java \
@@ -164,6 +165,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfile.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfileView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/resourceProfile/ResourceProfileViewState.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionSet.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/resourceTransaction/ResourceTransactionViewState.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentViewState.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNode.java \
@@ -193,8 +197,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/VariableQueryView.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionComparatorAscending.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionComparatorDescending.java \
-    src/gov/nasa/arc/planworks/viz/util/JGoButton.java \
     src/gov/nasa/arc/planworks/viz/util/SortStringComparator.java \
+    src/gov/nasa/arc/planworks/viz/util/StepButton.java \
     src/gov/nasa/arc/planworks/viz/util/TokenQueryComparatorAscending.java \
     src/gov/nasa/arc/planworks/viz/util/TokenQueryComparatorDescending.java \
     src/gov/nasa/arc/planworks/viz/util/VariableQueryComparatorAscending.java \

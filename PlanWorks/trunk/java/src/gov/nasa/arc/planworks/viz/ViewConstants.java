@@ -320,4 +320,10 @@ public interface ViewConstants {
    */
   public static final int RESOURCE_LEVEL_SCALE_WIDTH_OFFSET = 5;
 
+  /**
+   * constant <code>RESOURCE_TRANSACTION_HEIGHT</code>
+   *
+   */
+  public static final int RESOURCE_TRANSACTION_HEIGHT = 10;
+
 } // end ViewConstants

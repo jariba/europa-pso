@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: checkstyle.xml,v 1.1 2004-02-03 20:43:41 taylor Exp $ -->
+<!-- $Id: checkstyle.xml,v 1.2 2004-02-10 02:35:52 taylor Exp $ -->
 
 <!DOCTYPE module PUBLIC
     "-//Puppy Crawl//DTD Check Configuration 1.1//EN"
@@ -149,7 +149,7 @@
         <!-- Checks for blocks. You know, those {}'s         -->
         <!-- See http://checkstyle.sf.net/config_blocks.html -->
         <module name="AvoidNestedBlocks"/>
-        <module name="EmptyBlock"/>
+        <!-- module name="EmptyBlock"/ -->
         <module name="LeftCurly"/>
         <module name="NeedBraces"/>
         <module name="RightCurly"/>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.33 2004-02-05 23:24:56 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.34 2004-02-10 02:35:54 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -51,6 +51,7 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -89,7 +90,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 public class ConstraintNetworkView extends PartialPlanView {
 
   private static final int SET_VISIBLE = 1;
-  private static final int VIEW_HEIGHT = 250;
+  private static final int VIEW_HEIGHT = 275;
 
   public static final double HORIZONTAL_CONSTRAINT_BAND_Y = 50.;
   public static final double HORIZONTAL_VARIABLE_BAND_Y = 150.;
@@ -104,6 +105,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 
   private long startTimeMSecs;
   private ViewSet viewSet;
+  private MDIInternalFrame viewFrame;
   private ConstraintJGoView jGoView;
   private JGoDocument document;
   private Map tokenNodeMap;
@@ -117,6 +119,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   private PartialPlanViewState s;
   private JGoArea focusNode; // ConstraintNetworkTokenNode/ConstraintNode/VariableNode
   private NewConstraintNetworkLayout newLayout;
+  private boolean isStepButtonView;
 
   /**
    * <code>ConstraintNetworkView</code> - constructor -
@@ -130,6 +133,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
     constraintNetworkViewInit(viewSet);
     s = null;
+    isStepButtonView = false;
     SwingUtilities.invokeLater( runInit);
   } // end constructor
 
@@ -137,6 +141,7 @@ public class ConstraintNetworkView extends PartialPlanView {
                                PartialPlanViewState s) {
     super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
     constraintNetworkViewInit(viewSet);
+    isStepButtonView = true;
     //setState(s);
     this.s = s;
     SwingUtilities.invokeLater( runInit);
@@ -255,8 +260,6 @@ public class ConstraintNetworkView extends PartialPlanView {
     // setVisible( true | false) depending on ContentSpec
     setNodesLinksVisible();
 
-
-
     double maxTokenWidth = 0.;
     Iterator tokenIterator = tokenNodeMap.values().iterator();
     while(tokenIterator.hasNext()) {
@@ -268,23 +271,25 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
     }
 
-    
     VERTICAL_TOKEN_BAND_X = (maxTokenWidth / 2) + NODE_SPACING;
     VERTICAL_VARIABLE_BAND_X = VERTICAL_TOKEN_BAND_X + VERTICAL_BAND_DISTANCE;
     VERTICAL_CONSTRAINT_BAND_X = VERTICAL_VARIABLE_BAND_X + VERTICAL_BAND_DISTANCE;
 
-
-
     newLayout.performLayout();
 
+    viewFrame = viewSet.openView( this.getClass().getName());
     Rectangle documentBounds = jGoView.getDocument().computeBounds();
     jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
                                            (ViewConstants.TIMELINE_VIEW_X_INIT * 2),
                                            (int) documentBounds.getHeight() +
                                            (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
-    expandViewFrame( viewSet.openView( this.getClass().getName()),
-                     (int) jGoView.getDocumentSize().getWidth(), VIEW_HEIGHT);
- 
+    if (! isStepButtonView) {
+      expandViewFrame( viewFrame, (int) jGoView.getDocumentSize().getWidth(), VIEW_HEIGHT);
+    }
+    addStepButtons( jGoView);
+    if (! isStepButtonView) {
+      expandViewFrameForStepButtons( viewFrame);
+    }
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
@@ -292,8 +297,6 @@ public class ConstraintNetworkView extends PartialPlanView {
     isLayoutNeeded = false;
     focusNode = null;
 
-    addStepButtons(jGoView);
-    
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
@@ -1393,7 +1396,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       createChangeLayoutItem(changeLayoutItem);
       mouseRightPopup.add(changeLayoutItem);
 
-      if (areThereNavigatorWindows()) {
+      if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
         mouseRightPopup.addSeparator();
         JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
         createCloseNavigatorWindowsItem( closeWindowsItem);

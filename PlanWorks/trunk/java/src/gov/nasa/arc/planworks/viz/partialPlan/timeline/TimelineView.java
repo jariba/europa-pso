@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.35 2004-02-05 23:25:54 miatauro Exp $
+// $Id: TimelineView.java,v 1.36 2004-02-10 02:35:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -46,6 +46,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -73,6 +74,7 @@ public class TimelineView extends PartialPlanView {
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
+  private MDIInternalFrame viewFrame;
   private TimelineJGoView jGoView;
   private JGoDocument jGoDocument;
   // timelineNodeList & tmpTimelineNodeList used by JFCUnit test case
@@ -82,6 +84,7 @@ public class TimelineView extends PartialPlanView {
   private int slotLabelMinLength;
   private JGoArea mouseOverNode;
   private boolean isAutoSnapEnabled;
+  private boolean isStepButtonView;
 
   /**
    * <code>TimelineView</code> - constructor - 
@@ -94,12 +97,14 @@ public class TimelineView extends PartialPlanView {
   public TimelineView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     timelineViewInit( (PwPartialPlan) partialPlan, viewSet);
+    isStepButtonView = false;
     SwingUtilities.invokeLater( runInit);
   } // end constructor
 
   public TimelineView(ViewableObject partialPlan, ViewSet viewSet, PartialPlanViewState s) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     timelineViewInit( (PwPartialPlan) partialPlan, viewSet);
+    isStepButtonView = true;
     setState(s);
     SwingUtilities.invokeLater( runInit);
     
@@ -156,18 +161,23 @@ public class TimelineView extends PartialPlanView {
     // create all nodes
     boolean isValid = renderTimelineAndSlotNodes();
     if (isValid) {
-      expandViewFrame( viewSet.openView( this.getClass().getName()),
-                       (int) jGoView.getDocumentSize().getWidth(),
-                       (int) jGoView.getDocumentSize().getHeight());
-
+      viewFrame = viewSet.openView( this.getClass().getName());
+      if (! isStepButtonView) {
+        expandViewFrame( viewFrame, (int) jGoView.getDocumentSize().getWidth(),
+                         (int) jGoView.getDocumentSize().getHeight());
+      }
       // print out info for created nodes
       // iterateOverJGoDocument(); // slower - many more nodes to go thru
       // iterateOverNodes();
 
+      addStepButtons( jGoView);
+      if (! isStepButtonView) {
+        expandViewFrameForStepButtons( viewFrame);
+      }
+
       long stopTimeMSecs = System.currentTimeMillis();
       System.err.println( "   ... elapsed time: " +
                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
-      addStepButtons(jGoView);
       jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
     } else {
       try {
@@ -197,7 +207,10 @@ public class TimelineView extends PartialPlanView {
 
     public void run() {
       renderTimelineAndSlotNodes();
-      addStepButtons(jGoView);
+      addStepButtons( jGoView);
+      if (! isStepButtonView) {
+        expandViewFrameForStepButtons( viewFrame);
+      }
     } //end run
 
   } // end class RedrawViewThread
@@ -650,7 +663,7 @@ public class TimelineView extends PartialPlanView {
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
-    if (areThereNavigatorWindows()) {
+    if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);

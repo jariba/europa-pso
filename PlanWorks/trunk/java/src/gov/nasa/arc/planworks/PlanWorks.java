@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.83 2004-02-03 20:43:44 taylor Exp $
+// $Id: PlanWorks.java,v 1.84 2004-02-10 02:35:52 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -77,14 +77,15 @@ public class PlanWorks extends MDIDesktopFrame {
   protected static final String OPEN = "open";
 
   public static final String PLANSEQ_MENU = "Planning Sequence";
-  public static final String CONSTRAINT_NETWORK_VIEW = "Constraint Network View";
-  public static final String TEMPORAL_EXTENT_VIEW    = "Temporal Extent View";
-  public static final String TEMPORAL_NETWORK_VIEW   = "Temporal Network View";
-  public static final String TIMELINE_VIEW           = "Timeline View";
-  public static final String TOKEN_NETWORK_VIEW      = "Token Network View";
-  public static final String DB_TRANSACTION_VIEW     = "DB Transaction View";
-  public static final String NAVIGATOR_VIEW          = "Navigator View";
-  public static final String RESOURCE_PROFILE_VIEW    = "Resource Profile View";
+  public static final String CONSTRAINT_NETWORK_VIEW   = "Constraint Network View";
+  public static final String TEMPORAL_EXTENT_VIEW      = "Temporal Extent View";
+  public static final String TEMPORAL_NETWORK_VIEW     = "Temporal Network View";
+  public static final String TIMELINE_VIEW             = "Timeline View";
+  public static final String TOKEN_NETWORK_VIEW        = "Token Network View";
+  public static final String DB_TRANSACTION_VIEW       = "DB Transaction View";
+  public static final String NAVIGATOR_VIEW            = "Navigator View";
+  public static final String RESOURCE_PROFILE_VIEW     = "Resource Profile View";
+  public static final String RESOURCE_TRANSACTION_VIEW = "Resource Transaction View";
   public static final List PARTIAL_PLAN_VIEW_LIST;
 
   public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
@@ -125,6 +126,10 @@ public class PlanWorks extends MDIDesktopFrame {
     VIEW_CLASS_NAME_MAP.put
       ( RESOURCE_PROFILE_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView");
+    VIEW_CLASS_NAME_MAP.put
+      ( RESOURCE_TRANSACTION_VIEW,
+        "gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView");
+    // not in map, since it is created from nodes in views, not from other views
 //     VIEW_CLASS_NAME_MAP.put
 //       ( NAVIGATOR_VIEW,
 //         "gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView");
@@ -132,13 +137,15 @@ public class PlanWorks extends MDIDesktopFrame {
     VIEW_CLASS_NAME_MAP.put
       ( SEQUENCE_STEPS_VIEW,
         "gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView");
-    VIEW_CLASS_NAME_MAP.put
-      ( MODEL_RULES_VIEW,
-        "gov.nasa.arc.planworks.viz.sequence.modelRules.ModelRulesView");
+    // not implemented yet
+//     VIEW_CLASS_NAME_MAP.put
+//       ( MODEL_RULES_VIEW,
+//         "gov.nasa.arc.planworks.viz.sequence.modelRules.ModelRulesView");
 
     PARTIAL_PLAN_VIEW_LIST = new ArrayList();
     PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_TRANSACTION_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
@@ -148,7 +155,8 @@ public class PlanWorks extends MDIDesktopFrame {
 
     SEQUENCE_VIEW_LIST = new ArrayList();
     SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);
-    SEQUENCE_VIEW_LIST.add( MODEL_RULES_VIEW);
+    // not implemented yet
+    // SEQUENCE_VIEW_LIST.add( MODEL_RULES_VIEW);
   }
 
   /**
