@@ -22,7 +22,7 @@ public class MDIDesktopFrame extends JFrame
 	menuBar = new MDIDynamicMenuBar();
 	windowBar = new MDIWindowButtonBar(30, 80);
 	desktopPane = new MDIDesktopPane();
-	contentPane.add(menuBar, BorderLayout.NORTH);
+	// contentPane.add(menuBar, BorderLayout.NORTH);
 	contentPane.add(desktopPane, BorderLayout.CENTER);
 	contentPane.add(windowBar, BorderLayout.SOUTH);
 	setJMenuBar(menuBar);
@@ -38,7 +38,7 @@ public class MDIDesktopFrame extends JFrame
 	menuBar = new MDIDynamicMenuBar(constantMenus, true);
 	windowBar = new MDIWindowButtonBar(30, 80);
 	desktopPane = new MDIDesktopPane();
-	contentPane.add(menuBar, BorderLayout.NORTH);
+	// contentPane.add(menuBar, BorderLayout.NORTH);
 	contentPane.add(desktopPane, BorderLayout.CENTER);
 	contentPane.add(windowBar, BorderLayout.SOUTH);
 	setJMenuBar(menuBar);
@@ -105,19 +105,5 @@ public class MDIDesktopFrame extends JFrame
 	desktopPane.add(newFrame);
 	newFrame.setVisible(true);
 	return newFrame;
-    }
-    class MDIDesktopPane extends JDesktopPane
-    {
-	public MDIDesktopPane()
-	{
-	    super();
-	    setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-	    UIDefaults defaults = UIManager.getDefaults();
-	    defaults.put("DesktopIconUI", "EmptyDesktopIconUI");
-	    //   setDesktopManager(new MDIDesktopManager());
-	}
-	//class MDIDesktopManager extends DesktopManager
-	//{
-	//}
     }
 }

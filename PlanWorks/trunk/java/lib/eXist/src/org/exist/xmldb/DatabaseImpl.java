@@ -104,7 +104,7 @@ public class DatabaseImpl implements Database {
     private void configure() throws XMLDBException {
         //String pathSep = System.getProperty( "file.separator", "/" );
         //wmt String home, file = "conf.xml";
-        String home, file = System.getProperty( "exist.conf.xml");
+        String home, file = System.getProperty( "exist.conf.file");
         if(configuration == null) {
         	home = System.getProperty( "exist.home" );
         	if ( home == null )

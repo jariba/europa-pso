@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.5 2003-06-02 17:49:58 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.6 2003-06-08 00:14:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -27,6 +27,13 @@ public interface PwPartialPlan {
 
   // constructor retrieves partial plan from XML:DB and
   // builds Java data structure
+
+  /**
+   * <code>getUrl</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getUrl();
 
   /**
    * <code>getCollectionName</code>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.7 2003-06-02 17:49:59 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.8 2003-06-08 00:14:08 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -301,6 +301,21 @@ public class XmlDBeXist {
 
 
   /**
+   * <code>closeDataBase</code>
+   *
+   */
+  public static void closeDataBase() {
+    try {
+      currentCollection.close();
+    } catch (XMLDBException excp) {
+      System.err.println("XML:DB Exception in closeDataBase: " +
+                         excp.errorCode + " " + excp.getMessage());
+      excp.printStackTrace();
+      System.exit( 1);
+    }
+  } // end closeDataBase
+
+  /**
    * <code>createCollection</code>
    *
    * @param collectionName - <code>String</code> - 
@@ -373,24 +388,29 @@ public class XmlDBeXist {
    * @param collectionName - <code>String</code> - 
    */
   public static void removeCollection( String collectionName) {
-    if (collectionName.startsWith( ROOT_COLLECTION_NAME)) {
-      // remove /db if specified
-      collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
+    if (collectionName.equals( ROOT_COLLECTION_NAME)) {
+      System.err.println( "removeCollection will not remove collection " +
+                          collectionName);
+      return;
     }
+    changeCurrentCollection( collectionName);
+    System.err.println( "Removing Collection ...");
     try {
+      List collectionNameList = new ArrayList();
+      removeCollectionResources( currentCollection, collectionNameList);
       Collection root = DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME,
                                                        USER, PASSWORD);
       CollectionManagementService mgtService = 
         (CollectionManagementService)
         root.getService( "CollectionManagementService", "1.0");
-      String printStr = "Removed Collection " + ROOT_COLLECTION_NAME + collectionName;
-      System.err.println( printStr);
-//       mgtService.removeCollection( ROOT_COLLECTION_NAME + collectionName);
-      mgtService.removeCollection( collectionName);
+      for (int i = collectionNameList.size() - 1; i >= 0; i--) {
+        mgtService.removeCollection( (String) collectionNameList.get( i));
+      }
       // reset current collection
       currentCollection =
         DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME,
                                        USER, PASSWORD);
+      currentCollectionName = ROOT_COLLECTION_NAME;
     } catch (XMLDBException excp) {
       System.err.println("XML:DB Exception in removeCollection: " +
                          excp.errorCode + " " + excp.getMessage());
@@ -398,6 +418,36 @@ public class XmlDBeXist {
       System.exit( 1);
     }
   } // end removeCollection
+
+  // recursively descend thru child collections, removing resources
+  private static void removeCollectionResources( Collection collection,
+                                                 List collectionNameList) {
+    try {
+      System.err.println( "  name " + collection.getName());
+      collectionNameList.add( collection.getName());
+      String[] resourceIds = collection.listResources();
+      for (int i = 0, n = collection.getResourceCount(); i < n; i++) {
+        String id = resourceIds[i];
+        System.err.println( "    resource " + id);
+        collection.removeResource( collection.getResource( id));
+      }
+      String[] childCollectionIds = collection.listChildCollections();
+      if (childCollectionIds.length == 0) {
+        return;
+      } else {
+        for (int i = 0, n = collection.getChildCollectionCount(); i < n; i++) {
+          String id = childCollectionIds[i];
+          removeCollectionResources( collection.getChildCollection( id),
+                                     collectionNameList);
+        }
+      }
+    } catch (XMLDBException excp) {
+      System.err.println("XML:DB Exception in removeCollectionResources: " +
+                         excp.errorCode + " " + excp.getMessage());
+      excp.printStackTrace();
+      System.exit( 1);
+    }
+  } // removeCollectionResources
 
   /**
    * <code>addXMLFileToCollection</code>
@@ -438,6 +488,64 @@ public class XmlDBeXist {
     }
   } // end addXMLFileToCollection
 
+  /**
+   * <code>changeCurrrentCollection</code>
+   *
+   * @param collectionName - <code>String</code> - 
+   */
+  public static void changeCurrentCollection( String collectionName) {
+    if (collectionName.startsWith( ROOT_COLLECTION_NAME)) {
+      // remove /db if specified
+      collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
+    }
+    if (! currentCollectionName.equals( collectionName)) {
+      try {
+        currentCollection.close();
+      } catch (XMLDBException ex) {
+        System.err.println( "changeCurrrentCollection: closing currentCollection" +
+                            ex.errorCode + " " + ex.getMessage());
+        ex.printStackTrace();
+        System.exit( 1);
+      }
+      try {
+        Collection collection = 
+          DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME + collectionName,
+                                         USER, PASSWORD);
+        if (collection == null) {
+          System.err.println( "changeCurrrentCollection: collection " + URI +
+                              ROOT_COLLECTION_NAME + collectionName + " not found");
+          System.exit( 1);
+        } else {
+          currentCollection = collection;
+          currentCollectionName = collectionName;
+        }
+      } catch (XMLDBException ex) {
+        System.err.println( "changeCurrrentCollection: getCollection" +
+                            ex.errorCode + " " + ex.getMessage());
+        ex.printStackTrace();
+        System.exit( 1);
+      }
+    }
+  } // end changeCurrentCollection
+
+  /**
+   * <code>getCollection</code> - returns null if collectionName does not exist
+   *
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>Collection</code>
+   */
+  public static Collection getCollection(  String collectionName) {
+    try {
+      return DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME +
+                                            collectionName, USER, PASSWORD);
+    } catch (XMLDBException ex) {
+      System.err.println( "getCollection: DatabaseManager.getCollection" +
+                          ex.errorCode + " " + ex.getMessage());
+      ex.printStackTrace();
+      System.exit( 1);
+    }
+    return null;
+  } // end getCollection
 
   /**
    * <code>queryCollection</code>
@@ -447,31 +555,9 @@ public class XmlDBeXist {
    * @return nodeContentList - <code>List of ParsedDomNode</code> - 
    */
   public static List queryCollection( String collectionName, String query) {
-    if (collectionName.startsWith( ROOT_COLLECTION_NAME)) {
-      // remove /db if specified
-      collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
-    }
+    changeCurrentCollection( collectionName);
     try {
-      if (! currentCollectionName.equals( collectionName)) {
-        try {
-          currentCollection.close();
-        } catch (XMLDBException ex) {
-          System.err.println( "queryCollection: closing currentCollection" +
-                              ex.errorCode + " " + ex.getMessage());
-          ex.printStackTrace();
-          return null;
-        }
-        currentCollection = 
-          DatabaseManager.getCollection( URI + ROOT_COLLECTION_NAME + collectionName,
-                                         USER, PASSWORD);
-        currentCollectionName = collectionName;
-        if (currentCollection == null) {
-          System.err.println( "queryCollection: collection " + URI +
-                              ROOT_COLLECTION_NAME + collectionName + " not found");
-          return (new ArrayList());
-        }
-      }
-      // System.err.println( "Query: " + query);
+      // System.err.println( "Query: collectionName " + collectionName + " query " + query);
       XPathQueryService queryService =
         (XPathQueryService) currentCollection.getService( "XPathQueryService", "1.0");
       queryService.setProperty( "pretty", "true");
@@ -568,7 +654,8 @@ public class XmlDBeXist {
 
 
   static class ParsedDomNode {
-
+    // static => do not have to instantiate the outer class, to instantiate this class
+    //           members of this class cannot access members of the outer class
     private Short nodeType;
     private String nodeName;
     private String nodeValue;
@@ -799,6 +886,7 @@ public class XmlDBeXist {
         } else if (nodeName.equals( TOKEN_ELEMENT)) {
           currentNodeName = TOKEN_ELEMENT; tokenAttributeList = new ArrayList();
         } else {
+          // System.err.println( "nodeName not handled: " + nodeName);
           currentNodeName = "";
         }
       } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {

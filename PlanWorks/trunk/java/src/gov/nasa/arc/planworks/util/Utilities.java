@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.1 2003-05-21 23:48:36 taylor Exp $
+// $Id: Utilities.java,v 1.2 2003-06-08 00:14:08 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,11 +46,11 @@ public class Utilities {
     Point location = null;
     while (container != null) {
       location = container.getLocation();
-      System.err.println( "locationX " + location.x + " locationY " + location.y);
+      // System.err.println( "locationX " + location.x + " locationY " + location.y);
       container = container.getParent();
       if (isLocationAbsolute || ((!isLocationAbsolute) && (container != null))) {
         currentLocation.translate( location.x, location.y);
-        System.err.println( "currentLocation " + currentLocation);
+        // System.err.println( "currentLocation " + currentLocation);
       }
     }
     return currentLocation;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.5 2003-06-02 17:49:58 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.6 2003-06-08 00:14:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -41,22 +41,21 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   private int stepCount;
   private List partialPlans; // List of of PwPartialPlan
   private List transactions; // List of List of PwTransaction
-  private String sequenceName;
-  private String[] xmlFileNames;
+  private String name;
+  private List partialPlanNames; // List of String
 
   /**
-   * <code>PwPlanningSequenceImpl</code> - constructor -
+   * <code>PwPlanningSequenceImpl</code> - constructor - for CreateProject
    *
    * @param url - <code>String</code> - pathname of planning sequence
-   * @param projectName - <code>String</code> - 
-   * @param model - <code>PwModel</code> - 
-   * @param isInDb - <code>boolean</code> - 
+   * @param project - <code>PwProjectImpl</code> - 
+   * @param model - <code>PwModelImpl</code> - 
+   * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPlanningSequenceImpl( String url, String projectName, PwModel model,
-                                 boolean isInDb)
+  public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException {
     this.url = url;
-    this.projectName = projectName;
+    this.projectName = project.getName();
     this.model = model;
     stepCount = 0;
     partialPlans = new ArrayList();
@@ -67,22 +66,63 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
       throw new ResourceNotFoundException( "sequence url '" + url +
                                            "' cannot be parsed for '/'");
     } 
-    sequenceName = url.substring( index + 1);
+    name = url.substring( index + 1);
 
     // determine sequences's partial plans (steps)
-    xmlFileNames = new File( url).list( new XmlFilenameFilter());
+    String[] xmlFileNames = new File( url).list( new XmlFilenameFilter());
+    partialPlanNames = new ArrayList();
     for (int i = 0; i < xmlFileNames.length; i++) {
       String xmlFileName = xmlFileNames[i];
-      System.err.println( "PwPlanningSequenceImpl xmlFileName: " + xmlFileName);
-      partialPlans.add( new PwPartialPlanImpl( url + "/" + xmlFileName, projectName,
-                                               sequenceName, isInDb));
       stepCount++;
+      index = xmlFileName.lastIndexOf( ".");
+      partialPlanNames.add( xmlFileName.substring( 0, index));
     }
     if (xmlFileNames.length == 0) {
       throw new ResourceNotFoundException( "sequence url '" + url +
                                            "' does not have any xml files");
     }
-  } // end constructor
+    for (int i = 0; i < stepCount; i++) {
+      partialPlans.add( null);
+    }
+    // put these in PwProjectImpl so that its XMLDecode/Encode can access them
+    project.addPartialPlanNames( partialPlanNames);
+  } // end constructor for CreateProject call
+
+
+  /**
+   * <code>PwPlanningSequenceImpl</code> - constructor - for OpenProject
+   *
+   * @param url - <code>String</code> - pathname of planning sequence
+   * @param project - <code>PwProjectImpl</code> - 
+   * @param model - <code>PwModelImpl</code> - 
+   * @param partialPlanNames - <code>List</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   */
+  public PwPlanningSequenceImpl( String url, PwProjectImpl project,
+                                 PwModelImpl model, List partialPlanNames)
+    throws ResourceNotFoundException {
+    this.url = url;
+    this.projectName = project.getName();
+    this.model = model;
+    this.partialPlanNames = partialPlanNames;
+    partialPlans = new ArrayList();
+    transactions = new ArrayList();
+
+    int index = url.lastIndexOf( "/");
+    if (index == -1) {
+      throw new ResourceNotFoundException( "sequence url '" + url +
+                                           "' cannot be parsed for '/'");
+    } 
+    name = url.substring( index + 1);
+    stepCount = this.partialPlanNames.size();
+    for (int i = 0; i < stepCount; i++) {
+      partialPlans.add( null);
+    }
+  } // end constructor for OpenProject call
+
+
+
+  // IMPLEMENT INTERFACE ////////////////
 
 
   /**
@@ -104,21 +144,21 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   }
 
   /**
+   * <code>getName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
    * <code>getModel</code>
    *
    * @return - <code>PwModel</code> - 
    */
   public PwModel getModel() {
     return model;
-  }
-
-  /**
-   * <code>getSequenceName</code>
-   *
-   * @return - <code>String/code> - 
-   */
-  public String getSequenceName() {
-    return sequenceName;
   }
 
   /**
@@ -153,18 +193,31 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
   } // end getPartialPlan
 
   /**
-   * <code>addPartialPlan</code>
+   * <code>addPartialPlan</code> -
+   *          maintain PwPartialPlanImpl instance ordering of partialPlanNames
    *
-   * @param partialPlan - <code>PwPartialPlanImpl</code> - 
-   * @param transactionList - <code>List</code> - of PwTransactionImpl
-   * @return - <code>int</code> - length of partial plan set
+   * @param url - <code>String</code> - 
+   * @param partialPlanName - <code>String</code> - 
+   * @exception ResourceNotFoundException if an error occurs
    */
-  public int addPartialPlan( PwPartialPlanImpl partialPlan, List transactionList) {
-    partialPlans.add( partialPlan);
-    transactions.add( transactionList);
-    stepCount++;
-    return partialPlans.size();
-  } //end addPartialPlan
+  public PwPartialPlan addPartialPlan( String url, String partialPlanName)
+    throws ResourceNotFoundException {
+    for (int index = 0, n = partialPlanNames.size(); index < n; index++) {
+      if (((String) partialPlanNames.get( index)).equals( partialPlanName)) {
+        PwPartialPlan partialPlan =
+          new PwPartialPlanImpl( url + "/" + partialPlanName + ".xml",
+                                 projectName, name);
+        partialPlans.set( index, partialPlan);
+        return partialPlan;
+      }
+    }
+    return null;
+  } // end addPartialPlan
+
+
+  // END INTERFACE IMPLEMENTATION ///////////////////
+
+
 
 
 } // end class PwPlanningSequenceImpl

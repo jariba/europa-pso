@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.4 2003-05-18 00:02:25 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.5 2003-06-08 00:14:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,6 +43,13 @@ public interface PwPlanningSequence {
   public String getUrl();
 
   /**
+   * <code>getName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getName();
+
+  /**
    * <code>getModel</code>
    *
    * @return - <code>PwModel</code> - 
@@ -67,5 +74,17 @@ public interface PwPlanningSequence {
    */
   public PwPartialPlan getPartialPlan( int step) throws IndexOutOfBoundsException;
 
+
+  /**
+   * <code>addPartialPlan</code> -
+   *          maintain PwPartialPlanImpl instance ordering of partialPlanNames
+   *
+   * @param url - <code>String</code> - 
+   * @param partialPlanName - <code>String</code> - 
+   * @return - <code>PartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   */
+  public PwPartialPlan addPartialPlan( String url, String partialPlanName)
+    throws ResourceNotFoundException ;
 
 } // end interface PwPlanningSequence

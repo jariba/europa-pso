@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE PartialPlan SYSTEM 'PlanDb.dtd'>
+<!DOCTYPE PartialPlan SYSTEM '../../dtd/PlanDb.dtd'>
 
 <PartialPlan key="K1" model="monkey.ddl">
 	<Object key="K2" name="Monkey1">
