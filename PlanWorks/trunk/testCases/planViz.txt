@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.21 2003-12-22 20:51:26 miatauro Exp $
+// $Id: planViz.txt,v 1.22 2003-12-30 01:16:50 miatauro Exp $
 //
 // PlanWorks
 //
@@ -657,38 +657,32 @@ Pre-conditions:
 Method:
   1. Open a view that is not the "Transaction View" for a plan step that is neither the first nor
   the last step.
-  2. Right-click on the background of the view.
-  3. Select "Step forward".
-  4. Right-click on the background of the view.
-  5. Select "Step backward".
-  6. Open the "Overview Window" for the view.
-  7. Right-click on the background of the view.
-  8. Select "Step forward".
-  9. Right-click on the background of the view.
-  10. Select "Step backward".
-  11. Open a view for the first step.
-  12. Select "Step backward".
-  13. Open a view for the last step.
-  14. Select "Step forward".
+  2. Click on the "Step forward" button.
+  3. Click on the "Step backward" button.
+  4. Open the "Overview Window" for the view.
+  5. Click on the "Step forward" button.
+  6. Click on the "Step backward" button.
+  7. Open a view for the first step.
+  8. Click on the "Step backward" button.
+  9. Open a view for the last step.
+  10. Click on the "Step forward" button.
 Post-conditions:
   1. Method:1 - The selected view is visible and correct.
-  2. Method:2,4,7,9 - The Partial Plan View popup menu is visible with the items "Step forward",
-  "Step backward", and "Overview Window".
-  3. Method:3 - The view is replaced with the same view of the next step in the same position with
+  2. Method:2 - The view is replaced with the same view of the next step in the same position with
   possibly different size.
-  4. Method:5 - The view is replaces with the same fiew of the step that was originally opened.
-  5. Method:6 - The "Overview Window" for the view is visible and correct.
-  6. Method:8 - The view is replaced with the same view of the next step in the same position with
+  3. Method:3 - The view is replaces with the same fiew of the step that was originally opened.
+  4. Method:4 - The "Overview Window" for the view is visible and correct.
+  5. Method:5 - The view is replaced with the same view of the next step in the same position with
   possibly different size and the "Overview Window" is replaced with an "Overview Window" of the 
   next step.
-  7. Method:10 - The view is replaced with the same view of the previous step in the same position
+  6. Method:6 - The view is replaced with the same view of the previous step in the same position
   with possibly different size and the "Overview Window" is replaced with an "Overview Window" of
   the previous step.
-  8. Method:11 - The selected view of the first step is visible and correct.
-  9. Method:12 - An error dialog indicating that an attempt was made to move to a step previous to
+  7. Method:7 - The selected view of the first step is visible and correct.
+  8. Method:8 - An error dialog indicating that an attempt was made to move to a step previous to
   the first was made.
-  10. Method:13 - The selected view of the last step is visible and correct.
-  11. Method:14 - An error dialog indicating that an attempt was made to move to a step after the 
+  9. Method:9 - The selected view of the last step is visible and correct.
+  10. Method:10 - An error dialog indicating that an attempt was made to move to a step after the 
   last was made.
 
 Requirements: N/A

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.11 2003-12-30 00:38:34 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.12 2003-12-30 01:11:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -349,9 +349,9 @@ public class PartialPlanView extends VizView {
             parent = parent.getParent();
           }
           overviewFrame = (MDIInternalFrame) parent;
-          
+          String [] viewName = nextViewFrame.getTitle().split(" of ");
           VizViewOverview nextOverview = 
-            ViewGenerics.openOverviewFrame("Temporary View", nextStep, nextView, 
+            ViewGenerics.openOverviewFrame(viewName[0], nextStep, nextView, 
                                            viewManager.getViewSet(nextStep), nextJGoView, 
                                            overviewFrame.getLocation());
           nextView.setOverview(nextOverview);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.7 2003-10-16 21:40:40 taylor Exp $
+// $Id: Utilities.java,v 1.8 2003-12-30 01:11:09 miatauro Exp $
 //
 // PlanWorks
 //
@@ -132,7 +132,11 @@ public class Utilities {
    * @return - <code>String</code> - 
    */
   public static String trimView( String viewName) {
-    return viewName.substring( 0, viewName.indexOf( " View"));
+    int temp = 0;
+    if((temp = viewName.indexOf(" View")) != -1) {
+      return viewName.substring(0, temp);
+    }
+    return viewName.substring( 0, viewName.indexOf( "View"));
   }
 
 
