@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.24 2003-09-15 23:47:18 taylor Exp $
+// $Id: SlotNode.java,v 1.25 2003-09-16 19:29:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,6 +12,7 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Point;
@@ -76,7 +77,6 @@ public class SlotNode extends TextNode {
   private SlotNode previousSlotNode;
   private boolean isFirstSlot;
   private boolean isLastSlot;
-  private int objectCnt;
   private TimelineView view;
 
   private PwDomain startTimeIntervalDomain;
@@ -96,39 +96,29 @@ public class SlotNode extends TextNode {
    * @param previousSlotNode - <code>SlotNode</code> - 
    * @param isFirstSlot - <code>boolean</code> - 
    * @param isLastSlot - <code>boolean</code> - 
-   * @param objectCnt - <code>int</code> - 
+   * @param backgroundColor - <code>Color</code> - 
    * @param view - <code>TimelineView</code> - 
    */
   public SlotNode( String nodeLabel, PwSlot slot, Point slotLocation,
                    SlotNode previousSlotNode, boolean isFirstSlot, boolean isLastSlot,
-                   int objectCnt, TimelineView view) {
+                   Color backgroundColor, TimelineView view) {
     super( nodeLabel);
     this.predicateName = nodeLabel;
     this.slot = slot;
     this.previousSlotNode = previousSlotNode;
     this.isFirstSlot = isFirstSlot;
     this.isLastSlot = isLastSlot;
-    this.objectCnt = objectCnt;
     this.view = view;
     this.startTimeIntervalObject = null;
     this.endTimeIntervalObject = null;
     // System.err.println( "SlotNode: predicateName " + predicateName);
-    configure( nodeLabel, slotLocation);
+    configure( nodeLabel, slotLocation, backgroundColor);
   } // end constructor
 
 
-  private final void configure( String nodeLabel, Point slotLocation) {
-    String backGroundColor = null;
-    if (nodeLabel.indexOf( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL) >= 0) {
-      backGroundColor = ((objectCnt % 2) == 0) ?
-        ViewConstants.EVEN_OBJECT_TIMELINE_BG_COLOR :
-        ViewConstants.ODD_OBJECT_TIMELINE_BG_COLOR;
-    } else {
-      backGroundColor = ((objectCnt % 2) == 0) ?
-        ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
-        ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
-    }
-    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
+  private final void configure( String nodeLabel, Point slotLocation,
+                                Color backgroundColor) {
+    setBrush( JGoBrush.makeStockBrush( backgroundColor));  
     getLabel().setEditable( false);
     // to override VizView:
     // JGoText.setDefaultFontFaceName( ViewConstants.TIMELINE_VIEW_FONT_NAME);

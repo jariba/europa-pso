@@ -1,14 +1,17 @@
 package gov.nasa.arc.planworks.util;
 
 import java.awt.Color;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ColorStream {
+
+  private Map hashMap;
   private static final int COLOR_INC = 51;
   private int r, g, b;
-  private List usedColors;
+
   public ColorStream() {
-    usedColors = new ArrayList();
+    hashMap = new HashMap();
     r = 255;
     g = 153;
     b = 204;
@@ -21,7 +24,6 @@ public class ColorStream {
   }
   public Color nextColor() {
     Color retval = new Color(r, g, b);
-    usedColors.add(retval);
     r += COLOR_INC;
     if(r > 255) {
       r %= 255;
@@ -38,17 +40,28 @@ public class ColorStream {
     }
     return retval;
   }
+
   public Color getColor(int index) {
-    return (Color) usedColors.get(index);
+    Color indexColor = (Color) hashMap.get( new Integer( index));
+    // System.err.println( "getColor index " + index + " indexColor " + indexColor);
+    if (indexColor == null) {
+      indexColor = nextColor();
+      hashMap.put( new Integer( index), indexColor);
+     }
+    return indexColor;
   }
+
   public void setColor(Color color) {
     r = color.getRed();
     g = color.getGreen();
     b = color.getBlue();
   }
+
   public void setColor(int r, int g, int b) {
     this.r = r;
     this.g = g;
     this.b = b;
   }
 }
+
+

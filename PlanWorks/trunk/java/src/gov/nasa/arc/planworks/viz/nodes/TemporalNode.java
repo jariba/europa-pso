@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.10 2003-09-05 19:11:19 taylor Exp $
+// $Id: TemporalNode.java,v 1.11 2003-09-16 19:29:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,6 +12,7 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,7 @@ public class TemporalNode extends BasicNode implements Extent {
   private int latestEndTime;
   private int earliestDurationTime;
   private int latestDurationTime;
-  private int objectCnt;
+  private Color backgroundColor;
   private boolean isFreeToken;
   private TemporalExtentView view;
   private boolean isEarliestStartMinusInf;
@@ -90,14 +91,14 @@ public class TemporalNode extends BasicNode implements Extent {
    * @param endTimeIntervalDomain - <code>PwDomain</code> -  
    * @param earliestDurationString - <code>String</code> -  
    * @param latestDurationString - <code>String</code> -  
-   * @param objectCnt - <code>int</code> - 
+   * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param view - <code>TemporalExtentView</code> - 
    */
   public TemporalNode( PwToken token, PwSlot slot, PwDomain startTimeIntervalDomain,
                        PwDomain endTimeIntervalDomain, String earliestDurationString,
-                       String latestDurationString, int objectCnt, boolean isFreeToken,
-                       TemporalExtentView view) {
+                       String latestDurationString, Color backgroundColor,
+                       boolean isFreeToken, TemporalExtentView view) {
     super();
     this.token = token;
     this.slot = slot;
@@ -147,7 +148,7 @@ public class TemporalNode extends BasicNode implements Extent {
       latestDurationTime = Integer.parseInt( latestDurationString);
     }
 
-    this.objectCnt = objectCnt;
+    this.backgroundColor = backgroundColor;
     this.isFreeToken = isFreeToken;
     this.view = view;
     if (token != null) {
@@ -180,15 +181,7 @@ public class TemporalNode extends BasicNode implements Extent {
                            (int) (getLocation().getX())),
                  (int) getLocation().getY());
 
-    String backGroundColor = null;
-    if (isFreeToken) {
-      backGroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
-    } else {
-      backGroundColor = ((objectCnt % 2) == 0) ?
-        ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
-        ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
-    }
-    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
+    setBrush( JGoBrush.makeStockBrush( backgroundColor));  
     getLabel().setEditable( false);
     setDraggable( false);
     // do not allow user links

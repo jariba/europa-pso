@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.23 2003-09-15 23:47:19 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.24 2003-09-16 19:29:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.views.tokenNetwork;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -362,28 +363,29 @@ public class TokenNetworkView extends VizView {
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT * 2;
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
-    int objectCnt = 0;
+    int timelineCnt = 0;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
       Iterator timelineIterator = object.getTimelineList().iterator();
       while (timelineIterator.hasNext()) {
         int x = ViewConstants.TIMELINE_VIEW_X_INIT;
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        createTokenNodesOfTimeline( timeline, x, y, objectCnt);
+        Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
+        createTokenNodesOfTimeline( timeline, x, y, timelineColor);
         y += 2 * ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        timelineCnt++;
       }
-      objectCnt += 1;
     }
     // free tokens
     List freeTokenList = partialPlan.getFreeTokenList();
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
-    objectCnt = -1;
     // System.err.println( "token network view freeTokenList " + freeTokenList);
     Iterator freeTokenItr = freeTokenList.iterator();
     boolean isFreeToken = true, isDraggable = false;
+    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     while (freeTokenItr.hasNext()) {
       TokenNode freeTokenNode = new TokenNode( (PwToken) freeTokenItr.next(),
-                                               new Point( x, y), objectCnt,
+                                               new Point( x, y), backgroundColor,
                                                isFreeToken, isDraggable, this);
       if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
         x += freeTokenNode.getSize().getWidth() * 0.5;
@@ -400,7 +402,7 @@ public class TokenNetworkView extends VizView {
   } // end createTokenParentChildNodes
 
   private void createTokenNodesOfTimeline( PwTimeline timeline, int x, int y,
-                                           int objectCnt) {
+                                           Color backgroundColor) {
     boolean isFreeToken = false, isDraggable = false;
     Iterator slotIterator = timeline.getSlotList().iterator();
     while (slotIterator.hasNext()) {
@@ -409,7 +411,7 @@ public class TokenNetworkView extends VizView {
       while (tokenIterator.hasNext()) {
         PwToken token = (PwToken) tokenIterator.next();
         TokenNode tokenNode =
-          new TokenNode( token, new Point( x, y), objectCnt, isFreeToken,
+          new TokenNode( token, new Point( x, y), backgroundColor, isFreeToken,
                          isDraggable, this);
         if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
           x += tokenNode.getSize().getWidth() * 0.5;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.15 2003-09-15 23:47:18 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.16 2003-09-16 19:29:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.views.constraintNetwork;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -331,7 +332,7 @@ public class ConstraintNetworkView extends VizView {
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT * 2;
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
-    int objectCnt = 0;
+    int timelineCnt = 0;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
       String objectName = object.getName();
@@ -339,22 +340,24 @@ public class ConstraintNetworkView extends VizView {
       while (timelineIterator.hasNext()) {
         int x = ViewConstants.TIMELINE_VIEW_X_INIT;
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
+        Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
 
-        createTokenNodesOfTimeline( timeline, x, y, objectCnt);
+        createTokenNodesOfTimeline( timeline, x, y, timelineColor);
 
         y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        timelineCnt++;
       }
-      objectCnt += 1;
     }
     // free tokens
     List freeTokenList = partialPlan.getFreeTokenList();
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
     // System.err.println( "token network view freeTokenList " + freeTokenList);
     Iterator freeTokenItr = freeTokenList.iterator();
-    boolean isFreeToken = true; objectCnt = -1;
+    boolean isFreeToken = true;
+    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     while (freeTokenItr.hasNext()) {
       PwToken token = (PwToken) freeTokenItr.next();
-      TokenNode freeTokenNode = new TokenNode( token, new Point( x, y), objectCnt,
+      TokenNode freeTokenNode = new TokenNode( token, new Point( x, y), backgroundColor,
                                                isFreeToken, isDraggable, this);
       if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
         x += freeTokenNode.getSize().getWidth() * 0.5;
@@ -365,7 +368,7 @@ public class ConstraintNetworkView extends VizView {
       document.addObjectAtTail( freeTokenNode);
       network.addConstraintNode( freeTokenNode);
 
-      createVariableAndConstraintNodes( freeTokenNode, isFreeToken);
+      createVariableAndConstraintNodes( freeTokenNode, backgroundColor, isFreeToken);
       createTokenVariableConstraintLinks( freeTokenNode);
 
       x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
@@ -374,7 +377,7 @@ public class ConstraintNetworkView extends VizView {
   } // end createTokenNodes
 
   private void createTokenNodesOfTimeline( PwTimeline timeline, int x, int y,
-                                           int objectCnt) {
+                                           Color backgroundColor) {
     boolean isFreeToken = false, isDraggable = true;
     Iterator slotIterator = timeline.getSlotList().iterator();
     while (slotIterator.hasNext()) {
@@ -384,7 +387,7 @@ public class ConstraintNetworkView extends VizView {
       while (tokenIterator.hasNext()) {
         PwToken token = (PwToken) tokenIterator.next();
         TokenNode tokenNode =
-          new TokenNode( token, new Point( x, y), objectCnt, isFreeToken,
+          new TokenNode( token, new Point( x, y), backgroundColor, isFreeToken,
                          isDraggable, this);
         if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
           x += tokenNode.getSize().getWidth() * 0.5;
@@ -395,7 +398,7 @@ public class ConstraintNetworkView extends VizView {
         document.addObjectAtTail( tokenNode);
         network.addConstraintNode( tokenNode);
           
-        createVariableAndConstraintNodes( tokenNode, isFreeToken);
+        createVariableAndConstraintNodes( tokenNode, backgroundColor, isFreeToken);
         createTokenVariableConstraintLinks( tokenNode);
 
         x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
@@ -404,9 +407,9 @@ public class ConstraintNetworkView extends VizView {
     }
   } // end createTokenNodesOfTimeline
 
-  private void createVariableAndConstraintNodes( TokenNode tokenNode, boolean isFreeToken) {
+  private void createVariableAndConstraintNodes( TokenNode tokenNode, Color backgroundColor,
+                                                 boolean isFreeToken) {
     PwToken token = tokenNode.getToken();
-    int objectCnt = tokenNode.getObjectCnt();
     int xVar = (int) tokenNode.getLocation().getX();
     int yVar = (int) tokenNode.getLocation().getY() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
     boolean isDraggable = true;
@@ -418,7 +421,7 @@ public class ConstraintNetworkView extends VizView {
         VariableNode variableNode = getVariableNode( variable.getId());
         if (variableNode == null) {
           variableNode = new VariableNode( variable, tokenNode, new Point( xVar, yVar),
-                                           objectCnt, isFreeToken, isDraggable, this);
+                                           backgroundColor, isFreeToken, isDraggable, this);
           // System.err.println( "add variableNode " + variableNode.getVariable().getId() +
           //                     " type " + variable.getType());
           variableNodeList.add( variableNode);
@@ -438,7 +441,7 @@ public class ConstraintNetworkView extends VizView {
             if (constraintNode == null) {
               constraintNode =
                 new ConstraintNode( constraint, variableNode, new Point( xCon, yCon),
-                                    objectCnt, isFreeToken, isDraggable, this);
+                                    backgroundColor, isFreeToken, isDraggable, this);
               // System.err.println( "add constraintNode " +
               //                     constraintNode.getConstraint().getId());
               constraintNodeList.add( constraintNode);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.17 2003-09-05 16:52:41 miatauro Exp $
+// $Id: TokenNode.java,v 1.18 2003-09-16 19:29:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,6 +12,7 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +56,6 @@ public class TokenNode extends BasicNode {
 
   private PwToken token;
   private Point tokenLocation;
-  private int objectCnt;
   private boolean isFreeToken;
   private VizView vizView;
   private String predicateName;
@@ -69,17 +69,16 @@ public class TokenNode extends BasicNode {
    *
    * @param token - <code>PwToken</code> - 
    * @param tokenLocation - <code>Point</code> - 
-   * @param objectCnt - <code>int</code> - 
+   * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public TokenNode( PwToken token, Point tokenLocation, int objectCnt, boolean isFreeToken,
-                    boolean isDraggable, VizView vizView) {
+  public TokenNode( PwToken token, Point tokenLocation, Color backgroundColor,
+                    boolean isFreeToken, boolean isDraggable, VizView vizView) {
     super();
     this.token = token;
     this.tokenLocation = tokenLocation;
-    this.objectCnt = objectCnt;
     this.isFreeToken = isFreeToken;
     this.vizView = vizView;
     if (token != null) {
@@ -96,25 +95,18 @@ public class TokenNode extends BasicNode {
     areNeighborsShown = false;
     variableLinkCount = 0;
     
-    configure( tokenLocation, isDraggable);
+    configure( tokenLocation, backgroundColor, isDraggable);
   } // end constructor
 
   public TokenNode() {
     super();
   }
-  private final void configure( Point tokenLocation, boolean isDraggable) {
+  private final void configure( Point tokenLocation, Color backgroundColor,
+                                boolean isDraggable) {
     boolean isRectangular = true;
     setLabelSpot( JGoObject.Center);
     initialize( tokenLocation, nodeLabel, isRectangular);
-    String backGroundColor = null;
-    if (isFreeToken) {
-      backGroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
-    } else {
-      backGroundColor = ((objectCnt % 2) == 0) ?
-        ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
-        ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
-    }
-    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
+    setBrush( JGoBrush.makeStockBrush( backgroundColor));  
     getLabel().setEditable( false);
     setDraggable( isDraggable);
     // do not allow user links
@@ -138,15 +130,6 @@ public class TokenNode extends BasicNode {
    */
   public PwToken getToken() {
     return token;
-  }
-
-  /**
-   * <code>getObjectCnt</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getObjectCnt() {
-    return objectCnt;
   }
 
   /**

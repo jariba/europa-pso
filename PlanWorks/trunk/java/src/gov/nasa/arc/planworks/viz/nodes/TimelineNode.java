@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.9 2003-08-29 01:21:40 taylor Exp $
+// $Id: TimelineNode.java,v 1.10 2003-09-16 19:29:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
+import java.awt.Color;
 import java.awt.Insets;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -51,7 +52,6 @@ public class TimelineNode extends TextNode {
 
   private String timelineName;
   private PwTimeline timeline;
-  private int objectCnt;
   private VizView vizView;
 
   private List slotNodeList; // element SlotNode
@@ -62,29 +62,25 @@ public class TimelineNode extends TextNode {
    * @param timelineName - <code>String</code> - 
    * @param timeline - <code>PwTimeline</code> - 
    * @param timelineLocation - <code>Point</code> - 
-   * @param objectCnt - <code>int</code> - 
+   * @param backgroundColor - <code>Color</code> - 
    * @param vizView - <code>VizView</code> - 
    */
   public TimelineNode( String timelineName, PwTimeline timeline, Point timelineLocation,
-                       int objectCnt, VizView vizView) {
+                       Color backgroundColor, VizView vizView) {
     super( timelineName);
     this.timelineName = timelineName;
     this.timeline = timeline;
-    this.objectCnt = objectCnt;
     this.vizView = vizView;
     // System.err.println( "TimelineNode: timelineName " + timelineName);
     this.slotNodeList = new ArrayList();
 
-    configure( timelineLocation);
+    configure( timelineLocation, backgroundColor);
 
   } // end constructor
 
 
-  private final void configure( Point timelineLocation) {
-    String backGroundColor = ((objectCnt % 2) == 0) ?
-      ViewConstants.EVEN_OBJECT_TIMELINE_BG_COLOR :
-      ViewConstants.ODD_OBJECT_TIMELINE_BG_COLOR;
-    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));
+  private final void configure( Point timelineLocation, Color backgroundColor) {
+    setBrush( JGoBrush.makeStockBrush( backgroundColor));
     getLabel().setEditable( false);
     getLabel().setBold( true);
     setDraggable( false);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.17 2003-09-15 23:47:18 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.18 2003-09-16 19:29:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.views.temporalExtent;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -559,7 +560,7 @@ public class TemporalExtentView extends VizView  {
     tmpTemporalNodeList = new ArrayList();
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
-    int objectCnt = 0;
+    int timelineCnt = 0;
     boolean alwaysReturnEnd = true, isFreeToken = false;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
@@ -568,6 +569,7 @@ public class TemporalExtentView extends VizView  {
       Iterator timelineIterator = timelineList.iterator();
       while (timelineIterator.hasNext()) {
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
+        Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
         List slotList = timeline.getSlotList();
         Iterator slotIterator = slotList.iterator();
         PwSlot previousSlot = null;
@@ -600,8 +602,8 @@ public class TemporalExtentView extends VizView  {
                                              endTimeIntervalDomain);
               TemporalNode temporalNode = 
                 new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
-                                  earliestDurationString, latestDurationString, objectCnt,
-                                  isFreeToken, this); 
+                                  earliestDurationString, latestDurationString,
+                                  timelineColor, isFreeToken, this); 
               tmpTemporalNodeList.add( temporalNode);
               jGoExtentView.getDocument().addObjectAtTail( temporalNode);
               previousSlot = slot;
@@ -609,8 +611,8 @@ public class TemporalExtentView extends VizView  {
           }
           isFirstSlot = false;
         }
+        timelineCnt++;
       }
-      objectCnt += 1;
     }
 
     createFreeTokenTemporalNodes();
@@ -623,8 +625,9 @@ public class TemporalExtentView extends VizView  {
     List freeTokenList = partialPlan.getFreeTokenList();
     // System.err.println( "temporal extent view freeTokenList " + freeTokenList);
     Iterator freeTokenItr = freeTokenList.iterator();
-    boolean isFreeToken = true; int objectCnt = -1;
+    boolean isFreeToken = true;
     PwSlot slot = null;
+    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     while (freeTokenItr.hasNext()) {
       PwToken token = (PwToken) freeTokenItr.next();
       if (isTokenInContentSpec( token)) {
@@ -638,8 +641,8 @@ public class TemporalExtentView extends VizView  {
                                        endTimeIntervalDomain);
         TemporalNode temporalNode = 
           new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
-                            earliestDurationString, latestDurationString, objectCnt,
-                            isFreeToken, this); 
+                            earliestDurationString, latestDurationString,
+                            backgroundColor, isFreeToken, this); 
         tmpTemporalNodeList.add(temporalNode );
         // nodes are always in front of any links
         jGoExtentView.getDocument().addObjectAtTail( temporalNode);
