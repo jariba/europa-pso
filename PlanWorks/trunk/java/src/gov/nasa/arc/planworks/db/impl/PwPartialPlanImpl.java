@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.49 2003-10-07 02:13:34 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.50 2003-10-16 16:39:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -528,35 +528,38 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * <code>checkPlan</code> - verify that the PwPartialPlan structure is internally consistent.
    */
 
-  public void checkPlan() {
-    checkRelations();
-    checkConstraints();
-    checkTokens();
+  public boolean checkPlan() {
+    return checkRelations() && checkConstraints() && checkTokens();
   }
 
   /**
    * <code>checkRelations</code> - verify that all tokens related by token relations exist
    */
-  private void checkRelations() {
+  private boolean checkRelations() {
     Iterator relationIterator = tokenRelationMap.values().iterator();
+    boolean retval = true;
     while(relationIterator.hasNext()) {
       PwTokenRelationImpl relation = (PwTokenRelationImpl) relationIterator.next();
       if(!tokenMap.containsKey(relation.getTokenAId())) {
         System.err.println("Token relation " + relation.getId() + " has nonexistant token " +
                            relation.getTokenAId());
+        retval = false;
       }
       if(!tokenMap.containsKey(relation.getTokenBId())) {
         System.err.println("Token relation " + relation.getId() + " has nonexistant token " +
                            relation.getTokenBId());
+        retval = false;
       }
     }
+    return retval;
   }
 
   /**
    * <code>checkConstraints</code> - verify that all constrained variables exist
    */
-  private void checkConstraints() {
+  private boolean checkConstraints() {
     Iterator constraintIterator = constraintMap.values().iterator();
+    boolean retval = true;
     while(constraintIterator.hasNext()) {
       PwConstraintImpl constraint = (PwConstraintImpl) constraintIterator.next();
       ListIterator variableIdIterator = constraint.getVariableIdList().listIterator();
@@ -566,10 +569,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         if(!variableMap.containsKey(variableId)) {
           System.err.println("Constraint " + constraint.getId() + " has nonexistant variable " +
                              variableId + " at position " + variableIndex);
+          retval = false;
         }
         variableIndex++;
       }
     }
+    return retval;
   }
   
   /**
@@ -579,95 +584,112 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    *                            checking that the tokens have the relations they are in as well as being
    *                            in only the relations they have.
    */
-  private void checkTokens() {
+  private boolean checkTokens() {
     Iterator tokenIterator = tokenMap.values().iterator();
+    boolean retval = true;
     while(tokenIterator.hasNext()) {
       PwTokenImpl token = (PwTokenImpl) tokenIterator.next();
       if(token.getPredicate() == null) {
         System.err.println("Token " + token.getId() + " has null predicate.");
+        retval = false;
       }
       if(!token.isFreeToken()) {
         if(token.getObjectId() == null) {
           System.err.println("Slotted token " + token.getId() + " has null objectId.");
+          retval = false;
         }
         else if(!objectMap.containsKey(token.getObjectId())) {
           System.err.println("Slotted token " + token.getId() + " has nonexistant objectId " + 
                              token.getObjectId());
+          retval = false;
         }
         if(token.getTimelineId() == null) {
           System.err.println("Slotted token " + token.getId() + " has null timelineId.");
+          retval = false;
         }
         else if(!timelineMap.containsKey(token.getTimelineId())) {
           System.err.println("Slotted token " + token.getId() + " has nonexistant timelineId " +
                              token.getTimelineId());
+          retval = false;
         }
         if(token.getSlotId() == null) {
           System.err.println("Slotted token " + token.getId() + " has null slotId.");
+          retval = false;
         }
         else if(!slotMap.containsKey(token.getSlotId())) {
           System.err.println("Slotted token " + token.getId() + " has nonexistant slotId " + 
                              token.getSlotId());
+          retval = false;
         }
       }
-      checkTokenVars(token);
-      checkTokenParamVars(token);
-      checkTokenRelations(token);
+      retval = retval && checkTokenVars(token) && checkTokenParamVars(token) && 
+        checkTokenRelations(token);
     }
+    return retval;
   }
   /**
    * <code>checkTokenVars</code> - verify that all variables exist and are of the proper type
    */
-  private void checkTokenVars(PwTokenImpl token) {
+  private boolean checkTokenVars(PwTokenImpl token) {
     PwVariableImpl startVar = (PwVariableImpl) token.getStartVariable();
     PwVariableImpl endVar = (PwVariableImpl) token.getEndVariable();
     PwVariableImpl durationVar = (PwVariableImpl) token.getDurationVariable();
     PwVariableImpl objectVar = (PwVariableImpl) token.getObjectVariable();
     PwVariableImpl rejectVar = (PwVariableImpl) token.getRejectVariable();
+    boolean retval = true;
     if(startVar == null) {
       System.err.println("Token " + token.getId() + " has null start variable.");
+      retval = false;
     }
     else {
       if(!startVar.getType().equals("START_VAR")) {
         System.err.println("Token " + token.getId() + "'s start variable " + startVar.getId() + 
                            " isn't.");
+        retval = false;
       }
       else {
-        checkVariable(startVar);
+        retval = retval && checkVariable(startVar);
       }
     }
     if(endVar == null) {
       System.err.println("Token " + token.getId() + " has null end variable.");
+      retval = false;
     }
     else {
       if(!endVar.getType().equals("END_VAR")) {
         System.err.println("Token " + token.getId() + "'s end variable " + endVar.getId() + " isn't.");
+        retval = false;
       }
       else {
-        checkVariable(endVar);
+        retval = retval && checkVariable(endVar);
       }
     }
     if(durationVar == null) {
       System.err.println("Token " + token.getId() + " has null duration variable.");
+      retval = false;
     }
     else {
       if(!durationVar.getType().equals("DURATION_VAR")) {
         System.err.println("Token " + token.getId() + "'s duration variable " + durationVar.getId() +
                            " isn't.");
+        retval = false;
       }
       else {
-        checkVariable(durationVar);
+        retval = retval && checkVariable(durationVar);
       }
     }
     if(objectVar == null) {
       System.err.println("Token " + token.getId() + " has null object variable.");
+      retval = false;
     }
     else {
       if(!objectVar.getType().equals("OBJECT_VAR")) {
         System.err.println("Token " + token.getId() + "'s object variable " + objectVar.getId() + 
                            " isn't.");
+        retval = false;
       }
       else {
-        checkObjectVariable(objectVar, token.isFreeToken());
+        retval = retval && checkObjectVariable(objectVar, token.isFreeToken());
       }
     }
     if(rejectVar == null) {
@@ -677,49 +699,57 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       if(!rejectVar.getType().equals("REJECT_VAR")) {
         System.err.println("Token " + token.getId() + "'s reject variable " + rejectVar.getId()  + 
                            " isn't.");
+        retval = false;
       }
       else {
-        checkVariable(rejectVar);
+        retval = retval && checkVariable(rejectVar);
       }
     }
+    return retval;
   }
   /**
    * <code>checkTokenParamVars</code> - verify that the token has the correct number of parameter 
    *                                    variables
    */
-  private void checkTokenParamVars(PwTokenImpl token) {
+  private boolean checkTokenParamVars(PwTokenImpl token) {
     List paramVarList = token.getParamVarsList();
     int paramVarSize = paramVarList.size();
     int paramSize = token.getPredicate().getParameterList().size();
+    boolean retval = true;
     if(paramVarSize != paramSize) {
       System.err.println("Token " + token.getId().toString() + " has " + paramVarSize + 
                          " parameter variables.  Predicate " + token.getPredicate().getId() + " has " + 
                          paramSize + " parameters.");
+      retval = false;
     }
     ListIterator paramVarIterator = paramVarList.listIterator();
     while(paramVarIterator.hasNext()) {
       PwVariableImpl variable = (PwVariableImpl) paramVarIterator.next();
       if(variable == null) {
         System.err.println("Token " + token.getId().toString() + " has null variable.");
+        retval = false;
         continue;
       }
       if(!variableMap.containsValue(variable)) {
         System.err.println("Token " + token.getId().toString() + " has parameter variable " + 
                            variable.getId() + " that doesn't exist.");
+        retval = false;
       }
       else {
-        checkVariable(variable);
+        retval = retval && checkVariable(variable);
       }
     }
+    return retval;
   }
   /**
    * <code>checkTokenRelations</code> - ensure that all tokens related exist, are in the relations they
    *                                    have, and are in only the relations they have.
    */
-  private void checkTokenRelations(PwTokenImpl token) {
+  private boolean checkTokenRelations(PwTokenImpl token) {
     List relations = token.getTokenRelationIdsList();
+    boolean retval = true;
     if(relations.size() == 0) {
-      return;
+      return true;
     }
     ListIterator relationIdIterator = relations.listIterator();
     while(relationIdIterator.hasNext()) {
@@ -730,10 +760,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       if(tokenRelation == null) {
         System.err.println("Token " + token.getId() + " has nonexistant token relation " +
                            tokenRelationId);
+        retval = false;
         continue;
       }
       if(tokenRelation.getTokenAId() == null) {
         System.err.println("Master token id of relation " + tokenRelation.getId() + " is null.");
+        retval = false;
         if(tokenRelation.getTokenBId() == null) {
           System.err.println("Slave token id of relation " + tokenRelation.getId() + " is null.");
           continue;
@@ -741,18 +773,22 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       }
       if(tokenRelation.getTokenBId() == null) {
         System.err.println("Slave token id of relation " + tokenRelation.getId() + " is null.");
+        retval = false;
         continue;
       }
       if(!tokenRelation.getTokenAId().equals(token.getId()) && 
          !tokenRelation.getTokenBId().equals(token.getId())) {
         System.err.println("Token " + token.getId() + " has relation " + tokenRelation.getId() + 
                            " but isn't in it.");
+        retval = false;
       }
       if(tokenMap.get(tokenRelation.getTokenAId()) == null) {
         System.err.println("Master token " + tokenRelation.getTokenAId() + " doesn't exist.");
+        retval = false;
       }
       if(tokenMap.get(tokenRelation.getTokenBId()) == null) {
         System.err.println("Slave token " + tokenRelation.getTokenBId() + " doesn't exist.");
+        retval = false;
       }
     }
     Iterator tokenRelationIterator = tokenRelationMap.values().iterator();
@@ -762,22 +798,27 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
           tokenRelation.getTokenBId().equals(token.getId())) && !relations.contains(tokenRelation.getId())) {
         System.err.println("Token " + token.getId() + " is in relation " + tokenRelation.getId() +
                            " but doesn't have it.");
+        retval = false;
       }
     }
+    return retval;
   }
   /**
    * <code>checkVariable</code> - verify that a variable is of a valid type, has constraints that exist,
    *                              is in the constraints that is has, and is only in those constraints
    */
-  private void checkVariable(PwVariableImpl var) {
+  private boolean checkVariable(PwVariableImpl var) {
+    boolean retval = true;
     if(var.getDomain() == null) {
       System.err.println("Variable " + var.getId() + " has no domain.");
+      retval = false;
     }
     String type = var.getType();
     if(!type.equals("START_VAR") && !type.equals("END_VAR") && !type.equals("DURATION_VAR") && 
        !type.equals("OBJECT_VAR") && !type.equals("PARAMETER_VAR") && !type.equals("REJECT_VAR") &&
        !type.equals("GLOBAL_VAR")) {
       System.err.println("Variable " + var.getId() + " has invalid type " + type);
+      retval = false;
     }
     List varConstraints = var.getConstraintList();
     ListIterator varConstraintIterator = varConstraints.listIterator();
@@ -785,15 +826,18 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       PwConstraintImpl constraint = (PwConstraintImpl) varConstraintIterator.next();
       if(constraint == null) {
         System.err.println("Variable " + var.getId() + " has a null constraint.");
+        retval = false;
         continue;
       }
       if(!constraint.getVariablesList().contains(var)) {
         System.err.println("Variable " + var.getId() + " has constraint " + constraint.getId() + 
                            " but is not in the constraint.");
+        retval = false;
       }
       if(!constraintMap.containsKey(constraint.getId())) {
         System.err.println("Variable " + var.getId() + " has nonexistant constraint " + 
                            constraint.getId());
+        retval = false;
       }
     }
     Iterator constraintIterator = constraintMap.values().iterator();
@@ -802,22 +846,27 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       if(constraint.getVariablesList().contains(var) && !varConstraints.contains(constraint)) {
         System.err.println("Variable " + var.getId() + " is in constraint " + constraint.getId() + 
                            " but does not have it.");
+        retval = false;
       }
     }
+    return retval;
   }
   /**
    * <code>checkObjectVariable</code> - check validity of object variable, as well as that there is only
    *                                  - one object in the domain if the token is slotted
    */
-  private void checkObjectVariable(PwVariableImpl objectVar, boolean isFreeToken) {
-    checkVariable(objectVar);
+  private boolean checkObjectVariable(PwVariableImpl objectVar, boolean isFreeToken) {
+    boolean retval = true && checkVariable(objectVar);
+    //checkVariable(objectVar);
     PwEnumeratedDomainImpl domain = (PwEnumeratedDomainImpl) objectVar.getDomain();
     if(!isFreeToken) {
       if(domain.getEnumeration().size() > 1) {
         System.err.println("Slotted token has object variable " + objectVar.getId() + 
                            " with multiple objects.");
+        retval = false;
       }
     }
+    return retval;
   }
 
   // implement ViewableObject

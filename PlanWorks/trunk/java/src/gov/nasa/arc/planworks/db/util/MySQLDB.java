@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.48 2003-10-14 18:20:27 miatauro Exp $
+// $Id: MySQLDB.java,v 1.49 2003-10-16 16:40:33 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1060,6 +1060,78 @@ public class MySQLDB {
       ResultSet ppId = queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(seqId.toString()).concat(" && PlanName='").concat(stepName).concat("'"));
       ppId.last();
       retval = new Long(ppId.getLong("PartialPlanId"));
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static Map queryAllIdsForPartialPlan(Long ppId) {
+    OneToManyMap retval = new OneToManyMap();
+    try {
+      ResultSet ids = 
+        queryDatabase("SELECT ObjectId FROM Object WHERE PartialPlanId=".concat(ppId.toString()));
+      while(ids.next()) {
+        retval.put(DbConstants.TBL_OBJECT, new Integer(ids.getInt("ObjectId")));
+      }
+      ids = queryDatabase("SELECT PredicateId FROM Predicate WHERE PartialPlanId=".concat(ppId.toString()));
+      while(ids.next()) {
+        retval.put(DbConstants.TBL_PREDICATE, new Integer(ids.getInt("PredicateId")));
+      }
+      ids = queryDatabase("SELECT TokenId FROM Token WHERE PartialPlanId=".concat(ppId.toString()));
+      while(ids.next()) {
+        retval.put(DbConstants.TBL_TOKEN, new Integer(ids.getInt("TokenId")));
+      }
+      ids = queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()));
+      while(ids.next()) {
+        retval.put(DbConstants.TBL_TOKENREL, new Integer(ids.getInt("TokenRelationId")));
+      }
+      ids = queryDatabase("SELECT VariableId FROM Variable WHERE PartialPlanId=".concat(ppId.toString()));
+      while(ids.next()) {
+        retval.put(DbConstants.TBL_VARIABLE, new Integer(ids.getInt("VariableId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+  
+  synchronized public static List queryTimelineIdsForObject(Long ppId, Integer objId) {
+    List retval = new ArrayList();
+    try {
+      ResultSet ids = 
+        queryDatabase("SELECT TimelineId FROM Timeline WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ObjectId=").concat(objId.toString()));
+      while(ids.next()) {
+        retval.add(new Integer(ids.getInt("TimelineId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List querySlotIdsForTimeline(Long ppId, Integer objId, Integer tId) {
+    List retval = new ArrayList();
+    try {
+      ResultSet ids =
+        queryDatabase("SELECT SlotId FROM Slot WHERE PartialPlanId=".concat(ppId.toString()).concat(" && ObjectId=").concat(objId.toString()).concat(" && TimelineId=").concat(tId.toString()));
+      while(ids.next()) {
+        retval.add(new Integer(ids.getInt("SlotId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryTokenRelationIdsForToken(Long ppId, Integer tId) {
+    List retval = new ArrayList();
+    try {
+      ResultSet ids =
+        queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(ppId.toString()).concat(" && (TokenAId=").concat(tId.toString()).concat(" || TokenBId=").concat(tId.toString()).concat(")"));
+      while(ids.next()) {
+        retval.add(new Integer(ids.getInt("TokenRelationId")));
+      }
     }
     catch(SQLException sqle) {
     }

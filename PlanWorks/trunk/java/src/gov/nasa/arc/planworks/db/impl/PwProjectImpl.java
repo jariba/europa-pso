@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.34 2003-10-02 23:16:36 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.35 2003-10-16 16:39:41 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -173,7 +173,7 @@ public class PwProjectImpl extends PwProject {
       Long sequenceId = (Long) seqIdIterator.next();
       System.err.println(sequenceId + " : " + ((String)sequences.get(sequenceId)));
       planningSequences.add(new PwPlanningSequenceImpl((String) sequences.get(sequenceId), 
-                                                       sequenceId, this, new PwModelImpl()));
+                                                       sequenceId, new PwModelImpl()));
     }
     // this project is already in projectNames & projectUrls
     //projects.add(name, this);
