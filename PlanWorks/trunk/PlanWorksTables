@@ -1,6 +1,6 @@
 -- MySQL dump 9.08
 --
--- Host: 127.0.0.1    Database: PlanWorks
+-- Host: localhost    Database: PlanWorks
 ---------------------------------------------------------
 -- Server version	4.0.13-max-log
 
@@ -221,6 +221,7 @@ CREATE TABLE Token (
   PredicateId int(11) default NULL,
   TimelineId int(11) default NULL,
   ObjectId int(11) default NULL,
+  ObjectVarId int(11) default NULL,
   PRIMARY KEY  (PartialPlanId,TokenId)
 ) TYPE=MyISAM;
 
