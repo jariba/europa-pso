@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.29 2004-08-05 00:24:25 taylor Exp $
+// $Id: NodeGenerics.java,v 1.30 2004-08-05 19:34:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -165,8 +165,8 @@ public class NodeGenerics {
 //       System.err.println( "focusViewOnNode: variable " +
 //                           ((VariableNode) node).toString());
 //     }
+    // System.err.println( "focusViewOnNode: node " + node);
     JGoSelection selection = jGoView.getSelection();
-    selection.clearSelection();
     if (node != null) {
       jGoView.getHorizontalScrollBar().
         setValue( Math.max( 0, (int) (node.getLocation().getX() -
@@ -175,6 +175,7 @@ public class NodeGenerics {
         setValue( Math.max( 0, (int) (node.getLocation().getY() -
                                       (jGoView.getExtentSize().getHeight() / 2))));
       if (isHighlightNode) {
+	selection.clearSelection();
         selection.extendSelection( node);
       }
     } else {
