@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.100 2004-08-05 00:40:08 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.101 2004-08-05 01:03:15 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -265,9 +266,9 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     if (doProgMonitor) {
       isProgressMonitorCancel = true;
     }
-    for(Iterator it = getVariablePath(new Integer(920), new Integer(667)).iterator(); it.hasNext();) {
-      System.err.println(it.next());
-    }
+//     for(Iterator it = getVariablePath(new Integer(911), new Integer(3430)).iterator(); it.hasNext();) {
+//       System.err.println(it.next());
+//     }
 
   } // end createPartialPlan
 
@@ -1517,13 +1518,42 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   } // end progressMonitorWait
 
   public List getVariablePath(final Integer sKey, final Integer eKey) {
-    List retval = new ArrayList();
-    retval.add(new Integer(920));
-    retval.add(new Integer(926));
-    retval.add(new Integer(778));
-    retval.add(new Integer(1011));
-    retval.add(new Integer(667));
+    PwVariable start = (PwVariable) variableMap.get(sKey);
+    if(start == null)
+      return null;
+    PwVariable end = (PwVariable) variableMap.get(eKey);
+    if(end == null)
+      return null;
+
+    LinkedList retval = new LinkedList();
+
+    variablePathRecurse(start, end.getId(), retval);
     return retval;
   }
 
+  private boolean variablePathRecurse(PwVariable current, Integer end, LinkedList path) {
+    if(path.contains(current.getId()))
+      return false;
+    path.addLast(current.getId());
+    if(current.getId().equals(end))
+      return true;
+    for(Iterator it = current.getConstraintList().iterator(); it.hasNext();) {
+      if(variablePathRecurse((PwConstraint)it.next(), end, path))
+        return true;
+    }
+    path.removeLast();
+    return false;
+  }
+
+  private boolean variablePathRecurse(PwConstraint current, Integer end, LinkedList path) {
+    if(path.contains(current.getId()))
+      return false;
+    path.addLast(current.getId());
+    for(Iterator it = current.getVariablesList().iterator(); it.hasNext();) {
+      if(variablePathRecurse((PwVariable)it.next(), end, path))
+        return true;
+    }
+    path.removeLast();
+    return false;
+  }
 } // end class PwPartialPlanImpl
