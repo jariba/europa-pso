@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.50 2003-12-20 00:47:03 miatauro Exp $
+// $Id: ViewSet.java,v 1.51 2003-12-29 22:01:37 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -156,7 +156,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
           views.remove( ((VizViewOverview) contentPane.getComponent(i)).getTitle());
         }
       }
-      // System.err.println( "removeViewFrame " + viewFrame.getTitle());
+      //System.err.println( "removeViewFrame " + viewFrame.getTitle());
     }
     if(views.isEmpty()) {
       if (contentSpecWindow != null) {
@@ -170,6 +170,8 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
         viewable.setContentSpec(contentSpec.getCurrentSpec());
       }
       if(this instanceof SequenceViewSet) {
+        //System.err.println("Removing planning sequence and frames...");
+        //(new Throwable()).printStackTrace();
         List partialPlans = ((PwPlanningSequence) viewable).getPartialPlansList();
         ListIterator planIterator = partialPlans.listIterator();
         while(planIterator.hasNext()) {
@@ -180,7 +182,13 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
             getViewManager().removeViewSet(partialPlan);
           }
         }
+        getViewManager().removeViewSet(viewable);
       }
+    }
+    if(viewFrame.getTitle().indexOf("SequenceStepsView") != -1 && 
+       this instanceof SequenceViewSet) {
+      close();
+      getViewManager().removeViewSet(viewable);
     }
   }  
   /**

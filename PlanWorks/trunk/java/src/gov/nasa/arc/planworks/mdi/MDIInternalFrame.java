@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIInternalFrame.java,v 1.9 2003-12-20 01:54:48 taylor Exp $
+// $Id: MDIInternalFrame.java,v 1.10 2003-12-29 22:02:23 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -409,6 +409,9 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
       menu.notifyDeleted(frame);
       if(viewSet != null) {
         viewSet.notifyDeleted(frame);
+      }
+      else {
+        System.err.println("View set is null??");
       }
     }
     public void internalFrameDeactivated(InternalFrameEvent e) {}
