@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.38 2004-02-12 21:42:41 taylor Exp $
+// $Id: TimelineView.java,v 1.39 2004-02-17 22:22:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -310,8 +310,9 @@ public class TimelineView extends PartialPlanView {
         }
         timelineLabel += timelineName + "\ntimeline key=" + timeline.getId().toString();
         Color timelineColor = getTimelineColor(timeline.getId());
-        TimelineNode timelineNode =
-          new TimelineNode(timelineLabel, timeline, new Point(x, y), timelineColor, this);
+        TimelineViewTimelineNode timelineNode =
+          new TimelineViewTimelineNode(timelineLabel, timeline, new Point(x, y), timelineColor, 
+                                       this);
         tmpTimelineNodeList.add(timelineNode);
         jGoDocument.addObjectAtTail(timelineNode);
         x += timelineNode.getSize().getWidth();
@@ -353,7 +354,7 @@ public class TimelineView extends PartialPlanView {
     return isValid;
   } // end createTimelineAndSlotNodes
 
-  private boolean createSlotNodes( PwTimeline timeline, TimelineNode timelineNode,
+  private boolean createSlotNodes( PwTimeline timeline, TimelineViewTimelineNode timelineNode,
                                    int x, int y, Color backgroundColor) {
     boolean isValid = computeTimeIntervalLabelSize( timeline);
     if (! isValid) {
@@ -559,7 +560,7 @@ public class TimelineView extends PartialPlanView {
     //System.err.println( "iterateOverNodes: numTimelineNodes " + numTimelineNodes);
     Iterator timelineIterator = timelineNodeList.iterator();
     while (timelineIterator.hasNext()) {
-      TimelineNode timelineNode = (TimelineNode) timelineIterator.next();
+      TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineIterator.next();
       //System.err.println( "name '" + timelineNode.getTimelineName() + "' location " +
       //                    timelineNode.getLocation());
       int numSlotNodes = timelineNode.getSlotNodeList().size();
@@ -738,7 +739,7 @@ public class TimelineView extends PartialPlanView {
     Iterator timelineNodeListItr = timelineNodeList.iterator();
     foundIt:
     while (timelineNodeListItr.hasNext()) {
-      TimelineNode timelineNode = (TimelineNode) timelineNodeListItr.next();
+      TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineNodeListItr.next();
       Iterator slotNodeListItr = timelineNode.getSlotNodeList().iterator();
       while (slotNodeListItr.hasNext()) {
         SlotNode slotNode = (SlotNode) slotNodeListItr.next();
@@ -794,7 +795,7 @@ public class TimelineView extends PartialPlanView {
     Iterator timelineNodeListItr = timelineNodeList.iterator();
     foundIt:
     while (timelineNodeListItr.hasNext()) {
-      TimelineNode timelineNode = (TimelineNode) timelineNodeListItr.next();
+      TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineNodeListItr.next();
       Iterator slotNodeListItr = timelineNode.getSlotNodeList().iterator();
       while (slotNodeListItr.hasNext()) {
         SlotNode slotNode = (SlotNode) slotNodeListItr.next();

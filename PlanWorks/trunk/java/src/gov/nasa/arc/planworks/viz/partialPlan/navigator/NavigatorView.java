@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.10 2004-02-13 18:56:48 taylor Exp $
+// $Id: NavigatorView.java,v 1.11 2004-02-17 22:24:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -60,7 +60,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
-import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineNode;
+import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -101,7 +101,7 @@ public class NavigatorView extends PartialPlanView {
    * @param viewSet - <code>ViewSet</code> - 
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
-  public NavigatorView( TimelineNode timelineNode, ViewableObject partialPlan,
+  public NavigatorView( TimelineViewTimelineNode timelineNode, ViewableObject partialPlan,
                         ViewSet viewSet, MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.initialNode = timelineNode;
@@ -404,7 +404,7 @@ public class NavigatorView extends PartialPlanView {
   }
 
   private void renderInitialNodes() {
-    if (initialNode instanceof TimelineNode) {
+    if (initialNode instanceof TimelineViewTimelineNode) {
       renderTimelineNode();
     } else if (initialNode instanceof SlotNode) {
       renderSlotNode();
@@ -424,7 +424,7 @@ public class NavigatorView extends PartialPlanView {
 
   private void renderTimelineNode() {
     // TimelineView.TimelineNode
-    PwTimeline timeline = ((TimelineNode) initialNode).getTimeline();
+    PwTimeline timeline = ((TimelineViewTimelineNode) initialNode).getTimeline();
     boolean isDraggable = true;
 //     PwObject object = partialPlan.getObject( timeline.getParentId());
 //     ModelClassNavNode objectNavNode = null;
