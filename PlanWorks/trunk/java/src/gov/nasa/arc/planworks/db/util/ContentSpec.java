@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.5 2003-08-12 22:54:18 miatauro Exp $
+// $Id: ContentSpec.java,v 1.6 2003-08-19 00:24:53 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -32,8 +32,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.RedrawNotifier;
  * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
  * The content specification class.  Interfaces directely with the database to determine which ids
  * are/should be in the current specification, and provides a method for exposing that information
- * to other classes (VizView through ViewSet).  It uses <code>BitSet</code>s to determine validity
- * and perform logic functions.
+ * to other classes (VizView through ViewSet).
  */
 
 public class ContentSpec {
@@ -65,13 +64,10 @@ public class ContentSpec {
   private static final String TOKENID = "TokenId";
   private static final String TOKENID_QUERY = "SELECT TokenId FROM Token WHERE PartialPlanId=";
   /**
-   * Creates the ContentSpec object, then makes a query to determine the size of the
-   * <code>BitSet</code> that represents the current specification, and sets all of the bits
-   * to <code>true</code>: everything is in the spec initially.
-   * @param collectionName the name of the collection in eXist which contains the plan step with
-   *                       which this ContentSpec is associated
-   * @param redrawNotifier is used to notify the views governed by the spec that the spec has
-   *                       changed, and they need to redraw themselves.
+   * Creates the ContentSpec object, then makes a query for all valid tokens
+   *
+   * @param <code>partialPlan</code> the partial plan object constrained by this object
+   * @param <code>redrawNotifier</code> an interface to inform views that they need to re-draw
    */
 
   public ContentSpec(PwPartialPlan partialPlan, RedrawNotifier redrawNotifier) 
@@ -83,20 +79,30 @@ public class ContentSpec {
     queryValidTokens();
   }
   /**
-   * Sets all of the bits to true, then informs the views governed by the spec that they need to
-   * redraw.
+   * Sets all tokens valid
    */
   public void resetSpec() throws SQLException {
     validTokenIds.clear();
     queryValidTokens();
     redrawNotifier.notifyRedraw();
   }
+  
+  /**
+   * Get all token ids
+   */
+
   private void queryValidTokens() throws SQLException {
     ResultSet validTokens = MySQLDB.queryDatabase(TOKENID_QUERY.concat(partialPlanId.toString()));
     while(validTokens.next()) {
       validTokenIds.add(new Integer(validTokens.getInt(TOKENID)));
     }
   }
+
+  /**
+   * Get the list of ids for tokens conforming to the specification
+   *
+   * @return List - valid token ids
+   */
   public List getValidTokenIds(){return validTokenIds;}
 
   public void printSpec() {
@@ -108,7 +114,7 @@ public class ContentSpec {
   }
   /**
    * Given the parametes specified by the user in the ContentSpecWindow, constructs the entire
-   * specification of valid ids through a series of database queries, then informs the windows
+   * specification of valid ids through a database query, then informs the windows
    * goverend by this spec that they need to redraw themselves to the new specification.
    * @param timeline the result of getValues() in TimelineGroupBox.
    * @param predicate the result of getValues() in PredicateGroupBox.
@@ -170,9 +176,7 @@ public class ContentSpec {
     while(tokenIds.next()) {
       validTokenIds.add(new Integer(tokenIds.getInt(TOKENID)));
     }
-    //this probably takes too long
     if(timeInterval != null) {
-      System.err.println(timeInterval);
       ListIterator tokenIdIterator = validTokenIds.listIterator();
       while(tokenIdIterator.hasNext()) {
         Integer tokenId = (Integer) tokenIdIterator.next();
@@ -193,7 +197,7 @@ public class ContentSpec {
               break;
             }
           }
-          else if(connective.indexOf(NOT) > -1) {
+          else if(connective.indexOf(OR) > -1) {
             leftIsTrue = 
               (evaluateTimeInterval(connective, start, end, earliestStart, latestEnd) || 
                leftIsTrue);
@@ -207,10 +211,20 @@ public class ContentSpec {
     redrawNotifier.notifyRedraw();
   }
 
+  /**
+   * Given a time interval and a token's earliest start and latest end times, determines whether or not
+   * the token exists in the interval.
+   *
+   * @param connective The logic function to apply (negation)
+   * @param start The beginning of the interval
+   * @param end The end of the interval
+   * @param earliestStart The earliest start time of the token
+   * @param latestEnd The latest end time of the token
+   */
+
   private boolean evaluateTimeInterval(String connective, Integer start, Integer end, 
                                        Integer earliestStart, Integer latestEnd) {
     boolean negation = (connective.indexOf(NOT) > -1);
-    System.err.println(negation);
     if(earliestStart.compareTo(start) >= 0 && earliestStart.compareTo(end) <= 0) {
       return true ^ negation;
     }
@@ -222,6 +236,12 @@ public class ContentSpec {
     }
     return false ^ negation;
   }
+
+  /**
+   * Maps predicate names to predicate Ids for use in the ContentSpecWindow
+   *
+   * @return Map name => Id
+   */
 
   public Map getPredicateNames() throws SQLException {
     HashMap predicates = new HashMap();
@@ -235,6 +255,13 @@ public class ContentSpec {
     }
     return predicates;
   }
+
+  /**
+   * Maps timeline names to timeline Ids for use in the ContentSpecWindow
+   *
+   * @return Map name => Id
+   */
+
   public Map getTimelineNames() throws SQLException {
     HashMap timelines = new HashMap();
     System.err.println("Getting timeline names...");

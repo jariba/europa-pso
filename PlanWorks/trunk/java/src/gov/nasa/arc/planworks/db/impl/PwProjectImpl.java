@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.28 2003-08-12 22:54:01 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.29 2003-08-19 00:24:29 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -52,10 +53,9 @@ public class PwProjectImpl extends PwProject {
     }*/
 
   /**
-   * <code>initProjects</code> - 
+   * <code>initProjects</code> - initialize projects in the database
    *
    */
-  //private static void initProjects() throws ResourceNotFoundException, SQLException, IOException {
   synchronized public static void initProjects() 
     throws ResourceNotFoundException, SQLException, IOException {
     projects = new HashMap();
@@ -69,6 +69,14 @@ public class PwProjectImpl extends PwProject {
     }
   } // end initProjects
 
+  /**
+   * <code>createProject</code> - create named project not in database
+   *
+   * @param name - <code>String</code> - the name of the project
+   * @return <code>PwProject</code> the complete project object.
+   * @exception DuplicateNameException - if the a probect by the given name exists in the database
+   */
+
   public static PwProject createProject(String name) throws DuplicateNameException, SQLException {
     if(MySQLDB.projectExists(name)) {
       throw new DuplicateNameException("A project named '" + name + "' already exists.");
@@ -81,7 +89,13 @@ public class PwProjectImpl extends PwProject {
     retval.setId(MySQLDB.latestProjectId());
     return retval;
   }
-  private static void connectToDataBase() throws SQLException, IOException {
+
+  /**
+   * <code>connectToDataBase</code> - establish database connection
+   * @exception IOException if the database fails to start
+   */
+
+  private static void connectToDataBase() throws IOException {
     System.err.println("Starting MySQL...");
     long startTime = System.currentTimeMillis();
     MySQLDB.startDatabase();
@@ -95,10 +109,11 @@ public class PwProjectImpl extends PwProject {
   } // end connectToExistDataBase
 
   /**
-   * <code>getProject</code> -
+   * <code>getProject</code> - get a project object by its name.
    *
-   * @param url - <code>String</code> - 
-   * @return - <code>PwProject</code> - 
+   * @param name - <code>String</code> - the name of the project
+   * @return - <code>PwProject</code> - the project datastructure
+   * @exception - <code>ResourceNotFoundException</code> if no project by that name exists
    */
   public static PwProject getProject( String name) throws ResourceNotFoundException {
     if(!projects.containsKey(name)) {
@@ -111,7 +126,7 @@ public class PwProjectImpl extends PwProject {
   /**
    * <code>listProjects</code>
    *
-   * @return - <code>List</code> - of String (url)
+   * @return - <code>List</code> - of String (names)
    */
   public static List listProjects() {
     return new ArrayList(projects.keySet());
@@ -138,12 +153,10 @@ public class PwProjectImpl extends PwProject {
 
   /**
    * <code>PwProjectImpl</code> - constructor
-   *                  inflate a restored project from
-   *                  System.getProperty("projects.xml.data.dir")
-   *                  called from PwProject.initProjects
+   *                  construct project from information in database.
    *
-   * @param url - <code>String</code> - 
-   * @param isInDb - <code>boolean</code> - 
+   * @param name - <code>String</code> - project name
+   * @param isInDb - <code>boolean</code> - boolean used to differentiate between constructors
    * @exception ResourceNotFoundException if an error occurs
    */
   public PwProjectImpl( String name, boolean isInDb) 
@@ -155,7 +168,7 @@ public class PwProjectImpl extends PwProject {
       throw new ResourceNotFoundException("Project " + name + " not found in database.");
     }
     planningSequences = new ArrayList();
-    HashMap sequences = MySQLDB.getSequences(id);
+    Map sequences = MySQLDB.getSequences(id);
     Iterator seqIdIterator = sequences.keySet().iterator();
     while(seqIdIterator.hasNext()) {
       Integer sequenceId = (Integer) seqIdIterator.next();
@@ -165,6 +178,12 @@ public class PwProjectImpl extends PwProject {
     // this project is already in projectNames & projectUrls
     //projects.add(name, this);
   } // end  constructor PwProjectImpl.openProject
+
+  /**
+   * <code>getId</code> - get the project's Id.
+   *
+   * @return - <code>Integer</code> - the Id.
+   */
 
   public Integer getId() {
     return id;
@@ -188,7 +207,6 @@ public class PwProjectImpl extends PwProject {
    *
    * @return - <code>List</code> -  List of Strings (urls of sequences)
    *                                each sequence is set of partial plans
-   *                                e.g. monkey (PlanWorks/xml/test/monkey)
    */
   public List listPlanningSequences() {
     ArrayList retval = new ArrayList();
@@ -202,7 +220,7 @@ public class PwProjectImpl extends PwProject {
   /**
    * <code>getPlanningSequence</code>
    *
-   * @param sequenceName - <code>String</code> - 
+   * @param url - <code>String</code> - 
    * @return - <code>PwPlanningSequence</code> - 
    */
   public PwPlanningSequence getPlanningSequence( String url)
@@ -229,8 +247,7 @@ public class PwProjectImpl extends PwProject {
   }
 
   /**
-   * <code>delete</code> - remove project from /xml/proj/projects.xml, and
-   *                      remove /xml/proj/<projectName>.xml
+   * <code>delete</code> - remove this project from list of projects and database
    *
    * @exception Exception if an error occurs
    */

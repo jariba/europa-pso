@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * A class that provides List semantics while guarenteeing that all objects contained are unique 
+ * as determined by their equals() methods.
+ */
+
 public class UniqueSet extends ArrayList {
   public UniqueSet() {
     super();

@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+/**
+ * A class that provides facilities for representing one-to-many relationships.  Modeled closely after
+ * the HashMap class.
+ */
+
 public class OneToManyMap extends HashMap {
   public OneToManyMap() {
     super();

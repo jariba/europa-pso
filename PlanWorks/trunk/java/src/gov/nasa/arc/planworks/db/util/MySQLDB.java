@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
 import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
@@ -41,6 +42,11 @@ public class MySQLDB {
     dbIsConnected = false;
     queryTime = 0;
   }
+  
+  /**
+   * Start the database and install a handler that shuts down the database for all exit types except
+   * hard abort of the JVM
+   */
   synchronized public static void startDatabase() throws IllegalArgumentException, IOException, SecurityException
   {
     if(dbIsStarted) {
@@ -71,6 +77,11 @@ public class MySQLDB {
         }
       });
   }
+
+  /**
+   * Stop the database
+   */
+
   synchronized public static void stopDatabase() throws IllegalArgumentException, IOException, SecurityException
   {
     if(!dbIsStarted) {
@@ -81,6 +92,11 @@ public class MySQLDB {
     dbStopString.append(System.getProperty("mysql.sock")).append(" shutdown");
     Runtime.getRuntime().exec(dbStopString.toString());
   }
+  
+  /**
+   * Establish a connection to the database
+   */
+
   synchronized public static void registerDatabase() throws IOException {
     if(!dbIsStarted) {
       startDatabase();
@@ -107,6 +123,11 @@ public class MySQLDB {
       System.exit(-1);
     }
   }
+  
+  /**
+   * Close the database connection.
+   */
+
   synchronized public static void unregisterDatabase() {
     if(!dbIsStarted) {
       return;
@@ -120,11 +141,19 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
-  synchronized public static boolean isConnected(){return dbIsConnected;}
+
+  /**
+   * Execute a SQL query.
+   * @param query
+   */
+
   synchronized public static ResultSet queryDatabase(String query) {
     Statement stmt = null;
     ResultSet result = null;
     try {
+      if(conn.isClosed()) {
+        registerDatabase();
+      }
       long t1 = System.currentTimeMillis();
       stmt = conn.createStatement();
       result = stmt.executeQuery(query);
@@ -135,12 +164,25 @@ public class MySQLDB {
       sqle.printStackTrace();
       return null;
     }
+    catch(IOException ioe) {
+      ioe.printStackTrace();
+      System.exit(-1);
+    }
     return result;
   }
+
+  /**
+   * Execute a SQL statement that modifies the database.
+   * @param update
+   */
+
   synchronized public static int updateDatabase(String update) {
     Statement stmt = null;
     int result = -1;
     try {
+      if(conn.isClosed()) {
+        registerDatabase();
+      }
       long t1 = System.currentTimeMillis();
       stmt = conn.createStatement();
       result = stmt.executeUpdate(update);
@@ -150,6 +192,10 @@ public class MySQLDB {
       System.err.println(sqle);
       sqle.printStackTrace();
       return -1;
+    }
+    catch(IOException ioe) {
+      ioe.printStackTrace();
+      System.exit(-1);
     }
     return result;
   }
@@ -195,9 +241,25 @@ public class MySQLDB {
     }
   }
   */
+
+  /**
+   * Load a file into the database
+   *
+   * @param file The file to load
+   * @param tableName The name of the table into which the file should be loaded
+   */
+
   synchronized public static void loadFile(String file, String tableName) {
     updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
   }
+
+  /**
+   * Get the model name of a partial plan by the partial plan's Id.
+   *
+   * @param partialPlanId
+   * @return String - the name of the model.
+   */
+
   synchronized public static String queryPartialPlanModelById(Long partialPlanId) {
     try {
       ResultSet model = 
@@ -211,6 +273,13 @@ public class MySQLDB {
       return null;
     }
   }
+
+  /**
+   * Get the names of all projects in the database.
+   *
+   * @return List - list of Strings
+   */
+
   synchronized public static List getProjectNames() {
     ArrayList retval = new ArrayList();
     try {
@@ -223,6 +292,14 @@ public class MySQLDB {
     }
     return retval;
   }
+
+  /**
+   * Determine the existence of a project in the database by its name
+   *
+   * @param name
+   * @return boolean
+   */
+
   synchronized public static boolean projectExists(String name) {
     try {
       ResultSet rows = 
@@ -234,6 +311,14 @@ public class MySQLDB {
     }
     return false;
   }
+
+  /**
+   * Determine the existence of a planning sequence in the database by its URL
+   *
+   * @param url
+   * @return boolean
+   */
+
   synchronized public static boolean sequenceExists(String url) {
     try {
       ResultSet rows =
@@ -244,6 +329,15 @@ public class MySQLDB {
     catch(SQLException sqle){}
     return false;
   }
+  
+  /**
+   * Determine the existence of a partial plan by its sequence Id and name.
+   *
+   * @param sequenceId
+   * @param name
+   * @return boolean
+   */
+
   synchronized public static boolean partialPlanExists(Integer sequenceId, String name) {
     try {
       ResultSet rows =
@@ -254,9 +348,23 @@ public class MySQLDB {
     catch(SQLException sqle){}
     return false;
   }
+
+  /**
+   * Create a project entry in the database
+   *
+   * @param name The name of the project.
+   */
+
   synchronized public static void addProject(String name) {
     updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("')"));
   }
+
+  /**
+   * Get the most recently created project's Id
+   *
+   * @return Integer
+   */
+
   synchronized public static Integer latestProjectId() {
     try {
       ResultSet newId = queryDatabase("SELECT MAX(ProjectId) AS ProjectId from Project");
@@ -267,9 +375,24 @@ public class MySQLDB {
     }
     return null;
   }
+
+  /**
+   * Create a planning sequence entry in the database
+   *
+   * @param url The sequence's url
+   * @param projectId The project to which the sequence will be added
+   */
+
   synchronized public static void addSequence(String url, Integer projectId) {
     updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId) VALUES ('".concat(url).concat("', ").concat(projectId.toString()).concat(")"));
   }
+
+  /**
+   * Get the most recently created sequence's Id
+   *
+   * @return Integer
+   */
+
   synchronized public static Integer latestSequenceId() {
     try {
       ResultSet newId = queryDatabase("SELECT MAX(SequenceId) AS SequenceId from Sequence");
@@ -280,6 +403,14 @@ public class MySQLDB {
     }
     return null;
   }
+
+  /**
+   * Get the Id of a project given its name
+   *
+   * @param name
+   * @return Integer
+   */
+
   synchronized public static Integer getProjectIdByName(String name) {
     try {
       ResultSet projectId = queryDatabase("SELECT ProjectId FROM Project WHERE ProjectName='".concat(name).concat("'"));
@@ -294,7 +425,15 @@ public class MySQLDB {
     }
     return null;
   }
-  synchronized public static HashMap getSequences(Integer projectId) {
+
+  /**
+   * Get a mapping of sequence Ids to sequence URLs given a project Id
+   *
+   * @param projectId
+   * @return Map
+   */
+
+  synchronized public static Map getSequences(Integer projectId) {
     HashMap retval = null;
     try {
       ResultSet sequences = 
@@ -308,6 +447,13 @@ public class MySQLDB {
     }
     return retval;
   }
+
+  /**
+   * Remove a project and all of its substructures from the database.
+   *
+   * @param id
+   */
+
   synchronized public static void deleteProject(Integer id) {
     try {
       ResultSet sequenceIds = 
@@ -339,6 +485,14 @@ public class MySQLDB {
     catch(SQLException sqle) {
     }
   }
+
+  /**
+   * Get the names of all partial plans in a planning sequence
+   *
+   * @param sequenceId
+   * @return List of Strings
+   */
+
   synchronized public static List getPlanNamesInSequence(Integer sequenceId) {
     ArrayList retval = new ArrayList();
     try {
@@ -352,9 +506,24 @@ public class MySQLDB {
     }
     return retval;
   }
+
+  /**
+   * Set the sequence Id of a partial plan to a non-negative value
+   * 
+   * @param sequenceId
+   */
   synchronized public static void updatePartialPlanSequenceId(Integer sequenceId) {
     updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceId.toString()).concat(" WHERE SequenceId=-1"));
   }
+  
+  /**
+   * Get the Id for the most recently created partial plan
+   *
+   * @param sequenceId
+   * @param name The name of the partial plan
+   * @return Long
+   */
+
   synchronized public static Long getNewPartialPlanId(Integer sequenceId, String name) {
     Long retval = null;
     try {
@@ -367,6 +536,13 @@ public class MySQLDB {
     }
     return retval;
   }
+
+  /**
+   * Instantiate PwObjectImpl objects from data in the database
+   * 
+   * @param partialPlan The partial plan object to which the PwObjectImpl objects should be attached
+   */
+
   synchronized public static void createObjects(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet objects = 
@@ -381,6 +557,13 @@ public class MySQLDB {
     catch(SQLException sqle) {
     }
   }
+
+  /**
+   * Instantiate the Free Token/Timeline/Slot/Token structure from data in the database
+   *
+   * @param partialPlan The partial plan object to which the structure should be attached
+   */
+
   synchronized public static void createTimelineSlotTokenNodesStructure(PwPartialPlanImpl partialPlan) {
     List objectIdList = partialPlan.getObjectIdList();
     ListIterator objectIdIterator = objectIdList.listIterator();
@@ -438,15 +621,15 @@ public class MySQLDB {
           new Integer(timelineSlotTokens.getInt("Token.DurationVarId"));
         Integer currTokenTimelineId = new Integer(timelineSlotTokens.getInt("Token.TimelineId"));
 
-        if(!paramVarId.equals(currParamVarId) && !currParamVarId.equals(NULL)) {
-          if(!paramVars.contains(currParamVarId)) {
-            paramVars.add(currParamVarId);
+        if(!currParamVarId.equals(NULL)) {
+          if(!paramVarId.equals(M1) && !paramVars.contains(paramVarId)) {
+            paramVars.add(paramVarId);
           }
           paramVarId = currParamVarId;
         }
-        if(!tokenRelationId.equals(currTokenRelationId) && !currTokenRelationId.equals(NULL)) {
-          if(!tokenRelations.contains(currTokenRelationId)) {
-            tokenRelations.add(currTokenRelationId);
+        if(!currTokenRelationId.equals(NULL)) {
+          if(!tokenRelationId.equals(M1) && !tokenRelations.contains(tokenRelationId)) {
+            tokenRelations.add(tokenRelationId);
           }
           tokenRelationId = currTokenRelationId;
         }
@@ -522,7 +705,16 @@ public class MySQLDB {
           if(!currParamVarId.equals(NULL) && !paramVars.contains(currParamVarId)) {
             paramVars.add(currParamVarId);
           }
+          tokenRelationId = currTokenRelationId;
+          paramVarId = currParamVarId;
         }
+      }
+      if(!tokenRelations.contains(tokenRelationId) && !tokenRelationId.equals(NULL) &&
+         !tokenRelationId.equals(M1)) {
+        tokenRelations.add(tokenRelationId);
+      }
+      if(!paramVars.contains(paramVarId) && !paramVarId.equals(NULL) && !paramVarId.equals(M1)) {
+        paramVars.add(paramVarId);
       }
       slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
                     tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
@@ -584,12 +776,6 @@ public class MySQLDB {
           tokenDurationVarId = currTokenEndVarId;
           tokenRejectVarId = currTokenRejectVarId;
           tokenObjectVarId = currTokenObjectVarId;
-          if(!currTokenRelationId.equals(NULL) && !tokenRelations.contains(currTokenRelationId)) {
-            tokenRelations.add(currTokenRelationId);
-          }
-          if(!currParamVarId.equals(NULL) && !paramVars.contains(currParamVarId)) {
-            paramVars.add(currParamVarId);
-          }
         }
       }
       token = new PwTokenImpl(tokenId, tokenIsValueToken, (Integer) null,
@@ -606,11 +792,18 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
+
+  /**
+   * Instantiate PwConstraintImpl objects from data in the database
+   * 
+   * @param partialPlan The partial plan to which the constraints should be attached.
+   */
+
   synchronized public static void queryConstraints(PwPartialPlanImpl partialPlan) {
     try {
       long t1 = System.currentTimeMillis();
       ResultSet constraints = 
-        queryDatabase("SELECT VConstraint.ConstraintId, VConstraint.ConstraintName, VConstraint.ConstraintType, ConstraintVarMap.VariableId FROM VConstraint LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=VConstraint.PartialPlanId && ConstraintVarMap.ConstraintId=VConstraint.ConstraintId WHERE VConstraint.PartialPlanId=".concat(partialPlan.getId().toString()));
+        queryDatabase("SELECT VConstraint.ConstraintId, VConstraint.ConstraintName, VConstraint.ConstraintType, ConstraintVarMap.VariableId FROM VConstraint LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=VConstraint.PartialPlanId && ConstraintVarMap.ConstraintId=VConstraint.ConstraintId WHERE VConstraint.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" ORDER BY VConstraint.ConstraintId"));
       System.err.println("Time spent in constraint query: " + 
                          (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
@@ -624,14 +817,21 @@ public class MySQLDB {
         String currConstraintName = constraints.getString("VConstraint.ConstraintName");
         String currConstraintType = constraints.getString("VConstraint.ConstraintType");
         Integer currVariableId = new Integer(constraints.getInt("ConstraintVarMap.VariableId"));
-        if(!variableId.equals(currVariableId) && !currVariableId.equals(NULL)) {
-          if(!constrainedVarIds.contains(currVariableId) && !variableId.equals(M1)) {
+        //if(!variableId.equals(currVariableId) && !currVariableId.equals(NULL)) {
+        //  if(!constrainedVarIds.contains(currVariableId) && !variableId.equals(M1)) {
+        //    constrainedVarIds.add(variableId);
+        //  }
+        //  variableId = currVariableId;
+        //}
+        if(!currVariableId.equals(NULL)) {
+          if(!variableId.equals(M1) && !constrainedVarIds.contains(variableId)) {
             constrainedVarIds.add(variableId);
           }
           variableId = currVariableId;
         }
         if(!constraintId.equals(currConstraintId) && !currConstraintId.equals(NULL)) {
           if(!constraintId.equals(M1)) {
+            //System.err.println("Creating constraint on vars " + constrainedVarIds);
             partialPlan.addConstraint(constraintId,
                                       new PwConstraintImpl(constraintName, constraintId,
                                                            constraintType, constrainedVarIds,
@@ -655,6 +855,13 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
+
+  /**
+   * Instantiate PwPredicateImpl/PwParameterImpl objects from data in the database
+   *
+   * @param partialPlan The partial plan to which the PwPredicateImpl structure should be attached.
+   */
+
   synchronized public static void queryPredicates(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet predicates = 
@@ -680,7 +887,14 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
+
+  /**
+   * Instantiate PwVariableImpl objects from data in the database
+   *
+   * @param partialPlan The partial plan to which the PwVariableImpls should be attached
+   */
   synchronized public static void queryVariables(PwPartialPlanImpl partialPlan) {
+    //abandon all hope, ye who enter here...
     PwDomainImpl domainImpl = null;
     try {
       System.err.println("Executing variable query...");
@@ -800,6 +1014,13 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
+
+  /**
+   * Instantiate PwTokenRelationImpl objects from data in the database.
+   *
+   * @param partialPlan The partial plan to which the PwTokenRelationImpls should be attached.
+   */
+
   synchronized public static void queryTokenRelations(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet tokenRelations = 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.13 2003-08-12 22:54:02 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.14 2003-08-19 00:24:30 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -38,7 +38,7 @@ public class PwTimelineImpl implements PwTimeline {
    * <code>Timeline</code> - constructor 
    *
    * @param name - <code>String</code> - 
-   * @param id - <code>int</code> - 
+   * @param id - <code>Integer</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
   public PwTimelineImpl( String name, Integer id, Integer objectId, 
@@ -62,7 +62,7 @@ public class PwTimelineImpl implements PwTimeline {
   /**
    * <code>getId</code>
    *
-   * @return name - <code>int</code> -
+   * @return name - <code>Integer</code> -
    */
   public Integer getId() {
     return id;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.8 2003-08-12 22:53:59 miatauro Exp $
+// $Id: PwConstraintImpl.java,v 1.9 2003-08-19 00:24:23 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -40,7 +40,7 @@ public class PwConstraintImpl implements PwConstraint {
    * <code>PwConstraintImpl</code> - constructor 
    *
    * @param name - <code>String</code> - 
-   * @param id - <code>int</code> - 
+   * @param id - <code>Integer</code> - 
    * @param type - <code>String</code> - 
    * @param variableIds - <code>List of Integer</code> -
    * @param partialPlan - <code>PwPartialPlan</code> - 
@@ -67,7 +67,7 @@ public class PwConstraintImpl implements PwConstraint {
   /**
    * <code>getId</code>
    *
-   * @return name - <code>int</code> -
+   * @return name - <code>Integer</code> -
    */
   public Integer getId() {
     return id;
@@ -95,4 +95,12 @@ public class PwConstraintImpl implements PwConstraint {
     return retval;
   }
 
+  /**
+   * <code>getVariableIdList</code>
+   *
+   * @return - <code>List</code> - of Integer
+   */
+  public List getVariableIdList() {
+    return new ArrayList(variableIds);
+  }
 } // end class PwConstraintImpl

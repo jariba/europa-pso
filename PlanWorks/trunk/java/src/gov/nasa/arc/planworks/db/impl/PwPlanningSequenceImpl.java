@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.23 2003-08-12 22:54:01 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.24 2003-08-19 00:24:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -58,11 +58,11 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * <code>PwPlanningSequenceImpl</code> - constructor - for CreateProject
    *
    * @param url - <code>String</code> - pathname of planning sequence
-   * @param project - <code>PwProjectImpl</code> - 
-   * @param model - <code>PwModelImpl</code> - 
+   * @param id - <code>Integer</code> - id of sequence
+   * @param project - <code>PwProjectImpl</code> - the project to which the sequence will be added
+   * @param model - <code>PwModelImpl</code> - not currently used
    * @exception ResourceNotFoundException if an error occurs
    */
-  //from new PwProject(blah, true);
   public PwPlanningSequenceImpl( String url, Integer id, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException, SQLException {
     System.err.println("In PwPlanningSequenceImpl(String, Integer, PwProjectImpl, PwModelImpl");
@@ -98,12 +98,10 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * <code>PwPlanningSequenceImpl</code> - constructor - for OpenProject
    *
    * @param url - <code>String</code> - pathname of planning sequence
-   * @param project - <code>PwProjectImpl</code> - 
-   * @param model - <code>PwModelImpl</code> - 
-   * @param partialPlanNames - <code>List</code> - 
+   * @param project - <code>PwProjectImpl</code> - project to which the sequence will be added
+   * @param model - <code>PwModelImpl</code> - not currently used
    * @exception ResourceNotFoundException if an error occurs
    */ 
-  //from addPlanningSequence(url)
   public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException, SQLException {
     System.err.println("In PwPlanningSequenceImpl(String, PwProjectImpl, PwModelImpl)");
@@ -205,12 +203,25 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     }
   } // end listTransactions
 
+  /**
+   * <code>listPartialPlans</code>
+   *    get a list of all partial plans in the planning sequence
+   *
+   * @return List of PwPartialPlan objects
+   */
   public List listPartialPlans() {
-    return partialPlans;
+    return new ArrayList(partialPlans);
   }
 
+  /**
+   * <code>listPartialPlanNames</code>
+   *    get a list of the names of every partial plan in the sequence
+   *
+   * @return List of Strings
+   */
+
   public List listPartialPlanNames() {
-    return partialPlanNames;
+    return new ArrayList(partialPlanNames);
   }
   /**
    * <code>getPartialPlan</code>
@@ -256,8 +267,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     System.err.println("In addPartialPlan");
     int index = -1;
     if((index = partialPlanNames.indexOf(partialPlanName)) != -1) {
-      PwPartialPlan partialPlan =
-        new PwPartialPlanImpl(url, partialPlanName, id);
+      PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, id);
+      partialPlan.checkPlan();
       partialPlans.set(index, partialPlan);
       return partialPlan;
     }

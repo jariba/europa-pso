@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwParameterImpl.java,v 1.6 2003-08-12 22:54:00 miatauro Exp $
+// $Id: PwParameterImpl.java,v 1.7 2003-08-19 00:24:25 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -35,7 +35,7 @@ public class PwParameterImpl implements PwParameter {
    * <code>Parameter</code> - constructor 
    *
    * @param name - <code>String</code> - 
-   * @param id - <code>int</code> - 
+   * @param id - <code>Integer</code> - 
    */
   public PwParameterImpl( Integer id, String name) {
     this.name = name;
@@ -54,7 +54,7 @@ public class PwParameterImpl implements PwParameter {
   /**
    * <code>getId</code>
    *
-   * @return name - <code>int</code> -
+   * @return name - <code>Integer</code> -
    */
   public Integer getId() {
     return id;

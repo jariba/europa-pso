@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.19 2003-08-12 22:54:02 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.20 2003-08-19 00:24:31 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -28,7 +28,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 
 /**
- * <code>PwTokenImpl</code> - Java mapping of XML structure
+ * <code>PwTokenImpl</code> - Java mapping of database structure
  *                       /PartialPlan/Object/Timeline/Slot/Token
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
@@ -47,8 +47,8 @@ public class PwTokenImpl implements PwToken {
   private Integer objectId;
   private Integer rejectVarId;
   private Integer timelineId;
-  private List tokenRelationIds; // element String
-  private List paramVarIds; // element String
+  private List tokenRelationIds; // element Integer
+  private List paramVarIds; // element Integer
   private Integer slotId;
   
   private PwPartialPlanImpl partialPlan;
@@ -79,16 +79,26 @@ public class PwTokenImpl implements PwToken {
   /**
    * <code>getId</code>
    *
-   * @return name - <code>Integer</code> -
+   * @return <code>Integer</code>
    */
   public Integer getId() {
     return id;
   }
 
+  /**
+   * <code>getTimelineId</code>
+   *
+   * @return <code>Integer</code>
+   */
   public Integer getTimelineId() {
     return timelineId;
   }
   
+  /**
+   * <code>getObjectId</code>
+   *
+   * @return <code>Integer</code>
+   */
   public Integer getObjectId() {
     return objectId;
   }
@@ -119,13 +129,39 @@ public class PwTokenImpl implements PwToken {
     return partialPlan.getVariable( endVarId);
   }
 
+  /**
+   * <code>getEarliestStart</code> - get lowest value of start variable's domain
+   *
+   * @return <code>Integer</code> - earliest timepoint
+   */
+
   public Integer getEarliestStart() {
-    return new Integer(partialPlan.getVariable(startVarId).getDomain().getLowerBound());
+    String earliestStart = partialPlan.getVariable(startVarId).getDomain().getLowerBound();
+    if(earliestStart.equals(PwDomain.PLUS_INFINITY)) {
+      return new Integer(Integer.MAX_VALUE);
+    }
+    else if(earliestStart.equals(PwDomain.MINUS_INFINITY)) {
+      return new Integer(Integer.MIN_VALUE);
+    }
+    return new Integer(earliestStart);
   }
 
+  /**
+   * <code>getLatestEnd</code> - get highest value of end variable's domain
+   *
+   * @return <code>Integer</code> - latest timepoint
+   */
+
   public Integer getLatestEnd() {
-    return new Integer(partialPlan.getVariable(endVarId).getDomain().getUpperBound());
-  }
+    String latestEnd = partialPlan.getVariable(endVarId).getDomain().getUpperBound();
+    if(latestEnd.equals(PwDomain.PLUS_INFINITY)) {
+      return new Integer(Integer.MAX_VALUE);
+    }
+    else if(latestEnd.equals(PwDomain.MINUS_INFINITY)) {
+      return new Integer(Integer.MIN_VALUE);
+    }
+    return new Integer(latestEnd);
+}
 
   /**
    * <code>getDurationVariable</code>
@@ -198,7 +234,7 @@ public class PwTokenImpl implements PwToken {
   /**
    * <code>getSlotId</code>
    *
-   * @return - <code>String</code> - 
+   * @return - <code>Integer</code> - 
    */
   public Integer getSlotId() {
     return this.slotId;

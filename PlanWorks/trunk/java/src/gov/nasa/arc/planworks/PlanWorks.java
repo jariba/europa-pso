@@ -4,12 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.39 2003-08-12 21:32:36 miatauro Exp $
+// $Id: PlanWorks.java,v 1.40 2003-08-19 00:23:33 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -42,6 +44,7 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.mdi.SplashWindow;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.ProjectNameDialog;
@@ -119,6 +122,22 @@ public class PlanWorks extends MDIDesktopFrame {
   private String currentSequenceDirectory; // pathname
   private PwProject currentProject;
   private ViewManager viewManager;
+  private static boolean windowBuilt = false;
+  private static boolean usingSplash;
+
+  static {
+    String imagePath = null;
+    if((imagePath = System.getProperty("splash.image")) != null) {
+      usingSplash = true;
+      Image splashImage = Toolkit.getDefaultToolkit().createImage(imagePath);
+      SplashWindow.splash(splashImage);
+    }
+    else {
+      usingSplash = false;
+    }
+  }
+  
+  synchronized public static boolean isWindowBuilt() { return windowBuilt;}
 
   /**
    * <code>PlanWorks</code> - constructor 
@@ -152,6 +171,9 @@ public class PlanWorks extends MDIDesktopFrame {
       }
     }
     this.setVisible( true);
+    if(usingSplash) {
+      this.toBack();
+    }
 
     setProjectMenuEnabled(CREATE_MENU, true);
     setProjectMenuEnabled( ADDSEQ_MENU, false);
@@ -163,6 +185,10 @@ public class PlanWorks extends MDIDesktopFrame {
       setProjectMenuEnabled( DELETE_MENU, false);
     }
     projectMenu.setEnabled(true);
+    windowBuilt = true;
+    if(usingSplash) {
+      this.toFront();
+    }
   } // end constructor 
 
 
@@ -394,6 +420,7 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
           System.err.println( rnfExcep);
+          rnfExcep.printStackTrace();
           isProjectCreated = false;
       } catch (DuplicateNameException dupExcep) {
         int index = dupExcep.getMessage().indexOf( ":");
@@ -401,6 +428,7 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, dupExcep.getMessage().substring( index + 1),
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
           System.err.println( dupExcep);
+          dupExcep.printStackTrace();
           isProjectCreated = false; 
       } catch (SQLException sqlExcep) {
         StringBuffer errorOutput =
@@ -423,6 +451,7 @@ public class PlanWorks extends MDIDesktopFrame {
         JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage(),
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
+        e.printStackTrace();
         isProjectCreated = false;
       }
     }
@@ -463,6 +492,7 @@ public class PlanWorks extends MDIDesktopFrame {
               (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
                "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
             System.err.println( rnfExcep);
+            rnfExcep.printStackTrace();
           }
           break;
         }
@@ -528,6 +558,7 @@ public class PlanWorks extends MDIDesktopFrame {
               (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
                "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
             System.err.println( rnfExcep);
+            rnfExcep.printStackTrace();
           } catch (Exception excep) {
             excep.printStackTrace();
             System.err.println( " delete: excep " + excep);
@@ -536,6 +567,7 @@ public class PlanWorks extends MDIDesktopFrame {
               (PlanWorks.this, excep.getMessage().substring( index + 1),
                "Exception", JOptionPane.ERROR_MESSAGE);
             System.err.println( excep);
+            excep.printStackTrace();
           }
           break;
         }
@@ -587,12 +619,14 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, dupExcep.getMessage().substring( index + 1),
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( dupExcep);
+        dupExcep.printStackTrace();
       } catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog
           (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
+        rnfExcep.printStackTrace();
       } catch (SQLException sqlExcep) {
         StringBuffer errorOutput =
           new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
@@ -659,6 +693,7 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
+        rnfExcep.printStackTrace();
       }
     }
     return seqPartialPlanViewMenu;
@@ -780,6 +815,7 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
+        rnfExcep.printStackTrace();
       }
     } //end run
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicateImpl.java,v 1.8 2003-08-12 22:54:01 miatauro Exp $
+// $Id: PwPredicateImpl.java,v 1.9 2003-08-19 00:24:28 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -37,8 +37,8 @@ public class PwPredicateImpl implements PwPredicate {
   /**
    * <code>PwPredicateImpl</code> - constructor 
    *
+   * @param id - <code>Integer</code> - 
    * @param name - <code>String</code> - 
-   * @param id - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
   public PwPredicateImpl( Integer id, String name, PwPartialPlanImpl partialPlan) {
@@ -60,7 +60,7 @@ public class PwPredicateImpl implements PwPredicate {
   /**
    * <code>getId</code>
    *
-   * @return name - <code>String</code> -
+   * @return name - <code>Integer</code> -
    */
   public Integer getId() {
     return id;
@@ -82,8 +82,8 @@ public class PwPredicateImpl implements PwPredicate {
   /**
    * <code>addParameter</code>
    *
+   * @param id - <code>Integer</code> - 
    * @param name - <code>String</code> - 
-   * @param id - <code>String</code> - 
    * @return - <code>PwParameterImpl</code> - 
    */
   public PwParameterImpl addParameter( Integer id, String name) {

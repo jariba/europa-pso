@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.31 2003-08-12 22:54:00 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.32 2003-08-19 00:24:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -35,8 +36,6 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTokenRelation;
 import gov.nasa.arc.planworks.db.PwVariable;
-//import gov.nasa.arc.planworks.db.util.XmlDBeXist;
-//import gov.nasa.arc.planworks.db.util.XmlFilenameFilter;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
@@ -51,7 +50,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  */
 public class PwPartialPlanImpl implements PwPartialPlan {
 
-  private String url; // pathaname of xml file (no extension)
+  private String url; 
   private Integer projectId;
   private Integer sequenceId;
 
@@ -70,6 +69,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
   private int minId, maxId;
 
+  /**
+   * <code>PwPartialPlanImpl</code> - initialize storage structures then call createPartialPlan()
+   *
+   * @param - <code>url</code> - path to a directory containing plan data
+   * @param - <code>planName</code> - the name of the partial plan (usually stepN)
+   * @param - <code>sequenceId</code> - the Id of the sequence to which this plan is attached.
+   * @exception ResourceNotFoundException if the plan data is invalid
+   */
+
   public PwPartialPlanImpl(String url, String planName, Integer sequenceId)  
     throws ResourceNotFoundException, SQLException {
     System.err.println("In PwPartialPlanImpl");
@@ -86,6 +94,13 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     this.name = planName;
     createPartialPlan(sequenceId);
   }
+
+  /**
+   * <code>createPartialPlan</code> - load plan data into the database and/or construct substructures
+   *
+   * @param - <code>sequenceId</code> - Id of the sequence to which this plan is attached
+   * @exception ResourceNotFoundException if the plan data is invalid
+   */
 
   private void createPartialPlan(Integer sequenceId) throws ResourceNotFoundException, SQLException  {
     System.err.println( "Creating PwPartialPlan  ..." + url);
@@ -127,6 +142,10 @@ public class PwPartialPlanImpl implements PwPartialPlan {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end createPartialPlan
 
+  /**
+   * <code>fillElementMaps</code> - construct constraint, predicate, token relation, and variable
+   *                                structures.
+   */
 
   private final void fillElementMaps() {
 
@@ -155,25 +174,26 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   /**
-   * <code>getObjectIdList</code>
+   * <code>getObjectIdList</code> - get complete list of Ids for PwObject objects
    *
-   * @return - <code>List</code> - of String
+   * @return - <code>List</code> - of Integer
    */
   public List getObjectIdList() {
-    Object [] temp = objectMap.keySet().toArray();
+    /*Object [] temp = objectMap.keySet().toArray();
     Integer [] objectIds = new Integer[temp.length];
     System.arraycopy(temp, 0, objectIds, 0, temp.length);
     ArrayList retval = new ArrayList();
     for(int i = 0; i < objectIds.length; i++) {
       retval.add(objectIds[i]);
-    }
-    return retval;
+      }
+      return retval;*/
+    return new ArrayList(objectMap.keySet());
   }
 
   /**
-   * <code>getObjectImpl</code>
+   * <code>getObjectImpl</code> - get a PwObjectImpl object.  Not accessable outside of this package
    *
-   * @param id - <code>int</code> - 
+   * @param id - <code>Integer</code> - the Id of the desired PwObjectImpl
    * @return - <code>PwObjectImpl</code> - 
    */
   public PwObjectImpl getObjectImpl( Integer id) {
@@ -186,7 +206,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     
 
   /**
-   * <code>getUrl</code>
+   * <code>getUrl</code> - get URL of partial plan files
    *
    * @return - <code>String</code> - 
    */
@@ -194,17 +214,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     return url;
   }
 
+  /**
+   * <code>getId</code> - get the Id of this partial plan
+   *
+   *@return - <code>Long</code>
+   */
   public Long getId() {
     return id;
   }
 
-  public int getMinId() {
-    return minId;
-  }
-
-  public int getMaxId() {
-    return maxId;
-  }
   /**
    * <code>getObjectList</code> -
    *
@@ -215,6 +233,12 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     retval.addAll(objectMap.values());
     return retval;
   }
+
+  /**
+   * <code>getFreeTokenList</code> - get a list of free tokens in this plan
+   *
+   * @return - <code>List</code> - of PwToken 
+   */
 
   public List getFreeTokenList() {
     List retval = new ArrayList();
@@ -229,9 +253,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   }
 
   /**
-   * <code>getObject</code> - if not in Map, query
+   * <code>getObject</code> - get object by Id
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwObject</code> - 
    */
   public PwObject getObject( Integer id) {
@@ -240,9 +264,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   /**
-   * <code>getTimeline</code> - if not in Map, query
+   * <code>getTimeline</code> - get timeline by id
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwTimeline</code> - 
    */
   public PwTimeline getTimeline( Integer id) {
@@ -251,9 +275,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   /**
-   * <code>getSlot</code> - if not in Map, query
+   * <code>getSlot</code> - get slot by id
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwSlot</code> - 
    */
   public PwSlot getSlot( Integer id) {
@@ -262,9 +286,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   /**
-   * <code>getToken</code> - if not in Map, query
+   * <code>getToken</code> - get token by id
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwToken</code> - 
    */
   public PwToken getToken( Integer id) {
@@ -273,9 +297,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   /**
-   * <code>getConstraint</code> - if not in Map, query
+   * <code>getConstraint</code> - get constraint by id
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwConstraint</code> - 
    */
   public PwConstraint getConstraint( Integer id) {
@@ -284,9 +308,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   /**
-   * <code>getParameter</code> - if not in Map, query
+   * <code>getParameter</code> - get parameter by id
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Id</code> - 
    * @return - <code>PwParameter</code> - 
    */
   public PwParameter getParameter( Integer id) {
@@ -295,9 +319,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   /**
-   * <code>getPredicate</code> - if not in Map, query
+   * <code>getPredicate</code> - get predicate by id
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwPredicate</code> - 
    */
   public PwPredicate getPredicate( Integer id) {
@@ -306,9 +330,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   /**
-   * <code>getTokenRelation</code> - if not in Map, query
+   * <code>getTokenRelation</code> - get token relation by id
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwTokenRelation</code> - 
    */
   public PwTokenRelation getTokenRelation( Integer id) {
@@ -317,9 +341,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   /**
-   * <code>getVariable</code> - if not in Map, query
+   * <code>getVariable</code> - get variable by id
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @return - <code>PwVariable</code> - 
    */
   public PwVariable getVariable( Integer id) {
@@ -330,9 +354,22 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   // END IMPLEMENT PwPartialPlan INTERFACE 
     
 
+  /**
+   * <code>tokenExists</code> - check to see if token with specified id is present
+   *
+   * @return - <code>boolean</code> - return value of tokenMap.containsKey()
+   */
+
   public boolean tokenExists(Integer id) {
     return tokenMap.containsKey(id);
   }
+
+  /**
+   * <code>addObject</code> - add a PwObjectImpl object to the partial plan
+   *
+   * @param id - <code>Integer</code> - the Id of the PwObjectImpl
+   * @param object - <code>PwObjectImpl</code>
+   */
 
   public void addObject(Integer id, PwObjectImpl object) {
     if(objectMap.containsKey(id)) {
@@ -342,9 +379,9 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   }
 
   /**
-   * <code>addConstraint</code>
+   * <code>addConstraint</code> - add a PwConstraintImpl to the partial plan
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @param constraint - <code>PwConstraintImpl</code> - 
    */
   public void addConstraint( Integer id, PwConstraintImpl constraint) {
@@ -357,7 +394,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>addParameter</code>
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @param parameter - <code>PwParameterImpl</code> - 
    */
   public void addParameter( Integer id, PwParameterImpl parameter) {
@@ -370,7 +407,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>addPredicate</code>
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @param predicate - <code>PwPredicateImpl</code> - 
    */
   public void addPredicate( Integer id, PwPredicateImpl predicate) {
@@ -383,7 +420,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>addSlot</code>
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @param slot - <code>PwSlotImpl</code> - 
    */
   public void addSlot( Integer id, PwSlotImpl slot) {
@@ -396,7 +433,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>addTimeline</code>
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @param timeline - <code>PwTimelineImpl</code> - 
    */
   public void addTimeline( Integer id, PwTimelineImpl timeline) {
@@ -409,7 +446,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>addToken</code>
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @param token - <code>PwTokenImpl</code> - 
    */
   public void addToken( Integer id, PwTokenImpl token) {
@@ -421,7 +458,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>addTokenRelation</code>
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @param tokenRelation - <code>PwTokenRelationImpl</code> - 
    */
   public void addTokenRelation( Integer id, PwTokenRelationImpl tokenRelation) {
@@ -434,7 +471,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   /**
    * <code>addVariable</code>
    *
-   * @param id - <code>String</code> - 
+   * @param id - <code>Integer</code> - 
    * @param variable - <code>PwVariableImpl</code> - 
    */
   public void addVariable( Integer id, PwVariableImpl variable) {
@@ -444,5 +481,293 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     variableMap.put( id, variable);
   }
 
+  /**
+   * <code>checkPlan</code> - verify that the PwPartialPlan structure is internally consistent.
+   */
+
+  public void checkPlan() {
+    checkRelations();
+    checkConstraints();
+    checkTokens();
+  }
+
+  /**
+   * <code>checkRelations</code> - verify that all tokens related by token relations exist
+   */
+  private void checkRelations() {
+    Iterator relationIterator = tokenRelationMap.values().iterator();
+    while(relationIterator.hasNext()) {
+      PwTokenRelationImpl relation = (PwTokenRelationImpl) relationIterator.next();
+      if(!tokenMap.containsKey(relation.getTokenAId())) {
+        System.err.println("Token relation " + relation.getId() + " has nonexistant token " +
+                           relation.getTokenAId());
+      }
+      if(!tokenMap.containsKey(relation.getTokenBId())) {
+        System.err.println("Token relation " + relation.getId() + " has nonexistant token " +
+                           relation.getTokenBId());
+      }
+    }
+  }
+
+  /**
+   * <code>checkConstraints</code> - verify that all constrained variables exist
+   */
+  private void checkConstraints() {
+    Iterator constraintIterator = constraintMap.values().iterator();
+    while(constraintIterator.hasNext()) {
+      PwConstraintImpl constraint = (PwConstraintImpl) constraintIterator.next();
+      ListIterator variableIdIterator = constraint.getVariableIdList().listIterator();
+      int variableIndex = 0;
+      while(variableIdIterator.hasNext()) {
+        Integer variableId = (Integer) variableIdIterator.next();
+        if(!variableMap.containsKey(variableId)) {
+          System.err.println("Constraint " + constraint.getId() + " has nonexistant variable " +
+                             variableId + " at position " + variableIndex);
+        }
+        variableIndex++;
+      }
+    }
+  }
+  
+  /**
+   * <code>checkTokens</code> - verify that all tokens have predicates, the correct number of parameter
+   *                            variables, that all variables exist and are of the right type, that 
+   *                            slotted tokens have valid slots, timelines, and objects, as well as
+   *                            checking that the tokens have the relations they are in as well as being
+   *                            in only the relations they have.
+   */
+  private void checkTokens() {
+    Iterator tokenIterator = tokenMap.values().iterator();
+    while(tokenIterator.hasNext()) {
+      PwTokenImpl token = (PwTokenImpl) tokenIterator.next();
+      if(token.getPredicate() == null) {
+        System.err.println("Token " + token.getId() + " has null predicate.");
+      }
+      if(!token.isFreeToken()) {
+        if(token.getObjectId() == null) {
+          System.err.println("Slotted token " + token.getId() + " has null objectId.");
+        }
+        else if(!objectMap.containsKey(token.getObjectId())) {
+          System.err.println("Slotted token " + token.getId() + " has nonexistant objectId " + 
+                             token.getObjectId());
+        }
+        if(token.getTimelineId() == null) {
+          System.err.println("Slotted token " + token.getId() + " has null timelineId.");
+        }
+        else if(!timelineMap.containsKey(token.getTimelineId())) {
+          System.err.println("Slotted token " + token.getId() + " has nonexistant timelineId " +
+                             token.getTimelineId());
+        }
+        if(token.getSlotId() == null) {
+          System.err.println("Slotted token " + token.getId() + " has null slotId.");
+        }
+        else if(!slotMap.containsKey(token.getSlotId())) {
+          System.err.println("Slotted token " + token.getId() + " has nonexistant slotId " + 
+                             token.getSlotId());
+        }
+      }
+      checkTokenVars(token);
+      checkTokenParamVars(token);
+      checkTokenRelations(token);
+    }
+  }
+  /**
+   * <code>checkTokenVars</code> - verify that all variables exist and are of the proper type
+   */
+  private void checkTokenVars(PwTokenImpl token) {
+    PwVariableImpl startVar = (PwVariableImpl) token.getStartVariable();
+    PwVariableImpl endVar = (PwVariableImpl) token.getEndVariable();
+    PwVariableImpl durationVar = (PwVariableImpl) token.getDurationVariable();
+    PwVariableImpl objectVar = (PwVariableImpl) token.getObjectVariable();
+    PwVariableImpl rejectVar = (PwVariableImpl) token.getRejectVariable();
+    if(startVar == null) {
+      System.err.println("Token " + token.getId() + " has null start variable.");
+    }
+    else {
+      if(!startVar.getType().equals("START_VAR")) {
+        System.err.println("Token " + token.getId() + "'s start variable " + startVar.getId() + 
+                           " isn't.");
+      }
+      else {
+        checkVariable(startVar);
+      }
+    }
+    if(endVar == null) {
+      System.err.println("Token " + token.getId() + " has null end variable.");
+    }
+    else {
+      if(!endVar.getType().equals("END_VAR")) {
+        System.err.println("Token " + token.getId() + "'s end variable " + endVar.getId() + " isn't.");
+      }
+      else {
+        checkVariable(endVar);
+      }
+    }
+    if(durationVar == null) {
+      System.err.println("Token " + token.getId() + " has null duration variable.");
+    }
+    else {
+      if(!durationVar.getType().equals("DURATION_VAR")) {
+        System.err.println("Token " + token.getId() + "'s duration variable " + durationVar.getId() +
+                           " isn't.");
+      }
+      else {
+        checkVariable(durationVar);
+      }
+    }
+    if(objectVar == null) {
+      System.err.println("Token " + token.getId() + " has null object variable.");
+    }
+    else {
+      if(!objectVar.getType().equals("OBJECT_VAR")) {
+        System.err.println("Token " + token.getId() + "'s object variable " + objectVar.getId() + 
+                           " isn't.");
+      }
+      else {
+        checkObjectVariable(objectVar, token.isFreeToken());
+      }
+    }
+    if(rejectVar == null) {
+      System.err.println("Token " + token.getId() + " has null reject variable.");
+    }
+    else {
+      if(!rejectVar.getType().equals("REJECT_VAR")) {
+        System.err.println("Token " + token.getId() + "'s reject variable " + rejectVar.getId()  + 
+                           " isn't.");
+      }
+      else {
+        checkVariable(rejectVar);
+      }
+    }
+  }
+  /**
+   * <code>checkTokenParamVars</code> - verify that the token has the correct number of parameter 
+   *                                    variables
+   */
+  private void checkTokenParamVars(PwTokenImpl token) {
+    List paramVarList = token.getParamVarsList();
+    int paramVarSize = paramVarList.size();
+    int paramSize = token.getPredicate().getParameterList().size();
+    if(paramVarSize != paramSize) {
+      System.err.println("Token " + token.getId().toString() + " has " + paramVarSize + 
+                         " parameter variables.  Predicate " + token.getPredicate().getId() + " has " + 
+                         paramSize + " parameters.");
+    }
+    ListIterator paramVarIterator = paramVarList.listIterator();
+    while(paramVarIterator.hasNext()) {
+      PwVariableImpl variable = (PwVariableImpl) paramVarIterator.next();
+      if(variable == null) {
+        System.err.println("Token " + token.getId().toString() + " has null variable.");
+        continue;
+      }
+      if(!variableMap.containsValue(variable)) {
+        System.err.println("Token " + token.getId().toString() + " has parameter variable " + 
+                           variable.getId() + " that doesn't exist.");
+      }
+      else {
+        checkVariable(variable);
+      }
+    }
+  }
+  /**
+   * <code>checkTokenRelations</code> - ensure that all tokens related exist, are in the relations they
+   *                                    have, and are in only the relations they have.
+   */
+  private void checkTokenRelations(PwTokenImpl token) {
+    List relations = token.getTokenRelationsList();
+    ListIterator relationIterator = relations.listIterator();
+    while(relationIterator.hasNext()) {
+      PwTokenRelationImpl tokenRelation = (PwTokenRelationImpl) relationIterator.next();
+      if(tokenRelation == null) {
+        System.err.println("Null token relation!");
+        continue;
+      }
+      if(tokenRelation.getTokenAId() == null) {
+        System.err.println("Master token id of relation " + tokenRelation.getId() + " is null.");
+        if(tokenRelation.getTokenBId() == null) {
+          System.err.println("Slave token id of relation " + tokenRelation.getId() + " is null.");
+          continue;
+        }
+      }
+      if(tokenRelation.getTokenBId() == null) {
+        System.err.println("Slave token id of relation " + tokenRelation.getId() + " is null.");
+        continue;
+      }
+      if(!tokenRelation.getTokenAId().equals(token.getId()) && 
+         !tokenRelation.getTokenBId().equals(token.getId())) {
+        System.err.println("Token " + token.getId() + " has relation " + tokenRelation.getId() + 
+                           " but isn't in it.");
+      }
+      if(tokenMap.get(tokenRelation.getTokenAId()) == null) {
+        System.err.println("Master token " + tokenRelation.getTokenAId() + " doesn't exist.");
+      }
+      if(tokenMap.get(tokenRelation.getTokenBId()) == null) {
+        System.err.println("Slave token " + tokenRelation.getTokenBId() + " doesn't exist.");
+      }
+    }
+    Iterator tokenRelationIterator = tokenRelationMap.values().iterator();
+    while(tokenRelationIterator.hasNext()) {
+      PwTokenRelationImpl tokenRelation = (PwTokenRelationImpl) tokenRelationIterator.next();
+      if((tokenRelation.getTokenAId().equals(token.getId()) || 
+          tokenRelation.getTokenBId().equals(token.getId())) && !relations.contains(tokenRelation)) {
+        System.err.println("Token " + token.getId() + " is in relation " + tokenRelation.getId() +
+                           " but doesn't have it.");
+      }
+    }
+  }
+  /**
+   * <code>checkVariable</code> - verify that a variable is of a valid type, has constraints that exist,
+   *                              is in the constraints that is has, and is only in those constraints
+   */
+  private void checkVariable(PwVariableImpl var) {
+    if(var.getDomain() == null) {
+      System.err.println("Variable " + var.getId() + " has no domain.");
+    }
+    String type = var.getType();
+    if(!type.equals("START_VAR") && !type.equals("END_VAR") && !type.equals("DURATION_VAR") && 
+       !type.equals("OBJECT_VAR") && !type.equals("PARAMETER_VAR") && !type.equals("REJECT_VAR") &&
+       !type.equals("GLOBAL_VAR")) {
+      System.err.println("Variable " + var.getId() + " has invalid type " + type);
+    }
+    List varConstraints = var.getConstraintList();
+    ListIterator varConstraintIterator = varConstraints.listIterator();
+    while(varConstraintIterator.hasNext()) {
+      PwConstraintImpl constraint = (PwConstraintImpl) varConstraintIterator.next();
+      if(constraint == null) {
+        System.err.println("Variable " + var.getId() + " has a null constraint.");
+        continue;
+      }
+      if(!constraint.getVariablesList().contains(var)) {
+        System.err.println("Variable " + var.getId() + " has constraint " + constraint.getId() + 
+                           " but is not in the constraint.");
+      }
+      if(!constraintMap.containsKey(constraint.getId())) {
+        System.err.println("Variable " + var.getId() + " has nonexistant constraint " + 
+                           constraint.getId());
+      }
+    }
+    Iterator constraintIterator = constraintMap.values().iterator();
+    while(constraintIterator.hasNext()) {
+      PwConstraintImpl constraint = (PwConstraintImpl) constraintIterator.next();
+      if(constraint.getVariablesList().contains(var) && !varConstraints.contains(constraint)) {
+        System.err.println("Variable " + var.getId() + " is in constraint " + constraint.getId() + 
+                           " but does not have it.");
+      }
+    }
+  }
+  /**
+   * <code>checkObjectVariable</code> - check validity of object variable, as well as that there is only
+   *                                  - one object in the domain if the token is slotted
+   */
+  private void checkObjectVariable(PwVariableImpl objectVar, boolean isFreeToken) {
+    checkVariable(objectVar);
+    PwEnumeratedDomainImpl domain = (PwEnumeratedDomainImpl) objectVar.getDomain();
+    if(!isFreeToken) {
+      if(domain.getEnumeration().size() > 1) {
+        System.err.println("Slotted token has object variable " + objectVar.getId() + 
+                           " with multiple objects.");
+      }
+    }
+  }
 
 } // end class PwPartialPlanImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.14 2003-08-12 22:54:02 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.15 2003-08-19 00:24:30 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -36,7 +36,7 @@ public class PwSlotImpl implements PwSlot {
   /**
    * <code>PwSlotImpl</code> - constructor 
    *
-   * @param id - <code>int</code> - 
+   * @param id - <code>Integer</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
   public PwSlotImpl( Integer id, PwPartialPlanImpl partialPlan) {
@@ -49,7 +49,7 @@ public class PwSlotImpl implements PwSlot {
   /**
    * <code>getId</code>
    *
-   * @return name - <code>int</code> -
+   * @return name - <code>Integer</code> -
    */
   public Integer getId() {
     return id;
@@ -70,7 +70,19 @@ public class PwSlotImpl implements PwSlot {
   /**
    * <code>addToken</code>
    *
-   * @param attributeList - <code>List</code> - 
+   * @param id - <code>Integer</code>
+   * @param isValueToken <code>Integer</code>
+   * @param slotId - <code>Integer</code>
+   * @param predicateId - <code>Integer</code>
+   * @param startVarId - <code>Integer</code>
+   * @param endVarId - <code>Integer</code>
+   * @param durationVarId - <code>Integer</code>
+   * @param objectId - <code>Integer</code>
+   * @param rejectVarId - <code>Integer</code>
+   * @param objectVarId - <code>Integer</code>
+   * @param timelineId - <code>Integer</code>
+   * @param tokenRelationIds - <code>List</code>
+   * @param paramVarIds - <code>List</code>
    * @return - <code>PwTokenImpl</code> - 
    */
   public PwTokenImpl addToken(Integer id, boolean isValueToken, Integer slotId, 
