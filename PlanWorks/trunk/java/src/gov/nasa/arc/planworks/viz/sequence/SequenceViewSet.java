@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.14 2004-02-03 20:43:59 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.15 2004-02-07 00:32:30 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -90,7 +90,7 @@ public class SequenceViewSet extends ViewSet {
     }
     catch(ResourceNotFoundException rnfe) {
       rnfe.printStackTrace();
-      System.exit(-1);
+      //System.exit(-1);
     }
   }
 
