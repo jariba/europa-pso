@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.30 2004-03-09 19:59:31 taylor Exp $
+// $Id: planViz.txt,v 1.31 2004-03-09 22:10:14 miatauro Exp $
 //
 // PlanWorks
 //
@@ -297,7 +297,7 @@ Method:
 
 Post-conditions:
   1. Method:6 - All token nodes (rectangles) appear in the Constraint Network 
-     View, and variable nodes (ovals) and constraint nodes (left/right pointed 
+     View, and variable nodes ("pinched" rectangles) and constraint nodes (left/right pointed 
      rectangles) are linked to the token nodes "opened".  
      Token node labels consist of the predicate name and the token key value.  Mouse 
      cursor over token nodes displays "predicateName( parameterValues)" on the 
