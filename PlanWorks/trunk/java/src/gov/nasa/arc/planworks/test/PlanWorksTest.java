@@ -4,15 +4,18 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.11 2003-08-28 20:46:54 miatauro Exp $
+// $Id: PlanWorksTest.java,v 1.12 2003-09-04 00:27:36 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
 import java.awt.Container;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
 // import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -47,11 +50,13 @@ import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
-import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
+import gov.nasa.arc.planworks.viz.nodes.ConstraintNode;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
 import gov.nasa.arc.planworks.viz.nodes.TemporalNode;
+import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenLink;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.nodes.VariableNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.GroupBox;
@@ -233,6 +238,13 @@ public class PlanWorksTest extends JFCTestCase{
       validateFreeTokensTemporalExtent( temporalExtentView);
     }
 
+    seqAndPlanNames = selectView( "Constraint Network");
+    ConstraintNetworkView constraintNetworkView = getConstraintNetworkView( seqAndPlanNames);
+
+    if (testType.equals( "create")) {
+      validateMonkeyConstraintsOpen( constraintNetworkView);
+      validateMonkeyConstraintsClose( constraintNetworkView);
+    }
     exitPlanWorks( menuBar);
   } // end createProject
 
@@ -500,6 +512,39 @@ public class PlanWorksTest extends JFCTestCase{
     return temporalExtentView;
   } // end getTemporalExtentView
 
+  private ConstraintNetworkView getConstraintNetworkView( String [] seqAndPlanNames)
+    throws Exception {
+    String sequenceName = seqAndPlanNames[0];
+    String partialPlanName = seqAndPlanNames[1];
+    String sequenceUrl = seqAndPlanNames[2];
+    PwPartialPlan partialPlan = getPartialPlan( sequenceUrl, partialPlanName);
+
+    ViewManager viewManager = null;
+    viewManager = planWorks.getViewManager();
+    assertNotNull( "Failed to get ViewManager.", viewManager);
+
+    //System.err.println( "\n\nGot to here 3\n\n");
+    MDIInternalFrame viewFrame = null;
+    ConstraintNetworkView constraintNetworkView = null;
+    Thread.sleep( 3000);
+    long startTimeMSecs = (new Date()).getTime();
+    viewFrame =
+      viewManager.openConstraintNetworkView( partialPlan, sequenceName +
+                                    System.getProperty( "file.separator") +
+                                    partialPlanName, startTimeMSecs);
+    assertNotNull("Failed to get constraintNetwork view MDI internal frame.", viewFrame);
+
+    Container contentPane = viewFrame.getContentPane();
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof ConstraintNetworkView) {
+        constraintNetworkView = (ConstraintNetworkView) contentPane.getComponent(i);
+        break;
+      }
+    }
+    assertNotNull("Failed to get ConstraintNetworkView object.", constraintNetworkView);
+    return constraintNetworkView;
+  } // end getConstraintNetworkView
+
   private void validateMonkeyTimelines( TimelineView timelineView) {
     List timelineNodes = timelineView.getTimelineNodeList();
     ListIterator timelineNodeIterator = timelineNodes.listIterator();
@@ -558,7 +603,15 @@ public class PlanWorksTest extends JFCTestCase{
   } // end validateFreeTokensimelines
 
   private void validateFreeTokensNetwork(TokenNetworkView tokenNetworkView) {
-    List tokenNodeList = tokenNetworkView.getNodeList();
+    List tokenNodeList = null;
+    while (tokenNodeList == null) {
+      // System.err.println( "tokenNetworkView tokenNodeList still null");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      tokenNodeList = tokenNetworkView.getNodeList();
+    }
     ListIterator tokenNodeIterator = tokenNodeList.listIterator();
     int numFreeTokens = 0;
     while(tokenNodeIterator.hasNext()) {
@@ -595,17 +648,210 @@ public class PlanWorksTest extends JFCTestCase{
 
   private void validateEmptySlotsTimelines(TimelineView timelineView) {
     ListIterator timelineNodeIterator = timelineView.getTimelineNodeList().listIterator();
-    TimelineNode firstTimeline = (TimelineNode) timelineNodeIterator.next();
-    List slotNodeList = firstTimeline.getSlotNodeList();
-    SlotNode leadingNode = (SlotNode) slotNodeList.get(0);
-    SlotNode trailingNode = (SlotNode) slotNodeList.get(slotNodeList.size()-1);
-    assertTrue("Incorrectly displayed leading empty slot.  Displayed '" +
-               leadingNode.getPredicateName() + "'", 
-               leadingNode.getPredicateName().trim().equals("<empty>"));
-    assertTrue("Incorrectly displayed trailing empty slot.  Displayed '" + 
-               trailingNode.getPredicateName() + "'",
-               trailingNode.getPredicateName().trim().equals("<empty>"));
+    timelineNodeIterator.next();
+    timelineNodeIterator.next();
+    TimelineNode thirdTimeline = (TimelineNode) timelineNodeIterator.next();
+    List slotNodeList = thirdTimeline.getSlotNodeList();
+    SlotNode fourthNode = (SlotNode) slotNodeList.get(3);
+    SlotNode seventhNode = (SlotNode) slotNodeList.get(6);
+    assertTrue("Incorrectly displayed fourth node as empty slot.  Displayed '" +
+               fourthNode.getPredicateName() + "'", 
+               fourthNode.getPredicateName().trim().equals("<empty>"));
+    assertTrue("Incorrectly displayed seventh node as empty slot.  Displayed '" + 
+               seventhNode.getPredicateName() + "'",
+               seventhNode.getPredicateName().trim().equals("<empty>"));
   }
+
+  private void validateMonkeyConstraintsOpen( ConstraintNetworkView constraintNetworkView)
+    throws Exception {
+    List tokenNodeList = constraintNetworkView.getTokenNodeList();
+    List variableNodeList = constraintNetworkView.getVariableNodeList();
+    List constraintNodeList = constraintNetworkView.getConstraintNodeList();
+    TokenNode t19 = null;
+    Iterator tokenNodeItr = tokenNodeList.iterator();
+    while (tokenNodeItr.hasNext()) {
+      TokenNode tokenNode = (TokenNode) tokenNodeItr.next();
+      if (tokenNode.getToken().getId().equals( new Integer( 19))) {
+        t19 = tokenNode;
+        break;
+      }
+    }
+    assertTrue( "tokenNode id=19 not found", (t19 != null));
+    t19.doMouseClick( MouseEvent.BUTTON1_MASK,
+                       new Point( (int) t19.getLocation().getX(),
+                                  (int) t19.getLocation().getY()),
+                       new Point( 0, 0), constraintNetworkView.getJGoView());
+    Thread.sleep( 3000);
+    VariableNode v56 = null;
+    Iterator variableNodeItr = variableNodeList.iterator();
+    while (variableNodeItr.hasNext()) {
+      VariableNode variableNode = (VariableNode) variableNodeItr.next();
+      if (variableNode.getVariable().getId().equals( new Integer( 56)) &&
+          variableNode.isVisible()) {
+        v56 = variableNode;
+        break;
+      }
+    }
+    assertTrue( "variableNode id=56 not found", (v56 != null));
+    v56.doMouseClick( MouseEvent.BUTTON1_MASK,
+                      new Point( (int) v56.getLocation().getX(),
+                                 (int) v56.getLocation().getY()),
+                      new Point( 0, 0), constraintNetworkView.getJGoView());
+    Thread.sleep( 3000);
+    ConstraintNode c108 = null;
+    Iterator constraintNodeItr = constraintNodeList.iterator();
+    while (constraintNodeItr.hasNext()) {
+      ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
+      if (constraintNode.getConstraint().getId().equals( new Integer( 108)) &&
+          constraintNode.isVisible()) {
+        c108 = constraintNode;
+        break;
+      }
+    }
+    assertTrue( "constraintNode id=108 not found", (c108 != null));
+    c108.doMouseClick( MouseEvent.BUTTON1_MASK,
+                      new Point( (int) c108.getLocation().getX(),
+                                 (int) c108.getLocation().getY()),
+                      new Point( 0, 0), constraintNetworkView.getJGoView());
+    Thread.sleep( 3000);
+    VariableNode v57 = null;
+    variableNodeItr = variableNodeList.iterator();
+    while (variableNodeItr.hasNext()) {
+      VariableNode variableNode = (VariableNode) variableNodeItr.next();
+      if (variableNode.getVariable().getId().equals( new Integer( 57)) &&
+          variableNode.isVisible()) {
+        v57 = variableNode;
+        break;
+      }
+    }
+   assertTrue( "variableNode id=57 not found", (v57 != null));
+    v57.doMouseClick( MouseEvent.BUTTON1_MASK,
+                      new Point( (int) v57.getLocation().getX(),
+                                 (int) v57.getLocation().getY()),
+                      new Point( 0, 0), constraintNetworkView.getJGoView());
+    Thread.sleep( 3000);
+    TokenNode t20 = null;
+    tokenNodeItr = tokenNodeList.iterator();
+    while (tokenNodeItr.hasNext()) {
+      TokenNode tokenNode = (TokenNode) tokenNodeItr.next();
+      if (tokenNode.getToken().getId().equals( new Integer( 20))) {
+        t20 = tokenNode;
+        break;
+      }
+    }
+    assertTrue( "tokenNode id=20 not found", (t20 != null));
+    t20.doMouseClick( MouseEvent.BUTTON1_MASK,
+                       new Point( (int) t20.getLocation().getX(),
+                                  (int) t20.getLocation().getY()),
+                       new Point( 0, 0), constraintNetworkView.getJGoView());
+  } // end validateMonkeyConstraintsOpen
+
+  private void validateMonkeyConstraintsClose( ConstraintNetworkView constraintNetworkView)
+    throws Exception {
+    List tokenNodeList = constraintNetworkView.getTokenNodeList();
+    List variableNodeList = constraintNetworkView.getVariableNodeList();
+    List constraintNodeList = constraintNetworkView.getConstraintNodeList();
+    Thread.sleep( 3000);
+    TokenNode t20 = null;
+    Iterator tokenNodeItr = tokenNodeList.iterator();
+    while (tokenNodeItr.hasNext()) {
+      TokenNode tokenNode = (TokenNode) tokenNodeItr.next();
+      if (tokenNode.getToken().getId().equals( new Integer( 20))) {
+        t20 = tokenNode;
+        break;
+      }
+    }
+    assertTrue( "tokenNode id=20 not found", (t20 != null));
+    t20.doMouseClick( MouseEvent.BUTTON1_MASK,
+                       new Point( (int) t20.getLocation().getX(),
+                                  (int) t20.getLocation().getY()),
+                       new Point( 0, 0), constraintNetworkView.getJGoView());
+    Thread.sleep( 3000);
+    VariableNode v57 = null;
+    Iterator variableNodeItr = variableNodeList.iterator();
+    while (variableNodeItr.hasNext()) {
+      VariableNode variableNode = (VariableNode) variableNodeItr.next();
+      if (variableNode.getVariable().getId().equals( new Integer( 57)) &&
+          variableNode.isVisible()) {
+        v57 = variableNode;
+        break;
+      }
+    }
+    assertTrue( "variableNode id=57 not found", (v57 != null));
+    v57.doMouseClick( MouseEvent.BUTTON1_MASK,
+                      new Point( (int) v57.getLocation().getX(),
+                                 (int) v57.getLocation().getY()),
+                      new Point( 0, 0), constraintNetworkView.getJGoView());
+    Thread.sleep( 3000);
+    ConstraintNode c108 = null;
+    Iterator constraintNodeItr = constraintNodeList.iterator();
+    while (constraintNodeItr.hasNext()) {
+      ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
+      if (constraintNode.getConstraint().getId().equals( new Integer( 108)) &&
+          constraintNode.isVisible()) {
+        c108 = constraintNode;
+        break;
+      }
+    }
+    assertTrue( "constraintNode id=108 not found", (c108 != null));
+    c108.doMouseClick( MouseEvent.BUTTON1_MASK,
+                      new Point( (int) c108.getLocation().getX(),
+                                 (int) c108.getLocation().getY()),
+                      new Point( 0, 0), constraintNetworkView.getJGoView());
+    Thread.sleep( 3000);
+    VariableNode v56 = null;
+    variableNodeItr = variableNodeList.iterator();
+    while (variableNodeItr.hasNext()) {
+      VariableNode variableNode = (VariableNode) variableNodeItr.next();
+      if (variableNode.getVariable().getId().equals( new Integer( 56)) &&
+          variableNode.isVisible()) {
+        v56 = variableNode;
+        break;
+      }
+    }
+    assertTrue( "variableNode id=56 not found", (v56 != null));
+    v56.doMouseClick( MouseEvent.BUTTON1_MASK,
+                      new Point( (int) v56.getLocation().getX(),
+                                 (int) v56.getLocation().getY()),
+                      new Point( 0, 0), constraintNetworkView.getJGoView());
+    Thread.sleep( 3000);
+    TokenNode t19 = null;
+    tokenNodeItr = tokenNodeList.iterator();
+    while (tokenNodeItr.hasNext()) {
+      TokenNode tokenNode = (TokenNode) tokenNodeItr.next();
+      if (tokenNode.getToken().getId().equals( new Integer( 19))) {
+        t19 = tokenNode;
+        break;
+      }
+    }
+    assertTrue( "tokenNode id=19 not found", (t19 != null));
+    t19.doMouseClick( MouseEvent.BUTTON1_MASK,
+                       new Point( (int) t19.getLocation().getX(),
+                                  (int) t19.getLocation().getY()),
+                       new Point( 0, 0), constraintNetworkView.getJGoView());
+
+    Thread.sleep( 3000);
+    int visibleNodeCnt = 0;
+    variableNodeItr = variableNodeList.iterator();
+    while (variableNodeItr.hasNext()) {
+      VariableNode variableNode = (VariableNode) variableNodeItr.next();
+      if (variableNode.isVisible()) {
+        visibleNodeCnt++;
+      }
+    }
+    assertTrue( "Count of visible variable nodes was " + visibleNodeCnt + ", not 2",
+                (visibleNodeCnt == 2));
+    visibleNodeCnt = 0;
+    constraintNodeItr = constraintNodeList.iterator();
+    while (constraintNodeItr.hasNext()) {
+      ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
+      if (constraintNode.isVisible()) {
+        visibleNodeCnt++;
+      }
+    }
+    assertTrue( "Count of visible constraint nodes was " + visibleNodeCnt + ", not 0",
+                (visibleNodeCnt == 0));
+  } // end validateMonkeyConstraintsClose
 
   private void exitPlanWorks( JMenuBar menuBar) throws Exception {
     // exit from CreateProject Test
@@ -695,12 +941,9 @@ public class PlanWorksTest extends JFCTestCase{
     assertNotNull("Failed to get negation check box.", negationBox);
     keyBox.setSelectedIndex(3);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
-    List timelineNodes;
-    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
-      Thread.sleep(50);
-    }
-    //Thread.sleep(2000);
+    Thread.sleep(2000);
     int timelineNodeCnt = 0;
+    List timelineNodes = timelineView.getTimelineNodeList();
     for (int i = 0; i < timelineNodes.size(); i++) {
       if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
         timelineNodeCnt++;
@@ -722,9 +965,7 @@ public class PlanWorksTest extends JFCTestCase{
     }
     negationBox.setSelected(true);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
-    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
-      Thread.sleep(50);
-    }
+    Thread.sleep(2000);
     timelineNodeCnt = 0;
     List visibleTimelines = new ArrayList();
     for (int i = 0; i < timelineNodes.size(); i++) {
@@ -764,9 +1005,7 @@ public class PlanWorksTest extends JFCTestCase{
       }
     }
     helper.enterClickAndLeave(new MouseEventData(this, resetSpecButton));
-    while(timelineView.getTimelineNodeList() == null) {
-      Thread.sleep(50);
-    }
+    Thread.sleep(2000);
     validateMonkeyTimelines(timelineView);
     assertTrue("Reset spec didn't reset text box", keyBox.getSelectedIndex() == 0);
     assertTrue("Reset spec didn't reset check box", !negationBox.isSelected());
@@ -798,10 +1037,7 @@ public class PlanWorksTest extends JFCTestCase{
     assertNotNull("Failed to get negation check box.", negationBox);
     keyBox.setSelectedIndex(1);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
-    Thread.sleep(50);
-    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
-      Thread.sleep(50);
-    }
+    Thread.sleep(2000);
     timelineNodeCnt = 0;
     for(int i = 0; i < timelineNodes.size(); i++) {
       if(((TimelineNode)timelineNodes.get(i)).isVisible()) {
@@ -823,9 +1059,7 @@ public class PlanWorksTest extends JFCTestCase{
     }
     negationBox.setSelected(true);
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
-    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
-      Thread.sleep(50);
-    }
+    Thread.sleep(2000);
     timelineNodeCnt = 0;
     for(int i = 0; i < timelineNodes.size(); i++) {
       if(((TimelineNode) timelineNodes.get(i)).isVisible()) {
@@ -842,9 +1076,7 @@ public class PlanWorksTest extends JFCTestCase{
       }
     }
     helper.enterClickAndLeave(new MouseEventData(this, resetSpecButton));
-    while(timelineView.getTimelineNodeList() == null) {
-      Thread.sleep(50);
-    }
+    Thread.sleep(2000);
     validateMonkeyTimelines(timelineView);
     assertTrue("Reset spec didn't reset text box", keyBox.getSelectedIndex() == 0);
     assertTrue("Reset spec didn't reset check box", !negationBox.isSelected());
@@ -887,10 +1119,7 @@ public class PlanWorksTest extends JFCTestCase{
     start.setText("1");
     end.setText("4");
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
-    while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
-      Thread.sleep(50);
-    }
-    //Thread.sleep(2000);
+    Thread.sleep(2000);
     timelineNodeCnt = 0;
     for (int i = 0; i < timelineNodes.size(); i++) {
       if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
@@ -900,14 +1129,12 @@ public class PlanWorksTest extends JFCTestCase{
     assertTrue("Content spec not specing correctly: Too many timeline nodes.",
                timelineNodeCnt == 3);
     helper.enterClickAndLeave(new MouseEventData(this, resetSpecButton));
-       while(timelineView.getTimelineNodeList() == null) {
-      Thread.sleep(50);
-    }
+    Thread.sleep(2000);
     validateMonkeyTimelines(timelineView);
     assertTrue("Reset spec didn't reset start box", start.getText().equals(""));
     assertTrue("Reset spec didn't reset end box", end.getText().equals(""));
     assertTrue("Reset spec didn't reset check box", !negationBox.isSelected()); 
-  }
+  } // end confirmTimelineSpec
 
   public void testOpenAndContentSpec() throws Exception {
     System.err.println( "\n\nOpenAndContentSpecTestCase\n\n");
@@ -937,6 +1164,7 @@ public class PlanWorksTest extends JFCTestCase{
     }
     assertNotNull("Failed to get \"Open ...\" item.", openItem);
     assertTrue("Failed to get \"Open ...\" item.", openItem.getText().equals("Open ..."));
+    assertTrue("\"Open ...\" item not enabled", openItem.isEnabled());
     helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
     helper.enterClickAndLeave(new MouseEventData(this, openItem));
 
@@ -948,6 +1176,9 @@ public class PlanWorksTest extends JFCTestCase{
     TokenNetworkView tokenNetworkView = getTokenNetworkView( seqAndPlanNames);
     seqAndPlanNames = selectView( "Temporal Extent");
     TemporalExtentView temporalExtentView = getTemporalExtentView( seqAndPlanNames);
+    seqAndPlanNames = selectView( "Constraint Network");
+    ConstraintNetworkView constraintNetworkView = getConstraintNetworkView( seqAndPlanNames);
+    validateMonkeyConstraintsOpen( constraintNetworkView);
 
     Container contentPane = frame.getContentPane();
     JDesktopPane desktopPane = null;
@@ -980,7 +1211,7 @@ public class PlanWorksTest extends JFCTestCase{
     assertNotNull("Failed to get Content Specification window.");
     confirmTimelineSpec(contentSpecWindow, timelineView);
     exitPlanWorks( menuBar);
-  }
+  } // end testOpenAndContentSpec
 
   /**
    * <code>testFreeTokens</code>

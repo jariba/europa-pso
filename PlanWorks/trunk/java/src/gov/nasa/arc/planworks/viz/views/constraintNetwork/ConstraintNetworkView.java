@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.12 2003-09-02 23:01:48 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.13 2003-09-04 00:27:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -277,6 +277,15 @@ public class ConstraintNetworkView extends VizView {
   }
 
   /**
+   * <code>getJGoView</code> - needed for PlanWorksTest
+   *
+   * @return - <code>JGoView</code> - 
+   */
+  public JGoView getJGoView()  {
+    return jGoView;
+  }
+
+  /**
    * <code>getFontMetrics</code>
    *
    * @return - <code>FontMetrics</code> - 
@@ -291,6 +300,42 @@ public class ConstraintNetworkView extends VizView {
    */
   public void setLayoutNeeded() {
     isLayoutNeeded = true;
+  }
+
+  /**
+   * <code>isLayoutNeeded</code>> - needed for PlanWorksTest
+   *
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isLayoutNeeded() {
+    return isLayoutNeeded ;
+  }
+
+  /**
+   * <code>getTokenNodeList</code> - used by PlanWorksTest
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getTokenNodeList() {
+    return tokenNodeList;
+  }
+
+  /**
+   * <code>getConstraintNodeList</code> - used by PlanWorksTest
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getConstraintNodeList() {
+    return constraintNodeList;
+  }
+
+  /**
+   * <code>getVariableNodeList</code> - used by PlanWorksTest
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getVariableNodeList() {
+    return variableNodeList;
   }
 
   private void createTokenNodes() {
@@ -1181,15 +1226,6 @@ public class ConstraintNetworkView extends VizView {
     }
   } // end setLinksVisible
 
-  public List getTokenNodeList() {
-    return tokenNodeList;
-  }
-  public List getVariableNodeList() {
-    return variableNodeList;
-  }
-  public List getConstraintNodeList() {
-    return constraintNodeList;
-  }
 
 } // end class ConstraintNetworkView
 

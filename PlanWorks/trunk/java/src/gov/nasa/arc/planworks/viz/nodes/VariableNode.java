@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.7 2003-08-29 22:08:59 taylor Exp $
+// $Id: VariableNode.java,v 1.8 2003-09-04 00:27:36 taylor Exp $
 //
 // PlanWorks
 //
@@ -105,7 +105,6 @@ public class VariableNode extends BasicNode {
 
     isDebug = false;
     // isDebug = true;
-
     if (isDebug) {
       nodeLabel = variable.getType().substring( 0, 1) + "_" + variable.getId().toString();
     } else {

@@ -213,6 +213,24 @@ public interface ViewConstants {
    */
   public static final int TEMPORAL_NODE_Y_END_OFFSET = 34;
 
+  /**
+   * constant <code>TEMPORAL_MIN_END_X_LOC</code>
+   *
+   */
+  public static final int TEMPORAL_MIN_END_X_LOC = 500;
+
+  /**
+   * constant <code>TEMPORAL_MIN_MAX_SLOTS</code>
+   *
+   */
+  public static final int TEMPORAL_MIN_MAX_SLOTS = 15;
+
+  /**
+   * constant <code>TEMPORAL_LARGE_LABEL_RANGE</code>
+   *
+   */
+  public static final int TEMPORAL_LARGE_LABEL_RANGE = 1000000;
+
 
   // cannot figure out how to get this from MDIInternalFrame
   /**

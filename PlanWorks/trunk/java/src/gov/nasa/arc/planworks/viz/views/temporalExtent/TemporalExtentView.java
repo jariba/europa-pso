@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.11 2003-09-02 21:49:17 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.12 2003-09-04 00:27:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -322,6 +322,8 @@ public class TemporalExtentView extends VizView {
         }
       }
     }
+    maxSlots = Math.max( maxSlots, ViewConstants.TEMPORAL_MIN_MAX_SLOTS);
+
     collectFreeTokenMetrics();
 
     computeTimeScaleMetrics();
@@ -365,7 +367,9 @@ public class TemporalExtentView extends VizView {
   } // end collectTimeScaleMetrics
 
   private void computeTimeScaleMetrics() {
-    endXLoc = startXLoc + (maxSlots * slotLabelMinLength * fontMetrics.charWidth( 'A'));
+    endXLoc = Math.max( startXLoc +
+                        (maxSlots * slotLabelMinLength * fontMetrics.charWidth( 'A')),
+                        ViewConstants.TEMPORAL_MIN_END_X_LOC);
     timeScale = ((float) (endXLoc - startXLoc)) / ((float) (timeScaleEnd - timeScaleStart));
     System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
                         " endXLoc " + endXLoc);
@@ -396,7 +400,9 @@ public class TemporalExtentView extends VizView {
     }
     while (scaleStart < tickTime) {
       tickTime -= timeDelta;
-      xOrigin += (int) timeScale * timeDelta; 
+      xOrigin += (int) (timeScale * timeDelta);
+//       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
+//                           " xOrigin " + xOrigin);
     }
   } // end computeTimeScaleMetrics
 
@@ -442,26 +448,38 @@ public class TemporalExtentView extends VizView {
   } // end collectFreeTokenMetrics
 
   private void createTimeScale() {
-    // int xLoc = startXLoc;
     int xLoc = (int) scaleTime( tickTime);
-    int yLoc = startYLoc + ((maxCellRow + 1) * ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2;
+    // System.err.println( "createTimeScale: xLoc " + xLoc);
+    int yRuler = startYLoc + ((maxCellRow + 1) * ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2;
+    int yLabelUpper = yRuler, yLabelLower = yRuler;
+    if ((timeScaleEnd - timeScaleStart) > ViewConstants.TEMPORAL_LARGE_LABEL_RANGE) {
+      yLabelLower = yRuler + ViewConstants.TIMELINE_VIEW_Y_INIT;
+    }
+    int yLabel = yLabelUpper;
     int scaleWidth = 2, tickHeight = ViewConstants.TIMELINE_VIEW_Y_INIT / 2;
     JGoStroke timeScaleRuler = new JGoStroke();
     timeScaleRuler.setPen( new JGoPen( JGoPen.SOLID, scaleWidth, ColorMap.getColor( "black")));
     timeScaleRuler.setDraggable( false);
     timeScaleRuler.setResizable( false);
+    boolean isUpperLabel = true;
     while (tickTime < timeScaleEnd) {
-      timeScaleRuler.addPoint( xLoc, yLoc);
-      timeScaleRuler.addPoint( xLoc, yLoc + tickHeight);
-      timeScaleRuler.addPoint( xLoc, yLoc);
-      addTickLabel( tickTime, xLoc, yLoc + 4);
+      timeScaleRuler.addPoint( xLoc, yRuler);
+      timeScaleRuler.addPoint( xLoc, yRuler + tickHeight);
+      timeScaleRuler.addPoint( xLoc, yRuler);
+      addTickLabel( tickTime, xLoc, yLabel + 4);
       tickTime += timeDelta;
       xLoc = (int) scaleTime( tickTime);
+      isUpperLabel = (! isUpperLabel);
+      if (isUpperLabel) {
+        yLabel = yLabelUpper;
+      } else {
+        yLabel = yLabelLower;
+      }
     }
-    timeScaleRuler.addPoint( xLoc, yLoc);
-    timeScaleRuler.addPoint( xLoc, yLoc + tickHeight);
-    addTickLabel( tickTime, xLoc, yLoc + 4);
-    int maxHeight = yLoc + ViewConstants.TIMELINE_VIEW_Y_INIT;
+    timeScaleRuler.addPoint( xLoc, yRuler);
+    timeScaleRuler.addPoint( xLoc, yRuler + tickHeight);
+    addTickLabel( tickTime, xLoc, yLabel + 4);
+    int maxHeight = yRuler + (ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
     if (maxHeight > maxViewHeight) {
       maxViewHeight = maxHeight;
     }
