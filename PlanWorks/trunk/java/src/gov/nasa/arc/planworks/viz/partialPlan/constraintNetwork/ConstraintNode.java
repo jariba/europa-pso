@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.3 2003-09-23 19:28:16 taylor Exp $
+// $Id: ConstraintNode.java,v 1.1 2003-09-25 23:52:45 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 29july03
 //
 
-package gov.nasa.arc.planworks.viz.views.constraintNetwork;
+package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -38,7 +38,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
 /**
@@ -62,7 +62,7 @@ public class ConstraintNode extends BasicNode {
   private PwConstraint constraint;
   private VariableNode variableNode;
   private boolean isFreeToken;
-  private VizView vizView;
+  private PartialPlanView partialPlanView;
   private String nodeLabel;
   private List variableNodeList; // element VariableNode
   private boolean isDiamond = true;
@@ -83,16 +83,16 @@ public class ConstraintNode extends BasicNode {
    * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
-   * @param vizView - <code>VizView</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
    */
   public ConstraintNode( PwConstraint constraint, VariableNode variableNode,
                          Point constraintLocation, Color backgroundColor,
-                         boolean isFreeToken, boolean isDraggable, VizView vizView) { 
+                         boolean isFreeToken, boolean isDraggable, PartialPlanView partialPlanView) { 
     super();
     this.constraint = constraint;
     this.variableNode = variableNode;
     this.isFreeToken = isFreeToken;
-    this.vizView = vizView;
+    this.partialPlanView = partialPlanView;
     variableNodeList = new ArrayList();
     variableNodeList.add( variableNode);
     constraintVariableLinkList = new ArrayList();
@@ -224,12 +224,12 @@ public class ConstraintNode extends BasicNode {
   }
 
   /**
-   * <code>getVizView</code>
+   * <code>getPartialPlanView</code>
    *
-   * @return - <code>VizView</code> - 
+   * @return - <code>PartialPlanView</code> - 
    */
-  public VizView getVizView() {
-    return vizView;
+  public PartialPlanView getPartialPlanView() {
+    return partialPlanView;
   }
 
   /**
@@ -345,7 +345,7 @@ public class ConstraintNode extends BasicNode {
       } else {
         operation = "open";
       }
-    if ((! isUnaryConstraint)  && (vizView instanceof ConstraintNetworkView)) {
+    if ((! isUnaryConstraint)  && (partialPlanView instanceof ConstraintNetworkView)) {
       StringBuffer tip = new StringBuffer( "<html> ");
       tip.append( constraint.getType());
       if (isDebug) {
@@ -432,7 +432,7 @@ public class ConstraintNode extends BasicNode {
     //                             obj.getTopLevelObject().getClass().getName());
     ConstraintNode constraintNode = (ConstraintNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      if ((! isUnaryConstraint) && (vizView instanceof ConstraintNetworkView)) {
+      if ((! isUnaryConstraint) && (partialPlanView instanceof ConstraintNetworkView)) {
         if (! areNeighborsShown) {
           //System.err.println( "doMouseClick: Mouse-L show variable nodes of constraint id " +
           //                    constraintNode.getConstraint().getId());
@@ -444,7 +444,7 @@ public class ConstraintNode extends BasicNode {
           removeConstraintNodeVariables( this);
           setNodeClosed();
         }
-        ((ConstraintNetworkView) vizView).setFocusNode( constraintNode);
+        ((ConstraintNetworkView) partialPlanView).setFocusNode( constraintNode);
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -454,7 +454,7 @@ public class ConstraintNode extends BasicNode {
 
   private void addConstraintNodeVariables( ConstraintNode constraintNode) {
     ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) constraintNode.getVizView();
+      (ConstraintNetworkView) constraintNode.getPartialPlanView();
     boolean areNodesChanged = constraintNetworkView.addVariableNodes( constraintNode);
     boolean areLinksChanged =
       constraintNetworkView.addConstraintToVariableLinks( constraintNode);
@@ -466,7 +466,7 @@ public class ConstraintNode extends BasicNode {
 
   private void removeConstraintNodeVariables( ConstraintNode constraintNode) {
     ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) constraintNode.getVizView();
+      (ConstraintNetworkView) constraintNode.getPartialPlanView();
     boolean areLinksChanged =
       constraintNetworkView.removeConstraintToVariableLinks( constraintNode);
     boolean areNodesChanged = constraintNetworkView.removeVariableNodes( constraintNode);

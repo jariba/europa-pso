@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecChecker.java,v 1.6 2003-08-12 22:55:10 miatauro Exp $
+// $Id: ContentSpecChecker.java,v 1.7 2003-09-25 23:52:47 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -16,5 +16,5 @@ import java.util.List;
  */
 
 public interface ContentSpecChecker {
-  public List getValidTokenIds();
+  public List getValidIds();
 }

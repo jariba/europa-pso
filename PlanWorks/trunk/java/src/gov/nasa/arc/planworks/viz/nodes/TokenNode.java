@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.21 2003-09-23 19:28:16 taylor Exp $
+// $Id: TokenNode.java,v 1.22 2003-09-25 23:52:44 taylor Exp $
 //
 // PlanWorks
 //
@@ -38,9 +38,10 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.views.VizView;
-import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
-import gov.nasa.arc.planworks.viz.views.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 
 
 /**
@@ -64,7 +65,7 @@ public class TokenNode extends BasicNode {
   private PwToken token;
   private Point tokenLocation;
   private boolean isFreeToken;
-  private VizView vizView;
+  private PartialPlanView partialPlanView;
   private String predicateName;
   private String nodeLabel;
   private List variableNodeList; // element VariableNode
@@ -79,15 +80,15 @@ public class TokenNode extends BasicNode {
    * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
-   * @param vizView - <code>VizView</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
    */
   public TokenNode( PwToken token, Point tokenLocation, Color backgroundColor,
-                    boolean isFreeToken, boolean isDraggable, VizView vizView) {
+                    boolean isFreeToken, boolean isDraggable, PartialPlanView partialPlanView) {
     super();
     this.token = token;
     this.tokenLocation = tokenLocation;
     this.isFreeToken = isFreeToken;
-    this.vizView = vizView;
+    this.partialPlanView = partialPlanView;
     if (token != null) {
       predicateName = token.getPredicate().getName();
     } else {
@@ -150,12 +151,12 @@ public class TokenNode extends BasicNode {
   }
 
   /**
-   * <code>getVizView</code>
+   * <code>getPartialPlanView</code>
    *
-   * @return - <code>VizView</code> - 
+   * @return - <code>PartialPlanView</code> - 
    */
-  public VizView getVizView() {
-    return vizView;
+  public PartialPlanView getPartialPlanView() {
+    return partialPlanView;
   }
 
   /**
@@ -207,7 +208,7 @@ public class TokenNode extends BasicNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-    if (vizView instanceof ConstraintNetworkView) {
+    if (partialPlanView instanceof ConstraintNetworkView) {
       String opereration = null;
       if (areNeighborsShown) {
         opereration = "close";
@@ -257,7 +258,7 @@ public class TokenNode extends BasicNode {
     //                             obj.getTopLevelObject().getClass().getName());
     TokenNode tokenNode = (TokenNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      if (vizView instanceof ConstraintNetworkView) {
+      if (partialPlanView instanceof ConstraintNetworkView) {
         if (! areNeighborsShown) {
           //System.err.println( "doMouseClick: Mouse-L show variable nodes of " +
           //                    tokenNode.getPredicateName());
@@ -269,7 +270,7 @@ public class TokenNode extends BasicNode {
           removeTokenNodeVariables( this);
           areNeighborsShown = false;
         }
-        ((ConstraintNetworkView) vizView).setFocusNode( tokenNode);
+        ((ConstraintNetworkView) partialPlanView).setFocusNode( tokenNode);
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -281,7 +282,7 @@ public class TokenNode extends BasicNode {
 
   private void addTokenNodeVariables( TokenNode tokenNode) {
     ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) tokenNode.getVizView();
+      (ConstraintNetworkView) tokenNode.getPartialPlanView();
     boolean areNodesChanged = constraintNetworkView.addVariableNodes( tokenNode);
     boolean areLinksChanged = constraintNetworkView.addVariableToTokenLinks( tokenNode);
     if (areNodesChanged || areLinksChanged) {
@@ -293,7 +294,7 @@ public class TokenNode extends BasicNode {
 
   private void removeTokenNodeVariables( TokenNode tokenNode) {
     ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) tokenNode.getVizView();
+      (ConstraintNetworkView) tokenNode.getPartialPlanView();
     boolean areLinksChanged = constraintNetworkView.removeVariableToTokenLinks( tokenNode);
     boolean areNodesChanged = constraintNetworkView.removeVariableNodes( tokenNode);
     if (areNodesChanged || areLinksChanged) {
@@ -308,15 +309,16 @@ public class TokenNode extends BasicNode {
     JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          vizView.getViewSet().setActiveToken( TokenNode.this.getToken());
-          vizView.getViewSet().setSecondaryTokens( null);
+          ((PartialPlanViewSet) partialPlanView.getViewSet()).
+            setActiveToken( TokenNode.this.getToken());
+          ((PartialPlanViewSet) partialPlanView.getViewSet()).setSecondaryTokens( null);
           System.err.println( "TokenNode setActiveToken: " +
                               TokenNode.this.getToken().getPredicate().getName());
         }
       });
     mouseRightPopup.add( activeTokenItem);
 
-    NodeGenerics.showPopupMenu( mouseRightPopup, vizView, viewCoords);
+    NodeGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
   } // end mouseRightPopupMenu
 
 

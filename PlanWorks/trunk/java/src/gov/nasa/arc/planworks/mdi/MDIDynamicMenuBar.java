@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.8 2003-09-18 23:35:04 miatauro Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.9 2003-09-25 23:52:43 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -206,7 +206,68 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     validate();
     return menu;
   }
-}
+
+  /**
+   * <code>clearMenu</code>
+   *
+   * @param menuName - <code>String</code> - 
+   * @return - <code>JMenu</code> - 
+   */
+  public JMenu clearMenu( String menuName, int numProjects) {
+    // clear out previous project's menu contents and return menu root
+    for (int i = 0, n = getMenuCount(); i < n; i++) {
+      if (((JMenu) getMenu( i)).getText().equals( menuName)) {
+        JMenu menu = (JMenu) getMenu( i);
+        if (numProjects == 0) {
+          remove( menu);
+          menu = null;
+        } else {
+          menu.removeAll();
+        }
+        validate();
+        repaint();
+        return menu;
+      }
+    }
+    return null;
+  } // end clearMenu
+
+
+  /**
+   * <code>disableMenu</code>
+   *
+   * @param menuName - <code>String</code> - 
+   * @return - <code>JMenu</code> - 
+   */
+  public JMenu disableMenu( String menuName) {
+    JMenu menu = null;
+    for (int i = 0; i < getMenuCount(); i++) {
+      if (getMenu(i) != null &&
+         getMenu(i).getText().equals( menuName)) {
+        menu = getMenu(i);
+      }
+    }
+    if(menu != null) {
+      menu.setEnabled(false);
+    }
+    return menu;
+  } // end disableMenu
+
+
+  /**
+   * <code>enableMenu</code>
+   *
+   * @param menu - <code>JMenu</code> - 
+   */
+  public void enableMenu( JMenu menu) {
+    if (menu != null && menu.getItemCount() != 0) {
+      menu.setEnabled(true);
+    }
+  } // end enableMenu
+
+
+} // end class MDIDynamicMenuBar
+
 
 class SelectedActionListener implements ActionListener {
   private MDIInternalFrame frame;
@@ -220,7 +281,7 @@ class SelectedActionListener implements ActionListener {
     }
     catch(Exception f){}
   }
-}
+} // end class SelectedActionListener
 
 class TileActionListener implements ActionListener {
   private TileCascader tiler;
@@ -230,7 +291,8 @@ class TileActionListener implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     tiler.tileWindows();
   }
-}
+} // end class TileActionListener
+
 
 class CascadeActionListener implements ActionListener {
   private TileCascader cascader;
@@ -240,6 +302,9 @@ class CascadeActionListener implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     cascader.cascadeWindows();
   }
-}
+
+} // end class CascadeActionListener
+
+
 
 

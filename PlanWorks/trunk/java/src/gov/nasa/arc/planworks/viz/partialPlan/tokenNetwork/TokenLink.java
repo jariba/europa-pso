@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenLink.java,v 1.1 2003-09-18 20:48:50 taylor Exp $
+// $Id: TokenLink.java,v 1.1 2003-09-25 23:52:46 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 01july03
 //
 
-package gov.nasa.arc.planworks.viz.views.tokenNetwork;
+package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoLabeledLink;

@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.3 2003-09-23 19:28:16 taylor Exp $
+// $Id: TemporalNode.java,v 1.1 2003-09-25 23:52:45 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 21July03
 //
 
-package gov.nasa.arc.planworks.viz.views.temporalExtent;
+package gov.nasa.arc.planworks.viz.partialPlan.temporalExtent;
 
 import java.awt.Color;
 import java.awt.Point;
@@ -42,6 +42,7 @@ import gov.nasa.arc.planworks.util.Extent;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 
 /**
@@ -475,8 +476,9 @@ public class TemporalNode extends BasicNode implements Extent {
     JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          temporalExtentView.getViewSet().setActiveToken( TemporalNode.this.getToken());
-          temporalExtentView.getViewSet().setSecondaryTokens( null);
+          ((PartialPlanViewSet) temporalExtentView.getViewSet()).
+            setActiveToken( TemporalNode.this.getToken());
+          ((PartialPlanViewSet) temporalExtentView.getViewSet()).setSecondaryTokens( null);
           System.err.println( "TemporalNode setActiveToken: " +
                               TemporalNode.this.getToken().getPredicate().getName());
         }

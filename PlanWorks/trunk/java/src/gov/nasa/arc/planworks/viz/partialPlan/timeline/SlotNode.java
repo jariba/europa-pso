@@ -3,14 +3,14 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.4 2003-09-23 20:21:26 taylor Exp $
+// $Id: SlotNode.java,v 1.1 2003-09-25 23:52:46 taylor Exp $
 //
 // PlanWorks
 //
 // Will Taylor -- started 18may03
 //
 
-package gov.nasa.arc.planworks.viz.views.timeline;
+package gov.nasa.arc.planworks.viz.partialPlan.timeline;
 
 import java.awt.Color;
 import java.awt.Insets;
@@ -39,6 +39,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 
 /**
@@ -354,13 +355,15 @@ public class SlotNode extends TextNode {
       JMenuItem activeTokenItem = new JMenuItem( "Set Active Token");
       activeTokenItem.addActionListener( new ActionListener() {
           public void actionPerformed( ActionEvent evt) {
-            timelineView.getViewSet().setActiveToken( SlotNode.this.getSlot().getBaseToken());
+            ((PartialPlanViewSet) timelineView.getViewSet()).
+              setActiveToken( SlotNode.this.getSlot().getBaseToken());
             List secondaryTokens = SlotNode.this.getSlot().getTokenList();
             secondaryTokens.remove( 0);
             if (secondaryTokens.size() == 0) {
               secondaryTokens = null;
             }
-            timelineView.getViewSet().setSecondaryTokens( secondaryTokens);
+            ((PartialPlanViewSet) timelineView.getViewSet()).
+              setSecondaryTokens( secondaryTokens);
             System.err.println( "SlotNode setActiveToken " +
                                 SlotNode.this.getSlot().getBaseToken().getPredicate().getName());
           }

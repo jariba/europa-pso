@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.20 2003-09-23 21:54:35 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.21 2003-09-25 23:52:48 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -30,8 +30,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
+import gov.nasa.arc.planworks.db.util.PartialPlanContentSpec;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 /**
  * <code>ContentSpecWindow</code> -
@@ -52,7 +54,7 @@ public class ContentSpecWindow extends JPanel {
   //protected VariableTypeGroupBox variableTypeGroup;
   //private McLaughlanGroupBox mcLaughlanGroup
 
-  protected ContentSpec contentSpec;
+  protected PartialPlanContentSpec contentSpec;
 
   private static boolean queryTestExists;
   /**
@@ -64,11 +66,11 @@ public class ContentSpecWindow extends JPanel {
    *                    ViewSet
    */
   public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec) {
-    this.contentSpec = contentSpec;
+    this.contentSpec = (PartialPlanContentSpec) contentSpec;
     queryTestExists = false;
 
-    Map predicateNames = contentSpec.getPredicateNames();
-    Map timelineNames = contentSpec.getTimelineNames();
+    Map predicateNames = this.contentSpec.getPredicateNames();
+    Map timelineNames = this.contentSpec.getTimelineNames();
 
     //System.err.println("Pred: " + predicateNames);
     //System.err.println("Time: " + timelineNames);
@@ -164,15 +166,17 @@ public class ContentSpecWindow extends JPanel {
     for(int i = 0; i < tokenTypeBox.getComponentCount(); i++) {
       if(tokenTypeBox.getComponent(i) instanceof JRadioButton) {
         JRadioButton button = (JRadioButton) tokenTypeBox.getComponent(i);
-        if(button.getText().equals("all") && tokenTypes == ContentSpec.ALL) {
+        if(button.getText().equals("all") && tokenTypes == PartialPlanContentSpec.ALL) {
           button.setSelected(true);
           break;
         }
-        else if(button.getText().equals("slotted") && tokenTypes == ContentSpec.SLOTTED_ONLY) {
+        else if(button.getText().equals("slotted") && tokenTypes ==
+                PartialPlanContentSpec.SLOTTED_ONLY) {
           button.setSelected(true);
           break;
         }
-        else if(button.getText().equals("free") && tokenTypes == ContentSpec.FREE_ONLY) {
+        else if(button.getText().equals("free") && tokenTypes ==
+                PartialPlanContentSpec.FREE_ONLY) {
           button.setSelected(true);
           break;
         }
@@ -373,8 +377,13 @@ public class ContentSpecWindow extends JPanel {
         //timeline, predicate, constraint, variableType, timeInterval
         System.err.println("Applying Specification...");
         try {
-          specWindow.contentSpec.applySpec(timeline, predicate, timeInterval, mergeTokens, 
-                                           tokenType);
+          List specList = new ArrayList();
+          specList.add( timeline);
+          specList.add( predicate);
+          specList.add( timeInterval);
+          specList.add( new Boolean( mergeTokens));
+          specList.add( new Integer( tokenType));
+          specWindow.contentSpec.applySpec(specList);
         }
         catch(Exception e){
           System.err.println(e);

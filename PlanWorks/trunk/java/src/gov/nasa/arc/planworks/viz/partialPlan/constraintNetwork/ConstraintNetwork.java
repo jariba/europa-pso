@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetwork.java,v 1.3 2003-09-18 20:48:47 taylor Exp $
+// $Id: ConstraintNetwork.java,v 1.1 2003-09-25 23:52:44 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 07aug03
 //
 
-package gov.nasa.arc.planworks.viz.views.constraintNetwork;
+package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoObject;

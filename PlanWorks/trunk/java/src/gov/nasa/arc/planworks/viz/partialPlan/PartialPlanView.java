@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.19 2003-09-23 19:28:16 taylor Exp $
+// $Id: PartialPlanView.java,v 1.1 2003-09-25 23:52:44 taylor Exp $
 //
 // PlanWorks -- 
 //
-// Will Taylor -- started 18May03
+// Will Taylor -- started 25sept03
 //
 
-package gov.nasa.arc.planworks.viz.views;
+package gov.nasa.arc.planworks.viz.partialPlan;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,59 +32,39 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 // import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
 /**
- * <code>VizView</code> - 
+ * <code>PartialPlanView</code> - 
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *           NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class VizView extends JPanel {
+public class PartialPlanView extends VizView {
 
-  protected PwPartialPlan partialPlan;
-  protected ViewSet viewSet;
   protected List validTokenIds;
   protected List displayedTokenIds;
 
 
   /**
-   * <code>VizView</code> - constructor 
+   * <code>PartialPlanView</code> - constructor 
    *
    * @param partialPlan - <code>PwPartialPlan</code> - 
    * @param viewSet - <code>ViewSet</code> - 
    */
-  public VizView( PwPartialPlan partialPlan, ViewSet viewSet) {
-    super();
-    this.partialPlan = partialPlan;
-    this.viewSet = viewSet;
+  public PartialPlanView( PwPartialPlan partialPlan, ViewSet viewSet) {
+    super( partialPlan, viewSet);
     validTokenIds = null;
     displayedTokenIds = null;
     
-    JGoText.setDefaultFontFaceName("Monospaced");
+    JGoText.setDefaultFontFaceName( "Monospaced");
     JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
 
     // Utilities.printFontNames();
   }
-
-  /**
-   * <code>getViewSet</code>
-   *
-   * @return - <code>ViewSet</code> - 
-   */
-  public ViewSet getViewSet() {
-    return viewSet;
-  }
-
-  /**
-   * <code>redraw</code> - each subclass of VizView will implement redraw()
-   *
-   */  
-  public void redraw() {
-  }
-
 
   /**
    * <code>isContentSpecRendered</code>
@@ -220,56 +200,7 @@ public class VizView extends JPanel {
     }
   } // end isTokenInContentSpec
 
-  /**
-   * <code>expandViewFrame</code> - expand up to size of PlanWorks frame
-   *
-   * @param viewName - <code>String</code> - 
-   * @param maxViewWidth - <code>int</code> - 
-   * @param maxViewHeight - <code>int</code> - 
-   */
-  protected void expandViewFrame( String viewName, int maxViewWidth, int maxViewHeight) {
-    MDIInternalFrame viewFrame = null;
-    if (viewName.equals( "timelineView")) {
-      viewFrame = viewSet.openTimelineView( 0L);
-    } else if (viewName.equals( "tokenNetworkView")) {
-      viewFrame = viewSet.openTokenNetworkView( 0L);
-    } else if (viewName.equals( "temporalExtentView")) {
-      viewFrame = viewSet.openTemporalExtentView( 0L);
-    } else if (viewName.equals( "constraintNetworkView")) {
-      viewFrame = viewSet.openConstraintNetworkView( 0L);
-    } else if (viewName.equals( "temporalNetworkView")) {
-      JOptionPane.showMessageDialog
-        (PlanWorks.planWorks, viewName, "View Not Supported", 
-         JOptionPane.INFORMATION_MESSAGE);
-    } else {
-      JOptionPane.showMessageDialog
-        (PlanWorks.planWorks, viewName, "View Not Supported", 
-         JOptionPane.INFORMATION_MESSAGE);
-    }
-    maxViewWidth = Math.min( maxViewWidth, 
-                             (int) PlanWorks.planWorks.getSize().getWidth() -
-                             (int) viewFrame.getLocation().getX() -
-                             ViewConstants.MDI_FRAME_DECORATION_WIDTH -
-                             ViewConstants.FRAME_DECORATION_WIDTH); 
-    maxViewHeight = Math.min( maxViewHeight, 
-                              (int) PlanWorks.planWorks.getSize().getHeight() -
-                              (int) viewFrame.getLocation().getY() -
-                              ViewConstants.MDI_FRAME_DECORATION_HEIGHT -
-                              ViewConstants.FRAME_DECORATION_HEIGHT); 
-//     maxViewWidth = Math.min( Math.max( maxViewWidth, PlanWorks.INTERNAL_FRAME_WIDTH),
-//                              (int) PlanWorks.planWorks.getSize().getWidth() -
-//                              (int) viewFrame.getLocation().getX() -
-//                              ViewConstants.MDI_FRAME_DECORATION_WIDTH -
-//                              ViewConstants.FRAME_DECORATION_WIDTH); 
-//     maxViewHeight = Math.min( Math.max( maxViewHeight, PlanWorks.INTERNAL_FRAME_HEIGHT),
-//                               (int) PlanWorks.planWorks.getSize().getHeight() -
-//                               (int) viewFrame.getLocation().getY() -
-//                               ViewConstants.MDI_FRAME_DECORATION_HEIGHT -
-//                               ViewConstants.FRAME_DECORATION_HEIGHT); 
-    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
-                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
-  } // end expandViewFrame
 
 
-} // end class VizView
+} // end class PartialPlanView
 

@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.45 2003-09-23 19:28:17 taylor Exp $
+// $Id: TimelineView.java,v 1.1 2003-09-25 23:52:46 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 18May03
 //
 
-package gov.nasa.arc.planworks.viz.views.timeline;
+package gov.nasa.arc.planworks.viz.partialPlan.timeline;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -56,22 +56,21 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 /**
  * <code>TimelineView</code> - render a partial plan's timelines and slots
- *                JPanel->VizView->TimelineView
- *                JComponent->JGoView
+ *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TimelineView extends VizView {
+public class TimelineView extends PartialPlanView {
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
-  private ViewSet viewSet;
+  private PartialPlanViewSet viewSet;
   private TimelineJGoView jGoView;
   private String viewName;
   private JGoDocument jGoDocument;
@@ -85,15 +84,16 @@ public class TimelineView extends VizView {
   private int slotLabelMinLength;
 
   /**
-   * <code>TimelineView</code> - constructor - called by ViewSet.openTimelineView.
+   * <code>TimelineView</code> - constructor - 
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>PwPartialPlan</code> - 
    * @param startTimeMSecs - <code>long</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
+   * @param viewSet - <code>PartialPlanViewSet</code> - 
    */
-  public TimelineView( PwPartialPlan partialPlan, long startTimeMSecs, ViewSet viewSet) {
+  public TimelineView( PwPartialPlan partialPlan, long startTimeMSecs,
+                       PartialPlanViewSet viewSet) {
     super( partialPlan, viewSet);
 
     this.partialPlan = partialPlan;
@@ -194,7 +194,7 @@ public class TimelineView extends VizView {
   private void renderTimelineAndSlotNodes() {
     jGoView.getDocument().deleteContents();
 
-    validTokenIds = viewSet.getValidTokenIds();
+    validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
     timelineNodeList = null;
     freeTokenNodeList = new ArrayList();
@@ -286,7 +286,7 @@ public class TimelineView extends VizView {
           Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
           TimelineNode timelineNode =
             new TimelineNode( timelineNodeName, timeline, new Point( x, y),
-                              timelineColor, this);
+                              timelineColor);
           tmpTimelineNodeList.add( timelineNode);
           // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
           jGoDocument.addObjectAtTail( timelineNode);
@@ -500,7 +500,7 @@ public class TimelineView extends VizView {
 //     // print content spec
 //     // System.err.println( "TimelineView - contentSpec");
 //     // viewSet.printSpec();
-//     validTokenIds = viewSet.getValidTokenIds();
+//     validTokenIds = viewSet.getValidIds();
 //     displayedTokenIds = new ArrayList();
 //     Iterator timelineIterator = timelineNodeList.iterator();
 //     Integer id = null;
@@ -654,7 +654,8 @@ public class TimelineView extends VizView {
   private void createActiveTokenItem( JMenuItem activeTokenItem) {
     activeTokenItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          PwToken activeToken = TimelineView.this.getViewSet().getActiveToken();
+          PwToken activeToken =
+            ((PartialPlanViewSet) TimelineView.this.getViewSet()).getActiveToken();
           if (activeToken != null) {
             boolean isTokenFound = false;
             Iterator timelineNodeListItr = timelineNodeList.iterator();

@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkLayout.java,v 1.6 2003-09-23 16:10:39 taylor Exp $
+// $Id: ConstraintNetworkLayout.java,v 1.1 2003-09-25 23:52:44 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 28July03
 //
 
-package gov.nasa.arc.planworks.viz.views.constraintNetwork;
+package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.awt.Cursor;
 import java.util.Date;
