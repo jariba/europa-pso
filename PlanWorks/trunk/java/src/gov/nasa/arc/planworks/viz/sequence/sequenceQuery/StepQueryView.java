@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.3 2003-10-28 18:01:25 taylor Exp $
+// $Id: StepQueryView.java,v 1.4 2003-11-11 02:44:53 taylor Exp $
 //
 // PlanWorks
 //
@@ -51,6 +51,7 @@ public class StepQueryView extends SequenceView {
 
   private PwPlanningSequence planSequence;
   private List stepList; // element Integer
+  private String key;
   private String query;
   private SequenceQueryWindow sequenceQueryWindow;
   private MDIInternalFrame stepQueryFrame;
@@ -66,7 +67,8 @@ public class StepQueryView extends SequenceView {
   /**
    * <code>StepQueryView</code> - constructor 
    *
-   * @param stepList - <code>List</code> - element Integer
+   * @param stepList - <code>List</code> - 
+   * @param key - <code>String</code> - 
    * @param query - <code>String</code> - 
    * @param planSequence - <code>ViewableObject</code> - 
    * @param viewSet - <code>ViewSet</code> - 
@@ -74,11 +76,12 @@ public class StepQueryView extends SequenceView {
    * @param stepQueryFrame - <code>MDIInternalFrame</code> - 
    * @param startTimeMSecs - <code>long</code> - 
    */
-  public StepQueryView( List stepList, String query, ViewableObject planSequence,
+  public StepQueryView( List stepList, String key, String query, ViewableObject planSequence,
                         ViewSet viewSet, JPanel sequenceQueryWindow,
                         MDIInternalFrame stepQueryFrame, long startTimeMSecs) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.stepList = stepList;
+    this.key = key;
     Collections.sort( stepList,
                       new TransactionComparatorAscending
                       ( ViewConstants.TRANSACTION_STEP_NUM_HEADER));
@@ -124,14 +127,14 @@ public class StepQueryView extends SequenceView {
 
     stepHeaderPanel = new StepHeaderPanel();
     stepHeaderPanel.setLayout( new BoxLayout( stepHeaderPanel, BoxLayout.Y_AXIS));
-    headerJGoView = new StepHeaderView( stepList, query, this);
+    headerJGoView = new StepHeaderView( stepList, key, query, this);
     headerJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     headerJGoView.validate();
     headerJGoView.setVisible( true);
     stepHeaderPanel.add( headerJGoView, BorderLayout.NORTH);
     add( stepHeaderPanel, BorderLayout.NORTH);
 
-    contentJGoView = new StepContentView( stepList, query, headerJGoView,
+    contentJGoView = new StepContentView( stepList, key, query, headerJGoView,
                                                  planSequence, this);
     contentJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     add( contentJGoView, BorderLayout.SOUTH);

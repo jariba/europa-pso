@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintJGoView.java,v 1.2 2003-11-07 00:04:59 taylor Exp $
+// $Id: ConstraintJGoView.java,v 1.3 2003-11-11 02:44:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -80,14 +80,17 @@ class ConstraintJGoView extends JGoView {
 
 
   private void mouseRightPopupMenu( Point viewCoords) {
+    String partialPlanName = partialPlan.getPartialPlanName();
+    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
+
     JMenuItem tokenByKeyItem = new JMenuItem( "Find by Key");
     createNodeByKeyItem( tokenByKeyItem);
     mouseRightPopup.add( tokenByKeyItem);
 
-    JMenuItem changeViewItem = new JMenuItem( "Open a View");
-    constraintNetworkView.createChangeViewItem( changeViewItem, partialPlan, viewCoords);
-    mouseRightPopup.add( changeViewItem);
+    constraintNetworkView.createOpenViewItems( partialPlan, partialPlanName, planSequence,
+                                               mouseRightPopup,
+                                               PlanWorks.CONSTRAINT_NETWORK_VIEW);
     
     JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
     constraintNetworkView.createRaiseContentSpecItem( raiseContentSpecItem);
@@ -107,8 +110,6 @@ class ConstraintJGoView extends JGoView {
     createChangeLayoutItem(changeLayoutItem);
     mouseRightPopup.add(changeLayoutItem);
 
-    String partialPlanName = partialPlan.getPartialPlanName();
-    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
     constraintNetworkView.createAllViewItems( partialPlan, partialPlanName,
                                               planSequence, mouseRightPopup);
 

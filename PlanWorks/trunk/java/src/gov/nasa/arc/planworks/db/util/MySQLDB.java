@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.62 2003-11-06 21:52:52 miatauro Exp $
+// $Id: MySQLDB.java,v 1.63 2003-11-11 02:44:51 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -979,6 +979,49 @@ public class MySQLDB {
     try {
       ResultSet translations =
         queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && ObjectId=").concat(constraintId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
+      while(translations.next()) {
+        retval.add(Long.toString(translations.getLong("PartialPlanId")).concat(Integer.toString(translations.getInt("TransactionId"))));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithTokenTransaction(Long sequenceId, String type) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet translations =
+        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
+      while(translations.next()) {
+        retval.add(Long.toString(translations.getLong("PartialPlanId")).concat(Integer.toString(translations.getInt("TransactionId"))));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithVariableTransaction(Long sequenceId, String type) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet translations =
+        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
+      while(translations.next()) {
+        retval.add(Long.toString(translations.getLong("PartialPlanId")).concat(Integer.toString(translations.getInt("TransactionId"))));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static List queryStepsWithConstraintTransaction(Long sequenceId, 
+                                                                      String type) {
+    List retval = new UniqueSet();
+    try {
+      ResultSet translations =
+        queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType LIKE '").concat(type).concat("'"));
       while(translations.next()) {
         retval.add(Long.toString(translations.getLong("PartialPlanId")).concat(Integer.toString(translations.getInt("TransactionId"))));
       }

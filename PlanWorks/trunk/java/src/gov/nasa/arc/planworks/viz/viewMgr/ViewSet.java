@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.44 2003-11-07 00:05:00 taylor Exp $
+// $Id: ViewSet.java,v 1.45 2003-11-11 02:44:53 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -103,14 +103,9 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     }
     Constructor [] constructors = viewClass.getDeclaredConstructors();
     String frameViewName = viewClassName.substring( viewClassName.lastIndexOf( ".") + 1);
-    boolean closable = true; // partial plan views
-    if (viewClassName.indexOf( "SequenceStepsView") >= 0) {
-      // force user to do Project->Delete Sequence to dispose of this window
-      closable = false; 
-    }
     MDIInternalFrame viewFrame = desktopFrame.createFrame( frameViewName + " of " +
                                                            viewable.getName(),
-                                                           this, true, closable, true, true);
+                                                           this, true, true, true, true);
     viewFrame.setIconifiable( true);
     views.put(viewClass, viewFrame);
     Container contentPane = viewFrame.getContentPane();
@@ -304,8 +299,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       }
     catch(PropertyVetoException pve){}
 
-    // this causes content specs to perfectly overlay each other
-    // ((ViewManager) remover).decrementContentSpecWindowCnt();
+    ((ViewManager) remover).decrementContentSpecWindowCnt();
   }
 
   /**

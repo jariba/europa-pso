@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.6 2003-11-07 00:04:59 taylor Exp $
+// $Id: PartialPlanView.java,v 1.7 2003-11-11 02:44:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -20,6 +20,7 @@ import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JPopupMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
 
@@ -204,37 +205,31 @@ public class PartialPlanView extends VizView {
       return false;
     }
   } // end isTokenInContentSpec
-
-
+  
   /**
-   * <code>createChangeViewItem</code> - partial plan background Mouse-Right item
+   * <code>createOpenViewItems</code> - partial plan background Mouse-Right item
    *
-   * @param changeViewItem - <code>JMenuItem</code> - 
    * @param partialPlan - <code>PwPartialPlan</code> - 
-   * @param viewCoords - <code>Point</code> - 
+   * @param partialPlanName - <code>String</code> - 
+   * @param planSequence - <code>PwPlanningSequence</code> - 
+   * @param mouseRightPopup - <code>JPopupMenu</code> - 
+   * @param currentViewName - <code>String</code> - 
    */
-  public void createChangeViewItem( JMenuItem changeViewItem,
-                                    final PwPartialPlan partialPlan,
-                                    final Point viewCoords) {
-    changeViewItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          String partialPlanName = partialPlan.getPartialPlanName();
-          int stepNumber = partialPlan.getStepNumber();
-          PwPlanningSequence planSequence =
-            PlanWorks.planWorks.getPlanSequence( partialPlan);
-
-          PartialPlanViewMenu mouseRightPopup = new PartialPlanViewMenu();
-          JMenuItem header = new JMenuItem( "step" + stepNumber);
-          mouseRightPopup.add( header);
-          mouseRightPopup.addSeparator();
-
-          mouseRightPopup.buildPartialPlanViewMenu( partialPlanName, planSequence);
-          mouseRightPopup.show( PlanWorks.planWorks, (int) viewCoords.getX(),
-                                (int) viewCoords.getY());
-        }
-      });
-  } // end createChangeViewItem
-
+  public void createOpenViewItems( final PwPartialPlan partialPlan,
+                                   final String partialPlanName,
+                                   final PwPlanningSequence planSequence,
+                                   JPopupMenu mouseRightPopup, String currentViewName) {
+    PartialPlanViewMenu viewMenu = new PartialPlanViewMenu();
+    Iterator viewNamesItr = PlanWorks.planWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
+    while (viewNamesItr.hasNext()) {
+      String viewName = (String) viewNamesItr.next();
+      if (! viewName.equals( currentViewName)) {
+        PartialPlanViewMenuItem openViewItem =
+          viewMenu.createOpenViewItem( viewName, partialPlanName, planSequence);
+        mouseRightPopup.add( openViewItem);
+      }
+    }
+  } // end createOpenViewItems
 
   /**
    * <code>createRaiseContentSpecItem</code> - partial plan background Mouse-Right item
@@ -247,6 +242,10 @@ public class PartialPlanView extends VizView {
           MDIInternalFrame contentSpecWindow = viewSet.getContentSpecWindow();
           // bring window to the front
           try {
+            // in case content spec window was iconified
+            if (contentSpecWindow.isIcon()) {
+              contentSpecWindow.setIcon( false);
+            }
             contentSpecWindow.setSelected( false);
             contentSpecWindow.setSelected( true);
           } catch (PropertyVetoException excp) {

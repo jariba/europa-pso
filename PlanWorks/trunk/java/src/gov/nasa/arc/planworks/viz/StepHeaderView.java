@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepHeaderView.java,v 1.4 2003-10-28 18:01:24 taylor Exp $
+// $Id: StepHeaderView.java,v 1.5 2003-11-11 02:44:52 taylor Exp $
 //
 // PlanWorks
 //
@@ -57,6 +57,7 @@ public class StepHeaderView extends JGoView {
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE);
 
   private List transactionList; // element PwTransaction
+  private String key;
   private String query;
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
@@ -72,12 +73,14 @@ public class StepHeaderView extends JGoView {
    * <code>StepHeaderView</code> - constructor 
    *
    * @param transactionList - <code>List</code> - 
+   * @param key - <code>String</code> - 
    * @param query - <code>String</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public StepHeaderView( List transactionList, String query, VizView vizView) {
+  public StepHeaderView( List transactionList, String key, String query, VizView vizView) {
     super();
     this.transactionList = transactionList;
+    this.key = key;
     this.query = query;
     this.vizView= vizView;
 
@@ -115,7 +118,8 @@ public class StepHeaderView extends JGoView {
     jGoDocument.addObjectAtTail( typeNode);
     x += typeNode.getSize().getWidth();
 
-    if (query.indexOf( " With ") >= 0) {
+    if ((query.indexOf( " With ") >= 0) ||
+        ((query.indexOf( " With ") == -1) && key.equals( ""))) {
       objectKeyNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_OBJECT_KEY_HEADER,
                                                  vizView);
       configureTextNode( objectKeyNode, new Point( x, y), bgColor);

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.4 2003-11-07 00:08:39 taylor Exp $
+# $Id: README.release,v 1.5 2003-11-11 02:44:51 taylor Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
@@ -30,6 +30,18 @@ o Tag the Release
     > cvs co PlanWorks
   - Tag the files:
     > cvs tag PW_M_<release_num> PlanWorks
+
+o Test the Release
+  - In a clean directory, do a fresh checkout and build:
+    > cvs co -r PW_M_<release_num> PlanWorks
+    > cd PlanWorks/lib/mysql/bin
+    > cp <...>/mysql-max-4.0.13-<...>/bin/mysql .
+    > cp <...>/mysql-max-4.0.13-<...>/bin/mysqld .
+    > cp <...>/mysql-max-4.0.13-<...>/bin/mysqladmin .
+    > cd ../../..
+    > setenv PLANWORKS_HOME `pwd`
+    > ant planWorksDbInstall
+    > ant
 
 o Email Release Announcment
   - Send to pw-users@postdoc  (includes eurpoa-users@postdoc)

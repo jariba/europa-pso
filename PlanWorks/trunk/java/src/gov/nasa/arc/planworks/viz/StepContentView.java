@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepContentView.java,v 1.6 2003-10-28 22:14:11 miatauro Exp $
+// $Id: StepContentView.java,v 1.7 2003-11-11 02:44:52 taylor Exp $
 //
 // PlanWorks
 //
@@ -39,6 +39,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 public class StepContentView extends JGoView {
 
   private List transactionList; // element PwTransaction
+  private String key;
   private String query;
   private StepHeaderView headerJGoView;
   private ViewableObject viewableObject; // PwPartialPlan or PwPlanning Sequence
@@ -55,10 +56,12 @@ public class StepContentView extends JGoView {
    * @param viewableObject - <code>ViewableObject</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public StepContentView( List transactionList, String query, StepHeaderView headerJGoView,
-                                 ViewableObject viewableObject, VizView vizView) {
+  public StepContentView( List transactionList, String key, String query,
+                          StepHeaderView headerJGoView, ViewableObject viewableObject,
+                          VizView vizView) {
     super();
     this.transactionList = transactionList;
+    this.key = key;
     this.query = query;
     this.headerJGoView = headerJGoView;
     this.viewableObject = viewableObject;
@@ -133,7 +136,8 @@ public class StepContentView extends JGoView {
                          (int) typeField.getSize().getHeight());
       x += headerJGoView.getTypeNode().getSize().getWidth();
 
-      if (query.indexOf( " With ") >= 0) {
+      if ((query.indexOf( " With ") >= 0) ||
+          ((query.indexOf( " With ") == -1) && key.equals( ""))) {
         StepField objectKeyField =
           new StepField( transaction.getObjectId().toString(),
                          new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);

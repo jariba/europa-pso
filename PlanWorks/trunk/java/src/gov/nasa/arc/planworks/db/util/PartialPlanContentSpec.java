@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.6 2003-10-09 21:20:56 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.7 2003-11-11 02:44:51 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -128,6 +128,15 @@ public class PartialPlanContentSpec implements ContentSpec {
    * @return List - valid token ids
    */
   public List getValidIds(){return validTokenIds;}
+
+  /**
+   * <code>getPartialPlan</code>
+   *
+   * @return - <code>PwPartialPlan</code> - 
+   */
+  public PwPartialPlan getPartialPlan() {
+    return partialPlan;
+  }
 
   public void printSpec() {
     System.err.println("Allowable tokens: ");
