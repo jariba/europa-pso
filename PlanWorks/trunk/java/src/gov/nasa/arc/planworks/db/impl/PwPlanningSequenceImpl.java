@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.81 2004-05-11 22:44:54 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.82 2004-05-12 00:43:37 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -303,6 +303,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    * @return - <code>List</code> - of PwDBTransaction
    */
   public List getTransactionsList( final Long partialPlanId) {
+		loadTransactionFile();
     return MySQLDB.queryTransactionsForStep(id, partialPlanId);
   } // end listTransactions
 
