@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.4 2003-07-03 23:44:14 taylor Exp $
+// $Id: TokenNode.java,v 1.5 2003-07-09 23:14:38 taylor Exp $
 //
 // PlanWorks
 //
@@ -89,6 +89,8 @@ public class TokenNode extends BasicNode {
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
     setDraggable( false);
+    // do not allow user links
+    getPort().setVisible( false);
   } // end configure
 
 

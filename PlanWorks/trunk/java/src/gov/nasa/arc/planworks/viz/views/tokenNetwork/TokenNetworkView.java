@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.5 2003-07-03 23:44:14 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.6 2003-07-09 23:14:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -61,7 +61,7 @@ public class TokenNetworkView extends VizView {
   private ViewSet viewSet;
   private JGoView jGoView;
   private JGoDocument jGoDocument;
-  private JGoLayer hiddenLayer;
+  // private JGoLayer hiddenLayer;
   private Font font;
   private FontMetrics fontMetrics;
   // nodeList & tmpNodeList used by JFCUnit test case
@@ -140,7 +140,7 @@ public class TokenNetworkView extends VizView {
     graphics.dispose();
 
     jGoDocument = jGoView.getDocument();
-    hiddenLayer = jGoDocument.addLayerBefore( jGoDocument.getDefaultLayer());
+    // hiddenLayer = jGoDocument.addLayerBefore( jGoDocument.getDefaultLayer());
 
     // create all nodes
     createTokenNodes();
@@ -162,16 +162,11 @@ public class TokenNetworkView extends VizView {
 
   /**
    * <code>redraw</code> - called by Content Spec to apply user's content spec request.
-   *                       Remove the existing JGo objects and create new ones
-   *                       according to the Content Spec enabled keys
    *
    */
   public void redraw() {
     // setVisible(true | false) depending on keys
     setNodesVisible();
-
-    // move disabled nodes/links into hide layer
-    // and pass default layer (with enabled links) to auto layout
 
     JGoLayeredDigraphAutoLayout layout = new JGoLayeredDigraphAutoLayout( jGoDocument);
     layout.setDirectionOption( JGoLayeredDigraphAutoLayout.LD_DIRECTION_DOWN);
@@ -188,17 +183,6 @@ public class TokenNetworkView extends VizView {
    */
   public JGoDocument getJGoDocument()  {
     return this.jGoDocument;
-  }
-
-  /**
-   * <code>getViewSet</code> - allows TimelineNode and SlotNode to check their
-   *                           data base object key status with
-   *                           viewSet.isInContentSpec( key)
-   *
-   * @return - <code>ViewSet</code> - 
-   */
-  public ViewSet getViewSet() {
-    return this.viewSet;
   }
 
   /**
@@ -437,11 +421,12 @@ public class TokenNetworkView extends VizView {
 
 
   private void setNodesVisible() {
+    List validTokenIds = viewSet.getValidTokenIds();
     int numNodes = nodeList.size();
     Iterator tokenNodeIterator = nodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-      if (viewSet.isInContentSpec( tokenNode.getToken().getKey())) {
+      if (isTokenInContentSpec( tokenNode.getToken(), validTokenIds)) {
         tokenNode.setVisible( true);
       } else {
         tokenNode.setVisible( false);
@@ -450,8 +435,8 @@ public class TokenNetworkView extends VizView {
     Iterator tokenLinkIterator = linkList.iterator();
     while (tokenLinkIterator.hasNext()) {
       TokenLink tokenLink = (TokenLink) tokenLinkIterator.next();
-      if (viewSet.isInContentSpec( tokenLink.getFromToken().getKey()) &&
-          viewSet.isInContentSpec( tokenLink.getToToken().getKey())) {
+      if (isTokenInContentSpec( tokenLink.getFromToken(), validTokenIds) &&
+          isTokenInContentSpec( tokenLink.getToToken(), validTokenIds)) {
         tokenLink.setVisible( true);
       } else {
         tokenLink.setVisible( false);

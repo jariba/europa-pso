@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.6 2003-07-02 17:42:48 taylor Exp $
+// $Id: TimelineNode.java,v 1.7 2003-07-09 23:14:38 taylor Exp $
 //
 // PlanWorks
 //
@@ -87,7 +87,7 @@ public class TimelineNode extends TextNode {
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));
     getLabel().setEditable( false);
     setDraggable( false);
-    // do not allow links
+    // do not allow user links
     getTopPort().setVisible( false);
     getLeftPort().setVisible( false);
     getBottomPort().setVisible( false);

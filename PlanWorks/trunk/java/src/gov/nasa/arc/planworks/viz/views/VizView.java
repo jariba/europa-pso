@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.4 2003-06-30 21:52:47 taylor Exp $
+// $Id: VizView.java,v 1.5 2003-07-09 23:14:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,9 +13,14 @@
 
 package gov.nasa.arc.planworks.viz.views;
 
+import java.util.Iterator;
+import java.util.List;
 import javax.swing.JPanel;
 
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwSlot;
+import gov.nasa.arc.planworks.db.PwTimeline;
+import gov.nasa.arc.planworks.db.PwToken;
 
 
 /**
@@ -45,6 +50,75 @@ public class VizView extends JPanel {
    */
   public void redraw() {
   }
+
+
+  /**
+   * <code>isTimelineInContentSpec</code> - does timeline have a least one token
+   *                  in content spec
+   *
+   * @param timeline - <code>PwTimeline</code> - 
+   * @param validTokenIds - <code>List</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isTimelineInContentSpec( PwTimeline timeline, List validTokenIds) {
+    boolean inSpec = false;
+    List slotList = timeline.getSlotList();
+    Iterator slotIterator = slotList.iterator();
+    while (slotIterator.hasNext()) {
+      PwSlot slot = (PwSlot) slotIterator.next();
+      List tokenList = slot.getTokenList();
+      if (tokenList.size() > 0) {
+        Iterator tokenIterator = tokenList.iterator();
+        while (tokenIterator.hasNext()) {
+          PwToken token = (PwToken) tokenIterator.next();
+          if (validTokenIds.indexOf( token.getKey()) >= 0) {
+            return true;
+          }
+        }
+        continue;
+      } else {
+        // empty slot
+        continue;
+      }
+    }
+    return inSpec;
+  } // end isTimelineInContentSpec
+
+  /**
+   * <code>isSlotInContentSpec</code> - is one of slot's tokens in content spec
+   *
+   * @param slot - <code>PwSlot</code> - 
+   * @param validTokenIds - <code>List</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isSlotInContentSpec( PwSlot slot, List validTokenIds) {
+    List tokenList = slot.getTokenList();
+    if (tokenList.size() > 0) {
+      Iterator tokenIterator = tokenList.iterator();
+      while (tokenIterator.hasNext()) {
+        PwToken token = (PwToken) tokenIterator.next();
+        if (validTokenIds.indexOf( token.getKey()) >= 0) {
+          return true;
+        }
+      }
+      return false;
+    } else {
+      // empty slot -- do not display
+      return false;
+    }
+  } // end isSlotInContentSpec
+
+  /**
+   * <code>isTokenInContentSpec</code> - is token in content spec
+   *
+   * @param token - <code>PwToken</code> - 
+   * @param validTokenIds - <code>List</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isTokenInContentSpec( PwToken token, List validTokenIds) {
+    return (validTokenIds.indexOf( token.getKey()) >= 0);
+  } // end isTokenInContentSpec
+
 
 
 } // end class VizView

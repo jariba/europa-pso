@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.16 2003-07-08 22:57:33 taylor Exp $
+// $Id: TimelineView.java,v 1.17 2003-07-09 23:14:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -262,7 +262,7 @@ public class TimelineView extends VizView {
       String slotNodeLabel = getSlotNodeLabel( token);
       boolean isLastSlot = (! slotIterator.hasNext());
       SlotNode slotNode =
-        new SlotNode( slotNodeLabel, token, slot, new Point( x, y), previousToken,
+        new SlotNode( slotNodeLabel, slot, new Point( x, y), previousToken,
                       isLastSlot, objectCnt, this);
       timelineNode.addToSlotNodeList( slotNode);
       // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
@@ -315,22 +315,25 @@ public class TimelineView extends VizView {
   } // end getSlotNodeLabel
 
 
+  // is timelines and slots are in content spec, interms of their tokens,
+  // set them visible
   private void setNodesVisible() {
+    List validTokenIds = viewSet.getValidTokenIds();
     int numTimelineNodes = timelineNodeList.size();
     Iterator timelineIterator = timelineNodeList.iterator();
     while (timelineIterator.hasNext()) {
       TimelineNode timelineNode = (TimelineNode) timelineIterator.next();
-      if (viewSet.isInContentSpec( timelineNode.getTimeline().getKey())) {
+      if (isTimelineInContentSpec( timelineNode.getTimeline(), validTokenIds)) {
         timelineNode.setVisible( true);
       } else {
         timelineNode.setVisible( false);
       }
-      int numSlotNodes = timelineNode.getSlotNodeList().size();
-      Iterator slotIterator = timelineNode.getSlotNodeList().iterator();
-      while (slotIterator.hasNext()) {
-        SlotNode slotNode = (SlotNode) slotIterator.next();
-        Iterator timeLabelIterator = slotNode.getTimeIntervalLabels().iterator();
-        if (viewSet.isInContentSpec( slotNode.getSlot().getKey())) {
+      List slotList = timelineNode.getSlotNodeList();
+      int numSlotNodes = slotList.size();
+      for (int i = 0, n = slotList.size(); i < n; i++) {
+        SlotNode slotNode = (SlotNode) slotList.get( i);
+        List timeLabels = slotNode.getTimeIntervalLabels();
+        if (isSlotInContentSpec( slotNode.getSlot(), validTokenIds)) {
           slotNode.setVisible( true);
 
 //           System.err.println( "views " + slotNode.getView() + " and " + jGoView);
@@ -340,13 +343,25 @@ public class TimelineView extends VizView {
 //           System.err.println( "setNodesVisible: object " + slotNode);
 //           jGoSelection.showHandles( slotNode);
 
-          while (timeLabelIterator.hasNext()) {
-            ((JGoText) timeLabelIterator.next()).setVisible( true);
+          ((JGoText) timeLabels.get( 0)).setVisible( true);
+          if (i == n - 1) {
+            ((JGoText) timeLabels.get( 1)).setVisible( true);
           }
         } else {
           slotNode.setVisible( false);
-          while (timeLabelIterator.hasNext()) {
-            ((JGoText) timeLabelIterator.next()).setVisible( false);
+          boolean visibleValue = false;
+          // display interval time label, if previous slot is not being displayed
+          if (i > 0) {
+            SlotNode prevSlotNode = (SlotNode) slotList.get( i - 1);
+            if (isSlotInContentSpec( prevSlotNode.getSlot(), validTokenIds)) {
+              visibleValue = true;
+            }
+            ((JGoText) timeLabels.get( 0)).setVisible( visibleValue);
+            if (i == n - 1) {
+              ((JGoText) timeLabels.get( 1)).setVisible( false);
+            }
+          } else {
+            ((JGoText) timeLabels.get( 0)).setVisible( false);
           }
         }
       }

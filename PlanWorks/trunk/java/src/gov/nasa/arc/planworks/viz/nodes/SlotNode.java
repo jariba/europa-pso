@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.14 2003-07-08 22:57:33 taylor Exp $
+// $Id: SlotNode.java,v 1.15 2003-07-09 23:14:38 taylor Exp $
 //
 // PlanWorks
 //
@@ -69,7 +69,6 @@ public class SlotNode extends TextNode {
   private static final boolean IS_TEXT_MULTILINE = false;
   private static final boolean IS_TEXT_EDITABLE = false;
 
-  private PwToken token;
   private String predicateName;
   private PwSlot slot;
   private PwToken previousToken;
@@ -86,7 +85,6 @@ public class SlotNode extends TextNode {
    * <code>SlotNode</code> - constructor 
    *
    * @param nodeLabel - <code>String</code> - 
-   * @param token - <code>PwToken</code> - 
    * @param slot - <code>PwSlot</code> - 
    * @param slotLocation - <code>Point</code> - 
    * @param previousToken - <code>PwToken</code> - 
@@ -94,12 +92,11 @@ public class SlotNode extends TextNode {
    * @param objectCnt - <code>int</code> - 
    * @param view - <code>TimelineView</code> - 
    */
-  public SlotNode( String nodeLabel, PwToken token, PwSlot slot, Point slotLocation,
+  public SlotNode( String nodeLabel, PwSlot slot, Point slotLocation,
                    PwToken previousToken, boolean isLastSlot, int objectCnt,
                    TimelineView view) {
     super( nodeLabel);
     this.predicateName = nodeLabel;
-    this.token = token;
     this.slot = slot;
     this.previousToken = previousToken;
     this.isLastSlot = isLastSlot;
@@ -118,7 +115,7 @@ public class SlotNode extends TextNode {
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
     setDraggable( false);
-    // do not allow links
+    // do not allow user links
     getTopPort().setVisible( false);
     getLeftPort().setVisible( false);
     getBottomPort().setVisible( false);
@@ -280,7 +277,11 @@ public class SlotNode extends TextNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-    return token.toString();
+    if (slot.getTokenList().size() > 0) {
+      return ((PwToken) slot.getTokenList().get( 0)).toString();
+    } else {
+      return "";
+    }
   } // end getToolTipText
 
   /**
