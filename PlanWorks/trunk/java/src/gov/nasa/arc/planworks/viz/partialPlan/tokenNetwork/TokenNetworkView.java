@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.72 2004-09-21 01:07:07 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.73 2004-09-21 21:37:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -614,8 +614,12 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
       if (isTokenInContentSpec( token)) {
         Integer masterTokenId = partialPlan.getMasterTokenId( token.getId());
         // no parent; and one or more rule instance children
-        if ((masterTokenId == null) &&
-            (partialPlan.getSlaveTokenIds( token.getId()).size() > 0)) {
+//         if ((masterTokenId == null) &&
+//             (partialPlan.getSlaveTokenIds( token.getId()).size() > 0)) {
+//           rootTokens.add( token);
+//         }
+        // no parent, only
+        if (masterTokenId == null) {
           rootTokens.add( token);
         }
       }
