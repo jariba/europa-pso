@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomainImpl.java,v 1.7 2003-09-02 00:52:09 taylor Exp $
+// $Id: PwEnumeratedDomainImpl.java,v 1.8 2003-10-02 23:24:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwEnumeratedDomain;
 
@@ -87,10 +88,10 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
    */
   public int getLowerBoundInt() {
     String lowerBound = getLowerBound();
-    if (lowerBound.equals( PwDomain.MINUS_INFINITY)) {
-      return PwDomain.MINUS_INFINITY_INT;
-    } else if (lowerBound.equals( PwDomain.PLUS_INFINITY)) {
-      return PwDomain.PLUS_INFINITY_INT;
+    if (lowerBound.equals( DbConstants.MINUS_INFINITY)) {
+      return DbConstants.MINUS_INFINITY_INT;
+    } else if (lowerBound.equals( DbConstants.PLUS_INFINITY)) {
+      return DbConstants.PLUS_INFINITY_INT;
     } else if (lowerBound.equals( "")) {
       return -1;
     } else {
@@ -105,10 +106,10 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
    */
   public int getUpperBoundInt() {
     String upperBound = getUpperBound();
-    if (upperBound.equals( PwDomain.PLUS_INFINITY)) {
-      return PwDomain.PLUS_INFINITY_INT;
-    } else if (upperBound.equals( PwDomain.MINUS_INFINITY)) {
-      return PwDomain.MINUS_INFINITY_INT;
+    if (upperBound.equals( DbConstants.PLUS_INFINITY)) {
+      return DbConstants.PLUS_INFINITY_INT;
+    } else if (upperBound.equals( DbConstants.MINUS_INFINITY)) {
+      return DbConstants.MINUS_INFINITY_INT;
     } else if (upperBound.equals( "")) {
       return -1;
     } else {

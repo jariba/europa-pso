@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.4 2003-09-30 19:18:56 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.5 2003-10-02 23:24:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -48,6 +48,7 @@ import com.nwoods.jgo.JGoView;
 
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -388,13 +389,13 @@ public class TemporalExtentView extends PartialPlanView  {
 //                           startTimeIntervalDomain.getLowerBound() + " latest " +
 //                           startTimeIntervalDomain.getUpperBound());
       int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
-      if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
+      if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
           (earliestTime < timeScaleStart)) {
         timeScaleStart = earliestTime;
       }
       int latestTime = startTimeIntervalDomain.getUpperBoundInt();
-      if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
-          (latestTime != PwDomain.MINUS_INFINITY_INT) &&
+      if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
+          (latestTime != DbConstants.MINUS_INFINITY_INT) &&
           (latestTime < timeScaleStart)) {
         timeScaleStart = latestTime;
       }
@@ -404,13 +405,13 @@ public class TemporalExtentView extends PartialPlanView  {
 //                           endTimeIntervalDomain.getUpperBound() + " earliest " +
 //                           endTimeIntervalDomain.getLowerBound());
       int latestTime = endTimeIntervalDomain.getUpperBoundInt();
-      if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
+      if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
           (latestTime > timeScaleEnd)) {
         timeScaleEnd = latestTime;
       }
       int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
-      if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
-          (earliestTime != PwDomain.PLUS_INFINITY_INT) &&
+      if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
+          (earliestTime != DbConstants.PLUS_INFINITY_INT) &&
           (earliestTime > timeScaleEnd)) {
         timeScaleEnd = earliestTime;
       }
@@ -476,12 +477,12 @@ public class TemporalExtentView extends PartialPlanView  {
 //                             startTimeIntervalDomain.getLowerBound() + " latest " +
 //                             startTimeIntervalDomain.getUpperBound());
         int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
-        if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
+        if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
             (earliestTime < timeScaleStart)) {
           timeScaleStart = earliestTime;
         }
         int latestTime = startTimeIntervalDomain.getUpperBoundInt();
-        if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
+        if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
             (latestTime < timeScaleStart)) {
           timeScaleStart = latestTime;
         }
@@ -491,12 +492,12 @@ public class TemporalExtentView extends PartialPlanView  {
 //                             endTimeIntervalDomain.getUpperBound() + " earliest " +
 //                             endTimeIntervalDomain.getLowerBound());
         int latestTime = endTimeIntervalDomain.getUpperBoundInt();
-        if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
+        if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
             (latestTime > timeScaleEnd)) {
           timeScaleEnd = latestTime;
         }
         int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
-        if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
+        if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
             (earliestTime > timeScaleEnd)) {
           timeScaleEnd = earliestTime;
         }

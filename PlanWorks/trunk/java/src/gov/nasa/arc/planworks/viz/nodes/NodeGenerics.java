@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.3 2003-09-25 23:52:43 taylor Exp $
+// $Id: NodeGenerics.java,v 1.4 2003-10-02 23:24:21 taylor Exp $
 //
 // PlanWorks
 //
@@ -26,6 +26,7 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -151,17 +152,17 @@ public class NodeGenerics {
       int startLower = startTimeIntervalDomain.getLowerBoundInt();
       int endLower = endTimeIntervalDomain.getLowerBoundInt();
       int valueStart = Math.max( startLower, startUpper);
-      if (valueStart == PwDomain.PLUS_INFINITY_INT) {
+      if (valueStart == DbConstants.PLUS_INFINITY_INT) {
         valueStart = Math.min( startLower, startUpper);
       }
-      if (valueStart == PwDomain.MINUS_INFINITY_INT) {
+      if (valueStart == DbConstants.MINUS_INFINITY_INT) {
         valueStart = 0;
       }
       int valueEnd = Math.min( endLower, endUpper);
-      if (valueEnd == PwDomain.MINUS_INFINITY_INT) {
+      if (valueEnd == DbConstants.MINUS_INFINITY_INT) {
         valueEnd = Math.max( endLower, endUpper);
       }
-      if (valueEnd == PwDomain.PLUS_INFINITY_INT) {
+      if (valueEnd == DbConstants.PLUS_INFINITY_INT) {
         valueEnd = valueStart;
       }
       return String.valueOf( Math.abs( valueEnd - valueStart));
@@ -191,10 +192,10 @@ public class NodeGenerics {
         (slot.getBaseToken() == null)) { // empty slot
       String upperBound = endTimeIntervalDomain.getUpperBound();
       String lowerBound = startTimeIntervalDomain.getLowerBound();
-      if (upperBound.equals( PwDomain.PLUS_INFINITY)) {
-        return PwDomain.PLUS_INFINITY;
-      } else if (lowerBound.equals( PwDomain.MINUS_INFINITY)) {
-        return PwDomain.PLUS_INFINITY;
+      if (upperBound.equals( DbConstants.PLUS_INFINITY)) {
+        return DbConstants.PLUS_INFINITY;
+      } else if (lowerBound.equals( DbConstants.MINUS_INFINITY)) {
+        return DbConstants.PLUS_INFINITY;
       } else {
         return String.valueOf( endTimeIntervalDomain.getUpperBoundInt() -
                                startTimeIntervalDomain.getLowerBoundInt());      

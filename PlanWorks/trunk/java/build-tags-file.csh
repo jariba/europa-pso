@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.32 2003-10-01 23:53:53 taylor Exp $
+# $Id: build-tags-file.csh,v 1.33 2003-10-02 23:24:20 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -138,7 +138,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
-    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java
 
 
 echo "Writing `pwd`/planWorks.TAGS"

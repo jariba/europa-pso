@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNodeTimeMark.java,v 1.1 2003-09-25 23:52:46 taylor Exp $
+// $Id: TemporalNodeTimeMark.java,v 1.2 2003-10-02 23:24:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -15,7 +15,7 @@ package gov.nasa.arc.planworks.viz.partialPlan.temporalExtent;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoPolygon;
 
-import gov.nasa.arc.planworks.db.PwDomain;
+import gov.nasa.arc.planworks.db.DbConstants;
 
 /**
  * <code>TemporalNodeTimeMark</code> - JGo widget to render a temporal token's
@@ -45,9 +45,9 @@ public class TemporalNodeTimeMark extends JGoPolygon {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-    if (time == PwDomain.PLUS_INFINITY_INT) {
+    if (time == DbConstants.PLUS_INFINITY_INT) {
       return "Infinity";
-    } else if (time == PwDomain.MINUS_INFINITY_INT) {
+    } else if (time == DbConstants.MINUS_INFINITY_INT) {
       return "-Infinity";
     } else {
       return String.valueOf( time);

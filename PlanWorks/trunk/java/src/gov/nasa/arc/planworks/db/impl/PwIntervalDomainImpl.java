@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwIntervalDomainImpl.java,v 1.5 2003-09-02 00:52:09 taylor Exp $
+// $Id: PwIntervalDomainImpl.java,v 1.6 2003-10-02 23:24:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwIntervalDomain;
 
@@ -72,10 +73,10 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
    * @return - <code>int</code> - 
    */
   public int getLowerBoundInt() {
-    if (lowerBound.equals( PwDomain.MINUS_INFINITY)) {
-      return PwDomain.MINUS_INFINITY_INT;
-    } else if (lowerBound.equals( PwDomain.PLUS_INFINITY)) {
-      return PwDomain.PLUS_INFINITY_INT;
+    if (lowerBound.equals( DbConstants.MINUS_INFINITY)) {
+      return DbConstants.MINUS_INFINITY_INT;
+    } else if (lowerBound.equals( DbConstants.PLUS_INFINITY)) {
+      return DbConstants.PLUS_INFINITY_INT;
     } else {
       return Integer.parseInt( lowerBound);
     }
@@ -87,10 +88,10 @@ public class PwIntervalDomainImpl extends PwDomainImpl implements PwIntervalDoma
    * @return - <code>int</code> - 
    */
   public int getUpperBoundInt() {
-    if (upperBound.equals( PwDomain.PLUS_INFINITY)) {
-      return PwDomain.PLUS_INFINITY_INT;
-    } else if (upperBound.equals( PwDomain.MINUS_INFINITY)) {
-      return PwDomain.MINUS_INFINITY_INT;
+    if (upperBound.equals( DbConstants.PLUS_INFINITY)) {
+      return DbConstants.PLUS_INFINITY_INT;
+    } else if (upperBound.equals( DbConstants.MINUS_INFINITY)) {
+      return DbConstants.MINUS_INFINITY_INT;
     } else {
       return Integer.parseInt( upperBound);
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.8 2003-10-02 23:15:31 miatauro Exp $
+// $Id: DbConstants.java,v 1.9 2003-10-02 23:24:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -12,11 +12,6 @@
 //
 
 package gov.nasa.arc.planworks.db;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 
 
 /**
@@ -27,6 +22,30 @@ import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
  * @version 0.0
  */
 public interface DbConstants {
+
+  /**
+   * constant <code>PLUS_INFINITY</code> - String
+   *
+   */
+  public static final String PLUS_INFINITY = "Infinity";
+
+  /**
+   * constant <code>MINUS_INFINITY</code> - String
+   *
+   */
+  public static final String MINUS_INFINITY = "-Infinity";
+
+  /**
+   * constant <code>PLUS_INFINITY_INT</code>
+   *
+   */
+  public static final int PLUS_INFINITY_INT = Integer.MAX_VALUE;
+
+  /**
+   * constant <code>MINUS_INFINITY_INT</code>
+   *
+   */
+  public static final int MINUS_INFINITY_INT = Integer.MIN_VALUE;
 
   /**
    * constant <code>PP_PARTIAL_PLAN_EXT</code>
@@ -115,7 +134,7 @@ public interface DbConstants {
   public static final String PP_TRANSACTIONS_EXT = "transactions";
 
   /**
-   * constant <code>PARTIAL_PLAN_FILE_EXTS</code> - List of Strings
+   * constant <code>PARTIAL_PLAN_FILE_EXTS</code> - array of Strings
    *
    */
   public static final String [] PARTIAL_PLAN_FILE_EXTS =
@@ -133,5 +152,118 @@ public interface DbConstants {
    *
    */
   public static final int NUMBER_OF_PP_FILES = PARTIAL_PLAN_FILE_EXTS.length;
+
+
+  /**
+   * constant <code>SOURCE_USER</code> - String - transaction source type
+   *
+   */
+  public static final String SOURCE_USER = "USER";
+
+  /**
+   * constant <code>SOURCE_SYSTEM</code> - String - transaction source type
+   *
+   */
+  public static final String SOURCE_SYSTEM = "SYSTEM";
+
+  /**
+   * constant <code>SOURCE_UNKNOWN</code> - String - transaction source type
+   *
+   */
+  public static final String SOURCE_UNKNOWN = "UNKNOWN";
+
+
+  /**
+   * constant <code>TOKEN_CREATED</code> - String - transaction type
+   *
+   */
+  public static final String TOKEN_CREATED = "TOKEN_CREATED";
+
+  /**
+   * constant <code>TOKEN_DELETED</code> - String - transaction type
+   *
+   */
+  public static final String TOKEN_DELETED = "TOKEN_DELETED";
+
+  /**
+   * constant <code>TOKEN_FREED</code> - String - transaction type
+   *
+   */
+  public static final String TOKEN_FREED = "TOKEN_FREED";
+
+  /**
+   * constant <code>TOKEN_INSERTED</code> - String - transaction type
+   *
+   */
+  public static final String TOKEN_INSERTED = "TOKEN_INSERTED";
+
+  /**
+   * constant <code>VARIABLE_CREATED</code> - String - transaction type
+   *
+   */
+  public static final String VARIABLE_CREATED = "VARIABLE_CREATED";
+
+  /**
+   * constant <code>VARIABLE_DELETED</code> - String - transaction type
+   *
+   */
+  public static final String VARIABLE_DELETED = "VARIABLE_DELETED";
+
+  /**
+   * constant <code>VARIABLE_DOMAIN_EMPTIED</code> - String - transaction type
+   *
+   */
+  public static final String VARIABLE_DOMAIN_EMPTIED = "VARIABLE_DOMAIN_EMPTIED";
+
+  /**
+   * constant <code>VARIABLE_DOMAIN_RELAXED</code> - String - transaction type
+   *
+   */
+  public static final String VARIABLE_DOMAIN_RELAXED = "VARIABLE_DOMAIN_RELAXED";
+
+  /**
+   * constant <code>VARIABLE_DOMAIN_RESET</code> - String - transaction type
+   *
+   */
+  public static final String VARIABLE_DOMAIN_RESET = "VARIABLE_DOMAIN_RESET";
+
+  /**
+   * constant <code>VARIABLE_DOMAIN_RESTRICTED</code> - String - transaction type
+   *
+   */
+  public static final String VARIABLE_DOMAIN_RESTRICTED = "VARIABLE_DOMAIN_RESTRICTED";
+
+  /**
+   * constant <code>VARIABLE_DOMAIN_SPECIFIED</code> - String - transaction type
+   *
+   */
+  public static final String VARIABLE_DOMAIN_SPECIFIED = "VARIABLE_DOMAIN_SPECIFIED";
+
+  /**
+   * constant <code>CONSTRAINT_CREATED</code> - String - transaction type
+   *
+   */
+  public static final String CONSTRAINT_CREATED = "CONSTRAINT_CREATED";
+
+  /**
+   * constant <code>CONSTRAINT_DELETED</code> - String - transaction type
+   *
+   */
+  public static final String CONSTRAINT_DELETED = "CONSTRAINT_DELETED";
+
+  /**
+   * constant <code>PROPOGATION_BEGUN</code> - String - transaction type
+   *
+   */
+  public static final String PROPOGATION_BEGUN = "PROPOGATION_BEGUN";
+
+  /**
+   * constant <code>PROPOGATION_ENDED</code> - String - transaction type
+   *
+   */
+  public static final String PROPOGATION_ENDED = "PROPOGATION_ENDED";
+
+
+
 
 } // end interface DbConstants
