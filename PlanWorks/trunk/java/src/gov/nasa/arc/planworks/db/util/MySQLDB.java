@@ -78,13 +78,14 @@ public class MySQLDB {
     }
     try {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
-      for(int triedConnections = 0; triedConnections < 10; triedConnections++) {
+      for(int triedConnections = 0; triedConnections <= 10; triedConnections++) {
         try {
           conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=PlanWorksUser&password=PlanWorksUser");
         }
         catch(Exception e) {
           if(triedConnections == 10) {
-            throw e;
+            e.printStackTrace();
+            System.exit(-1);
           }
           System.err.println("Connection faled.  Trying again...");
           Thread.sleep(500);
