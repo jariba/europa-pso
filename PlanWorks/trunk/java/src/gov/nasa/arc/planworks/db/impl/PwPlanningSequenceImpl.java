@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.58 2003-11-07 00:04:58 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.59 2003-11-11 02:44:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -465,6 +465,39 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       throw new IllegalArgumentException("transaction type");
     }
     return getTransactionsById(MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type));
+  }
+
+  public List getStepsWhereTokenTransacted(String type) throws IllegalArgumentException {
+    if(!type.equals(DbConstants.TOKEN_CREATED) && !type.equals(DbConstants.TOKEN_DELETED) &&
+       !type.equals(DbConstants.TOKEN_FREED) && !type.equals(DbConstants.TOKEN_INSERTED)&&
+       !type.equals(DbConstants.TOKEN_ALL_TYPES)) {
+      throw new IllegalArgumentException("transaction type");
+    }
+    return getTransactionsById(MySQLDB.queryStepsWithTokenTransaction(this.id, type));
+  }
+
+  public List getStepsWhereVariableTransacted(String type) 
+    throws IllegalArgumentException  {
+    if(!type.equals(DbConstants.VARIABLE_CREATED) && !type.equals(DbConstants.VARIABLE_DELETED) &&
+       !type.equals(DbConstants.VARIABLE_DOMAIN_EMPTIED) && 
+       !type.equals(DbConstants.VARIABLE_DOMAIN_RELAXED) && 
+       !type.equals(DbConstants.VARIABLE_DOMAIN_RESET) &&  
+       !type.equals(DbConstants.VARIABLE_DOMAIN_RESTRICTED) &&
+       !type.equals(DbConstants.VARIABLE_DOMAIN_SPECIFIED) &&
+       !type.equals(DbConstants.VARIABLE_ALL_TYPES)) {
+      throw new IllegalArgumentException("transaction type");
+    }
+    return getTransactionsById(MySQLDB.queryStepsWithVariableTransaction(this.id, type));
+  }
+
+  public List getStepsWhereConstraintTransacted(String type) 
+    throws IllegalArgumentException  {
+    if(!type.equals(DbConstants.CONSTRAINT_CREATED) && 
+       !type.equals(DbConstants.CONSTRAINT_DELETED) &&
+       !type.equals(DbConstants.CONSTRAINT_ALL_TYPES)) { 
+      throw new IllegalArgumentException("transaction type");
+    }
+    return getTransactionsById(MySQLDB.queryStepsWithConstraintTransaction(this.id, type));
   }
 
   public List getStepsWithRestrictions() {

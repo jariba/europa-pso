@@ -72,3 +72,11 @@ is now output in it's own unique directory with a millisecond
 timestamp suffixed to the name.  This number is semi-important
 for importing the data into the PlanWorks database, so don't
 change it.
+
+============================================
+
+Copying Sequence Directory Trees
+--------------------------------
+'<Sequence-name>1068153263616/sequence' contains the sequence url.
+If the tree is copied to another location, the url must be
+changed.

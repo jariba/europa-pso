@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.17 2003-11-07 00:04:58 taylor Exp $
+# $Id: GETTING_STARTED,v 1.18 2003-11-11 02:44:50 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -185,14 +185,20 @@ selections, with applied together.
 Selections applied from this dialog result, internally, in a set of 
 valid tokens, which are used by the views to filter their displays.
 
+The Content Spec window's background areas offer Mouse-Right
+selections for opening individual or all partial plan views.
+
 
 Querying Sequences
 ==================
 The "SequenceQuery for <sequence-name>" dialog, provides the user with 
 queries which are in two groups, based on the primary kind of information 
-returned.  "Steps": "Where Constraint/Token/Variable Transacted ..." which 
-asks for a key value and the transaction type; "With Non-unit Variable 
-Decisions", "With Restrictions", and "With Unit Variable Decisions".  
+returned:
+"Steps": "Where Constraint/Token/Variable Transacted ..." which 
+asks for a key value (if the key value is left blank, then all key values 
+are returned) and the transaction type; "With Non-unit Variable 
+Decisions", "With Restrictions", and "With Unit Variable Decisions". 
+ 
 "Transactions": "For Constraint/Token/Variable ..." which asks for a key 
 value; and "In Range ...", which asks for "StartStep" and "EndStep" values.
 "Apply Query" will cause the query to be performed and a window "Query 

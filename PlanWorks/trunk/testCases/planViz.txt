@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.9 2003-11-07 00:05:00 taylor Exp $
+// $Id: planViz.txt,v 1.10 2003-11-11 02:44:53 taylor Exp $
 //
 // PlanWorks
 //
@@ -297,7 +297,7 @@ Exercise popup menu facilities of partial plan views.
 Pre-conditions:
   1. PlanWorks is running.
   2. The "test1" project is open, and all partial plan views are being
-     displayed for step<nn>.
+     displayed for step<nn> of sequence "test1-sequence1".
 
 Method:
   1. Using either the Constraint Network, Temporal Extent, Timeline, or
@@ -330,7 +330,8 @@ Method:
      descending order.  Mouse-left click to initiate the sort.  Sort all
      the columns.
  11. In each partial plan view, use Mouse-Right "Open a View" to
-     navigate to the other views.  In all views, except Transaction view,
+     navigate to the other views.  Iconify the Content Spec window, by clicking
+     on the "minimize" icon of its title bar.  In all views, except Transaction view,
      use Mouse-Right "Raise Content Spec" to set focus on the Content Spec
      window.
  12. For a selected partial plan step, open only one partial plan view, and
@@ -408,6 +409,9 @@ Method:
      to "exclude" for the first key.  Uncheck the "NOT" for the
      selected timeline.  Apply it.
  17. Reset the spec.
+ 18. Click Mouse-Right on a background area of the Content Spec dialog,
+     and choose either opening an individual partial plan view or all
+     the partial plan views.
 
 Post-conditions:
   1. Method:1 - only tokens of the selected predicate are displayed in
@@ -436,6 +440,7 @@ Post-conditions:
  16. Method:16 - Only tokens from the selected timeline are displayed, except
      for the "exclude" token.
  17. Method:17 - all tokens are displayed.
+ 18. Method:18 - The selected partial plan view(s) will be opened.
 
 Note: In the Constraint Network View, variable and constraint nodes are
      associated with their nearest token, and are displayed or not,
@@ -462,7 +467,8 @@ Method:
      turn the qualified "Steps" queries: "Where Constraint/Token/Variable
      Transacted", which expand into a "Key" field and a type "combo box".
      Use the keys from Method:2 for the object types, and then permute the
-     transaction types for each object type.  Click on "Apply Query".
+     transaction types for each object type.  Also, leave the "Key" field
+     blank for some cases.  Click on "Apply Query".
   4. In each of the "QueryResults" windows created by Method:3, Mouse-Right 
      click on the background of the "header" portion of the view, and select 
      "Find Transaction by Obj_Key".  Enter an OBJ_KEY value.
@@ -489,14 +495,12 @@ Post-conditions:
   1. Method:1 - the Sequence Query and Sequence Steps View windows appear.
   2. Method:2 - "TransactionView" window appears.
   3. Method:3 - Use "TransactionView" windows for appropriate steps of the
-     Sequence Steps View to verify the results in the "QueryResults"
-     windows.
+     Sequence Steps View to verify the results in the "QueryResults" windows.
   4. Method:4 - The lower portion of the "QueryResults" window will scroll up 
      to show the transaction entry with the selected OBJ_KEY value.
   5. Method:5 - Verify these queries using knowledge from the plan sequence.
   6. Method:6 - Use "TransactionView" windows for appropriate steps of the
-     Sequence Steps View to verify the results in the "QueryResults"
-     windows.
+     Sequence Steps View to verify the results in the "QueryResults" windows.
   7. Method:7 - The lower portion of the "QueryResults" window will scroll up 
      to show the transaction entry with the selected OBJ_KEY value.
   8. Method:8 - The values in the columns which are sorted will be redisplayed

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.8 2003-11-06 00:02:20 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.9 2003-11-11 02:44:53 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -207,6 +207,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     gridBag.setConstraints(buttonPanel, constraints);
     add( buttonPanel);
 
+    extendQueryForStepsWhereConstraintTransacted();
     addMouseListener( this);
   }
 
@@ -215,6 +216,29 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     repaint();
     sequenceQueryFrame.pack();
   }
+
+  private void removeExtendedQueryComponents() {
+    // remove all components with index > 1
+    Component [] components = queryPanel.getComponents();
+    for (int i = 0, n = components.length; i < n; i++) {
+      Component comp = components[i];
+      if (i > 1) {
+        queryPanel.remove( comp);
+      }
+    }
+  } // end removeExtendedQueryComponents
+
+  private void extendQueryForStepsWhereConstraintTransacted() {
+    ItemListener[] listeners = minorTypeBox.getItemListeners();
+    for (int i = 0, n = listeners.length; i < n; i++) {
+      ItemListener listener = listeners[i];
+      // System.err.println( listener);
+      if (listener instanceof MinorTypeListener) {
+        ((MinorTypeListener) listener).extendQueryForStepsWhereConstraintTransacted();
+        break;
+      }
+    }
+  } // extendQueryForStepsWhereConstraintTransacted
 
   /**
    * <code>getSequenceQueryFrame</code>
@@ -301,21 +325,16 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         }
       } else if (ae.getActionCommand().equals("Reset Query")) {
         if (majorTypeBox != null) {
-          majorTypeBox.setSelectedItem( "");
-          majorTypeBox.setEnabled( true);
+          majorTypeBox.setSelectedItem( QUERY_FOR_STEPS);
         }
         if (minorTypeBox != null) {
           minorTypeBox.removeAllItems();
-          minorTypeBox.addItem( "");
-          minorTypeBox.setEnabled( true);
-        }
-        // remove all components with index > 1
-        Component [] components = queryWindow.queryPanel.getComponents();
-        for (int i = 0, n = components.length; i < n; i++) {
-          Component comp = components[i];
-          if (i > 1) {
-            queryWindow.queryPanel.remove( comp);
+          Iterator stepsItr = STEP_QUERIES.iterator();
+          while (stepsItr.hasNext()) {
+            minorTypeBox.addItem( (String) stepsItr.next());
           }
+          SequenceQueryWindow.this.removeExtendedQueryComponents();
+          SequenceQueryWindow.this.extendQueryForStepsWhereConstraintTransacted();
         }
         queryWindow.refresh();
       }
@@ -326,7 +345,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       MDIInternalFrame stepQueryFrame =
         desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
                                   " for " + viewable.getName(),
-                                  viewSet, true, true, false, true);
+                                  viewSet, true, true, true, true);
       ((SequenceViewSet) viewSet).getViews().
         put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt), stepQueryFrame);
       Container contentPane = stepQueryFrame.getContentPane();
@@ -337,11 +356,16 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       }
       queryStringBuf.append( " ").append( stepsQuery);
       if (stepsQuery.indexOf( "Where") >= 0) {
-        queryStringBuf.append( " Key ").append( keyString);
+        queryStringBuf.append( " Key ");
+        if (keyString.equals( "")) {
+          queryStringBuf.append( "All");
+        } else {
+          queryStringBuf.append( keyString);
+        }
         queryStringBuf.append( " ").append( transactionType);
       }
       contentPane.add( new StepQueryView
-                       ( stepList, queryStringBuf.toString(), viewable,
+                       ( stepList, keyString, queryStringBuf.toString(), viewable,
                          viewSet, SequenceQueryWindow.this, stepQueryFrame,
                          startTimeMSecs));
       queryResultFrameCnt++;
@@ -352,7 +376,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       MDIInternalFrame transactionQueryFrame =
         desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
                                   " for " + viewable.getName(),
-                                  viewSet, true, true, false, true);
+                                  viewSet, true, true, true, true);
       ((SequenceViewSet) viewSet).getViews().
         put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt), transactionQueryFrame);
       Container contentPane = transactionQueryFrame.getContentPane();
@@ -379,7 +403,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
 
     private String getKeyString( String type) {
       keyString = (String) queryWindow.integerField.getText();
-      if (keyString.equals( "")) {
+      if (((String) queryWindow.majorTypeBox.getSelectedItem()).
+          equals( QUERY_FOR_TRANSACTIONS) && keyString.equals( "")) {
         JOptionPane.showMessageDialog
           (PlanWorks.planWorks, type + " Key is required",
            "Invalid Query", JOptionPane.ERROR_MESSAGE);
@@ -394,12 +419,17 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         String constraintKeyString = getKeyString( "Constraint");
         transactionType = (String) queryWindow.constraintTransComboBox.getSelectedItem();
         String queryTransactionType = transactionType;
-        if (transactionType.equals( "ALL")) {
+        if (transactionType.equals( "CONSTRAINT_ALL")) {
           queryTransactionType = DbConstants.CONSTRAINT_ALL_TYPES;
-        } 
-        stepList = ((PwPlanningSequence) queryWindow.viewable).
-          getStepsWhereConstraintTransacted( new Integer( constraintKeyString),
-                                             queryTransactionType);
+        }
+        if (! constraintKeyString.equals( "")) {
+          stepList = ((PwPlanningSequence) queryWindow.viewable).
+            getStepsWhereConstraintTransacted( new Integer( constraintKeyString),
+                                               queryTransactionType);
+        } else {
+          stepList = ((PwPlanningSequence) queryWindow.viewable).
+            getStepsWhereConstraintTransacted( queryTransactionType);
+        }
       } catch (IllegalArgumentException e) {
         return null;
       }
@@ -412,11 +442,16 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         String tokenKeyString = getKeyString( "Token");
         transactionType = (String) queryWindow.tokenTransComboBox.getSelectedItem();
         String queryTransactionType = transactionType;
-        if (transactionType.equals( "ALL")) {
+        if (transactionType.equals( "TOKEN_ALL")) {
           queryTransactionType = DbConstants.TOKEN_ALL_TYPES;
-        } 
-        stepList = ((PwPlanningSequence) queryWindow.viewable).
-          getStepsWhereTokenTransacted( new Integer( tokenKeyString), queryTransactionType);
+        }
+        if (! tokenKeyString.equals( "")) {
+          stepList = ((PwPlanningSequence) queryWindow.viewable).
+            getStepsWhereTokenTransacted( new Integer( tokenKeyString), queryTransactionType);
+        } else {
+          stepList = ((PwPlanningSequence) queryWindow.viewable).
+            getStepsWhereTokenTransacted( queryTransactionType);
+        }
       } catch (IllegalArgumentException e) {
         return null;
       }
@@ -429,12 +464,17 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         String variableKeyString = getKeyString( "Variable");
         transactionType = (String) queryWindow.variableTransComboBox.getSelectedItem();
         String queryTransactionType = transactionType;
-        if (transactionType.equals( "ALL")) {
+        if (transactionType.equals( "VARIABLE_ALL")) {
           queryTransactionType = DbConstants.VARIABLE_ALL_TYPES;
-        } 
-        stepList = ((PwPlanningSequence) queryWindow.viewable).
-          getStepsWhereVariableTransacted( new Integer( variableKeyString),
-                                           queryTransactionType);
+        }
+        if (! variableKeyString.equals( "")) {
+          stepList = ((PwPlanningSequence) queryWindow.viewable).
+            getStepsWhereVariableTransacted( new Integer( variableKeyString),
+                                             queryTransactionType);
+        } else {
+          stepList = ((PwPlanningSequence) queryWindow.viewable).
+            getStepsWhereVariableTransacted( queryTransactionType);
+        }
       } catch (IllegalArgumentException e) {
         return null;
       }
@@ -509,7 +549,6 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   class MajorTypeComboBox extends JComboBox {
 
     public MajorTypeComboBox() {
-      addItem( "");
       addItem( QUERY_FOR_STEPS);
       addItem(QUERY_FOR_TRANSACTIONS );
       setSize(58, 44);
@@ -520,7 +559,10 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   class MinorTypeComboBox extends JComboBox {
 
     public MinorTypeComboBox() {
-      addItem( "");
+      Iterator stepsItr = STEP_QUERIES.iterator();
+      while (stepsItr.hasNext()) {
+        addItem( (String) stepsItr.next());
+      }
       setSize(108, 44);
     }
   }
@@ -529,7 +571,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   class ConstraintTransComboBox extends JComboBox {
 
     public ConstraintTransComboBox() {
-      addItem( "ALL");
+      addItem( "CONSTRAINT_ALL");
       Iterator typesItr = CONSTRAINT_TRANSACTION_TYPES.iterator();
       while (typesItr.hasNext()) {
         addItem( (String) typesItr.next());
@@ -542,7 +584,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   class TokenTransComboBox extends JComboBox {
 
     public TokenTransComboBox() {
-      addItem( "ALL");
+      addItem( "TOKEN_ALL");
       Iterator typesItr = TOKEN_TRANSACTION_TYPES.iterator();
       while (typesItr.hasNext()) {
         addItem( (String) typesItr.next());
@@ -555,7 +597,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   class VariableTransComboBox extends JComboBox {
 
     public VariableTransComboBox() {
-      addItem( "ALL");
+      addItem( "VARIABLE_ALL");
       Iterator typesItr = VARIABLE_TRANSACTION_TYPES.iterator();
       while (typesItr.hasNext()) {
         addItem( (String) typesItr.next());
@@ -580,20 +622,19 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       if (ie.getStateChange() == ItemEvent.DESELECTED) {
         itemStateChangedFrom = (String) ie.getItem();
       } else if (ie.getStateChange() == ItemEvent.SELECTED) {
-        if (itemStateChangedFrom.equals("") && 
-            ((String) ie.getItem()).equals( QUERY_FOR_STEPS)) {
+        minorTypeBox.removeAllItems();
+
+        if (((String) ie.getItem()).equals( QUERY_FOR_STEPS)) {
           Iterator stepsItr = STEP_QUERIES.iterator();
           while (stepsItr.hasNext()) {
             minorTypeBox.addItem( (String) stepsItr.next());
           }
-        } else if (itemStateChangedFrom.equals("") && 
-                   ((String) ie.getItem()).equals( QUERY_FOR_TRANSACTIONS)) {
+        } else if (((String) ie.getItem()).equals( QUERY_FOR_TRANSACTIONS)) {
           Iterator transactionsItr = TRANSACTION_QUERIES.iterator();
           while (transactionsItr.hasNext()) {
             minorTypeBox.addItem( (String) transactionsItr.next());
           }
         }
-        majorTypeBox.setEnabled( false);
         refresh();
       }
     }
@@ -615,29 +656,23 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       if (ie.getStateChange() == ItemEvent.DESELECTED) {
         itemStateChangedFrom = (String) ie.getItem();
       } else if (ie.getStateChange() == ItemEvent.SELECTED) {
-        if (itemStateChangedFrom.equals("") && 
-            ((String) ie.getItem()).equals( STEPS_WHERE_CONSTRAINT_TRANSACTED)) {
+        SequenceQueryWindow.this.removeExtendedQueryComponents();
+
+        if (((String) ie.getItem()).equals( STEPS_WHERE_CONSTRAINT_TRANSACTED)) {
           extendQueryForStepsWhereConstraintTransacted();
-        } else if (itemStateChangedFrom.equals("") && 
-            ((String) ie.getItem()).equals( STEPS_WHERE_TOKEN_TRANSACTED)) {
+        } else if (((String) ie.getItem()).equals( STEPS_WHERE_TOKEN_TRANSACTED)) {
           extendQueryForStepsWhereTokenTransacted();
-        } else if (itemStateChangedFrom.equals("") && 
-                   ((String) ie.getItem()).equals( STEPS_WHERE_VARIABLE_TRANSACTED)) {
+        } else if (((String) ie.getItem()).equals( STEPS_WHERE_VARIABLE_TRANSACTED)) {
           extendQueryForStepsWhereVariableTransacted();
-        } else if (itemStateChangedFrom.equals("") && 
-                   ((String) ie.getItem()).equals( TRANSACTIONS_FOR_CONSTRAINT)) {
+        } else if (((String) ie.getItem()).equals( TRANSACTIONS_FOR_CONSTRAINT)) {
           addIntegerField();
-        } else if (itemStateChangedFrom.equals("") && 
-                   ((String) ie.getItem()).equals( TRANSACTIONS_FOR_TOKEN)) {
+        } else if (((String) ie.getItem()).equals( TRANSACTIONS_FOR_TOKEN)) {
           addIntegerField();
-        } else if (itemStateChangedFrom.equals("") && 
-                   ((String) ie.getItem()).equals( TRANSACTIONS_FOR_VARIABLE)) {
+        } else if (((String) ie.getItem()).equals( TRANSACTIONS_FOR_VARIABLE)) {
           addIntegerField();
-        } else if (itemStateChangedFrom.equals("") && 
-                   ((String) ie.getItem()).equals( TRANSACTIONS_IN_RANGE)) {
+        } else if (((String) ie.getItem()).equals( TRANSACTIONS_IN_RANGE)) {
           extendQueryForTransactionsInRange();
         }
-        minorTypeBox.setEnabled( false);
         refresh();
       }
     } // end itemStateChanged

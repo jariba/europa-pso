@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.12 2003-11-07 00:04:59 taylor Exp $
+// $Id: TimelineView.java,v 1.13 2003-11-11 02:44:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -613,14 +613,16 @@ public class TimelineView extends PartialPlanView {
 
 
   private void mouseRightPopupMenu( Point viewCoords) {
+    String partialPlanName = partialPlan.getPartialPlanName();
+    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
+
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
     createNodeByKeyItem( nodeByKeyItem);
     mouseRightPopup.add( nodeByKeyItem);
 
-    JMenuItem changeViewItem = new JMenuItem( "Open a View");
-    createChangeViewItem( changeViewItem, partialPlan, viewCoords);
-    mouseRightPopup.add( changeViewItem);
+    createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
+                         PlanWorks.TIMELINE_VIEW);
     
     JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
     createRaiseContentSpecItem( raiseContentSpecItem);
@@ -630,8 +632,6 @@ public class TimelineView extends PartialPlanView {
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
-    String partialPlanName = partialPlan.getPartialPlanName();
-    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);

@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.6 2003-11-06 00:02:17 taylor Exp $
+// $Id: CreateViewThread.java,v 1.7 2003-11-11 02:44:51 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -103,8 +103,8 @@ public class CreateViewThread extends Thread {
       if (viewable instanceof PwPartialPlan) {
         // put content spec windows below the sequence steps window
         sequenceStepsViewHeight =
-          (int) ((MDIInternalFrame) PlanWorks.planWorks.
-                 sequenceStepsViewMap.get( seqUrl)).getSize().getHeight();
+          (int) (((MDIInternalFrame) PlanWorks.planWorks.
+                  sequenceStepsViewMap.get( seqUrl)).getSize().getHeight() * 0.5);
         yFrameAvailable -= sequenceStepsViewHeight;
         yFrameDelta = (int) ((yFrameAvailable * 0.50) /
                              PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());

@@ -4,87 +4,31 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.53 2003-11-07 00:04:58 taylor Exp $
+# $Id: README,v 1.54 2003-11-11 02:44:51 taylor Exp $
 #
 
 SUMMARY
 =======
-The "Planning Sequence" menu now expands only into the available
-sequence names.  Selecting a sequence name brings up two windows.
-The first, "SequenceQuery ...", allows the user to make data base
-queries over the sequence.  The second, the "SequenceStepsView",
-is a histogram of the partial plan data base size for each step.  
-Individual or all partial plan views for each step are available 
-by clicking Mouse-Right on the desired step in the histogram.
-
-The "SequenceQuery ..." dialog provides the user with queries which
-are in two groups, based on the primary kind of information returned.  
-"Steps": "Where Constraint/Token/Variable Transacted ..." which asks 
-for a key value and the transaction type; "With Non-unit Variable 
-Decisions", "With Restrictions", and "With Unit Variable Decisions".  
-"Transactions": "For Constraint/Token/Variable ..." which asks for a key 
-value; and "In Range ...", which asks for "StartStep" and "EndStep" values.
-The query results are displayed in windows entitled "QueryResults for ...".
-The query results windows can be removing by clicking Mouse-Right on 
-the background of the "SequenceQuery ..." dialog, and selecting
-"Discard Query Results Windows".
-
-For each plan sequence step, there is now an additional partial plan
-view: "Transaction View".  It displays the transactions for the step.
-
-Both the partial plan "Transaction View" windows , and the sequence query
-"Query Results for ..." windows for "Transactions" queries, and the
-"With ..." "Steps" queries offer the user a pop-up dialog entitled 
-"Find Transaction by Obj_Key".  Mouse-Right on the background of the 
-header section of the window brings up this dialog.
-
-The column header nodes of the "Transaction View", and "Query Results for ..."
-windows, offer sorting of that columns's values, alternately in
-ascending order and descending order.
-
-All partial plan view's  Mouse-Right pop-ups offer the user a second
-pop-up selection ("Open a View") of the other partial plan views, 
-which will create them as needed.  All views, except for Transaction View,
-also offer "Raise Content Spec", which will set focus on the appropriate
-partial plan Content Spec window.
-
-In addition, all partial plan view's  Mouse-Right pop-ups offer the user
-"Close All Views", "Hide All Views", and "Open All Views".
-
-Each partial plan view, except for Transaction View, had a Mouse-Right
-choice of "Find Token By Key".  This has been changed and generalized to
-"Find By Key".  For Temporal Extent and Token Network views, entered keys
-will find token nodes; for the Timeline view, entered keys will find 
-token and slot nodes; and for the Constraint Network view, entered keys
-will find find token, variable, and constraint nodes -- opening
-appropriate connecting nodes, if needed.
-
-The Constraint Network View now uses a new layout algorithm that is many
-times faster than the previous algorithm.  Layout now generally takes 
-< 300ms.
-
-Almost all loading of data into the database is deferred until absolutely
-necessary.  This adds slight overhead to the first time a Partial Plan is
-viewed, but is a one-time cost.
-
-The current PartialPlanWriter (PlanWorks/cpp/integration/europa/README)
-requires a recent version of EUROPA.  The earliest known working
-version is tagged with the PlanWorks milestone release tag PW_M_9.  
-
-The PartialPlanWriter has changed since PW_M_8, and must be rebuilt.
-
-o  GNATS PRs and CRs completed:
-   #2150: Constraint Network View: find constraint/variable nodes by key.
-   #2157: Add window choices on pop-up menu for within Partial Plan.
-   #2158: Need to greatly imporve load-times for sequences.
-   #2159: Change option to Find By Key instead of Find Token By Key.
-   #2160: Time to delete a sequence is way too long   
-   #2161: Project menu goes away after deleting a sequence.
+o Sequence Steps windows are now closeable.
+o Query Results windows are now maximizable.
+o If the Content Spec window is iconified using the icon in the window's
+  title bar, and the user selects Mouse-Right "Raise Content Spec", the
+   Content Spec window is de-iconified and given focus.
+o Partial Plan view's Mouse-Right selection "Open a View" no longer
+  creates a seconday menu of views.  The available views are added
+  "in-line" to the primary menu.
+o Partial Plan view's Mouse-Right selections of views to open no longer
+  includes the current view.
+o The Content Spec window's background areas now offer Mouse-Right
+  selections for opening individual or all partial plan views.
+o The Sequence Query dialog for "Steps" queries now accepts an empty
+  key slot, which will return the steps for all keys for the specified 
+  contraint, token, or variable transaction type.
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_9 PlanWorks
+> cvs co -r PW_M_10 PlanWorks
 
 
 PREREQUISITES
@@ -193,6 +137,81 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+07november03: Milestone 9
+=========================
+The "Planning Sequence" menu now expands only into the available
+sequence names.  Selecting a sequence name brings up two windows.
+The first, "SequenceQuery ...", allows the user to make data base
+queries over the sequence.  The second, the "SequenceStepsView",
+is a histogram of the partial plan data base size for each step.  
+Individual or all partial plan views for each step are available 
+by clicking Mouse-Right on the desired step in the histogram.
+
+The "SequenceQuery ..." dialog provides the user with queries which
+are in two groups, based on the primary kind of information returned.  
+"Steps": "Where Constraint/Token/Variable Transacted ..." which asks 
+for a key value and the transaction type; "With Non-unit Variable 
+Decisions", "With Restrictions", and "With Unit Variable Decisions".  
+"Transactions": "For Constraint/Token/Variable ..." which asks for a key 
+value; and "In Range ...", which asks for "StartStep" and "EndStep" values.
+The query results are displayed in windows entitled "QueryResults for ...".
+The query results windows can be removing by clicking Mouse-Right on 
+the background of the "SequenceQuery ..." dialog, and selecting
+"Discard Query Results Windows".
+
+For each plan sequence step, there is now an additional partial plan
+view: "Transaction View".  It displays the transactions for the step.
+
+Both the partial plan "Transaction View" windows , and the sequence query
+"Query Results for ..." windows for "Transactions" queries, and the
+"With ..." "Steps" queries offer the user a pop-up dialog entitled 
+"Find Transaction by Obj_Key".  Mouse-Right on the background of the 
+header section of the window brings up this dialog.
+
+The column header nodes of the "Transaction View", and "Query Results for ..."
+windows, offer sorting of that columns's values, alternately in
+ascending order and descending order.
+
+All partial plan view's  Mouse-Right pop-ups offer the user a second
+pop-up selection ("Open a View") of the other partial plan views, 
+which will create them as needed.  All views, except for Transaction View,
+also offer "Raise Content Spec", which will set focus on the appropriate
+partial plan Content Spec window.
+
+In addition, all partial plan view's  Mouse-Right pop-ups offer the user
+"Close All Views", "Hide All Views", and "Open All Views".
+
+Each partial plan view, except for Transaction View, had a Mouse-Right
+choice of "Find Token By Key".  This has been changed and generalized to
+"Find By Key".  For Temporal Extent and Token Network views, entered keys
+will find token nodes; for the Timeline view, entered keys will find 
+token and slot nodes; and for the Constraint Network view, entered keys
+will find find token, variable, and constraint nodes -- opening
+appropriate connecting nodes, if needed.
+
+The Constraint Network View now uses a new layout algorithm that is many
+times faster than the previous algorithm.  Layout now generally takes 
+< 300ms.
+
+Almost all loading of data into the database is deferred until absolutely
+necessary.  This adds slight overhead to the first time a Partial Plan is
+viewed, but is a one-time cost.
+
+The current PartialPlanWriter (PlanWorks/cpp/integration/europa/README)
+requires a recent version of EUROPA.  The earliest known working
+version is tagged with the PlanWorks milestone release tag PW_M_9.  
+
+The PartialPlanWriter has changed since PW_M_8, and must be rebuilt.
+
+o  GNATS PRs and CRs completed:
+   #2150: Constraint Network View: find constraint/variable nodes by key.
+   #2157: Add window choices on pop-up menu for within Partial Plan.
+   #2158: Need to greatly imporve load-times for sequences.
+   #2159: Change option to Find By Key instead of Find Token By Key.
+   #2160: Time to delete a sequence is way too long   
+   #2161: Project menu goes away after deleting a sequence.
+
 
 16october03: Milestone 8
 ========================

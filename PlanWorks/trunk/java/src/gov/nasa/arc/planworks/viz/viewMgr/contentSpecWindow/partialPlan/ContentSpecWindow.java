@@ -4,20 +4,25 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.3 2003-10-09 17:23:30 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.4 2003-11-11 02:44:53 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -26,14 +31,23 @@ import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.db.util.PartialPlanContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.VizView;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 
 /**
@@ -45,7 +59,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
  * variables by type, and time intervals.
  */
 
-public class ContentSpecWindow extends JPanel {
+public class ContentSpecWindow extends JPanel implements MouseListener {
   //  protected ConstraintGroupBox constraintGroup;
   protected PredicateGroupBox predicateGroup;
   protected TimeIntervalGroupBox timeIntervalGroup;
@@ -57,8 +71,10 @@ public class ContentSpecWindow extends JPanel {
   //private McLaughlanGroupBox mcLaughlanGroup
 
   protected PartialPlanContentSpec contentSpec;
+  protected PartialPlanViewSet partialPlanViewSet;
 
   private static boolean queryTestExists;
+
   /**
    * <code>ContentSpecWindow
    * Constructs the entire content specification window.
@@ -67,8 +83,10 @@ public class ContentSpecWindow extends JPanel {
    * @param contentSpec The ContentSpec with which this window is associated.  Instantiated in
    *                    ViewSet
    */
-  public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec) {
+  public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec,
+                           PartialPlanViewSet partialPlanViewSet) {
     this.contentSpec = (PartialPlanContentSpec) contentSpec;
+    this.partialPlanViewSet = partialPlanViewSet;
     queryTestExists = false;
 
     Map predicateNames = this.contentSpec.getPredicateNames();
@@ -151,6 +169,8 @@ public class ContentSpecWindow extends JPanel {
     gridBag.setConstraints(buttonPanel, c);
     add(buttonPanel);
     buildFromSpec();
+
+    addMouseListener( this);
   }
 
   private void buildFromSpec() {
@@ -383,5 +403,88 @@ public class ContentSpecWindow extends JPanel {
         specWindow.uniqueKeyGroup.reset();
       }
     }
+  } // end class SpecButtonListener
+
+  /**
+   * mouseEntered - implement MouseListener - do nothing
+   *
+   * @param mouseEvent - MouseEvent 
+   */
+  public void mouseEntered( MouseEvent mouseEvent) {
+    // System.err.println( "mouseEntered " + mouseEvent.getPoint());
   }
-}
+
+  /**
+   * mouseExited - implement MouseListener -  do nothing
+   *
+   * @param mouseEvent - MouseEvent 
+   */
+  public void mouseExited( MouseEvent mouseEvent) {
+    // System.err.println( "mouseExited " + mouseEvent.getPoint());
+  }
+
+  /**
+   * mouseClicked - implement MouseListener -
+   *
+   * @param mouseEvent - MouseEvent 
+   */ 
+  public void mouseClicked( MouseEvent mouseEvent) {
+    // System.err.println( "mouseClicked " + mouseEvent.getModifiers());
+    if (MouseEventOSX.isMouseLeftClick( mouseEvent, PlanWorks.isMacOSX())) {
+
+    } else if (MouseEventOSX.isMouseRightClick( mouseEvent, PlanWorks.isMacOSX())) {
+      mouseRightPopupMenu( mouseEvent.getPoint());
+    }
+  } // end mouseClicked 
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    PwPartialPlan partialPlan = contentSpec.getPartialPlan();
+    String partialPlanName = partialPlan.getPartialPlanName();
+    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
+
+    List windowKeyList = new ArrayList( partialPlanViewSet.getViews().keySet());
+    Iterator windowListItr = windowKeyList.iterator();
+    foundIt:
+    while (windowListItr.hasNext()) {
+      Object viewWindowKey = (Object) windowListItr.next();
+      MDIInternalFrame viewFrame =
+        (MDIInternalFrame) partialPlanViewSet.getViews().get( viewWindowKey);
+      Container contentPane = viewFrame.getContentPane();
+      Component[] components = contentPane.getComponents();
+      for (int i = 0, n = components.length; i < n; i++) {
+        Component component = components[i];
+        if (component instanceof PartialPlanView) {
+          ((PartialPlanView) component).createOpenViewItems( partialPlan, partialPlanName,
+                                                             planSequence, mouseRightPopup, "");
+
+          ((VizView) component).createAllViewItems( partialPlan, partialPlanName,
+                                                    planSequence, mouseRightPopup);
+          break foundIt;
+        }
+      }
+
+    }
+    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+  } // end mouseRightPopupMenu
+
+  /**
+   * mousePressed - implement MouseListener - do nothing
+   *
+   * @param mouseEvent - MouseEvent 
+   */
+  public void mousePressed( MouseEvent mouseEvent) {
+    // System.err.println( "mousePressed " + mouseEvent.getPoint());
+  } // end mousePressed
+
+  /**
+   * mouseReleased - implement MouseListener - do nothing
+   *
+   * @param mouseEvent - MouseEvent
+   */
+  public void mouseReleased( MouseEvent mouseEvent) {
+    // System.err.println( "mouseReleased " + mouseEvent.getPoint());
+  } // end mouseReleased
+
+} // end class ContentSpecWindow
+

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.7 2003-11-06 00:02:18 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.8 2003-11-11 02:44:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.viz.partialPlan;
 
 import java.awt.Container;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -65,7 +66,7 @@ public class PartialPlanViewSet extends ViewSet {
     Container contentPane = this.contentSpecWindow.getContentPane();
     this.contentSpec = new PartialPlanContentSpec( viewable, this);
     ((PwPartialPlan) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
-    contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec));
+    contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec, this));
     this.contentSpecWindow.pack();
     int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
                                  ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
@@ -73,8 +74,8 @@ public class PartialPlanViewSet extends ViewSet {
                                   ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
     String seqUrl = ((PwPartialPlan) viewable).getSequenceUrl();
     int sequenceStepsViewHeight =
-      (int) ((MDIInternalFrame) PlanWorks.planWorks.
-             sequenceStepsViewMap.get( seqUrl)).getSize().getHeight();
+      (int) (((MDIInternalFrame) PlanWorks.planWorks.
+              sequenceStepsViewMap.get( seqUrl)).getSize().getHeight() * 0.5);
     this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
     this.contentSpecWindow.setVisible(true);
   }
@@ -124,6 +125,14 @@ public class PartialPlanViewSet extends ViewSet {
     secondaryTokens = tokenList;
   }
 
+  /**
+   * <code>getViews</code> - make views accessible to ContentSpecWindow
+   *
+   * @return - <code>HashMap</code> - 
+   */
+  public HashMap getViews() {
+    return views;
+  }
 
 
 } // end class PartialPlanViewSet
