@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.6 2003-08-26 01:37:13 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.7 2003-08-28 23:31:53 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -518,15 +518,18 @@ public class TemporalExtentView extends VizView {
 
 
   private void layoutTemporalNodes() {
-    List extents = new ArrayList();
+    /*List extents = new ArrayList();
     Iterator temporalNodeIterator = temporalNodeList.iterator();
     while (temporalNodeIterator.hasNext()) {
       TemporalNode temporalNode = (TemporalNode) temporalNodeIterator.next();
       extents.add( temporalNode);
-    }
+      }*/
+    List extents = new ArrayList(temporalNodeList);
     // do the layout -- compute cellRow for each node
     List results = Algorithms.allocateRows( scaleTime( timeScaleStart),
                                             scaleTime( timeScaleEnd), extents);
+    //List results = Algorithms.betterAllocateRows(scaleTime(timeScaleStart),
+    //                                            scaleTime(timeScaleEnd), extents);
     if (temporalNodeList.size() != results.size()) {
       String message = String.valueOf( temporalNodeList.size() - results.size()) +
         " nodes not successfully allocated";
@@ -545,7 +548,7 @@ public class TemporalExtentView extends VizView {
       // render the node
       temporalNode.configure();
     }
-    temporalNodeIterator = temporalNodeList.iterator();
+    Iterator temporalNodeIterator = temporalNodeList.iterator();
     while (temporalNodeIterator.hasNext()) {
       TemporalNode temporalNode = (TemporalNode) temporalNodeIterator.next();
       int maxHeight = (int) temporalNode.getLocation().getX() +

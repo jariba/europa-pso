@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Algorithms.java,v 1.4 2003-08-26 01:37:12 taylor Exp $
+// $Id: Algorithms.java,v 1.5 2003-08-28 23:31:14 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -24,6 +24,30 @@ import java.util.Collections;
 
 public class Algorithms
 {
+  public static List betterAllocateRows(int horizonStart, int horizonEnd, List extents) {
+    ArrayList source = new ArrayList(extents);
+    ArrayList rows = new ArrayList();
+    rows.add(new Row(0));
+    Collections.sort(source, new ExtentComparator());
+    Iterator extentIterator = source.listIterator();
+    while(extentIterator.hasNext()) {
+      Extent e = (Extent) extentIterator.next();
+      int i, n;
+      for(i = 0, n = rows.size(); i < n; i++) {
+        if(e.getStart() > ((Row)rows.get(i)).getLatestEnd()) {
+          ((Row)rows.get(i)).add(e);
+          break;
+        }
+      }
+      if(i == rows.size()) {
+        Row newRow = new Row(rows.size());
+        newRow.add(e);
+        rows.add(newRow);
+      }
+      System.err.println("[" + e.getStart() + ".." + e.getEnd() + "]: " + e.getRow());
+    }
+    return source;
+  }
     /**
      * Will allocate a row number to every extent in the list that may overlap the horizon. Row
      * numbers are assumed to begin at 0. This algorithm ensures that no temporal overlap occurs
@@ -139,6 +163,22 @@ public class Algorithms
 	System.out.println("Test succeded");
     }
 }
+
+class Row {
+  private int n, latestEnd;
+  public Row(int rownum) {
+    n = rownum;
+    latestEnd = Integer.MIN_VALUE;
+  }
+  public void add(Extent e) {
+    e.setRow(n);
+    latestEnd = e.getEnd();
+  }
+  public int getLatestEnd() {
+      return latestEnd;
+  }
+}
+
 
 /**
  * Utility class to compare extents

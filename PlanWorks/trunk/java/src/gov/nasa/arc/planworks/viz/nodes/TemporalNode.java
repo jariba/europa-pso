@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.5 2003-08-26 01:37:12 taylor Exp $
+// $Id: TemporalNode.java,v 1.6 2003-08-28 23:31:39 miatauro Exp $
 //
 // PlanWorks
 //
@@ -243,8 +243,9 @@ public class TemporalNode extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getStart() {
-    return Math.min( view.scaleTime( earliestStartTime),
-                     (int) (getLocation().getX() - getSize().getWidth() * 0.5));
+    //return Math.min( view.scaleTime( earliestStartTime),
+    //                 (int) (getLocation().getX() - getSize().getWidth() * 0.5));
+    return earliestStartTime;
   }
 
   /**
@@ -255,8 +256,9 @@ public class TemporalNode extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getEnd() {
-    return Math.max( view.scaleTime( latestEndTime),
-                     (int) (getLocation().getX() + getSize().getWidth() * 0.5));
+    //return Math.max( view.scaleTime( latestEndTime),
+    //                 (int) (getLocation().getX() + getSize().getWidth() * 0.5));
+    return latestEndTime;
   }
 
   /**
