@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.37 2003-10-07 22:19:06 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.38 2003-10-07 22:36:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -262,7 +262,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     if(stepNum < 0 || stepNum >= partialPlans.keySet().size()) {
       throw new IndexOutOfBoundsException();
     }
-    List ppIds = new ArrayList(partialPlans.keySet());
+    List ppIds = new ArrayList(planToTransactionMap.keySet());
     Collections.sort(ppIds);
     return getTransactionsList((Long) ppIds.get(stepNum));
   }
