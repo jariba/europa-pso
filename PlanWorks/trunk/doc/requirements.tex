@@ -31,7 +31,7 @@ This document outlines the requirements to be addressed in FY2003, the first yea
 \item specify initial values for such variables in the model.
 \item specify the initial values for Constants as part of the problem definition. This definition will over-ride any definition provided in the model.
 \item define a class that may or may not have predicates associated with it. A class with predicates is said to be a Timeline.
-\itme define a class which composes 0 or more classes.
+\item define a class which composes 0 or more classes.
 \item define a class which inherits from 0 or 1 other class.
 \item define references to classes within a compatibility. In defining such a reference, the part-of relationships may be traveresed upwards or downwards from the class of fthe compatibility.
 \item reference constants within a compatibility. In defining such a reference, the part-of relation may be used to access constants defined for classes.
@@ -75,47 +75,19 @@ This document outlines the requirements to be addressed in FY2003, the first yea
 \item The system shall prohibit use of any Tools unless a Project is open.
 \item The system will be started with no Project open.
 \item At most one Project may be open at any time.
-\end{enumerate}
-
-\section{Data logging from EUROPA}
-\begin{enumerate}
-\item Must support logging of the following events from EUROPA to a PlanWorks Repository:
-\begin{enumerate}
-\item \begin{verbatim}BEGIN_PROPAGATION\end{verbatim}
-\item \begin{verbatim}END_PROPAGATION\end{verbatim}
-\item \begin{verbatim}TOKEN_INSERTED\end{verbatim}
-\item \begin{verbatim}TOKEN_FREED\end{verbatim}
-\item \begin{verbatim}TOKEN_CREATED\end{verbatim}
-\item \begin{verbatim}CONSTRAINT_INSERTED\end{verbatim}
-\item \begin{verbatim}CONSTRAINT_DELETED\end{verbatim}
-\item \begin{verbatim}CONSTRAINT_EXECUTED\end{verbatim}
-\item \begin{verbatim}VARIABLE_CREATED\end{verbatim}
-\item \begin{verbatim}VARIABLE_DELETED\end{verbatim}
-\item \begin{verbatim}VARIABLE_DOMAIN_EMPTIED\end{verbatim}
-\item \begin{verbatim}VARIABLE_SPECIFIED_DOMAIN_CHANGED\end{verbatim}
-\item \begin{verbatim}VARIABLE_DERIVED_DOMAIN_CHANGED\end{verbatim}
-\item \begin{verbatim}NON_UNIT_DECISION_MADE\end{verbatim}
-\item \begin{verbatim}UNIT_DECISION_MADE\end{verbatim}
-\item \begin{verbatim}DECISION_RETRACTED\end{verbatim}
-\end{enumerate}
-
-\item Must allow for run-time control of event logging fidelity.
-\item Must allow for a PartialPlan to be output at any time during planning at the request of the Planner, as long as the Plan Database is not inconsistent.
-\item Must support run-time control of logging output destinations.
-\end{enumerate}
-
-\section{Plan Visualization}
-PlanViz is a tool to explore and visualize Partial Plans. This section describes what methods of visualization and exploration are to be supported and how PlanViz integrates to the rest of PlanWorks.
-\subsection{From Projects to Partial plans}
-\begin{enumerate}
 \item A Project shall contain 0 or more named planning sequences.
 \item A Planning Sequence shall contain 1 or more Steps.
 \item Each Step of a Planning Sequence must contain a Partial Plan.
 \item Each step of a Planning Sequence may contain one or more Transactions.
 \item All Partial Plans in a Planning Sequence share the same Model.
 \item The Partial Plan of the first Step is the initial state of a planning process.
+\end{enumerate}
+
+\section{Plan Visualization}
+PlanViz is a tool to explore and visualize Partial Plans. This section describes what methods of visualization and exploration are to be supported and how PlanViz integrates to the rest of PlanWorks.
+\begin{enumerate}
 \item The system must permit display of any Partial Plan in a Planning Sequence.
-\item The system must restrict display of multiple instances of the same Partial Plan.
+\item The system must prohibit display of the more than one instance of the same Partial Plan.
 \item The system will allow multiple Partial Plans to be visualized at once.
 \end{enumerate}
 \subsection{Content Specification}
@@ -172,8 +144,95 @@ PlanViz is a tool to explore and visualize Partial Plans. This section describes
 \item Changes to the Content Specification of a View take affect as soon as they are applied by the user.
 \end{enumerate}
 \end{enumerate}
+
 \subsection{Planner Debugger}
+The Debugger is a tool to support analysis of a Planning Sequence for the purposes of verification and troubleshooting of Planner, Model, Heuristic and Constraint Behavior.
+\begin{enumerate}
+\item The following Transactions must be supported:
+\begin{enumerate}
+\item \begin{verbatim}RESTRICT_SPECIFIED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
+\item \begin{verbatim}RESTRICT_DERIVED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
+\item \begin{verbatim}RELAX_SPECIFIED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
+\item \begin{verbatim}EMPTY_DOMAIN. Constraint, Variable.\end{verbatim}
+\item \begin{verbatim}CREATE_TOKEN. Token\end{verbatim}
+\item \begin{verbatim}DELETE_TOKEN. Token\end{verbatim}
+\item \begin{verbatim}INSERT_TOKEN. Token, Timeline, Slot, Alternative Slots.\end{verbatim}
+\item \begin{verbatim}FREE_TOKEN. Token.\end{verbatim}
+\end{enumerate}
+\item What are the Steps where:
+\begin{enumerate}
+\item Token T was created, inserted, freed, deleted
+\item Variable V was changed, restricted, relaxed
+\item Relaxations were made?
+\item Restrictions were made?
+\item Unit Decisions were made?
+\item Non-unit decisions were made?
+\end{enumerate}
+\item The system must support queries returning Transactions, of the form ``What are the Transactions:
+\begin{enumerate}
+\item at step S.
+\item on Variable V
+\item on Token T
+\item between step s1 and step s2.
+\end{enumerate}
+\item The system must smoothly integrate Plan Viz for detailed exploration and visualization of an partial plan in the Planning Sequence.
+\end{enumerate}
+
 \subsection{Test Harness}
+The Test Harness is a tool to allow capture and execution of regression tests.
+\begin{enumerate}
+\item A Project shall have 0 or more Test Suites. A Test Suite:
+\begin{enumerate}
+\item must contain 0 or more Test Suites.
+\item must have a name. The fully qualified name (name + path from project) must be unique within the project.
+\item must have a description.
+\item must be in exactly one Project.
+\item must contain 0 or more Test Cases.
+\end{enumerate}
+\item A Test Case:
+\begin{enumerate}
+\item must be primitive, i.e. it contains no Test Suite or Test Case.
+\item must be contained by exactly one Test Suite.
+\item must have a name. The fully qualified name (name + path from project) must be unique within the project.
+\item must have a description.
+\item must have a Planning Sequence name. The named planning sequence must be a member of the project.
+\item must have 1 or more Assertions.
+\end{enumerate}
+\item An Assertion:
+\begin{enumerate}
+\item is a statement that evaluates to true or false.
+\item shall be expressed in a declarative scriptiong language to be provided by the system.
+\item shall be evaluated by the system in the context of the active Planning Sequence, i.e. the Planning Sequence named in the containing Test Case. 
+\end{enumerate}
+\item It must be possible to create and delete Test Suites, Test Cases and Assertions.
+\item It must be possible to select and execute a Test Suite in PlanWorks.
+\item It must be possible to select and execute a Test Suite from the command line.
+\item Execution of a Test Suite shall cause execution of all contained Test Suites and Test Cases.
+\item A Test Case may only be executed through execution of its enclosing
+\item A Test Case execution will record success if and only if all assertions it contined were evaluated to true.
+\item A Test Suite will record success if and only if all all contained Test Cases and Test Suites record success.
+\item Upon completion of execution of a Test Case, a Report shall be produced.
+\item The Report for a Test Suite must be stored in the Project.
+\item The Report name shall be generated by the system as a concatenation of the test Suite name and the execution time.
+\item The Report must provide:
+\begin{enumerate}
+\item an indication of Success or Failure of each Test Case and Test Suite contained.
+\item in the event of Failure, the report for the failed Test Case or Test Suite must be accessible for inspection.
+\item in the event of Failure of a Test Case, the report must indicate all assertions that failed.
+\end{enumerate}
+\item It must be possible to erase a Report from a Project.
+\item It must be possible to export a Report to the file system.
+\end{enumerate}
+
+\section{Data logging from EUROPA}
+In order to populate PlanWorks with the required data, we must provide for generation of Planning Sequences from A Planning System. The current target system is EUROPA.
+\begin{enumerate}
+\item The system must support logging of the necessary events from EUROPA to a PlanWorks Repository to satisfy the queries of the debugger and plan visualizer.
+\item The system must allow for run-time control of event logging fidelity.
+\item The system must allow for a PartialPlan to be output at any time during planning at the request of the Planner, as long as the Plan Database is not inconsistent.
+\item The system must support run-time control of logging output destinations (note that this does not mean alteration of output during execution, but rather to direct output when staring the planner).
+\end{enumerate}
+
 \end{document}
 
 
