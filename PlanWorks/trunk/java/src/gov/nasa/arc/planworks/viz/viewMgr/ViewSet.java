@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.6 2003-06-11 17:47:53 miatauro Exp $
+// $Id: ViewSet.java,v 1.7 2003-06-12 18:17:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -19,7 +19,9 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 
+//maybe the hashmap should be changed.  is that much flexibility really necessary?
 public class ViewSet implements RedrawNotifier, ContentSpecChecker {
   private MDIDesktopFrame desktopFrame;
   private HashMap views;
@@ -27,6 +29,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
   private PwPartialPlan partialPlan;
   private ViewSetRemover remover;
   private String planName;
+  private MDIInternalFrame contentSpecWindow;
   public ViewSet(MDIDesktopFrame desktopFrame, PwPartialPlan partialPlan, String planName, 
                  ViewSetRemover remover) {
     this.views = new HashMap();
@@ -35,6 +38,12 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
     this.remover = remover;
     this.desktopFrame = desktopFrame;
     this.contentSpec = new ContentSpec(partialPlan.getCollectionName());
+    //change the arguments to something more sensible
+    this.contentSpecWindow = desktopFrame.createFrame(planName, true, true, true, true);
+    Container contentPane = this.contentSpecWindow.getContentPane();
+    contentPane.add(new ContentSpecWindow(this.contentSpecWindow, contentSpec));
+    this.contentSpecWindow.pack();
+    this.contentSpecWindow.setVisible(true);
   }
 
   public MDIInternalFrame openTimelineView() {
