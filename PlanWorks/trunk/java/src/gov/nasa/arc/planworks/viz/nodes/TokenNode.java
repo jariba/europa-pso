@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.32 2004-01-16 19:05:36 taylor Exp $
+// $Id: TokenNode.java,v 1.33 2004-02-17 22:54:07 miatauro Exp $
 //
 // PlanWorks
 //
@@ -37,6 +37,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -57,7 +58,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TokenNode extends BasicNode {
+public class TokenNode extends BasicNode implements VariableContainerNode {
 
   protected PwToken token;
   protected PwSlot slot;
@@ -166,6 +167,14 @@ public class TokenNode extends BasicNode {
    */
   public String toString() {
     return token.getId().toString();
+  }
+
+  public PwVariableContainer getContainer() {
+    return token;
+  }
+
+  public List getVariableNodes() {
+    return new ArrayList();
   }
 
   /**
