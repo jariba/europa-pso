@@ -17,6 +17,11 @@
 #include "../PlanDatabase/Timeline.hh"
 #include "../PlanDatabase/Token.hh"
 #include "../PlanDatabase/TokenVariable.hh"
+#include "../PlanDatabase/TokenTemporalVariable.hh"
+
+// #include "../Resource/Resource.hh"
+// #include "../Resource/ResourceDefs.hh"
+// #include "../Resource/Transaction.hh"
 
 #include <exception>
 #include <iostream>
@@ -39,13 +44,10 @@
 #ifdef __sun
 #include <strstream>
 typedef std::strstream std::stringstream;
-#else
-#include <sstream>
-#endif
-
-#ifdef __sun
 #define streamIsEmpty(s) !(s).str()
 #else
+#include <sstream>
+//typedef std::stringstream sstream;
 #define streamIsEmpty(s) (s).str() == ""
 #endif
 
@@ -58,17 +60,23 @@ const char *envAltWriteDest = "PPW_WRITE_DEST";
 
 const char *envPPWNoWrite = "PPW_DONT_WRITE";
 
-const char *transactionTypeNames[13] = {"TOKEN_CREATED", "TOKEN_DELETED", "TOKEN_INSERTED",
-                                        "TOKEN_FREED", "VARIABLE_CREATED", "VARIABLE_DELETED",
-                                        "VARIABLE_DOMAIN_RELAXED", "VARIABLE_DOMAIN_RESTRICTED",
-                                        "VARIABLE_DOMAIN_SPECIFIED", "VARIABLE_DOMAIN_RESET",
-                                        "VARIABLE_DOMAIN_EMPTIED", "CONSTRAINT_CREATED",
-                                        "CONSTRAINT_DELETED"};
+enum transactionTypes {OBJECT_CREATED = 0, OBJECT_DELETED, TOKEN_CREATED, TOKEN_ADDED_TO_OBJECT, 
+                       TOKEN_CLOSED, TOKEN_ACTIVATED, TOKEN_DEACTIVATED, TOKEN_MERGED, TOKEN_SPLIT,
+                       TOKEN_REJECTED, TOKEN_REINSTATED, TOKEN_DELETED, TOKEN_REMOVED, 
+                       TOKEN_INSERTED, TOKEN_FREED, CONSTRAINT_CREATED, CONSTRAINT_DELETED,
+                       CONSTRAINT_EXECUTED, VAR_CREATED, VAR_DELETED, VAR_DOMAIN_RELAXED,
+                       VAR_DOMAIN_RESTRICTED, VAR_DOMAIN_SPECIFIED, VAR_DOMAIN_RESET, 
+                       VAR_DOMAIN_EMPTIED, ERROR};
 
-enum transactionTypes {TOKEN_CREATED = 0, TOKEN_DELETED, TOKEN_INSERTED, TOKEN_FREED,
-                             VAR_CREATED, VAR_DELETED, VAR_DOMAIN_RELAXED, VAR_DOMAIN_RESTRICTED,
-                             VAR_DOMAIN_SPECIFIED, VAR_DOMAIN_RESET, VAR_DOMAIN_EMPTIED,
-                             CONSTRAINT_CREATED, CONSTRAINT_DELETED, ERROR};
+const int transactionTotal = ERROR + 1;
+
+const char *transactionTypeNames[transactionTotal] = { 
+  "OBJECT_CREATED", "OBJECT_DELETED", "TOKEN_CREATED", "TOKEN_ADDED_TO_OBJECT", "TOKEN_CLOSED",
+    "TOKEN_ACTIVATED", "TOKEN_DEACTIVATED", "TOKEN_MERGED", "TOKEN_SPLIT", "TOKEN_REJECTED",
+    "TOKEN_REINSTATED", "TOKEN_DELETED", "TOKEN_REMOVED", "TOKEN_INSERTED", "TOKEN_FREED",
+    "CONSTRAINT_CREATED", "CONSTRAINT_DELETED", "CONSTRAINT_EXECUTED", "VARIABLE_CREATED",
+    "VARIABLE_DELETED", "VARIABLE_DOMAIN_RELAXED", "VARIABLE_DOMAIN_RESTRICTED", 
+    "VARIABLE_DOMAIN_SPECIFIED", "VARIABLE_DOMAIN_RESET", "VARIABLE_DOMAIN_EMPTIED", "ERROR"};
 
 const char *sourceTypeNames[3] = {"SYSTEM", "USER", "UNKNOWN"};
 
@@ -77,16 +85,17 @@ enum sourceTypes {SYSTEM = 0, USER, UNKNOWN};
 const std::string DURATION_VAR("DURATION_VAR");
 const std::string END_VAR("END_VAR");
 const std::string START_VAR("START_VAR");
-const std::string REJECT_VAR("REJECT_VAR");
+const std::string STATE_VAR("STATE_VAR");
 const std::string OBJECT_VAR("OBJECT_VAR");
 const std::string PARAMETER_VAR("PARAMETER_VAR");
+const std::string MEMBER_VAR("MEMBER_VAR");
 
-const std::string tokenVarTypes[6] = 
-{REJECT_VAR, OBJECT_VAR, DURATION_VAR, START_VAR, END_VAR, PARAMETER_VAR};
+const std::string tokenVarTypes[7] = 
+{STATE_VAR, OBJECT_VAR, DURATION_VAR, START_VAR, END_VAR, PARAMETER_VAR, MEMBER_VAR};
 
-enum varTypes {I_REJECT = 0, I_OBJECT, I_DURATION, I_START, I_END, I_PARAMETER};
+enum varTypes {I_STATE = 0, I_OBJECT, I_DURATION, I_START, I_END, I_PARAMETER, I_MEMBER};
 enum objectTypes {O_OBJECT = 0, O_TIMELINE, O_RESOURCE};
-enum tokenTypes {T_INTERVAL = 0, T_RESOURCE};
+enum tokenTypes {T_INTERVAL = 0, T_TRANSACTION};
 
 #define TAB "\t"
 #define COLON ":"
@@ -120,6 +129,7 @@ const std::string TOKEN_RELATIONS(".tokenRelations");
 const std::string VARIABLES(".variables");
 const std::string CONSTRAINTS(".constraints");
 const std::string CONSTRAINT_VAR_MAP(".constraintVarMap");
+const std::string INSTANTS(".instants");
 const std::string E_DOMAIN("E");
 const std::string I_DOMAIN("I");
 const std::string CAUSAL("CAUSAL");
@@ -199,7 +209,7 @@ namespace Prototype {
       seqName = seqName.substr(0, extStart);
       if(stepsPerWrite) {
 	if(mkdir(dest.c_str(), 0777) && errno != EEXIST) {
-	  std::cerr << "Failed to make directory " << dest << endl;
+	  std::cerr << "Failed to make directory " << dest << std::endl;
 	  FatalErrno();
 	}
 	dest += seqName;
@@ -311,6 +321,12 @@ namespace Prototype {
 	FatalErrno();
       }
 
+      std::string ppInsts = ppDest + SLASH + stepnum + INSTANTS;
+      std::ofstream instsOut(ppInsts.c_str());
+      if(!instsOut) {
+        FatalErrno();
+      }
+
       const std::set<ConstraintId> &constraints = (*ceId)->getConstraints();
       numConstraints = constraints.size();
       for(std::set<ConstraintId>::const_iterator it = constraints.begin();
@@ -320,55 +336,86 @@ namespace Prototype {
 
       std::set<ObjectId> objects((*pdbId)->getObjects());
       std::set<TokenId> tokens((*pdbId)->getTokens());
-      int slotId = 1;
+      int slotId = 1000000;
       for(std::set<ObjectId>::iterator objectIterator = objects.begin();
 	  objectIterator != objects.end(); ++objectIterator) {
 	const ObjectId &objId = *objectIterator;
-	if(! TimelineId::convertable(objId)) {
-          outputObject(objId, O_OBJECT, objOut);
-	  continue;
+        if(TimelineId::convertable(objId)) {
+          outputObject(objId, O_TIMELINE, objOut, varOut);
+          TimelineId &tId = (TimelineId &) objId;
+          const std::list<TokenId>& orderedTokens = tId->getTokenSequence();
+          int slotIndex = 0;
+          int emptySlots = 0;
+          for(std::list<TokenId>::const_iterator tokenIterator = orderedTokens.begin();
+              tokenIterator != orderedTokens.end(); ++tokenIterator) {
+            const TokenId &token = *tokenIterator;
+            outputToken(token, T_INTERVAL, slotId, slotIndex, (ObjectId) tId, tokOut, tokRelOut, 
+                        varOut);
+            tokens.erase(token);
+            std::set<TokenId>::const_iterator mergedTokenIterator = 
+              token->getMergedTokens().begin();
+            for(;mergedTokenIterator != token->getMergedTokens().end(); ++mergedTokenIterator) {
+              outputToken(*mergedTokenIterator, T_INTERVAL, slotId, slotIndex, (ObjectId &) tId, 
+                          tokOut, tokRelOut, varOut);
+              tokens.erase(*mergedTokenIterator);
+            }
+            slotId++;
+            slotIndex++;
+            ++tokenIterator;
+            /*ExtraData: empty slot info*/
+            if(tokenIterator != orderedTokens.end()) {
+              const TokenId &nextToken = *tokenIterator;
+              if(token->getEnd()->lastDomain() != nextToken->getStart()->lastDomain()) {
+                objOut << slotId << COMMA << slotIndex << COLON;
+                emptySlots++;
+                slotId++;
+                slotIndex++;
+              }
+            }
+            --tokenIterator;
+          }
+          if(!emptySlots)
+            objOut << SNULL;
+          objOut << std::endl;
         }
-        else
-          outputObject(objId, O_TIMELINE, objOut);
-	TimelineId &tId = (TimelineId &) objId;
-	const std::list<TokenId>& orderedTokens = tId->getTokenSequence();
-	int slotIndex = 0;
-	int emptySlots = 0;
-	for(std::list<TokenId>::const_iterator tokenIterator = orderedTokens.begin();
-	    tokenIterator != orderedTokens.end(); ++tokenIterator) {
-	  const TokenId &token = *tokenIterator;
-	  outputToken(token, T_INTERVAL, slotId, slotIndex, &tId, tokOut, tokRelOut, varOut);
-	  tokens.erase(token);
-	  std::set<TokenId>::const_iterator mergedTokenIterator = 
-	    token->getMergedTokens().begin();
-	  for(;mergedTokenIterator != token->getMergedTokens().end(); ++mergedTokenIterator) {
-	    outputToken(*mergedTokenIterator, T_INTERVAL, slotId, slotIndex, &tId, tokOut, 
-                        tokRelOut, varOut);
-	    tokens.erase(*mergedTokenIterator);
-	  }
-	  slotId++;
-	  slotIndex++;
-	  ++tokenIterator;
-	  if(tokenIterator != orderedTokens.end()) {
-	    const TokenId &nextToken = *tokenIterator;
-	    if(token->getEnd()->lastDomain() != nextToken->getStart()->lastDomain()) {
-	      objOut << slotId << COMMA << slotIndex << COLON;
-	      emptySlots++;
-	      slotId++;
-	      slotIndex++;
-	    }
-	  }
-	  --tokenIterator;
-	}
-	if(!emptySlots)
-	  objOut << SNULL;
-	objOut << std::endl;
+        else if(ResourceId::convertable(objId)) {
+          outputObject(objId, O_RESOURCE, objOut, varOut);
+
+          ResourceId &rId = (ResourceId &) objId;
+          
+          /*ExtraData: resource info*/
+          objOut << rId->getHorizonStart() << COMMA << rId->getHorizonEnd() << COMMA
+                 << rId->getInitialCapacity() << COMMA << rId->getLimitMin() << COMMA
+                 << rId->getLimitMax() << COMMA;
+          std::list<TransactionId> resTrans;
+          rId->getTransactions(resTrans, MINUS_INFINITY, PLUS_INFINITY);
+          for(std::list<TransactionId>::iterator transIt = resTrans.begin();
+              transIt != resTrans.end(); ++transIt) {
+            TransactionId trans = *transIt;
+            outputToken(trans, T_TRANSACTION, 0, 1, rId, tokOut, tokRelOut, varOut);
+            tokens.erase(trans);
+          }
+          std::list<InstantId> insts;
+          rId->getInstants(insts, MINUS_INFINITY, PLUS_INFINITY);
+          for(std::list<InstantId>::iterator instIt = insts.begin();
+              instIt != insts.end(); ++instIt) {
+            InstantId inst = *instIt;
+            outputInstant(inst, rId->getKey(), instsOut);
+            objOut << inst->getKey() << COMMA;
+          }
+          objOut << std::endl;
+        }
+        else {
+          outputObject(objId, O_OBJECT, objOut, varOut);
+          /*ExtraData: NULL*/
+          objOut << SNULL << std::endl;
+        }
       }
-      for(std::set<TokenId>::iterator tokenIterator = tokens.begin(); tokenIterator != tokens.end();
-	  ++tokenIterator) {
+      for(std::set<TokenId>::iterator tokenIterator = tokens.begin(); 
+          tokenIterator != tokens.end(); ++tokenIterator) {
 	TokenId token = *tokenIterator;
 	check_error(token.isValid());
-	outputToken(token, T_INTERVAL, 0, 0, NULL, tokOut, tokRelOut, varOut);
+	outputToken(token, T_INTERVAL, 0, 0, ObjectId::noId(), tokOut, tokRelOut, varOut);
       }
 
       (*statsOut) << seqId << TAB << ppId << TAB << nstep << TAB << numTokens << TAB << numVariables
@@ -388,23 +435,56 @@ namespace Prototype {
     }
 
     void PartialPlanWriter::outputObject(const ObjectId &objId, const int type,
-                                         std::ofstream &objOut) {
+                                         std::ofstream &objOut, std::ofstream &varOut) {
       int parentKey = -1;
       if(!objId->getParent().isNoId())
         parentKey = objId->getParent()->getKey();
       objOut << objId->getKey() << TAB << type << TAB << parentKey << TAB
              << ppId << TAB << objId->getName().toString() << TAB;
-      for(std::set<ObjectId>::const_iterator childIt = objId->getComponents().begin();
-          childIt != objId->getComponents().end(); ++childIt) {
-        ObjectId child = *childIt;
-        objOut << child->getKey() << COMMA;
+      /*ChildObjectIds*/
+      if(objId->getComponents().empty()) {
+        objOut << SNULL << TAB;
       }
-      objOut << TAB;
-      //<< SNULL;// << std::endl;
+      else {
+        for(std::set<ObjectId>::const_iterator childIt = objId->getComponents().begin();
+            childIt != objId->getComponents().end(); ++childIt) {
+          ObjectId child = *childIt;
+          objOut << child->getKey() << COMMA;
+        }
+        objOut << TAB;
+      }
+      /*end ChildObjectIds*/
+      /*VariableIds*/
+      if(objId->getVariables().empty()) {
+        objOut << SNULL << TAB;
+      }
+      else {
+        for(std::vector<ConstrainedVariableId>::const_iterator varIt = 
+              objId->getVariables().begin(); varIt != objId->getVariables().end(); ++varIt) {
+          ConstrainedVariableId var = *varIt;
+          objOut << var->getKey() << COMMA;
+          outputConstrVar(var, objId->getKey(), I_MEMBER, varOut);
+        }
+        objOut << TAB;
+      }
+      /*end VariableIds*/
+      /*TokenIds*/
+      if(objId->getTokens().empty()) {
+        objOut << SNULL << TAB;
+      }
+      else {
+        for(std::set<TokenId>::const_iterator tokIt = objId->getTokens().begin();
+            tokIt != objId->getTokens().end(); ++tokIt) {
+          TokenId token = *tokIt;
+          objOut << token->getKey() << COMMA;
+        }
+        objOut << TAB;
+      }
+      /*end TokenIds*/
     }
 
     void PartialPlanWriter::outputToken(const TokenId &token, const int type, const int slotId, 
-                                        const int slotIndex, const TimelineId *tId, 
+                                        const int slotIndex, const ObjectId &tId, 
                                         std::ofstream &tokOut, std::ofstream &tokRelOut,
                                         std::ofstream &varOut) {
       check_error(token.isValid());
@@ -412,12 +492,12 @@ namespace Prototype {
 	std::cerr << "Token " << token->getKey() << " is incomplete.  Skipping. " << std::endl;
 	return;
       }
-      if(tId != NULL) {
+      if(!tId.isNoId()) {
 	tokOut << token->getKey() << TAB << type << TAB << slotId << TAB << slotIndex << TAB 
                << ppId << TAB << 0 << TAB << 1 << TAB << token->getStart()->getKey() << TAB 
                << token->getEnd()->getKey() << TAB << token->getDuration()->getKey() << TAB 
                << token->getState()->getKey() << TAB << token->getPredicateName().toString() 
-               << TAB << (*tId)->getKey() << TAB << (*tId)->getName().toString() << TAB 
+               << TAB << tId->getKey() << TAB << tId->getName().toString() << TAB 
                << token->getObject()->getKey() << TAB;
       }
       else {
@@ -437,11 +517,11 @@ namespace Prototype {
 	tokOut << SNULL << TAB;
       }
 
-      outputObjVar(token->getObject(), token, I_OBJECT, varOut);
-      outputIntIntVar(token->getStart(), token, I_START, varOut);
-      outputIntIntVar(token->getEnd(), token, I_END, varOut);
-      outputIntIntVar(token->getDuration(), token, I_DURATION, varOut);
-      outputEnumVar(token->getState(), token, I_REJECT, varOut);
+      outputObjVar(token->getObject(), token->getKey(), I_OBJECT, varOut);
+      outputIntIntVar(token->getStart(), token->getKey(), I_START, varOut);
+      outputIntIntVar(token->getEnd(), token->getKey(), I_END, varOut);
+      outputIntIntVar(token->getDuration(), token->getKey(), I_DURATION, varOut);
+      outputEnumVar(token->getState(), token->getKey(), I_STATE, varOut);
 
       std::string paramVarIds;
       char paramIdStr[NBBY * sizeof(int) * 28/93 + 4];
@@ -450,26 +530,36 @@ namespace Prototype {
 	  paramVarIterator != token->getParameters().end(); ++paramVarIterator) {
 	ConstrainedVariableId varId = *paramVarIterator;
 	check_error(varId.isValid());
-	outputConstrVar(varId, token, I_PARAMETER, varOut);
+	outputConstrVar(varId, token->getKey(), I_PARAMETER, varOut);
 	bzero(paramIdStr, NBBY * sizeof(int) * 28/93 + 4);
 	sprintf(paramIdStr, "%d", varId->getKey());
 	paramVarIds += std::string(paramIdStr) + COLON;
       }
       if(paramVarIds == "") {
-	tokOut << SNULL << std::endl;
+	tokOut << SNULL << TAB;
       }
       else {
-	tokOut << paramVarIds << std::endl;
+	tokOut << paramVarIds << TAB;
       }
+      /*ExtraData: QuantityMin:QuantityMax*/
+      if(type == T_TRANSACTION) {
+        TransactionId trans = (TransactionId) token;
+        tokOut << trans->getMin() << COMMA << trans->getMax();
+      }
+      else {
+        tokOut << SNULL;
+      }
+      tokOut << std::endl;
       numTokens++;
     }
   
     void PartialPlanWriter::outputEnumVar(const Id<TokenVariable<EnumeratedDomain> >& enumVar, 
-					  const TokenId &tokId, const int type, 
+					  //const TokenId &tokId, const int type, 
+                                          const int parentId, const int type,
 					  std::ofstream &varOut) {
       numVariables++;
 
-      varOut << enumVar->getKey() << TAB << ppId << TAB << tokId->getKey() << TAB 
+      varOut << enumVar->getKey() << TAB << ppId << TAB << /*tokId->getKey()*/parentId << TAB 
 	     << enumVar->getName().toString() << TAB;
 
       varOut << ENUM_DOMAIN << TAB << getEnumerationStr((EnumeratedDomain &) enumVar->lastDomain()) 
@@ -479,10 +569,11 @@ namespace Prototype {
     }
   
     void PartialPlanWriter::outputIntVar(const Id<TokenVariable<IntervalDomain> >& intVar,
-					 const TokenId &tokId, const int type, 
+					 //const TokenId &tokId, const int type, 
+                                         const int parentId, const int type,
 					 std::ofstream &varOut) {
       numVariables++;
-      varOut << intVar->getKey() << TAB << ppId << TAB << tokId->getKey() << TAB 
+      varOut << intVar->getKey() << TAB << ppId << TAB << /*tokId->getKey()*/parentId << TAB 
 	     << intVar->getName().toString() << TAB;
 
       varOut << INT_DOMAIN << TAB << SNULL << TAB << REAL_SORT << TAB 
@@ -493,11 +584,12 @@ namespace Prototype {
     }
   
     void PartialPlanWriter::outputIntIntVar(const Id<TokenVariable<IntervalIntDomain> >& intVar,
-					    const TokenId &tokId, const int type, 
+					    //const TokenId &tokId, const int type, 
+                                            const int parentId, const int type,
 					    std::ofstream &varOut) {
       numVariables++;
 
-      varOut << intVar->getKey() << TAB << ppId << TAB << tokId->getKey() << TAB 
+      varOut << intVar->getKey() << TAB << ppId << TAB << /*tokId->getKey()*/parentId << TAB 
 	     << intVar->getName().toString() << TAB;
     
       varOut << INT_DOMAIN << TAB << SNULL << TAB << INTEGER_SORT << TAB 
@@ -508,11 +600,12 @@ namespace Prototype {
     }
 
     void PartialPlanWriter::outputObjVar(const Id<TokenVariable<ObjectSet> >& objVar,
-					 const TokenId &tokId, const int type, 
+					 //const TokenId &tokId, const int type, 
+                                         const int parentId, const int type,
 					 std::ofstream &varOut) {
       numVariables++;
 
-      varOut << objVar->getKey() << TAB << ppId << TAB << tokId->getKey() << TAB 
+      varOut << objVar->getKey() << TAB << ppId << TAB << /*tokId->getKey()*/parentId << TAB 
 	     << objVar->getName().toString() << TAB;
 
       varOut << ENUM_DOMAIN << TAB;
@@ -529,11 +622,12 @@ namespace Prototype {
     }
   
     void PartialPlanWriter::outputConstrVar(const ConstrainedVariableId &otherVar, 
-					    const TokenId &tokId, const int type, 
+					    //const TokenId &tokId, const int type, 
+                                            const int parentId, const int type,
 					    std::ofstream &varOut) {
       numVariables++;
 
-      varOut << otherVar->getKey() << TAB << ppId << TAB << tokId->getKey() << TAB 
+      varOut << otherVar->getKey() << TAB << ppId << TAB << /*tokId->getKey()*/parentId << TAB 
 	     << otherVar->getName().toString() << TAB;
 
       if(otherVar->derivedDomain().isEnumerated()) {
@@ -563,24 +657,60 @@ namespace Prototype {
       }
     }
 
+     void PartialPlanWriter::outputInstant(const InstantId &instId, const int resId, 
+                                           std::ofstream &instOut) {
+       instOut << ppId << TAB << resId << TAB << instId->getKey() << TAB << instId->getTime() 
+               << TAB << instId->getLevelMin() << TAB << instId->getLevelMax() << TAB;
+       const TransactionSet &transactions = instId->getTransactions();
+       for(TransactionSet::const_iterator transIt = transactions.begin();
+           transIt != transactions.end(); ++transIt) {
+         TransactionId trans = *transIt;
+         instOut << trans->getKey() << COMMA;
+       }
+       instOut << std::endl;
+     }
+
     const std::string PartialPlanWriter::getUpperBoundStr(IntervalDomain &dom) const {
-      std::stringstream stream;
-      if((int) dom.getUpperBound() == PLUS_INFINITY)
-	return PINFINITY;
-      else if((int) dom.getUpperBound() == MINUS_INFINITY)
-	return NINFINITY;
-      stream << (int) dom.getUpperBound();
-      return std::string(stream.str());
+      if(dom.isNumeric()) {
+        if((int) dom.getUpperBound() == PLUS_INFINITY)
+          return PINFINITY;
+        else if((int) dom.getUpperBound() == MINUS_INFINITY)
+          return NINFINITY;
+        else {
+          std::stringstream stream;
+          stream << (int) dom.getUpperBound();
+          return std::string(stream.str());
+        }
+      }
+      else if(LabelStr::isString((int)dom.getUpperBound())) {
+        LabelStr label((int)dom.getUpperBound());
+        return label.toString();
+      }
+      else {
+        return ObjectId(dom.getUpperBound())->getName().toString();
+      }
+      return std::string("");
     }
 
     const std::string PartialPlanWriter::getLowerBoundStr(IntervalDomain &dom) const {
-      std::stringstream stream;
-      if((int)dom.getLowerBound() == PLUS_INFINITY)
-	return PINFINITY;
-      else if((int) dom.getLowerBound() == MINUS_INFINITY)
-	return NINFINITY;
-      stream << (int) dom.getLowerBound();
-      return std::string(stream.str());
+      
+      if(dom.isNumeric()) {
+        if((int)dom.getLowerBound() == PLUS_INFINITY)
+          return PINFINITY;
+        else if((int) dom.getLowerBound() == MINUS_INFINITY)
+          return NINFINITY;
+        std::stringstream stream;
+        stream << (int) dom.getLowerBound();
+        return std::string(stream.str());
+      }
+      else if(LabelStr::isString((int)dom.getLowerBound())) {
+        LabelStr label((int)dom.getLowerBound());
+        return label.toString();
+      }
+      else {
+        return ObjectId(dom.getLowerBound())->getName().toString();
+      }
+      return std::string("");
     }
   
     const std::string PartialPlanWriter::getEnumerationStr(EnumeratedDomain &edom) const {
@@ -600,19 +730,21 @@ namespace Prototype {
 	dom.getValues(enumeration);
       }
       for(std::list<double>::iterator it = enumeration.begin(); it != enumeration.end(); ++it) {
-	if((int) (*it) == PLUS_INFINITY)
-	  stream << PINFINITY;
-	else if((int) (*it) == MINUS_INFINITY)
-	  stream << NINFINITY;
-	else {
-	  if(LabelStr::isString(*it)) {
-	    LabelStr label(*it);
-	    stream << label.toString() << " ";
-	  }
-	  else {
-	    stream << (int)(*it) << " ";
-	  }
-	}
+        if(dom.isNumeric()) {
+          if((int) (*it) == PLUS_INFINITY)
+            stream << PINFINITY;
+          else if((int) (*it) == MINUS_INFINITY)
+            stream << NINFINITY;
+          else
+            stream << (int)(*it) << " ";
+        }
+        else if(LabelStr::isString(*it)) {
+          LabelStr label(*it);
+          stream << label.toString() << " ";
+        }
+        else {
+          stream << ObjectId(*it)->getName().toString() << " ";
+        }
       }
       if(streamIsEmpty(stream)) {
 	return "bugStr";
@@ -621,6 +753,24 @@ namespace Prototype {
     }
   
     /****From PlanDatabaseListener****/
+
+    void PartialPlanWriter::notifyAdded(const ObjectId &objId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(OBJECT_CREATED, objId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               objId->getName().toString()));
+        numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifyRemoved(const ObjectId &objId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(OBJECT_DELETED, objId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               objId->getName().toString()));
+        numTransactions++;
+      }
+    }
 
     void PartialPlanWriter::notifyAdded(const TokenId &tokId) {
       if(stepsPerWrite) {
@@ -633,26 +783,110 @@ namespace Prototype {
 
     void PartialPlanWriter::notifyAdded(const ObjectId &objId, const TokenId &tokId) {
       if(stepsPerWrite) {
-	transactionList->push_back(Transaction(TOKEN_INSERTED, tokId->getKey(), UNKNOWN,
-					       transactionId++, seqId, nstep, 
-					       tokId->getPredicateName().toString()));
-	numTransactions++;
+ 	transactionList->push_back(Transaction(TOKEN_ADDED_TO_OBJECT, tokId->getKey(), UNKNOWN,
+ 					       transactionId++, seqId, nstep, 
+ 					       tokId->getPredicateName().toString()));
+ 	numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifyClosed(const TokenId &tokId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(TOKEN_CREATED, tokId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               tokId->getPredicateName().toString()));
+        numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifyActivated(const TokenId &tokId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(TOKEN_ACTIVATED, tokId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               tokId->getPredicateName().toString()));
+        numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifyDeactivated(const TokenId &tokId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(TOKEN_DEACTIVATED, tokId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               tokId->getPredicateName().toString()));
+        numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifyMerged(const TokenId &tokId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(TOKEN_MERGED, tokId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               tokId->getPredicateName().toString()));
+        numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifySplit(const TokenId &tokId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(TOKEN_SPLIT, tokId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               tokId->getPredicateName().toString()));
+        numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifyRejected(const TokenId &tokId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(TOKEN_REJECTED, tokId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               tokId->getPredicateName().toString()));
+        numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifyReinstated(const TokenId &tokId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(TOKEN_REINSTATED, tokId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               tokId->getPredicateName().toString()));
+        numTransactions++;
+      }
+    }
+
+
+    void PartialPlanWriter::notifyConstrained(const ObjectId &objId, const TokenId &tokId,
+                                              const TokenId &successor) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(TOKEN_INSERTED, tokId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               tokId->getPredicateName().toString()));
       }
     }
 
     void PartialPlanWriter::notifyRemoved(const TokenId &tokId) {
       if(stepsPerWrite) {
-	transactionList->push_back(Transaction(TOKEN_DELETED, tokId->getKey(), UNKNOWN, transactionId++,
-					       seqId, nstep, tokId->getPredicateName().toString()));
+	transactionList->push_back(Transaction(TOKEN_DELETED, tokId->getKey(), UNKNOWN, 
+                                               transactionId++, seqId, nstep, 
+                                               tokId->getPredicateName().toString()));
 	numTransactions++;
       }
     }
 
     void PartialPlanWriter::notifyRemoved(const ObjectId &objId, const TokenId &tokId) {
       if(stepsPerWrite) {
-	transactionList->push_back(Transaction(TOKEN_FREED, tokId->getKey(), UNKNOWN, transactionId++,
-					       seqId, nstep, tokId->getPredicateName().toString()));
+	transactionList->push_back(Transaction(TOKEN_REMOVED, tokId->getKey(), UNKNOWN, 
+                                               transactionId++, seqId, nstep, 
+                                               tokId->getPredicateName().toString()));
 	numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifyFreed(const ObjectId &objId, const TokenId &tokId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(TOKEN_FREED, tokId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               tokId->getPredicateName().toString()));
+        numTransactions++;
       }
     }
 
@@ -673,6 +907,15 @@ namespace Prototype {
 					       transactionId++, seqId, nstep, 
 					       constrId->getName().toString()));
 	numTransactions++;
+      }
+    }
+
+    void PartialPlanWriter::notifyExecuted(const ConstraintId &constrId) {
+      if(stepsPerWrite) {
+        transactionList->push_back(Transaction(CONSTRAINT_EXECUTED, constrId->getKey(), UNKNOWN,
+                                               transactionId++, seqId, nstep,
+                                               constrId->getName().toString()));
+        numTransactions++;
       }
     }
 
@@ -750,7 +993,7 @@ namespace Prototype {
   
     const std::string PartialPlanWriter::getVarInfo(const ConstrainedVariableId &varId) const {
       std::string type, paramName, predName, retval;
-      if(varId->getIndex() >= I_REJECT && varId->getIndex() <= I_END) {
+      if(varId->getIndex() >= I_STATE && varId->getIndex() <= I_END) {
 	type = tokenVarTypes[varId->getIndex()];
       }
       else {
@@ -759,6 +1002,9 @@ namespace Prototype {
       }
       if(TokenId::convertable(varId->getParent())) {
 	predName = ((TokenId &)varId->getParent())->getPredicateName().toString();
+      }
+      else if(ObjectId::convertable(varId->getParent())) {
+        predName = ((ObjectId &)varId->getParent())->getName().toString();
       }
       else {
 	predName = "UNKNOWN VARIABLE PARENT";

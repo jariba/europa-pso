@@ -7,8 +7,12 @@
 
 #include "../ConstraintEngine/ConstraintEngineListener.hh"
 #include "../ConstraintEngine/DomainListener.hh"
+#include "../ConstraintEngine/Id.hh"
 #include "../ConstraintEngine/VariableChangeListener.hh"
 #include "../PlanDatabase/PlanDatabaseListener.hh"
+#include "../Resource/Resource.hh"
+#include "../Resource/ResourceDefs.hh"
+#include "../Resource/Transaction.hh"
 
 namespace Prototype {
   namespace PlanWriter {
@@ -44,37 +48,50 @@ namespace Prototype {
       std::list<Transaction> *transactionList;
       std::ofstream *transOut, *statsOut;
       std::string dest;
-      void outputObject(const ObjectId &, const int, std::ofstream &);
-      void outputToken(const TokenId &, const int, const int, const int, const TimelineId *, 
+      void outputObject(const ObjectId &, const int, std::ofstream &, std::ofstream &);
+      void outputToken(const TokenId &, const int, const int, const int, const ObjectId &, 
                        std::ofstream &, std::ofstream &, std::ofstream &);
-      void outputEnumVar(const Id< TokenVariable<EnumeratedDomain> > &, const TokenId &,
+      void outputEnumVar(const Id< TokenVariable<EnumeratedDomain> > &, const int,
 			 const int, std::ofstream &);
-      void outputIntVar(const Id< TokenVariable<IntervalDomain> > &, const TokenId &,
+      void outputIntVar(const Id< TokenVariable<IntervalDomain> > &, const int,
                         const int, std::ofstream &);
-      void outputIntIntVar(const Id< TokenVariable<IntervalIntDomain> >&, const TokenId &,
+      void outputIntIntVar(const Id< TokenVariable<IntervalIntDomain> >&, const int,
 			   const int, std::ofstream &);
-      void outputObjVar(const Id< TokenVariable<ObjectSet> > &, const TokenId &, const int,
+      void outputObjVar(const Id< TokenVariable<ObjectSet> > &, const int, const int,
                         std::ofstream &);
-      void outputConstrVar(const ConstrainedVariableId &, const TokenId &, const int, 
+      void outputConstrVar(const ConstrainedVariableId &, const int, const int, 
 			   std::ofstream &);
       void outputConstraint(const ConstraintId &, std::ofstream &, std::ofstream &);
+      void outputInstant(const InstantId &, const int, std::ofstream &);
       const std::string getUpperBoundStr(IntervalDomain &dom) const;
       const std::string getLowerBoundStr(IntervalDomain &dom) const;
       const std::string getEnumerationStr(EnumeratedDomain &dom) const;
       const std::string getVarInfo(const ConstrainedVariableId &) const;
       const std::string getLongVarInfo(const ConstrainedVariableId &) const;
 
-
       /****From PlanDatabaseListener****/
     
+      void notifyAdded(const ObjectId &); //OBJECT_CREATED
+      void notifyRemoved(const ObjectId &); //OBJECT_DELETED
       void notifyAdded(const TokenId &); //TOKEN_CREATED
-      void notifyAdded(const ObjectId &, const TokenId &);  //TOKEN_INSERTED
+      void notifyAdded(const ObjectId &, const TokenId &);  //TOKEN_ADDED_TO_OBJECT
+      void notifyClosed(const TokenId &); //TOKEN_CLOSED
+      void notifyActivated(const TokenId &); //TOKEN_ACTIVATED
+      void notifyDeactivated(const TokenId &); //TOKEN_DEACTIVATED
+      void notifyMerged(const TokenId &); //TOKEN_MERGED
+      void notifySplit(const TokenId &); //TOKEN_SPLIT
+      void notifyRejected(const TokenId &); //TOKEN_REJECTED
+      void notifyReinstated(const TokenId &); //TOKEN_REINSTATED
       void notifyRemoved(const TokenId &); //TOKEN_DELETED
-      void notifyRemoved(const ObjectId &, const TokenId &); //TOKEN_FREED
-    
+      void notifyRemoved(const ObjectId &, const TokenId &); //TOKEN_REMOVED
+      void notifyConstrained(const ObjectId &, const TokenId &, const TokenId &); //TOKEN_INSERTED
+      void notifyFreed(const ObjectId &, const TokenId &); //TOKEN_FREED
+      
+
       /****From ConstraintEngineListener****/
       void notifyAdded(const ConstraintId &); //CONSTRAINT_CREATED
       void notifyRemoved(const ConstraintId &); //CONSTRAINT_DELETED
+      void notifyExecuted(const ConstraintId &); //CONSTRAINT_EXECUTED
       void notifyAdded(const ConstrainedVariableId &); //VARIABLE_CREATED
       void notifyRemoved(const ConstrainedVariableId &); //VARIABLE_DELETED
       void notifyChanged(const ConstrainedVariableId &, const DomainListener::ChangeType &);
