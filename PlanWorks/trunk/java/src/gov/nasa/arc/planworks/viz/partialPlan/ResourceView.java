@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.19 2004-09-14 22:59:39 taylor Exp $
+// $Id: ResourceView.java,v 1.20 2004-09-24 22:39:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -59,6 +59,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  * @version 0.0
  */
 public abstract class ResourceView extends PartialPlanView  {
+
+  private static Object staticObject = new Object();
 
   /**
    * constant <code>LEVEL_SCALE_FONT_SIZE</code>
@@ -464,31 +466,33 @@ public abstract class ResourceView extends PartialPlanView  {
     }  // end constructor
 
     public final void run() {
-      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
-      System.err.println( "Redrawing " + viewName + " ...");
-      if (startTimeMSecs == 0L) {
-        startTimeMSecs = System.currentTimeMillis();
+      synchronized( staticObject) {
+        handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+        System.err.println( "Redrawing " + viewName + " ...");
+        if (startTimeMSecs == 0L) {
+          startTimeMSecs = System.currentTimeMillis();
+        }
+        try {
+          ViewGenerics.setRedrawCursor( viewFrame);
+          boolean isRedraw = true, isScrollBarAdjustment = false;
+          renderResourceExtent();
+          int maxStepButtonY = addStepButtons( jGoExtentView);
+          // causes bottom view edge to creep off screen
+          //       if (! isStepButtonView) {
+          //         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
+          //       }
+          // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
+          // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
+          equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
+        } finally {
+          ViewGenerics.resetRedrawCursor( viewFrame);
+        }
+        long stopTimeMSecs = System.currentTimeMillis();
+        System.err.println( "   ... " + viewName + " elapsed time: " +
+                            (stopTimeMSecs - startTimeMSecs) + " msecs.");
+        startTimeMSecs = 0L;
+        handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
       }
-      try {
-        ViewGenerics.setRedrawCursor( viewFrame);
-        boolean isRedraw = true, isScrollBarAdjustment = false;
-        renderResourceExtent();
-        int maxStepButtonY = addStepButtons( jGoExtentView);
-        // causes bottom view edge to creep off screen
-        //       if (! isStepButtonView) {
-        //         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
-        //       }
-        // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
-        // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
-        equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
-      } finally {
-        ViewGenerics.resetRedrawCursor( viewFrame);
-      }
-      long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... " + viewName + " elapsed time: " +
-                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
-      startTimeMSecs = 0L;
-      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } // end run
 
   } // end class RedrawViewThread

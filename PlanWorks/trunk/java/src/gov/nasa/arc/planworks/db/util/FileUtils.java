@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.18 2004-09-21 21:37:50 taylor Exp $
+// $Id: FileUtils.java,v 1.19 2004-09-24 22:39:58 taylor Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -95,8 +95,7 @@ public abstract class FileUtils {
         // determine if child dirs are each sequence dirs
         List seqDirs  = new ArrayList();
         String [] fileNames = new File( firstSelectedPath).list();
-        String msg = null;
-        if(fileNames.length == 0) {
+        if ((fileNames == null) || fileNames.length == 0) {
           // No files or directories in directory -- will be caught by validateSequenceDirectory
           return ;
         }
@@ -136,10 +135,16 @@ public abstract class FileUtils {
    * @return - <code>String</code> - 
    */
   public static String validateSequenceDirectory(final String sequenceDirectory) {
+    String msg = null;
+    File seqDir = new File( sequenceDirectory);
+    if (! seqDir.exists()) {
+      msg = sequenceDirectory + "\n    Directory does not exist.";
+      System.err.println( msg);
+      return msg;
+    }
     // determine sequence's partial plan directories
     List partialPlanDirs = new ArrayList();
-    String [] fileNames = new File( sequenceDirectory).list();
-    String msg = null;
+    String [] fileNames = seqDir.list();
     if(fileNames.length == 0) {
       msg = sequenceDirectory + "\n    No files or directories in directory.";
       System.err.println( msg);

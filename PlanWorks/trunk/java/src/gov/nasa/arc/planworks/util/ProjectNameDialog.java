@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ProjectNameDialog.java,v 1.7 2004-09-10 01:33:58 taylor Exp $
+// $Id: ProjectNameDialog.java,v 1.8 2004-09-24 22:39:59 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -139,11 +139,12 @@ public class ProjectNameDialog extends JDialog {
         public final void actionPerformed( final ActionEvent e) {
           DirectoryChooser dirChooser =
             PlanWorks.getPlanWorks().createDirectoryChooser( new File( workingDir));
-          int returnVal = dirChooser.showDialog( PlanWorks.getPlanWorks(), "");
-          if (returnVal == JFileChooser.APPROVE_OPTION) {
-            String currentSelectedDir = dirChooser.getCurrentDirectory().getAbsolutePath();
-            workingDirField.setText( currentSelectedDir);
+
+          String currentSelectedDir = dirChooser.getValidSelectedDirectory();
+          if (currentSelectedDir == null) {
+            return;
           }
+          workingDirField.setText( currentSelectedDir);
         }
       });
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.61 2004-09-21 01:07:07 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.62 2004-09-24 22:40:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -85,9 +85,12 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class TemporalExtentView extends PartialPlanView  {
 
+  private static Object staticObject = new Object();
+
   protected static final int SHOW_INTERVALS = 0;
   protected static final int SHOW_EARLIEST = 1;
   protected static final int SHOW_LATEST = 2;
+
   private static final String SHOW_INTERVALS_LABEL = "Show Intervals";
   private static final String SHOW_EARLIEST_LABEL = "Show Earliest";
   private static final String SHOW_LATEST_LABEL = "Show Latest";
@@ -331,33 +334,35 @@ public class TemporalExtentView extends PartialPlanView  {
     }  // end constructor
 
     public void run() {
-      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
-      System.err.println( "Redrawing Temporal Extent View ...");
-      if (startTimeMSecs == 0L) {
-        startTimeMSecs = System.currentTimeMillis();
-      }
-      try {
-        ViewGenerics.setRedrawCursor( viewFrame);
-        // redraw jGoRulerView, in case zoomFactor changed
-        jGoRulerView.computeTimeScaleMetrics( TemporalExtentView.this.getZoomFactor(),
-                                              TemporalExtentView.this);
-        jGoRulerView.createTimeScale();
+      synchronized( staticObject) {
+        handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+        System.err.println( "Redrawing Temporal Extent View ...");
+        if (startTimeMSecs == 0L) {
+          startTimeMSecs = System.currentTimeMillis();
+        }
+        try {
+          ViewGenerics.setRedrawCursor( viewFrame);
+          // redraw jGoRulerView, in case zoomFactor changed
+          jGoRulerView.computeTimeScaleMetrics( TemporalExtentView.this.getZoomFactor(),
+                                                TemporalExtentView.this);
+          jGoRulerView.createTimeScale();
 
-        boolean isRedraw = true;
-        renderTemporalExtent( isRedraw);
-        addStepButtons( jGoExtentView);
-        // causes bottom view edge to creep off screen
-        //       if (! isStepButtonView) {
-        //         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
-        //       }
-      } finally {
-        ViewGenerics.resetRedrawCursor( viewFrame);
+          boolean isRedraw = true;
+          renderTemporalExtent( isRedraw);
+          addStepButtons( jGoExtentView);
+          // causes bottom view edge to creep off screen
+          //       if (! isStepButtonView) {
+          //         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
+          //       }
+        } finally {
+          ViewGenerics.resetRedrawCursor( viewFrame);
+        }
+        long stopTimeMSecs = System.currentTimeMillis();
+        System.err.println( "   ... " + ViewConstants.TEMPORAL_EXTENT_VIEW + " elapsed time: " +
+                            (stopTimeMSecs - startTimeMSecs) + " msecs.");
+        startTimeMSecs = 0L;
+        handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
       }
-      long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... " + ViewConstants.TEMPORAL_EXTENT_VIEW + " elapsed time: " +
-                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
-      startTimeMSecs = 0L;
-      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } //end run
 
   } // end class RedrawViewThread

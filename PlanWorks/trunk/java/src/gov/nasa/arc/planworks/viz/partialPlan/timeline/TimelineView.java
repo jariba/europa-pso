@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.68 2004-09-21 01:07:07 taylor Exp $
+// $Id: TimelineView.java,v 1.69 2004-09-24 22:40:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -78,6 +78,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  * @version 0.0
  */
 public class TimelineView extends PartialPlanView {
+
+  private static Object staticObject = new Object();
 
   private static final double LABEL_MIN_LEN_FIRST_SLOT_FACTOR = 1.25;
 
@@ -278,29 +280,31 @@ public class TimelineView extends PartialPlanView {
     }  // end constructor
 
     public void run() {
-      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
-      System.err.println( "Redrawing Timeline View ...");
-      if (startTimeMSecs == 0L) {
-        startTimeMSecs = System.currentTimeMillis();
-      }
-      try {
-        ViewGenerics.setRedrawCursor( viewFrame);
+      synchronized( staticObject) {
+        handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+        System.err.println( "Redrawing Timeline View ...");
+        if (startTimeMSecs == 0L) {
+          startTimeMSecs = System.currentTimeMillis();
+        }
+        try {
+          ViewGenerics.setRedrawCursor( viewFrame);
 
-        boolean isRedraw = true;
-        renderTimelineAndSlotNodes( isRedraw);
-        addStepButtons( jGoView);
-        // causes bottom view edge to creep off screen
-        //       if (! isStepButtonView) {
-        //         expandViewFrameForStepButtons( viewFrame, jGoView);
-        //       }
-      } finally {
-        ViewGenerics.resetRedrawCursor( viewFrame);
+          boolean isRedraw = true;
+          renderTimelineAndSlotNodes( isRedraw);
+          addStepButtons( jGoView);
+          // causes bottom view edge to creep off screen
+          //       if (! isStepButtonView) {
+          //         expandViewFrameForStepButtons( viewFrame, jGoView);
+          //       }
+        } finally {
+          ViewGenerics.resetRedrawCursor( viewFrame);
+        }
+        long stopTimeMSecs = System.currentTimeMillis();
+        System.err.println( "   ... " + ViewConstants.TIMELINE_VIEW + " elapsed time: " +
+                            (stopTimeMSecs - startTimeMSecs) + " msecs.");
+        startTimeMSecs = 0L;
+        handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
       }
-      long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... " + ViewConstants.TIMELINE_VIEW + " elapsed time: " +
-                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
-      startTimeMSecs = 0L;
-      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } //end run
 
   } // end class RedrawViewThread

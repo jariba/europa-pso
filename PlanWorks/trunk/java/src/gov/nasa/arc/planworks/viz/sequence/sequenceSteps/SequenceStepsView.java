@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.44 2004-09-21 01:07:08 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.45 2004-09-24 22:40:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -67,6 +67,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  * @version 0.0
  */
 public class SequenceStepsView extends SequenceView {
+
+  private static Object staticObject = new Object();
 
   /**
    * constant <code>DB_TOKENS</code>
@@ -326,56 +328,58 @@ public class SequenceStepsView extends SequenceView {
   } // end class RedrawViewThread
 
   private void redrawView() {
-    handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
-    System.err.println( "Redrawing Sequence Steps View ...");
-    if (startTimeMSecs == 0L) {
-      startTimeMSecs = System.currentTimeMillis();
-    }
-    try {
-      ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
+    synchronized( staticObject) {
+      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+      System.err.println( "Redrawing Sequence Steps View ...");
+      if (startTimeMSecs == 0L) {
+        startTimeMSecs = System.currentTimeMillis();
+      }
+      try {
+        ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
 
-      //document.deleteContents();
-      for (Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
-        document.removeObject( (JGoObject) it.next());
-      }
-      for(Iterator it = stepNumberList.listIterator(); it.hasNext();) {
-        document.removeObject((JGoObject) it.next());
-      }
-      statusIndicatorList.clear();
+        //document.deleteContents();
+        for (Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
+          document.removeObject( (JGoObject) it.next());
+        }
+        for(Iterator it = stepNumberList.listIterator(); it.hasNext();) {
+          document.removeObject((JGoObject) it.next());
+        }
+        statusIndicatorList.clear();
     
-      numOperations = planSequence.getPlanDBSizeList().size();
-      redrawPMThread =
-	createProgressMonitorThread( "Redrawing Sequence Steps View ...", 0, numOperations,
-			       Thread.currentThread(), this);
-      numOperations = 0;
-      if (! progressMonitorWait( redrawPMThread, this)) {
-        closeView( this);
-        return;
-      }
-      boolean isValid = renderHistogram( redrawPMThread);
-      if (! isValid) {
-       ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
-       closeView( this);
-       redrawPMThread.setProgressMonitorCancel();
-       return;
-      }
+        numOperations = planSequence.getPlanDBSizeList().size();
+        redrawPMThread =
+          createProgressMonitorThread( "Redrawing Sequence Steps View ...", 0, numOperations,
+                                       Thread.currentThread(), this);
+        numOperations = 0;
+        if (! progressMonitorWait( redrawPMThread, this)) {
+          closeView( this);
+          return;
+        }
+        boolean isValid = renderHistogram( redrawPMThread);
+        if (! isValid) {
+          ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+          closeView( this);
+          redrawPMThread.setProgressMonitorCancel();
+          return;
+        }
 
-      // PlannerController creates a view with small number of steps -- do not squish it
-      if (planSequence.getPlanDBSizeList().size() > MIN_NUM_STEPS_TO_CALL_EXPAND_FRAME) {
-        expandViewFrame( viewFrame,
-                         (int) jGoView.getDocumentSize().getWidth(),
-                         (int) jGoView.getDocumentSize().getHeight());
-      }
+        // PlannerController creates a view with small number of steps -- do not squish it
+        if (planSequence.getPlanDBSizeList().size() > MIN_NUM_STEPS_TO_CALL_EXPAND_FRAME) {
+          expandViewFrame( viewFrame,
+                           (int) jGoView.getDocumentSize().getWidth(),
+                           (int) jGoView.getDocumentSize().getHeight());
+        }
 
-    } finally {
-      ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+      } finally {
+        ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+      }
+      long stopTimeMSecs = System.currentTimeMillis();
+      System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
+                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
+      startTimeMSecs = 0L;
+      redrawPMThread.setProgressMonitorCancel();
+      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     }
-    long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    startTimeMSecs = 0L;
-    redrawPMThread.setProgressMonitorCancel();
-    handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
   } // end redrawView
 
 

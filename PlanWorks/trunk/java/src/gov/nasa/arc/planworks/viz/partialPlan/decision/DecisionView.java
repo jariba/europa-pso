@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.15 2004-09-21 01:07:06 taylor Exp $
+// $Id: DecisionView.java,v 1.16 2004-09-24 22:40:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -98,6 +98,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
  * @version 0.0
  */
 public class DecisionView extends PartialPlanView {
+
+  private static Object staticObject = new Object();
 
   private static final int ROW_SEPARATOR_HEIGHT = 6;
 
@@ -341,6 +343,7 @@ public class DecisionView extends PartialPlanView {
 //     }  // end constructor
 
 //     public void run() {
+//      synchronized( staticObject) {
 //       handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
 //       System.err.println( "Redrawing Decision View ...");
 //       if (startTimeMSecs == 0L) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.73 2004-09-21 21:37:51 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.74 2004-09-24 22:40:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -82,6 +82,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  * @version 0.0
  */
 public class TokenNetworkView extends PartialPlanView implements FindEntityPathAdapter {
+
+  private static Object staticObject = new Object();
 
   /**
    * variable <code>timelineColorMap</code>
@@ -426,62 +428,64 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 
 
   private void redrawView( boolean isContentSpecRedraw) {
-    handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
-     System.err.println( "Redrawing Token Network View ...");
-    if (startTimeMSecs == 0L) {
-      startTimeMSecs = System.currentTimeMillis();
-    }
-    this.setVisible( false);
-    validTokenIds = viewSet.getValidIds();
-    displayedTokenIds = new ArrayList();
+    synchronized( staticObject) {
+      handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+      System.err.println( "Redrawing Token Network View ...");
+      if (startTimeMSecs == 0L) {
+        startTimeMSecs = System.currentTimeMillis();
+      }
+      this.setVisible( false);
+      validTokenIds = viewSet.getValidIds();
+      displayedTokenIds = new ArrayList();
 
-    redrawPMThread = 
-      createProgressMonitorThread( "Redrawing Token Network View ...", 0, 6,
-                                   Thread.currentThread(), this);
-    if (! progressMonitorWait( redrawPMThread, this)) {
-      System.err.println( "progressMonitorWait failed");
-      closeView( this);
-      return;
-    }
-    redrawPMThread.getProgressMonitor().setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
-    // content spec apply/reset do not change layout, only TokenNode/
-    // variableNode/constraintNode opening/closing
+      redrawPMThread = 
+        createProgressMonitorThread( "Redrawing Token Network View ...", 0, 6,
+                                     Thread.currentThread(), this);
+      if (! progressMonitorWait( redrawPMThread, this)) {
+        System.err.println( "progressMonitorWait failed");
+        closeView( this);
+        return;
+      }
+      redrawPMThread.getProgressMonitor().setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      // content spec apply/reset do not change layout, only TokenNode/
+      // variableNode/constraintNode opening/closing
 
-    setNodesLinksVisible();
+      setNodesLinksVisible();
 
-    if (isContentSpecRedraw || ((! isContentSpecRedraw) && isLayoutNeeded)) {
-      TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
-      layout.performLayout();
+      if (isContentSpecRedraw || ((! isContentSpecRedraw) && isLayoutNeeded)) {
+        TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
+        layout.performLayout();
 
-      isLayoutNeeded = false;
-    }
-    removeStepButtons( jGoView);
-    addStepButtons( jGoView);
+        isLayoutNeeded = false;
+      }
+      removeStepButtons( jGoView);
+      addStepButtons( jGoView);
 
-//     System.err.println( "redrawView: focusNode " + focusNode + " highlightPathNodesList " +
-//                         highlightPathNodesList);
-    if ((focusNode == null) && (highlightPathNodesList != null) &&
-        (highlightPathLinksList != null)) {
-      NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
-      NodeGenerics.highlightPathLinks( highlightPathLinksList, this, jGoView);
-    } else if (focusNode != null) {
-      // do not highlight node, if it has been removed
-      NodeGenerics.focusViewOnNode( focusNode, ((IncrementalNode) focusNode).inLayout(),
-				    jGoView);
-    } else {
-      JGoObject node = null; boolean isHighlightNode = false;
-      NodeGenerics.focusViewOnNode( node, isHighlightNode, jGoView);
-    }
-    long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... " + ViewConstants.TOKEN_NETWORK_VIEW + " elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    startTimeMSecs = 0L;
-    this.setVisible( true);
-    redrawPMThread.setProgressMonitorCancel();
-    // since this view is incremental, do not check that all tokens are displayed
-    // boolean showDialog = true;
-    // isContentSpecRendered( ViewConstants.TOKEN_NETWORK_VIEW, showDialog);
+//       System.err.println( "redrawView: focusNode " + focusNode +
+//                           " highlightPathNodesList " + highlightPathNodesList);
+      if ((focusNode == null) && (highlightPathNodesList != null) &&
+          (highlightPathLinksList != null)) {
+        NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
+        NodeGenerics.highlightPathLinks( highlightPathLinksList, this, jGoView);
+      } else if (focusNode != null) {
+        // do not highlight node, if it has been removed
+        NodeGenerics.focusViewOnNode( focusNode, ((IncrementalNode) focusNode).inLayout(),
+                                      jGoView);
+      } else {
+        JGoObject node = null; boolean isHighlightNode = false;
+        NodeGenerics.focusViewOnNode( node, isHighlightNode, jGoView);
+      }
+      long stopTimeMSecs = System.currentTimeMillis();
+      System.err.println( "   ... " + ViewConstants.TOKEN_NETWORK_VIEW + " elapsed time: " +
+                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
+      startTimeMSecs = 0L;
+      this.setVisible( true);
+      redrawPMThread.setProgressMonitorCancel();
+      // since this view is incremental, do not check that all tokens are displayed
+      // boolean showDialog = true;
+      // isContentSpecRendered( ViewConstants.TOKEN_NETWORK_VIEW, showDialog);
       handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
+    }
   } // end redrawView
 
   /**

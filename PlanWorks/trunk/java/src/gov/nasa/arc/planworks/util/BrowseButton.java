@@ -1,3 +1,11 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: BrowseButton.java,v 1.5 2004-09-24 22:39:58 taylor Exp $
+//
 package gov.nasa.arc.planworks.util;
 
 import java.awt.event.ActionEvent;
@@ -42,24 +50,13 @@ public class BrowseButton extends JButton {
       this.chooserTitle = chooserTitle;
     }
     public void actionPerformed(ActionEvent e) {
-      DirectoryChooser chooser = new DirectoryChooser();
-      chooser.setDialogTitle( chooserTitle);
-      chooser.setMultiSelectionEnabled(multiSelect);
+      DirectoryChooser chooser = new DirectoryChooser( chooserTitle, multiSelect);
       chooser.setFileSelectionMode(chooserMode);
-      chooser.getOkButton().addActionListener(new ChooseButtonListener(chooser, button));
-      chooser.showOpenDialog(PlanWorks.getPlanWorks());
-    }
-  }
-  class ChooseButtonListener implements ActionListener {
-    private DirectoryChooser chooser;
-    private BrowseButton button;
-    public ChooseButtonListener(final DirectoryChooser chooser, final BrowseButton button) {
-      this.chooser = chooser;
-      this.button = button;
-    }
-    public void actionPerformed(ActionEvent e) {
-      chooser.approveSelection();
-      button.dest.setText(chooser.getSelectedFile().getAbsolutePath());
+      int returnVal = chooser.showOpenDialog(PlanWorks.getPlanWorks());
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+        chooser.approveSelection();
+        button.dest.setText(chooser.getSelectedFile().getAbsolutePath());
+      }
     }
   }
 }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.114 2004-09-10 20:02:31 taylor Exp $
+// $Id: PlanWorks.java,v 1.115 2004-09-24 22:39:58 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -825,69 +825,26 @@ public class PlanWorks extends MDIDesktopFrame {
    * @return - <code>DirectoryChooser</code> - 
    */
   public final DirectoryChooser createSequenceDirChooser( File currentDirectory) {
-    final DirectoryChooser sequenceDirChooser = new DirectoryChooser( currentDirectory);
-    sequenceDirChooser.setDialogTitle( "Select Planning Sequence Directory(ies)");
-    sequenceDirChooser.setMultiSelectionEnabled( true);
-    sequenceDirChooser.getOkButton().addActionListener( new ActionListener() {
-        public final void actionPerformed( final ActionEvent e) {
-          String dirChoice = sequenceDirChooser.getCurrentDirectory().getAbsolutePath();
-          File [] seqDirs = sequenceDirChooser.getSelectedFiles();
-//           System.err.println( "PlanWorks sequence parent directory" + dirChoice);
-//           System.err.println( "sequenceDirectories");
-//           for (int i = 0, n = seqDirs.length; i < n; i++) {
-//             System.err.println( "i " + i + " " + seqDirs[i].getName());
-//           }
-          if ((dirChoice != null) && (dirChoice.length() > 0) &&
-              (new File( dirChoice)).isDirectory() &&
-              (seqDirs.length != 0)) {
-            sequenceDirChooser.approveSelection();
-          } else {
-            String seqDir = "<null>";
-            if (seqDirs.length != 0) {
-              seqDir = seqDirs[0].getName();
-            }
-            JOptionPane.showMessageDialog
-              ( PlanWorks.this, "`" + dirChoice +
-                System.getProperty( "file.separator") +  seqDir +
-                "'\nis not a valid sequence directory.",
-                "No Directory Selected", JOptionPane.ERROR_MESSAGE);
-          }
-        }
-      });
+    boolean isMultiSelectionEnabled = true;
+    final DirectoryChooser sequenceDirChooser =
+      new DirectoryChooser( "Select Planning Sequence Directory(ies)",
+                            isMultiSelectionEnabled, currentDirectory);
     sequenceDirChooser.setFileFilter( new SequenceDirectoryFilter());
-    return sequenceDirChooser;
+    sequenceDirChooser.setApproveButtonToolTipText( "Accept selected directory(ies)");
+    return sequenceDirChooser; 
   } // end createSequenceDirChooser
 
+  /**
+   * <code>createDirectoryChooser</code>
+   *
+   * @param currentDirectory - <code>File</code> - 
+   * @return - <code>DirectoryChooser</code> - 
+   */
   public final DirectoryChooser createDirectoryChooser( File currentDirectory) {
-    final DirectoryChooser dirChooser = new DirectoryChooser( currentDirectory);
-    dirChooser.setDialogTitle( "Select Directory");
-    dirChooser.setMultiSelectionEnabled( false);
-    dirChooser.getOkButton().addActionListener( new ActionListener() {
-        public final void actionPerformed( final ActionEvent e) {
-          String dirChoice = dirChooser.getCurrentDirectory().getAbsolutePath();
-          File [] childDirs = dirChooser.getSelectedFiles();
-          // System.err.println( "createDirectoryChooser parent directory" + dirChoice);
-          // System.err.println( "childDirectories");
-          for (int i = 0, n = childDirs.length; i < n; i++) {
-            System.err.println( "i " + i + " " + childDirs[i].getName());
-          }
-          if ((dirChoice != null) && (dirChoice.length() > 0) &&
-              (new File( dirChoice)).isDirectory() &&
-              (childDirs.length == 0)) {
-            dirChooser.approveSelection();
-          } else {
-            String childDir = "<null>";
-            if (childDirs.length != 0) {
-              childDir = childDirs[0].getName();
-            }
-            JOptionPane.showMessageDialog
-              ( PlanWorks.this, "`" + dirChoice +
-                System.getProperty( "file.separator") +  childDir +
-                "'\nis not a valid directory.",
-                "No Directory Selected", JOptionPane.ERROR_MESSAGE);
-          }
-        }
-      });
+    boolean isMultiSelectionEnabled = false;
+    final DirectoryChooser dirChooser =
+      new DirectoryChooser( "Select Directory", isMultiSelectionEnabled, currentDirectory);
+    dirChooser.setApproveButtonToolTipText( "Accept selected directory");
     return dirChooser;
   } // end createDirectoryChooser
 
@@ -914,15 +871,16 @@ public class PlanWorks extends MDIDesktopFrame {
         } else {
           String [] allFileNames = file.list();
           String [] ppFileNames = file.list( new PwSQLFilenameFilter());
-					if(allFileNames == null || ppFileNames == null)
-						return false;
+          if(allFileNames == null || ppFileNames == null)
+            return false;
           if ((ppFileNames.length == DbConstants.NUMBER_OF_PP_FILES) ||
               (ppFileNames.length == allFileNames.length)) {
             isValid = false;
           }
         }
       }
-      // System.err.println( "accept " + file.getName() + " isValid " + isValid); 
+//       System.err.println( "SequenceDirectoryFilter accept " + file.getName() +
+//                           " isValid " + isValid); 
       return isValid;
     } // end accept
 
@@ -950,7 +908,7 @@ public class PlanWorks extends MDIDesktopFrame {
       selectedSequenceUrls = new ArrayList(); invalidSequenceUrls = new ArrayList();
       // ask user for a single or multiple sequence directory(ies) of partialPlans
       DirectoryChooser dirChooser = createSequenceDirChooser( workingDirectory);
-      int returnVal = dirChooser.showDialog( PlanWorks.planWorks, "");
+      int returnVal = dirChooser.showDialog( PlanWorks.planWorks, "OK");
       if (returnVal == JFileChooser.APPROVE_OPTION) {
         FileUtils.validateMultiSequenceDirectory( dirChooser);
         String currentSelectedDir = dirChooser.getCurrentDirectory().getAbsolutePath();
