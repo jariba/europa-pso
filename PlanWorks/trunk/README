@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.93 2004-06-03 17:33:34 taylor Exp $
+# $Id: README,v 1.94 2004-06-04 23:08:59 taylor Exp $
 #
 
 SUMMARY
@@ -41,6 +41,13 @@ o The Decision View has been added which lists the current plan decision and pen
 
 o Previously, the DB Transaction View was not "steppable".  It now is, as are all the
   other partial plan views.
+
+o The PlanWorks "Window" pull-down menu of all active windows is now ordered thusly:
+  - menu separators divide different plan sequence window groups;
+  - within each plan sequence group, the ordering is SequenceQueryView, SequenceStepsView,
+    and any QueryResults windows;
+  - then a cascading sort by step number, and by view name of all partial plan views,
+    including the NavigatorView.
 
 o  GNATS PRs and CRs completed:
    #2332: Need resizable column width in DB transaction view.

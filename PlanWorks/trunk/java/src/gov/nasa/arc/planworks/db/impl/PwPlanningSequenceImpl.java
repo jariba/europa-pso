@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.86 2004-06-02 19:10:37 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.87 2004-06-04 23:09:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -508,6 +508,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
 
   public Integer getCurrentDecisionIdForStep(final int stepNum) throws ResourceNotFoundException {
     loadPartialPlanFiles("step" + stepNum);
+    loadTransactionFile();
     return MySQLDB.queryCurrentDecisionIdForStep(MySQLDB.getPartialPlanIdByStepNum(id, stepNum));
   }
 
