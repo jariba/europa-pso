@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.16 2004-08-14 01:39:15 taylor Exp $
+// $Id: DBTransactionView.java,v 1.17 2004-08-21 00:31:55 taylor Exp $
 //
 // PlanWorks
 //
@@ -188,7 +188,7 @@ public class DBTransactionView extends PartialPlanView {
 
     int numOperations = 6;
     progressMonThread = 
-      progressMonitorThread( "Rendering DB Transaction View:", 0, numOperations,
+      createProgressMonitorThread( "Rendering DB Transaction View:", 0, numOperations,
 			     Thread.currentThread(), this);
     if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);

@@ -8,7 +8,7 @@
 // modified by Will Taylor starting 26july04
 // monitoredThread passed in and stopped when cancel is received
 
-// $Id: PWProgressMonitor.java,v 1.6 2004-08-14 01:39:20 taylor Exp $
+// $Id: PWProgressMonitor.java,v 1.7 2004-08-21 00:32:00 taylor Exp $
 
 
 package gov.nasa.arc.planworks.viz.util;
@@ -37,6 +37,7 @@ import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
+import gov.nasa.arc.planworks.viz.util.FindEntityPath;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
 /** A class to monitor the progress of some operation. If it looks
@@ -88,7 +89,7 @@ public class PWProgressMonitor extends Object
   private Thread monitoredThread;
   private JPanel view;
   private Thread thisThread;
-
+  private FindEntityPath findEntityPath;
 
     /**
      * Constructs a graphic object that shows progress, typically by filling
@@ -120,7 +121,8 @@ public class PWProgressMonitor extends Object
                            int max,
                              Thread monitoredThread,
                              JPanel view) {
-        this(parentComponent, message, note, min, max, null, monitoredThread, view, null);
+        this(parentComponent, message, note, min, max, null, monitoredThread, view,
+             null, null);
     }
 
     public PWProgressMonitor(Component parentComponent,
@@ -131,9 +133,22 @@ public class PWProgressMonitor extends Object
                              Thread monitoredThread,
                              JPanel view,
 			     Thread thisThread) {
-        this(parentComponent, message, note, min, max, null, monitoredThread, view, thisThread);
+        this(parentComponent, message, note, min, max, null, monitoredThread, view,
+             thisThread, null);
     }
 
+    public PWProgressMonitor(Component parentComponent,
+                           Object message,
+                           String note,
+                           int min,
+                           int max,
+                             Thread monitoredThread,
+                             JPanel view,
+			     Thread thisThread,
+                             FindEntityPath findEntityPath) {
+        this(parentComponent, message, note, min, max, null, monitoredThread, view,
+             thisThread, findEntityPath);
+    }
 
     private PWProgressMonitor(Component parentComponent,
                             Object message,
@@ -143,13 +158,15 @@ public class PWProgressMonitor extends Object
                             ProgressMonitor group,
                               Thread monitoredThread,
                               JPanel view,
-			      Thread thisThread) {
+			      Thread thisThread,
+                              FindEntityPath findEntityPath) {
         this.min = min;
         this.max = max;
         this.parentComponent = parentComponent;
         this.monitoredThread = monitoredThread;
         this.view = view;
 	this.thisThread = thisThread;
+        this.findEntityPath = findEntityPath;
 
         cancelOption = new Object[1];
         cancelOption[0] = UIManager.getString("OptionPane.cancelButtonText");
@@ -235,11 +252,10 @@ public class PWProgressMonitor extends Object
 			      (ConstraintNetworkView.FindVariablePath) view;
 			    findVarPath.setVarConstrKeyList( new ArrayList());
 			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
-			  } else if (view instanceof NavigatorView.FindEntityPath) {
-			    System.err.println( "FindEntityPath'");
-			    NavigatorView.FindEntityPath findTokenPath =
-			      (NavigatorView.FindEntityPath) view;
-			    findTokenPath.setEntityKeyList( new ArrayList());
+			  } else if ((view instanceof NavigatorView) &&
+                                     (findEntityPath != null)) {
+			    System.err.println( "FindEntityPath' (NavigatorView)");
+			    findEntityPath.setEntityKeyList( new ArrayList());
 			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
 			  } else if (view instanceof TokenNetworkView.FindTokenPath) {
 			    System.err.println( "FindTokenPath'");

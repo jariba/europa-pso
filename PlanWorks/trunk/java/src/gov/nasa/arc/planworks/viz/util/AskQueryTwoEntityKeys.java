@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskQueryTwoEntityKeys.java,v 1.3 2004-08-14 01:39:20 taylor Exp $
+// $Id: AskQueryTwoEntityKeys.java,v 1.4 2004-08-21 00:31:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,8 +13,6 @@
 
 package gov.nasa.arc.planworks.viz.util;
 
-import java.util.Iterator;
-import java.util.List;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -30,7 +28,6 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.VizView;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 
 
 /**
@@ -170,7 +167,7 @@ public class AskQueryTwoEntityKeys extends JDialog {
                    "Invalid value for key", JOptionPane.ERROR_MESSAGE);
                 entityKey1 = null;
               }
-	      try {
+              try {
                 entityKey2 = new Integer( Integer.parseInt( typedText2));
               } catch ( NumberFormatException except) {
                 // text was invalid

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.57 2004-08-16 22:01:00 taylor Exp $
+# $Id: GETTING_STARTED,v 1.58 2004-08-21 00:31:49 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -138,12 +138,14 @@ Then the node becomes "closed" and has an unbold border.  The active node
 view after layout, and highlighted by a bright green rectangle.
 
 The view background Mouse-Right pop-up offers, in addition to the "standard" selections,
-"Find Variable Path" and "Highlight Current Path".  "Find Variable Path" requests 
-two variable keys and finds a path through variables and constraints which connects
-them.  This node path is saved.  Selected nodes are dragged as a group, which may
-be inconvenient.  To deal with this, click Mouse-Left in the background to discard
-the selections, drag the nodes to new locations, and then on the background select
-Mouse-Right: "Highlight Current Path".
+"Find Entity Path" and "Highlight Current Path".  "Find Entity Path" requests 
+two entity keys, class node types to search, and an optional maximum 
+path length.  "Find Path" finds a path through the classes specified, rendering
+the selected nodes and highlighting them.  This dialog also offers "Does Path Exist"
+which determines whether a path exists, without finding the nodes.  Selected nodes 
+are dragged as a group, which may be inconvenient.  To deal with this, click
+Mouse-Left in the background to discard the selections, drag the nodes to new 
+locations, and then on the background select Mouse-Right: "Highlight Current Path".
 
 Mouse cursor over all variable container nodes, except for interval tokens and
 resource transactions, displays the node name, and Mouse-L: open" on the second 
@@ -280,12 +282,14 @@ view can be imncrementally increased or decreased by clicking on the appropriate
 nodes (see below).
 
 The view background Mouse-Right pop-up offers, in addition to the "standard"
-selections, "Find Token Path", and "Highlight Current Path".  "Find Token Path" 
-requests two token keys and finds a path through tokens and rule instances which 
-connects them.  This node path is saved.  Selected nodes are dragged as a group, 
-which may be inconvenient.  To deal with this, click Mouse-Left in the background 
-to discard the selections, drag the nodes to new locations, and then on the background 
-select Mouse-Right: "Highlight Current Path".
+selections, "Find Entity Path", and "Highlight Current Path".  "Find Entity Path" 
+requests two entity keys, class node types to search, and an optional maximum 
+path length.  "Find Path" finds a path through the classes specified, rendering
+the selected nodes and highlighting them.  This dialog also offers "Does Path Exist"
+which determines whether a path exists, without finding the nodes.  Selected nodes 
+are dragged as a group, which may be inconvenient.  To deal with this, click
+Mouse-Left in the background to discard the selections, drag the nodes to new 
+locations, and then on the background select Mouse-Right: "Highlight Current Path".
 
 Mouse cursor over token nodes displays "predicateName( parameterValues)", and 
 the second line, if appropriate, shows "Mouse-L: {open | close}".  "Open" will
@@ -354,12 +358,13 @@ In addition to the "standard" selections, the Navigator View has three
 background Mouse-Right selection options: "Find by Key", "Find Entity Path",
 and "Highlight Current Path".  "Find by Key" requests a single entity key and 
 finds that node, opening it and its neighbors, if necessary.  "Find Entity Path" 
-requests two entity keys and finds a path through tokens, variables, constraints, 
-rule instances, slots, objects, resources, and timelines.  This node path is saved.  
-Selected nodes are dragged as a group, which may be inconvenient.  To deal with 
-this, click Mouse-Left in the background to discard the selections, drag the
-nodes to new locations, and then on the background select Mouse-Right: 
-"Highlight Current Path".
+requests two entity keys, class node types to search, and an optional maximum 
+path length.  "Find Path" finds a path through the classes specified, rendering
+the selected nodes and highlighting them.  This dialog also offers "Does Path Exist"
+which determines whether a path exists, without finding the nodes.  Selected nodes 
+are dragged as a group, which may be inconvenient.  To deal with this, click
+Mouse-Left in the background to discard the selections, drag the nodes to new 
+locations, and then on the background select Mouse-Right: "Highlight Current Path".
 
 
 Content Filtering

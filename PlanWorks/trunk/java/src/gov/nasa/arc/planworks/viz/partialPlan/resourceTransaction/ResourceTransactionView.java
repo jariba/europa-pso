@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.24 2004-08-14 01:39:18 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.25 2004-08-21 00:31:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -285,7 +285,7 @@ public class ResourceTransactionView extends ResourceView  {
     currentYLoc = 0;
     List resourceList = partialPlan.getResourceList(); //createDummyData( isNamesOnly);
     progressMonThread =
-      progressMonitorThread( "Rendering Resource Transaction View ...", 0, resourceList.size(),
+      createProgressMonitorThread( "Rendering Resource Transaction View ...", 0, resourceList.size(),
 			     Thread.currentThread(), this);
     if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);

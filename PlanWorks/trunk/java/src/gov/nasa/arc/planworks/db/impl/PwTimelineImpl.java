@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.24 2004-08-14 01:39:11 taylor Exp $
+// $Id: PwTimelineImpl.java,v 1.25 2004-08-21 00:31:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -184,11 +184,11 @@ public class PwTimelineImpl extends PwObjectImpl implements PwTimeline {
     List retval = new LinkedList();
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
-      if(cclass.equals(PwSlot.class)) {
+      if(PwSlot.class.isAssignableFrom( cclass)) {
         retval.addAll(getSlotList());
-      } else if(cclass.equals(PwVariable.class)) {
+      } else if(PwVariable.class.isAssignableFrom( cclass)) {
         retval.addAll(((PwVariableContainer) this).getVariables());
-      } else if(cclass.equals(PwTimeline.class)) {
+      } else if(PwTimeline.class.isAssignableFrom( cclass)) {
 	if (getParent() != null) {
 	  retval.add(getParent());
 	}

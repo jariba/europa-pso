@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.37 2004-08-14 01:39:13 taylor Exp $
+// $Id: VizView.java,v 1.38 2004-08-21 00:31:54 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -52,6 +52,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
+import gov.nasa.arc.planworks.viz.util.FindEntityPath;
 import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -549,7 +550,7 @@ public class VizView extends JPanel {
   }
 
   /**
-   * <code>progressMonitorThread</code>
+   * <code>createProgressMonitorThread</code>
    *
    * @param title - <code>String</code> - 
    * @param minValue - <code>int</code> - 
@@ -558,11 +559,35 @@ public class VizView extends JPanel {
    * @param view - <code>JPanel</code> - 
    * @return - <code>ProgressMonitorThread</code> - 
    */
-  protected ProgressMonitorThread  progressMonitorThread( String title, int minValue,
-							  int maxValue, Thread monitoredThread,
-							  JPanel view) {
+  protected ProgressMonitorThread  createProgressMonitorThread( String title, int minValue,
+                                                                int maxValue,
+                                                                Thread monitoredThread,
+                                                                JPanel view) {
     ProgressMonitorThread thread =
       new ProgressMonitorThread( title, minValue, maxValue, monitoredThread, view);
+    thread.setPriority(Thread.MAX_PRIORITY);
+    thread.start();
+    return thread;
+  }
+
+  /**
+   * <code>createProgressMonitorThread</code>
+   *
+   * @param title - <code>String</code> - 
+   * @param minValue - <code>int</code> - 
+   * @param maxValue - <code>int</code> - 
+   * @param monitoredThread - <code>Thread</code> - 
+   * @param view - <code>JPanel</code> - 
+   * @param findEntityPath - <code>FindEntityPath</code> - 
+   * @return - <code>ProgressMonitorThread</code> - 
+   */
+  public ProgressMonitorThread  createProgressMonitorThread( String title, int minValue,
+                                                             int maxValue, Thread monitoredThread,
+                                                             JPanel view,
+                                                             FindEntityPath findEntityPath) {
+    ProgressMonitorThread thread =
+      new ProgressMonitorThread( title, minValue, maxValue, monitoredThread,
+                                 view, findEntityPath);
     thread.setPriority(Thread.MAX_PRIORITY);
     thread.start();
     return thread;
@@ -574,7 +599,7 @@ public class VizView extends JPanel {
    * @param vizView - <code>VizView</code> - 
    * @return - <code>boolean</code> - 
    */
-  protected boolean progressMonitorWait( ProgressMonitorThread pmThread, VizView vizView) {
+  public boolean progressMonitorWait( ProgressMonitorThread pmThread, VizView vizView) {
     int maxCycles = ViewConstants.WAIT_NUM_CYCLES;
     int numCycles = maxCycles;
     while ((pmThread.getProgressMonitor() == null) && numCycles != 0) {

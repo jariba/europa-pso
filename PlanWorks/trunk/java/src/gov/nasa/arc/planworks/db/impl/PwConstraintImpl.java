@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.15 2004-08-14 01:39:09 taylor Exp $
+// $Id: PwConstraintImpl.java,v 1.16 2004-08-21 00:31:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -158,7 +158,7 @@ public class PwConstraintImpl implements PwConstraint {
   public List getNeighbors(List classes) {
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
-      if(cclass.equals(PwVariable.class)) {
+      if(PwVariable.class.isAssignableFrom( cclass)) {
         return getVariablesList();
       }
     }

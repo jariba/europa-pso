@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.57 2004-08-14 01:39:18 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.58 2004-08-21 00:31:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -375,7 +375,7 @@ public class TemporalExtentView extends PartialPlanView  {
       title = "Redrawing";
     }
     progressMonThread = 
-      progressMonitorThread( title + " Temporal Extent View:", 0, numOperations,
+      createProgressMonitorThread( title + " Temporal Extent View:", 0, numOperations,
 			     Thread.currentThread(), this);
     if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);

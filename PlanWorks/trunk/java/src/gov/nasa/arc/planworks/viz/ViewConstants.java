@@ -20,6 +20,15 @@ import java.util.List;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoText;
 
+import gov.nasa.arc.planworks.db.PwConstraint;
+import gov.nasa.arc.planworks.db.PwObject;
+import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.db.PwResourceTransaction;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
+import gov.nasa.arc.planworks.db.PwSlot;
+import gov.nasa.arc.planworks.db.PwTimeline;
+import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 
 
@@ -351,6 +360,37 @@ public abstract class ViewConstants {
   public static final int WAIT_INTERVAL = 50; //in milliseconds
 
   public static final int MONITOR_MIN_MAX_SCALING = 100;
+
+  public static List CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES = null;
+  public static List NAVIGATOR_VIEW_ENTITY_CLASSES = null;
+  public static List TOKEN_NETWORK_VIEW_ENTITY_CLASSES = null;
+
+  static {
+    CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES = new ArrayList();
+    CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES.add( PwConstraint.class);
+    CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES.add( PwObject.class);
+    CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES.add( PwResource.class);
+    CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES.add( PwResourceTransaction.class);
+    CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES.add( PwRuleInstance.class);
+    CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES.add( PwTimeline.class);
+    CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES.add( PwToken.class);
+    CONSTRAINT_NETWORK_VIEW_ENTITY_CLASSES.add( PwVariable.class);
+
+    NAVIGATOR_VIEW_ENTITY_CLASSES = new ArrayList();
+    NAVIGATOR_VIEW_ENTITY_CLASSES.add( PwConstraint.class);
+    NAVIGATOR_VIEW_ENTITY_CLASSES.add( PwObject.class);
+    NAVIGATOR_VIEW_ENTITY_CLASSES.add( PwResource.class);
+    NAVIGATOR_VIEW_ENTITY_CLASSES.add( PwResourceTransaction.class);
+    NAVIGATOR_VIEW_ENTITY_CLASSES.add( PwRuleInstance.class);
+    NAVIGATOR_VIEW_ENTITY_CLASSES.add( PwSlot.class);
+    NAVIGATOR_VIEW_ENTITY_CLASSES.add( PwTimeline.class);
+    NAVIGATOR_VIEW_ENTITY_CLASSES.add( PwToken.class);
+    NAVIGATOR_VIEW_ENTITY_CLASSES.add( PwVariable.class);
+    
+    TOKEN_NETWORK_VIEW_ENTITY_CLASSES = new ArrayList();
+    TOKEN_NETWORK_VIEW_ENTITY_CLASSES.add( PwRuleInstance.class);
+    TOKEN_NETWORK_VIEW_ENTITY_CLASSES.add( PwToken.class);
+  }
 
 
 } // end ViewConstants

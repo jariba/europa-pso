@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.44 2004-08-14 01:39:09 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.45 2004-08-21 00:31:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -272,18 +272,7 @@ public interface PwPartialPlan extends ViewableObject {
   public abstract List getPath(final Integer sKey, final Integer eKey, final List classes,
 			       final int maxLength);
 
-  public abstract List getVariablePath(final Integer sKey, final Integer eKey);
-
-  public abstract List getVariablePath(final Integer sKey, final Integer eKey, final int maxLength);
-  
-  public abstract List getTokenNetworkPath(final Integer sKey, final Integer eKey);
-
-  public abstract List getTokenNetworkPath(final Integer sKey, final Integer eKey,
-					   final int maxLength);
-  
-  public abstract List getEntityPath(final Integer sKey, final Integer eKey);
-
-  public abstract List getEntityPath(final Integer sKey, final Integer eKey, final int maxLength);
+  public abstract boolean pathExists(final PwEntity sKey, final Integer eKey, final List classes);
   
 } // end interface PwPartialPlan
 

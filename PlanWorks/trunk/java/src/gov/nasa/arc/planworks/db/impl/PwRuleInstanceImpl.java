@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRuleInstanceImpl.java,v 1.5 2004-08-06 00:56:20 miatauro Exp $
+// $Id: PwRuleInstanceImpl.java,v 1.6 2004-08-21 00:31:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -21,6 +21,7 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
@@ -184,11 +185,12 @@ public class PwRuleInstanceImpl implements PwRuleInstance {
     LinkedList retval = new LinkedList();
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
-      if(cclass.equals(PwToken.class)) {
+      // if(cclass.equals(PwToken.class)) {
+      if (PwToken.class.isAssignableFrom( cclass)) {
         retval.addAll(partialPlan.getTokenList(getSlaveIdsList()));
         retval.add(partialPlan.getToken(getMasterId()));
       }
-      else if(cclass.equals(PwVariable.class))
+      else if(PwVariable.class.isAssignableFrom( cclass))
         retval.addAll(partialPlan.getVariableList(getRuleVarIdList()));
     }
     return retval;

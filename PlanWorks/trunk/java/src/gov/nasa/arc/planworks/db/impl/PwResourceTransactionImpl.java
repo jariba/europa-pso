@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceTransactionImpl.java,v 1.8 2004-06-14 22:11:22 taylor Exp $
+// $Id: PwResourceTransactionImpl.java,v 1.9 2004-08-21 00:31:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,9 +18,7 @@ import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwIntervalDomain;
-import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
-import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 
 
 /**
@@ -116,5 +114,6 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
     retval.append("\n");
     return retval.toString();
   }
+
 
 } // end class PwResourceTransactionImpl

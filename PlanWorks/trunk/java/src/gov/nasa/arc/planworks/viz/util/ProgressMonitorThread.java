@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ProgressMonitorThread.java,v 1.1 2004-08-14 01:39:20 taylor Exp $
+// $Id: ProgressMonitorThread.java,v 1.2 2004-08-21 00:32:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,6 +26,8 @@ public class ProgressMonitorThread extends Thread {
   private int maxValue;
   private Thread monitoredThread;
   private JPanel view;
+  private FindEntityPath findEntityPath;
+
   private boolean isThreadCancel;
   private PWProgressMonitor progressMonitor;
   private boolean isProgressMonitorCancel;
@@ -49,6 +51,31 @@ public class ProgressMonitorThread extends Thread {
     this.maxValue = maxValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
     this.monitoredThread = monitoredThread;
     this.view = view;
+    this.findEntityPath = null;
+  }  // end constructor
+
+  /**
+   * <code>ProgressMonitorThread</code> - constructor 
+   *
+   * @param title - <code>String</code> - 
+   * @param minValue - <code>int</code> - 
+   * @param maxValue - <code>int</code> - 
+   * @param monitoredThread - <code>Thread</code> - 
+   * @param view - <code>JPanel</code> - 
+   * @param findEntityPath - <code>FindEntityPath</code> - 
+   */
+  public ProgressMonitorThread( String title, int minValue, int maxValue,
+				Thread monitoredThread, JPanel view,
+                                FindEntityPath findEntityPath) {
+    progressMonitor = null;
+    isProgressMonitorCancel = false;
+    isThreadCancel = false;
+    this.title = title;
+    this.minValue = minValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
+    this.maxValue = maxValue * ViewConstants.MONITOR_MIN_MAX_SCALING;
+    this.monitoredThread = monitoredThread;
+    this.view = view;
+    this.findEntityPath = findEntityPath;
   }  // end constructor
 
   public PWProgressMonitor getProgressMonitor() {
@@ -71,7 +98,8 @@ public class ProgressMonitorThread extends Thread {
    */
   public void run() {
     progressMonitor = new PWProgressMonitor( PlanWorks.getPlanWorks(), title, "",
-					     minValue, maxValue, monitoredThread, view, this);
+					     minValue, maxValue, monitoredThread, view,
+                                             this, findEntityPath);
     progressMonitor.setMillisToDecideToPopup( 0);
     progressMonitor.setMillisToPopup( 0);
     // these two must be set to 0 before calling setProgress, which puts up the dialog

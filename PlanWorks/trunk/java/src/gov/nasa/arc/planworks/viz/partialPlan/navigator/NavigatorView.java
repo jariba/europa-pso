@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.35 2004-08-16 22:01:01 taylor Exp $
+// $Id: NavigatorView.java,v 1.36 2004-08-21 00:31:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.partialPlan.navigator;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,9 +25,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
@@ -52,14 +51,13 @@ import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.StringViewSetKey;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
-import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
+import gov.nasa.arc.planworks.viz.partialPlan.FindEntityPathAdapter;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkObjectNode;
@@ -68,8 +66,8 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
-import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeys;
-import gov.nasa.arc.planworks.viz.util.MessageDialog;
+import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeysClasses;
+import gov.nasa.arc.planworks.viz.util.FindEntityPath;
 import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -82,7 +80,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class NavigatorView extends PartialPlanView implements StringViewSetKey {
+public class NavigatorView extends PartialPlanView
+  implements StringViewSetKey, FindEntityPathAdapter {
 
   private PwEntity initialEntity;
   private PwPartialPlan partialPlan;
@@ -96,9 +95,6 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
   private boolean isDebugPrint;
   private String viewSetKey;
   private List highlightPathNodesList;
-  private Integer entityKey1;
-  private Integer entityKey2;
-  private ProgressMonitorThread findPathPMThread;
   private ProgressMonitorThread redrawPMThread;
   private boolean didRenderInitialNodeChange;
   /**
@@ -176,18 +172,6 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     this.navigatorFrame = navigatorFrame;
 
     commonConstructor();
-  } // end constructor
-
-  /**
-   * <code>NavigatorView</code> - constructor 
-   *
-   * @param partialPlan - <code>ViewableObject</code> - 
-   * @param viewSet - <code>ViewSet</code> - 
-   * @param isFindEntityPath - <code>boolean</code> - 
-   */
-  public NavigatorView( final ViewableObject partialPlan, final ViewSet viewSet,
-			final boolean isFindEntityPath) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
   } // end constructor
 
   private void commonConstructor() {
@@ -325,7 +309,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     this.setVisible( false);
 
     redrawPMThread =
-      progressMonitorThread( "Redrawing Navigator View ...", 0, 6, Thread.currentThread(),
+      createProgressMonitorThread( "Redrawing Navigator View ...", 0, 6, Thread.currentThread(),
 			   this);
     if (! progressMonitorWait( redrawPMThread, this)) {
       System.err.println( "progressMonitorWait failed");
@@ -421,6 +405,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
   public final String getViewSetKey() {
     return viewSetKey;
   }
+
 
   private ExtendedBasicNode renderInitialNode( PwEntity entity) {
     initialEntity = entity;
@@ -750,31 +735,6 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
 
 
   /**
-   * <code>FindEntityPath</code> - used as arg to ProgressMonitorThread
-   *
-   */
-  public class FindEntityPath extends NavigatorView {
-
-    private List entityKeyList;
-
-    FindEntityPath( ViewableObject partialPlan, ViewSet viewSet,
-		      boolean isFindEntityPath) {
-      super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet, isFindEntityPath);
-    }
-
-    public List getEntityKeyList() {
-      return entityKeyList;
-    }
-
-    public void setEntityKeyList( List lst) {
-      // System.err.println( "setEntityKeyList " + lst);import gov.nasa.arc.planworks.viz.util.
-      entityKeyList = lst;
-    }
-
-  } // end class FindEntityPath
-
-
-  /**
    * <code>NavigatorJGoView</code> - subclass JGoView to add doBackgroundClick
    *
    */
@@ -871,9 +831,13 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
           Integer nodeKey = nodeByKeyDialog.getNodeKey();
           if (nodeKey != null) {
             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
-            boolean isFindEntityPath = true;
+            Integer entityKey1 = null, entityKey2 = null; List pathClasses = null;
+            boolean doPathExists = false;
+            int maxPathLength = Integer.MAX_VALUE;
+            MDIInternalFrame frame = null;
             FindEntityPath findEntityPath =
-              new FindEntityPath( partialPlan, viewSet, isFindEntityPath);
+              new FindEntityPath( entityKey1, entityKey2, pathClasses, doPathExists,
+                                  maxPathLength, partialPlan, NavigatorView.this, frame);
             List entityKeyList = new ArrayList();
             entityKeyList.add( nodeKey);
             findEntityPath.setEntityKeyList( entityKeyList);
@@ -898,79 +862,69 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
       });
   } // end createOverviewWindowItem
 
-  private FindEntityPath getFindEntityPath() {
-    boolean isFindEntityPath = true;
-    FindEntityPath findEntityPath =  new FindEntityPath( partialPlan, viewSet, isFindEntityPath);
-    findEntityPath.setEntityKeyList( null);
-    findEntityPathDoit( findEntityPath);
-    while (findEntityPath.getEntityKeyList() == null) {
-      try {
-	Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL * 2);
-      } catch (InterruptedException ie) {}
-      // System.err.println("createFindEntityPathItemWorker wait for findEntityPath");
-    }
-    return findEntityPath;
-  } // end getFindEntityPath
-
-  private void findEntityPathDoit( final FindEntityPath findEntityPath) {
-    final SwingWorker worker = new SwingWorker() {
-	public Object construct() {
-	  findPathPMThread =
-	    progressMonitorThread( "Finding Entity Path ...", 0, 6, Thread.currentThread(),
-				   findEntityPath);
-	  if (! progressMonitorWait( findPathPMThread, NavigatorView.this)) {
-	    System.err.println( "progressMonitorWait failed");
-	    findEntityPath.setEntityKeyList( new ArrayList());
-	    return null;
-	  }
-	  findPathPMThread.getProgressMonitor().setProgress
-	    ( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
-
-	  findEntityPath.setEntityKeyList( partialPlan.getEntityPath( entityKey1, entityKey2));
-
-	  findPathPMThread.setProgressMonitorCancel();
-	  return null;
-	}
-      };
-    worker.start();  
-  } // end findEntityPath
-
   private void createFindEntityPathItem( JMenuItem findEntityPathItem) {
     findEntityPathItem.addActionListener( new ActionListener() {
 	public void actionPerformed( ActionEvent evt) {
-	  final SwingWorker worker = new SwingWorker() {
-	      public Object construct() {
-		createFindEntityPathItemWorker();
-		return null;
-	      }
-	    };
-	  worker.start();
+          MDIInternalFrame twoEntityKeysWindow = 
+            PlanWorks.getPlanWorks().createFrame( "Find Path in " + navigatorFrame.getTitle(),
+                                                  getViewSet(), true, true, false, false);
+          Container contentPane = twoEntityKeysWindow.getContentPane();
+          AskQueryTwoEntityKeysClasses twoEntityKeysContent =
+            new AskQueryTwoEntityKeysClasses( twoEntityKeysWindow, partialPlan,
+                                              NavigatorView.this);
+          contentPane.add( twoEntityKeysContent);
+          twoEntityKeysWindow.pack();
 	}
       });
   } // createFindEntityPathItem
 
-  private void createFindEntityPathItemWorker() {
-    AskQueryTwoEntityKeys twoKeysDialog =
-      new AskQueryTwoEntityKeys( "Enter Ids for Find Entity Path", "entity",
-				 "start entity key (int)", "entity",
-				 "end entity key (int)", partialPlan);
-    entityKey1 = twoKeysDialog.getEntityKey1();
-    entityKey2 = twoKeysDialog.getEntityKey2();
-    if ((entityKey1 == null) || (entityKey2 == null)) {
+  /**
+   * <code>invokeFindEntityPathClasses</code>
+   *
+   * @param entityKey1 - <code>Integer</code> - 
+   * @param entityKey2 - <code>Integer</code> - 
+   * @param pathClasses - <code>List</code> - 
+   * @param doPathExists - <code>boolean</code> - 
+   * @param maxPathLength - <code>int</code> - 
+   * @param dialogWindowFrame - <code>MDIInternalFrame</code> - 
+   */
+  public void invokeFindEntityPathClasses( final Integer entityKey1,
+                                           final Integer entityKey2,
+                                           final List pathClasses,
+                                           final boolean doPathExists,
+                                           final int maxPathLength,
+                                           final MDIInternalFrame dialogWindowFrame) {
+//     System.err.println( "invoke entityKey1 " + entityKey1);
+//     System.err.println( "invoke entityKey2 " + entityKey2);
+//     for (int i = 0, n = pathClasses.size(); i < n; i++) {
+//       System.err.println( "invoke pathClass i=" + i + " " +
+//                           ((Class) pathClasses.get( i)).getName());
+//     }
+//     System.err.println( "invoke doPathExists " + doPathExists);
+//     System.err.println( "invoke maxPathLength " + maxPathLength);
+    if ((entityKey1 == null) || (entityKey2 == null) || (pathClasses == null)) {
       return;
     }
-    FindEntityPath findEntityPath =  getFindEntityPath();
-    if (findEntityPath.getEntityKeyList().size() == 0) {
-      JOptionPane.showMessageDialog
-	( PlanWorks.getPlanWorks(), "no path found for " + entityKey1 + " => " +
-	  entityKey2, "Find Entity Path Error", JOptionPane.ERROR_MESSAGE);
-      return;
-    }
-    List nodeList = renderEntityPathNodes( findEntityPath);
-    outputEntityPathNodes( nodeList);
-  } // end createFindEntityPathItemWorker
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          FindEntityPath findEntityPath =
+            new FindEntityPath( entityKey1, entityKey2, pathClasses, doPathExists,
+                                maxPathLength, partialPlan, NavigatorView.this,
+                                dialogWindowFrame);
+          findEntityPath.invokeAndWait();
+         return null;
+        }
+      };
+    worker.start();
+  } // end invokeFindEntityPathClasses
 
-  private List renderEntityPathNodes( FindEntityPath findEntityPath) {
+  /**
+   * <code>renderEntityPathNodes</code>
+   *
+   * @param findEntityPath - <code>FindEntityPath</code> - 
+   * @return - <code>List</code> - 
+   */
+  public List renderEntityPathNodes( final FindEntityPath findEntityPath) {
     boolean isLayoutNeeded = false;
     List nodeList =  new ArrayList();
     Iterator entityItr = findEntityPath.getEntityKeyList().iterator();
@@ -1125,46 +1079,11 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     highlightPathItem.addActionListener( new ActionListener() {
 	public void actionPerformed(ActionEvent evt) {
 	  NodeGenerics.highlightPathNodes( nodeList, jGoView);
-	  outputEntityPathNodes( nodeList);
+	  FindEntityPath.outputEntityPathNodes( nodeList, NavigatorView.this);
 	}
       });
   } // end createHighlightPathItem
 
-  private void outputEntityPathNodes( List nodeList) {
-    System.err.print( "Found Entity Path ");
-    StringBuffer nodeBuffer = new StringBuffer( "(");
-    nodeBuffer.append( NavigatorView.this.getName()).append( ") => ");
-    Iterator nodeItr = nodeList.iterator();
-    while (nodeItr.hasNext()) {
-      ExtendedBasicNode node = (ExtendedBasicNode) nodeItr.next();
-      Integer nodeId = null;
-      if (node instanceof TokenNavNode) {
-	nodeId = ((TokenNavNode) node).getToken().getId();
-      } else if (node instanceof VariableNavNode) {
-  	nodeId = ((VariableNavNode) node).getVariable().getId();
-      } else if (node instanceof ConstraintNavNode) {
-  	nodeId = ((ConstraintNavNode) node).getConstraint().getId();
-      } else if (node instanceof RuleInstanceNavNode) {
-  	nodeId = ((RuleInstanceNavNode) node).getRuleInstance().getId();
-      } else if (node instanceof SlotNavNode) {
-  	nodeId = ((SlotNavNode) node).getSlot().getId();
-      } else if (node instanceof ModelClassNavNode) {
-  	nodeId = ((ModelClassNavNode) node).getObject().getId();
-      } else if (node instanceof TimelineNavNode) {
-  	nodeId = ((TimelineNavNode) node).getTimeline().getId();
-      } else if (node instanceof ResourceNavNode) {
-  	nodeId = ((ResourceNavNode) node).getResource().getId();
-      } else {
-	System.err.println( "NavigatorView.outputEntityPathNodes: node " +
-			    node.getClass().getName() + " not handled");
-      }
-      nodeBuffer.append( nodeId).append( " ");
-    }
-    System.err.println( nodeBuffer.toString());
-    MessageDialog msgDialog = // non-modal
-      new MessageDialog( PlanWorks.getPlanWorks(), "Found Entity Path",
-			 nodeBuffer.toString());
-  } // end outputEntityPathNodes
 
 
 

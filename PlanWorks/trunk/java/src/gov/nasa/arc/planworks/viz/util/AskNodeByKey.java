@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.3 2004-08-20 21:53:05 pdaley Exp $
+// $Id: AskNodeByKey.java,v 1.4 2004-08-21 00:31:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -173,7 +173,8 @@ public class AskNodeByKey extends JDialog {
                 } else if (isNodeKeyValid( nodeKey) == KEY_NOT_AVAILABLE) {
                   JOptionPane.showMessageDialog
                     (PlanWorks.getPlanWorks(),
-                     "Sorry, \"" + nodeKey.toString() + "\" " + "is a valid key but is not available in this view.",
+                     "Sorry, \"" + nodeKey.toString() + "\" " +
+                     "is a valid key, but is not available in this view.",
                      "Key Not Available", JOptionPane.ERROR_MESSAGE);
                 } else {
                   // we're done; dismiss the dialog
@@ -246,10 +247,9 @@ public class AskNodeByKey extends JDialog {
         }
       }
     } else if (partialPlanView instanceof NavigatorView) {
-      if ((partialPlan.getEntity( nodeKey) != null) &&
-	      (partialPlan.getResourceTransaction( nodeKey) == null)) {
-          return KEY_FOUND;  
-        }
+      if (partialPlan.getEntity( nodeKey) != null) {
+        return KEY_FOUND;
+      }
     } else {
       System.err.println( "AskNodeByKey.isNodeKeyValid: " + partialPlanView +
                           " not handled");

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.13 2004-08-14 01:39:15 taylor Exp $
+// $Id: DecisionView.java,v 1.14 2004-08-21 00:31:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -413,7 +413,7 @@ public class DecisionView extends PartialPlanView {
   private DefaultMutableTreeNode renderDecisions() {
     int numOperations = 6;
     progressMonThread =
-      progressMonitorThread( "Rendering Decision View:", 0, numOperations,
+      createProgressMonitorThread( "Rendering Decision View:", 0, numOperations,
 			     Thread.currentThread(), this);
     if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);
