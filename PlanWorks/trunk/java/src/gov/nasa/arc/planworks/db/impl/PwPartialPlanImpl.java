@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.80 2004-03-27 01:04:23 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.81 2004-04-02 00:24:42 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -296,6 +296,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
   public List getTokenList() {
     return new ArrayList(tokenMap.values());
+  }
+
+  public List getVariableList() {
+    return new ArrayList(variableMap.values());
+  }
+
+  public List getConstraintList() {
+    return new ArrayList(constraintMap.values());
   }
 
   public List getObjectList(List objectIds) {

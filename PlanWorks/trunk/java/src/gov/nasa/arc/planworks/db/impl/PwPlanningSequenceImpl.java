@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.75 2004-03-27 01:04:24 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.76 2004-04-02 00:24:42 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -121,6 +121,29 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     fakeRules();
   }
 
+  //for testing only
+  public PwPlanningSequenceImpl( final String url, final Long id, final boolean forTesting) 
+  throws ResourceNotFoundException {
+    this.url = url;
+    this.id = id;
+    this.model = null;
+    stepCount = 0;
+    
+    int index = url.lastIndexOf( System.getProperty( "file.separator"));
+    if (index == -1) {
+      throw new ResourceNotFoundException( "sequence url '" + url +
+                                           "' cannot be parsed for '" +
+                                           System.getProperty( "file.separator") + "'");
+    } 
+    name = url.substring( index + 1);
+    contentSpec = new ArrayList();
+   
+    partialPlans = new HashMap();
+    planNamesInFilesystem = new ArrayList();
+    stepCount = 0;
+    transactions = new HashMap();
+    fakeRules();
+  }
 
   /**
    * <code>PwPlanningSequenceImpl</code> - constructor - for OpenProject
@@ -338,6 +361,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   public PwPartialPlan getPrevPartialPlan(final String planName) throws ResourceNotFoundException, 
   IndexOutOfBoundsException {
     return getPartialPlan(Integer.parseInt(planName.substring(4)) - 1);
+  }
+
+  public void addPartialPlan(final PwPartialPlanImpl partialPlan) {
+    stepCount++;
+    partialPlans.put(partialPlan.getName(), partialPlan);
+    planNamesInDb.add(partialPlan.getName());
   }
   
   /**
@@ -632,6 +661,31 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
 
   public PwRule getRule(Integer rId) {
     return (PwRule) ruleMap.get(rId);
+  }
+
+  public void addTransaction(PwDBTransactionImpl trans) {
+    transactions.put(id.toString() + trans.getId(), trans);
+  }
+
+  //.partialPlanStats,.sequence,.transactions
+  public String [] toOutputString(Integer projId) {
+    StringBuffer pps = new StringBuffer();
+    for(Iterator it = partialPlans.values().iterator(); it.hasNext();) {
+      PwPartialPlanImpl partialPlan = (PwPartialPlanImpl) it.next();
+      pps.append(id.toString()).append("\t").append(partialPlan.getId().toString()).append("\t");
+      pps.append(partialPlan.getStepNumber()).append("\t");
+      pps.append(partialPlan.getTokenList().size()).append("\t");
+      pps.append(partialPlan.getVariableList().size()).append("\t");
+      pps.append(partialPlan.getConstraintList().size()).append("\t0\n");
+    }
+    StringBuffer seq = new StringBuffer(url);
+    seq.append("\t").append(id.toString()).append("\t").append(projId.toString()).append("\n");
+    StringBuffer trans = new StringBuffer();
+    for(Iterator it = transactions.values().iterator(); it.hasNext();) {
+      PwDBTransaction t = (PwDBTransaction) it.next();
+      trans.append(t.toOutputString());
+    }
+    return new String [] {pps.toString(), seq.toString(), trans.toString()};
   }
 
   private class PartialPlanNameComparator implements Comparator {
