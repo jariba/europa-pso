@@ -73,9 +73,16 @@ JNIEXPORT jint JNICALL Java_gov_nasa_arc_planworks_PlannerControlJNI_initPlanner
   }
 
   // call the initModel function
-  retStatus  = (*fcn_initModel)(modelLibPath, initialStatePath);
-  printf("Returned from calling the initModel function\n");
-  fflush(stdout);
+  try {
+    retStatus  = (*fcn_initModel)(modelLibPath, initialStatePath);
+    printf("Returned from calling the initModel function\n");
+    fflush(stdout);
+  }
+  catch (...) {
+    clazz = env->FindClass("java/lang/Exception");
+    env->ThrowNew(clazz, "Unexpected exception in initModel()");
+    return gov_nasa_arc_planworks_PlannerControlJNI_PLANNER_INITIALLY_INCONSISTANT;
+  }
 
   env->ReleaseStringUTFChars(planner_path, plannerLibPath);
   env->ReleaseStringUTFChars(model_path, modelLibPath);
