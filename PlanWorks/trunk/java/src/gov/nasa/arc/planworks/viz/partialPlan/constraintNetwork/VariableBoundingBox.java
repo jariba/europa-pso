@@ -20,22 +20,30 @@ import java.util.ListIterator;
 */
 
 public class VariableBoundingBox {
-  VariableNode varNode;
-  LinkedList constraintNodes;
-  public VariableBoundingBox(VariableNode varNode) {
+  private VariableNode varNode;
+  private LinkedList constraintNodes;
+  private NewConstraintNetworkLayout layout;
+  private boolean visited;
+  public VariableBoundingBox(VariableNode varNode, NewConstraintNetworkLayout layout) {
     this.varNode = varNode;
+    this.layout = layout;
+    visited = false;
     constraintNodes = new LinkedList(varNode.getConstraintNodeList());
   }
-  public VariableBoundingBox(VariableNode varNode, List constraints) {
+  public VariableBoundingBox(VariableNode varNode, List constraints, 
+                             NewConstraintNetworkLayout layout) {
     this.varNode = varNode;
+    this.layout = layout;
+    visited = false;
     this.constraintNodes = new LinkedList(constraints);
   }
   public void addConstraint(ConstraintNode constraint) {
     constraintNodes.addLast(constraint);
   }
+  public boolean isVisible() { return varNode.isVisible();}
   public double getHeight() {
     double retval = 0.;
-    if(NewConstraintNetworkLayout.layoutHorizontal()) {
+    if(layout.layoutHorizontal()) {
       retval = ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y - 
         ConstraintNetworkView.HORIZONTAL_VARIABLE_BAND_Y;
     }
@@ -65,7 +73,7 @@ public class VariableBoundingBox {
   }
   public double getWidth() {
     double retval = 0.;
-    if(NewConstraintNetworkLayout.layoutHorizontal()) {
+    if(layout.layoutHorizontal()) {
       if(varNode.isVisible()) {
         ListIterator constraintIterator = constraintNodes.listIterator();
         double constraintsWidth = 0;
@@ -91,7 +99,7 @@ public class VariableBoundingBox {
     if(!varNode.isVisible()) {
       return;
     }
-    if(NewConstraintNetworkLayout.layoutHorizontal()) {
+    if(layout.layoutHorizontal()) {
       positionHorizontal(pos);
     }
     else {
@@ -154,6 +162,15 @@ public class VariableBoundingBox {
                          (int) ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y);
       }
     }
+  }
+  public void setVisited() {
+    visited = true;
+  }
+  public void clearVisited() {
+    visited = false;
+  }
+  public boolean wasVisited() {
+    return visited;
   }
 }
 

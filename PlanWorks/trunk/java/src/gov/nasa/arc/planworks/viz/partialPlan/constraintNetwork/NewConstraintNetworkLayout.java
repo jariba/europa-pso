@@ -16,22 +16,19 @@ public class NewConstraintNetworkLayout {
   private List orderedTokenNodes;
   private List variableNodes;
   private List constraintNodes;
-  private static boolean horizontalLayout;
+  private List tokenBoundingBoxes;
+  private List variableBoundingBoxes;
+  private boolean horizontalLayout;
   public NewConstraintNetworkLayout(List tokenNodes, List variableNodes, List constraintNodes) {
+    horizontalLayout = true;
     this.variableNodes = variableNodes;
     this.constraintNodes = constraintNodes;
     orderedTokenNodes = new ArrayList();
+    tokenBoundingBoxes = new ArrayList(tokenNodes.size());
+    variableBoundingBoxes = new ArrayList(variableNodes.size());
 
     List tempTokenNodes = new ArrayList(tokenNodes);
     Collections.sort(tempTokenNodes, new TokenLinkCountComparator());
-
-    ListIterator printIterator = tempTokenNodes.listIterator();
-    System.err.println("---------------------");
-    while(printIterator.hasNext()) {
-      ConstraintNetworkTokenNode printNode = (ConstraintNetworkTokenNode) printIterator.next();
-      System.err.println(printNode + ": " + printNode.getTokenLinkCount());
-    }
-    System.err.println("---------------------");
 
     while(!tempTokenNodes.isEmpty()) {
       List connectedComponent = new UniqueSet();
@@ -76,30 +73,79 @@ public class NewConstraintNetworkLayout {
       orderedTokenNodes.addAll(subOrdering);
     }
 
-    printIterator = tokenNodes.listIterator();
-    System.err.println("---------------------");
-    while(printIterator.hasNext()) {
-      ConstraintNetworkTokenNode printNode = (ConstraintNetworkTokenNode) printIterator.next();
-      System.err.println(printNode + ": " + printNode.getTokenLinkCount());
+    ListIterator orderedIterator = orderedTokenNodes.listIterator();
+    while(orderedIterator.hasNext()) {
+      ConstraintNetworkTokenNode node = (ConstraintNetworkTokenNode) orderedIterator.next();
+      TokenBoundingBox box = new TokenBoundingBox(this, node);
+      variableBoundingBoxes.addAll(box.getVariableBoxes());
+      tokenBoundingBoxes.add(box);
     }
-    System.err.println("---------------------");
+    //performLayout();
   }
-  public static void setLayoutHorizontal() {
+  public void setLayoutHorizontal() {
     horizontalLayout = true;
   }
-  public static void setLayoutVertical() {
+  public void setLayoutVertical() {
     horizontalLayout = false;
   }
-  public static boolean layoutHorizontal() {
+  public  boolean layoutHorizontal() {
     return horizontalLayout;
   }
+
+  public void performLayout() {
+    ListIterator varBoxIterator = variableBoundingBoxes.listIterator();
+    while(varBoxIterator.hasNext()) {
+      ((VariableBoundingBox)varBoxIterator.next()).clearVisited();
+    }
+    if(horizontalLayout) {
+      performHorizontalLayout();
+    }
+    else {
+      performVerticalLayout();
+    }
+  }
+  private void performHorizontalLayout() {
+    ListIterator tokenBoxIterator = tokenBoundingBoxes.listIterator();
+    double xpos = 0.;
+    while(tokenBoxIterator.hasNext()) {
+      TokenBoundingBox box = (TokenBoundingBox) tokenBoxIterator.next();
+      xpos += box.getWidth();
+      box.positionNodes(xpos);
+    }
+    ListIterator variableBoxIterator = variableBoundingBoxes.listIterator();
+    while(variableBoxIterator.hasNext()) {
+      VariableBoundingBox box = (VariableBoundingBox) variableBoxIterator.next();
+      if(box.isVisible() && !box.wasVisited()) {
+        xpos += box.getWidth();
+        box.positionNodes(xpos);
+      }
+    }
+  }
+  private void performVerticalLayout() {
+    ListIterator tokenBoxIterator = tokenBoundingBoxes.listIterator();
+    double ypos = 0.;
+    while(tokenBoxIterator.hasNext()) {
+      TokenBoundingBox box = (TokenBoundingBox) tokenBoxIterator.next();
+      ypos += box.getHeight();
+      box.positionNodes(ypos);
+    }
+    ListIterator variableBoxIterator = variableBoundingBoxes.listIterator();
+    while(variableBoxIterator.hasNext()) {
+      VariableBoundingBox box = (VariableBoundingBox) variableBoxIterator.next();
+      if(box.isVisible() && !box.wasVisited()) {
+        ypos += box.getHeight();
+        box.positionNodes(ypos);
+      }
+    }
+  }
+
   class TokenLinkCountComparator implements Comparator {
     public TokenLinkCountComparator() {
     }
     public int compare(Object o1, Object o2) {
       ConstraintNetworkTokenNode n1 = (ConstraintNetworkTokenNode) o1;
       ConstraintNetworkTokenNode n2 = (ConstraintNetworkTokenNode) o2;
-      return n1.getTokenLinkCount() - n2.getTokenLinkCount();
+      return n2.getTokenLinkCount() - n1.getTokenLinkCount();
     }
     public boolean equals(Object o){return false;}
   }
@@ -112,7 +158,7 @@ public class NewConstraintNetworkLayout {
     public int compare(Object o1, Object o2) {
       ConstraintNetworkTokenNode n1 = (ConstraintNetworkTokenNode) o1;
       ConstraintNetworkTokenNode n2 = (ConstraintNetworkTokenNode) o2;
-      return n1.getTokenLinkCount(node) - n2.getTokenLinkCount(node);
+      return n2.getTokenLinkCount(node) - n1.getTokenLinkCount(node);
 
     }
     public boolean equals(Object o){return false;}
