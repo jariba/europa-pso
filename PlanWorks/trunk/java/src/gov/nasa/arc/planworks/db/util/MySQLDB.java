@@ -579,14 +579,12 @@ public class MySQLDB {
         Integer currVariableId = new Integer(constraints.getInt("ConstraintVarMap.VariableId"));
         if(!variableId.equals(currVariableId) && !currVariableId.equals(NULL)) {
           if(!constrainedVarIds.contains(currVariableId) && !variableId.equals(M1)) {
-            System.err.println("adding constrained variable " + variableId);
             constrainedVarIds.add(variableId);
           }
           variableId = currVariableId;
         }
         if(!constraintId.equals(currConstraintId) && !currConstraintId.equals(NULL)) {
           if(!constraintId.equals(M1)) {
-            System.err.println("Creating constraint on vars " + constrainedVarIds);
             partialPlan.addConstraint(constraintId,
                                       new PwConstraintImpl(constraintName, constraintId,
                                                            constraintType, constrainedVarIds,
@@ -599,7 +597,6 @@ public class MySQLDB {
         }
       }
       constrainedVarIds.add(variableId);
-      System.err.println("Creating constraint on vars " + constrainedVarIds);
       partialPlan.addConstraint(constraintId, new PwConstraintImpl(constraintName, constraintId,
                                                                    constraintType, 
                                                                    constrainedVarIds,partialPlan));
@@ -713,7 +710,6 @@ public class MySQLDB {
                !constraintId.equals(NULL) && !currConstraintId.equals(NULL)) {
               constraintIdList.add(constraintId);
             }
-            System.err.println("Creating variable with constraints " + constraintIdList);
             partialPlan.addVariable(variableId, new PwVariableImpl(variableId, variableType,
                                                                    constraintIdList,
                                                                    parameterIdList, tokenIdList,
@@ -744,7 +740,6 @@ public class MySQLDB {
         }
         constraintId = currConstraintId;
       }
-      System.err.println("Creating variable with constraints " + constraintIdList);
       partialPlan.addVariable(variableId, new PwVariableImpl(variableId, variableType,
                                                              constraintIdList,
                                                              parameterIdList, tokenIdList,
