@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableQueryView.java,v 1.5 2004-04-22 19:26:27 taylor Exp $
+// $Id: VariableQueryView.java,v 1.6 2004-05-04 01:27:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -32,6 +32,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.VariableQueryContentView;
 import gov.nasa.arc.planworks.viz.VariableQueryHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -54,7 +55,6 @@ public class VariableQueryView extends SequenceView {
   private List unboundVariableList; // element PwVariableQuery
   private String query;
   private SequenceQueryWindow sequenceQueryWindow;
-  private MDIInternalFrame unboundVariableQueryFrame;
 
   private long startTimeMSecs;
   private ViewSet viewSet;
@@ -62,6 +62,7 @@ public class VariableQueryView extends SequenceView {
   private VariableQueryHeaderPanel unboundVariableHeaderPanel;
   private VariableQueryContentView contentJGoView;
   private JGoDocument jGoDocument;
+  private ViewListener viewListener;
 
 
   /**
@@ -74,12 +75,13 @@ public class VariableQueryView extends SequenceView {
    * @param sequenceQueryWindow - <code>JPanel</code> - 
    * @param unboundVariableQueryFrame - <code>MDIInternalFrame</code> - 
    * @param startTimeMSecs - <code>long</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
    */
   public VariableQueryView( List unboundVariableList, String query,
                                    ViewableObject planSequence, ViewSet viewSet,
                                    JPanel sequenceQueryWindow,
                                    MDIInternalFrame unboundVariableQueryFrame,
-                                   long startTimeMSecs) {
+                                   long startTimeMSecs, ViewListener viewListener) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.unboundVariableList = unboundVariableList;
     Collections.sort( unboundVariableList,
@@ -89,10 +91,14 @@ public class VariableQueryView extends SequenceView {
     this.planSequence = (PwPlanningSequence) planSequence;
     this.viewSet = (SequenceViewSet) viewSet;
     this.sequenceQueryWindow = (SequenceQueryWindow) sequenceQueryWindow;
-    this.unboundVariableQueryFrame = unboundVariableQueryFrame;
+    viewFrame = unboundVariableQueryFrame;
     // for PWTestHelper.findComponentByName
-    this.setName( unboundVariableQueryFrame.getTitle());
+    setName( unboundVariableQueryFrame.getTitle());
     this.startTimeMSecs = startTimeMSecs;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    this.viewListener = viewListener;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -117,6 +123,7 @@ public class VariableQueryView extends SequenceView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -128,7 +135,8 @@ public class VariableQueryView extends SequenceView {
     this.computeFontMetrics( this);
 
     unboundVariableHeaderPanel = new VariableQueryHeaderPanel();
-    unboundVariableHeaderPanel.setLayout( new BoxLayout( unboundVariableHeaderPanel, BoxLayout.Y_AXIS));
+    unboundVariableHeaderPanel.setLayout( new BoxLayout( unboundVariableHeaderPanel,
+                                                         BoxLayout.Y_AXIS));
     headerJGoView = new VariableQueryHeaderView( unboundVariableList, query, this);
     headerJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     headerJGoView.validate();
@@ -150,9 +158,8 @@ public class VariableQueryView extends SequenceView {
                                 // contentJGoView.getDocumentSize().getHeight());
                                 // keep contentJGoView small
                                 (ViewConstants.INTERNAL_FRAME_X_DELTA));
-    unboundVariableQueryFrame.setSize
-      ( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
-        maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
+    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
+                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
     int maxQueryFrameY =
       (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
              sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
@@ -161,10 +168,10 @@ public class VariableQueryView extends SequenceView {
                           (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
                                  maxQueryFrameY -
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
-    unboundVariableQueryFrame.setLocation
-      ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta, maxQueryFrameY + delta);
+    viewFrame.setLocation( ViewConstants.INTERNAL_FRAME_X_DELTA + delta,
+                           maxQueryFrameY + delta);
     // prevent right edge from going outside the MDI frame
-    expandViewFrame( unboundVariableQueryFrame,
+    expandViewFrame( viewFrame,
                      (int) headerJGoView.getDocumentSize().getWidth(),
                      (int) (headerJGoView.getDocumentSize().getHeight() +
                             contentJGoView.getDocumentSize().getHeight()));
@@ -172,6 +179,7 @@ public class VariableQueryView extends SequenceView {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 

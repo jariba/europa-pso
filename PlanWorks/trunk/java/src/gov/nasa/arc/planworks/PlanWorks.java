@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.94 2004-04-22 19:26:17 taylor Exp $
+// $Id: PlanWorks.java,v 1.95 2004-05-04 01:27:11 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -74,6 +74,9 @@ public class PlanWorks extends MDIDesktopFrame {
   private static final int FRAME_Y_LOCATION;// = 125;
   public static final Map VIEW_CLASS_NAME_MAP;
 
+  public static final String FILE_MENU = "File";
+  public static final String EXIT_MENU_ITEM = "Exit";
+
   public static final String PROJECT_MENU = "Project";
   public static final String CREATE_MENU_ITEM = "Create ...";
   public static final String OPEN_MENU_ITEM = "Open ...";
@@ -85,25 +88,10 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String OPEN = "open";
 
   public static final String PLANSEQ_MENU = "Planning Sequence";
-  public static final String CONSTRAINT_NETWORK_VIEW   = "Constraint Network View";
-  public static final String TEMPORAL_EXTENT_VIEW      = "Temporal Extent View";
-  public static final String TEMPORAL_NETWORK_VIEW     = "Temporal Network View";
-  public static final String TIMELINE_VIEW             = "Timeline View";
-  public static final String TOKEN_NETWORK_VIEW        = "Token Network View";
-  public static final String DB_TRANSACTION_VIEW       = "DB Transaction View";
-  public static final String NAVIGATOR_VIEW            = "Navigator View";
-  public static final String RESOURCE_PROFILE_VIEW     = "Resource Profile View";
-  public static final String RESOURCE_TRANSACTION_VIEW = "Resource Transaction View";
-  public static final List PARTIAL_PLAN_VIEW_LIST;
-
-  public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
-  public static final String OBJECT_TREE_VIEW        = "Object Tree View";
-  public static final String MODEL_RULES_VIEW        = "Model Rules View";
-  public static final List SEQUENCE_VIEW_LIST;
 
   public static final String WINDOW_MENU = "Window";
   public static final String TILE_WINDOWS_MENU_ITEM = "Tile Windows";
-  public static final String CASCADE_MENU_ITEM = "Cascade";
+  public static final String CASCADE_WINDOWS_MENU_ITEM = "Cascade Windows";
 
   static {
     GraphicsDevice [] devices = 
@@ -119,64 +107,47 @@ public class PlanWorks extends MDIDesktopFrame {
 
     VIEW_CLASS_NAME_MAP = new HashMap();
     VIEW_CLASS_NAME_MAP.put
-      ( CONSTRAINT_NETWORK_VIEW,
+      ( ViewConstants.CONSTRAINT_NETWORK_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView");
     VIEW_CLASS_NAME_MAP.put
-      ( TEMPORAL_EXTENT_VIEW,
+      ( ViewConstants.TEMPORAL_EXTENT_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView");
 //     VIEW_CLASS_NAME_MAP.put
-//       ( TEMPORAL_NETWORK_VIEW,
+//       ( ViewConstants.TEMPORAL_NETWORK_VIEW,
 //         "gov.nasa.arc.planworks.viz.partialPlan.temporalNetwork.TemporalNetworkView");
     VIEW_CLASS_NAME_MAP.put
-      ( TIMELINE_VIEW,
+      ( ViewConstants.TIMELINE_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView");
     VIEW_CLASS_NAME_MAP.put
-      ( TOKEN_NETWORK_VIEW,
+      ( ViewConstants.TOKEN_NETWORK_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView");
     VIEW_CLASS_NAME_MAP.put
-      ( DB_TRANSACTION_VIEW,
+      ( ViewConstants.DB_TRANSACTION_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView");
     VIEW_CLASS_NAME_MAP.put
-      ( RESOURCE_PROFILE_VIEW,
+      ( ViewConstants.RESOURCE_PROFILE_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView");
     VIEW_CLASS_NAME_MAP.put
-      ( RESOURCE_TRANSACTION_VIEW,
+      ( ViewConstants.RESOURCE_TRANSACTION_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView");
     // not in map, since it is created from nodes in views, not from other views
 //     VIEW_CLASS_NAME_MAP.put
-//       ( NAVIGATOR_VIEW,
+//       ( ViewConstants.NAVIGATOR_VIEW,
 //         "gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView");
 
     VIEW_CLASS_NAME_MAP.put
-      ( SEQUENCE_STEPS_VIEW,
+      ( ViewConstants.SEQUENCE_STEPS_VIEW,
         "gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView");
     // not in map, since it is created by M-R on SequenceStepsView
 //     VIEW_CLASS_NAME_MAP.put
-//       ( OBJECT_TREE_VIEW,
+//       ( ViewConstants.OBJECT_TREE_VIEW,
 //         "gov.nasa.arc.planworks.viz.sequence.objectTree.ObjectTreeView");
     // not implemented yet
 //     VIEW_CLASS_NAME_MAP.put
-//       ( MODEL_RULES_VIEW,
+//       ( ViewConstants.MODEL_RULES_VIEW,
 //         "gov.nasa.arc.planworks.viz.sequence.modelRules.ModelRulesView");
 
-    PARTIAL_PLAN_VIEW_LIST = new ArrayList();
-    PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_TRANSACTION_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
-    PARTIAL_PLAN_VIEW_LIST.add( DB_TRANSACTION_VIEW);
-    // not in list, since it is created from nodes in views, not from other views
-    // PARTIAL_PLAN_VIEW_LIST.add( NAVIGATOR_VIEW);
-
-    SEQUENCE_VIEW_LIST = new ArrayList();
-    SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);
-    // not in list, since it is created by M-R on SequenceStepsView
-    // SEQUENCE_VIEW_LIST.add( OBJECT_TREE_VIEW);
-    // not implemented yet
-    // SEQUENCE_VIEW_LIST.add( MODEL_RULES_VIEW);
-  }
+  } // end static
 
   /**
    * constant <code>INTERNAL_FRAME_WIDTH</code>
@@ -508,8 +479,8 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public static JMenu[] buildConstantMenus() {
     JMenu [] jMenuArray = new JMenu [2];
-    JMenu fileMenu = new JMenu( "File");
-    JMenuItem exitItem = new JMenuItem( "Exit");
+    JMenu fileMenu = new JMenu( FILE_MENU);
+    JMenuItem exitItem = new JMenuItem( EXIT_MENU_ITEM);
     exitItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent e) {
           System.exit(0);
@@ -676,7 +647,7 @@ public class PlanWorks extends MDIDesktopFrame {
       planDbSizeItem.addActionListener( new ActionListener() {
           public final void actionPerformed( final ActionEvent evt) {
             PlanWorks.planWorks.createSequenceViewThread
-              ( SEQUENCE_STEPS_VIEW, (SequenceViewMenuItem) evt.getSource());
+              ( ViewConstants.SEQUENCE_STEPS_VIEW, (SequenceViewMenuItem) evt.getSource());
           }
         });
       planSeqViewMenu.add( planDbSizeItem);

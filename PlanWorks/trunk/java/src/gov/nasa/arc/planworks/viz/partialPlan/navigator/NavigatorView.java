@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.23 2004-04-06 01:31:44 taylor Exp $
+// $Id: NavigatorView.java,v 1.24 2004-05-04 01:27:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -961,7 +961,7 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         PlanWorks.NAVIGATOR_VIEW);
+                         ViewConstants.NAVIGATOR_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.11 2004-04-22 19:26:22 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.12 2004-05-04 01:27:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -21,6 +21,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
 
 
@@ -51,7 +52,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
   public void buildPartialPlanViewMenu( String partialPlanName,
                                         PwPlanningSequence planSequence,
                                         ViewListener viewListener) {
-    Iterator viewNamesItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
+    Iterator viewNamesItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
       PartialPlanViewMenuItem viewItem = 

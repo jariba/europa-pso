@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.97 2004-04-30 21:50:35 miatauro Exp $
+// $Id: MySQLDB.java,v 1.98 2004-05-04 01:27:13 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -430,7 +430,7 @@ public class MySQLDB {
   synchronized public static Long addSequence(final String url, final Integer projectId) {
     //loadFile(url + System.getProperty("file.separator") + "sequence", "Sequence");
     loadFile(url + System.getProperty("file.separator") + "sequence", "Sequence",
-             DbConstants.SEQ_COL_SEP, DbConstants.SEQ_LINE_SEP);
+             DbConstants.SEQ_COL_SEP_HEX, DbConstants.SEQ_LINE_SEP_HEX);
     Long latestSequenceId = latestSequenceId();
     updateDatabase("UPDATE Sequence SET ProjectId=".concat(projectId.toString()).concat(" WHERE SequenceId=").concat(latestSequenceId.toString()));
     return latestSequenceId;
@@ -812,12 +812,14 @@ public class MySQLDB {
           t = new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
                                             durationVarId, stateVarId, objectVarId, parentId, 
                                             tokenRelIds, paramVarIds, extraInfo, partialPlan);
+          System.err.println( "MySQLDB T_TRANSACTION id = " + tokenId);
         }
         else if(tokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
           t = new PwTokenImpl(tokenId, isValueToken, new Integer(tokens.getInt("Token.SlotId")),
                               predName, startVarId, endVarId, durationVarId, stateVarId, 
                               objectVarId, parentId, tokenRelIds, paramVarIds, extraInfo, 
                               partialPlan);
+          System.err.println( "MySQLDB T_INTERVAL id = " + tokenId);
         }
         int ruleKey = tokens.getInt("RuleTokenMap.RuleId");
         if(!tokens.wasNull()) {
@@ -1139,7 +1141,9 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
-    return retval;
+    // return retval;
+    // Collections.sort will not handle UniqueSet -- convert to ArrayList
+    return new ArrayList( retval);
   }
 
   synchronized public static List queryStepsWithVariableTransaction(final Long sequenceId, 
@@ -1155,7 +1159,9 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
-    return retval;
+    // return retval;
+    // Collections.sort will not handle UniqueSet -- convert to ArrayList
+    return new ArrayList( retval);
   }
 
   synchronized public static List queryStepsWithConstraintTransaction(final Long sequenceId, 
@@ -1171,7 +1177,9 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
-    return retval;
+    // return retval;
+    // Collections.sort will not handle UniqueSet -- convert to ArrayList
+    return new ArrayList( retval);
   }
 
   synchronized public static List queryStepsWithTokenTransaction(final Long sequenceId, 
@@ -1186,7 +1194,9 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
-    return retval;
+    // return retval;
+    // Collections.sort will not handle UniqueSet -- convert to ArrayList
+    return new ArrayList( retval);
   }
 
   synchronized public static List queryStepsWithVariableTransaction(final Long sequenceId, 
@@ -1201,7 +1211,9 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
-    return retval;
+    // return retval;
+    // Collections.sort will not handle UniqueSet -- convert to ArrayList
+    return new ArrayList( retval);
   }
 
   synchronized public static List queryStepsWithConstraintTransaction(final Long sequenceId, 
@@ -1216,7 +1228,9 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
-    return retval;
+    // return retval;
+    // Collections.sort will not handle UniqueSet -- convert to ArrayList
+    return new ArrayList( retval);
   }
 
   synchronized public static List queryStepsWithRestrictions(final Long sequenceId) {
@@ -1229,7 +1243,9 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
-    return retval;
+    // return retval;
+    // Collections.sort will not handle UniqueSet -- convert to ArrayList
+    return new ArrayList( retval);
   }
 
   synchronized public static List queryStepsWithRelaxations(final Long sequenceId) {
@@ -1243,7 +1259,9 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
-    return retval;
+    // return retval;
+    // Collections.sort will not handle UniqueSet -- convert to ArrayList
+    return new ArrayList( retval);
   }
 
   //NOTE: these should be changed to just take sequence Ids ~MJI
@@ -1268,7 +1286,9 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {
     }
-    return retval;
+    // return retval;
+    // Collections.sort will not handle UniqueSet -- convert to ArrayList
+    return new ArrayList( retval);
   }
 
   synchronized public static List queryStepsWithNonUnitVariableDecisions(final PwPlanningSequenceImpl seq) {

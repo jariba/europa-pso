@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.16 2004-04-22 19:26:24 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.17 2004-05-04 01:27:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -253,7 +253,7 @@ public class ResourceProfileView extends ResourceView  {
     mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         PlanWorks.RESOURCE_PROFILE_VIEW);
+                         ViewConstants.RESOURCE_PROFILE_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -264,7 +264,7 @@ public class ResourceProfileView extends ResourceView  {
     mouseRightPopup.add( raiseContentSpecItem);
 
     String timeMarkTitle = "Set Time Scale Line";
-    if (doesViewFrameExist( PlanWorks.RESOURCE_TRANSACTION_VIEW)) {
+    if (doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
       timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Transactions");
     }
     JMenuItem timeMarkItem = new JMenuItem( timeMarkTitle);
@@ -284,7 +284,7 @@ public class ResourceProfileView extends ResourceView  {
       mouseRightPopup.add( activeResourceByTransItem);
     }
 
-    if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
+    if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -437,10 +437,11 @@ public class ResourceProfileView extends ResourceView  {
           createTimeMark( xLoc);
 
           // draw mark in ResourceTransactionView & scroll to same resource
-          if (doesViewFrameExist( PlanWorks.RESOURCE_TRANSACTION_VIEW)) {
+          if (doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
+            ViewListener viewListener = null;
             MDIInternalFrame resourceTransFrame =
               viewSet.openView( PlanWorks.getViewClassName
-                                ( PlanWorks.RESOURCE_TRANSACTION_VIEW), viewListener);
+                                ( ViewConstants.RESOURCE_TRANSACTION_VIEW), viewListener);
             ResourceTransactionView resourceTransactionView = null;
             Container contentPane = resourceTransFrame.getContentPane();
             for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
@@ -468,7 +469,7 @@ public class ResourceProfileView extends ResourceView  {
     overviewWindowItem.addActionListener( new ActionListener() { 
         public final void actionPerformed( final ActionEvent evt) {
           VizViewOverview currentOverview =
-            ViewGenerics.openOverviewFrame( PlanWorks.RESOURCE_PROFILE_VIEW, partialPlan,
+            ViewGenerics.openOverviewFrame( ViewConstants.RESOURCE_PROFILE_VIEW, partialPlan,
                                             resourceProfileView, viewSet, jGoExtentView,
                                             viewCoords);
           if (currentOverview != null) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.43 2004-04-30 21:49:39 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.44 2004-05-04 01:27:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -425,12 +425,18 @@ public class PwTokenImpl implements PwToken {
     retval.append(startVarId).append("\t");
     retval.append(endVarId).append("\t");
     retval.append(durationVarId).append("\t");
-    retval.append(stateVarId).append("\t").append(predicateName).append("\t").append(parentId);
-    retval.append("\t").append(partialPlan.getObject(parentId).getName()).append("\t");
+    retval.append(stateVarId).append("\t");
+    retval.append(predicateName).append("\t");
+    if(isFree()) {
+      retval.append("\\N").append("\t").append("\\N").append("\t");
+    } else {
+      retval.append(parentId).append("\t");
+      retval.append(partialPlan.getObject(parentId).getName()).append("\t");
+    }
     retval.append(objectVarId).append("\t");
     if(!tokenRelationIds.isEmpty()) {
       for(ListIterator it = tokenRelationIds.listIterator(); it.hasNext();) {
-        retval.append(it.next()).append(",");
+        retval.append(it.next()).append(":");
       }
     }
     else {
@@ -439,7 +445,7 @@ public class PwTokenImpl implements PwToken {
     retval.append("\t");
     if(!paramVarIds.isEmpty()) {
       for(ListIterator it = paramVarIds.listIterator(); it.hasNext();) {
-        retval.append(it.next()).append(",");
+        retval.append(it.next()).append(":");
       }
     }
     else {
@@ -451,7 +457,8 @@ public class PwTokenImpl implements PwToken {
       retval.append(partialPlan.getSlot(slotId).getTokenList().indexOf(this)); 
     }
     else {
-      retval.append("-1");
+      // retval.append("-1");
+      retval.append("0");
     }
     retval.append("\n");
     return retval.toString();

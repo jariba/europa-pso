@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.24 2004-04-30 21:48:40 miatauro Exp $
+// $Id: DbConstants.java,v 1.25 2004-05-04 01:27:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -96,9 +96,15 @@ public interface DbConstants {
 
   public static final String PP_RESOURCE_INSTANTS_EXT = "instants";
 
-  public static final String SEQ_COL_SEP = "0x1e";
+  public static final String SEQ_COL_SEP_HEX = "0x1e";
+
+  public static final String SEQ_COL_SEP = "1E";
+  // covert to string - (char) Integer.parseInt(DbConstants.SEQ_COL_SEP, 16)
  
-  public static final String SEQ_LINE_SEP = "0x1f";
+  public static final String SEQ_LINE_SEP_HEX = "0x1f";
+
+  public static final String SEQ_LINE_SEP = "1F";
+  // covert to string - (char) Integer.parseInt(DbConstants.SEQ_LINE_SEP, 16)
 
   public static final String SEQ_PP_STATS = "partialPlanStats";
 
@@ -154,6 +160,12 @@ public interface DbConstants {
 
 
   /**
+   * constant <code>OBJECT_CREATED</code> - String - transaction type
+   *
+   */
+  public static final String OBJECT_CREATED = "OBJECT_CREATED";
+
+  /**
    * constant <code>TOKEN_CREATED</code> - String - transaction type
    *
    */
@@ -176,6 +188,24 @@ public interface DbConstants {
    *
    */
   public static final String TOKEN_INSERTED = "TOKEN_INSERTED";
+
+  /**
+   * constant <code>TOKEN_ADDED_TO_OBJECT</code> - String - transaction type
+   *
+   */
+  public static final String TOKEN_ADDED_TO_OBJECT = "TOKEN_ADDED_TO_OBJECT";
+
+  /**
+   * constant <code>TOKEN_REMOVED</code> - String - transaction type
+   *
+   */
+  public static final String TOKEN_REMOVED = "TOKEN_REMOVED";
+
+  /**
+   * constant <code>TOKEN_CLOSED</code> - String - transaction type
+   *
+   */
+  public static final String TOKEN_CLOSED = "TOKEN_CLOSED";
 
   /**
    * constant <code>TOKEN_ALL_TYPES</code> - String - transaction type
@@ -226,6 +256,30 @@ public interface DbConstants {
   public static final String VARIABLE_DOMAIN_SPECIFIED = "VARIABLE_DOMAIN_SPECIFIED";
                                                           
   /**
+   * constant <code>VARIABLE_DOMAIN_CLOSED</code> - String - transaction type
+   *
+   */
+  public static final String VARIABLE_DOMAIN_CLOSED = "VARIABLE_DOMAIN_CLOSED";
+      
+  public static final String VARIABLE_DOMAIN_RESTRICT_TO_SINGLETON =
+    "VARIABLE_DOMAIN_RESTRICT_TO_SINGLETON";
+  public static final String VARIABLE_DOMAIN_LOWER_BOUND_INCREASED =
+    "VARIABLE_DOMAIN_LOWER_BOUND_INCREASED";
+  public static final String VARIABLE_DOMAIN_LOWER_BOUND_DECREASED =
+    "VARIABLE_DOMAIN_LOWER_BOUND_DECREASED";
+  public static final String VARIABLE_DOMAIN_UPPER_BOUND_INCREASED =
+    "VARIABLE_DOMAIN_UPPER_BOUND_INCREASED";
+  public static final String VARIABLE_DOMAIN_UPPER_BOUND_DECREASED =
+    "VARIABLE_DOMAIN_UPPER_BOUND_DECREASED";
+  public static final String VARIABLE_DOMAIN_BOUNDS_RESTRICTED =
+    "VARIABLE_DOMAIN_BOUNDS_RESTRICTED";
+  public static final String VARIABLE_DOMAIN_VALUE_REMOVED =
+    "VARIABLE_DOMAIN_VALUE_REMOVED";
+  public static final String VARIABLE_DOMAIN_SET_TO_SINGLETON =
+    "VARIABLE_DOMAIN_SET_TO_SINGLETON";
+   public static final String VARIABLE_DOMAIN_SET = "VARIABLE_DOMAIN_SET";
+                          
+  /**
    * constant <code>VARIABLE_ALL_TYPES</code> - String - transaction type
    *
    */
@@ -244,6 +298,12 @@ public interface DbConstants {
   public static final String CONSTRAINT_DELETED = "CONSTRAINT_DELETED";
 
   /**
+   * constant <code>CONSTRAINT_EXECUTED</code> - String - transaction type
+   *
+   */
+  public static final String CONSTRAINT_EXECUTED = "CONSTRAINT_EXECUTED";
+
+  /**
    * constant <code>CONSTRAINT_ALL_TYPES</code> - String - transaction type
    *
    */
@@ -260,6 +320,23 @@ public interface DbConstants {
    *
    */
   public static final String PROPOGATION_ENDED = "PROPOGATION_ENDED";
+
+  public static final String RULE_EXECUTED = "RULE_EXECUTED";
+
+
+  public static final String ATEMPORAL_CONSTRAINT_TYPE = "ATEMPORAL";
+
+  public static final String TEMPORAL_CONSTRAINT_TYPE = "TEMPORAL";
+
+  public static final String TOKEN_RELATION_TYPE = "CAUSAL";
+
+  public static final String INTEGER_INTERVAL_DOMAIN_TYPE = "INTEGER_SORT";
+
+  public static final String REAL_INTERVAL_DOMAIN_TYPE = "REAL_SORT";
+
+  public static final String ENUMERATED_DOMAIN = "EnumeratedDomain";
+
+  public static final String INTERVAL_DOMAIN = "IntervalDomain";
   
   public static final String TT_CREATION = "CREATION";
   public static final String TT_DELETION = "DELETION";
@@ -271,8 +348,31 @@ public interface DbConstants {
   public static final String TT_EXECUTION = "EXECUTION";
   public static final String TT_SPECIFICATION = "SPECIFICATION";
   public static final String TT_UNDO = "UNDO";
-  
 
+  public static final String [] TT_CREATION_TYPES = new String [] {
+    TOKEN_CREATED, VARIABLE_CREATED, CONSTRAINT_CREATED, OBJECT_CREATED };
+  public static final String [] TT_DELETION_TYPES = new String [] {
+    TOKEN_DELETED, VARIABLE_DELETED, CONSTRAINT_DELETED };
+  public static final String [] TT_ADDITION_TYPES = new String [] {
+    TOKEN_ADDED_TO_OBJECT};
+  public static final String [] TT_REMOVAL_TYPES = new String [] {
+    TOKEN_REMOVED};
+  public static final String [] TT_CLOSURE_TYPES = new String [] {
+    VARIABLE_DOMAIN_CLOSED, TOKEN_CLOSED};
+  public static final String [] TT_RESTRICTION_TYPES = new String [] {
+    VARIABLE_DOMAIN_RESTRICT_TO_SINGLETON, VARIABLE_DOMAIN_LOWER_BOUND_INCREASED,
+    VARIABLE_DOMAIN_LOWER_BOUND_DECREASED, VARIABLE_DOMAIN_UPPER_BOUND_INCREASED,
+    VARIABLE_DOMAIN_UPPER_BOUND_DECREASED, VARIABLE_DOMAIN_BOUNDS_RESTRICTED,
+    VARIABLE_DOMAIN_VALUE_REMOVED };
+  public static final String [] TT_RELAXATION_TYPES = new String [] {
+    };
+  public static final String [] TT_EXECUTION_TYPES = new String [] {
+    RULE_EXECUTED, CONSTRAINT_EXECUTED };
+  public static final String [] TT_SPECIFICATION_TYPES = new String [] {
+    VARIABLE_DOMAIN_SET_TO_SINGLETON, VARIABLE_DOMAIN_SET};
+  public static final String [] TT_UNDO_TYPES = new String [] {
+    };
+  
   public static final String TBL_CONSTRAINT = "VConstraint";
   public static final String TBL_CONSTVARMAP = "ConstraintVarMap";
   public static final String TBL_OBJECT = "Object";

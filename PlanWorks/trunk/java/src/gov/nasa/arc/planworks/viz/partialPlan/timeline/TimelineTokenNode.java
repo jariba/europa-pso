@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineTokenNode.java,v 1.4 2004-04-22 19:26:25 taylor Exp $
+// $Id: TimelineTokenNode.java,v 1.5 2004-05-04 01:27:21 taylor Exp $
 //
 // PlanWorks
 //
@@ -23,6 +23,7 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -85,7 +86,7 @@ public class TimelineTokenNode extends TokenNode {
            (! ((TokenNode) currentMouseOverNode).getToken().getId().equals
             ( tokenNode.getToken().getId())))))) {
       timelineView.setMouseOverNode( tokenNode);
-      String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
+      String className = PlanWorks.getViewClassName( ViewConstants.TEMPORAL_EXTENT_VIEW);
       if (timelineView.isAutoSnapEnabled() &&
           timelineView.getViewSet().viewExists( className)) {
         PwSlot slot = null; // free token has no slot

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryView.java,v 1.5 2004-04-22 19:26:27 taylor Exp $
+// $Id: TokenQueryView.java,v 1.6 2004-05-04 01:27:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -32,6 +32,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.TokenQueryContentView;
 import gov.nasa.arc.planworks.viz.TokenQueryHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -53,7 +54,6 @@ public class TokenQueryView extends SequenceView {
   private List freeTokenList; // element PwQueryToken
   private String query;
   private SequenceQueryWindow sequenceQueryWindow;
-  private MDIInternalFrame freeTokenQueryFrame;
 
   private long startTimeMSecs;
   private ViewSet viewSet;
@@ -73,10 +73,12 @@ public class TokenQueryView extends SequenceView {
    * @param sequenceQueryWindow - <code>JPanel</code> - 
    * @param freeTokenQueryFrame - <code>MDIInternalFrame</code> - 
    * @param startTimeMSecs - <code>long</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
    */
   public TokenQueryView( List freeTokenList, String query, ViewableObject planSequence,
-                             ViewSet viewSet, JPanel sequenceQueryWindow,
-                             MDIInternalFrame freeTokenQueryFrame, long startTimeMSecs) {
+                         ViewSet viewSet, JPanel sequenceQueryWindow,
+                         MDIInternalFrame freeTokenQueryFrame, long startTimeMSecs,
+                         ViewListener viewListener) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.freeTokenList = freeTokenList;
     Collections.sort( freeTokenList,
@@ -86,10 +88,13 @@ public class TokenQueryView extends SequenceView {
     this.planSequence = (PwPlanningSequence) planSequence;
     this.viewSet = (SequenceViewSet) viewSet;
     this.sequenceQueryWindow = (SequenceQueryWindow) sequenceQueryWindow;
-    this.freeTokenQueryFrame = freeTokenQueryFrame;
+    viewFrame = freeTokenQueryFrame;
     // for PWTestHelper.findComponentByName
-    this.setName( freeTokenQueryFrame.getTitle());
+    setName( freeTokenQueryFrame.getTitle());
     this.startTimeMSecs = startTimeMSecs;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -114,6 +119,7 @@ public class TokenQueryView extends SequenceView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -147,9 +153,8 @@ public class TokenQueryView extends SequenceView {
                                 // contentJGoView.getDocumentSize().getHeight());
                                 // keep contentJGoView small
                                 (ViewConstants.INTERNAL_FRAME_X_DELTA));
-    freeTokenQueryFrame.setSize
-      ( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
-        maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
+    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
+                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
     int maxQueryFrameY =
       (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
              sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
@@ -158,16 +163,17 @@ public class TokenQueryView extends SequenceView {
                           (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
                                  maxQueryFrameY -
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
-    freeTokenQueryFrame.setLocation
-      ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta, maxQueryFrameY + delta);
+    viewFrame.setLocation( ViewConstants.INTERNAL_FRAME_X_DELTA + delta,
+                           maxQueryFrameY + delta);
     // prevent right edge from going outside the MDI frame
-    expandViewFrame( freeTokenQueryFrame,
+    expandViewFrame( viewFrame,
                      (int) headerJGoView.getDocumentSize().getWidth(),
                      (int) (headerJGoView.getDocumentSize().getHeight() +
                             contentJGoView.getDocumentSize().getHeight()));
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 

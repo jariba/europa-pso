@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.18 2004-04-22 19:26:25 taylor Exp $
+// $Id: SlotNode.java,v 1.19 2004-05-04 01:27:20 taylor Exp $
 //
 // PlanWorks
 //
@@ -441,7 +441,7 @@ public class SlotNode extends TextNode {
             ( slotNode.getSlot().getId())))))) {
       timelineView.setMouseOverNode( slotNode);
       if (! slotNode.getSlot().isEmpty()) { // no empty slots in TemporalExtentView
-        String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
+        String className = PlanWorks.getViewClassName( ViewConstants.TEMPORAL_EXTENT_VIEW);
         if (timelineView.isAutoSnapEnabled() &&
             timelineView.getViewSet().viewExists( className)) {
           ((PartialPlanViewSet) timelineView.getViewSet()).setActiveToken( token);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.3 2004-04-22 19:26:24 taylor Exp $
+// $Id: DBTransactionView.java,v 1.4 2004-05-04 01:27:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -67,7 +67,6 @@ public class DBTransactionView extends PartialPlanView {
   private DBTransactionContentView contentJGoView;
   private JGoDocument jGoDocument;
   private List transactionJGoTextList; // element JGoText
-  private ViewListener viewListener;
 
 
   /**
@@ -106,8 +105,6 @@ public class DBTransactionView extends PartialPlanView {
   } // end constructor
 
   private void dBTransactionViewInit( ViewableObject partialPlan) {
-    this.viewListener = null;
-
     planSequence = PlanWorks.getPlanWorks().getPlanSequence( this.partialPlan);
 
     transactionList = planSequence.getTransactionsList( this.partialPlan.getId());
@@ -116,6 +113,10 @@ public class DBTransactionView extends PartialPlanView {
                       ( ViewConstants.DB_TRANSACTION_KEY_HEADER));
 
     stepNumber = this.partialPlan.getStepNumber();
+    ViewListener viewListener = null;
+    viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
+    // for PWTestHelper.findComponentByName
+    this.setName( viewFrame.getTitle());
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
   } // end DBTransactionInit
@@ -177,10 +178,7 @@ public class DBTransactionView extends PartialPlanView {
 
     this.setVisible( true);
 
-    MDIInternalFrame frame = viewSet.openView( this.getClass().getName(), viewListener);
-    // for PWTestHelper.findComponentByName
-    this.setName( frame.getTitle());
-    expandViewFrame( frame,
+    expandViewFrame( viewFrame,
                      (int) headerJGoView.getDocumentSize().getWidth(),
                      (int) (headerJGoView.getDocumentSize().getHeight() +
                             contentJGoView.getDocumentSize().getHeight()));

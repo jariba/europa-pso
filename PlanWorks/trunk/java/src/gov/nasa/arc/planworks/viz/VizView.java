@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.21 2004-04-22 19:26:22 taylor Exp $
+// $Id: VizView.java,v 1.22 2004-05-04 01:27:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -78,6 +78,7 @@ public class VizView extends JPanel {
                                                                   "Zoom Out x 2",
                                                                   "Zoom Out x 4",
                                                                   "Zoom Out x 8" };
+  private  List listenerList;
 
   protected ViewSet viewSet;
   protected Font font;
@@ -85,7 +86,7 @@ public class VizView extends JPanel {
   protected VizViewOverview overview;
   protected VizViewRuleView ruleView;
   protected int zoomFactor;
-  private  List listenerList;
+  protected MDIInternalFrame viewFrame;
 
   /**
    * <code>VizView</code> - constructor 
@@ -104,6 +105,7 @@ public class VizView extends JPanel {
     overview = null;
     ruleView = null;
     zoomFactor = 1;
+    viewFrame = null;
 
     JGoText.setDefaultFontFaceName( "Monospaced");
     JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
@@ -170,6 +172,15 @@ public class VizView extends JPanel {
     return zoomFactor;
   }
 
+  /**
+   * <code>getViewFrame</code>
+   *
+   * @return - <code>MDIInternalFrame</code> - 
+   */
+  public final MDIInternalFrame getViewFrame() {
+    return viewFrame;
+  }
+      
   /**
    * <code>redraw</code> - each subclass of VizView will implement 
    *
@@ -336,7 +347,7 @@ public class VizView extends JPanel {
           String seqUrl = planSequence.getUrl();
           String seqName = planSequence.getName();
           boolean isInvokeAndWait = true;
-          Iterator viewListItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
+          Iterator viewListItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
           ViewListener viewListener = null;
           while (viewListItr.hasNext()) {
             final String viewName = (String) viewListItr.next();
@@ -351,7 +362,7 @@ public class VizView extends JPanel {
           if (partialPlanIfLoaded != null) {
             PartialPlanViewSet partialPlanViewSet =
               (PartialPlanViewSet) viewSet.getViewManager().getViewSet( partialPlanIfLoaded);
-            String navigatorWindowName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
+            String navigatorWindowName = ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "");
             List windowKeyList = new ArrayList( partialPlanViewSet.getViews().keySet());
             CollectionUtils.lMap(new NavViewDeIcon(partialPlanViewSet, navigatorWindowName),
                                  windowKeyList);

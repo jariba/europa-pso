@@ -62,7 +62,7 @@ public class MySQLDBTest extends TestCase {
       assertTrue(c.getInt("ConstraintId") == 1);
       assertTrue(c.getLong("PartialPlanId") == 1L);
       assertTrue(c.getString("ConstraintName").equals("constraintname"));
-      assertTrue(c.getString("ConstraintType").equals("ATEMPORAL"));
+      assertTrue(c.getString("ConstraintType").equals(DbConstants.ATEMPORAL_CONSTRAINT_TYPE));
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
@@ -95,8 +95,8 @@ public class MySQLDBTest extends TestCase {
       assertTrue(id.getLong("PartialPlanId") == 1L);
       assertTrue(id.getString("LowerBound").equals("lowerbound"));
       assertTrue(id.getString("UpperBound").equals("upperbound"));
-      assertTrue(id.getString("IntervalDomainType").equals("INTEGER_SORT") ||
-                 id.getString("IntervalDomainType").equals("REAL_SORT"));
+      assertTrue(id.getString("IntervalDomainType").equals(DbConstants.INTEGER_INTERVAL_DOMAIN_TYPE) ||
+                 id.getString("IntervalDomainType").equals(DbConstants.REAL_INTERVAL_DOMAIN_TYPE));
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
