@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.14 2003-07-14 23:52:19 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.15 2003-07-15 00:21:51 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -182,7 +182,7 @@ public class PwTokenImpl implements PwToken {
   }
 
   public boolean isFreeToken() {
-    return this.slotId.equals(new Integer(0));
+    return this.slotId == null;
   }
   /**
    * <code>toString</code>

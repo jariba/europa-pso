@@ -20,6 +20,7 @@ import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
 import gov.nasa.arc.planworks.db.impl.PwPredicateImpl;
 import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
+import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 
@@ -219,6 +220,34 @@ public class MySQLDB {
             }
           }
         }
+      }
+      ResultSet freeTokens = queryDatabase("SELECT TokenId, IsValueToken, ObjectVarId, StartVarId, EndVarId, DurationVarId, RejectVarId, PredicateId FROM Token WHERE IsFreeToken=1 && PartialPlanId=".concat(partialPlan.getKey().toString()));
+      while(freeTokens.next()) {
+        Integer freeTokenId = new Integer(freeTokens.getInt("TokenId"));
+        ResultSet paramVarIds =
+          queryDatabase("SELECT VariableId, ParameterId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND TokenId=").concat(freeTokenId.toString()).concat(" ORDER BY ParameterId"));
+        ArrayList variableIdList = new ArrayList();
+        while(paramVarIds.next()) {
+          variableIdList.add(new Integer(paramVarIds.getInt("VariableId")));
+        }
+        ResultSet tokenRelationIds =
+          queryDatabase("SELECT TokenRelationId FROM TokenRelation WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND (TokenAId=").concat(freeTokenId.toString()).concat(" OR TokenBId=").concat(freeTokenId.toString()).concat(")"));
+        ArrayList tokenRelationIdList = new ArrayList();
+        while(tokenRelationIds.next()) {
+          tokenRelationIdList.add(new Integer(tokenRelationIds.getInt("TokenRelationId")));
+        }
+        PwTokenImpl token = new PwTokenImpl(freeTokenId, freeTokens.getBoolean("IsValueToken"),
+                                            (Integer) null,
+                                            new Integer(freeTokens.getInt("PredicateId")),
+                                            new Integer(freeTokens.getInt("StartVarId")),
+                                            new Integer(freeTokens.getInt("EndVarId")),
+                                            new Integer(freeTokens.getInt("DurationVarId")),
+                                            (Integer) null, 
+                                            new Integer(freeTokens.getInt("RejectVarId")),
+                                            new Integer(freeTokens.getInt("ObjectVarId")), 
+                                            (Integer) null,
+                                            tokenRelationIdList, variableIdList, partialPlan);
+        partialPlan.addToken(freeTokenId, token);
       }
     }
     catch(SQLException sqle) {
