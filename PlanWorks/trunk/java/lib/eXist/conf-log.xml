@@ -127,9 +127,11 @@
     		retrieving query results or for some types of XPath subexpressions, like
     		equality comparisons.
   -->
+
+<!--MJI- changed index-depth to 5 so it'll index down to Tokens-->
   <indexer batchLoad="true" tmpDir="tmp"
 	  stemming="false" controls="ctl" caseSensitive="false"
-	  suppress-whitespace="both" index-depth="1"
+	  suppress-whitespace="both" index-depth="5"
 	  tokenizer="org.exist.storage.analysis.SimpleTokenizer"
 	  validation="auto">
 
