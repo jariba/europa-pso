@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: VariableTypeBox.java,v 1.3 2003-06-16 16:28:09 miatauro Exp $
+//
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
 import java.awt.Container;
@@ -13,21 +21,20 @@ import javax.swing.JPanel;
 
 import javax.swing.JFrame;
 
-public class VariableTypeBox extends JPanel implements ContentSpecElement
-{
+public class VariableTypeBox extends JPanel implements ContentSpecElement {
   private LogicComboBox logicBox;
   private NegationCheckBox negationBox;
   private JComboBox typeBox;
-  public VariableTypeBox(boolean first)
-  {
+  public VariableTypeBox(boolean first) {
     GridBagLayout gridBag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
     setLayout(gridBag);
     
     logicBox = new LogicComboBox();
     logicBox.addItemListener(new LogicBoxListener(this));
-    if(first)
+    if(first) {
       logicBox.setEnabled(false);
+    }
     
     c.weightx = 0.5;
     c.gridx = 0;
@@ -57,28 +64,29 @@ public class VariableTypeBox extends JPanel implements ContentSpecElement
     gridBag.setConstraints(typeBox, c);
     add(typeBox);
   }
-  public List getValue() throws NullPointerException
-  {
+  public List getValue() throws NullPointerException {
     ArrayList retval = new ArrayList();
     StringBuffer connective = new StringBuffer();
-    if(((String)typeBox.getSelectedItem()).equals(""))
+    if(((String)typeBox.getSelectedItem()).equals("")) {
       return null;
-    if(logicBox.isEnabled())
-      {
-        if(((String)logicBox.getSelectedItem()).equals(""))
-          return null;
-        connective.append(((String)logicBox.getSelectedItem()).toLowerCase());
+    }
+    if(logicBox.isEnabled()) {
+      if(((String)logicBox.getSelectedItem()).equals("")) {
+        return null;
       }
-    else
+      connective.append(((String)logicBox.getSelectedItem()).toLowerCase());
+    }
+    else {
       connective.append("or");
-    if(negationBox.isSelected())
+    }
+    if(negationBox.isSelected()) {
       connective.append(" not");
+    }
     retval.add(connective.toString());
     retval.add((String)typeBox.getSelectedItem());
     return retval;
   }
-  protected void addVariableTypeBox()
-  {
+  protected void addVariableTypeBox() {
     GroupBox parent = (GroupBox) getParent();
     GridBagLayout gridBag = (GridBagLayout) parent.getLayout();
     GridBagConstraints c = new GridBagConstraints();
@@ -90,51 +98,39 @@ public class VariableTypeBox extends JPanel implements ContentSpecElement
     parent.add((ContentSpecElement)box);
     parent.validate();
   }
-  protected void removeVariableTypeBox()
-  {
+  protected void removeVariableTypeBox() {
     GroupBox parent = (GroupBox) getParent();
     parent.remove(this);
     parent.validate();
     parent.repaint();
   }
-  public void reset()
-  {
+  public void reset() {
     logicBox.setSelectedItem("");
     negationBox.setSelected(false);
     typeBox.setSelectedItem("");
   }
-  class LogicBoxListener implements ItemListener
-  {
+  class LogicBoxListener implements ItemListener {
     private VariableTypeBox box;
     private String itemStateChangedFrom;
     
-    public LogicBoxListener(VariableTypeBox box)
-    {
+    public LogicBoxListener(VariableTypeBox box) {
       this.box = box;
       itemStateChangedFrom = null;
     }
-    public void itemStateChanged(ItemEvent ie)
-    {
-      if(ie.getStateChange() == ItemEvent.DESELECTED)
+    public void itemStateChanged(ItemEvent ie) {
+      if(ie.getStateChange() == ItemEvent.DESELECTED) {
         itemStateChangedFrom = (String) ie.getItem();
-      else if(ie.getStateChange() == ItemEvent.SELECTED)
-        {
-          if(itemStateChangedFrom.equals("") &&
-             (((String)ie.getItem()).equals("AND") ||
-              ((String)ie.getItem()).equals("OR")))
-            box.addVariableTypeBox();
-          else if((itemStateChangedFrom.equals("AND") || itemStateChangedFrom.equals("OR")) &&
-                  ((String)ie.getItem()).equals(""))
-            box.removeVariableTypeBox();
+      }
+      else if(ie.getStateChange() == ItemEvent.SELECTED) {
+        if(itemStateChangedFrom.equals("") &&
+           (((String)ie.getItem()).equals("AND") || ((String)ie.getItem()).equals("OR"))) {
+          box.addVariableTypeBox();
         }
+        else if((itemStateChangedFrom.equals("AND") || itemStateChangedFrom.equals("OR")) &&
+                ((String)ie.getItem()).equals("")) {
+          box.removeVariableTypeBox();
+        }
+      }
     }
-  }
-  public static void main(String [] args)
-  {
-    JFrame frame = new JFrame("test");
-    frame.setBounds(100, 100, 500, 200);
-    Container contentPane = frame.getContentPane();
-    contentPane.add(new VariableTypeBox(true));
-    frame.setVisible(true);
   }
 }
