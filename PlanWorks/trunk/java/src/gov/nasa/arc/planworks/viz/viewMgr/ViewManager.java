@@ -4,10 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.6 2003-06-25 17:04:05 taylor Exp $
+// $Id: ViewManager.java,v 1.7 2003-07-09 16:50:47 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +44,8 @@ public class ViewManager implements ViewSetRemover {
    *                 they are visually distinct across partial plans.
    * @return MDIInternalFrame the frame containing the newly created or selected view.
    */
-  public MDIInternalFrame openTimelineView(PwPartialPlan partialPlan, String planName) {
+  public MDIInternalFrame openTimelineView(PwPartialPlan partialPlan, String planName) 
+  throws SQLException {
     if(!viewSets.containsKey(partialPlan)) {
       viewSets.put(partialPlan, new ViewSet(desktopFrame, partialPlan, planName, this));
     }
@@ -57,7 +59,8 @@ public class ViewManager implements ViewSetRemover {
    *                 they are visually distinct across partial plans.
    * @return MDIInternalFrame the frame containing the newly created or selected view.
    */
-  public MDIInternalFrame openTokenNetworkView(PwPartialPlan partialPlan, String planName) {
+  public MDIInternalFrame openTokenNetworkView(PwPartialPlan partialPlan, String planName)
+  throws SQLException {
     if(!viewSets.containsKey(partialPlan)) {
       viewSets.put(partialPlan, new ViewSet(desktopFrame, partialPlan, planName, this));
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.9 2003-06-26 18:19:50 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.10 2003-07-09 16:51:35 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -31,6 +31,7 @@ public class PwTimelineImpl implements PwTimeline {
 
   private String name;
   private Integer key;
+  private Integer objectId;
   private List slotIdList;
   private PwPartialPlanImpl partialPlan;
   /**
@@ -40,10 +41,12 @@ public class PwTimelineImpl implements PwTimeline {
    * @param key - <code>int</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwTimelineImpl( String name, Integer key, PwPartialPlanImpl partialPlan) {
+  public PwTimelineImpl( String name, Integer key, Integer objectId, 
+                         PwPartialPlanImpl partialPlan) {
     this.name = name;
     this.key = key;
     this.partialPlan = partialPlan;
+    this.objectId = objectId;
     slotIdList = new ArrayList();
   } // end constructor
 
@@ -64,7 +67,10 @@ public class PwTimelineImpl implements PwTimeline {
   public Integer getKey() {
     return key;
   }
-	
+  
+  public Integer getObjectId() {
+    return objectId;
+  }
   /**
    * <code>getSlotList</code>
    *

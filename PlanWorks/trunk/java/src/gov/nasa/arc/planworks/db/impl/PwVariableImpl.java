@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.7 2003-07-02 18:30:05 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.8 2003-07-09 16:51:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -36,6 +36,7 @@ public class PwVariableImpl implements PwVariable {
   private String type;
   private List constraintIdList; // element String
   private List parameterIdList;
+  private List tokenIdList;
   private PwDomainImpl domain; // PwEnumeratedDomainImpl || PwIntervalDomainImpl
   private PwPartialPlanImpl partialPlan;
 
@@ -51,11 +52,12 @@ public class PwVariableImpl implements PwVariable {
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
   public PwVariableImpl( Integer key, String type, List constraintIds, List parameterIds,
-                         PwDomainImpl domain, PwPartialPlanImpl partialPlan) {
+                         List tokenIds, PwDomainImpl domain, PwPartialPlanImpl partialPlan) {
     this.key = key;
     this.type = type;
     this.constraintIdList = constraintIds;
     this.parameterIdList = parameterIds;
+    this.tokenIdList = tokenIds;
     this.domain = domain;
     this.partialPlan = partialPlan;
   } // end constructor
@@ -106,5 +108,11 @@ public class PwVariableImpl implements PwVariable {
     return retval;
   }
 
-
+  public List getTokenList() {
+    List retval = new ArrayList(tokenIdList.size());
+    for(int i = 0; i < tokenIdList.size(); i++) {
+      retval.add(partialPlan.getConstraint((Integer) tokenIdList.get(i)));
+    }
+    return retval;
+  }
 } // end class PwVariableImpl

@@ -190,7 +190,7 @@ public class MySQLDB {
             Integer slotId = new Integer(slots.getInt("SlotId"));
             slot = timeline.addSlot(slotId);
             ResultSet tokens =
-              queryDatabase("SELECT TokenId, IsValueToken, StartVarId, EndVarId, DurationVarId, RejectVarId, PredicateId, SlotId, ObjectId FROM Token WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND SlotId=").concat(slotId.toString()));
+              queryDatabase("SELECT TokenId, IsValueToken, StartVarId, EndVarId, DurationVarId, RejectVarId, PredicateId, SlotId, ObjectId, TimelineId FROM Token WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND SlotId=").concat(slotId.toString()));
             while(tokens.next()) {
               Integer tokenId = new Integer(tokens.getInt("TokenId"));
               ResultSet paramVarIds =
@@ -213,6 +213,7 @@ public class MySQLDB {
                             new Integer(tokens.getInt("DurationVarId")),
                             new Integer(tokens.getInt("ObjectId")),
                             new Integer(tokens.getInt("RejectVarId")),
+                            new Integer(tokens.getInt("TimelineId")),
                             tokenRelationIdList, variableIdList);
             }
           }
@@ -307,15 +308,20 @@ public class MySQLDB {
                                  domain.getString("LowerBound"), domain.getString("UpperBound"));
         }
         ArrayList parameterIdList = new ArrayList();
+        ArrayList tokenIdList = new ArrayList();
         ResultSet parameterIds =
-          queryDatabase("SELECT ParameterId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(variableId.toString()));
+          queryDatabase("SELECT ParameterId, TokenId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(variableId.toString()));
         while(parameterIds.next()) {
           parameterIdList.add(new Integer(parameterIds.getInt("ParameterId")));
+          if(parameterIds.getInt("TokenId") != 0) {
+            tokenIdList.add(new Integer(parameterIds.getInt("TokenId")));
+          }
         }
         partialPlan.addVariable(variableId, new PwVariableImpl(variableId, 
                                                                variables.getString("VariableType"),
                                                                constraintIdList,
                                                                parameterIdList,
+                                                               tokenIdList,
                                                                domainImpl, partialPlan));
       }
     }
@@ -415,13 +421,17 @@ public class MySQLDB {
         constraintIdList.add(new Integer(constraintIds.getInt("ConstraintId")));
       }
       ArrayList parameterIdList = new ArrayList();
+      ArrayList tokenIdList = new ArrayList();
       ResultSet parameterIds =
-        queryDatabase("SELECT ParameterId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()));
+        queryDatabase("SELECT ParameterId, TokenId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()));
       while(parameterIds.next()) {
         parameterIdList.add(new Integer(parameterIds.getInt("ParameterId")));
+        if(parameterIds.getInt("TokenId") != 0) {
+          tokenIdList.add(new Integer(parameterIds.getInt("TokenId")));
+        }
       }
       variableImpl = new PwVariableImpl(key, variable.getString("VariableType"), constraintIdList,
-                                    parameterIdList, domainImpl, partialPlan);
+                                        parameterIdList, tokenIdList, domainImpl, partialPlan);
       return variableImpl;
     }
     catch(SQLException sqle) {

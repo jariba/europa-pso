@@ -4,15 +4,17 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.16 2003-07-08 20:27:18 miatauro Exp $
+// $Id: ViewSet.java,v 1.17 2003-07-09 16:50:48 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
 import java.awt.Container;
 import java.beans.PropertyVetoException;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import javax.swing.JButton;
 
 import gov.nasa.arc.planworks.mdi.MDIFrame;
@@ -51,7 +53,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    * @param remover the interface which is responsible for removing entire ViewSets.
    */
   public ViewSet(MDIDesktopFrame desktopFrame, PwPartialPlan partialPlan, String planName, 
-                 ViewSetRemover remover) {
+                 ViewSetRemover remover) throws SQLException{
     this.views = new HashMap();
     this.partialPlan = partialPlan;
     this.planName = planName;
@@ -156,6 +158,9 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    */
   public boolean isInContentSpec(Integer key) {
     return contentSpec.isInContentSpec(key);
+  }
+  public List getValidTokenIds() {
+    return contentSpec.getValidTokenIds();
   }
   public void printSpec() {
     contentSpec.printSpec();

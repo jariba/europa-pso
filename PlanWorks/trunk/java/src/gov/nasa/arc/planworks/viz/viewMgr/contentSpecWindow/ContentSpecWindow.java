@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.8 2003-07-08 20:44:08 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.9 2003-07-09 16:50:57 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -251,14 +251,14 @@ public class ContentSpecWindow extends JPanel {
         System.err.println(output.toString());
         //timeline, predicate, constraint, variableType, timeInterval
         System.err.println("Applying Specification...");
-        specWindow.contentSpec.applySpec(timeline, predicate, /*constraint, variableType, */
-                                         timeInterval);
+        try {specWindow.contentSpec.applySpec(timeline, predicate, /*constraint, variableType, */
+                                              timeInterval);}catch(Exception e){}
         System.err.println("Done applying Specification.");
         specWindow.contentSpec.printSpec();
       }
       else if(ae.getActionCommand().equals("Reset Spec")) {
         
-        specWindow.contentSpec.resetSpec();
+        try{specWindow.contentSpec.resetSpec();}catch(Exception e){}
         //specWindow.constraintGroup.reset();
         specWindow.timeIntervalGroup.reset();
         //specWindow.variableTypeGroup.reset();

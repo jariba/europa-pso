@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimeline.java,v 1.4 2003-06-26 18:19:03 miatauro Exp $
+// $Id: PwTimeline.java,v 1.5 2003-07-09 16:51:17 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -46,6 +46,6 @@ public interface PwTimeline {
    */
   public abstract List getSlotList();
 
-
+  public abstract Integer getObjectId();
 
 } // end interface PwTimeline
