@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.100 2004-05-11 22:45:46 miatauro Exp $
+// $Id: MySQLDB.java,v 1.101 2004-05-12 00:14:35 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1604,6 +1604,21 @@ public class MySQLDB {
 //     }
 //     return retval;
 //   }
+
+	synchronized public static List queryTransactionNameList() {
+		List retval = new ArrayList();
+		try {
+			ResultSet names = queryDatabase("SELECT DISTINCT TransactionName FROM Transaction");
+			while(names.next()) {
+				retval.add(names.getString("TransactionName"));
+			}
+		}
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		}
+		return retval;
+	}
+
 	synchronized public static void queryTransactionNames(PwPlanningSequence seq, Set constrTrans, Set tokTrans, Set varTrans) {
 		try {
 			ResultSet names = queryDatabase("SELECT DISTINCT TransactionName FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()));
