@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.54 2003-10-23 20:22:17 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.55 2003-11-06 00:02:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -92,7 +92,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     predicateMap = new HashMap();
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
-    // PlanWorks.renderPartialPlanView invokes setSeqName() to set this.seqName
+    // PlanWorks.renderPartialPlanView invokes setName() to set this.seqName
 //     this.seqName = url.substring(url.lastIndexOf(System.getProperty("file.separator")) + 1).
 //       concat(System.getProperty("file.separator")).concat(planName);    
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
@@ -922,6 +922,22 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return new ArrayList(contentSpec);
   }
 
+  /**
+   * <code>setName</code> - sequenceDir/stepDir
+   *      PlanWorks.renderPartialPlanView invokes this method 
+   *
+   * @param name - <code>String</code> - 
+   */
+  public void setName( String name) {
+    this.seqName = name;
+  }
+
+
+  /**
+   * <code>getName</code> - sequenceDir/stepDir
+   *
+   * @return - <code>String</code> - 
+   */
   public String getName() {
     return seqName;
   }
@@ -929,15 +945,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   // end implement ViewableObject
 
   /**
-   * <code>setSeqName</code> - sequenceDir/stepDir
-   *      PlanWorks.renderPartialPlanView invokes this method 
+   * <code>getPartialPlanName</code> - stepDir
    *
-   * @param seqName - <code>String</code> - 
+   * @return - <code>String</code> - 
    */
-  public void setSeqName( String seqName) {
-    this.seqName = seqName;
+  public String getPartialPlanName() {
+    return this.seqName.substring( this.seqName.lastIndexOf
+                                   ( System.getProperty( "file.separator")) + 1);
   }
-
 
   /**
    * <code>getPlanDBSize</code> - sum of hash map sizes of all plan objects
@@ -952,7 +967,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
             variableMap.keySet().size());
   } // end getDataBaseSize
 
-
   /**
    * <code>getStepNumber</code> - strip "step" prefix off stepDir and create int
    *
@@ -965,5 +979,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return Integer.parseInt( stepDir.substring( 4)); // strip off step
   } // end getStepNumber
 
+  /**
+   * <code>getSequenceUrl</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getSequenceUrl() {
+    return url.substring( 0, url.lastIndexOf( System.getProperty( "file.separator")));
+  }
+  
 
 } // end class PwPartialPlanImpl

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.44 2003-11-03 19:02:39 taylor Exp $
+# $Id: build-tags-file.csh,v 1.45 2003-11-06 00:02:17 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -129,7 +129,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/UniqueKeyBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/UniqueKeyGroupBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/sequence/SequenceQueryWindow.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/AskTokenByKey.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/AskNodeByKey.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenu.java \
@@ -137,6 +137,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodeLink.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodePortWDiamond.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintJGoView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTokenNode.java \

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.55 2003-10-31 00:50:23 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.56 2003-11-06 00:02:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -226,15 +226,6 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return url;
   }
 
-  /**
-   * <code>getName</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public String getName() {
-    return name;
-  }
-
   public Long getId() {
     //return id;
     return new Long(id.longValue());
@@ -381,19 +372,27 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return new ArrayList(contentSpec);
   }
 
-  // getName already defined
+  /**
+   * <code>setName</code> - sequenceDir
+   *      PlanWorks.renderSequenceView invokes this method 
+   *
+   * @param name - <code>String</code> - 
+   */
+  public void setName( String name) {
+    this.name = name;
+  }
+
+  /**
+   * <code>getName</code> - sequenceDir
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getName() {
+    return name;
+  }
 
   // end implement ViewableObject
 
-  /**
-   * <code>setSeqName</code> - sequenceDir
-   *      PlanWorks.renderSequenceView invokes this method 
-   *
-   * @param seqName - <code>String</code> - 
-   */
-  public void setSeqName( String seqName) {
-    this.name = seqName;
-  }
 
   private List getTransactionsById(List ids) {
     List retval = new ArrayList();

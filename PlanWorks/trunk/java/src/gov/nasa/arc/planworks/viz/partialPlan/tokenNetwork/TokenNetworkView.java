@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.7 2003-11-03 19:02:40 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.8 2003-11-06 00:02:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -46,7 +46,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.AskTokenByKey;
+import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -62,7 +62,6 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class TokenNetworkView extends PartialPlanView {
 
-  private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
   private TokenNetworkJGoView jGoView;
@@ -85,7 +84,6 @@ public class TokenNetworkView extends PartialPlanView {
    */
   public TokenNetworkView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
@@ -580,11 +578,11 @@ public class TokenNetworkView extends PartialPlanView {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
-    JMenuItem tokenByKeyItem = new JMenuItem( "Find Token by Key");
-    createTokenByKeyItem( tokenByKeyItem);
-    mouseRightPopup.add( tokenByKeyItem);
+    JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
+    createNodeByKeyItem( nodeByKeyItem);
+    mouseRightPopup.add( nodeByKeyItem);
 
-    JMenuItem changeViewItem = new JMenuItem( "Get Partial Plan View");
+    JMenuItem changeViewItem = new JMenuItem( "Open a View");
     createChangeViewItem( changeViewItem, partialPlan, viewCoords);
     mouseRightPopup.add( changeViewItem);
     
@@ -595,6 +593,8 @@ public class TokenNetworkView extends PartialPlanView {
     JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
+
+    createAllViewItems( partialPlan, mouseRightPopup);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
@@ -612,24 +612,25 @@ public class TokenNetworkView extends PartialPlanView {
       });
   } // end createActiveTokenItem
 
-  private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
-    tokenByKeyItem.addActionListener( new ActionListener() {
+  private void createNodeByKeyItem( JMenuItem nodeByKeyItem) {
+    nodeByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          AskTokenByKey tokenByKeyDialog =
-            new AskTokenByKey( partialPlan, "Find Token by Key", "key (int)");
-          Integer tokenKey = tokenByKeyDialog.getTokenKey();
-          if (tokenKey != null) {
-            // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());
-            PwToken tokenToFind = partialPlan.getToken( tokenKey);
+          AskNodeByKey nodeByKeyDialog =
+            new AskNodeByKey( "Find by Key", "key (int)", TokenNetworkView.this);
+          Integer nodeKey = nodeByKeyDialog.getNodeKey();
+          if (nodeKey != null) {
+            // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
+            PwToken tokenToFind = partialPlan.getToken( nodeKey);
             boolean isByKey = true;
             findAndSelectToken( tokenToFind, isByKey);
           }
         }
       });
-  } // end createTokenByKeyItem
+  } // end createNodeByKeyItem
 
   private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
     boolean isTokenFound = false;
+    boolean isHighlightNode = true;
     Iterator tokenNodeListItr = nodeList.iterator();
     while (tokenNodeListItr.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeListItr.next();
@@ -638,7 +639,7 @@ public class TokenNetworkView extends PartialPlanView {
         System.err.println( "TokenNetworkView found token: " +
                             tokenToFind.getPredicate().getName() +
                             " (key=" + tokenToFind.getId().toString() + ")");
-        NodeGenerics.focusViewOnNode( tokenNode, jGoView);
+        NodeGenerics.focusViewOnNode( tokenNode, isHighlightNode, jGoView);
         isTokenFound = true;
         break;
       }

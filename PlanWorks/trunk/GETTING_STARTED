@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.15 2003-11-03 19:02:38 taylor Exp $
+# $Id: GETTING_STARTED,v 1.16 2003-11-06 00:02:16 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -43,7 +43,9 @@ The "Planning Sequence" menu expands into the available sequence names.
 Selecting a sequence name brings up two windows.  The first,
 "SequenceQuery ...", allows the user to make data base queries over the 
 sequence (see below).  The second, "SequenceStepsView", is a histogram 
-of the partial plan data base size for each step of the sequence.  
+of the partial plan data base size for each step of the sequence, with
+every tenth step number displayed at the bottom of the appropriate
+element.
 
 Partial plan views for each step are available by clicking Mouse-Right on 
 the desired step in the histogram ("SequenceStepsView").  The histogram 
@@ -53,10 +55,12 @@ constraints, variables, timelines, and slots appear in the appropriate node
 labels.  
 
 All partial plan view's  Mouse-Right pop-ups offer the user a second
-pop-up selection ("Get Partial Plan View") of the other partial plan views, 
+pop-up selection ("Open a View") of the other partial plan views, 
 which will create them as needed.  All views, except for Transaction View,
 also offer "Raise Content Spec", which will set focus on the appropriate
-partial plan Content Spec window.
+partial plan Content Spec window.  In addition, all partial plan view's  
+Mouse-Right pop-ups offer the user "Close All Views", "Hide All Views", 
+and "Open All Views".
 
 There are five active views:
 
@@ -131,8 +135,8 @@ nodes offer sorting of that columns's values, alternately in ascending order
 and desending order.
 
 
-Token Focus in Views
-====================
+Token/Variable/Constraint/Slot Node Focus in Views
+==================================================
 Token nodes (slot nodes in the Timeline View) in all views (except the
 Transaction View), have a Mouse-Right pop-up menu with the possible selection: 
 "Set Active Token".  When the "active token" has been set, the other views 
@@ -149,8 +153,12 @@ highlighting (turquoise).  The basic token will have the primary highlighting
 color (light green).
 
 In all the partial plan views (except the Transaction View), Mouse-Right on 
-the background offers "Find Token by Key" which allows the user to enter a 
-token's key and have the view scroll to that token's location.
+the background offers "Find by Key" which allows the user to enter a key
+and have the view scroll to that node's location.  For Temporal Extent and 
+Token Network views, entered keys will find token nodes; for the Timeline 
+view, entered keys will find token and slot nodes; and for the Constraint 
+Network view, entered keys will find find token, variable, and constraint 
+nodes -- opening appropriate connecting nodes, if needed.
 
 
 Content Specification
@@ -189,6 +197,9 @@ Decisions", "With Restrictions", and "With Unit Variable Decisions".
 value; and "In Range ...", which asks for "StartStep" and "EndStep" values.
 "Apply Query" will cause the query to be performed and a window "Query 
 Results for ..." to be created to display the query results.  
+The query results windows can be removing by clicking Mouse-Right on 
+the background of the "SequenceQuery for ..." dialog, and selecting
+"Discard Query Results Windows".
 
 Each entry of the "Query Results for ..." windows for "Transactions" queries 
 includes the transaction key (TX_KEY), the TRANSACTION_TYPE, the transaction 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionView.java,v 1.6 2003-11-03 19:02:41 taylor Exp $
+// $Id: TransactionView.java,v 1.7 2003-11-06 00:02:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -54,7 +54,6 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  */
 public class TransactionView extends PartialPlanView {
 
-  private PwPartialPlan partialPlan;
   private PwPlanningSequence planSequence;
   private List transactionList; // element PwTransaction
   private int stepNumber;
@@ -76,7 +75,6 @@ public class TransactionView extends PartialPlanView {
    */
   public TransactionView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-    this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
 
@@ -153,15 +151,6 @@ public class TransactionView extends PartialPlanView {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end init
 
-
-  /**
-   * <code>getPartialPlan</code>
-   *
-   * @return - <code>PwPartialPlan</code> - 
-   */
-  public PwPartialPlan getPartialPlan() {
-    return partialPlan;
-  }
 
   /**
    * <code>getTransactionContentView</code>

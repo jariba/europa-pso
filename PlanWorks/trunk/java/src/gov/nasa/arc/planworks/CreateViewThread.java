@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.5 2003-10-16 21:40:39 taylor Exp $
+// $Id: CreateViewThread.java,v 1.6 2003-11-06 00:02:17 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -56,9 +56,9 @@ public class CreateViewThread extends Thread {
     if (PlanWorks.planWorks.supportedViewNames.contains( viewName)) {
       if (! viewExists) {
         if (viewable instanceof PwPartialPlan) {
-          ((PwPartialPlan) viewable).setSeqName( fullSequenceName);
+          ((PwPartialPlan) viewable).setName( fullSequenceName);
         } else if (viewable instanceof PwPlanningSequence) {
-          ((PwPlanningSequence) viewable).setSeqName( fullSequenceName);
+          ((PwPlanningSequence) viewable).setName( fullSequenceName);
         }
         System.err.println( "Rendering " + viewName + " ...");
       }
@@ -78,15 +78,15 @@ public class CreateViewThread extends Thread {
   protected void finishViewRendering( MDIInternalFrame viewFrame, ViewManager viewManager,
                                       boolean viewExists, ViewableObject viewable) {
     ViewSet viewSet = null;
-    if (! viewExists) {
-      while (viewSet == null) {
-        // System.err.println( "wait for ViewSet");
-        try {
-          Thread.currentThread().sleep(50);
-        } catch (InterruptedException excp) {
-        }
-        viewSet = PlanWorks.planWorks.viewManager.getViewSet( viewable);
+    while (viewSet == null) {
+      // System.err.println( "wait for ViewSet");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
       }
+      viewSet = PlanWorks.planWorks.viewManager.getViewSet( viewable);
+    }
+    if (! viewExists) {
       int planWorksFrameHeight = (int) PlanWorks.planWorks.getSize().getHeight();
       int contentSpecFrameHeight = 0;
       if (viewSet.getContentSpecWindow() != null) {
@@ -133,6 +133,15 @@ public class CreateViewThread extends Thread {
     }
     // make associated menus appear & bring window to the front
     try {
+      // in case content spec existed and was iconified
+      if (viewSet.getContentSpecWindow().isIcon()) {
+        viewSet.getContentSpecWindow().setIcon( false);
+      }
+      // in case view existed and was iconified
+      if (viewFrame.isIcon()) {
+        viewFrame.setIcon( false);
+      }
+
       viewFrame.setSelected( false);
       viewFrame.setSelected( true);
     } catch (PropertyVetoException excp) {

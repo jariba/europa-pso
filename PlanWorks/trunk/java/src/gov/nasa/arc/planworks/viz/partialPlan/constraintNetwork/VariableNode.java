@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.2 2003-10-30 22:12:23 taylor Exp $
+// $Id: VariableNode.java,v 1.3 2003-11-06 00:02:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -268,6 +268,24 @@ public class VariableNode extends BasicNode {
   }
 
   /**
+   * <code>setAreNeighborsShown</code>
+   *
+   * @param areShown - <code>boolean</code> - 
+   */
+  protected void setAreNeighborsShown( boolean areShown) {
+    areNeighborsShown = areShown;
+  }
+
+  /**
+   * <code>areNeighborsShown</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean areNeighborsShown() {
+    return areNeighborsShown;
+  }
+
+  /**
    * <code>toString</code>
    *
    * @return - <code>String</code> - 
@@ -355,24 +373,6 @@ public class VariableNode extends BasicNode {
   } // end resetNode
 
   /**
-   * <code>setNodeOpen</code>
-   *
-   */
-  public void setNodeOpen() {
-    areNeighborsShown = true;
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-  }
-
-  /**
-   * <code>setNodeOpen</code>
-   *
-   */
-  public void setNodeClosed() {
-    areNeighborsShown = false;
-    setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
-  }
-
-  /**
    * <code>setHasBeenVisited</code>
    *
    * @param value - <code>boolean</code> - 
@@ -412,13 +412,13 @@ public class VariableNode extends BasicNode {
           //  ( "doMouseClick: Mouse-L show constraint/token nodes of variable id " +
           //    variableNode.getVariable().getId());
           addVariableNodeTokensAndConstraints( this, (ConstraintNetworkView) partialPlanView);
-          setNodeOpen();
+          areNeighborsShown = true;
         } else {
           //System.err.println
           //  ( "doMouseClick: Mouse-L hide constraint/token nodes of variable id " +
           //    variableNode.getVariable().getId());
           removeVariableNodeTokensAndConstraints( this, (ConstraintNetworkView) partialPlanView);
-          setNodeClosed();
+          areNeighborsShown = false;
         }
         return true;
       }
@@ -427,7 +427,14 @@ public class VariableNode extends BasicNode {
     return false;
   } // end doMouseClick   
 
-  private void addVariableNodeTokensAndConstraints
+  /**
+   * <code>addVariableNodeTokensAndConstraints</code> - protected since
+   *                                           needed by ConstraintJGoView
+   *
+   * @param variableNode - <code>VariableNode</code> - 
+   * @param constraintNetworkView - <code>ConstraintNetworkView</code> - 
+   */
+  protected void addVariableNodeTokensAndConstraints
     ( VariableNode variableNode, ConstraintNetworkView constraintNetworkView) {
     boolean areNodesChanged = constraintNetworkView.addConstraintNodes( variableNode);
     boolean areLinksChanged =
@@ -437,6 +444,7 @@ public class VariableNode extends BasicNode {
       constraintNetworkView.setFocusNode( variableNode);
       constraintNetworkView.redraw();
     }
+    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
   } // end addVariableNodeTokensAndConstraints
 
   private void removeVariableNodeTokensAndConstraints
@@ -448,6 +456,7 @@ public class VariableNode extends BasicNode {
       constraintNetworkView.setFocusNode( variableNode);
       constraintNetworkView.redraw();
     }
+    setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
   } // end removeVariableNodeTokensAndConstraints
 
 
