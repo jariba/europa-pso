@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.59 2003-10-28 23:13:52 miatauro Exp $
+// $Id: MySQLDB.java,v 1.60 2003-10-28 23:47:06 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -613,16 +613,10 @@ public class MySQLDB {
         queryDatabase("SELECT Transaction.TransactionType, Transaction.ObjectId, Transaction.Source, Transaction.StepNumber, Transaction.TransactionId, Transaction.PartialPlanId, Token.TokenId, Variable.VariableId, VConstraint.ConstraintId FROM Transaction LEFT JOIN Token ON Token.PartialPlanId=Transaction.PartialPlanId && Token.TokenId=Transaction.ObjectId LEFT JOIN Variable ON Variable.PartialPlanId=Transaction.PartialPlanId && Variable.VariableId=Transaction.ObjectId LEFT JOIN VConstraint ON VConstraint.PartialPlanId=Transaction.PartialPlanId && VConstraint.ConstraintId=Transaction.ObjectId WHERE Transaction.SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY Transaction.PartialPlanId, Transaction.TransactionId"));
       String [] info = new String [] {"", "", ""};
       while(transactions.next()) {
-
-        transactions.getInt("Token.TokenId");
-        if(transactions.wasNull()) {
-          transactions.getInt("Variable.VariableId");
-          if(transactions.wasNull()) {
-            transactions.getInt("VConstraint.ConstraintId");
-            if(transactions.wasNull()) {
-              continue;
-            }
-          }
+        if(transactions.getInt("Token.TokenId") == 0 && 
+           transactions.getInt("Variable.VariableId") == 0 &&
+           transactions.getInt("VConstraint.ConstraintId") == 0) {
+          continue;
         }
 
         Long partialPlanId = new Long(transactions.getLong("PartialPlanId"));
@@ -663,6 +657,9 @@ public class MySQLDB {
           transactionInfo.last();
           info[0] = transactionInfo.getString("VConstraint.ConstraintName");
           info[1] = transactionInfo.getString("Variable.VariableType");
+          if(transactionInfo.wasNull()) {
+            continue;
+          }
           info[2] = "";
           transaction.setInfo(info);
         }
