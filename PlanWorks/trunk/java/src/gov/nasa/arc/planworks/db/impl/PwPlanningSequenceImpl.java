@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.82 2004-05-12 00:43:37 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.83 2004-05-14 18:02:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -223,7 +223,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
 		long t1 = System.currentTimeMillis();
     MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_TRANSACTIONS,
                      DbConstants.TBL_TRANSACTION);
-		System.err.println("Loading transaction file took " + (System.currentTimeMillis() - t1));
+		System.err.println("Loading transaction file took " +
+                                   (System.currentTimeMillis() - t1) + " msecs.");
 		hasLoadedTransactionFile = true;
   }
 
