@@ -4,9 +4,9 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineViewTest.java,v 1.17 2003-07-07 17:30:24 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.1 2003-07-08 22:57:32 taylor Exp $
 //
-package gov.nasa.arc.planworks.viz.views.test;
+package gov.nasa.arc.planworks.test;
 
 import java.awt.Container;
 // import java.awt.event.KeyEvent;
@@ -16,6 +16,7 @@ import java.util.ListIterator;
 import java.util.Set;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -38,6 +39,7 @@ import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
+import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
@@ -52,7 +54,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineGroupBox;
 
 
 /**
- * <code>TimelineViewTest</code> - JFCUnit test case for timeline view, along with
+ * <code>PlanWorksTest</code> - JFCUnit test case for timeline view, along with
  *                  project management
  *
  * @author <a href="mailto:miatauro@email.arcnasa.gov">Michael Iatauro</a>
@@ -61,19 +63,19 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineGroupBox;
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TimelineViewTest extends JFCTestCase{
+public class PlanWorksTest extends JFCTestCase{
 
   private JFrame frame;
   private PlanWorks planWorks;
   private String testType;
 
   /**
-   * <code>TimelineViewTest</code> - constructor 
+   * <code>PlanWorksTest</code> - constructor 
    *
    * @param test - <code>String</code> - 
    * @param testType - <code>String</code> - 
    */
-  public TimelineViewTest(String test, String testType) {
+  public PlanWorksTest(String test, String testType) {
     super(test);
     this.testType = testType;
   }
@@ -156,17 +158,12 @@ public class TimelineViewTest extends JFCTestCase{
     helper.enterClickAndLeave(new MouseEventData(this, createItem));
 
     String [] seqAndPlanNames = selectTimelineView();
-
     TimelineView timelineView = getTimelineView( seqAndPlanNames);
-
     validateTimelines( timelineView);
 
-//     while ( true) {
-//       try {
-//         Thread.currentThread().sleep(50);
-//       } catch (InterruptedException excp) {
-//       }
-//     }
+    seqAndPlanNames = selectTokenNetworkView();
+    TokenNetworkView tokenNetworkView = getTokenNetworkView( seqAndPlanNames);
+
     exitPlanWorks( menuBar);
   } // end testCreateProject
 
@@ -174,7 +171,14 @@ public class TimelineViewTest extends JFCTestCase{
     // click enter on CreateProject dialog, which creates Partial Plan menu
     awtSleep();
     JMenu partialPlanMenu = null;
-    partialPlanMenu = urlEnter();
+    if (testType.equals( "create")) {
+      createProjectEnter();
+    } else if (testType.equals( "open") || testType.equals("contentSpec")) {
+      openProjectEnter();
+    } else {
+      throw new Exception( "selectTimelineView: testType " + testType + " not handled");
+    }
+    partialPlanMenu = getPartialPlanMenu();
     assertNotNull( "Failed to get partialPlanMenu", partialPlanMenu);
     helper.enterClickAndLeave(new MouseEventData(this, partialPlanMenu));
     Thread.sleep( 1000);
@@ -186,16 +190,16 @@ public class TimelineViewTest extends JFCTestCase{
     String partialPlanName = null;
     String seqUrl = null;
     found: for (int i = 0; i < partialPlanMenu.getItemCount(); i++) {
-      if (partialPlanMenu.getItem(i).getText().equals("monkey")) {
+      if (partialPlanMenu.getItem(i).getText().equals("sqlseq")) {
         sequenceMenu = (JMenu) partialPlanMenu.getItem(i);
-        assertNotNull( "Failed to get sequence \"monkey\"", sequenceMenu);
+        assertNotNull( "Failed to get sequence \"sqlseq\"", sequenceMenu);
         helper.enterClickAndLeave(new MouseEventData(this, sequenceMenu));
         Thread.sleep( 1000);
         sequenceName = partialPlanMenu.getItem(i).getText();
         for (int j = 0; j < sequenceMenu.getItemCount(); j++) {
-          if (sequenceMenu.getItem(j).getText().equals("step0000")) {
+          if (sequenceMenu.getItem(j).getText().equals("pp1")) {
             partialPlanSubMenu = (JMenu) sequenceMenu.getItem(j);
-            assertNotNull( "Failed to get partialPlan \"step0000\"", sequenceMenu);
+            assertNotNull( "Failed to get partialPlan \"pp1\"", sequenceMenu);
             helper.enterClickAndLeave(new MouseEventData(this, partialPlanSubMenu));
             Thread.sleep( 1000);
             partialPlanName = sequenceMenu.getItem(j).getText();
@@ -221,56 +225,136 @@ public class TimelineViewTest extends JFCTestCase{
   } // end selectTimelineView
 
 
-  private JMenu urlEnter() throws Exception {
-    if (testType.equals( "create")) {
-      List dialogs = new ArrayList();
-      while (dialogs.size() == 0) {
-        // System.err.println( "wait for create dialog");
-        try {
-          Thread.currentThread().sleep(50);
-        } catch (InterruptedException excp) {
-        }
-        dialogs = TestHelper.getShowingDialogs("Create Project");
-      }
-      assertEquals("Dialog not found:", 1, dialogs.size());
-      Container planWorksDialog = (Container) dialogs.get(0);
-      // JTextField field = null;
-      // field = (JTextField) TestHelper.findComponent(JTextField.class, jfcunitDialog, 0);
-      // assertNotNull("Could not find \"Enter\" field", field);
-      // helper.sendString(new StringEventData(this, field, "Harry Potter"));
-      // helper.sendKeyAction(new KeyEventData(this, field, KeyEvent.VK_ENTER));
-      // Cancel button -- cancel 2nd dialog created by PlanWorks
-      JButton button = null;
-      button = (JButton) TestHelper.findComponent(JButton.class, planWorksDialog, 0);
-      assertNotNull("Could not find \"Enter\" button", button);
-      helper.enterClickAndLeave(new MouseEventData(this, button));
-    } else if (testType.equals( "open") || testType.equals("contentSpec")) {
-      List dialogs = new ArrayList();
-      while (dialogs.size() == 0) {
-        // System.err.println( "wait for open dialog");
-        try {
-          Thread.currentThread().sleep(50);
-        } catch (InterruptedException excp) {
-        }
-        dialogs = TestHelper.getShowingDialogs("Open Project");
-      }
-      assertEquals("Dialog not found:", 1, dialogs.size());
-      Container planWorksDialog = (Container) dialogs.get(0);
-
-      JButton okButton = null;
-      for (int i = 0, n = 10; i < n; i++) {
-        JButton button = (JButton) TestHelper.findComponent(JButton.class, planWorksDialog, i);
-        if (button.getText().equals( "OK")) {
-          okButton = button;
-          break;
+  private String [] selectTokenNetworkView() throws Exception {
+    // click enter on CreateProject dialog, which creates Partial Plan menu
+    awtSleep();
+    JMenu partialPlanMenu = getPartialPlanMenu();
+    assertNotNull( "Failed to get partialPlanMenu", partialPlanMenu);
+    helper.enterClickAndLeave(new MouseEventData(this, partialPlanMenu));
+    Thread.sleep( 1000);
+    // System.err.println( "\n\nGot to here 1\n\n");
+    JMenu sequenceMenu = null;
+    JMenu partialPlanSubMenu = null;
+    PlanWorks.SeqPartPlanViewMenuItem tokenNetworkViewItem = null;
+    String sequenceName = null;
+    String partialPlanName = null;
+    String seqUrl = null;
+    found: for (int i = 0; i < partialPlanMenu.getItemCount(); i++) {
+      if (partialPlanMenu.getItem(i).getText().equals("sqlseq")) {
+        sequenceMenu = (JMenu) partialPlanMenu.getItem(i);
+        assertNotNull( "Failed to get sequence \"sqlseq\"", sequenceMenu);
+        helper.enterClickAndLeave(new MouseEventData(this, sequenceMenu));
+        Thread.sleep( 1000);
+        sequenceName = partialPlanMenu.getItem(i).getText();
+        for (int j = 0; j < sequenceMenu.getItemCount(); j++) {
+          if (sequenceMenu.getItem(j).getText().equals("pp1")) {
+            partialPlanSubMenu = (JMenu) sequenceMenu.getItem(j);
+            assertNotNull( "Failed to get partialPlan \"pp1\"", sequenceMenu);
+            helper.enterClickAndLeave(new MouseEventData(this, partialPlanSubMenu));
+            Thread.sleep( 1000);
+            partialPlanName = sequenceMenu.getItem(j).getText();
+            for (int k = 0; k < partialPlanSubMenu.getItemCount(); k++) {
+              if (partialPlanSubMenu.getItem(k).getText().equals("Token Network")) {
+                tokenNetworkViewItem =
+                  (PlanWorks.SeqPartPlanViewMenuItem) partialPlanSubMenu.getItem(k);
+                assertNotNull( "Failed to get view \"Token Network\"", sequenceMenu);
+                helper.enterClickAndLeave(new MouseEventData(this, tokenNetworkViewItem));
+                break found;
+              }
+            }
+          }
         }
       }
-      assertNotNull("Could not find \"OK\" button", okButton);
-      helper.enterClickAndLeave(new MouseEventData(this, okButton));
-    } else {
-      throw new Exception( "urlEnter: testType " + testType + " not handled");
     }
+    assertNotNull("Failed to get any menu item.", tokenNetworkViewItem);
+    assertTrue("Failed to get \"Token Network\" submenu item.", 
+               tokenNetworkViewItem.getText().equals("Token Network"));
+    // System.err.println( "\n\nGot to here 2\n\n");
+    // helper.mousePressed(tokenNetworkViewItem, EventDataConstants.DEFAULT_MOUSE_MODIFIERS, 1, false);
+    return new String [] { sequenceName, partialPlanName , tokenNetworkViewItem.getSeqUrl()};
+  } // end selectTokenNetworkView
 
+
+  private void createProjectEnter() throws Exception {
+    // project name dialog
+    List dialogs = new ArrayList();
+    while (dialogs.size() == 0) {
+      // System.err.println( "wait for create dialog");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      dialogs = TestHelper.getShowingDialogs("Create Project");
+    }
+    assertEquals("Create Project Dialog not found:", 1, dialogs.size());
+    Container projectNameDialog = (Container) dialogs.get(0);
+    // JTextField field = null;
+    // field = (JTextField) TestHelper.findComponent(JTextField.class, jfcunitDialog, 0);
+    // assertNotNull("Could not find \"Enter\" field", field);
+    // helper.sendString(new StringEventData(this, field, "Harry Potter"));
+    // helper.sendKeyAction(new KeyEventData(this, field, KeyEvent.VK_ENTER));
+    // Cancel button -- cancel 2nd dialog created by PlanWorks
+    JButton button = null;
+    button = (JButton) TestHelper.findComponent(JButton.class, projectNameDialog, 0);
+    System.err.println( "projectNameDialog " + button.getText());
+    assertNotNull("Could not find \"Enter\" button", button);
+    helper.enterClickAndLeave(new MouseEventData(this, button));
+
+    // project sequence dialog
+    JFileChooser fileChooser = null;
+    while (fileChooser == null) {
+      // System.err.println( "wait for create JFileChooser");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      fileChooser = helper.getShowingJFileChooser( planWorks);
+    }
+    assertNotNull( "Select Sequence Directory Dialog not found:", fileChooser);
+    Container projectSeqDialog = (Container) fileChooser;
+    JButton okButton = null;
+    okButton = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog, 4);
+    // this does not work
+//     for (int i = 0, n = 10; i < n; i++) {
+//       button = (JButton) TestHelper.findComponent(JButton.class, projectSeqDialog, i);
+//       System.err.println( "projectSeqDialog button " + button.getText());
+//       if (button.getText().equals( "OK")) {
+//         okButton = button;
+//         break;
+//       }
+//     }
+    System.err.println( "projectSeqDialog " + okButton.getText());
+    assertNotNull("Could not find \"OK\" button", okButton);
+    helper.enterClickAndLeave(new MouseEventData(this, okButton));
+  } // end createProjectEnter
+
+
+  private void openProjectEnter() throws Exception {
+    List dialogs = new ArrayList();
+    while (dialogs.size() == 0) {
+      // System.err.println( "wait for open dialog");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      dialogs = TestHelper.getShowingDialogs("Open Project");
+    }
+    assertEquals("Dialog not found:", 1, dialogs.size());
+    Container projectNameDialog = (Container) dialogs.get(0);
+
+    JButton okButton = null;
+    for (int i = 0, n = 10; i < n; i++) {
+      JButton button = (JButton) TestHelper.findComponent(JButton.class, projectNameDialog, i);
+      if (button.getText().equals( "OK")) {
+        okButton = button;
+        break;
+      }
+    }
+    assertNotNull("Could not find \"OK\" button", okButton);
+    helper.enterClickAndLeave(new MouseEventData(this, okButton));
+  } // end openProjectEnter
+
+  private JMenu getPartialPlanMenu() {
     JMenu partialPlanMenu = null;
     JMenuBar menuBar = frame.getJMenuBar();
     // wait for TimelineView instance to become displayable
@@ -291,7 +375,7 @@ public class TimelineViewTest extends JFCTestCase{
     assertTrue("Failed to get \"Partial Plan\" menu.",
                partialPlanMenu.getText().equals("Partial Plan"));
     return partialPlanMenu;
-  } // end urlEnter
+  } // end getPartialPlanMenu
 
   private TimelineView getTimelineView( String [] seqAndPlanNames) throws Exception {
     String sequenceName = seqAndPlanNames[0];
@@ -334,6 +418,48 @@ public class TimelineViewTest extends JFCTestCase{
     assertNotNull("Failed to get TimelineView object.", timelineView);
     return timelineView;
   } // end getTimelineView
+
+  private TokenNetworkView getTokenNetworkView( String [] seqAndPlanNames) throws Exception {
+    String sequenceName = seqAndPlanNames[0];
+    String partialPlanName = seqAndPlanNames[1];
+    String sequenceUrl = seqAndPlanNames[2];
+    PwPlanningSequence planSequence =
+      planWorks.getCurrentProject().getPlanningSequence( sequenceUrl);
+    PwPartialPlan partialPlan = null;
+    while (partialPlan == null) {
+      // System.err.println( "partialPlan still null");
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      partialPlan = planSequence.getPartialPlan( partialPlanName);
+    }
+
+    assertNotNull( "Failed to get Partial Plan.", partialPlan);
+    ViewManager viewManager = null;
+    viewManager = planWorks.getViewManager();
+    assertNotNull( "Failed to get ViewManager.", viewManager);
+
+    //System.err.println( "\n\nGot to here 3\n\n");
+    MDIInternalFrame viewFrame = null;
+    TokenNetworkView tokenNetworkView = null;
+    Thread.sleep( 3000);
+    viewFrame =
+      viewManager.openTokenNetworkView( partialPlan, sequenceName +
+                                    System.getProperty( "file.separator") +
+                                    partialPlanName);
+    assertNotNull("Failed to get tokenNetwork view MDI internal frame.", viewFrame);
+
+    Container contentPane = viewFrame.getContentPane();
+    for(int i = 0; i < contentPane.getComponentCount(); i++) {
+      if(contentPane.getComponent(i) instanceof TokenNetworkView) {
+        tokenNetworkView = (TokenNetworkView) contentPane.getComponent(i);
+        break;
+      }
+    }
+    assertNotNull("Failed to get TokenNetworkView object.", tokenNetworkView);
+    return tokenNetworkView;
+  } // end getTokenNetworkView
 
   private void validateTimelines( TimelineView timelineView) {
     List timelineNodes = timelineView.getTimelineNodeList();
@@ -595,9 +721,10 @@ public class TimelineViewTest extends JFCTestCase{
     helper.enterClickAndLeave(new MouseEventData(this, openItem));
 
     String [] seqAndPlanNames = selectTimelineView();
-
-    //<<<<<<< TimelineViewTest.java
     TimelineView timelineView = getTimelineView( seqAndPlanNames);
+    seqAndPlanNames = selectTokenNetworkView();
+    TokenNetworkView tokenNetworkView = getTokenNetworkView( seqAndPlanNames);
+
     Container contentPane = frame.getContentPane();
     JDesktopPane desktopPane = null;
     for(int i = 0; i < contentPane.getComponentCount(); i++) {
@@ -638,9 +765,9 @@ public class TimelineViewTest extends JFCTestCase{
    */
   public static TestSuite suite() {
     TestSuite testSuite = new TestSuite();
-    testSuite.addTest( new TimelineViewTest( "testCreateProject", "create"));
-    //testSuite.addTest( new TimelineViewTest( "testOpenProject", "open"));
-    testSuite.addTest( new TimelineViewTest("testOpenAndContentSpec", "contentSpec"));
+    testSuite.addTest( new PlanWorksTest( "testCreateProject", "create"));
+    //testSuite.addTest( new PlanWorksTest( "testOpenProject", "open"));
+    testSuite.addTest( new PlanWorksTest("testOpenAndContentSpec", "contentSpec"));
     return testSuite;
   }
 
@@ -662,9 +789,12 @@ public class TimelineViewTest extends JFCTestCase{
     }
     PlanWorks.osType = System.getProperty("os.type");
     PlanWorks.planWorksRoot = System.getProperty( "planworks.root");
+    PlanWorks.defaultProjectName = System.getProperty( "default.project.name");
+    PlanWorks.defaultSequenceDirectory = System.getProperty( "default.sequence.dir");
 
     TestRunner.run( suite());
-  }
-}
+  } // end main
+
+} // end class PlanWorksTest
  
     

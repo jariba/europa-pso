@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.27 2003-07-07 17:30:24 taylor Exp $
+// $Id: PlanWorks.java,v 1.28 2003-07-08 22:57:32 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -117,6 +117,19 @@ public class PlanWorks extends MDIDesktopFrame {
    *
    */
   public static PlanWorks planWorks;
+
+  /**
+   * variable <code>defaultProjectName</code> - make it accessible to JFCUnit tests
+   *
+   */
+  public static String defaultProjectName;
+
+  /**
+   * variable <code>defaultSequenceDirectory</code> - make it accessible to JFCUnit tests
+   *
+   */
+  public static String defaultSequenceDirectory;
+
   private static JMenu projectMenu;
   private final DirectoryChooser sequenceDirChooser;
   private static String sequenceDirectory; // pathname
@@ -125,9 +138,6 @@ public class PlanWorks extends MDIDesktopFrame {
   private String currentSequenceDirectory; // pathname
   private PwProject currentProject;
   private ViewManager viewManager;
-
-  private static String defaultProjectName;
-  private static String defaultSequenceDirectory;
 
   /**
    * <code>PlanWorks</code> - constructor 
