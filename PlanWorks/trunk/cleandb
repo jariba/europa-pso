@@ -10,3 +10,4 @@ DELETE FROM TokenRelation;
 DELETE FROM VConstraint;
 DELETE FROM Variable;
 DELETE FROM Transaction;
+DELETE FROM ResourceInstants;
