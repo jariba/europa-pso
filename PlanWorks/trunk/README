@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.50 2003-11-06 00:02:17 taylor Exp $
+# $Id: README,v 1.51 2003-11-06 22:40:57 miatauro Exp $
 #
 
 SUMMARY
@@ -59,9 +59,13 @@ token and slot nodes; and for the Constraint Network view, entered keys
 will find find token, variable, and constraint nodes -- opening
 appropriate connecting nodes, if needed.
 
+Almost all loading of data into the database is deferred until absolutely
+necessary.  This adds slight overhead to the first time a Partial Plan is
+viewed, but is a one-time cost.
+
 The current PartialPlanWriter (PlanWorks/cpp/integration/europa/README)
 requires a recent version of EUROPA.  The earliest known working
-version is tagged with the PlanWorks milestone release tag PW_M_8.  
+version is tagged with the PlanWorks milestone release tag PW_M_9.  
 
 The PartialPlanWriter has changed since PW_M_8, and must be rebuilt.
 
@@ -70,6 +74,8 @@ o  GNATS PRs and CRs completed:
    #2157: Add window choices on pop-up menu for within Partial Plan.
    #2159: Change option to Find By Key instead of Find Token By Key.
    #2161: Project menu goes away after deleting a sequence.
+   #2158: Need to greatly imporve load-times for sequences.
+   #2160: Time to delete a sequence is way too long   
 
 
 CVS CHECKOUT
