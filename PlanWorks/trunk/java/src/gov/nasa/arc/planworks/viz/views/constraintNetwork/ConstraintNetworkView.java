@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.1 2003-07-30 00:38:41 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.2 2003-07-30 17:21:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -170,7 +170,7 @@ public class ConstraintNetworkView extends VizView {
     // create all nodes
     createTokenNodes();
     // setVisible( true | false) depending on ContentSpec
-    setNodesVisible();
+    setNodesLinksVisible();
 
     LayeredDigraphAutoLayout layout =
       new LayeredDigraphAutoLayout( jGoDocument, startTimeMSecs);
@@ -191,7 +191,7 @@ public class ConstraintNetworkView extends VizView {
    */
   public void redraw() {
     // setVisible(true | false) depending on keys
-    setNodesVisible();
+    setNodesLinksVisible();
     expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
   } // end redraw
 
@@ -435,7 +435,7 @@ public class ConstraintNetworkView extends VizView {
     jGoDocument.addObjectAtTail( link);
   } // end createConstraintLink
 
-  private void setNodesVisible() {
+  private void setNodesLinksVisible() {
     // System.err.println( "Constraint Network View - contentSpec");
     // viewSet.printSpec();
     validTokenIds = viewSet.getValidTokenIds();
@@ -443,30 +443,36 @@ public class ConstraintNetworkView extends VizView {
     Iterator tokenNodeIterator = nodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-      Iterator variablesItr = tokenNode.getVariableNodeList().iterator();
       if (isTokenInContentSpec( tokenNode.getToken())) {
         tokenNode.setVisible( true);
-        while (variablesItr.hasNext()) {
-          VariableNode variableNode = (VariableNode) variablesItr.next();
-          variableNode.setVisible( true);
-          Iterator varConItr = variableNode.getConstraintNodeList().iterator();
-          while (varConItr.hasNext()) {
-            ((ConstraintNode) varConItr.next()).setVisible( true);
-          }
-        }
       } else {
         tokenNode.setVisible( false);
-        while (variablesItr.hasNext()) {
-          VariableNode variableNode = (VariableNode) variablesItr.next();
+      }
+      Iterator variablesItr = tokenNode.getVariableNodeList().iterator();
+      while (variablesItr.hasNext()) {
+        VariableNode variableNode = (VariableNode) variablesItr.next();
+        if (isVariableNodeInContentSpec( variableNode)) {
+          variableNode.setVisible( true);
+        } else {
           variableNode.setVisible( false);
-          Iterator varConItr = variableNode.getConstraintNodeList().iterator();
-          while (varConItr.hasNext()) {
-            ((ConstraintNode) varConItr.next()).setVisible( false);
+        }
+        Iterator varConItr = variableNode.getConstraintNodeList().iterator();
+        while (varConItr.hasNext()) {
+          ConstraintNode constraintNode = (ConstraintNode) varConItr.next();
+          if (isConstraintNodeInContentSpec( constraintNode)) {
+            constraintNode.setVisible( true);
+          } else {
+            constraintNode.setVisible( false);
           }
         }
       }
     }
+    setLinksVisible();
+    boolean showDialog = true;
+    isContentSpecRendered( "Constraint Network View", showDialog);
+  } // end setNodesLinksVisible
 
+  private void setLinksVisible() {
     Iterator tokenLinkIterator = linkList.iterator();
     while (tokenLinkIterator.hasNext()) {
       BasicNodeLink link = (BasicNodeLink) tokenLinkIterator.next();
@@ -490,9 +496,7 @@ public class ConstraintNetworkView extends VizView {
         }
       }
     }
-    boolean showDialog = true;
-    isContentSpecRendered( "Constraint Network View", showDialog);
-  } // end setNodesVisible
+  } // end LinksVisible
 
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.10 2003-07-30 00:38:41 taylor Exp $
+// $Id: VizView.java,v 1.11 2003-07-30 17:21:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -15,17 +15,23 @@ package gov.nasa.arc.planworks.viz.views;
 
 import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.nodes.ConstraintNode;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.nodes.VariableNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
@@ -196,6 +202,38 @@ public class VizView extends JPanel {
       return false;
     }
   } // end isTokenInContentSpec
+
+  /**
+   * <code>isVariableNodeInContentSpec</code> - 
+   *
+   * @param variableNode - <code>VariableNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean isVariableNodeInContentSpec( VariableNode variableNode) {
+    Iterator tokenNodeItr = variableNode.getTokenNodeList().iterator();
+    while (tokenNodeItr.hasNext()) {
+      if (isTokenInContentSpec( ((TokenNode) tokenNodeItr.next()).getToken())) {
+        return true;
+      }
+    }
+    return false;
+  } // end isVariableNodeInContentSpec
+
+  /**
+   * <code>isConstraintNodeInContentSpec</code>
+   *
+   * @param constraintNode - <code>ConstraintNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean isConstraintNodeInContentSpec( ConstraintNode constraintNode) {
+    Iterator variableNodeItr = constraintNode.getVariableNodeList().iterator();
+    while (variableNodeItr.hasNext()) {
+      if (isVariableNodeInContentSpec( (VariableNode) variableNodeItr.next())) {
+        return true;
+      }
+    }
+    return false;
+  } // end isConstraintNodeInContentSpec
 
   /**
    * <code>expandViewFrame</code> - expand up to size of PlanWorks frame
