@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksBigTest.java,v 1.8 2003-09-30 00:16:03 taylor Exp $
+// $Id: PlanWorksBigTest.java,v 1.9 2003-09-30 19:18:55 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -44,7 +44,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
@@ -403,7 +403,7 @@ public class PlanWorksBigTest extends JFCTestCase {
     }
     ListIterator tokenIterator = view.getTokenNodeList().listIterator();
     while(tokenIterator.hasNext()) {
-      TokenNode node = (TokenNode) tokenIterator.next();
+      ConstraintNetworkTokenNode node = (ConstraintNetworkTokenNode) tokenIterator.next();
       List variables = node.getVariableNodeList();
       assertTrue("Token with incorrect number of variables.", variables.size() >= 5);
       int requiredVars = 0;

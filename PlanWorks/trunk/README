@@ -4,44 +4,21 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.35 2003-09-23 19:47:26 taylor Exp $
+# $Id: README,v 1.36 2003-09-30 19:18:53 taylor Exp $
 #
 
 SUMMARY
 =======
 
-In the Timeline View, clicking Mouse-Right "Set Active Token" on a slot,
-will now set the overloaded tokens as "secondary tokens", such that when
-Mouse-Right "Snap to Active Token" is invoked in the background of the
-Constraint Network View or the Token Network View, these secondary tokens
-will be given secondary highlighting (turquoise).  The basic token will
-have the primary highlighting color (light green).
-
-The active node ("opened" or "closed" by Mouse-Left click) in the Constraint
-Network View, is now positioned in the center of the view after layout.
-
-The key values for tokens, constraints, variables, timelines, and slots now
-appear in the appropriate node labels.
-
-The planWorksTest ant target has been improved by adding the following menu
-functionalities: "Project->Add Sequence ...", "Project->Delete Sequence ...",
-and "Window->Tile Windows".
-
-The PartialPlanWriter previously failed to create certain support
-directories.  This is now fixed.
 
 Completed several change requests and bug fixes.
 
 o  GNATS PRs and CRs completed:
-   #2056: No test data to add more than one sequence to the same project.
-   #2089: Constraint Network View leaves dangling variable node after Content Spec.
-   #2090: Need more info from the constraint network display about the actual objects.
-   #2091: Graph-redrawing on CNet gets users lost.
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_7 PlanWorks
+> cvs co -r PW_M_8 PlanWorks
 
 
 PREREQUISITES
@@ -133,6 +110,37 @@ See file "PlanWorks/GETTING_STARTED" for PlanWorks usage.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+23september03: Milestone 7
+==========================
+In the Timeline View, clicking Mouse-Right "Set Active Token" on a slot,
+will now set the overloaded tokens as "secondary tokens", such that when
+Mouse-Right "Snap to Active Token" is invoked in the background of the
+Constraint Network View or the Token Network View, these secondary tokens
+will be given secondary highlighting (turquoise).  The basic token will
+have the primary highlighting color (light green).
+
+The active node ("opened" or "closed" by Mouse-Left click) in the Constraint
+Network View, is now positioned in the center of the view after layout.
+
+The key values for tokens, constraints, variables, timelines, and slots now
+appear in the appropriate node labels.
+
+The planWorksTest ant target has been improved by adding the following menu
+functionalities: "Project->Add Sequence ...", "Project->Delete Sequence ...",
+and "Window->Tile Windows".
+
+The PartialPlanWriter previously failed to create certain support
+directories.  This is now fixed.
+
+Completed several change requests and bug fixes.
+
+o  GNATS PRs and CRs completed:
+   #2056: No test data to add more than one sequence to the same project.
+   #2089: Constraint Network View leaves dangling variable node after Content Spec.
+   #2090: Need more info from the constraint network display about the actual objects.
+   #2091: Graph-redrawing on CNet gets users lost.
+
 
 18september03: Milestone 6
 ==========================

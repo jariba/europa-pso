@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanDbSizeView.java,v 1.1 2003-09-25 23:52:47 taylor Exp $
+// $Id: PlanDbSizeView.java,v 1.2 2003-09-30 19:18:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,7 +25,6 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;

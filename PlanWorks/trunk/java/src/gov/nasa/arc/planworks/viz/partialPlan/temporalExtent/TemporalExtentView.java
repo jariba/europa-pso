@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.3 2003-09-28 00:19:30 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.4 2003-09-30 19:18:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,7 +26,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
@@ -204,7 +203,7 @@ public class TemporalExtentView extends PartialPlanView  {
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
 
-    long stopTimeMSecs = (new Date()).getTime();
+    long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     jGoExtentView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));

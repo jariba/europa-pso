@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.46 2003-09-29 23:52:11 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.47 2003-09-30 19:18:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,7 +18,6 @@ import java.io.FilenameFilter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -138,12 +137,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     //System.err.println("Creating Timeline/Slot/Token structure");
     MySQLDB.createTimelineSlotTokenNodesStructure(this);
     //System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
-    long start2TimeMSecs = (new Date()).getTime();
+    long start2TimeMSecs = System.currentTimeMillis();
     fillElementMaps();
-    long stop2TimeMSecs = (new Date()).getTime();
+    long stop2TimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stop2TimeMSecs - start2TimeMSecs) + " msecs.");
-    long stopTimeMSecs = (new Date()).getTime();
+    long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     cleanConstraints();

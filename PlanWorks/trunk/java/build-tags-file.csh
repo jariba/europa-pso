@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.30 2003-09-28 00:19:29 taylor Exp $
+# $Id: build-tags-file.csh,v 1.31 2003-09-30 19:18:53 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -12,6 +12,12 @@ if ( "`/bin/uname -s`" == "SunOS" ) then # SUN-OS OR SOLARIS
 endif
 
 etags $etags_flag planWorks.TAGS \
+    src/gov/nasa/arc/planworks/AddSequenceThread.java \
+    src/gov/nasa/arc/planworks/CreatePartialPlanViewThread.java \
+    src/gov/nasa/arc/planworks/CreatePlanStepsViewThread.java \
+    src/gov/nasa/arc/planworks/DeleteProjectThread.java \
+    src/gov/nasa/arc/planworks/DeleteSequenceThread.java \
+    src/gov/nasa/arc/planworks/InstantiateProjectThread.java \
     src/gov/nasa/arc/planworks/PlanWorks.java \
     src/gov/nasa/arc/planworks/db/DbConstants.java \
     src/gov/nasa/arc/planworks/db/PwConstraint.java \
@@ -113,6 +119,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodePortWDiamond.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java \

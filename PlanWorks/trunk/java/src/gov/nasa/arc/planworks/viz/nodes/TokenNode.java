@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.23 2003-09-26 22:47:07 miatauro Exp $
+// $Id: TokenNode.java,v 1.24 2003-09-30 19:18:55 taylor Exp $
 //
 // PlanWorks
 //
@@ -47,7 +47,6 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 /**
  * <code>TokenNode</code> - JGo widget to render a token with a
  *                          label consisting of the slot's predicate name.
- *             Object->JGoObject->JGoArea->BasicNode->TokenNode
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
@@ -55,22 +54,12 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
  */
 public class TokenNode extends BasicNode {
 
-  private static final boolean IS_FONT_BOLD = false;
-  private static final boolean IS_FONT_UNDERLINED = false;
-  private static final boolean IS_FONT_ITALIC = false;
-  private static final int TEXT_ALIGNMENT = JGoText.ALIGN_LEFT;
-  private static final boolean IS_TEXT_MULTILINE = false;
-  private static final boolean IS_TEXT_EDITABLE = false;
-
-  private PwToken token;
-  private Point tokenLocation;
-  private boolean isFreeToken;
-  private PartialPlanView partialPlanView;
-  private String predicateName;
-  private String nodeLabel;
-  private List variableNodeList; // element VariableNode
-  private boolean areNeighborsShown;
-  private int variableLinkCount;
+  protected PwToken token;
+  protected Point tokenLocation;
+  protected boolean isFreeToken;
+  protected PartialPlanView partialPlanView;
+  protected String predicateName;
+  protected String nodeLabel;
 
 
   /**
@@ -100,15 +89,9 @@ public class TokenNode extends BasicNode {
     nodeLabel = labelBuf.toString();
     
     // System.err.println( "TokenNode: " + nodeLabel);
-    variableNodeList = new ArrayList();
-    areNeighborsShown = false;
-    variableLinkCount = 0;
     configure( tokenLocation, backgroundColor, isDraggable);
   } // end constructor
 
-  public TokenNode() {
-    super();
-  }
   private final void configure( Point tokenLocation, Color backgroundColor,
                                 boolean isDraggable) {
     boolean isRectangular = true;
@@ -178,70 +161,6 @@ public class TokenNode extends BasicNode {
   }
 
   /**
-   * <code>incrVariableLinkCount</code>
-   *
-   */
-  public void incrVariableLinkCount() {
-    variableLinkCount++;
-  }
-
-  /**
-   * <code>decVariableLinkCount</code>
-   *
-   */
-  public void decVariableLinkCount() {
-    variableLinkCount--;
-  }
-
-  /**
-   * <code>getVariableLinkCount</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getVariableLinkCount() {
-    return variableLinkCount;
-  }
-
-  /**
-   * <code>getToolTipText</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public String getToolTipText() {
-    if (partialPlanView instanceof ConstraintNetworkView) {
-      String opereration = null;
-      if (areNeighborsShown) {
-        opereration = "close";
-      } else {
-        opereration = "open";
-      }
-      return "<html> " + token.toString() +
-        "<br> Mouse-L: " + opereration + " nearest variables</html>";
-    } else {
-      return token.toString();
-    }
-  } // end getToolTipText
-
-
-  /**
-   * <code>getVariableNodeList</code>
-   *
-   * @return - <code>List</code> - of VariableNode
-   */
-  public List getVariableNodeList() {
-    return variableNodeList;
-  }
-
-  /**
-   * <code>addVariableNode</code>
-   *
-   * @param variableNode - <code>VariableNode</code> - 
-   */
-  public void addVariableNode( VariableNode variableNode) {
-    variableNodeList.add( variableNode);
-  }
-
-  /**
    * <code>doMouseClick</code> - For Constraint Network View, Mouse-Left opens/closes
    *            tokenNode to show variableNodes.  Mouse-Right: Set Active Token
    *
@@ -258,51 +177,13 @@ public class TokenNode extends BasicNode {
     //                             obj.getTopLevelObject().getClass().getName());
     TokenNode tokenNode = (TokenNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      if (partialPlanView instanceof ConstraintNetworkView) {
-        if (! areNeighborsShown) {
-          //System.err.println( "doMouseClick: Mouse-L show variable nodes of " +
-          //                    tokenNode.getPredicateName());
-          addTokenNodeVariables( this);
-          areNeighborsShown = true;
-        } else {
-          //System.err.println( "doMouseClick: Mouse-L hide variable nodes of " +
-          //                    tokenNode.getPredicateName());
-          removeTokenNodeVariables( this);
-          areNeighborsShown = false;
-        }
-        ((ConstraintNetworkView) partialPlanView).setFocusNode( tokenNode);
-        return true;
-      }
+      // do nothing
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       mouseRightPopupMenu( viewCoords);
       return true;
     }
     return false;
   } // end doMouseClick   
-
-  private void addTokenNodeVariables( TokenNode tokenNode) {
-    ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) tokenNode.getPartialPlanView();
-    boolean areNodesChanged = constraintNetworkView.addVariableNodes( tokenNode);
-    boolean areLinksChanged = constraintNetworkView.addVariableToTokenLinks( tokenNode);
-    if (areNodesChanged || areLinksChanged) {
-      constraintNetworkView.setLayoutNeeded();
-      constraintNetworkView.redraw();
-    }
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
-  } // end addTokenNodeVariables
-
-  private void removeTokenNodeVariables( TokenNode tokenNode) {
-    ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) tokenNode.getPartialPlanView();
-    boolean areLinksChanged = constraintNetworkView.removeVariableToTokenLinks( tokenNode);
-    boolean areNodesChanged = constraintNetworkView.removeVariableNodes( tokenNode);
-    if (areNodesChanged || areLinksChanged) {
-      constraintNetworkView.setLayoutNeeded();
-      constraintNetworkView.redraw();
-    }
-    setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
-  } // end adremoveTokenNodeVariables
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
