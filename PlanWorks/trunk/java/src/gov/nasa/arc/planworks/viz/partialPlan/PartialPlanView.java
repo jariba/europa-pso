@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.19 2004-01-17 01:22:52 taylor Exp $
+// $Id: PartialPlanView.java,v 1.20 2004-01-27 01:58:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -336,7 +336,7 @@ public class PartialPlanView extends VizView {
         return;
       }
       if(nextStep.getName() == null) {
-        String [] title = viewFrame.getTitle().split("\\s+");
+        String [] title = viewFrame.getTitle().split("\\s+", 3);
         String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
         nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" + (currStepNumber + dir));
       }
@@ -435,7 +435,7 @@ public class PartialPlanView extends VizView {
       this.forward = forward;
     }
     public void viewChanged(JGoViewEvent e) {
-      if(e.getHint() == JGoViewEvent.POSITION_CHANGED) {
+      //if(e.getHint() == JGoViewEvent.POSITION_CHANGED || e.getHint() == JGoViewEvent.CHANGED) {
         Rectangle viewRect = view.getViewRect();
         view.getSelection().clearSelection();
         back.setLocation((int)(viewRect.getX() + back.getSize().getWidth()),
@@ -443,7 +443,7 @@ public class PartialPlanView extends VizView {
                                back.getSize().getHeight()));
         forward.setLocation((int)(back.getLocation().getX() + back.getWidth()),
                             (int)(back.getLocation().getY()));
-      }
+        //}
     }
   }
   /**
