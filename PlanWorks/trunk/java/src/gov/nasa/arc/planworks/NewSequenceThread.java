@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.8 2004-09-10 20:02:31 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.9 2004-09-10 20:12:11 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -105,8 +105,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       return null;
     }
 
-    // String seqUrl = PlannerControlJNI.getDestinationPath();
-    String seqUrl = "/home/wtaylor/PlanWorksProject/sequences/PLASMA/basic-model1091643100999";
+    String seqUrl = PlannerControlJNI.getDestinationPath();
+    // String seqUrl = "/home/wtaylor/PlanWorksProject/sequences/PLASMA/basic-model1091643100999";
     return seqUrl;
   } // end getNewSequenceUrl
 
