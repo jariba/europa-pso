@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.22 2004-04-01 22:51:18 taylor Exp $
+// $Id: NavigatorView.java,v 1.23 2004-04-06 01:31:44 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -462,9 +462,12 @@ public class NavigatorView extends PartialPlanView implements StringViewSetKey {
     }  // end constructor
 
     public final void run() {
-      ViewGenerics.setRedrawCursor( navigatorFrame);
-      redrawView();
-      ViewGenerics.resetRedrawCursor( navigatorFrame);
+      try {
+        ViewGenerics.setRedrawCursor( navigatorFrame);
+        redrawView();
+      } finally {
+        ViewGenerics.resetRedrawCursor( navigatorFrame);
+      }
     } //end run
 
   } // end class RedrawViewThread

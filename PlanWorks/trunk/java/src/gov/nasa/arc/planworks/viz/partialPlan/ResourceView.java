@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.6 2004-04-01 22:51:18 taylor Exp $
+// $Id: ResourceView.java,v 1.7 2004-04-06 01:31:44 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -369,18 +369,21 @@ public abstract class ResourceView extends PartialPlanView  {
     }  // end constructor
 
     public final void run() {
-      ViewGenerics.setRedrawCursor( viewFrame);
-      boolean isRedraw = true, isScrollBarAdjustment = false;
-      renderResourceExtent();
-      int maxStepButtonY = addStepButtons( jGoExtentView);
-      // causes bottom view edge to creep off screen
-//       if (! isStepButtonView) {
-//         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
-//       }
-      // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
-      // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
-      equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
-      ViewGenerics.resetRedrawCursor( viewFrame);
+      try {
+        ViewGenerics.setRedrawCursor( viewFrame);
+        boolean isRedraw = true, isScrollBarAdjustment = false;
+        renderResourceExtent();
+        int maxStepButtonY = addStepButtons( jGoExtentView);
+        // causes bottom view edge to creep off screen
+        //       if (! isStepButtonView) {
+        //         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
+        //       }
+        // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
+        // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
+        equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
+      } finally {
+        ViewGenerics.resetRedrawCursor( viewFrame);
+      }
     } // end run
 
   } // end class RedrawViewThread

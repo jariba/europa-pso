@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.77 2004-04-02 00:37:48 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.78 2004-04-06 01:31:42 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -367,6 +367,13 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     stepCount++;
     partialPlans.put(partialPlan.getName(), partialPlan);
     planNamesInDb.add(partialPlan.getName());
+  }
+
+  // for testing only
+  public void addPartialPlan(final PwPartialPlanImpl partialPlan, final boolean forTesting) {
+    stepCount++;
+    partialPlans.put(partialPlan.getName(), partialPlan);
+    planNamesInFilesystem.add(partialPlan.getName());
   }
   
   /**

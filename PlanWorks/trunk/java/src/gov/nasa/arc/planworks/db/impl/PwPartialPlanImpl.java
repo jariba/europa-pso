@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.82 2004-04-02 00:58:27 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.83 2004-04-06 01:31:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -111,6 +111,34 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     contentSpec = new ArrayList();
     this.name = planName;
     createPartialPlan();
+  }
+
+  //for testing only
+  public PwPartialPlanImpl(final String url, final String planName, 
+                           final PwPlanningSequenceImpl sequence, final Long partialPlanId,
+                           final String model) 
+    throws ResourceNotFoundException {
+    this.sequence = sequence;
+    //System.err.println("In PwPartialPlanImpl");
+    //objectMap = new HashMap();
+    objectMap = new TreeMap();
+    timelineMap = new HashMap();
+    slotMap = new HashMap();
+    tokenMap = new HashMap();
+    constraintMap = new HashMap();
+    //predicateMap = new HashMap();
+    tokenRelationMap = new HashMap(); 
+    resourceMap = new HashMap();
+    resTransactionMap = new HashMap();
+    variableMap = new HashMap();
+    tokenMasterSlaveMap = new HashMap();
+    instantMap = new HashMap();
+    this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
+    contentSpec = new ArrayList();
+    this.name = planName;
+
+    id = partialPlanId;
+    this.model = model;
   }
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.41 2004-04-01 22:51:19 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.42 2004-04-06 01:31:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -271,20 +271,23 @@ public class TemporalExtentView extends PartialPlanView  {
     }  // end constructor
 
     public void run() {
-      ViewGenerics.setRedrawCursor( viewFrame);
-      // redraw jGoRulerView, in case zoomFactor changed
-      jGoRulerView.computeTimeScaleMetrics( TemporalExtentView.this.getZoomFactor(),
-                                            TemporalExtentView.this);
-      jGoRulerView.createTimeScale();
+      try {
+        ViewGenerics.setRedrawCursor( viewFrame);
+        // redraw jGoRulerView, in case zoomFactor changed
+        jGoRulerView.computeTimeScaleMetrics( TemporalExtentView.this.getZoomFactor(),
+                                              TemporalExtentView.this);
+        jGoRulerView.createTimeScale();
 
-      boolean isRedraw = true;
-      renderTemporalExtent( isRedraw);
-      addStepButtons( jGoExtentView);
-      // causes bottom view edge to creep off screen
-//       if (! isStepButtonView) {
-//         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
-//       }
-      ViewGenerics.resetRedrawCursor( viewFrame);
+        boolean isRedraw = true;
+        renderTemporalExtent( isRedraw);
+        addStepButtons( jGoExtentView);
+        // causes bottom view edge to creep off screen
+        //       if (! isStepButtonView) {
+        //         expandViewFrameForStepButtons( viewFrame, jGoExtentView);
+        //       }
+      } finally {
+        ViewGenerics.resetRedrawCursor( viewFrame);
+      }
     } //end run
 
   } // end class RedrawViewThread

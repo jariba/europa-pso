@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.48 2004-04-01 22:51:19 taylor Exp $
+// $Id: TimelineView.java,v 1.49 2004-04-06 01:31:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -220,16 +220,18 @@ public class TimelineView extends PartialPlanView {
     }  // end constructor
 
     public void run() {
-      ViewGenerics.setRedrawCursor( viewFrame);
+      try {
+        ViewGenerics.setRedrawCursor( viewFrame);
 
-      renderTimelineAndSlotNodes();
-      addStepButtons( jGoView);
-      // causes bottom view edge to creep off screen
-//       if (! isStepButtonView) {
-//         expandViewFrameForStepButtons( viewFrame, jGoView);
-//       }
-
-      ViewGenerics.resetRedrawCursor( viewFrame);
+        renderTimelineAndSlotNodes();
+        addStepButtons( jGoView);
+        // causes bottom view edge to creep off screen
+        //       if (! isStepButtonView) {
+        //         expandViewFrameForStepButtons( viewFrame, jGoView);
+        //       }
+      } finally {
+        ViewGenerics.resetRedrawCursor( viewFrame);
+      }
     } //end run
 
   } // end class RedrawViewThread

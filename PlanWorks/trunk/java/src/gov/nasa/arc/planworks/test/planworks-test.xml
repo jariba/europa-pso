@@ -33,8 +33,8 @@
           <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
           <jvmarg value="-Dsplash.image=${splash.image}"/>
           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
-          <arg value="${name.application}"/>
-          <arg value="${boolean.isMaxScreen}"/>
+          <jvmarg value="-Dname.application=${name.application}"/>
+          <jvmarg value="-Dboolean.isMaxScreen=${boolean.isMaxScreen}"/>
         </java>
 
 </target>

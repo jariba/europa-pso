@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.64 2004-04-01 22:51:16 taylor Exp $
+# $Id: build-tags-file.csh,v 1.65 2004-04-06 01:31:40 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -40,7 +40,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/PwListener.java \
     src/gov/nasa/arc/planworks/db/PwModel.java \
     src/gov/nasa/arc/planworks/db/PwObject.java \
-    src/gov/nasa/arc/planworks/db/PwParameter.java \
     src/gov/nasa/arc/planworks/db/PwPartialPlan.java \
     src/gov/nasa/arc/planworks/db/PwPlanningSequence.java \
     src/gov/nasa/arc/planworks/db/PwPredicate.java \
@@ -64,7 +63,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/impl/PwIntervalDomainImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwModelImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwObjectImpl.java \
-    src/gov/nasa/arc/planworks/db/impl/PwParameterImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwPartialPlanImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwPlanningSequenceImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwPredicateImpl.java \
@@ -103,7 +101,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/test/PlanWorksGUITest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksUtilsTest.java \
-    src/gov/nasa/arc/planworks/test/TestHelper.java \
+    src/gov/nasa/arc/planworks/test/PWTestHelper.java \
     src/gov/nasa/arc/planworks/util/Algorithms.java \
     src/gov/nasa/arc/planworks/util/BooleanFunctor.java \
     src/gov/nasa/arc/planworks/util/BrowseButton.java \
