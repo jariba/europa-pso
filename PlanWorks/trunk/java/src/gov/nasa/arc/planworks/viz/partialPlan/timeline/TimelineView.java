@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.34 2004-02-04 20:16:40 taylor Exp $
+// $Id: TimelineView.java,v 1.35 2004-02-05 23:25:54 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -279,42 +279,37 @@ public class TimelineView extends PartialPlanView {
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
-    int timelineCnt = 0;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
-      String objectName = object.getName();
-      List timelineList = object.getTimelineList();
-      int timelineNodeWidth = computeTimelineNodesWidth( timelineList, objectName);
-      Iterator timelineIterator = timelineList.iterator();
-      while (timelineIterator.hasNext()) {
-        x = ViewConstants.TIMELINE_VIEW_X_INIT;
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        if (isTimelineInContentSpec( timeline)) {
-          String timelineName = timeline.getName();
-          String timelineLabel = objectName + " : " + timelineName + 
-                                  "\ntimeline key=" + timeline.getId().toString();
-          Color timelineColor =
-            ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
-          System.err.println(timeline.getId() + "=>" + timelineColor);
-          TimelineNode timelineNode =
-            new TimelineNode( timelineLabel, timeline, object, new Point( x, y),
-                              timelineColor, this);
-          tmpTimelineNodeList.add( timelineNode);
-          // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
-          jGoDocument.addObjectAtTail( timelineNode);
-          if (timelineNodeWidth > timelineNode.getSize().getWidth()) {
-            timelineNode.setSize( timelineNodeWidth, (int) timelineNode.getSize().getHeight());
-          }
-          x += timelineNode.getSize().getWidth(); 
-          isValid = createSlotNodes( timeline, timelineNode, x, y, timelineColor);
-          if (! isValid) {
-            return isValid;
-          }
-          y += ViewConstants.TIMELINE_VIEW_Y_DELTA; 
-        }
-        timelineCnt += 1;
-      }
+       if(object.getObjectType() == DbConstants.O_TIMELINE) {
+         x = ViewConstants.TIMELINE_VIEW_X_INIT;
+         PwTimeline timeline = (PwTimeline) object;
+         if(isTimelineInContentSpec(timeline)) {
+           String timelineName = timeline.getName();
+           String parentName = null;
+           if(timeline.getParent() != null) {
+             parentName = timeline.getParent().getName();
+           }
+           String timelineLabel = "";
+           if(parentName != null) {
+             timelineLabel += parentName + " : ";
+           }
+           timelineLabel += timelineName + "\ntimeline key=" + timeline.getId().toString();
+           Color timelineColor = getTimelineColor(timeline.getId());
+           TimelineNode timelineNode =
+             new TimelineNode(timelineLabel, timeline, new Point(x, y), timelineColor, this);
+           tmpTimelineNodeList.add(timelineNode);
+           jGoDocument.addObjectAtTail(timelineNode);
+           x += timelineNode.getSize().getWidth();
+           isValid = createSlotNodes(timeline, timelineNode, x, y, timelineColor);
+           if(!isValid) {
+             return isValid;
+           }
+           y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
+         }
+       }
     }
+
     y += ViewConstants.TIMELINE_VIEW_Y_INIT;
     List freeTokenList = partialPlan.getFreeTokenList();
     Iterator freeTokenItr = freeTokenList.iterator();

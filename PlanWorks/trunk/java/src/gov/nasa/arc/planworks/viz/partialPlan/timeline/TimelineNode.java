@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.3 2004-01-16 19:05:40 taylor Exp $
+// $Id: TimelineNode.java,v 1.4 2004-02-05 23:25:54 miatauro Exp $
 //
 // PlanWorks
 //
@@ -99,6 +99,21 @@ public class TimelineNode extends TextNode {
   } // end constructor
 
 
+  public TimelineNode(String timelineName, PwTimeline timeline, Point timelineLocation, 
+                      Color backgroundColor, TimelineView timelineView) {
+        super( timelineName);
+    this.timelineName = timelineName;
+    this.timeline = timeline;
+    this.object = null;
+    this.backgroundColor = backgroundColor;
+    this.timelineView = timelineView;
+    // System.err.println( "TimelineNode: timelineName " + timelineName);
+    this.slotNodeList = new ArrayList();
+
+    configure( timelineLocation, backgroundColor);
+
+  }
+
   private final void configure( Point timelineLocation, Color backgroundColor) {
     setBrush( JGoBrush.makeStockBrush( backgroundColor));
     getLabel().setEditable( false);
@@ -130,6 +145,7 @@ public class TimelineNode extends TextNode {
    * @return - <code>PwObect</code> - 
    */
   public PwObject getPwObject() {
+    (new Throwable()).printStackTrace();
     return object;
   }
 

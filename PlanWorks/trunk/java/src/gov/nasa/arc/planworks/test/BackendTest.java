@@ -123,7 +123,7 @@ public class BackendTest extends TestCase {
           objectIterator.remove();
           objectIdList.remove(object.getId());
           List timelineIdList = MySQLDB.queryTimelineIdsForObject(temp[i].getId(), object.getId()); 
-          List timelineList = object.getTimelineList();
+          List timelineList = object.getComponentList();
           ListIterator timelineIterator = timelineList.listIterator();
           while(timelineIterator.hasNext()) {
             PwTimeline timeline = (PwTimeline) timelineIterator.next();
@@ -176,8 +176,8 @@ public class BackendTest extends TestCase {
                 else {
                   assertTrue("Instantiated variable not in db.", false);
                 }
-                if(variableIdList.contains(token.getRejectVariable().getId())) {
-                  variableIdList.remove(token.getRejectVariable().getId());
+                if(variableIdList.contains(token.getStateVariable().getId())) {
+                  variableIdList.remove(token.getStateVariable().getId());
                 }
                 else {
                   assertTrue("Instantiated variable not in db.", false);
@@ -253,8 +253,8 @@ public class BackendTest extends TestCase {
         else {
           assertTrue("Instantiated variable not in db.", false);
         }
-        if(variableIdList.contains(token.getRejectVariable().getId())) {
-          variableIdList.remove(token.getRejectVariable().getId());
+        if(variableIdList.contains(token.getStateVariable().getId())) {
+          variableIdList.remove(token.getStateVariable().getId());
         }
         else {
           assertTrue("Instantiated variable not in db.", false);

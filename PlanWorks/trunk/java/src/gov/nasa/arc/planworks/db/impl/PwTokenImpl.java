@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.28 2004-02-03 19:22:19 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.29 2004-02-05 23:23:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -46,8 +46,7 @@ public class PwTokenImpl implements PwToken {
   private Integer endVarId;
   private Integer durationVarId;
   private Integer objectVarId;
-  private Integer objectId;
-  private Integer rejectVarId;
+  private Integer stateVarId;
   private Integer timelineId;
   private List tokenRelationIds; // element Integer
   private List paramVarIds; // element Integer
@@ -58,7 +57,7 @@ public class PwTokenImpl implements PwToken {
 
   public PwTokenImpl(final Integer id, final boolean isValueToken, final Integer slotId, 
                      final String predicateName, final Integer startVarId, final Integer endVarId, 
-                     final Integer durationVarId, final Integer objectId, final Integer rejectVarId,
+                     final Integer durationVarId, final Integer stateVarId, 
                      final Integer objectVarId, final Integer timelineId, 
                      final List tokenRelationIds, final List paramVarIds, 
                      final PwPartialPlanImpl partialPlan)
@@ -72,8 +71,7 @@ public class PwTokenImpl implements PwToken {
     this.endVarId = endVarId;
     this.durationVarId = durationVarId;
     this.objectVarId = objectVarId;
-    this.objectId = objectId;
-    this.rejectVarId = rejectVarId;
+    this.stateVarId = stateVarId;
     this.tokenRelationIds = new UniqueSet(tokenRelationIds);
     this.paramVarIds = new UniqueSet(paramVarIds);
     this.partialPlan = partialPlan;
@@ -82,7 +80,7 @@ public class PwTokenImpl implements PwToken {
 
   public PwTokenImpl(final Integer id, final boolean isValueToken, final Integer slotId, 
                      final String predicateName, final Integer startVarId, final Integer endVarId, 
-                     final Integer durationVarId, final Integer objectId, final Integer rejectVarId,
+                     final Integer durationVarId, final Integer stateVarId,
                      final Integer objectVarId, final Integer timelineId, 
                      final PwPartialPlanImpl partialPlan) {
     this.id = id;
@@ -94,8 +92,7 @@ public class PwTokenImpl implements PwToken {
     this.endVarId = endVarId;
     this.durationVarId = durationVarId;
     this.objectVarId = objectVarId;
-    this.objectId = objectId;
-    this.rejectVarId = rejectVarId;
+    this.stateVarId = stateVarId;
     this.tokenRelationIds = new UniqueSet();
     this.paramVarIds = new UniqueSet();
     this.partialPlan = partialPlan;
@@ -126,7 +123,8 @@ public class PwTokenImpl implements PwToken {
    * @return <code>Integer</code>
    */
   public Integer getObjectId() {
-    return objectId;
+    //return objectId;
+    return null; 
   }
   /**
    * <code>getPredicate</code>
@@ -216,8 +214,8 @@ public class PwTokenImpl implements PwToken {
    *
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getRejectVariable() {
-    return partialPlan.getVariable( rejectVarId);
+  public PwVariable getStateVariable() {
+    return partialPlan.getVariable( stateVarId);
   }
 
   /**
@@ -236,12 +234,7 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>List</code> - of PwVariable
    */
   public List getVariablesList() {
-    List retval = new ArrayList( 5 + paramVarIds.size());
-    retval.add( getStartVariable());
-    retval.add( getEndVariable());
-    retval.add( getDurationVariable());
-    retval.add( getObjectVariable());
-    retval.add( getRejectVariable());
+    List retval = getTokenVarsList();
     for (int i = 0; i < paramVarIds.size(); i++) {
       retval.add( partialPlan.getVariable( (Integer) paramVarIds.get( i)));
     }
@@ -259,7 +252,7 @@ public class PwTokenImpl implements PwToken {
     retval.add( getEndVariable());
     retval.add( getDurationVariable());
     retval.add( getObjectVariable());
-    retval.add( getRejectVariable());
+    retval.add( getStateVariable());
     return retval;
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.16 2004-02-03 19:21:46 miatauro Exp $
+// $Id: PwToken.java,v 1.17 2004-02-05 23:23:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -76,7 +76,7 @@ public interface PwToken {
    *
    * @return - <code>PwVariable</code> - 
    */
-  public abstract PwVariable getRejectVariable();
+  public abstract PwVariable getStateVariable();
 
   /**
    * <code>getTokenRelationIdsList</code>

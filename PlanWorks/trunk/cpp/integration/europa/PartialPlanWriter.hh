@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.19 2004-01-14 21:28:16 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.20 2004-02-05 23:21:13 miatauro Exp $
 //
 
 #ifndef PARTIALPLANWRITER_H

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObject.java,v 1.7 2003-08-12 22:53:32 miatauro Exp $
+// $Id: PwObject.java,v 1.8 2004-02-05 23:23:32 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -42,11 +42,15 @@ public interface PwObject {
 
 
   /**
-   * <code>getTimelineList</code> -
+   * <code>getComponentList</code> -
    *
-   * @return timelineList - <code>List</code> - of PwTimeline
+   * @return list - <code>List</code> - of PwObject
    */
-  public abstract List getTimelineList();
+  public abstract List getComponentList();
 
+  public abstract int getObjectType();
+  
+  public abstract PwObject getParent();
 
+  public abstract Integer getParentId();
 } // end interface PwObject

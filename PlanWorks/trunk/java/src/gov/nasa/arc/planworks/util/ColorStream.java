@@ -38,7 +38,7 @@ public class ColorStream {
   public ColorStream(final Color startColor) {
     this(startColor.getRed(), startColor.getGreen(), startColor.getBlue());
   }
-  public Color nextColor() {
+  private Color nextColor() {
     Color retval;
     //I know, it's bad style, but some values of blue simply *refuse* to cooperate. ~MJI
     if((h == 0.6f || h == 0.75f) && b == 0.75) {
@@ -59,32 +59,16 @@ public class ColorStream {
     return retval;
   }
 
-  public Color getColor(final int index) {
-    Color indexColor = (Color) hashMap.get( new Integer( index));
-    // System.err.println( "getColor index " + index + " indexColor " + indexColor);
-    if (indexColor == null) {
-      List indices = new ArrayList(hashMap.keySet());
-      if(!indices.isEmpty()) {
-        Collections.sort(indices);
-        for(int i = ((Integer)indices.get(indices.size()-1)).intValue(); i < index; i++) {
-          hashMap.put(new Integer(i), nextColor());
-        }
-      }
-      indexColor = nextColor();
-      hashMap.put( new Integer( index), indexColor);
+  public Color getColor(Object o) {
+    Color retval = null;
+    if(!hashMap.containsKey(o)) {
+      retval = nextColor();
+      hashMap.put(o, retval);
     }
-    System.err.println("for index " + index + " returning color " + indexColor);
-    return indexColor;
-  }
-
-  public void setColor(final Color color) {
-    setColor(color.getRed(), color.getGreen(), color.getBlue());
-  }
-
-  public void setColor(final int r, final int g, final int b) {
-    float [] hsb = Color.RGBtoHSB(r, g, b, null);
-    h = hsb[0];
-    this.b = hsb[2];
+    else {
+      retval = (Color) hashMap.get(o);
+    }
+    return retval;
   }
 }
 

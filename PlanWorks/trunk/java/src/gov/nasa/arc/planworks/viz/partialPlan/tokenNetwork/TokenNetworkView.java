@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.26 2004-02-03 20:43:59 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.27 2004-02-05 23:26:08 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -36,6 +36,7 @@ import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -233,15 +234,12 @@ public class TokenNetworkView extends PartialPlanView {
     int timelineCnt = 0;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
-      Iterator timelineIterator = object.getTimelineList().iterator();
-      while (timelineIterator.hasNext()) {
+      if(object.getObjectType() == DbConstants.O_TIMELINE) {
         int x = ViewConstants.TIMELINE_VIEW_X_INIT;
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        Color timelineColor =
-          ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
+        PwTimeline timeline = (PwTimeline) object;
+        Color timelineColor = getTimelineColor(timeline.getId());
         createTokenNodesOfTimeline( timeline, x, y, timelineColor);
-        y += 2 * ViewConstants.TIMELINE_VIEW_Y_DELTA;
-        timelineCnt++;
+        y += 2 * ViewConstants.TIMELINE_VIEW_Y_DELTA; 
       }
     }
     // free tokens
@@ -336,37 +334,6 @@ public class TokenNetworkView extends PartialPlanView {
     tokenLinkMap.put( linkName, link);
     jGoDocument.addObjectAtTail( link);
   } // end createTokenLink
-
-
-//   private void setNodesVisible() {
-//     // print content spec
-//     // System.err.println( "Token Network View - contentSpec");
-//     // viewSet.printSpec();
-//     validTokenIds = viewSet.getValidIds();
-//     displayedTokenIds = new ArrayList();
-//     Iterator tokenNodeIterator = nodeList.iterator();
-//     while (tokenNodeIterator.hasNext()) {
-//       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-//       if (isTokenInContentSpec( tokenNode.getToken())) {
-//         tokenNode.setVisible( true);
-//       } else {
-//         tokenNode.setVisible( false);
-//       }
-//     }
-//     Iterator tokenLinkIterator = linkList.iterator();
-//     while (tokenLinkIterator.hasNext()) {
-//       TokenLink tokenLink = (TokenLink) tokenLinkIterator.next();
-//       if (isTokenInContentSpec( tokenLink.getFromToken()) &&
-//           isTokenInContentSpec( tokenLink.getToToken())) {
-//         tokenLink.setVisible( true);
-//       } else {
-//         tokenLink.setVisible( false);
-//       }
-//     }
-//     boolean showDialog = true;
-//     isContentSpecRendered( PlanWorks.TOKEN_NETWORK_VIEW, showDialog);
-//   } // end setNodesVisible
-
 
   /**
    * <code>TokenNetworkJGoView</code> - subclass JGoView to add doBackgroundClick

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimeline.java,v 1.7 2003-08-19 00:24:00 miatauro Exp $
+// $Id: PwTimeline.java,v 1.8 2004-02-05 23:23:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -23,35 +23,13 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwTimeline {
+public interface PwTimeline extends PwObject {
 
-  /**
-   * <code>getName</code>
-   *
-   * @return <code>String</code> -
-   */
-  public abstract String getName();
-
-  /**
-   * <code>getId</code>
-   *
-   * @return <code>Integer</code> -
-   */
-  public abstract Integer getId();
-	
   /**
    * <code>getSlotList</code>
    *
    * @return name - <code>List</code> - of PwSlot
    */
   public abstract List getSlotList();
-
-  /**
-   * <code>getObjectId</code>
-   *
-   * @return <code>Integer</code>
-   */
-
-  public abstract Integer getObjectId();
 
 } // end interface PwTimeline

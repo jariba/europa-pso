@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNavNode.java,v 1.4 2004-01-17 01:22:53 taylor Exp $
+// $Id: SlotNavNode.java,v 1.5 2004-02-05 23:25:20 miatauro Exp $
 //
 // PlanWorks
 //
@@ -367,7 +367,7 @@ public class SlotNavNode extends ExtendedBasicNode {
   protected boolean addTimelineNavNodes() {
     boolean areNodesChanged = false, isDraggable = true;
     ModelClassNavNode objectNavNode =
-      (ModelClassNavNode) navigatorView.objectNavNodeMap.get( timeline.getObjectId());
+      (ModelClassNavNode) navigatorView.objectNavNodeMap.get( timeline.getParentId());
     TimelineNavNode timelineNavNode =
       (TimelineNavNode) navigatorView.timelineNavNodeMap.get( timeline.getId());
     if (timelineNavNode == null) {
@@ -375,8 +375,7 @@ public class SlotNavNode extends ExtendedBasicNode {
         new TimelineNavNode( timeline, 
                              new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                         ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                             navigatorView.getTimelineColor( timeline.getId(),
-                                                             navigatorView.timelineColorMap),
+                             navigatorView.getTimelineColor( timeline.getId()),
                              isDraggable, navigatorView);
       navigatorView.timelineNavNodeMap.put( timeline.getId(), timelineNavNode);
       navigatorView.getJGoDocument().addObjectAtTail( timelineNavNode);
@@ -450,9 +449,8 @@ public class SlotNavNode extends ExtendedBasicNode {
         tokenNavNode =
           new TokenNavNode( token, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                               ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                             navigatorView.getTimelineColor( timeline.getId(),
-                                                             navigatorView.timelineColorMap),
-                             isDraggable, navigatorView);
+                            navigatorView.getTimelineColor( timeline.getId()),
+                            isDraggable, navigatorView);
         navigatorView.tokenNavNodeMap.put( token.getId(), tokenNavNode);
         navigatorView.getJGoDocument().addObjectAtTail( tokenNavNode);
       }

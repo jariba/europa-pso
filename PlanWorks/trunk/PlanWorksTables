@@ -169,11 +169,16 @@ CREATE TABLE ConstraintVarMap (
 -- Table structure for table 'Object'
 --
 
---EmptySlotInfo format is TimelineId,SlotId,SlotIndex:TimelineId,SlotId,SlotIndex
+--EmptySlotInfo format is SlotId,SlotIndex:SlotId,SlotIndex
+--ChildObjectIds is a CSV
+--ObjectType is currently Object = 0, Timeline = 1, Resource = 2
 CREATE TABLE Object (
   ObjectId int(11) NOT NULL default '0',
+  ObjectType int(11) NOT NULL default '0',
+  ParentId int(11) default '0',
   PartialPlanId bigint(20) NOT NULL default '0',
   ObjectName varchar(255) NOT NULL default 'ErrorObject',
+  ChildObjectIds blob default NULL,
   EmptySlotInfo blob default NULL,
   PRIMARY KEY  (PartialPlanId,ObjectId),
   INDEX (ObjectId)
@@ -182,24 +187,6 @@ CREATE TABLE Object (
 --
 -- Dumping data for table 'Object'
 --
-
---
--- Table structure for table 'Parameter'
---
-
---CREATE TABLE Parameter (
---  ParameterId int(11) NOT NULL default '0',
---  PredicateId int(11) NOT NULL default '0',
---  PartialPlanId bigint(20) NOT NULL default '0',
---  ParameterName varchar(255) NOT NULL default 'ErrorParameter',
---  PRIMARY KEY  (PartialPlanId,ParameterId,PredicateId),
---  INDEX (ParameterId), INDEX (PredicateId)
---) TYPE=MyISAM;
-
---
--- Dumping data for table 'Parameter'
---
-
 
 --
 -- Table structure for table 'PartialPlan'
@@ -216,23 +203,6 @@ CREATE TABLE PartialPlan (
 
 --
 -- Dumping data for table 'PartialPlan'
---
-
-
---
--- Table structure for table 'Predicate'
---
-
---CREATE TABLE Predicate (
---  PredicateId int(11) NOT NULL default '0',
---  PredicateName varchar(25) NOT NULL default 'ErrorPredicate',
---  PartialPlanId bigint(20) NOT NULL default '0',
---  PRIMARY KEY  (PartialPlanId,PredicateId),
---  INDEX (PredicateId)
---) TYPE=MyISAM;
-
---
--- Dumping data for table 'Predicate'
 --
 
 
@@ -271,11 +241,11 @@ CREATE TABLE Sequence (
 --
 -- Table structure for table 'Token'
 --
--- leaving DurationVarId and ObjectVarId defaulting to NULL
--- to avoid breaking hand-crafted Monkey data
+--TokenType currently IntervalToken = 0, ResourceTransaction = 1
 
 CREATE TABLE Token (
   TokenId int(11) NOT NULL default '0',
+  TokenType int(11) NOT NULL default '0',
   SlotId int(11) default NULL,
   SlotIndex int(11) default NULL,
   PartialPlanId bigint(20) NOT NULL default '0',
@@ -284,18 +254,17 @@ CREATE TABLE Token (
   StartVarId int(11) NOT NULL default '0',
   EndVarId int(11) NOT NULL default '0',
   DurationVarId int(11) default NULL,
-  RejectVarId int(11) NOT NULL default '0',
+  StateVarId int(11) NOT NULL default '0',
   PredicateName varchar(255) default 'ErrorPredicate',
   TimelineId int(11) default NULL,
   TimelineName varchar(255) default 'ErrorTimeline',
-  ObjectId int(11) default NULL,
   ObjectVarId int(11) default NULL,
   TokenRelationIds blob default NULL,
   ParamVarIds blob default NULL,
   PRIMARY KEY  (PartialPlanId,TokenId),
   INDEX (TokenId), INDEX (SlotId), INDEX (SlotIndex), INDEX (StartVarId), INDEX (EndVarId), 
-  INDEX (DurationVarId), INDEX (RejectVarId), INDEX (PredicateName), INDEX (TimelineId), 
-  INDEX (ObjectId), INDEX (ObjectVarId)
+  INDEX (DurationVarId), INDEX (StateVarId), INDEX (PredicateName), INDEX (TimelineId), 
+  INDEX (ObjectVarId)
 ) TYPE=MyISAM;
 
 --

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.71 2004-02-03 22:43:43 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.72 2004-02-05 23:23:54 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -83,7 +84,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     throws ResourceNotFoundException {
     this.sequence = sequence;
     //System.err.println("In PwPartialPlanImpl");
-    objectMap = new HashMap();
+    //objectMap = new HashMap();
+    objectMap = new TreeMap();
     timelineMap = new HashMap();
     slotMap = new HashMap();
     tokenMap = new HashMap();
@@ -120,7 +122,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     MySQLDB.createObjects(this);
     model = MySQLDB.queryPartialPlanModelById(id);
-    MySQLDB.createTimelineSlotTokenNodesStructure(this);
+    MySQLDB.createSlotTokenNodesStructure(this);
 
     long start2TimeMSecs = System.currentTimeMillis();
     fillElementMaps();
@@ -170,9 +172,10 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     MySQLDB.queryVariables( this);
     Iterator objIterator = objectMap.values().iterator();
     while(objIterator.hasNext()) {
-      PwObjectImpl obj = (PwObjectImpl) objIterator.next();
-      obj.createEmptySlots();
-      obj.calculateSlotTimes();
+      PwObject obj = (PwObject) objIterator.next();
+      if(obj.getObjectType() == DbConstants.O_TIMELINE) {
+        ((PwTimelineImpl)obj).finishSlots();
+      }
     }
     initTokenRelationships();
     buildTokenRelationships();
@@ -417,6 +420,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     if(timelineMap.containsKey(id)) {
       return;
     }
+    objectMap.put(id, timeline);
     timelineMap.put( id, timeline);
   }
 
@@ -521,7 +525,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
          variable.getType().equals(DbConstants.END_VAR) ||
          variable.getType().equals(DbConstants.DURATION_VAR) ||
          variable.getType().equals(DbConstants.OBJECT_VAR) ||
-         variable.getType().equals(DbConstants.REJECT_VAR)) {
+         variable.getType().equals(DbConstants.STATE_VAR)) {
         if(variable.getParameterNameList().size() != 0) {
           System.err.println(variable.getType() + " " + variable.getId() +
                              " has parameter list of size " + 
@@ -647,7 +651,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     PwVariableImpl endVar = (PwVariableImpl) token.getEndVariable();
     PwVariableImpl durationVar = (PwVariableImpl) token.getDurationVariable();
     PwVariableImpl objectVar = (PwVariableImpl) token.getObjectVariable();
-    PwVariableImpl rejectVar = (PwVariableImpl) token.getRejectVariable();
+    PwVariableImpl stateVar = (PwVariableImpl) token.getStateVariable();
     boolean retval = true;
     if(startVar == null) {
       System.err.println("Token " + token.getId() + " has null start variable.");
@@ -704,17 +708,17 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         retval = retval && checkObjectVariable(objectVar, token.isFreeToken());
       }
     }
-    if(rejectVar == null) {
-      System.err.println("Token " + token.getId() + " has null reject variable.");
+    if(stateVar == null) {
+      System.err.println("Token " + token.getId() + " has null state variable.");
     }
     else {
-      if(!rejectVar.getType().equals(DbConstants.REJECT_VAR)) {
-        System.err.println("Token " + token.getId() + "'s reject variable " + rejectVar.getId()  + 
+      if(!stateVar.getType().equals(DbConstants.STATE_VAR)) {
+        System.err.println("Token " + token.getId() + "'s reject variable " + stateVar.getId()  + 
                            " isn't.");
         retval = false;
       }
       else {
-        retval = retval && checkVariable(rejectVar);
+        retval = retval && checkVariable(stateVar);
       }
     }
     return retval;

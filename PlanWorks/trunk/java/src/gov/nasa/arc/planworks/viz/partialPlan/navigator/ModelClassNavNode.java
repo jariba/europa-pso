@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.4 2004-01-20 19:57:48 taylor Exp $
+// $Id: ModelClassNavNode.java,v 1.5 2004-02-05 23:25:19 miatauro Exp $
 //
 // PlanWorks
 //
@@ -73,7 +73,7 @@ public class ModelClassNavNode extends ExtendedBasicNode {
     nodeLabel = labelBuf.toString();
     // System.err.println( "ModelClassNavNode: " + nodeLabel);
     hasSingleTimeline = false;
-    if (object.getTimelineList().size() == 1) {
+    if (object.getComponentList().size() == 1) {
       hasSingleTimeline = true;
     }
 

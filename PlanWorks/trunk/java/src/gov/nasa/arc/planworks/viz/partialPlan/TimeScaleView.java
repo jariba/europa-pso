@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.3 2004-02-04 20:16:38 taylor Exp $
+// $Id: TimeScaleView.java,v 1.4 2004-02-05 23:24:47 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -127,7 +127,7 @@ public class TimeScaleView extends JGoView  {
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
       String objectName = object.getName();
-      List timelineList = object.getTimelineList();
+      List timelineList = object.getComponentList();
       Iterator timelineIterator = timelineList.iterator();
       while (timelineIterator.hasNext()) {
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
