@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.9 2004-05-21 21:38:56 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.10 2004-06-10 18:51:39 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -124,7 +124,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQue
  *                   NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class PlanWorksGUITest extends JFCTestCase {
+public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   
   private PlanWorks planWorks;
   private JFCTestHelper helper;
