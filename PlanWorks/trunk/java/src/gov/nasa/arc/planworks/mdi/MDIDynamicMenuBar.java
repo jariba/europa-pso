@@ -4,10 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.2 2003-06-16 22:32:14 miatauro Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.3 2003-07-16 00:33:15 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
+import java.awt.Component;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.VetoableChangeListener;
@@ -130,6 +131,12 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
   public void addMenus(JMenu [] menus) {
     for(int i = 0; i < menus.length; i++) {
       this.add(menus[i]);
+    }
+  }
+  public void remove(Component c) {
+    super.remove(c);
+    if(constantMenus.contains(c)) {
+      constantMenus.remove(constantMenus.indexOf(c));
     }
   }
 }
