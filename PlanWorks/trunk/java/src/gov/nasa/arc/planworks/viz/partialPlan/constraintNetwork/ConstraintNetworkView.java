@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.23 2004-01-02 19:05:54 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.24 2004-01-07 23:02:19 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -21,9 +21,11 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -102,14 +104,11 @@ public class ConstraintNetworkView extends PartialPlanView {
   private ViewSet viewSet;
   private ConstraintJGoView jGoView;
   private JGoDocument document;
-  //private ConstraintNetwork network;
-  // tokenNodeList & tmpTokenNodeList used by JFCUnit test case
-  private List tokenNodeList; // element ConstraintNetworkTokenNode
-  private List tmpTokenNodeList; // element ConstraintNetworkTokenNode
-  private List variableNodeList; // element VariableNode
-  private List constraintNodeList; // element ConstraintNode
-  private List constraintLinkList; // element BasicNodeLink
-  private List variableLinkList; // element BasicNodeLink
+  private Map tokenNodeMap;
+  private Map variableNodeMap;
+  private Map constraintNodeMap;
+  private Map constraintLinkMap;
+  private Map variableLinkMap;
   private boolean isDebugPrint;
   private boolean isDebugTraverse;
   private boolean isLayoutNeeded;
@@ -128,14 +127,13 @@ public class ConstraintNetworkView extends PartialPlanView {
     super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    tokenNodeList = null;
-    tmpTokenNodeList = new ArrayList();
-    variableNodeList = new ArrayList();
-    constraintNodeList = new ArrayList();
-    constraintLinkList = new ArrayList();
-    variableLinkList = new ArrayList();
+    variableNodeMap = new HashMap();
+    constraintNodeMap = new HashMap();
+    constraintLinkMap = new HashMap();
+    variableLinkMap = new HashMap();
+    tokenNodeMap = new HashMap();
 
-    // isDebugPrint = true;
+    //isDebugPrint = true;
     isDebugPrint = false;
 
     // isDebugTraverse = true;
@@ -149,9 +147,6 @@ public class ConstraintNetworkView extends PartialPlanView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
-
-    // print content spec
-    // viewSet.printSpec();
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -180,39 +175,39 @@ public class ConstraintNetworkView extends PartialPlanView {
         Thread.currentThread().sleep(50);
       } catch (InterruptedException excp) {
       }
-      // System.err.println( "constraintNetworkView displayable " + this.isDisplayable());
     }
+
     this.computeFontMetrics( this);
 
     document = jGoView.getDocument();
-    //network = new ConstraintNetwork();
     createVerticalScrollBarMaintainer();
+
+    long t1 = System.currentTimeMillis();
     createTokenNodes();
+    System.err.println("createTokenNodes took " + (System.currentTimeMillis() - t1) + "ms");
     // setVisible( true | false) depending on ContentSpec
     setNodesLinksVisible();
 
+
+
     double maxTokenWidth = 0.;
-    ListIterator tokenIterator = tokenNodeList.listIterator();
-    long t1 = System.currentTimeMillis();
+    Iterator tokenIterator = tokenNodeMap.values().iterator();
     while(tokenIterator.hasNext()) {
       ConstraintNetworkTokenNode node = (ConstraintNetworkTokenNode) tokenIterator.next();
       node.discoverLinkage();
+      node.connectNodes(tokenNodeMap);
       if(node.getSize().getWidth() > maxTokenWidth) {
         maxTokenWidth = node.getSize().getWidth();
       }
     }
-    System.err.println("Discovering token node linkage took " + 
-                       (System.currentTimeMillis() - t1) + "ms");
+
+    
     VERTICAL_TOKEN_BAND_X = (maxTokenWidth / 2) + NODE_SPACING;
     VERTICAL_VARIABLE_BAND_X = VERTICAL_TOKEN_BAND_X + VERTICAL_BAND_DISTANCE;
     VERTICAL_CONSTRAINT_BAND_X = VERTICAL_VARIABLE_BAND_X + VERTICAL_BAND_DISTANCE;
 
-    //NewConstraintNetworkLayout newLayout = 
-    newLayout = new NewConstraintNetworkLayout(tokenNodeList, variableNodeList, constraintNodeList);
+    newLayout = new NewConstraintNetworkLayout(getTokenNodeList());
 
-    //ConstraintNetworkLayout layout =
-    //  new ConstraintNetworkLayout( document, network, startTimeMSecs);
-    //layout.performLayout();
     newLayout.performLayout();
 
     Rectangle documentBounds = jGoView.getDocument().computeBounds();
@@ -231,9 +226,6 @@ public class ConstraintNetworkView extends PartialPlanView {
     focusNode = null;
 
     addStepButtons(jGoView);
-    // print out info for created nodes
-    // iterateOverJGoDocument(); // slower - many more nodes to go thru
-    // iterateOverNodes();
     
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
@@ -277,11 +269,8 @@ public class ConstraintNetworkView extends PartialPlanView {
       if (isDebugPrint) {
         //network.validateConstraintNetwork();
       }
-      //ConstraintNetworkLayout layout =
-      //  new ConstraintNetworkLayout( document, network, startTimeMSecs);
-      //layout.performLayout();
       newLayout.performLayout();
-
+      newLayout.performLayout(); //<----- BIG FAT HACK!!!!
       // do not highlight node, if it has been removed
       boolean isHighlightNode = ((focusNode instanceof ConstraintNetworkTokenNode) ||
                                  ((focusNode instanceof VariableNode) &&
@@ -341,7 +330,7 @@ public class ConstraintNetworkView extends PartialPlanView {
    * @return - <code>List</code> - 
    */
   public List getTokenNodeList() {
-    return tokenNodeList;
+    return new ArrayList(tokenNodeMap.values());
   }
 
   /**
@@ -350,7 +339,8 @@ public class ConstraintNetworkView extends PartialPlanView {
    * @return - <code>List</code> - 
    */
   public List getConstraintNodeList() {
-    return constraintNodeList;
+    //return constraintNodeList;
+    return new ArrayList(constraintNodeMap.values());
   }
 
   /**
@@ -359,7 +349,8 @@ public class ConstraintNetworkView extends PartialPlanView {
    * @return - <code>List</code> - 
    */
   public List getVariableNodeList() {
-    return variableNodeList;
+    //return variableNodeList;
+    return new ArrayList(variableNodeMap.values());
   }
 
   /**
@@ -400,237 +391,190 @@ public class ConstraintNetworkView extends PartialPlanView {
     hiddenLine.addPoint( x, y + (int) HORIZONTAL_TOKEN_BAND_Y);
     // make mark invisible
     hiddenLine.setPen( new JGoPen( JGoPen.SOLID, 1, ViewConstants.VIEW_BACKGROUND_COLOR));
+    hiddenLine.setDraggable(false);
+    hiddenLine.setResizable(false);
+    hiddenLine.setSelectable(false);
+    
     document.addObjectAtTail( hiddenLine);
   } // end createVerticalScrollBarMaintainer
 
   private void createTokenNodes() {
     boolean isDraggable = true;
-    int y = ViewConstants.TIMELINE_VIEW_Y_INIT * 2;
-    List objectList = partialPlan.getObjectList();
-    Iterator objectIterator = objectList.iterator();
     int timelineCnt = 0;
-    while (objectIterator.hasNext()) {
-      PwObject object = (PwObject) objectIterator.next();
-      String objectName = object.getName();
-      Iterator timelineIterator = object.getTimelineList().iterator();
-      while (timelineIterator.hasNext()) {
-        int x = ViewConstants.TIMELINE_VIEW_X_INIT;
+    Map timelineIndexMap = new HashMap();
+    int x = 0;
+    int y = 0;
+    ListIterator objectIterator = partialPlan.getObjectList().listIterator();
+    while(objectIterator.hasNext()) {
+      PwObject obj = (PwObject) objectIterator.next();
+      ListIterator timelineIterator = obj.getTimelineList().listIterator();
+      while(timelineIterator.hasNext()) {
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        Color timelineColor =
-          ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
-
-        createTokenNodesOfTimeline( timeline, x, y, timelineColor);
-
-        y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        timelineIndexMap.put(timeline.getId(), new Integer(timelineCnt));
+//         System.err.println(timeline.getId() + "=>" + 
+//                            ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineCnt));
         timelineCnt++;
       }
     }
-    // free tokens
-    List freeTokenList = partialPlan.getFreeTokenList();
-    int x = ViewConstants.TIMELINE_VIEW_X_INIT;
-    // System.err.println( "token network view freeTokenList " + freeTokenList);
-    Iterator freeTokenItr = freeTokenList.iterator();
-    boolean isFreeToken = true;
-    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
-    PwSlot slot = null;
-    while (freeTokenItr.hasNext()) {
-      PwToken token = (PwToken) freeTokenItr.next();
-      ConstraintNetworkTokenNode freeTokenNode =
-        new ConstraintNetworkTokenNode( token, slot, new Point( x, y), backgroundColor,
-                                        isFreeToken, isDraggable, this);
-      if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
-        x += freeTokenNode.getSize().getWidth() * 0.5;
-        freeTokenNode.setLocation( x, y);
+    long tokenTime = 0L;
+    long varTime = 0L;
+    long constrTime = 0L;
+    
+    ListIterator tokenIterator = partialPlan.getTokenList().listIterator();
+    while(tokenIterator.hasNext()) {
+      PwToken token = (PwToken) tokenIterator.next();
+      Color backgroundColor = null;
+      if(token.isFreeToken()) {
+        backgroundColor = ColorMap.getColor(ViewConstants.FREE_TOKEN_BG_COLOR);
       }
-      tmpTokenNodeList.add( freeTokenNode);
-      // nodes are always in front of any links
-      document.addObjectAtTail( freeTokenNode);
-      //network.addConstraintNode( freeTokenNode);
-
-      createVariableAndConstraintNodes( freeTokenNode, backgroundColor, isFreeToken);
-      createTokenVariableConstraintLinks( freeTokenNode);
-
-      x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
-    }
-    tokenNodeList = tmpTokenNodeList;
-  } // end createTokenNodes
-
-  private void createTokenNodesOfTimeline( PwTimeline timeline, int x, int y,
-                                           Color backgroundColor) {
-    boolean isFreeToken = false, isDraggable = true;
-    Iterator slotIterator = timeline.getSlotList().iterator();
-    while (slotIterator.hasNext()) {
-      PwSlot slot = (PwSlot) slotIterator.next();
-      Iterator tokenIterator = slot.getTokenList().iterator();
-      int tokenCnt = 0;
-      while (tokenIterator.hasNext()) {
-        PwToken token = (PwToken) tokenIterator.next();
-        ConstraintNetworkTokenNode tokenNode =
-          new ConstraintNetworkTokenNode( token, slot, new Point( x, y), backgroundColor,
-                                          isFreeToken, isDraggable, this);
-        if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
-          x += tokenNode.getSize().getWidth() * 0.5;
-          tokenNode.setLocation( x, y);
-        }
-        tmpTokenNodeList.add( tokenNode);
-        // nodes are always in front of any links
-        document.addObjectAtTail( tokenNode);
-        //network.addConstraintNode( tokenNode);
-          
-        createVariableAndConstraintNodes( tokenNode, backgroundColor, isFreeToken);
-        createTokenVariableConstraintLinks( tokenNode);
-
-        x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
-        tokenCnt++;
+      else {
+        backgroundColor = 
+          ((PartialPlanViewSet) viewSet).getColorStream().
+          getColor(((Integer)timelineIndexMap.get(token.getTimelineId())).intValue());
+//         System.err.println(token.getId() + "=>" + token.getTimelineId() + "=>" + backgroundColor);
       }
+      long t1 = System.currentTimeMillis();
+      ConstraintNetworkTokenNode tokenNode =
+        new ConstraintNetworkTokenNode( token, partialPlan.getSlot(token.getSlotId()), 
+                                        new Point( x, y), backgroundColor, token.isFreeToken(), 
+                                        isDraggable, this);
+      tokenTime += System.currentTimeMillis() - t1;
+      tokenNodeMap.put(token.getId(), tokenNode);
+      document.addObjectAtTail(tokenNode);
     }
-  } // end createTokenNodesOfTimeline
+  }
 
-  private void createVariableAndConstraintNodes( ConstraintNetworkTokenNode tokenNode,
-                                                 Color backgroundColor,
-                                                 boolean isFreeToken) {
-    PwToken token = tokenNode.getToken();
-    int xVar = (int) tokenNode.getLocation().getX();
-    int yVar = (int) tokenNode.getLocation().getY() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+  private void createVarsAndLinksForToken(ConstraintNetworkTokenNode tokenNode) {
     boolean isDraggable = true;
-    Iterator variableItr = token.getVariablesList().iterator();
-    // System.err.println( "createVariables: " + token.getVariablesList().size());
-    while (variableItr.hasNext()) {
-      PwVariable variable = (PwVariable) variableItr.next();
-      if (variable != null) {
-        VariableNode variableNode = getVariableNode( variable.getId());
-        if (variableNode == null) {
-          variableNode = new VariableNode( variable, tokenNode, new Point( xVar, yVar),
-                                           backgroundColor, isFreeToken, isDraggable, this);
-          // System.err.println( "add variableNode " + variableNode.getVariable().getId() +
-          //                     " type " + variable.getType());
-          variableNodeList.add( variableNode);
-        } else {
-          variableNode.addTokenNode( tokenNode);
+    int x = 0, y = 0;
+    PwToken token = tokenNode.getToken();
+    ListIterator varIterator = token.getVariablesList().listIterator();
+    while(varIterator.hasNext()) {
+      PwVariable var = (PwVariable) varIterator.next();
+      if(var != null) {
+        VariableNode varNode;
+        if((varNode = getVariableNode(var.getId())) == null) {
+          varNode = new VariableNode(var, tokenNode, new Point(x, y), tokenNode.getColor(),
+                                     token.isFreeToken(), isDraggable, this);
+          variableNodeMap.put(var.getId(), varNode);
+          document.addObjectAtTail(varNode);
         }
-        tokenNode.addVariableNode( variableNode);
-
-        int xCon = xVar, yCon = yVar + ViewConstants.TIMELINE_VIEW_Y_DELTA;
-        // System.err.println( "variable " + variable.getId());
-        // System.err.println( "  constraintList " + variable.getConstraintList());
-        Iterator constraintItr = variable.getConstraintList().iterator();
-        while (constraintItr.hasNext()) {
-          PwConstraint constraint = (PwConstraint) constraintItr.next();
-          if (constraint != null) {
-            ConstraintNode constraintNode = getConstraintNode( constraint.getId());
-            if (constraintNode == null) {
-              constraintNode =
-                new ConstraintNode( constraint, variableNode, new Point( xCon, yCon),
-                                    backgroundColor, isFreeToken, isDraggable, this);
-              // System.err.println( "add constraintNode " +
-              //                     constraintNode.getConstraint().getId());
-              constraintNodeList.add( constraintNode);
-              xCon += constraintNode.getSize().getWidth() * 1.5;
-              constraintNode.setLocation( xCon, yCon);
-            } else {
-              constraintNode.addVariableNode( variableNode);
-            }
-            variableNode.addConstraintNode( constraintNode);
-          }
+        varNode.addTokenNode(tokenNode);
+        tokenNode.addVariableNode(varNode);
+        //document.removeObject(varNode);
+        
+        String linkName = var.getId() + "->" + token.getId();
+        BasicNodeLink link;
+        if((link = getVariableLink(linkName)) == null) {
+          link = new BasicNodeLink(varNode, tokenNode, linkName);
+          variableLinkMap.put(link.getLinkName(), link);
+          //document.addObjectAtTail(link);
+          document.insertObjectBefore(document.findObject(tokenNode), link);
         }
-        xVar += variableNode.getSize().getWidth() * 1.5;
-        variableNode.setLocation( xVar, yVar);
+        varNode.addLink(link);
+        //document.removeObject(link);
       }
     }
-  } // end createVariableAndConstraintNodes
+  }
 
-  private void createTokenVariableConstraintLinks( ConstraintNetworkTokenNode tokenNode) {
-    // System.err.println( "tokenNode " + tokenNode.getToken().getId());
-    Iterator variableItr = tokenNode.getVariableNodeList().iterator();
-    while (variableItr.hasNext()) {
-      VariableNode variableNode = (VariableNode) variableItr.next();
-      // System.err.println( "  variableNode " + variableNode.getVariable().getId());
-      createConstraintLink( variableNode, tokenNode);
-      Iterator constraintNodeItr = variableNode.getConstraintNodeList().iterator();
-      while (constraintNodeItr.hasNext()) {
-        ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
-        // System.err.println( "    constraintNode " + constraintNode.getConstraint().getId());
-        createConstraintLink( constraintNode, variableNode);
-      }
-    }
-  } // end createTokenVariableConstraintLinks
 
-  private void createConstraintLink( BasicNode fromNode, BasicNode toNode) {
-    String linkName = null, linkTypeName = null;
-    BasicNodeLink link = null;
-    if (fromNode instanceof ConstraintNode) {
-      linkName =
-        ((ConstraintNode) fromNode).getConstraint().getId().toString() + "->" +
-        ((VariableNode) toNode).getVariable().getId().toString();
-      if (getConstraintLink( linkName) != null) {
-        // System.err.println( "discard duplicate constraint=>variable link " + linkName);
-        return;
+  private void createConstrsAndLinksForVar(VariableNode varNode) {
+    boolean isDraggable = true;
+    int x = 0, y = 0;
+    PwVariable var = varNode.getVariable();
+    ListIterator constrIterator = var.getConstraintList().listIterator();
+    while(constrIterator.hasNext()) {
+      PwConstraint constr = (PwConstraint) constrIterator.next();
+      if(constr != null) {
+        ConstraintNode constrNode;
+        if((constrNode = getConstraintNode(constr.getId())) == null) {
+          constrNode = new ConstraintNode(constr, varNode, new Point(x, y), varNode.getColor(),
+                                          true, isDraggable, this);
+          constraintNodeMap.put(constr.getId(), constrNode);
+          document.addObjectAtTail(constrNode);
+        }
+        constrNode.addVariableNode(varNode);
+        varNode.addConstraintNode(constrNode);
+        //document.removeObject(constrNode);
+        
+        BasicNodeLink link;
+        String linkName = constr.getId() + "->" + var.getId();
+        if((link = getConstraintLink(linkName)) == null) {
+          link = new BasicNodeLink(constrNode, varNode, linkName);
+          //document.addObjectAtTail(link);
+          document.insertObjectBefore(document.findObject(varNode), link);
+        }
+        constraintLinkMap.put(linkName, link);
+        constrNode.addLink(link);
+        //document.removeObject(link);
       }
-      linkTypeName = "constraint=>variable";
-      link = new BasicNodeLink( fromNode, toNode, linkName);
-      constraintLinkList.add( link);
-      ((ConstraintNode) fromNode).addLink( link);
     }
-    if (fromNode instanceof VariableNode) {
-      linkName =
-        ((VariableNode) fromNode).getVariable().getId().toString() + "->" +
-        ((TokenNode) toNode).getToken().getId().toString();
-      if (getConstraintLink( linkName) != null) {
-        // System.err.println( "discard duplicate variable=>token link " + linkName);
-        return;
+  }
+
+  private void createVarNodesAndLinksForConstr(ConstraintNode constrNode) {
+    boolean isDraggable = false;
+    int x = 0, y = 0;
+    PwConstraint constr = constrNode.getConstraint();
+    ListIterator varIterator = constr.getVariablesList().listIterator();
+    while(varIterator.hasNext()) {
+      PwVariable var = (PwVariable) varIterator.next();
+      PwToken token = (PwToken) var.getTokenList().get(0);
+      ConstraintNetworkTokenNode tokenNode = getTokenNode(token.getId());
+      if(var != null) {
+        VariableNode varNode;
+        if((varNode = getVariableNode(var.getId())) == null) {
+          varNode = new VariableNode(var, tokenNode, new Point(x, y), tokenNode.getColor(),
+                                     token.isFreeToken(), isDraggable, this);
+          variableNodeMap.put(var.getId(), varNode);
+          document.addObjectAtTail(varNode);
+        }
+        tokenNode.addVariableNode(varNode);
+        constrNode.addVariableNode(varNode);
+        varNode.addConstraintNode(constrNode);
+        varNode.addTokenNode(tokenNode);
+        //document.removeObject(varNode);
+        
+        String link1Name = constr.getId() + "->" + var.getId();
+        String link2Name = var.getId() + "->" + token.getId();
+        BasicNodeLink link1, link2;
+        if((link1 = getConstraintLink(link1Name)) == null) {
+          link1 = new BasicNodeLink(constrNode, varNode, link1Name);
+          constraintLinkMap.put(link1Name, link1);
+          document.insertObjectBefore(document.findObject(tokenNode), link1);
+          //document.addObjectAtTail(link1);
+        }
+        if((link2 = getVariableLink(link2Name)) == null) {
+          link2 = new BasicNodeLink(varNode, tokenNode, link2Name);
+          variableLinkMap.put(link2Name, link2);
+          //document.addObjectAtTail(link2);
+          document.insertObjectBefore(document.findObject(tokenNode), link2);
+        }
+        constrNode.addLink(link1);
+        varNode.addLink(link2);
+        //document.removeObject(link1);
+        //document.removeObject(link2);
       }
-      linkTypeName = "variable=>token";
-      link = new BasicNodeLink( fromNode, toNode, linkName);
-      variableLinkList.add( link);
-      ((VariableNode) fromNode).addLink( link);
     }
-    // System.err.println( "create " +  linkTypeName + " link " + linkName);
-  } // end createConstraintLink
+  }
+
+  private ConstraintNetworkTokenNode getTokenNode(Integer nodeId) {
+    return (ConstraintNetworkTokenNode) tokenNodeMap.get(nodeId);
+  }
 
   private VariableNode getVariableNode( Integer nodeId) {
-    Iterator variableNodeItr = variableNodeList.iterator();
-    while (variableNodeItr.hasNext()) {
-      VariableNode variableNode = (VariableNode) variableNodeItr.next();
-      if (nodeId.equals( variableNode.getVariable().getId())) {
-        return variableNode;
-      }
-    }
-    return null;
+    return (VariableNode) variableNodeMap.get(nodeId);
   } // end getVariableNode
 
   private ConstraintNode getConstraintNode( Integer nodeId) {
-    Iterator constraintNodeItr = constraintNodeList.iterator();
-    while (constraintNodeItr.hasNext()) {
-      ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
-      if (nodeId.equals( constraintNode.getConstraint().getId())) {
-        return constraintNode;
-      }
-    }
-    return null;
+    return (ConstraintNode) constraintNodeMap.get(nodeId);
   } // end getConstraintNode
  
   private BasicNodeLink getConstraintLink( String linkName) {
-    Iterator linkItr = constraintLinkList.iterator();
-    while (linkItr.hasNext()) {
-      BasicNodeLink link = (BasicNodeLink) linkItr.next();
-      // System.err.println( "getConstraintLink: linkName '" + link.getLinkName() + "'");
-      if (linkName.equals( link.getLinkName())) {
-        return link;
-      }
-    }
-    return null;
+    return (BasicNodeLink) constraintLinkMap.get(linkName);
   } // end getConstraintLink
 
   private BasicNodeLink getVariableLink( String linkName) {
-    Iterator linkItr = variableLinkList.iterator();
-    while (linkItr.hasNext()) {
-      BasicNodeLink link = (BasicNodeLink) linkItr.next();
-      // System.err.println( "getVariableLink: linkName '" + link.getLinkName() + "'");
-      if (linkName.equals( link.getLinkName())) {
-        return link;
-      }
-    }
-    return null;
+    return (BasicNodeLink) variableLinkMap.get(linkName);
   } // end getVariableLink
 
   /**
@@ -641,6 +585,10 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public boolean addVariableNodes( ConstraintNetworkTokenNode tokenNode) { 
     boolean areNodesChanged = false;
+    if(tokenNode.getVariableNodeList().isEmpty() || 
+       tokenNode.getToken().getVariablesList().size() != tokenNode.getVariableNodeList().size()) {
+      createVarsAndLinksForToken(tokenNode);
+    }
     Iterator variableNodeItr = tokenNode.getVariableNodeList().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
@@ -650,8 +598,8 @@ public class ConstraintNetworkView extends PartialPlanView {
         }
         variableNode.setInLayout( true);
         // nodes are always in front of any links
+        //document.removeObject(variableNode);
         document.addObjectAtTail( variableNode);
-        //network.addConstraintNode( variableNode);
         areNodesChanged = true;
       }
     }
@@ -666,6 +614,11 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public boolean addConstraintNodes( VariableNode variableNode) {
     boolean areNodesChanged = false;
+    if(variableNode.getConstraintNodeList().isEmpty() ||
+       variableNode.getVariable().getConstraintList().size() != 
+       variableNode.getConstraintNodeList().size()) {
+      createConstrsAndLinksForVar(variableNode);
+    }
     Iterator constraintNodeItr = variableNode.getConstraintNodeList().iterator();
     while (constraintNodeItr.hasNext()) {
       ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
@@ -676,8 +629,8 @@ public class ConstraintNetworkView extends PartialPlanView {
         }
         constraintNode.setInLayout( true);
         // nodes are always in front of any links
+        //document.removeObject(constraintNode);
         document.addObjectAtTail( constraintNode);
-        //network.addConstraintNode( constraintNode);
         areNodesChanged = true;
       }
     }
@@ -692,6 +645,7 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public boolean addVariableNodes( ConstraintNode constraintNode) {
     boolean areNodesChanged = false;
+    createVarNodesAndLinksForConstr(constraintNode);
     Iterator variableNodeItr = constraintNode.getVariableNodeList().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
@@ -701,8 +655,8 @@ public class ConstraintNetworkView extends PartialPlanView {
         }
         variableNode.setInLayout( true);
         // nodes are always in front of any links
+        //document.removeObject(variableNode);
         document.addObjectAtTail( variableNode);
-        //network.addConstraintNode( variableNode);
         areNodesChanged = true;
       }
     }
@@ -722,7 +676,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     //                     tokenNode.getToken().getId());
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
-      // System.err.println( "  variableNode " + variableNode.getVariable().getId());
+      //System.err.println( "  variableNode " + variableNode.getVariable().getId());
       if (addConstraintLink( variableNode, tokenNode, tokenNode)) {
         areLinksChanged = true;
       }
@@ -800,11 +754,13 @@ public class ConstraintNetworkView extends PartialPlanView {
       link = addVariableToTokenLink( (VariableNode) fromNode,
                                      (ConstraintNetworkTokenNode) toNode,
                                      sourceNode);
+
       linkType = "VtoT";
     }
     if (link != null) {
       // links are always behind any nodes
-      document.addObjectAtHead( link);
+      //document.removeObject(link);
+      document.addObjectAtTail( link);
       //network.addConstraintLink( link, fromNode, toNode);
       link.setInLayout( true);
       link.incrLinkCount();
@@ -1049,7 +1005,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       while (varTokLinkItr.hasNext()) {
         BasicNodeLink link = (BasicNodeLink) varTokLinkItr.next();
         if (link.inLayout() &&
-            ((ConstraintNetworkTokenNode) link.getToNode()).equals( tokenNode)) {
+            ((ConstraintNetworkTokenNode) link.getToNode()).equals(tokenNode)) {
           if (removeVariableToTokenLink( link, variableNode, tokenNode)) {
             areLinksChanged = true;
           }
@@ -1078,7 +1034,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       Iterator varTokLinkItr = variableNode.getVariableTokenLinkList().iterator();
       while (varTokLinkItr.hasNext()) {
         BasicNodeLink link = (BasicNodeLink) varTokLinkItr.next();
-        if (((ConstraintNetworkTokenNode) link.getToNode()).equals( tokenNode) &&
+        if (((ConstraintNetworkTokenNode) link.getToNode()).equals(tokenNode) &&
             link.inLayout()) {
           if (removeVariableToTokenLink( link, variableNode, tokenNode)) {
             areLinksChanged = true;
@@ -1131,27 +1087,15 @@ public class ConstraintNetworkView extends PartialPlanView {
           }
         }
       }
-      // this decrements/removes token->variable links when constraintNode is
-      // closed -- do not do it - will 04nov03
-//       Iterator varTokLinkItr = variableNode.getVariableTokenLinkList().iterator();
-//       while (varTokLinkItr.hasNext()) {
-//         BasicNodeLink link = (BasicNodeLink) varTokLinkItr.next();
-//         if (link.inLayout() &&
-//             ((VariableNode) link.getFromNode()).equals( variableNode)) {
-//           if (removeVariableToTokenLink( link, variableNode,
-//                                          (ConstraintNetworkTokenNode) link.getToNode())) {
-//             areLinksChanged = true;
-//           }
-//         }
-//       }
-    }
+      
+    } 
     return areLinksChanged;
-  } // end removeConstraintToVariableLinks( ConstraintNode constraintNode) {
-
+  }
 
   private boolean traverseVariableNode( VariableNode variableNode, TokenNode tokenNode,
                                         int action) {
     boolean isVariableLinkedToToken = false;
+    //System.err.println(variableNode + " : " + variableNode.inLayout());
     if (variableNode.inLayout()) {
       if (isDebugTraverse) {
         System.err.println( "traverse to variable " + variableNode.getVariable().getId() +
@@ -1160,7 +1104,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       Iterator varTokLinkItr = variableNode.getVariableTokenLinkList().iterator();
       while (varTokLinkItr.hasNext()) {
         BasicNodeLink link = (BasicNodeLink) varTokLinkItr.next();
-//         System.err.println( "  linkName " + link.getLinkName());
+        //         System.err.println( "  linkName " + link.getLinkName());
         if (link.inLayout() &&
             ((VariableNode) link.getFromNode()).equals( variableNode) &&
             ((TokenNode) link.getToNode()).equals( tokenNode)) {
@@ -1240,20 +1184,20 @@ public class ConstraintNetworkView extends PartialPlanView {
     // viewSet.printSpec();
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
-    Iterator constraintNodeItr = constraintNodeList.iterator();
+    Iterator constraintNodeItr = constraintNodeMap.values().iterator();
     while (constraintNodeItr.hasNext()) {
       ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
       constraintNode.setVisible( false);
       constraintNode.setHasBeenVisited( false);
     }
-    Iterator variableNodeItr = variableNodeList.iterator();
+    Iterator variableNodeItr = variableNodeMap.values().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
       variableNode.setVisible( false);
       variableNode.setHasBeenVisited( false);
     }
 
-    Iterator tokenNodeIterator = tokenNodeList.iterator();
+    Iterator tokenNodeIterator = tokenNodeMap.values().iterator();
     while (tokenNodeIterator.hasNext()) {
       ConstraintNetworkTokenNode tokenNode =
         (ConstraintNetworkTokenNode) tokenNodeIterator.next();
@@ -1278,7 +1222,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   } // end setNodesLinksVisible
 
   private void setLinksVisible() {
-    Iterator variableLinkItr = variableLinkList.iterator();
+    Iterator variableLinkItr = variableLinkMap.values().iterator();
     while (variableLinkItr.hasNext()) {
       BasicNodeLink link = (BasicNodeLink) variableLinkItr.next();
       TokenNode tokenNode = (TokenNode) link.getToNode();
@@ -1297,7 +1241,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         }
       }
     }
-    Iterator constraintLinkItr = constraintLinkList.iterator();
+    Iterator constraintLinkItr = constraintLinkMap.values().iterator();
     while (constraintLinkItr.hasNext()) {
       BasicNodeLink link = (BasicNodeLink) constraintLinkItr.next();
       ConstraintNode fromNode = (ConstraintNode) link.getFromNode();
@@ -1318,13 +1262,13 @@ public class ConstraintNetworkView extends PartialPlanView {
     }
   } // end setLinksVisible
   /**
-   * <code>ConstraintJGoView</code> - subclass JGoView to add doBackgroundClick and
-   *                           handle Mouse-Right functionality
-   *
-   * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
-   *                NASA Ames Research Center - Code IC
-   * @version 0.0
-   */
+     * <code>ConstraintJGoView</code> - subclass JGoView to add doBackgroundClick and
+     *                           handle Mouse-Right functionality
+     *
+     * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
+     *                NASA Ames Research Center - Code IC
+     * @version 0.0
+     */
   class ConstraintJGoView extends JGoView {
 
     private ConstraintNetworkView constraintNetworkView;

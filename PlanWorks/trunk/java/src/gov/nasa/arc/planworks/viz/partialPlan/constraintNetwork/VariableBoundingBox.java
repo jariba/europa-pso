@@ -38,9 +38,13 @@ public class VariableBoundingBox {
     this.constraintNodes = new LinkedList(constraints);
   }
   public void addConstraint(ConstraintNode constraint) {
-    constraintNodes.addLast(constraint);
+    if(!constraintNodes.contains(constraint)) {
+      constraintNodes.addLast(constraint);
+    }
   }
   public boolean isVisible() { return varNode.isVisible();}
+
+  public VariableNode getVariable(){return varNode;}
 
   public double getHeight() {
     double retval = 0.;
@@ -100,6 +104,18 @@ public class VariableBoundingBox {
     if(!varNode.isVisible()) {
       return;
     }
+    if(constraintNodes.size() > varNode.getConstraintNodeList().size()) {
+      System.err.println("Too many constraint nodes in var node " + varNode);
+      System.err.println("box:  " + constraintNodes.size());
+      System.err.println("node: " + varNode.getConstraintNodeList());
+    }
+    if(constraintNodes.size() < varNode.getConstraintNodeList().size()) {
+      //constraintNodes = new LinkedList(varNode.getConstraintNodeList());
+      ListIterator constrNodeIterator = varNode.getConstraintNodeList().listIterator();
+      while(constrNodeIterator.hasNext()) {
+        addConstraint((ConstraintNode)constrNodeIterator.next());
+      }
+    }
     if(layout.layoutHorizontal()) {
       positionHorizontal(pos);
     }
@@ -153,6 +169,14 @@ public class VariableBoundingBox {
   }
   public boolean wasVisited() {
     return visited;
+  }
+
+  public boolean equals(VariableBoundingBox v) {
+    return varNode.equals(v.varNode);
+  }
+  
+  public String toString() {
+    return varNode.toString();
   }
 }
 

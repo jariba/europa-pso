@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.6 2003-12-12 01:23:05 taylor Exp $
+// $Id: ConstraintNode.java,v 1.7 2004-01-07 23:02:20 miatauro Exp $
 //
 // PlanWorks
 //
@@ -77,6 +77,7 @@ public class ConstraintNode extends BasicNodeWDiamond {
   private int variableLinkCount;
   private boolean isDebug;
   private boolean hasBeenVisited;
+  private Color backgroundColor;
 
   /**
    * <code>ConstraintNode</code> - constructor 
@@ -102,6 +103,8 @@ public class ConstraintNode extends BasicNodeWDiamond {
     constraintVariableLinkList = new ArrayList();
     constraintVariableLinkMap = new HashMap();
 
+    this.backgroundColor = backgroundColor;
+
     inLayout = false;
     isUnaryConstraint = true;
     if (constraint.getVariablesList().size() > 1) {
@@ -116,7 +119,6 @@ public class ConstraintNode extends BasicNodeWDiamond {
 
     hasBeenVisited = false;
     resetNode( false);
-
     configure( constraintLocation, backgroundColor, isDraggable);
   } // end constructor
 
@@ -135,15 +137,7 @@ public class ConstraintNode extends BasicNodeWDiamond {
     }
   } // end configure
 
-  /**
-   * <code>equals</code>
-   *
-   * @param node - <code>ConstraintNode</code> - 
-   * @return - <code>boolean</code> - 
-   */
-  public boolean equals( ConstraintNode node) {
-    return (this.getConstraint().getId().equals( node.getConstraint().getId()));
-  }
+  public Color getColor(){return backgroundColor;}
 
   /**
    * <code>getConstraint</code>
@@ -301,7 +295,7 @@ public class ConstraintNode extends BasicNodeWDiamond {
    * @param variableNode - <code>VariableNode</code> - 
    */
   public void addVariableNode( VariableNode variableNode) {
-    if (variableNodeList.indexOf( variableNode) == -1) {
+    if (!variableNodeList.contains(variableNode)) {
       variableNodeList.add( variableNode);
     }
   }
@@ -321,7 +315,7 @@ public class ConstraintNode extends BasicNodeWDiamond {
    * @param link - <code>BasicNodeLink</code> - 
    */
   public void addLink( BasicNodeLink link) {
-    if (constraintVariableLinkList.indexOf( link) == -1) {
+    if(!constraintVariableLinkList.contains(link)) {
       constraintVariableLinkList.add( link);
       constraintVariableLinkMap.put(link.getToNode(), link);
     }
@@ -411,5 +405,9 @@ public class ConstraintNode extends BasicNodeWDiamond {
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
   } // end addConstraintnodeVariablesConstraints
 
+
+  public boolean equals(ConstraintNode c) {
+    return constraint.getId().equals(c.getConstraint().getId());
+  }
 
 } // end class ConstraintNode
