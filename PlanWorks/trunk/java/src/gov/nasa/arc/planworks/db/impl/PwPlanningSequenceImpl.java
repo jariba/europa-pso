@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.41 2003-10-09 22:07:43 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.42 2003-10-14 18:20:14 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -57,8 +57,9 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
   private PwModel model;
 
   private int stepCount;
-  private List transactions; 
-  private Map planToTransactionMap;
+  //private List transactions; 
+  //private Map planToTransactionMap;
+  private Map transactions;
   private String name;
   //private List partialPlanNames; // List of String
   private List contentSpec;
@@ -193,9 +194,10 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
   }
 
   private void loadTransactions() {
-    List info = MySQLDB.queryTransactions(id);
-    transactions = (List) info.get(0);
-    planToTransactionMap = (Map) info.get(1);
+    transactions = MySQLDB.queryTransactions(id);
+    //List info = MySQLDB.queryTransactions(id);
+    //transactions = (List) info.get(0);
+    //planToTransactionMap = (Map) info.get(1);
   }
   
   // IMPLEMENT INTERFACE 
@@ -249,25 +251,43 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
    * @return - <code>List</code> - of PwTransaction
    */
   public List getTransactionsList( Long partialPlanId) {
-    ListIterator transactionIdIterator = 
+    List retval = new ArrayList();
+    String ppId = partialPlanId.toString();
+    ListIterator transactionKeyIterator = (new ArrayList(transactions.keySet())).listIterator();
+    while(transactionKeyIterator.hasNext()) {
+      String key = (String) transactionKeyIterator.next();
+      if(key.indexOf(ppId) == 0) {
+        retval.add(transactions.get(key));
+      }
+    }
+    /*ListIterator transactionIdIterator = 
       ((List) planToTransactionMap.get(partialPlanId)).listIterator();
     List retval = new ArrayList();
     while(transactionIdIterator.hasNext()) {
       retval.add(transactions.get(((Integer)transactionIdIterator.next()).intValue()));
-    }
+      }*/
     return retval;
   } // end listTransactions
 
   public List getTransactionsList(int stepNum) throws IndexOutOfBoundsException {
-    if (planToTransactionMap.keySet().size() == 0) {
-      return null;
-    }
-    if(stepNum < 0 || stepNum >= planToTransactionMap.keySet().size()) {
-      throw new IndexOutOfBoundsException();
-    }
-    List ppIds = new ArrayList(planToTransactionMap.keySet());
-    Collections.sort(ppIds);
-    return getTransactionsList((Long) ppIds.get(stepNum));
+    //if (planToTransactionMap.keySet().size() == 0) {
+    //  return null;
+    // }
+    //if(stepNum < 0 || stepNum >= planToTransactionMap.keySet().size()) {
+    //  throw new IndexOutOfBoundsException();
+    //}
+    //List ppIds = new ArrayList(planToTransactionMap.keySet());
+    //Collections.sort(ppIds);
+    //return getTransactionsList((Long) ppIds.get(stepNum));
+    //Long temp = null;
+    //try {
+    //  temp = getPartialPlan(stepNum).getId();
+    //}
+    //catch(ResourceNotFoundException rnfe) {
+    //  throw new IndexOutOfBoundsException();
+    //}
+    //return getTransactionsList(temp);
+    return getTransactionsList(getPartialPlanId(stepNum));
   }
 
   /**
@@ -411,7 +431,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     List retval = new ArrayList();
     ListIterator idIterator = ids.listIterator();
     while(idIterator.hasNext()) {
-      retval.add(transactions.get(((Integer)idIterator.next()).intValue()));
+      retval.add(transactions.get(idIterator.next()));
     }
     return retval;
   }
@@ -498,15 +518,31 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     if(stepNum < 0 || stepNum > stepCount) {
       throw new IndexOutOfBoundsException();
     }
-    List ids = new ArrayList(planToTransactionMap.keySet());
-    Collections.sort(ids);
-    return MySQLDB.queryPartialPlanSize((Long)ids.get(stepNum));
+    //List ids = new ArrayList(planToTransactionMap.keySet());
+    //Collections.sort(ids);
+    //return MySQLDB.queryPartialPlanSize((Long)ids.get(stepNum));
+    //Long temp = gnull;
+    //try {
+    //  temp = getPartialPlan(stepNum).getId();
+    // }
+    //catch(ResourceNotFoundException rnfe) {
+    //  throw new IndexOutOfBoundsException();
+    //}
+    //return MySQLDB.queryPartialPlanSize(temp);
+    return MySQLDB.queryPartialPlanSize(getPartialPlanId(stepNum));
   }
   
   public List getPlanDBSizeList() {
     return MySQLDB.queryPartialPlanSizes(id);
   }
 
+  private Long getPartialPlanId(int stepNum) {
+    return getPartialPlanId("step".concat(Integer.toString(stepNum)));
+  }
+
+  private Long getPartialPlanId(String stepName) {
+    return MySQLDB.queryPartialPlanId(id, stepName);
+  }
   private class PartialPlanNameComparator implements Comparator {
     public PartialPlanNameComparator() {
     }
