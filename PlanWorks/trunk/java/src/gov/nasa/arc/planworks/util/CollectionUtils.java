@@ -4,13 +4,15 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: CollectionUtils.java,v 1.2 2004-03-26 22:10:42 miatauro Exp $
+// $Id: CollectionUtils.java,v 1.3 2004-06-22 22:44:31 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -159,4 +161,35 @@ public class CollectionUtils {
     return null;
   }
 
+	public static final Object findGreatest(final List l) {
+		List temp = tempSort(l);
+		return temp.get(temp.size()-1);
+	}
+	
+	public static final Object findGreatest(final Comparator c, final List l) {
+		List temp = tempSort(l,c);
+		return temp.get(temp.size()-1);
+	}
+
+	public static final Object findLeast(final List l) {
+		List temp = tempSort(l);
+		return temp.get(0);
+	}
+	
+	public static final Object findLeast(final Comparator c, final List l) {
+		List temp = tempSort(l,c);
+		return temp.get(0);
+	}
+
+	public static final List tempSort(final List l) {
+		ArrayList temp = new ArrayList(l);
+		Collections.sort(temp);
+		return temp;
+	}
+	
+	public static final List tempSort(final List l, final Comparator c) {
+		ArrayList temp = new ArrayList(l);
+		Collections.sort(temp, c);
+		return temp;
+	}
 }
