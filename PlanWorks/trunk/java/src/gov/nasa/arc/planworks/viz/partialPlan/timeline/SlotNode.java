@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.10 2004-02-03 22:45:07 miatauro Exp $
+// $Id: SlotNode.java,v 1.11 2004-02-04 20:16:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -213,13 +213,12 @@ public class SlotNode extends TextNode {
   //        previousSlot endInterval != startInterval (adjust spacing so labels
   //              do not overlap)
   private void renderTimeIntervals() {
-    boolean alwaysReturnEnd = true;
     PwSlot previousSlot = null;
     if (previousSlotNode != null) {
       previousSlot = previousSlotNode.getSlot();
     }
 //     PwDomain[] intervalArray =
-//       NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot, alwaysReturnEnd);
+//       NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot);
 //     startTimeIntervalDomain = intervalArray[0];
 //     endTimeIntervalDomain = intervalArray[1];
     startTimeIntervalDomain = slot.getStartTime();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.33 2004-02-03 22:45:08 miatauro Exp $
+// $Id: TimelineView.java,v 1.34 2004-02-04 20:16:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -325,8 +325,14 @@ public class TimelineView extends PartialPlanView {
       PwToken freeToken = (PwToken) freeTokenItr.next();
       if (isTokenInContentSpec( freeToken))  {
         // increment by half the label width, since x is center, not left edge
-        x = x +  SwingUtilities.computeStringWidth( this.fontMetrics,
-                                                    freeToken.getPredicateName()) / 2;
+        int divisor = 2;
+        if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
+          divisor = 1;
+        }
+        x = x +  Math.max( SwingUtilities.computeStringWidth
+                           ( this.fontMetrics, freeToken.getPredicateName()) / divisor,
+                           SwingUtilities.computeStringWidth
+                           ( this.fontMetrics, "key=" + freeToken.getId().toString()) / divisor);
         TimelineTokenNode freeTokenNode =
           new TimelineTokenNode( freeToken, slot, new Point( x, y), backgroundColor,
                                  isFreeToken, isDraggable, this);
@@ -349,12 +355,14 @@ public class TimelineView extends PartialPlanView {
     Iterator slotIterator = slotList.iterator();
     SlotNode previousSlotNode = null;
     SlotNode slotNode = null;
-    boolean isFirstSlot = true, alwaysReturnEnd = false;
+    boolean isFirstSlot = true;
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
       // overloaded tokens on slot - not displayed, put in displayedTokenIds
       List tokenList = slot.getTokenList();
-
+      for (int i = 1, n = tokenList.size(); i < n; i++) {
+        isTokenInContentSpec( (PwToken) tokenList.get( i));
+      }
       boolean isLastSlot = (! slotIterator.hasNext());
       PwToken token = slot.getBaseToken();
       if ((token == null) && (isFirstSlot || isLastSlot)) {
@@ -395,7 +403,7 @@ public class TimelineView extends PartialPlanView {
     ListIterator slotIterator = slotList.listIterator();
     PwSlot previousSlot = null;
     SlotNode slotNode = null;
-    boolean alwaysReturnEnd = true, foundEmptySlot = false;
+    boolean foundEmptySlot = false;
     int earliestStartTime = DbConstants.MINUS_INFINITY_INT;
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
@@ -416,17 +424,8 @@ public class TimelineView extends PartialPlanView {
         foundEmptySlot = false;
       }
       boolean isLastSlot = (! slotIterator.hasNext());
-     //  PwDomain[] intervalArray;
-//       if(slotIterator.hasNext()) {
-//         intervalArray = NodeGeneraics.getStartEndIntervals(slot, previousSlot, 
-//                                                            (PwSlot) slotIterator.next(), 
-//                                                            isLastSlot, alwaysReturnEnd);
-//         slotIterator.previous();
-//       }
-//       else {
-//         intervalArray =
-//           NodeGenerics.getStartEndIntervals( slot, previousSlot, null, isLastSlot, 
-//                                              alwaysReturnEnd);
+//       PwDomain[] intervalArray =
+//         NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot);
 //       PwDomain startTimeIntervalDomain = intervalArray[0];
 //       PwDomain endTimeIntervalDomain = intervalArray[1];
       PwDomain startTimeIntervalDomain = slot.getStartTime();

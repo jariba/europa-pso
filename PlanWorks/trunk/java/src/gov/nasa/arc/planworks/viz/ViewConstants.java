@@ -300,13 +300,13 @@ public interface ViewConstants {
    * constant <code>RESOURCE_PROFILE_CELL_HEIGHT</code>
    *
    */
-  public static final int RESOURCE_PROFILE_CELL_HEIGHT = 100; 
+  public static final int RESOURCE_PROFILE_CELL_HEIGHT = 120; 
 
   /**
    * constant <code>RESOURCE_PROFILE_MIN_Y_OFFSET</code>
    *
    */
-  public static final int RESOURCE_PROFILE_MIN_Y_OFFSET = 10;
+  public static final int RESOURCE_PROFILE_MIN_Y_OFFSET = 18;
 
   /**
    * constant <code>RESOURCE_PROFILE_MAX_Y_OFFSET</code>
