@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.81 2004-01-12 19:46:15 taylor Exp $
+// $Id: PlanWorks.java,v 1.82 2004-02-03 19:21:27 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -233,7 +233,7 @@ public class PlanWorks extends MDIDesktopFrame {
    *
    * @param constantMenus - <code>JMenu[]</code> -
    */                                
-  public PlanWorks( JMenu[] constantMenus) {
+  public PlanWorks( final JMenu[] constantMenus) {
     super( name, constantMenus);
     projectMenu.setEnabled(false);
     currentProjectName = "";
@@ -316,7 +316,7 @@ public class PlanWorks extends MDIDesktopFrame {
    *
    * @param name - <code>String</code> - 
    */
-  public void setCurrentProjectName( String name) {
+  public void setCurrentProjectName( final String name) {
     currentProjectName = name;
   }
 
@@ -343,7 +343,7 @@ public class PlanWorks extends MDIDesktopFrame {
    *
    * @param planWorksInstance - <code>PlanWorks</code> - 
    */
-  public static void setPlanWorks( PlanWorks planWorksInstance) {
+  public static void setPlanWorks( final PlanWorks planWorksInstance) {
     planWorks = planWorksInstance;
   }
 
@@ -370,7 +370,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end getProjectsLessCurrent
 
 
-  protected static void setProjectMenuEnabled( String textName, boolean isEnabled) {
+  protected static void setProjectMenuEnabled( final String textName, final boolean isEnabled) {
     for (int i = 0, n = projectMenu.getItemCount(); i < n; i++) {
       if ((projectMenu.getItem( i) != null) &&
           (projectMenu.getItem( i).getText().equals( textName))) {
@@ -380,11 +380,11 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end setProjectMenuEnabled
 
-  private String getSequenceMenuItemName( String seqName, JMenu planSequenceViewMenu) {
+  private String getSequenceMenuItemName( final String seqName, final JMenu planSequenceViewMenu) {
     int nameCount = 0;
     // System.err.println( "getSequenceMenuItemName: seqName " + seqName);
     // check for e.g. monkey1066690986042
-    seqName = seqName.substring( 0, seqName.length() - DbConstants.LONG_INT_LENGTH);
+    String newSeqName = seqName.substring( 0, seqName.length() - DbConstants.LONG_INT_LENGTH);
     for (int i = 0; i < planSequenceViewMenu.getItemCount(); i++) {
       JMenuItem item = planSequenceViewMenu.getItem(i);
       String itemName = item.getText();
@@ -392,15 +392,15 @@ public class PlanWorks extends MDIDesktopFrame {
       if (index != -1) {
         itemName = itemName.substring(0, index);
       }
-      if (itemName.equals( seqName)) {
+      if (itemName.equals( newSeqName)) {
         nameCount++;
       }
     }
     if (nameCount > 0) {
-      seqName = seqName.concat(" (").concat(Integer.toString(nameCount)).concat(")");
+      newSeqName = newSeqName.concat(" (").concat(Integer.toString(nameCount)).concat(")");
     }
     // System.err.println( "   seqName " + seqName);
-    return seqName;
+    return newSeqName;
   } // end getSequenceMenuItemName
 
   /**
@@ -470,7 +470,7 @@ public class PlanWorks extends MDIDesktopFrame {
     return jMenuArray;
   } // end buildConstantMenus
 
-  private void instantiateProjectThread( String type) {
+  private void instantiateProjectThread( final String type) {
     if(sequenceStepsViewMap == null) {
       sequenceStepsViewMap = new HashMap();
     }
@@ -508,7 +508,7 @@ public class PlanWorks extends MDIDesktopFrame {
    *
    * @return - <code>PwPlanningSequence</code> - 
    */
-  public PwPlanningSequence getPlanSequence( PwPartialPlan partialPlan) {
+  public PwPlanningSequence getPlanSequence( final PwPartialPlan partialPlan) {
     PwPlanningSequence planSequence = null;
     String partialPlanUrl = partialPlan.getUrl();
     String seqUrl =
@@ -529,7 +529,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end getPlanSequence
 
 
-  public void addPlanSeqViewMenu( PwProject project, JMenu planSeqMenu) {
+  public void addPlanSeqViewMenu( final PwProject project, final JMenu planSeqMenu) {
     // Create Dynamic Cascading Seq/PartialPlan/View Menu
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
     if (planSeqMenu == null) {
@@ -542,7 +542,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end addSeqPartialPlanMenu
 
 
-  protected JMenu buildPlanSeqViewMenu( PwProject project, JMenu planSeqViewMenu) {
+  protected JMenu buildPlanSeqViewMenu( final PwProject project, JMenu planSeqViewMenu) {
     if (planSeqViewMenu == null) {
       planSeqViewMenu = new JMenu( PLANSEQ_MENU);
     }
@@ -572,7 +572,8 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end buildPlanSeqViewMenu
 
 
-  private void createSequenceViewThread( String viewName, SequenceViewMenuItem menuItem) {
+  private void createSequenceViewThread( final String viewName, 
+                                         final SequenceViewMenuItem menuItem) {
     Thread thread = new CreateSequenceViewThread(viewName, menuItem);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();

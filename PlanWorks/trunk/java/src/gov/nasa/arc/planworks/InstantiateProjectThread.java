@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.7 2003-12-15 18:40:21 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.8 2004-02-03 19:21:27 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -45,7 +45,7 @@ public class InstantiateProjectThread extends Thread {
    *
    * @param type - <code>String</code> - 
    */
-  public InstantiateProjectThread( String type) {
+  public InstantiateProjectThread( final String type) {
     this.type = type;
   }  // end constructor
 
@@ -175,9 +175,6 @@ public class InstantiateProjectThread extends Thread {
           // dupExcep.printStackTrace();
           isProjectCreated = false; 
       } catch (Exception e) {
-        //         int index = e.getMessage().indexOf(":");
-        //         JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage().substring(index+1),
-        //                                       "Exception", JOptionPane.ERROR_MESSAGE);
         JOptionPane.showMessageDialog(PlanWorks.planWorks, e.getMessage(),
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.8 2003-12-30 01:11:09 miatauro Exp $
+// $Id: Utilities.java,v 1.9 2004-02-03 19:24:01 miatauro Exp $
 //
 // PlanWorks
 //
@@ -49,9 +49,11 @@ public class Utilities {
    *                           otherwise location will be relative to enclosing JFrame
    * @return currentLocation - <code>Point</code> - 
    */
-  public static Point computeNestedLocation( Point currentLocation, Container container,
-                                             boolean isLocationAbsolute) {
+  public static Point computeNestedLocation( final Point currentLocation, 
+                                             final Container argContainer,
+                                             final boolean isLocationAbsolute) {
     Point location = null;
+    Container container = argContainer;
     while (container != null) {
       location = container.getLocation();
       // System.err.println( "locationX " + location.x + " locationY " + location.y);
@@ -86,7 +88,7 @@ public class Utilities {
    * @param seqUrl - <code>String</code> - 
    * @return - <code>String</code> - 
    */
-  public static String getUrlLeaf( String seqUrl) {
+  public static String getUrlLeaf( final String seqUrl) {
     int index = seqUrl.lastIndexOf( System.getProperty( "file.separator"));
     return seqUrl.substring( index + 1);
   }
@@ -98,7 +100,7 @@ public class Utilities {
    * @param map - <code>Map</code> - 
    * @return - <code>List</code> - of String
    */
-  public static List sortStringKeySet( Map map) {
+  public static List sortStringKeySet( final Map map) {
     List names = new ArrayList();
     Iterator keyItr = map.keySet().iterator();
     while (keyItr.hasNext()) {
@@ -115,7 +117,7 @@ public class Utilities {
    * @param popUp - <code>Window</code> - 
    * @param frame - <code>JFrame</code> - 
    */
-  public static void setPopUpLocation( Window popUp, JFrame frame) {
+  public static void setPopUpLocation( final Window popUp, final JFrame frame) {
     popUp.setLocation( (int) (frame.getLocation().getX() +
                               (frame.getSize().getWidth() / 2) -
                               (popUp.getSize().getWidth() / 2)),
@@ -131,7 +133,7 @@ public class Utilities {
    * @param viewName - <code>String</code> - 
    * @return - <code>String</code> - 
    */
-  public static String trimView( String viewName) {
+  public static String trimView( final String viewName) {
     int temp = 0;
     if((temp = viewName.indexOf(" View")) != -1) {
       return viewName.substring(0, temp);
@@ -146,7 +148,7 @@ public class Utilities {
    * @param partialPlanName - <code>String</code> - 
    * @return - <code>int</code> - 
    */
-  public static int getStepNumber( String partialPlanName) {
+  public static int getStepNumber( final String partialPlanName) {
     return Integer.parseInt( partialPlanName.substring( 4)); // strip off step
   }
 

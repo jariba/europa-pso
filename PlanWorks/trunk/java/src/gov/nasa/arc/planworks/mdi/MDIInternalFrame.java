@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIInternalFrame.java,v 1.10 2003-12-29 22:02:23 miatauro Exp $
+// $Id: MDIInternalFrame.java,v 1.11 2004-02-03 19:23:21 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -49,7 +49,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    * @param windowBar The bar that will contain a button associated with this frame such that
    *                  clicking on it will select the frame.
    */  
-  public MDIInternalFrame(int n, MDIMenu menuBar, MDIWindowBar windowBar) {
+  public MDIInternalFrame(final int n, final MDIMenu menuBar, final MDIWindowBar windowBar) {
     super();
     button = new JButton("Window " + n);
     final MDIInternalFrame temp = this;
@@ -78,7 +78,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    * @param windowBar The bar that will contain a button associated with this frame such that
    *                  clicking on it will select the frame.
    */  
-  public MDIInternalFrame(String title, MDIMenu menuBar, MDIWindowBar windowBar) {
+  public MDIInternalFrame(final String title, final MDIMenu menuBar, final MDIWindowBar windowBar) {
     super(title);
     button = new JButton(title);
     final MDIInternalFrame temp = this;
@@ -108,8 +108,8 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    *                  clicking on it will select the frame.
    * @param resizable The boolean value of the frame's resizable attribute.
    */  
-  public MDIInternalFrame(String title, MDIMenu menuBar, MDIWindowBar windowBar,
-                          boolean resizable) {
+  public MDIInternalFrame(final String title, final MDIMenu menuBar, final MDIWindowBar windowBar,
+                          final boolean resizable) {
     super(title, resizable);
     button = new JButton(title);
     final MDIInternalFrame temp = this;
@@ -140,8 +140,8 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    * @param resizable The boolean value of the frame's resizable attribute.
    * @param closable The boolean value of the frame's closable attribute.
    */  
-  public MDIInternalFrame(String title, MDIMenu menuBar, MDIWindowBar windowBar, boolean resizable,
-                          boolean closable) {
+  public MDIInternalFrame(final String title, final MDIMenu menuBar, final MDIWindowBar windowBar, 
+                          final boolean resizable, final boolean closable) {
     super(title, resizable, closable);
     button = new JButton(title);
     final MDIInternalFrame temp = this;
@@ -174,8 +174,9 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    * @param closable The boolean value of the frame's closable attribute.
    * @param maximizable The boolean value of the frame's maximizable attribute.
    */  
-  public MDIInternalFrame(String title, MDIMenu menuBar, MDIWindowBar windowBar, boolean resizable,
-                          boolean closable, boolean maximizable) {
+  public MDIInternalFrame(final String title, final MDIMenu menuBar, final MDIWindowBar windowBar, 
+                          final boolean resizable, final boolean closable, 
+                          final boolean maximizable) {
     super(title, resizable, closable, maximizable);
     button = new JButton(title);
     final MDIInternalFrame temp = this;
@@ -209,8 +210,9 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    * @param maximizable The boolean value of the frame's maximizable attribute.
    * @param iconifiable The boolean value of the frame's iconifiable attribute.
    */  
-  public MDIInternalFrame(String title, MDIMenu menuBar, MDIWindowBar windowBar, boolean resizable,
-                          boolean closable, boolean maximizable, boolean iconifiable) {
+  public MDIInternalFrame(final String title, final MDIMenu menuBar, final MDIWindowBar windowBar, 
+                          final boolean resizable, final boolean closable, 
+                          final boolean maximizable, final boolean iconifiable) {
     super(title, resizable, closable, maximizable, iconifiable);
     button = new JButton(title);
     final MDIInternalFrame temp = this;
@@ -244,9 +246,10 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    * @param maximizable The boolean value of the frame's maximizable attribute.
    * @param iconifiable The boolean value of the frame's iconifiable attribute.
    */  
-  public MDIInternalFrame(String title, MDIMenu menuBar, MDIWindowBar windowBar, 
-                          MDIWindowBar viewSet, boolean resizable, boolean closable,
-                          boolean maximizable, boolean iconifiable) {
+  public MDIInternalFrame(final String title, final MDIMenu menuBar, final MDIWindowBar windowBar, 
+                          final MDIWindowBar viewSet, final boolean resizable, 
+                          final boolean closable, final boolean maximizable, 
+                          final boolean iconifiable) {
     super(title, resizable, closable, maximizable, iconifiable);
     button = new JButton(title);
     final MDIInternalFrame temp = this;
@@ -271,7 +274,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    * Associates a menu with this frame.
    * @param menu The menu to associate.
    */
-  public void associateMenu(JMenu menu) {
+  public void associateMenu(final JMenu menu) {
     if(this.menus == null) {
       this.menus = new ArrayList(3);
     }
@@ -283,7 +286,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    * Associates multiple menus with this frame.
    * @param menus The menus to associate
    */
-  public void associateMenus(JMenu [] menus) {
+  public void associateMenus(final JMenu [] menus) {
     for(int i = 0; i < menus.length; i++) {
       associateMenu(menus[i]);
     }
@@ -317,7 +320,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
    * well.
    * @param child The MDIInternalFrame to add as a child of this frame.
    */
-  public void addChild(MDIInternalFrame child) throws IllegalArgumentException {
+  public void addChild(final MDIInternalFrame child) throws IllegalArgumentException {
     if(this.children == null) {
       this.children = new ArrayList(3);
     }
@@ -355,7 +358,8 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
      * @param windowBar The MDIWindowButtonBar on the MDIDesktopFrame.
      * @param menu The MDIDynamicWindowBar on the MDIDesktopFrame
      */
-    public MDIInternalFrameListener(MDIInternalFrame frame, MDIWindowBar windowBar, MDIMenu menu) {
+    public MDIInternalFrameListener(final MDIInternalFrame frame, final MDIWindowBar windowBar, 
+                                    final MDIMenu menu) {
       this.frame = frame;
       this.windowBar = windowBar;
       this.menu = menu;
@@ -366,8 +370,8 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
      * @param windowBar The MDIWindowButtonBar on the MDIDesktopFrame.
      * @param menu The MDIDynamicWindowBar on the MDIDesktopFrame
      */
-    public MDIInternalFrameListener(MDIInternalFrame frame, MDIWindowBar windowBar, MDIMenu menu,
-                                    MDIWindowBar viewSet) {
+    public MDIInternalFrameListener(final MDIInternalFrame frame, final MDIWindowBar windowBar, 
+                                    final MDIMenu menu, final MDIWindowBar viewSet) {
       this.frame = frame;
       this.windowBar = windowBar;
       this.menu = menu;

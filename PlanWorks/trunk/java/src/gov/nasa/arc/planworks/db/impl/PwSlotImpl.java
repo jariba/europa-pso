@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.19 2004-01-16 19:05:34 taylor Exp $
+// $Id: PwSlotImpl.java,v 1.20 2004-02-03 19:22:18 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -41,7 +41,8 @@ public class PwSlotImpl implements PwSlot {
    * @param id - <code>Integer</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwSlotImpl( Integer id, Integer timelineId, PwPartialPlanImpl partialPlan) {
+  public PwSlotImpl( final Integer id, final Integer timelineId, 
+                     final PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.timelineId = timelineId;
     this.partialPlan = partialPlan;
@@ -97,11 +98,12 @@ public class PwSlotImpl implements PwSlot {
    * @param paramVarIds - <code>List</code>
    * @return - <code>PwTokenImpl</code> - 
    */
-  public PwTokenImpl addToken(Integer id, boolean isValueToken, Integer slotId, 
-                              String predicateName, Integer startVarId, Integer endVarId, 
-                              Integer durationVarId, Integer objectId, Integer rejectVarId,
-                              Integer objectVarId, Integer timelineId, List tokenRelationIds, 
-                              List paramVarIds) {
+  public PwTokenImpl addToken(final Integer id, final boolean isValueToken, final Integer slotId, 
+                              final String predicateName, final Integer startVarId, 
+                              final Integer endVarId, final Integer durationVarId, 
+                              final Integer objectId, final Integer rejectVarId,
+                              final Integer objectVarId, final Integer timelineId, 
+                              final List tokenRelationIds, final List paramVarIds) {
     PwTokenImpl token = new PwTokenImpl(id, isValueToken, slotId, predicateName, startVarId, 
                                         endVarId, durationVarId, objectId, rejectVarId, 
                                         objectVarId, timelineId, tokenRelationIds, paramVarIds, 
@@ -119,7 +121,7 @@ public class PwSlotImpl implements PwSlot {
    * @param token - <code>PwTokenImpl</code> - 
    * @return - <code>PwTokenImpl</code> - 
    */
-  public PwTokenImpl addToken(PwTokenImpl token) {
+  public PwTokenImpl addToken(final PwTokenImpl token) {
     if(!tokenIdList.contains(token.getId())) {
       tokenIdList.add(token.getId());
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.78 2004-01-14 21:22:57 miatauro Exp $
+// $Id: MySQLDB.java,v 1.79 2004-02-03 19:22:40 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -82,7 +82,6 @@ public class MySQLDB {
     dbStartString.append(" -O bulk_insert_buffer_size=16M");
     //System.err.println("Starting db with: " + dbStartString.toString());
     Runtime.getRuntime().exec(dbStartString.toString());
-    //    try{Thread.sleep(100000);}catch(Exception e){}
     dbIsStarted = true;
     Runtime.getRuntime().addShutdownHook(new Thread() 
       { 
@@ -169,7 +168,7 @@ public class MySQLDB {
    * @param query
    */
 
-  synchronized public static ResultSet queryDatabase(String query) {
+  synchronized public static ResultSet queryDatabase(final String query) {
     Statement stmt = null;
     ResultSet result = null;
     try {
@@ -184,7 +183,7 @@ public class MySQLDB {
     catch(SQLException sqle) {
       System.err.println(sqle);
       sqle.printStackTrace();
-      return null;
+      System.exit(-1);
     }
     catch(IOException ioe) {
       ioe.printStackTrace();
@@ -198,7 +197,7 @@ public class MySQLDB {
    * @param update
    */
 
-  synchronized public static int updateDatabase(String update) {
+  synchronized public static int updateDatabase(final String update) {
     Statement stmt = null;
     int result = -1;
     try {
@@ -219,7 +218,6 @@ public class MySQLDB {
       ioe.printStackTrace();
       System.exit(-1);
     }
-    //analyzeDatabase();
     return result;
   }
   synchronized public static void analyzeDatabase() {
@@ -232,8 +230,6 @@ public class MySQLDB {
       stmt.execute("ANALYZE TABLE Variable");
       stmt.execute("ANALYZE TABLE VConstraint");
       stmt.execute("ANALYZE TABLE ConstraintVarMap");
-      //stmt.execute("ANALYZE TABLE Predicate");
-      //stmt.execute("ANALYZE TABLE Parameter");
       stmt.execute("ANALYZE TABLE TokenRelation");
       stmt.execute("ANALYZE TABLE Transaction");
     }
@@ -250,7 +246,7 @@ public class MySQLDB {
    * @param tableName The name of the table into which the file should be loaded
    */
 
-  synchronized public static void loadFile(String file, String tableName) {
+  synchronized public static void loadFile(final String file, final String tableName) {
 //     try {
 //       Statement stmt = conn.createStatement();
 //       stmt.execute("ALTER TABLE ".concat(tableName).concat(" DISABLE KEYS"));
@@ -270,7 +266,7 @@ public class MySQLDB {
    * @return String - the name of the model.
    */
 
-  synchronized public static String queryPartialPlanModelById(Long partialPlanId) {
+  synchronized public static String queryPartialPlanModelById(final Long partialPlanId) {
     try {
       ResultSet model = 
         queryDatabase("SELECT (Model) FROM PartialPlan WHERE PartialPlanId=".concat(partialPlanId.toString()));
@@ -310,7 +306,7 @@ public class MySQLDB {
    * @return boolean
    */
 
-  synchronized public static boolean projectExists(String name) {
+  synchronized public static boolean projectExists(final String name) {
     try {
       ResultSet rows = 
         queryDatabase("SELECT ProjectId FROM Project WHERE ProjectName='".concat(name).concat("'"));
@@ -329,7 +325,7 @@ public class MySQLDB {
    * @return boolean
    */
 
-  synchronized public static boolean sequenceExists(String url) {
+  synchronized public static boolean sequenceExists(final String url) {
     try {
       ResultSet rows =
         queryDatabase("SELECT * FROM Sequence WHERE SequenceURL='".concat(url).concat("'"));
@@ -340,7 +336,7 @@ public class MySQLDB {
     return false;
   }
 
-  synchronized public static boolean sequenceExists(Long id) {
+  synchronized public static boolean sequenceExists(final Long id) {
     try {
       ResultSet rows =
         queryDatabase("SELECT * FROM Sequence WHERE SequenceId=".concat(id.toString()));
@@ -359,7 +355,7 @@ public class MySQLDB {
    * @return boolean
    */
 
-  synchronized public static boolean partialPlanExists(Long sequenceId, String name) {
+  synchronized public static boolean partialPlanExists(final Long sequenceId, final String name) {
     try {
       ResultSet rows =
         queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()).concat(" && PlanName='").concat(name).concat("'"));
@@ -376,7 +372,7 @@ public class MySQLDB {
    * @param name The name of the project.
    */
 
-  synchronized public static void addProject(String name) {
+  synchronized public static void addProject(final String name) {
     updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("')"));
   }
 
@@ -404,7 +400,7 @@ public class MySQLDB {
    * @param projectId The project to which the sequence will be added
    */
 
-  synchronized public static Long addSequence(String url, Integer projectId) {
+  synchronized public static Long addSequence(final String url, final Integer projectId) {
     loadFile(url + System.getProperty("file.separator") + "sequence", "Sequence");
     Long latestSequenceId = latestSequenceId();
     updateDatabase("UPDATE Sequence SET ProjectId=".concat(projectId.toString()).concat(" WHERE SequenceId=").concat(latestSequenceId.toString()));
@@ -436,7 +432,7 @@ public class MySQLDB {
    * @return Integer
    */
 
-  synchronized public static Integer getProjectIdByName(String name) {
+  synchronized public static Integer getProjectIdByName(final String name) {
     try {
       ResultSet projectId = queryDatabase("SELECT ProjectId FROM Project WHERE ProjectName='".concat(name).concat("'"));
       projectId.first();
@@ -458,7 +454,7 @@ public class MySQLDB {
    * @return Map
    */
 
-  synchronized public static Map getSequences(Integer projectId) {
+  synchronized public static Map getSequences(final Integer projectId) {
     HashMap retval = null;
     try {
       ResultSet sequences = 
@@ -479,7 +475,7 @@ public class MySQLDB {
    * @param id
    */
 
-  synchronized public static void deleteProject(Integer id) throws ResourceNotFoundException {
+  synchronized public static void deleteProject(final Integer id) throws ResourceNotFoundException {
     try {
       ResultSet sequenceIds = 
         queryDatabase("SELECT SequenceId FROM Sequence WHERE ProjectId=".concat(id.toString()));
@@ -493,7 +489,8 @@ public class MySQLDB {
     }
   }
 
-  synchronized public static void deletePlanningSequence(Long sequenceId) throws ResourceNotFoundException{
+  synchronized public static void deletePlanningSequence(final Long sequenceId) 
+    throws ResourceNotFoundException{
     if(!sequenceExists(sequenceId)) {
       throw new ResourceNotFoundException("Sequence with id " + sequenceId + " not in database.");
     }
@@ -517,8 +514,6 @@ public class MySQLDB {
         updateDatabase("DELETE FROM VConstraint".concat(whereClause.toString()));
         updateDatabase("DELETE FROM TokenRelation".concat(whereClause.toString()));
         updateDatabase("DELETE FROM ConstraintVarMap".concat(whereClause.toString()));
-        //updateDatabase("DELETE FROM Predicate".concat(whereClause.toString()));
-        //updateDatabase("DELETE FROM Parameter".concat(whereClause.toString()));
         updateDatabase("DELETE FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
       }
       updateDatabase("DELETE FROM PartialPlanStats WHERE SequenceId=".concat(sequenceId.toString()));
@@ -536,7 +531,7 @@ public class MySQLDB {
    * @return List of Strings
    */
 
-  synchronized public static List getPlanNamesInSequence(Long sequenceId) {
+  synchronized public static List getPlanNamesInSequence(final Long sequenceId) {
     ArrayList retval = new ArrayList();
     try {
       ResultSet names = 
@@ -558,7 +553,7 @@ public class MySQLDB {
    * @return Long
    */
 
-  synchronized public static Long getNewPartialPlanId(Long sequenceId, String name) {
+  synchronized public static Long getNewPartialPlanId(final Long sequenceId, final String name) {
     Long retval = null;
     try {
       ResultSet partialPlan = 
@@ -571,7 +566,7 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static Long getPartialPlanIdByName(Long sequenceId, String name) {
+  synchronized public static Long getPartialPlanIdByName(final Long sequenceId, final String name) {
     Long retval = null;
     try {
       StringBuffer temp = 
@@ -591,7 +586,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static Long getPartialPlanIdByStepNum(Long sequenceId, int stepNum) {
+  synchronized public static Long getPartialPlanIdByStepNum(final Long sequenceId, 
+                                                            final int stepNum) {
     Long retval = null;
     try {
       StringBuffer temp =
@@ -609,7 +605,7 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryPartialPlanNames(Long sequenceId) {
+  synchronized public static List queryPartialPlanNames(final Long sequenceId) {
     List retval = new ArrayList();
     try {
       ResultSet stepNums = queryDatabase("SELECT StepNum FROM PartialPlanStats WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
@@ -649,7 +645,7 @@ public class MySQLDB {
     }
   }
 
-  synchronized public static Map queryTransactions(Long sequenceId) {
+  synchronized public static Map queryTransactions(final Long sequenceId) {
     Map retval = new HashMap();
     try {
       ResultSet transactions =
@@ -732,7 +728,6 @@ public class MySQLDB {
           token = new PwTokenImpl(tokenId, timelineSlotTokens.getBoolean("Token.IsValueToken"),
                                   slot.getId(), 
                                   timelineSlotTokens.getString("Token.PredicateName"),
-                                  //new Integer(timelineSlotTokens.getInt("Token.PredicateId")),
                                   new Integer(timelineSlotTokens.getInt("Token.StartVarId")),
                                   new Integer(timelineSlotTokens.getInt("Token.EndVarId")),
                                   new Integer(timelineSlotTokens.getInt("Token.DurationVarId")),
@@ -781,7 +776,6 @@ public class MySQLDB {
           token = new PwTokenImpl(tokenId, freeTokens.getBoolean("Token.IsValueToken"),
                                   (Integer) null, 
                                   freeTokens.getString("Token.PredicateName"),
-                                  //new Integer(freeTokens.getInt("Token.PredicateId")),
                                   new Integer(freeTokens.getInt("Token.StartVarId")),
                                   new Integer(freeTokens.getInt("Token.EndVarId")),
                                   new Integer(freeTokens.getInt("Token.DurationVarId")),
@@ -891,7 +885,6 @@ public class MySQLDB {
                                         domain, partialPlan);
           partialPlan.addVariable(variableId, variable);
 
-          //Integer parameterId = new Integer(variables.getInt("Variable.ParameterId"));
           String parameterName = variables.getString("Variable.ParameterName");
           if(!variables.wasNull()) {
             variable.addParameter(parameterName);
@@ -936,8 +929,8 @@ public class MySQLDB {
     }
   }
 
-  synchronized public static List queryTransactionsForConstraint(Long sequenceId, 
-                                                                 Integer constraintId) {
+  synchronized public static List queryTransactionsForConstraint(final Long sequenceId, 
+                                                                 final Integer constraintId) {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
@@ -951,7 +944,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryTransactionsForToken(Long sequenceId, Integer tokenId) {
+  synchronized public static List queryTransactionsForToken(final Long sequenceId, 
+                                                            final Integer tokenId) {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
@@ -965,7 +959,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryTransactionsForVariable(Long sequenceId, Integer varId) {
+  synchronized public static List queryTransactionsForVariable(final Long sequenceId, 
+                                                               final Integer varId) {
     List retval = new ArrayList();
     try {
       ResultSet transactions =
@@ -979,8 +974,9 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithTokenTransaction(Long sequenceId, Integer tokenId,
-                                                                 String type) {
+  synchronized public static List queryStepsWithTokenTransaction(final Long sequenceId, 
+                                                                 final Integer tokenId,
+                                                                 final String type) {
     List retval = new UniqueSet();
     try {
       ResultSet translations =
@@ -994,8 +990,9 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithVariableTransaction(Long sequenceId, Integer varId,
-                                                                    String type) {
+  synchronized public static List queryStepsWithVariableTransaction(final Long sequenceId, 
+                                                                    final Integer varId,
+                                                                    final String type) {
     List retval = new UniqueSet();
     try {
       ResultSet translations =
@@ -1009,9 +1006,9 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithConstraintTransaction(Long sequenceId, 
-                                                                      Integer constraintId,
-                                                                      String type) {
+  synchronized public static List queryStepsWithConstraintTransaction(final Long sequenceId, 
+                                                                      final Integer constraintId,
+                                                                      final String type) {
     List retval = new UniqueSet();
     try {
       ResultSet translations =
@@ -1025,7 +1022,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithTokenTransaction(Long sequenceId, String type) {
+  synchronized public static List queryStepsWithTokenTransaction(final Long sequenceId, 
+                                                                 final String type) {
     List retval = new UniqueSet();
     try {
       ResultSet translations =
@@ -1039,7 +1037,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithVariableTransaction(Long sequenceId, String type) {
+  synchronized public static List queryStepsWithVariableTransaction(final Long sequenceId, 
+                                                                    final String type) {
     List retval = new UniqueSet();
     try {
       ResultSet translations =
@@ -1053,8 +1052,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithConstraintTransaction(Long sequenceId, 
-                                                                      String type) {
+  synchronized public static List queryStepsWithConstraintTransaction(final Long sequenceId, 
+                                                                      final String type) {
     List retval = new UniqueSet();
     try {
       ResultSet translations =
@@ -1068,7 +1067,7 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithRestrictions(Long sequenceId) {
+  synchronized public static List queryStepsWithRestrictions(final Long sequenceId) {
     List retval = new UniqueSet();
     try {
       ResultSet transactions = queryDatabase("SELECT TransactionId, PartialPlanId FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_RESTRICTED).concat("'"));
@@ -1081,7 +1080,7 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithRelaxations(Long sequenceId) {
+  synchronized public static List queryStepsWithRelaxations(final Long sequenceId) {
     List retval = new UniqueSet();
     try {
       ResultSet transactions = 
@@ -1095,8 +1094,9 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithUnitVariableDecisions(PwPlanningSequenceImpl seq) {
-    List retval = new ArrayList();
+  //NOTE: these should be changed to just take sequence Ids ~MJI
+  synchronized public static List queryStepsWithUnitVariableDecisions(final PwPlanningSequenceImpl seq) {
+    List retval = new UniqueSet();
     try {
       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
       while(transactedSteps.next()) {
@@ -1104,14 +1104,14 @@ public class MySQLDB {
         int varId = transactedSteps.getInt("ObjectId");
         ResultSet previousSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && ObjectId=").concat(Integer.toString(varId)).concat(" && StepNumber < ").concat(Integer.toString(stepNum)).concat(" ORDER BY StepNumber"));
         previousSteps.last();
-        int lastStepNum = previousSteps.getInt("StepNumber");
-        if(previousSteps.wasNull()) {
-          continue;
-        }
-        if(varSpecDomainIsSingleton(transactedSteps.getBlob("TransactionInfo")) &&
-           varDerivedDomainIsSingleton(previousSteps.getBlob("TransactionInfo"))) {
-          retval.add(Long.toString(transactedSteps.getLong("PartialPlanId")).concat(Integer.toString(transactedSteps.getInt("TransactionId"))));
-        }
+          int lastStepNum = previousSteps.getInt("StepNumber");
+          if(previousSteps.wasNull()) {
+            continue;
+          }
+          if(varSpecDomainIsSingleton(transactedSteps.getBlob("TransactionInfo")) &&
+             varDerivedDomainIsSingleton(previousSteps.getBlob("TransactionInfo"))) {
+            retval.add(Long.toString(transactedSteps.getLong("PartialPlanId")).concat(Integer.toString(transactedSteps.getInt("TransactionId"))));
+          }
       }
     }
     catch(SQLException sqle) {
@@ -1119,7 +1119,7 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryStepsWithNonUnitVariableDecisions(PwPlanningSequenceImpl seq) {
+  synchronized public static List queryStepsWithNonUnitVariableDecisions(final PwPlanningSequenceImpl seq) {
     List retval = new ArrayList();
     try {
       ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionType='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
@@ -1137,7 +1137,8 @@ public class MySQLDB {
   }
 
   
-  synchronized public static List queryFreeTokensAtStep( int stepNum, PwPlanningSequenceImpl seq) {
+  synchronized public static List queryFreeTokensAtStep( final int stepNum, 
+                                                         final PwPlanningSequenceImpl seq) {
     // return list of lists of TokenId, PartialPlanId, StepNum, PredicateName
     // currently does all steps
     List retval = new ArrayList();
@@ -1162,8 +1163,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryUnboundVariablesAtStep( int stepNum,
-                                                               PwPlanningSequenceImpl seq) {
+  synchronized public static List queryUnboundVariablesAtStep( final int stepNum,
+                                                               final PwPlanningSequenceImpl seq) {
     List retval = new ArrayList();
     try {
       Long partialPlanId = getPartialPlanIdByStepNum(seq.getId(), stepNum);
@@ -1198,7 +1199,7 @@ public class MySQLDB {
   }
 
 
-  synchronized private static boolean varDerivedDomainIsSingleton(Blob info) {
+  synchronized private static boolean varDerivedDomainIsSingleton(final Blob info) {
     String temp;
     try {
       temp = new String(info.getBytes(1, (int) info.length()));
@@ -1213,7 +1214,7 @@ public class MySQLDB {
     return varDomainIsSingleton(type, domain);
   }
 
-  synchronized private static boolean varSpecDomainIsSingleton(Blob info) {
+  synchronized private static boolean varSpecDomainIsSingleton(final Blob info) {
     String temp;
     try {
       temp = new String(info.getBytes(1, (int) info.length()));
@@ -1233,7 +1234,7 @@ public class MySQLDB {
     return varDomainIsSingleton(type, domain);
   }
 
-  synchronized private static boolean varDomainIsSingleton(String type, String domain) {
+  synchronized private static boolean varDomainIsSingleton(final String type, String domain) {
     StringTokenizer strTok = new StringTokenizer(domain);
     if(type.equals("E")) {
       return strTok.countTokens() == 1;
@@ -1264,7 +1265,7 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static int [] queryPartialPlanSize(Long partialPlanId) {
+  synchronized public static int [] queryPartialPlanSize(final Long partialPlanId) {
     int [] retval = new int[3];
     try {
       ResultSet sizes = 
@@ -1279,7 +1280,7 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static Long queryPartialPlanId(Long seqId, int stepNum) {
+  synchronized public static Long queryPartialPlanId(final Long seqId, final int stepNum) {
     Long retval = null;
     try {
       ResultSet ppId = queryDatabase("SELECT PartialPlanId FROM PartialPlanStats WHERE SequenceId=".concat(seqId.toString()).concat(" && StepNum=").concat(Integer.toString(stepNum)));
@@ -1290,7 +1291,7 @@ public class MySQLDB {
     }
     return retval;
   }
-  synchronized public static Long queryPartialPlanId(Long seqId, String stepName) {
+  synchronized public static Long queryPartialPlanId(final Long seqId, final String stepName) {
     Long retval = null;
     try {
       ResultSet ppId = queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(seqId.toString()).concat(" && PlanName='").concat(stepName).concat("'"));
@@ -1302,7 +1303,7 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static Map queryAllIdsForPartialPlan(Long ppId) {
+  synchronized public static Map queryAllIdsForPartialPlan(final Long ppId) {
     OneToManyMap retval = new OneToManyMap();
     try {
       ResultSet ids = 
@@ -1310,10 +1311,6 @@ public class MySQLDB {
       while(ids.next()) {
         retval.put(DbConstants.TBL_OBJECT, new Integer(ids.getInt("ObjectId")));
       }
-//       ids = queryDatabase("SELECT PredicateId FROM Predicate WHERE PartialPlanId=".concat(ppId.toString()));
-//       while(ids.next()) {
-//         retval.put(DbConstants.TBL_PREDICATE, new Integer(ids.getInt("PredicateId")));
-//       }
       ids = queryDatabase("SELECT TokenId FROM Token WHERE PartialPlanId=".concat(ppId.toString()));
       while(ids.next()) {
         retval.put(DbConstants.TBL_TOKEN, new Integer(ids.getInt("TokenId")));
@@ -1332,7 +1329,7 @@ public class MySQLDB {
     return retval;
   }
   
-  synchronized public static List queryTimelineIdsForObject(Long ppId, Integer objId) {
+  synchronized public static List queryTimelineIdsForObject(final Long ppId, final Integer objId) {
     List retval = new ArrayList();
     try {
       ResultSet ids = 
@@ -1346,7 +1343,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List querySlotIdsForTimeline(Long ppId, Integer objId, Integer tId) {
+  synchronized public static List querySlotIdsForTimeline(final Long ppId, final Integer objId, 
+                                                          final Integer tId) {
     List retval = new ArrayList();
     try {
       ResultSet ids =
@@ -1360,7 +1358,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryTokenRelationIdsForToken(Long ppId, Integer tId) {
+  synchronized public static List queryTokenRelationIdsForToken(final Long ppId, 
+                                                                final Integer tId) {
     List retval = new ArrayList();
     try {
       ResultSet ids =
@@ -1376,7 +1375,8 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static List queryTransactionIdsForPartialPlan(Long seqId, Long ppId) {
+  synchronized public static List queryTransactionIdsForPartialPlan(final Long seqId, 
+                                                                    final Long ppId) {
     List retval = new ArrayList();
     try {
       ResultSet ids = queryDatabase("SELECT TransactionId FROM Transaction WHERE SequenceId=".concat(seqId.toString()).concat(" && PartialPlanId=").concat(ppId.toString()));

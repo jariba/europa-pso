@@ -28,7 +28,10 @@ public class NewConstraintNetworkLayout {
     long t2 = System.currentTimeMillis();
     Collections.sort(tempTokenNodes, new TokenLinkCountComparator());
     System.err.println("Spent " + (System.currentTimeMillis() - t2) + "ms in first sort.");
-
+    if(tempTokenNodes.isEmpty()) {
+      System.err.println("Attempted to lay out constraint network with no token nodes!");
+      return;
+    }
     while(((ConstraintNetworkTokenNode) tempTokenNodes.get(tempTokenNodes.size() - 1)).getTokenLinkCount() == 0) {
       orderedTokenNodes.add(tempTokenNodes.remove(tempTokenNodes.size() - 1));
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewMenuItem.java,v 1.1 2003-10-09 22:07:43 taylor Exp $
+// $Id: SequenceViewMenuItem.java,v 1.2 2004-02-03 19:21:28 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -16,7 +16,7 @@ public class SequenceViewMenuItem extends JMenuItem {
   private String seqUrl;
   private String sequenceName;
 
-  public SequenceViewMenuItem( String viewName, String seqUrl, String seqName) {
+  public SequenceViewMenuItem( final String viewName, final String seqUrl, final String seqName) {
     super( viewName);
     this.seqUrl = seqUrl;
     this.sequenceName = seqName;

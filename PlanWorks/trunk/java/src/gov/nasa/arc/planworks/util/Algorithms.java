@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Algorithms.java,v 1.5 2003-08-28 23:31:14 miatauro Exp $
+// $Id: Algorithms.java,v 1.6 2004-02-03 19:23:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -58,7 +58,8 @@ public class Algorithms
      * @param extents A list of objects implementing the Extent interface whose rows are to be set (thus may be changed)
      * @return A susbet of extents which intersected the time horizon, and for which rows have been assigned.
      */
-    public static List allocateRows(int horizonStart, int horizonEnd, List extents)
+    public static List allocateRows(final int horizonStart, final int horizonEnd, 
+                                    final List extents)
     {
 	List results = new ArrayList();
 	LinkedList source = new LinkedList(extents);

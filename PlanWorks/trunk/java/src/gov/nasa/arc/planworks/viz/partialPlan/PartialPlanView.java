@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.20 2004-01-27 01:58:44 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.21 2004-02-03 19:24:22 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -577,8 +577,8 @@ public class PartialPlanView extends VizView {
       while(timelineIterator.hasNext()) {
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
         timelineIndexMap.put(timeline.getId(), new Integer(timelineCnt));
-//         System.err.println(timeline.getId() + "=>" + 
-//                            ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineCnt));
+        System.err.println(timeline.getId() + "=>" + 
+                           ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineCnt));
         timelineCnt++;
       }
     }

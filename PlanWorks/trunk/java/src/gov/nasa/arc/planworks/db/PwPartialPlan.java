@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.29 2004-01-16 19:05:34 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.30 2004-02-03 19:21:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -65,7 +65,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwObject</code> - 
    */
-  public abstract PwObject getObject( Integer id);
+  public abstract PwObject getObject( final Integer id);
 
 
   /**
@@ -74,7 +74,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwTimeline</code> - 
    */
-  public abstract PwTimeline getTimeline( Integer id);
+  public abstract PwTimeline getTimeline( final Integer id);
 
 
   /**
@@ -83,7 +83,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwSlot</code> - 
    */
-  public abstract PwSlot getSlot( Integer id);
+  public abstract PwSlot getSlot( final Integer id);
 
 
   /**
@@ -92,7 +92,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwToken</code> - 
    */
-  public abstract PwToken getToken( Integer id);
+  public abstract PwToken getToken( final Integer id);
 
 
   /**
@@ -101,7 +101,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwConstraint</code> - 
    */
-  public abstract PwConstraint getConstraint( Integer id);
+  public abstract PwConstraint getConstraint( final Integer id);
 
 
   /**
@@ -128,7 +128,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwTokenRelation</code> - 
    */
-  public abstract PwTokenRelation getTokenRelation( Integer id);
+  public abstract PwTokenRelation getTokenRelation( final Integer id);
 
 
   /**
@@ -137,7 +137,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwVariable</code> - 
    */
-  public abstract PwVariable getVariable( Integer id);
+  public abstract PwVariable getVariable( final Integer id);
 
   // extend ViewableObject
 
@@ -146,7 +146,7 @@ public interface PwPartialPlan extends ViewableObject {
    *
    * @param spec - <code>List</code> - 
    */
-  public abstract void setContentSpec( List spec);
+  public abstract void setContentSpec( final List spec);
 
   /**
    * <code>getContentSpec</code>
@@ -160,7 +160,7 @@ public interface PwPartialPlan extends ViewableObject {
    *
    * @param name - <code>String</code> - 
    */
-  public abstract void setName( String name);
+  public abstract void setName( final String name);
 
   /**
    * <code>getName</code> - sequenceDir/stepDir
@@ -199,7 +199,7 @@ public interface PwPartialPlan extends ViewableObject {
    */
   public abstract String getSequenceUrl();
   
-  public abstract Integer getObjectIdByName(String name);
+  public abstract Integer getObjectIdByName(final String name);
 
   /**
    * <code>getMasterTokenId</code>
@@ -207,7 +207,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param tokenId - <code>Integer</code> - 
    * @return - <code>Integer</code> - 
    */
-  public abstract Integer getMasterTokenId( Integer tokenId);
+  public abstract Integer getMasterTokenId( final Integer tokenId);
 
   /**
    * <code>getSlaveTokenIds</code>
@@ -215,7 +215,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param tokenId - <code>Integer</code> - 
    * @return - <code>List</code> - of Integer
    */
-  public abstract List getSlaveTokenIds( Integer tokenId);
+  public abstract List getSlaveTokenIds( final Integer tokenId);
 
 
 } // end interface PwPartialPlan

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.29 2003-12-29 21:21:14 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.30 2004-02-03 19:21:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -59,7 +59,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>List</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
    */
-  public abstract List getTransactionsList( int step) throws IndexOutOfBoundsException;
+  public abstract List getTransactionsList( final int step) throws IndexOutOfBoundsException;
 
   /**
    * <code>getTransactionsList</code>
@@ -67,7 +67,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @param ppId - <code>Long</code> - 
    * @return - <code>List</code> - 
    */
-  public abstract List getTransactionsList(Long ppId);
+  public abstract List getTransactionsList(final Long ppId);
 
   /**
    * <code>listPartialPlans</code>
@@ -91,7 +91,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>PartialPlan</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
    */
-  public abstract PwPartialPlan getPartialPlan( int step)
+  public abstract PwPartialPlan getPartialPlan( final int step)
     throws IndexOutOfBoundsException, ResourceNotFoundException;
 
   /**
@@ -101,7 +101,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>PwPartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract PwPartialPlan getPartialPlan( String planName)
+  public abstract PwPartialPlan getPartialPlan( final String planName)
     throws ResourceNotFoundException;
 
   /**
@@ -111,17 +111,17 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>PwPartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract PwPartialPlan getPartialPlanIfLoaded( String planName)
+  public abstract PwPartialPlan getPartialPlanIfLoaded( final String planName)
     throws ResourceNotFoundException;
 
-  public abstract PwPartialPlan getNextPartialPlan(int step) throws ResourceNotFoundException, 
-  IndexOutOfBoundsException;
-  public abstract PwPartialPlan getNextPartialPlan(String planName) 
+  public abstract PwPartialPlan getNextPartialPlan(final int step) 
+    throws ResourceNotFoundException, IndexOutOfBoundsException;
+  public abstract PwPartialPlan getNextPartialPlan(final String planName) 
     throws ResourceNotFoundException, IndexOutOfBoundsException;
   
-  public abstract PwPartialPlan getPrevPartialPlan(int step) throws ResourceNotFoundException,
-  IndexOutOfBoundsException;
-  public abstract PwPartialPlan getPrevPartialPlan(String planName)
+  public abstract PwPartialPlan getPrevPartialPlan(final int step) 
+    throws ResourceNotFoundException, IndexOutOfBoundsException;
+  public abstract PwPartialPlan getPrevPartialPlan(final String planName)
     throws ResourceNotFoundException, IndexOutOfBoundsException;
   
   /**
@@ -138,7 +138,7 @@ public interface PwPlanningSequence extends ViewableObject {
    *
    * @param spec - <code>List</code> - 
    */
-  public abstract void setContentSpec( List spec);
+  public abstract void setContentSpec( final List spec);
 
   /**
    * <code>getContentSpec</code>
@@ -152,7 +152,7 @@ public interface PwPlanningSequence extends ViewableObject {
    *
    * @param name - <code>String</code> - 
    */
-  public void setName( String name);
+  public void setName( final String name);
 
   /**
    * <code>getName</code> - sequenceDir
@@ -169,7 +169,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>List</code> - 
    */
-  public List getTransactionsForConstraint(Integer id);
+  public List getTransactionsForConstraint(final Integer id);
 
   /**
    * <code>getTransactionsForToken</code>
@@ -177,7 +177,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>List</code> - 
    */
-  public List getTransactionsForToken(Integer id);
+  public List getTransactionsForToken(final Integer id);
  
   /**
    * <code>getTransactionsForVariable</code>
@@ -185,7 +185,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>List</code> - 
    */
-  public List getTransactionsForVariable(Integer id);
+  public List getTransactionsForVariable(final Integer id);
   
   /**
    * <code>getTransactionsInRange</code>
@@ -194,7 +194,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @param end - <code>int</code> - 
    * @return - <code>List</code> - 
    */
-  public List getTransactionsInRange(int start, int end);
+  public List getTransactionsInRange(final int istart, final int iend);
 
   /**
    * <code>getTransactionsInRange</code>
@@ -203,7 +203,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @param end - <code>Integer</code> - 
    * @return - <code>List</code> - 
    */
-  public List getTransactionsInRange(Integer start, Integer end);
+  public List getTransactionsInRange(final Integer start, final Integer end);
   
   /**
    * <code>getStepsWhereTokenTransacted</code>
@@ -213,7 +213,8 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>List</code> - 
    * @exception IllegalArgumentException if an error occurs
    */
-  public List getStepsWhereTokenTransacted(Integer id, String type) throws IllegalArgumentException;
+  public List getStepsWhereTokenTransacted(final Integer id, final String type) 
+    throws IllegalArgumentException;
 
   /**
    * <code>getStepsWhereVariableTransacted</code>
@@ -223,7 +224,8 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>List</code> - 
    * @exception IllegalArgumentException if an error occurs
    */
-  public List getStepsWhereVariableTransacted(Integer id, String type) throws IllegalArgumentException;
+  public List getStepsWhereVariableTransacted(final Integer id, final String type) 
+    throws IllegalArgumentException;
 
   /**
    * <code>getStepsWhereConstraintTransacted</code>
@@ -233,7 +235,8 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>List</code> - 
    * @exception IllegalArgumentException if an error occurs
    */
-  public List getStepsWhereConstraintTransacted(Integer id, String type) throws IllegalArgumentException;
+  public List getStepsWhereConstraintTransacted(final Integer id, final String type) 
+    throws IllegalArgumentException;
 
   /**
    * <code>getStepsWhereTokenTransacted</code>
@@ -242,7 +245,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>List</code> - 
    * @exception IllegalArgumentException if an error occurs
    */
-  public List getStepsWhereTokenTransacted(String type) throws IllegalArgumentException;
+  public List getStepsWhereTokenTransacted(final String type) throws IllegalArgumentException;
 
   /**
    * <code>getStepsWhereVariableTransacted</code>
@@ -251,7 +254,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>List</code> - 
    * @exception IllegalArgumentException if an error occurs
    */
-  public List getStepsWhereVariableTransacted(String type) throws IllegalArgumentException;
+  public List getStepsWhereVariableTransacted(final String type) throws IllegalArgumentException;
 
   /**
    * <code>getStepsWhereConstraintTransacted</code>
@@ -260,7 +263,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>List</code> - 
    * @exception IllegalArgumentException if an error occurs
    */
-  public List getStepsWhereConstraintTransacted(String type) throws IllegalArgumentException;
+  public List getStepsWhereConstraintTransacted(final String type) throws IllegalArgumentException;
 
   /**
    * <code>getStepsWithRestrictions</code>
@@ -295,14 +298,14 @@ public interface PwPlanningSequence extends ViewableObject {
    *
    * @return - <code>List</code> - 
    */
-  public List getFreeTokensAtStep( int stepNum) throws ResourceNotFoundException;
+  public List getFreeTokensAtStep( final int stepNum) throws ResourceNotFoundException;
 
   /**
    * <code>getUnboundVariablesAtStep</code>
    *
    * @return - <code>List</code> - 
    */
-  public List getUnboundVariablesAtStep(int stepNum) throws ResourceNotFoundException;
+  public List getUnboundVariablesAtStep(final int stepNum) throws ResourceNotFoundException;
 
   /**
    * <code>getPlanDBSize</code>
@@ -311,7 +314,7 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>int[]</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
    */
-  public int [] getPlanDBSize(int stepNum) throws IndexOutOfBoundsException;
+  public int [] getPlanDBSize(final int stepNum) throws IndexOutOfBoundsException;
   
   /**
    * <code>getPlanDBSizeList</code>

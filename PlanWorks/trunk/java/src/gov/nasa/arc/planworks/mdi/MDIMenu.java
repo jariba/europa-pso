@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIMenu.java,v 1.3 2003-09-10 00:32:15 miatauro Exp $
+// $Id: MDIMenu.java,v 1.4 2004-02-03 19:23:22 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -20,7 +20,7 @@ public interface MDIMenu {
    * Notifies the MDIDynamicMenuBar that a frame has been activated and so its associated menus
    * should be drawn.
    */
-  public void notifyActivated(MDIFrame frame);
-  public void notifyDeleted(MDIFrame frame);
-  public void addWindow(MDIInternalFrame frame);
+  public void notifyActivated(final MDIFrame frame);
+  public void notifyDeleted(final MDIFrame frame);
+  public void addWindow(final MDIInternalFrame frame);
 }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.68 2003-12-29 21:21:33 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.69 2004-02-03 19:22:16 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -76,14 +76,14 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @param project - <code>PwProjectImpl</code> - the project to which the sequence will be added
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPlanningSequenceImpl( String url, Long id)
+  public PwPlanningSequenceImpl( final String url, final Long id)
     throws ResourceNotFoundException {
     this.url = url;
     this.id = id;
     this.model = null;
     stepCount = 0;
     
-    String error = null;;
+    String error = null;
     if((error = validateSequenceDirectory(url)) != null) {
       throw new ResourceNotFoundException("url '" + url + "' is not a valid sequence directory: "
                                           + error);
@@ -116,7 +116,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @param project - <code>PwProjectImpl</code> - project to which the sequence will be added
    * @exception ResourceNotFoundException if an error occurs
    */ 
-  public PwPlanningSequenceImpl( String url, PwProjectImpl project)
+  public PwPlanningSequenceImpl( final String url, final PwProjectImpl project)
     throws ResourceNotFoundException {
     this.url = url;
     this.model = null;
@@ -169,7 +169,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     System.err.println("Loading transactions took " + (System.currentTimeMillis() - t1) + "ms");
   }
   
-  public void cleanTransactions(PwPartialPlanImpl pp) {
+  public void cleanTransactions(final PwPartialPlanImpl pp) {
     ListIterator transactionNameIterator = (new ArrayList(transactions.keySet())).listIterator();
     String ppIdStr = pp.getId().toString();
     while(transactionNameIterator.hasNext()) {
@@ -241,7 +241,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @param step - <code>int</code> - 
    * @return - <code>List</code> - of PwTransaction
    */
-  public List getTransactionsList( Long partialPlanId) {
+  public List getTransactionsList( final Long partialPlanId) {
     if(transactions == null) {
       loadTransactions();
     }
@@ -257,7 +257,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return retval;
   } // end listTransactions
 
-  public List getTransactionsList(int stepNum) throws IndexOutOfBoundsException {
+  public List getTransactionsList(final int stepNum) throws IndexOutOfBoundsException {
     return getTransactionsList(getPartialPlanId(stepNum));
   }
 
@@ -302,7 +302,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @return - <code>PwPartialPlan</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
    */
-  public PwPartialPlan getPartialPlan( int step) throws IndexOutOfBoundsException, 
+  public PwPartialPlan getPartialPlan( final int step) throws IndexOutOfBoundsException, 
   ResourceNotFoundException {
     if(step >= 0 && step < stepCount) {
       String name = "step" + step;
@@ -325,7 +325,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @return - <code>PwPartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPartialPlan getPartialPlan( String planName) throws ResourceNotFoundException {
+  public PwPartialPlan getPartialPlan( final String planName) throws ResourceNotFoundException {
     if(!partialPlans.containsKey(planName)) {
       throw new ResourceNotFoundException("plan name '" + planName + "' not found in url " + url);
     }
@@ -336,20 +336,20 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return retval;
   } // end getPartialPlan( String)
 
-  public PwPartialPlan getNextPartialPlan(int step) throws ResourceNotFoundException, 
+  public PwPartialPlan getNextPartialPlan(final int step) throws ResourceNotFoundException, 
   IndexOutOfBoundsException {
     return getPartialPlan(step+1);
   }
-  public PwPartialPlan getNextPartialPlan(String planName) throws ResourceNotFoundException,
+  public PwPartialPlan getNextPartialPlan(final String planName) throws ResourceNotFoundException,
   IndexOutOfBoundsException {
     return getPartialPlan(Integer.parseInt(planName.substring(4)) + 1);
   }
   
-  public PwPartialPlan getPrevPartialPlan(int step) throws ResourceNotFoundException,
+  public PwPartialPlan getPrevPartialPlan(final int step) throws ResourceNotFoundException,
   IndexOutOfBoundsException {
     return getPartialPlan(step-1);
   }
-  public PwPartialPlan getPrevPartialPlan(String planName) throws ResourceNotFoundException, 
+  public PwPartialPlan getPrevPartialPlan(final String planName) throws ResourceNotFoundException, 
   IndexOutOfBoundsException {
     return getPartialPlan(Integer.parseInt(planName.substring(4)) - 1);
   }
@@ -362,7 +362,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @return - <code>PwPartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  private PwPartialPlan addPartialPlan(String partialPlanName) 
+  private PwPartialPlan addPartialPlan(final String partialPlanName) 
     throws ResourceNotFoundException {
     if(partialPlans.containsKey(partialPlanName)) {
       PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, this);
@@ -380,7 +380,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @return - <code>PwPartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPartialPlan getPartialPlanIfLoaded( String planName)
+  public PwPartialPlan getPartialPlanIfLoaded(final  String planName)
     throws ResourceNotFoundException {
     if (! partialPlans.containsKey( planName)) {
       throw new ResourceNotFoundException("plan name '" + planName +
@@ -397,7 +397,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
 
   // implement ViewableObject
 
-  public void setContentSpec(List spec) {
+  public void setContentSpec(final List spec) {
     contentSpec.clear();
     contentSpec.addAll(spec);
   }
@@ -412,7 +412,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    *
    * @param name - <code>String</code> - 
    */
-  public void setName( String name) {
+  public void setName( final String name) {
     this.name = name;
   }
 
@@ -428,7 +428,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   // end implement ViewableObject
 
 
-  private List getTransactionsById(List ids) {
+  private List getTransactionsById(final List ids) {
     if(transactions == null) {
       loadTransactions();
     }
@@ -443,26 +443,30 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return retval;
   }
 
-  public List getTransactionsForConstraint(Integer id) {
+  public List getTransactionsForConstraint(final Integer id) {
     return getTransactionsById(MySQLDB.queryTransactionsForConstraint(this.id, id));
   }
 
-  public List getTransactionsForToken(Integer id) {
+  public List getTransactionsForToken(final Integer id) {
     return getTransactionsById(MySQLDB.queryTransactionsForToken(this.id, id));
   }
  
-  public List getTransactionsForVariable(Integer id) {
+  public List getTransactionsForVariable(final Integer id) {
     return getTransactionsById(MySQLDB.queryTransactionsForVariable(this.id, id));
   }
   
-  public List getTransactionsInRange(int start, int end) {
-    if(start == end) {
-      return getTransactionsList(start);
+  public List getTransactionsInRange(final int istart, final int iend) {
+    if(istart == iend) {
+      return getTransactionsList(istart);
     }
-    if(start == end) {
-      start ^= end;
-      end ^= start;
-      start ^= end;
+    int start, end;
+    if(istart >= iend) {
+      start = iend;
+      end = istart;
+    }
+    else {
+      start = istart;
+      end = iend;
     }
     List retval = new ArrayList();
     for(int i = start; i <= end; i++) {
@@ -471,11 +475,12 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return retval;
   }
 
-  public List getTransactionsInRange(Integer start, Integer end) {
+  public List getTransactionsInRange(final Integer start, final Integer end) {
     return getTransactionsInRange(start.intValue(), end.intValue());
   }
   
-  public List getStepsWhereTokenTransacted(Integer id, String type) throws IllegalArgumentException {
+  public List getStepsWhereTokenTransacted(final Integer id, final String type) 
+    throws IllegalArgumentException {
     if(!type.equals(DbConstants.TOKEN_CREATED) && !type.equals(DbConstants.TOKEN_DELETED) &&
        !type.equals(DbConstants.TOKEN_FREED) && !type.equals(DbConstants.TOKEN_INSERTED)&&
        !type.equals(DbConstants.TOKEN_ALL_TYPES)) {
@@ -484,7 +489,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return getTransactionsById(MySQLDB.queryStepsWithTokenTransaction(this.id, id, type));
   }
 
-  public List getStepsWhereVariableTransacted(Integer id, String type) 
+  public List getStepsWhereVariableTransacted(final Integer id, final String type) 
     throws IllegalArgumentException  {
     if(!type.equals(DbConstants.VARIABLE_CREATED) && !type.equals(DbConstants.VARIABLE_DELETED) &&
        !type.equals(DbConstants.VARIABLE_DOMAIN_EMPTIED) && 
@@ -498,7 +503,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return getTransactionsById(MySQLDB.queryStepsWithVariableTransaction(this.id, id, type));
   }
 
-  public List getStepsWhereConstraintTransacted(Integer id, String type) 
+  public List getStepsWhereConstraintTransacted(final Integer id, final String type) 
     throws IllegalArgumentException  {
     if(!type.equals(DbConstants.CONSTRAINT_CREATED) && 
        !type.equals(DbConstants.CONSTRAINT_DELETED) &&
@@ -508,7 +513,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return getTransactionsById(MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type));
   }
 
-  public List getStepsWhereTokenTransacted(String type) throws IllegalArgumentException {
+  public List getStepsWhereTokenTransacted(final String type) throws IllegalArgumentException {
     if(!type.equals(DbConstants.TOKEN_CREATED) && !type.equals(DbConstants.TOKEN_DELETED) &&
        !type.equals(DbConstants.TOKEN_FREED) && !type.equals(DbConstants.TOKEN_INSERTED)&&
        !type.equals(DbConstants.TOKEN_ALL_TYPES)) {
@@ -517,7 +522,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return getTransactionsById(MySQLDB.queryStepsWithTokenTransaction(this.id, type));
   }
 
-  public List getStepsWhereVariableTransacted(String type) 
+  public List getStepsWhereVariableTransacted(final String type) 
     throws IllegalArgumentException  {
     if(!type.equals(DbConstants.VARIABLE_CREATED) && !type.equals(DbConstants.VARIABLE_DELETED) &&
        !type.equals(DbConstants.VARIABLE_DOMAIN_EMPTIED) && 
@@ -531,7 +536,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return getTransactionsById(MySQLDB.queryStepsWithVariableTransaction(this.id, type));
   }
 
-  public List getStepsWhereConstraintTransacted(String type) 
+  public List getStepsWhereConstraintTransacted(final String type) 
     throws IllegalArgumentException  {
     if(!type.equals(DbConstants.CONSTRAINT_CREATED) && 
        !type.equals(DbConstants.CONSTRAINT_DELETED) &&
@@ -563,14 +568,14 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @param stepNum - <code>int</code> - 
    * @return - <code>List</code> - 
    */
-  public List getFreeTokensAtStep( int stepNum) throws ResourceNotFoundException {
+  public List getFreeTokensAtStep( final int stepNum) throws ResourceNotFoundException {
     boolean isFreeToken = true;
     //getPartialPlan(stepNum);
     loadPartialPlanFiles("step" + stepNum);
     return getTokensById( MySQLDB.queryFreeTokensAtStep( stepNum, this), isFreeToken);
   }
 
-  private List getTokensById( List listOfListOfIds, boolean isFreeToken) {
+  private List getTokensById( final List listOfListOfIds, final boolean isFreeToken) {
     List returnList = new ArrayList();
     Iterator listOfListItr = listOfListOfIds.iterator();
     while (listOfListItr.hasNext()) {
@@ -591,20 +596,20 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @param stepNum - <code>int</code> - 
    * @return - <code>List</code> - 
    */
-  public List getUnboundVariablesAtStep( int stepNum) throws ResourceNotFoundException {
+  public List getUnboundVariablesAtStep( final int stepNum) throws ResourceNotFoundException {
     boolean isUnbound = true;
     loadPartialPlanFiles("step" + stepNum);
     return MySQLDB.queryUnboundVariablesAtStep(stepNum, this);
     //return getVariablesById( MySQLDB.queryUnboundVariablesAtStep( stepNum, this), isUnbound);
   }
 
-  private void loadPartialPlanFiles(String name) throws ResourceNotFoundException {
+  private void loadPartialPlanFiles(final String name) throws ResourceNotFoundException {
     if(MySQLDB.getPartialPlanIdByName(id, name) == null) {
       PwPartialPlanImpl.loadFiles(new File(url + System.getProperty("file.separator") + name));
     }
   }
 
-  private List getVariablesById( List listOfListOfIds, boolean isUnbound) {
+  private List getVariablesById( final List listOfListOfIds, final boolean isUnbound) {
     List returnList = new ArrayList();
     Iterator listOfListItr = listOfListOfIds.iterator();
     while (listOfListItr.hasNext()) {
@@ -619,7 +624,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return returnList;
   } // end getVariablesById
 
-  public int [] getPlanDBSize(int stepNum) throws IndexOutOfBoundsException {
+  public int [] getPlanDBSize(final int stepNum) throws IndexOutOfBoundsException {
     if(stepNum < 0 || stepNum > stepCount) {
       System.err.println(stepNum + " is OOB");
       throw new IndexOutOfBoundsException();
@@ -631,12 +636,12 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return MySQLDB.queryPartialPlanSizes(id);
   }
 
-  private Long getPartialPlanId(int stepNum) {
+  private Long getPartialPlanId(final int stepNum) {
     //return getPartialPlanId("step".concat(Integer.toString(stepNum)));
     return MySQLDB.queryPartialPlanId(id, stepNum);
   }
 
-  private Long getPartialPlanId(String stepName) {
+  private Long getPartialPlanId(final String stepName) {
     return MySQLDB.queryPartialPlanId(id, stepName);
   }
 
@@ -674,7 +679,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       return s1.equals(s2);
     }
   }
-  private String validateSequenceDirectory(String url) {
+  private String validateSequenceDirectory(final String url) {
     File sequenceDir = new File(url);
     if(!sequenceDir.isDirectory()) {
       return "Not a directory.";

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenRelationImpl.java,v 1.6 2003-08-12 22:54:03 miatauro Exp $
+// $Id: PwTokenRelationImpl.java,v 1.7 2004-02-03 19:22:19 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -48,8 +48,8 @@ public class PwTokenRelationImpl implements PwTokenRelation {
    * @param type - <code>String</code> -
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwTokenRelationImpl( Integer id, Integer tokenAId, Integer tokenBId, String type,
-                              PwPartialPlanImpl partialPlan) {
+  public PwTokenRelationImpl( final Integer id, final Integer tokenAId, final Integer tokenBId, 
+                              final String type, final PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.tokenAId = tokenAId;
     this.tokenBId = tokenBId;

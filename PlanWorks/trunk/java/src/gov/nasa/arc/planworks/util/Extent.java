@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Extent.java,v 1.2 2003-07-24 20:57:11 taylor Exp $
+// $Id: Extent.java,v 1.3 2004-02-03 19:23:55 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -18,5 +18,5 @@ public interface Extent
     int getStart();
     int getEnd();
     int getRow();
-    void setRow(int row);
+    void setRow(final int row);
 }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.21 2003-12-03 02:29:50 taylor Exp $
+// $Id: PwProject.java,v 1.22 2004-02-03 19:21:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -50,7 +50,7 @@ public abstract class PwProject {
    * @exception DuplicateNameException if an error occurs
    * @exception ResourceNotFoundException if an error occurs
    */
-  public static PwProject createProject( String url)
+  public static PwProject createProject( final String url)
     throws DuplicateNameException, ResourceNotFoundException {
     //return (new PwProjectImpl( url));
     return PwProjectImpl.createProject(url);
@@ -64,7 +64,7 @@ public abstract class PwProject {
    * @return - <code>PwProject</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public static PwProject getProject( String url)  throws ResourceNotFoundException {
+  public static PwProject getProject( final String url)  throws ResourceNotFoundException {
     return PwProjectImpl.getProject( url);
   }
 
@@ -100,7 +100,7 @@ public abstract class PwProject {
    * @return - <code>PwPlanningSequence</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract PwPlanningSequence getPlanningSequence( String seqName)
+  public abstract PwPlanningSequence getPlanningSequence( final String seqName)
     throws ResourceNotFoundException;
 
   /**
@@ -110,7 +110,7 @@ public abstract class PwProject {
    * @return - <code>PwPlanningSequence</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract PwPlanningSequence getPlanningSequence(Long seqId)
+  public abstract PwPlanningSequence getPlanningSequence(final Long seqId)
     throws ResourceNotFoundException;
 
   /**
@@ -121,7 +121,7 @@ public abstract class PwProject {
    * @exception DuplicateNameException if an error occurs
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract PwPlanningSequence addPlanningSequence(String url) 
+  public abstract PwPlanningSequence addPlanningSequence(final String url) 
     throws DuplicateNameException, ResourceNotFoundException;
 
   /**
@@ -130,7 +130,8 @@ public abstract class PwProject {
    * @param seqName - <code>String</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract void deletePlanningSequence(String seqName) throws ResourceNotFoundException;
+  public abstract void deletePlanningSequence(final String seqName)
+    throws ResourceNotFoundException;
 
   /**
    * <code>deletePlanningSequence</code>
@@ -138,7 +139,8 @@ public abstract class PwProject {
    * @param seqId - <code>Long</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract void deletePlanningSequence(Long seqId) throws ResourceNotFoundException;
+  public abstract void deletePlanningSequence(final Long seqId)
+    throws ResourceNotFoundException;
 
   /**
    * <code>close</code> - 

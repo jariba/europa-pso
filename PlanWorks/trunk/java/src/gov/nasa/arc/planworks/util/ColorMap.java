@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ColorMap.java,v 1.2 2003-06-25 17:04:05 taylor Exp $
+// $Id: ColorMap.java,v 1.3 2004-02-03 19:23:52 miatauro Exp $
 //
 // PlanWorks
 //
@@ -78,7 +78,7 @@ public class ColorMap {
    * @param colorName - String - X11 color name
    * @return colorObject - Color - instance with rgb value
    */
-  public static Color getColor( String colorName) {
+  public static Color getColor( final String colorName) {
     Color colorObject = (Color) x11Colors.get( colorName);
     if (colorObject == null) {
       System.err.println( "ColorMap.getColor cannot handle " + colorName +

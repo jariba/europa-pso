@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.38 2004-01-13 20:45:13 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.39 2004-02-03 19:22:17 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -71,7 +71,7 @@ public class PwProjectImpl extends PwProject {
    * @exception DuplicateNameException - if the a probect by the given name exists in the database
    */
 
-  public static PwProject createProject(String name) throws DuplicateNameException {
+  public static PwProject createProject(final String name) throws DuplicateNameException {
     if(MySQLDB.projectExists(name)) {
       throw new DuplicateNameException("A project named '" + name + "' already exists.");
     }
@@ -109,7 +109,7 @@ public class PwProjectImpl extends PwProject {
    * @return - <code>PwProject</code> - the project datastructure
    * @exception - <code>ResourceNotFoundException</code> if no project by that name exists
    */
-  public static PwProject getProject( String name) throws ResourceNotFoundException {
+  public static PwProject getProject( final String name) throws ResourceNotFoundException {
     if(!projects.containsKey(name)) {
       throw new ResourceNotFoundException("Project " + name + " not found.");
     }
@@ -138,7 +138,7 @@ public class PwProjectImpl extends PwProject {
    * @param name - <code>String</code> - 
    * @exception DuplicateNameException if an error occurs
    */
-  public PwProjectImpl( String name)  throws DuplicateNameException {
+  public PwProjectImpl( final String name)  throws DuplicateNameException {
     this.name = name;
     id = new Integer(-1);
     planningSequences = new ArrayList();
@@ -154,7 +154,7 @@ public class PwProjectImpl extends PwProject {
    * @param isInDb - <code>boolean</code> - boolean used to differentiate between constructors
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwProjectImpl( String name, boolean isInDb) 
+  public PwProjectImpl( final String name, final boolean isInDb) 
     throws ResourceNotFoundException {
     this.name = name;
     
@@ -184,7 +184,7 @@ public class PwProjectImpl extends PwProject {
     return id;
   }
   
-  protected void setId(Integer id) {
+  protected void setId(final Integer id) {
     this.id = id;
   }
 
@@ -219,7 +219,7 @@ public class PwProjectImpl extends PwProject {
    * @param url - <code>String</code> - 
    * @return - <code>PwPlanningSequence</code> - 
    */
-  public PwPlanningSequence getPlanningSequence( String url)
+  public PwPlanningSequence getPlanningSequence( final String url)
     throws ResourceNotFoundException {
     PwPlanningSequence retval;
     if(!sequenceIdUrlMap.containsValue(url)) {
@@ -237,7 +237,7 @@ public class PwProjectImpl extends PwProject {
     return retval;
   } // end getPlanningSequence
 
-  public PwPlanningSequence getPlanningSequence(Long seqId) throws ResourceNotFoundException {
+  public PwPlanningSequence getPlanningSequence(final Long seqId) throws ResourceNotFoundException {
     PwPlanningSequence retval;
     if(!sequenceIdUrlMap.containsKey(seqId)) {
       throw new ResourceNotFoundException("getPlanning sequence could not find " + id);
@@ -254,7 +254,7 @@ public class PwProjectImpl extends PwProject {
     return retval;
   }
 
-  public PwPlanningSequence addPlanningSequence(String url) 
+  public PwPlanningSequence addPlanningSequence(final String url) 
     throws DuplicateNameException, ResourceNotFoundException {
     PwPlanningSequenceImpl retval = null;
     if(MySQLDB.sequenceExists(url)) {
@@ -265,7 +265,7 @@ public class PwProjectImpl extends PwProject {
     return retval;
   }
 
-  public void deletePlanningSequence(String seqName) throws ResourceNotFoundException {
+  public void deletePlanningSequence(final String seqName) throws ResourceNotFoundException {
     ListIterator seqIterator = planningSequences.listIterator();
     while(seqIterator.hasNext()) {
       PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();
@@ -278,7 +278,7 @@ public class PwProjectImpl extends PwProject {
     throw new ResourceNotFoundException("Sequence " + seqName + " not in projet.");
   }
 
-  public void deletePlanningSequence(Long seqId) throws ResourceNotFoundException {
+  public void deletePlanningSequence(final Long seqId) throws ResourceNotFoundException {
     ListIterator seqIterator = planningSequences.listIterator();
     while(seqIterator.hasNext()) {
       PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();

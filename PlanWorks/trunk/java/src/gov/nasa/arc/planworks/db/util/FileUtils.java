@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.11 2003-11-25 01:40:38 taylor Exp $
+// $Id: FileUtils.java,v 1.12 2004-02-03 19:22:40 miatauro Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -35,7 +35,7 @@ public class FileUtils {
    * @param file - File -
    * @return extension - String 
    */
-  public static String getExtension( File file) {
+  public static String getExtension(final File file) {
     String fileName = file.getName();
     int i = fileName.lastIndexOf( '.');
     if (i > 0 && i < fileName.length() - 1) {
@@ -52,7 +52,7 @@ public class FileUtils {
    * @param relativePath - <code>String</code> - 
    * @return - <code>String</code> - 
    */
-  public static String getCanonicalPath( String relativePath) {
+  public static String getCanonicalPath(final String relativePath) {
     File file = new File( relativePath);
     try {
       String canonicalPath = file.getCanonicalPath();
@@ -72,7 +72,7 @@ public class FileUtils {
    * @param sequenceDirectory - <code>String</code> - 
    * @return - <code>String</code> - 
    */
-  public static String validateSequenceDirectory( String sequenceDirectory) {
+  public static String validateSequenceDirectory(final String sequenceDirectory) {
     // determine sequence's partial plan directories
     List partialPlanDirs = new ArrayList();
     String [] fileNames = new File( sequenceDirectory).list();
