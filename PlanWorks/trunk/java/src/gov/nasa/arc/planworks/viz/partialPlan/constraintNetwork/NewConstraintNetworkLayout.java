@@ -20,7 +20,8 @@ public class NewConstraintNetworkLayout {
   private List variableBoundingBoxes;
   private boolean horizontalLayout;
   public NewConstraintNetworkLayout(List tokenNodes, List variableNodes, List constraintNodes) {
-    horizontalLayout = true;
+    //horizontalLayout = true;
+    horizontalLayout = false;
     this.variableNodes = variableNodes;
     this.constraintNodes = constraintNodes;
     orderedTokenNodes = new ArrayList();
@@ -119,7 +120,6 @@ public class NewConstraintNetworkLayout {
       VariableBoundingBox box = (VariableBoundingBox) variableBoxIterator.next();
       if(box.isVisible() && !box.wasVisited()) {
         xpos += box.getWidth();
-        System.err.println("Positioning box at " + xpos);
         box.positionNodes(xpos);
       }
     }

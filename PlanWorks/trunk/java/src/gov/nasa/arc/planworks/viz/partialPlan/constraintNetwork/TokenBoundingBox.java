@@ -50,8 +50,8 @@ public class TokenBoundingBox {
   public double getHeight() {
     double retval = 0.;
     if(layout.layoutHorizontal()) {
-      retval = ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y -
-        ConstraintNetworkView.HORIZONTAL_TOKEN_BAND_Y;
+      retval = ConstraintNetworkView.HORIZONTAL_TOKEN_BAND_Y -
+        ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y;
     }
     else {
       if(tokenNode.isVisible()) {
@@ -104,8 +104,8 @@ public class TokenBoundingBox {
     ListIterator varBoxIterator = variableBoundingBoxes.listIterator();
     while(varBoxIterator.hasNext()) {
       VariableBoundingBox varBox = (VariableBoundingBox) varBoxIterator.next();
-      lastBoxHeight += varBox.getHeight();
       varBox.positionNodes(boxY - lastBoxHeight);
+      lastBoxHeight += varBox.getHeight();
       varBox.setVisited();
     }
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.10 2003-10-29 01:53:55 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.11 2003-10-30 19:11:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -88,10 +88,11 @@ public class ConstraintNetworkView extends PartialPlanView {
   public static final double HORIZONTAL_VARIABLE_BAND_Y = 150.;
   public static final double HORIZONTAL_TOKEN_BAND_Y = 250.;
   
-  public static final double VERTICAL_CONSTRAINT_BAND_X = 0.;
-  public static final double VERTICAL_VARIABLE_BAND_X = 0.;
-  public static final double VERTICAL_TOKEN_BAND_X = 0.;
+  public static double VERTICAL_CONSTRAINT_BAND_X = 450.;
+  public static double VERTICAL_VARIABLE_BAND_X = 250.;
+  public static double VERTICAL_TOKEN_BAND_X= 50.;
 
+  private static final double VERTICAL_BAND_DISTANCE = 200;
   public static final double NODE_SPACING = 10.;
 
   private PwPartialPlan partialPlan;
@@ -188,10 +189,19 @@ public class ConstraintNetworkView extends PartialPlanView {
     // setVisible( true | false) depending on ContentSpec
     setNodesLinksVisible();
 
+    double maxTokenWidth = 0.;
     ListIterator tokenIterator = tokenNodeList.listIterator();
     while(tokenIterator.hasNext()) {
-      ((ConstraintNetworkTokenNode)tokenIterator.next()).discoverLinkage();
+      ConstraintNetworkTokenNode node = (ConstraintNetworkTokenNode) tokenIterator.next();
+      node.discoverLinkage();
+      if(node.getSize().getWidth() > maxTokenWidth) {
+        maxTokenWidth = node.getSize().getWidth();
+      }
     }
+
+    VERTICAL_TOKEN_BAND_X = (maxTokenWidth / 2) + NODE_SPACING;
+    VERTICAL_VARIABLE_BAND_X = VERTICAL_TOKEN_BAND_X + VERTICAL_BAND_DISTANCE;
+    VERTICAL_CONSTRAINT_BAND_X = VERTICAL_VARIABLE_BAND_X + VERTICAL_BAND_DISTANCE;
 
     //NewConstraintNetworkLayout newLayout = 
     newLayout = new NewConstraintNetworkLayout(tokenNodeList, variableNodeList, constraintNodeList);
@@ -1287,6 +1297,15 @@ public class ConstraintNetworkView extends PartialPlanView {
     JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
+    JMenuItem changeLayoutItem = null;
+    if(newLayout.layoutHorizontal()) {
+      changeLayoutItem = new JMenuItem("Vertical Layout");
+    }
+    else {
+      changeLayoutItem = new JMenuItem("Horizontal Layout");
+    }
+    createChangeLayoutItem(changeLayoutItem);
+    mouseRightPopup.add(changeLayoutItem);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
@@ -1319,6 +1338,21 @@ public class ConstraintNetworkView extends PartialPlanView {
         }
       });
   } // end createTokenByKeyItem
+
+  private void createChangeLayoutItem(JMenuItem changeLayoutItem) {
+    changeLayoutItem.addActionListener( new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if(newLayout.layoutHorizontal()) {
+            newLayout.setLayoutVertical();
+          }
+          else {
+            newLayout.setLayoutHorizontal();
+          }
+          newLayout.performLayout();
+          redraw();
+        }
+      });
+  }
 
   private void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
     boolean isTokenFound = false;
