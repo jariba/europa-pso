@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.14 2004-03-02 02:34:16 taylor Exp $
+// $Id: NavigatorView.java,v 1.15 2004-03-06 02:22:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -29,8 +29,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
+import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
 
@@ -54,6 +54,7 @@ import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
@@ -78,7 +79,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class NavigatorView extends PartialPlanView {
 
-  private JGoArea initialNode;
+  private JGoObject initialNode;
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
@@ -176,6 +177,18 @@ public class NavigatorView extends PartialPlanView {
    * @param navigatorFrame - <code>MDIInternalFrame</code> - 
    */
   public NavigatorView( final ConstraintNetworkResourceNode resourceNode,
+                        final ViewableObject partialPlan, final ViewSet viewSet,
+                        final MDIInternalFrame navigatorFrame) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    this.initialNode = resourceNode;
+    this.partialPlan = (PwPartialPlan) partialPlan;
+    this.viewSet = (PartialPlanViewSet) viewSet;
+    this.navigatorFrame = navigatorFrame;
+
+    commonConstructor();
+  } // end constructor
+
+  public NavigatorView( final ResourceNameNode resourceNode,
                         final ViewableObject partialPlan, final ViewSet viewSet,
                         final MDIInternalFrame navigatorFrame) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
@@ -487,9 +500,15 @@ public class NavigatorView extends PartialPlanView {
     if (initialNode instanceof ConstraintNetworkObjectNode) {
       PwObject object = ((ConstraintNetworkObjectNode) initialNode).getObject();
       node = addEntityNavNode( object, isDebugPrint);
-    } else if (initialNode instanceof ConstraintNetworkResourceNode) {
-      PwResource object = ((ConstraintNetworkResourceNode) initialNode).getResource();
-      node = addEntityNavNode( object, isDebugPrint);
+    } else if ((initialNode instanceof ConstraintNetworkResourceNode) ||
+               (initialNode instanceof ResourceNameNode)) {
+      PwResource resource = null;
+      if (initialNode instanceof ConstraintNetworkResourceNode) {
+        resource = ((ConstraintNetworkResourceNode) initialNode).getResource();
+      } else if (initialNode instanceof ResourceNameNode) {
+        resource = ((ResourceNameNode) initialNode).getResource();
+      }
+      node = addEntityNavNode( resource , isDebugPrint);
     } else if ((initialNode instanceof TimelineViewTimelineNode) ||
                (initialNode instanceof ConstraintNetworkTimelineNode)) {
       PwTimeline timeline = null;

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceNameNode.java,v 1.1 2004-02-10 02:35:53 taylor Exp $
+// $Id: ResourceNameNode.java,v 1.2 2004-03-06 02:22:34 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,7 +12,12 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
+import java.awt.Container;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoObject;
@@ -20,18 +25,42 @@ import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResource;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
+/**
+ * <code>ResourceNameNode</code> - 
+ *
+ * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
+ *           NASA Ames Research Center - Code IC
+ * @version 0.0
+ */
 public class ResourceNameNode extends JGoText {
 
   private PwResource resource;
+  private ResourceView resourceView;
 
 
-  public ResourceNameNode( final Point nameLoc, final PwResource resource) {
+  public ResourceNameNode( final Point nameLoc, final PwResource resource,
+                           ResourceView resourceView) {
     super( nameLoc, resource.getName());
     this.resource = resource;
+    this.resourceView = resourceView;
+  }
+
+  /**
+   * <code>getResource</code>
+   *
+   * @return - <code>PwResource</code> - 
+   */
+  public final PwResource getResource() {
+    return resource;
   }
 
   /**
@@ -58,16 +87,37 @@ public class ResourceNameNode extends JGoText {
   public final boolean doMouseClick( final int modifiers, final Point docCoords,
                                      final Point viewCoords, final JGoView view) {
     JGoObject obj = view.pickDocObject( docCoords, false);
-    //         System.err.println( "doMouseClick obj class " +
-    //                             obj.getTopLevelObject().getClass().getName());
+            System.err.println( "doMouseClick obj class " +
+                                obj.getTopLevelObject().getClass().getName());
     ResourceNameNode resourceNameNode = (ResourceNameNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       // do nothing
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      //       mouseRightPopupMenu( viewCoords);
-      //       return true;
+      mouseRightPopupMenu( viewCoords);
+      return true;
     }
     return false;
   } // end doMouseClick   
+
+  private void mouseRightPopupMenu( final Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
+    navigatorItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent evt) {
+          MDIInternalFrame navigatorFrame = resourceView.openNavigatorViewFrame();
+          Container contentPane = navigatorFrame.getContentPane();
+          PwPartialPlan partialPlan = resourceView.getPartialPlan();
+          contentPane.add( new NavigatorView( ResourceNameNode.this, partialPlan,
+                                              resourceView.getViewSet(),
+                                              navigatorFrame));
+        }
+      });
+    mouseRightPopup.add( navigatorItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, resourceView, viewCoords);
+  } // end mouseRightPopupMenu
+
+
 
 } // end class ResourceNameNode

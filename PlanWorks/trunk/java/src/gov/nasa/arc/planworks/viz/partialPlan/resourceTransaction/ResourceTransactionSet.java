@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.6 2004-03-04 21:30:28 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.7 2004-03-06 02:22:35 taylor Exp $
 //
 // PlanWorks
 //
@@ -52,8 +52,8 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 
 
 /**
@@ -64,10 +64,6 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
  * @version 0.0
  */
 public class ResourceTransactionSet extends BasicNode {
-
-  private static final int Y_MARGIN = 4;
-  private static final int RESOURCE_NAME_Y_OFFSET = 2;
-  private static final double ONE_HALF_MULTIPLIER = 0.5;
 
   private PwResource resource;
   private int earliestStartTime;
@@ -82,8 +78,6 @@ public class ResourceTransactionSet extends BasicNode {
   private String nodeLabel;
   private int nodeLabelWidth;
   private String resourceId;
-  private int extentYTop;
-  private int extentYBottom;
   private int transactionSetYOrigin;
   private int levelScaleWidth;
   private List transactionObjectList;
@@ -139,33 +133,40 @@ public class ResourceTransactionSet extends BasicNode {
    */
   public final void configure() {
     // put the label in the LevelScaleView, rather than the ExtentView
-
-    transactionSetYOrigin =  resourceTransactionView.currentYLoc;
+    // System.err.println( "currentYLoc " + resourceTransactionView.getCurrentYLoc());
+    int currentYLoc = resourceTransactionView.getCurrentYLoc();
+    transactionSetYOrigin = currentYLoc;
     levelScaleWidth = resourceTransactionView.getLevelScaleViewWidth() -
       ViewConstants.RESOURCE_LEVEL_SCALE_WIDTH_OFFSET;
-    renderBordersUpper( resourceTransactionView.getJGoRulerView().scaleTime( earliestStartTime),
-                        resourceTransactionView.getJGoRulerView().scaleTime( latestEndTime),
-                        resourceTransactionView.currentYLoc,
-                        resourceTransactionView.getJGoExtentDocument());
-    renderBordersUpper( 0, levelScaleWidth, resourceTransactionView.currentYLoc,
-                        resourceTransactionView.getJGoLevelScaleDocument());
-    renderResourceName( resourceTransactionView.currentYLoc);
+    ResourceView.renderBordersUpper
+      ( resourceTransactionView.getJGoRulerView().scaleTime( earliestStartTime),
+        resourceTransactionView.getJGoRulerView().scaleTime( latestEndTime),
+        currentYLoc, resourceTransactionView.getJGoExtentDocument());
+    ResourceView.renderBordersUpper
+      ( 0, levelScaleWidth, currentYLoc, resourceTransactionView.getJGoLevelScaleDocument());
+    ResourceView.renderResourceName( resource,
+                                     resourceTransactionView.getLevelScaleViewWidth() -
+                                     nodeLabelWidth, currentYLoc,
+                                     resourceTransactionView.getJGoLevelScaleDocument(),
+                                     resourceTransactionView);
 
-    resourceTransactionView.currentYLoc += ViewConstants.RESOURCE_PROFILE_MAX_Y_OFFSET;
-    resourceTransactionView.currentYLoc += Y_MARGIN;
+    currentYLoc = currentYLoc + ViewConstants.RESOURCE_PROFILE_MAX_Y_OFFSET +
+      ResourceView.Y_MARGIN;
+    resourceTransactionView.setCurrentYLoc( currentYLoc);
 
-    renderTransactions();
+    currentYLoc = renderTransactions( currentYLoc);
 
-    resourceTransactionView.currentYLoc += Y_MARGIN;
+    currentYLoc += ResourceView.Y_MARGIN;
 
-    renderBordersLower( resourceTransactionView.getJGoRulerView().scaleTime( earliestStartTime),
-                        resourceTransactionView.getJGoRulerView().scaleTime( latestEndTime),
-                        resourceTransactionView.currentYLoc,
-                        resourceTransactionView.getJGoExtentDocument());
-    renderBordersLower( 0, levelScaleWidth, resourceTransactionView.currentYLoc,
-                        resourceTransactionView.getJGoLevelScaleDocument());
+    ResourceView.renderBordersLower
+      ( resourceTransactionView.getJGoRulerView().scaleTime( earliestStartTime),
+        resourceTransactionView.getJGoRulerView().scaleTime( latestEndTime),
+        currentYLoc, resourceTransactionView.getJGoExtentDocument());
+    ResourceView.renderBordersLower
+      ( 0, levelScaleWidth, currentYLoc, resourceTransactionView.getJGoLevelScaleDocument());
 
-    resourceTransactionView.currentYLoc += ViewConstants.RESOURCE_PROFILE_MIN_Y_OFFSET;
+    currentYLoc += ViewConstants.RESOURCE_PROFILE_MIN_Y_OFFSET;
+    resourceTransactionView.setCurrentYLoc( currentYLoc);
   } // end configure
 
 
@@ -188,15 +189,6 @@ public class ResourceTransactionSet extends BasicNode {
   }
 
   /**
-   * <code>getTransactionSetYOrigin</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getTransactionSetYOrigin() {
-    return transactionSetYOrigin;
-  }
-
-  /**
    * <code>getTransactionObjectList</code>
    *
    * @return - <code>List</code> - 
@@ -205,53 +197,19 @@ public class ResourceTransactionSet extends BasicNode {
     return transactionObjectList;
   }
 
-  private void renderBordersUpper( final int xLeft, final int xRight, final int yLoc,
-                                   final JGoDocument jGoDocument) {
-    JGoStroke divider = new JGoStroke();
-    divider.addPoint( xLeft, yLoc);
-    divider.addPoint( xRight, yLoc);
-    divider.setDraggable( false); divider.setResizable( false);
-    divider.setSelectable( false);
-    divider.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "black")));
-    jGoDocument.addObjectAtTail( divider);
+  /**
+   * <code>getTransactionSetYOrigin</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getTransactionSetYOrigin() {
+    return transactionSetYOrigin;
+  }
 
-    extentYTop = yLoc + ViewConstants.RESOURCE_PROFILE_MAX_Y_OFFSET;
-    JGoStroke extentTop = new JGoStroke();
-    extentTop.addPoint( xLeft, extentYTop);
-    extentTop.addPoint( xRight, extentYTop);
-    extentTop.setDraggable( false); extentTop.setResizable( false);
-    extentTop.setSelectable( false);
-    extentTop.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "green3")));
-    jGoDocument.addObjectAtTail( extentTop);
-  } // end renderBordersUpper
-
-  private void renderBordersLower( final int xLeft, final int xRight, final int yLoc,
-                                   final JGoDocument jGoDocument) {
-    extentYBottom = yLoc;
-    JGoStroke extentBottom = new JGoStroke();
-    extentBottom.addPoint( xLeft, extentYBottom);
-    extentBottom.addPoint( xRight, extentYBottom);
-    extentBottom.setDraggable( false); extentBottom.setResizable( false);
-    extentBottom.setSelectable( false);
-    extentBottom.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "green3")));
-    jGoDocument.addObjectAtTail( extentBottom);
-  } // end renderBordersLower
-
-  private void renderResourceName( final int yLoc) {
-    int xTop = resourceTransactionView.getLevelScaleViewWidth() - nodeLabelWidth +
-      (int) (ViewConstants.TIMELINE_VIEW_INSET_SIZE * ONE_HALF_MULTIPLIER);
-    Point nameLoc = new Point( xTop, yLoc + RESOURCE_NAME_Y_OFFSET);
-    ResourceNameNode nameNode = new ResourceNameNode( nameLoc, resource);
-    nameNode.setResizable( false); nameNode.setEditable( false);
-    nameNode.setDraggable( false); nameNode.setSelectable( false);
-    nameNode.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
-    resourceTransactionView.getJGoLevelScaleDocument().addObjectAtTail( nameNode);
-  } // end renderResourceName
-
-  private void renderTransactions() {
+  private int renderTransactions( int currentYLoc) {
     List transactionSet = resource.getTransactionSet();
+    currentYLoc += 2;
     Iterator transSetItr = transactionSet.iterator();
-    resourceTransactionView.currentYLoc += 2;
     while (transSetItr.hasNext()) {
       Object t = transSetItr.next();
       if(!(t instanceof PwResourceTransaction)) {
@@ -273,16 +231,17 @@ public class ResourceTransactionSet extends BasicNode {
       // force min width to 2, so that toolTip will show up
       TransactionObject transactionObject =
         new TransactionObject( transaction,
-                               new Point( transStartX, resourceTransactionView.currentYLoc),
+                               new Point( transStartX, currentYLoc),
                                new Dimension( Math.max( transEndX - transStartX, 2),
                                               yDelta));
       transactionObject.setResizable( false); transactionObject.setDraggable( false);
       transactionObject.setSelectable( false);
       resourceTransactionView.getJGoExtentDocument().addObjectAtTail( transactionObject);
-      resourceTransactionView.currentYLoc += yDelta;
+      currentYLoc += yDelta;
       transactionObjectList.add( transactionObject);
     }
-    resourceTransactionView.currentYLoc += 2;
+    currentYLoc += 2;
+    return currentYLoc;
   } // end renderTransactions
 
 
