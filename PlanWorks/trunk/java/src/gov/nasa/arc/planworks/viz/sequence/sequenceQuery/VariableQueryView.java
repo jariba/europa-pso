@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableQueryView.java,v 1.12 2004-09-27 23:27:28 taylor Exp $
+// $Id: VariableQueryView.java,v 1.13 2004-10-13 23:49:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -72,6 +72,7 @@ public class VariableQueryView extends SequenceView {
   private JTable variableTable;
   private int objectKeyColumnIndx;
   private int stepNumberColumnIndx;
+  private QueryHeaderView headerJGoView;
 
 
   /**
@@ -148,7 +149,7 @@ public class VariableQueryView extends SequenceView {
     }
     this.computeFontMetrics( this);
 
-    QueryHeaderView headerJGoView = new QueryHeaderView( query);
+    headerJGoView = new QueryHeaderView( query);
     headerJGoView.validate();
     headerJGoView.setVisible( true);
 
@@ -237,7 +238,26 @@ public class VariableQueryView extends SequenceView {
     handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
-  class QueryHeaderView extends TransactionHeaderView {
+  /**
+   * <code>getVariableList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getVariableList() {
+    return variableList;
+  }
+
+  /**
+   * <code>getHeaderJGoView</code>
+   *
+   * @return - <code>QueryHeaderView</code> - 
+   */
+  public QueryHeaderView getHeaderJGoView() {
+    return headerJGoView;
+  }
+
+
+  public class QueryHeaderView extends TransactionHeaderView {
 
     public QueryHeaderView( final String query) {
       super( query);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.17 2004-10-07 20:19:03 taylor Exp $
+// $Id: PWTestHelper.java,v 1.18 2004-10-13 23:49:17 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -985,7 +985,7 @@ public abstract class PWTestHelper {
     VizView queryResultsWindow =
       (VizView)  PWTestHelper.findComponentByName( windowClass, windowFindName,
                                                    Finder.OP_EQUALS);
-     Assert.assertNotNull( windowFindName + " not found:", queryResultsWindow);
+    Assert.assertNotNull( windowFindName + " not found:", queryResultsWindow);
     System.err.println( "getQueryResultsWindow found " + windowFindName);
     return queryResultsWindow;
   } // end getSequenceQueryWindow
@@ -1096,6 +1096,7 @@ public abstract class PWTestHelper {
     field.setText( null);
     helper.sendString( new StringEventData( guiTest, field, fieldValue));
     helper.sendKeyAction( new KeyEventData( guiTest, field, KeyEvent.VK_ENTER));
+    guiTest.flushAWT(); guiTest.awtSleep();
   } // end setSequenceQueryField
 
 
