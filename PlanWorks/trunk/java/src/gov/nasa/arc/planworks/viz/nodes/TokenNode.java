@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.3 2003-07-02 17:42:48 taylor Exp $
+// $Id: TokenNode.java,v 1.4 2003-07-03 23:44:14 taylor Exp $
 //
 // PlanWorks
 //
@@ -50,6 +50,7 @@ public class TokenNode extends BasicNode {
   private int objectCnt;
   private TokenNetworkView view;
   private String predicateName;
+  private String nodeLabel;
 
   /**
    * <code>TokenNode</code> - constructor 
@@ -65,18 +66,23 @@ public class TokenNode extends BasicNode {
     this.token = token;
     this.objectCnt = objectCnt;
     this.view = view;
-    this.predicateName = token.getPredicate().getName();
-    System.err.println( "TokenNode: predicateName " + predicateName + 
-                        " key: " + token.getKey().toString());
+    if (token != null) {
+      predicateName = token.getPredicate().getName();
+      // nodeLabel = predicateName + " " + token.getKey().toString();
+      nodeLabel = predicateName;
+    } else {
+      predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
+      nodeLabel = predicateName;
+    }
+    // System.err.println( "TokenNode: " + nodeLabel);
+
     configure( tokenLocation);
   } // end constructor
 
   private final void configure( Point tokenLocation) {
     boolean isRectangular = true;
     setLabelSpot( JGoObject.Center);
-    initialize( tokenLocation,
-                token.getPredicate().getName() + " " + token.getKey().toString(),
-                isRectangular);
+    initialize( tokenLocation, nodeLabel, isRectangular);
     String backGroundColor = ((objectCnt % 2) == 0) ?
       ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
       ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
@@ -103,6 +109,15 @@ public class TokenNode extends BasicNode {
   public String getPredicateName() {
     return predicateName;
   }
+
+  /**
+   * <code>getToolTipText</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText() {
+    return token.toString();
+  } // end getToolTipText
 
 
 } // end class TokenNode

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.14 2003-07-03 00:41:22 taylor Exp $
+// $Id: TimelineView.java,v 1.15 2003-07-03 23:44:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -256,18 +256,16 @@ public class TimelineView extends VizView {
       if (slot.getTokenList().size() > 0) {
         token = (PwToken) slot.getTokenList().get( 0);
       }
-      if (token != null) {
-        String slotNodeLabel = getSlotNodeLabel( token);
-        boolean isLastSlot = (! slotIterator.hasNext());
-        SlotNode slotNode =
-          new SlotNode( slotNodeLabel, slot, new Point( x, y), previousToken,
-                        isLastSlot, objectCnt, this);
-        timelineNode.addToSlotNodeList( slotNode);
-        // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
-        jGoDocument.addObjectAtTail( slotNode);
-        previousToken = token;
-        x += slotNode.getSize().getWidth();
-      }
+      String slotNodeLabel = getSlotNodeLabel( token);
+      boolean isLastSlot = (! slotIterator.hasNext());
+      SlotNode slotNode =
+        new SlotNode( slotNodeLabel, token, slot, new Point( x, y), previousToken,
+                      isLastSlot, objectCnt, this);
+      timelineNode.addToSlotNodeList( slotNode);
+      // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
+      jGoDocument.addObjectAtTail( slotNode);
+      previousToken = token;
+      x += slotNode.getSize().getWidth();
     }
   } // end createSlotNodes
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.4 2003-07-02 17:42:48 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.5 2003-07-03 23:44:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -31,7 +31,7 @@ import javax.swing.SwingUtilities;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoLayer;
 import com.nwoods.jgo.JGoView;
-import com.nwoods.jgo.layout.JGoForceDirectedAutoLayout;
+import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -147,7 +147,10 @@ public class TokenNetworkView extends VizView {
     // setVisible( true | false) depending on ContentSpec
     setNodesVisible();
 
-    JGoForceDirectedAutoLayout layout = new JGoForceDirectedAutoLayout( jGoDocument);
+    JGoLayeredDigraphAutoLayout layout = new JGoLayeredDigraphAutoLayout( jGoDocument);
+    layout.setDirectionOption( JGoLayeredDigraphAutoLayout.LD_DIRECTION_DOWN);
+    layout.setColumnSpacing( layout.getColumnSpacing() / 4);
+    layout.setLayerSpacing( layout.getLayerSpacing() / 4);
     layout.performLayout();
 
     // print out info for created nodes
@@ -170,7 +173,10 @@ public class TokenNetworkView extends VizView {
     // move disabled nodes/links into hide layer
     // and pass default layer (with enabled links) to auto layout
 
-    JGoForceDirectedAutoLayout layout = new JGoForceDirectedAutoLayout( jGoDocument);
+    JGoLayeredDigraphAutoLayout layout = new JGoLayeredDigraphAutoLayout( jGoDocument);
+    layout.setDirectionOption( JGoLayeredDigraphAutoLayout.LD_DIRECTION_DOWN);
+    layout.setColumnSpacing( layout.getColumnSpacing() / 4);
+    layout.setLayerSpacing( layout.getLayerSpacing() / 4);
     layout.performLayout();
   } // end redraw
 
@@ -207,10 +213,11 @@ public class TokenNetworkView extends VizView {
   private void buildTokenParentChildRelationships() {
     initRelationships();
     buildRelationships();
-    Iterator keyIterator = relationships.keySet().iterator();
-    while (keyIterator.hasNext()) {
-      System.err.println( relationships.get( (String) keyIterator.next()));
-    }
+    System.err.println( "Token Network View: count: " + relationships.keySet().size());
+//     Iterator keyIterator = relationships.keySet().iterator();
+//     while (keyIterator.hasNext()) {
+//       System.err.println( relationships.get( (Integer) keyIterator.next()));
+//     }
   } // end buildTokenParentChildRelationships 
 
 
@@ -324,8 +331,7 @@ public class TokenNetworkView extends VizView {
 
 
   private void createTokenNodes() {
-    int x = ViewConstants.TIMELINE_VIEW_X_INIT;
-    int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
+    int y = ViewConstants.TIMELINE_VIEW_Y_INIT * 2;
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
     int objectCnt = 0;
@@ -333,7 +339,7 @@ public class TokenNetworkView extends VizView {
       PwObject object = (PwObject) objectIterator.next();
       Iterator timelineIterator = object.getTimelineList().iterator();
       while (timelineIterator.hasNext()) {
-        x = ViewConstants.TIMELINE_VIEW_X_INIT;
+        int x = ViewConstants.TIMELINE_VIEW_X_INIT;
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
         createTokenNodesOfTimeline( timeline, x, y, objectCnt);
         y += 2 * ViewConstants.TIMELINE_VIEW_Y_DELTA;
@@ -352,13 +358,15 @@ public class TokenNetworkView extends VizView {
       Iterator tokenIterator = slot.getTokenList().iterator();
       while (tokenIterator.hasNext()) { 
         PwToken token = (PwToken) tokenIterator.next();
-        if (token != null) { // empty slot
-          TokenNode tokenNode =
-            new TokenNode( token, new Point( x, y), objectCnt, this);
-          tmpNodeList.add( tokenNode);
-          jGoDocument.addObjectAtTail( tokenNode);
-          x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        TokenNode tokenNode =
+          new TokenNode( token, new Point( x, y), objectCnt, this);
+        if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
+          x += tokenNode.getSize().getWidth() * 0.5;
+          tokenNode.setLocation( x, y);
         }
+        tmpNodeList.add( tokenNode);
+        jGoDocument.addObjectAtTail( tokenNode);
+        x += tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
       }
     }
   } // end createTokenNodes
@@ -418,10 +426,11 @@ public class TokenNetworkView extends VizView {
 //       System.err.println( "createTokenLink: type " + type + " not handled");
 //     }
 //     ((JGoText) link.getMidLabel()).setBkColor( ColorMap.getColor( "lightGray"));
-    System.err.println( fromTokenNode.getPredicateName() + " " +
-                        fromTokenNode.getToken().getKey().toString() + " => " +
-                        toTokenNode.getPredicateName() + " " +
-                        toTokenNode.getToken().getKey().toString() + " " + type);
+
+//     System.err.println( fromTokenNode.getPredicateName() + " " +
+//                         fromTokenNode.getToken().getKey().toString() + " => " +
+//                         toTokenNode.getPredicateName() + " " +
+//                         toTokenNode.getToken().getKey().toString() + " " + type);
     jGoDocument.addObjectAtTail( link);
     linkNameList.add( linkName);
   } // end createTokenLink
