@@ -4,9 +4,9 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecGroup.java,v 1.3 2003-06-16 18:51:08 miatauro Exp $
+// $Id: ContentSpecGroup.java,v 1.1 2003-10-01 23:54:01 taylor Exp $
 //
-package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
+package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import java.util.List;
 

@@ -1,4 +1,12 @@
-package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: TokenTypeBox.java,v 1.1 2003-10-01 23:54:03 taylor Exp $
+//
+package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.1 2003-09-30 19:18:53 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.2 2003-10-01 23:53:54 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -50,7 +50,6 @@ public class AddSequenceThread extends Thread {
   public void run() {
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-    JMenu seqStepsMenu = dynamicMenuBar.disableMenu( PlanWorks.SEQSTEPS_MENU);
     PlanWorks.projectMenu.setEnabled(false);
 
     addSequence();
@@ -58,7 +57,6 @@ public class AddSequenceThread extends Thread {
     PlanWorks.planWorks.projectMenu.setEnabled( true);
     PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
     dynamicMenuBar.enableMenu( planSeqMenu);
-    dynamicMenuBar.enableMenu( seqStepsMenu);
   } // end run
 
 
@@ -125,8 +123,6 @@ public class AddSequenceThread extends Thread {
       JMenu partialPlanMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
       PlanWorks.planWorks.addSeqPartialPlanViewMenu
         ( PlanWorks.planWorks.currentProject, partialPlanMenu);
-      JMenu planStepsMenu = dynamicMenuBar.clearMenu( PlanWorks.SEQSTEPS_MENU, numProjects);
-      PlanWorks.planWorks.addPlanStepsMenu( PlanWorks.planWorks.currentProject, planStepsMenu);
     }
   } // end addSequence
 

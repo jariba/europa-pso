@@ -4,9 +4,9 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.21 2003-09-25 23:52:48 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.1 2003-10-01 23:54:01 taylor Exp $
 //
-package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
+package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

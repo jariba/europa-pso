@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.1 2003-09-30 19:18:54 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.2 2003-10-01 23:53:55 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -53,8 +53,11 @@ public class InstantiateProjectThread extends Thread {
    * <code>run</code>
    *
    */
-  public void run() {
-      
+  public void run() {      
+    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+    JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
+    PlanWorks.projectMenu.setEnabled( false);
+
     PwProject instantiatedProject = null;
     if (type.equals( PlanWorks.CREATE)) {
       instantiatedProject = createProject();
@@ -66,16 +69,11 @@ public class InstantiateProjectThread extends Thread {
     }
     if (instantiatedProject != null) {
       PlanWorks.planWorks.currentProject = instantiatedProject;
-      MDIDynamicMenuBar dynamicMenuBar =
-        (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
       int numProjects = PwProject.listProjects().size();
       JMenu partialPlanMenu = dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
       PlanWorks.planWorks.addSeqPartialPlanViewMenu( instantiatedProject, partialPlanMenu);
-      JMenu planStepsMenu = dynamicMenuBar.clearMenu( PlanWorks.SEQSTEPS_MENU, numProjects);
-      PlanWorks.planWorks.addPlanStepsMenu( instantiatedProject, planStepsMenu);
       if (PlanWorks.planWorks.currentProject.listPlanningSequences().size() == 0) {
         dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-        dynamicMenuBar.disableMenu( PlanWorks.SEQSTEPS_MENU);
       }
       // clear the old project's views
       if (PlanWorks.planWorks.viewManager != null) {
@@ -83,6 +81,9 @@ public class InstantiateProjectThread extends Thread {
       }
       PlanWorks.planWorks.viewManager = new ViewManager( PlanWorks.planWorks);
     }
+
+    PlanWorks.planWorks.projectMenu.setEnabled( true);
+    dynamicMenuBar.enableMenu( planSeqMenu);
   } //end run
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.18 2003-09-30 00:16:03 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.19 2003-10-01 23:53:56 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -64,16 +64,16 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenLink;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.GroupBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.LogicComboBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.NegationCheckBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.PredicateBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.PredicateGroupBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimeIntervalBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimeIntervalGroupBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineBox;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.TimelineGroupBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.GroupBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.LogicComboBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.NegationCheckBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.PredicateBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.PredicateGroupBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TimeIntervalBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TimeIntervalGroupBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TimelineBox;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TimelineGroupBox;
 
 /**
  * <code>PlanWorksTest</code> - JFCUnit test case for timeline view, along with

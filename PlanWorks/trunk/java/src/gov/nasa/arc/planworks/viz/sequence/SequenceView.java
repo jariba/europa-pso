@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceView.java,v 1.1 2003-09-25 23:52:47 taylor Exp $
+// $Id: SequenceView.java,v 1.2 2003-10-01 23:53:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
-import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -41,13 +41,15 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class SequenceView extends VizView {
 
+  protected PwPlanningSequence planSequence;
 
   /**
    * <code>SequenceView</code> - constructor 
    *
    */
-  public SequenceView( PwPartialPlan partialPlan, ViewSet viewSet) {
-    super( partialPlan, viewSet);
+  public SequenceView( PwPlanningSequence planSequence, ViewSet viewSet) {
+    super( viewSet);
+    this.planSequence = planSequence;
 
     // Utilities.printFontNames();
   }

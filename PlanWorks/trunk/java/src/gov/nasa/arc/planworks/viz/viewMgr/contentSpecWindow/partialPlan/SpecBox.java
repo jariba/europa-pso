@@ -4,9 +4,9 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SpecBox.java,v 1.9 2003-09-23 21:54:36 miatauro Exp $
+// $Id: SpecBox.java,v 1.1 2003-10-01 23:54:02 taylor Exp $
 //
-package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
+package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import java.awt.BorderLayout;
 import java.awt.Container;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteProjectThread.java,v 1.1 2003-09-30 19:18:54 taylor Exp $
+// $Id: DeleteProjectThread.java,v 1.2 2003-10-01 23:53:55 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -15,6 +15,7 @@
 package gov.nasa.arc.planworks;
 
 import java.util.List;
+import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
 import gov.nasa.arc.planworks.db.PwProject;
@@ -43,7 +44,14 @@ public class DeleteProjectThread extends Thread {
    *
    */
   public void run() {
+    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
+    JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
+    PlanWorks.projectMenu.setEnabled( false);
+
     deleteProject();
+
+    PlanWorks.planWorks.projectMenu.setEnabled( true);
+    dynamicMenuBar.enableMenu( planSeqMenu);
   } //end run
 
 
@@ -72,7 +80,6 @@ public class DeleteProjectThread extends Thread {
               PlanWorks.planWorks.setTitle( PlanWorks.planWorks.name);
               int numProjects = PwProject.listProjects().size();
               dynamicMenuBar.clearMenu( PlanWorks.PLANSEQ_MENU, numProjects);
-              dynamicMenuBar.clearMenu( PlanWorks.SEQSTEPS_MENU, numProjects);
             }
             if (PwProject.listProjects().size() == 0) {
               PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, false);

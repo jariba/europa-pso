@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.13 2003-08-28 20:45:06 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.14 2003-10-01 23:53:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,10 +13,10 @@
 
 package gov.nasa.arc.planworks.db;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
 /**
@@ -26,7 +26,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwPlanningSequence {
+public interface PwPlanningSequence extends ViewableObject {
 
 
   /**
@@ -96,10 +96,43 @@ public interface PwPlanningSequence {
    *
    * @param planName - <code>String</code> - 
    * @return - <code>PwPartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
    */
   public abstract PwPartialPlan getPartialPlan( String planName)
     throws ResourceNotFoundException;
 
+  /**
+   * <code>delete</code>
+   *
+   * @exception ResourceNotFoundException if an error occurs
+   */
   public abstract void delete() throws ResourceNotFoundException;
+
+  // extend ViewableObject
+
+  /**
+   * <code>setContentSpec</code>
+   *
+   * @param spec - <code>List</code> - 
+   */
+  public abstract void setContentSpec( List spec);
+
+  /**
+   * <code>getContentSpec</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public abstract List getContentSpec();
+
+  // getName already defined
+  
+  // end extend ViewableObject
+
+  /**
+   * <code>setSeqName</code>
+   *
+   * @param seqName - <code>String</code> - 
+   */
+  public void setSeqName( String seqName);
 
 } // end interface PwPlanningSequence

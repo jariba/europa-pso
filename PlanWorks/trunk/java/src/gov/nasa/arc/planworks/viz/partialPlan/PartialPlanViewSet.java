@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.2 2003-09-28 00:19:30 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.3 2003-10-01 23:53:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -30,10 +30,12 @@ import gov.nasa.arc.planworks.db.util.PartialPlanContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 // import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.util.ColorStream;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSetRemover;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
 
 
 /**
@@ -63,6 +65,8 @@ public class PartialPlanViewSet extends ViewSet {
     ((PwPartialPlan) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
     contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec));
     this.contentSpecWindow.pack();
+    this.contentSpecWindow.setLocation( ((ViewManager) remover).getContentSpecWindowCnt() *
+                                        ViewConstants.INTERNAL_FRAME_X_DELTA, 0);
     this.contentSpecWindow.setVisible(true);
   }
 

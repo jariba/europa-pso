@@ -4,9 +4,9 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineGroupBox.java,v 1.4 2003-07-14 20:52:21 miatauro Exp $
+// $Id: PredicateGroupBox.java,v 1.1 2003-10-01 23:54:02 taylor Exp $
 //
-package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
+package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,9 +22,11 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
  * A logical grouping of ContentSpecElements for specifying predicates.
  */
 
-public class TimelineGroupBox extends GroupBox {
-  public TimelineGroupBox(MDIInternalFrame window, Map timelineNames) {
+public class PredicateGroupBox extends GroupBox {
+  //private Map predicateNames;
+  public PredicateGroupBox(MDIInternalFrame window, Map predicateNames) {
     super(window);
+    //this.predicatNames = predicateNames;
     GridBagLayout gridBag = (GridBagLayout) getLayout();
     GridBagConstraints c = new GridBagConstraints();
     
@@ -32,11 +34,11 @@ public class TimelineGroupBox extends GroupBox {
     //c.weighty = 0.5;
     c.gridx = 0;
     c.gridy = 0;
-    TimelineBox box1 = new TimelineBox(true, timelineNames);
+    PredicateBox box1 = new PredicateBox(true, predicateNames);
     gridBag.setConstraints(box1, c);
     this.add((ContentSpecElement)box1);
     
-    TimelineBox box2 = new TimelineBox(false, timelineNames);
+    PredicateBox box2 = new PredicateBox(false, predicateNames);
     c.gridy++;
     gridBag.setConstraints(box2, c);
     this.add((ContentSpecElement)box2);

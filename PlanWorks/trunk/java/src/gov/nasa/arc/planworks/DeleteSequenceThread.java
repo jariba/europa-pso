@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteSequenceThread.java,v 1.1 2003-09-30 19:18:54 taylor Exp $
+// $Id: DeleteSequenceThread.java,v 1.2 2003-10-01 23:53:55 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -48,14 +48,12 @@ public class DeleteSequenceThread extends Thread {
   public void run() {
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.planWorks.getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
-    JMenu seqStepsMenu = dynamicMenuBar.disableMenu( PlanWorks.SEQSTEPS_MENU);
     PlanWorks.planWorks.projectMenu.setEnabled(false);
 
     deleteSequence();
 
     PlanWorks.planWorks.projectMenu.setEnabled(true);
     dynamicMenuBar.enableMenu( planSeqMenu);
-    dynamicMenuBar.enableMenu( seqStepsMenu);
   }
 
   private void deleteSequence() {

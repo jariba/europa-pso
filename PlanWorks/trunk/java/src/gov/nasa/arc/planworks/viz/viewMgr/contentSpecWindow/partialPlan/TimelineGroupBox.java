@@ -4,27 +4,26 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimeIntervalGroupBox.java,v 1.3 2003-06-16 18:51:10 miatauro Exp $
+// $Id: TimelineGroupBox.java,v 1.1 2003-10-01 23:54:03 taylor Exp $
 //
-package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
+package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Window;
+import java.util.Map;
 
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 
 /**
- * <code>TimeIntervalGroupBox</code> -
- *            JPanel->TimeIntervalGroupBox
- *            ContentSpecElement->TimeIntervalBox
+ * <code>PredicateGroupBox</code> -
+ *                      GroupBox->PredicateGroupBox
  * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
- * See the documentation for the GroupBox class.  This is one of those for TimeIntervalBoxen.
+ * A logical grouping of ContentSpecElements for specifying predicates.
  */
 
-
-public class TimeIntervalGroupBox extends GroupBox {
-  public TimeIntervalGroupBox(MDIInternalFrame window) {
+public class TimelineGroupBox extends GroupBox {
+  public TimelineGroupBox(MDIInternalFrame window, Map timelineNames) {
     super(window);
     GridBagLayout gridBag = (GridBagLayout) getLayout();
     GridBagConstraints c = new GridBagConstraints();
@@ -33,11 +32,11 @@ public class TimeIntervalGroupBox extends GroupBox {
     //c.weighty = 0.5;
     c.gridx = 0;
     c.gridy = 0;
-    TimeIntervalBox box1 = new TimeIntervalBox(true);
+    TimelineBox box1 = new TimelineBox(true, timelineNames);
     gridBag.setConstraints(box1, c);
     this.add((ContentSpecElement)box1);
     
-    TimeIntervalBox box2 = new TimeIntervalBox(false);
+    TimelineBox box2 = new TimelineBox(false, timelineNames);
     c.gridy++;
     gridBag.setConstraints(box2, c);
     this.add((ContentSpecElement)box2);
