@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.115 2004-08-05 00:24:19 taylor Exp $
+# $Id: README,v 1.116 2004-08-05 03:30:15 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -65,6 +65,10 @@ o "Progress monitors" have been added for functions which can be cpu intensive, 
 
 o Added new Ant target 'createJars' which creates PlanWorksDB.jar and PlanWorksPlugin.jar
   in PlanWorks/java/jars.  (These jar files are checked in to CVS).
+
+o The TokenNetwork View is now incremental -- it opens with the "root" tokens and t
+  heir immediate rule instance nodes.  They can be expanded incrementally as in the 
+  Navigator View.  The layout is maintained when "stepping".
 
 o The PLASMA PartialPlanWriter configuration file now resides at
   PLASMA/CBPlanner/component/sample-ppw-config.  Your PPW_CONFIG environment variable
