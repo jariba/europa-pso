@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineNode.java,v 1.4 2003-06-19 00:31:20 taylor Exp $
+// $Id: TimelineNode.java,v 1.5 2003-06-25 17:04:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -52,7 +52,7 @@ public class TimelineNode extends TextNode {
 
   private String timelineName;
   private PwTimeline timeline;
-  private Point timelineLocation;
+  private int objectCnt;
   private TimelineView view;
 
   private List slotNodeList; // element SlotNode
@@ -63,25 +63,29 @@ public class TimelineNode extends TextNode {
    * @param timelineName - <code>String</code> - 
    * @param timeline - <code>PwTimeline</code> - 
    * @param timelineLocation - <code>Point</code> - 
+   * @param objectCnt - <code>int</code> - 
    * @param view - <code>TimelineView</code> - 
    */
   public TimelineNode( String timelineName, PwTimeline timeline, Point timelineLocation,
-                       TimelineView view) {
+                       int objectCnt, TimelineView view) {
     super( timelineName);
     this.timelineName = timelineName;
     this.timeline = timeline;
-    this.timelineLocation = timelineLocation;
+    this.objectCnt = objectCnt;
     this.view = view;
     // System.err.println( "TimelineNode: timelineName " + timelineName);
     this.slotNodeList = new ArrayList();
 
-    configure();
+    configure( timelineLocation);
 
   } // end constructor
 
 
-  private final void configure() {
-    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( "gray60")));  
+  private final void configure( Point timelineLocation) {
+    String backGroundColor = ((objectCnt % 2) == 0) ?
+      ViewConstants.EVEN_OBJECT_TIMELINE_BG_COLOR :
+      ViewConstants.ODD_OBJECT_TIMELINE_BG_COLOR;
+    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));
     getLabel().setEditable( false);
     setDraggable( false);
     // do not allow links
@@ -100,15 +104,6 @@ public class TimelineNode extends TextNode {
    */
   public String getTimelineName() {
     return timelineName;
-  }
-
-  /**
-   * <code>getTimelineLocation</code>
-   *
-   * @return - <code>Point</code> - 
-   */
-  public Point getTimelineLocation() {
-    return timelineLocation;
   }
 
   /**

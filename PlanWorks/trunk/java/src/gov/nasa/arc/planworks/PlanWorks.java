@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.13 2003-06-19 17:31:17 taylor Exp $
+// $Id: PlanWorks.java,v 1.14 2003-06-25 17:04:04 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -577,14 +577,14 @@ public class PlanWorks extends MDIDesktopFrame {
             }});
     partialPlanMenu.add( timelineViewItem);
 
-    SeqPartPlanViewMenuItem tokenGraphViewItem =
-          new SeqPartPlanViewMenuItem( "Token Graph", seqName, partialPlanName);
-    tokenGraphViewItem.addActionListener( new ActionListener() {
+    SeqPartPlanViewMenuItem tokenNetworkViewItem =
+          new SeqPartPlanViewMenuItem( "Token Network", seqName, partialPlanName);
+    tokenNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
-                ( "tokenGraphView", (SeqPartPlanViewMenuItem) e.getSource());
+                ( "tokenNetworkView", (SeqPartPlanViewMenuItem) e.getSource());
             }});
-    partialPlanMenu.add( tokenGraphViewItem);
+    partialPlanMenu.add( tokenNetworkViewItem);
 
   } // end buildViewSubMenu
 
@@ -659,38 +659,28 @@ public class PlanWorks extends MDIDesktopFrame {
     private void renderView( String viewName, String sequenceName, String partialPlanName,
                              PwPartialPlan partialPlan) {
       ViewSet viewSet = viewManager.getViewSet( partialPlan);
+      MDIInternalFrame viewFrame = null;
       boolean viewExists = false;
+      long startTimeMSecs = (new Date()).getTime();
       if ((viewSet != null) && viewSet.viewExists( viewName)) {
         viewExists = true;
       }
       if (viewName.equals( "timelineView")) {
-        long startTimeMSecs = 0L, stopTimeMSecs = 0L;
         if (! viewExists) {
           System.err.println( "Rendering Timeline View ...");
-          startTimeMSecs = (new Date()).getTime();
         }
-        MDIInternalFrame viewFrame =
-          viewManager.openTimelineView( partialPlan, sequenceName +
-                                        System.getProperty( "file.separator") +
-                                        partialPlanName);
+        viewFrame = viewManager.openTimelineView( partialPlan, sequenceName +
+                                                  System.getProperty( "file.separator") +
+                                                  partialPlanName);
+        finishViewRendering( viewFrame, viewExists, startTimeMSecs);
+      } else if (viewName.equals( "tokenNetworkView")) {
         if (! viewExists) {
-          stopTimeMSecs = (new Date()).getTime();
-          System.err.println( "   ... elapsed time: " +
-                              (stopTimeMSecs - startTimeMSecs) + " msecs.");
-          viewFrame.setSize( INTERNAL_FRAME_WIDTH, INTERNAL_FRAME_HEIGHT);
-          viewFrame.setLocation( FRAME_X_LOCATION, FRAME_Y_LOCATION);
-          viewFrame.setVisible( true);
+          System.err.println( "Rendering Token Network View ...");
         }
-        // make associated menus appear & bring window to the front
-        try {
-          viewFrame.setSelected( false);
-          viewFrame.setSelected( true);
-        } catch (PropertyVetoException excp) { };
-
-      } else if (viewName.equals( "tokenGraphView")) {
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, viewName, "View Not Supported", 
-           JOptionPane.INFORMATION_MESSAGE);
+        viewFrame = viewManager.openTokenNetworkView( partialPlan, sequenceName +
+                                                      System.getProperty( "file.separator") +
+                                                      partialPlanName);        
+        finishViewRendering( viewFrame, viewExists, startTimeMSecs);
       } else if (viewName.equals( "temporalExtentView")) {
         JOptionPane.showMessageDialog
           (PlanWorks.this, viewName, "View Not Supported", 
@@ -709,6 +699,23 @@ public class PlanWorks extends MDIDesktopFrame {
            JOptionPane.INFORMATION_MESSAGE);
       }
     } // end renderView
+
+    private void finishViewRendering( MDIInternalFrame viewFrame, boolean viewExists,
+                                      long startTimeMSecs) {
+      if (! viewExists) {
+        long stopTimeMSecs = (new Date()).getTime();
+        System.err.println( "   ... elapsed time: " +
+                            (stopTimeMSecs - startTimeMSecs) + " msecs.");
+        viewFrame.setSize( INTERNAL_FRAME_WIDTH, INTERNAL_FRAME_HEIGHT);
+        viewFrame.setLocation( FRAME_X_LOCATION, FRAME_Y_LOCATION);
+        viewFrame.setVisible( true);
+      }
+      // make associated menus appear & bring window to the front
+      try {
+        viewFrame.setSelected( false);
+        viewFrame.setSelected( true);
+      } catch (PropertyVetoException excp) { };
+    } // end finishViewRendering
 
   } // end class CreatePartialPlanViewThread
 

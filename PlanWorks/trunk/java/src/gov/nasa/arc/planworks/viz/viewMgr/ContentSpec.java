@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.10 2003-06-19 19:54:36 miatauro Exp $
+// $Id: ContentSpec.java,v 1.11 2003-06-25 17:04:05 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -75,18 +75,19 @@ public class ContentSpec {
     //there may be a better way to do this
     System.err.println("contentSpec: querying " + collectionName);
     //replace this with the count() function!
-    List nodeList = XmlDBeXist.queryCollection(collectionName, "/PartialPlan/*/@key");
-    System.err.println("contentSpec: got " + nodeList.size() + " keys.");
-    ListIterator nodeListIterator = nodeList.listIterator();
-    while(nodeListIterator.hasNext()) {
-      ParsedDomNode node = (ParsedDomNode) nodeListIterator.next();
-      if(node.getNodeName().equals("key")) {
-        int index = keyToIndex(node.getNodeValue());
-        if(index > highestIndex) {
-          highestIndex = index;
-        }
-      }
-    }
+//     List nodeList = XmlDBeXist.queryCollection(collectionName, "/PartialPlan/*/@key");
+//     System.err.println("contentSpec: got " + nodeList.size() + " keys.");
+//     ListIterator nodeListIterator = nodeList.listIterator();
+//     while(nodeListIterator.hasNext()) {
+//       ParsedDomNode node = (ParsedDomNode) nodeListIterator.next();
+//       if(node.getNodeName().equals("key")) {
+//         int index = keyToIndex(node.getNodeValue());
+//         if(index > highestIndex) {
+//           highestIndex = index;
+//         }
+//       }
+//     }
+    highestIndex = 150;
     System.err.println("Content spec highest index: " + highestIndex);
     currentSpec = new BitSet(highestIndex + 1);
     currentSpec.set(0, highestIndex, true);

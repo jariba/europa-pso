@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.5 2003-06-16 18:50:39 miatauro Exp $
+// $Id: ViewManager.java,v 1.6 2003-06-25 17:04:05 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -15,7 +15,6 @@ import java.util.Iterator;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 
 /**
  * <code>ViewManager</code> -
@@ -50,14 +49,27 @@ public class ViewManager implements ViewSetRemover {
     }
     return ((ViewSet)viewSets.get(partialPlan)).openTimelineView();
   }
+
+  /**
+   * Opens a TokenNetworkView.  If one exists, it is setSelected(true).
+   * @param partialPlan The PwPartialPlan with which this view is associated.
+   * @param planName The name of the plan.  This is used as the title of the view windows so
+   *                 they are visually distinct across partial plans.
+   * @return MDIInternalFrame the frame containing the newly created or selected view.
+   */
+  public MDIInternalFrame openTokenNetworkView(PwPartialPlan partialPlan, String planName) {
+    if(!viewSets.containsKey(partialPlan)) {
+      viewSets.put(partialPlan, new ViewSet(desktopFrame, partialPlan, planName, this));
+    }
+    return ((ViewSet)viewSets.get(partialPlan)).openTokenNetworkView();
+  }
+
   /*
   public MDIInternalFrame openConstraintNetworkView(PwPartialPlan partialPlan, String planName) {
   }
   public MDIInternalFrame openTemporalExtentView(PwPartialPlan partialPlan, String planName) {
   }
   public MDIInternalFrame openTemporalNetworkView(PwPartialPlan partialPlan, String planName) {
-  }
-  public MDIInternalFrame openTokenNetworkView(PwPartialPlan partialPlan, String planName) {
   }
   */
   /**

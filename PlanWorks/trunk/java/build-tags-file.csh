@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.12 2003-06-18 22:55:02 taylor Exp $
+# $Id: build-tags-file.csh,v 1.13 2003-06-25 17:04:03 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -73,6 +73,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
     src/gov/nasa/arc/planworks/viz/nodes/SlotNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpec.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/RedrawNotifier.java \
@@ -99,7 +100,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/VariableTypeGroupBox.java \
     src/gov/nasa/arc/planworks/viz/views/VizView.java \
     src/gov/nasa/arc/planworks/viz/views/test/TimelineViewTest.java \
-    src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java
+    src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java \
+    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java
 
 
 echo "Writing `pwd`/planWorks.TAGS"

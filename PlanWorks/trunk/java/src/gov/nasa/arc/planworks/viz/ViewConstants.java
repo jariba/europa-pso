@@ -129,5 +129,29 @@ public interface ViewConstants {
    */
   public static final boolean TIMELINE_VIEW_IS_TEXT_EDITABLE = false;
 
+  /**
+   * constant <code>EVEN_OBJECT_TIMELINE_BG_COLOR</code>
+   *
+   */
+  public static final String EVEN_OBJECT_TIMELINE_BG_COLOR = "cornflowerBlue";
+
+  /**
+   * constant <code>EVEN_OBJECT_SLOT_BG_COLOR</code>
+   *
+   */
+  public static final String EVEN_OBJECT_SLOT_BG_COLOR = "skyBlue";
+
+  /**
+   * constant <code>ODD_OBJECT_TIMELINE_BG_COLOR</code>
+   *
+   */
+  public static final String ODD_OBJECT_TIMELINE_BG_COLOR = "aquamarine3";
+
+  /**
+   * constant <code>ODD_OBJECT_SLOT_BG_COLOR</code>
+   *
+   */
+  public static final String ODD_OBJECT_SLOT_BG_COLOR = "paleGreen";
+
 
 } // end ViewConstants
