@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.35 2004-06-03 17:33:35 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.36 2004-06-22 22:38:37 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -105,6 +105,9 @@ public interface PwPlanningSequence extends ViewableObject {
    * @exception ResourceNotFoundException if an error occurs
    */
   public abstract PwPartialPlan getPartialPlan( final String planName)
+    throws ResourceNotFoundException;
+
+  public abstract PwPartialPlan getPartialPlan(final Long ppid)
     throws ResourceNotFoundException;
 
   /**
