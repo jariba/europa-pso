@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.8 2003-06-26 18:18:28 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.9 2003-06-26 19:47:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -66,6 +66,8 @@ public interface PwPlanningSequence {
    */
   public abstract List listTransactions( int step) throws IndexOutOfBoundsException;
 
+  public abstract List listPartialPlans();
+
   /**
    * <code>getPartialPlan</code>
    *
@@ -85,6 +87,7 @@ public interface PwPlanningSequence {
   public abstract PwPartialPlan getPartialPlan( String planName)
     throws ResourceNotFoundException;
 
+  
   /**
    * <code>addPartialPlan</code> -
    *          maintain PwPartialPlanImpl instance ordering with partialPlanNames
