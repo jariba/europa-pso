@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.5 2003-09-10 00:32:15 miatauro Exp $
+// $Id: MDIDesktopFrame.java,v 1.6 2003-09-10 01:05:40 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -176,16 +176,26 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     JInternalFrame [] frames = desktopPane.getAllFrames();
     int xmin = 0;
     int ymin = 0;
+    int numContentSpecWindows = 0;
     for(int i = 0; i < frames.length; i++) {
       if(frames[i].getTitle().indexOf("Content specification") != -1) {
-        frames[i].setLocation(0, 0);
         ymin = frames[i].getHeight();
+        numContentSpecWindows++;
+      }
+    }
+    int contInc = getWidth() / numContentSpecWindows;
+    for(int i = 0, x = 0; i < frames.length; i++) {
+      if(frames[i].getTitle().indexOf("Content specification") != -1) {
+        frames[i].setBounds(x, 0, contInc, frames[i].getHeight());
+        System.err.println("Setting values: " + x + " " + 0 + " " + contInc + " " + 
+                           frames[i].getHeight());
+        x += contInc;
       }
     }
     if(isHorizontal) {
       int xmax = getX() + getWidth() - 110;
       int height = getHeight() - ymin - 90;
-      int xinc = (xmax - xmin) / (frames.length - 1);
+      int xinc = (xmax - xmin) / (frames.length - numContentSpecWindows);
       for(int i = 0; i < frames.length; i++) {
         if(frames[i].getTitle().indexOf("Content specification") != -1) {
           continue;
@@ -197,7 +207,7 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     else {
       int ymax = getY() + getHeight() - 190;
       int width = getWidth() - 15;
-      int yinc = (ymax - ymin) / (frames.length - 1);
+      int yinc = (ymax - ymin) / (frames.length - numContentSpecWindows);
       for(int i = 0; i < frames.length; i++) {
         if(frames[i].getTitle().indexOf("Content specification") != -1) {
           continue;
