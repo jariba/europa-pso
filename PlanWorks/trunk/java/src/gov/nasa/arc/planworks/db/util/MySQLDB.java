@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -147,6 +148,9 @@ public class MySQLDB {
     }
     return result;
   }
+  public static void loadFile(String file, String tableName) {
+    updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
+  }
   public static String queryPartialPlanModelByKey(Long partialPlanKey) {
     try {
       ResultSet model = 
@@ -158,6 +162,176 @@ public class MySQLDB {
       System.err.println(sqle);
       sqle.printStackTrace();
       return null;
+    }
+  }
+  public static List getProjectNames() {
+    ArrayList retval = new ArrayList();
+    try {
+      ResultSet names = queryDatabase("SELECT ProjectName FROM Project");
+      while(names.next()) {
+        retval.add(names.getString("ProjectName"));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+  public static boolean projectExists(String name) {
+    try {
+      ResultSet rows = 
+        queryDatabase("SELECT ProjectId FROM Project WHERE ProjectName='".concat(name).concat("'"));
+      rows.last();
+      return rows.getRow() != 0;
+    }
+    catch(SQLException sqle) {
+    }
+    return false;
+  }
+  public static boolean sequenceExists(String url) {
+    try {
+      ResultSet rows =
+        queryDatabase("SELECT * FROM Sequence WHERE SequenceURL='".concat(url).concat("'"));
+      rows.last();
+      return rows.getRow() != 0;
+    }
+    catch(SQLException sqle){}
+    return false;
+  }
+  public static boolean partialPlanExists(Integer sequenceKey, String name) {
+    try {
+      ResultSet rows =
+        queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
+      rows.last();
+      return rows.getRow() != 0;
+    }
+    catch(SQLException sqle){}
+    return false;
+  }
+  public static void addProject(String name) {
+    updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("')"));
+  }
+  public static Integer latestProjectKey() {
+    try {
+      ResultSet newKey = queryDatabase("SELECT MAX(ProjectId) AS ProjectId from Project");
+      newKey.last();
+      return new Integer(newKey.getInt("ProjectId"));
+    }
+    catch(SQLException sqle) {
+    }
+    return null;
+  }
+  public static void addSequence(String url, Integer projectId) {
+    updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId) VALUES ('".concat(url).concat("', ").concat(projectId.toString()).concat(")"));
+  }
+  public static Integer latestSequenceKey() {
+    try {
+      ResultSet newKey = queryDatabase("SELECT MAX(SequenceId) AS SequenceId from Sequence");
+      newKey.last();
+      return new Integer(newKey.getInt("SequenceId"));
+    }
+    catch(SQLException sqle) {
+    }
+    return null;
+  }
+  public static Integer getProjectIdByName(String name) {
+    try {
+      ResultSet projectId = queryDatabase("SELECT ProjectId FROM Project WHERE ProjectName='".concat(name).concat("'"));
+      projectId.first();
+      Integer id = new Integer(projectId.getInt("ProjectId"));
+      if(projectId.wasNull()) {
+        return null;
+      }
+      return id;
+    }
+    catch(SQLException sqle) {
+    }
+    return null;
+  }
+  public static HashMap getSequences(Integer projectId) {
+    HashMap retval = null;
+    try {
+      ResultSet sequences = 
+        queryDatabase("SELECT SequenceURL, SequenceId FROM Sequence WHERE ProjectId=".concat(projectId.toString()));
+      retval = new HashMap();
+      while(sequences.next()) {
+        retval.put(new Integer(sequences.getInt("SequenceId")), sequences.getString("SequenceURL"));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+  public static void deleteProject(Integer key) {
+    try {
+      ResultSet sequenceIds = 
+        queryDatabase("SELECT SequenceId FROM Sequence WHERE ProjectId=".concat(key.toString()));
+      while(sequenceIds.next()) {
+        Integer sequenceId = new Integer(sequenceIds.getInt("SequenceId"));
+        ResultSet partialPlanIds =
+          queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
+        while(partialPlanIds.next()) {
+          Long partialPlanId = new Long(partialPlanIds.getLong("PartialPlanId"));
+          updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM Timeline WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM Slot WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM EnumeratedDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM IntervalDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM VConstraint WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM TokenRelation WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM Predicate WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          updateDatabase("DELETE FROM Parameter WHERE PartialPlanId=".concat(partialPlanId.toString()));
+        }
+        updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
+      }
+      updateDatabase("DELETE FROM Project WHERE ProjectId=".concat(key.toString()));
+    }
+    catch(SQLException sqle) {
+    }
+  }
+  public static List getPlanNamesInSequence(Integer sequenceKey) {
+    ArrayList retval = new ArrayList();
+    try {
+      ResultSet names = 
+        queryDatabase("SELECT PlanName FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()));
+      while(names.next()) {
+        retval.add(names.getString("PlanName"));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+  public static void updatePartialPlanSequenceId(Integer sequenceKey) {
+    updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceKey.toString()).concat(" WHERE SequenceId=-1"));
+  }
+  public static Long getNewPartialPlanKey(Integer sequenceKey, String name) {
+    Long retval = null;
+    try {
+      ResultSet partialPlan = 
+        queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
+      partialPlan.first();
+      retval = new Long(partialPlan.getLong("PartialPlanId"));
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+  public static void createObjects(PwPartialPlanImpl partialPlan) {
+    try {
+      ResultSet objects = 
+        queryDatabase("SELECT ObjectName, ObjectId FROM Object WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
+      while(objects.next()) {
+        Integer objectKey = new Integer(objects.getInt("ObjectId"));
+        partialPlan.addObject(objectKey, new PwObjectImpl(objectKey, 
+                                                          objects.getString("ObjectName"),
+                                                          partialPlan));
+      }
+    }
+    catch(SQLException sqle) {
     }
   }
   public static void createTimelineSlotTokenNodesStructure(PwPartialPlanImpl partialPlan) {
