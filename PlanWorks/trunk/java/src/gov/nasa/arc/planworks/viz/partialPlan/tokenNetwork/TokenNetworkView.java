@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.37 2004-03-23 20:05:59 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.38 2004-03-24 02:31:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -330,10 +330,15 @@ public class TokenNetworkView extends PartialPlanView {
                                 String type) {
     String linkName = fromTokenNode.getToken().getId().toString() + "->" +
       toTokenNode.getToken().getId().toString();
-    if (tokenLinkMap.get( linkName) != null) {
-      return;
-    }
-    TokenLink link = new TokenLink( fromTokenNode, toTokenNode);
+//     if (tokenLinkMap.get( linkName) != null) {
+//       System.err.println( "createTokenLink discard " + linkName);
+//       return;
+//     }
+    // getOpenJGoPenWidth( getZoomFactor()) = 2, with zoomFactor = 1, but
+    // this view is not being redrawn when zoomFactor changes, so we need
+    // the extra width for the higher zoomFactors
+    TokenLink link = new TokenLink( fromTokenNode, toTokenNode,
+                                    getOpenJGoPenWidth( getZoomFactor()));
     tokenLinkMap.put( linkName, link);
     jGoDocument.addObjectAtTail( link);
   } // end createTokenLink

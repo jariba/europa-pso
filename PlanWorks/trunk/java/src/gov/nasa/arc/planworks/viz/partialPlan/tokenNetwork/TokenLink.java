@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenLink.java,v 1.1 2003-09-25 23:52:46 taylor Exp $
+// $Id: TokenLink.java,v 1.2 2004-03-24 02:31:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,8 +14,10 @@ package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoLabeledLink;
+import com.nwoods.jgo.JGoPen;
 
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 
 
@@ -38,15 +40,17 @@ public class TokenLink extends JGoLabeledLink {
    *
    * @param fromTokenNode - <code>TokenNode</code> - 
    * @param toTokenNode - <code>TokenNode</code> - 
+   * @param penWidth - <code>int</code> - 
    */
-  public TokenLink( TokenNode fromTokenNode, TokenNode toTokenNode) {
+  public TokenLink( TokenNode fromTokenNode, TokenNode toTokenNode, int penWidth) {
     super( fromTokenNode.getPort(), toTokenNode.getPort());
     this.fromTokenNode = fromTokenNode;
     this.toTokenNode = toTokenNode;
     this.setArrowHeads( false, true); // fromArrowHead toArrowHead
     // do no allow user to select and move links
     this.setRelinkable( false);
-  } // end constgructor
+    this.setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
+  } // end constructor
 
   /**
    * <code>getFromToken</code>
@@ -57,6 +61,11 @@ public class TokenLink extends JGoLabeledLink {
     return this.fromTokenNode.getToken();
   }
 
+  /**
+   * <code>getFromTokenNode</code>
+   *
+   * @return - <code>TokenNode</code> - 
+   */
   public TokenNode getFromTokenNode() {
     return this.fromTokenNode;
   }
@@ -70,7 +79,29 @@ public class TokenLink extends JGoLabeledLink {
     return this.toTokenNode.getToken();
   }
 
+  /**
+   * <code>getToTokenNode</code>
+   *
+   * @return - <code>TokenNode</code> - 
+   */
   public TokenNode getToTokenNode() {
     return this.toTokenNode;
   }
+
+
+  /**
+   * <code>getToolTipText</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText() {
+    StringBuffer tip = new StringBuffer( "<html> ");
+    tip.append( "model rule: ");
+    tip.append( this.toTokenNode.getToken().getModelRule());
+    tip.append( "</html>");
+    return tip.toString();
+  } // end getToolTipText
+
+
+
 } // end class TokenLink

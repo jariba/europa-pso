@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.20 2004-03-02 02:34:11 taylor Exp $
+// $Id: PwToken.java,v 1.21 2004-03-24 02:31:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -165,5 +165,12 @@ public interface PwToken extends PwVariableContainer {
    * @return - <code>String</code> - 
    */
   public abstract String toString();
+
+  /**
+   * <code>getModelRule</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getModelRule();
 
 } // end interface PwToken

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.1 2004-02-03 20:43:55 taylor Exp $
+// $Id: DBTransactionView.java,v 1.2 2004-03-24 02:31:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -124,7 +124,11 @@ public class DBTransactionView extends PartialPlanView {
     transactionHeaderPanel.setLayout( new BoxLayout( transactionHeaderPanel, BoxLayout.Y_AXIS));
 
     String query = null;
+    // long startTimeMSecs1 = System.currentTimeMillis();
     headerJGoView = new DBTransactionHeaderView( transactionList, query, this);
+    // long stopTimeMSecs1 = System.currentTimeMillis();
+    // System.err.println( "   DBTransactionHeaderView elapsed time: " +
+    //                     (stopTimeMSecs1 - startTimeMSecs1) + " msecs.");
     headerJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     headerJGoView.validate();
     headerJGoView.setVisible( true);
@@ -132,8 +136,12 @@ public class DBTransactionView extends PartialPlanView {
     transactionHeaderPanel.add( headerJGoView, BorderLayout.NORTH);
     add( transactionHeaderPanel, BorderLayout.NORTH);
 
+    // startTimeMSecs1 = System.currentTimeMillis();
     contentJGoView = new DBTransactionContentView( transactionList, headerJGoView,
                                                  partialPlan, this);
+    // stopTimeMSecs1 = System.currentTimeMillis();
+    // System.err.println( "   DBTransactionContentView elapsed time: " +
+    //                     (stopTimeMSecs1 - startTimeMSecs1) + " msecs.");
     contentJGoView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
     add( contentJGoView, BorderLayout.NORTH);
     contentJGoView.validate();

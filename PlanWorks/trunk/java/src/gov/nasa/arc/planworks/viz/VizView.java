@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.16 2004-03-23 20:05:57 taylor Exp $
+// $Id: VizView.java,v 1.17 2004-03-24 02:31:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -39,14 +39,9 @@ import com.nwoods.jgo.JGoViewEvent;
 import com.nwoods.jgo.JGoViewListener;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.db.PwSlot;
-import gov.nasa.arc.planworks.db.PwTimeline;
-import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.viz.partialPlan.CreatePartialPlanViewThread;
