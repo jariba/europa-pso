@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.4 2004-03-03 02:14:24 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.5 2004-03-04 20:52:19 miatauro Exp $
 //
 // PlanWorks
 //
@@ -44,6 +44,7 @@ import gov.nasa.arc.planworks.db.PwIntervalDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceTransaction;
+import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
@@ -252,7 +253,11 @@ public class ResourceTransactionSet extends BasicNode {
     Iterator transSetItr = transactionSet.iterator();
     resourceTransactionView.currentYLoc += 2;
     while (transSetItr.hasNext()) {
-      PwResourceTransaction transaction = (PwResourceTransaction) transSetItr.next();
+      Object t = transSetItr.next();
+      if(!(t instanceof PwResourceTransaction)) {
+        continue;
+      }
+      PwResourceTransaction transaction = (PwResourceTransaction) t;//transSetItr.next();
       PwIntervalDomain transInterval = transaction.getInterval();
       int transStart = transInterval.getLowerBoundInt();
       String transIdString = transaction.getId().toString();

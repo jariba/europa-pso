@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.6 2004-03-03 02:14:24 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.7 2004-03-04 20:52:18 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -865,8 +865,8 @@ public class ResourceTransactionView extends PartialPlanView  {
       // final position, comment out next check
       // if (! source.getValueIsAdjusting()) {
         int newPostion = source.getValue();
-        if ((jGoExtentView.getVerticalScrollBar() == null) ||
-            (jGoLevelScaleView.getVerticalScrollBar() == null)) {
+        if (jGoExtentView == null || jGoExtentView.getVerticalScrollBar() == null ||
+            jGoLevelScaleView.getVerticalScrollBar() == null) {
           return;
         }
         if (newPostion != jGoExtentView.getVerticalScrollBar().getValue()) {

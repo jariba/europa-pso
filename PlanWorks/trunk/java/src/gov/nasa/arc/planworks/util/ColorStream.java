@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public class ColorStream {
   private static final float B_MIN = 0.78f;
 
   private Map hashMap;
-  //private 
+  private LinkedList colorList;
   private float h, b;
   private int multiplier;
 
@@ -25,19 +26,27 @@ public class ColorStream {
     h = 0.0f;
     b = B_MIN;
     multiplier = 1;
+    initColorList();
   }
   public ColorStream(final int r, final int g, final int b) {
-    this();
+    hashMap = new HashMap();
+    multiplier = 1;
     float [] hsb = Color.RGBtoHSB(r, g, b, null);
     h = hsb[0];
     this.b = hsb[2];
-    for(int i = 0; i < 10; i++) {
-      hashMap.put(new Integer(i), nextColor());
-    }
+    initColorList();
   }
   public ColorStream(final Color startColor) {
     this(startColor.getRed(), startColor.getGreen(), startColor.getBlue());
   }
+  
+  private void initColorList() {
+    colorList = new LinkedList();
+    for(int i = 0; i < 10; i++) {
+      colorList.addLast(nextColor());
+    }
+  }
+
   private Color nextColor() {
     Color retval;
     //I know, it's bad style, but some values of blue simply *refuse* to cooperate. ~MJI
@@ -62,8 +71,9 @@ public class ColorStream {
   public Color getColor(Object o) {
     Color retval = null;
     if(!hashMap.containsKey(o)) {
-      retval = nextColor();
+      retval = (Color) colorList.removeFirst();
       hashMap.put(o, retval);
+      colorList.addLast(nextColor());
     }
     else {
       retval = (Color) hashMap.get(o);

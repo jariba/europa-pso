@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.21 2004-02-27 18:04:37 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.22 2004-03-04 20:50:25 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -164,6 +164,10 @@ public class PwObjectImpl implements PwObject {
     if(!tokenIdList.contains(tokenId)) {
       tokenIdList.add(tokenId);
     }
+  }
+
+  public String toString() {
+    return id.toString();
   }
 
 } // end class PwObjectImpl

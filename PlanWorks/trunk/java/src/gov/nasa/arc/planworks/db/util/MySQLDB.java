@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.89 2004-03-02 22:29:08 miatauro Exp $
+// $Id: MySQLDB.java,v 1.90 2004-03-04 20:50:43 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1420,6 +1420,33 @@ public class MySQLDB {
       ResultSet ids = queryDatabase("SELECT TransactionId FROM Transaction WHERE SequenceId=".concat(seqId.toString()).concat(" && PartialPlanId=").concat(ppId.toString()));
       while(ids.next()) {
         retval.add(new Integer(ids.getInt("TransactionId")));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+  
+  synchronized public static List queryConstraintTransactionNames() {
+    return queryTransactionNames("'CONSTRAINT%'");
+  }
+
+  synchronized public static List queryTokenTransactionNames() {
+    return queryTransactionNames("'TOKEN%'");
+  }
+
+  synchronized public static List queryVariableTransactionNames() {
+    return queryTransactionNames("'VAR%'");
+  }
+
+  synchronized public static List queryTransactionNames(String type) {
+    List retval = new ArrayList();
+    try {
+      ResultSet names = 
+        queryDatabase("SELECT DISTINCT TransactionType FROM Transaction WHERE TransactionType LIKE "
+                      + type);
+      while(names.next()) {
+        retval.add(names.getString("TransactionType"));
       }
     }
     catch(SQLException sqle) {
