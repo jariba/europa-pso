@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.110 2004-08-25 18:40:59 taylor Exp $
+// $Id: PlanWorks.java,v 1.111 2004-08-26 22:59:24 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -41,15 +41,16 @@ import javax.swing.JTextField;
 import javax.swing.ToolTipManager;
 import javax.swing.filechooser.FileFilter;
 
+import testLang.TestLangParseException;
+import testLang.TestLangRuntimeException;
+
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
-import gov.nasa.arc.planworks.dbg.testLang.TestLangHelper;
-import gov.nasa.arc.planworks.dbg.testLang.TestLangParseException;
-import gov.nasa.arc.planworks.dbg.testLang.TestLangRuntimeException;
+import gov.nasa.arc.planworks.dbg.testLang.TestLangInterpreter;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
@@ -181,6 +182,15 @@ public class PlanWorks extends MDIDesktopFrame {
     else {
       usingSplash = false;
     }
+  }
+
+  static {
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+        public void start() throws IllegalThreadStateException {
+          if(Math.floor(Math.random() * 10) < 2)
+            System.err.println("You only *think* you've found all the bugs.");
+        }
+      });
   }
   
   /**
@@ -1068,15 +1078,15 @@ public class PlanWorks extends MDIDesktopFrame {
     public void actionPerformed(ActionEvent ae) {
       try {
         if(testName.getText().trim().equals("")) {
-          TestLangHelper.runTests(projectName.getText().trim(),
+          TestLangInterpreter.runTests(projectName.getText().trim(),
                                   sequenceUrl.getText().trim(),
                                   testFile.getText().trim());
         }
         else {
-          TestLangHelper.runTests(projectName.getText().trim(),
-                                  sequenceUrl.getText().trim(),
-                                  testFile.getText().trim(),
-                                  testName.getText().trim());
+          TestLangInterpreter.runTests(projectName.getText().trim(),
+                                       sequenceUrl.getText().trim(),
+                                       testFile.getText().trim(),
+                                       testName.getText().trim());
         }
       }
       catch(TestLangParseException tlpe) {
@@ -1143,6 +1153,7 @@ public class PlanWorks extends MDIDesktopFrame {
 
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) planWorks.getJMenuBar();
     ConfigureAndPlugins.invokeLoadPlugin( dynamicMenuBar.getPlugInMenu());
+    
   } // end main
 
   private class SeqNameComparator implements Comparator {
