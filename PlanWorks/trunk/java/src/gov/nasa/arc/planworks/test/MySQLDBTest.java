@@ -14,9 +14,6 @@ public class MySQLDBTest extends TestCase {
     junit.textui.TestRunner.run(suite());
   }
   protected void setUp() {
-    //while(PlanWorksTest.TEST_RUNNING != 0) {
-    //  try{Thread.sleep(50);}catch(Exception e){}
-    // }
     try {
       MySQLDB.startDatabase();
       MySQLDB.registerDatabase();
@@ -33,28 +30,40 @@ public class MySQLDBTest extends TestCase {
   public static TestSuite suite() {
     return new TestSuite(MySQLDBTest.class);
   }
+
   public void testLoadFile() {
-    String datadir = 
-      System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat("loadTest").concat(System.getProperty("file.separator"));
-    checkConstraintLoad(datadir);
-    //checkEnumerationLoad(datadir);
-    //checkIntervalLoad(datadir);
-    checkObjectLoad(datadir);
-    //checkPVTMLoad(datadir);
-    //checkParamLoad(datadir);
-    checkPartialPlanLoad(datadir);
-    //checkPredicateLoad(datadir);
-    checkProjectLoad(datadir);
-    checkSequenceLoad(datadir);
-    //checkSlotLoad(datadir);
-    //checkTimelineLoad(datadir);
-    checkTokenLoad(datadir);
-    checkTokenRelationLoad(datadir);
-    checkVariableLoad(datadir);
-    checkTransactionLoad(datadir);
+    try {
+      String datadir = 
+        System.getProperty("planworks.test.data.dir").concat(
+        System.getProperty("file.separator")).concat("loadTest").concat(
+        System.getProperty("file.separator"));
+      checkConstraintLoad(datadir);
+      checkConstraintVarMapLoad(datadir);
+      checkObjectLoad(datadir);
+      checkPartialPlanLoad(datadir);
+      checkProjectLoad(datadir);
+      checkSequenceLoad(datadir);
+      checkTokenLoad(datadir);
+      checkVariableLoad(datadir);
+      checkTransactionLoad(datadir);
+      checkPartialPlanStatsLoad(datadir);
+      checkResourceInstantsLoad(datadir);
+      checkRulesLoad(datadir);
+      checkRuleInstanceLoad(datadir);
+      checkDecisionLoad(datadir);
+
+    // catch assert errors and Exceptions here, since JUnit seems to not do it
+    } catch (AssertionFailedError err) {
+      err.printStackTrace();
+      System.exit( -1);
+    } catch (Exception excp) {
+      excp.printStackTrace();
+      System.exit( -1);
+    }
   }
 
   private void checkConstraintLoad(String datadir) {
+    System.err.println("Checking VConstraint table load");
     MySQLDB.loadFile(datadir + "loadCTest", "VConstraint");
     try {
       ResultSet c = MySQLDB.queryDatabase("SELECT * FROM VConstraint");
@@ -70,48 +79,21 @@ public class MySQLDBTest extends TestCase {
     }
     MySQLDB.updateDatabase("DELETE FROM VConstraint");
   }
-  private void checkEnumerationLoad(String datadir) {
-    MySQLDB.loadFile(datadir + "loadEDTest", "EnumeratedDomain");
-    try {
-      ResultSet ed = MySQLDB.queryDatabase("SELECT * FROM EnumeratedDomain");
-      ed.last();
-      assertTrue(ed.getInt("EnumeratedDomainId") == 1);
-      assertTrue(ed.getLong("PartialPlanId") == 1L);
-      Blob blob = ed.getBlob("Domain");
-      assertTrue((new String(blob.getBytes(1, (int) blob.length()))).equals("enumerateddomain"));
-    }
-    catch(SQLException sqle) {
-      sqle.printStackTrace();
-      System.exit(-1);
-    }
-    MySQLDB.updateDatabase("DELETE FROM EnumeratedDomain");
-  }
-  private void checkIntervalLoad(String datadir) {
-    MySQLDB.loadFile(datadir + "loadIDTest", "IntervalDomain");
-    try {
-      ResultSet id = MySQLDB.queryDatabase("SELECT * FROM IntervalDomain");
-      id.last();
-      assertTrue(id.getInt("IntervalDomainId") == 1);
-      assertTrue(id.getLong("PartialPlanId") == 1L);
-      assertTrue(id.getString("LowerBound").equals("lowerbound"));
-      assertTrue(id.getString("UpperBound").equals("upperbound"));
-      assertTrue(id.getString("IntervalDomainType").equals(DbConstants.INTEGER_INTERVAL_DOMAIN_TYPE) ||
-                 id.getString("IntervalDomainType").equals(DbConstants.REAL_INTERVAL_DOMAIN_TYPE));
-    }
-    catch(SQLException sqle) {
-      sqle.printStackTrace();
-      System.exit(-1);
-    }
-    MySQLDB.updateDatabase("DELETE FROM IntervalDomain");
-  }
   private void checkObjectLoad(String datadir) {
+    System.err.println("Checking Object table load");
     MySQLDB.loadFile(datadir + "loadOTest", "Object");
     try {
       ResultSet o = MySQLDB.queryDatabase("SELECT * FROM Object");
       o.last();
       assertTrue(o.getInt("ObjectId") == 1);
-      assertTrue(o.getLong("PartialPlanId") == 1L);
+      assertTrue(o.getInt("ObjectType") == 2);
+      assertTrue(o.getInt("ParentId") == 3);
+      assertTrue(o.getLong("PartialPlanId") == 4L);
       assertTrue(o.getString("ObjectName").equals("objectname"));
+      assertTrue(o.getString("ChildObjectIds").equals("childobjectids"));
+      assertTrue(o.getString("VariableIds").equals("variableids"));
+      assertTrue(o.getString("TokenIds").equals("tokenids"));
+      assertTrue(o.getString("ExtraInfo").equals("extrainfo"));
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
@@ -119,39 +101,8 @@ public class MySQLDBTest extends TestCase {
     }
     MySQLDB.updateDatabase("DELETE FROM Object");
   }
-  private void checkPVTMLoad(String datadir) {
-    MySQLDB.loadFile(datadir + "loadPVTMTest", "ParamVarTokenMap");
-    try {
-      ResultSet pvtm = MySQLDB.queryDatabase("SELECT * FROM ParamVarTokenMap");
-      pvtm.last();
-      assertTrue("VariableId is not as expected:" + pvtm.getInt("VariableId"), pvtm.getInt("VariableId") == 1);
-      assertTrue(pvtm.getInt("TokenId") == 1);
-      assertTrue(pvtm.getInt("ParameterId") == 1);
-      assertTrue(pvtm.getLong("PartialPlanId") == 1L);
-    }
-    catch(SQLException sqle) {
-      sqle.printStackTrace();
-      System.exit(-1);
-    }
-    MySQLDB.updateDatabase("DELETE FROM ParamVarTokenMap");
-  }
-  private void checkParamLoad(String datadir) {
-    MySQLDB.loadFile(datadir + "loadPATest", "Parameter");
-    try {
-      ResultSet p = MySQLDB.queryDatabase("SELECT * FROM Parameter");
-      p.last();
-      assertTrue(p.getInt("ParameterId") == 1);
-      assertTrue(p.getInt("PredicateId") == 1);
-      assertTrue(p.getLong("PartialPlanId") == 1L);
-      assertTrue(p.getString("ParameterName").equals("parametername"));
-    }
-    catch(SQLException sqle) {
-      sqle.printStackTrace();
-      System.exit(-1);
-    }
-    MySQLDB.updateDatabase("DELETE FROM Parameter");
-  }
   private void checkPartialPlanLoad(String datadir) {
+    System.err.println("Checking PartialPlan table load");
     MySQLDB.loadFile(datadir + "loadPPTest", "PartialPlan");
     try {
       ResultSet p = MySQLDB.queryDatabase("SELECT * FROM PartialPlan");
@@ -167,28 +118,15 @@ public class MySQLDBTest extends TestCase {
     }
     MySQLDB.updateDatabase("DELETE FROM PartialPlan");
   }
-  private void checkPredicateLoad(String datadir) {
-    MySQLDB.loadFile(datadir + "loadPRTest", "Predicate");
-    try {
-      ResultSet p = MySQLDB.queryDatabase("SELECT * FROM Predicate");
-      p.last();
-      assertTrue(p.getInt("PredicateId") == 1);
-      assertTrue(p.getString("PredicateName").equals("predicatename"));
-      assertTrue(p.getLong("PartialPlanId") == 1L);
-    }
-    catch(SQLException sqle) {
-      sqle.printStackTrace();
-      System.exit(-1);
-    }
-    MySQLDB.updateDatabase("DELETE FROM Predicate");
-  }
   private void checkProjectLoad(String datadir) {
+    System.err.println("Checking Project table load");
     MySQLDB.loadFile(datadir + "loadPJTest", "Project");
     try {
       ResultSet p = MySQLDB.queryDatabase("SELECT * FROM Project");
       p.last();
       assertTrue(p.getInt("ProjectId") == 1);
       assertTrue(p.getString("ProjectName").equals("projectname"));
+      assertTrue(p.getString("Tests").equals("tests"));
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
@@ -197,12 +135,14 @@ public class MySQLDBTest extends TestCase {
     MySQLDB.updateDatabase("DELETE FROM Project"); 
   }
   private void checkSequenceLoad(String datadir) {
+    System.err.println("Checking Sequence table load");
     MySQLDB.loadFile(datadir + "loadSQTest", "Sequence");
     try {
       ResultSet s = MySQLDB.queryDatabase("SELECT * FROM Sequence");
       s.last();
       assertTrue(s.getString("SequenceURL").equals("sequenceurl"));
       assertTrue(s.getLong("SequenceId") == 1L);
+      assertTrue(s.getString("RulesText").equals("rulestext"));
       assertTrue(s.getInt("ProjectId") == 1);
       assertTrue(s.getInt("SequenceOrdering") > 0);
     }
@@ -212,46 +152,32 @@ public class MySQLDBTest extends TestCase {
     }
     MySQLDB.updateDatabase("DELETE FROM Sequence");
   }
-  private void checkSlotLoad(String datadir) {
-    MySQLDB.loadFile(datadir + "loadSLTest", "Slot");
+  private void checkConstraintVarMapLoad(String datadir) {
+    System.err.println("Checking ConstraintVarMap table load");
+    MySQLDB.loadFile(datadir + "loadCVMTest", "ConstraintVarMap");
     try {
-      ResultSet s = MySQLDB.queryDatabase("SELECT * FROM Slot");
-      s.last();
-      assertTrue(s.getInt("SlotId") == 1);
-      assertTrue(s.getInt("TimelineId") == 1);
-      assertTrue(s.getLong("PartialPlanId") == 1L);
-      assertTrue(s.getInt("ObjectId") == 1);
-      assertTrue(s.getInt("SlotIndex") == 1);
+      ResultSet c = MySQLDB.queryDatabase("SELECT * FROM ConstraintVarMap");
+      c.last();
+      assertTrue(c.getInt("ConstraintId") == 1);
+      assertTrue(c.getInt("VariableId") == 2);
+      assertTrue(c.getLong("PartialPlanId") == 3L);
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
       System.exit(-1);
     }
-    MySQLDB.updateDatabase("DELETE FROM Slot");
-  }
-    private void checkTimelineLoad(String datadir) {
-    MySQLDB.loadFile(datadir + "loadTITest", "Timeline");
-    try {
-      ResultSet t = MySQLDB.queryDatabase("SELECT * FROM Timeline");
-      t.last();
-      assertTrue(t.getInt("TimelineId") == 1);
-      assertTrue(t.getInt("ObjectId") == 1);
-      assertTrue(t.getLong("PartialPlanId") == 1L);
-      assertTrue(t.getString("TimelineName").equals("timelinename"));
-    }
-    catch(SQLException sqle) {
-      sqle.printStackTrace();
-      System.exit(-1);
-    }
-    MySQLDB.updateDatabase("DELETE FROM Timeline");
+    MySQLDB.updateDatabase("DELETE FROM ConstraintVarMap");
   }
   private void checkTokenLoad(String datadir) {
+    System.err.println("Checking Token table load");
     MySQLDB.loadFile(datadir + "loadTKTest", "Token");
     try {
       ResultSet t = MySQLDB.queryDatabase("SELECT * FROM Token");
       t.last();
       assertTrue(t.getInt("TokenId") == 1);
+      assertTrue(t.getInt("TokenType") == 1);
       assertTrue(t.getInt("SlotId") == 1);
+      assertTrue(t.getInt("SlotIndex") == 1);
       assertTrue(t.getLong("PartialPlanId") == 1L);
       assertTrue(t.getBoolean("IsFreeToken"));
       assertTrue(t.getBoolean("IsValueToken"));
@@ -259,11 +185,12 @@ public class MySQLDBTest extends TestCase {
       assertTrue(t.getInt("EndVarId") == 1);
       assertTrue(t.getInt("DurationVarId") == 1);
       assertTrue(t.getInt("StateVarId") == 1);
-      //assertTrue(t.getInt("PredicateId") == 1);
       assertTrue(t.getString("PredicateName").equals("1"));
       assertTrue(t.getInt("ParentId") == 1);
-      //assertTrue(t.getInt("ObjectId") == 1);
+      assertTrue(t.getString("ParentName").equals("1"));
       assertTrue(t.getInt("ObjectVarId") == 1);
+      assertTrue(t.getString("ParamVarIds").equals("1"));
+      assertTrue(t.getString("ExtraData").equals("1"));
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
@@ -271,32 +198,21 @@ public class MySQLDBTest extends TestCase {
     }
     MySQLDB.updateDatabase("DELETE FROM Token");
   }
-  private void checkTokenRelationLoad(String datadir) {
-    MySQLDB.loadFile(datadir + "loadTRTest", "TokenRelation");
-    try {
-      ResultSet t = MySQLDB.queryDatabase("SELECT * FROM TokenRelation");
-      t.last();
-      assertTrue(t.getLong("PartialPlanId") == 1L);
-      assertTrue(t.getInt("TokenAId") == 1);
-      assertTrue(t.getInt("TokenBId") == 1);
-      assertTrue(t.getString("RelationType").equals("CONSTRAINT"));
-      assertTrue(t.getInt("TokenRelationId") == 1);
-    }
-    catch(SQLException sqle) {
-      sqle.printStackTrace();
-      System.exit(-1);
-    }
-    MySQLDB.updateDatabase("DELETE FROM TokenRelation");
-  }
   private void checkVariableLoad(String datadir) {
+    System.err.println("Checking Variable table load");
     MySQLDB.loadFile(datadir + "loadVTest", "Variable");
     try {
       ResultSet v = MySQLDB.queryDatabase("SELECT * FROM Variable");
       v.last();
       assertTrue(v.getInt("VariableId") == 1);
-      assertTrue(v.getLong("PartialPlanId") == 1L);
+      assertTrue(v.getLong("PartialPlanId") == 2L);
+      assertTrue(v.getInt("ParentId") == 3);
+      assertTrue(v.getString("ParameterName").equals("parametername"));
       assertTrue(v.getString("DomainType").equals("EnumeratedDomain"));
-      //assertTrue(v.getInt("DomainId") == 1);
+      assertTrue(v.getString("EnumDomain").equals("enumdomain"));
+      assertTrue(v.getString("IntDomainType").equals("INTEGER_SORT"));
+      assertTrue(v.getString("IntDomainLowerBound").equals("1"));
+      assertTrue(v.getString("IntDomainUpperBound").equals("10"));
       assertTrue(v.getString("VariableType").equals(DbConstants.GLOBAL_VAR));
     }
     catch(SQLException sqle) {
@@ -306,23 +222,121 @@ public class MySQLDBTest extends TestCase {
     MySQLDB.updateDatabase("DELETE FROM Variable");
   }
   private void checkTransactionLoad(String datadir) {
+    System.err.println("Checking Transaction table load");
     MySQLDB.loadFile(datadir + "loadTATest", "Transaction");
     try {
       ResultSet t = MySQLDB.queryDatabase("SELECT * FROM Transaction");
       t.last();
-      assertTrue(t.getString("TransactionType").equals("VARIABLE_DOMAIN_RELAXED"));
+      assertTrue(t.getString("TransactionName").equals("VARIABLE_DOMAIN_RELAXED"));
+      assertTrue(t.getString("TransactionType").equals("RELAXATION"));
       assertTrue(t.getInt("ObjectId") == 1);
       assertTrue(t.getString("Source").equals("SYSTEM"));
       assertTrue(t.getInt("TransactionId") == 1);
       assertTrue(t.getInt("StepNumber") == 1);
       assertTrue(t.getLong("PartialPlanId") == 1L);
       assertTrue(t.getLong("SequenceId") == 1L);
+      assertTrue(t.getString("TransactionInfo").equals("1"));
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
       System.exit(-1);
     }
     MySQLDB.updateDatabase("DELETE FROM Transaction");
+  }
+  private void checkPartialPlanStatsLoad(String datadir) {
+    System.err.println("Checking PartialPlanStats table load");
+    MySQLDB.loadFile(datadir + "loadPSTest", "PartialPlanStats");
+    try {
+      ResultSet p = MySQLDB.queryDatabase("SELECT * FROM PartialPlanStats");
+      p.last();
+      assertTrue(p.getLong("SequenceId") == 1L);
+      assertTrue(p.getLong("PartialPlanId") == 2L);
+      assertTrue(p.getInt("StepNum") == 3);
+      assertTrue(p.getInt("NumTokens") == 10);
+      assertTrue(p.getInt("NumVariables") == 20);
+      assertTrue(p.getInt("NumConstraints") == 30);
+      assertTrue(p.getInt("NumTransactions") == 40);
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+      System.exit(-1);
+    }
+    MySQLDB.updateDatabase("DELETE FROM PartialPlanStats");
+  }
+  private void checkResourceInstantsLoad(String datadir) {
+    System.err.println("Checking ResourceInstants table load");
+    MySQLDB.loadFile(datadir + "loadINTest", "ResourceInstants");
+    try {
+      ResultSet r = MySQLDB.queryDatabase("SELECT * FROM ResourceInstants");
+      r.last();
+      assertTrue(r.getLong("PartialPlanId") == 1L);
+      assertTrue(r.getInt("ResourceId") == 2);
+      assertTrue(r.getInt("InstantId") == 3);
+      assertTrue(r.getInt("TimePoint") == 10);
+      assertTrue(r.getDouble("LevelMin") == 20.0);
+      assertTrue(r.getDouble("LevelMax") == 30.0);
+      assertTrue(r.getString("Transactions").equals("transactions"));
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+      System.exit(-1);
+    }
+    MySQLDB.updateDatabase("DELETE FROM ResourceInstants");
+  }
+  private void checkRulesLoad(String datadir) {
+    System.err.println("Checking Rules table load");
+    MySQLDB.loadFile(datadir + "loadRUTest", "Rules");
+    try {
+      ResultSet r = MySQLDB.queryDatabase("SELECT * FROM Rules");
+      r.last();
+      assertTrue(r.getLong("SequenceId") == 1L);
+      assertTrue(r.getInt("RuleId") == 2);
+      assertTrue(r.getString("RuleSource").equals("rulesource"));
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+      System.exit(-1);
+    }
+    MySQLDB.updateDatabase("DELETE FROM Rules");
+  }
+  private void checkRuleInstanceLoad(String datadir) {
+    System.err.println("Checking RuleInstance table load");
+    MySQLDB.loadFile(datadir + "loadRITest", "RuleInstance");
+    try {
+      ResultSet r = MySQLDB.queryDatabase("SELECT * FROM RuleInstance");
+      r.last();
+      assertTrue(r.getInt("RuleInstanceId") == 1);
+      assertTrue(r.getLong("PartialPlanId") == 2L);
+      assertTrue(r.getLong("SequenceId") == 3L);
+      assertTrue(r.getInt("RuleId") == 4);
+      assertTrue(r.getInt("MasterTokenId") == 5);
+      assertTrue(r.getString("SlaveTokenIds").equals("slavetokenids"));
+      assertTrue(r.getString("RuleVarIds").equals("rulevarids"));
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+      System.exit(-1);
+    }
+    MySQLDB.updateDatabase("DELETE FROM RuleInstance");
+  }
+  private void checkDecisionLoad(String datadir) {
+    System.err.println("Checking Decision table load");
+    MySQLDB.loadFile(datadir + "loadDTest", "Decision");
+    try {
+      ResultSet d = MySQLDB.queryDatabase("SELECT * FROM Decision");
+      d.last();
+      assertTrue(d.getLong("PartialPlanId") == 1L);
+      assertTrue(d.getInt("DecisionId") == 2);
+      assertTrue(d.getInt("DecisionType") == 3);
+      assertTrue(d.getInt("EntityId") == 4);
+      assertTrue(d.getBoolean("IsUnit"));
+      assertTrue(d.getString("Choices").equals("choices"));
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+      System.exit(-1);
+    }
+    MySQLDB.updateDatabase("DELETE FROM Decision");
   }
 }
 

@@ -172,9 +172,9 @@ CREATE TABLE ConstraintVarMap (
 --ChildObjectIds is a CSV
 --ObjectType is currently Object = 0, Timeline = 1, Resource = 2
 --If the object is a timeline:
---ExtraData format SlotId,SlotIndex:SlotId,SlotIndex
+--ExtraInfo format SlotId,SlotIndex:SlotId,SlotIndex
 --If the object is a Resource:
---ExtraData format HorizonStart,HorizonEnd,InitialCapacity,LimitMin,LimitMax
+--ExtraInfo format HorizonStart,HorizonEnd,InitialCapacity,LimitMin,LimitMax, InstantIdList
 CREATE TABLE Object (
   ObjectId int(11) NOT NULL default '0',
   ObjectType int(11) NOT NULL default '0',
@@ -366,6 +366,11 @@ CREATE TABLE PartialPlanStats (
   INDEX (StepNum)
 ) TYPE=MyISAM;
 
+--
+-- Table structure for table 'ResourceInstants'
+--
+
+--Transactions blob is a CSV of Transaction Ids
 CREATE TABLE ResourceInstants (
   PartialPlanId bigint(20) NOT NULL default '0',
   ResourceId int(11) NOT NULL default '0',

@@ -11,52 +11,57 @@ import gov.nasa.arc.planworks.db.*;
 import gov.nasa.arc.planworks.db.impl.*;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 
-public class BackendTest extends TestCase {
-  private static PwPartialPlanImpl plan1, plan2, plan3, plan4, plan5;
+public class BackendTest extends TestCase implements IdSource {
+
+  private static final String BACKEND_TEST_DIR = "backendTest";
+  private static PwPartialPlanImpl plan;
   private static PwPlanningSequenceImpl sequence;
-  private static final String step1 = "step2";
-  private static final String step2 = "step9";
-  private static final String step3 = "step0";
-  private static final String step4 = "step1";
-  private static final String step5 = "step8";
-  private static final String sequenceName = "basic-model1084297295265";
+  private static String sequenceName;
+  private static List sequenceUrls;
+  private static final String step0 = "step0";
   private static final int numTests = 3;
   private static int testsRun = 0;
+  private int entityIdInt;
+
+  //static initializer block runs when class is first loaded
   static {
+    //inner class to provide IdSource methods to buildTestData method since they won't have
+    //been created yet for BackendTest at the time the class is first loaded.
+    class IdSourceImpl implements IdSource {
+      // implements IdSource
+      private int entityIdInt;
+      public int incEntityIdInt() {
+        return ++entityIdInt;
+      }
+      public void resetEntityIdInt() {
+        entityIdInt = 0;
+      }
+    }
+    IdSourceImpl idSource = new IdSourceImpl();
+
+    int numSequences = 1, numSteps = 1;
+    sequenceUrls = PWSetupHelper.buildTestData(numSequences, numSteps, idSource , BACKEND_TEST_DIR);
+    sequenceName = (String) sequenceUrls.get( 0);
+
     try {
       MySQLDB.startDatabase();
       MySQLDB.registerDatabase();
-			String seq = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator"));
-			MySQLDB.loadFile(seq + "sequence", "Sequence", DbConstants.SEQ_COL_SEP_HEX, DbConstants.SEQ_LINE_SEP_HEX);
-			for(int i = 1; i < DbConstants.NUMBER_OF_SEQ_FILES; i++) {
-				MySQLDB.loadFile(seq.toString().concat(DbConstants.SEQUENCE_FILES[i]), 
-												 DbConstants.PW_DB_TABLES[i + DbConstants.NUMBER_OF_PP_FILES + 1]);
-			}
-      String p1 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step1).concat(System.getProperty("file.separator")).concat(step1).concat(".");
-      String p2 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step2).concat(".");
-      String p3 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step3).concat(System.getProperty("file.separator")).concat(step3).concat(".");
-      String p4 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step4).concat(System.getProperty("file.separator")).concat(step4).concat(".");
-      String p5 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step5).concat(System.getProperty("file.separator")).concat(step5).concat(".");
+      String seq = sequenceName.concat(System.getProperty("file.separator"));
+      
+      MySQLDB.loadFile(seq + "sequence", "Sequence", DbConstants.SEQ_COL_SEP_HEX, 
+                       DbConstants.SEQ_LINE_SEP_HEX);
+      for(int i = 1; i < DbConstants.NUMBER_OF_SEQ_FILES; i++) {
+        MySQLDB.loadFile(seq.toString().concat(DbConstants.SEQUENCE_FILES[i]), 
+                         DbConstants.PW_DB_TABLES[i + DbConstants.NUMBER_OF_PP_FILES + 1]);
+      }
+      String p1 = sequenceName.concat(System.getProperty("file.separator")).concat(step0).concat(
+                  System.getProperty("file.separator")).concat(step0).concat(".");
       for(int i = 0; i < DbConstants.NUMBER_OF_PP_FILES; i++) {
         MySQLDB.loadFile(p1.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
                          DbConstants.PW_DB_TABLES[i]);
-        MySQLDB.loadFile(p2.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
-                         DbConstants.PW_DB_TABLES[i]);
-        MySQLDB.loadFile(p3.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
-                         DbConstants.PW_DB_TABLES[i]);
-        MySQLDB.loadFile(p4.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
-                         DbConstants.PW_DB_TABLES[i]);
-        MySQLDB.loadFile(p5.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
-                         DbConstants.PW_DB_TABLES[i]);
       }
-      sequence = 
-				new PwPlanningSequenceImpl(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName), 
-																	 MySQLDB.latestSequenceId());
-      plan1 = (PwPartialPlanImpl) sequence.getPartialPlan(step1);
-      plan2 = (PwPartialPlanImpl) sequence.getPartialPlan(step2);
-      plan3 = (PwPartialPlanImpl) sequence.getPartialPlan(step3);
-      plan4 = (PwPartialPlanImpl) sequence.getPartialPlan(step4);
-      plan5 = (PwPartialPlanImpl) sequence.getPartialPlan(step5);
+      sequence = new PwPlanningSequenceImpl(sequenceName, MySQLDB.latestSequenceId());
+      plan = (PwPartialPlanImpl) sequence.getPartialPlan(step0);
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -67,9 +72,6 @@ public class BackendTest extends TestCase {
     junit.textui.TestRunner.run(suite());
   }
   protected void setUp() {
-    //while(PlanWorksTest.TEST_RUNNING != 0 && PlanWorksTest.TEST_RUNNING != 1) {
-    //  try{Thread.sleep(50);}catch(Exception e){}
-    //}
     setTestRunning(1);
   }
   protected void tearDown() {
@@ -93,51 +95,132 @@ public class BackendTest extends TestCase {
   public static TestSuite suite() {
     final TestSuite suite = new TestSuite();
     suite.addTest(new BackendTest("testPlanLoad"));
-    //suite.addTest(new BackendTest("testDataConsistency"));
+    suite.addTest(new BackendTest("testDataConsistency"));
     suite.addTest(new BackendTest("testTransactionQueries"));
     return suite;
   }
+
   public void testPlanLoad() {
-    assertTrue("Plan 1 is null", plan1 != null);
-    assertTrue("Plan 2 is null", plan2 != null);
-    assertTrue("Plan 3 is null", plan3 != null);
-    assertTrue("Plan 4 is null", plan4 != null);
-    assertTrue("Plan 5 is null", plan5 != null);
-    //assertTrue("Plan 1 is inconsistant", plan1.checkPlan());
-    //assertTrue("Plan 2 is inconsistant", plan2.checkPlan());
-    //assertTrue("Plan 3 is inconsistant", plan3.checkPlan());
-    //assertTrue("Plan 4 is inconsistant", plan4.checkPlan());
-    //assertTrue("Plan 5 is inconsistant", plan5.checkPlan());
-    //testsRun++;
-    incTestsRun();
-		System.err.println("Done with testPlanLoad");
+    try {
+      assertTrue("Test plan is null", plan != null);
+      assertTrue("Test plan is inconsistant", plan.checkPlan());
+      System.err.println("Done with testPlanLoad");
+
+      incTestsRun();
+
+    // catch assert errors and Exceptions here, since JUnit seems to not do it
+    } catch (AssertionFailedError err) {
+      err.printStackTrace();
+      System.exit( -1);
+    } catch (Exception excp) {
+      excp.printStackTrace();
+      System.exit( -1);
+    }
   }
-  public void testDataConsistency() {
-    PwPartialPlanImpl [] temp = new PwPartialPlanImpl [] {plan1, plan2, plan3, plan4, plan5};
-    for(int i = 0; i < temp.length; i++) {
-      Map ids = MySQLDB.queryAllIdsForPartialPlan(temp[i].getId());
+
+  public void testDataConsistency() throws Exception {
+    System.err.println("testDataConsistancy...");
+    try {
+      Map ids = MySQLDB.queryAllIdsForPartialPlan(plan.getId());
       List objectIdList = (List) ids.get(DbConstants.TBL_OBJECT);
       List tokenIdList = (List) ids.get(DbConstants.TBL_TOKEN);
       List variableIdList = (List) ids.get(DbConstants.TBL_VARIABLE);
-      //List predicateIdList = (List) ids.get(DbConstants.TBL_PREDICATE);
+      List ruleInstanceIdList = (List) ids.get(DbConstants.TBL_RULE_INSTANCE);
+      List instantIdList = (List) ids.get(DbConstants.TBL_INSTANTS);
+      List constraintIdList = (List) ids.get(DbConstants.TBL_CONSTRAINT);
+      //System.err.println("Number of variable constraint ids is " + constraintIdList.size());
 
-      List objectList = temp[i].getObjectList();
+      System.err.println("Checking resource transaction tokens and variables");
+      List resourceTransactionList = plan.getResTransactionList();
+      ListIterator resourceTransactionIterator = resourceTransactionList.listIterator();
+      //System.err.println("Number of resource transactions is " + resourceTransactionList.size());
+      while(resourceTransactionIterator.hasNext()) {
+        PwResourceTransaction resourceTransaction = (PwResourceTransaction) resourceTransactionIterator.next();
+        if(tokenIdList.contains(resourceTransaction.getId())) {
+          resourceTransactionIterator.remove();
+          tokenIdList.remove(resourceTransaction.getId());
+        }
+        if(variableIdList.contains(resourceTransaction.getStartVariable().getId())) {
+          variableIdList.remove(resourceTransaction.getStartVariable().getId());
+        }
+        else {
+          assertTrue("Instantiated variable not in db.", false);
+        }
+        if(variableIdList.contains(resourceTransaction.getDurationVariable().getId())) {
+          variableIdList.remove(resourceTransaction.getDurationVariable().getId());
+        }
+        else {
+          assertTrue("Instantiated variable not in db.", false);
+        }
+        if(variableIdList.contains(resourceTransaction.getObjectVariable().getId())) {
+          variableIdList.remove(resourceTransaction.getObjectVariable().getId());
+        }
+        else {
+          assertTrue("Instantiated variable not in db.", false);
+        }
+        if(variableIdList.contains(resourceTransaction.getStateVariable().getId())) {
+          variableIdList.remove(resourceTransaction.getStateVariable().getId());
+        }
+        else {
+          assertTrue("Instantiated variable not in db.", false);
+        }
+        List paramVarsList = resourceTransaction.getParamVarsList();
+        ListIterator paramVarIterator = paramVarsList.listIterator();
+        while(paramVarIterator.hasNext()) {
+          PwVariable var = (PwVariable) paramVarIterator.next();
+          if(variableIdList.contains(var.getId())) {
+            paramVarIterator.remove();
+            variableIdList.remove(var.getId());
+          }
+        }
+        assertTrue("Instantiated more variables than in db.", paramVarsList.size() == 0);
+      }
+      assertTrue("Instantiated more resource transaction tokens than in db.", 
+                 resourceTransactionList.size() == 0);
+
+      System.err.println("Checking objects, member variables, and resources");
+      System.err.println("Checking timelines, slots, tokens and variables");
+      List objectList = plan.getObjectList();
       ListIterator objectIterator = objectList.listIterator();
       while(objectIterator.hasNext()) {
         PwObject object = (PwObject) objectIterator.next();
         if(objectIdList.contains(object.getId())) {
           objectIterator.remove();
           objectIdList.remove(object.getId());
-          List timelineIdList = MySQLDB.queryTimelineIdsForObject(temp[i].getId(), object.getId()); 
-          List timelineList = object.getComponentList();
-          ListIterator timelineIterator = timelineList.listIterator();
+          //check member variables for all types of objects
+          List objectVarList = object.getVariables();
+          ListIterator objectVarIterator = objectVarList.listIterator();
+          while(objectVarIterator.hasNext()) {
+            PwVariable var = (PwVariable) objectVarIterator.next();
+            if(variableIdList.contains(var.getId())) {
+              objectVarIterator.remove();
+              variableIdList.remove(var.getId());
+            }
+          }
+          assertTrue("Instantiated more object member variables than in db.", objectVarList.size() == 0);
+
+          List resourceIdList = MySQLDB.queryResourceIdsForObject(plan.getId(), object.getId()); 
+          List componentList = object.getComponentList();
+          //first, check resource objects for this parent object
+          ListIterator componentIterator = componentList.listIterator();
+          while(componentIterator.hasNext()) {
+            PwObject component = (PwObject) componentIterator.next();
+            if (component.getObjectType() == DbConstants.O_RESOURCE) {
+              componentIterator.remove();
+              resourceIdList.remove(component.getId());
+            }
+          }
+          assertTrue("Failed to instantiate all resources in db.", resourceIdList.size() == 0);
+  
+          List timelineIdList = MySQLDB.queryTimelineIdsForObject(plan.getId(), object.getId()); 
+          ListIterator timelineIterator = componentList.listIterator();
           while(timelineIterator.hasNext()) {
             PwTimeline timeline = (PwTimeline) timelineIterator.next();
             if(timelineIdList.contains(timeline.getId())) {
               timelineIterator.remove();
               timelineIdList.remove(timeline.getId());
             }
-            List slotIdList = MySQLDB.querySlotIdsForTimeline(temp[i].getId(), object.getId(), 
+            List slotIdList = MySQLDB.querySlotIdsForTimeline(plan.getId(), object.getId(), 
                                                               timeline.getId());
             List slotList = timeline.getSlotList();
             ListIterator slotIterator = slotList.listIterator();
@@ -155,8 +238,6 @@ public class BackendTest extends TestCase {
                   tokenIterator.remove();
                   tokenIdList.remove(token.getId());
                 }
-                //assertTrue("Instantiated predicate not in db.", 
-                //           predicateIdList.contains(token.getPredicate().getId()));
 
                 if(variableIdList.contains(token.getStartVariable().getId())) {
                   variableIdList.remove(token.getStartVariable().getId());
@@ -197,22 +278,8 @@ public class BackendTest extends TestCase {
                     variableIdList.remove(var.getId());
                   }
                 }
-                assertTrue("Instantiated more variables than in db.", paramVarsList.size() == 0);
-                //List tokenRelationIdList = MySQLDB.queryTokenRelationIdsForToken(temp[i].getId(),
-                //                                                                 token.getId());
-                //List lTokenRelationIdList = token.getTokenRelationIdsList();
-                //ListIterator tokenRelationIdIterator = lTokenRelationIdList.listIterator();
-                //while(tokenRelationIdIterator.hasNext()) {
-                //  Integer trId = (Integer) tokenRelationIdIterator.next();
-                //  if(tokenRelationIdList.contains(trId)) {
-                //    tokenRelationIdIterator.remove();
-                //    tokenRelationIdList.remove(trId);
-                //  }
-               // }
-               // assertTrue("Instantiated more token relations than in db.", 
-               //           lTokenRelationIdList.size() == 0);
-               // assertTrue("Failed to instantiate all token relations in db.",
-               //            tokenRelationIdList.size() == 0);
+                assertTrue("Instantiated more variables than in db.", 
+                            paramVarsList.size() == 0);
               }
               assertTrue("Instantiated more tokens than in db.", tokenList.size() == 0);
             }
@@ -220,12 +287,44 @@ public class BackendTest extends TestCase {
                        slotList.size() == 1 || slotList.size() == 0);
             assertTrue("Failed to instantiate all slots in db.", slotIdList.size() == 0);
           }
-          //assertTrue("Instantiated more timelines than in db.", timelineList.size() == 0);
-          assertTrue("Failed to instantiate all timelines in db.", timelineIdList.size() == 0);
+          assertTrue("Instantiated more timelines and/or resources than in db.", 
+                     componentList.size() == 0);
+          assertTrue("Failed to instantiate all timelines in db.", 
+                     timelineIdList.size() == 0);
         }
-        //assertTrue("Instantiated more objects than in db.", objectList.size() == 0);
       }
-      List freeTokens = temp[i].getFreeTokenList();
+      assertTrue("Instantiated more objects than in db.", objectList.size() == 0);
+
+      //checking all resource instants in plan
+      System.err.println("Checking resource instants");
+      List resourceInstants = plan.getInstantList();
+      ListIterator instantIterator = resourceInstants.listIterator();
+      while(instantIterator.hasNext()) {
+        PwResourceInstant instant = (PwResourceInstant) instantIterator.next();
+          instantIterator.remove();
+          instantIdList.remove(instant.getId());
+      }
+      assertTrue("Instantiated more resource instants than in db.", 
+                 resourceInstants.size() == 0);
+      assertTrue("Failed to instantiate all resource instants in db.", 
+                 instantIdList.size() == 0);
+
+      //checking all variable constrainsts in plan
+      System.err.println("Checking constraints");
+      List vConstraints = plan.getConstraintList();
+      ListIterator constraintIterator = vConstraints.listIterator();
+      while(constraintIterator.hasNext()) {
+        PwConstraint constraint = (PwConstraint) constraintIterator.next();
+          //System.err.println("Found constraint id " + constraint.getId());
+          constraintIterator.remove();
+          constraintIdList.remove(constraint.getId());
+      }
+      assertTrue("Instantiated more constraints than in db.", vConstraints.size() == 0);
+      assertTrue("Failed to instantiate all constraints in db.", 
+                 constraintIdList.size() == 0);
+
+      System.err.println("Checking free tokens and variables");
+      List freeTokens = plan.getFreeTokenList();
       ListIterator freeTokenIterator = freeTokens.listIterator();
       while(freeTokenIterator.hasNext()) {
         PwToken token = (PwToken) freeTokenIterator.next();
@@ -233,8 +332,6 @@ public class BackendTest extends TestCase {
           freeTokenIterator.remove();
           tokenIdList.remove(token.getId());
         }
-        //assertTrue("Instantiated predicate not in db.",
-        //           predicateIdList.contains(token.getPredicate().getId()));
         if(variableIdList.contains(token.getStartVariable().getId())) {
           variableIdList.remove(token.getStartVariable().getId());
         }
@@ -275,136 +372,171 @@ public class BackendTest extends TestCase {
           }
         }
         assertTrue("Instantiated more variables than in db.", paramVarsList.size() == 0);
-        //List tokenRelationIdList = MySQLDB.queryTokenRelationIdsForToken(temp[i].getId(), token.getId());
-        //List lTokenRelationIdList = token.getTokenRelationIdsList();
-        //ListIterator tokenRelationIdIterator = lTokenRelationIdList.listIterator();
-        //while(tokenRelationIdIterator.hasNext()) {
-        //  Integer trId = (Integer) tokenRelationIdIterator.next();
-        //  if(tokenRelationIdList.contains(trId)) {
-        //    tokenRelationIdIterator.remove();
-        //    tokenRelationIdList.remove(trId);
-        //  }
-       // }
-       // assertTrue("Instantiated more token relations than in db.", lTokenRelationIdList.size() == 0);
-       // assertTrue("Failed to instantiate all token relations in db.", tokenRelationIdList.size() == 0);
       }
       assertTrue("Instantiated more free tokens than in db.", freeTokens.size() == 0);
       assertTrue("Instantiated more objects than in db.", objectList.size() == 0);
       assertTrue("Failed to instantiate all objects in db.", objectIdList.size() == 0);
       assertTrue("Failed to instantiate all tokens in db.", tokenIdList.size() == 0);
-      assertTrue("Failed to instantiate all variables in db.", variableIdList.size() == 0);
+
+      System.err.println("Checking rules, rule instances and rule variables");
+      List ruleIdList = MySQLDB.queryRuleIdsForSequence(sequence.getId()); 
+      List rules = sequence.getRuleList();
+      ListIterator ruleIterator = rules.listIterator();
+      while(ruleIterator.hasNext()) {
+        PwRule rule = (PwRule) ruleIterator.next();
+        if(ruleIdList.contains(rule.getId())) {
+          //System.err.println("Found rule id " + rule.getId());
+          ruleIterator.remove();
+          ruleIdList.remove(rule.getId());
+        }
+      }
+      assertTrue("Failed to instantiate all rules in db.", ruleIdList.size() == 0);
+      assertTrue("Instantiated more rules than in db.", rules.size() == 0);
+
+      List ruleInstances = plan.getRuleInstanceList();
+      ListIterator ruleInstanceIterator = ruleInstances.listIterator();
+      while(ruleInstanceIterator.hasNext()) {
+        PwRuleInstance ri = (PwRuleInstance) ruleInstanceIterator.next();
+        if(ruleInstanceIdList.contains(ri.getId())) {
+          ruleInstanceIdList.remove(ri.getId());
+        }
+        else {
+          assertTrue("Instantiated rule instance not in db.", false);
+        }
+        List ruleVarList = ri.getVariables();
+        ListIterator ruleVarIterator = ruleVarList.listIterator();
+        while(ruleVarIterator.hasNext()) {
+          PwVariable var = (PwVariable) ruleVarIterator.next();
+          if(variableIdList.contains(var.getId())) {
+            ruleVarIterator.remove();
+            variableIdList.remove(var.getId());
+          }
+        }
+        assertTrue("Instantiated more rule variables than in db.", 
+                   ruleVarList.size() == 0);
+      }
+      assertTrue("Failed to instantiate all rule instances in db.", 
+                 ruleInstanceIdList.size() == 0);
+      assertTrue("Failed to instantiate all variables in db.", 
+                 variableIdList.size() == 0);
+      System.err.println("Done with testDataConsistency");
+
+      incTestsRun();
+
+    // catch assert errors and Exceptions here, since JUnit seems to not do it
+    } catch (AssertionFailedError err) {
+      err.printStackTrace();
+      System.exit( -1);
+    } catch (Exception excp) {
+      excp.printStackTrace();
+      System.exit( -1);
     }
-		System.err.println("foo!");
-    //testsRun++;
-    incTestsRun();
-		System.err.println("Done with testDataConsistency");
   }
 
   public void testTransactionQueries() {
-    List plan1Transactions = sequence.getTransactionsList(plan1.getId());
-    List plan2Transactions = sequence.getTransactionsList(plan2.getId());
-    ListIterator plan1TransactionIterator = plan1Transactions.listIterator();
-    ListIterator plan2TransactionIterator = plan2Transactions.listIterator();
-    List plan1TransactionIds = MySQLDB.queryTransactionIdsForPartialPlan(sequence.getId(),
-                                                                         plan1.getId());
-    List plan2TransactionIds = MySQLDB.queryTransactionIdsForPartialPlan(sequence.getId(),
-                                                                         plan2.getId());
-
-    while(plan1TransactionIterator.hasNext()) {
-      PwDBTransaction transaction = (PwDBTransaction) plan1TransactionIterator.next();
-      if(plan1TransactionIds.contains(transaction.getId())) {
-        plan1TransactionIds.remove(transaction.getId());
-        plan1TransactionIterator.remove();
+    try {
+      Map ids = MySQLDB.queryAllIdsForPartialPlan(plan.getId());
+      List tokenIdList = (List) ids.get(DbConstants.TBL_TOKEN);
+      List variableIdList = (List) ids.get(DbConstants.TBL_VARIABLE);
+      List constraintIdList = (List) ids.get(DbConstants.TBL_CONSTRAINT);
+      List planTransactions = sequence.getTransactionsList(plan.getId());
+      ListIterator planTransactionIterator = planTransactions.listIterator();
+      List planTransactionIds = MySQLDB.queryTransactionIdsForPartialPlan(sequence.getId(),
+                                                                         plan.getId());
+      while(planTransactionIterator.hasNext()) {
+        PwDBTransaction transaction = (PwDBTransaction) planTransactionIterator.next();
+        if(planTransactionIds.contains(transaction.getId())) {
+          planTransactionIds.remove(transaction.getId());
+          planTransactionIterator.remove();
+        }
       }
+      assertTrue("Failed to instantiate all transactions in db", planTransactionIds.size() == 0);
+      assertTrue("Instantiated transactions not in db.", planTransactions.size() == 0);
+
+      testQueriesForConstraint(constraintIdList.size());
+      testQueriesForToken(tokenIdList.size());
+      testQueriesForVariable(variableIdList.size());
+      System.err.println("Done with testTransactionQueries");
+
+      incTestsRun();
+
+    // catch assert errors and Exceptions here, since JUnit seems to not do it
+    } catch (AssertionFailedError err) {
+      err.printStackTrace();
+      System.exit( -1);
+    } catch (Exception excp) {
+      excp.printStackTrace();
+      System.exit( -1);
     }
-
-    while(plan2TransactionIterator.hasNext()) {
-      PwDBTransaction transaction = (PwDBTransaction) plan2TransactionIterator.next();
-      if(plan2TransactionIds.contains(transaction.getId())) {
-        plan2TransactionIds.remove(transaction.getId());
-        plan2TransactionIterator.remove();
-      }
-    }
-
-    assertTrue("Failed to instantiate all transactions in db", plan1TransactionIds.size() == 0);
-    assertTrue("Instantiated transactions not in db.", plan1Transactions.size() == 0);
-    assertTrue("Failed to instantiate all transactions in db " + plan2TransactionIds.size(), plan2TransactionIds.size() == 0);
-    assertTrue("Instantiated transactions not in db.", plan2Transactions.size() == 0);
-    testQueriesForConstraint();
-
-    testQueriesForToken();
-    testQueriesForVariable();
-    //testQueriesForRestrictionsAndRelaxations();
-    //testQueriesForDecisions();
-    //testsRun++;
-    incTestsRun();
-		System.err.println("Done with testTransactionQueries");
   }
 
-  private void testQueriesForConstraint() {
+  private void testQueriesForConstraint(int numConstraints) {
+    System.err.println("Checking constraint transactions");
+    List transactions = MySQLDB.queryStepsWithConstraintTransaction(sequence.getId(), "CONSTRAINT_CREATED");
+    //System.err.println("Found " + transactions.size() +" CONSTRAINT_CREATED transactions");
+    assertTrue("Wrong number of CONSTRAINT_CREATED transactions. Is " + transactions.size() + " should be " + 
+                numConstraints, transactions.size() == numConstraints);
 
-    List transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(16));
+    //get the constraint id for the first transaction in the list
+    PwDBTransactionImpl constraintTrans = (PwDBTransactionImpl) transactions.get(0);
+    Integer constraintId = constraintTrans.getEntityId();
+    //System.err.println("Constraint id for the first transaction is " + constraintId);
+    transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), constraintId);
+    assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 1",
+               transactions.size() == 1);
+    transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(1));
     assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 0",
                transactions.size() == 0);
-
-    transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(53));
-
-    //assertTrue("Wrong number of constraint transactions.  Is " + transactions.size() + " should be 0",
-    //           transactions.size() == 0);
-
-    List steps = MySQLDB.queryStepsWithConstraintTransaction(sequence.getId(), new Integer(53), 
-                                                             "CONSTRAINT_CREATED");
-    //String check = "106814074228136";
-
-		// assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 0", steps.size() == 0);
-    //assertTrue("Incorret step.  Is " + steps.get(0) + " should be " + check, 
-    //           ((String)steps.get(0)).equals(check));
-
   }
 
-  private void testQueriesForToken() {
-    List transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(2));
-    assertTrue(transactions.size() == 0);
-    transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(21));
-    assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 0", 
+  private void testQueriesForToken(int numTokens) {
+    System.err.println("Checking token transactions");
+    List transactions = MySQLDB.queryStepsWithTokenTransaction(sequence.getId(), "TOKEN_CREATED");
+    //System.err.println("Found " + transactions.size() +" TOKEN_CREATED transactions");
+    assertTrue("Wrong number of TOKEN_CREATED transactions. Is " + transactions.size() + " should be " + 
+                numTokens, transactions.size() == numTokens);
+
+    //get the token id for the first transaction in the list
+    PwDBTransactionImpl tokenTrans = (PwDBTransactionImpl) transactions.get(0);
+    Integer tokenId = tokenTrans.getEntityId();
+    //System.err.println("Token id for the first transaction is " + tokenId);
+    transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), tokenId);
+    assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 1",
+               transactions.size() == 1);
+    transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(1));
+    assertTrue("Wrong number of token transactions.  Is " + transactions.size() + " should be 0",
                transactions.size() == 0);
-    List steps = MySQLDB.queryStepsWithTokenTransaction(sequence.getId(), new Integer(21),
-                                                        "TOKEN_INSERTED");
-    String check = "106814074228134";
-    assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 0", steps.size() == 0);
-    //assertTrue("Incorrect step.  Is " + steps.get(0) + " should be " + check, 
-    //           ((String)steps.get(0)).equals(check));
   }
 
-  private void testQueriesForVariable() {
-    List transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(2));
-    assertTrue(transactions.size() == 0);
-    transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(50));
-    //assertTrue("Wrong number of transactions.  Is " + transactions.size() + " should be 0", 
-    //           transactions.size() == 0);
-    List steps = MySQLDB.queryStepsWithVariableTransaction(sequence.getId(), new Integer(50),
-                                                           "VARIABLE_CREATED");
-    String check = "106814074228140";
-    //assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 0", steps.size() == 0);
-    //assertTrue(((String)steps.get(0)).equals(check));
+  private void testQueriesForVariable(int numVariables) {
+    System.err.println("Checking variable transactions");
+    List transactions = MySQLDB.queryStepsWithVariableTransaction(sequence.getId(), "VARIABLE_CREATED");
+    //System.err.println("Found " + transactions.size() +" VARIABLE_CREATED transactions");
+    assertTrue("Wrong number of VARIABLE_CREATED transactions. Is " + transactions.size() + " should be " + 
+                numVariables, transactions.size() == numVariables);
+
+    //get the variable id for the first transaction in the list
+    PwDBTransactionImpl variableTrans = (PwDBTransactionImpl) transactions.get(0);
+    Integer variableId = variableTrans.getEntityId();
+    //System.err.println("Variable id for the first transaction is " + variableId);
+    transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), variableId);
+    assertTrue("Wrong number of variable transactions.  Is " + transactions.size() + " should be 1",
+               transactions.size() == 1);
+    transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(1));
+    assertTrue("Wrong number of variable transactions.  Is " + transactions.size() + " should be 0",
+               transactions.size() == 0);
   }
 
-  private void testQueriesForRestrictionsAndRelaxations() {
-    List steps = MySQLDB.queryStepsWithRestrictions(sequence.getId());
-    assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 1861", 
-               steps.size() == 1861);
-    String check = "10764517169198";
-    assertTrue("Wrong step.  Was " + (String) steps.get(0) + " should be " + check,
-               ((String)steps.get(0)).equals(check));
-    steps = MySQLDB.queryStepsWithRelaxations(sequence.getId());
-    assertTrue(steps.size() == 0);
+
+  // implements IdSource
+  public int incEntityIdInt() {
+    return ++entityIdInt;
   }
-  private void testQueriesForDecisions() {
-    List steps = MySQLDB.queryStepsWithUnitVariableDecisions(sequence);
-    assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 38",
-               steps.size() == 38);
-    steps = MySQLDB.queryStepsWithNonUnitVariableDecisions(sequence);
-    assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 0",
-               steps.size() == 0);
+
+  // implements IdSource
+  public void resetEntityIdInt() {
+    entityIdInt = 0;
   }
+
 }
+

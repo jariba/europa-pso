@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.90 2004-07-08 21:33:21 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.91 2004-07-13 21:33:52 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -66,7 +66,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   private String projectName;
   private String url; //directory containing the partialplan directories
   private PwModel model;
-	private boolean hasLoadedTransactionFile;
+  private boolean hasLoadedTransactionFile;
   private int stepCount;
   private Map transactions;
   private String name;
@@ -776,11 +776,9 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     StringBuffer seq = new StringBuffer(url);
     seq.append((char) Integer.parseInt(DbConstants.SEQ_COL_SEP, 16));
     seq.append(id.toString()).append((char) Integer.parseInt(DbConstants.SEQ_COL_SEP, 16));
-    // seq.append("-1").append((char) Integer.parseInt(DbConstants.SEQ_COL_SEP, 16));
     // fake rule text -- dummy path must match paths in rules file
     seq.append("--begin /dummy/rulesource/model.nddl\n");
     seq.append("class Rover{\npredicate At{\n Locations m_location;\n eq(duration, 1);\n}}");
-    // seq.append((char) Integer.parseInt(DbConstants.SEQ_COL_SEP, 16)).append("-1");
     seq.append((char) Integer.parseInt(DbConstants.SEQ_LINE_SEP, 16));
 
     StringBuffer trans = new StringBuffer();
