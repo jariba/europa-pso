@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.6 2003-06-26 18:20:07 miatauro Exp $
+// $Id: PwConstraintImpl.java,v 1.7 2003-07-29 21:22:57 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -50,7 +50,7 @@ public class PwConstraintImpl implements PwConstraint {
     this.name = name;
     this.key = key;
     this.type = type;
-    this.variableIds = variableIds;
+    this.variableIds = new ArrayList(variableIds);
     this.partialPlan = partialPlan;
   } // end constructor
 

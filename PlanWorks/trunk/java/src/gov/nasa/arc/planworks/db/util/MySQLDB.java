@@ -32,7 +32,8 @@ public class MySQLDB {
   private static Connection conn;
   private static long queryTime;
   public static final MySQLDB INSTANCE = new MySQLDB();
-
+  private static final Integer NULL = new Integer(0);
+  private static final Integer M1 = new Integer(-1);
   private MySQLDB() {
     dbIsStarted = false;
     queryTime = 0;
@@ -208,8 +209,6 @@ public class MySQLDB {
       Integer tokenTimelineId = new Integer(-1);
       ArrayList tokenRelations = new ArrayList();
       ArrayList paramVars = new ArrayList();
-      Integer NULL = new Integer(0);
-      Integer M1 = new Integer(-1);
       ArrayList slots = new ArrayList();
       while(timelineSlotTokens.next()) {
         Integer currTimelineId = new Integer(timelineSlotTokens.getInt("Timeline.TimelineId"));
@@ -395,21 +394,39 @@ public class MySQLDB {
   public static void queryConstraints(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet constraints = 
-        queryDatabase("SELECT ConstraintId, ConstraintName, ConstraintType FROM VConstraint WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
+        queryDatabase("SELECT VConstraint.ConstraintId, VConstraint.ConstraintName, VConstraint.ConstraintType, ConstraintVarMap.VariableId FROM VConstraint LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=VConstraint.PartialPlanId && ConstraintVarMap.ConstraintId=VConstraint.ConstraintId WHERE VConstraint.PartialPlanId=".concat(partialPlan.getKey().toString()));
+      Integer constraintId = new Integer(-1);
+      Integer variableId = new Integer(-1);
+      String constraintName = new String("");
+      String constraintType = new String("");
+      ArrayList constrainedVarIds = new ArrayList();
       while(constraints.next()) {
-        Integer constraintId = new Integer(constraints.getInt("ConstraintId"));
-        ResultSet variableIds =
-          queryDatabase("SELECT VariableId FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND ConstraintId=").concat(constraintId.toString()));
-        ArrayList constrainedVarIds = new ArrayList();
-        while(variableIds.next()) {
-          constrainedVarIds.add(new Integer(variableIds.getInt("VariableId")));
+        Integer currConstraintId = new Integer(constraints.getInt("VConstraint.ConstraintId"));
+        String currConstraintName = constraints.getString("VConstraint.ConstraintName");
+        String currConstraintType = constraints.getString("VConstraint.ConstraintType");
+        Integer currVariableId = new Integer(constraints.getInt("ConstraintVarMap.VariableId"));
+        if(!variableId.equals(currVariableId) && !currVariableId.equals(NULL)) {
+          if(!constrainedVarIds.contains(currVariableId)) {
+            constrainedVarIds.add(currVariableId);
+          }
+          variableId = currVariableId;
         }
-        partialPlan.addConstraint(constraintId, 
-                                  new PwConstraintImpl(constraints.getString("ConstraintName"), 
-                                                       constraintId,
-                                                       constraints.getString("ConstraintType"), 
-                                                       constrainedVarIds, partialPlan));
-       }
+        if(!constraintId.equals(currConstraintId) && !currConstraintId.equals(NULL)) {
+          if(!constraintId.equals(M1)) {
+            partialPlan.addConstraint(constraintId,
+                                      new PwConstraintImpl(constraintName, constraintId,
+                                                           constraintType, constrainedVarIds,
+                                                           partialPlan));
+          }
+          constraintId = currConstraintId;
+          constraintName = currConstraintName;
+          constraintType = currConstraintType;
+          constrainedVarIds.clear();
+        }
+      }
+      partialPlan.addConstraint(constraintId, new PwConstraintImpl(constraintName, constraintId,
+                                                                   constraintType, 
+                                                                   constrainedVarIds,partialPlan));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -446,44 +463,106 @@ public class MySQLDB {
     try {
       System.err.println("Executing variable query...");
       ResultSet variables =
-        queryDatabase("SELECT Variable.VariableId, Variable.DomainType, Variable.VariableType, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.IntervalDomainId=Variable.DomainId && IntervalDomain.PartialPlanId=Variable.PartialPlanId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.EnumeratedDomainId=Variable.DomainId && EnumeratedDomain.PartialPlanId=Variable.PartialPlanId WHERE Variable.PartialPlanId=".concat(partialPlan.getKey().toString()));
+        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" ORDER BY Variable.VariableId"));
 
+      Integer variableId = new Integer(-1);
+      String domainType = "";
+      String variableType = "";
+      String intDomainType = "";
+      String intDomainLB = "";
+      String intDomainUB = "";
+      String enumDomain = "";
+      Integer constraintId = new Integer(-1);
+      Integer parameterId = new Integer(-1);
+      Integer tokenId = new Integer(-1);
+      ArrayList constraintIdList = new ArrayList();
+      ArrayList parameterIdList = new ArrayList();
+      ArrayList tokenIdList = new ArrayList();
       while(variables.next()) {
-        Integer variableId = new Integer(variables.getInt("Variable.VariableId"));
-        String domainType = variables.getString("Variable.DomainType");
-        ArrayList constraintIdList = new ArrayList();
-        ResultSet constraintIds =
-          queryDatabase("SELECT ConstraintId FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(variableId.toString()));
-        while(constraintIds.next()) {
-          constraintIdList.add(new Integer(constraintIds.getInt("ConstraintId")));
+        Integer currVariableId = new Integer(variables.getInt("Variable.VariableId"));
+        String currVariableType = variables.getString("Variable.VariableType");
+        String currDomainType = variables.getString("Variable.DomainType");
+        String currIntDomainType = "";
+        String currIntDomainLB = "";
+        String currIntDomainUB = "";
+        String currEnumDomain = "";
+        Integer currConstraintId = new Integer(variables.getInt("ConstraintVarMap.ConstraintId"));
+        Integer currParameterId = new Integer(variables.getInt("ParamVarTokenMap.ParameterId"));
+        Integer currTokenId = new Integer(variables.getInt("ParamVarTokenMap.TokenId"));
+        if(!constraintId.equals(currConstraintId) && !currConstraintId.equals(NULL)) {
+          if(!constraintId.equals(M1) && !constraintIdList.contains(currConstraintId)) {
+            constraintIdList.add(currConstraintId);
+          }
+          constraintId = currConstraintId;
         }
-        if(domainType.equals("EnumeratedDomain")) {
-          Blob blob = variables.getBlob("EnumeratedDomain.Domain");
-          String domainStr = new String(blob.getBytes(1, (int) blob.length()));
-          domainImpl = new PwEnumeratedDomainImpl(domainStr);
+        if(!parameterId.equals(currParameterId) && !currParameterId.equals(NULL)) {
+          if(!parameterId.equals(M1) && !parameterIdList.contains(currParameterId)) {
+            parameterIdList.add(currParameterId);
+          }
+          parameterId = currParameterId;
         }
-        else if(domainType.equals("IntervalDomain")) {
-          domainImpl = new PwIntervalDomainImpl(variables.getString("IntervalDomain.IntervalDomainType"),
-                                                variables.getString("IntervalDomain.LowerBound"),
-                                                variables.getString("IntervalDomain.UpperBound"));
+        if(!tokenId.equals(currTokenId) && !currTokenId.equals(NULL)) {
+          if(!tokenId.equals(M1) && !tokenIdList.contains(currTokenId)) {
+            tokenIdList.add(currTokenId);
+          }
+          tokenId = currTokenId;
         }
-        ArrayList parameterIdList = new ArrayList();
-        ArrayList tokenIdList = new ArrayList();
-        ResultSet parameterIds =
-          queryDatabase("SELECT ParameterId, TokenId FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(variableId.toString()));
-        while(parameterIds.next()) {
-          parameterIdList.add(new Integer(parameterIds.getInt("ParameterId")));
-          if(parameterIds.getInt("TokenId") != 0) {
-            tokenIdList.add(new Integer(parameterIds.getInt("TokenId")));
+        if(domainType.equals("")) {
+          domainType = currDomainType;
+        }
+        if(currDomainType.equals("IntervalDomain")) {
+          currIntDomainType = variables.getString("IntervalDomain.IntervalDomainType");
+          currIntDomainLB = variables.getString("IntervalDomain.LowerBound");
+          currIntDomainUB = variables.getString("IntervalDomain.UpperBound");
+          if((intDomainType == null || intDomainType.equals("")) && 
+             (intDomainLB == null || intDomainLB.equals("")) && 
+             (intDomainUB == null || intDomainUB.equals(""))) {
+            intDomainType = currIntDomainType;
+            intDomainLB = currIntDomainLB;
+            intDomainUB = currIntDomainUB;
           }
         }
-        partialPlan.addVariable(variableId, new PwVariableImpl(variableId, 
-                                                               variables.getString("VariableType"),
-                                                               constraintIdList,
-                                                               parameterIdList,
-                                                               tokenIdList,
-                                                               domainImpl, partialPlan));
+        else if(currDomainType.equals("EnumeratedDomain")) {
+          Blob blob = variables.getBlob("EnumeratedDomain.Domain");
+          if(blob == null) {
+            throw new SQLException("Undefined EnumeratedDomain");
+          }
+          currEnumDomain = new String(blob.getBytes(1, (int) blob.length()));
+          if(enumDomain.equals("")) {
+            enumDomain = currEnumDomain;
+          }
+        }
+        if(!variableId.equals(currVariableId) && !currVariableId.equals(NULL)) {
+          if(!variableId.equals(M1)) {
+            partialPlan.addVariable(variableId, new PwVariableImpl(variableId, variableType,
+                                                                   constraintIdList,
+                                                                   parameterIdList, tokenIdList,
+                                                                   domainImpl, partialPlan));
+          }
+          variableId = currVariableId;
+          variableType = currVariableType;
+          domainType = currDomainType;
+          enumDomain = currEnumDomain;
+          intDomainType = currIntDomainType;
+          intDomainLB = currIntDomainLB;
+          intDomainUB = currIntDomainUB;
+          constraintIdList.clear();
+          parameterIdList.clear();
+          tokenIdList.clear();
+        }
+        if(domainType.equals("IntervalDomain")) {
+          domainImpl = new PwIntervalDomainImpl(intDomainType, intDomainLB, intDomainUB);
+        }
+        else if(domainType.equals("EnumeratedDomain")) {
+          Blob blob = variables.getBlob("EnumeratedDomain.Domain");
+          enumDomain = new String(blob.getBytes(1, (int) blob.length()));
+          domainImpl = new PwEnumeratedDomainImpl(enumDomain);
+        }
       }
+      partialPlan.addVariable(variableId, new PwVariableImpl(variableId, variableType,
+                                                             constraintIdList,
+                                                             parameterIdList, tokenIdList,
+                                                             domainImpl, partialPlan));
     }
     catch(SQLException sqle) {
       System.err.println(sqle);
@@ -557,6 +636,34 @@ public class MySQLDB {
     PwVariableImpl variableImpl = null;
     PwDomainImpl domainImpl = null;
     try {
+      /*ResultSet variable = queryDatabase("Select Variable.DomainType, Variable.VariableType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" && Variable.VariableId=").concat(key.toString()));
+      variable.first();
+      String domainType = variable.getString("Variable.DomainType");
+      String variableType = variable.getString("Variable.VariableType");
+      if(domainType.equals("IntervalDomain")) {
+        domainImpl = 
+          new PwIntervalDomainImpl(variable.getString("IntervalDomain.IntervalDomainType"),
+                                   variable.getString("IntervalDomain.LowerBound"),
+                                   variable.getString("IntervalDomain.UppberBound"));
+      }
+      else if(domainType.equals("EnumeratedDomain")) {
+        domainImpl =
+          new PwEnumeratedDomainImpl(new String(domain.getBlob("EnumeratedDomain.Domain").getBytes(1, (int)domain.getBlob("EnumeratedDomain.Domain").length())));
+      }
+      ArrayList constraintIdList = new ArrayList();
+      ArrayList parameterIdList = new ArrayList();
+      ArrayList tokenIdList = new ArrayList();
+      Integer constraintId = new Integer(M1);
+      Integer parameterId = new Integer(M1);
+      Integer tokenId = new Integer(M1);
+      if(variable.getInt("ConstraintVarMap.ConstraintId") != 0) {
+        constraintId = new Integer(variable.getInt("ConstraintVarMap.ConstraintId"));
+        constraintIdList.add(constraintId);
+      }
+      if(variable.getInt("ParamVarTokenMap.ParameterId") != 0) {
+        
+      }
+      while(*/
       ResultSet variable = 
         queryDatabase("SELECT DomainType, VariableType, DomainId, ParameterId FROM Variable WHERE PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" AND VariableId=").concat(key.toString()));
       variable.first();
@@ -591,7 +698,7 @@ public class MySQLDB {
         }
       }
       variableImpl = new PwVariableImpl(key, variable.getString("VariableType"), constraintIdList,
-                                        parameterIdList, tokenIdList, domainImpl, partialPlan);
+      parameterIdList, tokenIdList, domainImpl, partialPlan);
       return variableImpl;
     }
     catch(SQLException sqle) {
