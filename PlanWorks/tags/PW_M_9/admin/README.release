@@ -1,0 +1,37 @@
+# 
+# * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+# * information on usage and redistribution of this file, 
+# * and for a DISCLAIMER OF ALL WARRANTIES. 
+# 
+
+# $Id: README.release,v 1.4 2003-11-07 00:08:39 taylor Exp $
+#
+
+Releasing the PlanWorks Plan Visualization Application
+======================================================
+
+o Update PlanWorks/README
+
+o Update PlanWorks/GETTING_STARTED
+
+o Update PlanWorks/testCases/planViz.txt
+
+o Update PlanWorks/cpp/integration/europa/README
+
+o Perform test cases outlined in PlanWorks/testCases/planViz.txt
+
+o Run "ant test"
+
+o Build PartialPlanWriter, integrate into freshly checked-out
+  Europa, and run Europa "make tests".  View a generated sequence.
+
+o Tag the Release
+  - In a clean directory, do a fresh checkout of the CVS "head":
+    > cvs co PlanWorks
+  - Tag the files:
+    > cvs tag PW_M_<release_num> PlanWorks
+
+o Email Release Announcment
+  - Send to pw-users@postdoc  (includes eurpoa-users@postdoc)
+  - Include PlanWorks/README
+
