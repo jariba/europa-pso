@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.8 2003-08-29 01:21:40 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.9 2003-08-29 22:08:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -111,7 +111,7 @@ public class TemporalExtentView extends VizView {
     temporalNodeList = new ArrayList();
     tmpTemporalNodeList = new ArrayList();
 
-    startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT;
+    startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
     maxCellRow = 0;
     maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
@@ -305,43 +305,16 @@ public class TemporalExtentView extends VizView {
         List slotList = timeline.getSlotList();
         Iterator slotIterator = slotList.iterator();
         PwToken previousToken = null;
-        boolean isFirstSlot = true; int slotCnt = 0;
+        int slotCnt = 0;
         while (slotIterator.hasNext()) {
           PwSlot slot = (PwSlot) slotIterator.next();
           boolean isLastSlot = (! slotIterator.hasNext());
-          PwToken token = null;
-          if (slot.getTokenList().size() > 0) {
-            token = (PwToken) slot.getTokenList().get( 0);
-          }
+          PwToken token = slot.getBaseToken();
           slotCnt++;
-          // if last slot latest end time for all timelines = infinity,
-          // we get no timeScaleEnd
-          // if (isFirstSlot || isLastSlot) {
-            PwDomain[] intervalArray =
-              SlotNode.getStartEndIntervals( slot, previousToken, isLastSlot,
-                                             alwaysReturnEnd);
-            PwDomain startTimeIntervalDomain = intervalArray[0];
-            PwDomain endTimeIntervalDomain = intervalArray[1];
-            if ((startTimeIntervalDomain != null) && (! isLastSlot)) {
-//               System.err.println( "Temporal Extent View Scale start interval earliest " +
-//                                    startTimeIntervalDomain.getLowerBound());
-              int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
-              if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
-                  (earliestTime < timeScaleStart)) {
-                timeScaleStart = earliestTime;
-              }
-              isFirstSlot = false;
-            }
-            if (endTimeIntervalDomain != null) {
-//               System.err.println( "Temporal Extent View Scale end interval latest " +
-//                                   endTimeIntervalDomain.getUpperBound());
-              int latestTime = endTimeIntervalDomain.getUpperBoundInt();
-              if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
-                  (latestTime > timeScaleEnd)) {
-                timeScaleEnd = latestTime;
-              }
-            }
-            // }
+          PwDomain[] intervalArray =
+            SlotNode.getStartEndIntervals( slot, previousToken, isLastSlot,
+                                           alwaysReturnEnd);
+          collectTimeScaleMetrics( intervalArray[0], intervalArray[1]);
           previousToken = token;
         }
         if (slotCnt > maxSlots) {
@@ -350,8 +323,44 @@ public class TemporalExtentView extends VizView {
       }
     }
     collectFreeTokenMetrics();
+
     computeTimeScaleMetrics();
+
   } // collectAndComputeTimeScaleMetrics
+
+  private void collectTimeScaleMetrics( PwDomain startTimeIntervalDomain,
+                                        PwDomain endTimeIntervalDomain) {
+    if (startTimeIntervalDomain != null) {
+//       System.err.println( "collectTimeScaleMetrics earliest " +
+//                           startTimeIntervalDomain.getLowerBound() + " latest " +
+//                           startTimeIntervalDomain.getUpperBound());
+      int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
+      if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
+          (earliestTime < timeScaleStart)) {
+        timeScaleStart = earliestTime;
+      }
+      int latestTime = startTimeIntervalDomain.getUpperBoundInt();
+      if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
+          (latestTime < timeScaleStart)) {
+        timeScaleStart = latestTime;
+      }
+    }
+    if (endTimeIntervalDomain != null) {
+//       System.err.println( "collectTimeScaleMetrics latest " +
+//                           endTimeIntervalDomain.getUpperBound() + " earliest " +
+//                           endTimeIntervalDomain.getLowerBound());
+      int latestTime = endTimeIntervalDomain.getUpperBoundInt();
+      if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
+          (latestTime > timeScaleEnd)) {
+        timeScaleEnd = latestTime;
+      }
+      int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
+      if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
+          (earliestTime > timeScaleEnd)) {
+        timeScaleEnd = earliestTime;
+      }
+    }
+  } // end collectTimeScaleMetrics
 
   private void computeTimeScaleMetrics() {
     endXLoc = startXLoc + (maxSlots * slotLabelMinLength * fontMetrics.charWidth( 'A'));
@@ -384,21 +393,33 @@ public class TemporalExtentView extends VizView {
       PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
 
       if (startTimeIntervalDomain != null) {
-        // System.err.println( "Temporal Extent View Scale start interval earliest " +
-        //                      startTimeIntervalDomain.getLowerBound());
+//         System.err.println( "collectFreeTokenMetrics earliest " +
+//                             startTimeIntervalDomain.getLowerBound() + " latest " +
+//                             startTimeIntervalDomain.getUpperBound());
         int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
         if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
             (earliestTime < timeScaleStart)) {
           timeScaleStart = earliestTime;
         }
+        int latestTime = startTimeIntervalDomain.getUpperBoundInt();
+        if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
+            (latestTime < timeScaleStart)) {
+          timeScaleStart = latestTime;
+        }
       }
       if (endTimeIntervalDomain != null) {
-        // System.err.println( "Temporal Extent View Scale end interval latest " +
-        //                     endTimeIntervalDomain.getUpperBound());
+//         System.err.println( "collectFreeTokenMetrics latest " +
+//                             endTimeIntervalDomain.getUpperBound() + " earliest " +
+//                             endTimeIntervalDomain.getLowerBound());
         int latestTime = endTimeIntervalDomain.getUpperBoundInt();
         if ((latestTime != PwDomain.PLUS_INFINITY_INT) &&
             (latestTime > timeScaleEnd)) {
           timeScaleEnd = latestTime;
+        }
+        int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
+        if ((earliestTime != PwDomain.MINUS_INFINITY_INT) &&
+            (earliestTime > timeScaleEnd)) {
+          timeScaleEnd = earliestTime;
         }
       }
     }

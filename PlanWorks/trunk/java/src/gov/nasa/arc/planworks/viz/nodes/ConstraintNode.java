@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.7 2003-08-26 01:37:12 taylor Exp $
+// $Id: ConstraintNode.java,v 1.8 2003-08-29 22:08:58 taylor Exp $
 //
 // PlanWorks
 //
@@ -105,8 +105,8 @@ public class ConstraintNode extends BasicNode {
     if (constraint.getVariablesList().size() > 1) {
       isUnaryConstraint = false;
     }
-    // isDebug = false;
-    isDebug = true;
+    isDebug = false;
+    // isDebug = true;
     if (isDebug) {
       nodeLabel = constraint.getType().substring( 0, 1) + "_" +
         constraint.getId().toString();
