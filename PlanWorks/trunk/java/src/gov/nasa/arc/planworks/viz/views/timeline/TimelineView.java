@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.19 2003-07-12 01:36:33 taylor Exp $
+// $Id: TimelineView.java,v 1.20 2003-07-15 00:33:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
+import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.util.ViewRenderingException;
@@ -65,6 +66,7 @@ public class TimelineView extends VizView {
   private JGoSelection jGoSelection;
   // timelineNodeList & tmpTimelineNodeList used by JFCUnit test case
   private List timelineNodeList; // element TimelineNode
+  private List freeTokenNodeList; // element TokenNode
   private List tmpTimelineNodeList; // element TimelineNode
   private Font font;
   private FontMetrics fontMetrics;
@@ -83,7 +85,8 @@ public class TimelineView extends VizView {
     super( partialPlan);
     this.partialPlan = partialPlan;
     this.viewSet = viewSet;
-    this.timelineNodeList = null;
+    this.timelineNodeList = new ArrayList();
+    this.freeTokenNodeList = new ArrayList();
     this.tmpTimelineNodeList = new ArrayList();
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
@@ -244,6 +247,20 @@ public class TimelineView extends VizView {
       }
       objectCnt += 1;
     }
+    // free tokens
+    y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
+    List freeTokenList = partialPlan.getFreeTokenList();
+    // System.err.println( "freeTokenList " + freeTokenList);
+    Iterator freeTokenItr = freeTokenList.iterator();
+    boolean isFreeToken = true; objectCnt = -1;
+    while (freeTokenItr.hasNext()) {
+      TokenNode freeTokenNode = new TokenNode( (PwToken) freeTokenItr.next(),
+                                               new Point( x, y), objectCnt,
+                                               isFreeToken, this);
+      freeTokenNodeList.add( freeTokenNode);
+      jGoDocument.addObjectAtTail( freeTokenNode);
+      x += freeTokenNode.getSize().getWidth();
+    }
     timelineNodeList = tmpTimelineNodeList;
   } // end createTimelineAndSlotNodes
 
@@ -369,10 +386,23 @@ public class TimelineView extends VizView {
         }
       }
     }
+    setFreeTokensVisible();
     boolean showDialog = true;
     isContentSpecRendered( "Timeline View", showDialog);
   } // end setNodesVisible
 
+  private void setFreeTokensVisible() {
+    Iterator freeTokenNodeItr = freeTokenNodeList.iterator();
+    while (freeTokenNodeItr.hasNext()) {
+      TokenNode node = (TokenNode) freeTokenNodeItr.next();
+      // System.err.println( "setFreeTokensVisible " + node.getToken().getKey());
+      if (isTokenInContentSpec( node.getToken())) {
+        node.setVisible( true);
+      } else {
+        node.setVisible( false);
+      }
+    }
+  } // end setFreeTokensVisible
 
   private void iterateOverNodes() {
     int numTimelineNodes = timelineNodeList.size();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.8 2003-07-12 01:36:33 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.9 2003-07-15 00:33:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -331,20 +331,39 @@ public class TokenNetworkView extends VizView {
       }
       objectCnt += 1;
     }
+    // free tokens
+    List freeTokenList = partialPlan.getFreeTokenList();
+    int x = ViewConstants.TIMELINE_VIEW_X_INIT;
+    System.err.println( "token network view freeTokenList " + freeTokenList);
+    Iterator freeTokenItr = freeTokenList.iterator();
+    boolean isFreeToken = true; objectCnt = -1;
+    while (freeTokenItr.hasNext()) {
+      TokenNode freeTokenNode = new TokenNode( (PwToken) freeTokenItr.next(),
+                                               new Point( x, y), objectCnt,
+                                               isFreeToken, this);
+      if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
+        x += freeTokenNode.getSize().getWidth() * 0.5;
+        freeTokenNode.setLocation( x, y);
+      }
+      tmpNodeList.add( freeTokenNode);
+      jGoDocument.addObjectAtTail( freeTokenNode);
+      x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+    }
     createTokenParentChildRelationships();
     nodeList = tmpNodeList;
   } // end createTokenParentChildNodes
 
   private void createTokenNodesOfTimeline( PwTimeline timeline, int x, int y,
                                            int objectCnt) {
+    boolean isFreeToken = false;
     Iterator slotIterator = timeline.getSlotList().iterator();
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
       Iterator tokenIterator = slot.getTokenList().iterator();
-      while (tokenIterator.hasNext()) { 
+      while (tokenIterator.hasNext()) {
         PwToken token = (PwToken) tokenIterator.next();
         TokenNode tokenNode =
-          new TokenNode( token, new Point( x, y), objectCnt, this);
+          new TokenNode( token, new Point( x, y), objectCnt, isFreeToken, this);
         if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
           x += tokenNode.getSize().getWidth() * 0.5;
           tokenNode.setLocation( x, y);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.7 2003-07-14 20:52:33 miatauro Exp $
+// $Id: VizView.java,v 1.8 2003-07-15 00:33:52 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -104,7 +104,8 @@ public class VizView extends JPanel {
     }
     if(error) {
       if(showDialog) {
-        JOptionPane.showMessageDialog(PlanWorks.planWorks, message.toString(), "View Rendering Exception", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(PlanWorks.planWorks, message.toString(),
+                                      "View Rendering Exception", JOptionPane.ERROR_MESSAGE);
       }
       return false;
     }
@@ -171,8 +172,8 @@ public class VizView extends JPanel {
         return false;
       }
     } else {
-      // empty slot -- do not display
-      return false;
+      // empty slot -- display
+      return true;
     }
   } // end isSlotInContentSpec
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.5 2003-07-09 23:14:38 taylor Exp $
+// $Id: TokenNode.java,v 1.6 2003-07-15 00:33:52 taylor Exp $
 //
 // PlanWorks
 //
@@ -25,7 +25,7 @@ import com.nwoods.jgo.examples.BasicNode;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
+import gov.nasa.arc.planworks.viz.views.VizView;
 
 
 /**
@@ -48,7 +48,8 @@ public class TokenNode extends BasicNode {
 
   private PwToken token;
   private int objectCnt;
-  private TokenNetworkView view;
+  private boolean isFreeToken;
+  private VizView view;
   private String predicateName;
   private String nodeLabel;
 
@@ -58,13 +59,15 @@ public class TokenNode extends BasicNode {
    * @param token - <code>PwToken</code> -
    * @param tokenLocation - <code>Point</code> - 
    * @param objectCnt - <code>int</code> - 
-   * @param view - <code>TokenNetworkView</code> - 
+   * @param isFreeToken - <code>boolean</code> - 
+   * @param view - <code>VizView</code> - 
    */
-  public TokenNode( PwToken token, Point tokenLocation, int objectCnt,
-                    TokenNetworkView view) {
+  public TokenNode( PwToken token, Point tokenLocation, int objectCnt, boolean isFreeToken,
+                    VizView view) {
     super();
     this.token = token;
     this.objectCnt = objectCnt;
+    this. isFreeToken = isFreeToken;
     this.view = view;
     if (token != null) {
       predicateName = token.getPredicate().getName();
@@ -83,9 +86,14 @@ public class TokenNode extends BasicNode {
     boolean isRectangular = true;
     setLabelSpot( JGoObject.Center);
     initialize( tokenLocation, nodeLabel, isRectangular);
-    String backGroundColor = ((objectCnt % 2) == 0) ?
-      ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
-      ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
+    String backGroundColor = null;
+    if (isFreeToken) {
+      backGroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
+    } else {
+      backGroundColor = ((objectCnt % 2) == 0) ?
+        ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
+        ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
+    }
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
     setDraggable( false);
