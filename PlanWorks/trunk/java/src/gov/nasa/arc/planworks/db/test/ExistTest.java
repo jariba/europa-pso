@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ExistTest.java,v 1.5 2003-05-27 21:24:47 taylor Exp $
+// $Id: ExistTest.java,v 1.6 2003-06-12 23:49:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -117,19 +117,22 @@ public class ExistTest {
 
 
   private String loadPlannerXmlFiles() {
-    int index = xmlFilesDirectory.toString().lastIndexOf( "/");
+    int index = xmlFilesDirectory.toString().
+      lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
       System.err.println( "collectionName cannot be parsed " +
                           xmlFilesDirectory.toString());
       return "";
     }
-    index = xmlFilesDirectory.toString().substring( 0, index - 1).lastIndexOf( "/");
+    index = xmlFilesDirectory.toString().substring( 0, index - 1).
+      lastIndexOf( System.getProperty( "file.separator"));
     String collectionName = userCollectionName + xmlFilesDirectory.substring( index);
     System.err.println( "xmlFiles ");
     int count = 0;
     for (int i = 0, n = xmlFileNames.length; i < n; i++) {
       StringBuffer pathStrBuf = new StringBuffer( xmlFilesDirectory);
-      pathStrBuf.append( "/").append( (String) xmlFileNames[i]);
+      pathStrBuf.append( System.getProperty( "file.separator")).
+        append( (String) xmlFileNames[i]);
       System.err.println( "Load " + pathStrBuf.toString());
       long startLoadTimeMSecs = (new Date()).getTime();
 
@@ -268,7 +271,7 @@ public class ExistTest {
     planWorksRoot = System.getProperty( "planworks.root");
     // userName = getEnvVar( "USER");
     userName = System.getProperty( "user");
-    userCollectionName = "/" + userName;
+    userCollectionName = System.getProperty( "file.separator") + userName;
 
     existTest = new ExistTest();
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.7 2003-06-02 17:49:58 taylor Exp $
+// $Id: PwObjectImpl.java,v 1.8 2003-06-12 23:49:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -58,7 +58,7 @@ public class PwObjectImpl implements PwObject {
   public PwTimelineImpl addTimeline( String name, String key) {
     timelineIdList.add( key);
     PwTimelineImpl timeline = new PwTimelineImpl( name, key, partialPlan);
-    partialPlan.getTimelineMap().put( key, timeline);
+    partialPlan.addTimeline( key, timeline);
     return timeline;
   } // end addTimeline
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.11 2003-06-12 00:08:53 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.12 2003-06-12 23:49:45 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -89,19 +89,22 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
     objectIdList = new ArrayList();
-    userCollectionName = "/" + System.getProperty( "user");
+    userCollectionName = System.getProperty( "file.separator") + System.getProperty( "user");
     this.url = url;
     this.projectCollectionName = projectCollectionName;
     this.sequenceCollectionName = sequenceCollectionName;
     StringBuffer collectionBuffer = new StringBuffer(userCollectionName );
-    collectionBuffer.append( "/");
-    collectionBuffer.append( projectCollectionName).append( "/");
-    collectionBuffer.append( sequenceCollectionName).append( "/");
+    collectionBuffer.append( System.getProperty( "file.separator"));
+    collectionBuffer.append( projectCollectionName).
+      append( System.getProperty( "file.separator"));
+    collectionBuffer.append( sequenceCollectionName).
+      append( System.getProperty( "file.separator"));
 
-    int index = url.lastIndexOf( "/");
+    int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
       throw new ResourceNotFoundException( "partial plan url '" + url +
-                                           "' cannot be parsed for '/'");
+                                           "' cannot be parsed for '" +
+                                           System.getProperty( "file.separator") + "'");
     } 
     xmlFileName = url.substring( index + 1);
     index = xmlFileName.lastIndexOf( ".");
@@ -166,35 +169,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   private final void fillElementMaps() {
-    Iterator keysIterator = null;
-    List constraintKeyList =
-      XmlDBeXist.INSTANCE.queryElementKeysByType( "constraint", collectionName);
-    keysIterator = constraintKeyList.iterator();
-    while (keysIterator.hasNext()) {
-      getConstraint( (String) keysIterator.next());
-    }
 
+    XmlDBeXist.INSTANCE.queryConstraints( this, collectionName);
+    
     // parameters are inside predicates
-    List predicateKeyList =
-      XmlDBeXist.INSTANCE.queryElementKeysByType( "predicate", collectionName);
-    keysIterator = predicateKeyList.iterator();
-    while (keysIterator.hasNext()) {
-      getPredicate( (String) keysIterator.next());
-    }
+    XmlDBeXist.INSTANCE.queryPredicates( this, collectionName);
 
-    List tokenRelationKeyList =
-       XmlDBeXist.INSTANCE.queryElementKeysByType( "tokenRelation", collectionName);
-    keysIterator = tokenRelationKeyList.iterator();
-    while (keysIterator.hasNext()) {
-      getTokenRelation( (String) keysIterator.next());
-    }
+    XmlDBeXist.INSTANCE.queryTokenRelations( this, collectionName);
 
-    List variableKeyList =
-      XmlDBeXist.INSTANCE.queryElementKeysByType( "variable", collectionName);
-    keysIterator = variableKeyList.iterator();
-    while (keysIterator.hasNext()) {
-      getVariable( (String) keysIterator.next());
-    }
+    XmlDBeXist.INSTANCE.queryVariables( this, collectionName);
 
     System.err.println( "Partial Plan keys:");
     System.err.println( "  objectMap        " + objectMap.keySet().size());
@@ -228,42 +211,6 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     return (PwObjectImpl) objectMap.get( key);
   }
 
-  /**
-   * <code>addParameter</code>
-   *
-   * @param key - <code>String</code> - 
-   * @param parameter - <code>PwParameterImpl</code> - 
-   */
-  public void addParameter( String key, PwParameterImpl parameter) {
-    parameterMap.put( key, parameter);
-  } // end addParameter
-
-  /**
-   * <code>getTimelineMap</code>
-   *
-   * @return - <code>Map</code> - 
-   */
-  public Map getTimelineMap() {
-    return timelineMap;
-  }
-
-  /**
-   * <code>getSlotMap</code>
-   *
-   * @return - <code>Map</code> - 
-   */
-  public Map getSlotMap() {
-    return slotMap;
-  }
-
-  /**
-   * <code>getTokenMap</code>
-   *
-   * @return - <code>Map</code> - 
-   */
-  public Map getTokenMap() {
-    return tokenMap;
-  }
 
 
   // IMPLEMENT PwPartialPlan INTERFACE 
@@ -443,6 +390,89 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     }
     return variable;
   } // end getVariable
+
+
+  // END IMPLEMENT PwPartialPlan INTERFACE 
+    
+
+  /**
+   * <code>addConstraint</code>
+   *
+   * @param key - <code>String</code> - 
+   * @param constraint - <code>PwConstraintImpl</code> - 
+   */
+  public void addConstraint( String key, PwConstraintImpl constraint) {
+    constraintMap.put( key, constraint);
+  }
+
+  /**
+   * <code>addParameter</code>
+   *
+   * @param key - <code>String</code> - 
+   * @param parameter - <code>PwParameterImpl</code> - 
+   */
+  public void addParameter( String key, PwParameterImpl parameter) {
+    parameterMap.put( key, parameter);
+  }
+
+  /**
+   * <code>addPredicate</code>
+   *
+   * @param key - <code>String</code> - 
+   * @param predicate - <code>PwPredicateImpl</code> - 
+   */
+  public void addPredicate( String key, PwPredicateImpl predicate) {
+    predicateMap.put( key, predicate);
+  }
+
+  /**
+   * <code>addSlot</code>
+   *
+   * @param key - <code>String</code> - 
+   * @param slot - <code>PwSlotImpl</code> - 
+   */
+  public void addSlot( String key, PwSlotImpl slot) {
+    slotMap.put( key, slot);
+  }
+
+  /**
+   * <code>addTimeline</code>
+   *
+   * @param key - <code>String</code> - 
+   * @param timeline - <code>PwTimelineImpl</code> - 
+   */
+  public void addTimeline( String key, PwTimelineImpl timeline) {
+    timelineMap.put( key, timeline);
+  }
+
+  /**
+   * <code>addToken</code>
+   *
+   * @param key - <code>String</code> - 
+   * @param token - <code>PwTokenImpl</code> - 
+   */
+  public void addToken( String key, PwTokenImpl token) {
+    tokenMap.put( key, token);
+  }
+  /**
+   * <code>addTokenRelation</code>
+   *
+   * @param key - <code>String</code> - 
+   * @param tokenRelation - <code>PwTokenRelationImpl</code> - 
+   */
+  public void addTokenRelation( String key, PwTokenRelationImpl tokenRelation) {
+    tokenRelationMap.put( key, tokenRelation);
+  }
+
+  /**
+   * <code>addVariable</code>
+   *
+   * @param key - <code>String</code> - 
+   * @param variable - <code>PwVariableImpl</code> - 
+   */
+  public void addVariable( String key, PwVariableImpl variable) {
+    variableMap.put( key, variable);
+  }
 
 
 } // end class PwPartialPlanImpl

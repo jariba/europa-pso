@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.8 2003-06-12 19:57:20 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.9 2003-06-12 23:49:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -60,7 +60,7 @@ public class PwProjectImpl extends PwProject {
     projectNames = new ArrayList();
     projectUrls = new ArrayList();
     projects = new ArrayList();
-    userCollectionName = "/" + System.getProperty( "user");
+    userCollectionName = System.getProperty( "file.separator") + System.getProperty( "user");
     try {
       projectsXmlDataDir = System.getProperty( "projects.xml.data.dir");
       projectsXmlDataPathname = System.getProperty( "projects.xml.data.pathname");
@@ -113,7 +113,7 @@ public class PwProjectImpl extends PwProject {
     this.url = url; // project pathname
     name = parseProjectName( url);
     projectCollectionName = getProjectCollectionName();
-    projectDataPathname = projectsXmlDataDir + "/" + name +
+    projectDataPathname = projectsXmlDataDir + System.getProperty( "file.separator") + name +
       XmlFileFilter.XML_EXTENSION_W_DOT;
     planningSequences = new ArrayList();
     seqDirNames = new ArrayList();
@@ -130,12 +130,12 @@ public class PwProjectImpl extends PwProject {
     for (int i = 0; i < fileNames.length; i++) {
       String fileName = fileNames[i];
       if ((! fileName.equals( "CVS")) &&
-          (new File( url + "/" + fileName)).isDirectory()) {
+          (new File( url + System.getProperty( "file.separator") + fileName)).isDirectory()) {
         System.err.println( "Project " + name + " => seqDirName: " + fileName);
         seqDirNames.add( fileName);
         planningSequences.add
-          ( new PwPlanningSequenceImpl(  url + "/" + fileName, this,
-                                         new PwModelImpl()));
+          ( new PwPlanningSequenceImpl(  url + System.getProperty( "file.separator") +
+                                         fileName, this, new PwModelImpl()));
       }
     }
     if (planningSequences.size() == 0) {
@@ -160,7 +160,7 @@ public class PwProjectImpl extends PwProject {
     this.url = url; // project pathname
     name = parseProjectName( url);
     projectCollectionName = getProjectCollectionName();
-    projectDataPathname = projectsXmlDataDir + "/" + name +
+    projectDataPathname = projectsXmlDataDir + System.getProperty( "file.separator") + name +
       XmlFileFilter.XML_EXTENSION_W_DOT;
     planningSequences = new ArrayList();
     seqDirNames = new ArrayList();
@@ -183,8 +183,8 @@ public class PwProjectImpl extends PwProject {
       String seqDir = (String) seqDirNamesItr.next();
       this.seqDirNames.add( seqDir);
       this.planningSequences.add
-        ( new PwPlanningSequenceImpl(  url + "/" + seqDir, this,
-                                       new PwModelImpl(),
+        ( new PwPlanningSequenceImpl(  url + System.getProperty( "file.separator") +
+                                       seqDir, this, new PwModelImpl(),
                                        (List) partialPlanNames.get( seqIndx)));
       seqIndx++;
     }
@@ -419,8 +419,10 @@ public class PwProjectImpl extends PwProject {
     requiresSaving = false;
 
     // remove XML:DB collection
-    StringBuffer projectCollectionNameBuf = new StringBuffer( "/");
-    projectCollectionNameBuf.append( System.getProperty( "user")).append( "/");
+    StringBuffer projectCollectionNameBuf =
+      new StringBuffer( System.getProperty( "file.separator"));
+    projectCollectionNameBuf.append( System.getProperty( "user")).
+      append( System.getProperty( "file.separator"));
     projectCollectionNameBuf.append( name);
     String projectCollectionName = projectCollectionNameBuf.toString();
     if (XmlDBeXist.INSTANCE.getCollection( projectCollectionName) != null) {
@@ -563,10 +565,11 @@ public class PwProjectImpl extends PwProject {
 
 
   private String parseProjectName( String url) throws ResourceNotFoundException {
-    int index = url.lastIndexOf( "/");
+    int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
       throw new ResourceNotFoundException( "project url '" + url +
-                                           "' cannot be parsed for '/'");
+                                           "' cannot be parsed for '" +
+                                           System.getProperty( "file.separator") + "'");
     } 
     return url.substring( index + 1);
   } // end parseProjectName
@@ -574,7 +577,7 @@ public class PwProjectImpl extends PwProject {
 
   private String getProjectCollectionName() {
     StringBuffer projectCollectionNameBuf = new StringBuffer( userCollectionName);
-    projectCollectionNameBuf.append( "/").append( name);
+    projectCollectionNameBuf.append( System.getProperty( "file.separator")).append( name);
     return projectCollectionNameBuf.toString();
   }
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.7 2003-06-02 17:49:59 taylor Exp $
+// $Id: PwSlotImpl.java,v 1.8 2003-06-12 23:49:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -77,7 +77,7 @@ public class PwSlotImpl implements PwSlot {
     String tokenKey = (String) attributeList.get( 0);
     PwTokenImpl token = new PwTokenImpl( attributeList, partialPlan);
     tokenIdList.add( tokenKey);
-    partialPlan.getTokenMap().put( tokenKey, token);
+    partialPlan.addToken( tokenKey, token);
     return token;
   } // end addToken
 
