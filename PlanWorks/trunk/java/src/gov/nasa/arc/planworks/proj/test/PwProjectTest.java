@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectTest.java,v 1.3 2003-05-20 18:25:35 taylor Exp $
+// $Id: PwProjectTest.java,v 1.4 2003-05-21 23:48:35 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,6 +26,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -104,79 +105,14 @@ public class PwProjectTest extends JFrame {
     // PwProjectMgmt.createProject
     String url = System.getProperty( "planworks.root") + "/xml/test";
     partialPlan = createTestPartialPlan( url);
-    System.out.println( "Test partialPlan " + partialPlan);
+    // System.out.println( "Test partialPlan " + partialPlan);
 
     contentPane = getContentPane();
     contentPane.setLayout( new BoxLayout( contentPane, BoxLayout.Y_AXIS));
 
-
-    JPanel fileRequestPane2 = new FixedHeightJPanel();
-    fileRequestPane2.setBackground( ColorMap.getColor( "green3"));
-    fileRequestPane2.setBorder( BorderFactory.createLineBorder
-                                ( ColorMap.getColor( "black"), 1));
-    JLabel fileRequestPathnameLabel = new JLabel ( "will taylor");
-    fileRequestPathnameLabel.setForeground( Color.black);
-    fileRequestPathnameLabel.setBackground( Color.green);
-    fileRequestPane2.add( fileRequestPathnameLabel, BorderLayout.NORTH);
-    contentPane.add( fileRequestPane2, BorderLayout.NORTH);
-
-    
-//     tabbedPane = new JTabbedPane( SwingConstants.TOP);
-//     tabbedPane.addTab( "fill1" , null, new JPanel(), "fill2");
-//     contentPane.add( tabbedPane);
-
     buildMenuBar();
 
-//     timelineView = new TimelineView( partialPlan);
-//     contentPane.add( timelineView);
-//     contentPane.validate(); // IMPORTANT
-//     addComponentListener( new ComponentListener() {
-//         public void componentHidden( ComponentEvent e) { }
-//         public void componentMoved ( ComponentEvent e) {}
-//         public void componentResized ( ComponentEvent e) {}
-//         public void componentShown ( ComponentEvent e) {
-//           // render the JGo widgets
-//           System.err.println( "constructor componentShown: " + e.getComponent());
-//           TimelineView timelineView =
-//             (TimelineView) ((PwProjectTest) e.getComponent()).timelineView;
-//           timelineView.init();
-//         }    
-//       });
-
   } // end constructor
-
-
-  class FixedHeightJPanel extends JPanel {
-
-  public FixedHeightJPanel() {
-    super();
-
-  }
-
-  /**
-   * <code>getMaximumSize</code> - height constrained to minimum size
-   *
-   * @return - <code>Dimension</code> - 
-   */ 
-  public Dimension getMaximumSize() { 
-    int h = super.getMinimumSize().height;
-    int w = super.getMaximumSize().width; 
-    return new Dimension( w, h);
-  };
-
-  } // end class FixedHeightJPanel
-
-
-  class RenderThread extends Thread {
-
-    public RenderThread() {
-    }  // end constructor
-
-    public void run() {
-      renderTimelineView();
-    } //end run
-
-  } // end class RenderThread
 
 
   private PwPartialPlan createTestPartialPlan( String url) {
@@ -260,60 +196,43 @@ public class PwProjectTest extends JFrame {
 
   private final void buildMenuBar() {
     JMenuBar menuBar = new JMenuBar();
+    JMenu fileMenu = new JMenu( "File");
+    JMenuItem exitItem = new JMenuItem( "Exit");
+    exitItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent e) {
+          System.exit(0);
+        } });
+    fileMenu.add( exitItem);
+
     JMenu renderMenu = new JMenu( "Render");
     JMenuItem renderTimelineViewItem = new JMenuItem( "Timeline View");
     renderTimelineViewItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent e) {
-          new RenderThread().start();
+          PwProjectTest.this.renderTimelineView();
         }
       });
     renderMenu.add( renderTimelineViewItem);
+
+    menuBar.add( fileMenu);
     menuBar.add( renderMenu);
     setJMenuBar( menuBar);
   } // end buildMenuBar
 
-  // called from RenderThread - in JPanel
+
   private void renderTimelineView() {
-    System.err.println( "renderTimelineView");
+    // System.err.println( "renderTimelineView");
+    long startTimeMSecs = (new Date()).getTime();
+
     timelineView = new TimelineView( partialPlan);
     contentPane.add( timelineView);
     contentPane.validate(); // IMPORTANT
-    timelineView.addComponentListener( new ComponentListener() {
-        public void componentHidden( ComponentEvent e) { }
-        public void componentMoved ( ComponentEvent e) {
-          System.err.println( "RenderThread componentMoved: " + e.getComponent());
-        }
-        public void componentResized ( ComponentEvent e) {
-          System.err.println( "RenderThread componentResized: " + e.getComponent());
-        }
-        public void componentShown ( ComponentEvent e) {
-          // render the JGo widgets
-          System.err.println( "RenderThread componentShown: " + e.getComponent());
-          TimelineView timelineView = (TimelineView) e.getComponent();
-          timelineView.init();
-        }    
-      });
+
+    long stopTimeMSecs = (new Date()).getTime();
+    String timeString = "Render Timeline View \n   ... elapsed time: " +
+      //       writeTime( (stopTimeMSecs - startTimeMSecs)) + " seconds.";
+      (stopTimeMSecs - startTimeMSecs) + " msecs.";
+    System.err.println( timeString);
   } // end renderTimelineView
-
-
-  // called from RenderThread - in JTabbedPane
-//   private void renderTimelineView() {
-//     timelineView = new TimelineView( partialPlan);
-//     tabbedPane.addTab( "will" , null, timelineView, "taylor");
-//     Component tabComponent =
-//       tabbedPane.getComponentAt( tabbedPane.getTabCount() - 1);
-//     tabComponent.addComponentListener( new ComponentListener() {
-//         public void componentHidden( ComponentEvent e) { }
-//         public void componentMoved ( ComponentEvent e) { }
-//         public void componentResized ( ComponentEvent e) { }
-//         public void componentShown ( ComponentEvent e) {
-//           // render the JGo widgets
-//           System.err.println( "componentShown: " + e.getComponent());
-//           TimelineView timelineView = (TimelineView) tabbedPane.getSelectedComponent();
-//           timelineView.init();
-//         }    
-//       });
-//   } // end renderTimelineView
 
 
   private static void processArguments( String[] args) {

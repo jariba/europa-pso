@@ -36,12 +36,14 @@ import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 
 
 /**
- * <code>TimelineNode</code> - 
+ * <code>TimelineNode</code> -
+ *             Object->JGoObject->JGoArea->TextNode->TimelineNode
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *        NASA Ames Research Center - Code IC
@@ -49,23 +51,17 @@ import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
  */
 public class TimelineNode extends TextNode {
 
-  /**
-   * constant <code>INSET_SIZE</code>
-   *
-   */
-  public static final int INSET_SIZE = 10;
-  /**
-   * constant <code>INSET_SIZE_HALF</code>
-   *
-   */
-  public static final int INSET_SIZE_HALF = INSET_SIZE / 2;
   // top left bottom right
   private static final Insets NODE_INSETS =
-    new Insets( INSET_SIZE_HALF, INSET_SIZE, INSET_SIZE_HALF, INSET_SIZE);
+    new Insets( ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
+                ViewConstants.TIMELINE_VIEW_INSET_SIZE,
+                ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
+                ViewConstants.TIMELINE_VIEW_INSET_SIZE);
 
   private String timelineName;
   private PwTimeline timeline;
-  private VizView view;
+  private Point timelineLocation;
+  private TimelineView view;
 
 
   /**
@@ -75,12 +71,14 @@ public class TimelineNode extends TextNode {
    * @param timeline - <code>PwTimeline</code> - 
    * @param view - <code>VizView</code> - 
    */
-  public TimelineNode( String timelineName, PwTimeline timeline, VizView view) {
+  public TimelineNode( String timelineName, PwTimeline timeline, Point timelineLocation,
+                       TimelineView view) {
     super( timelineName);
     this.timelineName = timelineName;
     this.timeline = timeline;
+    this.timelineLocation = timelineLocation;
     this.view = view;
-    System.err.println( "TimelineNode: timelineName " + timelineName);
+    // System.err.println( "TimelineNode: timelineName " + timelineName);
     configure();
 
   } // end constructor
@@ -95,6 +93,7 @@ public class TimelineNode extends TextNode {
     getLeftPort().setVisible( false);
     getBottomPort().setVisible( false);
     getRightPort().setVisible( false);
+    setLocation( (int) timelineLocation.getX(), (int) timelineLocation.getY());
     setInsets( NODE_INSETS);
   } // end configure
 
