@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.29 2004-02-03 22:44:51 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.30 2004-02-04 20:16:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -40,12 +40,10 @@ import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoStroke;
-import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -91,7 +89,6 @@ public class TemporalExtentView extends PartialPlanView  {
   private ExtentView jGoExtentView;
   private TimeScaleView jGoRulerView;
   private RulerPanel rulerPanel;
-  private JGoSelection jGoSelection;
   // temporalNodeList & tmpTemporalNodeList used by JFCUnit test case
   private List temporalNodeList; // element TemporalNode
   private List tmpTemporalNodeList; // element TemporalNode
@@ -351,7 +348,7 @@ public class TemporalExtentView extends PartialPlanView  {
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
     int timelineCnt = 0;
-    boolean alwaysReturnEnd = true, isFreeToken = false;
+    boolean isFreeToken = false;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
       String objectName = object.getName();
@@ -381,8 +378,7 @@ public class TemporalExtentView extends PartialPlanView  {
             if ((token == null) ||
                 (token != null) && isTokenInContentSpec( token)) {
 //               PwDomain[] intervalArray =
-//                 NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot,
-//                                                    alwaysReturnEnd);
+//                 NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot);
 //               PwDomain startTimeIntervalDomain = intervalArray[0];
 //               PwDomain endTimeIntervalDomain = intervalArray[1];
               PwDomain startTimeIntervalDomain = slot.getStartTime();

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.1 2004-02-03 20:43:56 taylor Exp $
+// $Id: ResourceProfile.java,v 1.2 2004-02-04 20:16:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,6 +14,7 @@ package gov.nasa.arc.planworks.viz.partialPlan.resourceProfile;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -64,6 +65,8 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 public class ResourceProfile extends BasicNode implements Extent {
 
   private static final int RESOURCE_NAME_Y_OFFSET = 2;
+  private static final int NUM_LEVEL_SCALE_TICKS = 6;
+  private static final int LEVEL_SCALE_TICK_WIDTH = 10;
 
   private PwResource resource;
   private int earliestStartTime;
@@ -73,12 +76,8 @@ public class ResourceProfile extends BasicNode implements Extent {
   private int earliestDurationTime;
   private int latestDurationTime;
   private Color backgroundColor;
+  private FontMetrics levelScaleFontMetrics;
   private ResourceProfileView resourceProfileView;
-  private boolean isEarliestStartMinusInf;
-  private boolean isLatestStartPlusInf;
-  private boolean isEarliestEndMinusInf;
-  private boolean isEarliestEndPlusInf;
-  private boolean isLatestEndPlusInf;
 
   private String nodeLabel;
   private int nodeLabelWidth;
@@ -87,53 +86,27 @@ public class ResourceProfile extends BasicNode implements Extent {
   private int extentYTop;
   private int extentYBottom;
   private double levelScaleScaling;
+  private int levelScaleWidth;
+  private double levelMax; // actual levels
+  private double levelMin;
+  private double levelLimitMin; // level limits - can be exceeded
+  private double levelLimitMax;
 
   public ResourceProfile( PwResource resource, Color backgroundColor,
-                       ResourceProfileView resourceProfileView) {
+                          FontMetrics levelScaleFontMetrics,
+                          ResourceProfileView resourceProfileView) {
     super();
     this.resource = resource;
     earliestStartTime = resource.getHorizonStart();
     latestEndTime = resource.getHorizonEnd();
-//     earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
-//     this.earliestStartTime = earliestStartTime;
-//     isEarliestStartMinusInf = false;
-//     if (earliestStartTime == DbConstants.MINUS_INFINITY_INT) {
-//       isEarliestStartMinusInf = true;
-//       this.earliestStartTime = resourceProfileView.getTimeScaleStart();
-//     }
-//     latestStartTime = startTimeIntervalDomain.getUpperBoundInt();
-//     isLatestStartPlusInf = false;
-//     if (latestStartTime == DbConstants.PLUS_INFINITY_INT) {
-//       isLatestStartPlusInf = true;
-//       latestStartTime = resourceProfileView.getTimeScaleEnd();
-//     }
-//     earliestEndTime = endTimeIntervalDomain.getLowerBoundInt();
-//     isEarliestEndMinusInf = false;
-//     isEarliestEndPlusInf = false;
-//     if (earliestEndTime == DbConstants.MINUS_INFINITY_INT) {
-//       isEarliestEndMinusInf = true;
-//       earliestEndTime = resourceProfileView.getTimeScaleStart();
-//     } else if (earliestEndTime == DbConstants.PLUS_INFINITY_INT) {
-//       isEarliestEndPlusInf = true;
-//       earliestEndTime = resourceProfileView.getTimeScaleEnd();
-//     }
-
-    // latestEndTime = endTimeIntervalDomain.getUpperBoundInt();
-//     this.latestEndTime = latestEndTime;
-//     isLatestEndPlusInf = false;
-//     if (latestEndTime == DbConstants.PLUS_INFINITY_INT) {
-//       isLatestEndPlusInf = true;
-//       this.latestEndTime = resourceProfileView.getTimeScaleEnd();
-//     }
-
     resourceId = resource.getId().toString();
-
 //     System.err.println( "Resource Node: " + resourceId + " eS " +
 //                         earliestStartTime + " lE " + latestEndTime);
 
     this.backgroundColor = backgroundColor;
-
+    this.levelScaleFontMetrics = levelScaleFontMetrics;
     this.resourceProfileView = resourceProfileView;
+
     nodeLabel = resource.getName();
     nodeLabelWidth = ResourceProfile.getNodeLabelWidth( nodeLabel, resourceProfileView);
     cellRow = Algorithms.NO_ROW;
@@ -165,35 +138,36 @@ public class ResourceProfile extends BasicNode implements Extent {
   public void configure() {
     // put the label in the LevelScaleView, rather than the ExtentView
 
-    // set center point of label to earliestStartTime
-//     Point resourceLocation = new Point( resourceProfileView.scaleTime( earliestStartTime),
-//                                         scaleY( ViewConstants.RESOURCE_PROFILE_MIN_Y_OFFSET));
-//     boolean isRectangular = true;
-//     setLabelSpot( JGoObject.Center);
-//     initialize( resourceLocation, nodeLabel, isRectangular);
-//     // BasicNode's initial location is its center - move left edge to  earliestStartTime
-//     int startTime = earliestStartTime;
-//     int newXLoc =
-//       (int) resourceProfileView.scaleTime
-//       ( (int) (startTime + ((nodeLabelWidth * 0.5) / resourceProfileView.getTimeScale())));
-//     setLocation( newXLoc, (int) getLocation().getY());
-
-//     setBrush( JGoBrush.makeStockBrush( backgroundColor));  
-//     getLabel().setEditable( false);
-//     setDraggable( false);
-//     // do not allow user links
-//     getPort().setVisible( false);
-//     getLabel().setMultiline( true);
-
-    renderBorders( resourceProfileView.scaleTime( earliestStartTime),
-                   resourceProfileView.scaleTime( latestEndTime),
+    renderBorders( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
+                   resourceProfileView.getJGoRulerView().scaleTime( latestEndTime),
                    resourceProfileView.getJGoExtentDocument());
-    int levelScaleWidth = resourceProfileView.getLevelScaleViewWidth() -
+    levelScaleWidth = resourceProfileView.getLevelScaleViewWidth() -
       ViewConstants.RESOURCE_LEVEL_SCALE_WIDTH_OFFSET;
     renderBorders( 0, levelScaleWidth, resourceProfileView.getJGoLevelScaleDocument());
     renderResourceName();
+    
+    levelLimitMin = resource.getLevelLimitMin();
+    levelLimitMax = resource.getLevelLimitMax();
 
-    renderLevelsAndLimits();
+    List instantList = resource.getInstantList();
+    Iterator instantItr = instantList.iterator();
+    while (instantItr.hasNext()) {
+      PwResourceInstant instant = (PwResourceInstant) instantItr.next();
+      if (instant.getLevelMax() > levelMax) {
+        levelMax = instant.getLevelMax();
+      }
+      if (instant.getLevelMin() < levelMin) {
+        levelMin = instant.getLevelMin();
+      }
+    }
+    levelScaleScaling = (extentYBottom - extentYTop) / (levelMax - levelMin);
+    // System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
+    // System.err.println( " levelMin " + levelMin + " levelMax " +
+    //                     levelMax + " levelScaleScaling " + levelScaleScaling);
+
+    renderLevelScaleLinesAndTicks();
+    renderLimits();
+    renderLevels();
   } // end configure
 
 
@@ -256,33 +230,95 @@ public class ResourceProfile extends BasicNode implements Extent {
     resourceProfileView.getJGoLevelScaleDocument().addObjectAtTail( textObject);
   } // end renderResourceName
 
-  private void renderLevelsAndLimits() {
-    double levelLimitMin = resource.getLevelLimitMin();
-    double levelLimitMax = resource.getLevelLimitMax();
-    levelScaleScaling = (extentYBottom - extentYTop) / (levelLimitMax - levelLimitMin);
-    // System.err.println( "extentYTop " + extentYTop + " extentYBottom " + extentYBottom);
-    // System.err.println( " levelLimitMin " + levelLimitMin + " levelLimitMax " +
-    //                     levelLimitMax + " levelScaleScaling " + levelScaleScaling);
-    double initialCapacity = resource.getInitialCapacity();
-//     JGoStroke initCap = new JGoStroke();
-//     initCap.addPoint( resourceProfileView.scaleTime( earliestStartTime),
-//                       scaleResourceLevel( initialCapacity));
-//     initCap.addPoint( resourceProfileView.scaleTime( latestEndTime),
-//                       scaleResourceLevel( initialCapacity));
-//     // System.err.println( " pointY " + scaleResourceLevel( initialCapacity));
-//     initCap.setDraggable( false); initCap.setResizable( false);
-//     initCap.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "aquamarine3")));
-//     resourceProfileView.getJGoExtentDocument().addObjectAtTail( initCap);
+  private void renderLevelScaleLinesAndTicks() {
+    int tickDelta = (int) ((levelMax - levelMin) / NUM_LEVEL_SCALE_TICKS);
+//     System.err.println( "renderLevelScale: max " + levelMax + " min " + levelMin +
+//                         " tickDelta " + tickDelta);
+    int level = (int) levelMin;
+    while (level <= levelMax) {
+//       System.err.println( "  level " + level);
+      JGoStroke tickLine = new JGoStroke();
+      tickLine.addPoint( levelScaleWidth - LEVEL_SCALE_TICK_WIDTH,
+                         scaleResourceLevel( (double) level));
+      tickLine.addPoint( levelScaleWidth, scaleResourceLevel( (double) level));
+      tickLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "white")));
+      resourceProfileView.getJGoLevelScaleDocument().addObjectAtTail( tickLine);
 
+      JGoStroke tickLevelLine = new JGoStroke();
+      tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
+                              scaleTime( earliestStartTime),
+                              scaleResourceLevel( (double) level));
+      tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
+                              scaleTime( earliestStartTime + 10),
+                              scaleResourceLevel( (double) level));
+      tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
+                              scaleTime( earliestStartTime + 20),
+                              scaleResourceLevel( (double) level));
+      tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
+                              scaleTime( latestEndTime),
+                              scaleResourceLevel( (double) level));
+      tickLevelLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "white")));
+      resourceProfileView.getJGoExtentDocument().addObjectAtTail( tickLevelLine);
+
+      level += tickDelta;
+    }
+    // labels
+    level = (int) levelMin;
+    while (level < levelMax) {
+      String label = new Double( level).toString();
+      int xTop = levelScaleWidth / 2;
+      Point labelLoc =
+        new Point( levelScaleWidth - LEVEL_SCALE_TICK_WIDTH - 2 -
+                   SwingUtilities.computeStringWidth( levelScaleFontMetrics, label),
+                   scaleResourceLevel( (double) level + tickDelta * 0.5));
+      JGoText labelObject = new JGoText( labelLoc, label);
+      labelObject.setResizable( false);
+      labelObject.setEditable( false);
+      labelObject.setDraggable( false);
+      labelObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
+      labelObject.setFontSize( ResourceProfileView.LEVEL_SCALE_FONT_SIZE);
+      resourceProfileView.getJGoLevelScaleDocument().addObjectAtTail( labelObject);
+      level += tickDelta;
+    }
+  } // end renderLevelScaleLinesAndTicks
+
+  private void renderLimits() {
+    JGoStroke levelLimitMaxLine = new JGoStroke();
+    levelLimitMaxLine.addPoint( resourceProfileView.getJGoRulerView().
+                                scaleTime( earliestStartTime),
+                                scaleResourceLevel( levelLimitMax));
+    levelLimitMaxLine.addPoint( resourceProfileView.getJGoRulerView().
+                                scaleTime( latestEndTime),
+                                scaleResourceLevel( levelLimitMax));
+    // System.err.println( " pointY " + scaleResourceLevel( initialCapacity));
+    levelLimitMaxLine.setDraggable( false); levelLimitMaxLine.setResizable( false);
+    levelLimitMaxLine.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "red")));
+    resourceProfileView.getJGoExtentDocument().addObjectAtTail( levelLimitMaxLine);
+
+    JGoStroke levelLimitMinLine = new JGoStroke();
+    levelLimitMinLine.addPoint( resourceProfileView.getJGoRulerView().
+                                scaleTime( earliestStartTime),
+                                scaleResourceLevel( levelLimitMin));
+    levelLimitMinLine.addPoint( resourceProfileView.getJGoRulerView().
+                                scaleTime( latestEndTime),
+                                scaleResourceLevel( levelLimitMin));
+    // System.err.println( " pointY " + scaleResourceLevel( initialCapacity));
+    levelLimitMinLine.setDraggable( false); levelLimitMinLine.setResizable( false);
+    levelLimitMinLine.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "red")));
+    resourceProfileView.getJGoExtentDocument().addObjectAtTail( levelLimitMinLine);
+  } // end renderLimits
+
+  private void renderLevels() {
+    double initialCapacity = resource.getInitialCapacity();
     List instantList = resource.getInstantList();
     Iterator instantItr = instantList.iterator();
     JGoStroke levelMaxLine = new JGoStroke();
     JGoStroke levelMinLine = new JGoStroke();
     double lastLevelMax = initialCapacity;
     double lastLevelMin = initialCapacity;
-    levelMaxLine.addPoint( resourceProfileView.scaleTime( earliestStartTime),
+    levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
                            scaleResourceLevel( lastLevelMax));
-    levelMinLine.addPoint( resourceProfileView.scaleTime( earliestStartTime),
+    levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
                            scaleResourceLevel( lastLevelMin));
     while (instantItr.hasNext()) {
       PwResourceInstant instant = (PwResourceInstant) instantItr.next();
@@ -295,31 +331,31 @@ public class ResourceProfile extends BasicNode implements Extent {
       int time = instant.getTime().getLowerBoundInt();
       double levelMax = instant.getLevelMax();
       double levelMin = instant.getLevelMin();
-      levelMaxLine.addPoint( resourceProfileView.scaleTime( time),
+      levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
                              scaleResourceLevel( lastLevelMax));
-      levelMaxLine.addPoint( resourceProfileView.scaleTime( time),
+      levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
                              scaleResourceLevel(levelMax ));
-      levelMinLine.addPoint( resourceProfileView.scaleTime( time),
+      levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
                              scaleResourceLevel( lastLevelMin));
-      levelMinLine.addPoint( resourceProfileView.scaleTime( time),
+      levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
                              scaleResourceLevel( levelMin));
       lastLevelMax = levelMax; lastLevelMin = levelMin;
     }
-    levelMaxLine.addPoint( resourceProfileView.scaleTime( latestEndTime),
+    levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( latestEndTime),
                            scaleResourceLevel( lastLevelMax));
-    levelMinLine.addPoint( resourceProfileView.scaleTime( latestEndTime),
+    levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( latestEndTime),
                            scaleResourceLevel( lastLevelMin));
     levelMaxLine.setDraggable( false); levelMaxLine.setResizable( false);
-    levelMaxLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "magenta")));
+    levelMaxLine.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "magenta")));
     levelMinLine.setDraggable( false); levelMinLine.setResizable( false);
-    levelMinLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "blue")));
-    resourceProfileView.getJGoExtentDocument().addObjectAtTail( levelMaxLine);
+    levelMinLine.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "blue")));
     resourceProfileView.getJGoExtentDocument().addObjectAtTail( levelMinLine);
-  } // end renderLevelsAndLimits
+    resourceProfileView.getJGoExtentDocument().addObjectAtTail( levelMaxLine);
+  } // end renderLevels
 
 
   private int scaleResourceLevel( double level) {
-    return (extentYBottom - (int) (level * levelScaleScaling));
+    return (extentYBottom - (int) ((level - levelMin) * levelScaleScaling));
   }
 
   /**
@@ -358,7 +394,7 @@ public class ResourceProfile extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getStart() {
-    int xStart = resourceProfileView.scaleTime( earliestStartTime);
+    int xStart = resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime);
 //     if (resourceId.equals( "185") || resourceId.equals( "978")) {
 //       System.err.println( "xStart: " + predicateName + " xStart " +
 //                           String.valueOf( (xStart - ViewConstants.TIMELINE_VIEW_INSET_SIZE)));
@@ -374,8 +410,8 @@ public class ResourceProfile extends BasicNode implements Extent {
    * @return - <code>int</code> - 
    */
   public int getEnd() {
-    int xStart = resourceProfileView.scaleTime( earliestStartTime);
-    int xEnd = resourceProfileView.scaleTime( latestEndTime);
+    int xStart = resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime);
+    int xEnd = resourceProfileView.getJGoRulerView().scaleTime( latestEndTime);
     int xStartPlusLabel = xStart;
 //     if (resourceId.equals( "185") || resourceId.equals( "978")) {
 //       System.err.println( "xEnd: " + predicateName + " xEnd " +

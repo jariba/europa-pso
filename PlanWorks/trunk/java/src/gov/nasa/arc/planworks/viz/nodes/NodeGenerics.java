@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.15 2004-02-03 22:44:05 miatauro Exp $
+// $Id: NodeGenerics.java,v 1.16 2004-02-04 20:16:38 taylor Exp $
 //
 // PlanWorks
 //
@@ -80,12 +80,10 @@ public class NodeGenerics {
    * @param slot - <code>PwSlot</code> - 
    * @param previousSlot - <code>PwSlot</code> - 
    * @param isLastSlot - <code>boolean</code> - 
-   * @param alwaysReturnEnd - <code>boolean</code> - 
    * @return - <code>PwDomain[]</code> - 
    */
-  public static PwDomain[] getStartEndIntervals(PwSlot slot, PwSlot previousSlot, PwSlot nextSlot,
-                                                boolean isLastSlot, boolean alwaysReturnEnd) 
-  {
+  public static PwDomain[] getStartEndIntervals( PwSlot slot, PwSlot previousSlot,
+                                                 PwSlot nextSlot, boolean isLastSlot) {
     PwDomain[] intervalArray = new PwDomain[2];
     PwDomain startIntervalDomain = null;
     PwDomain endIntervalDomain = null;
@@ -129,7 +127,7 @@ public class NodeGenerics {
         endIntervalDomain = lastIntervalVariable.getDomain();
       }
     }
-    if (alwaysReturnEnd && (endIntervalDomain == null)) {
+    if (endIntervalDomain == null) {
       System.err.println("EQ");
       endIntervalDomain = startIntervalDomain;
     }

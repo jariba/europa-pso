@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.2 2004-02-03 22:44:37 miatauro Exp $
+// $Id: ResourceProfileView.java,v 1.3 2004-02-04 20:16:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -78,6 +81,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
+import gov.nasa.arc.planworks.viz.partialPlan.TimeScaleView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -91,23 +95,20 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class ResourceProfileView extends PartialPlanView  {
 
+  protected static final int LEVEL_SCALE_FONT_SIZE = 8;
+
   private long startTimeMSecs;
   private ViewSet viewSet;
   private ExtentView jGoExtentView;
   private JGoView jGoLevelScaleView;
-  private JGoView jGoRulerView;
+  private TimeScaleView jGoRulerView;
   private Component horizontalStrut;
   private List resourceProfileList; // element ResourceProfile
   private int slotLabelMinLength;
-  private int timeScaleStart;
-  private int timeScaleEnd;
   private int maxSlots;
   private int startXLoc;
   private int xOrigin;
-  private int endXLoc;
   private int startYLoc;
-  private int timeDelta;
-  private int tickTime;
   private int maxCellRow;
   private float timeScale;
   private JGoStroke timeScaleMark;
@@ -116,6 +117,8 @@ public class ResourceProfileView extends PartialPlanView  {
   private int maxYExtent;
   private JGoStroke maxExtentViewHeightPoint;
   private JGoStroke maxLevelViewHeightPoint;
+  private Font levelScaleFont;
+  private FontMetrics levelScaleFontMetrics;
 
   private static Point docCoords;
 
@@ -200,7 +203,7 @@ public class ResourceProfileView extends PartialPlanView  {
     JPanel rulerPanel = new JPanel();
     rulerPanel.setLayout( new BoxLayout( rulerPanel, BoxLayout.Y_AXIS));
 
-    jGoRulerView = new JGoView();
+    jGoRulerView = new TimeScaleView( startXLoc, startYLoc, partialPlan, this);
     jGoRulerView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoRulerView.getHorizontalScrollBar().addAdjustmentListener
                                      ( new HorizontalScrollBarListener());
@@ -252,7 +255,15 @@ public class ResourceProfileView extends PartialPlanView  {
       }
       // System.err.println( "timelineView displayable " + this.isDisplayable());
     }
+    // reource names font
     this.computeFontMetrics( this);
+
+    levelScaleFont = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
+                               ViewConstants.TIMELINE_VIEW_FONT_STYLE,
+                               LEVEL_SCALE_FONT_SIZE);
+    Graphics graphics = ((JPanel) this).getGraphics();
+    levelScaleFontMetrics = graphics.getFontMetrics( levelScaleFont);
+    graphics.dispose();
 
     levelScaleViewWidth = computeMaxResourceLabelWidth();
     fillerWidth = levelScaleViewWidth + ViewConstants.JGO_SCROLL_BAR_WIDTH;
@@ -265,8 +276,10 @@ public class ResourceProfileView extends PartialPlanView  {
    
     this.setVisible( true);
     
-    collectAndComputeTimeScaleMetrics();
-    createTimeScale();
+    boolean doFreeTokens = false;
+    xOrigin = jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+    jGoRulerView.createTimeScale();
+
     boolean isRedraw = false, isScrollBarAdjustment = false;
     renderResourceExtent();
 
@@ -396,7 +409,7 @@ public class ResourceProfileView extends PartialPlanView  {
    * @return - <code>float</code> - 
    */
   public float getTimeScale() {
-    return timeScale;
+    return jGoRulerView.getTimeScale();
   }
 
   /**
@@ -405,7 +418,7 @@ public class ResourceProfileView extends PartialPlanView  {
    * @return - <code>int</code> - 
    */
   public int getTimeScaleStart() {
-    return timeScaleStart;
+    return jGoRulerView.getTimeScaleStart();
   }
 
   /**
@@ -414,27 +427,7 @@ public class ResourceProfileView extends PartialPlanView  {
    * @return - <code>int</code> - 
    */
   public int getTimeScaleEnd() {
-    return timeScaleEnd;
-  }
-
-  /**
-   * <code>scaleTime</code> - convert time to view x location
-   *
-   * @param time - <code>int</code> - 
-   * @return - <code>int</code> - 
-   */
-  public int scaleTime( int time) {
-    return xOrigin + (int) (timeScale * time);
-  }
-
-  /**
-   * <code>scaleXLoc</code> - convert from view x location to time
-   *
-   * @param xLoc - <code>int</code> - 
-   * @return - <code>int</code> - 
-   */
-  public int  scaleXLoc( int xLoc) {
-    return (int) ((xLoc - xOrigin) / timeScale);
+    return jGoRulerView.getTimeScaleEnd();
   }
 
   /**
@@ -446,190 +439,21 @@ public class ResourceProfileView extends PartialPlanView  {
     return startYLoc;
   }
 
-  private void collectAndComputeTimeScaleMetrics() {
-    List objectList = partialPlan.getObjectList();
-    Iterator objectIterator = objectList.iterator();
-    boolean alwaysReturnEnd = true;
-    while (objectIterator.hasNext()) {
-      PwObject object = (PwObject) objectIterator.next();
-      String objectName = object.getName();
-      List timelineList = object.getTimelineList();
-      Iterator timelineIterator = timelineList.iterator();
-      while (timelineIterator.hasNext()) {
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        List slotList = timeline.getSlotList();
-        Iterator slotIterator = slotList.iterator();
-        PwSlot previousSlot = null;
-        int slotCnt = 0;
-        while (slotIterator.hasNext()) {
-          PwSlot slot = (PwSlot) slotIterator.next();
-          boolean isLastSlot = (! slotIterator.hasNext());
-          PwToken token = slot.getBaseToken();
-          slotCnt++;
-//           PwDomain[] intervalArray =
-//             NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot,
-//                                                alwaysReturnEnd);
-          //collectTimeScaleMetrics( intervalArray[0], intervalArray[1], token);
-          collectTimeScaleMetrics(slot.getStartTime(), slot.getEndTime(), token);
-          previousSlot = slot;
-        }
-        if (slotCnt > maxSlots) {
-          maxSlots = slotCnt;
-        }
-      }
+  /**
+   * <code>getJGoRulerView</code>
+   *
+   * @return - <code>TimeScaleView</code> - 
+   */
+  public TimeScaleView getJGoRulerView() {
+    return jGoRulerView;
+  }
+
+  private List createDummyData( boolean isNameOnly) {
+    int startTime = 0, endTime = 0;
+    if (! isNameOnly) {
+      startTime = getTimeScaleStart();
+      endTime = getTimeScaleEnd();
     }
-    maxSlots = Math.max( maxSlots, ViewConstants.TEMPORAL_MIN_MAX_SLOTS);
-
-    computeTimeScaleMetrics();
-
-  } // collectAndComputeTimeScaleMetrics
-
-  private void collectTimeScaleMetrics( PwDomain startTimeIntervalDomain,
-                                        PwDomain endTimeIntervalDomain, PwToken token) {
-    int leftMarginTime = 0;
-    if (startTimeIntervalDomain != null) {
-//       System.err.println( "collectTimeScaleMetrics earliest " +
-//                           startTimeIntervalDomain.getLowerBound() + " latest " +
-//                           startTimeIntervalDomain.getUpperBound());
-      int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
-      leftMarginTime = earliestTime;
-      if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
-          (earliestTime < timeScaleStart)) {
-          timeScaleStart = earliestTime;
-      }
-      int latestTime = startTimeIntervalDomain.getUpperBoundInt();
-      if (leftMarginTime == DbConstants.MINUS_INFINITY_INT) {
-        leftMarginTime = latestTime;
-      }
-      if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
-          (latestTime != DbConstants.MINUS_INFINITY_INT) &&
-          (latestTime < timeScaleStart)) {
-        timeScaleStart = latestTime;
-      }
-    }
-    if (endTimeIntervalDomain != null) {
-//       System.err.println( "collectTimeScaleMetrics latest " +
-//                           endTimeIntervalDomain.getUpperBound() + " earliest " +
-//                           endTimeIntervalDomain.getLowerBound());
-      int latestTime = endTimeIntervalDomain.getUpperBoundInt();
-      if (latestTime != DbConstants.PLUS_INFINITY_INT) {
-        if (latestTime > timeScaleEnd) {
-          timeScaleEnd = latestTime;
-        }
-      }
-      int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
-      if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
-          (earliestTime != DbConstants.PLUS_INFINITY_INT) &&
-          (earliestTime > timeScaleEnd)) {
-        timeScaleEnd = earliestTime;
-      }
-    }
-  } // end collectTimeScaleMetrics
-
-  private void computeTimeScaleMetrics() {
-    endXLoc = Math.max( startXLoc +
-                        (maxSlots * slotLabelMinLength * fontMetrics.charWidth( 'A')),
-                        ViewConstants.TEMPORAL_MIN_END_X_LOC);
-    timeScale = ((float) (endXLoc - startXLoc)) / ((float) (timeScaleEnd - timeScaleStart));
-    //System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
-    //                    " endXLoc " + endXLoc);
-    //System.err.println( "Temporal Extent View time scale: " + timeScaleStart + " " +
-    //                   timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
-    int timeScaleRange = timeScaleEnd - timeScaleStart;
-    timeDelta = 1;
-    int maxIterationCnt = 25, iterationCnt = 0;
-    while ((timeDelta * maxSlots) < timeScaleRange) {
-      if (timeDelta == 1) {
-        timeDelta = 2;
-      } else if (timeDelta == 2) {
-        timeDelta = 5;
-      } else {
-        timeDelta *= 2;
-      }
-//       System.err.println( "range " + timeScaleRange + " maxSlots " +
-//                           maxSlots + " timeDelta " + timeDelta);
-      iterationCnt++;
-      if (iterationCnt > maxIterationCnt) {
-        String message = "Range (" + timeScaleRange + ") execeeds functionality";
-        JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                       "Resource Profile View Exception",
-                                       JOptionPane.ERROR_MESSAGE);
-        System.err.println( message);
-        System.exit( 1);
-      }
-    }
-    tickTime = 0;
-    xOrigin = startXLoc;
-    int scaleStart = timeScaleStart;
-    if ((scaleStart < 0) && ((scaleStart % timeDelta) == 0)) {
-      scaleStart -= 1;
-    }
-    while (scaleStart < tickTime) {
-      tickTime -= timeDelta;
-      xOrigin += (int) (timeScale * timeDelta);
-//       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
-//                           " xOrigin " + xOrigin);
-    }
-    // System.err.println( " xOrigin " + xOrigin);
-  } // end computeTimeScaleMetrics
-
-  private void createTimeScale() {
-    int xLoc = (int) scaleTime( tickTime);
-    // System.err.println( "createTimeScale: xLoc " + xLoc);
-    int yRuler = startYLoc;
-    int yLabelUpper = yRuler, yLabelLower = yRuler;
-    if ((timeScaleEnd - timeScaleStart) > ViewConstants.TEMPORAL_LARGE_LABEL_RANGE) {
-      yLabelLower = yRuler + ViewConstants.TIMELINE_VIEW_Y_INIT;
-    }
-    int yLabel = yLabelUpper;
-    int scaleWidth = 2, tickHeight = ViewConstants.TIMELINE_VIEW_Y_INIT / 2;
-    JGoStroke timeScaleRuler = new JGoStroke();
-    timeScaleRuler.setPen( new JGoPen( JGoPen.SOLID, scaleWidth, ColorMap.getColor( "black")));
-    timeScaleRuler.setDraggable( false);
-    timeScaleRuler.setResizable( false);
-    boolean isUpperLabel = true;
-    while (tickTime < timeScaleEnd) {
-      timeScaleRuler.addPoint( xLoc, yRuler);
-      timeScaleRuler.addPoint( xLoc, yRuler + tickHeight);
-      timeScaleRuler.addPoint( xLoc, yRuler);
-      addTickLabel( tickTime, xLoc, yLabel + 4);
-      tickTime += timeDelta;
-      xLoc = (int) scaleTime( tickTime);
-      isUpperLabel = (! isUpperLabel);
-      if (isUpperLabel) {
-        yLabel = yLabelUpper;
-      } else {
-        yLabel = yLabelLower;
-      }
-    }
-    timeScaleRuler.addPoint( xLoc, yRuler);
-    timeScaleRuler.addPoint( xLoc, yRuler + tickHeight);
-    addTickLabel( tickTime, xLoc, yLabel + 4);
-
-    jGoRulerView.getDocument().addObjectAtTail( timeScaleRuler);
-  } // end createTimeScale
-
-
-  private void addTickLabel( int tickTime, int x, int y) {
-    String text = String.valueOf( tickTime);
-    Point textLoc = new Point( x, y);
-    JGoText textObject = new JGoText( textLoc, ViewConstants.TIMELINE_VIEW_FONT_SIZE,
-                                      text, ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                                      ViewConstants.TIMELINE_VIEW_IS_FONT_BOLD,
-                                      ViewConstants.TIMELINE_VIEW_IS_FONT_UNDERLINED,
-                                      ViewConstants.TIMELINE_VIEW_IS_FONT_ITALIC,
-                                      ViewConstants.TIMELINE_VIEW_TEXT_ALIGNMENT,
-                                      ViewConstants.TIMELINE_VIEW_IS_TEXT_MULTILINE,
-                                      ViewConstants.TIMELINE_VIEW_IS_TEXT_EDITABLE);
-    textObject.setResizable( false);
-    textObject.setEditable( false);
-    textObject.setDraggable( false);
-    textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
-    jGoRulerView.getDocument().addObjectAtTail( textObject);
-  } // end addTickLabel
-
-
-  private List createDummyData() {
     List resourceList = new ArrayList();
     List resourceInstantList = new ArrayList();
     PwIntervalDomain instantDomain =
@@ -638,36 +462,31 @@ public class ResourceProfileView extends PartialPlanView  {
       ( new PwResourceInstantImpl( new Integer( 99011), instantDomain, 4., 6.));
     resourceInstantList.add
       ( new PwResourceInstantImpl( new Integer( 99012),
-                                   new PwIntervalDomainImpl( "type", "20", "20"), 6., 8.));
+                                   new PwIntervalDomainImpl( "type", "20", "20"), 10., 14.));
     resourceInstantList.add
       ( new PwResourceInstantImpl( new Integer( 99013),
-                                   new PwIntervalDomainImpl( "type", "30", "30"), 8., 10.));
+                                   new PwIntervalDomainImpl( "type", "30", "30"), -2., 0.));
     resourceInstantList.add
       ( new PwResourceInstantImpl( new Integer( 99014),
                                    new PwIntervalDomainImpl( "type", "50", "50"), 2., 4.));
     PwResource dummyResource =
-      new PwResourceImpl( new Integer( 9901), "Resource1", 4., 0., 12.,
-                          timeScaleStart, timeScaleEnd,
+      new PwResourceImpl( new Integer( 9901), "Resource1", 4., 0., 12., startTime, endTime,
                           new UniqueSet(), resourceInstantList);
     resourceList.add( dummyResource);
     dummyResource =
-      new PwResourceImpl( new Integer( 9902), "Resource2", 4., 0., 12., 
-                          timeScaleStart, timeScaleEnd,
+      new PwResourceImpl( new Integer( 9902), "Resource2", 4., 0., 12., startTime, endTime,
                           new UniqueSet(), resourceInstantList);
     resourceList.add( dummyResource);
     dummyResource =
-      new PwResourceImpl( new Integer( 9903), "ResourceThree", 4., 0., 12., 
-                          timeScaleStart, timeScaleEnd,
+      new PwResourceImpl( new Integer( 9903), "ResourceThree", 4., 0., 12., startTime, endTime,
                           new UniqueSet(), resourceInstantList);
     resourceList.add( dummyResource);
     dummyResource =
-      new PwResourceImpl( new Integer( 9904), "ResourceFour", 4., 0., 12., 
-                          timeScaleStart, timeScaleEnd,
+      new PwResourceImpl( new Integer( 9904), "ResourceFour", 4., 0., 12., startTime, endTime,
                           new UniqueSet(), resourceInstantList);
     resourceList.add( dummyResource);
     dummyResource =
-      new PwResourceImpl( new Integer( 9905), "ResourceFive", 4., 0., 12., 
-                          timeScaleStart, timeScaleEnd,
+      new PwResourceImpl( new Integer( 9905), "ResourceFive", 4., 0., 12., startTime, endTime,
                           new UniqueSet(), resourceInstantList);
     resourceList.add( dummyResource);
     return resourceList;
@@ -675,14 +494,15 @@ public class ResourceProfileView extends PartialPlanView  {
 
 
   private void createResourceProfiles() {
+    boolean isNamesOnly = false;
     // resourceList will come from partialPlan
-    List resourceList = createDummyData();
+    List resourceList = createDummyData( isNamesOnly);
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
       ResourceProfile resourceProfile =
         new ResourceProfile( resource, ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR),
-                             this);
+                             levelScaleFontMetrics, this);
       // System.err.println( "resourceProfile " + resourceProfile);
       jGoExtentView.getDocument().addObjectAtTail( resourceProfile);
       resourceProfileList.add( resourceProfile);
@@ -691,9 +511,10 @@ public class ResourceProfileView extends PartialPlanView  {
   } // end createResourceProfiles
 
   private int computeMaxResourceLabelWidth() {
+    boolean isNamesOnly = true;
     int maxWidth = ViewConstants.JGO_SCROLL_BAR_WIDTH * 2;
     // resourceList will come from partialPlan
-    List resourceList = createDummyData();
+    List resourceList = createDummyData( isNamesOnly);
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
@@ -714,10 +535,14 @@ public class ResourceProfileView extends PartialPlanView  {
       }*/
     List extents = new ArrayList(resourceProfileList);
     // do the layout -- compute cellRow for each node
-    List results = Algorithms.allocateRows( scaleTime( timeScaleStart),
-                                            scaleTime( timeScaleEnd), extents);
-    //List results = Algorithms.betterAllocateRows(scaleTime(timeScaleStart),
-    //                                            scaleTime(timeScaleEnd), extents);
+    List results =
+      Algorithms.allocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
+                               jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
+                               extents);
+//     List results =
+//       Algorithms.betterAllocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
+//                                      jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
+//                                      extents);
     if (resourceProfileList.size() != results.size()) {
       String message = String.valueOf( resourceProfileList.size() - results.size()) +
         " nodes not successfully allocated";
@@ -1215,7 +1040,7 @@ public class ResourceProfileView extends PartialPlanView  {
     }
 
     public String getToolTipText() {
-      return String.valueOf( scaleXLoc( xLoc) + 1);
+      return String.valueOf( jGoRulerView.scaleXLoc( xLoc) + 1);
     }
 
   } // end class TimeScaleMark

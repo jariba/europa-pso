@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.2 2004-02-03 22:44:20 miatauro Exp $
+// $Id: TimeScaleView.java,v 1.3 2004-02-04 20:16:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,31 +13,12 @@
 
 package gov.nasa.arc.planworks.viz.partialPlan;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollBar;
-import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoListPosition;
-import com.nwoods.jgo.JGoSelection;
-import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoText;
@@ -49,26 +30,14 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
-import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
-import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.ViewGenerics;
-import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 /**
  * <code>TimeScaleView</code> - a time scale with time ticks
@@ -78,6 +47,10 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  * @version 0.0
  */
 public class TimeScaleView extends JGoView  {
+
+  private static final int TICK_Y_INCREMENT = 4;
+  private static final int TIME_DELTA_INTERATION_CNT = 25;
+  private static final int TIME_DELTA_INCREMENT_LARGE = 5;
 
   private int startXLoc;
   private int startYLoc;
@@ -99,9 +72,11 @@ public class TimeScaleView extends JGoView  {
    * @param startXLoc - <code>int</code> - 
    * @param startYLoc - <code>int</code> - 
    * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
    */
-  public TimeScaleView( int startXLoc, int startYLoc, PwPartialPlan partialPlan,
-                        PartialPlanView partialPlanView) {
+  public TimeScaleView( final int startXLoc, final int startYLoc,
+                        final PwPartialPlan partialPlan,
+                        final PartialPlanView partialPlanView) {
     super();
     this.startXLoc = startXLoc;
     this.startYLoc = startYLoc;
@@ -116,7 +91,7 @@ public class TimeScaleView extends JGoView  {
    *
    * @return - <code>int</code> - 
    */
-  public int getTimeScaleStart() {
+  public final int getTimeScaleStart() {
     return timeScaleStart;
   }
 
@@ -125,7 +100,7 @@ public class TimeScaleView extends JGoView  {
    *
    * @return - <code>int</code> - 
    */
-  public int getTimeScaleEnd() {
+  public final int getTimeScaleEnd() {
     return timeScaleEnd;
   }
 
@@ -134,7 +109,7 @@ public class TimeScaleView extends JGoView  {
    *
    * @return - <code>float</code> - 
    */
-  public float getTimeScale() {
+  public final float getTimeScale() {
     return timeScale;
   }
 
@@ -142,14 +117,13 @@ public class TimeScaleView extends JGoView  {
    * <code>collectAndComputeTimeScaleMetrics</code>
    *
    * @param doFreeTokens - <code>boolean</code> - 
-   * @param partialPlanView - <code>PartialPlanView</code> - 
+   * @param partPlanView - <code>PartialPlanView</code> - 
    * @return - <code>int</code> - 
    */
-  public int collectAndComputeTimeScaleMetrics( boolean doFreeTokens,
-                                                PartialPlanView partialPlanView) {
+  public final int collectAndComputeTimeScaleMetrics( final boolean doFreeTokens,
+                                                      final PartialPlanView partPlanView) {
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
-    boolean alwaysReturnEnd = true;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
       String objectName = object.getName();
@@ -167,8 +141,7 @@ public class TimeScaleView extends JGoView  {
           PwToken token = slot.getBaseToken();
           slotCnt++;
 //           PwDomain[] intervalArray =
-//             NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot,
-//                                                alwaysReturnEnd);
+//             NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot);
 //           collectTimeScaleMetrics( intervalArray[0], intervalArray[1], token);
           collectTimeScaleMetrics(slot.getStartTime(), slot.getEndTime(), token);
           previousSlot = slot;
@@ -183,12 +156,13 @@ public class TimeScaleView extends JGoView  {
     if (doFreeTokens) {
       collectFreeTokenMetrics();
     }
-    return computeTimeScaleMetrics( partialPlanView);
+    return computeTimeScaleMetrics( partPlanView);
   } // end collectAndComputeTimeScaleMetrics
 
 
-  private void collectTimeScaleMetrics( PwDomain startTimeIntervalDomain,
-                                        PwDomain endTimeIntervalDomain, PwToken token) {
+  private void collectTimeScaleMetrics( final PwDomain startTimeIntervalDomain,
+                                        final PwDomain endTimeIntervalDomain,
+                                        final PwToken token) {
     int leftMarginTime = 0;
     if (startTimeIntervalDomain != null) {
 //       System.err.println( "collectTimeScaleMetrics earliest " +
@@ -276,7 +250,7 @@ public class TimeScaleView extends JGoView  {
     }
   } // end collectFreeTokenMetrics
 
-  private int computeTimeScaleMetrics( PartialPlanView partialPlanView) {
+  private int computeTimeScaleMetrics( final PartialPlanView partPlanView) {
     endXLoc = Math.max( startXLoc +
                         (maxSlots * slotLabelMinLength *
                          partialPlanView.getFontMetrics().charWidth( 'A')),
@@ -288,12 +262,12 @@ public class TimeScaleView extends JGoView  {
     //                   timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
     int timeScaleRange = timeScaleEnd - timeScaleStart;
     timeDelta = 1;
-    int maxIterationCnt = 25, iterationCnt = 0;
+    int maxIterationCnt = TIME_DELTA_INTERATION_CNT, iterationCnt = 0;
     while ((timeDelta * maxSlots) < timeScaleRange) {
       if (timeDelta == 1) {
         timeDelta = 2;
       } else if (timeDelta == 2) {
-        timeDelta = 5;
+        timeDelta = TIME_DELTA_INCREMENT_LARGE;
       } else {
         timeDelta *= 2;
       }
@@ -302,9 +276,9 @@ public class TimeScaleView extends JGoView  {
       iterationCnt++;
       if (iterationCnt > maxIterationCnt) {
         String dialogTitle = null;
-        if (partialPlanView instanceof TemporalExtentView) {
+        if (partPlanView instanceof TemporalExtentView) {
           dialogTitle = PlanWorks.TEMPORAL_EXTENT_VIEW;
-        } else if (partialPlanView instanceof ResourceProfileView) {
+        } else if (partPlanView instanceof ResourceProfileView) {
           dialogTitle = PlanWorks.RESOURCE_PROFILE_VIEW;
         } else {
           System.err.println( "TimeScaleView.computeTimeScaleMetrics: view " +
@@ -340,7 +314,7 @@ public class TimeScaleView extends JGoView  {
    * <code>createTimeScale</code>
    *
    */
-  public void createTimeScale() {
+  public final void createTimeScale() {
     int xLoc = (int) scaleTime( tickTime);
     // System.err.println( "createTimeScale: xLoc " + xLoc);
     int yRuler = startYLoc;
@@ -359,7 +333,7 @@ public class TimeScaleView extends JGoView  {
       timeScaleRuler.addPoint( xLoc, yRuler);
       timeScaleRuler.addPoint( xLoc, yRuler + tickHeight);
       timeScaleRuler.addPoint( xLoc, yRuler);
-      addTickLabel( tickTime, xLoc, yLabel + 4);
+      addTickLabel( tickTime, xLoc, yLabel + TICK_Y_INCREMENT);
       tickTime += timeDelta;
       xLoc = (int) scaleTime( tickTime);
       isUpperLabel = (! isUpperLabel);
@@ -371,13 +345,13 @@ public class TimeScaleView extends JGoView  {
     }
     timeScaleRuler.addPoint( xLoc, yRuler);
     timeScaleRuler.addPoint( xLoc, yRuler + tickHeight);
-    addTickLabel( tickTime, xLoc, yLabel + 4);
+    addTickLabel( tickTime, xLoc, yLabel + TICK_Y_INCREMENT);
 
     getDocument().addObjectAtTail( timeScaleRuler);
   } // end createTimeScale
 
-  private void addTickLabel( int tickTime, int x, int y) {
-    String text = String.valueOf( tickTime);
+  private void addTickLabel( final int time, final int x, final int y) {
+    String text = String.valueOf( time);
     Point textLoc = new Point( x, y);
     JGoText textObject = new JGoText( textLoc, text);
     textObject.setResizable( false);
@@ -394,7 +368,7 @@ public class TimeScaleView extends JGoView  {
    * @param time - <code>int</code> - 
    * @return - <code>int</code> - 
    */
-  public int scaleTime( int time) {
+  public final int scaleTime( final int time) {
     return xOrigin + (int) (timeScale * time);
   }
 
@@ -404,7 +378,7 @@ public class TimeScaleView extends JGoView  {
    * @param xLoc - <code>int</code> - 
    * @return - <code>int</code> - 
    */
-  public int  scaleXLoc( int xLoc) {
+  public final int  scaleXLoc( final int xLoc) {
     return (int) ((xLoc - xOrigin) / timeScale);
   }
 
