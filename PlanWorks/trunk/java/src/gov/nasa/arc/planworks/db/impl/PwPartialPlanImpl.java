@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.33 2003-08-20 23:34:06 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.34 2003-08-21 18:38:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -66,8 +66,6 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   private Map predicateMap; // key = attribute id, value = PwPredicateImpl instance
   private Map tokenRelationMap; // key = attribute id, value = PwTokenRelationImpl instance
   private Map variableMap; // key = attribute id, value = PwVariableImpl instance
-
-  private int minId, maxId;
 
   /**
    * <code>PwPartialPlanImpl</code> - initialize storage structures then call createPartialPlan()
