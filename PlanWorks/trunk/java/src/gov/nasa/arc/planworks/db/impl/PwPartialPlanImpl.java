@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.60 2003-12-16 23:18:28 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.61 2003-12-20 01:54:48 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -533,16 +533,18 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
         System.err.println("Variable " + variable.getId() + " has null domain.");
         retval = false;
       }
-      if(variable.getType().equals("START_VAR") || variable.getType().equals("END_VAR") ||
-         variable.getType().equals("DURATION_VAR") || variable.getType().equals("OBJECT_VAR") ||
-         variable.getType().equals("REJECT_VAR")) {
+      if(variable.getType().equals(DbConstants.START_VAR) ||
+         variable.getType().equals(DbConstants.END_VAR) ||
+         variable.getType().equals(DbConstants.DURATION_VAR) ||
+         variable.getType().equals(DbConstants.OBJECT_VAR) ||
+         variable.getType().equals(DbConstants.REJECT_VAR)) {
         if(variable.getParameterList().size() != 0) {
           System.err.println(variable.getType() + " " + variable.getId() +
                              " has parameter list of size " + variable.getParameterList().size());
           retval = false;
         }
       }
-      else if(variable.getType().equals("PARAMETER_VAR")) {
+      else if(variable.getType().equals(DbConstants.PARAMETER_VAR)) {
         if(variable.getParameterList().size() == 0) {
           System.err.println("Parameter variable " + variable.getId() + " has no parameters.");
           retval = false;
@@ -667,7 +669,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       retval = false;
     }
     else {
-      if(!startVar.getType().equals("START_VAR")) {
+      if(!startVar.getType().equals(DbConstants.START_VAR)) {
         System.err.println("Token " + token.getId() + "'s start variable " + startVar.getId() + 
                            " isn't.");
         retval = false;
@@ -681,7 +683,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       retval = false;
     }
     else {
-      if(!endVar.getType().equals("END_VAR")) {
+      if(!endVar.getType().equals(DbConstants.END_VAR)) {
         System.err.println("Token " + token.getId() + "'s end variable " + endVar.getId() + " isn't.");
         retval = false;
       }
@@ -694,7 +696,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       retval = false;
     }
     else {
-      if(!durationVar.getType().equals("DURATION_VAR")) {
+      if(!durationVar.getType().equals(DbConstants.DURATION_VAR)) {
         System.err.println("Token " + token.getId() + "'s duration variable " + durationVar.getId() +
                            " isn't.");
         retval = false;
@@ -708,7 +710,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       retval = false;
     }
     else {
-      if(!objectVar.getType().equals("OBJECT_VAR")) {
+      if(!objectVar.getType().equals(DbConstants.OBJECT_VAR)) {
         System.err.println("Token " + token.getId() + "'s object variable " + objectVar.getId() + 
                            " isn't.");
         retval = false;
@@ -721,7 +723,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       System.err.println("Token " + token.getId() + " has null reject variable.");
     }
     else {
-      if(!rejectVar.getType().equals("REJECT_VAR")) {
+      if(!rejectVar.getType().equals(DbConstants.REJECT_VAR)) {
         System.err.println("Token " + token.getId() + "'s reject variable " + rejectVar.getId()  + 
                            " isn't.");
         retval = false;
@@ -839,9 +841,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       retval = false;
     }
     String type = var.getType();
-    if(!type.equals("START_VAR") && !type.equals("END_VAR") && !type.equals("DURATION_VAR") && 
-       !type.equals("OBJECT_VAR") && !type.equals("PARAMETER_VAR") && !type.equals("REJECT_VAR") &&
-       !type.equals("GLOBAL_VAR")) {
+    boolean isValidType = false;
+    for (int i = 0, n = DbConstants.DB_VARIABLE_TYPES.length; i < n; i++) {
+      if (DbConstants.DB_VARIABLE_TYPES[i].equals( type)) {
+        isValidType = true;
+        break;
+      }
+    }
+    if (! isValidType) {
       System.err.println("Variable " + var.getId() + " has invalid type " + type);
       retval = false;
     }

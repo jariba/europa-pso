@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.5 2003-11-13 23:21:17 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.6 2003-12-20 01:54:52 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -155,12 +155,12 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
     buttonConstraints.gridx = 0;
     buttonConstraints.gridy = 0;
 
-    JButton valueButton = new JButton("Apply Spec");
+    JButton valueButton = new JButton("Apply Filter");
     valueButton.addActionListener(new SpecButtonListener(this));
     buttonGridBag.setConstraints(valueButton, buttonConstraints);
     buttonPanel.add(valueButton);
 
-    JButton resetButton = new JButton("Reset Spec");
+    JButton resetButton = new JButton("Reset Filter");
     resetButton.addActionListener(new SpecButtonListener(this));
     buttonConstraints.gridx++;
     buttonGridBag.setConstraints(resetButton, buttonConstraints);
@@ -359,7 +359,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
       this.specWindow = specWindow;
     }
     public void actionPerformed(ActionEvent ae) {
-      if(ae.getActionCommand().equals("Apply Spec")) {
+      if(ae.getActionCommand().equals("Apply Filter")) {
         List timeInterval, predicate, timeline, uniqueKeys;
         boolean mergeTokens;
         int tokenType;
@@ -373,7 +373,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
         }
         catch(IllegalArgumentException e){return;}
 
-        System.err.println("Applying Specification...");
+        System.err.println("Applying Filter ...");
         forceConstraintNetworkViewLayout();
         try {
           List specList = new ArrayList();
@@ -392,10 +392,10 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
           System.err.println(e);
           e.printStackTrace();
         }
-        System.err.println("Done applying Specification.");
+        System.err.println("Done applying Filter.");
         specWindow.contentSpec.printSpec();
       }
-      else if(ae.getActionCommand().equals("Reset Spec")) {
+      else if(ae.getActionCommand().equals("Reset Filter")) {
         forceConstraintNetworkViewLayout();
         
         try{specWindow.contentSpec.resetSpec();}catch(Exception e){}

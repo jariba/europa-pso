@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNodeDurationBridge.java,v 1.2 2003-10-02 23:24:22 taylor Exp $
+// $Id: TemporalNodeDurationBridge.java,v 1.3 2003-12-20 01:54:51 taylor Exp $
 //
 // PlanWorks
 //
@@ -14,15 +14,16 @@ package gov.nasa.arc.planworks.viz.partialPlan.temporalExtent;
 
 
 // PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoStroke;
 
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.util.ColorMap;
 
 
 /**
  * <code>TemporalNodeDurationBridge</code> - JGo widget to render a temporal token's
  *                             min/max duration extents with tool tip 
- *             Object->JGoObject->JGoDrawable->JGoStroke->TemporalNodeDurationBridge
 
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
@@ -42,6 +43,9 @@ public class TemporalNodeDurationBridge extends JGoStroke {
   public TemporalNodeDurationBridge( int minDurationTime, int maxDurationTime) {
     this.minDurationTime = minDurationTime;
     this.maxDurationTime = maxDurationTime;
+    setDraggable( false);
+    setResizable(false);
+    setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "black")));
   }
 
   /**

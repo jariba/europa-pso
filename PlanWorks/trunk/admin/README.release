@@ -4,13 +4,15 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.5 2003-11-11 02:44:51 taylor Exp $
+# $Id: README.release,v 1.6 2003-12-20 01:54:47 taylor Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
 ======================================================
 
 o Update PlanWorks/README
+
+o Update PlanWorks/planWorks.xml (property name="name.application" with new tag)
 
 o Update PlanWorks/GETTING_STARTED
 

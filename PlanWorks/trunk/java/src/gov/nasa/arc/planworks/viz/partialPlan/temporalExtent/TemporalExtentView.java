@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.18 2003-12-19 18:55:36 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.19 2003-12-20 01:54:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -99,7 +99,7 @@ public class TemporalExtentView extends PartialPlanView  {
   private float timeScale;
   private JGoStroke timeScaleMark;
   private static Point docCoords;
-  private List leftMarginAdjust; // end LeftMarginAdjust
+  private boolean isShowLabels;
 
 
   /**
@@ -119,6 +119,8 @@ public class TemporalExtentView extends PartialPlanView  {
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
     maxCellRow = 0;
     timeScaleMark = null;
+    isShowLabels = true;
+
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
@@ -177,7 +179,6 @@ public class TemporalExtentView extends PartialPlanView  {
     }
     this.computeFontMetrics( this);
 
-    leftMarginAdjust = new ArrayList();
     collectAndComputeTimeScaleMetrics();
     createTimeScale();
     boolean isRedraw = false;
@@ -276,6 +277,15 @@ public class TemporalExtentView extends PartialPlanView  {
    */
   public List getTemporalNodeList() {
     return temporalNodeList;
+  }
+
+  /**
+   * <code>getTimeScale</code>
+   *
+   * @return - <code>float</code> - 
+   */
+  public float getTimeScale() {
+    return timeScale;
   }
 
   /**
@@ -396,12 +406,6 @@ public class TemporalExtentView extends PartialPlanView  {
         if (latestTime > timeScaleEnd) {
           timeScaleEnd = latestTime;
         }
-        if (leftMarginTime != DbConstants.MINUS_INFINITY_INT) {
-          int nodeLabelWidth = 
-            TemporalNode.getNodeLabelWidth( TemporalNode.createNodeLabel( token), this);
-          leftMarginAdjust.add( new LeftMarginAdjust( leftMarginTime, latestTime,
-                                                      nodeLabelWidth));
-        }
       }
       int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
       if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
@@ -448,12 +452,6 @@ public class TemporalExtentView extends PartialPlanView  {
         if (latestTime != DbConstants.PLUS_INFINITY_INT) {
           if (latestTime > timeScaleEnd) {
             timeScaleEnd = latestTime;
-          }
-          if (leftMarginTime != DbConstants.MINUS_INFINITY_INT) {
-            int nodeLabelWidth = 
-              TemporalNode.getNodeLabelWidth( TemporalNode.createNodeLabel( token), this);
-            leftMarginAdjust.add( new LeftMarginAdjust( leftMarginTime, latestTime,
-                                                        nodeLabelWidth));
           }
         }
         int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
@@ -509,22 +507,7 @@ public class TemporalExtentView extends PartialPlanView  {
 //       System.err.println( "scaleStart " + scaleStart + " tickTime " + tickTime +
 //                           " xOrigin " + xOrigin);
     }
-    // translate view to adjust for wide labels near the left edge of view
-    int maxMarginAdjust = 0;
-    Iterator marginAdjustItr = leftMarginAdjust.iterator();
-    while (marginAdjustItr.hasNext()) {
-      LeftMarginAdjust adjustObject = (LeftMarginAdjust) marginAdjustItr.next();
-      if (adjustObject.getLabelWidth() >
-          ((adjustObject.getLatestEndTime() - adjustObject.getEarliestStartTime()) *
-           timeScale)) {
-        int adjustX = - (int) ((timeScale * adjustObject.getEarliestStartTime()) -
-                               (adjustObject.getLabelWidth() * 0.5));
-        if (adjustX > maxMarginAdjust) {
-          maxMarginAdjust = adjustX;
-        }
-      }
-    }
-    xOrigin = Math.max( xOrigin, maxMarginAdjust);
+    System.err.println( " xOrigin " + xOrigin);
   } // end computeTimeScaleMetrics
 
   private void createTimeScale() {
@@ -708,7 +691,7 @@ public class TemporalExtentView extends PartialPlanView  {
         maxCellRow = temporalNode.getRow();
       }
       // render the node
-      temporalNode.configure();
+      temporalNode.configure( isShowLabels);
     }
   } // end layoutTemporalNodes
 
@@ -957,6 +940,17 @@ public class TemporalExtentView extends PartialPlanView  {
     PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
+    JMenuItem showLabelsItem = null;
+    if (isShowLabels) {
+      showLabelsItem = new JMenuItem( "Hide Node Labels");
+    } else {
+      showLabelsItem = new JMenuItem( "Show Node Labels");
+    }
+    createShowLabelsItem( showLabelsItem);
+    mouseRightPopup.add( showLabelsItem);
+
+    mouseRightPopup.addSeparator();
+
     createSteppingItems(mouseRightPopup);
 
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
@@ -970,7 +964,7 @@ public class TemporalExtentView extends PartialPlanView  {
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
     mouseRightPopup.add( overviewWindowItem);
 
-    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
+    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Filter");
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
     
@@ -986,6 +980,20 @@ public class TemporalExtentView extends PartialPlanView  {
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
+
+
+  private void createShowLabelsItem( JMenuItem showLabelsItem) {
+    showLabelsItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          if (isShowLabels) {
+            isShowLabels = false;
+          } else {
+            isShowLabels = true;
+          }
+          TemporalExtentView.this.redraw();
+        }
+      });
+  } // end createShowLabelsItem
 
 
   private void createActiveTokenItem( JMenuItem activeTokenItem) {
@@ -1134,31 +1142,6 @@ public class TemporalExtentView extends PartialPlanView  {
   } // end class TimeScaleMark
 
 
-  class LeftMarginAdjust {
-
-    private int earliestStartTime; 
-    private int latestEndTime; 
-    private int labelWidth;
-
-    public LeftMarginAdjust( int earliestStartTime, int latestEndTime, int labelWidth) {
-      this.earliestStartTime = earliestStartTime;
-      this.latestEndTime = latestEndTime;
-      this.labelWidth = labelWidth;
-    }
-
-    public int getEarliestStartTime() {
-      return earliestStartTime;
-    }
-
-    public int getLatestEndTime() {
-      return latestEndTime;
-    }
-
-    public int getLabelWidth() {
-      return labelWidth;
-    }
-
-  } // end class LeftMarginAdjust
     
 
 } // end class TemporalExtentView

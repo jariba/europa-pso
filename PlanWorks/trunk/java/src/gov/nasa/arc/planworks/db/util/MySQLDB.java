@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.71 2003-12-16 23:18:30 miatauro Exp $
+// $Id: MySQLDB.java,v 1.72 2003-12-20 01:54:48 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -651,7 +652,7 @@ public class MySQLDB {
           else {
             break;
           }
-          if(i == 2 && !info[0].equals("PARAMETER_VAR")) {
+          if(i == 2 && !info[0].equals(DbConstants.PARAMETER_VAR)) {
             info[2] = "";
           }
         }
@@ -1105,6 +1106,107 @@ public class MySQLDB {
     return retval;
   }
 
+  
+  synchronized public static List queryFreeTokensAtStep( int stepNum, PwPlanningSequenceImpl seq) {
+    // return list of lists of TokenId, PartialPlanId, StepNum, PredicateName
+    // currently does all steps
+    List retval = new ArrayList();
+    try {
+      ResultSet partialPlanIds = queryDatabase("SELECT PartialPlanId FROM PartialPlanStats WHERE SequenceId=".concat( seq.getId().toString()));
+      String queryString = "SELECT Token.TokenId, Token.PredicateId, Token.PartialPlanId, Predicate.PredicateName FROM Token LEFT JOIN Predicate ON Predicate.PartialPlanId=Token.PartialPlanId && Predicate.PredicateId=Token.PredicateId WHERE Token.IsFreeToken=1 && Token.PartialPlanId IN (";
+      while (partialPlanIds.next()) {
+        queryString =
+          queryString.concat( Long.toString( partialPlanIds.getLong( "PartialPlanId")));
+        if (! partialPlanIds.isLast()) {
+          queryString = queryString.concat( ", ");
+        }
+      }
+      queryString = queryString.concat( ")");
+      System.err.println( "queryString " + queryString);
+      ResultSet queryResults = queryDatabase( queryString);
+      while (queryResults.next()) {
+        List retvalObject = new ArrayList();
+        retvalObject.add( new Integer( queryResults.getInt( "Token.TokenId")));
+        Long partialPlanId = new Long( queryResults.getLong( "Token.PartialPlanId"));
+        retvalObject.add( partialPlanId);
+        // query for stepNum
+        ResultSet stepNumResults = queryDatabase("SELECT StepNum FROM PartialPlanStats WHERE SequenceId=".concat( seq.getId().toString()).concat( " && PartialPlanId=".concat( partialPlanId.toString())));
+        while (stepNumResults.next()) {
+          retvalObject.add( new Integer( stepNumResults.getInt( "StepNum")));
+        }
+        retvalObject.add( queryResults.getString( "Predicate.PredicateName"));
+        System.err.println( "retvalObject " + retvalObject);
+        retval.add( retvalObject);
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+
+
+
+//   synchronized public static List queryFreeTokens( PwPlanningSequenceImpl seq) {
+//     // return list of lists of TokenId, PartialPlanId, StepNum, PredicateName
+//     List retval = new ArrayList();
+//     try {
+//       ResultSet partialPlanIds = queryDatabase("SELECT PartialPlanId FROM PartialPlanStats WHERE SequenceId=".concat( seq.getId().toString()));
+//       String queryString = "SELECT TokenId, PartialPlanId, PredicateId FROM Token WHERE IsFreeToken=1 && PartialPlanId IN (";
+//       while (partialPlanIds.next()) {
+//         queryString =
+//           queryString.concat( Long.toString( partialPlanIds.getLong( "PartialPlanId")));
+//         if (! partialPlanIds.isLast()) {
+//           queryString = queryString.concat( ", ");
+//         }
+//       }
+//       queryString = queryString.concat( ")");
+//       System.err.println( "queryString " + queryString);
+//       ResultSet queryResults = queryDatabase( queryString);
+//       while (queryResults.next()) {
+//         List retvalObject = new ArrayList();
+//         retvalObject.add( new Integer( queryResults.getInt( "TokenId")));
+//         Long partialPlanId = new Long( queryResults.getLong( "PartialPlanId"));
+//         Integer predicateId = new Integer( queryResults.getInt( "PredicateId"));
+//         retvalObject.add( partialPlanId);
+//         // query for stepNum
+//         ResultSet stepNumResults = queryDatabase("SELECT StepNum FROM PartialPlanStats WHERE SequenceId=".concat( seq.getId().toString()).concat( " && PartialPlanId=".concat( partialPlanId.toString())));
+//         while (stepNumResults.next()) {
+//           retvalObject.add( new Integer( stepNumResults.getInt( "StepNum")));
+//         }
+//         // query for predicateName
+//         queryString = "SELECT PredicateName FROM Predicate WHERE PredicateId=".concat( predicateId.toString()).concat( " && PartialPlanId IN (");
+//         partialPlanIds.first();
+//         while (partialPlanIds.next()) {
+//           queryString =
+//             queryString.concat( Long.toString( partialPlanIds.getLong( "PartialPlanId")));
+//           if (! partialPlanIds.isLast()) {
+//             queryString = queryString.concat( ", ");
+//           }
+//         }       
+//         queryString = queryString.concat( ")");
+//         // System.err.println( "queryString " + queryString);
+//         ResultSet predicateNameResults = queryDatabase( queryString);
+//         while (predicateNameResults.next()) {
+//           retvalObject.add( predicateNameResults.getString( "PredicateName"));
+//           break; // just get first -- will possibly be more
+//         }
+//         System.err.println( "retvalObject " + retvalObject);
+//         retval.add( retvalObject);
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
+
+  synchronized public static List queryUnboundVariablesAtStep( int stepNum,
+                                                               PwPlanningSequenceImpl seq) {
+    List retval = new ArrayList();
+    return retval;
+  }
+
+
   synchronized private static boolean varDerivedDomainIsSingleton(Blob info) {
     String temp;
     try {
@@ -1127,6 +1229,11 @@ public class MySQLDB {
     }
     catch(SQLException sqle) {return false;}
     StringTokenizer strTok = new StringTokenizer(temp, ",");
+    if (strTok.countTokens() != 7) {
+      System.err.println( "MySQLDB.varSpecDomainIsSingleton temp '" + temp + "'");
+      System.err.println( "   ... returning false");
+      return false;
+    }
     while(strTok.countTokens() != 2) {
       strTok.nextToken();
     }

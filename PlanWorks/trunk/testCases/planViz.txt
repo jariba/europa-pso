@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.19 2003-12-20 00:47:29 miatauro Exp $
+// $Id: planViz.txt,v 1.20 2003-12-20 01:54:52 taylor Exp $
 //
 // PlanWorks
 //
@@ -299,7 +299,8 @@ Post-conditions:
      nearest variables" on the third line.  
      Variable node labels consist of the variable value and the variable key value.  
      Mouse cursor over variable nodes displays "variableType" on the first line, 
-     and "Mouse-L: open/close nearest token links/constraints" on the second line.  
+     (plus "variableName" for PARAMETER_VAR and OBJECT_VAR types), and
+     "Mouse-L: open/close nearest token links/constraints" on the second line.  
      Constraint node labels consist of the constraint name and the constraint key value.
      Mouse cursor over constraint nodes displays "constraintType" on the first 
      line, and "Mouse-L: open/close nearest token variables" on the second line, 
@@ -366,7 +367,8 @@ Method:
   7. In each of the other views, except for the Transaction view, Mouse-
      Right click on the background, and select "Snap to Active Token".
   8. In the Temporal Extent view, Mouse-Right click on the background, and
-     select "Set Time Scale Line".
+     select "Set Time Scale Line".  Also select "Hide/Show Node Labels"
+     from the Mouse-Right pop-up menu.
   9. In the Transaction view, Mouse-Right click on the background of the 
      "header" portion of the view, and select "Find Transaction by Obj_Key".
      Enter an OBJ_KEY value.
@@ -407,6 +409,7 @@ Post-conditions:
   7. Method:8 - a red vertical line should appear at the location of the
      mouse click, and placing the mouse cursor over the red line will cause
      a "tool tip" to appear with the value of the "x" or time coordinate.
+     The node labels will disappear/appear with selections of "Hide/Show Node Labels".
   8. Method:9 - The lower portion of the Transaction view will scroll up to 
      show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
      value will be highlighted.
@@ -537,15 +540,26 @@ Method:
   7. In the "In Range" "QueryResults" window created by Method:6, Mouse-Right 
      click on the background of the "header" portion of the view, and select 
      "Find Transaction by Obj_Key".  Enter an OBJ_KEY value.
-  8. In each of the "QueryResults" windows, move the mouse over any of the 
+  8. Using the "SequenceQuery" dialog, select "Free Tokens At Step", enter
+     a step number, and click on "Apply Query".
+  9. In the "Free Tokens" "QueryResults" window created by Method:8, Mouse-Right 
+     click on the background of the "header" portion of the view, and select 
+     "Find Token by Tok_Key".  Enter an TOK_KEY value.
+ 10. Using the "SequenceQuery" dialog, select "Unbound Variables At Step", enter
+     a step number, and click on "Apply Query".
+ 11. In the "Unbound Variables" "QueryResults" window created by Method:10,
+     Mouse-Right click on the background of the "header" portion of the view, 
+     and select "Find Token by Tok_Key".  Enter an TOK_KEY value.
+ 12. In each of the "QueryResults" windows, move the mouse over any of the 
      column header nodes to see whether that column is sortable, in either 
      ascending or descending order.  Mouse-left click to initiate the sort.  
      Sort all the columns.
-  9. On the background of the "SequenceQuery ..." dialog, click Mouse-Right
+ 13. On the background of the "SequenceQuery ..." dialog, click Mouse-Right
      and select "Discard Query Results Windows".
- 10. On a "Step" column value of both a "Steps" and "Transactions" QueryResults
-     window, click Mouse-Right to popup a menu of individual and group
-     partial plan view operations.  Select one of the options.
+ 14. On "Step" column values of "Steps", "Transactions", "Free Tokens", and
+     "Unbound Variables" QueryResults windows, click Mouse-Right to popup a 
+     menu of individual and group partial plan view operations.  Select one 
+     of the options.
 
 Post-conditions:
   1. Method:1 - the Sequence Query and Sequence Steps View windows appear.
@@ -561,11 +575,21 @@ Post-conditions:
   7. Method:7 - The lower portion of the "QueryResults" window will scroll up 
      to show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
      value will be highlighted.
-  8. Method:8 - The values in the columns which are sorted will be redisplayed
+  8. Method:8 - Use "TransactionView" windows for appropriate steps of the
+     Sequence Steps View to verify the results in the "QueryResults" windows.
+  9. Method:9 - The lower portion of the "QueryResults" window will scroll up 
+     to show the free token entry with the selected TOK_KEY value.  The TOK_KEY
+     value will be highlighted.
+ 10. Method:10 - Use "TransactionView" windows for appropriate steps of the
+     Sequence Steps View to verify the results in the "QueryResults" windows.
+ 11. Method:11 - The lower portion of the "QueryResults" window will scroll up 
+     to show the transaction entry with the selected VAR_KEY value.  The VAR_KEY
+     value will be highlighted.
+ 12. Method:12 - The values in the columns which are sorted will be redisplayed
      in the proper order.
-  9. Method:9 - All "QueryResults" windows created from the "SequenceQuery ..." 
+ 13. Method:13 - All "QueryResults" windows created from the "SequenceQuery ..." 
      dialog, will be deleted.
- 10. Method:10 - The selected partial plan view(s) will be opened.
+ 14. Method:14 - The selected partial plan view(s) will be opened.
 
 Requirements: 4.3.1.a-g, 4.3.2.b-e
 

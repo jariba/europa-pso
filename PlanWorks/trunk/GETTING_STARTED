@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.21 2003-12-12 01:23:03 taylor Exp $
+# $Id: GETTING_STARTED,v 1.22 2003-12-20 01:54:47 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -75,10 +75,13 @@ the partial plan views.
 All partial plan views' Mouse-Right pop-ups offer the user selections
  ("Open <view-name> View") for the other partial plan views, which will 
 create them as needed.  All views, except for Transaction View,
-also offer "Raise Content Spec", which will set focus on the appropriate
-partial plan Content Spec window.  In addition, all partial plan view's  
+also offer "Raise Content Filter", which will set focus on the appropriate
+partial plan Content Filter window.  In addition, all partial plan view's  
 Mouse-Right pop-ups offer the user "Close All Views", "Hide All Views", 
 and "Open All Views".
+
+Applying a Content Filter specification will cause the views to be redrawn 
+with only the filtered predicates and their dependencies.
 
 There are five active views:
 
@@ -98,10 +101,11 @@ the center of the view after layout.
 Mouse cursor over token nodes displays "predicateName( parameterValues)"
 on the first line, its slot key value on the second line, and 
 "Mouse-L: open nearest variables" on the third line.  Mouse cursor over 
-variable nodes displays "variableType" on the first line, and
-"Mouse-L: open nearest token links/constraints" on the second line.  
-Mouse cursor over constraint nodes displays "constraintType" on the first 
-line, and "Mouse-L: open nearest token variables" on the second line. 
+variable nodes displays "variableType" on the first line (plus "variableName"
+for PARAMETER_VAR and OBJECT_VAR types), and "Mouse-L: open nearest token 
+links/constraints" on the second line.  Mouse cursor over constraint nodes 
+displays "constraintType" on the first line, and "Mouse-L: open nearest 
+token variables" on the second line. 
 
 Temporal Extent View
 --------------------
@@ -119,14 +123,14 @@ on the second line.
 Clicking Mouse-Right on the view background will pop-up a menu, one of whose 
 selections is "Set Time Scale Line".  Selecting it will cause a red vertical 
 time scale line to be drawn.  A Mouse-Right "Set Time Scale Line" selection 
-at another location will move the time scale line.  Applying a Content 
-Specification filter will cause the view to be redrawn with only the filtered 
-predicates.
+at another location will move the time scale line.  "Hide/Show Node Labels"
+is another available selection, where the large label rectangles vanish and
+the token duration line expands.
 
 Timeline View
 -------------
 Lays out the plan's objects, timelines, and slots.  Start/end time intervals
-are displayed at slot boundaries.  Applying a Content Specification filter 
+are displayed at slot boundaries.  Applying a Content Filter specification 
 will cause the view to be redrawn with only the filtered timelines and slots.
 Adjacent slots whose end and start intervals are equal will be drawn abutting 
 each other.  Those that are not, will be drawn with a fixed space between them,
@@ -139,7 +143,7 @@ Token Network View
 ------------------
 Lays out the plan's token relations in directed graphs whose root nodes are the 
 "supreme" master tokens.  The Token Network View is freshly layed out after 
-a  Content Spec filter is applied.  Mouse cursor over token nodes displays 
+a  Content Filter specification is applied.  Mouse cursor over token nodes displays 
 "predicateName( parameterValues)", and the second line displays its slot key.
 
 Transaction View
@@ -185,11 +189,11 @@ Network view, entered keys will find find token, variable, and constraint
 nodes -- opening appropriate connecting nodes, if needed.
 
 
-Content Specification
+Content Filtering
 =====================
 The information displayed in the partial plan views may be filtered by
-predicate, by timeline, by time interval, and by token keys using the
-partial plan's Content Specification dialog.  It is also possible to 
+predicate, by timeline, by time interval, and/or by token keys using the
+partial plan's Content Filter dialog.  It is also possible to 
 limit the set of valid tokens to only free or slotted tokens, as well 
 as the first token on a slot ("Merge tokens").  
 
@@ -202,21 +206,21 @@ each object type, and the "AND" combo box selection
 The token keys filter works thusly: click on either the "require" or 
 "exclude" radio button, and then enter the key value in the input slot.  
 To include more keys, click on "Add"; to remove keys from a previous 
-"Apply Spec" set, click on "Remove".  The "require" or "exclude" 
+"Apply Filer" set, click on "Remove".  The "require" or "exclude" 
 selections override the "Predicate", "Timeline", and "Time Interval" 
 selections, with applied together.
 
 Selections applied from this dialog result, internally, in a set of 
 valid tokens, which are used by the views to filter their displays.
 
-The Content Spec window's background areas offer Mouse-Right
+The Content Filter window's background areas offer Mouse-Right
 selections for opening individual or all partial plan views.
 
 
 Querying Sequences
 ==================
 The "SequenceQuery for <sequence-name>" dialog, provides the user with 
-queries which are in two groups, based on the primary kind of information 
+queries which are in four groups, based on the primary kind of information 
 returned:
 "Steps": "Where Constraint/Token/Variable Transacted ..." which 
 asks for a key value (if the key value is left blank, then all key values 
@@ -225,6 +229,11 @@ Decisions", "With Restrictions", and "With Unit Variable Decisions".
  
 "Transactions": "For Constraint/Token/Variable ..." which asks for a key 
 value; and "In Range ...", which asks for "StartStep" and "EndStep" values.
+
+"Free Tokens":  "At Step ..." which asks for a sequence step.
+
+"Unbound Variables": "At Step ..." which asks for a sequence step.
+
 "Apply Query" will cause the query to be performed and a window "Query 
 Results for ..." to be created to display the query results.  
 The query results windows can be removing by clicking Mouse-Right on 
@@ -254,19 +263,14 @@ the background of the header section of the window brings up this dialog.
 The column header nodes of the "Query Results for ..." windows, offer sorting 
 of that columns's values, alternately in ascending order and desending order.
 
-The "Step" column values of Query Results windows for "Steps" and "Transactions" 
-queries, offer a Mouse-Right popup with actions on the partial plan views for 
-that step.
+The "Step" column values of Query Results windows offer a Mouse-Right popup 
+with actions on the partial plan views for that step.
 
 
 Screen Management
 =================
-The "Window" pull-down menu offers the user the ability to rearrange the
-partial plan content spec and view internal windows by "tiling", 
-or "cascading".  This menu also provides for the selection of all active
-windows.
+The "Window" pull-down menu offers the user the ability to rearrange all
+active windows by "tiling", or "cascading".  This menu also provides for the 
+indivual selection of any active window.
 
-Note that the Multiple Document Interface (MDI) implementation presents
-the user with a line of click-able icons along the bottom of the PlanWorks
-frame for all internal windows.
 

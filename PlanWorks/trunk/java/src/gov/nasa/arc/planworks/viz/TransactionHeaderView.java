@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.12 2003-12-12 01:23:04 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.13 2003-12-20 01:54:49 taylor Exp $
 //
 // PlanWorks
 //
@@ -36,7 +36,6 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TransactionHeaderNode;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
 
@@ -293,13 +292,14 @@ public class TransactionHeaderView extends JGoView {
   private void createTransByKeyItem( JMenuItem transByKeyItem) {
     transByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          AskTransactionObjectKey transByKeyDialog =
-            new AskTransactionObjectKey( TransactionHeaderView.this.transactionList,
-                                         "Find Transaction by Obj_Key", "key (int)");
+          AskQueryObjectKey transByKeyDialog =
+            new AskQueryObjectKey( TransactionHeaderView.this.transactionList,
+                                    "Find Transaction by Obj_Key", "key (int)",
+                                    TransactionHeaderView.this);
           Integer objectKey = transByKeyDialog.getObjectKey();
           if (objectKey != null) {
             System.err.println( "createTransByKeyItem: objectKey " + objectKey.toString());
-            int entryIndx = transByKeyDialog.getTransactionListIndex();
+            int entryIndx = transByKeyDialog.getObjectListIndex();
             TransactionContentView transactionContentView = null;
             if (vizView instanceof TransactionView) {
               transactionContentView =

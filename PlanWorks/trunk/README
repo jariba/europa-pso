@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.58 2003-12-12 01:23:03 taylor Exp $
+# $Id: README,v 1.59 2003-12-20 01:54:47 taylor Exp $
 #
 
 SUMMARY
@@ -17,6 +17,21 @@ o The "Find Transaction by Obj_Key" Mouse-right popup selection and
   "With ..." queries, and the "Transactions" Sequence Query for
   "In Range ..." queries.  The OBJ_KEY" value found using
   "Find Transaction by Obj_Key" is now highlighted.
+o The Temporal Extent View now has an additional Mouse-Right selection:
+  "Hide/Show Node Labels".  These node labels are now aligned with
+  the earliest start times.
+o The Content Spec dialog has been renamed Content Filter.
+o The "window bar" buttons at the bottom of the DeskTop Frame have been
+  removed.  Use the "Window" pull-down menu.
+o The Constraint Network View's variable node tool tips have been
+  augmented to show the PARAMETER_VAR names and OBJECT_VAR names.
+o The Sequence Query dialog now has two new options: "Free Tokens At Step" 
+  and "Unbound Variables At Step".
+
+o  GNATS PRs and CRs completed:
+   #2190: Align boxes in Temporal extent view with earliest start.
+   #2194: Rename Content Specification to Content Filter.
+   #2199: Provide actual parameter names.
 
 
 CVS CHECKOUT

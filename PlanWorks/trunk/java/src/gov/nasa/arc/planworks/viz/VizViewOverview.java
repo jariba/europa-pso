@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.5 2003-12-20 00:45:50 miatauro Exp $
+// $Id: VizViewOverview.java,v 1.6 2003-12-20 01:54:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -27,6 +27,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.ThickDurationBridge;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
 import gov.nasa.arc.planworks.viz.sequence.modelRules.PredicateNode;
 
@@ -152,6 +153,8 @@ public class VizViewOverview extends Overview {
         tip = ((TokenNode) obj).getToolTipText( isOverview);
       } else if (obj instanceof SlotNode) {
         tip = ((SlotNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof ThickDurationBridge) {
+        tip = ((ThickDurationBridge) obj).getToolTipText( isOverview);
       } else if (obj instanceof PredicateNode) {
         tip = ((PredicateNode) obj).getToolTipText( isOverview);
       } else {

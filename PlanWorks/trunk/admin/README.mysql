@@ -1,3 +1,16 @@
+# 
+# * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+# * information on usage and redistribution of this file, 
+# * and for a DISCLAIMER OF ALL WARRANTIES. 
+# 
+
+# $Id: README.mysql,v 1.3 2003-12-20 01:54:47 taylor Exp $
+#
+
+PlanWorks MySQL DB Maintenance
+======================================================
+
+# start mysql
 /home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/bin/mysqld --basedir=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql --skip-bdb --bind-address=127.0.0.1 --datadir=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/data --log=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/log/mysql.log --log-error=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/log/mysql.error.log --skip-symlink --socket=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/mysql.sock --tmpdir=/home/wtaylor/PlanWorksProject/PlanWorks/lib/mysql/tmp
 
 # shutdown mysql
@@ -43,3 +56,14 @@ select * from Sequence;
 UPDATE PLANWORKS TABLES
 -----------------------
 ant planWorksDbInstall
+
+DELETE SEQUENCES FROM MYSQL DB
+------------------------------
+"start mysql" (above)
+"mysql cmd line" (above)
+mysql> connect PlanWorks;
+mysql>  select * from Sequence;
+mysql> delete from Sequence where SequenceOrdering = 9 || SequenceOrdering = 10 || SequenceOrdering = 11;
+mysql> quit
+
+
