@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.2 2004-02-03 20:43:53 taylor Exp $
+// $Id: AskNodeByKey.java,v 1.3 2004-03-04 21:48:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -185,7 +185,8 @@ public class AskNodeByKey extends JDialog {
     } else if ((partialPlanView instanceof ConstraintNetworkView)) {
       if ((partialPlan.getToken( nodeKey) != null) ||
           (partialPlan.getVariable( nodeKey) != null) ||
-          (partialPlan.getConstraint( nodeKey) != null)) {
+          (partialPlan.getConstraint( nodeKey) != null) ||
+          (partialPlan.getObject(nodeKey) != null)) {
         return true;
       }
     } else {
