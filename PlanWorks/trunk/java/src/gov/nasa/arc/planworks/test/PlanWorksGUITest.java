@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.25 2004-09-21 01:07:04 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.26 2004-09-21 21:37:51 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -293,6 +293,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       File configFile = new File( System.getProperty( "planworks.config") + ".template");
       ConfigureAndPlugins.processPlanWorksConfigFile( configFile);
 
+      configFile = new File( System.getProperty( "projects.config") + ".template");
+      ConfigureAndPlugins.processProjectsConfigFile( configFile);
+
       CONSTRAINT_NETWORK_VIEW_INDEX =
         PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.CONSTRAINT_NETWORK_VIEW);
       DB_TRANSACTION_VIEW_INDEX =
@@ -378,9 +381,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     sequenceFileArray[0] = new File( sequenceDirectory +
                                      System.getProperty("file.separator") +
                                      sequenceUrls.get( 0));
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, sequenceFileArray,
-                                helper, this, planWorks);
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
     // post condition 1
     assertTrueVerbose("PlanWorks title does not contain " + PWTestHelper.PROJECT1,
                       PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1),
@@ -400,7 +402,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   public void planViz02() throws Exception {
     String sequenceDirectory =  System.getProperty( "planworks.test.data.dir") +
       System.getProperty( "file.separator") + PWTestHelper.GUI_TEST_DIR;
-    int numSequences = 4;
+    int numSequences = 3;
     File [] sequenceFileArray = new File [numSequences];
     for (int i = 0; i < numSequences; i++) {
       sequenceFileArray[i] = new File( (String) sequenceUrls.get( i));
@@ -429,14 +431,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     int seq2NumFilesDeleted = 1;
     (new File( sequenceFileArray[1] + System.getProperty("file.separator") +
                DbConstants.SEQ_FILE)).delete();
-    // modify sequence #3
+
     String stepName = "step1"; int stepNumber = 1;
-    int seq3Step1FilesDeleted = 1;
-    (new File( sequenceFileArray[2] + System.getProperty("file.separator") + stepName +
-               System.getProperty("file.separator") + stepName + "." +
-               DbConstants.PP_PARTIAL_PLAN_EXT)).delete();
-    // modify sequence #4
-    String stepDir = sequenceFileArray[3] + System.getProperty("file.separator") + stepName;
+
+    // modify sequence #3
+    String stepDir = sequenceFileArray[2] + System.getProperty("file.separator") + stepName;
     success = FileUtils.deleteDir( new File( stepDir));
     if (! success) {
       System.err.println( "PlanWorksGUITest.planViz02: deleting '" + stepDir +
@@ -445,9 +444,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     File [] seqFileArray = new File [1];
     // try sequence #1
     seqFileArray[0] = sequenceFileArray[0];
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, seqFileArray,
-                                helper, this, planWorks);
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( seqFileArray, helper, this, planWorks);
     int seq1FilesRemaining = DbConstants.SEQUENCE_FILES.length - seq1NumFilesDeleted;
     PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK", seq1FilesRemaining +
                                " sequence files in directory -- " +
@@ -458,27 +456,17 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     PWTestHelper.deleteProject( PWTestHelper.PROJECT1, helper, this);
     // try{Thread.sleep(5000);}catch(Exception e){}
 
-    // try sequences #2, #3, #4
-    File [] seq3FileArray = new File [3];
-    seq3FileArray[0] = sequenceFileArray[1];
-    seq3FileArray[1] = sequenceFileArray[2];
-    seq3FileArray[2] = sequenceFileArray[3];
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, seq3FileArray,
-                                helper, this, planWorks);
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    // try sequences #2, #3
+    File [] seq2FileArray = new File [2];
+    seq2FileArray[0] = sequenceFileArray[1];
+    seq2FileArray[1] = sequenceFileArray[2];
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( seq2FileArray, helper, this, planWorks);
     int seq2FilesRemaining = DbConstants.SEQUENCE_FILES.length - seq2NumFilesDeleted;
     PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK", seq2FilesRemaining +
                                " sequence files in directory -- " +
                                DbConstants.SEQUENCE_FILES.length + " are required",
                                helper, this);
-    // try{Thread.sleep(2000);}catch(Exception e){}
-    int seq3Step1FilesRemaining = DbConstants.PARTIAL_PLAN_FILE_EXTS.length -
-      seq3Step1FilesDeleted;
-    PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK",
-                               "Has " + seq3Step1FilesRemaining + " files -- " +
-                               DbConstants.PARTIAL_PLAN_FILE_EXTS.length + " are required",
-                               helper, this);
-    // try{Thread.sleep(2000);}catch(Exception e){}
 
     ViewListener viewListener01 = new ViewListenerWait01( this);
     PWTestHelper.openSequenceStepsView( PWTestHelper.SEQUENCE_NAME, viewListener01,
@@ -522,16 +510,14 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
 //     System.err.println( "sequenceDirectory " + sequenceDirectory);
 //     System.err.println( "sequenceFileArray[0] " + sequenceFileArray[0].getName());
 
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, sequenceFileArray,
-                                helper, this, planWorks);
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
    // try{Thread.sleep(2000);}catch(Exception e){}
 
     sequenceFileArray[0] = new File( sequenceDirectory +
                                       System.getProperty("file.separator") +
                                       sequenceUrls.get( 5));
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, sequenceFileArray,
-                                helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
     // try{Thread.sleep(2000);}catch(Exception e){}
 
     PWTestHelper.handleDialog( "Duplicate Name Exception", "OK",
@@ -574,19 +560,17 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                                      System.getProperty("file.separator") +
                                      sequenceUrls.get( 4));
     // System.err.println( "planViz05 sequenceUrls.get( 4) " + sequenceUrls.get( 4));
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, sequenceFileArray,
-                                helper, this, planWorks);
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
     // try{Thread.sleep(4000);}catch(Exception e){}
 
     sequenceFileArray[0] = new File( sequenceDirectory +
                                       System.getProperty("file.separator") +
                                       sequenceUrls.get( 5));
     // System.err.println( "planViz05 sequenceUrls.get( 5) " + sequenceUrls.get( 5));
-    PWTestHelper.createProject( PWTestHelper.PROJECT2, sequenceDirectory, sequenceFileArray,
-                                helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT2, sequenceDirectory, helper, this, planWorks);
 
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
     // try{Thread.sleep(4000);}catch(Exception e){}
     assertTrueVerbose( "PlanWorks title does not contain '" + PWTestHelper.PROJECT2 +
                        "' after 2nd Project->Create",
@@ -614,26 +598,23 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                                      System.getProperty("file.separator") +
                                      sequenceUrls.get( 4));
     // System.err.println( "planViz06 sequenceUrls.get( 4) " + sequenceUrls.get( 4));
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, sequenceFileArray,
-                                helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
     // try{Thread.sleep(2000);}catch(Exception e){}
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
 
     sequenceFileArray[0] = new File( sequenceDirectory +
                                       System.getProperty("file.separator") +
                                       sequenceUrls.get( 5));
     // System.err.println( "planViz06 sequenceUrls.get( 5) " + sequenceUrls.get( 5));
-    PWTestHelper.addPlanSequence( sequenceDirectory, sequenceFileArray, helper,
-                                  this, planWorks);
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.addPlanSequence( helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
 
     sequenceFileArray[0] = new File( sequenceDirectory +
                                       System.getProperty("file.separator") +
                                       sequenceUrls.get( 6));
     // System.err.println( "planViz06 sequenceUrls.get( 6) " + sequenceUrls.get( 6));
-    PWTestHelper.addPlanSequence( sequenceDirectory, sequenceFileArray, helper,
-                                  this, planWorks);
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.addPlanSequence( helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
 
     assertTrueVerbose( "PlanWorks title does not contain '" + PWTestHelper.PROJECT1,
                        PlanWorks.getPlanWorks().getTitle().endsWith( PWTestHelper.PROJECT1),
@@ -972,11 +953,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       System.getProperty( "file.separator") + PWTestHelper.GUI_TEST_DIR;
     File [] sequenceFileArray = new File [1];
     sequenceFileArray[0] = new File( sequenceDirectory +
-                                      System.getProperty("file.separator") +
-                                      sequenceUrls.get( 6));
-    PWTestHelper.addPlanSequence( sequenceDirectory, sequenceFileArray, helper,
-                                  this, planWorks);
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+                                      System.getProperty("file.separator") + sequenceUrls.get( 6));
+    PWTestHelper.addPlanSequence( helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
 
     sequenceName = PWTestHelper.SEQUENCE_NAME + " (1)";
     viewListener01.reset();
@@ -1022,10 +1001,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     sequenceFileArray[0] = new File( sequenceDirectory +
                                      System.getProperty("file.separator") +
                                      sequenceUrls.get( seqUrlIndex));
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, sequenceFileArray,
-                                helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
     // try{Thread.sleep(2000);}catch(Exception e){}
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
 
     ViewListener viewListener01 = new ViewListenerWait01( this);
     PWTestHelper.openSequenceStepsView( PWTestHelper.SEQUENCE_NAME, viewListener01,
@@ -1991,8 +1969,8 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                           slottedTokenNode, "not ");
     assertNotNullVerbose( "Did not find TokenNetworkView free TokenNode (TokenNode)",
                           freeTokenNode, "not ");
-    assertNotNullVerbose( "Did not find TokenNetworkView resTransactionNode (TokenNode)",
-                          resTransactionNode, "not ");
+//     assertNotNullVerbose( "Did not find TokenNetworkView resTransactionNode (TokenNode)",
+//                           resTransactionNode, "not ");
     assertNotNullVerbose( "Did not find TokenNetworkView ruleInstanceNode (RuleInstanceNode)",
                           ruleInstanceNode, "not ");
   // assertTrueVerbose( "Number of partial plan interval tokens and resource transactions (" +
@@ -2088,27 +2066,27 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
 //                        slotKeyString + "'", (toolTipText.indexOf( slotKeyString) >= 0),
 //                        "not ");
 
-    System.err.println( "resTransactionNode labelText " + resTransactionNode.getText());
-    System.err.println( "resTransactionNode toolTipText " + resTransactionNode.getToolTipText());
-    labelText = resTransactionNode.getText();
-    toolTipText = resTransactionNode.getToolTipText();
-    predArgsString = resTransactionNode.getToken().toString();
-    predString = resTransactionNode.getToken().getPredicateName();
-    keyString = "key=" + resTransactionNode.getToken().getId().toString();
-    slotKeyString = "slot key=";
-    assertTrueVerbose( "TokenNetworkView resource transaction node (" +
-                       resTransactionNode.getToken().getId().toString() +
-                       ") label does not contain '" +
-                       predString + "'", (labelText.indexOf( predString) >= 0), "not ");
-    assertTrueVerbose( "TokenNetworkView resource transaction node (" +
-                       resTransactionNode.getToken().getId().toString() +
-                       ") label does not contain '" +
-                       keyString + "'", (labelText.indexOf( keyString) >= 0), "not ");
-    assertTrueVerbose( "TokenNetworkView resource transaction node (" +
-                       resTransactionNode.getToken().getId().toString() +
-                       ") tool tip does not contain '" +
-                       predArgsString + "'", (toolTipText.indexOf( predArgsString) >= 0),
-                       "not ");
+//     System.err.println( "resTransactionNode labelText " + resTransactionNode.getText());
+//     System.err.println( "resTransactionNode toolTipText " + resTransactionNode.getToolTipText());
+//     labelText = resTransactionNode.getText();
+//     toolTipText = resTransactionNode.getToolTipText();
+//     predArgsString = resTransactionNode.getToken().toString();
+//     predString = resTransactionNode.getToken().getPredicateName();
+//     keyString = "key=" + resTransactionNode.getToken().getId().toString();
+//     slotKeyString = "slot key=";
+//     assertTrueVerbose( "TokenNetworkView resource transaction node (" +
+//                        resTransactionNode.getToken().getId().toString() +
+//                        ") label does not contain '" +
+//                        predString + "'", (labelText.indexOf( predString) >= 0), "not ");
+//     assertTrueVerbose( "TokenNetworkView resource transaction node (" +
+//                        resTransactionNode.getToken().getId().toString() +
+//                        ") label does not contain '" +
+//                        keyString + "'", (labelText.indexOf( keyString) >= 0), "not ");
+//     assertTrueVerbose( "TokenNetworkView resource transaction node (" +
+//                        resTransactionNode.getToken().getId().toString() +
+//                        ") tool tip does not contain '" +
+//                        predArgsString + "'", (toolTipText.indexOf( predArgsString) >= 0),
+//                        "not ");
 //     assertFalseVerbose( "TokenNetworkView resource transaction node (" +
 //                        resTransactionNode.getToken().getId().toString() +
 //                        ") tool tip does not contain '" +
@@ -2300,10 +2278,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     sequenceFileArray[0] = new File( sequenceDirectory +
                                      System.getProperty("file.separator") +
                                      sequenceUrls.get( seqUrlIndex));
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, sequenceFileArray,
-                                helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
     // try{Thread.sleep(2000);}catch(Exception e){}
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
 
     ViewListener viewListener01 = new ViewListenerWait01( this);
     PWTestHelper.openSequenceStepsView( PWTestHelper.SEQUENCE_NAME, viewListener01,
@@ -3085,10 +3062,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     sequenceFileArray[0] = new File( sequenceDirectory +
                                      System.getProperty("file.separator") +
                                      sequenceUrls.get( seqUrlIndex));
-    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, sequenceFileArray,
-                                helper, this, planWorks);
+    PWTestHelper.createProject( PWTestHelper.PROJECT1, sequenceDirectory, helper, this, planWorks);
     // try{Thread.sleep(2000);}catch(Exception e){}
-    PWTestHelper.addSequencesToProject( helper, this, planWorks);
+    PWTestHelper.addSequencesToProject( sequenceFileArray, helper, this, planWorks);
 
     ViewListener viewListener01 = new ViewListenerWait01( this);
     PWTestHelper.openSequenceStepsView( PWTestHelper.SEQUENCE_NAME, viewListener01,

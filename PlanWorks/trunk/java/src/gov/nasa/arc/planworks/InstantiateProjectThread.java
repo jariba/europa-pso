@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.18 2004-09-10 20:02:31 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.19 2004-09-21 21:37:50 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -119,6 +119,8 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
       ProjectNameDialog projectNameDialog = new ProjectNameDialog( PlanWorks.getPlanWorks());
       String inputName = projectNameDialog.getProjectName();
       String workingDir = projectNameDialog.getWorkingDir();
+      // System.err.println( "createProject: inputName " + inputName);
+      // System.err.println( "createProject: workingDir " + workingDir);
       if ((inputName == null) || (inputName.equals( ""))) {
         return null;
       }

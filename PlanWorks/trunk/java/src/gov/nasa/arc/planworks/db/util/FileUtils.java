@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.17 2004-09-03 00:35:35 taylor Exp $
+// $Id: FileUtils.java,v 1.18 2004-09-21 21:37:50 taylor Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -175,7 +175,9 @@ public abstract class FileUtils {
 //       System.err.println( msg);
 //       return msg;
 //     }
-//     // determine existence of the N SQL-input files in partial plan directories (steps)
+    // determine existence of the N SQL-input files in partial plan directories (steps)
+    // commented out since it is slow for large sequences, and this check is done
+    // when each step is loaded
 //     for (int i = 0, n = partialPlanDirs.size(); i < n; i++) {
 //       String partialPlanPath = sequenceDirectory + System.getProperty( "file.separator") +
 //         partialPlanDirs.get( i);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.15 2004-09-03 00:35:36 taylor Exp $
+// $Id: PWTestHelper.java,v 1.16 2004-09-21 21:37:51 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -49,6 +49,7 @@ import junit.framework.Assert;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoView;
 
+import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.SequenceViewMenuItem;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
@@ -210,28 +211,20 @@ public abstract class PWTestHelper {
    *
    * @param projectName - <code>String</code> - 
    * @param sequenceDirectory - <code>String</code> - 
-   * @param sequenceFileArray - <code>File[]</code> - 
    * @param helper - <code>JFCTestHelper</code> - 
    * @param guiTest - <code>PlanWorksGUITest</code> - 
    * @param planWorks - <code>PlanWorks</code> - 
    * @exception Exception if an error occurs
    */
   public static void createProject( String projectName, String sequenceDirectory,
-                                         File [] sequenceFileArray, JFCTestHelper helper,
-                                         PlanWorksGUITest guiTest, PlanWorks planWorks)
+                                    JFCTestHelper helper, PlanWorksGUITest guiTest,
+                                    PlanWorks planWorks)
     throws Exception {
-    // create new DirectoryChooser because using the same instance for several
-    // createProjects results in getSelectedFiles returning null
-    DirectoryChooser dirChooser =
-      planWorks.createSequenceDirChooser( new File( sequenceDirectory));
-    guiTest.flushAWT(); guiTest.awtSleep();
     System.err.println( "createProject sequenceDirectory " + sequenceDirectory);
-    for (int i = 0, n = sequenceFileArray.length; i < n; i++) {
-      System.err.println( "  i " + i + " sequenceFileArray " + sequenceFileArray[i].getName());
-    }
-    guiTest.flushAWT(); guiTest.awtSleep();
-    dirChooser.setSelectedFiles( sequenceFileArray);
-    guiTest.flushAWT(); guiTest.awtSleep();
+    List nameValueList = new ArrayList();
+    nameValueList.add( ConfigureAndPlugins.PROJECT_WORKING_DIR);
+    nameValueList.add( sequenceDirectory);
+    ConfigureAndPlugins.updateProjectConfigMap( "default", nameValueList);
 
     JMenuItem createItem =
       PWTestHelper.findMenuItem( PlanWorks.PROJECT_MENU, PlanWorks.CREATE_MENU_ITEM,
@@ -242,10 +235,10 @@ public abstract class PWTestHelper {
     guiTest.flushAWT(); guiTest.awtSleep();
 
     JTextField field = (JTextField) PWTestHelper.findComponentByClass( JTextField.class);
-    // System.err.println( "createProject field " + field);
     Assert.assertNotNull( "Could not find \"name (string)\" field", field);
-    field.setText( null);
-    helper.sendString( new StringEventData( guiTest, field, projectName));
+//     field.setText( null);
+//     helper.sendString( new StringEventData( guiTest, field, projectName));
+    field.setText( projectName);
     helper.sendKeyAction( new KeyEventData( guiTest, field, KeyEvent.VK_ENTER));
     System.err.println( "'Project->Create' " + projectName);
     guiTest.flushAWT(); guiTest.awtSleep();
@@ -254,12 +247,13 @@ public abstract class PWTestHelper {
   /**
    * <code>addSequencesToProject</code>
    *
+   * @param sequenceFileArray - <code>File[]</code> - 
    * @param helper - <code>JFCTestHelper</code> - 
    * @param guiTest - <code>PlanWorksGUITest</code> - 
    * @param planWorks - <code>PlanWorks</code> - 
    * @exception Exception if an error occurs
    */
-  public static void addSequencesToProject( JFCTestHelper helper,
+  public static void addSequencesToProject( File [] sequenceFileArray, JFCTestHelper helper,
                                             PlanWorksGUITest guiTest, PlanWorks planWorks)
     throws Exception {
     
@@ -268,11 +262,17 @@ public abstract class PWTestHelper {
     fileChooser = (JFileChooser) new JFileChooserFinder( null).find( planWorks, 0);
 
     Assert.assertNotNull( "'Select Sequence Directory' dialog not found:", fileChooser);
-    Container projectSeqDialog = (Container) fileChooser;
+    // Container projectSeqDialog = (Container) fileChooser;
+
+    for (int i = 0, n = sequenceFileArray.length; i < n; i++) {
+      System.err.println( "  i " + i + " sequenceFileArray " + sequenceFileArray[i].getName());
+    }
+    fileChooser.setSelectedFiles( sequenceFileArray);
+    guiTest.flushAWT(); guiTest.awtSleep();
 
     JButton okButton = (JButton) PWTestHelper.findButton( "OK");
+    Assert.assertNotNull("Could not find 'Select Sequence Directory' dialog \"OK\" button", okButton);
     System.err.println( "'Select Sequence Directory' dialog " + okButton.getText()); 
-    Assert.assertNotNull("Could not find projectSeqDialog \"OK\" button", okButton);
     helper.enterClickAndLeave( new MouseEventData( guiTest, okButton));
     guiTest.flushAWT(); guiTest.awtSleep();
   } // end addSequencesToProject
@@ -377,28 +377,14 @@ public abstract class PWTestHelper {
   /**
    * <code>addPlanSequence</code>
    *
-   * @param sequenceDirectory - <code>String</code> - 
-   * @param sequenceFileArray - <code>File[]</code> - 
    * @param helper - <code>JFCTestHelper</code> - 
    * @param guiTest - <code>PlanWorksGUITest</code> - 
    * @param planWorks - <code>PlanWorks</code> - 
    * @exception Exception if an error occurs
    */
-  public static void addPlanSequence( String sequenceDirectory, File [] sequenceFileArray,
-                                      JFCTestHelper helper, PlanWorksGUITest guiTest,
+  public static void addPlanSequence( JFCTestHelper helper, PlanWorksGUITest guiTest,
                                       PlanWorks planWorks)
     throws Exception {
-    // create new DirectoryChooser because using the same instance for several
-    // createProject's results in getSelectedFiles returning null
-    DirectoryChooser dirChooser =
-      planWorks.createSequenceDirChooser( new File( sequenceDirectory));
-    guiTest.flushAWT(); guiTest.awtSleep();
-//     System.err.println( "createProject sequenceDirectory " + sequenceDirectory);
-//     for (int i = 0, n = sequenceFileArray.length; i < n; i++) {
-//       System.err.println( "  i " + i + " sequenceFileArray " + sequenceFileArray[i].getName());
-//     }
-    dirChooser.setSelectedFiles( sequenceFileArray);
-
     JMenuItem addSeqItem =
       PWTestHelper.findMenuItem( PlanWorks.PROJECT_MENU, PlanWorks.ADDSEQ_MENU_ITEM,
                                  helper, guiTest);
