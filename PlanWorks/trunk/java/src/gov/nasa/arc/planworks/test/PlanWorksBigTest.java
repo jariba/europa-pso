@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksBigTest.java,v 1.2 2003-09-02 21:53:17 miatauro Exp $
+// $Id: PlanWorksBigTest.java,v 1.3 2003-09-02 23:01:28 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -39,19 +39,23 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
+import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
+import gov.nasa.arc.planworks.viz.nodes.ConstraintNode;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
 import gov.nasa.arc.planworks.viz.nodes.TemporalNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenLink;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.nodes.VariableNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.GroupBox;
@@ -359,6 +363,51 @@ public class PlanWorksBigTest extends JFCTestCase {
       }
     }
     assertNotNull("Failed to get ConstraintNetworkView object.", view);
+    do {
+      Thread.sleep(50);
+    }
+    while(view.getTokenNodeList() == null || view.getVariableNodeList() == null || 
+          view.getConstraintNodeList() == null);
+    ListIterator constraintIterator = view.getConstraintNodeList().listIterator();
+    while(constraintIterator.hasNext()) {
+      ConstraintNode node = (ConstraintNode) constraintIterator.next();
+      if(node.getConstraint().getName().equals(PwConstraint.unaryTempConst) || 
+         node.getConstraint().getName().equals(PwConstraint.unaryConst)) {
+        assertTrue("Unary constraint on incorrect number of variables.", 
+                   node.getConstraintVariableLinkList().size() == 1);
+      }
+      else if(node.getConstraint().getName().equals(PwConstraint.varTempConst)) {
+        assertTrue("Variable temporal constraint on incorrect number of variables.",
+                   node.getConstraintVariableLinkList().size() == 3);
+      }
+      else if(node.getConstraint().getName().equals(PwConstraint.fixedTempConst) ||
+              node.getConstraint().getName().equals(PwConstraint.eqConst)) {
+        assertTrue("Equality constraint on incorrect number of variables.",
+                   node.getConstraintVariableLinkList().size() == 2);
+      }
+    }
+    ListIterator variableIterator = view.getVariableNodeList().listIterator();
+    while(variableIterator.hasNext()) {
+      assertTrue("Variable on multiple tokens.", 
+                 ((VariableNode)variableIterator.next()).getTokenNodeList().size() == 1);
+    }
+    ListIterator tokenIterator = view.getTokenNodeList().listIterator();
+    while(tokenIterator.hasNext()) {
+      TokenNode node = (TokenNode) tokenIterator.next();
+      List variables = node.getVariableNodeList();
+      assertTrue("Token with incorrect number of variables.", variables.size() >= 5);
+      int requiredVars = 0;
+      variableIterator = variables.listIterator();
+      while(variableIterator.hasNext()) {
+        PwVariable variable = ((VariableNode)variableIterator.next()).getVariable();
+        String type = variable.getType();
+        if(type.equals("OBJECT_VAR") || type.equals("REJECT_VAR") || type.equals("DURATION_VAR") ||
+           type.equals("START_VAR") || type.equals("END_VAR")) {
+          requiredVars++;
+        }
+      }
+      assertTrue("Token without one of the required variables.", requiredVars == 5);
+    }
   }
 
   private List findSequenceDirectories(File dir) {
