@@ -177,7 +177,93 @@ public class MySQLDB {
     PwObjectImpl object = null;
     PwTimelineImpl timeline = null;
     PwSlotImpl slot = null;
+
     try {
+      /*ResultSet timelineSlotTokens = 
+        queryDatabase("SELECT Timeline.TimelineId, Timeline.TimelineName, Timeline.ObjectId, Slot.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.ObjectId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateId, Token.TimelineId, ParamVarTokenMap.VariableId, TokenRelation.TokenRelationId FROM Timeline, Slot, Token LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.TokenId=Token.TokenId LEFT JOIN TokenRelation ON TokenRelation.TokenAId=Token.TokenId || TokenRelation.TokenBId=Token.TokenId WHERE Timeline.PartialPlanId=1058307361389 && Slot.TimelineId=Timeline.TimelineId && Token.SlotId=Slot.SlotId ORDER BY Timeline.TimelineId, Slot.SlotId, Token.TokenId, ParamVarTokenMap.ParameterId");
+
+      Integer objectId = new Integer(-1);
+      Integer timelineId = new Integer(-1);
+      Integer slotId = new Integer(-1);
+      Integer tokenId = new Integer(-1);
+      Integer paramVarId = new Integer(-1);
+      Integer tokenRelationId = new Integer(-1);
+      boolean tokenIsValueToken = false;
+      Integer tokenSlotId = new Integer(-1);
+      Integer tokenPredicateId = new Integer(-1);
+      Integer tokenStartVarId = new Integer(-1);
+      Integer tokenEndVarId = new Integer(-1);
+      Integer tokenDurationVarId = new Integer(-1);
+      Integer tokenObjectId = new Integer(-1);
+      Integer tokenRejectVarId = new Integer(-1);
+      Integer tokenObjectVarId = new Integer(-1);
+      Integer tokenTimelineId = new Integer(-1);
+      ArrayList tokenRelations = new ArrayList();
+      ArrayList paramVars = new ArrayList();
+      Integer NULL = new Integer(0);
+      while(timelineSlotTokens.next()) {
+        Integer currObjectId = new Integer(timelineSlotTokens.getInt("Timeline.ObjectId"));
+        Integer currTimelineId = new Integer(timelineSlotTokens.getInt("Timeline.TimelineId"));
+        Integer currSlotId = new Integer(timelineSlotTokens.getInt("Slot.SlotId"));
+        Integer currTokenId = new Integer(timelineSlotTokens.getInt("Token.TokenId"));
+        Integer currParamVarId = 
+          new Integer(timelineSlotTokens.getInt("ParamVarTokenMap.VariableId"));
+        Integer currTokenRelationId = 
+          new Integer(timelineSlotTokens.getInt("TokenRelation.TokenRelationId"));
+        if(!objectId.equals(currObjectId) && !currObjectId.equals(NULL)) {
+          System.err.println("Object switch " + currObjectId);
+          objectId = currObjectId;
+          object = partialPlan.getObjectImpl(objectId);
+        }
+        if(!timelineId.equals(currTimelineId) && !currTimelineId.equals(NULL)) {
+          System.err.println("Timeline switch " + currTimelineId);
+          timelineId = currTimelineId;
+          timeline = object.addTimeline(timelineSlotTokens.getString("TimelineName"), timelineId);
+        }
+        if(!slotId.equals(currSlotId) && !currSlotId.equals(NULL)) {
+          System.err.println("Slot switch " + currSlotId);
+          slotId = currSlotId;
+          slot = timeline.addSlot(slotId);
+        }
+        if(!tokenId.equals(currTokenId) && !currTokenId.equals(NULL)) {
+          if(!tokenId.equals(new Integer(-1)) && !partialPlan.tokenExists(tokenId)) {
+            System.err.println("Adding token " + tokenId);
+            slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
+                          tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
+                          tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
+                          paramVars);
+          }
+          tokenIsValueToken = timelineSlotTokens.getBoolean("IsValueToken");
+          tokenSlotId = slotId;
+          tokenPredicateId = new Integer(timelineSlotTokens.getInt("Token.PredicateId"));
+          tokenStartVarId = new Integer(timelineSlotTokens.getInt("Token.StartVarId"));
+          tokenEndVarId = new Integer(timelineSlotTokens.getInt("Token.EndVarId"));
+          tokenDurationVarId = new Integer(timelineSlotTokens.getInt("Token.DurationVarId"));
+          tokenObjectId = new Integer(timelineSlotTokens.getInt("Token.ObjectId"));
+          tokenRejectVarId = new Integer(timelineSlotTokens.getInt("Token.RejectVarId"));
+          tokenObjectVarId = new Integer(timelineSlotTokens.getInt("Token.ObjectVarId"));
+          tokenTimelineId = new Integer(timelineSlotTokens.getInt("Token.TimelineId"));
+          tokenRelations.clear();
+          paramVars.clear();
+          System.err.println("Token switch " + currTokenId);
+          tokenId = currTokenId;
+        }
+        if(!paramVarId.equals(currParamVarId) && !currParamVarId.equals(NULL)) {
+          System.err.println("Parameter variable switch " + currParamVarId);
+          paramVarId = currParamVarId;
+          paramVars.add(paramVarId);
+        }
+        if(!tokenRelationId.equals(currTokenRelationId) && !currTokenRelationId.equals(NULL)) {
+          System.err.println("Token relation switch " + currTokenRelationId);
+          tokenRelationId = currTokenRelationId;
+          tokenRelations.add(tokenRelationId);
+        }
+      }
+      slot.addToken(tokenId, tokenIsValueToken, tokenSlotId, tokenPredicateId, 
+                    tokenStartVarId, tokenEndVarId, tokenDurationVarId, tokenObjectId,
+                    tokenRejectVarId, tokenObjectVarId, tokenTimelineId, tokenRelations,
+                    paramVars);*/
+      
       while(objectIdIterator.hasNext()) {
         Integer objectId = (Integer) objectIdIterator.next();
         object = partialPlan.getObjectImpl(objectId);
@@ -222,6 +308,7 @@ public class MySQLDB {
           }
         }
       }
+
       ResultSet freeTokens = queryDatabase("SELECT TokenId, IsValueToken, ObjectVarId, StartVarId, EndVarId, DurationVarId, RejectVarId, PredicateId FROM Token WHERE IsFreeToken=1 && PartialPlanId=".concat(partialPlan.getKey().toString()));
       while(freeTokens.next()) {
         Integer freeTokenId = new Integer(freeTokens.getInt("TokenId"));
