@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.93 2004-07-27 21:58:05 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.94 2004-07-29 01:36:37 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -68,7 +68,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   private String url; //directory containing the partialplan directories
   private PwModel model;
   private boolean hasLoadedTransactionFile;
-  private int stepCount;
   private Map transactions;
   private String name;
   private List contentSpec;
@@ -93,7 +92,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     this.url = url;
     this.id = id;
     this.model = null;
-    stepCount = 0;
     
     String error = null;
     if((error = validateSequenceDirectory(url)) != null) {
@@ -112,7 +110,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     partialPlans = new HashMap();
     planNamesInFilesystem = new ArrayList();
     String [] planNames = (new File(url)).list(new StepDirectoryFilter());
-    stepCount = planNames.length;
     for(int i = 0; i < planNames.length; i++) {
       planNamesInFilesystem.add(planNames[i]);
       partialPlans.put(planNames[i], null);
@@ -130,7 +127,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     this.url = url;
     this.id = id;
     this.model = null;
-    stepCount = 0;
     
     int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
@@ -143,7 +139,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    
     partialPlans = new HashMap();
     planNamesInFilesystem = new ArrayList();
-    stepCount = 0;
     transactions = new HashMap();
     fakeRules();
   }
@@ -198,7 +193,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
         planNamesInFilesystem.add(planName);
       }
       partialPlans.put(planName, null);
-      stepCount++;
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);
     instantiateRules();
@@ -256,15 +250,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   
   // IMPLEMENT INTERFACE 
 
-
-  /**
-   * <code>getStepCount</code> - number of PartialPlans, each a step
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getStepCount() {
-    return stepCount;
-  }
 
   /**
    * <code>getUrl</code>
@@ -333,24 +318,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    *
    * @param step - <code>int</code> - 
    * @return - <code>PwPartialPlan</code> - 
-   * @exception IndexOutOfBoundsException if an error occurs
    * @exception ResourceNotFoundException if an error occurs
    * @exception CreatePartialPlanException if the user interrupts the plan creation
    */
   public PwPartialPlan getPartialPlan( final int step)
-    throws IndexOutOfBoundsException, ResourceNotFoundException, CreatePartialPlanException {
-    if(step >= 0 && step < stepCount) {
-      String name = "step" + step;
-      if(!partialPlans.containsKey(name)) {
-        throw new IndexOutOfBoundsException("step " + step + ", not >= 0 and < " + stepCount);
-      }
-      PwPartialPlan retval = (PwPartialPlan) partialPlans.get(name);
-      if(retval == null) {
-        retval = addPartialPlan(name);
-      }
-      return retval;
-    }
-    throw new IndexOutOfBoundsException("step " + step + ", not >= 0 and < " + stepCount);
+    throws ResourceNotFoundException, CreatePartialPlanException {
+    return getPartialPlan( "step" + step);
   } // end getPartialPlan( int)
 
   /**
@@ -448,14 +421,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   }
 
   public void addPartialPlan(final PwPartialPlanImpl partialPlan) {
-    stepCount++;
     partialPlans.put(partialPlan.getName(), partialPlan);
     planNamesInDb.add(partialPlan.getName());
   }
 
   // for testing only
   public void addPartialPlan(final PwPartialPlanImpl partialPlan, final boolean forTesting) {
-    stepCount++;
     partialPlans.put(partialPlan.getName(), partialPlan);
     planNamesInFilesystem.add(partialPlan.getName());
   }
@@ -731,11 +702,11 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     return returnList;
   } // end getVariablesById
 
-  public int [] getPlanDBSize(final int stepNum) throws IndexOutOfBoundsException {
-    if(stepNum < 0 || stepNum > stepCount) {
-      System.err.println(stepNum + " is OOB");
-      throw new IndexOutOfBoundsException();
-    }
+  public List getPartialPlanNameList() {
+    return MySQLDB.queryPartialPlanNames( id);
+  }
+
+  public int [] getPlanDBSize(final int stepNum) {
     return MySQLDB.queryPartialPlanSize(getPartialPlanId(stepNum));
   }
   
@@ -774,7 +745,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       }
       if(!partialPlans.containsKey(planName)) {
         partialPlans.put(planName, null);
-        stepCount++;
       }
     }
     planNamesInDb = MySQLDB.queryPlanNamesInDatabase(id);

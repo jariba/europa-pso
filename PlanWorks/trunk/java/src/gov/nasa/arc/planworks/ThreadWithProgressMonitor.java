@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ThreadWithProgressMonitor.java,v 1.1 2004-07-27 21:58:04 taylor Exp $
+// $Id: ThreadWithProgressMonitor.java,v 1.2 2004-07-29 01:36:36 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -75,6 +75,7 @@ public class ThreadWithProgressMonitor extends Thread {
         catch (InterruptedException ie) {}
       }
       progressMonitor.close();
+      progressMonitor = null;
     } // end run
 
   } // end class ProgressMonitorThread

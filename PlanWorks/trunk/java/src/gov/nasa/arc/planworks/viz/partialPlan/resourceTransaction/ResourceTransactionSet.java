@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionSet.java,v 1.14 2004-07-27 21:58:13 taylor Exp $
+// $Id: ResourceTransactionSet.java,v 1.15 2004-07-29 01:36:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -78,15 +78,19 @@ public class ResourceTransactionSet extends BasicNode {
    * <code>ResourceTransactionSet</code> - constructor 
    *
    * @param resource - <code>PwResource</code> - 
+   * @param resourceHorizonEnd - <code>int</code> - 
    * @param backgroundColor - <code>Color</code> - 
    * @param resourceTransactionView - <code>ResourceTransactionView</code> - 
    */
-  public ResourceTransactionSet( final PwResource resource, final Color backgroundColor,
+  public ResourceTransactionSet( final PwResource resource, final int resourceHorizonEnd,
+                                 final Color backgroundColor,
                                  final ResourceTransactionView resourceTransactionView) {
     super();
     this.resource = resource;
     earliestStartTime = resource.getHorizonStart();
-    latestEndTime = resource.getHorizonEnd();
+    // latestEndTime = resource.getHorizonEnd();
+    // latestEndTime may be PLUS_INFINITY in planner model
+    latestEndTime = resourceHorizonEnd;
     resourceId = resource.getId().toString();
 //     System.err.println( "Resource Node: " + resourceId + " eS " +
 //                         earliestStartTime + " lE " + latestEndTime);
@@ -242,18 +246,6 @@ public class ResourceTransactionSet extends BasicNode {
 
   } // end renderTransactions
 
-
-  private void checkIntervalForInfinity( String transIdString, int time) {
-    if (time == DbConstants.MINUS_INFINITY_INT) {
-      System.err.println( "ResourceTransactionSet transId = " + transIdString +
-                          "; value = " + DbConstants.MINUS_INFINITY);
-    }
-    if (time == DbConstants.PLUS_INFINITY_INT) {
-      System.err.println( "ResourceTransactionSet transId = " + transIdString +
-                          "; value = " + DbConstants.PLUS_INFINITY);
-    }
-  } // end checkIntervalForInfinity
-
   /**
    * <code>toString</code>
    *
@@ -334,6 +326,18 @@ public class ResourceTransactionSet extends BasicNode {
     }
 //     System.err.println( "maxCellRow " + maxCellRow);
   } // end  layoutTransactionNodes
+
+  private void checkIntervalForInfinity( String transIdString, int time) {
+    if (time == DbConstants.MINUS_INFINITY_INT) {
+      System.err.println( "ResourceTransactionSet transId = " + transIdString +
+                          "; value = " + DbConstants.MINUS_INFINITY);
+    }
+    if (time == DbConstants.PLUS_INFINITY_INT) {
+      System.err.println( "ResourceTransactionSet transId = " + transIdString +
+                          "; value = " + DbConstants.PLUS_INFINITY);
+    }
+  } // end checkIntervalForInfinity
+
 
 } // end class ResourceTransactionSet
 

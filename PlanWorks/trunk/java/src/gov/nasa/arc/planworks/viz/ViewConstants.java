@@ -56,8 +56,6 @@ public abstract class ViewConstants {
    */
   public static final Color PRIMARY_SELECTION_COLOR = ColorMap.getColor( "green");
 
-  public static final Color RESOURCE_TRANSACTION_BG_COLOR = ColorMap.getColor( "lightGray");
-
   public static final int INTERNAL_FRAME_X_DELTA = 100;
 
   public static final int INTERNAL_FRAME_X_DELTA_DIV_4 = 25;

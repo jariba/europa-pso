@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.73 2004-07-27 21:58:11 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.74 2004-07-29 01:36:38 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -326,7 +326,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     setNodesLinksVisible();
 
     double maxTokenWidth = 0.;
-    int numContainerNodes = containerNodeMap.size();
+    int numContainerNodes = containerNodeMap.size() * 2;
     progressMonitorThread( "Rendering Constraint Network View ...", 0, numContainerNodes,
                            Thread.currentThread(), this);
     if (! progressMonitorWait( this)) {
@@ -352,7 +352,6 @@ public class ConstraintNetworkView extends PartialPlanView {
       numContainerNodes++;
       progressMonitor.setProgress( numContainerNodes * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-    progressMonitor.close();
 
     VERTICAL_TOKEN_BAND_X = (maxTokenWidth / 2) + NODE_SPACING;
     VERTICAL_VARIABLE_BAND_X = VERTICAL_TOKEN_BAND_X + VERTICAL_BAND_DISTANCE;
@@ -382,7 +381,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     isLayoutNeeded = false;
     focusNode = null;
     focusNodeId = null;
-
+    isProgressMonitorCancel = true;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
@@ -424,6 +423,13 @@ public class ConstraintNetworkView extends PartialPlanView {
     // setVisible(true | false) depending on keys
     setNodesLinksVisible();
 
+    progressMonitorThread( "Redrawing Constraint Network View ...", 0, 6,
+                           Thread.currentThread(), this);
+    if (! progressMonitorWait( this)) {
+      closeView( this);
+      return;
+    }
+    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
     // content spec apply/reset do not change layout, only ConstraintNetworkTokenNode/
     // variableNode/constraintNode opening/closing
     if (isLayoutNeeded) {
@@ -445,6 +451,7 @@ public class ConstraintNetworkView extends PartialPlanView {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     startTimeMSecs = 0L;
     this.setVisible( true);
+    isProgressMonitorCancel = true;
     handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
   } // end redrawView
 

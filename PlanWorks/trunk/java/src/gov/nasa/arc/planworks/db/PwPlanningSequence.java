@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.37 2004-07-27 21:58:04 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.38 2004-07-29 01:36:36 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,13 +32,6 @@ public interface PwPlanningSequence extends ViewableObject {
   public static final String EVT_PP_ADDED = "PartialPlan Added";
 
   public static final String EVT_PP_REMOVED = "PartialPlan Removed";
-
-  /**
-   * <code>getStepCount</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public abstract int getStepCount();
 
   /**
    * <code>getUrl</code>
@@ -332,14 +325,15 @@ public interface PwPlanningSequence extends ViewableObject {
    */
   public List getUnboundVariablesAtStep(final int stepNum) throws ResourceNotFoundException;
 
+  public List getPartialPlanNameList();
+
   /**
    * <code>getPlanDBSize</code>
    *
    * @param stepNum - <code>int</code> - 
    * @return - <code>int[]</code> - 
-   * @exception IndexOutOfBoundsException if an error occurs
    */
-  public int [] getPlanDBSize(final int stepNum) throws IndexOutOfBoundsException;
+  public int [] getPlanDBSize(final int stepNum);
   
   /**
    * <code>getPlanDBSizeList</code>

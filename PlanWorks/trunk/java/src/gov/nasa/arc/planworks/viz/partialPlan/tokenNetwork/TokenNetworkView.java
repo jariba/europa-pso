@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.60 2004-07-27 21:58:15 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.61 2004-07-29 01:36:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -273,11 +273,14 @@ public class TokenNetworkView extends PartialPlanView {
   } // end class RedrawViewThread
 
   private void renderTokenNetwork( final boolean isRedraw) {
+    String monitorTitle = null;
     if (isRedraw) {
+      monitorTitle = "Redrawing";
       System.err.println( "Redrawing Token Network View ...");
       startTimeMSecs = System.currentTimeMillis();
       this.setVisible( false);
     } else {
+      monitorTitle = "Rendering";
       startTimeMSecs =
         PlanWorks.getPlanWorks().getViewRenderingStartTime( ViewConstants.TOKEN_NETWORK_VIEW);
     }
@@ -292,7 +295,7 @@ public class TokenNetworkView extends PartialPlanView {
     jGoDocument = jGoView.getDocument();
 
     int numOperations = 3;
-    progressMonitorThread( "Rendering Token Network View:", 0, numOperations,
+    progressMonitorThread( monitorTitle + " Token Network View:", 0, numOperations,
                              Thread.currentThread(), this);
     if (! progressMonitorWait( this)) {
       closeView( this);
