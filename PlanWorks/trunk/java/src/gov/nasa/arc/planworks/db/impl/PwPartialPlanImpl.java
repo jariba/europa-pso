@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.21 2003-07-11 22:33:23 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.22 2003-07-14 22:19:09 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -243,6 +243,19 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     retval.addAll(objectMap.values());
     return retval;
   }
+
+  public List getFreeTokenList() {
+    List retval = new ArrayList();
+    Iterator tokenIterator = tokenMap.values().iterator();
+    while(tokenIterator.hasNext()) {
+      PwToken token = (PwToken) tokenIterator.next();
+      if(token.isFreeToken()) {
+        retval.add(token);
+      }
+    }
+    return retval;
+  }
+
   /**
    * <code>getObject</code> - if not in Map, query
    *

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.11 2003-06-30 20:36:17 miatauro Exp $
+// $Id: PwPartialPlan.java,v 1.12 2003-07-14 22:18:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,7 @@ public interface PwPartialPlan {
    */
   public abstract List getObjectList();
 
+  public abstract List getFreeTokenList();
 
   /**
    * <code>getObject</code> - if not in Map, query
