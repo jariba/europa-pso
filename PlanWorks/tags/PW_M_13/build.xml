@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<!-- $Id: build.xml,v 1.38 2004-03-06 02:22:34 taylor Exp $ -->
+<project name="PlanWorks" default="planWorks" basedir=".">
+  <description>
+    PlanWorks Build and Run Targets
+  </description>
+
+  <property environment="env"/>
+  <property name="planworks.root" value="${basedir}"/>
+  <property name="mysql.basedir" value="${planworks.root}/lib/mysql"/>
+  <property name="mysql.datadir" value="${mysql.basedir}/data"/>
+  <property name="mysql.log" value="${mysql.basedir}/log/mysql.log"/>
+  <property name="mysql.log.err" value="${mysql.basedir}/log/mysql.error.log"/>
+  <property name="mysql.sock" value="${mysql.basedir}/mysql.sock"/>
+  <property name="mysql.tmpdir" value="${mysql.basedir}/tmp"/>
+  <property name="mysql.solaris.bindir" value="/home/cmcgann/bin/planworks/mysql/solaris8"/>
+  <!-- property name="mysql.linux.bindir" value="/home/cmcgann/bin/planworks/mysql/linux"/ -->
+  <!-- property name="mysql.bindir" value="${mysql.solaris.bindir}"/ -->
+  <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
+
+  <!-- Change the path below to the required MySQL bin path if you're using your own, then
+       comment out the appropriate assignment in the chk_[linux|solaris]_2 targets -->
+  <!-- property name="mysql.custom.bindir" location="/path/to/mysql/bin"/ -->
+  <property name="mysql.custom.bindir" location="/home/czi/mysql/bin/"/>
+
+  <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
+  <property name="jgo.home"  value="${planworks.root}/java/lib/JGo"/>
+  <property name="jgo.layout.home"  value="${planworks.root}/java/lib/JGo"/>
+  <!-- property name="jgo.layout.home"  value="/home/wtaylor/pub/JGo50"/ -->
+  <property name="splash.image" value="${planworks.root}/lib/images/monkeybananasfixed.png"/>
+  <property name="planworks.test.data.dir" value="${planworks.root}/java/src/gov/nasa/arc/planworks/test/data"/>
+  <property name="europa.home" value="${env.EUROPA_HOME}"/>
+  <!-- specify values for the next two properties to have PlanWorks have a default project -->
+  <property name="default.project.name" value=""/>
+  <property name="default.sequence.dir" value=""/>
+
+  <target name="planWorksDbInstall" depends="chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+    description="-- create all necessary databases and tables">
+      <exec executable="${basedir}/dbInstall.sh" failonerror="true" failifexecutionfails="true">
+        <arg value="${mysql.bindir}"/>
+        <arg value="${mysql.basedir}"/>
+        <arg value="${mysql.datadir}"/>
+        <arg value="${mysql.log}"/>
+        <arg value="${mysql.log.err}"/>
+        <arg value="${mysql.sock}"/>
+        <arg value="${mysql.tmpdir}"/>
+      </exec>
+  </target>
+
+  <target name="planWorks"  depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+    description="-- launch application (compile dependency)">
+    <ant dir="./" antfile="planWorks.xml"/>
+  </target>
+
+  <target name="planWorksProf" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+    description="-- launch application with profiling info">
+    <ant dir="./" antfile="planWorks.xml" target="planWorksProf"/>
+  </target>
+
+  <target name="planWorksOpt" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+    description="-- launch application (compile_optimized dependency)">
+    <ant dir="./" antfile="planWorks.xml" target="planWorksOpt"/>
+  </target>
+
+  <target name="cleanCls" depends="chk_jvm_2"
+      description="-- delete the 'java/classes' directory tree">
+    <ant dir="./java" antfile="build.xml" target="clean"/>
+  </target>
+
+  <target name="compile" depends="chk_jvm_2"
+      description="-- compile 'java/src' tree into 'java/classes' tree">
+    <ant dir="./java" antfile="build.xml" target="compile"/>
+  </target>
+
+  <target name="cleanDb" depends="chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
+      description="-- delete loaded projects from data base">
+      <exec executable="${basedir}/cleanDb.sh" failonerror="true" failifexecutionfails="true">
+        <arg value="${mysql.bindir}"/>
+        <arg value="${mysql.basedir}"/>
+        <arg value="${mysql.datadir}"/>
+        <arg value="${mysql.log}"/>
+        <arg value="${mysql.log.err}"/>
+        <arg value="${mysql.sock}"/>
+        <arg value="${mysql.tmpdir}"/>
+      </exec>
+  </target>
+
+  <target name="chk_solaris_1">
+    <condition property="os.solaris">
+      <equals arg1="${env.OSTYPE}" arg2="solaris"/>
+    </condition>
+    <!-- echo message="os.solaris ${os.solaris}"/ -->
+  </target>
+
+  <target name="chk_solaris_2" depends="chk_solaris_1" if="os.solaris">
+<!--Comment out the following line if you're on Solaris and set your own MySQL bindir-->
+    <property name="mysql.bindir" value="${mysql.solaris.bindir}"/>
+<!--This works because properties are immutable, so this line is ignored.-->
+    <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
+  </target>
+
+  <target name="chk_linux_1">
+    <condition property="os.linux">
+      <equals arg1="${env.OSTYPE}" arg2="linux"/>
+    </condition>
+    <condition property="os.linux">
+      <equals arg1="${env.OSTYPE}" arg2="linux-gnu"/>
+    </condition>
+    <condition property="os.linux">
+      <equals arg1="${env.OSTYPE}" arg2="gnu-linux"/>
+    </condition>
+    <!-- echo message="os.linux ${os.linux}"/ -->
+  </target>
+
+  <target name="chk_linux_2" depends="chk_linux_1" if="os.linux">
+<!--Comment out the following line if you're on Linux and set your own MySQL bindir-->
+    <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
+<!--This works because properties are immutable, so this line is ignored.-->
+    <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
+  </target>
+
+  <target name="chk_cygwin_1">
+    <condition property="os.cygwin">
+      <equals arg1="${env.OSTYPE}" arg2="cygwin"/>
+    </condition>
+    <!-- echo message="os.macosx ${os.macosx}"/ -->
+  </target>
+
+  <target name="chk_cygwin_2" depends="chk_cygwin_1" if="os.cygwin">
+    <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
+    <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
+  </target>
+
+  <target name="chk_macosx_1">
+    <condition property="os.macosx">
+      <equals arg1="${env.OSTYPE}" arg2="darwin"/>
+    </condition>
+    <!-- echo message="os.macosx ${os.macosx}"/ -->
+  </target>
+
+  <target name="chk_macosx_2" depends="chk_macosx_1" if="os.macosx">
+    <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
+  </target>
+
+  <!-- JVM checking from Tarang Patel -->
+
+  <target name="chk_jvm_1">
+    <available property="jdk1.4+" classname="java.lang.CharSequence" />
+    <condition property="correct.java">
+      <equals arg1="${jdk1.4+}" arg2="true"/>
+    </condition>
+    <echo message="ant.java.version ${ant.java.version}"/>
+    <!-- get the full version id -->
+    <java classname="gov.nasa.arc.planworks.util.Utilities" fork="true">
+        <jvmarg value="-version"/>
+    </java>
+  </target>
+
+  <target name="chk_jvm_2" depends="chk_jvm_1" unless="correct.java">
+    <fail message="Wrong JVM version: ${ant.java.version} => require jdk1.4.*"/>
+  </target>
+
+  <target name="test" depends="chk_jvm_2, cleanDb, compile"
+    description="-- Data access layer JFCUnit test (compile, cleandb dependencies)">
+          <ant dir="./java/src/gov/nasa/arc/planworks/test" antfile="planworks-test.xml"/>
+  </target>
+
+</project>
