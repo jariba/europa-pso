@@ -80,7 +80,7 @@ public class MySQLDB {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
       for(int triedConnections = 0; triedConnections <= 10; triedConnections++) {
         try {
-          conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=root&password=root");
+          conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=root");
         }
         catch(Exception e) {
           if(triedConnections == 10) {
