@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.15 2003-12-03 02:29:50 taylor Exp $
+// $Id: DbConstants.java,v 1.16 2003-12-12 01:23:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -318,5 +318,11 @@ public interface DbConstants {
 
   // number of numeric characters in a type long value
   public static final int LONG_INT_LENGTH = 13;
+
+  public static final String RULE_MEETS = "meets";
+  public static final String RULE_MET_BY = "met-by";
+  public static final String RULE_CONTAINS = "contains";
+  public static final String RULE_CONTAINED_BY = "contained-by";
+
 
 } // end interface DbConstants

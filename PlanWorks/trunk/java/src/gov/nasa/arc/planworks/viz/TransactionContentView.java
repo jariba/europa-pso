@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.11 2003-12-11 22:25:07 miatauro Exp $
+// $Id: TransactionContentView.java,v 1.12 2003-12-12 01:23:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -37,6 +37,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TransactionField;
+import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
@@ -56,6 +57,7 @@ public class TransactionContentView extends JGoView {
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
   private TransactionField keyField;
+  private List objectKeyFieldList;  // element TransactionField
 
 
   /**
@@ -74,6 +76,7 @@ public class TransactionContentView extends JGoView {
     this.viewableObject = viewableObject;
     this.vizView = vizView;
 
+    objectKeyFieldList = new ArrayList();
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoDocument = this.getDocument();
 
@@ -88,7 +91,6 @@ public class TransactionContentView extends JGoView {
     Thread thread = new RedrawViewThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new RedrawViewThread().start();
   }
 
   class RedrawViewThread extends Thread {
@@ -117,6 +119,11 @@ public class TransactionContentView extends JGoView {
     int x = 0, y = 5;
     Iterator transItr = transactionList.iterator();
     int i = 1;
+    boolean isTransactionQueryView = (vizView instanceof TransactionQueryView);
+    boolean isObjectKeyField =
+      ((isTransactionQueryView && // "In Range" only
+        (((TransactionQueryView) vizView).getQuery().indexOf( "For ") == -1)) ||
+       (vizView instanceof TransactionView));
     while (transItr.hasNext()) {
       x = 0;
       PwTransaction transaction = (PwTransaction) transItr.next();
@@ -144,15 +151,18 @@ public class TransactionContentView extends JGoView {
                            (int) sourceField.getSize().getHeight());
       x += headerJGoView.getSourceNode().getSize().getWidth();
 
-      TransactionField objectKeyField =
-        new TransactionField( transaction.getObjectId().toString(), new Point( x, y),
-                              JGoText.ALIGN_RIGHT, bgColor, viewableObject);
-      jGoDocument.addObjectAtTail( objectKeyField);
-      objectKeyField.setSize( (int) headerJGoView.getObjectKeyNode().getSize().getWidth(),
-                             (int) objectKeyField.getSize().getHeight());
-      x += headerJGoView.getObjectKeyNode().getSize().getWidth();
+      if (isObjectKeyField) {
+        TransactionField objectKeyField =
+          new TransactionField( transaction.getObjectId().toString(), new Point( x, y),
+                                JGoText.ALIGN_RIGHT, bgColor, viewableObject);
+        objectKeyFieldList.add( objectKeyField);
+        jGoDocument.addObjectAtTail( objectKeyField);
+        objectKeyField.setSize( (int) headerJGoView.getObjectKeyNode().getSize().getWidth(),
+                                (int) objectKeyField.getSize().getHeight());
+        x += headerJGoView.getObjectKeyNode().getSize().getWidth();
+      }
 
-      if (vizView instanceof TransactionQueryView) {
+      if (isTransactionQueryView) {
         TransactionField stepNumField =
           new TransactionField( transaction.getStepNumber().toString(), new Point( x, y),
                                 JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
@@ -357,6 +367,16 @@ public class TransactionContentView extends JGoView {
 //     }
 //     return parameterName;
 //   } // end getParameterName 
+
+  /**
+   * <code>getObjectKeyField</code>
+   *
+   * @param lineIndex - <code>int</code> - 
+   * @return - <code>TransactionField</code> - 
+   */
+  public TransactionField getObjectKeyField( int lineIndex) {
+    return (TransactionField) objectKeyFieldList.get( lineIndex);
+  }
 
   /**
    * <code>scrollEntries</code>

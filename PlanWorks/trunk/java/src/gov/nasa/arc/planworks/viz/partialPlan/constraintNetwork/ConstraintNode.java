@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.5 2003-11-20 19:11:24 taylor Exp $
+// $Id: ConstraintNode.java,v 1.6 2003-12-12 01:23:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -40,6 +40,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.nodes.BasicNodeWDiamond;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
 
@@ -52,7 +53,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ConstraintNode extends BasicNode {
+public class ConstraintNode extends BasicNodeWDiamond {
 
   private static final boolean IS_FONT_BOLD = false;
   private static final boolean IS_FONT_UNDERLINED = false;
@@ -67,7 +68,6 @@ public class ConstraintNode extends BasicNode {
   private PartialPlanView partialPlanView;
   private String nodeLabel;
   private List variableNodeList; // element VariableNode
-  private boolean isDiamond = true;
   private List constraintVariableLinkList; // element BasicNodeLink
   //fix me.
   private Map constraintVariableLinkMap;
@@ -134,80 +134,6 @@ public class ConstraintNode extends BasicNode {
       setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
     }
   } // end configure
-
-
-  // extend BasicNode to use Diamond
-
-  /**
-   * <code>initialize</code> - modified from BasicNode to handle Diamond node shape
-   *
-   * @param loc - <code>Point</code> - 
-   * @param labeltext - <code>String</code> - 
-   */
-  public void initialize(Point loc, String labeltext) {
-    // the area as a whole is not directly selectable using a mouse,
-    // but the area can be selected by trying to select any of its
-    // children, all of whom are currently !isSelectable().
-    setSelectable(false);
-    setGrabChildSelection(true);
-    // the user can move this node around
-    setDraggable(true);
-    // the user cannot resize this node
-    setResizable(false);
-
-    // create the circle/ellipse around and behind the port
-    myDrawable = createDrawable();
-    // can't setLocation until myDrawable exists
-    setLocation(loc);
-
-    // if there is a string, create a label with a transparent
-    // background that is centered
-    if (labeltext != null) {
-      myLabel = createLabel(labeltext);
-    }
-
-    // create a Port, which knows how to make sure
-    // connected JGoLinks have a reasonable end point
-    // myPort = new BasicNodePort();
-    myPort = new BasicNodePortWDiamond();
-    myPort.setSize(7, 7);
-    if (getLabelSpot() == Center) {
-      getPort().setStyle(JGoPort.StyleHidden);
-    } else {
-      getPort().setStyle(JGoPort.StyleEllipse);
-    }
-
-    // add all the children to the area
-    addObjectAtHead(myDrawable);
-    addObjectAtTail(myPort);
-    if (myLabel != null) {
-      addObjectAtTail(myLabel);
-    }
-  }
-
-
-  /**
-   * <code>createDrawable</code> - modified from BasicNode to handle Diamond node shape
-   *
-   * @return - <code>JGoDrawable</code> - 
-   */
-  public JGoDrawable createDrawable() {
-    JGoDrawable d;
-    if (isRectangular()) {
-      d = new JGoRectangle();
-    } else if (isDiamond) {
-      d = new Diamond();
-    } else {
-      d = new JGoEllipse();
-    }
-    d.setSelectable(false);
-    d.setDraggable(false);
-    d.setSize(20, 20);
-    return d;
-  } // end createDrawable
-
-  // end extending BasicNode 
-
 
   /**
    * <code>equals</code>

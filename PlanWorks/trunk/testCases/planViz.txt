@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.17 2003-12-10 20:47:54 miatauro Exp $
+// $Id: planViz.txt,v 1.18 2003-12-12 01:23:07 taylor Exp $
 //
 // PlanWorks
 //
@@ -408,7 +408,8 @@ Post-conditions:
      mouse click, and placing the mouse cursor over the red line will cause
      a "tool tip" to appear with the value of the "x" or time coordinate.
   8. Method:9 - The lower portion of the Transaction view will scroll up to 
-     show the transaction entry with the selected OBJ_KEY value.
+     show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
+     value will be highlighted.
   9. Method:10 - The values in the columns which are sorted will be redisplayed
      in the proper order.
  10. Method:11 - The selected view or window will be raised to the top of the
@@ -521,9 +522,10 @@ Method:
      Use the keys from Method:2 for the object types, and then permute the
      transaction types for each object type.  Also, leave the "Key" field
      blank for some cases.  Click on "Apply Query".
-  4. In each of the "QueryResults" windows created by Method:3, Mouse-Right 
-     click on the background of the "header" portion of the view, and select 
-     "Find Transaction by Obj_Key".  Enter an OBJ_KEY value.
+  4. In the "QueryResults" windows created by Method:3, which have no "Key"
+     field or have a blank "Key" field, Mouse-Right click on the background 
+     of the "header" portion of the view, and select "Find Transaction by Obj_Key".  
+     Enter an OBJ_KEY value.
   5. Using the "SequenceQuery" dialog, select "Steps" and then select in
      turn the qualified "Steps" queries: With Non-unit Decisions/Restrictions/
      Unit Decisions.  These queries do not expand.  Click on "Apply Query".
@@ -532,7 +534,7 @@ Method:
      which expand into a "Key" field; and "In Range", which expands into
      "startStep" and "endStep" fields.  Enter appropriate values for the
      fields, and click on "Apply Query".
-  7. In each of the "QueryResults" windows created by Method:6, Mouse-Right 
+  7. In the "In Range" "QueryResults" window created by Method:6, Mouse-Right 
      click on the background of the "header" portion of the view, and select 
      "Find Transaction by Obj_Key".  Enter an OBJ_KEY value.
   8. In each of the "QueryResults" windows, move the mouse over any of the 
@@ -551,12 +553,14 @@ Post-conditions:
   3. Method:3 - Use "TransactionView" windows for appropriate steps of the
      Sequence Steps View to verify the results in the "QueryResults" windows.
   4. Method:4 - The lower portion of the "QueryResults" window will scroll up 
-     to show the transaction entry with the selected OBJ_KEY value.
+     to show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
+     value will be highlighted.
   5. Method:5 - Verify these queries using knowledge from the plan sequence.
   6. Method:6 - Use "TransactionView" windows for appropriate steps of the
      Sequence Steps View to verify the results in the "QueryResults" windows.
   7. Method:7 - The lower portion of the "QueryResults" window will scroll up 
-     to show the transaction entry with the selected OBJ_KEY value.
+     to show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
+     value will be highlighted.
   8. Method:8 - The values in the columns which are sorted will be redisplayed
      in the proper order.
   9. Method:9 - All "QueryResults" windows created from the "SequenceQuery ..." 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.77 2003-12-11 22:24:48 miatauro Exp $
+// $Id: PlanWorks.java,v 1.78 2003-12-12 01:23:03 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -469,35 +469,30 @@ public class PlanWorks extends MDIDesktopFrame {
     Thread thread = new InstantiateProjectThread(type);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new InstantiateProjectThread( type).start();
   }
 
   private void deleteProjectThread() {
     Thread thread = new DeleteProjectThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new DeleteProjectThread().start();
   }
 
   private void newSequenceThread() {
     Thread thread = new NewSequenceThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new NewSequenceThread().start();
   }
 
   private void addSequenceThread() {
     Thread thread = new AddSequenceThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new AddSequenceThread().start();
   }
 
   private void deleteSequenceThread() {
     Thread thread = new DeleteSequenceThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new DeleteSequenceThread().start();
   }
 
   /**
@@ -573,7 +568,6 @@ public class PlanWorks extends MDIDesktopFrame {
     Thread thread = new CreateSequenceViewThread(viewName, menuItem);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new CreateSequenceViewThread( viewName, menuItem).start();
   } // end createSequenceViewThread
 
   private final void createDirectoryChooser() {

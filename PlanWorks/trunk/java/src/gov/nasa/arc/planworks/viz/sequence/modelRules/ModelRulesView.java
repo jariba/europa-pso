@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ModelRulesView.java,v 1.1 2003-12-03 02:29:51 taylor Exp $
+// $Id: ModelRulesView.java,v 1.2 2003-12-12 01:23:06 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,81 +19,100 @@ import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
-import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoPen;
-import com.nwoods.jgo.JGoRectangle;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
 
+import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwRule;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.util.StringNameComparator;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.VizViewOverview;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
+/**
+ * <code>ModelRulesView</code> - 
+ *
+ * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
+ *                   NASA Ames Research Center - Code IC
+ * @version 0.0
+ */
 public class ModelRulesView extends SequenceView {
 
-  private static final String RULE_MEETS = "meets";
-  private static final String RULE_MET_BY = "met-by";
-
   private static final Color RULE_MEETS_COLOR = ColorMap.getColor( "blue");
-  private static final Color RULE_MET_BY_COLOR = ColorMap.getColor( "green3");
+  private static final Color RULE_MET_BY_COLOR = ColorMap.getColor( "plum");
+  private static final Color RULE_CONTAINS_COLOR = ColorMap.getColor( "green3");
+  private static final Color RULE_CONTAINED_BY_COLOR = ColorMap.getColor( "aquamarine");
 
-  private static final List RULE_TYPE_LIST;
+  protected static final List RULE_TYPE_LIST;
   private static final List RULE_COLOR_LIST;
 
 
   static {
     RULE_TYPE_LIST = new ArrayList();
-    RULE_TYPE_LIST.add( RULE_MEETS);
-    RULE_TYPE_LIST.add( RULE_MET_BY);
+    RULE_TYPE_LIST.add( DbConstants.RULE_MEETS);
+    RULE_TYPE_LIST.add( DbConstants.RULE_MET_BY);
+    RULE_TYPE_LIST.add( DbConstants.RULE_CONTAINS);
+    RULE_TYPE_LIST.add( DbConstants.RULE_CONTAINED_BY);
 
     RULE_COLOR_LIST = new ArrayList();
     RULE_COLOR_LIST.add( RULE_MEETS_COLOR);
     RULE_COLOR_LIST.add( RULE_MET_BY_COLOR);
+    RULE_COLOR_LIST.add( RULE_CONTAINS_COLOR);
+    RULE_COLOR_LIST.add( RULE_CONTAINED_BY_COLOR);
   } // end static
   
   private PwPlanningSequence planSequence;
   private PwModel model;
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private JGoView jGoView;
+  private ModelRulesJGoView jGoView;
   private JGoDocument jGoDocument;
   private Graphics graphics;
   private FontMetrics fontMetrics;
   private Font font;
 
-  private List nodeList; // element PredicateNode
+  private List predicateNodeList; // element PredicateNode
+  private List predicateNameList; // element String
   private List linkList; // element RuleLink
   private List linkNameList; // element String
 
+  /**
+   * <code>ModelRulesView</code> - constructor 
+   *
+   * @param planSequence - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   */
   public ModelRulesView( ViewableObject planSequence,  ViewSet viewSet) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.planSequence = (PwPlanningSequence) planSequence;
@@ -103,12 +122,9 @@ public class ModelRulesView extends SequenceView {
     // build model structure from MySQL db
     model = this.planSequence.getModel();
 
-    linkList = new ArrayList();
-    linkNameList = new ArrayList();
-
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
-    jGoView = new JGoView();
+    jGoView = new ModelRulesJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -117,6 +133,16 @@ public class ModelRulesView extends SequenceView {
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
+
+
+  /**
+   * <code>getPlanSequence</code>
+   *
+   * @return - <code>PwPlanningSequence</code> - 
+   */
+  public PwPlanningSequence getPlanSequence() {
+    return planSequence;
+  }
 
 
   Runnable runInit = new Runnable() {
@@ -163,6 +189,7 @@ public class ModelRulesView extends SequenceView {
     expandViewFrame( viewSet.openView( this.getClass().getName()),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
+    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
 
@@ -171,7 +198,9 @@ public class ModelRulesView extends SequenceView {
    *
    */
   public void redraw() {
-    new RedrawViewThread().start();
+    Thread thread = new RedrawViewThread();
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
   }
 
   class RedrawViewThread extends Thread {
@@ -195,12 +224,18 @@ public class ModelRulesView extends SequenceView {
       this.setVisible( false);
     }
 
-    nodeList = new ArrayList();
+    predicateNodeList = new ArrayList();
+    predicateNameList = new ArrayList();
     linkList = new ArrayList();
     linkNameList = new ArrayList();
 
    // create all nodes
     createPredicateNodes();
+
+    ModelRulesLayout layout = new ModelRulesLayout( jGoDocument, startTimeMSecs);
+    layout.performLayout();
+
+    Collections.sort( predicateNameList, new StringNameComparator());
 
     if (isRedraw) {
       this.setVisible( true);
@@ -211,7 +246,8 @@ public class ModelRulesView extends SequenceView {
 
   private void createPredicateNodes() {
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
-    int y = ViewConstants.TIMELINE_VIEW_Y_INIT * 2;
+    int y = (ViewConstants.TIMELINE_VIEW_Y_INIT * 2) +
+      (ViewConstants.TIMELINE_VIEW_Y_DELTA * 2);
     Color backgroundColor = ColorMap.getColor( "chartreuse1");
       // ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
 
@@ -219,57 +255,77 @@ public class ModelRulesView extends SequenceView {
     while (ruleItr.hasNext()) {
       PwRule rule = (PwRule) ruleItr.next();
       String fromPredicate = rule.getFromPredicate();
+      String fromPredicateObject = rule.getFromPredicateObject();
+      String fromPredicateAttribute = rule.getFromPredicateAttribute();
+      List fromPredicateParams = rule.getFromPredicateParams();
+      List fromPredicateParamValues = rule.getFromPredicateParamValues();
+      if (fromPredicateParams.size() == 0) {
+        fromPredicateParams.add( "noParams");
+      }
       String toPredicate = rule.getToPredicate();
+      String toPredicateObject = rule.getToPredicateObject();
+      String toPredicateAttribute = rule.getToPredicateAttribute();
+      List toPredicateParams = rule.getToPredicateParams();
+      List toPredicateParamValues = rule.getToPredicateParamValues();
       String ruleType = rule.getType();
 //       System.err.println( "ModelRulesView: fromPredicate " + fromPredicate +
 //                           " toPredicate " + toPredicate + " ruleType " + ruleType);
       PredicateNode fromPredicateNode =
-        createPredicateNode( fromPredicate, new Point( x, y), backgroundColor);
+        createPredicateNode( fromPredicate, fromPredicateObject, fromPredicateAttribute,
+                             fromPredicateParams, fromPredicateParamValues,
+                             new Point( x, y), backgroundColor, rule);
 
-      if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
-        x = (int) ( ViewConstants.TIMELINE_VIEW_X_INIT +
+      if (! fromPredicateNode.isExisting()) {
+        x = (int) ( fromPredicateNode.getLocation().getX() +
                     (fromPredicateNode.getSize().getWidth() / 2));
         fromPredicateNode.setLocation( x, (int) fromPredicateNode.getLocation().getY());
-      }
-      if (! fromPredicateNode.isExisting()) {
-        x += fromPredicateNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        x += (fromPredicateNode.getSize().getWidth() / 2) +
+          (ViewConstants.TIMELINE_VIEW_X_DELTA * 2);
       }
       PredicateNode toPredicateNode =
-        createPredicateNode( toPredicate, new Point( x, y), backgroundColor);
+        createPredicateNode( toPredicate,toPredicateObject, toPredicateAttribute,
+                             toPredicateParams, toPredicateParamValues,
+                             new Point( x, y), backgroundColor, rule);
       if (! toPredicateNode.isExisting()) {
-        x += toPredicateNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        x = (int) ( toPredicateNode.getLocation().getX() +
+                    (toPredicateNode.getSize().getWidth() / 2));
+        toPredicateNode.setLocation( x, (int) toPredicateNode.getLocation().getY());
+        x += (toPredicateNode.getSize().getWidth() / 2) +
+          (ViewConstants.TIMELINE_VIEW_X_DELTA * 2);
       }
 
+//       createRuleLinkTriplets( fromPredicateNode, toPredicateNode, fromPredicateParams,
+//                               fromPredicateParamValues, ruleType);
       createRuleLink( fromPredicateNode, toPredicateNode, ruleType);
     }
   } // end createPredicateNodes
 
 
-  private PredicateNode createPredicateNode( String name, Point location,
-                                             Color backgroundColor) {
+  private PredicateNode createPredicateNode( String name, String object, String attribute,
+                                             List params, List paramValues, Point location,
+                                             Color backgroundColor, PwRule rule) {
+//     System.err.println( "createPredicateNode: name " + name + " object " + object +
+//                         " attribute " + attribute + " params " + params);
     PredicateNode predicateNode =
-      new PredicateNode( name, location, backgroundColor, this);
-    if (! nodeList.contains( predicateNode)) {
+      new PredicateNode( name, object, attribute, params, paramValues, location,
+                         backgroundColor, rule, this);
+    int index = predicateNodeList.indexOf( predicateNode);
+    if (index == -1) {
       predicateNode.setIsExisting( false);
-      nodeList.add( predicateNode);
+      predicateNodeList.add( predicateNode);
+      predicateNameList.add( name);
       jGoDocument.addObjectAtTail( predicateNode);
       return predicateNode;
     } else {
-      Iterator nodeItr = nodeList.iterator();
-      while (nodeItr.hasNext()) {
-        PredicateNode node = (PredicateNode) nodeItr.next();
-        if (node.getName().equals( name)) {
-          node.setIsExisting( true);
-          return node;
-        }
-      }
-      return null;
+      return (PredicateNode) predicateNodeList.get( index);
     }
   } // end createPredicateNodes
 
 
-  private void createRuleLink( PredicateNode fromPredicateNode, PredicateNode toPredicateNode,
-                                String ruleType) {
+  private void createRuleLinkTriplets( PredicateNode fromPredicateNode,
+                                       PredicateNode toPredicateNode,
+                                       List fromPredicateParams, List fromPredicateParamValues,
+                                       String ruleType) {
     if ((fromPredicateNode == null) || (toPredicateNode == null)) {
       return;
     }
@@ -283,25 +339,176 @@ public class ModelRulesView extends SequenceView {
       }
     }
     linkNameList.add( linkName);
+
     int ruleIndex = RULE_TYPE_LIST.indexOf( ruleType);
     if (ruleIndex != -1) {
+      Point ruleNodeLocation = getRuleNodeLocation( fromPredicateNode, toPredicateNode, ruleType);
       Color ruleColor = (Color) RULE_COLOR_LIST.get( ruleIndex);
-      RuleLink link = new RuleLink( fromPredicateNode, toPredicateNode);
-      linkList.add( link);
-      link.setMidLabel( new JGoText( ruleType));
-      // arrow head
-      link.setBrush( JGoBrush.makeStockBrush( ruleColor));
-      // line
-      link.setPen( new JGoPen( JGoPen.SOLID, 1, ruleColor));
-      // label background
-      ((JGoText) link.getMidLabel()).setBkColor( ruleColor);
-      ((JGoText) link.getMidLabel()).setDraggable( false);
+      for (int i = 0, n = fromPredicateParams.size(); i < n; i++) {
+        String param = (String) fromPredicateParams.get( i);
+        List paramValues = (List) fromPredicateParamValues.get( i);
+        Point paramNodeLocation = ruleNodeLocation;
+        ParamNode paramNode = new ParamNode( param, paramNodeLocation,
+                                             ColorMap.getColor( "lightYellow"), this);
+        jGoDocument.addObjectAtTail( paramNode);
 
-      jGoDocument.addObjectAtTail( link);
+        createRuleLink( fromPredicateNode, paramNode, ruleType);
+
+        Iterator paramValueItr = paramValues.iterator();
+        while (paramValueItr.hasNext()) {
+          String paramValue = (String) paramValueItr.next();
+          RuleNode ruleNode = new RuleNode( param, paramValue, ruleType, ruleNodeLocation,
+                                            ruleColor, this);
+          jGoDocument.addObjectAtTail( ruleNode);
+
+          createRuleLink( paramNode, ruleNode, ruleType);
+
+          createRuleLink( ruleNode, toPredicateNode, ruleType);
+        }
+      }
     } else {
       System.err.println( "createRuleLink: ruleType " + ruleType + " not handled");
     }
-  } // end createRuleLink
+  } // end createRuleLinkTriplets
+
+  private void createRuleLink( BasicNode fromNode, BasicNode toNode, String ruleType) {
+    Color ruleColor = (Color) RULE_COLOR_LIST.get( RULE_TYPE_LIST.indexOf( ruleType));
+    RuleLink link = new RuleLink( fromNode, toNode, ruleType);
+    linkList.add( link);
+    // arrow head
+    link.setBrush( JGoBrush.makeStockBrush( ruleColor));
+    // line
+    link.setPen( new JGoPen( JGoPen.SOLID, 1, ruleColor));
+    jGoDocument.addObjectAtTail( link);
+  } // end crateRuleLink
+
+  private Point getRuleNodeLocation( PredicateNode fromPredicateNode,
+                                     PredicateNode toPredicateNode, String ruleType) {
+    Point ruleNodeLocation = null;
+    if (ruleType.equals( DbConstants.RULE_MEETS) ||
+        ruleType.equals( DbConstants.RULE_CONTAINS)) {
+      ruleNodeLocation = new Point( (int) (fromPredicateNode.getLocation().getX() +
+                                           ((toPredicateNode.getLocation().getX() -
+                                             fromPredicateNode.getLocation().getX()) / 2)),
+                                    (int) (fromPredicateNode.getLocation().getY() +
+                                           ((toPredicateNode.getLocation().getY() -
+                                             fromPredicateNode.getLocation().getY()) / 2)));
+    } else if (ruleType.equals( DbConstants.RULE_MET_BY) ||
+               ruleType.equals( DbConstants.RULE_CONTAINED_BY)) {
+      ruleNodeLocation = new Point( (int) (fromPredicateNode.getLocation().getX() -
+                                           ((fromPredicateNode.getLocation().getX() -
+                                             toPredicateNode.getLocation().getX()) / 2)),
+                                    (int) (fromPredicateNode.getLocation().getY() -
+                                           ((fromPredicateNode.getLocation().getY() -
+                                             toPredicateNode.getLocation().getY()) / 2)));
+    }
+    return ruleNodeLocation;
+  } // end getRuleNodeLocation
+
+  /**
+   * <code>getPredicateNode</code> - test name with equalsIgnoreCase
+   *
+   * @param nodeName - <code>String</code> - 
+   * @return - <code>PredicateNode</code> - 
+   */
+  public PredicateNode getPredicateNode( String nodeName) {
+    Iterator nodeItr = predicateNodeList.iterator();
+    while (nodeItr.hasNext()) {
+      PredicateNode predicateNode = (PredicateNode) nodeItr.next();
+      if (nodeName.equalsIgnoreCase( predicateNode.getName())) {
+        return predicateNode;
+      }
+    }
+    return null;
+  } // end getPredicateNode
+
+
+  /**
+   * <code>ModelRulesJGoView</code> - subclass JGoView to add doBackgroundClick
+   *
+   */
+  class ModelRulesJGoView extends JGoView {
+
+    /**
+     * <code>ModelRulesJGoView</code> - constructor 
+     *
+     */
+    public ModelRulesJGoView() {
+      super();
+    }
+
+    /**
+     * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
+     *                                 1) snap to active token
+     *
+     * @param modifiers - <code>int</code> - 
+     * @param docCoords - <code>Point</code> - 
+     * @param viewCoords - <code>Point</code> - 
+     */
+    public void doBackgroundClick( int modifiers, Point docCoords, Point viewCoords) {
+      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+        // do nothing
+      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        mouseRightPopupMenu( viewCoords);
+      }
+    } // end doBackgroundClick
+
+  } // end class ModelRulesJGoView
+
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    JMenuItem nodeByPredicateNameItem = new JMenuItem( "Find by Predicate Name");
+    createNodeByPredicateNameItem( nodeByPredicateNameItem);
+    mouseRightPopup.add( nodeByPredicateNameItem);
+
+    JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
+    createOverviewWindowItem( overviewWindowItem, this, viewCoords);
+    mouseRightPopup.add( overviewWindowItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+  } // end mouseRightPopupMenu
+
+
+  private void createNodeByPredicateNameItem( JMenuItem nodeByPredicateNameItem) {
+    nodeByPredicateNameItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          Object[] options = new Object[predicateNameList.size()];
+          for (int i = 0, n = predicateNameList.size(); i < n; i++) {
+            options[i] = (String) predicateNameList.get( i);
+          }
+          Object response = JOptionPane.showInputDialog
+            ( PlanWorks.planWorks, "", "Find by Predicate Name",
+              JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+          if (response instanceof String) {
+            PredicateNode predicateNode = getPredicateNode( (String) response);
+            if (predicateNode != null) {
+              boolean isHighlightNode = true;
+              NodeGenerics.focusViewOnNode( predicateNode, isHighlightNode, jGoView);
+              System.err.println( "ModelRulesView found predicate node: " +
+                                  predicateNode.getName());
+            }
+          }
+          // JOptionPane.showInputDialog returns null if user selected "cancel"
+        }
+      });
+  } // end createNodeByPredicateNameItem
+
+  private void createOverviewWindowItem( JMenuItem overviewWindowItem,
+                                         final ModelRulesView modelRulesView,
+                                         final Point viewCoords) {
+    overviewWindowItem.addActionListener( new ActionListener() { 
+        public void actionPerformed( ActionEvent evt) {
+          VizViewOverview currentOverview =
+            ViewGenerics.openOverviewFrame( PlanWorks.MODEL_RULES_VIEW, planSequence,
+                                            modelRulesView, viewSet, jGoView, viewCoords);
+          if (currentOverview != null) {
+            overview = currentOverview;
+          }
+        }
+      });
+  } // end createOverviewWindowItem
 
 
 

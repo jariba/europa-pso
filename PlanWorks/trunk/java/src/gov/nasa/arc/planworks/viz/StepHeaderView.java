@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepHeaderView.java,v 1.5 2003-11-11 02:44:52 taylor Exp $
+// $Id: StepHeaderView.java,v 1.6 2003-12-12 01:23:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -238,7 +238,8 @@ public class StepHeaderView extends JGoView {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       // do nothing
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      if (query.indexOf( " With ") >= 0) {
+      if ((query.indexOf( " With ") >= 0) ||
+          ((query.indexOf( " With ") == -1) && key.equals( ""))) {
         mouseRightPopupMenu( viewCoords);
       }
     }
@@ -246,6 +247,7 @@ public class StepHeaderView extends JGoView {
 
   private void mouseRightPopupMenu( Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
+
     JMenuItem transByKeyItem = new JMenuItem( "Find Transaction by Obj_Key");
     createTransByKeyItem( transByKeyItem);
     mouseRightPopup.add( transByKeyItem);
@@ -263,13 +265,19 @@ public class StepHeaderView extends JGoView {
           if (objectKey != null) {
             System.err.println( "createTransByKeyItem: objectKey " + objectKey.toString());
             int entryIndx = transByKeyDialog.getTransactionListIndex();
+            StepContentView stepContentView = null;
             if (vizView instanceof StepQueryView) {
-              ((StepQueryView) vizView).getStepContentView().
-                scrollEntries( entryIndx);
+              stepContentView = ((StepQueryView) vizView).getStepContentView();
             } else {
               System.err.println( "StepHeaderView.createTransByKeyItem: " +
                                   vizView + " not handled");
               System.exit( -1);
+            }
+            if (stepContentView != null) {
+              stepContentView.scrollEntries( entryIndx);
+              stepContentView.getSelection().clearSelection();
+              stepContentView.getSelection().extendSelection
+                ( stepContentView.getObjectKeyField( entryIndx));
             }
           }
         }

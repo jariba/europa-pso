@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.47 2003-12-03 02:29:49 taylor Exp $
+# $Id: build-tags-file.csh,v 1.48 2003-12-12 01:23:03 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -82,6 +82,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksBigTest.java \
     src/gov/nasa/arc/planworks/util/Algorithms.java \
+    src/gov/nasa/arc/planworks/util/BrowseButton.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/ColorStream.java \
     src/gov/nasa/arc/planworks/util/DirectoryChooser.java \
@@ -106,6 +107,8 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/ViewGenerics.java \
     src/gov/nasa/arc/planworks/viz/VizView.java \
     src/gov/nasa/arc/planworks/viz/VizViewOverview.java \
+    src/gov/nasa/arc/planworks/viz/nodes/BasicNodePortWDiamond.java \
+    src/gov/nasa/arc/planworks/viz/nodes/BasicNodeWDiamond.java \
     src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
     src/gov/nasa/arc/planworks/viz/nodes/StepField.java \
@@ -144,7 +147,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenuItem.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodeLink.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodePortWDiamond.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintJGoView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
@@ -168,9 +170,12 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/transaction/TransactionView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ModelRulesLayout.java \
     src/gov/nasa/arc/planworks/viz/sequence/modelRules/ModelRulesView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ParamNode.java \
     src/gov/nasa/arc/planworks/viz/sequence/modelRules/PredicateNode.java \
     src/gov/nasa/arc/planworks/viz/sequence/modelRules/RuleLink.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/RuleNode.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/StepQueryView.java \

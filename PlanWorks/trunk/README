@@ -4,12 +4,19 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.57 2003-11-25 01:40:37 taylor Exp $
+# $Id: README,v 1.58 2003-12-12 01:23:03 taylor Exp $
 #
 
 SUMMARY
 =======
 o Improved diagnostics for "Invalid Sequence Directory" error dialog.
+o The "Find Transaction by Obj_Key" Mouse-right popup selection and
+  the transaction entry column "OBJ_KEY", have now been properly
+  restricted to the partial plan Transaction View, the "Steps"
+  Sequence Query for "Where ..." queries with blank "Key" entries and
+  "With ..." queries, and the "Transactions" Sequence Query for
+  "In Range ..." queries.  The OBJ_KEY" value found using
+  "Find Transaction by Obj_Key" is now highlighted.
 
 
 CVS CHECKOUT

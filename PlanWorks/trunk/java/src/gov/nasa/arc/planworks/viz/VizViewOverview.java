@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.3 2003-11-21 00:41:50 taylor Exp $
+// $Id: VizViewOverview.java,v 1.4 2003-12-12 01:23:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -28,7 +28,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetwor
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
-
+import gov.nasa.arc.planworks.viz.sequence.modelRules.PredicateNode;
 
 /**
  * <code>VizViewOverview</code> - 
@@ -117,7 +117,7 @@ public class VizViewOverview extends Overview {
       vizView.setOverview( null);
       super.removeNotify();
     }
-  }
+  } // end removeNotifyFromViewSet
 
   // show tooltips, so users might get a clue about which object is which
   // even though the objects are so small
@@ -151,6 +151,8 @@ public class VizViewOverview extends Overview {
         tip = ((TokenNode) obj).getToolTipText( isOverview);
       } else if (obj instanceof SlotNode) {
         tip = ((SlotNode) obj).getToolTipText( isOverview);
+      } else if (obj instanceof PredicateNode) {
+        tip = ((PredicateNode) obj).getToolTipText( isOverview);
       } else {
         tip = obj.getToolTipText();
       }
@@ -161,7 +163,7 @@ public class VizViewOverview extends Overview {
       }
     }
     return null;
-  }
+  } // end getToolTipText
 
 } // end class VizViewOverview
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.16 2003-12-11 22:25:48 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.17 2003-12-12 01:23:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -210,7 +210,6 @@ public class TemporalExtentView extends PartialPlanView  {
     Thread thread = new RedrawViewThread();
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
-    //new RedrawViewThread().start();
   }
 
   /**

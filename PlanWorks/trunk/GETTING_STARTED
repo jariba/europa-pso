@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.20 2003-11-20 19:11:23 taylor Exp $
+# $Id: GETTING_STARTED,v 1.21 2003-12-12 01:23:03 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -154,9 +154,9 @@ OBJ_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
 Mouse-Right click on the background of the "header" portion of the view, 
 offers "Find Transaction By Obj_Key".  Entering an OBJ_KEY value will cause
 the lower portion of the Transaction view to scroll up to show the transaction 
-entry with the selected OBJ_KEY value.  Mouse-Left click on the column header
-nodes offer sorting of that columns's values, alternately in ascending order 
-and desending order.
+entry with the selected OBJ_KEY value.  The OBJ_KEY value will be highlighted.
+Mouse-Left click on the column header nodes offer sorting of that columns's 
+values, alternately in ascending order and desending order.
 
 
 Token/Variable/Constraint/Slot Node Focus in Views
@@ -233,23 +233,23 @@ the background of the "SequenceQuery for ..." dialog, and selecting
 
 Each entry of the "Query Results for ..." windows for "Transactions" queries 
 includes the transaction key (TX_KEY), the TRANSACTION_TYPE, the transaction 
-source (SOURCE), the object key (OBJ_KEY), the step number (STEP), and the 
-object name (OBJ_NAME).  Entries with TRANSACTION_TYPEs of VARIABLE_* and 
-TOKEN_* have values for PREDICATE_NAME.  Entries with TRANSACTION_TYPEs of 
-VARIABLE_* and OBJ_NAME = PARAMETER_VAR have values for PARAMETER_NAME.
+source (SOURCE), the step number (STEP), and the object name (OBJ_NAME).  
+Entries with TRANSACTION_TYPEs of VARIABLE_* and TOKEN_* have values for 
+PREDICATE_NAME.  Entries with TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = 
+PARAMETER_VAR have values for PARAMETER_NAME.  The "In Range ..." queries, 
+also include the object key (OBJ_KEY).
 
 Each entry of the "Query Results for ..." windows for "Steps" queries 
 includes the step number (STEP), the transaction key (TX_KEY), the 
 TRANSACTION_TYPE, and the object name (OBJ_NAME).  Entries with 
 TRANSACTION_TYPEs of VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  
 Entries with TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = PARAMETER_VAR 
-have values for PARAMETER_NAME.  The "With ..." queries also include the
-object key (OBJ_KEY).
+have values for PARAMETER_NAME.  The "With ..." queries, and the "Where ..."
+queries with blank "Key" fields, also include the object key (OBJ_KEY).
 
-The "Query Results for ..." windows for "Transactions" queries and the 
-"With ..." "Steps" queries offer the user a pop-up dialog entitled "Find 
-Transaction by Obj_Key".  Mouse-Right on the background of the header section 
-of the window brings up this dialog.
+The "Query Results for ..." windows which have a (OBJ_KEY) column offer the 
+user a pop-up dialog entitled "Find Transaction by Obj_Key".  Mouse-Right on 
+the background of the header section of the window brings up this dialog.
 
 The column header nodes of the "Query Results for ..." windows, offer sorting 
 of that columns's values, alternately in ascending order and desending order.

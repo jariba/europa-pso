@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwRule.java,v 1.1 2003-12-03 02:29:50 taylor Exp $
+// $Id: PwRule.java,v 1.2 2003-12-12 01:23:04 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.db;
 
+import java.util.List;
 
 /**
  * <code>PwRule</code> - 
@@ -44,5 +45,74 @@ public interface PwRule {
    */
   public abstract String getType();
 
+  /**
+   * <code>getFromPredicateParams</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public abstract List getFromPredicateParams();
+
+  /**
+   * <code>getToPredicateParams</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public abstract List getToPredicateParams();
+
+  /**
+   * <code>getFromPredicateParamValues</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public abstract List getFromPredicateParamValues();
+
+  /**
+   * <code>getToPredicateParamValues</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public abstract List getToPredicateParamValues();
+
+  /**
+   * <code>getFromPredicateObject</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getFromPredicateObject();
+
+  /**
+   * <code>getToPredicateObject</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getToPredicateObject();
+
+  /**
+   * <code>getFromPredicateAttribute</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getFromPredicateAttribute();
+
+  /**
+   * <code>getToPredicateAttribute</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getToPredicateAttribute();
+
+  /**
+   * <code>getDurationStart</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getDurationStart();
+
+  /**
+   * <code>getDurationEnd</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getDurationEnd();
 
 } // end interface PwRule
