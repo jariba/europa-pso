@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.30 2004-02-04 20:16:39 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.31 2004-02-05 23:25:35 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -44,6 +44,7 @@ import com.nwoods.jgo.JGoView;
 
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -351,18 +352,14 @@ public class TemporalExtentView extends PartialPlanView  {
     boolean isFreeToken = false;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
-      String objectName = object.getName();
-      List timelineList = object.getTimelineList();
-      Iterator timelineIterator = timelineList.iterator();
-      while (timelineIterator.hasNext()) {
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        Color timelineColor =
-          ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
+      if(object.getObjectType() == DbConstants.O_TIMELINE) {
+        PwTimeline timeline = (PwTimeline) object;
+        Color timelineColor = getTimelineColor(timeline.getId());
         List slotList = timeline.getSlotList();
         Iterator slotIterator = slotList.iterator();
         PwSlot previousSlot = null;
         boolean isFirstSlot = true;
-        while (slotIterator.hasNext()) {
+        while(slotIterator.hasNext()) {
           PwSlot slot = (PwSlot) slotIterator.next();
           // overloaded tokens on slot - not displayed, put in displayedTokenIds
           List tokenList = slot.getTokenList();
@@ -377,10 +374,6 @@ public class TemporalExtentView extends PartialPlanView  {
             // check for embedded empty slots - always show them, unless free standing
             if ((token == null) ||
                 (token != null) && isTokenInContentSpec( token)) {
-//               PwDomain[] intervalArray =
-//                 NodeGenerics.getStartEndIntervals( slot, previousSlot, isLastSlot);
-//               PwDomain startTimeIntervalDomain = intervalArray[0];
-//               PwDomain endTimeIntervalDomain = intervalArray[1];
               PwDomain startTimeIntervalDomain = slot.getStartTime();
               PwDomain endTimeIntervalDomain = slot.getEndTime();
               if ((startTimeIntervalDomain != null) && (endTimeIntervalDomain != null)) {
@@ -403,12 +396,11 @@ public class TemporalExtentView extends PartialPlanView  {
           }
           isFirstSlot = false;
         }
-        timelineCnt++;
       }
     }
 
     createFreeTokenTemporalNodes();
-
+    
     temporalNodeList = tmpTemporalNodeList;
   } // end createTemporalNodes
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.18 2004-02-03 22:43:45 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.19 2004-02-05 23:23:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -28,13 +28,12 @@ import gov.nasa.arc.planworks.db.PwTimeline;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class PwTimelineImpl implements PwTimeline {
+public class PwTimelineImpl extends PwObjectImpl implements PwTimeline {
 
-  private String name;
-  private Integer id;
-  private Integer objectId;
   private List slotIdList;
-  private PwPartialPlanImpl partialPlan;
+  private String emptySlotInfo;
+  private boolean hasCreatedEmptySlots;
+  private boolean hasCalculatedSlotTimes;
   /**
    * <code>Timeline</code> - constructor 
    *
@@ -42,36 +41,15 @@ public class PwTimelineImpl implements PwTimeline {
    * @param id - <code>Integer</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwTimelineImpl( final String name, final Integer id, final Integer objectId, 
-                         final PwPartialPlanImpl partialPlan) {
-    this.name = name;
-    this.id = id;
-    this.partialPlan = partialPlan;
-    this.objectId = objectId;
+  public PwTimelineImpl(final Integer id, final int type, final Integer parentId, 
+                        final String name, final String childObjectIds, final String emptySlotInfo,
+                        final PwPartialPlanImpl partialPlan) {
+    super(id, type, parentId, name, childObjectIds, partialPlan);
+    this.emptySlotInfo = emptySlotInfo;
     slotIdList = new ArrayList();
+    hasCreatedEmptySlots = hasCalculatedSlotTimes = false;
   } // end constructor
 
-  /**
-   * <code>getName</code>
-   *
-   * @return name - <code>String</code> -
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * <code>getId</code>
-   *
-   * @return name - <code>Integer</code> -
-   */
-  public Integer getId() {
-    return id;
-  }
-  
-  public Integer getObjectId() {
-    return objectId;
-  }
   /**
    * <code>getSlotList</code>
    *
@@ -98,26 +76,50 @@ public class PwTimelineImpl implements PwTimeline {
     return slot;
   } // end addSlot
 
-  public void createEmptySlot(final Integer sId, final int slotIndex) {
+  private void createEmptySlot(final Integer sId, final int slotIndex) {
     PwSlotImpl slot = new PwSlotImpl(sId, this.id, partialPlan);
     slotIdList.add(slotIndex, sId);
     partialPlan.addSlot(sId, slot);
   }
 
-  public void calculateSlotTimes() {
-    ListIterator slotIterator = getSlotList().listIterator();
-    PwSlotImpl prev = null;
-    while(slotIterator.hasNext()) {
-      PwSlotImpl next = null;
-      PwSlotImpl slot = (PwSlotImpl) slotIterator.next();
-      if(slotIterator.hasNext()) {
-        next = (PwSlotImpl) slotIterator.next();
+  public void finishSlots() {
+    createEmptySlots();
+    calculateSlotTimes();
+  }
+
+  private void createEmptySlots() {
+    if(!hasCreatedEmptySlots && emptySlotInfo != null) {
+      StringTokenizer strTok = new StringTokenizer(emptySlotInfo, ":");
+      while(strTok.hasMoreTokens()) {
+        String emptySlot = strTok.nextToken();
+        StringTokenizer subTok = new StringTokenizer(emptySlot, ",");
+        if(subTok.hasMoreTokens()) {
+          createEmptySlot(Integer.valueOf(subTok.nextToken()), 
+                          Integer.parseInt(subTok.nextToken()));
+        }
       }
-      slot.calcTimes(prev, next);
-      if(next != null) {
-        slotIterator.previous();
+      hasCreatedEmptySlots = true;
+    }
+  }
+
+  private void calculateSlotTimes() {
+    createEmptySlots();
+    if(!hasCalculatedSlotTimes) {
+      ListIterator slotIterator = getSlotList().listIterator();
+      PwSlotImpl prev = null;
+      while(slotIterator.hasNext()) {
+        PwSlotImpl next = null;
+        PwSlotImpl slot = (PwSlotImpl) slotIterator.next();
+        if(slotIterator.hasNext()) {
+          next = (PwSlotImpl) slotIterator.next();
+        }
+        slot.calcTimes(prev, next);
+        if(next != null) {
+          slotIterator.previous();
+        }
+        prev = slot;
       }
-      prev = slot;
+      hasCalculatedSlotTimes = true;
     }
   }
 } // end class PwTimelineImpl

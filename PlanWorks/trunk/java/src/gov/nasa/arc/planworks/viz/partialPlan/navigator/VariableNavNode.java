@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.1 2004-01-16 19:05:39 taylor Exp $
+// $Id: VariableNavNode.java,v 1.2 2004-02-05 23:25:21 miatauro Exp $
 //
 // PlanWorks
 //
@@ -381,8 +381,7 @@ public class VariableNavNode extends ExtendedBasicNode {
         if (! token.isFreeToken()) {
           PwTimeline timeline =
             navigatorView.getPartialPlan().getTimeline( token.getTimelineId());
-          nodeColor = navigatorView.getTimelineColor( timeline.getId(),
-                                                      navigatorView.timelineColorMap);
+          nodeColor = navigatorView.getTimelineColor( timeline.getId());
         }
         tokenNavNode =
           new TokenNavNode( token, 
@@ -469,8 +468,7 @@ public class VariableNavNode extends ExtendedBasicNode {
         if (! token.isFreeToken()) {
           PwTimeline timeline =
             navigatorView.getPartialPlan().getTimeline( token.getTimelineId());
-          nodeColor = navigatorView.getTimelineColor( timeline.getId(),
-                                                      navigatorView.timelineColorMap);
+          nodeColor = navigatorView.getTimelineColor( timeline.getId());
         }
 
         constraintNavNode =

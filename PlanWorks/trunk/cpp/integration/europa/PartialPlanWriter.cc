@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.30 2004-01-14 21:28:16 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.31 2004-02-05 23:21:12 miatauro Exp $
 //
 #include <cstring>
 #include <string>
@@ -60,6 +60,9 @@ enum transactionTypes {TOKEN_CREATED = 0, TOKEN_DELETED, TOKEN_INSERTED, TOKEN_F
                              CONSTRAINT_CREATED, CONSTRAINT_DELETED, ERROR};
 
 const char *sourceTypeNames[3] = {"SYSTEM", "USER", "UNKNOWN"};
+
+enum objectTypes {O_OBJECT = 0, O_TIMELINE, O_RESOURCE};
+enum tokenTypes {T_INTERVAL = 0, T_RESOURCE_TRANSACTION};
 
 #define TAB "\t"
 #define COLON ":"
@@ -306,14 +309,24 @@ void PartialPlanWriter::write(void) {
   }
   List<ObjectId> objectList = tnet->getAllObjects();
   ListIterator<ObjectId> objectIterator = ListIterator<ObjectId>(objectList);
-  int timelineId = 0;
+  int timelineId = 1000000;
   while(!objectIterator.isDone()) {
     ObjectId objectId = objectIterator.item();
-    objectOut << objectId->getKey() << TAB << partialPlanId << TAB << objectId->getName() << TAB;
+    objectOut << objectId->getKey() << TAB << O_OBJECT << TAB << -1 << TAB << partialPlanId << TAB 
+              << objectId->getName() << TAB;
     List<AttributeId> timelineNames = tnet->getAttributes(objectId);
+    for(int i = timelineId; i < timelineId + timelineNames.getSize(); i++) {
+      objectOut << i << ",";
+    }
+    objectOut << TAB << SNULL << endl;
+
     ListIterator<AttributeId> timelineNameIterator = ListIterator<AttributeId>(timelineNames);
     while(!timelineNameIterator.isDone()) {
       AttributeId timelineAttId = timelineNameIterator.item();
+      objectOut << timelineId << TAB << O_TIMELINE << TAB << objectId->getKey() << TAB 
+                << partialPlanId << TAB << modelId.getAttributeName(timelineAttId) << TAB
+                << SNULL << TAB;
+
       List<SlotInfo> slotList = tnet->getAllSlots(objectId, timelineAttId);
       ListIterator<SlotInfo> slotIterator = ListIterator<SlotInfo>(slotList);
       while(!slotIterator.isDone()) {
@@ -327,7 +340,7 @@ void PartialPlanWriter::write(void) {
         SlotId slotId = slotIterator.item().getId();
         if(slotId->isSlotEmpty()) {
           if(slotId->getNextSlotId() != SlotId::noId()) {
-            objectOut << timelineId << COMMA << slotId->getKey() << COMMA << slotIndex << COLON;
+            objectOut << slotId->getKey() << COMMA << slotIndex << COLON;
           }
           slotIndex++;
           slotIterator.step();
@@ -346,10 +359,11 @@ void PartialPlanWriter::write(void) {
         slotIndex++;
         slotIterator.step();
       }
+      objectOut << endl;
       timelineId++;
       timelineNameIterator.step();
     }
-    objectOut << endl;
+    //objectOut << endl;
     objectIterator.step();
   }
 
@@ -391,24 +405,23 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
   String tokenRelationIds("");
   String paramVarIds("");
   if(isFree) {
-    tokenOut << tokenId->getKey() << TAB << SNULL << TAB << SNULL << TAB << partialPlanId << TAB 
-             << 1 << TAB << 1
-             << TAB << tokenId->getStartVariable()->getKey() << TAB
+    tokenOut << tokenId->getKey() << TAB << T_INTERVAL << TAB << SNULL << TAB << SNULL << TAB 
+             << partialPlanId << TAB << 1 << TAB << 1 << TAB 
+             << tokenId->getStartVariable()->getKey() << TAB
              << tokenId->getEndVariable()->getKey() << TAB
              << tokenId->getDurationVariable()->getKey() << TAB
              << tokenId->getRejectVariable()->getKey() << TAB
-             << predicateId->getName() << TAB << SNULL << TAB << SNULL << TAB << SNULL << TAB
+             << predicateId->getName() << TAB << SNULL << TAB << SNULL << TAB
              << tokenId->getObjectVariable()->getKey() << TAB;
   }
   else {
-    tokenOut << tokenId->getKey() << TAB << (*slotId)->getKey() << TAB  << slotIndex << TAB
-             << partialPlanId << TAB 
-             << 0 << TAB << 1 << TAB << tokenId->getStartVariable()->getKey() << TAB
+    tokenOut << tokenId->getKey() << TAB << T_INTERVAL << TAB << (*slotId)->getKey() << TAB  
+             << slotIndex << TAB << partialPlanId << TAB << 0 << TAB << 1 << TAB 
+             << tokenId->getStartVariable()->getKey() << TAB
              << tokenId->getEndVariable()->getKey() << TAB
              << tokenId->getDurationVariable()->getKey() << TAB
              << tokenId->getRejectVariable()->getKey() << TAB
              << predicateId->getName() << TAB << timelineId << TAB << timelineName << TAB
-             << (*objectId)->getKey() << TAB
              << tokenId->getObjectVariable()->getKey() << TAB;
   }
   if(tokenId->getMasterToken().isValid()) {
@@ -429,7 +442,7 @@ void PartialPlanWriter::outputToken(const TokenId &tokenId, const bool isFree,
                  variableOut);
   outputVariable(tokenId->getDurationVariable(), "DURATION_VAR", partialPlanId, tokenId, SNULL,
                  variableOut);
-  outputVariable(tokenId->getRejectVariable(), "REJECT_VAR", partialPlanId, tokenId, SNULL,
+  outputVariable(tokenId->getRejectVariable(), "STATE_VAR", partialPlanId, tokenId, SNULL,
                  variableOut);
   outputVariable(tokenId->getObjectVariable(), "OBJECT_VAR", partialPlanId, tokenId, SNULL,
                  variableOut);

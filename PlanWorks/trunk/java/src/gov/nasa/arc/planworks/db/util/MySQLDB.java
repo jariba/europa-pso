@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.80 2004-02-03 20:43:48 taylor Exp $
+// $Id: MySQLDB.java,v 1.81 2004-02-05 23:26:46 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -628,17 +628,34 @@ public class MySQLDB {
   synchronized public static void createObjects(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet objects = 
-        queryDatabase("SELECT ObjectName, ObjectId, EmptySlotInfo FROM Object WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
+        queryDatabase("SELECT ObjectId, ObjectType, ParentId, ObjectName, ChildObjectIds, EmptySlotInfo FROM Object WHERE PartialPlanId=".concat(partialPlan.getId().toString()));
       while(objects.next()) {
         Integer objectId = new Integer(objects.getInt("ObjectId"));
-        Blob blob = objects.getBlob("EmptySlotInfo");
-        String info = null;
+        int type = objects.getInt("ObjectType");
+        Integer parentId = new Integer(objects.getInt("ParentId"));
+        String name = objects.getString("ObjectName");
+        String childObjectIds = null;
+        Blob blob = objects.getBlob("ChildObjectIds");
         if(!objects.wasNull()) {
-          info = new String(blob.getBytes(1, (int) blob.length()));
+          childObjectIds = new String(blob.getBytes(1, (int) blob.length()));
         }
-        partialPlan.addObject(objectId, new PwObjectImpl(objectId, 
-                                                         objects.getString("ObjectName"),
-                                                         partialPlan, info));
+        if(type == DbConstants.O_TIMELINE) {
+          String emptySlots = null;
+          blob = objects.getBlob("EmptySlotInfo");
+          if(!objects.wasNull()) {
+            emptySlots = new String(blob.getBytes(1, (int) blob.length()));
+          }
+          partialPlan.addTimeline(objectId, 
+                                  new PwTimelineImpl(objectId, type, parentId, name, 
+                                                     childObjectIds, emptySlots, partialPlan));
+        }
+        else if(type == DbConstants.O_RESOURCE) {
+        }
+        else {
+          partialPlan.addObject(objectId, 
+                                new PwObjectImpl(objectId, type, parentId, name, childObjectIds,
+                                                 partialPlan));
+        }
       }
     }
     catch(SQLException sqle) {
@@ -690,32 +707,27 @@ public class MySQLDB {
    * @param partialPlan The partial plan object to which the structure should be attached
    */
 
-  synchronized public static void createTimelineSlotTokenNodesStructure(PwPartialPlanImpl partialPlan) {
+  synchronized public static void createSlotTokenNodesStructure(PwPartialPlanImpl partialPlan) {
     List objectIdList = partialPlan.getObjectIdList();
     ListIterator objectIdIterator = objectIdList.listIterator();
 
     try {
-      ResultSet timelineSlotTokens = 
-        queryDatabase("SELECT Token.TimelineId, Token.TimelineName, Token.ObjectId, Token.SlotId, Token.TokenId, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.RejectVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds FROM Token WHERE Token.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.ObjectId, Token.TimelineId, Token.SlotIndex, Token.TokenId"));
-      PwObjectImpl object = null;
+      ResultSet slotTokens = 
+        queryDatabase("SELECT Token.TokenId, Token.TokenType, Token.SlotId, Token.SlotIndex, Token.IsValueToken, Token.StartVarId, Token.EndVarId, Token.StateVarId, Token.DurationVarId, Token.ObjectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds, Token.TimelineId FROM Token WHERE Token.PartialPlanId=".concat(partialPlan.getId().toString()).concat(" && Token.IsFreeToken=0 ORDER BY Token.TimelineId, Token.SlotIndex, Token.TokenId"));
       PwTimelineImpl timeline = null;
       PwSlotImpl slot = null;
       PwTokenImpl token = null;
-      while(timelineSlotTokens.next()) {
-        Integer objectId = new Integer(timelineSlotTokens.getInt("Token.ObjectId"));
-        Integer timelineId = new Integer(timelineSlotTokens.getInt("Token.TimelineId"));
-        Integer slotId = new Integer(timelineSlotTokens.getInt("Token.SlotId"));
-        Integer tokenId = new Integer(timelineSlotTokens.getInt("Token.TokenId"));
-        if(timelineSlotTokens.wasNull()) {
+      while(slotTokens.next()) {
+        Integer timelineId = new Integer(slotTokens.getInt("Token.TimelineId"));
+        Integer slotId = new Integer(slotTokens.getInt("Token.SlotId"));
+        Integer tokenId = new Integer(slotTokens.getInt("Token.TokenId"));
+        if(slotTokens.wasNull()) {
           tokenId = null;
         }
-
-        if(object == null || !object.getId().equals(objectId)) {
-          object = partialPlan.getObjectImpl(objectId);
-        }
         if(timeline == null || !timeline.getId().equals(timelineId)) {
-          timeline = object.addTimeline(timelineSlotTokens.getString("Token.TimelineName"),
-                                        timelineId);
+          System.err.println("Getting timeline " + timelineId);
+          timeline = (PwTimelineImpl) partialPlan.getTimeline(timelineId);
+          System.err.println("Got " + timeline);
         }
         if(slot == null || !slot.getId().equals(slotId)) {
           slot = timeline.addSlot(slotId);
@@ -725,18 +737,17 @@ public class MySQLDB {
           continue;
         }
         if(token == null || !token.getId().equals(tokenId)) {
-          token = new PwTokenImpl(tokenId, timelineSlotTokens.getBoolean("Token.IsValueToken"),
+          token = new PwTokenImpl(tokenId, slotTokens.getBoolean("Token.IsValueToken"),
                                   slot.getId(), 
-                                  timelineSlotTokens.getString("Token.PredicateName"),
-                                  new Integer(timelineSlotTokens.getInt("Token.StartVarId")),
-                                  new Integer(timelineSlotTokens.getInt("Token.EndVarId")),
-                                  new Integer(timelineSlotTokens.getInt("Token.DurationVarId")),
-                                  object.getId(), 
-                                  new Integer(timelineSlotTokens.getInt("Token.RejectVarId")),
-                                  new Integer(timelineSlotTokens.getInt("Token.ObjectVarId")),
+                                  slotTokens.getString("Token.PredicateName"),
+                                  new Integer(slotTokens.getInt("Token.StartVarId")),
+                                  new Integer(slotTokens.getInt("Token.EndVarId")),
+                                  new Integer(slotTokens.getInt("Token.DurationVarId")),
+                                  new Integer(slotTokens.getInt("Token.StateVarId")),
+                                  new Integer(slotTokens.getInt("Token.ObjectVarId")),
                                   timeline.getId(), partialPlan);
-          Blob blob = timelineSlotTokens.getBlob("Token.ParamVarIds");
-          if(!timelineSlotTokens.wasNull()) {
+          Blob blob = slotTokens.getBlob("Token.ParamVarIds");
+          if(!slotTokens.wasNull()) {
             String paramVarStr = new String(blob.getBytes(1, (int) blob.length()));
             if(!paramVarStr.equals("NULL")) {
               try {
@@ -750,8 +761,8 @@ public class MySQLDB {
               }
             }
           }
-          blob = timelineSlotTokens.getBlob("Token.TokenRelationIds");
-          if(!timelineSlotTokens.wasNull()) {
+          blob = slotTokens.getBlob("Token.TokenRelationIds");
+          if(!slotTokens.wasNull()) {
             String tokenRelationStr = new String(blob.getBytes(1, (int) blob.length()));
             if(!tokenRelationStr.equals("NULL")) {
               try {
@@ -768,7 +779,7 @@ public class MySQLDB {
           slot.addToken(token);
         }
       }
-      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.RejectVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds FROM Token WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
+      ResultSet freeTokens = queryDatabase("Select Token.TokenId, Token.IsValueToken, Token.ObjectVarId, Token.StartVarId, Token.EndVarId, Token.DurationVarId, Token.StateVarId, Token.PredicateName, Token.ParamVarIds, Token.TokenRelationIds FROM Token WHERE Token.IsFreeToken=1 && Token.PartialPlanId=".concat(partialPlan.getId().toString()));
       token = null;
       while(freeTokens.next()) {
         Integer tokenId = new Integer(freeTokens.getInt("Token.TokenId"));
@@ -779,8 +790,7 @@ public class MySQLDB {
                                   new Integer(freeTokens.getInt("Token.StartVarId")),
                                   new Integer(freeTokens.getInt("Token.EndVarId")),
                                   new Integer(freeTokens.getInt("Token.DurationVarId")),
-                                  (Integer) null, 
-                                  new Integer(freeTokens.getInt("Token.RejectVarId")),
+                                  new Integer(freeTokens.getInt("Token.StateVarId")),
                                   new Integer(freeTokens.getInt("Token.ObjectVarId")),
                                   (Integer) null, partialPlan);
           Blob blob = freeTokens.getBlob("Token.ParamVarIds");

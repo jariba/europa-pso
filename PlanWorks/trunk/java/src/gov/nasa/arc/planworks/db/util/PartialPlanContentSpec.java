@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.14 2004-02-03 19:22:41 miatauro Exp $
+// $Id: PartialPlanContentSpec.java,v 1.15 2004-02-05 23:26:47 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
@@ -49,6 +50,7 @@ public class PartialPlanContentSpec implements ContentSpec {
   private static final String NEG = "!";
   private static final String NOT = "not";
   private static final String OBJECTNAME = "Object.ObjectName";
+  private static final String OBJECTID = "Object.ObjectId";
   private static final String OR = "or";
   private static final String OR_TIMELINEID = "|| TimelineId";
   private static final String OR_PREDICATENAME = "|| PredicateName";
@@ -59,7 +61,8 @@ public class PartialPlanContentSpec implements ContentSpec {
   private static final String TIMELINEID = "Token.TimelineId";
   private static final String TIMELINENAME = "Token.TimelineName";
   private static final String TIMELINENAME_QUERY =
-    "SELECT DISTINCT Object.ObjectName, Token.TimelineName, Token.TimelineId FROM Object RIGHT JOIN Token ON Token.ObjectId=Object.ObjectId && Token.PartialPlanId=Object.PartialPlanId WHERE Object.PartialPlanId=";
+    "SELECT DISTINCT Object.ObjectName, Object.ObjectId FROM Object WHERE Object.ObjectType=" 
+    + DbConstants.O_TIMELINE + " && Object.PartialPlanId=";
   private static final String TOKENID = "TokenId";
   private static final String TOKENID_QUERY = "SELECT TokenId FROM Token WHERE PartialPlanId=";
   public static final int FREE_ONLY = -1;
@@ -430,11 +433,11 @@ public class PartialPlanContentSpec implements ContentSpec {
     try {
       ResultSet timelineNames =
         MySQLDB.queryDatabase(TIMELINENAME_QUERY.concat(partialPlanId.toString()));
-      String objName = null;
+      //String objName = null;
       while(timelineNames.next()) {
-        objName = (timelineNames.getString(OBJECTNAME) == null ? objName : 
-                   timelineNames.getString(OBJECTNAME));
-        timelines.put("".concat(objName).concat(":").concat(timelineNames.getString(TIMELINENAME)), new Integer(timelineNames.getInt(TIMELINEID)));
+        timelines.put(timelineNames.getString(OBJECTNAME), 
+                      new Integer(timelineNames.getInt(OBJECTID)));
+        //timelines.put("".concat(objName).concat(":").concat(timelineNames.getString(TIMELINENAME)), new Integer(timelineNames.getInt(TIMELINEID)));
       }
     }
     catch(SQLException sqle) {}

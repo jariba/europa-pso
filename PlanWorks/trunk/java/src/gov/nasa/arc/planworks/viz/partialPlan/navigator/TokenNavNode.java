@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.1 2004-01-16 19:05:38 taylor Exp $
+// $Id: TokenNavNode.java,v 1.2 2004-02-05 23:25:21 miatauro Exp $
 //
 // PlanWorks
 //
@@ -485,8 +485,7 @@ public class TokenNavNode extends ExtendedBasicNode {
         new SlotNavNode( slot, 
                          new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                     ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                         navigatorView.getTimelineColor( timeline.getId(),
-                                                         navigatorView.timelineColorMap),
+                         navigatorView.getTimelineColor( timeline.getId()),
                          isDraggable, navigatorView);
       navigatorView.slotNavNodeMap.put( slot.getId(), slotNavNode);
       navigatorView.getJGoDocument().addObjectAtTail( slotNavNode);
@@ -561,8 +560,7 @@ public class TokenNavNode extends ExtendedBasicNode {
       if (variableNavNode == null) {
         Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
         if (! token.isFreeToken()) {
-          nodeColor = navigatorView.getTimelineColor( timeline.getId(),
-                                                      navigatorView.timelineColorMap);
+          nodeColor = navigatorView.getTimelineColor( timeline.getId());
         }
         variableNavNode =
           new VariableNavNode( variable, new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
@@ -727,8 +725,7 @@ public class TokenNavNode extends ExtendedBasicNode {
           new TokenNavNode( master, 
                             new Point( ViewConstants.TIMELINE_VIEW_X_INIT * 2,
                                        ViewConstants.TIMELINE_VIEW_Y_INIT * 2),
-                            navigatorView.getTimelineColor( timeline.getId(),
-                                                            navigatorView.timelineColorMap),
+                            navigatorView.getTimelineColor( timeline.getId()),
                             isDraggable, navigatorView);
         navigatorView.tokenNavNodeMap.put( masterId, masterNavNode);
         navigatorView.getJGoDocument().addObjectAtTail( masterNavNode);
@@ -898,8 +895,7 @@ public class TokenNavNode extends ExtendedBasicNode {
         if (! slave.isFreeToken()) {
           PwTimeline timeline =
             navigatorView.getPartialPlan().getTimeline( slave.getTimelineId());
-          nodeColor = navigatorView.getTimelineColor( timeline.getId(),
-                                                      navigatorView.timelineColorMap);
+          nodeColor = navigatorView.getTimelineColor( timeline.getId());
         }
         slaveNavNode =
           new TokenNavNode( slave, 

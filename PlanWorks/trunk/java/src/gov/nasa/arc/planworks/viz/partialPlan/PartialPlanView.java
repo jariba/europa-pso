@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.22 2004-02-03 20:43:54 taylor Exp $
+// $Id: PartialPlanView.java,v 1.23 2004-02-05 23:24:47 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -581,38 +581,14 @@ public class PartialPlanView extends VizView {
   } // end createCloseNavigatorWindowsItem
 
   /**
-   * <code>createTimelineColorMap</code>
-   *
-   * @return - <code>Map</code> - 
-   */
-  public Map createTimelineColorMap() {
-    int timelineCnt = 0;
-    Map timelineIndexMap = new HashMap();
-    ListIterator objectIterator = partialPlan.getObjectList().listIterator();
-    while(objectIterator.hasNext()) {
-      PwObject obj = (PwObject) objectIterator.next();
-      ListIterator timelineIterator = obj.getTimelineList().listIterator();
-      while(timelineIterator.hasNext()) {
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        timelineIndexMap.put(timeline.getId(), new Integer(timelineCnt));
-        System.err.println(timeline.getId() + "=>" + 
-                           ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineCnt));
-        timelineCnt++;
-      }
-    }
-    return timelineIndexMap;
-  } // end createTimelineColorMap
-
-  /**
    * <code>getTimelineColor</code>
    *
    * @param timelineId - <code>Integer</code> - 
    * @param timelineIndexMap - <code>Map</code> - 
    * @return - <code>Color</code> - 
    */
-  public Color getTimelineColor( Integer timelineId, Map timelineIndexMap) {
-    return ((PartialPlanViewSet) viewSet).getColorStream().
-      getColor(((Integer)timelineIndexMap.get(timelineId)).intValue());
+  public Color getTimelineColor( Integer timelineId){//, Map timelineIndexMap) {
+    return ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineId);
   }
 
 

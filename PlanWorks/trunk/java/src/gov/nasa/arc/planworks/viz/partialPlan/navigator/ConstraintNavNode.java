@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.1 2004-01-16 19:05:37 taylor Exp $
+// $Id: ConstraintNavNode.java,v 1.2 2004-02-05 23:25:18 miatauro Exp $
 //
 // PlanWorks
 //
@@ -347,8 +347,7 @@ public class ConstraintNavNode extends ExtendedBasicNode {
         if (! token.isFreeToken()) {
           PwTimeline timeline =
             navigatorView.getPartialPlan().getTimeline( token.getTimelineId());
-          nodeColor = navigatorView.getTimelineColor( timeline.getId(),
-                                                      navigatorView.timelineColorMap);
+          nodeColor = navigatorView.getTimelineColor( timeline.getId());
         }
         variableNavNode =
           new VariableNavNode( variable, 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.32 2004-02-03 20:43:55 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.33 2004-02-05 23:24:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -467,7 +467,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 
   private void createTokenNodes() {
     boolean isDraggable = true;
-    Map timelineIndexMap = createTimelineColorMap();
+    //Map timelineIndexMap = createTimelineColorMap();
     int x = 0;
     int y = 0;
     long tokenTime = 0L;
@@ -482,7 +482,7 @@ public class ConstraintNetworkView extends PartialPlanView {
         backgroundColor = ColorMap.getColor(ViewConstants.FREE_TOKEN_BG_COLOR);
       }
       else {
-        backgroundColor = getTimelineColor( token.getTimelineId(), timelineIndexMap);
+        backgroundColor = getTimelineColor( token.getTimelineId());//, timelineIndexMap);
           // ((PartialPlanViewSet) viewSet).getColorStream().
           // getColor(((Integer)timelineIndexMap.get(token.getTimelineId())).intValue());
 //         System.err.println(token.getId() + "=>" + token.getTimelineId() + "=>" + backgroundColor);
