@@ -315,9 +315,10 @@ class PlanGenXMLParser extends DefaultHandler {
         else if(attributes.getQName(i).indexOf("name") != -1) {
           name = attributes.getValue(i);
         }
-        currObject = new DbObject(name, id, currPartialPlan.getId());
-        objects.add(currObject);
+        
       }
+      currObject = new DbObject(name, id, currPartialPlan.getId());
+      objects.add(currObject);
     }
     else if(qname.equals("Timeline")) {
       if(!((Integer)state.peek()).equals(IN_OBJECT)) {
