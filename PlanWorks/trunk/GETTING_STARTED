@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.22 2003-12-20 01:54:47 taylor Exp $
+# $Id: GETTING_STARTED,v 1.23 2003-12-30 21:16:16 miatauro Exp $
 #
 
 Projects and Plan Sequences
@@ -82,6 +82,9 @@ and "Open All Views".
 
 Applying a Content Filter specification will cause the views to be redrawn 
 with only the filtered predicates and their dependencies.
+
+Every view has two buttons in the lower left corner which, when clicked, will cause the view to 
+display either the next or previous step.
 
 There are five active views:
 
