@@ -4,12 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.5 2003-06-11 00:46:48 miatauro Exp $
+// $Id: ContentSpec.java,v 1.6 2003-06-12 18:16:59 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
@@ -94,29 +95,38 @@ public class ContentSpec {
   //REALLY INEFFICIENT INITIAL RUN.  some of this should probably be refactored
   public void applySpec(List timeline, List predicate, List constraint, List variableType, 
                         List timeInterval) throws NumberFormatException {
-    currentSpec.clear();
+    //currentSpec.clear();
+    boolean cleared = false;
     BitSet partialSpec = new BitSet(currentSpec.size());
 
 
     if(timeline != null) {
+      System.err.println("Timeline spec " + timeline.size());
+      if(!cleared) {
+        currentSpec.clear();
+        cleared = true;
+      }
       for(int i = 1; i < timeline.size(); i += 2) {
+        System.err.println("timeline spec for key " + (String)timeline.get(i));
         //build query strings
         StringBuffer timelineQuery = new StringBuffer();
         //quick path to timeline.  doing it with shortcuts may be faster.
-        StringBuffer pathToTimeline = new StringBuffer("/");
+        StringBuffer pathToTimeline = new StringBuffer("/PartialPlan/*");
         // //Timeline[@key="key"]
         pathToTimeline.append(TIMELINE).append("[").append(KEY).append(EQ).append("\"");
         pathToTimeline.append((String)timeline.get(i)).append("\"]");
         //quick path to token.
         StringBuffer pathToToken = new StringBuffer(pathToTimeline.toString());
         // //Timeline[@key="key"]//Token/
-        pathToToken.append("/").append(TOKEN).append("/");
+        pathToToken.append("/*").append(TOKEN).append("/");
         // //Timeline[@key="Key"]/Slot/@key | 
         timelineQuery.append(pathToTimeline).append(SLOT).append("/").append(KEY).append(OR);
         // //Timeline[@key="Key"]//Token/@*
         timelineQuery.append(pathToToken).append("@*");
+        System.err.println("Timeline query: " + timelineQuery.toString());
         //query
         List nodeList = XmlDBeXist.queryCollection(collectionName, timelineQuery.toString());
+        System.out.println("Got " + nodeList.size() + " nodes.");
         ListIterator nodeListIterator = nodeList.listIterator();
         ArrayList varKeys = new ArrayList();
         //iterate through resultant nodes
@@ -194,6 +204,10 @@ public class ContentSpec {
 
 
     if(predicate != null) {
+      if(!cleared) {
+        currentSpec.clear();
+        cleared = true;
+      }
       for(int i = 1; i < predicate.size(); i += 2) {
         StringBuffer predicateQuery = new StringBuffer();
         StringBuffer pathToToken = new StringBuffer("/");
@@ -280,6 +294,10 @@ public class ContentSpec {
 
 
     if(constraint != null) {
+      if(!cleared) {
+        currentSpec.clear();
+        cleared = true;
+      }
       for(int i = 1; i < constraint.size(); i += 2) {
         StringBuffer constraintQuery = new StringBuffer("/");
         constraintQuery.append(CONSTRAINT).append("[").append(KEY).append(EQ).append("\"");
@@ -314,6 +332,10 @@ public class ContentSpec {
 
 
     if(variableType != null) {
+      if(!cleared) {
+        currentSpec.clear();
+        cleared = true;
+      }
       for(int i = 1; i < variableType.size(); i += 2) {
         StringBuffer variableQuery = new StringBuffer("/");
         variableQuery.append(VARIABLE).append("[").append(VTYPE).append(EQ).append("\"");
@@ -343,6 +365,10 @@ public class ContentSpec {
     }
 
     if(timeInterval != null) {
+      if(!cleared) {
+        currentSpec.clear();
+        cleared = true;
+      }
       for(int i = 1; i < timeInterval.size(); i += 3) {
         StringBuffer intervalQuery = (new StringBuffer("//Variable[(@type=\"START_VAR\" and (IntervalDomain[@lowerBound >= ")).append(Integer.parseInt((String)timeInterval.get(i))).append("] or EnumeratedDomain[contains(text(), \"").append(timeInterval.get(i)).append("\")])) or (@type=\"END_VAR\" and (IntervalDomain[@upperBound <= ").append(Integer.parseInt((String)timeInterval.get(i+1))).append("] or EnumeratedDomain[contains(text(), \"").append(timeInterval.get(i+1)).append("\")]))]/@key");
         List nodeList = XmlDBeXist.queryCollection(collectionName, intervalQuery.toString());
