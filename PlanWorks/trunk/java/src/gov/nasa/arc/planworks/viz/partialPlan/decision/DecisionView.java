@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.5 2004-06-16 22:09:14 taylor Exp $
+// $Id: DecisionView.java,v 1.6 2004-06-29 00:47:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -417,8 +417,11 @@ public class DecisionView extends PartialPlanView {
       Iterator choiceItr = choiceList.iterator();
       while (choiceItr.hasNext()) {
         PwChoice choice = (PwChoice) choiceItr.next();
-
-        decisionNode.add( new ChoiceNode( choice));
+        boolean isCurrent = false;
+        if (! choiceItr.hasNext()) {
+          isCurrent = true;
+        }
+        decisionNode.add( new ChoiceNode( choice, isCurrent));
 
 //         switch ( choice.getType()) {
 //         case DbConstants.C_TOKEN:
@@ -436,6 +439,11 @@ public class DecisionView extends PartialPlanView {
 //         }
       } // end while choiceList
     } // end while decisionList
+
+    // prevents last node from being clipped off by bottom of scroll pane
+    DefaultMutableTreeNode dummyNode = new DefaultMutableTreeNode();
+    top.add( dummyNode);
+
     return top;
   } // end renderDecisions
 
@@ -647,7 +655,7 @@ public class DecisionView extends PartialPlanView {
                               decisionToFind.toString() + "' (key=" +
                               decisionToFind.getId().toString() + ")");
           scrollPane.getVerticalScrollBar().
-            setValue( Math.max( 0, (int) ((row * decisionTree.getRowHeight()) -
+            setValue( Math.max( 0, (int) ((foundRow * decisionTree.getRowHeight()) -
                                           (scrollPane.getViewport().getHeight() / 2))));
           decisionTree.getSelectionModel().clearSelection();
           decisionTree.getSelectionModel().addSelectionPath( treePath);
@@ -688,6 +696,12 @@ public class DecisionView extends PartialPlanView {
         } else {
           setFont( DecisionView.this.getFont());
         }
+      } else if (value instanceof DecisionView.ChoiceNode) {
+        if (((DecisionView.ChoiceNode) value).isCurrent()) {
+          setFont( DecisionView.this.getCurrentDecisionFont());
+        } else {
+          setFont( DecisionView.this.getFont());
+        }          
       } else if (value instanceof DefaultMutableTreeNode) {
         // skip root node
       }
@@ -738,14 +752,20 @@ public class DecisionView extends PartialPlanView {
   class ChoiceNode extends DefaultMutableTreeNode {
 
     private PwChoice choice;
+    private boolean isCurrent;
     
-    public ChoiceNode( PwChoice choice) {
+    public ChoiceNode( PwChoice choice, boolean isCurrent) {
       super( choice);
       this.choice = choice;
+      this.isCurrent = isCurrent;
     }
 
     public final PwChoice getChoice() {
       return choice;
+    }
+
+    public final boolean isCurrent() {
+      return isCurrent;
     }
 
   } // end class ChoiceNode

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.10 2004-06-16 22:09:13 taylor Exp $
+// $Id: DBTransactionView.java,v 1.11 2004-06-29 00:47:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -70,6 +70,7 @@ public class DBTransactionView extends PartialPlanView {
   private JGoView stepJGoView;
   private FixedHeightPanel stepsPanel;
   private boolean isStepButtonView;
+  private DBTransactionHeaderView headerJGoView;
 
   /**
    * <code>DBTransactionView</code> - constructor 
@@ -167,7 +168,7 @@ public class DBTransactionView extends PartialPlanView {
     this.computeFontMetrics( this);
 
     String query = null;
-    DBTransactionHeaderView headerJGoView = new DBTransactionHeaderView( query);
+    headerJGoView = new DBTransactionHeaderView( query);
     headerJGoView.validate();
     headerJGoView.setVisible( true);
 
@@ -269,27 +270,45 @@ public class DBTransactionView extends PartialPlanView {
     return dbTransactionTable;
   }
 
-  class DBTransactionHeaderView extends TransactionHeaderView {
+  /**
+   * <code>getJGoView</code>
+   *
+   * @return - <code>JGoView</code> - 
+   */
+  public final JGoView getJGoView() {
+    return headerJGoView;
+  }
 
+  /**
+   * <code>DBTransactionHeaderView</code> - 
+   *
+   */
+  public class DBTransactionHeaderView extends TransactionHeaderView {
+
+    /**
+     * <code>DBTransactionHeaderView</code> - constructor 
+     *
+     * @param query - <code>String</code> - 
+     */
     public DBTransactionHeaderView( final String query) {
       super( query);
     }
 
-  /**
-   * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
-   *
-   * @param modifiers - <code>int</code> - 
-   * @param docCoords - <code>Point</code> - 
-   * @param viewCoords - <code>Point</code> - 
-   */
-  public final void doBackgroundClick( final int modifiers, final Point docCoords,
-                                       final Point viewCoords) {
-    if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      // do nothing
-    } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      mouseRightPopupMenu( viewCoords);
-    }
-  } // end doBackgroundClick 
+    /**
+     * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
+     *
+     * @param modifiers - <code>int</code> - 
+     * @param docCoords - <code>Point</code> - 
+     * @param viewCoords - <code>Point</code> - 
+     */
+    public final void doBackgroundClick( final int modifiers, final Point docCoords,
+                                         final Point viewCoords) {
+      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+        // do nothing
+      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        mouseRightPopupMenu( viewCoords);
+      }
+    } // end doBackgroundClick 
 
     private void mouseRightPopupMenu( final Point viewCoords) {
       JPopupMenu mouseRightPopup = new JPopupMenu();

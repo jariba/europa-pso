@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.72 2004-06-16 22:09:05 taylor Exp $
+# $Id: build-tags-file.csh,v 1.73 2004-06-29 00:47:15 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -89,6 +89,15 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/util/PwSequenceFilenameFilter.java \
     src/gov/nasa/arc/planworks/db/util/PwSQLFilenameFilter.java \
     src/gov/nasa/arc/planworks/db/util/SequenceContentSpec.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/Domain.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/EnumeratedDomain.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/IntervalDomain.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/TestLangHelper.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/TestLangLexer.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/TestLangParser.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/TestLangParseException.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/TestLangRuntimeException.java \
+    src/gov/nasa/arc/planworks/dbg/testLang/TestLangTokenTypes.java \
     src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopFrame.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopPane.java \
@@ -108,6 +117,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/test/PlanWorksUtilsTest.java \
     src/gov/nasa/arc/planworks/test/PWSetupHelper.java \
     src/gov/nasa/arc/planworks/test/PWTestHelper.java \
+    src/gov/nasa/arc/planworks/test/TestLangTest.java \
     src/gov/nasa/arc/planworks/util/Algorithms.java \
     src/gov/nasa/arc/planworks/util/BooleanFunctor.java \
     src/gov/nasa/arc/planworks/util/BrowseButton.java \

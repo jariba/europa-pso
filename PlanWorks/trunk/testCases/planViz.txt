@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.49 2004-06-21 22:43:04 taylor Exp $
+// $Id: planViz.txt,v 1.50 2004-06-29 00:47:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -405,8 +405,8 @@ Method:
      from the Mouse-Right pop-up menu, as well as "Show Earliest" and 
      "Show Latest", which are options to "Show Intervals".
   9. In the DBTransaction view, Mouse-Right click on the background of the 
-     "header" portion of the view, and select "Find Transaction by Obj_Key".
-     Enter an OBJ_KEY value.
+     "header" portion of the view, and select "Find Transaction by Entity_Key".
+     Enter an ENTITY_KEY value.
  10. In the DBTransaction view, move the mouse over any of the column header
      nodes to see whether that column is sortable, in either ascending or
      descending order.  Mouse-left click to initiate the sort.  Sort all
@@ -456,7 +456,7 @@ Post-conditions:
      "Show Earliest", "Show Latest", and "Show Intervals" will redraw the nodes
      based on earliest/latest/interval for their start, end, and duration times.
   8. Method:9 - The lower portion of the DBTransaction view will scroll up to 
-     show the transaction entry with the selected OBJ_KEY value.  The OBJ_KEY
+     show the transaction entry with the selected ENTITY_KEY value.  The ENTITY_KEY
      value will be highlighted.
   9. Method:10 - The values in the columns which are sorted will be redisplayed
      in the proper order.
