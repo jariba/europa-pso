@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.95 2004-06-04 23:19:47 miatauro Exp $
+# $Id: README,v 1.96 2004-06-04 23:32:03 taylor Exp $
 #
 
 SUMMARY
@@ -63,7 +63,7 @@ Latest development state:
   > cvs co PlanWorks  or
   > cvs update PlanWorks
 Latest tagged milestone: (see Summary below)
-  > cvs co -r PW_M_14 PlanWorks
+  > cvs co -r PW_M_15 PlanWorks
 
 
 PREREQUISITES
