@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionComparatorAscending.java,v 1.1 2003-10-28 18:01:25 taylor Exp $
+// $Id: TransactionComparatorAscending.java,v 1.2 2003-10-28 20:42:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -48,11 +48,17 @@ public class TransactionComparatorAscending implements Comparator {
       Integer s2 = ((PwTransaction) o2).getStepNumber();
       return s1.compareTo(s2);
     } else if (field.equals( ViewConstants.TRANSACTION_OBJ_NAME_HEADER)) {
-      return 0;
+      String s1 = ((PwTransaction) o1).getInfo()[0];
+      String s2 = ((PwTransaction) o2).getInfo()[0];
+      return s1.compareTo(s2);
     } else if (field.equals( ViewConstants.TRANSACTION_PREDICATE_HEADER)) {
-      return 0;
+      String s1 = ((PwTransaction) o1).getInfo()[1];
+      String s2 = ((PwTransaction) o2).getInfo()[1];
+      return s1.compareTo(s2);
     } else if (field.equals( ViewConstants.TRANSACTION_PARAMETER_HEADER)) {
-      return 0;
+      String s1 = ((PwTransaction) o1).getInfo()[2];
+      String s2 = ((PwTransaction) o2).getInfo()[2];
+      return s1.compareTo(s2);
     }
     System.err.println( "TransactionComparatorAscending: field '" + field +
                         "' not handled");
@@ -82,11 +88,17 @@ public class TransactionComparatorAscending implements Comparator {
       Integer s2 = ((PwTransaction) o2).getStepNumber();
       return s1.equals(s2);
     } else if (field.equals( ViewConstants.TRANSACTION_OBJ_NAME_HEADER)) {
-      return true;
+      String s1 = ((PwTransaction) o1).getInfo()[0];
+      String s2 = ((PwTransaction) o2).getInfo()[0];
+      return s1.equals(s2);
     } else if (field.equals( ViewConstants.TRANSACTION_PREDICATE_HEADER)) {
-      return true;
+      String s1 = ((PwTransaction) o1).getInfo()[1];
+      String s2 = ((PwTransaction) o2).getInfo()[1];
+      return s1.equals(s2);
     } else if (field.equals( ViewConstants.TRANSACTION_PARAMETER_HEADER)) {
-      return true;
+      String s1 = ((PwTransaction) o1).getInfo()[2];
+      String s2 = ((PwTransaction) o2).getInfo()[2];
+      return s1.equals(s2);
     }
     System.err.println( "TransactionComparatorAscending: field '" + field +
                         "' not handled");

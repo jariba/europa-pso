@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepContentView.java,v 1.4 2003-10-28 18:01:24 taylor Exp $
+// $Id: StepContentView.java,v 1.5 2003-10-28 20:41:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,13 +24,13 @@ import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.db.PwTransaction;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.StepField;
-import gov.nasa.arc.planworks.viz.nodes.TransactionField;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
 /**
- * <code>StepContentView</code> - render values of step object as TransactionField's
+ * <code>StepContentView</code> - render values of step object as StepField's
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                NASA Ames Research Center - Code IC
@@ -143,25 +143,34 @@ public class StepContentView extends JGoView {
         x += headerJGoView.getObjectKeyNode().getSize().getWidth();
       }
 
+      String objectName =
+        NodeGenerics.trimName( transaction.getInfo[0], headerJGoView.getObjectNameNode(),
+                               vizView);
       StepField objectNameField =
-        new StepField( "",
-                       new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+        new StepField( objectName, new Point( x, y),
+                       JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail(objectNameField );
       objectNameField.setSize( (int) headerJGoView.getObjectNameNode().getSize().getWidth(),
                                (int) objectNameField.getSize().getHeight());
       x += headerJGoView.getObjectNameNode().getSize().getWidth();
 
+      String predicateName =
+        NodeGenerics.trimName( transaction.getInfo[1], headerJGoView.getPredicateNode(),
+                               vizView);
       StepField predicateField =
-        new StepField( "",
-                       new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+        new StepField( predicateName, new Point( x, y),
+                       JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( predicateField);
       predicateField.setSize( (int) headerJGoView.getPredicateNode().getSize().getWidth(),
                               (int) predicateField.getSize().getHeight());
       x += headerJGoView.getPredicateNode().getSize().getWidth();
 
-      TransactionField parameterField =
-        new TransactionField( "",
-                              new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
+      String parameterName =
+         NodeGenerics.trimName( transaction.getInfo[2], headerJGoView.getParameterNode(),
+                                vizView);
+      StepField parameterField =
+        new StepField( parameterName, new Point( x, y),
+                       JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( parameterField);
       parameterField.setSize( (int) headerJGoView.getParameterNode().getSize().getWidth(),
                            (int) parameterField.getSize().getHeight());

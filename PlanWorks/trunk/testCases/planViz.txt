@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.5 2003-10-28 18:01:26 taylor Exp $
+// $Id: planViz.txt,v 1.6 2003-10-28 20:42:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -315,6 +315,10 @@ Method:
   9. In the Transaction view, Mouse-Right click on the background of the 
      "header" portion of the view, and select "Find Transaction By Obj_Key".
      Enter an OBJ_KEY value.
+ 10. In the Transaction view, move the mouse over any of the column header
+     nodes to see whether that column is sortable, in either ascending or
+     descending order.  Mouse-left click to initiate the sort.  Sort all
+     the columns.
 
 Post-conditions:
   1. Method:2 - In turn, each of the views should re-oriented itself to
@@ -334,6 +338,8 @@ Post-conditions:
      a "tool tip" to appear with the value of the "x" or time coordinate.
   8. Method:9 - The lower portion of the Transaction view will scroll up to 
      show the transaction entry with the selected OBJ_KEY value.
+  9. Method:10 - The values in the columns which are sorted will be redisplayed
+     in the proper order.
 
 Requirements: TBD
 
@@ -416,7 +422,7 @@ Requirements: 4.1.1, 4.1.2.a, 4.1.2.b, 4.1.2.c, 4.1.3, 4.1.4, 4.1.5,
 
 PLANVIZ-13
 --------------------
-Use Sequence Query dialog window to display windows with sequence query information.
+Use the Sequence Query dialog to display windows with sequence query information.
 
 Pre-conditions:
   1. PlanWorks is running.
@@ -443,13 +449,16 @@ Method:
      which expand into a "Key" field; and "In Range", which expands into
      "startStep" and "endStep" fields.  Enter appropriate values for the
      fields, and click on "Apply Query".
-  7. In each of the "QueryResults" windows created by Method:5, Mouse-Right 
+  7. In each of the "QueryResults" windows created by Method:6, Mouse-Right 
      click on the background of the "header" portion of the view, and select 
      "Find Transaction By Obj_Key".  Enter an OBJ_KEY value.
+  8. In each of the "QueryResults" windows, move the mouse over any of the 
+     column header nodes to see whether that column is sortable, in either 
+     ascending or descending order.  Mouse-left click to initiate the sort.  
+     Sort all the columns.
 
 Post-conditions:
-  1. Method:1 - the Sequence Query and Sequence Steps View
-     windows appear.
+  1. Method:1 - the Sequence Query and Sequence Steps View windows appear.
   2. Method:2 - "TransactionView" window appears.
   3. Method:3 - Use "TransactionView" windows for appropriate steps of the
      Sequence Steps View to verify the results in the "QueryResults"
@@ -462,6 +471,8 @@ Post-conditions:
      windows.
   7. Method:7 - The lower portion of the "QueryResults" window will scroll up 
      to show the transaction entry with the selected OBJ_KEY value.
+  8. Method:8 - The values in the columns which are sorted will be redisplayed
+     in the proper order.
 
 Requirements: 4.3.1.a-g, 4.3.2.b-e
 

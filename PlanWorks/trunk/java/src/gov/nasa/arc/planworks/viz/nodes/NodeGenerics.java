@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.5 2003-10-25 00:58:18 taylor Exp $
+// $Id: NodeGenerics.java,v 1.6 2003-10-28 20:42:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -25,6 +25,7 @@ import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
+import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -285,6 +286,29 @@ public class NodeGenerics {
     }
     return basicNodeList;
   } // end mapTokensToTokenNodes
+
+
+  /**
+   * <code>trimName</code> - trim name to fit in headerNode column
+   *
+   * @param name - <code>String</code> - 
+   * @param headerNode - <code>TextNode</code> - 
+   * @return - <code>String</code> - 
+   */
+  public static String trimName( String name, TextNode headerNode, VizView vizView) {
+    int columnWidth = (int) headerNode.getSize().getWidth();
+    int nameWidth = SwingUtilities.computeStringWidth( vizView.getFontMetrics(), name);
+    // System.err.println( " name " + name + " " + nameWidth + " columnWidth " + columnWidth);
+    if (nameWidth > columnWidth) {
+      int numTrimChars = ((nameWidth - columnWidth) /
+                          vizView.getFontMetrics().charWidth( 'A')) + 1;
+      // System.err.println( " numTrimChars " + numTrimChars);
+      name = name.substring( 0, (name.length() - numTrimChars - 2)).concat( "..");
+    }
+    // System.err.println( " name " + name);
+    return name;
+  } // end trimName
+
 
 } // end class NodeGenerics
 

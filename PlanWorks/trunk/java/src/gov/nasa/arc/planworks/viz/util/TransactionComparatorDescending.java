@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionComparatorDescending.java,v 1.1 2003-10-28 18:01:25 taylor Exp $
+// $Id: TransactionComparatorDescending.java,v 1.2 2003-10-28 20:42:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -48,13 +48,19 @@ public class TransactionComparatorDescending implements Comparator {
       Integer s2 = ((PwTransaction) o2).getStepNumber();
       return s2.compareTo(s1);
     } else if (field.equals( ViewConstants.TRANSACTION_OBJ_NAME_HEADER)) {
-      return 0;
+      String s1 = ((PwTransaction) o1).getInfo()[0];
+      String s2 = ((PwTransaction) o2).getInfo()[0];
+      return s2.compareTo(s1);
     } else if (field.equals( ViewConstants.TRANSACTION_PREDICATE_HEADER)) {
-      return 0;
+      String s1 = ((PwTransaction) o1).getInfo()[1];
+      String s2 = ((PwTransaction) o2).getInfo()[1];
+      return s2.compareTo(s1);
     } else if (field.equals( ViewConstants.TRANSACTION_PARAMETER_HEADER)) {
-      return 0;
+      String s1 = ((PwTransaction) o1).getInfo()[2];
+      String s2 = ((PwTransaction) o2).getInfo()[2];
+      return s2.compareTo(s1);
     }
-    System.err.println( "TransactionComparatorAscending: field '" + field +
+    System.err.println( "TransactionComparatorDescending: field '" + field +
                         "' not handled");
     System.exit( -1);
     return 0;
@@ -82,13 +88,19 @@ public class TransactionComparatorDescending implements Comparator {
       Integer s2 = ((PwTransaction) o2).getStepNumber();
       return s2.equals(s1);
     } else if (field.equals( ViewConstants.TRANSACTION_OBJ_NAME_HEADER)) {
-      return true;
+      String s1 = ((PwTransaction) o1).getInfo()[0];
+      String s2 = ((PwTransaction) o2).getInfo()[0];
+      return s2.equals(s1);
     } else if (field.equals( ViewConstants.TRANSACTION_PREDICATE_HEADER)) {
-      return true;
+      String s1 = ((PwTransaction) o1).getInfo()[1];
+      String s2 = ((PwTransaction) o2).getInfo()[1];
+      return s2.equals(s1);
     } else if (field.equals( ViewConstants.TRANSACTION_PARAMETER_HEADER)) {
-      return true;
+      String s1 = ((PwTransaction) o1).getInfo()[2];
+      String s2 = ((PwTransaction) o2).getInfo()[2];
+      return s2.equals(s1);
     }
-    System.err.println( "TransactionComparatorAscending: field '" + field +
+    System.err.println( "TransactionComparatorDescending: field '" + field +
                         "' not handled");
     System.exit( -1);
     return true;
