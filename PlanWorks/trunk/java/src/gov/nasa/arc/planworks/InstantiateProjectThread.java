@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.3 2003-10-09 22:07:43 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.4 2003-11-13 22:42:29 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -137,9 +137,9 @@ public class InstantiateProjectThread extends Thread {
                                       PlanWorks.planWorks.currentProjectName);
         PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, true);
         PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
-        PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         if (PwProject.listProjects().size() > 1) {
           PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
+          PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         }
         for (int i = 0, n = PlanWorks.planWorks.sequenceDirectories.length; i < n; i++) {
           String sequenceDirectory = PlanWorks.planWorks.sequenceParentDirectory +
