@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.2 2004-01-16 19:05:38 taylor Exp $
+// $Id: TimelineNavNode.java,v 1.3 2004-01-20 19:57:48 taylor Exp $
 //
 // PlanWorks
 //
@@ -245,8 +245,9 @@ public class TimelineNavNode extends ExtendedBasicNode {
     if (isDebug) {
       tip.append( " linkCntObj ").append( String.valueOf( objectLinkCount));
       tip.append( " linkCntSlot ").append( String.valueOf( slotLinkCount));
+      tip.append( "<br>");
     }
-    tip.append( "<br> Mouse-L: ").append( operation);
+    tip.append( "Mouse-L: ").append( operation);
     tip.append("</html>");
     return tip.toString();
   } // end getToolTipText
