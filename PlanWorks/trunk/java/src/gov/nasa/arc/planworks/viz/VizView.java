@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.6 2003-11-18 23:54:15 taylor Exp $
+// $Id: VizView.java,v 1.7 2003-11-20 19:11:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -100,6 +100,15 @@ public class VizView extends JPanel {
   }
 
   /**
+   * <code>setOverview</code>
+   *
+   * @param overview - <code>VizViewOverview</code> - 
+   */
+  public void setOverview( VizViewOverview overview) {
+    this.overview = overview;
+  }
+
+  /**
    * <code>redraw</code> - each subclass of VizView will implement 
    *
    */  
@@ -125,8 +134,8 @@ public class VizView extends JPanel {
    * @param maxViewWidth - <code>int</code> - 
    * @param maxViewHeight - <code>int</code> - 
    */
-  protected void expandViewFrame( String viewClassName, int maxViewWidth, int maxViewHeight) {
-    MDIInternalFrame viewFrame = viewSet.openView( viewClassName);
+  protected void expandViewFrame( MDIInternalFrame viewFrame, int maxViewWidth,
+                                  int maxViewHeight) {
     maxViewWidth = Math.min( maxViewWidth, 
                              (int) PlanWorks.planWorks.getSize().getWidth() -
                              (int) viewFrame.getLocation().getX() -

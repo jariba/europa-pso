@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.19 2003-11-13 23:21:16 taylor Exp $
+# $Id: GETTING_STARTED,v 1.20 2003-11-20 19:11:23 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -37,6 +37,17 @@ base.
 the selected sequence from the current project, and the MySQL data base.
 
 
+Overviews of Plan Sequence and Partial Plan Views
+=================================================
+The partial plan views, except for Transaction View, and the Sequence
+Steps View, have a Mouse-Right popup named "Overview Window" which
+opens a 1/8th scaled view of the entire "observed" view.  There is a
+rectangle in the overview which can be dragged to cause the "observed" 
+view to be scrolled to new locations.  Mouse-Left clicking in the
+overview outside of the rectangle will cause the "observed" view to
+"jump" to that location.
+
+
 Plan Sequence Views
 ===================
 The "Planning Sequence" menu expands into the available sequence names.  
@@ -51,12 +62,19 @@ Individual or all partial plan views for each step are available by
 clicking Mouse-Right on the desired step in the histogram ("SequenceStepsView").  
 The histogram steps have a "mouse over" pop-up showing the step number, 
 and the data base size for tokens, variables, and constraints -- which are
-color coded.  The key values for tokens, constraints, variables, timelines, 
-and slots appear in the appropriate node labels of the partial plan views. 
+color coded.  
 
-All partial plan view's  Mouse-Right pop-ups offer the user a second
-pop-up selection ("Open a View") of the other partial plan views, 
-which will create them as needed.  All views, except for Transaction View,
+
+Partial Plan Views
+==================
+The partial plan views are Constraint Network, Temporal Extent, Timeline,
+Token Network, and Transaction.  The key values for tokens, constraints, 
+variables, timelines, and slots appear in the appropriate node labels of 
+the partial plan views. 
+
+All partial plan views' Mouse-Right pop-ups offer the user selections
+ ("Open <view-name> View") for the other partial plan views, which will 
+create them as needed.  All views, except for Transaction View,
 also offer "Raise Content Spec", which will set focus on the appropriate
 partial plan Content Spec window.  In addition, all partial plan view's  
 Mouse-Right pop-ups offer the user "Close All Views", "Hide All Views", 

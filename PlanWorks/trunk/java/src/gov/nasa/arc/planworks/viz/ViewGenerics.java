@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.1 2003-11-18 23:54:14 taylor Exp $
+// $Id: ViewGenerics.java,v 1.2 2003-11-20 19:11:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -48,6 +48,7 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -63,7 +64,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class ViewGenerics {
 
-  public static final String OVERVIEW_TITLE = " Overview for ";
+  public static final String OVERVIEW_TITLE = "Overview for ";
 
   private ViewGenerics() {
   }
@@ -118,8 +119,8 @@ public class ViewGenerics {
   public static VizViewOverview openOverviewFrame( String viewName, ViewableObject viewable,
                                                    VizView vizView, ViewSet viewSet,
                                                    JGoView jGoView, Point viewCoords) {
-    String overviewTitle = Utilities.trimView( viewName) + OVERVIEW_TITLE +
-      viewable.getName();
+    String overviewTitle = Utilities.trimView( viewName).replaceAll( " ", "") +
+      OVERVIEW_TITLE + viewable.getName();
     MDIInternalFrame overviewFrame = (MDIInternalFrame) viewSet.getViews().get( overviewTitle);
     VizViewOverview overview = null;
     // System.err.println( "openOverviewFrame " + overviewFrame);
@@ -140,13 +141,14 @@ public class ViewGenerics {
       overview.setVisible( true);
       contentPane.add( overview);
 
+      overviewFrame.setLocation( viewCoords);
       Dimension overviewDocSize = new Dimension( overview.getDocumentSize());
       overview.convertDocToView( overviewDocSize);
-      overviewFrame.setSize( (int) (overviewDocSize.getWidth() +
-                                    (ViewConstants.MDI_FRAME_DECORATION_WIDTH * 0.8)),
-                             (int) (overviewDocSize.getHeight() +
-                                    (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 0.6)));
-      overviewFrame.setLocation( viewCoords);
+      vizView.expandViewFrame( overviewFrame,
+                               (int) (overviewDocSize.getWidth() +
+                                      (ViewConstants.MDI_FRAME_DECORATION_WIDTH * 0.8)),
+                               (int) (overviewDocSize.getHeight() +
+                                      (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 0.6)));
     }
     // make window appear & bring to the front
     try {

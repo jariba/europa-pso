@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.55 2003-11-13 23:21:16 taylor Exp $
+# $Id: README,v 1.56 2003-11-20 19:11:23 taylor Exp $
 #
 
 SUMMARY
@@ -37,6 +37,13 @@ o Clicking on the "Apply Spec" and "Reset Spec" buttons of the Content
 o The "Step" column values of Query Results windows for "Steps" and 
   "Transactions" queries, now offer a Mouse-Right popup with actions
   on the partial plan views for that step.
+o The partial plan views, except for Transaction View, and the Sequence
+  Steps View, now have a Mouse-Right popup named "Overview Window" which
+  opens a 1/8th scaled view of the entire "observed" view.  There is a
+  rectangle in the overview which can be dragged to cause the "observed" 
+  view to be scrolled to new locations.  Mouse-Left clicking in the
+  overview outside of the rectangle will cause the "observed" view to
+  "jump" to that location.
 
 o  GNATS PRs and CRs completed:
    #2172: Invalid behaviour for sequence windows after closing and opening.

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintJGoView.java,v 1.3 2003-11-11 02:44:52 taylor Exp $
+// $Id: ConstraintJGoView.java,v 1.4 2003-11-20 19:11:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,6 +32,8 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
@@ -92,6 +94,10 @@ class ConstraintJGoView extends JGoView {
                                                mouseRightPopup,
                                                PlanWorks.CONSTRAINT_NETWORK_VIEW);
     
+    JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
+    createOverviewWindowItem( overviewWindowItem, constraintNetworkView, viewCoords);
+    mouseRightPopup.add( overviewWindowItem);
+
     JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
     constraintNetworkView.createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
@@ -325,6 +331,23 @@ class ConstraintJGoView extends JGoView {
     }
     return null;
   } // end getVariableNodeInLayout
+
+  private void createOverviewWindowItem( JMenuItem overviewWindowItem,
+                                         final ConstraintNetworkView constraintNetworkView,
+                                         final Point viewCoords) {
+    overviewWindowItem.addActionListener( new ActionListener() { 
+        public void actionPerformed( ActionEvent evt) {
+          VizViewOverview currentOverview =
+            ViewGenerics.openOverviewFrame( PlanWorks.CONSTRAINT_NETWORK_VIEW, partialPlan,
+                                            constraintNetworkView,
+                                            constraintNetworkView.getViewSet(),
+                                            ConstraintJGoView.this, viewCoords);
+          if (currentOverview != null) {
+            constraintNetworkView.setOverview( currentOverview);
+          }
+        }
+      });
+  } // end createOverviewWindowItem
 
 
 } // end class ConstraintJGoView

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionView.java,v 1.7 2003-11-06 00:02:19 taylor Exp $
+// $Id: TransactionView.java,v 1.8 2003-11-20 19:11:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -141,7 +141,7 @@ public class TransactionView extends PartialPlanView {
 
     this.setVisible( true);
 
-    expandViewFrame( this.getClass().getName(),
+    expandViewFrame( viewSet.openView( this.getClass().getName()),
                      (int) headerJGoView.getDocumentSize().getWidth(),
                      (int) (headerJGoView.getDocumentSize().getHeight() +
                             contentJGoView.getDocumentSize().getHeight()));

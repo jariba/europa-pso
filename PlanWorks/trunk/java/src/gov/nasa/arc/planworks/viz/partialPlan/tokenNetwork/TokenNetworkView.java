@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.11 2003-11-13 23:21:17 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.12 2003-11-20 19:11:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ import gov.nasa.arc.planworks.db.PwTokenRelation;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
@@ -131,7 +134,12 @@ public class TokenNetworkView extends PartialPlanView {
     boolean isRedraw = false;
     renderTokenNetwork( isRedraw);
 
-    expandViewFrame( this.getClass().getName(),
+    Rectangle documentBounds = jGoView.getDocument().computeBounds();
+    jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
+                                           (ViewConstants.TIMELINE_VIEW_X_INIT * 2),
+                                           (int) documentBounds.getHeight() +
+                                           (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
+    expandViewFrame( viewSet.openView( this.getClass().getName()),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
     // print out info for created nodes
@@ -590,6 +598,10 @@ public class TokenNetworkView extends PartialPlanView {
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
                          PlanWorks.TOKEN_NETWORK_VIEW);
 
+    JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
+    createOverviewWindowItem( overviewWindowItem, this, viewCoords);
+    mouseRightPopup.add( overviewWindowItem);
+
     JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
@@ -665,6 +677,21 @@ public class TokenNetworkView extends PartialPlanView {
       System.exit( 1);
     }
   } // end findAndSelectToken
+
+  private void createOverviewWindowItem( JMenuItem overviewWindowItem,
+                                         final TokenNetworkView tokenNetworkView,
+                                         final Point viewCoords) {
+    overviewWindowItem.addActionListener( new ActionListener() { 
+        public void actionPerformed( ActionEvent evt) {
+          VizViewOverview currentOverview =
+            ViewGenerics.openOverviewFrame( PlanWorks.TOKEN_NETWORK_VIEW, partialPlan,
+                                            tokenNetworkView, viewSet, jGoView, viewCoords);
+          if (currentOverview != null) {
+            overview = currentOverview;
+          }
+        }
+      });
+  } // end createOverviewWindowItem
 
 
 } // end class TokenNetworkView

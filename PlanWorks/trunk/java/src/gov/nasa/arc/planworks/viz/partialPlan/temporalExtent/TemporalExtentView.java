@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.13 2003-11-11 02:44:52 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.14 2003-11-20 19:11:24 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -57,6 +57,8 @@ import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -181,7 +183,7 @@ public class TemporalExtentView extends PartialPlanView  {
     boolean isRedraw = false;
     renderTemporalExtent( isRedraw);
 
-    expandViewFrame( this.getClass().getName(),
+    expandViewFrame( viewSet.openView( this.getClass().getName()),
                      (int) Math.max( jGoExtentView.getDocumentSize().getWidth(),
                                      jGoRulerView.getDocumentSize().getWidth()),
                      (int) (jGoExtentView.getDocumentSize().getHeight() +
@@ -960,6 +962,10 @@ public class TemporalExtentView extends PartialPlanView  {
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
                          PlanWorks.TEMPORAL_EXTENT_VIEW);
 
+    JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
+    createOverviewWindowItem( overviewWindowItem, this, viewCoords);
+    mouseRightPopup.add( overviewWindowItem);
+
     JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
@@ -1078,6 +1084,22 @@ public class TemporalExtentView extends PartialPlanView  {
       });
   } // end createTimeMarkItem
 
+
+  private void createOverviewWindowItem( JMenuItem overviewWindowItem,
+                                         final TemporalExtentView temporalExtentView,
+                                         final Point viewCoords) {
+    overviewWindowItem.addActionListener( new ActionListener() { 
+        public void actionPerformed( ActionEvent evt) {
+          VizViewOverview currentOverview =
+            ViewGenerics.openOverviewFrame( PlanWorks.TEMPORAL_EXTENT_VIEW, partialPlan,
+                                            temporalExtentView, viewSet, jGoExtentView,
+                                            viewCoords);
+          if (currentOverview != null) {
+            overview = currentOverview;
+          }
+        }
+      });
+  } // end createOverviewWindowItem
 
   /**
    * <code>TimeScaleMark</code> - color the mark and provide its time value
