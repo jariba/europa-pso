@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -108,7 +109,8 @@ public class SlotNode extends TextNode implements ViewConstants {
 
 
   private final void configure() {
-    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( "gray60")));  
+    // bgcolor of TextNode rectangle
+    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( "lightGray")));  
     getLabel().setEditable( false);
     setDraggable( false);
     // do not allow links
@@ -167,10 +169,26 @@ public class SlotNode extends TextNode implements ViewConstants {
   // the previous slot
   private void renderTimeIntervals() {
     PwVariable intervalVariable = null, lastIntervalVariable = null;
-    PwToken baseToken = (PwToken) slot.getTokenList().get( 0);
+    PwToken baseToken = null;
+    PwDomain intervalDomain = null, lastIntervalDomain = null;
+    if (slot.getTokenList().size() > 0) {
+      baseToken = (PwToken) slot.getTokenList().get( 0);
+    }
     boolean isLocationAbsolute = false;
     if (baseToken == null) {
-      intervalVariable = previousToken.getEndVariable();
+      if (previousToken == null) {
+        // first slot is empty
+        if (isLastSlot == true) {
+          // this is also the last slot
+          intervalDomain = new PwEnumeratedDomainImpl( "0");
+          lastIntervalDomain = new PwEnumeratedDomainImpl( "_plus_infinity_");
+        } else {
+           intervalDomain = new PwEnumeratedDomainImpl( "0");         
+        }
+      } else {
+        // empty slot between filled slots
+        intervalVariable = previousToken.getEndVariable();
+      }
     } else if (isLastSlot == true) {
       intervalVariable = baseToken.getStartVariable();
       lastIntervalVariable = baseToken.getEndVariable();
@@ -178,15 +196,23 @@ public class SlotNode extends TextNode implements ViewConstants {
       intervalVariable = baseToken.getStartVariable();      
     }
 
-    startTimeIntervalDomain = intervalVariable.getDomain();
+    if (intervalVariable == null) {
+      startTimeIntervalDomain = intervalDomain;
+    } else {
+      startTimeIntervalDomain = intervalVariable.getDomain();
+    }
     // System.err.println( "startTimeIntervalDomain " + startTimeIntervalDomain.toString());
     Point startLoc = new Point( (int) this.getLocation().getX() - this.getXOffset(),
                                 (int) this.getLocation().getY() +
                                 (int) this.getSize().getHeight());
     renderIntervalText( startTimeIntervalDomain.toString(), startLoc);
 
-    if (lastIntervalVariable != null) {
-      endTimeIntervalDomain = lastIntervalVariable.getDomain();
+    if ((lastIntervalVariable != null) || (lastIntervalDomain != null)) {
+      if (lastIntervalVariable == null) {
+        endTimeIntervalDomain = lastIntervalDomain;
+      } else {
+        endTimeIntervalDomain = lastIntervalVariable.getDomain();
+      }
       // System.err.println( "endTimeIntervalDomain " + endTimeIntervalDomain.toString());
       Point endLoc = new Point( (int) (this.getLocation().getX() +
                                        this.getSize().getWidth()),
@@ -222,7 +248,7 @@ public class SlotNode extends TextNode implements ViewConstants {
   } // end renderText
 
 
-    // offset time interval labels, so they overlap previous & current slot nodes
+    // offset time interval labels, so they do not overlap previous & current slot nodes
   private int getXOffset() {
     if (previousToken == null) {
       return 0;

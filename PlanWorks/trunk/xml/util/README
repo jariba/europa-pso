@@ -1,0 +1,31 @@
+# 
+# * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+# * information on usage and redistribution of this file, 
+# * and for a DISCLAIMER OF ALL WARRANTIES. 
+# 
+
+# $Id: README,v 1.1 2003-06-08 00:14:09 taylor Exp $
+#
+
+PlanGen - generate "fake" partial plan XML files
+
+$JAVA_HOME/bin/javac PlanGen.java
+
+$JAVA_HOME/bin/java -classpath . PlanGen --usage
+
+Generate equivalent to PlanWorks/xml/test
+                       PlanWorks/xml/test/monkey
+                       PlanWorks/xml/test/monkey/step0000.xml
+
+
+$JAVA_HOME/bin/java -classpath . PlanGen --dest /home/wtaylor/PlanWorksProject/PlanWorks/xml/pg1 --horizon 0 200 --nseq 1 --nsteps 1 --nobjs 1 --ntimelines 3 --nslots 5 --ntokens 1 --ntokenrelations 1
+
+Copy PlanDb.dtd into each created sequence directory:
+cp PlanWorks/xml/dtd//PlanDb.dtd seq0
+cp PlanWorks/xml/dtd//PlanDb.dtd seq1
+...
+cp PlanWorks/xml/dtd//PlanDb.dtd seqn
+
+
+
+

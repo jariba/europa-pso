@@ -238,7 +238,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame
 	}
 	public void internalFrameActivated(InternalFrameEvent e)
 	{
-	    System.out.println("Activated frame: " + frame.getTitle());
+            // System.out.println("Activated frame: " + frame.getTitle());
 	    menu.notifyActivated(frame);
 	    frame.validate();
 	}

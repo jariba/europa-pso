@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.4 2003-06-02 17:50:00 taylor Exp $
+// $Id: TimelineView.java,v 1.5 2003-06-08 00:14:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -84,6 +85,7 @@ public class TimelineView extends VizView {
                      ViewConstants.TIMELINE_VIEW_FONT_STYLE,
                      ViewConstants.TIMELINE_VIEW_FONT_SIZE);
     jGoView.setFont( font);
+    this.setVisible( true);
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -103,6 +105,14 @@ public class TimelineView extends VizView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    // wait for TimelineView instance to become displayable
+    while (! this.isDisplayable()) {
+      try {
+        Thread.currentThread().sleep(50);
+      } catch (InterruptedException excp) {
+      }
+      // System.err.println( "timelineView displayable " + this.isDisplayable());
+    }
     Graphics graphics = ((JPanel) this).getGraphics();
     fontMetrics = graphics.getFontMetrics( font);
     graphics.dispose();
@@ -173,25 +183,32 @@ public class TimelineView extends VizView {
       PwObject object = (PwObject) objectIterator.next();
       String objectName = object.getName();
       List timelineList = object.getTimelineList();
+      int timelineNodeWidth = computeTimelineNodesWidth( timelineList, objectName);
       Iterator timelineIterator = timelineList.iterator();
       while (timelineIterator.hasNext()) {
         x = ViewConstants.TIMELINE_VIEW_X_INIT;
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
         String timelineName = timeline.getName();
         String timelineKey = timeline.getKey();
+        String timelineNodeName = objectName + " : " + timelineName;
         TimelineNode timelineNode =
-          new TimelineNode( objectName + " : " + timelineName, timeline,
-                            new Point( x, y), this);
+          new TimelineNode( timelineNodeName, timeline, new Point( x, y), this);
         timelineNodeList.add( timelineNode);
         // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
         jGoDoc.addObjectAtTail( timelineNode);
+        timelineNode.setSize( timelineNodeWidth,
+                              (int) timelineNode.getSize().getHeight());
         x += timelineNode.getSize().getWidth();
+
         List slotList = timeline.getSlotList();
         Iterator slotIterator = slotList.iterator();
         PwToken previousToken = null;
         while (slotIterator.hasNext()) {
           PwSlot slot = (PwSlot) slotIterator.next();
-          PwToken token = (PwToken) slot.getTokenList().get( 0);
+          PwToken token = null;
+          if (slot.getTokenList().size() > 0) {
+            token = (PwToken) slot.getTokenList().get( 0);
+          }
           String slotNodeLabel = getSlotNodeLabel( token);
           boolean isLastSlot = (! slotIterator.hasNext());
           SlotNode slotNode =
@@ -207,6 +224,24 @@ public class TimelineView extends VizView {
       }
     }
   } // end createTimelineAndSlotNodes
+
+
+  // make all timeline nodes the same width
+  private int computeTimelineNodesWidth( List timelineList, String objectName) {
+    int maxNodeWidth = 0;
+    Iterator timelineIterator = timelineList.iterator();
+    while (timelineIterator.hasNext()) {
+      PwTimeline timeline = (PwTimeline) timelineIterator.next();
+      String timelineName = timeline.getName();
+      String timelineNodeName = objectName + " : " + timelineName;
+      int nodeWidth = SwingUtilities.computeStringWidth( this.getFontMetrics(),
+                                                         timelineNodeName);
+      if (nodeWidth > maxNodeWidth) {
+        maxNodeWidth = nodeWidth;
+      }
+    }
+    return maxNodeWidth + 2 *  ViewConstants.TIMELINE_VIEW_INSET_SIZE;
+  } // end computeTimelineNodesWidth
 
 
   // pad labels with blanks up to min size -- initally that of "empty" label

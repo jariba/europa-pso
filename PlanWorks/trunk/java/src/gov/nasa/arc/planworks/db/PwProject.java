@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.4 2003-06-02 17:49:58 taylor Exp $
+// $Id: PwProject.java,v 1.5 2003-06-08 00:14:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -62,12 +62,31 @@ public abstract class PwProject {
   }
 
   /**
+   * <code>getProject</code> - get project instance after it is Created or Opened
+   *
+   * @param url - <code>String</code> - 
+   * @return - <code>PwProject</code> - 
+   */
+  public static PwProject getProject( String url) {
+    return PwProjectImpl.getProject( url);
+  }
+
+  /**
    * <code>listProjects</code>
    *
    * @return - <code>List</code> - of String (url)
    */
   public static List listProjects() {
     return PwProjectImpl.listProjects();
+  }
+
+  /**
+   * <code>saveProjects</code> - save project names & urls in /xml/proj/projects.xml
+   *                             and save project specific info in separate files
+   *
+   */
+  public static void saveProjects() throws Exception {
+    PwProjectImpl.saveProjects();
   }
 
   /**
@@ -78,12 +97,12 @@ public abstract class PwProject {
   public abstract String getUrl();
 
   /**
-   * <code>getProjectName</code> - project name (directory containing
+   * <code>getName</code> - project name (directory containing
    *                               planning sequences
    *
    * @return - <code>String</code> - 
    */
-  public abstract String getProjectName();
+  public abstract String getName();
 
   /**
    * <code>listPlanningSequences</code>
@@ -104,6 +123,21 @@ public abstract class PwProject {
     throws ResourceNotFoundException;
 
   /**
+   * <code>getPlanningSequenceNames</code>
+   *
+   * @return - <code>List</code> - of String
+   */
+  public abstract List getPlanningSequenceNames();
+
+  /**
+   * <code>getPartialPlanNames</code>
+   *
+   * @param seqName - <code>String</code> - 
+   * @return - <code>List</code> - of List of String
+   */
+  public abstract List getPartialPlanNames( String seqName);
+
+  /**
    * <code>close</code> - remove project from /xml/proj/projects.xml, and
    *                      remove /xml/proj/<projectName>.xml
    *
@@ -119,8 +153,7 @@ public abstract class PwProject {
   public abstract boolean requiresSaving();
 
   /**
-   * <code>save</code> - save project names & urls in /xml/proj/projects.xml
-   *            save project url, name, & seqDirNames in /xml/proj/<projectName>.xml
+   * <code>save</code> - save project url, name, & seqDirNames in /xml/proj/<projectName>.xml
    *
    * @exception Exception if an error occurs
    */

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.7 2003-06-02 17:49:57 taylor Exp $
+# $Id: build-tags-file.csh,v 1.8 2003-06-08 00:14:07 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -12,6 +12,8 @@ if ( "`/bin/uname -s`" == "SunOS" ) then # SUN-OS OR SOLARIS
 endif
 
 etags $etags_flag planWorks.TAGS \
+    lib/eXist/src/org/exist/xmldb/DatabaseImpl.java \
+    src/gov/nasa/arc/planworks/PlanWorks.java \
     src/gov/nasa/arc/planworks/db/PwConstraint.java \
     src/gov/nasa/arc/planworks/db/PwDomain.java \
     src/gov/nasa/arc/planworks/db/PwEnumeratedDomain.java \
@@ -52,6 +54,15 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/util/XmlDBeXist.java \
     src/gov/nasa/arc/planworks/db/util/XmlFileFilter.java \
     src/gov/nasa/arc/planworks/db/util/XmlFilenameFilter.java \
+    src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java \
+    src/gov/nasa/arc/planworks/mdi/MDIDesktopFrame.java \
+    src/gov/nasa/arc/planworks/mdi/MDIDesktopPane.java \
+    src/gov/nasa/arc/planworks/mdi/MDIDynamicMenuBar.java \
+    src/gov/nasa/arc/planworks/mdi/MDIFrame.java \
+    src/gov/nasa/arc/planworks/mdi/MDIInternalFrame.java \
+    src/gov/nasa/arc/planworks/mdi/MDIMenu.java \
+    src/gov/nasa/arc/planworks/mdi/MDIWindowBar.java \
+    src/gov/nasa/arc/planworks/mdi/MDIWindowButtonBar.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
     src/gov/nasa/arc/planworks/util/DuplicateNameException.java \
     src/gov/nasa/arc/planworks/util/ResourceNotFoundException.java \

@@ -1,16 +1,12 @@
 <?xml version="1.0"?>
-<!-- $Id: timeline-view-test.xml,v 1.4 2003-06-02 17:50:00 taylor Exp $ -->
+<!-- $Id: timeline-view-test.xml,v 1.5 2003-06-08 00:14:08 taylor Exp $ -->
 <project name="timeline-view-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
-        <!-- planworks.root is an inherited property from PlanWorks/build.xml -->
+        <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
-	<property name="eXist_conf_file" value="conf-nolog.xml"/>
 	<property name="xml_files_dir" value="xml/test/monkey"/>
-	<property name="exist.home" location="${planworks.root}/java/lib/eXist"/>
 	<property environment="env"/>
-        <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
-        <property name="jfcunit.home" value="${planworks.root}/java/lib/JFCUnit"/>
 
 	<path id="planworks.jars">
 		<pathelement path="${planworks.root}/java/classes"/>
@@ -35,8 +31,10 @@
             <jvmarg value="-Duser=${env.USER}"/>
             <jvmarg value="-Dexist.initdb=true"/>
             <jvmarg value="-Dexist.home=${exist.home}"/>
-            <jvmarg value="-Dexist.conf.xml=${eXist_conf_file}"/>
+            <jvmarg value="-Dexist.conf.file=${exist.conf.file}"/>
             <jvmarg value="-Dxml.files.dir=${planworks.root}/${xml_files_dir}"/>
+            <jvmarg value="-Dprojects.xml.data.dir=${projects.xml.data.dir}"/>
+            <jvmarg value="-Dprojects.xml.data.pathname=${projects.xml.data.pathname}"/>
 	</java>
 
 </target>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.4 2003-06-02 17:49:59 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.5 2003-06-08 00:14:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -61,23 +61,17 @@ public class PwProjectImpl extends PwProject {
     projects = new ArrayList();
     userCollectionName = "/" + System.getProperty( "user");
     try {
-      StringBuffer projectsXmlDataDirBuf =
-        new StringBuffer( System.getProperty( "planworks.root"));
-      projectsXmlDataDirBuf.append( "/xml/db/proj/");
-      projectsXmlDataDir = projectsXmlDataDirBuf.toString();
-      StringBuffer projectsXmlDataPathnameBuf =
-        new StringBuffer( System.getProperty( "planworks.root"));
-      projectsXmlDataPathnameBuf.append( "/xml/db/proj/projects.xml");
-      projectsXmlDataPathname = projectsXmlDataPathnameBuf.toString();
+      projectsXmlDataDir = System.getProperty( "projects.xml.data.dir");
+      projectsXmlDataPathname = System.getProperty( "projects.xml.data.pathname");
       if ((new File( projectsXmlDataPathname)).exists()) {
         FileInputStream fileInputStream =
           new FileInputStream( projectsXmlDataPathname);
         XMLDecoder xmlDecoder = new XMLDecoder( fileInputStream);
         List projectNamesRestore = (List) xmlDecoder.readObject();
         List projectUrlsRestore = (List) xmlDecoder.readObject();
-        System.err.println( "PwProjectImpl restore: projectNames " +
+        System.err.println( "PwProjectImpl: restore projectNames " +
                             projectNamesRestore);
-        System.err.println( "PwProjectImpl restore: projectUrls " +
+        System.err.println( "PwProjectImpl: restore projectUrls " +
                             projectUrlsRestore);
         xmlDecoder.close();
         Iterator namesIterator = projectNamesRestore.iterator();
@@ -99,9 +93,10 @@ public class PwProjectImpl extends PwProject {
 
 
   private String url; // project pathname
-  private String projectName;
+  private String name;
   private List planningSequences; // element PwPlanningSequence
   private List seqDirNames; // element String
+  private List partialPlanNames; // element List of String
   private String projectDataPathname;
   private boolean requiresSaving;
 
@@ -110,19 +105,18 @@ public class PwProjectImpl extends PwProject {
    *                  called from PwProject.createProject
    *
    * @param url - <code>String</code> - 
-   * @param projectName - <code>String</code> - 
+   * @exception DuplicateNameException if an error occurs
    * @exception ResourceNotFoundException if an error occurs
    */
   public PwProjectImpl( String url)  throws DuplicateNameException, ResourceNotFoundException {
     this.url = url; // project pathname
-    projectName = parseProjectName( url);
+    name = parseProjectName( url);
     projectCollectionName = getProjectCollectionName();
-    projectDataPathname = projectsXmlDataDir.concat( projectName);
-    projectDataPathname = projectDataPathname.concat( ".xml");
+    projectDataPathname = projectsXmlDataDir + "/" + name + ".xml";
     planningSequences = new ArrayList();
     seqDirNames = new ArrayList();
+    partialPlanNames = new ArrayList();
     requiresSaving = true;
-    boolean isInDb = false;
     Iterator urlsIterator = projectUrls.iterator();
     while (urlsIterator.hasNext()) {
       if (((String) urlsIterator.next()).equals( url)) {
@@ -135,18 +129,18 @@ public class PwProjectImpl extends PwProject {
       String fileName = fileNames[i];
       if ((! fileName.equals( "CVS")) &&
           (new File( url + "/" + fileName)).isDirectory()) {
-        System.err.println( "Project " + projectName + " => seqDirName: " + fileName);
+        System.err.println( "Project " + name + " => seqDirName: " + fileName);
         seqDirNames.add( fileName);
         planningSequences.add
-          ( new PwPlanningSequenceImpl(  url + "/" + fileName, projectName, 
-                                         new PwModelImpl(), isInDb));
+          ( new PwPlanningSequenceImpl(  url + "/" + fileName, this,
+                                         new PwModelImpl()));
       }
     }
     if (planningSequences.size() == 0) {
       throw new ResourceNotFoundException( "CreateProject for url '" + url +
                                            "' does not have any sequence directories");
     }
-    projectNames.add(projectName );
+    projectNames.add(name );
     projectUrls.add( url);
     projects.add( this);
   } // end  constructor PwProject.createProject
@@ -162,10 +156,9 @@ public class PwProjectImpl extends PwProject {
    */
   public PwProjectImpl( String url, boolean isInDb) throws ResourceNotFoundException {
     this.url = url; // project pathname
-    projectName = parseProjectName( url);
+    name = parseProjectName( url);
     projectCollectionName = getProjectCollectionName();
-    projectDataPathname = projectsXmlDataDir.concat( projectName);
-    projectDataPathname = projectDataPathname.concat( ".xml");
+    projectDataPathname = projectsXmlDataDir + "/" + name + ".xml";
     planningSequences = new ArrayList();
     seqDirNames = new ArrayList();
     requiresSaving = false;
@@ -180,13 +173,17 @@ public class PwProjectImpl extends PwProject {
                                            "does not match that in " +
                                            projectDataPathname.toString());
     }
+    partialPlanNames = restoredProject.getPartialPlanNames();
     Iterator seqDirNamesItr = restoredProject.getSeqDirNames().iterator();
+    int seqIndx = 0;
     while (seqDirNamesItr.hasNext()) {
       String seqDir = (String) seqDirNamesItr.next();
       this.seqDirNames.add( seqDir);
       this.planningSequences.add
-        ( new PwPlanningSequenceImpl(  url + "/" + seqDir, projectName,
-                                       new PwModelImpl(), isInDb));
+        ( new PwPlanningSequenceImpl(  url + "/" + seqDir, this,
+                                       new PwModelImpl(),
+                                       (List) partialPlanNames.get( seqIndx)));
+      seqIndx++;
     }
     // this project is already in projectNames & projectUrls
     projects.add( this);
@@ -242,8 +239,32 @@ public class PwProjectImpl extends PwProject {
     this.projectUrls = projectUrls;
   }
 
+  /**
+   * <code>addPartialPlanNames</code>
+   *
+   * @param names - <code>List</code> - 
+   */
+  public void addPartialPlanNames( List names) {
+    partialPlanNames.add( names);
+  }
 
-  ///////// EXTEND PwProject ////// 
+
+  // EXTEND PwProject 
+
+  /**
+   * <code>getProject</code>
+   *
+   * @param url - <code>String</code> - 
+   * @return - <code>PwProject</code> - 
+   */
+  public static PwProject getProject( String url) {
+    for (int i = 0, n = projectUrls.size(); i < n; i++) {
+      if (((String) projectUrls.get( i)).equals( url)) {
+        return (PwProject) projects.get( i);
+      }
+    }
+    return null;
+  } // end getProject
 
   /**
    * <code>listProjects</code>
@@ -253,6 +274,30 @@ public class PwProjectImpl extends PwProject {
   public static List listProjects() {
     return projectUrls;
   }
+
+  /**
+   * <code>saveProjects</code> - save project names & urls in /xml/proj/projects.xml
+   *                             and save project specific info in separate files
+   *
+   */
+  public static void saveProjects() throws Exception {
+    FileOutputStream fileOutputStream =
+      new FileOutputStream( projectsXmlDataPathname);
+    XMLEncoder xmlEncoder = new XMLEncoder( fileOutputStream);
+    xmlEncoder.writeObject( projectNames);
+    xmlEncoder.writeObject( projectUrls);
+    System.err.println( "PwProjectImpl: save projectNames " + projectNames);
+    System.err.println( "PwProjectImpl: save projectUrls " + projectUrls);
+    xmlEncoder.close();
+
+    Iterator projectsItr = projects.iterator();
+    while (projectsItr.hasNext()) {
+      PwProjectImpl activeProject = (PwProjectImpl) projectsItr.next();
+      if (activeProject.requiresSaving) {
+        activeProject.save();
+      }
+    }
+  } // end saveProjects
 
   /**
    * <code>getUrl</code> - project pathname for planning sequences. e.g.
@@ -265,14 +310,14 @@ public class PwProjectImpl extends PwProject {
   } // end getUrl
 
   /**
-   * <code>getProjectName</code> - project name (directory containing
+   * <code>getName</code> - project name (directory containing
    *                               planning sequences
    *
    * @return - <code>String</code> - 
    */
-  public String getProjectName() {
-    return projectName;
-  } // end getProjectName
+  public String getName() {
+    return name;
+  } // end getName
 
   /**
    * <code>listPlanningSequences</code>
@@ -309,6 +354,30 @@ public class PwProjectImpl extends PwProject {
     throw new ResourceNotFoundException( "getPlanningSequence could not find " + url);
   } // end getPlanningSequence
 
+    /**
+   * <code>getPlanningSequenceNames</code>
+   *
+   * @return - <code>List</code> - of String
+   */
+  public List getPlanningSequenceNames() {
+    return seqDirNames;
+  }
+
+  /**
+   * <code>getPartialPlanNames</code>
+   *
+   * @param seqName - <code>String</code> - 
+   * @return - <code>List</code> - of List of String
+   */
+  public List getPartialPlanNames( String seqName) {
+    for (int i = 0, n = seqDirNames.size(); i < n; i++) {
+      if (((String) seqDirNames.get( i)).equals( seqName)) {
+        return (List) partialPlanNames.get( i);
+      }
+    }
+    return null;
+  } // end getPartialPlanNames
+
   /**
    * <code>close</code> - remove project from /xml/proj/projects.xml, and
    *                      remove /xml/proj/<projectName>.xml
@@ -316,37 +385,40 @@ public class PwProjectImpl extends PwProject {
    * @exception Exception if an error occurs
    */
   public void close() throws Exception, ResourceNotFoundException {
-
-    throw new ResourceNotFoundException
-      ( "PwProjectImpl.close: XmlDBeXist.removeCollection " +
-        "does not work => " + projectName);
-
-//     Iterator projectNamesItr = projectNames.iterator();
-//     while (projectNamesItr.hasNext()) {
-//       if (((String) projectNamesItr.next()).equals( projectName)) {
-//         projectNamesItr.remove();
-//       }
-//     }
-//     Iterator projectUrlsItr = projectUrls.iterator();
-//     while (projectUrlsItr.hasNext()) {
-//       if (((String) projectUrlsItr.next()).equals( url)) {
-//         projectUrlsItr.remove();
-//       }
-//     }
-//     // save() will save the changes to projectNames & projectUrls
-//     File projectFile = new File( projectDataPathname);
-//     if (! projectFile.exists()) {
+    Iterator projectNamesItr = projectNames.iterator();
+    while (projectNamesItr.hasNext()) {
+      if (((String) projectNamesItr.next()).equals( name)) {
+        projectNamesItr.remove();
+      }
+    }
+    Iterator projectUrlsItr = projectUrls.iterator();
+    while (projectUrlsItr.hasNext()) {
+      if (((String) projectUrlsItr.next()).equals( url)) {
+        projectUrlsItr.remove();
+      }
+    }
+    Iterator projectsItr = projects.iterator();
+    while (projectsItr.hasNext()) {
+      PwProjectImpl activeProject = (PwProjectImpl) projectsItr.next();
+      if (activeProject.getUrl().equals( url)) {
+        projectsItr.remove();
+      }
+    }
+    // save() will save the changes to projectNames & projectUrls
+    File projectFile = new File( projectDataPathname);
+    if (! projectFile.exists()) {
 //       throw new Exception( "Close Project for url '" + url + "' failed -- " +
 //                            "file not found: " + projectDataPathname);
-//     }
-//     projectFile.delete();
-//     requiresSaving = false;
+    } else {
+      projectFile.delete();
+    }
+    requiresSaving = false;
 
-//     // remove XML:DB collection
-//     StringBuffer projectCollectionName = new StringBuffer( "/");
-//     projectCollectionName.append( System.getProperty( "user")).append( "/");
-//     projectCollectionName.append( projectName);
-//     XmlDBeXist.removeCollection( projectCollectionName.toString());
+    // remove XML:DB collection
+    StringBuffer projectCollectionName = new StringBuffer( "/");
+    projectCollectionName.append( System.getProperty( "user")).append( "/");
+    projectCollectionName.append( name);
+    XmlDBeXist.INSTANCE.removeCollection( projectCollectionName.toString());
   } // end close
 
   /**
@@ -359,41 +431,27 @@ public class PwProjectImpl extends PwProject {
   } // end requiresSaving
 
   /**
-   * <code>save</code> - save project names & urls in /xml/proj/projects.xml
-   *            save project url, name, & seqDirNames in /xml/proj/<Projectame>.xml
+   * <code>save</code> - save project url, name, & seqDirNames in /xml/proj/<Projectame>.xml
    *
    * @exception Exception if an error occurs
    */
   public void save() throws Exception {
     FileOutputStream fileOutputStream =
-      new FileOutputStream( projectsXmlDataPathname);
+      new FileOutputStream( projectDataPathname);
     XMLEncoder xmlEncoder = new XMLEncoder( fileOutputStream);
-    xmlEncoder.writeObject( projectNames);
-    xmlEncoder.writeObject( projectUrls);
-    System.err.println( "PwProjectImpl save: projectNames " + projectNames);
-    System.err.println( "PwProjectImpl save: projectUrls " + projectUrls);
+    PwProjectImpl project = new PwProjectImpl();
+    project.setUrl( url);
+    project.setName( name);
+    project.setSeqDirNames( seqDirNames);
+    project.setPartialPlanNames( partialPlanNames);
+    xmlEncoder.writeObject( project);
+    System.err.println( "save: project name " + name);
+
     xmlEncoder.close();
-
-    Iterator projectsItr = projects.iterator();
-    while (projectsItr.hasNext()) {
-      PwProjectImpl activeProject = (PwProjectImpl) projectsItr.next();
-      if (activeProject.requiresSaving) {
-        fileOutputStream = new FileOutputStream( activeProject.projectDataPathname);
-        xmlEncoder = new XMLEncoder( fileOutputStream);
-        PwProjectImpl project = new PwProjectImpl();
-        project.setUrl( activeProject.url);
-        project.setProjectName( activeProject.projectName);
-        project.setSeqDirNames( activeProject.seqDirNames);
-        xmlEncoder.writeObject( project);
-        System.err.println( "save: projectName " + activeProject.projectName);
-
-        xmlEncoder.close();
-      }
-    }
   } // end save
 
 
-  //////// END EXTEND PwProject ////////////////////////////////
+  // END EXTEND PwProject 
 
   /**
    * <code>setUrl</code> - with getUrl, makes this a bean property and enabled
@@ -406,13 +464,13 @@ public class PwProjectImpl extends PwProject {
   }
 
   /**
-   * <code>setProjectName</code> - with get<...>, makes this a bean property
+   * <code>setName</code> - with get<...>, makes this a bean property
    *                       and enabled for XMLEncode/Decode
    *
-   * @param projectName - <code>String</code> - 
+   * @param name - <code>String</code> - 
    */
-  public void setProjectName( String projectName) {
-    this.projectName = projectName;
+  public void setName( String name) {
+    this.name = name;
   }
 
   /**
@@ -439,7 +497,7 @@ public class PwProjectImpl extends PwProject {
    * <code>getSeqDirNames</code> - with set<...>, makes this a bean property
    *                       and enabled for XMLEncode/Decode
    *
-   * @return - <code>List</code> - 
+   * @return - <code>List</code> - of String
    */
   public List getSeqDirNames() {
     return seqDirNames;
@@ -449,10 +507,30 @@ public class PwProjectImpl extends PwProject {
    * <code>setSeqDirNames</code> - with get<...>, makes this a bean property
    *                       and enabled for XMLEncode/Decode
    *
-   * @param seqDirNames - <code>List</code> - 
+   * @param seqDirNames - <code>List</code> - of String
    */
   public void setSeqDirNames( List seqDirNames) {
     this.seqDirNames = seqDirNames;
+  }
+
+  /**
+   * <code>getPartialPlanNames</code> - with set<...>, makes this a bean property
+   *                       and enabled for XMLEncode/Decode
+   *
+   * @return - <code>List</code> - List of String
+   */
+  public List getPartialPlanNames() {
+    return partialPlanNames;
+  }
+
+  /**
+   * <code>setPartialPlanNames</code> - with get<...>, makes this a bean property
+   *                       and enabled for XMLEncode/Decode
+   *
+   * @param partialPlanNames - <code>List</code> - List of String
+   */
+  public void setPartialPlanNames( List partialPlanNames) {
+    this.partialPlanNames = partialPlanNames;
   }
 
   private static void connectToExistDataBase() {
@@ -481,7 +559,7 @@ public class PwProjectImpl extends PwProject {
 
   private String getProjectCollectionName() {
     StringBuffer projectCollectionNameBuf = new StringBuffer( userCollectionName);
-    projectCollectionNameBuf.append( "/").append( projectName);
+    projectCollectionNameBuf.append( "/").append( name);
     return projectCollectionNameBuf.toString();
   }
 
@@ -498,8 +576,9 @@ public class PwProjectImpl extends PwProject {
     XMLDecoder xmlDecoder = new XMLDecoder( fileInputStream);
     PwProjectImpl project = (PwProjectImpl) xmlDecoder.readObject();
     System.err.println( "restore: url " + project.getUrl());
-    System.err.println( "restore: projectName " + project.getProjectName());
+    System.err.println( "restore: projectName " + project.getName());
     System.err.println( "restore: seqDirNames " + project.getSeqDirNames());
+    System.err.println( "restore: partialPlanNames " + project.getPartialPlanNames());
 
     xmlDecoder.close();
     return project;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectTest.java,v 1.1 2003-06-02 17:49:59 taylor Exp $
+// $Id: PwProjectTest.java,v 1.2 2003-06-08 00:14:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -319,7 +319,7 @@ public class PwProjectTest extends JFrame {
     saveProjectItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
           try {
-            PwProjectTest.this.project.save();
+            PwProject.saveProjects();
           } catch (Exception excp) {
             System.err.println( excp ); System.exit( 0); }}});
     projectMenu.add( saveProjectItem);

@@ -1,18 +1,31 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.8 2003-06-02 17:52:12 taylor Exp $ -->
-<project name="PlanWorks" default="projectTest" basedir=".">
+<!-- $Id: build.xml,v 1.9 2003-06-08 00:14:07 taylor Exp $ -->
+<project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
   </description>
 
   <property name="planworks.root" value="${basedir}"/>
+  <property name="exist.home" location="${planworks.root}/java/lib/eXist"/>
+  <property name="exist.conf.file" value="conf-nolog.xml"/>
+  <property name="default.project.dir" location="${planworks.root}/xml/test"/>
+  <property name="projects.xml.data.dir" location="${planworks.root}/xml/db/proj"/>
+  <property name="projects.xml.data.pathname" 
+      location="${planworks.root}/xml/db/proj/projects.xml"/>
+  <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
+  <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
+
+  <target name="planWorks"  depends="check_jvm_2"
+    description="-- launch application (compile dependency)">
+    <ant dir="./" antfile="planWorks.xml"/>
+  </target>
 
   <target name="existTest"  depends="check_jvm_2, cleanDb"
     description="-- prototyping test (compile dependency)">
     <ant dir="./test" antfile="exist-test.xml"/>
   </target>
 
-  <target name="projectTest" depends="check_jvm_2" 
+  <target name="projectTest" depends="check_jvm_2, cleanDb" 
       description="-- prototyping test (compile dependency)">
     <ant dir="./test" antfile="project-test.xml"/>
   </target>

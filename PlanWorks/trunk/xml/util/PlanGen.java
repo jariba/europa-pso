@@ -20,6 +20,15 @@ public class PlanGen
   {
     for(int i = 0; i < PlanGenState.nsequences; i++)
       {
+        // ensure that PlanGenState.destDir exists
+        File projDir = new File(PlanGenState.destDir);
+        if (! projDir.exists()) {
+          if (! projDir.mkdir()) {
+            System.err.println("Failed to create destination directory " + i + 
+                               ": '" + projDir.getName() + "'  I wish Java had errno.");
+            System.exit(-1);
+          }
+        }
         StringBuffer dirBuf = (new StringBuffer(PlanGenState.destDir)).append("/seq").append(i);
         File seqDir = new File(dirBuf.toString());
         if(!seqDir.exists())
@@ -29,7 +38,8 @@ public class PlanGen
                 if(!seqDir.mkdir())
                   {
                     System.err.println("Failed to create sequence directory " + i + 
-                                       ".  I wish Java had errno.");
+                                       ": '" + seqDir.getName() +
+                                       "'  I wish Java had errno.");
                     System.exit(-1);
                   }
               }
@@ -122,6 +132,7 @@ abstract class PlanGenState
               {
                 try{destDir = args[i+1];}
                 catch(Exception e){System.out.println("Invalid destination argument.");usage();}
+                i++;
               }
             else if(args[i].equals("--nseq"))
               {
@@ -258,7 +269,7 @@ abstract class PlanGenState
                     System.out.println("Cannot have both a number and range of slots.");
                     usage();
                   }
-                try{ntimelines = Integer.parseInt(args[i+1]);}
+                try{nslots = Integer.parseInt(args[i+1]);}
                 catch(Exception e){System.out.println("Invalid number of slots."); usage();}
                 seenNumTimelines = true;
                 i++;
