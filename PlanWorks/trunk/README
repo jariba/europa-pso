@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.77 2004-03-09 19:59:29 taylor Exp $
+# $Id: README,v 1.78 2004-03-09 20:16:53 miatauro Exp $
 #
 
 SUMMARY
@@ -37,14 +37,18 @@ o Two Partial Plan resourece views have been added: ResourceProfileView and
 
 
 o  GNATS PRs and CRs completed:
+   #2198: Provide queries of constraint execution and when domains become emptied.
    #2241: Timeline view disappear and does not reappear after the 
           non-monotonic timeline error message.
+   #2242: Script to clean database does not work correctly.
+   #2243: Prototype:Planworks bug: Timeline view crash.
+   #2244: Change Request: Not crash if a model's seq directories have been deleted.
+   #2248: Fix interaction between content filter persistance and state switching.
    #2249: Partial Plan View frames do not maintain user's resizing when stepping.
    #2250: Always show timeline objects in Timeline View.
    #2251: Keep Content Filter frame and view frames in same position when stepping.
    #2252: When stepping, move SequenceSteps View highlight to current step.
    #2256: SequenceStepsView: add hide/show all partial plan views.
-
 
 CVS CHECKOUT
 ============

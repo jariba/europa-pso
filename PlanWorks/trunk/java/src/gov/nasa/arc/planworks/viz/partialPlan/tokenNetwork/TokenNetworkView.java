@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.32 2004-03-07 01:49:30 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.33 2004-03-09 20:20:21 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -287,9 +287,6 @@ public class TokenNetworkView extends PartialPlanView {
     while (tokenNodeKeyItr.hasNext()) {
       TokenNode tokenNode =
         (TokenNode) tokenNodeMap.get( (Integer) tokenNodeKeyItr.next());
-//       System.err.println("Token: " + tokenNode + " master: " + 
-//                          partialPlan.getMasterTokenId(tokenNode.getToken().getId()) + " slaves: " +
-//                          partialPlan.getSlaveTokenIds(tokenNode.getToken().getId()));
       Integer tokenId = tokenNode.getToken().getId();
       Integer masterTokenId = partialPlan.getMasterTokenId( tokenId);
       if (masterTokenId != null) {
