@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.12 2003-09-04 00:27:36 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.13 2003-09-11 23:41:30 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -136,7 +136,7 @@ public class PlanWorksTest extends JFCTestCase{
       System.setProperty( "default.sequence.dir",
                           System.getProperty( "planworks.test.data.dir") +
                           System.getProperty( "file.separator") + projectName +
-                          System.getProperty("file.separator") + sequenceName);
+                          System.getProperty("file.separator")/* + sequenceName*/);
       System.err.println("Set default.project.name: " + System.getProperty("default.project.name"));
       System.err.println("Set default.sequence.dir: " + System.getProperty("default.sequence.dir"));
     } else if (testType.equals( "emptySlots")) {
@@ -145,14 +145,16 @@ public class PlanWorksTest extends JFCTestCase{
       System.setProperty( "default.sequence.dir",
                           System.getProperty( "planworks.test.data.dir") +
                           System.getProperty("file.separator") + projectName +
-                          System.getProperty( "file.separator") + sequenceName);
+                          System.getProperty( "file.separator")/* + sequenceName*/);
     } else {
       throw new Exception( "setup: testType " + testType + " not handled"); 
     }
     planWorks.getSequenceDirChooser().setCurrentDirectory
       ( new File( System.getProperty( "default.sequence.dir")));
-
-
+    File [] temp = new File [1];
+    temp[0] = new File(System.getProperty("default.sequence.dir") +
+                       System.getProperty("file.separator") + "seq0");
+    planWorks.getSequenceDirChooser().setSelectedFiles(temp);
     // Give a little extra time for the painting/construction
     Thread.currentThread().sleep(500);
     flushAWT();

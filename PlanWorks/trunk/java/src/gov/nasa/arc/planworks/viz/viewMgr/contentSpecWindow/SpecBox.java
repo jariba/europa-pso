@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SpecBox.java,v 1.7 2003-08-12 22:55:23 miatauro Exp $
+// $Id: SpecBox.java,v 1.8 2003-09-11 23:41:56 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -37,8 +37,6 @@ import javax.swing.JTextField;
  * A single element for specifying content.  Includes logical connectives for specification
  * chaining.
  */
-
-
 public class SpecBox extends JPanel implements ContentSpecElement {
   protected LogicComboBox logicBox;
   protected NegationCheckBox negationBox;
@@ -46,7 +44,6 @@ public class SpecBox extends JPanel implements ContentSpecElement {
   private String name;
   private Map names;
   private static final Pattern keyPattern = Pattern.compile("\\d+");
-
   /**
    * Constructs the SpecBox and arranges the appropriate input fields.
    * @param first <code>boolean</code> value determining whether or not this SpecBox is the first
@@ -66,7 +63,6 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     if(first) {
       logicBox.setEnabled(false);
     }
-
     c.weightx = 1;
     c.gridx = 0;
     c.gridy = 0;
