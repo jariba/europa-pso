@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.37 2003-12-03 02:29:50 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.38 2004-01-13 20:45:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -128,6 +128,7 @@ public class PwProjectImpl extends PwProject {
   private String name;
   private Integer id;
   private List planningSequences; // element PwPlanningSequence
+  private Map sequenceIdUrlMap;
 
   /**
    * <code>PwProjectImpl</code> - constructor 
@@ -141,6 +142,7 @@ public class PwProjectImpl extends PwProject {
     this.name = name;
     id = new Integer(-1);
     planningSequences = new ArrayList();
+    sequenceIdUrlMap = new HashMap();
   } // end  constructor PwProjectImpl.createProject
 
 
@@ -161,11 +163,12 @@ public class PwProjectImpl extends PwProject {
       throw new ResourceNotFoundException("Project " + name + " not found in database.");
     }
     planningSequences = new ArrayList();
-    Map sequences = MySQLDB.getSequences(id);
-    Iterator seqIdIterator = sequences.keySet().iterator();
+    //Map sequences = MySQLDB.getSequences(id);
+    sequenceIdUrlMap = MySQLDB.getSequences(id); //sequenceId->sequenceUrl
+    Iterator seqIdIterator = sequenceIdUrlMap.keySet().iterator();
     while(seqIdIterator.hasNext()) {
       Long sequenceId = (Long) seqIdIterator.next();
-      String seqUrl = (String) sequences.get(sequenceId);
+      String seqUrl = (String) sequenceIdUrlMap.get(sequenceId);
       System.err.println(sequenceId + " : " + seqUrl);
       planningSequences.add( new PwPlanningSequenceImpl( seqUrl, sequenceId));
     }
@@ -201,12 +204,13 @@ public class PwProjectImpl extends PwProject {
    *                                each sequence is set of partial plans
    */
   public List listPlanningSequences() {
-    ArrayList retval = new ArrayList();
-    ListIterator sequenceIterator = planningSequences.listIterator();
-    while(sequenceIterator.hasNext()) {
-      retval.add(((PwPlanningSequenceImpl)sequenceIterator.next()).getUrl());
-    }
-    return retval;
+    return new ArrayList(sequenceIdUrlMap.values());
+//     ArrayList retval = new ArrayList();
+//     ListIterator sequenceIterator = planningSequences.listIterator();
+//     while(sequenceIterator.hasNext()) {
+//       retval.add(((PwPlanningSequenceImpl)sequenceIterator.next()).getUrl());
+//     }
+//    return retval;
   } // end listPlanningSequences
 
   /**
@@ -217,6 +221,10 @@ public class PwProjectImpl extends PwProject {
    */
   public PwPlanningSequence getPlanningSequence( String url)
     throws ResourceNotFoundException {
+    PwPlanningSequence retval;
+    if(!sequenceIdUrlMap.containsValue(url)) {
+      throw new ResourceNotFoundException("getPlanningSequence could not find " + url);
+    }
     Iterator planningSeqIterator = planningSequences.iterator();
     while (planningSeqIterator.hasNext()) {
       PwPlanningSequence pwPlanningSequence =
@@ -225,10 +233,15 @@ public class PwProjectImpl extends PwProject {
         return pwPlanningSequence;
       }
     }
-    throw new ResourceNotFoundException( "getPlanningSequence could not find " + url);
+    planningSequences.add(retval = new PwPlanningSequenceImpl(url, this));
+    return retval;
   } // end getPlanningSequence
 
   public PwPlanningSequence getPlanningSequence(Long seqId) throws ResourceNotFoundException {
+    PwPlanningSequence retval;
+    if(!sequenceIdUrlMap.containsKey(seqId)) {
+      throw new ResourceNotFoundException("getPlanning sequence could not find " + id);
+    }
     Iterator planningSeqIterator = planningSequences.iterator();
     while(planningSeqIterator.hasNext()) {
       PwPlanningSequence pwPlanningSequence = (PwPlanningSequence) planningSeqIterator.next();
@@ -236,7 +249,9 @@ public class PwProjectImpl extends PwProject {
         return pwPlanningSequence;
       }
     }
-    throw new ResourceNotFoundException("getPlanning sequence could not find " + id);
+    planningSequences.add(retval = 
+                          new PwPlanningSequenceImpl((String) sequenceIdUrlMap.get(seqId), this));
+    return retval;
   }
 
   public PwPlanningSequence addPlanningSequence(String url) 
@@ -246,6 +261,7 @@ public class PwProjectImpl extends PwProject {
       throw new DuplicateNameException("Sequence at " + url + " already in database.");
     }
     planningSequences.add(retval = new PwPlanningSequenceImpl( url, this));
+    sequenceIdUrlMap.put(retval.getId(), retval.getUrl());
     return retval;
   }
 
@@ -255,6 +271,7 @@ public class PwProjectImpl extends PwProject {
       PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();
       if(planSeq.getUrl().equals(seqName)) {
         seqIterator.remove();
+        System.gc();
         return;
       }
     }
@@ -267,6 +284,7 @@ public class PwProjectImpl extends PwProject {
       PwPlanningSequence planSeq = (PwPlanningSequence) seqIterator.next();
       if(planSeq.getId().equals(seqId)) {
         seqIterator.remove();
+        System.gc();
         return;
       }
     }

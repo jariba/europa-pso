@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.12 2004-01-02 19:06:12 miatauro Exp $
+// $Id: SequenceViewSet.java,v 1.13 2004-01-13 20:45:40 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -24,6 +24,7 @@ import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.db.util.SequenceContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
@@ -82,6 +83,14 @@ public class SequenceViewSet extends ViewSet {
         set.close();
         getViewManager().removeViewSet(partialPlan);
       }
+    }
+    try {
+      PlanWorks.planWorks.currentProject.
+        deletePlanningSequence(((PwPlanningSequence)viewable).getId());
+    }
+    catch(ResourceNotFoundException rnfe) {
+      rnfe.printStackTrace();
+      System.exit(-1);
     }
   }
 
