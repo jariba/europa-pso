@@ -29,7 +29,13 @@
           <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
           <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
           <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+          <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
+          <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
+          <jvmarg value="-Dsplash.image=${splash.image}"/>
           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
+          <arg value="${name.application}"/>
+          <arg value="${boolean.isMaxScreen}"/>
         </java>
+
 </target>
 </project>
