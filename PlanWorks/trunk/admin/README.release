@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.3 2003-10-21 01:29:19 taylor Exp $
+# $Id: README.release,v 1.4 2003-11-07 00:08:39 taylor Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
@@ -29,7 +29,7 @@ o Tag the Release
   - In a clean directory, do a fresh checkout of the CVS "head":
     > cvs co PlanWorks
   - Tag the files:
-    > cvs tag PW_M_<release_num>
+    > cvs tag PW_M_<release_num> PlanWorks
 
 o Email Release Announcment
   - Send to pw-users@postdoc  (includes eurpoa-users@postdoc)

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.43 2003-11-06 00:02:20 taylor Exp $
+// $Id: ViewSet.java,v 1.44 2003-11-07 00:05:00 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -304,7 +304,8 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       }
     catch(PropertyVetoException pve){}
 
-    ((ViewManager) remover).decrementContentSpecWindowCnt();
+    // this causes content specs to perfectly overlay each other
+    // ((ViewManager) remover).decrementContentSpecWindowCnt();
   }
 
   /**
@@ -324,6 +325,15 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
         }
       }
     catch(PropertyVetoException pve){}
+  }
+
+  /**
+   * <code>getViewManager</code>
+   *
+   * @return - <code>ViewManager</code> - 
+   */
+  public ViewManager getViewManager() {
+    return (ViewManager) remover;
   }
 
   /**

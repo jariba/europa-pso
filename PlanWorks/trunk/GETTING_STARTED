@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.16 2003-11-06 00:02:16 taylor Exp $
+# $Id: GETTING_STARTED,v 1.17 2003-11-07 00:04:58 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -47,12 +47,12 @@ of the partial plan data base size for each step of the sequence, with
 every tenth step number displayed at the bottom of the appropriate
 element.
 
-Partial plan views for each step are available by clicking Mouse-Right on 
-the desired step in the histogram ("SequenceStepsView").  The histogram 
-steps have a "mouse over" pop-up showing the step number, the data base 
-size, and the number of transactions.  The key values for tokens, 
-constraints, variables, timelines, and slots appear in the appropriate node 
-labels.  
+Individual or all partial plan views for each step are available by
+clicking Mouse-Right on the desired step in the histogram ("SequenceStepsView").  
+The histogram steps have a "mouse over" pop-up showing the step number, 
+and the data base size for tokens, variables, and constraints -- which are
+color coded.  The key values for tokens, constraints, variables, timelines, 
+and slots appear in the appropriate node labels of the partial plan views. 
 
 All partial plan view's  Mouse-Right pop-ups offer the user a second
 pop-up selection ("Open a View") of the other partial plan views, 

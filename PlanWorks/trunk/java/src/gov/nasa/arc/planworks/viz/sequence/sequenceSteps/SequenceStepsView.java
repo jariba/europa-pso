@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.8 2003-11-06 00:02:19 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.9 2003-11-07 00:05:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -79,6 +79,13 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class SequenceStepsView extends SequenceView {
 
+  protected static final String DB_TOKENS = "numTokens";
+  protected static final String DB_VARIABLES = "numVariables";
+  protected static final String DB_CONSTRAINTS = "numConstraints";
+  protected static final Color TOKENS_BG_COLOR = ColorMap.getColor( "seaGreen1");
+  protected static final Color VARIABLES_BG_COLOR = ColorMap.getColor( "skyBlue");
+  protected static final Color DB_CONSTRAINTS_BG_COLOR = ColorMap.getColor( "lightYellow");
+
   private PwPlanningSequence planSequence;
   private long startTimeMSecs;
   private ViewSet viewSet;
@@ -87,8 +94,7 @@ public class SequenceStepsView extends SequenceView {
   private Graphics graphics;
   private FontMetrics fontMetrics;
   private Font font;
-  private List tmpStepList; // of StepElement
-  private List stepList; // of StepElement
+  private float heightScaleFactor;
 
   /**
    * <code>SequenceStepsView</code> - constructor 
@@ -103,8 +109,6 @@ public class SequenceStepsView extends SequenceView {
     this.planSequence = (PwPlanningSequence) planSequence;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (SequenceViewSet) viewSet;
-    tmpStepList = new ArrayList();
-    stepList = null;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -157,6 +161,7 @@ public class SequenceStepsView extends SequenceView {
 
     document = jGoView.getDocument();
 
+    heightScaleFactor = computeHeightScaleFactor();
     renderHistogram();
 
     expandViewFrame( this.getClass().getName(),
@@ -225,28 +230,62 @@ public class SequenceStepsView extends SequenceView {
     return fontMetrics;
   }
 
+  
+  private float computeHeightScaleFactor() {
+    int maxDbSize = 0;
+    Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
+    while (sizeItr.hasNext()) {
+      int [] planDbSizes= (int[]) sizeItr.next();
+      int dbSize = planDbSizes[0] + planDbSizes[1] + planDbSizes[2];
+//       System.err.println( "dbSize " + dbSize + " " + planDbSizes[0] +
+//                           " " + planDbSizes[1] + " " + planDbSizes[2]);
+      if (dbSize > maxDbSize) {
+        maxDbSize = dbSize;
+      }
+    }
+//     System.err.println( "computeHeightScaleFactor: " +
+//                         ViewConstants.STEP_VIEW_Y_MAX / (float) maxDbSize +
+//                         " maxDbSize " + maxDbSize);
+    return ViewConstants.STEP_VIEW_Y_MAX / (float) maxDbSize;
+  } // end computeHeightScaleFactor
 
   private void renderHistogram() {
     // System.err.println( "stepCount " + planSequence.getStepCount());
     // System.err.println( "stepNumbers " + planSequence.getPartialPlanNamesList());
     
-    int x = ViewConstants.STEP_VIEW_X_INIT, y = ViewConstants.STEP_VIEW_Y_INIT;
-    Iterator stepItr = planSequence.getPartialPlanNamesList().iterator();
-    while (stepItr.hasNext()) {
-      String partialPlanName = (String) stepItr.next();
-      int planDBSize =
-        planSequence.getPlanDBSize( Utilities.getStepNumber( partialPlanName));
+    int x = ViewConstants.STEP_VIEW_X_INIT;
+    int stepNumber = 0;
+    Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
+    while (sizeItr.hasNext()) {
+      int y = ViewConstants.STEP_VIEW_Y_INIT;
+      String partialPlanName = "step".concat( String.valueOf( stepNumber));
+      int [] planDbSizes= (int[]) sizeItr.next();
 
-      StepElement stepElement = new StepElement( x, y, planDBSize, partialPlanName,
-                                                 planSequence, this);
+      int height = Math.max( 1, (int) (planDbSizes[0] * heightScaleFactor));
+      StepElement stepElement = new StepElement( x, y, height, DB_TOKENS,
+                                                 planDbSizes[0], TOKENS_BG_COLOR,
+                                                 partialPlanName, planSequence, this);
       document.addObjectAtTail( stepElement);
+      y += height;
+
+      height = Math.max( 1, (int) (planDbSizes[1] * heightScaleFactor));
+      stepElement = new StepElement( x, y, height, DB_VARIABLES,
+                                     planDbSizes[1], VARIABLES_BG_COLOR,
+                                     partialPlanName, planSequence, this);
+      document.addObjectAtTail( stepElement);
+      y += height;
+
+      height = Math.max( 1, (int) (planDbSizes[2] * heightScaleFactor));
+      stepElement = new StepElement( x, y, height, DB_CONSTRAINTS,
+                                     planDbSizes[2], DB_CONSTRAINTS_BG_COLOR,
+                                     partialPlanName, planSequence, this);
+      document.addObjectAtTail( stepElement);
+      y += height;
 
       // display step number for every 10th step
-      int stepNumber = Utilities.getStepNumber( partialPlanName);
       if ((stepNumber % 10) == 0) {
         JGoText textObject =
-          new JGoText( new Point( x, y + planDBSize /
-                                  ViewConstants.STEP_VIEW_DB_SIZE_SCALING + 4),
+          new JGoText( new Point( x, y + 4),
                        ViewConstants.TIMELINE_VIEW_FONT_SIZE,
                        String.valueOf( stepNumber),
                        ViewConstants.TIMELINE_VIEW_FONT_NAME,
@@ -264,9 +303,8 @@ public class SequenceStepsView extends SequenceView {
       }
 
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
-      tmpStepList.add( stepElement);
+      stepNumber++;
     }
-    stepList = tmpStepList;
   } // end renderHistogram
 
 
