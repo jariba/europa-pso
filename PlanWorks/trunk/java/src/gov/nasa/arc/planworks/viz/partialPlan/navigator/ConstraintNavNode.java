@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.11 2004-08-05 00:24:26 taylor Exp $
+// $Id: ConstraintNavNode.java,v 1.12 2004-08-14 01:39:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -324,7 +324,7 @@ public class ConstraintNavNode extends ExtendedBasicNode
     return false;
   } // end doMouseClick   
 
-  private boolean addConstraintObjects( final ConstraintNavNode constraintNavNode) {
+  protected boolean addConstraintObjects( final ConstraintNavNode constraintNavNode) {
     boolean areNodesChanged =
       NavNodeGenerics.addEntityNavNodes( constraintNavNode, navigatorView, isDebug);
     boolean areLinksChanged = false;

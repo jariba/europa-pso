@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.37 2004-08-05 00:24:32 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.38 2004-08-14 01:39:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -68,6 +68,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.util.StepButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -132,6 +133,8 @@ public class SequenceStepsView extends SequenceView {
   private List statusIndicatorList;
   private List stepNumberList;
   private int numOperations;
+  private ProgressMonitorThread initPMThread;
+  private ProgressMonitorThread redrawPMThread;
 
   /**
    * variable <code>selectedStepElement</code>
@@ -263,9 +266,10 @@ public class SequenceStepsView extends SequenceView {
     document = jGoView.getDocument();
 
     numOperations = planSequence.getPlanDBSizeList().size() * 2;
-    progressMonitorThread( "Rendering Sequence Steps View ...", 0, numOperations,
-                           Thread.currentThread(), this);
-    if (! progressMonitorWait( this)) {
+    initPMThread =
+      progressMonitorThread( "Rendering Sequence Steps View ...", 0, numOperations,
+			     Thread.currentThread(), this);
+    if (! progressMonitorWait( initPMThread, this)) {
       closeView( this);
       return;
     }
@@ -277,15 +281,15 @@ public class SequenceStepsView extends SequenceView {
       if (heightScaleFactor == -1.0f) {
         ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
         closeView( this);
-        isProgressMonitorCancel = true;
+	initPMThread.setProgressMonitorCancel();
         return;
       }
 
-      boolean isValid = renderHistogram();
+      boolean isValid = renderHistogram( initPMThread);
       if (! isValid) {
         ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
         closeView( this);
-        isProgressMonitorCancel = true;
+	initPMThread.setProgressMonitorCancel();
         return;
       }
 
@@ -301,7 +305,7 @@ public class SequenceStepsView extends SequenceView {
       ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
     }
     startTimeMSecs = 0L;
-    isProgressMonitorCancel = true;
+    initPMThread.setProgressMonitorCancel();
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
@@ -346,18 +350,19 @@ public class SequenceStepsView extends SequenceView {
       statusIndicatorList.clear();
     
       numOperations = planSequence.getPlanDBSizeList().size();
-      progressMonitorThread( "Redrawing Sequence Steps View ...", 0, numOperations,
-                             Thread.currentThread(), this);
+      redrawPMThread =
+	progressMonitorThread( "Redrawing Sequence Steps View ...", 0, numOperations,
+			       Thread.currentThread(), this);
       numOperations = 0;
-      if (! progressMonitorWait( this)) {
+      if (! progressMonitorWait( redrawPMThread, this)) {
         closeView( this);
         return;
       }
-      boolean isValid = renderHistogram();
+      boolean isValid = renderHistogram( redrawPMThread);
       if (! isValid) {
        ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
        closeView( this);
-       isProgressMonitorCancel = true;
+       redrawPMThread.setProgressMonitorCancel();
        return;
       }
 
@@ -372,7 +377,7 @@ public class SequenceStepsView extends SequenceView {
     System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     startTimeMSecs = 0L;
-    isProgressMonitorCancel = true;
+    redrawPMThread.setProgressMonitorCancel();
     handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
   } // end redrawView
 
@@ -440,7 +445,7 @@ public class SequenceStepsView extends SequenceView {
     selectedStepElement = element;
   }
 
-  // calso alled by createRefreshItem with no progressMonitor
+  // also called by createRefreshItem with no progressMonitor
   private float computeHeightScaleFactor() {
     int maxDbSize = 0;
     Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
@@ -452,15 +457,16 @@ public class SequenceStepsView extends SequenceView {
       if (dbSize > maxDbSize) {
         maxDbSize = dbSize;
       }
-      if ((progressMonitor != null) && progressMonitor.isCanceled()) {
+      if ((initPMThread != null) && initPMThread.getProgressMonitor().isCanceled()) {
         String msg = "User Canceled Sequence Steps View Rendering";
         System.err.println( msg);
-        isProgressMonitorCancel = true;
+	initPMThread.setProgressMonitorCancel();
         return -1.0f;
       }
-      if (progressMonitor != null) {
+      if (initPMThread != null) {
         numOperations++;
-        progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+        initPMThread.getProgressMonitor().setProgress
+	  ( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
       }
     }
 //     System.err.println( "computeHeightScaleFactor: " +
@@ -469,7 +475,7 @@ public class SequenceStepsView extends SequenceView {
     return ViewConstants.STEP_VIEW_Y_MAX / (float) maxDbSize;
   } // end computeHeightScaleFactor
 
-  private boolean renderHistogram() {
+  private boolean renderHistogram( ProgressMonitorThread pmThread) {
     // System.err.println( "stepNumbers " + planSequence.getPartialPlanNamesList());
     int x = ViewConstants.STEP_VIEW_X_INIT;
     Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
@@ -518,17 +524,9 @@ public class SequenceStepsView extends SequenceView {
         y += height;
 
         stepElementList.add( elementList);
-        // display step number for every 10th step
-//         if ((stepNumber % 10) == 0) {
-//           JGoText textObject = new JGoText( new Point( x, y + 4), String.valueOf( stepNumber));
-//           textObject.setResizable( false);
-//           textObject.setEditable( false);
-//           textObject.setDraggable( false);
-//           textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
-//           document.addObjectAtTail( textObject);
-//        }
         stepRepresentedList.add( partialPlanName);
       }
+      // display step number for every 10th step
       if ((stepNumber % 10) == 0) {
         JGoText textObject = new JGoText( new Point( x, y + 4), String.valueOf( stepNumber));
         textObject.setResizable( false);
@@ -539,15 +537,16 @@ public class SequenceStepsView extends SequenceView {
         document.addObjectAtTail( textObject);
       }
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
-      if (progressMonitor.isCanceled()) {
+      if (pmThread.getProgressMonitor().isCanceled()) {
         String msg = "User Canceled Sequence Steps View Rendering";
         System.err.println( msg);
-        isProgressMonitorCancel = true;
+	pmThread.setProgressMonitorCancel();
         return false;
       }
       stepNumber++;
       numOperations++;
-      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      pmThread.getProgressMonitor().setProgress
+	( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
     return true;
   } // end renderHistogram

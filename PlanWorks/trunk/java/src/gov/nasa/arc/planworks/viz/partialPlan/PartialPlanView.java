@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.51 2004-08-10 21:17:09 taylor Exp $
+// $Id: PartialPlanView.java,v 1.52 2004-08-14 01:39:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -132,6 +132,9 @@ public class PartialPlanView extends VizView {
 
   public void setState(PartialPlanViewState state) {
     if(state == null) {
+      return;
+    }
+    if ((state.getContentSpec() == null) || (viewSet.getContentSpecWindow() == null)) {
       return;
     }
     partialPlan.setContentSpec(state.getContentSpec());
@@ -402,15 +405,31 @@ public class PartialPlanView extends VizView {
       int currStepNumber = getPartialPlan().getStepNumber();
       PwPartialPlan nextStep = null;
       try {
+	PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getCurrentProject().
+	  getPlanningSequence(getPartialPlan().getSequenceUrl());
+	int newStepNumber = (dir == 1) ? (currStepNumber + 1) : (currStepNumber - 1);
+	String newPlanName = "step" + newStepNumber;
+	if (((! pView.getViewName().equals( ViewConstants.DB_TRANSACTION_VIEW)) &&
+	     planSequence.doesPartialPlanExist( newPlanName)) ||
+	    (pView.getViewName().equals( ViewConstants.DB_TRANSACTION_VIEW) &&
+	     (planSequence.hasLoadedTransactionFile( newPlanName) ||
+	      planSequence.isTransactionFileOnDisk()))) {
+	  // ok
+	} else {
+	  String viewTitle = pView.getName();
+	  int indx = viewTitle.indexOf( "/");
+	  JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(),
+					 viewTitle.substring( 0, indx) + "/" + newPlanName,
+					 "No View Available", 
+					 JOptionPane.ERROR_MESSAGE);
+	  return;
+	}
+
         if(dir == 1) {
-          nextStep = PlanWorks.getPlanWorks().getCurrentProject().
-            getPlanningSequence(getPartialPlan().getSequenceUrl()).
-            getNextPartialPlan(currStepNumber);
+          nextStep = planSequence.getNextPartialPlan(currStepNumber);
         }
         else if(dir == -1) {
-          nextStep = PlanWorks.getPlanWorks().getCurrentProject().
-            getPlanningSequence(getPartialPlan().getSequenceUrl()).
-            getPrevPartialPlan(currStepNumber);
+          nextStep = planSequence.getPrevPartialPlan(currStepNumber);
         }
       }
       catch(IndexOutOfBoundsException ibe) {
@@ -444,10 +463,12 @@ public class PartialPlanView extends VizView {
         nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" +
                          (currStepNumber + dir));
       }
-      // pass ContentSpec window location to next view frame
-      Point specWindowLocation = new Point( viewSet.getContentSpecWindow().getLocation());
       PartialPlanViewState partialPlanViewState = PartialPlanView.this.getState();
-      partialPlanViewState.setContentSpecWindowLocation( specWindowLocation);
+      if (viewSet.getContentSpecWindow() != null) {
+	// pass ContentSpec window location to next view frame
+	Point specWindowLocation = new Point( viewSet.getContentSpecWindow().getLocation());
+	partialPlanViewState.setContentSpecWindowLocation( specWindowLocation);
+      }
       PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), 
                                                           pView.getViewName());
       MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),

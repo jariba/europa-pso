@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.23 2004-08-07 01:18:28 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.24 2004-08-14 01:39:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -55,6 +55,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 import gov.nasa.arc.planworks.viz.partialPlan.TimeScaleView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -71,6 +72,7 @@ public class ResourceTransactionView extends ResourceView  {
   private static final int SLEEP_FOR_50MS = 50;
 
   private List resourceTransactionSetList; // element ResourceTransactionSet
+  private ProgressMonitorThread progressMonThread;
 
   /**
    * <code>ResourceTransactionView</code> - constructor 
@@ -282,9 +284,10 @@ public class ResourceTransactionView extends ResourceView  {
     boolean isNamesOnly = false;
     currentYLoc = 0;
     List resourceList = partialPlan.getResourceList(); //createDummyData( isNamesOnly);
-    progressMonitorThread( "Rendering Resource Transaction View ...", 0, resourceList.size(),
-                           Thread.currentThread(), this);
-    if (! progressMonitorWait( this)) {
+    progressMonThread =
+      progressMonitorThread( "Rendering Resource Transaction View ...", 0, resourceList.size(),
+			     Thread.currentThread(), this);
+    if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);
       return;
     }
@@ -299,17 +302,18 @@ public class ResourceTransactionView extends ResourceView  {
       // System.err.println( "resourceTransactionSet " + resourceTransactionSet);
       this.getJGoExtentDocument().addObjectAtTail( resourceTransactionSet);
       resourceTransactionSetList.add( resourceTransactionSet);
-      if (progressMonitor.isCanceled()) {
+      if (progressMonThread.getProgressMonitor().isCanceled()) {
         String msg = "User Canceled Resource Transaction View Rendering";
         System.err.println( msg);
-        isProgressMonitorCancel = true;
+	progressMonThread.setProgressMonitorCancel();
         closeView( this);
         return;
       }
       numResources++;
-      progressMonitor.setProgress( numResources * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      progressMonThread.getProgressMonitor().setProgress( numResources *
+							  ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-    isProgressMonitorCancel = true;
+    progressMonThread.setProgressMonitorCancel();
   } // end createResourceTransactionSets
 
 

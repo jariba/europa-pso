@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.13 2004-08-05 00:24:29 taylor Exp $
+// $Id: VariableNavNode.java,v 1.14 2004-08-14 01:39:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -332,7 +332,13 @@ public class VariableNavNode extends ExtendedBasicNode
     return false;
   } // end doMouseClick   
 
-  private boolean addVariableObjects( final VariableNavNode variableNavNode) {
+  /**
+   * <code>addVariableObjects</code>
+   *
+   * @param variableNavNode - <code>VariableNavNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean addVariableObjects( final VariableNavNode variableNavNode) {
     boolean areNodesChanged =
       NavNodeGenerics.addEntityNavNodes( variableNavNode, navigatorView, isDebug);
     boolean areLinksChanged = false;

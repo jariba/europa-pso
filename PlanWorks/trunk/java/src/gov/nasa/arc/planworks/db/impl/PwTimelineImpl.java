@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.23 2004-03-23 18:20:50 miatauro Exp $
+// $Id: PwTimelineImpl.java,v 1.24 2004-08-14 01:39:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,11 +14,19 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.PwEntity;
+import gov.nasa.arc.planworks.db.PwResourceTransaction;
+import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
+import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.db.PwVariableContainer;
 
 
 /**
@@ -163,4 +171,45 @@ public class PwTimelineImpl extends PwObjectImpl implements PwTimeline {
     retval.append("\n");
     return retval.toString();
   }
+
+  public List getNeighbors() {
+    List classes = new LinkedList();
+    classes.add(PwTimeline.class);
+    classes.add(PwVariable.class);
+    classes.add(PwSlot.class);
+    return getNeighbors(classes);
+  }
+
+  public List getNeighbors(List classes) {
+    List retval = new LinkedList();
+    for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
+      Class cclass = (Class) classIt.next();
+      if(cclass.equals(PwSlot.class)) {
+        retval.addAll(getSlotList());
+      } else if(cclass.equals(PwVariable.class)) {
+        retval.addAll(((PwVariableContainer) this).getVariables());
+      } else if(cclass.equals(PwTimeline.class)) {
+	if (getParent() != null) {
+	  retval.add(getParent());
+	}
+        retval.addAll(getComponentList());
+      }
+    }
+//     Iterator retvalItr = retval.iterator();
+//     while (retvalItr.hasNext()) {
+//       PwEntity entity = (PwEntity) retvalItr.next();
+//       if (entity == null) {
+// 	System.err.println( "null");
+//       } else {
+// 	System.err.println( "PwTimelineImpl.getNeighbors " + entity.getClass().getName());
+//       }
+//     }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, Set ids) {
+    return PwEntityImpl.getNeighbors(this, classes, ids);
+  }
+
+
 } // end class PwTimelineImpl

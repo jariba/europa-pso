@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.18 2004-07-27 21:58:03 taylor Exp $
+// $Id: CreateViewThread.java,v 1.19 2004-08-14 01:39:08 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -155,7 +155,7 @@ public class CreateViewThread extends ThreadWithProgressMonitor {
     // make associated menus appear & bring window to the front
     try {
       // in case content spec existed and was iconified
-      if (viewSet.getContentSpecWindow().isIcon()) {
+      if ((viewSet.getContentSpecWindow() != null) && viewSet.getContentSpecWindow().isIcon()) {
         viewSet.getContentSpecWindow().setIcon( false);
       }
       // in case view existed and was iconified

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.10 2004-07-27 21:58:10 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.11 2004-08-14 01:39:13 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -22,10 +22,12 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.CreateViewThread;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.SwingWorker;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
 
 
@@ -97,10 +99,18 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
       try {
         PwPlanningSequence planSequence =
           PlanWorks.getPlanWorks().getCurrentProject().getPlanningSequence( seqUrl);
-        
-        PwPartialPlan partialPlan = planSequence.getPartialPlan( partialPlanName);
+	PwPartialPlan partialPlan = null;
+	if (viewName.equals( ViewConstants.DB_TRANSACTION_VIEW) &&
+	    (! planSequence.doesPartialPlanExist( partialPlanName))) {
+	  // create dummy partial plan for DBTransactionView
+	  partialPlan = new PwPartialPlanImpl( partialPlanName, planSequence);
+	} else {
+	  partialPlan = planSequence.getPartialPlan( partialPlanName);
+	}
+
         renderView( sequenceName + System.getProperty( "file.separator") + partialPlanName,
                     partialPlan, viewListener);
+
       } catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog

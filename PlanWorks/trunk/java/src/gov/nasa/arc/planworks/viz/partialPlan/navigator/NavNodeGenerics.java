@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.9 2004-08-05 00:24:27 taylor Exp $
+// $Id: NavNodeGenerics.java,v 1.10 2004-08-14 01:39:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -81,15 +81,19 @@ public final class NavNodeGenerics {
     Iterator parentEntityItr = navNode.getParentEntityList().iterator();
     while (parentEntityItr.hasNext()) {
       PwEntity parentEntity = (PwEntity) parentEntityItr.next();
+      if (navigatorView.entityNavNodeMap.get( parentEntity.getId()) == null) {
+	  areNodesChanged = true;
+      }
       navigatorView.addEntityNavNode( parentEntity, isDebugPrint);
-      areNodesChanged = true;
     }
     Iterator childEntityItr = navNode.getComponentEntityList().iterator();
     while (childEntityItr.hasNext()) {
       PwEntity childEntity = (PwEntity) childEntityItr.next();
       // System.err.println( "addEntityNavNodes childEntity " + childEntity);
+      if (navigatorView.entityNavNodeMap.get( childEntity.getId()) == null) {
+	areNodesChanged = true;
+      }
       navigatorView.addEntityNavNode( childEntity, isDebugPrint);
-      areNodesChanged = true;
     }
     return areNodesChanged;
   } // end addEntityNavNodes

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.10 2004-08-05 00:24:28 taylor Exp $
+// $Id: TimelineNavNode.java,v 1.11 2004-08-14 01:39:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -264,7 +264,13 @@ public class TimelineNavNode extends TimelineNode implements IncrementalNode, Ov
     return false;
   } // end doMouseClick   
 
-  private boolean addTimelineObjects( final TimelineNavNode timelineNavNode) {
+  /**
+   * <code>addTimelineObjects</code>
+   *
+   * @param timelineNavNode - <code>TimelineNavNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean addTimelineObjects( final TimelineNavNode timelineNavNode) {
     boolean areNodesChanged =
       NavNodeGenerics.addEntityNavNodes( timelineNavNode, navigatorView, isDebugPrint);
     boolean areLinksChanged = false;

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.23 2004-07-27 21:58:09 taylor Exp $
+// $Id: ViewGenerics.java,v 1.24 2004-08-14 01:39:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -119,25 +119,33 @@ public class ViewGenerics {
     mouseRightPopup.add( header);
     mouseRightPopup.addSeparator();
 
-    ((PartialPlanViewMenu) mouseRightPopup).
+    int numItemsAdded = ((PartialPlanViewMenu) mouseRightPopup).
       buildPartialPlanViewMenu( partialPlanName, planSequence, viewListenerList);
-    PwPartialPlan partialPlanIfLoaded = null;
-    try {
-      partialPlanIfLoaded = planSequence.getPartialPlanIfLoaded( partialPlanName);
-    } catch (ResourceNotFoundException rnfExcep) {
-      int index = rnfExcep.getMessage().indexOf( ":");
-      JOptionPane.showMessageDialog
-        (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
-         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-      System.err.println( rnfExcep);
-      // rnfExcep.printStackTrace();
-      return;
+    if (numItemsAdded > 0) {
+      PwPartialPlan partialPlanIfLoaded = null;
+      try {
+	partialPlanIfLoaded = planSequence.getPartialPlanIfLoaded( partialPlanName);
+      } catch (ResourceNotFoundException rnfExcep) {
+	int index = rnfExcep.getMessage().indexOf( ":");
+	JOptionPane.showMessageDialog
+	  (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
+	   "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+	System.err.println( rnfExcep);
+	// rnfExcep.printStackTrace();
+	return;
+      }
+      if (numItemsAdded == PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()) {
+	vizView.createAllViewItems( partialPlanIfLoaded, partialPlanName, planSequence,
+				    viewListenerList, mouseRightPopup);
+      }
+
+      ViewGenerics.showPopupMenu( mouseRightPopup, vizView, viewCoords);
+    } else {
+      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), "Sequence " +
+				     planSequence.getName() + "/" + partialPlanName,
+				     "No Views Available", 
+				     JOptionPane.ERROR_MESSAGE);
     }
-    vizView.createAllViewItems( partialPlanIfLoaded, partialPlanName, planSequence,
-                                viewListenerList, mouseRightPopup);
-
-    ViewGenerics.showPopupMenu( mouseRightPopup, vizView, viewCoords);
-
   } // end partialPlanViewsPopupMenu
 
   /**

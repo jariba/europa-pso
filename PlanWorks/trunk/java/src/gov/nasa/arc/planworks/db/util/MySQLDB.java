@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.117 2004-08-10 22:41:26 miatauro Exp $
+// $Id: MySQLDB.java,v 1.118 2004-08-14 01:39:12 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1905,7 +1905,40 @@ public class MySQLDB {
     }
     return retval;
   }
-}
+
+  synchronized public static boolean transactionsInDatabaseForStep(Long partialPlanId) {
+    boolean retval = false;
+    try {
+      ResultSet count = queryDatabase("SELECT COUNT(*) AS number FROM Transaction WHERE PartialPlanId=".concat(partialPlanId.toString()));
+      count.last();
+      retval = count.getInt("number") != 0;
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
+
+  synchronized public static int maxStepForTransactionsInDb(Long seqId) {
+    int retval = -1;
+    try {
+      ResultSet partialPlanIds = queryDatabase("SELECT DISTINCT PartialPlanId FROM Transaction WHERE SequenceId=".concat(seqId.toString()).concat( " ORDER BY PartialPlanId"));
+      boolean rowsExist = partialPlanIds.last();
+      if (rowsExist) {
+	Long maxPartialPlanId = new Long(partialPlanIds.getLong("PartialPlanId"));
+	String maxPartialPlanName = getPartialPlanNameById( seqId, maxPartialPlanId);
+	retval = Integer.parseInt( maxPartialPlanName.substring( 4));
+      }
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
+
+
+} // end class MYSQLDB
+
 
 class EntityIdComparator implements Comparator {
   public EntityIdComparator() {

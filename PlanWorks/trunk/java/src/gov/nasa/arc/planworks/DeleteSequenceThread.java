@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteSequenceThread.java,v 1.10 2004-07-29 20:31:43 taylor Exp $
+// $Id: DeleteSequenceThread.java,v 1.11 2004-08-14 01:39:08 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -129,7 +129,8 @@ public class DeleteSequenceThread extends ThreadWithProgressMonitor {
                 }
               }
               if (sequenceMenu.getItemCount() == 0) {
-                dynamicMenuBar.remove(sequenceMenu);
+		dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
+                // dynamicMenuBar.remove(sequenceMenu);
                 PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
               }
               long stopTimeMSecs = System.currentTimeMillis();

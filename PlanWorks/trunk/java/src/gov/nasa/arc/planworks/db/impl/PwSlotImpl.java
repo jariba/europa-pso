@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.30 2004-08-06 00:53:26 miatauro Exp $
+// $Id: PwSlotImpl.java,v 1.31 2004-08-14 01:39:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,13 +14,16 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwSlot;
+import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 
 
@@ -155,7 +158,35 @@ public class PwSlotImpl implements PwSlot {
     return null;
   }
 
-  public List getNeighbors(){return null;}
-  public List getNeighbors(List classes){return null;}
-  public List getNeighbors(List classes, Set ids){return null;}
+//   public List getNeighbors(){return null;}
+//   public List getNeighbors(List classes){return null;}
+//   public List getNeighbors(List classes, Set ids){return null;}
+
+
+  public List getNeighbors() {
+    List classes = new LinkedList();
+    classes.add(PwTimeline.class);
+    classes.add(PwToken.class);
+    return getNeighbors(classes);
+  }
+
+  public List getNeighbors(List classes) {
+    List retval = new LinkedList();
+    for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
+      Class cclass = (Class) classIt.next();
+      if(cclass.equals(PwToken.class)) {
+        retval.addAll( getTokenList());
+      } else if (cclass.equals(PwTimeline.class)) {
+	retval.add( partialPlan.getTimeline( timelineId));
+      }
+    }
+    return retval;
+  }
+
+  public List getNeighbors(List classes, Set ids) {
+    return PwEntityImpl.getNeighbors(this, classes, ids);
+  }
+
+
+
 } // end class PwSlotImpl

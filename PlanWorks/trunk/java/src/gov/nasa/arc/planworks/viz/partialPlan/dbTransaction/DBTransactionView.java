@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.15 2004-08-10 21:17:10 taylor Exp $
+// $Id: DBTransactionView.java,v 1.16 2004-08-14 01:39:15 taylor Exp $
 //
 // PlanWorks
 //
@@ -47,6 +47,7 @@ import gov.nasa.arc.planworks.viz.util.DBTransactionComparatorAscending;
 import gov.nasa.arc.planworks.viz.util.DBTransactionTable;
 import gov.nasa.arc.planworks.viz.util.DBTransactionTableModel;
 import gov.nasa.arc.planworks.viz.util.FixedHeightPanel;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.util.TableSorter;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -74,6 +75,7 @@ public class DBTransactionView extends PartialPlanView {
   private FixedHeightPanel stepsPanel;
   private boolean isStepButtonView;
   private DBTransactionHeaderView headerJGoView;
+  private ProgressMonitorThread progressMonThread;
 
   /**
    * <code>DBTransactionView</code> - constructor 
@@ -177,7 +179,7 @@ public class DBTransactionView extends PartialPlanView {
    */
   public final void init() {
     handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
-    // wait for TimelineView instance to become displayable
+    // wait for DBTransactionView instance to become displayable
     if (! ViewGenerics.displayableWait( DBTransactionView.this)) {
       closeView( this);
       return;
@@ -185,14 +187,15 @@ public class DBTransactionView extends PartialPlanView {
     this.computeFontMetrics( this);
 
     int numOperations = 6;
-    progressMonitorThread( "Rendering DB Transaction View:", 0, numOperations,
-                           Thread.currentThread(), this);
-    if (! progressMonitorWait( this)) {
+    progressMonThread = 
+      progressMonitorThread( "Rendering DB Transaction View:", 0, numOperations,
+			     Thread.currentThread(), this);
+    if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);
       return;
     }
-    progressMonitor.setNote( "Get Transactions ...");
-    progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+    progressMonThread.getProgressMonitor().setNote( "Get Transactions ...");
+    progressMonThread.getProgressMonitor().setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
  
     planSequence = PlanWorks.getPlanWorks().getPlanSequence( this.partialPlan);
     dbTransactionList = planSequence.getTransactionsList( this.partialPlan.getId());
@@ -201,10 +204,11 @@ public class DBTransactionView extends PartialPlanView {
                       ( ViewConstants.DB_TRANSACTION_KEY_HEADER));
     stepNumber = this.partialPlan.getStepNumber();
 
-    progressMonitor.setNote( "Create Table ...");
-    progressMonitor.setMaximum( dbTransactionList.size());
+    progressMonThread.getProgressMonitor().setNote( "Create Table ...");
+    progressMonThread.getProgressMonitor().setMaximum( dbTransactionList.size());
     numOperations = 4;
-    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+    progressMonThread.getProgressMonitor().setProgress
+      ( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     String query = null;
     headerJGoView = new DBTransactionHeaderView( query);
     headerJGoView.validate();
@@ -237,15 +241,16 @@ public class DBTransactionView extends PartialPlanView {
       data[row][4] = transaction.getInfo()[0];
       data[row][5] = transaction.getInfo()[1];
       data[row][6] = transaction.getInfo()[2];
-      if (progressMonitor.isCanceled()) {
+      if (progressMonThread.getProgressMonitor().isCanceled()) {
         String msg = "User Canceled DB Transaction View Rendering";
         System.err.println( msg);
-        isProgressMonitorCancel = true;
+	progressMonThread.setProgressMonitorCancel();
         closeView( this);
         return;
       }
       numOperations++;
-      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      progressMonThread.getProgressMonitor().setProgress( numOperations *
+							  ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
     objectKeyColumnIndx = 3;
     int stepNumberColumnIndx = -1;
@@ -307,7 +312,7 @@ public class DBTransactionView extends PartialPlanView {
                         (stopTimeMSecs -
                          PlanWorks.getPlanWorks().getViewRenderingStartTime
                          ( ViewConstants.DB_TRANSACTION_VIEW)) + " msecs.");
-    isProgressMonitorCancel = true;
+    progressMonThread.setProgressMonitorCancel();
     handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 

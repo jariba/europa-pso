@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.24 2004-08-07 01:18:28 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.25 2004-08-14 01:39:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -53,6 +53,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
+import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -67,6 +68,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 public class ResourceProfileView extends ResourceView  {
 
   private List resourceProfileList; // element ResourceProfile
+  private ProgressMonitorThread progressMonThread;
 
   /**
    * <code>ResourceProfileView</code> - constructor 
@@ -207,9 +209,10 @@ public class ResourceProfileView extends ResourceView  {
     boolean isNamesOnly = false;
     currentYLoc = 0;
     List resourceList = partialPlan.getResourceList();
-    progressMonitorThread( "Rendering Resource Profile View ...", 0, resourceList.size(),
-                           Thread.currentThread(), this);
-    if (! progressMonitorWait( this)) {
+    progressMonThread =
+      progressMonitorThread( "Rendering Resource Profile View ...", 0, resourceList.size(),
+			     Thread.currentThread(), this);
+    if (! progressMonitorWait( progressMonThread, this)) {
       closeView( this);
       return;
     }
@@ -224,17 +227,18 @@ public class ResourceProfileView extends ResourceView  {
       // System.err.println( "resourceProfile " + resourceProfile);
       this.getJGoExtentDocument().addObjectAtTail( resourceProfile);
       resourceProfileList.add( resourceProfile);
-      if (progressMonitor.isCanceled()) {
+      if (progressMonThread.getProgressMonitor().isCanceled()) {
         String msg = "User Canceled Resource Profile View Rendering";
         System.err.println( msg);
-        isProgressMonitorCancel = true;
+	progressMonThread.setProgressMonitorCancel();
         closeView( this);
         return;
       }
       numResources++;
-      progressMonitor.setProgress( numResources * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      progressMonThread.getProgressMonitor().setProgress( numResources *
+							  ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
-    isProgressMonitorCancel = true;
+    progressMonThread.setProgressMonitorCancel();
   } // end createResourceProfiles
 
   /**

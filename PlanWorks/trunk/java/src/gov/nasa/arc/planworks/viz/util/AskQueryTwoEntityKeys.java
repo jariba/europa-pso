@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskQueryTwoEntityKeys.java,v 1.2 2004-08-10 21:17:13 taylor Exp $
+// $Id: AskQueryTwoEntityKeys.java,v 1.3 2004-08-14 01:39:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -220,6 +220,10 @@ public class AskQueryTwoEntityKeys extends JDialog {
       return (partialPlan.getVariable( entityKey) != null);
     } else if (keyType.equals( "token")) {
       return (partialPlan.getToken( entityKey) != null);
+      // NavigatorView does not render resource transactions
+    } else if (keyType.equals( "entity")) {
+      return ((partialPlan.getEntity( entityKey) != null) &&
+	      (partialPlan.getResourceTransaction( entityKey) == null));
     } else {
       System.err.println( "AskQueryTwoEntityKeys.isValidEntityKey: keyType " + keyType +
 			  " not handled");

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.33 2004-07-30 19:12:25 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.34 2004-08-14 01:39:21 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -389,6 +389,24 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     private void queryAndRenderView( ActionEvent ae) {
       String stepsQuery = "", transactionsQuery = "";
       if (ae.getActionCommand().equals( APPLY_QUERY_BUTTON)) {
+	PwPlanningSequence planSequence = (PwPlanningSequence) queryWindow.viewable;
+	if (! planSequence.isTransactionFileOnDisk()) {
+	  int maxStepNumber = planSequence.getPlanDBSizeList().size() - 1;
+	  int maxTransStepNumber = MySQLDB.maxStepForTransactionsInDb( planSequence.getId());
+	  if (maxTransStepNumber == -1) {
+	    JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), "Sequence " +
+					   planSequence.getName(),
+					   "No Transactions Available", 
+					   JOptionPane.ERROR_MESSAGE);
+	    return;
+	  } else if (maxTransStepNumber < maxStepNumber) {
+	    JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), "Sequence " +
+					   planSequence.getName() + ": step0 - step" +
+					   maxTransStepNumber + " (of " + maxStepNumber + ")",
+					   "Limited Transactions Available", 
+					   JOptionPane.ERROR_MESSAGE);
+	  }
+	}
         long startTimeMSecs = System.currentTimeMillis();
         System.err.println( "Querying and Rendering Sequence Query View ...");
         progressMonitorThread( "Querying/Rendering Sequence Query View ...", 0, 6,
@@ -409,17 +427,13 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
             } else if (stepsQuery.equals( STEPS_WHERE_VARIABLE_TRANSACTED)) {
               stepList = getStepsWhereVariableTransacted();
             } else if (stepsQuery.equals( STEPS_WITH_NON_UNIT_VARIABLE_DECISIONS)) {
-              stepList = ((PwPlanningSequence) queryWindow.viewable).
-                getStepsWithNonUnitVariableBindingDecisions();
+              stepList = planSequence.getStepsWithNonUnitVariableBindingDecisions();
             } else if (stepsQuery.equals( STEPS_WITH_RELAXATIONS)) {
-              stepList = ((PwPlanningSequence) queryWindow.viewable).
-                getStepsWithRelaxations();
+              stepList = planSequence.getStepsWithRelaxations();
             } else if (stepsQuery.equals( STEPS_WITH_RESTRICTIONS)) {
-              stepList = ((PwPlanningSequence) queryWindow.viewable).
-                getStepsWithRestrictions();
+              stepList = planSequence.getStepsWithRestrictions();
             } else if (stepsQuery.equals( STEPS_WITH_UNIT_VARIABLE_DECISIONS)) {
-              stepList = ((PwPlanningSequence) queryWindow.viewable).
-                getStepsWithUnitVariableBindingDecisions();
+              stepList = planSequence.getStepsWithUnitVariableBindingDecisions();
             }
             if (stepList != null) {
               System.err.println( "   Query elapsed time: " +

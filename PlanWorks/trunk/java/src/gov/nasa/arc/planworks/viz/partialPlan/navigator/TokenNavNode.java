@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.14 2004-08-05 00:24:29 taylor Exp $
+// $Id: TokenNavNode.java,v 1.15 2004-08-14 01:39:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -306,7 +306,7 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
     }
-    tip.append( "<br> Mouse-L: ").append( operation);
+    tip.append( "<br>Mouse-L: ").append( operation);
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
@@ -365,7 +365,13 @@ public class TokenNavNode extends ExtendedBasicNode implements IncrementalNode, 
     return false;
   } // end doMouseClick   
 
-  private boolean addTokenObjects( final TokenNavNode tokenNavNode) {
+  /**
+   * <code>addTokenObjects</code>
+   *
+   * @param tokenNavNode - <code>TokenNavNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean addTokenObjects( final TokenNavNode tokenNavNode) {
     boolean areNodesChanged =
       NavNodeGenerics.addEntityNavNodes( tokenNavNode, navigatorView, isDebug);
     boolean areLinksChanged = false;
