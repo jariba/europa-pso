@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.48 2003-12-12 01:23:03 taylor Exp $
+# $Id: build-tags-file.csh,v 1.49 2003-12-20 01:54:47 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -38,9 +38,11 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/PwSlot.java \
     src/gov/nasa/arc/planworks/db/PwTimeline.java \
     src/gov/nasa/arc/planworks/db/PwToken.java \
+    src/gov/nasa/arc/planworks/db/PwTokenQuery.java \
     src/gov/nasa/arc/planworks/db/PwTokenRelation.java \
     src/gov/nasa/arc/planworks/db/PwTransaction.java \
     src/gov/nasa/arc/planworks/db/PwVariable.java \
+    src/gov/nasa/arc/planworks/db/PwVariableQuery.java \
     src/gov/nasa/arc/planworks/db/impl/PwConstraintImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwDomainImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwEnumeratedDomainImpl.java \
@@ -56,9 +58,11 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/impl/PwSlotImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTimelineImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTokenImpl.java \
+    src/gov/nasa/arc/planworks/db/impl/PwTokenQueryImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTokenRelationImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTransactionImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwVariableImpl.java \
+    src/gov/nasa/arc/planworks/db/impl/PwVariableQueryImpl.java \
     src/gov/nasa/arc/planworks/db/util/ContentSpec.java \
     src/gov/nasa/arc/planworks/db/util/FileUtils.java \
     src/gov/nasa/arc/planworks/db/util/MySQLDB.java \
@@ -98,11 +102,15 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/UniqueSet.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
-    src/gov/nasa/arc/planworks/viz/AskTransactionObjectKey.java \
+    src/gov/nasa/arc/planworks/viz/AskQueryObjectKey.java \
     src/gov/nasa/arc/planworks/viz/StepContentView.java \
     src/gov/nasa/arc/planworks/viz/StepHeaderView.java \
+    src/gov/nasa/arc/planworks/viz/TokenQueryContentView.java \
+    src/gov/nasa/arc/planworks/viz/TokenQueryHeaderView.java \
     src/gov/nasa/arc/planworks/viz/TransactionContentView.java \
     src/gov/nasa/arc/planworks/viz/TransactionHeaderView.java \
+    src/gov/nasa/arc/planworks/viz/VariableQueryContentView.java \
+    src/gov/nasa/arc/planworks/viz/VariableQueryHeaderView.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
     src/gov/nasa/arc/planworks/viz/ViewGenerics.java \
     src/gov/nasa/arc/planworks/viz/VizView.java \
@@ -111,10 +119,60 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/BasicNodeWDiamond.java \
     src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
-    src/gov/nasa/arc/planworks/viz/nodes/StepField.java \
+    src/gov/nasa/arc/planworks/viz/nodes/QueryResultField.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
-    src/gov/nasa/arc/planworks/viz/nodes/TransactionField.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TokenQueryHeaderNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TransactionHeaderNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/VariableQueryHeaderNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/AskNodeByKey.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenu.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenuItem.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodeLink.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTokenNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/NewConstraintNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/TokenBoundingBox.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableBoundingBox.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNodeDurationBridge.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNodeTimeMark.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/ThickDurationBridge.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/SlotNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenLink.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/transaction/TransactionView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ModelRulesLayout.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ModelRulesView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ParamNode.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/PredicateNode.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/RuleLink.java \
+    src/gov/nasa/arc/planworks/viz/sequence/modelRules/RuleNode.java \
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java \
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/StepQueryView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TokenQueryView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TransactionQueryView.java \
+    src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/VariableQueryView.java \
+    src/gov/nasa/arc/planworks/viz/util/SortStringComparator.java \
+    src/gov/nasa/arc/planworks/viz/util/TokenQueryComparatorAscending.java \
+    src/gov/nasa/arc/planworks/viz/util/TokenQueryComparatorDescending.java \
+    src/gov/nasa/arc/planworks/viz/util/VariableQueryComparatorAscending.java \
+    src/gov/nasa/arc/planworks/viz/util/VariableQueryComparatorDescending.java \
+    src/gov/nasa/arc/planworks/viz/util/TransactionComparatorAscending.java \
+    src/gov/nasa/arc/planworks/viz/util/TransactionComparatorDescending.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/RedrawNotifier.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewableObject.java \
@@ -139,50 +197,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TokenTypeBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/UniqueKeyBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/UniqueKeyGroupBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/sequence/SequenceQueryWindow.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/AskNodeByKey.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenu.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenuItem.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodeLink.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintJGoView.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTokenNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/NewConstraintNetworkLayout.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/TokenBoundingBox.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableBoundingBox.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentView.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNodeDurationBridge.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNodeTimeMark.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/SlotNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenLink.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/transaction/TransactionView.java \
-    src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
-    src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ModelRulesLayout.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ModelRulesView.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/ParamNode.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/PredicateNode.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/RuleLink.java \
-    src/gov/nasa/arc/planworks/viz/sequence/modelRules/RuleNode.java \
-    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java \
-    src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java \
-    src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/StepQueryView.java \
-    src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TransactionQueryView.java \
-    src/gov/nasa/arc/planworks/viz/util/SortStringComparator.java \
-    src/gov/nasa/arc/planworks/viz/util/TransactionComparatorAscending.java \
-    src/gov/nasa/arc/planworks/viz/util/TransactionComparatorDescending.java
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/sequence/SequenceQueryWindow.java
 
 
 echo "Writing `pwd`/planWorks.TAGS"

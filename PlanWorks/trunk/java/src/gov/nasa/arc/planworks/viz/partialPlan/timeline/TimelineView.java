@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.20 2003-12-19 18:55:37 miatauro Exp $
+// $Id: TimelineView.java,v 1.21 2003-12-20 01:54:51 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -636,7 +636,7 @@ public class TimelineView extends PartialPlanView {
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
     mouseRightPopup.add( overviewWindowItem);
 
-    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
+    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Filter");
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
     

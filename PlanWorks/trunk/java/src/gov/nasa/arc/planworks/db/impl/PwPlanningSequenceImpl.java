@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.65 2003-12-19 18:55:35 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.66 2003-12-20 01:54:48 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -556,6 +556,58 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   public List getStepsWithNonUnitVariableBindingDecisions() {
     return getTransactionsById(MySQLDB.queryStepsWithNonUnitVariableDecisions(this));
   }
+
+  /**
+   * <code>getFreeTokensAtStep</code>
+   *
+   * @param stepNum - <code>int</code> - 
+   * @return - <code>List</code> - 
+   */
+  public List getFreeTokensAtStep( int stepNum) {
+    boolean isFreeToken = true;
+    return getTokensById( MySQLDB.queryFreeTokensAtStep( stepNum, this), isFreeToken);
+  }
+
+  private List getTokensById( List listOfListOfIds, boolean isFreeToken) {
+    List returnList = new ArrayList();
+    Iterator listOfListItr = listOfListOfIds.iterator();
+    while (listOfListItr.hasNext()) {
+      List listOfIds = (List) listOfListItr.next();
+      returnList.add( new PwTokenQueryImpl( (Integer) listOfIds.get( 0), // tokenId
+                                            (String) listOfIds.get( 3), // predicateName
+                                            (Integer) listOfIds.get( 2), // stepNumber
+                                            id, // sequenceId
+                                            (Long) listOfIds.get( 1), // partialPlanId
+                                            isFreeToken));
+    }
+    return returnList;
+  } // end getTokensById
+
+  /**
+   * <code>getUnboundVariablesAtStep</code>
+   *
+   * @param stepNum - <code>int</code> - 
+   * @return - <code>List</code> - 
+   */
+  public List getUnboundVariablesAtStep( int stepNum) {
+    boolean isUnbound = true;
+    return getVariablesById( MySQLDB.queryUnboundVariablesAtStep( stepNum, this), isUnbound);
+  }
+
+  private List getVariablesById( List listOfListOfIds, boolean isUnbound) {
+    List returnList = new ArrayList();
+    Iterator listOfListItr = listOfListOfIds.iterator();
+    while (listOfListItr.hasNext()) {
+      List listOfIds = (List) listOfListItr.next();
+      returnList.add( new PwTokenQueryImpl( (Integer) listOfIds.get( 0), // variableId
+                                            (String) listOfIds.get( 3), // variableName
+                                            (Integer) listOfIds.get( 2), // stepNumber
+                                            id, // sequenceId
+                                            (Long) listOfIds.get( 1), // partialPlanId
+                                            isUnbound));
+    }
+    return returnList;
+  } // end getVariablesById
 
   public int [] getPlanDBSize(int stepNum) throws IndexOutOfBoundsException {
     if(stepNum < 0 || stepNum > stepCount) {

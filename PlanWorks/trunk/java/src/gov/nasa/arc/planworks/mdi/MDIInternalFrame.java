@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIInternalFrame.java,v 1.8 2003-12-19 18:55:36 miatauro Exp $
+// $Id: MDIInternalFrame.java,v 1.9 2003-12-20 01:54:48 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -66,7 +66,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
         }
       });
     button.setToolTipText("Window " + n);
-    windowBar.add(button);
+    // windowBar.add(button);
     menuBar.addWindow(this);
     addInternalFrameListener(new MDIInternalFrameListener(this, windowBar, menuBar));
   }
@@ -95,7 +95,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
         }
       });
     button.setToolTipText(title);
-    windowBar.add(button);
+    // windowBar.add(button);
     menuBar.addWindow(this);
     addInternalFrameListener(new MDIInternalFrameListener(this, windowBar, menuBar));
   }
@@ -126,7 +126,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
         }
       });
     button.setToolTipText(title);
-    windowBar.add(button);
+    // windowBar.add(button);
     menuBar.addWindow(this);
     addInternalFrameListener(new MDIInternalFrameListener(this, windowBar, menuBar));
  }
@@ -158,7 +158,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
         }
       });
     button.setToolTipText(title);
-    windowBar.add(button);
+    // windowBar.add(button);
     menuBar.addWindow(this);
     addInternalFrameListener(new MDIInternalFrameListener(this, windowBar,
                                                           menuBar));
@@ -192,7 +192,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
         }
       });
     button.setToolTipText(title);
-    windowBar.add(button);
+    // windowBar.add(button);
     menuBar.addWindow(this);
     addInternalFrameListener(new MDIInternalFrameListener(this, windowBar,
                                                           menuBar));
@@ -227,7 +227,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
         }
       });
     button.setToolTipText(title);
-    windowBar.add(button);
+    // windowBar.add(button);
     menuBar.addWindow(this);
     addInternalFrameListener(new MDIInternalFrameListener(this, windowBar, menuBar));
   }
@@ -263,7 +263,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
         }
       });
     button.setToolTipText(title);
-    windowBar.add(button);
+//     windowBar.add(button);
     menuBar.addWindow(this);
     addInternalFrameListener(new MDIInternalFrameListener(this, windowBar, menuBar, viewSet));
   }
@@ -405,7 +405,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
      */
     public void internalFrameClosed(InternalFrameEvent e){
       //System.err.println("frame closed");
-      windowBar.notifyDeleted(frame);
+      // windowBar.notifyDeleted(frame);
       menu.notifyDeleted(frame);
       if(viewSet != null) {
         viewSet.notifyDeleted(frame);

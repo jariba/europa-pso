@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskTransactionObjectKey.java,v 1.1 2003-10-28 18:01:24 taylor Exp $
+// $Id: AskQueryObjectKey.java,v 1.1 2003-12-20 01:54:49 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,26 +25,33 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+// PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoView;
+
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwTokenQuery;
+import gov.nasa.arc.planworks.db.PwVariableQuery;
 import gov.nasa.arc.planworks.db.PwTransaction;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
 /**
- * <code>AskTransactionObjectKey</code> - custom dialog to allow user to enter
- *           a value for a transaction object key, and check that it exists in 
- *           the list of transactions for the particular partial plan
+ * <code>AskQueryObjectKey</code> - custom dialog to allow user to enter
+ *           a value for a query results object key, and check that it exists in 
+ *           the list of all objects
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *           NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class AskTransactionObjectKey extends JDialog { 
+public class AskQueryObjectKey extends JDialog { 
 
-  private List transactionList;
+  private List objectList;
+  private JGoView headerView;
   private Integer objectKey;
-  private int transactionListIndex;
+  private int objectListIndex;
+  private String keyType;
 
   private String typedText = null;
   private JOptionPane optionPane;
@@ -52,18 +59,22 @@ public class AskTransactionObjectKey extends JDialog {
   private String btnString1;
   private String btnString2;
 
-  /**
-   * <code>AskTransactionObjectKey</code> - constructor 
-   *
-   * @param partialPlan - <code>PwPartialPlan</code> - 
-   */
-  public AskTransactionObjectKey( List transactionList, String dialogTitle,
-                                  String textFieldLabel) {
+  public AskQueryObjectKey( List objectList, String dialogTitle, String textFieldLabel,
+                            JGoView headerView) {
     // modal dialog - blocks other activity
     super( PlanWorks.planWorks, true);
-    this.transactionList = transactionList;
-    transactionListIndex = -1;
+    this.objectList = objectList;
+    this.headerView = headerView;
+    objectListIndex = -1;
 
+    if ((headerView instanceof StepHeaderView) ||
+        (headerView instanceof TransactionHeaderView)) {
+      keyType = "object";
+    } else if (headerView instanceof TokenQueryHeaderView) {
+      keyType = "token";
+    } else if (headerView instanceof VariableQueryHeaderView) {
+      keyType = "variable";
+    }
     setTitle( dialogTitle);
     final String msgString1 = textFieldLabel;
     textField = new JTextField(10);
@@ -117,12 +128,12 @@ public class AskTransactionObjectKey extends JDialog {
   }
 
   /**
-   * <code>getTransactionListIndex</code>
+   * <code>getObjectListIndex</code>
    *
    * @return - <code>int</code> - 
    */
-  public int getTransactionListIndex() {
-    return transactionListIndex;
+  public int getObjectListIndex() {
+    return objectListIndex;
   }
 
   private void addInputListener() {
@@ -148,12 +159,13 @@ public class AskTransactionObjectKey extends JDialog {
               typedText = textField.getText();
               try {
                 objectKey = new Integer( Integer.parseInt( typedText));
-                // System.err.println( "AskTransactionObjectKey key " + typedText);
+                // System.err.println( "AskQueryObjectKey key " + typedText);
                 if (! isValidObjectKey( objectKey)) {
                   JOptionPane.showMessageDialog
                     (PlanWorks.planWorks,
-                     "Sorry, \"" + objectKey.toString() + "\" " + "isn't a valid object key.",
-                     "Invalid object key", JOptionPane.ERROR_MESSAGE);
+                     "Sorry, \"" + objectKey.toString() + "\" " +
+                     "is not a valid " + keyType + " key.",
+                     "Invalid " + keyType + " key", JOptionPane.ERROR_MESSAGE);
                 } else {
                   // we're done; dismiss the dialog
                   setVisible( false);
@@ -166,10 +178,10 @@ public class AskTransactionObjectKey extends JDialog {
                    "Sorry, \"" + typedText + "\" " + "isn't a valid response.\n" +
                    "Please enter a intger number",
                    "Invalid value for key", JOptionPane.ERROR_MESSAGE);
-                objectKey = null; transactionListIndex = -1;
+                objectKey = null; objectListIndex = -1;
               }
             } else { // user closed dialog or clicked cancel
-              objectKey = null; transactionListIndex = -1;
+              objectKey = null; objectListIndex = -1;
               setVisible( false);
             }
           }
@@ -181,17 +193,43 @@ public class AskTransactionObjectKey extends JDialog {
   private boolean isValidObjectKey( Integer objectKey) {
     boolean isValid = false;
     int indx = 0;
-    Iterator transItr = transactionList.iterator();
-    while (transItr.hasNext()) {
-      if (((PwTransaction) transItr.next()).getObjectId().equals( objectKey)) {
-        transactionListIndex = indx;
-        return true;
+    Iterator objItr = objectList.iterator();
+    if ((headerView instanceof StepHeaderView) ||
+        (headerView instanceof TransactionHeaderView)) {
+      while (objItr.hasNext()) {
+        if (((PwTransaction) objItr.next()).getObjectId().equals( objectKey)) {
+          objectListIndex = indx;
+          return true;
+        }
+        indx++;
       }
-      indx++;
+      return isValid;
+    } else if (headerView instanceof TokenQueryHeaderView) {
+      while (objItr.hasNext()) {
+        if (((PwTokenQuery) objItr.next()).getId().equals( objectKey)) {
+          objectListIndex = indx;
+          return true;
+        }
+        indx++;
+      }
+      return isValid;
+    } else if (headerView instanceof VariableQueryHeaderView) {
+      while (objItr.hasNext()) {
+        if (((PwVariableQuery) objItr.next()).getId().equals( objectKey)) {
+          objectListIndex = indx;
+          return true;
+        }
+        indx++;
+      }
+      return isValid;
+    } else {
+      System.err.println( "AskQueryObjectKey.isValidObjectKey not handled");
+      System.exit( -1);
     }
-    return isValid;
+    return false;
   } // end isValidObjectKey
 
 
-} // end class AskTransactionObjectKey
+} // end class AskQueryObjectKey
 
+   

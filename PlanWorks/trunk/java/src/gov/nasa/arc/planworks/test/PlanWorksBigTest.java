@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksBigTest.java,v 1.11 2003-10-07 20:19:37 miatauro Exp $
+// $Id: PlanWorksBigTest.java,v 1.12 2003-12-20 01:54:49 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -38,6 +38,7 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -411,8 +412,9 @@ public class PlanWorksBigTest extends JFCTestCase {
       while(variableIterator.hasNext()) {
         PwVariable variable = ((VariableNode)variableIterator.next()).getVariable();
         String type = variable.getType();
-        if(type.equals("OBJECT_VAR") || type.equals("REJECT_VAR") || type.equals("DURATION_VAR") ||
-           type.equals("START_VAR") || type.equals("END_VAR")) {
+        if(type.equals(DbConstants.OBJECT_VAR) || type.equals(DbConstants.REJECT_VAR) ||
+           type.equals(DbConstants.DURATION_VAR) || type.equals(DbConstants.START_VAR) ||
+           type.equals(DbConstants.END_VAR)) {
           requiredVars++;
         }
       }

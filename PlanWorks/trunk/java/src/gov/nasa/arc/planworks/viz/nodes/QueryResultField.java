@@ -3,17 +3,16 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepField.java,v 1.3 2003-11-18 23:54:15 taylor Exp $
+// $Id: QueryResultField.java,v 1.1 2003-12-20 01:54:50 taylor Exp $
 //
 // PlanWorks
 //
-// Will Taylor -- started 17oct03
+// Will Taylor -- started 18dec03
 //
 
 package gov.nasa.arc.planworks.viz.nodes;
 
 import java.awt.Color;
-import java.awt.Insets;
 import java.awt.Point;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -27,35 +26,27 @@ import com.nwoods.jgo.examples.TextNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
 /**
- * <code>StepField</code> - JGo widget to render an field of a SequenceQuery Steps entry
+ * <code>QueryResultField</code> - JGo widget to render a field of a query results entry
 
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class StepField extends TextNode {
-
-  // top left bottom right
-  private static final Insets NODE_INSETS =
-    new Insets( ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
-                ViewConstants.TIMELINE_VIEW_INSET_SIZE,
-                ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
-                ViewConstants.TIMELINE_VIEW_INSET_SIZE);
+public class QueryResultField extends TextNode {
 
   private String fieldName;
-  private ViewableObject viewableObject; // PwPartialPlan or PwPlanningSequence
+  private ViewableObject viewableObject; // PwPlanningSequence
   private VizView vizView;
   private boolean fieldIsStepNumber;
 
   /**
-   * <code>StepField</code> - constructor 
+   * <code>QueryResultField</code> - constructor 
    *
    * @param fieldName - <code>String</code> - 
    * @param location - <code>Point</code> - 
@@ -63,7 +54,7 @@ public class StepField extends TextNode {
    * @param bgColor - <code>Color</code> - 
    * @param viewableObject - <code>ViewableObject</code> - 
    */
-  public StepField( String fieldName, Point location, int alignment, Color bgColor,
+  public QueryResultField( String fieldName, Point location, int alignment, Color bgColor,
                            ViewableObject viewableObject) {
     super( fieldName);
     this.fieldName = fieldName;
@@ -76,7 +67,7 @@ public class StepField extends TextNode {
 
 
   /**
-   * <code>StepField</code> - constructor 
+   * <code>QueryResultField</code> - constructor 
    *
    * @param fieldName - <code>String</code> - 
    * @param location - <code>Point</code> - 
@@ -85,7 +76,7 @@ public class StepField extends TextNode {
    * @param viewableObject - <code>ViewableObject</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public StepField( String fieldName, Point location, int alignment, Color bgColor,
+  public QueryResultField( String fieldName, Point location, int alignment, Color bgColor,
                            ViewableObject viewableObject, VizView vizView) {
     super( fieldName);
     this.fieldName = fieldName;
@@ -110,8 +101,7 @@ public class StepField extends TextNode {
     getBottomPort().setVisible( false);
     getRightPort().setVisible( false);
     setLocation( (int) location.getX(), (int) location.getY());
-    // setInsets( NODE_INSETS);
-  } // end configureStepField
+  } // end configure
 
 
   /**
@@ -120,7 +110,11 @@ public class StepField extends TextNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-    return "";
+    if (fieldIsStepNumber) {
+      return "M-R: Open partial plan views";
+    } else {
+      return null;
+    }
   } // end getToolTipText
 
   /**
@@ -137,7 +131,6 @@ public class StepField extends TextNode {
     JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
-    StepField stepField = (StepField) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -153,4 +146,4 @@ public class StepField extends TextNode {
 
 
 
-} // end class StepField
+} // end class QueryResultField

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.27 2003-12-19 18:55:35 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.28 2003-12-20 01:54:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -289,6 +289,20 @@ public interface PwPlanningSequence extends ViewableObject {
    * @return - <code>List</code> - 
    */
   public List getStepsWithNonUnitVariableBindingDecisions();
+
+  /**
+   * <code>getFreeTokensAtStep</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getFreeTokensAtStep( int stepNum);
+
+  /**
+   * <code>getUnboundVariablesAtStep</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getUnboundVariablesAtStep(int stepNum);
 
   /**
    * <code>getPlanDBSize</code>

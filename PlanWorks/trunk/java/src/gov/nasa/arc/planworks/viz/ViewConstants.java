@@ -291,4 +291,12 @@ public interface ViewConstants {
   public static final String TRANSACTION_PREDICATE_HEADER =  "  PREDICATE_NAME  ";
   public static final String TRANSACTION_PARAMETER_HEADER =  "  PARAMETER_NAME  ";
 
+  public static final String QUERY_TOKEN_KEY_HEADER =        "TOK_KEY"; 
+  public static final String QUERY_TOKEN_PREDICATE_HEADER =  "  PREDICATE_NAME  "; 
+  public static final String QUERY_TOKEN_STEP_NUM_HEADER  =  "  STEP  ";
+
+  public static final String QUERY_VARIABLE_KEY_HEADER =      "VAR_KEY"; 
+  public static final String QUERY_VARIABLE_NAME_HEADER =     "   VARIABLE_NAME  "; 
+  public static final String QUERY_VARIABLE_STEP_NUM_HEADER = "  STEP  ";
+
 } // end ViewConstants

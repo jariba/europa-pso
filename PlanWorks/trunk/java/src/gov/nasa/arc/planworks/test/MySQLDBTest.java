@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import junit.framework.*;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 
 public class MySQLDBTest extends TestCase {
@@ -295,7 +296,7 @@ public class MySQLDBTest extends TestCase {
       assertTrue(v.getLong("PartialPlanId") == 1L);
       assertTrue(v.getString("DomainType").equals("EnumeratedDomain"));
       assertTrue(v.getInt("DomainId") == 1);
-      assertTrue(v.getString("VariableType").equals("GLOBAL_VAR"));
+      assertTrue(v.getString("VariableType").equals(DbConstants.GLOBAL_VAR));
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();

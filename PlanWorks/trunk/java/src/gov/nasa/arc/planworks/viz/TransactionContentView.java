@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.12 2003-12-12 01:23:04 taylor Exp $
+// $Id: TransactionContentView.java,v 1.13 2003-12-20 01:54:49 taylor Exp $
 //
 // PlanWorks
 //
@@ -17,33 +17,22 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
-// PlanWorks/java/lib/JGo/Classier.jar
-import com.nwoods.jgo.examples.TextNode;
-
-import gov.nasa.arc.planworks.db.PwConstraint;
-import gov.nasa.arc.planworks.db.PwParameter;
-import gov.nasa.arc.planworks.db.PwPartialPlan;
-import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTransaction;
-import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.nodes.TransactionField;
+import gov.nasa.arc.planworks.viz.nodes.QueryResultField;
 import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
 /**
- * <code>TransactionContentView</code> - render values of transaction object as TransactionField's
+ * <code>TransactionContentView</code> - render values of transaction object as QueryResultField's
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                NASA Ames Research Center - Code IC
@@ -56,8 +45,8 @@ public class TransactionContentView extends JGoView {
   private ViewableObject viewableObject; // PwPartialPlan or PwPlanningSequence
   private VizView vizView; // PartialPlanView  or SequenceView
   private JGoDocument jGoDocument;
-  private TransactionField keyField;
-  private List objectKeyFieldList;  // element TransactionField
+  private QueryResultField keyField;
+  private List objectKeyFieldList;  // element QueryResultField
 
 
   /**
@@ -128,23 +117,23 @@ public class TransactionContentView extends JGoView {
       x = 0;
       PwTransaction transaction = (PwTransaction) transItr.next();
       keyField =
-        new TransactionField( transaction.getId().toString(), new Point( x, y),
+        new QueryResultField( transaction.getId().toString(), new Point( x, y),
                               JGoText.ALIGN_RIGHT, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( keyField);
       keyField.setSize( (int) headerJGoView.getKeyNode().getSize().getWidth(),
                        (int) keyField.getSize().getHeight());
       x += headerJGoView.getKeyNode().getSize().getWidth();
 
-      TransactionField typeField =
-        new TransactionField( transaction.getType(), new Point( x, y),
+      QueryResultField typeField =
+        new QueryResultField( transaction.getType(), new Point( x, y),
                               JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( typeField);
       typeField.setSize( (int) headerJGoView.getTypeNode().getSize().getWidth(),
                          (int) typeField.getSize().getHeight());
       x += headerJGoView.getTypeNode().getSize().getWidth();
 
-      TransactionField sourceField =
-        new TransactionField( transaction.getSource(), new Point( x, y),
+      QueryResultField sourceField =
+        new QueryResultField( transaction.getSource(), new Point( x, y),
                               JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( sourceField);
       sourceField.setSize( (int) headerJGoView.getSourceNode().getSize().getWidth(),
@@ -152,8 +141,8 @@ public class TransactionContentView extends JGoView {
       x += headerJGoView.getSourceNode().getSize().getWidth();
 
       if (isObjectKeyField) {
-        TransactionField objectKeyField =
-          new TransactionField( transaction.getObjectId().toString(), new Point( x, y),
+        QueryResultField objectKeyField =
+          new QueryResultField( transaction.getObjectId().toString(), new Point( x, y),
                                 JGoText.ALIGN_RIGHT, bgColor, viewableObject);
         objectKeyFieldList.add( objectKeyField);
         jGoDocument.addObjectAtTail( objectKeyField);
@@ -163,8 +152,8 @@ public class TransactionContentView extends JGoView {
       }
 
       if (isTransactionQueryView) {
-        TransactionField stepNumField =
-          new TransactionField( transaction.getStepNumber().toString(), new Point( x, y),
+        QueryResultField stepNumField =
+          new QueryResultField( transaction.getStepNumber().toString(), new Point( x, y),
                                 JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
         jGoDocument.addObjectAtTail( stepNumField);
         stepNumField.setSize( (int) headerJGoView.getStepNumNode().getSize().getWidth(),
@@ -182,15 +171,15 @@ public class TransactionContentView extends JGoView {
       String objectName =
         NodeGenerics.trimName( transaction.getInfo()[0], headerJGoView.getObjectNameNode(),
                                vizView);
-      TransactionField objectNameField =
-        new TransactionField( objectName, new Point( x, y),
+      QueryResultField objectNameField =
+        new QueryResultField( objectName, new Point( x, y),
                               JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail(objectNameField );
       objectNameField.setSize( (int) headerJGoView.getObjectNameNode().getSize().getWidth(),
                            (int) objectNameField.getSize().getHeight());
       x += headerJGoView.getObjectNameNode().getSize().getWidth();
 
-        // new TransactionField( getPredicateName( transaction.getObjectId()),
+        // new QueryResultField( getPredicateName( transaction.getObjectId()),
       if (transaction.getInfo()[1] == null) {
         System.err.println( "1 key " + transaction.getId().toString() +
                             " type " + transaction.getType() +
@@ -200,15 +189,15 @@ public class TransactionContentView extends JGoView {
       String predicateName =
         NodeGenerics.trimName( transaction.getInfo()[1], headerJGoView.getPredicateNode(),
                                vizView);
-      TransactionField predicateField =
-        new TransactionField( predicateName, new Point( x, y),
+      QueryResultField predicateField =
+        new QueryResultField( predicateName, new Point( x, y),
                               JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( predicateField);
       predicateField.setSize( (int) headerJGoView.getPredicateNode().getSize().getWidth(),
                            (int) predicateField.getSize().getHeight());
       x += headerJGoView.getPredicateNode().getSize().getWidth();
 
-        // new TransactionField( getParameterName( transaction.getObjectId(), objectName),
+        // new QueryResultField( getParameterName( transaction.getObjectId(), objectName),
       if (transaction.getInfo()[2] == null) {
         System.err.println( "2 key " + transaction.getId().toString() +
                             " type " + transaction.getType() +
@@ -218,8 +207,8 @@ public class TransactionContentView extends JGoView {
       String parameterName =
          NodeGenerics.trimName( transaction.getInfo()[2], headerJGoView.getParameterNode(),
                                 vizView);
-      TransactionField parameterField =
-        new TransactionField( parameterName, new Point( x, y),
+      QueryResultField parameterField =
+        new QueryResultField( parameterName, new Point( x, y),
                               JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( parameterField);
       parameterField.setSize( (int) headerJGoView.getParameterNode().getSize().getWidth(),
@@ -343,7 +332,7 @@ public class TransactionContentView extends JGoView {
 //         }
 //         if (! isNameFound) {
 //           PwVariable variable = ((PwPartialPlan) viewableObject).getVariable( objectId);
-//           if ((variable != null) && objectName.equals( "PARAMETER_VAR")) {
+//           if ((variable != null) && objectName.equals( DbConstants.PARAMETER_VAR)) {
 //             // System.err.println( "  isVariable");
 //             UniqueSet parameterNameList = new UniqueSet();
 //             List parameterList = variable.getParameterList();
@@ -372,10 +361,10 @@ public class TransactionContentView extends JGoView {
    * <code>getObjectKeyField</code>
    *
    * @param lineIndex - <code>int</code> - 
-   * @return - <code>TransactionField</code> - 
+   * @return - <code>QueryResultField</code> - 
    */
-  public TransactionField getObjectKeyField( int lineIndex) {
-    return (TransactionField) objectKeyFieldList.get( lineIndex);
+  public QueryResultField getObjectKeyField( int lineIndex) {
+    return (QueryResultField) objectKeyFieldList.get( lineIndex);
   }
 
   /**

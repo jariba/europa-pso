@@ -3,11 +3,11 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderNode.java,v 1.2 2003-12-20 01:54:51 taylor Exp $
+// $Id: TokenQueryHeaderNode.java,v 1.1 2003-12-20 01:54:50 taylor Exp $
 //
 // PlanWorks
 //
-// Will Taylor -- started 27oct03
+// Will Taylor -- started 17dec03
 //
 
 package gov.nasa.arc.planworks.viz.nodes;
@@ -26,25 +26,23 @@ import com.nwoods.jgo.examples.TextNode;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.StepContentView;
-import gov.nasa.arc.planworks.viz.TransactionContentView;
-import gov.nasa.arc.planworks.viz.TransactionHeaderView;
+import gov.nasa.arc.planworks.viz.TokenQueryContentView;
+import gov.nasa.arc.planworks.viz.TokenQueryHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.VizView;
-import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
-import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
-import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
-import gov.nasa.arc.planworks.viz.util.TransactionComparatorAscending;
-import gov.nasa.arc.planworks.viz.util.TransactionComparatorDescending;
+import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TokenQueryView;
+import gov.nasa.arc.planworks.viz.util.TokenQueryComparatorAscending;
+import gov.nasa.arc.planworks.viz.util.TokenQueryComparatorDescending;
 
 
 /**
- * <code>TransactionHeaderNode</code> - 
+ * <code>TokenQueryHeaderNode</code> - 
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a> 
  *                    NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TransactionHeaderNode extends TextNode {
+public class TokenQueryHeaderNode extends TextNode {
 
   private String headerLabel;
   private VizView vizView;
@@ -52,21 +50,18 @@ public class TransactionHeaderNode extends TextNode {
 
 
   /**
-   * <code>TransactionHeaderNode</code> - constructor 
+   * <code>TokenQueryHeaderNode</code> - constructor 
    *
    * @param headerLabel - <code>String</code> - 
    * @param vizView - <code>VizView</code> - 
    */
-  public TransactionHeaderNode( String headerLabel, VizView vizView) {
+  public TokenQueryHeaderNode( String headerLabel, VizView vizView) {
     super( headerLabel);
     this.headerLabel = headerLabel;
     this.vizView = vizView;
 
-    if ((((vizView instanceof TransactionView) ||
-          (vizView instanceof TransactionQueryView)) &&
-         headerLabel.equals( ViewConstants.TRANSACTION_KEY_HEADER)) ||
-        ((vizView instanceof StepQueryView) &&
-         headerLabel.equals( ViewConstants.TRANSACTION_STEP_NUM_HEADER))) {
+    if ((vizView instanceof TokenQueryView) &&
+         headerLabel.equals( ViewConstants.QUERY_TOKEN_STEP_NUM_HEADER)) {
       isAscending = false;
     } else {
       isAscending = true;
@@ -102,9 +97,9 @@ public class TransactionHeaderNode extends TextNode {
     JGoObject obj = view.pickDocObject( docCoords, false);
     // System.err.println( "TokenNode: doMouseClick obj class " +
     //                     obj.getTopLevelObject().getClass().getName());
-    TransactionHeaderNode tokenNode = (TransactionHeaderNode) obj.getTopLevelObject();
+    TokenQueryHeaderNode tokenQueryNode = (TokenQueryHeaderNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-      sortTransactionList();
+      sortTokenQueryList();
       isAscending = ! isAscending;
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -114,40 +109,30 @@ public class TransactionHeaderNode extends TextNode {
   } // end doMouseClick   
 
 
-  private void sortTransactionList() {
-    TransactionContentView transactionContentView = null;
-    StepContentView stepContentView = null;
-    List transactionList = null;
-    if (vizView instanceof TransactionView) {
-      transactionContentView = ((TransactionView) vizView).getTransactionContentView();
-      transactionList = transactionContentView.getTransactionList();
-    } else if (vizView instanceof TransactionQueryView) {
-      transactionContentView = ((TransactionQueryView) vizView).getTransactionContentView();
-      transactionList = transactionContentView.getTransactionList();
-    } else if (vizView instanceof StepQueryView) {
-      stepContentView = ((StepQueryView) vizView).getStepContentView();
-      transactionList = stepContentView.getTransactionList();
+  private void sortTokenQueryList() {
+    TokenQueryContentView tokenQueryContentView = null;
+    List tokenQueryList = null;
+    if (vizView instanceof TokenQueryView) {
+      tokenQueryContentView = ((TokenQueryView) vizView).getTokenQueryContentView();
+      tokenQueryList = tokenQueryContentView.getTokenList();
     } else {
-      System.err.println( "TransactionHeaderNode.sortTransactionList: vizView " +
+      System.err.println( "TokenQueryHeaderNode.sortTokenQueryList: vizView " +
                           vizView + " not handled");
       System.exit( -1);
     }
-    if (isAscending) {
-      Collections.sort( transactionList,
-                        new TransactionComparatorAscending( headerLabel));
+    if (isAscending) { 
+      Collections.sort( tokenQueryList,
+                        new TokenQueryComparatorAscending( headerLabel));
     } else {
-      Collections.sort( transactionList,
-                        new TransactionComparatorDescending( headerLabel));
+      Collections.sort( tokenQueryList,
+                        new TokenQueryComparatorDescending( headerLabel));
     }
-    if (transactionContentView != null) {
-      transactionContentView.redraw();
-    } else if (stepContentView != null) {
-      stepContentView.redraw();
+    if (tokenQueryContentView != null) {
+      tokenQueryContentView.redraw();
     }
+  } // end sortTokenQueryList
 
-  } // end sortTransactionList
 
-
-} // end class TransactionHeaderNode
+} // end class TokenQueryHeaderNode
 
   

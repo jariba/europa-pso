@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepHeaderView.java,v 1.6 2003-12-12 01:23:04 taylor Exp $
+// $Id: StepHeaderView.java,v 1.7 2003-12-20 01:54:49 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,8 +24,6 @@ import javax.swing.JPopupMenu;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoPen;
-import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
@@ -33,9 +31,7 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TransactionHeaderNode;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
@@ -82,7 +78,7 @@ public class StepHeaderView extends JGoView {
     this.transactionList = transactionList;
     this.key = key;
     this.query = query;
-    this.vizView= vizView;
+    this.vizView = vizView;
 
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
 
@@ -258,13 +254,14 @@ public class StepHeaderView extends JGoView {
   private void createTransByKeyItem( JMenuItem transByKeyItem) {
     transByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          AskTransactionObjectKey transByKeyDialog =
-            new AskTransactionObjectKey( StepHeaderView.this.transactionList,
-                                         "Find Transaction by Obj_Key", "key (int)");
+          AskQueryObjectKey transByKeyDialog =
+            new AskQueryObjectKey( StepHeaderView.this.transactionList,
+                                   "Find Transaction by Obj_Key", "key (int)",
+                                   StepHeaderView.this);
           Integer objectKey = transByKeyDialog.getObjectKey();
           if (objectKey != null) {
             System.err.println( "createTransByKeyItem: objectKey " + objectKey.toString());
-            int entryIndx = transByKeyDialog.getTransactionListIndex();
+            int entryIndx = transByKeyDialog.getObjectListIndex();
             StepContentView stepContentView = null;
             if (vizView instanceof StepQueryView) {
               stepContentView = ((StepQueryView) vizView).getStepContentView();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.11 2003-12-12 01:23:04 taylor Exp $
+// $Id: MDIDesktopFrame.java,v 1.12 2003-12-20 01:54:48 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -64,15 +64,15 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     super(name);
     Container contentPane = getContentPane();
     menuBar = new MDIDynamicMenuBar(constantMenus, true, this);
-    windowBar = new MDIWindowButtonBar(30, 80);
+//     windowBar = new MDIWindowButtonBar(30, 80);
     desktopPane = new MDIDesktopPane();
     // contentPane.add(menuBar, BorderLayout.NORTH);
     contentPane.add(desktopPane, BorderLayout.CENTER);
-    contentPane.add(windowBar, BorderLayout.SOUTH);
+//     contentPane.add(windowBar, BorderLayout.SOUTH);
     setJMenuBar(menuBar);
     desktopPane.setVisible(true);
     menuBar.setVisible(true);
-    windowBar.setVisible(true);
+//     windowBar.setVisible(true);
     this.setVisible(true);
   }
   /**
