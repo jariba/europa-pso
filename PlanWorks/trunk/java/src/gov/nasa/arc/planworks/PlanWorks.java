@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.48 2003-09-11 00:25:48 taylor Exp $
+// $Id: PlanWorks.java,v 1.49 2003-09-11 18:19:10 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -660,10 +660,10 @@ public class PlanWorks extends MDIDesktopFrame {
             }
           }
           if (invalidSequenceDirs.size() == sequenceDirectories.length) {
-            System.err.println( "continue");
+            // System.err.println( "continue");
             continue; // user must reselect
           } else {
-            System.err.println( "break");
+            // System.err.println( "break");
             break; // some sequences are valid
           }
         } else {
@@ -672,7 +672,7 @@ public class PlanWorks extends MDIDesktopFrame {
       } // end while
 
       try {
-            System.err.println( "try");
+        // System.err.println( "try");
         for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
           String sequenceDirectory = sequenceParentDirectory +
             System.getProperty( "file.separator") + sequenceDirectories[i].getName();
