@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.16 2004-07-08 21:33:22 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.17 2004-08-07 01:18:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -29,6 +29,8 @@ import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.TextNode;
+
+import gov.nasa.arc.planworks.viz.util.AskQueryEntityKey;
 
 
 /**

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.20 2004-06-21 22:43:02 taylor Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.21 2004-08-07 01:18:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -74,6 +74,7 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
   private boolean hasDiscoveredLinks;
   private int variableLinkCount;
   private int connectedContainerCount;
+  private boolean isDebug;
   //private Color backgroundColor;
 
   /**
@@ -101,6 +102,8 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
     connectedContainerCount = 0;
     connectedContainerMap = new HashMap();
     connectedContainerNodes = new UniqueSet();
+    isDebug = false;
+    // isDebug = true;
     //this.backgroundColor = backgroundColor;
   } // end constructor
 
@@ -146,6 +149,9 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
     }
     if (token != null) {
       tip.append( token.toString());
+      if (isDebug) {
+	tip.append( " linkCnt ").append( String.valueOf( variableLinkCount));	
+      }
       if (partialPlanView.getZoomFactor() > 1) {
         tip.append( "<br>key=");
         tip.append( token.getId().toString());
@@ -221,7 +227,7 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
 
   /**
    * <code>areNeighborsShown</code>
-   *
+   *a
    * @return - <code>boolean</code> - 
    */
   public boolean areNeighborsShown() {
@@ -262,13 +268,13 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
     ConstraintNetworkUtils.addContainerNodeVariables(tokenNode, constraintNetworkView, doRedraw);
     int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
-  } // end addTokenNodeVariables
+  } // end addContainerNodeVariables
 
   public void removeContainerNodeVariables( VariableContainerNode tokenNode,
                                          ConstraintNetworkView constraintNetworkView) {
     ConstraintNetworkUtils.removeContainerNodeVariables(tokenNode, constraintNetworkView);
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
-  } // end adremoveTokenNodeVariables
+  } // end removeContainerNodeVariables
 
   public void discoverLinkage() {
     connectedContainerCount = ConstraintNetworkUtils.discoverLinkage(this, connectedContainerMap);

@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskQueryEntityKey.java,v 1.1 2004-05-21 21:38:57 taylor Exp $
+// $Id: AskQueryEntityKey.java,v 1.1 2004-08-07 01:18:30 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 24oct03
 //
 
-package gov.nasa.arc.planworks.viz;
+package gov.nasa.arc.planworks.viz.util;
 
 import java.util.Iterator;
 import java.util.List;
@@ -30,6 +30,8 @@ import gov.nasa.arc.planworks.db.PwTokenQuery;
 import gov.nasa.arc.planworks.db.PwVariableQuery;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;

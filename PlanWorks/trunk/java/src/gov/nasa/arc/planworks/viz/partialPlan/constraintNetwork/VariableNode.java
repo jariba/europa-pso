@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.20 2004-06-16 22:09:13 taylor Exp $
+// $Id: VariableNode.java,v 1.21 2004-08-07 01:18:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -214,6 +214,9 @@ public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
     boolean isVariableWithConstraints = (! hasZeroConstraints) &&
       (partialPlanView instanceof ConstraintNetworkView);
     NodeGenerics.getVariableNodeToolTipText( variable, partialPlanView, tip);
+    if (isDebug) {
+      tip.append( " linkCnt ").append( String.valueOf( constraintLinkCount));
+    }
     if (partialPlanView.getZoomFactor() > 1) {
       tip.append( "<br>key=");
       tip.append( variable.getId().toString());

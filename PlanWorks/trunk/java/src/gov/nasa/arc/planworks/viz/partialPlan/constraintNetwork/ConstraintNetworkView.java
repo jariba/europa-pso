@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.79 2004-08-06 20:05:29 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.80 2004-08-07 01:18:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -59,7 +59,6 @@ import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.SwingWorker;
-import gov.nasa.arc.planworks.viz.AskQueryTwoEntityKeys;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -69,10 +68,11 @@ import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
-import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
+import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
+import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeys;
 import gov.nasa.arc.planworks.viz.util.MessageDialog;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -1883,6 +1883,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 	  break;
 	}
       }
+      setNodesLinksVisible();
       newLayout.performLayout();
       highlightPathNodesList = nodeList;
       highlightPathNodes( nodeList);

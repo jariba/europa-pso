@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.103 2004-08-06 16:35:37 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.104 2004-08-07 01:18:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1570,7 +1570,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       for(int i = 1; i < maxLength; i++)
         if(getPathRecurse(start, eKey, classes, path, 0, i))
           break;
-    System.err.println("Finding path took " + (System.currentTimeMillis() - t1));
+    System.err.println("Finding path took " + (System.currentTimeMillis() - t1) + " msecs.");
     return path;
   }
 

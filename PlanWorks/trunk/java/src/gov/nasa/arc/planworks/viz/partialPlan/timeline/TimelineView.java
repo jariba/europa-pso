@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.62 2004-07-29 01:36:40 taylor Exp $
+// $Id: TimelineView.java,v 1.63 2004-08-07 01:18:29 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -60,10 +60,10 @@ import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
-import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
+import gov.nasa.arc.planworks.viz.util.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
