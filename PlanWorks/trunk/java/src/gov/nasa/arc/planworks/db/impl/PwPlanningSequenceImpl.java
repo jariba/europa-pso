@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.67 2003-12-22 20:52:38 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.68 2003-12-29 21:21:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -563,8 +563,10 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @param stepNum - <code>int</code> - 
    * @return - <code>List</code> - 
    */
-  public List getFreeTokensAtStep( int stepNum) {
+  public List getFreeTokensAtStep( int stepNum) throws ResourceNotFoundException {
     boolean isFreeToken = true;
+    //getPartialPlan(stepNum);
+    loadPartialPlanFiles("step" + stepNum);
     return getTokensById( MySQLDB.queryFreeTokensAtStep( stepNum, this), isFreeToken);
   }
 
@@ -589,10 +591,17 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @param stepNum - <code>int</code> - 
    * @return - <code>List</code> - 
    */
-  public List getUnboundVariablesAtStep( int stepNum) {
+  public List getUnboundVariablesAtStep( int stepNum) throws ResourceNotFoundException {
     boolean isUnbound = true;
+    loadPartialPlanFiles("step" + stepNum);
     return MySQLDB.queryUnboundVariablesAtStep(stepNum, this);
     //return getVariablesById( MySQLDB.queryUnboundVariablesAtStep( stepNum, this), isUnbound);
+  }
+
+  private void loadPartialPlanFiles(String name) throws ResourceNotFoundException {
+    if(MySQLDB.getPartialPlanIdByName(id, name) == null) {
+      PwPartialPlanImpl.loadFiles(new File(url + System.getProperty("file.separator") + name));
+    }
   }
 
   private List getVariablesById( List listOfListOfIds, boolean isUnbound) {

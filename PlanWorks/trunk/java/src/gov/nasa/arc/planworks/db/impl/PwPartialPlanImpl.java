@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.62 2003-12-22 20:52:46 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.63 2003-12-29 21:21:33 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -133,7 +133,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     //checkPlan();
   } // end createPartialPlan
 
-  private void loadFiles(File planDir) throws ResourceNotFoundException {
+  //  private void loadFiles(File planDir) throws ResourceNotFoundException {
+  public static void loadFiles(File planDir) throws ResourceNotFoundException {
     if(planDir == null) {
       throw new ResourceNotFoundException("Failed to find sequence directory.");
     }

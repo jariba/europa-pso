@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.28 2003-12-20 01:54:47 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.29 2003-12-29 21:21:14 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -295,14 +295,14 @@ public interface PwPlanningSequence extends ViewableObject {
    *
    * @return - <code>List</code> - 
    */
-  public List getFreeTokensAtStep( int stepNum);
+  public List getFreeTokensAtStep( int stepNum) throws ResourceNotFoundException;
 
   /**
    * <code>getUnboundVariablesAtStep</code>
    *
    * @return - <code>List</code> - 
    */
-  public List getUnboundVariablesAtStep(int stepNum);
+  public List getUnboundVariablesAtStep(int stepNum) throws ResourceNotFoundException;
 
   /**
    * <code>getPlanDBSize</code>
