@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.7 2003-06-12 18:32:56 taylor Exp $
+// $Id: TimelineView.java,v 1.8 2003-06-19 00:31:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,28 +14,20 @@
 package gov.nasa.arc.planworks.viz.views.timeline;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoListPosition;
-// import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoView;
 
 
@@ -52,7 +44,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
 
 /**
- * <code>TimelineView</code> - 
+ * <code>TimelineView</code> - render a partial plan's timelines and slots
  *                JPanel->VizView->TimelineView
  *                JComponent->JGoView
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
@@ -73,6 +65,14 @@ public class TimelineView extends VizView {
   private List jGoObjectPositionList;
 
 
+  /**
+   * <code>TimelineView</code> - constructor - called by ViewSet.openTimelineView.
+   *                             Use SwingUtilities.invokeLater( runInit) to
+   *                             properly render the JGo widgets
+   *
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   */
   public TimelineView( PwPartialPlan partialPlan, ViewSet viewSet) {
     super( partialPlan);
     this.partialPlan = partialPlan;
@@ -107,9 +107,11 @@ public class TimelineView extends VizView {
     };
 
   /**
-   * <code>init</code>render the JGo widgets
+   * <code>init</code> - wait for instance to become displayable, determine
+   *                     appropriate font metrics, and render the JGo timeline,
+   *                     and slot widgets
    *
-   *    not done in constructor to avoid:
+   *    These functions are not done in the constructor to avoid:
    *    "Cannot measure text until a JGoView exists and is part of a visible window".
    *    called by componentShown method on the JFrame
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
@@ -139,7 +141,9 @@ public class TimelineView extends VizView {
 
 
   /**
-   * <code>redraw</code> - called by Content Spec to apply user's content spec request
+   * <code>redraw</code> - called by Content Spec to apply user's content spec request.
+   *                       Remove the existing JGo objects and create new ones
+   *                       according to the Content Spec enabled keys
    *
    */
   public void redraw() {
@@ -164,7 +168,8 @@ public class TimelineView extends VizView {
   }
 
   /**
-   * <code>addJGoObjectPosition</code>
+   * <code>addJGoObjectPosition</code> - keep a list of JGo widget object positions,
+   *                                     so they can be reomved by redraw()
    *
    * @param position - <code>JGoListPosition</code> - 
    */
@@ -173,7 +178,9 @@ public class TimelineView extends VizView {
   }
 
   /**
-   * <code>getViewSet</code>
+   * <code>getViewSet</code> - allows TimelineNode and SlotNode to check their
+   *                           data base object key status with
+   *                           viewSet.isInContentSpec( key)
    *
    * @return - <code>ViewSet</code> - 
    */
@@ -191,7 +198,11 @@ public class TimelineView extends VizView {
   }
 
   /**
-   * <code>getSlotLabelMinLength</code>
+   * <code>getSlotLabelMinLength</code> - pad labels with blanks up to min size,
+   *                           initially that of "empty" label, then base it on
+   *                           length of time interval string.  This prevents
+   *                           time interval strings of adjacent slots from
+   *                           overlaying each other.
    *
    * @return - <code>int</code> - 
    */
@@ -327,7 +338,7 @@ public class TimelineView extends VizView {
   } // end getSlotNodeLabel
 
 
-  public void iterateOverNodes() {
+  private void iterateOverNodes() {
     int numTimelineNodes = timelineNodeList.size();
     System.err.println( "iterateOverNodes: numTimelineNodes " + numTimelineNodes);
     Iterator timelineIterator = timelineNodeList.iterator();
@@ -352,7 +363,7 @@ public class TimelineView extends VizView {
 
 
 
-//   public void iterateOverJGoDocument() {
+//   private void iterateOverJGoDocument() {
 //     JGoListPosition position = jGoDocument.getFirstObjectPos();
 //     JGoListPosition lastPosition = jGoDocument.getLastObjectPos();
 //     JGoObject object = jGoDocument.getObjectAtPos( position);

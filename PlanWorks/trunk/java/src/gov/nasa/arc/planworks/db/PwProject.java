@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.7 2003-06-17 22:19:02 taylor Exp $
+// $Id: PwProject.java,v 1.8 2003-06-19 00:31:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -30,9 +30,9 @@ public abstract class PwProject {
 
 
   /**
-   * <code>initProjects</code> - register loaded XML files data base (eXist)
-   *                             restore loaded projects configuration info
-   *                             and inflate projects, reading XML formatted
+   * <code>initProjects</code> - register loaded XML files data base (eXist),
+   *                             restore loaded projects configuration info,
+   *                             and inflate projects, by reading XML formatted
    *                             saved project information.
    *
    * @exception ResourceNotFoundException if an error occurs
@@ -44,7 +44,7 @@ public abstract class PwProject {
   /**
    * <code>createProject</code> - using user supplied url, load XML formatted
    *                              partial plans into XML:DB data base, show user
-   *                              cascading pulldown menuf for their selection
+   *                              cascading pulldown menu for their selection
    *
    * @param url - <code>String</code> - 
    * @return - <code>PwProject</code> - 
@@ -69,7 +69,7 @@ public abstract class PwProject {
   }
 
   /**
-   * <code>listProjects</code>
+   * <code>listProjects</code> - list of the active project URLs
    *
    * @return - <code>List</code> - of String (url)
    */
@@ -88,15 +88,15 @@ public abstract class PwProject {
   }
 
   /**
-   * <code>getUrl</code>
+   * <code>getUrl</code> - return project URL 
    *
    * @return - <code>String</code> - 
    */
   public abstract String getUrl();
 
   /**
-   * <code>getName</code> - project name (directory containing
-   *                               planning sequences
+   * <code>getName</code> - return project name (directory containing
+   *                               planning sequences)
    *
    * @return - <code>String</code> - 
    */
@@ -121,14 +121,15 @@ public abstract class PwProject {
     throws ResourceNotFoundException;
 
   /**
-   * <code>getPlanningSequenceNames</code>
+   * <code>getPlanningSequenceNames</code> - return project's sequence names
    *
    * @return - <code>List</code> - of String
    */
   public abstract List getPlanningSequenceNames();
 
   /**
-   * <code>getPartialPlanNames</code>
+   * <code>getPartialPlanNames</code> - return project's partial plan names for
+   *                                    specified <code>seqName</code>
    *
    * @param seqName - <code>String</code> - 
    * @return - <code>List</code> - of List of String
@@ -145,14 +146,16 @@ public abstract class PwProject {
   public abstract void close() throws Exception, ResourceNotFoundException;
 
   /**
-   * <code>requiresSaving</code>
+   * <code>requiresSaving</code> - indicates to <code>save</code> that this
+   *                               project's info should be written to
+   *                               /xml/proj/<projectName>.xml
    *
    * @return - <code>boolean</code> - 
    */
   public abstract boolean requiresSaving();
 
   /**
-   * <code>save</code> - save project url, name, & seqDirNames in /xml/proj/<projectName>.xml
+   * <code>save</code> - save project url, name, & seqNames in /xml/proj/<projectName>.xml
    *
    * @exception Exception if an error occurs
    */
