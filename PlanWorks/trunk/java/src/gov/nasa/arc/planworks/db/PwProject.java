@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.26 2004-09-03 00:35:33 taylor Exp $
+// $Id: PwProject.java,v 1.27 2004-09-10 20:02:31 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -50,9 +50,11 @@ public abstract class PwProject {
    * @return - <code>PwProject</code> - 
    * @exception DuplicateNameException if an error occurs
    */
-  public static PwProject createProject( final String name, final String workingDir)
+//   public static PwProject createProject( final String name, final String workingDir)
+  public static PwProject createProject( final String name)
     throws DuplicateNameException {
-    return PwProjectImpl.createProject( name, workingDir);
+//     return PwProjectImpl.createProject( name, workingDir);
+    return PwProjectImpl.createProject( name);
   }
 
   /**
@@ -89,42 +91,42 @@ public abstract class PwProject {
    *
    * @return - <code>String</code> - 
    */
-  public abstract String getWorkingDir();
+  // public abstract String getWorkingDir();
 
   /**
    * <code>getPlannerPath</code>
    *
    * @return - <code>String</code> - 
    */
-  public abstract String getPlannerPath();
+  // public abstract String getPlannerPath();
 
   /**
    * <code>getModelName</code>
    *
    * @return - <code>String</code> - 
    */
-  public abstract String getModelName();
+  // public abstract String getModelName();
 
   /**
    * <code>getModelPath</code>
    *
    * @return - <code>String</code> - 
    */
-  public abstract String getModelPath();
+  // public abstract String getModelPath();
 
   /**
    * <code>getModelOutputDestDir</code>
    *
    * @return - <code>String</code> - 
    */
-  public abstract String getModelOutputDestDir();
+  // public abstract String getModelOutputDestDir();
 
   /**
    * <code>getModelInitStatePath</code>
    *
    * @return - <code>String</code> - 
    */
-  public abstract String getModelInitStatePath();
+  // public abstract String getModelInitStatePath();
 
   /**
    * <code>listPlanningSequences</code>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.7 2004-09-09 22:45:04 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.8 2004-09-10 20:02:31 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -84,9 +84,16 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
             "Invalid Planner JNI Library", JOptionPane.ERROR_MESSAGE);
         return null;
       }
-      System.err.println( "Loading: " + plannerPath);
-      System.load( plannerPath);
-      currentProject.setJNIAdapterLoaded( true);
+      try {
+        System.load( plannerPath);
+        currentProject.setJNIAdapterLoaded( true);
+        System.err.println( "Loading: " + plannerPath);
+      } catch (UnsatisfiedLinkError err) {
+        JOptionPane.showMessageDialog
+          (PlanWorks.getPlanWorks(), err.getMessage(), "Planner Loading Error",
+           JOptionPane.ERROR_MESSAGE);
+        return null;
+      }
     }
 
     if (PlannerControlJNI.initPlannerRun( modelPath, modelInitStatePath,
@@ -98,8 +105,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       return null;
     }
 
-    String seqUrl = PlannerControlJNI.getDestinationPath();
-    // String seqUrl = "/home/wtaylor/PlanWorksProject/sequences/PLASMA/basic-model1091643100999";
+    // String seqUrl = PlannerControlJNI.getDestinationPath();
+    String seqUrl = "/home/wtaylor/PlanWorksProject/sequences/PLASMA/basic-model1091643100999";
     return seqUrl;
   } // end getNewSequenceUrl
 
@@ -208,7 +215,7 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       ( ConfigureAndPlugins.PROJECT_WORKING_DIR, projectName);
     plannerPath = ConfigureAndPlugins.getProjectConfigValue
       ( ConfigureAndPlugins.PROJECT_PLANNER_PATH, projectName);
-    modelName = configureDialog.getModelName();
+//     modelName = configureDialog.getModelName();
     modelPath = configureDialog.getModelPath();
     modelInitStatePath = configureDialog.getModelInitStatePath();
     modelOutputDestDir = configureDialog.getModelOutputDestDir();
@@ -221,8 +228,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
     nameValueList.add( workingDir);
     nameValueList.add( ConfigureAndPlugins.PROJECT_PLANNER_PATH);
     nameValueList.add( plannerPath);
-    nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_NAME);
-    nameValueList.add( modelName);
+//     nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_NAME);
+//     nameValueList.add( modelName);
     nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_PATH);
     nameValueList.add( modelPath);
     nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.17 2004-09-03 00:35:31 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.18 2004-09-10 20:02:31 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -142,7 +142,8 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
           progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
         }
 
-        project = PwProject.createProject( inputName, workingDir);
+//         project = PwProject.createProject( inputName, workingDir);
+        project = PwProject.createProject( inputName);
 
         PlanWorks.getPlanWorks().currentProjectName = inputName;
         isProjectCreated = true;
