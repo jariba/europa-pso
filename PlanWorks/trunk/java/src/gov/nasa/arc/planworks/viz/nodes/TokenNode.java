@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.26 2003-10-08 19:10:28 taylor Exp $
+// $Id: TokenNode.java,v 1.27 2003-10-25 00:58:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -159,6 +159,20 @@ public class TokenNode extends BasicNode {
   public String toString() {
     return token.getId().toString();
   }
+
+  /**
+   * <code>getToolTipText</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getToolTipText() {
+    if (token != null) {
+      return token.toString();
+    } else {
+      return "";
+    }
+  } // end getToolTipText
+
 
   /**
    * <code>doMouseClick</code> - For Constraint Network View, Mouse-Left opens/closes

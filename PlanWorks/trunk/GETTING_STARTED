@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.11 2003-10-21 01:29:19 taylor Exp $
+# $Id: GETTING_STARTED,v 1.12 2003-10-25 00:58:08 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -65,6 +65,13 @@ are 1.  Then the node becomes "closed" and has an unbold border.
 The active node ("opened" or "closed" by Mouse-Left click) is positioned in
 the center of the view after layout.
 
+Mouse cursor over token nodes displays "predicateName( parameterValues)"
+on the first line, and "Mouse-L: open nearest variables".  Mouse cursor over 
+variable nodes displays "variableType" on the first line, and
+"Mouse-L: open nearest token links/constraints" on the second line.  
+Mouse cursor over constraint nodes displays "constraintType" on the first 
+line, and "Mouse-L: open nearest token variables" on the second line. 
+
 Temporal Extent View
 --------------------
 Lays out all predicates on a time scale, with triangles denoting the start 
@@ -72,7 +79,9 @@ and end variable values.  The range of extent is shown by a horizontal line.
 The extent line and associated triangles are displayed immediately below 
 each predicate node.  Downward triangles are start times, upward triangles 
 are end times, leftward triangles are -Infinity, and rightward triangles are 
-+Infinity.  Clicking Mouse-Right on the view background will pop-up a menu,
++Infinity.  Mouse cursorover start/end interval "triangles" displays their 
+time scale value.  Mouse cursor over a token's duration  line displays the 
+duration interval.  Clicking Mouse-Right on the view background will pop-up a menu,
 one of whose selections is "Set Time Scale Line".  Selecting it will cause a
 red vertical time scale line to be drawn.  A Mouse-Right "Set Time Scale Line"
 selection at another location will move the time scale line.  Applying a 
@@ -87,19 +96,29 @@ will cause the view to be redrawn with only the filtered timelines and slots.
 Adjacent slots whose end and start intervals are equal will be drawn abutting 
 each other.  Those that are not, will be drawn with a fixed space between them,
 and the later slot will have its time interval labels drawn "lower" than
-the previous slot, to prevent overlap.  
+the previous slot, to prevent overlap.  Mouse cursor over timeline slots displays 
+the slot's "predicateName( parameterValues)".
 
 Token Network View
 ------------------
 Lays out the plan's token relations in directed graphs whose root nodes are the 
-"supreme" master tokens.  The Token Network View now is freshly layed out after 
-a  Content Spec filter is applied.
+"supreme" master tokens.  The Token Network View is freshly layed out after 
+a  Content Spec filter is applied.  Mouse cursor over token nodes displays 
+"predicateName( parameterValues)".  
 
 Transaction View
 ----------------
-Lists the transactions for this partial plan step.  The information includes the
-transaction type and the key of the object on which the transaction was acting.
+Lists the transactions for this partial plan step.  Each entry includes the
+transaction key, the transaction type, the transaction source, the object key,
+the step number, and the object name.  Entries with TRANSACTION_TYPEs of
+VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  Entries with 
+TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = PARAMETER_VAR have values 
+for PARAMETER_NAME.
 
+Mouse-Right click on the background of the "header" portion of the view, 
+offers "Find Transaction By Obj_Key".  Entering an OBJ_KEY value will cause
+the lower portion of the Transaction view to scroll up to show the transaction 
+entry with the selected OBJ_KEY value.
 
 Token Focus in Views
 ====================

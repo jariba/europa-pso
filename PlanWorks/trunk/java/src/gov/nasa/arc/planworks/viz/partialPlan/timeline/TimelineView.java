@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.8 2003-10-16 21:40:41 taylor Exp $
+// $Id: TimelineView.java,v 1.9 2003-10-25 00:58:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -643,7 +643,8 @@ public class TimelineView extends PartialPlanView {
   private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
     tokenByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          AskTokenByKey tokenByKeyDialog = new AskTokenByKey( partialPlan);
+          AskTokenByKey tokenByKeyDialog =
+            new AskTokenByKey( partialPlan, "Find Token by Key", "key (int)");
           Integer tokenKey = tokenByKeyDialog.getTokenKey();
           if (tokenKey != null) {
             // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.3 2003-10-21 21:51:31 taylor Exp $
+// $Id: planViz.txt,v 1.4 2003-10-25 00:58:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -20,15 +20,15 @@ Create a project.
 
 Pre-conditions:
   1. PlanWorks is not running.
-  2. "monkey" test data contains all files named step0 with required extensions.
-  3. PlanWorks data base is "clean".
+  2. PlanWorks data base is "clean".
 
 Method:
   1. Start PlanWorks:
-  2. Create "monkey" project with menu-bar selection "Project->Create ...".
+  2. Create a project with menu-bar selection "Project->Create ...",
+     adding a plan sequence.
 
 Post-conditions:
-  1. PlanWorks frame title is suffixed with "=> monkey".
+  1. PlanWorks frame title is suffixed with "=> <project-name>".
   2. "Planning Sequence" menu appears in the menu-bar.
   3. Menu-bar item "Project->Delete ..." is enabled.
 
@@ -41,13 +41,14 @@ Exercise error handling for missing partial plan files.
 
 Pre-conditions:
   1. PlanWorks is not running.
-  2. "monkey" test data contains all files named step0 with required extensions,
-     except for step0.slots.
+  2. Plan sequence step test data contains all files named step<nn> with 
+     required extensions, except for step<nn>.slots.
   3. PlanWorks data base is "clean".
 
 Method:
   1. Start PlanWorks:
-  2. Create "monkey" project with menu-bar selection "Project->Create ...".
+  2. Create a project with menu-bar selection "Project->Create ...",
+     adding the test sequence.
 
 Post-conditions:
   1. Error dialog "Invalid Sequence Directory" appears.
@@ -61,10 +62,11 @@ Exercise error handling for duplicate projects
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. "monkey" project has been created.
+  2. Test project has been created.
 
 Method:
-  1. Create "monkey" project with menu-bar selection "Project->Create ...".
+  1. Create a project with the same name as the test project, using
+     menu-bar selection "Project->Create ...".
 
 Post-conditions:
   1. Error dialog "Duplicate Name Exception" appears.
@@ -78,13 +80,13 @@ Delete a project.
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. "monkey" project has been created.
+  2. Test project has been created, and is the only project.
 
 Method:
-  1. Delete "monkey" project with menu-bar selection "Project->Delete ...".
+  1. Delete test project with menu-bar selection "Project->Delete ...".
 
 Post-conditions:
-  1. PlanWorks frame title suffix "=> monkey" is removed.
+  1. PlanWorks frame title suffix "=> <project-name>" is removed.
   2. Menu-bar item "Project->Delete ..." is disabled.
 
 Requirements: 3.2.c
@@ -96,14 +98,15 @@ Open a project.
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. "monkey" project has been created.
+  2. Test project has been created.
 
 Method:
-  1. Create "emptySlots" project with menu-bar selection "Project->Create ...".
-  2. Open "monkey" project with menu-bar selection "Project->Open ...".
+  1. Create a second test project, with a unique name, with menu-bar 
+     selection "Project->Create ...".
+  2. Open first test project with menu-bar selection "Project->Open ...".
 
 Post-conditions:
-  1. PlanWorks frame title is suffixed with "=> monkey".
+  1. PlanWorks frame title is suffixed with "=> <test-project-2>".
   2. Menu-bar item "Project->Open ..." is enabled.
 
 Requirements: 3.2.c
@@ -115,18 +118,19 @@ Add sequences to a project.
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. "monkey" project is the only project in the data base.
+  2. Project "test1" is the only project in the data base.  It has
+     plan sequence "test-seq-1".
 
 Method:
-  1. Add sequence "emptySlots" to "monkey" project with menu-bar selection
+  1. Add sequence "test-seq-2" to "test1" project with menu-bar selection
      "Project->Add Sequence ...".
-  2. Add sequence "freeTokens" to "monkey" project with menu-bar selection
+  2. Add sequence "test-seq-3" to "test1" project with menu-bar selection
      "Project->Add Sequence ...".
 
 Post-conditions:
-  1. PlanWorks frame title remains suffixed with "=> monkey".
+  1. PlanWorks frame title remains suffixed with "=> "test1"".
   2. Menu-bar selection "Planning Sequence" offers user three sequences for
-     viewing: "emptySlots", "freeTokens", and "monkey".
+     viewing: "test-seq-1", "test-seq-2", and "test-seq-3".
 
 Requirements: 3.10
 
@@ -137,32 +141,32 @@ Display the Timeline Views of multiple sequence partial plans.
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. "emptySlots", and "freeTokens" have been added to the "monkey" project
-     as sequences.
+  2. "test-seq-2", and "test-seq-3" have been added to the "test1" project
+     as sequences, in addtion to "test-seq-1"
 
 Method:
-  1. Display "monkey" Sequence Steps View using menu-bar selection
+  1. Display "test1" Sequence Steps View using menu-bar selection
      "Planning Sequence->monkey.....".
-  2. Display "monkey" Timeline View by clicking Mouse-Right on the "step0"
-     element of the "SequenceStepsView of monkey....", and selecting 
+  2. Display "test-seq-1" Timeline View by clicking Mouse-Right on the "step0"
+     element of the "SequenceStepsView of test-seq-1", and selecting 
      "Timeline View".
-  3. Display "emptySlots" Sequence Steps View using menu-bar selection
-     "Planning Sequence->emptySlots.....".
-  4. Display "emptySlots" Timeline View by clicking Mouse-Right on the "step0"
-     element of the "SequenceStepsView of emptySlots....", and selecting
+  3. Display "test-seq-2" Sequence Steps View using menu-bar selection
+     "Planning Sequence->test-seq-2".
+  4. Display "test-seq-2" Timeline View by clicking Mouse-Right on the "step0"
+     element of the "SequenceStepsView of test-seq-2", and selecting
      "Timeline View"".
-  5. Display "freeTokens" Sequence Steps View using menu-bar selection
-     "Planning Sequence->freeTokens.....".
-  6. Display "freeTokens" Timeline View by clicking Mouse-Right on the "step0"
-     element of the "SequenceStepsView of freeTokens....", and selecting
+  5. Display "test-seq-3" Sequence Steps View using menu-bar selection
+     "Planning Sequence->test-seq-3".
+  6. Display "test-seq-3" Timeline View by clicking Mouse-Right on the "step0"
+     element of the "SequenceStepsView of test-seq-3", and selecting
      "Timeline View"".
-  7. Display "monkey" Timeline View by clicking Mouse-Right on the "step0"
-     element of the "SequenceStepsView of monkey....", and selecting 
+  7. Display "test-seq-1" Timeline View by clicking Mouse-Right on the "step0"
+     element of the "SequenceStepsView of test-seq-1", and selecting 
      "Timeline View"".
 
 Post-conditions:
   1. Three Content Spec windows exist, three TimelineView windows exist, and
-     the "TimelineView of monkey..." was brought to the front by method step 7.
+     the TimelineView of "test-seq-1" was brought to the front by method step 7.
 
 Requirements: 4.0.2, 4.0.3, 4.2.1, 4.2.2
 
@@ -173,8 +177,8 @@ Perform "tiling" and cascading layouts of multiple view and content spec windows
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. "emptySlots", and "freeTokens" have been added to the "monkey" project
-     as sequences.
+  2. "test-seq-2", and "test-seq-3" have been added to the "test1" project
+     as sequences, in addtion to "test-seq-1"
   3. Each sequence has its Content Spec, SequenceQuery, Timeline View and
      Sequence Steps View windows displayed.
 
@@ -187,10 +191,10 @@ Post-conditions:
      ContentSpec and SequenceQuery windows are tiled across the top row of
      the frame.  The TimelineView and SequenceStepsView windows are tiled
      in the second thru fourth rows.
-  2. After Method:2, the six Content Spec and windows are tiled across the 
-     top of the frame, and six Sequence Steps Views and Timeline Views are 
-     an overlapping cascade from the upper left to the lower right, under 
-     the Content Spec and Sequence Query windows.
+  2. After Method:2, the six Content Spec and SequenceQuery windows are 
+     tiled across the top of the frame, and six Sequence Steps Views and
+     Timeline Views are an overlapping cascade from the upper left to the 
+     lower right, under the Content Spec and Sequence Query windows.
 
 Requirements: 4.2.3.f
 
@@ -201,20 +205,20 @@ Delete sequences from a project.
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. "emptySlots", and "freeTokens" have been added to the "monkey" project
-     as sequences.
+  2. "test-seq-2", and "test-seq-3" have been added to the "test1" project
+     as sequences, in addtion to "test-seq-1"
   3. Each sequence has its Content Spec, SequenceQuery, Timeline View and
      Sequence Steps View windows displayed.
 
 Method:
-  1. Delete "emptySlots" sequence by using menu-bar selection of
+  1. Delete "test-seq-2" sequence by using menu-bar selection of
      "Project->Delete Sequence ...".
-  2. Delete "freeTokens" sequence by using menu-bar selection of
+  2. Delete "test-seq-3" sequence by using menu-bar selection of
      "Project->Delete Sequence ...".
 
 Post-conditions:
   1. Four windows remain: the ContentSpec, the SequenceQuery, the TimelineView, 
-     and the SequenceStepsView of "monkey".
+     and the SequenceStepsView of "test-seq-1".
 
 Requirements: 3.10
 
@@ -225,26 +229,26 @@ Display all partial plan views for a sequence step.
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. The "monkey" project is open.
+  2. The "test1" project is open.
   3. No partial plan views are displayed.
 
 Method:
-  1. Display "monkey" Sequence Steps View using menu-bar selection
-     "Planning Sequence->monkey.....".
-  2. Display "monkey" Constraint Network View by clicking Mouse-Right on the
-     "step0" element of the "SequenceStepsView of monkey....", and selecting
+  1. Display "test-seq-1" Sequence Steps View using menu-bar selection
+     "Planning Sequence->test-seq-1".
+  2. Display "test-seq-1" Constraint Network View by clicking Mouse-Right on the
+     "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "Constraint Network View".
-  3. Display "monkey" Temporal Extent View by clicking Mouse-Right on the
-     "step0" element of the "SequenceStepsView of monkey....", and selecting
+  3. Display "test-seq-1" Temporal Extent View by clicking Mouse-Right on the
+     "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "Temporal Extent View".
-  4. Display "monkey" Timeline View by clicking Mouse-Right on the
-     "step0" element of the "SequenceStepsView of monkey....", and selecting
+  4. Display "test-seq-1" Timeline View by clicking Mouse-Right on the
+     "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "Timeline View".
-  4. Display "monkey" Token Network View by clicking Mouse-Right on the
-     "step0" element of the "SequenceStepsView of monkey....", and selecting
+  4. Display "test-seq-1" Token Network View by clicking Mouse-Right on the
+     "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "Token Network View".
-  5. Display "monkey" Transaction View by clicking Mouse-Right on the
-     "step0" element of the "SequenceStepsView of monkey....", and selecting
+  5. Display "test-seq-1" Transaction View by clicking Mouse-Right on the
+     "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "TransactionView".
   6. Open the first two token nodes of the Constraint Network View, and then
      open the "closed" variable and constraint nodes that result.  Then 
@@ -252,27 +256,98 @@ Method:
      initial state.
 
 Post-conditions:
-  1. Seventeen token nodes appear in the Constraint Network View.
-  2. Thirteen token nodes appear in the Temporal Extent View.
-  3. Three timeline nodes and thirteen slot nodes appear in the Timeline View.
-  4. Seventeen token nodes, with two "master roots" appear in the Token Network View.
-  5. One transaction entry appears in the Transaction View.
-  6. The initial state of the Constraint Network View is not completely
-     achievable, because the manually-generated sample partial plan has some
-     inconsistencies.
+  1. All token nodes (rectangles) appear in the Constraint Network View, and 
+     variable nodes (ovals) and constraint nodes (left/right pointed rectangles)
+     are linked to the token nodes "opened" in Method:6.
+     Mouse cursor over token nodes displays "predicateName( parameterValues)"
+     on the first line, and "Mouse-L: open nearest variables".  Mouse cursor over 
+     variable nodes displays "variableType" on the first line, and
+     "Mouse-L: open nearest token links/constraints" on the second line.  
+     Mouse cursor over constraint nodes displays "constraintType" on the first 
+     line, and "Mouse-L: open nearest token variables" on the second line. 
+  2. All token nodes appear in the Temporal Extent View.  Mouse cursor over 
+     the token nodes displays "predicateName( parameterValues)".  Mouse cursor
+     over start/end interval "triangles" displays their time scale value.
+     Mouse cursor over a token's duration  line displays the duration
+     interval.
+  3. Timeline nodes and slot nodes appear in the Timeline View.  Mouse cursor
+     over timeline slots displays the slot's "predicateName( parameterValues)".
+  4. Token nodes, with "master roots" appear in the Token Network View.
+     Mouse cursor over token nodes displays "predicateName( parameterValues)".
+  5. Transaction entries appear in the Transaction View.  All transaction
+     entries have values for OBJ_NAME.  Entries with TRANSACTION_TYPEs of
+     VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  Entries with 
+     TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = PARAMETER_VAR have values 
+     for PARAMETER_NAME.
 
 Requirements: 4.2.1, 4.2.2, 4.2.3.d, 4.2.3.e, 4.2.3.f, 4.3.2.a
 
 
 PLANVIZ-11
 --------------------
+Exercise popup menu facilities of partial plan views.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. The "test1" project is open, and all partial plan views are being
+     displayed for step<nn>.
+
+Method:
+  1. Using either the Constraint Network, Temporal Extent, Timeline, or
+     Token Network view, choose token keys for a slotted token and a
+     free token.
+  2. Mouse-Right click, in turn, on the Constraint Network , Temporal Extent, 
+     Timeline, and Token Network views, selecting "Find Token By Key",
+     entering the slotted token key value, and then selecting "Enter".
+  3. Mouse-Right, in turn, the Constraint Network , Temporal Extent, 
+     Timeline, and Token Network views, selecting "Find Token By Key",
+     entering the free token key value, and then selecting "Enter".
+  4. Arbitrarily, pick a slotted token node in one of the views, and Mouse-
+     Right click on the node, selecting "Set Active Token".
+  5. In each of the other views, except for the Transaction view, Mouse-
+     Right click on the background, and select "Snap to Active Token".
+  6. Arbitrarily, pick a free token node in one of the views, and Mouse-
+     Right click on the node, selecting "Set Active Token".
+  7. In each of the other views, except for the Transaction view, Mouse-
+     Right click on the background, and select "Snap to Active Token".
+  8. In the Temporal Extent view, Mouse-Right click on the background, and
+     select "Set Time Scale Line".
+  9. In the Transaction view, Mouse-Right click on the background of the 
+     "header" portion of the view, and select "Find Transaction By Obj_Key".
+     Enter an OBJ_KEY value.
+
+Post-conditions:
+  1. Method:2 - In turn, each of the views should re-oriented itself to
+     display the selected slotted token node with a green highlight around it.
+  2. Method:3 - In turn, each of the views should re-oriented itself to
+     display the selected free token node with a green highlight around it.
+  3. Method:4 - the selected slotted token node will have a green highlight 
+     around it.
+  4. Method:5 - Each of the other views should re-oriented itself to
+     display the selected slotted token node with a green highlight around it.
+  5. Method:6 -the selected free token node will have a green highlight 
+     around it.
+  6. Method:7 - Each of the other views should re-oriented itself to
+     display the selected free token node with a green highlight around it.
+  7. Method:8 - a red vertical line should appear at the location of the
+     mouse click, and placing the mouse cursor over the red line will cause
+     a "tool tip" to appear with the value of the "x" or time coordinate.
+  8. Method:9 - The lower portion of the Transaction view will scroll up to 
+     show the transaction entry with the selected OBJ_KEY value.
+
+Requirements: TBD
+
+
+PLANVIZ-12
+--------------------
 Use the Content Specification to filter which tokens are displayed on the 
 partial plan views.
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. The "monkey" project is open, and the four partial plan views are being
-     displayed for step0 in a "tiled" layout arrangement.
+  2. The "test1" project is open, and all partial plan views, except
+     Transaction View, are being displayed for step<nn> in a "tiled" layout 
+     arrangement.
   3. The Constraint Network View has been expanded for at least two tokens,
      and all their variable and constraint nodes.
 
@@ -339,7 +414,7 @@ Requirements: 4.1.1, 4.1.2.a, 4.1.2.b, 4.1.2.c, 4.1.3, 4.1.4, 4.1.5,
      4.1.7, 4.1.8, 4.1.9
 
 
-PLANVIZ-12
+PLANVIZ-13
 --------------------
 Use Sequence Query dialog window to display windows with sequence query information.
 
@@ -365,8 +440,6 @@ Method:
      which expand into a "Key" field; and "In Range", which expands into
      "startStep" and "endStep" fields.  Enter appropriate values for the
      fields, and click on "Apply Query".
-
-
 
 Post-conditions:
   1. Method:1 - the Sequence Query and Sequence Steps View

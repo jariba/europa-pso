@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskTokenByKey.java,v 1.2 2003-10-09 00:29:39 taylor Exp $
+// $Id: AskTokenByKey.java,v 1.3 2003-10-25 00:58:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -31,7 +31,7 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
 
 /**
  * <code>AskTokenByKey</code> - custom dialog to allow user to enter
- *           a value for a token key
+ *           a value for a token key, and check that it exists.
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *           NASA Ames Research Center - Code IC
@@ -40,8 +40,9 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
 public class AskTokenByKey extends JDialog { 
 
   private PwPartialPlan partialPlan;
-  private String typedText = null;
   private Integer tokenKey;
+
+  private String typedText = null;
   private JOptionPane optionPane;
   private JTextField textField;
   private String btnString1;
@@ -52,13 +53,13 @@ public class AskTokenByKey extends JDialog {
    *
    * @param partialPlan - <code>PwPartialPlan</code> - 
    */
-  public AskTokenByKey( PwPartialPlan partialPlan) {
-    // model dialog - blocks other activity
+  public AskTokenByKey( PwPartialPlan partialPlan, String dialogTitle, String textFieldLabel) {
+    // modal dialog - blocks other activity
     super( PlanWorks.planWorks, true);
     this.partialPlan = partialPlan;
-    setTitle( "Find Token by Key");
 
-    final String msgString1 = "key (int)";
+    setTitle( dialogTitle);
+    final String msgString1 = textFieldLabel;
     textField = new JTextField(10);
     Object[] array = {msgString1, textField};
 
@@ -132,8 +133,9 @@ public class AskTokenByKey extends JDialog {
               typedText = textField.getText();
               try {
                 tokenKey = new Integer( Integer.parseInt( typedText));
-                // System.err.println( "key " + typedText);
-                if (partialPlan.getToken( tokenKey) == null) {
+                // System.err.println( "AskTokenByKey key " + typedText + " partialPlan " +
+                //                     partialPlan);
+                if ((partialPlan != null) && (partialPlan.getToken( tokenKey) == null)) {
                   JOptionPane.showMessageDialog
                     (PlanWorks.planWorks,
                      "Sorry, \"" + tokenKey.toString() + "\" " + "isn't a valid token key.",

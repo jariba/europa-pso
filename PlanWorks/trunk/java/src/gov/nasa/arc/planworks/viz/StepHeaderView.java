@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepHeaderView.java,v 1.2 2003-10-23 18:28:10 taylor Exp $
+// $Id: StepHeaderView.java,v 1.3 2003-10-25 00:58:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -50,7 +50,8 @@ public class StepHeaderView extends JGoView {
   private static final String KEY_HEADER =        "TX_KEY "; 
   private static final String TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
   private static final String OBJ_NAME_HEADER =   "     OBJ_NAME     ";
-  private static final String PREDICATE_HEADER =  "  PREDICATE  ";
+  private static final String PREDICATE_HEADER =  "  PREDICATE_NAME  ";
+  private static final String PARAMETER_HEADER =  "  PARAMETER_NAME  ";
 
 
   private VizView vizView; // PartialPlanView  or SequenceView
@@ -60,6 +61,7 @@ public class StepHeaderView extends JGoView {
   private TextNode typeNode;
   private TextNode objectNameNode;
   private TextNode predicateNode;
+  private TextNode parameterNode;
 
   /**
    * <code>StepHeaderView</code> - constructor 
@@ -112,6 +114,12 @@ public class StepHeaderView extends JGoView {
     predicateNode = new TextNode( PREDICATE_HEADER);
     configureTextNode( predicateNode, new Point( x, y), bgColor);
     jGoDocument.addObjectAtTail( predicateNode);
+    x += predicateNode.getSize().getWidth();
+
+    parameterNode = new TextNode( PARAMETER_HEADER);
+    configureTextNode( parameterNode, new Point( x, y), bgColor);
+    jGoDocument.addObjectAtTail( parameterNode);
+    x += parameterNode.getSize().getWidth();
   } // end renderStepHeader
 
 
@@ -136,7 +144,7 @@ public class StepHeaderView extends JGoView {
    *
    * @return the value of stepNumNode
    */
-  public TextNode getStepNumNode()  {
+  protected TextNode getStepNumNode()  {
     return this.stepNumNode;
   }
 
@@ -145,7 +153,7 @@ public class StepHeaderView extends JGoView {
    *
    * @return the value of keyNode
    */
-  public TextNode getKeyNode()  {
+  protected TextNode getKeyNode()  {
     return this.keyNode;
   }
 
@@ -154,7 +162,7 @@ public class StepHeaderView extends JGoView {
    *
    * @return the value of typeNode
    */
-  public TextNode getTypeNode()  {
+  protected TextNode getTypeNode()  {
     return this.typeNode;
   }
 
@@ -163,7 +171,7 @@ public class StepHeaderView extends JGoView {
    *
    * @return the value of objectNameNode
    */
-  public TextNode getObjectNameNode()  {
+  protected TextNode getObjectNameNode()  {
     return this.objectNameNode;
   }
 
@@ -172,8 +180,17 @@ public class StepHeaderView extends JGoView {
    *
    * @return the value of predicateNode
    */
-  public TextNode getPredicateNode()  {
+  protected TextNode getPredicateNode()  {
     return this.predicateNode;
+  }
+
+  /**
+   * Gets the value of parameterNode
+   *
+   * @return the value of parameterNode
+   */
+  protected TextNode getParameterNode()  {
+    return this.parameterNode;
   }
 
 

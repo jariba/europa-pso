@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.4 2003-10-02 23:24:21 taylor Exp $
+// $Id: NodeGenerics.java,v 1.5 2003-10-25 00:58:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -16,6 +16,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
@@ -50,15 +51,16 @@ public class NodeGenerics {
   }
 
   /**
-   * <code>showPopupMenu</code> - show pop up menu in vizView at viewCoords location
+   * <code>showPopupMenu</code> - show pop up menu in component at viewCoords location
    *
    * @param popupMenu - <code>JPopupMenu</code> - 
-   * @param vizView - <code>VizView</code> - 
+   * @param component - <code>JComponent</code> - 
    * @param viewCoords - <code>Point</code> - 
    */
-  public static void showPopupMenu( JPopupMenu popupMenu, VizView vizView, Point viewCoords) {
+  public static void showPopupMenu( JPopupMenu popupMenu, JComponent component,
+                                    Point viewCoords) {
     boolean isLocationAbsolute = false;
-    Point popupPoint = Utilities.computeNestedLocation( viewCoords, vizView,
+    Point popupPoint = Utilities.computeNestedLocation( viewCoords, component,
                                                         isLocationAbsolute);
     popupMenu.show( PlanWorks.planWorks, (int) popupPoint.getX(),
                     (int) popupPoint.getY());

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.49 2003-10-23 18:28:10 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.50 2003-10-25 00:58:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -545,19 +545,19 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   }
 
   public List getStepsWithRestrictions() {
-    return MySQLDB.queryStepsWithRestrictions(id);
+    return getTransactionsById(MySQLDB.queryStepsWithRestrictions(id));
   }
 
   public List getStepsWithRelaxations() {
-    return MySQLDB.queryStepsWithRelaxations(id);
+    return getTransactionsById(MySQLDB.queryStepsWithRelaxations(id));
   }
 
   public List getStepsWithUnitVariableBindingDecisions() {
-    return MySQLDB.queryStepsWithUnitVariableDecisions(this);
+    return getTransactionsById(MySQLDB.queryStepsWithUnitVariableDecisions(this));
   }
 
   public List getStepsWithNonUnitVariableBindingDecisions() {
-    return MySQLDB.queryStepsWithNonUnitVariableDecisions(this);
+    return getTransactionsById(MySQLDB.queryStepsWithNonUnitVariableDecisions(this));
   }
 
   public int getPlanDBSize(int stepNum) throws IndexOutOfBoundsException {

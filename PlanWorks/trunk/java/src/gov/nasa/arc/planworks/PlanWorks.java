@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.69 2003-10-21 21:51:30 taylor Exp $
+// $Id: PlanWorks.java,v 1.70 2003-10-25 00:58:09 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -499,9 +499,11 @@ public class PlanWorks extends MDIDesktopFrame {
     new CreateSequenceViewThread( viewName, menuItem).start();
   } // end createSequenceViewThread
 
-  private final void createDirectoryChooser() { 
-    sequenceDirChooser.setCurrentDirectory
-      ( new File( System.getProperty( "default.sequence.dir")));
+  private final void createDirectoryChooser() {
+    if (! System.getProperty( "default.sequence.dir").equals( "")) {
+      sequenceDirChooser.setCurrentDirectory
+        ( new File( System.getProperty( "default.sequence.dir")));
+    }
     sequenceDirChooser.setDialogTitle
       ( "Select Sequence Directory of Partial Plan Directory(ies)");
     sequenceDirChooser.setMultiSelectionEnabled( true);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.5 2003-10-16 21:40:41 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.6 2003-10-25 00:58:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -607,7 +607,8 @@ public class TokenNetworkView extends PartialPlanView {
   private void createTokenByKeyItem( JMenuItem tokenByKeyItem) {
     tokenByKeyItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          AskTokenByKey tokenByKeyDialog = new AskTokenByKey( partialPlan);
+          AskTokenByKey tokenByKeyDialog =
+            new AskTokenByKey( partialPlan, "Find Token by Key", "key (int)");
           Integer tokenKey = tokenByKeyDialog.getTokenKey();
           if (tokenKey != null) {
             // System.err.println( "createTokenByKeyItem: tokenKey " + tokenKey.toString());
