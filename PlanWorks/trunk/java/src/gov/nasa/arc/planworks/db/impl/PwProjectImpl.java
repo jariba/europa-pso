@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.9 2003-06-12 23:49:46 taylor Exp $
+// $Id: PwProjectImpl.java,v 1.10 2003-06-13 18:51:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -79,9 +79,12 @@ public class PwProjectImpl extends PwProject {
         while (namesIterator.hasNext()) {
           projectNames.add( namesIterator.next());
         }
+        boolean isInDb = true;
         Iterator urlsIterator = projectUrlsRestore.iterator();
         while (urlsIterator.hasNext()) {
-          projectUrls.add( urlsIterator.next());
+          String url = (String) urlsIterator.next();
+          projectUrls.add( url);
+          new PwProjectImpl( url, isInDb);
         }
       }
     } catch (Exception e) {
@@ -103,6 +106,7 @@ public class PwProjectImpl extends PwProject {
 
   /**
    * <code>PwProjectImpl</code> - constructor 
+   *                  create a new project from an url
    *                  called from PwProject.createProject
    *
    * @param url - <code>String</code> - 
@@ -145,12 +149,14 @@ public class PwProjectImpl extends PwProject {
     projectNames.add(name );
     projectUrls.add( url);
     projects.add( this);
-  } // end  constructor PwProject.createProject
+  } // end  constructor PwProjectImpl.createProject
 
 
   /**
-   * <code>PwProjectImpl</code> - constructor 
-   *                  called from PwProject.openProject
+   * <code>PwProjectImpl</code> - constructor
+   *                  inflate a restored project from
+   *                  System.getProperty("projects.xml.data.dir")
+   *                  called from PwProject.initProjects
    *
    * @param url - <code>String</code> - 
    * @param isInDb - <code>boolean</code> - 
@@ -190,7 +196,7 @@ public class PwProjectImpl extends PwProject {
     }
     // this project is already in projectNames & projectUrls
     projects.add( this);
-  } // end  constructor PwProject.openProject
+  } // end  constructor PwProjectImpl.openProject
 
 
   /**
@@ -255,18 +261,18 @@ public class PwProjectImpl extends PwProject {
   // EXTEND PwProject 
 
   /**
-   * <code>getProject</code>
+   * <code>getProject</code> -
    *
    * @param url - <code>String</code> - 
    * @return - <code>PwProject</code> - 
    */
-  public static PwProject getProject( String url) {
+  public static PwProject getProject( String url) throws ResourceNotFoundException {
     for (int i = 0, n = projectUrls.size(); i < n; i++) {
       if (((String) projectUrls.get( i)).equals( url)) {
         return (PwProject) projects.get( i);
       }
     }
-    return null;
+    throw new ResourceNotFoundException( "Project not found for url '" + url + "'");
   } // end getProject
 
   /**
@@ -293,9 +299,12 @@ public class PwProjectImpl extends PwProject {
     System.err.println( "PwProjectImpl: save projectUrls " + projectUrls);
     xmlEncoder.close();
 
+    System.err.println( "saveProjects: " + projects.size());
     Iterator projectsItr = projects.iterator();
     while (projectsItr.hasNext()) {
       PwProjectImpl activeProject = (PwProjectImpl) projectsItr.next();
+      System.err.println( "  project " + activeProject.getName() +
+                          " requiresSaving " + activeProject.requiresSaving);
       if (activeProject.requiresSaving) {
         activeProject.save();
         activeProject.setRequiresSaving( false);

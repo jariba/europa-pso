@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.5 2003-06-12 23:49:45 taylor Exp $
+// $Id: PlanWorks.java,v 1.6 2003-06-13 18:51:26 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -110,7 +110,7 @@ public class PlanWorks extends MDIDesktopFrame {
    * <code>PlanWorks</code> - constructor 
    *
    * @param constantMenus - <code>JMenu[]</code> - 
-   */
+   */                                
   public PlanWorks( JMenu[] constantMenus) {
     super( name, constantMenus);
     currentProjectUrl = null;
@@ -160,6 +160,7 @@ public class PlanWorks extends MDIDesktopFrame {
     setProjectMenuEnabled( "Create ...", true);
     if (PwProject.listProjects().size() > 0) {
       setProjectMenuEnabled( "Open ...", true);
+      setProjectMenuEnabled( "Delete ...", true);
     }
   } //end constructor 
 
@@ -267,11 +268,13 @@ public class PlanWorks extends MDIDesktopFrame {
         currentProject = instantiatedProject;
         JMenu partialPlanMenu = clearSeqPartialPlanViewMenu();
         addSeqPartialPlanViewMenu( instantiatedProject, partialPlanMenu);
-        // cache the project info
-        try {
-          PwProject.saveProjects();
-        } catch (Exception excp) {
-          System.err.println( excp );
+        if (type.equals( "create")) {
+          // cache the project info
+          try {
+            PwProject.saveProjects();
+          } catch (Exception excp) {
+            System.err.println( excp );
+          }
         }
         // clear the old project's views
         if (viewManager != null) {
@@ -351,9 +354,8 @@ public class PlanWorks extends MDIDesktopFrame {
           currentProjectUrl = (String) urlsLessCurrent.get( i);
           System.err.println( "Open Project: " + currentProjectUrl);
           try {
-            project = PwProject.openProject( currentProjectUrl);
+            project = PwProject.getProject( currentProjectUrl);
             this.setTitle( name + "  --  project: " + currentProjectUrl);
-            setProjectMenuEnabled( "Delete ...", true);
           } catch (ResourceNotFoundException rnfExcep) {
             // System.err.println( "Project " + projectName + " not found: " + rnfExcep1);
             int index = rnfExcep.getMessage().indexOf( ":");
@@ -402,8 +404,14 @@ public class PlanWorks extends MDIDesktopFrame {
           String projectUrl = (String) projectUrls.get( i);
           System.out.println( "Delete Project: " + projectUrl);
           try {
-            PwProject.getProject( projectUrl).close();
-            if (this.currentProjectUrl.equals( projectUrl)) {
+              PwProject.getProject( projectUrl).close();
+            try {
+              PwProject.saveProjects();
+            } catch (Exception excp) {
+              System.err.println( excp );
+            }
+            if ((this.currentProjectUrl != null) &&
+                this.currentProjectUrl.equals( projectUrl)) {
               viewManager.clearViewSets();
               this.setTitle( name);
               clearSeqPartialPlanViewMenu();
@@ -416,7 +424,15 @@ public class PlanWorks extends MDIDesktopFrame {
             } else {
               setProjectMenuEnabled( "Open ...", true);
             }
+          } catch (ResourceNotFoundException rnfExcep) {
+            int index = rnfExcep.getMessage().indexOf( ":");
+            JOptionPane.showMessageDialog
+              (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
+               "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+            System.err.println( rnfExcep);
           } catch (Exception excep) {
+            excep.printStackTrace();
+            System.err.println( " delete: excep " + excep);
             int index = excep.getMessage().indexOf( ":");
             JOptionPane.showMessageDialog
               (PlanWorks.this, excep.getMessage().substring( index + 1),
