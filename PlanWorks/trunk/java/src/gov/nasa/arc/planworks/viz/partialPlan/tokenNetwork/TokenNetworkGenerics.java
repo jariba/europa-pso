@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkGenerics.java,v 1.4 2004-09-28 18:54:46 taylor Exp $
+// $Id: TokenNetworkGenerics.java,v 1.5 2004-09-28 20:45:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,10 +42,6 @@ import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
  */
 public final class TokenNetworkGenerics {
 
-  public static final String RULE_INST_TO_TOKEN_LINK_TYPE = "RutoT";
-  public static final String TOKEN_TO_RULE_INST_LINK_TYPE = "TtoRu";
-  public static final String TOKEN_TO_TOKEN_LINK_TYPE = "TtoT";
- 
   private TokenNetworkGenerics() {
   }
 
@@ -342,10 +338,10 @@ public final class TokenNetworkGenerics {
    * @return - <code>boolean</code> - 
    */
   public static boolean removeTokNetLink( final BasicNodeLink link,
-                                       final IncrementalNode fromTokNetNode,
-                                       final IncrementalNode toTokNetNode,
-                                       final String linkType,
-                                       final boolean isDebugPrint) {
+                                          final IncrementalNode fromTokNetNode,
+                                          final IncrementalNode toTokNetNode,
+                                          final String linkType,
+                                          final boolean isDebugPrint) {
     boolean areLinksChanged = false;
     link.decLinkCount();
     fromTokNetNode.decLinkCount();
@@ -373,17 +369,17 @@ public final class TokenNetworkGenerics {
    * @param toTokNetNode - <code>IncrementalNode</code> - 
    * @return - <code>String</code> - 
    */
-  public static String getLinkType( final IncrementalNode fromTokNetNode,
-                                    final IncrementalNode toTokNetNode) {
+  protected static String getLinkType( final IncrementalNode fromTokNetNode,
+                                       final IncrementalNode toTokNetNode) {
     if ((fromTokNetNode instanceof TokenNetworkTokenNode) &&
         (toTokNetNode instanceof TokenNetworkTokenNode)) {
-      return TOKEN_TO_TOKEN_LINK_TYPE;
+      return ViewConstants.TOKEN_TO_TOKEN_LINK_TYPE;
     } else if ((fromTokNetNode instanceof TokenNetworkTokenNode) &&
                (toTokNetNode instanceof TokenNetworkRuleInstanceNode)) {
-      return TOKEN_TO_RULE_INST_LINK_TYPE;
+      return ViewConstants.TOKEN_TO_RULE_INST_LINK_TYPE;
     } else if ((fromTokNetNode instanceof TokenNetworkRuleInstanceNode) &&
                (toTokNetNode instanceof TokenNetworkTokenNode)) {
-      return RULE_INST_TO_TOKEN_LINK_TYPE;
+      return ViewConstants.RULE_INST_TO_TOKEN_LINK_TYPE;
     } else {
       System.err.println( "TokenNetworkGenerics.getLinkType: no link type for " +
                           fromTokNetNode + " => " + toTokNetNode);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.76 2004-09-28 18:54:46 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.77 2004-09-28 20:45:09 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1209,9 +1209,12 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 	  }
 	}
         if (nodeList.size() >= 2) {
-          linkList.add( NodeGenerics.getLinkFromNodes
-                        ( (IncrementalNode) nodeList.get( nodeList.size() - 2),
-                          (IncrementalNode) nodeList.get( nodeList.size() - 1), tokNetLinkMap));
+          BasicNodeLink link = NodeGenerics.getLinkFromNodes
+            ( (IncrementalNode) nodeList.get( nodeList.size() - 2),
+              (IncrementalNode) nodeList.get( nodeList.size() - 1), tokNetLinkMap);
+          if (link != null) {
+            linkList.add( link);
+          }
         }
       }
       if (layoutNeeded) {

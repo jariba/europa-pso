@@ -394,5 +394,24 @@ public abstract class ViewConstants {
     TOKEN_NETWORK_VIEW_ENTITY_CLASSES.add( PwToken.class);
   }
 
+  public static final String OBJECT_TO_OBJECT_LINK_TYPE = "OtoO";
+  public static final String OBJECT_TO_RESOURCE_LINK_TYPE = "OtoR";
+  public static final String OBJECT_TO_TIMELINE_LINK_TYPE = "OtoTi";
+  public static final String OBJECT_TO_VARIABLE_LINK_TYPE = "OtoV";
+  public static final String RESOURCE_TO_TOKEN_LINK_TYPE = "RtoT";
+  public static final String RESOURCE_TO_VARIABLE_LINK_TYPE = "RtoV";
+  public static final String RULE_INST_TO_TOKEN_LINK_TYPE = "RutoT";
+  public static final String RULE_INST_TO_VARIABLE_LINK_TYPE = "RutoV";
+  public static final String SLOT_TO_TOKEN_LINK_TYPE = "StoT";
+  public static final String TIMELINE_TO_OBJECT_LINK_TYPE = "TitoO";
+  public static final String TIMELINE_TO_RESOURCE_LINK_TYPE = "TitoR";
+  public static final String TIMELINE_TO_SLOT_LINK_TYPE = "TitoS";
+  public static final String TIMELINE_TO_TIMELINE_LINK_TYPE = "TitoTi";
+  public static final String TIMELINE_TO_VARIABLE_LINK_TYPE = "TitoV";
+  public static final String TOKEN_TO_RULE_INST_LINK_TYPE = "TtoRu";
+  public static final String TOKEN_TO_TOKEN_LINK_TYPE = "TtoT";
+  public static final String TOKEN_TO_VARIABLE_LINK_TYPE = "TtoV";
+  public static final String VARIABLE_TO_CONSTRAINT_LINK_TYPE = "VtoC";
+ 
 
 } // end ViewConstants

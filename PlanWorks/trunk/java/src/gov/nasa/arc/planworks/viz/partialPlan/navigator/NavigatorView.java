@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.38 2004-09-09 22:45:06 taylor Exp $
+// $Id: NavigatorView.java,v 1.39 2004-09-28 20:45:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1074,9 +1074,12 @@ public class NavigatorView extends PartialPlanView
 			    entityKey + " not handled");
       }
       if (nodeList.size() >= 2) {
-        linkList.add( NodeGenerics.getLinkFromNodes
-                      ( (IncrementalNode) nodeList.get( nodeList.size() - 2),
-                        (IncrementalNode) nodeList.get( nodeList.size() - 1), navLinkMap));
+        BasicNodeLink link = NodeGenerics.getLinkFromNodes
+          ( (IncrementalNode) nodeList.get( nodeList.size() - 2),
+            (IncrementalNode) nodeList.get( nodeList.size() - 1), navLinkMap);
+        if (link != null) {
+          linkList.add( link);
+        }
       }
     }
     if (isLayoutNeeded) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNodeGenerics.java,v 1.10 2004-08-14 01:39:16 taylor Exp $
+// $Id: NavNodeGenerics.java,v 1.11 2004-09-28 20:45:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,25 +42,6 @@ import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
  */
 public final class NavNodeGenerics {
 
-  public static final String OBJECT_TO_OBJECT_LINK_TYPE = "OtoO";
-  public static final String OBJECT_TO_RESOURCE_LINK_TYPE = "OtoR";
-  public static final String OBJECT_TO_TIMELINE_LINK_TYPE = "OtoTi";
-  public static final String OBJECT_TO_VARIABLE_LINK_TYPE = "OtoV";
-  public static final String TIMELINE_TO_OBJECT_LINK_TYPE = "TitoO";
-  public static final String TIMELINE_TO_TIMELINE_LINK_TYPE = "TitoTi";
-  public static final String TIMELINE_TO_SLOT_LINK_TYPE = "TitoS";
-  public static final String TIMELINE_TO_VARIABLE_LINK_TYPE = "TitoV";
-  public static final String TIMELINE_TO_RESOURCE_LINK_TYPE = "TitoR";
-  public static final String RESOURCE_TO_TOKEN_LINK_TYPE = "RtoT";
-  public static final String RULE_INST_TO_TOKEN_LINK_TYPE = "RutoT";
-  public static final String RULE_INST_TO_VARIABLE_LINK_TYPE = "RutoV";
-  public static final String RESOURCE_TO_VARIABLE_LINK_TYPE = "RtoV";
-  public static final String SLOT_TO_TOKEN_LINK_TYPE = "StoT";
-  public static final String TOKEN_TO_RULE_INST_LINK_TYPE = "TtoRu";
-  public static final String TOKEN_TO_TOKEN_LINK_TYPE = "TtoT";
-  public static final String TOKEN_TO_VARIABLE_LINK_TYPE = "TtoV";
-  public static final String VARIABLE_TO_CONSTRAINT_LINK_TYPE = "VtoC";
- 
   private NavNodeGenerics() {
   }
 
@@ -255,7 +236,8 @@ public final class NavNodeGenerics {
     BasicNodeLink link = (BasicNodeLink) navigatorView.navLinkMap.get( linkName);
     if (link == null) {
       link = new BasicNodeLink( (ExtendedBasicNode) fromNavNode,
-                                (ExtendedBasicNode) toNavNode, linkName);
+                                (ExtendedBasicNode) toNavNode, linkName,
+                                getLinkType( fromNavNode, toNavNode));
       link.setArrowHeads( false, true);
       returnLink = link;
       navigatorView.navLinkMap.put( linkName, link);
@@ -388,62 +370,62 @@ public final class NavNodeGenerics {
    * @param toNavNode - <code>IncrementalNode</code> - 
    * @return - <code>String</code> - 
    */
-  public static String getLinkType( final IncrementalNode fromNavNode,
-                                    final IncrementalNode toNavNode) {
+  protected static String getLinkType( final IncrementalNode fromNavNode,
+                                       final IncrementalNode toNavNode) {
     if ((fromNavNode instanceof ModelClassNavNode) &&
         (toNavNode instanceof ModelClassNavNode)) {
-      return OBJECT_TO_OBJECT_LINK_TYPE;
+      return ViewConstants.OBJECT_TO_OBJECT_LINK_TYPE;
     } else if ((fromNavNode instanceof ModelClassNavNode) &&
                (toNavNode instanceof TimelineNavNode)) {
-      return OBJECT_TO_TIMELINE_LINK_TYPE;
+      return ViewConstants.OBJECT_TO_TIMELINE_LINK_TYPE;
     } else if ((fromNavNode instanceof ModelClassNavNode) &&
                (toNavNode instanceof ResourceNavNode)) {
-      return OBJECT_TO_RESOURCE_LINK_TYPE;
+      return ViewConstants.OBJECT_TO_RESOURCE_LINK_TYPE;
     } else if ((fromNavNode instanceof TimelineNavNode) &&
                (toNavNode instanceof ModelClassNavNode)) {
-      return TIMELINE_TO_OBJECT_LINK_TYPE;
+      return ViewConstants.TIMELINE_TO_OBJECT_LINK_TYPE;
     } else if ((fromNavNode instanceof TimelineNavNode) &&
                (toNavNode instanceof TimelineNavNode)) {
-      return TIMELINE_TO_TIMELINE_LINK_TYPE;
+      return ViewConstants.TIMELINE_TO_TIMELINE_LINK_TYPE;
     } else if ((fromNavNode instanceof TimelineNavNode) &&
                (toNavNode instanceof SlotNavNode)) {
-      return TIMELINE_TO_SLOT_LINK_TYPE;
+      return ViewConstants.TIMELINE_TO_SLOT_LINK_TYPE;
     } else if ((fromNavNode instanceof TimelineNavNode) &&
                (toNavNode instanceof ResourceNavNode)) {
-      return TIMELINE_TO_RESOURCE_LINK_TYPE;
+      return ViewConstants.TIMELINE_TO_RESOURCE_LINK_TYPE;
     } else if ((fromNavNode instanceof SlotNavNode) &&
                (toNavNode instanceof TokenNavNode)) {
-      return SLOT_TO_TOKEN_LINK_TYPE;
+      return ViewConstants.SLOT_TO_TOKEN_LINK_TYPE;
     } else if ((fromNavNode instanceof TokenNavNode) &&
                (toNavNode instanceof TokenNavNode)) {
-      return TOKEN_TO_TOKEN_LINK_TYPE;
+      return ViewConstants.TOKEN_TO_TOKEN_LINK_TYPE;
     } else if ((fromNavNode instanceof TokenNavNode) &&
                (toNavNode instanceof VariableNavNode)) {
-      return TOKEN_TO_VARIABLE_LINK_TYPE;
+      return ViewConstants.TOKEN_TO_VARIABLE_LINK_TYPE;
     } else if ((fromNavNode instanceof VariableNavNode) &&
                (toNavNode instanceof ConstraintNavNode)) {
-      return VARIABLE_TO_CONSTRAINT_LINK_TYPE;
+      return ViewConstants.VARIABLE_TO_CONSTRAINT_LINK_TYPE;
     } else if ((fromNavNode instanceof ModelClassNavNode) &&
                (toNavNode instanceof VariableNavNode)) {
-      return OBJECT_TO_VARIABLE_LINK_TYPE;
+      return ViewConstants.OBJECT_TO_VARIABLE_LINK_TYPE;
     } else if ((fromNavNode instanceof TimelineNavNode) &&
                (toNavNode instanceof VariableNavNode)) {
-      return TIMELINE_TO_VARIABLE_LINK_TYPE;
+      return ViewConstants.TIMELINE_TO_VARIABLE_LINK_TYPE;
     } else if ((fromNavNode instanceof ResourceNavNode) &&
                (toNavNode instanceof TokenNavNode)) {
-      return RESOURCE_TO_TOKEN_LINK_TYPE;
+      return ViewConstants.RESOURCE_TO_TOKEN_LINK_TYPE;
     } else if ((fromNavNode instanceof ResourceNavNode) &&
                (toNavNode instanceof VariableNavNode)) {
-      return RESOURCE_TO_VARIABLE_LINK_TYPE;
+      return ViewConstants.RESOURCE_TO_VARIABLE_LINK_TYPE;
     } else if ((fromNavNode instanceof TokenNavNode) &&
                (toNavNode instanceof RuleInstanceNavNode)) {
-      return TOKEN_TO_RULE_INST_LINK_TYPE;
+      return ViewConstants.TOKEN_TO_RULE_INST_LINK_TYPE;
     } else if ((fromNavNode instanceof RuleInstanceNavNode) &&
                (toNavNode instanceof TokenNavNode)) {
-      return RULE_INST_TO_TOKEN_LINK_TYPE;
+      return ViewConstants.RULE_INST_TO_TOKEN_LINK_TYPE;
     } else if ((fromNavNode instanceof RuleInstanceNavNode) &&
                (toNavNode instanceof VariableNavNode)) {
-      return RULE_INST_TO_VARIABLE_LINK_TYPE;
+      return ViewConstants.RULE_INST_TO_VARIABLE_LINK_TYPE;
     } else {
       System.err.println( "NavNodeGenerics.getLinkType: no link type for " +
                           fromNavNode + " => " + toNavNode);
