@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.9 2003-07-02 17:42:48 taylor Exp $
+// $Id: SlotNode.java,v 1.10 2003-07-03 00:41:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -206,7 +206,8 @@ public class SlotNode extends TextNode {
     } else {
       startTimeIntervalDomain = intervalVariable.getDomain();
     }
-    // System.err.println( "startTimeIntervalDomain " + startTimeIntervalDomain.toString());
+    System.err.println( "intervalDomain " + intervalDomain + " intervalVariable " + intervalVariable.getDomain());
+    System.err.println( "startTimeIntervalDomain " + startTimeIntervalDomain.toString());
     Point startLoc = new Point( (int) this.getLocation().getX() - this.getXOffset(),
                                 (int) this.getLocation().getY() +
                                 (int) this.getSize().getHeight());

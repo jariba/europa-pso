@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.8 2003-06-26 18:19:51 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.9 2003-07-03 00:41:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -54,7 +54,7 @@ public class PwTokenImpl implements PwToken {
   public PwTokenImpl(Integer key, boolean isValueToken, Integer slotId, Integer predicateId, 
                      Integer startVarId, Integer endVarId, Integer durationVarId, 
                      Integer objectVarId, Integer rejectVarId, List tokenRelationIds, 
-                     List paramVarIds)
+                     List paramVarIds, PwPartialPlanImpl partialPlan)
   {
     this.key = key;
     this.isValueToken = isValueToken;
@@ -67,6 +67,7 @@ public class PwTokenImpl implements PwToken {
     this.rejectVarId = rejectVarId;
     this.tokenRelationIds = tokenRelationIds;
     this.paramVarIds = paramVarIds;
+    this.partialPlan = partialPlan;
   }
 		
   /**
