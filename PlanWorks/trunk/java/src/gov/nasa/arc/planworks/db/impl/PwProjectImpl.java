@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.12 2003-06-26 18:19:49 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.13 2003-06-26 19:59:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -211,7 +211,7 @@ public class PwProjectImpl extends PwProject {
     throw new ResourceNotFoundException( "getPlanningSequence could not find " + url);
   } // end getPlanningSequence
 
-  public PwPlanningSequence addPlanningSeqence(String url) throws ResourceNotFoundException{
+  public PwPlanningSequence addPlanningSeqence(String url) throws ResourceNotFoundException {
     PwPlanningSequenceImpl retval = null;
     planningSequences.add(retval = new PwPlanningSequenceImpl(url, this, new PwModelImpl()));
     return retval;
