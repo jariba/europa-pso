@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.34 2004-03-03 02:14:20 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.35 2004-03-04 20:50:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -314,11 +314,6 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>boolean</code> - 
    */
   public boolean isBaseToken() {
-//     System.err.println ( "isSlotted " + isSlotted() + " getSlotId " + getSlotId());
-//     System.err.println ( " slot " + partialPlan.getSlot( getSlotId()));
-//     System.err.println ( " baseToken " + partialPlan.getSlot( getSlotId()).getBaseToken());
-//     System.err.println ( " baseTokenId " +
-//                          partialPlan.getSlot( getSlotId()).getBaseToken().getId());
     return (isSlotted() &&
             (partialPlan.getSlot( getSlotId()).getBaseToken().getId().equals( id)));
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.70 2004-02-03 20:43:46 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.71 2004-03-04 20:50:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -481,68 +481,30 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   
   public List getStepsWhereTokenTransacted(final Integer id, final String type) 
     throws IllegalArgumentException {
-    if(!type.equals(DbConstants.TOKEN_CREATED) && !type.equals(DbConstants.TOKEN_DELETED) &&
-       !type.equals(DbConstants.TOKEN_FREED) && !type.equals(DbConstants.TOKEN_INSERTED)&&
-       !type.equals(DbConstants.TOKEN_ALL_TYPES)) {
-      throw new IllegalArgumentException("transaction type");
-    }
     return getTransactionsById(MySQLDB.queryStepsWithTokenTransaction(this.id, id, type));
   }
 
   public List getStepsWhereVariableTransacted(final Integer id, final String type) 
     throws IllegalArgumentException  {
-    if(!type.equals(DbConstants.VARIABLE_CREATED) && !type.equals(DbConstants.VARIABLE_DELETED) &&
-       !type.equals(DbConstants.VARIABLE_DOMAIN_EMPTIED) && 
-       !type.equals(DbConstants.VARIABLE_DOMAIN_RELAXED) && 
-       !type.equals(DbConstants.VARIABLE_DOMAIN_RESET) &&  
-       !type.equals(DbConstants.VARIABLE_DOMAIN_RESTRICTED) &&
-       !type.equals(DbConstants.VARIABLE_DOMAIN_SPECIFIED) &&
-       !type.equals(DbConstants.VARIABLE_ALL_TYPES)) {
-      throw new IllegalArgumentException("transaction type");
-    }
     return getTransactionsById(MySQLDB.queryStepsWithVariableTransaction(this.id, id, type));
   }
 
   public List getStepsWhereConstraintTransacted(final Integer id, final String type) 
     throws IllegalArgumentException  {
-    if(!type.equals(DbConstants.CONSTRAINT_CREATED) && 
-       !type.equals(DbConstants.CONSTRAINT_DELETED) &&
-       !type.equals(DbConstants.CONSTRAINT_ALL_TYPES)) { 
-      throw new IllegalArgumentException("transaction type");
-    }
     return getTransactionsById(MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type));
   }
 
   public List getStepsWhereTokenTransacted(final String type) throws IllegalArgumentException {
-    if(!type.equals(DbConstants.TOKEN_CREATED) && !type.equals(DbConstants.TOKEN_DELETED) &&
-       !type.equals(DbConstants.TOKEN_FREED) && !type.equals(DbConstants.TOKEN_INSERTED)&&
-       !type.equals(DbConstants.TOKEN_ALL_TYPES)) {
-      throw new IllegalArgumentException("transaction type");
-    }
     return getTransactionsById(MySQLDB.queryStepsWithTokenTransaction(this.id, type));
   }
 
   public List getStepsWhereVariableTransacted(final String type) 
     throws IllegalArgumentException  {
-    if(!type.equals(DbConstants.VARIABLE_CREATED) && !type.equals(DbConstants.VARIABLE_DELETED) &&
-       !type.equals(DbConstants.VARIABLE_DOMAIN_EMPTIED) && 
-       !type.equals(DbConstants.VARIABLE_DOMAIN_RELAXED) && 
-       !type.equals(DbConstants.VARIABLE_DOMAIN_RESET) &&  
-       !type.equals(DbConstants.VARIABLE_DOMAIN_RESTRICTED) &&
-       !type.equals(DbConstants.VARIABLE_DOMAIN_SPECIFIED) &&
-       !type.equals(DbConstants.VARIABLE_ALL_TYPES)) {
-      throw new IllegalArgumentException("transaction type");
-    }
     return getTransactionsById(MySQLDB.queryStepsWithVariableTransaction(this.id, type));
   }
 
   public List getStepsWhereConstraintTransacted(final String type) 
     throws IllegalArgumentException  {
-    if(!type.equals(DbConstants.CONSTRAINT_CREATED) && 
-       !type.equals(DbConstants.CONSTRAINT_DELETED) &&
-       !type.equals(DbConstants.CONSTRAINT_ALL_TYPES)) { 
-      throw new IllegalArgumentException("transaction type");
-    }
     return getTransactionsById(MySQLDB.queryStepsWithConstraintTransaction(this.id, type));
   }
 

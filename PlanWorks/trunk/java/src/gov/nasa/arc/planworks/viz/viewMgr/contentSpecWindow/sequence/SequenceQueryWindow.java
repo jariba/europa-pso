@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.20 2004-02-03 20:44:04 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.21 2004-03-04 20:53:09 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -38,6 +38,7 @@ import gov.nasa.arc.planworks.SequenceViewMenuItem;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
+import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -85,6 +86,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   private static final String TRANSACTIONS_FOR_TOKEN = "For Token ...";
   private static final String TRANSACTIONS_FOR_VARIABLE = "For Variable ...";
   private static final String TRANSACTIONS_IN_RANGE = "In Range ...";
+  private static final String TRANSACTIONS_OF_TYPE = "Of Type ...";
   private static final List DB_TRANSACTION_QUERIES;
 
   private static final List CONSTRAINT_TRANSACTION_TYPES;
@@ -114,22 +116,26 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     DB_TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_TOKEN);
     DB_TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_VARIABLE);
     DB_TRANSACTION_QUERIES.add( TRANSACTIONS_IN_RANGE);
-    CONSTRAINT_TRANSACTION_TYPES = new ArrayList();
-    CONSTRAINT_TRANSACTION_TYPES.add( DbConstants.CONSTRAINT_CREATED);
-    CONSTRAINT_TRANSACTION_TYPES.add( DbConstants.CONSTRAINT_DELETED);
-    TOKEN_TRANSACTION_TYPES = new ArrayList();
-    TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_CREATED);
-    TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_DELETED);
-    TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_FREED);
-    TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_INSERTED);
-    VARIABLE_TRANSACTION_TYPES = new ArrayList();
-    VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_CREATED);
-    VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DELETED);
+    DB_TRANSACTION_QUERIES.add(TRANSACTIONS_OF_TYPE);
+    CONSTRAINT_TRANSACTION_TYPES = MySQLDB.queryConstraintTransactionNames();
+//     CONSTRAINT_TRANSACTION_TYPES = new ArrayList();
+//     CONSTRAINT_TRANSACTION_TYPES.add( DbConstants.CONSTRAINT_CREATED);
+//     CONSTRAINT_TRANSACTION_TYPES.add( DbConstants.CONSTRAINT_DELETED);
+    TOKEN_TRANSACTION_TYPES = MySQLDB.queryTokenTransactionNames();
+//     TOKEN_TRANSACTION_TYPES = new ArrayList();
+//     TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_CREATED);
+//     TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_DELETED);
+//     TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_FREED);
+//     TOKEN_TRANSACTION_TYPES.add( DbConstants.TOKEN_INSERTED);
+//     VARIABLE_TRANSACTION_TYPES = new ArrayList();
+//     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_CREATED);
+//     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DELETED);
     // VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_EMPTIED); // no MySql query yet
     // VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RELAXED); // no MySql query yet
-    VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESET); 
-    VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESTRICTED);
-    VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_SPECIFIED);
+//     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESET); 
+//     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_RESTRICTED);
+//     VARIABLE_TRANSACTION_TYPES.add( DbConstants.VARIABLE_DOMAIN_SPECIFIED);
+    VARIABLE_TRANSACTION_TYPES = MySQLDB.queryVariableTransactionNames();
     FREE_TOKEN_QUERIES = new ArrayList();
     FREE_TOKEN_QUERIES.add( FREE_TOKENS_AT_STEP);
     UNBOUND_VARIABLE_QUERIES = new ArrayList();

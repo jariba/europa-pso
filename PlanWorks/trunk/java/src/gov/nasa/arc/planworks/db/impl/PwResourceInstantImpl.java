@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceInstantImpl.java,v 1.2 2004-02-27 18:04:38 miatauro Exp $
+// $Id: PwResourceInstantImpl.java,v 1.3 2004-03-04 20:50:26 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -105,5 +105,9 @@ public class PwResourceInstantImpl implements PwResourceInstant {
       }
     }
     return retval;
+  }
+
+  public String toString() {
+    return "Instant " + id + " at " + time + ": [" + levelMin + "-" + levelMax + "]";
   }
 } // end class PwResourceInstantImpl

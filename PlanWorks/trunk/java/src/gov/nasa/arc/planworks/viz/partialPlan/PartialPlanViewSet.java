@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.15 2004-02-11 02:29:30 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.16 2004-03-04 20:51:16 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,6 +30,7 @@ import javax.swing.KeyStroke;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
+import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwSlot;
@@ -105,6 +106,14 @@ public class PartialPlanViewSet extends ViewSet {
 
   private void commonConstructor() {
     this.colorStream = new ColorStream();
+
+    //this is to ensure that the colors always come out in the right order.
+    //it works because objectIds are stored in a TreeMap
+    Iterator objIt = ((PwPartialPlan)viewable).getObjectList().iterator();
+    while(objIt.hasNext()) {
+      colorStream.getColor(((PwObject)objIt.next()).getId());
+    }
+
     this.activeResource = null;
     Point windowLocation = null;
     if (this.contentSpecWindow != null) {
@@ -143,39 +152,12 @@ public class PartialPlanViewSet extends ViewSet {
 
   public MDIInternalFrame openView(String viewClassName) {
     MDIInternalFrame retval = super.openView(viewClassName);
-//     retval.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK, false),
-//                              "foobar");
-//     retval.getActionMap().put("foobar", new AbstractAction() {
-//         public void actionPerformed(ActionEvent e) {
-//           System.err.println("foobar");
-//         }
-//       });
     return retval;
   }
 
   public MDIInternalFrame openView(String viewClassName, PartialPlanViewState state) {
     MDIInternalFrame retval = super.openView(viewClassName, state);
     Container contentPane = retval.getContentPane();
-    //dreaded equivalent of Big Switch Statement...
-//     for(int i = 0; i < contentPane.getComponentCount(); i++) {
-//       Component temp = contentPane.getComponent(i);
-//       if(temp instanceof TimelineView) {
-//         ((TimelineView)temp).setState(state);
-//         break;
-//       }
-//       else if(temp instanceof TokenNetworkView) {
-//         ((TokenNetworkView)temp).setState(state); 
-//         break;
-//       }
-//       else if(temp instanceof ConstraintNetworkView) {
-//         ((ConstraintNetworkView)temp).setState(state); 
-//         break;
-//       }
-//       else if(temp instanceof TemporalExtentView) {
-//         ((TemporalExtentView)temp).setState(state); 
-//         break;
-//       }
-//     }
     return retval;
   }
 
