@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.6 2003-09-18 23:42:09 miatauro Exp $
+# $Id: GETTING_STARTED,v 1.7 2003-09-19 00:33:59 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -63,7 +63,7 @@ and end variable values.  The range of extent is shown by a horizontal line.
 The extent line and associated triangles are displayed immediately below 
 each predicate node.  Downward triangles are start times, upward triangles 
 are end times, leftward triangles are -Infinity, and rightward triangles are 
-+Infinity.  Clicking Mouse-Right on the view background will popup a menu,
++Infinity.  Clicking Mouse-Right on the view background will pop-up a menu,
 one of whose selections is "Set Time Scale Line".  Selecting it will cause a
 red vertical time scale line to be drawn.  A Mouse-Right "Set Time Scale Line"
 selection at another location will move the time scale line.  Applying a 
@@ -89,9 +89,9 @@ are the "supreme" master tokens.
 Token Focus in Views
 ====================
 Token nodes (slot nodes in the Timeline View) in all views, have a
-Mouse-Right popup menu with the possible selection: "Set Active Token".
+Mouse-Right pop-up menu with the possible selection: "Set Active Token".
 When the "active token" has been set, the other views have a
-"background" Mouse-Right popup menu with the possible selection of
+"background" Mouse-Right pop-up menu with the possible selection of
 "Snap to Active Token".  Making this selection will cause the view
 to scroll to a position where the "active token" will be shown,
 highlighted, in the approximate center of the view.  A Mouse-Left click
@@ -104,8 +104,8 @@ Content Specification
 The information displayed in the partial plan views may be filtered by
 predicate, by timeline, and by time interval using the partial plan's
 Content Specification dialog.  It is also possible to limit the
-set of valid tokens to only free or slotted tokens, as well as 
-the first token on a slot.  Selections applied from this dialog
+set of valid tokens to only free or slotted tokens, as well as the first 
+token on a slot ("Merge tokens").  Selections applied from this dialog 
 result, internally, in a set of valid tokens, which are used by the 
 views to filter their displays.
 
@@ -114,9 +114,9 @@ Screen Management
 =================
 
 The "Window" pull-down menu offers the user the ability to rearrange the
-partial plan content spec and view internal windows by horizontal "tiling", 
-vertical "tiling", or "cascading".  This menu also provides for the 
-selection of all active windows.
+partial plan content spec and view internal windows by "tiling", 
+or "cascading".  This menu also provides for the selection of all active
+windows.
 
 Note that the Multiple Document Interface (MDI) implementation presents
 the user with a line of click-able icons along the bottom of the PlanWorks
