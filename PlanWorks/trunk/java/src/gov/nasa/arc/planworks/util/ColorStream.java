@@ -33,6 +33,7 @@ public class ColorStream {
   }
   public Color nextColor() {
     Color retval;
+    //I know, it's bad style, but some values of blue simply *refuse* to cooperate. ~MJI
     if((h == 0.6f || h == 0.75f) && b == 0.75) {
         retval = Color.getHSBColor(h + 0.09f, SAT, b);
     }
