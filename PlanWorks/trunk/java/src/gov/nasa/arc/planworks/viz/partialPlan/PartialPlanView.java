@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.54 2004-09-14 22:59:39 taylor Exp $
+// $Id: PartialPlanView.java,v 1.55 2004-09-30 22:03:46 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -950,6 +950,6 @@ public class PartialPlanView extends VizView {
     return ((PartialPlanViewSet) viewSet).getColorStream().getColor(timelineId);
   }
 
-		
+  public List getDefaultLinkTypes(){return null;}
 } // end class PartialPlanView
 

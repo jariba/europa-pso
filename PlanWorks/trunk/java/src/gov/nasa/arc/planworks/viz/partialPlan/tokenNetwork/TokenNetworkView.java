@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.77 2004-09-28 20:45:09 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.78 2004-09-30 22:05:04 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import javax.swing.BoxLayout;
@@ -1337,7 +1338,13 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
       });
   } // end createOverviewWindowItem
 
-
+  public List getDefaultLinkTypes() {
+    LinkedList retval = new LinkedList();
+    retval.add(ViewConstants.RULE_INST_TO_TOKEN_LINK_TYPE);
+    retval.add(ViewConstants.TOKEN_TO_RULE_INST_LINK_TYPE);
+    retval.add(ViewConstants.TOKEN_TO_RULE_INST_LINK_TYPE);
+    return retval;
+  }
 
 } // end class TokenNetworkView
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.53 2004-08-21 00:31:53 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.54 2004-09-30 22:03:03 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -13,26 +13,29 @@
 
 package gov.nasa.arc.planworks.db.impl;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
+import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwRule;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.UniqueSet;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 /**
  * <code>PwTokenImpl</code> - Java mapping of database structure
@@ -43,16 +46,6 @@ import gov.nasa.arc.planworks.util.UniqueSet;
  * @version 0.0
  */
 public class PwTokenImpl implements PwToken {
-
-  private static SecureRandom rand;
-
-  static {
-    rand = null;
-    try{rand = SecureRandom.getInstance("SHA1PRNG");}
-    catch(NoSuchAlgorithmException nsae) {nsae.printStackTrace(); System.exit(-1);}
-    rand.setSeed(SecureRandom.getSeed(20));
-  }
-
 
   protected Integer id;
   protected boolean isValueToken; // true, unless a Europa constraint token
@@ -459,31 +452,31 @@ public class PwTokenImpl implements PwToken {
     for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
       Class cclass = (Class) classIt.next();
       if(PwRuleInstance.class.isAssignableFrom( cclass)) {
-	if ((getRuleInstanceId() != null) && (getRuleInstanceId().intValue() > 0)) {
-	  retval.add(partialPlan.getRuleInstance(getRuleInstanceId()));
-	}
-	Iterator slaveIdItr = partialPlan.getSlaveTokenIds( getId()).iterator();
-	while (slaveIdItr.hasNext()) {
-	  Integer ruleInstanceId =
-	    partialPlan.getToken( (Integer) slaveIdItr.next()).getRuleInstanceId();
-	  if ((ruleInstanceId != null) && (ruleInstanceId.intValue() > 0)) {
-	    retval.add( partialPlan.getRuleInstance( ruleInstanceId));
-	  }
-	}
+        if ((getRuleInstanceId() != null) && (getRuleInstanceId().intValue() > 0)) {
+          retval.add(partialPlan.getRuleInstance(getRuleInstanceId()));
+        }
+        Iterator slaveIdItr = partialPlan.getSlaveTokenIds( getId()).iterator();
+        while (slaveIdItr.hasNext()) {
+          Integer ruleInstanceId =
+            partialPlan.getToken( (Integer) slaveIdItr.next()).getRuleInstanceId();
+          if ((ruleInstanceId != null) && (ruleInstanceId.intValue() > 0)) {
+            retval.add( partialPlan.getRuleInstance( ruleInstanceId));
+          }
+        }
       } else if(PwVariable.class.isAssignableFrom( cclass)) {
         retval.addAll(getVariablesList());
       } else if(cclass.equals(PwSlot.class)) {
-	if ((slotId != null) && (! slotId.equals( DbConstants.NO_ID))) {
-	  slotParent = partialPlan.getSlot(slotId);
-	}
+        if ((slotId != null) && (! slotId.equals( DbConstants.NO_ID))) {
+          slotParent = partialPlan.getSlot(slotId);
+        }
       } else if(cclass.equals(PwResource.class)) {
-	if ((getParentId() != null) && (! getParentId().equals( DbConstants.NO_ID))) {
-	  resourceParent = partialPlan.getResource(getParentId());
-	}
+        if ((getParentId() != null) && (! getParentId().equals( DbConstants.NO_ID))) {
+          resourceParent = partialPlan.getResource(getParentId());
+        }
       } else if(cclass.equals(PwObject.class)) {
-	if ((getParentId() != null) && (! getParentId().equals( DbConstants.NO_ID))) {
-	  objectParent = partialPlan.getObject(getParentId());
-	}
+        if ((getParentId() != null) && (! getParentId().equals( DbConstants.NO_ID))) {
+          objectParent = partialPlan.getObject(getParentId());
+        }
       }
     }
     if (slotParent != null) {
@@ -496,6 +489,42 @@ public class PwTokenImpl implements PwToken {
       // free token
     }
     return new ArrayList( retval);
+  }
+
+  public List getNeighbors(List classes, List linkTypes) {
+    List retval = new LinkedList();
+    for(Iterator it = linkTypes.iterator(); it.hasNext();) {
+      String linkType = (String) it.next();
+      if(linkType.equals(ViewConstants.RULE_INST_TO_TOKEN_LINK_TYPE) &&
+         CollectionUtils.findFirst(new AssignableFunctor(PwRuleInstance.class), classes) != null) {
+        if(getRuleInstanceId() != null && getRuleInstanceId().intValue() > 0) {
+          retval.add(partialPlan.getRuleInstance(getRuleInstanceId()));
+        }
+        Set usedRuleInstanceIds = new TreeSet();
+        for(Iterator slaveIdIterator = partialPlan.getSlaveTokenIds(getId()).iterator(); slaveIdIterator.hasNext();) {
+          Integer ruleInstanceId =
+            partialPlan.getToken((Integer) slaveIdIterator.next()).getRuleInstanceId();
+          if(ruleInstanceId != null && ruleInstanceId.intValue() > 0 && !usedRuleInstanceIds.contains(ruleInstanceId)) {
+            retval.add(partialPlan.getRuleInstance(ruleInstanceId));
+            usedRuleInstanceIds.add(ruleInstanceId);
+          }
+        }
+      }
+      else if(linkType.equals(ViewConstants.TOKEN_TO_VARIABLE_LINK_TYPE) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwVariable.class), classes) != null) {
+        retval.addAll(getVariablesList());
+      }
+      else if(linkType.equals(ViewConstants.SLOT_TO_TOKEN_LINK_TYPE) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwSlot.class), classes) != null &&
+              slotId.intValue() > 0) {
+        retval.add(partialPlan.getSlot(slotId));
+      }
+      else if(linkType.equals(ViewConstants.OBJECT_TO_TOKEN_LINK_TYPE) && 
+              Collections.binarySearch(classes, PwObject.class) >= 0) {
+        retval.add(partialPlan.getObject(getParentId()));
+      }
+    }
+    return retval;
   }
 
   public List getNeighbors(List classes, Set ids) {

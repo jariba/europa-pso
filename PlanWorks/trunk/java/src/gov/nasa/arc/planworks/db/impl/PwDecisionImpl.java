@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDecisionImpl.java,v 1.7 2004-08-06 00:53:25 miatauro Exp $
+// $Id: PwDecisionImpl.java,v 1.8 2004-09-30 22:03:01 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
@@ -91,5 +91,6 @@ public class PwDecisionImpl implements PwDecision {
   public List getNeighbors(){return null;}
   public List getNeighbors(List classes){return null;}
   public List getNeighbors(List classes, Set ids){return null;}
+  public List getNeighbors(List classes, List linkTypes){return null;}
 
 }

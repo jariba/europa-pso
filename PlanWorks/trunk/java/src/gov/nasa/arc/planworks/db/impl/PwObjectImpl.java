@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.27 2004-08-21 00:31:52 taylor Exp $
+// $Id: PwObjectImpl.java,v 1.28 2004-09-30 22:03:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -24,7 +24,9 @@ import java.util.StringTokenizer;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
-
+import gov.nasa.arc.planworks.util.BooleanFunctor;
+import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 /**
  * <code>PwObjectImpl</code> - 
@@ -190,11 +192,31 @@ public class PwObjectImpl implements PwObject {
         retval.addAll(getVariables());
       //else if(cclass.equals(PwObject.class)) {
       else if(PwObject.class.isAssignableFrom( cclass)) {
-	if (getParent() != null) {
-	  retval.add(getParent());
-	}
+        if (getParent() != null) {
+          retval.add(getParent());
+        }
         retval.addAll(getComponentList());
       }
+    }
+    return retval;
+  }
+  
+  public List getNeighbors(List classes, List linkTypes) {
+    List retval = new LinkedList();
+    for(Iterator it = linkTypes.iterator(); it.hasNext();) {
+      String linkType = (String) it.next();
+      if(linkType.equals(ViewConstants.OBJECT_TO_OBJECT_LINK_TYPE) &&
+         CollectionUtils.findFirst(new AssignableFunctor(PwObject.class), classes) != null) {
+        if(getParent() != null)
+          retval.add(getParent());
+        retval.addAll(getComponentList());
+      }
+      else if(linkType.equals(ViewConstants.OBJECT_TO_VARIABLE_LINK_TYPE) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwVariable.class), classes) != null)
+        retval.addAll(getVariables());
+      else if(linkType.equals(ViewConstants.OBJECT_TO_TOKEN_LINK_TYPE) &&
+              CollectionUtils.findFirst(new AssignableFunctor(PwToken.class), classes) != null)
+        retval.addAll(getTokens());
     }
     return retval;
   }
@@ -202,4 +224,5 @@ public class PwObjectImpl implements PwObject {
   public List getNeighbors(List classes, Set ids) {
     return PwEntityImpl.getNeighbors(this, classes, ids);
   }
+
 } // end class PwObjectImpl

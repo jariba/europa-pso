@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PwEntity.java,v 1.4 2004-08-06 00:52:05 miatauro Exp $
+// $Id: PwEntity.java,v 1.5 2004-09-30 22:02:31 miatauro Exp $
 //
 // PlanWorks
 //
@@ -37,4 +37,6 @@ public interface PwEntity {
   //get all neighbors that are members of particular classes and which are in
   //a set of ids
   public List getNeighbors(List classes, Set ids);
+
+  public List getNeighbors(List classes, List linkTypes);
 }

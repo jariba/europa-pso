@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nasa.arc.planworks.db.PwEntity;
+import gov.nasa.arc.planworks.util.BooleanFunctor;
 
 public abstract class PwEntityImpl {
   protected static List getNeighbors(PwEntity entity, List classes, Set ids) {
@@ -17,3 +18,12 @@ public abstract class PwEntityImpl {
     return retval;
   }
 }
+
+class AssignableFunctor implements BooleanFunctor {
+  private Class c;
+  public AssignableFunctor(Class c) {this.c = c;}
+  public boolean func(Object o) {
+    return c.isAssignableFrom((Class) o);
+  }
+}
+

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.16 2004-08-21 00:31:51 taylor Exp $
+// $Id: PwConstraintImpl.java,v 1.17 2004-09-30 22:03:00 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -22,6 +22,8 @@ import java.util.Set;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.UniqueSet;
+//used for the link type consts.  these should be moved ~MJI
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 /**
  * <code>PwConstraintImpl</code> - 
@@ -167,6 +169,16 @@ public class PwConstraintImpl implements PwConstraint {
 
   public List getNeighbors(List classes, Set ids) {
     return PwEntityImpl.getNeighbors(this, classes, ids);
+  }
+
+  public List getNeighbors(List classes, List linkTypes) {
+    for(Iterator classIt = classes.iterator(); classIt.hasNext();) {
+      Class cclass = (Class) classIt.next();
+      if(PwVariable.class.isAssignableFrom( cclass) && linkTypes.contains(ViewConstants.VARIABLE_TO_CONSTRAINT_LINK_TYPE)) {
+        return getVariablesList();
+      }
+    }
+    return new LinkedList();
   }
 
 } // end class PwConstraintImpl
