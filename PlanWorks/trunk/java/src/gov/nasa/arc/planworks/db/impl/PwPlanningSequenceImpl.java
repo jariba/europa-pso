@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.20 2003-07-29 23:24:36 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.21 2003-08-01 22:28:11 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -81,13 +81,9 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     } 
     name = url.substring( index + 1);
     
-    ResultSet dbPartialPlans = 
-      MySQLDB.queryDatabase("SELECT PlanName FROM PartialPlan WHERE SequenceId=".concat(key.toString()));
-    while(dbPartialPlans.next()) {
-      partialPlanNames.add(dbPartialPlans.getString("PlanName"));
-      //partialPlans.add(new PwPartialPlan(new Long(partialPlans.getLong("PartialPlanId"))));
-      stepCount++;
-    }
+    List planNames = MySQLDB.getPlanNamesInSequence(key);
+    partialPlanNames.addAll(MySQLDB.getPlanNamesInSequence(key));
+    stepCount = partialPlanNames.size();
     partialPlans = new ArrayList(partialPlanNames.size());
     ListIterator planNameIterator = partialPlanNames.listIterator();
     while(planNameIterator.hasNext()) {
@@ -123,10 +119,9 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
                                            System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
-    MySQLDB.updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId) VALUES ('".concat(url).concat("', ").concat(project.getKey().toString()).concat(")"));
-    ResultSet newKey = MySQLDB.queryDatabase("SELECT MAX(SequenceId) AS SequenceId FROM Sequence");
-    newKey.first();
-    this.key = new Integer(newKey.getInt("SequenceId"));
+    
+    MySQLDB.addSequence(url, project.getKey());
+    this.key = MySQLDB.latestSequenceKey();
     File sequenceDir = new File(url);
     if(!sequenceDir.isDirectory()) {
       throw new ResourceNotFoundException("sequence url '" + url + "' is not a directory.");

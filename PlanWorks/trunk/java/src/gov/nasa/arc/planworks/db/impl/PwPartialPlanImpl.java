@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.26 2003-07-29 23:24:36 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.27 2003-08-01 22:28:11 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -89,10 +89,8 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     System.err.println( "Creating PwPartialPlan  ..." + url);
     long startTimeMSecs = System.currentTimeMillis();
     long loadTime = 0L;
-    ResultSet existingPartialPlan =
-      MySQLDB.queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
-    existingPartialPlan.last();
-    if(existingPartialPlan.getRow() < 1) {
+    HashMap existingPartialPlan = null;
+    if(!MySQLDB.partialPlanExists(sequenceKey, name)) {
       String [] fileNames = new File(url).list(new FilenameFilter () {
           public boolean accept(File dir, String name) {
             return (name.endsWith(".partialPlan") || name.endsWith(".objects") || 
@@ -113,27 +111,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
         if(tableName.equals("Constraint")) {
           tableName = "VConstraint";
         }
-        System.err.println("Loading " + fileNames[i] + " into " + tableName);
         long time1 = System.currentTimeMillis();
-        MySQLDB.updateDatabase("LOAD DATA INFILE '".concat(url).concat(System.getProperty("file.separator")).concat(fileNames[i]).concat("' IGNORE INTO TABLE ").concat(tableName));
+        MySQLDB.loadFile(url.toString().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
         loadTime += System.currentTimeMillis() - time1;
       }
-      MySQLDB.updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceKey.toString()).concat(" WHERE SequenceId=-1"));
-      existingPartialPlan =
-        MySQLDB.queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
+      MySQLDB.updatePartialPlanSequenceId(sequenceKey);
+      key = MySQLDB.getNewPartialPlanKey(sequenceKey, name);
     }
     System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
-    existingPartialPlan.first();
-    key = new Long(existingPartialPlan.getLong("PartialPlanId"));
-    minKey = existingPartialPlan.getInt("MinKey");
-    maxKey = existingPartialPlan.getInt("MaxKey");
-    ResultSet dbObject =
-      MySQLDB.queryDatabase("SELECT ObjectName, ObjectId FROM Object WHERE PartialPlanId=".concat(key.toString()));
-    while(dbObject.next()) {
-      Integer objectKey = new Integer(dbObject.getInt("ObjectId"));
-      objectMap.put(objectKey, new PwObjectImpl(objectKey, dbObject.getString("ObjectName"),this));
-    }
-    dbObject.close();
+    MySQLDB.createObjects(this);
     model = MySQLDB.INSTANCE.queryPartialPlanModelByKey(key);
     System.err.println("Creating Timeline/Slot/Token structure");
     MySQLDB.INSTANCE.createTimelineSlotTokenNodesStructure(this);
@@ -353,6 +339,13 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
   public boolean tokenExists(Integer key) {
     return tokenMap.containsKey(key);
+  }
+
+  public void addObject(Integer key, PwObjectImpl object) {
+    if(objectMap.containsKey(key)) {
+      return;
+    }
+    objectMap.put(key, object);
   }
 
   /**

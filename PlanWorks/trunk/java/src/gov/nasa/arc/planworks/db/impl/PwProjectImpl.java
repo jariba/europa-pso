@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.25 2003-07-11 22:33:34 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.26 2003-08-01 22:28:12 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -53,28 +53,24 @@ public class PwProjectImpl extends PwProject {
     projects = new HashMap();
     connectToDataBase();
 
-    ResultSet dbProjectNames = MySQLDB.queryDatabase("SELECT ProjectName FROM Project");
-    while(dbProjectNames.next()) {
-      System.err.println("Got project " + dbProjectNames.getString("ProjectName"));
-      projects.put(dbProjectNames.getString("ProjectName"),
-                   new PwProjectImpl(dbProjectNames.getString("ProjectName"), true));
+    ListIterator dbProjectNameIterator = MySQLDB.getProjectNames().listIterator();
+    while(dbProjectNameIterator.hasNext()) {
+      String name = (String) dbProjectNameIterator.next();
+      System.err.println("Got project " + name);
+      projects.put(name, new PwProjectImpl(name, true));
     }
   } // end initProjects
 
   public static PwProject createProject(String name) throws DuplicateNameException, SQLException {
-    ResultSet dbProjects = MySQLDB.queryDatabase("SELECT ProjectId FROM Project WHERE ProjectName='".concat(name).concat("'"));
-    dbProjects.last();
-    if(dbProjects.getRow() > 0) {
-      throw new DuplicateNameException("A project named '" + name +
-                                       "' already exists.");
+    if(MySQLDB.projectExists(name)) {
+      throw new DuplicateNameException("A project named '" + name + "' already exists.");
     }
     PwProjectImpl retval = null;
     retval = new PwProjectImpl(name);
     projects.put(name, retval);
-    MySQLDB.updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("')"));
-    ResultSet newKey = MySQLDB.queryDatabase("SELECT MAX(ProjectId) AS ProjectId from Project");
-    newKey.first();
-    retval.setKey(new Integer(newKey.getInt("ProjectId")));
+
+    MySQLDB.addProject(name);
+    retval.setKey(MySQLDB.latestProjectKey());
     return retval;
   }
   private static void connectToDataBase() throws SQLException, IOException {
@@ -145,25 +141,19 @@ public class PwProjectImpl extends PwProject {
   public PwProjectImpl( String name, boolean isInDb) 
     throws ResourceNotFoundException, SQLException {
     this.name = name;
-    ResultSet dbProject = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName='".concat(name).concat("'"));
-    dbProject.last();
-    if(dbProject.getRow() == 0) {
+    
+    key = MySQLDB.getProjectIdByName(name);
+    if(key == null) {
       throw new ResourceNotFoundException("Project " + name + " not found in database.");
     }
-    dbProject.beforeFirst();
-    
-    dbProject.first();
-    key = new Integer(dbProject.getInt("ProjectId"));
     planningSequences = new ArrayList();
-    
-    //ResultSet sequences = MySQLDB.queryDatabase("SELECT (Sequence.SequenceURL, Sequence.SequenceId) FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
-    ResultSet sequences = MySQLDB.queryDatabase("SELECT SequenceURL, SequenceId FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
-    while(sequences.next()) {
-      planningSequences.add(new PwPlanningSequenceImpl(sequences.getString("SequenceURL"),
-                                                       new Integer(sequences.getInt("SequenceId")),
-                                                       this, new PwModelImpl()));
+    HashMap sequences = MySQLDB.getSequences(key);
+    Iterator seqIdIterator = sequences.keySet().iterator();
+    while(seqIdIterator.hasNext()) {
+      Integer sequenceId = (Integer) seqIdIterator.next();
+      planningSequences.add(new PwPlanningSequenceImpl((String) sequences.get(sequenceId), 
+                                                       sequenceId, this, new PwModelImpl()));
     }
-
     // this project is already in projectNames & projectUrls
     //projects.add(name, this);
   } // end  constructor PwProjectImpl.openProject
@@ -223,9 +213,7 @@ public class PwProjectImpl extends PwProject {
   public PwPlanningSequence addPlanningSequence(String url) 
     throws DuplicateNameException, ResourceNotFoundException, SQLException {
     PwPlanningSequenceImpl retval = null;
-    ResultSet dupCheck = MySQLDB.queryDatabase("SELECT * FROM Sequence WHERE SequenceURL='".concat(url).concat("'"));
-    dupCheck.last();
-    if(dupCheck.getRow() != 0) {
+    if(MySQLDB.sequenceExists(url)) {
       throw new DuplicateNameException("Sequence at " + url + " already in database.");
     }
     planningSequences.add(retval = new PwPlanningSequenceImpl(url, this, new PwModelImpl()));
@@ -240,38 +228,6 @@ public class PwProjectImpl extends PwProject {
    */
   public void delete() throws Exception, ResourceNotFoundException {
     projects.remove(name);
-
-    try {
-      ResultSet sequenceIds = 
-        MySQLDB.queryDatabase("SELECT SequenceId FROM Sequence WHERE ProjectId=".concat(key.toString()));
-      while(sequenceIds.next()) {
-        Integer sequenceId = new Integer(sequenceIds.getInt("SequenceId"));
-        ResultSet partialPlanIds =
-          MySQLDB.queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
-        while(partialPlanIds.next()) {
-          Long partialPlanId = new Long(partialPlanIds.getLong("PartialPlanId"));
-          MySQLDB.updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM Timeline WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM Slot WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM EnumeratedDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM IntervalDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM VConstraint WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM TokenRelation WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM Predicate WHERE PartialPlanId=".concat(partialPlanId.toString()));
-          MySQLDB.updateDatabase("DELETE FROM Parameter WHERE PartialPlanId=".concat(partialPlanId.toString()));
-        }
-        MySQLDB.updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
-      }
-      MySQLDB.updateDatabase("DELETE FROM Project WHERE ProjectId=".concat(key.toString()));
-    }
-    catch(SQLException sqle) { //are we transactional?  can we roll back?
-      System.err.println(sqle);
-      sqle.printStackTrace();
-      return;
-    }
-  } // end close
+    MySQLDB.deleteProject(key);
+  } // end delete
 } // end class PwProjectImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.10 2003-07-30 00:38:41 taylor Exp $
+// $Id: ViewManager.java,v 1.11 2003-08-01 22:28:49 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -112,10 +112,9 @@ public class ViewManager implements ViewSetRemover {
    * Clears all of the view sets.
    */
   public void clearViewSets() {
-    Collection viewSetss = viewSets.values();
-    Iterator viewSetIterator = viewSetss.iterator();
-    while(viewSetIterator.hasNext()) {
-      ((ViewSet)viewSetIterator.next()).close();
+    Object [] viewSetss = viewSets.values().toArray();
+    for(int i = 0; i < viewSetss.length; i++) {
+      ((ViewSet)viewSetss[i]).close();
     }
     viewSets.clear();
   }
