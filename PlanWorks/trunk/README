@@ -4,18 +4,29 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.2 2003-05-23 22:20:19 taylor Exp $
+# $Id: README,v 1.3 2003-05-27 19:00:04 taylor Exp $
 #
+
+CVS CHECKOUT
+============
+> cvs co -r PW_M_1 PlanWorks
+
 
 PREREQUISITES
 =============
 Set environment varibles:
   o JAVA_HOME - location of J2SDK >= 1.4.1
     e.g. setenv JAVA_HOME /home/wtaylor/pub/j2sdk1.4.1_02
-  o ANT_HOME - location of Apache Ant >= 1.5.1
-    e.g. setenv ANT_HOME /home/wtaylor/pub/jakarta-ant-1.5.1
+
+  o ANT_HOME - location of Apache Ant 
+    e.g. setenv ANT_HOME <root>/PlanWorks/java/lib/apache-ant
+
+  o PATH - should include Ant 
+    e.g. tcsh: set path = ($path <root>/PlanWorks/java/lib/apache-ant/bin)
+
   o OSTYPE - linux, solaris, or darwin (MacOS)
     should be set by user's standard environment
+
   o USER - user's account name, used in defining the data base collection
     should be set by user's standard environment
 
@@ -32,6 +43,8 @@ BUILDING & RUNNING PLANWORKS
  existTest         -- prototyping test (compile dependency)
  projectTest       -- prototyping test (compile dependency)
  timelineViewTest  -- JFCunit test (compile dependency)
+
+Default target: projectTest
 
 
 DEVELOPING PLANWORKS

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.2 2003-05-15 18:38:44 taylor Exp $
+// $Id: PwProject.java,v 1.3 2003-05-27 19:00:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -94,6 +94,13 @@ public abstract class PwProject {
    * @exception Exception if an error occurs
    */
   public abstract void save() throws Exception;
+
+  /**
+   * <code>restore</code>
+   *
+   * @exception Exception if an error occurs
+   */
+  public abstract void restore() throws Exception;
 
 
 

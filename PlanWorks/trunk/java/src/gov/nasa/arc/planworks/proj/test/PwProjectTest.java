@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectTest.java,v 1.5 2003-05-23 19:06:19 taylor Exp $
+// $Id: PwProjectTest.java,v 1.6 2003-05-27 19:00:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -103,6 +103,7 @@ public class PwProjectTest extends JFrame {
 
   private JTabbedPane tabbedPane;
 
+  private PwProject project;
 
   /**
    * <code>PwProjectTest</code> - constructor
@@ -172,11 +173,15 @@ public class PwProjectTest extends JFrame {
 
     buildMenuBar();
 
+    // project.save();
+
+    // project.restore();
+
   } // end constructor
 
 
   private PwPartialPlan createTestPartialPlan( String url) {
-    PwProject project = null; PwPlanningSequence planSeq = null;
+    project = null; PwPlanningSequence planSeq = null;
     PwPartialPlan partialPlan = null;
     try {
       project = PwProjectMgmt.createProject( url);
