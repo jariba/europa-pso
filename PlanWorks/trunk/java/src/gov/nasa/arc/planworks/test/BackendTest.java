@@ -17,7 +17,7 @@ public class BackendTest extends TestCase {
   private static final String step1 = "step2";
   private static final String step2 = "step9";
   private static final String sequenceName = "Camera1065545818740";
-  private static final int numTests = 2;
+  private static final int numTests = 3;
   private static int testsRun = 0;
   static {
     try {
@@ -45,6 +45,10 @@ public class BackendTest extends TestCase {
     junit.textui.TestRunner.run(suite());
   }
   protected void setUp() {
+    //while(PlanWorksTest.TEST_RUNNING != 0 && PlanWorksTest.TEST_RUNNING != 1) {
+    //  try{Thread.sleep(50);}catch(Exception e){}
+    //}
+    setTestRunning(1);
   }
   protected void tearDown() {
     if(testsRun != numTests) {
@@ -53,6 +57,13 @@ public class BackendTest extends TestCase {
     for(int i = 0; i < DbConstants.PW_DB_TABLES.length; i++) {
       MySQLDB.updateDatabase("DELETE FROM ".concat(DbConstants.PW_DB_TABLES[i]));
     }
+    setTestRunning(0);
+  }
+  synchronized private void setTestRunning(int t) {
+    PlanWorksTest.TEST_RUNNING = t;
+  }
+  synchronized private void incTestsRun() {
+    testsRun++;
   }
   public BackendTest(String testType) {
     super(testType);
@@ -61,6 +72,7 @@ public class BackendTest extends TestCase {
     final TestSuite suite = new TestSuite();
     suite.addTest(new BackendTest("testPlanLoad"));
     suite.addTest(new BackendTest("testDataConsistency"));
+    suite.addTest(new BackendTest("testTransactionQueries"));
     return suite;
   }
   public void testPlanLoad() {
@@ -68,7 +80,8 @@ public class BackendTest extends TestCase {
     assertTrue("Plan 2 is null", plan2 != null);
     assertTrue("Plan 1 is inconsistant", plan1.checkPlan());
     assertTrue("Plan 2 is inconsistant", plan2.checkPlan());
-    testsRun++;
+    //testsRun++;
+    incTestsRun();
   }
   public void testDataConsistency() {
     PwPartialPlanImpl [] temp = new PwPartialPlanImpl [] {plan1, plan2};
@@ -252,6 +265,85 @@ public class BackendTest extends TestCase {
       assertTrue("Failed to instantiate all tokens in db.", tokenIdList.size() == 0);
       assertTrue("Failed to instantiate all variables in db.", variableIdList.size() == 0);
     }
-    testsRun++;
+    //testsRun++;
+    incTestsRun();
   }
+
+  public void testTransactionQueries() {
+    List plan1Transactions = sequence.getTransactionsList(plan1.getId());
+    List plan2Transactions = sequence.getTransactionsList(plan2.getId());
+    ListIterator plan1TransactionIterator = plan1Transactions.listIterator();
+    ListIterator plan2TransactionIterator = plan2Transactions.listIterator();
+    List plan1TransactionIds = MySQLDB.queryTransactionIdsForPartialPlan(sequence.getId(),
+                                                                         plan1.getId());
+    List plan2TransactionIds = MySQLDB.queryTransactionIdsForPartialPlan(sequence.getId(),
+                                                                         plan2.getId());
+    while(plan1TransactionIterator.hasNext()) {
+      PwTransaction transaction = (PwTransaction) plan1TransactionIterator.next();
+      if(plan1TransactionIds.contains(transaction.getId())) {
+        plan1TransactionIds.remove(transaction.getId());
+        plan1TransactionIterator.remove();
+      }
+    }
+    while(plan2TransactionIterator.hasNext()) {
+      PwTransaction transaction = (PwTransaction) plan2TransactionIterator.next();
+      if(plan2TransactionIds.contains(transaction.getId())) {
+        plan2TransactionIds.remove(transaction.getId());
+        plan2TransactionIterator.remove();
+      }
+    }
+    assertTrue("Failed to instantiate all transactions in db.", plan1TransactionIds.size() == 0);
+    assertTrue("Instantiated transactions not in db.", plan1Transactions.size() == 0);
+    assertTrue("Failed to instantiate all transactions in db.", plan2TransactionIds.size() == 0);
+    assertTrue("Instantiated transactions not in db.", plan2Transactions.size() == 0);
+    testQueriesForConstraint();
+    testQueriesForToken();
+    testQueriesForVariable();
+    testQueriesForRestrictionsAndRelaxations();
+    testQueriesForDecisions();
+    //testsRun++;
+    incTestsRun();
+  }
+
+  private void testQueriesForConstraint() {
+    List transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(17));
+    assertTrue(transactions.size() == 0);
+    transactions = MySQLDB.queryTransactionsForConstraint(sequence.getId(), new Integer(53));
+    assertTrue(transactions.size() == 1);
+    List steps = MySQLDB.queryStepsWithConstraintTransaction(sequence.getId(), new Integer(53), 
+                                                             "CONSTRAINT_CREATED");
+    assertTrue(steps.size() == 1);
+    assertTrue(((Integer)steps.get(0)).equals(new Integer(2)));
+  }
+
+  private void testQueriesForToken() {
+    List transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(2));
+    assertTrue(transactions.size() == 0);
+    transactions = MySQLDB.queryTransactionsForToken(sequence.getId(), new Integer(21));
+    assertTrue(transactions.size() == 1);
+    List steps = MySQLDB.queryStepsWithTokenTransaction(sequence.getId(), new Integer(21),
+                                                        "TOKEN_INSERTED");
+    assertTrue(steps.size() == 1);
+    assertTrue(((Integer)steps.get(0)).equals(new Integer(2)));
+  }
+
+  private void testQueriesForVariable() {
+    List transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(2));
+    assertTrue(transactions.size() == 0);
+    transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(50));
+    assertTrue(transactions.size() == 1);
+    List steps = MySQLDB.queryStepsWithVariableTransaction(sequence.getId(), new Integer(50),
+                                                           "VARIABLE_CREATED");
+    assertTrue(steps.size() == 1);
+    assertTrue(((Integer)steps.get(0)).equals(new Integer(2)));
+  }
+
+  private void testQueriesForRestrictionsAndRelaxations() {
+    List steps = MySQLDB.queryStepsWithRestrictions(sequence.getId());
+    assertTrue(steps.size() == 1);
+    assertTrue(((Integer)steps.get(0)).equals(new Integer(2)));
+    steps = MySQLDB.queryStepsWithRelaxations(sequence.getId());
+    assertTrue(steps.size() == 0);
+  }
+  private void testQueriesForDecisions(){}
 }
