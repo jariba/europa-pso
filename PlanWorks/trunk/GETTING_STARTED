@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.5 2003-09-18 19:20:55 taylor Exp $
+# $Id: GETTING_STARTED,v 1.6 2003-09-18 23:42:09 miatauro Exp $
 #
 
 Projects and Plan Sequences
@@ -103,7 +103,9 @@ Content Specification
 
 The information displayed in the partial plan views may be filtered by
 predicate, by timeline, and by time interval using the partial plan's
-Content Specification dialog.  Selections applied from this dialog
+Content Specification dialog.  It is also possible to limit the
+set of valid tokens to only free or slotted tokens, as well as 
+the first token on a slot.  Selections applied from this dialog
 result, internally, in a set of valid tokens, which are used by the 
 views to filter their displays.
 
