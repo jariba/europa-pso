@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.7 2003-08-20 18:52:37 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.8 2003-08-20 21:48:54 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -573,9 +573,12 @@ public class ConstraintNetworkView extends VizView {
   /**
    * <code>addConstraintToVariableLinks</code>
    *
-   * @param constraintNode - <code>ConstraintNode</code> - 
+   * @param constraintNode - <code>ConstraintNode</code> -
+   *
+   * this does not necessarily work for constraint nodes with > 2 variables
+   * no examples available at this time 20aug03
    */
-  public void addConstraintToVariableLinks( ConstraintNode constraintNode) {
+ public void addConstraintToVariableLinks( ConstraintNode constraintNode) {
     Iterator variableNodeItr = constraintNode.getVariableNodeList().iterator();
     while (variableNodeItr.hasNext()) {
       VariableNode variableNode = (VariableNode) variableNodeItr.next();
@@ -1024,6 +1027,9 @@ public class ConstraintNetworkView extends VizView {
         link.setVisible( true);
       } else {
         link.setVisible( false);
+        if (isDebugPrint && (link.getMidLabel() != null)) {
+          link.getMidLabel().setVisible( false);
+        }
       }
     }
     Iterator constraintLinkItr = constraintLinkList.iterator();
@@ -1040,10 +1046,16 @@ public class ConstraintNetworkView extends VizView {
             break;
           } else {
             link.setVisible( false);
+            if (isDebugPrint && (link.getMidLabel() != null)) {
+              link.getMidLabel().setVisible( false);
+            }
           }
         }
       } else {
         link.setVisible( false);
+        if (isDebugPrint && (link.getMidLabel() != null)) {
+          link.getMidLabel().setVisible( false);
+        }
       }
     }
   } // end setLinksVisible
