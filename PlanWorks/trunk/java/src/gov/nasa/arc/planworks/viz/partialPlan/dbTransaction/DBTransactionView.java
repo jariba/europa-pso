@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.8 2004-06-03 17:33:36 taylor Exp $
+// $Id: DBTransactionView.java,v 1.9 2004-06-04 23:09:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -239,7 +239,7 @@ public class DBTransactionView extends PartialPlanView {
     this.setVisible( true);
 
     expandViewFrame( viewFrame, dbTransactionTable.getColumnModel().getTotalColumnWidth(),
-                     (int) (((dbTransactionTable.getRowCount() + 1) *
+                     (int) (((dbTransactionTable.getRowCount() + 2) *
                              dbTransactionTable.getRowHeight()) +
                             headerJGoView.getDocumentSize().getHeight() +
                             stepJGoView.getDocumentSize().getHeight() +

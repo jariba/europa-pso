@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.46 2004-06-03 17:33:34 taylor Exp $
+# $Id: GETTING_STARTED,v 1.47 2004-06-04 23:08:59 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -401,6 +401,12 @@ Screen Management
 =================
 The "Window" pull-down menu offers the user the ability to rearrange all
 active windows by "tiling", or "cascading".  This menu also provides for the 
-indivual selection of any active window.
+indivual selection of any active window ordered thusly:
+  - menu separators divide different plan sequence window groups;
+  - within each plan sequence group, the ordering is SequenceQueryView, 
+    SequenceStepsView, and any QueryResults windows;
+  - then a cascading sort by step number, and by view name of all partial plan 
+    views, including the NavigatorView.
+
 
 

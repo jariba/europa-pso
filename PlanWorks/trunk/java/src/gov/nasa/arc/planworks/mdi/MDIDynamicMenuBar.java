@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.12 2004-05-04 01:27:14 taylor Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.13 2004-06-04 23:09:00 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -15,6 +15,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ListIterator;
 import javax.swing.JButton;
 import javax.swing.JMenu;
@@ -22,6 +25,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 
 
 /**
@@ -34,6 +40,9 @@ import gov.nasa.arc.planworks.PlanWorks;
  */
 
 public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
+
+  private static final int NUM_SEQUENCE_WINDOWS = 2;
+
   private ArrayList constantMenus = new ArrayList(3);
   private ArrayList windows = new ArrayList();
   private TileCascader tileCascader;
@@ -171,9 +180,9 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     if(windowMenu != null) {
       windowMenu.removeAll();
       remove(windowMenu);
-    }
-    else {
-      windowMenu = new JMenu( PlanWorks.WINDOW_MENU);
+//     }
+//     else {
+//       windowMenu = new JMenu( PlanWorks.WINDOW_MENU);
     }
     JMenuItem tileItem = new JMenuItem( PlanWorks.TILE_WINDOWS_MENU_ITEM);
     JMenuItem cascadeItem = new JMenuItem( PlanWorks.CASCADE_WINDOWS_MENU_ITEM);
@@ -184,12 +193,18 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     windowMenu.add(cascadeItem);
     windowMenu.addSeparator();
     windowMenu.validate();
-    ListIterator windowIterator = windows.listIterator();
+
+    ListIterator windowIterator = sortWindows( windows).listIterator();
     while(windowIterator.hasNext()) {
-      MDIInternalFrame frame = (MDIInternalFrame) windowIterator.next();
-      JMenuItem temp = new JMenuItem(frame.getTitle());
-      temp.addActionListener(new SelectedActionListener(frame));
-      windowMenu.add(temp);
+      Object object = (Object) windowIterator.next();
+      if (object instanceof MDIInternalFrame) {
+        MDIInternalFrame frame = (MDIInternalFrame) object;
+        JMenuItem temp = new JMenuItem(frame.getTitle());
+        temp.addActionListener(new SelectedActionListener(frame));
+        windowMenu.add(temp);
+      } else {
+        windowMenu.addSeparator();
+      }
     }
     if(windows.size() == 0) {
       windowMenu.setEnabled(false);
@@ -198,11 +213,241 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     windowMenu.validate();
     validate();
   }
+
+  private List sortWindows( List  windows) {
+    if (windows.size() == 0) { return windows; }
+    List itemSeqNames =  new ArrayList();
+    List sortedWindows = new ArrayList();
+//     for (int i = 0, n = windows.size(); i < n; i++) {
+//       System.err.println( "windows i " + i + " " +
+//                           ((MDIInternalFrame) windows.get( i)).getTitle());
+//     }
+    List planSeqNames = PlanWorks.getPlanWorks().getCurrentProject().listPlanningSequences();
+    Collections.sort( planSeqNames, new SeqNameComparator());
+    ListIterator seqNameItr = planSeqNames.listIterator();
+    boolean isFirst = true;
+    while (seqNameItr.hasNext()) {
+      String seqName = getMenuItemSeqName( Utilities.getUrlLeaf( (String) seqNameItr.next()),
+                                           itemSeqNames);
+      itemSeqNames.add( seqName);
+      // System.err.println( "seqName " + seqName);
+      List windowsForSeq = getWindowsForSeq( seqName, windows);
+      if (windowsForSeq.size() > 0) {
+        if (isFirst) {
+          isFirst = false;
+        } else {
+          sortedWindows.add( null); // marker for JMenu separator
+        }
+        Collections.sort( windowsForSeq, new StepNumberComparator());
+        int numSeqWindows = windowsForSeq.size();
+        // pick off SequenceQuery & Sequence Steps view
+        int windowsWithStepIndx = Math.min( NUM_SEQUENCE_WINDOWS, numSeqWindows);
+        for (int i = 0, n = windowsWithStepIndx; i < n; i++) {
+          sortedWindows.add ( (MDIInternalFrame) windowsForSeq.get( i));
+        }
+
+        sortedWindows = sortWindowsForSeqByView( seqName, windowsForSeq, sortedWindows,
+                                                 windowsWithStepIndx);
+
+      } // end if (windowsForSeq.size() > 0)
+    } // end while (seqNameItr.
+//     for (int i = 0, n = sortedWindows.size(); i < n; i++) {
+//       Object object = (Object) sortedWindows.get( i);
+//       if (object instanceof MDIInternalFrame) {
+//         System.err.println( "sortedWindows i " + i + " " +
+//                             ((MDIInternalFrame) sortedWindows.get( i)).getTitle());
+//       } else {
+//         System.err.println( "sortedWindows i " + i + " separator");
+//       }
+//     }
+    return sortedWindows;
+  } // end sortWindows
+
+  private List getWindowsForSeq( String seqName, List windows) {
+//     System.err.println( "\ngetWindowsForSeq seqName " + seqName);
+    List windowsForSeq = new ArrayList();
+    ListIterator windowsItr = windows.listIterator();
+    while (windowsItr.hasNext()) {
+      MDIInternalFrame frame = (MDIInternalFrame) windowsItr.next();
+      String frameTitle = frame.getTitle();
+//       System.err.println( " frameTitle " + frameTitle);
+      int indx1 = frameTitle.indexOf( seqName);
+      int indx2 = frameTitle.indexOf( (seqName + "/"));
+      int indx3 = frameTitle.indexOf( (seqName + " - "));
+      boolean passedTest = false;
+      if ((indx1 >= 0) && (seqName.length() == frameTitle.substring( indx1).length())) {
+//         System.err.println( "  passed test1");
+        // SequenceQuery for Rover & SequenceQuery for Rover (1)
+        passedTest = true;
+      } else if (indx2 >= 0) {
+//         System.err.println( "  passed test2");
+        // ContentFilter for Rover/step20 & Rover (1)/step20 & NavigatorView for k9 (1)/step6 - 1
+        passedTest = true;
+      } else if (indx3 >= 0) {
+//         System.err.println( "  passed test3");
+        // QueryResults for Rover - 1 & QueryResults for Rover (1) - 1
+        passedTest = true;
+      }
+      if (passedTest) {
+        windowsForSeq.add( frame);
+      }
+    }
+    return windowsForSeq;
+  } // end getWindowsForSeq
+
+      // QueryResults for Rover - 1
+
+  private List sortWindowsForSeqByView( String seqName, List windowsForSeq, List sortedWindows,
+                                        int windowsWithStepIndx) {
+    int numSeqWindows = windowsForSeq.size();
+    String currentStepStr = "";
+    int currentIndx = windowsWithStepIndx, windowCnt = NUM_SEQUENCE_WINDOWS;
+    boolean isFirst1 = true;
+    while (windowCnt < numSeqWindows) {
+//           System.err.println( "currentIndx " + currentIndx + " numSeqWindows " + numSeqWindows);
+      List viewsAtStep = new ArrayList();
+      for (int i = currentIndx; i < numSeqWindows; i++) {
+        MDIInternalFrame frame = (MDIInternalFrame) windowsForSeq.get( i);
+        String frameTitle = frame.getTitle();
+        String stepStr = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE;
+        int indx1 = frameTitle.indexOf( "step");
+        if (indx1 > 0) {
+          stepStr = frameTitle.substring( indx1 + 4);
+          int indx2 = stepStr.indexOf( " ");
+          if (indx2 > 0) {
+            stepStr = stepStr.substring( 0, indx2);
+          }
+        }
+//             System.err.println( "frameTitle " + frameTitle + " stepStr '" + stepStr +
+//                                 "' currentStepStr '" + currentStepStr + "'" + " isFirst1 " +
+//                                 isFirst1);
+        if (! stepStr.equals( currentStepStr)) {
+          currentStepStr = stepStr;
+          if (isFirst1) {
+            isFirst1 = false;
+          } else {
+            currentIndx = i;
+            break;
+          }
+        }
+        viewsAtStep.add( frame);
+        windowCnt++;
+      } // end for
+//           System.err.println( "viewsAtStep.size() " + viewsAtStep.size());
+      Collections.sort( viewsAtStep, new ViewNameComparator( seqName));
+      for (int i = 0, n = viewsAtStep.size(); i < n; i++) {
+        sortedWindows.add ( (MDIInternalFrame) viewsAtStep.get( i));
+      }
+    } // end while
+    return sortedWindows;
+  } // end sortWindowsForSeqByView
+
+  private String getMenuItemSeqName( String seqName, List itemSeqNames) {
+      int nameCount = 0;
+    // System.err.println( "getMenuItemSeqName: seqName " + seqName);
+    // check for e.g. monkey1066690986042
+    String newSeqName = seqName.substring( 0, seqName.length() - DbConstants.LONG_INT_LENGTH);
+    for (int i = 0; i < itemSeqNames.size(); i++) {
+      String itemSeqName = (String) itemSeqNames.get( i);
+      int index = itemSeqName.indexOf(" (");
+      if (index != -1) {
+        itemSeqName = itemSeqName.substring( 0, index);
+      }
+      if (itemSeqName.equals( newSeqName)) {
+        nameCount++;
+      }
+    }
+    if (nameCount > 0) {
+      newSeqName = newSeqName.concat(" (").concat( Integer.toString( nameCount)).concat(")");
+    }
+    // System.err.println( "   newSeqName " + newSeqName);
+    return newSeqName;
+  } // end getMenuItemSeqName
+
+
+   private class SeqNameComparator implements Comparator {
+    public SeqNameComparator() {
+    }
+    public final int compare( final Object o1, final Object o2) {
+      String s1 = Utilities.getUrlLeaf((String) o1);
+      String s2 = Utilities.getUrlLeaf((String) o2);
+      return s1.compareTo(s2);
+    }
+    public final boolean equals( final Object o1, final Object o2) {
+      String s1 = Utilities.getUrlLeaf((String)o1);
+      String s2 = Utilities.getUrlLeaf((String)o2);
+      return s1.equals(s2);
+    }
+  }
+ 
+
+  private class StepNumberComparator implements Comparator {
+    public StepNumberComparator() {
+    }
+    public final int compare( final Object o1, final Object o2) {
+      Integer stepNumberInt1 = getStepNumberInt( ((MDIInternalFrame) o1).getTitle());
+      Integer stepNumberInt2 = getStepNumberInt( ((MDIInternalFrame) o2).getTitle());
+      return stepNumberInt1.compareTo( stepNumberInt2);
+    }
+    public final boolean equals( final Object o1, final Object o2) {
+      Integer stepNumberInt1 = getStepNumberInt( ((MDIInternalFrame) o1).getTitle());
+      Integer stepNumberInt2 = getStepNumberInt( ((MDIInternalFrame) o2).getTitle());
+      return stepNumberInt1.equals( stepNumberInt2);
+    }
+
+    private Integer getStepNumberInt( String title) {
+      int stepNumber = -1;
+      int indx = title.indexOf( "/step");
+      if (indx >= 0) {
+        String stepNumberStr = title.substring( indx + 5);
+        int indx2 = stepNumberStr.indexOf( " ");
+        if (indx2 > 0) {
+          stepNumberStr = stepNumberStr.substring( 0, indx2);
+        }
+        stepNumber = Integer.parseInt( stepNumberStr);
+      }
+      return new Integer( stepNumber);
+    } // end getStepNumberInt
+
+  } // end class StepNumberComparator
+
+
+  private class ViewNameComparator implements Comparator {
+    private String planName;
+    public ViewNameComparator( String planName) {
+      this.planName = planName;
+    }
+    public final int compare( final Object o1, final Object o2) {
+      String viewName1 = getViewName( ((MDIInternalFrame) o1).getTitle());
+      String viewName2 = getViewName( ((MDIInternalFrame) o2).getTitle());
+      return viewName1.compareTo( viewName2);
+    }
+    public final boolean equals( final Object o1, final Object o2) {
+      String viewName1 = getViewName( ((MDIInternalFrame) o1).getTitle());
+      String viewName2 = getViewName( ((MDIInternalFrame) o2).getTitle());
+      return viewName1.equals( viewName2);
+    }
+
+    private String getViewName( String title) {
+      String viewName = "";
+      int indx = title.indexOf( planName);
+      if (indx >= 0) {
+        viewName = title.substring( 0, indx);
+      }
+      return viewName;
+    } // end getViewName
+
+  } // end class StepNumberComparator
+
+
   public void notifyDeleted(final MDIFrame frame) {
     windows.remove(frame);
     buildWindowMenu();
   }
-  public void add(final JButton button){}
+
+  public void add(final JButton button){
+  }
+
   public JMenu add(final JMenu menu) {
     remove(windowMenu);
     super.add(menu);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.3 2004-06-03 17:33:37 taylor Exp $
+// $Id: DecisionView.java,v 1.4 2004-06-04 23:09:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -420,20 +420,20 @@ public class DecisionView extends PartialPlanView {
 
         decisionNode.add( new ChoiceNode( choice));
 
-        switch ( choice.getType()) {
-        case DbConstants.C_TOKEN:
-          System.err.println( "  DbConstants.C_TOKEN " + choice.toString());
-          break;
-        case DbConstants.C_VALUE:
-          System.err.println( "  DbConstants.C_VALUE " + choice.toString());
-          break;
-        case DbConstants.C_DOMAIN:
-          System.err.print( "  DbConstants.C_DOMAIN " + choice.toString());
-          break;
-        case DbConstants.C_CLOSE:
-          System.err.println( "  DbConstants.C_CLOSE " + choice.toString());
-          break;
-        }
+//         switch ( choice.getType()) {
+//         case DbConstants.C_TOKEN:
+//           System.err.println( "  DbConstants.C_TOKEN " + choice.toString());
+//           break;
+//         case DbConstants.C_VALUE:
+//           System.err.println( "  DbConstants.C_VALUE " + choice.toString());
+//           break;
+//         case DbConstants.C_DOMAIN:
+//           System.err.print( "  DbConstants.C_DOMAIN " + choice.toString());
+//           break;
+//         case DbConstants.C_CLOSE:
+//           System.err.println( "  DbConstants.C_CLOSE " + choice.toString());
+//           break;
+//         }
       } // end while choiceList
     } // end while decisionList
     return top;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.29 2004-05-21 21:39:11 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.30 2004-06-04 23:09:00 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -25,6 +25,8 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -53,6 +55,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
@@ -547,19 +550,34 @@ public class SequenceStepsView extends SequenceView {
     createRefreshItem( refreshItem, this);
     mouseRightPopup.add( refreshItem);
 
-    List partialPlanViewList = null;
-    if ((selectedStepElement != null) &&
-        ((partialPlanViewList = getPartialPlanViewList()).size() != 0)) {
-      String stepTitle = selectedStepElement.getPartialPlanName() + " Active Views";
-      String stepBackwardTitle = "Step Backward " + stepTitle;
-      JMenuItem stepBackwardItem = new JMenuItem( stepBackwardTitle);
-      createStepBackwardItem( stepBackwardItem, partialPlanViewList);
-      mouseRightPopup.add( stepBackwardItem);
+    List allPartialPlansViewList = new ArrayList();
+    List partialPlansOfViews = getPartialPlansOfViews();
+    Iterator partialPlanItr = partialPlansOfViews.iterator();
+    while (partialPlanItr.hasNext()) {
+      PwPartialPlan partialPlan = (PwPartialPlan) partialPlanItr.next();
+      List partialPlanViewList = null;
+      if ((partialPlanViewList =
+           getPartialPlanViewList( partialPlan.getStepNumber())).size() != 0) {
+        allPartialPlansViewList.addAll( partialPlanViewList);
+        String stepTitle = partialPlan.getPartialPlanName() + " Active Views";
+        String stepBackwardTitle = "Step Backward " + stepTitle;
+        JMenuItem stepBackwardItem = new JMenuItem( stepBackwardTitle);
+        createStepBackwardItem( stepBackwardItem, partialPlanViewList);
+        mouseRightPopup.add( stepBackwardItem);
 
-      String stepForwardTitle = "Step Forward " + stepTitle;
-      JMenuItem stepForwardItem = new JMenuItem( stepForwardTitle);
-      createStepForwardItem( stepForwardItem, partialPlanViewList);
-      mouseRightPopup.add( stepForwardItem);
+        String stepForwardTitle = "Step Forward " + stepTitle;
+        JMenuItem stepForwardItem = new JMenuItem( stepForwardTitle);
+        createStepForwardItem( stepForwardItem, partialPlanViewList);
+        mouseRightPopup.add( stepForwardItem);
+      }
+    }
+    if (partialPlansOfViews.size() > 1) {
+      JMenuItem stepBackwardAllItem = new JMenuItem( "Step Backward All Active Views");
+      createStepBackwardItem( stepBackwardAllItem, allPartialPlansViewList);
+      mouseRightPopup.add( stepBackwardAllItem);
+      JMenuItem stepForwardAllItem = new JMenuItem( "Step Forward All Active Views");
+      createStepForwardItem( stepForwardAllItem, allPartialPlansViewList);
+      mouseRightPopup.add( stepForwardAllItem);
     }
 
     createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
@@ -568,6 +586,41 @@ public class SequenceStepsView extends SequenceView {
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
+
+  private List getPartialPlansOfViews() {
+    List uniquePartialPlanList = new UniqueSet();
+    Object[] viewSetKeys =  PlanWorks.getPlanWorks().getViewManager().getViewSetKeys();
+    for (int i = 0, n = viewSetKeys.length; i < n; i++) {
+      ViewableObject viewableObject = (ViewableObject) viewSetKeys[i];
+      if (viewableObject instanceof PwPartialPlan) {
+        uniquePartialPlanList.add( (PwPartialPlan) viewableObject);
+      }
+    }
+    // sort by stepNumber
+    List partialPlanList = new ArrayList( uniquePartialPlanList);
+    Collections.sort( partialPlanList, new StepNumberComparator());
+//    for (int i = 0, n = partialPlanList.size(); i < n; i++) {
+//       System.err.println( "getPartialPlansOfViews i " + i + " " +
+//                           ((PwPartialPlan) partialPlanList.get( i)).getStepNumber());
+//     }
+    return partialPlanList;
+  } // end getSequenceStepsOfViews
+
+
+  private class StepNumberComparator implements Comparator {
+    public StepNumberComparator() {
+    }
+    public final int compare( final Object o1, final Object o2) {
+      Integer i1 = new Integer( ((PwPartialPlan) o1).getStepNumber());
+      Integer i2 = new Integer( ((PwPartialPlan) o2).getStepNumber());
+      return i1.compareTo( i2);
+    }
+    public final boolean equals( final Object o1, final Object o2) {
+      Integer i1 =  new Integer( ((PwPartialPlan) o1).getStepNumber());
+      Integer i2 = new Integer( ((PwPartialPlan) o2).getStepNumber());
+      return i1.equals( i2);
+    }
+  } // end class StepNumberComparator
 
 
   private void createOverviewWindowItem( JMenuItem overviewWindowItem,
@@ -616,13 +669,12 @@ public class SequenceStepsView extends SequenceView {
       });
   }
 
-  private List getPartialPlanViewList() {
+  private List getPartialPlanViewList( int stepNumber) {
     List partialPlanViewList = new ArrayList();
-    int currentStep = selectedStepElement.getStepNumber();
-    // System.err.println( "createStepBackwardItem currentStep " + currentStep);
+    // System.err.println( "getPartialPlanViewList stepNumber " + stepNumber);
     PwPartialPlan partialPlan = null;
     try {
-      partialPlan = planSequence.getPartialPlan( currentStep);
+      partialPlan = planSequence.getPartialPlan( stepNumber);
     } catch (IndexOutOfBoundsException excp) {
     } catch (ResourceNotFoundException excpR) {
     }
@@ -635,11 +687,8 @@ public class SequenceStepsView extends SequenceView {
       while (viewsItr.hasNext()) {
         PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
         StepButton backwardButton = partialPlanView.getBackwardButton();
-        // DBTransactionView does not have step buttons
-        if (backwardButton != null) {
-          // System.err.println( "partialPlanView " + partialPlanView);
-          partialPlanViewList.add( partialPlanView);
-        }
+        // System.err.println( "partialPlanView " + partialPlanView);
+        partialPlanViewList.add( partialPlanView);
       }
     }
     return partialPlanViewList;
