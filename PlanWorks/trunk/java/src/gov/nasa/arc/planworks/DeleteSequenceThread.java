@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteSequenceThread.java,v 1.5 2003-11-03 19:02:39 taylor Exp $
+// $Id: DeleteSequenceThread.java,v 1.6 2003-12-29 23:22:04 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -74,10 +74,10 @@ public class DeleteSequenceThread extends Thread {
           try {
             PwPlanningSequence seq =
               PlanWorks.planWorks.currentProject.getPlanningSequence( sequenceName);
-              if (PlanWorks.planWorks.viewManager.getViewSet( seq) != null) {
-                PlanWorks.planWorks.viewManager.getViewSet( seq).close();
-                PlanWorks.planWorks.viewManager.removeViewSet( seq);
-              }
+            if (PlanWorks.planWorks.viewManager.getViewSet( seq) != null) {
+              PlanWorks.planWorks.viewManager.getViewSet( seq).close();
+              PlanWorks.planWorks.viewManager.removeViewSet( seq);
+            }
             PlanWorks.planWorks.currentProject.deletePlanningSequence( sequenceName);
             ListIterator partialPlanIterator = seq.getPartialPlansList().listIterator();
             while (partialPlanIterator.hasNext()) {
