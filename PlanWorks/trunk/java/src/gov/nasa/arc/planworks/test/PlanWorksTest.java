@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.29 2004-05-13 20:24:07 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.30 2004-05-14 17:41:38 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -26,9 +26,9 @@ public class PlanWorksTest extends JFCTestCase {
   public static void main(String [] args) {
     PlanWorksTest.args = args;
 
-    TestRunner.run(suite());
+    //TestRunner.run(suite());
 
-    //TestResult result = new TestResult();
+    TestResult result = new TestResult();
     //BackendTest.suite().run(result);
     //while(TEST_RUNNING == 1) {
     //  try{Thread.yield();}catch(Exception e){}
@@ -36,6 +36,20 @@ public class PlanWorksTest extends JFCTestCase {
     //printFailures(result);
     //MySQLDBTest.suite().run(result);
     //printFailures(result);
+		System.err.println("Backend test...");
+		BackendTest.suite().run(result);
+		printFailures(result);
+		System.err.println("Backend done.");
+// 		MySQLDBTest.suite().run(result);
+// 		printFailures(result);
+		System.err.println("Utils test...");
+		PlanWorksUtilsTest.suite().run(result);
+		printFailures(result);
+		System.err.println("Utils done.");
+		System.err.println("GUI test...");
+		PlanWorksGUITest.suite().run(result);
+		printFailures(result);
+		System.err.println("GUI done.");
   }
   public static TestSuite suite() {
     TestSuite suite = new TestSuite();
