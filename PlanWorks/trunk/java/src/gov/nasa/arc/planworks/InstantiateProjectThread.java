@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.9 2004-02-03 20:43:43 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.10 2004-03-09 21:11:46 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -148,6 +148,7 @@ public class InstantiateProjectThread extends Thread {
           PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         }
         if (PlanWorks.getPlanWorks().sequenceDirectories != null) {
+          boolean isSequenceAdded = false;
           for (int i = 0, n = PlanWorks.getPlanWorks().sequenceDirectories.length; i < n; i++) {
             String sequenceDirectory = PlanWorks.getPlanWorks().sequenceParentDirectory +
               System.getProperty( "file.separator") +
@@ -155,8 +156,10 @@ public class InstantiateProjectThread extends Thread {
             if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
               System.err.println( "project.addPlanningSequence " + sequenceDirectory);
               project.addPlanningSequence( sequenceDirectory);
+              isSequenceAdded = true;
             }
           }
+          PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.DELSEQ_MENU_ITEM, true);
         }
 
       } catch (ResourceNotFoundException rnfExcep) {

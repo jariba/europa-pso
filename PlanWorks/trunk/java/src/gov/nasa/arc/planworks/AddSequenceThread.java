@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AddSequenceThread.java,v 1.6 2004-02-03 20:43:42 taylor Exp $
+// $Id: AddSequenceThread.java,v 1.7 2004-03-09 21:11:47 miatauro Exp $
 //
 //
 // PlanWorks -- 
@@ -52,9 +52,7 @@ public class AddSequenceThread extends Thread {
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
     PlanWorks.projectMenu.setEnabled(false);
-
     addSequence();
-
     PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
     dynamicMenuBar.enableMenu( planSeqMenu);
