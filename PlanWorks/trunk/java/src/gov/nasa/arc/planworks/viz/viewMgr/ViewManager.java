@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.19 2003-10-10 23:59:52 taylor Exp $
+// $Id: ViewManager.java,v 1.20 2003-10-16 21:40:42 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -60,6 +60,7 @@ public class ViewManager implements ViewSetRemover {
 	    viewSets.put(viewable,
                          new SequenceViewSet(desktopFrame,
                                              (PwPlanningSequence) viewable, this));
+            contentSpecWindowCnt++;
 	}
 	else {
 	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));

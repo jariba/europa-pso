@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.4 2003-10-08 19:10:29 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.5 2003-10-16 21:40:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -16,9 +16,6 @@ package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,8 +69,6 @@ public class TokenNetworkView extends PartialPlanView {
   private TokenNetworkJGoView jGoView;
   private JGoDocument jGoDocument;
   // private JGoLayer hiddenLayer;
-  private Font font;
-  private FontMetrics fontMetrics;
   // nodeList & tmpNodeList used by JFCUnit test case
   private List nodeList; // element TokenNode
   private List tmpNodeList; // element TokenNode
@@ -133,14 +128,7 @@ public class TokenNetworkView extends PartialPlanView {
       }
       // System.err.println( "tokenNetworkView displayable " + this.isDisplayable());
     }
-    Graphics graphics = ((JPanel) this).getGraphics();
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-    // does nothing
-    // jGoView.setFont( font);
-    fontMetrics = graphics.getFontMetrics( font);
-    graphics.dispose();
+    this.computeFontMetrics( this);
 
     boolean isRedraw = false;
     renderTokenNetwork( isRedraw);
@@ -240,15 +228,6 @@ public class TokenNetworkView extends PartialPlanView {
    */
   public List getLinkList() {
     return linkList;
-  }
-
-  /**
-   * <code>getFontMetrics</code>
-   *
-   * @return - <code>FontMetrics</code> - 
-   */
-  public FontMetrics getFontMetrics()  {
-    return fontMetrics;
   }
 
   private void buildTokenParentChildRelationships() {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.67 2003-10-10 23:59:52 taylor Exp $
+// $Id: PlanWorks.java,v 1.68 2003-10-16 21:40:39 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -52,8 +52,6 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.SplashWindow;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.ProjectNameDialog;
-import gov.nasa.arc.planworks.util.DuplicateNameException;
-import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
@@ -90,6 +88,7 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String TEMPORAL_NETWORK_VIEW   = "Temporal Network View";
   public static final String TIMELINE_VIEW           = "Timeline View";
   public static final String TOKEN_NETWORK_VIEW      = "Token Network View";
+  public static final String TRANSACTION_VIEW      = "Transaction View";
   public static final List PARTIAL_PLAN_VIEW_LIST;
 
   public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
@@ -122,6 +121,9 @@ public class PlanWorks extends MDIDesktopFrame {
     viewClassNameMap.put
       ( TOKEN_NETWORK_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView");
+    viewClassNameMap.put
+      ( TRANSACTION_VIEW,
+        "gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView");
 
     viewClassNameMap.put
       ( SEQUENCE_STEPS_VIEW,
@@ -132,6 +134,8 @@ public class PlanWorks extends MDIDesktopFrame {
     PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( TRANSACTION_VIEW);
+
     SEQUENCE_VIEW_LIST = new ArrayList();
     SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);
   }
@@ -473,32 +477,19 @@ public class PlanWorks extends MDIDesktopFrame {
                                                 planSeqViewMenu);
       //System.err.println( "  sequenceName " + seqName);
       sequenceNameMap.put(seqUrl, seqName);
-      JMenu seqMenu = new JMenu( seqName);
-      planSeqViewMenu.add( seqMenu);
-      buildSequenceViewSubMenu( seqMenu, seqUrl, seqName);
+      SequenceViewMenuItem planDbSizeItem =
+        new SequenceViewMenuItem( seqName, seqUrl, seqName);
+      planDbSizeItem.addActionListener( new ActionListener() {
+          public void actionPerformed( ActionEvent evt) {
+            PlanWorks.planWorks.createSequenceViewThread
+              ( SEQUENCE_STEPS_VIEW, (SequenceViewMenuItem) evt.getSource());
+          }
+        });
+      planSeqViewMenu.add( planDbSizeItem);
     }
     return planSeqViewMenu;
   } // end buildPlanSeqViewMenu
 
-
-  private void buildSequenceViewSubMenu( JMenu seqMenu, String seqUrl, String seqName) {
-    Iterator viewNamesItr = supportedViewNames.iterator();
-    while (viewNamesItr.hasNext()) {
-      String viewName = (String) viewNamesItr.next();
-      if (viewName.equals( SEQUENCE_STEPS_VIEW)) {
-        SequenceViewMenuItem planDbSizeItem =
-          new SequenceViewMenuItem( Utilities.trimView( SEQUENCE_STEPS_VIEW),
-                                    seqUrl, seqName);
-        planDbSizeItem.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent evt) {
-              PlanWorks.planWorks.createSequenceViewThread
-                ( SEQUENCE_STEPS_VIEW, (SequenceViewMenuItem) evt.getSource());
-            }
-          });
-        seqMenu.add( planDbSizeItem);
-      }
-    }
-  } // end buildSequenceViewSubMenu
 
   private void createSequenceViewThread( String viewName, SequenceViewMenuItem menuItem) {
     new CreateSequenceViewThread( viewName, menuItem).start();

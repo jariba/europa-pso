@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.21 2003-10-07 02:13:34 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.22 2003-10-16 21:40:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -175,4 +175,13 @@ public interface PwPartialPlan extends ViewableObject {
    */
   public abstract int getPlanDBSize();
 
+  /**
+   * <code>getStepNumber</code> - strip "step" prefix off stepDir and create int
+   *
+   * @return - <code>int</code> - 
+   */
+  public abstract int getStepNumber();
+
+
 } // end interface PwPartialPlan
+

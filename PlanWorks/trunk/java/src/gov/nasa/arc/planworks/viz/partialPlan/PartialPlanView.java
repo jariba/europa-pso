@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.2 2003-10-01 23:53:56 taylor Exp $
+// $Id: PartialPlanView.java,v 1.3 2003-10-16 21:40:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,10 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-
-// PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoText;
-import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
@@ -61,11 +57,6 @@ public class PartialPlanView extends VizView {
     this.partialPlan = partialPlan;
     validTokenIds = null;
     displayedTokenIds = null;
-    
-    JGoText.setDefaultFontFaceName( "Monospaced");
-    JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-
-    // Utilities.printFontNames();
   }
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.6 2003-10-09 22:07:46 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.7 2003-10-16 21:40:42 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -58,6 +58,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -233,7 +234,7 @@ public class SequenceStepsView extends SequenceView {
     while (stepItr.hasNext()) {
       String partialPlanName = (String) stepItr.next();
       int planDBSize =
-        planSequence.getPlanDBSize( Integer.parseInt( partialPlanName.substring( 4)));
+        planSequence.getPlanDBSize( Utilities.getStepNumber( partialPlanName));
 
       StepElement stepElement = new StepElement( x, y, planDBSize, partialPlanName,
                                                  planSequence, this);

@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.4 2003-10-10 23:59:52 taylor Exp $
+// $Id: CreateViewThread.java,v 1.5 2003-10-16 21:40:39 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -113,6 +113,7 @@ public class CreateViewThread extends Thread {
       } else if (viewable instanceof PwPlanningSequence) {
         yFrameDelta = (int) ((yFrameAvailable * 0.50)/ PlanWorks.SEQUENCE_VIEW_LIST.size());
         viewList = PlanWorks.SEQUENCE_VIEW_LIST;
+        deltaCnt--;
       }
       Iterator viewItr = viewList.iterator();
       int viewIndex = 0;

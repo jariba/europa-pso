@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.37 2003-10-09 22:07:41 taylor Exp $
+# $Id: build-tags-file.csh,v 1.38 2003-10-16 21:40:38 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -19,7 +19,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/DeleteSequenceThread.java \
     src/gov/nasa/arc/planworks/InstantiateProjectThread.java \
     src/gov/nasa/arc/planworks/PlanWorks.java \
-     src/gov/nasa/arc/planworks/SequenceViewMenuItem.java \
+    src/gov/nasa/arc/planworks/SequenceViewMenuItem.java \
     src/gov/nasa/arc/planworks/db/DbConstants.java \
     src/gov/nasa/arc/planworks/db/PwConstraint.java \
     src/gov/nasa/arc/planworks/db/PwDomain.java \
@@ -72,6 +72,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/mdi/MDIWindowButtonBar.java \
     src/gov/nasa/arc/planworks/mdi/SplashWindow.java \
     src/gov/nasa/arc/planworks/mdi/TileCascader.java \
+    src/gov/nasa/arc/planworks/test/BackendTest.java \
+    src/gov/nasa/arc/planworks/test/MySQLDBTest.java \
+    src/gov/nasa/arc/planworks/test/PlanWorksTest.java \
     src/gov/nasa/arc/planworks/test/PlanWorksBigTest.java \
     src/gov/nasa/arc/planworks/util/Algorithms.java \
     src/gov/nasa/arc/planworks/util/ColorMap.java \
@@ -88,11 +91,14 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/UniqueSet.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
+    src/gov/nasa/arc/planworks/viz/TransactionContentView.java \
+    src/gov/nasa/arc/planworks/viz/TransactionHeaderView.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
     src/gov/nasa/arc/planworks/viz/VizView.java \
     src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TransactionField.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/RedrawNotifier.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewableObject.java \
@@ -117,7 +123,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/TokenTypeBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/UniqueKeyBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/partialPlan/UniqueKeyGroupBox.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/sequence/ContentSpecWindow.java \
+    src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/sequence/SequenceQueryWindow.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/AskTokenByKey.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
@@ -142,9 +148,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenLink.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/transaction/TransactionView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
-    src/gov/nasa/arc/planworks/viz/sequence/ViewTransactionsFrame.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/StepElement.java
 

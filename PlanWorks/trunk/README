@@ -4,62 +4,26 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.42 2003-10-16 21:05:11 taylor Exp $
+# $Id: README,v 1.43 2003-10-16 21:40:38 taylor Exp $
 #
 
 SUMMARY
 =======
-Each sequence in the "Planning Sequence" menu now includes only the
-"Sequence Steps" view, which is a histogram of the partial plan
-data base size for each step.  The sequence step menu selections have
-been removed.  Partial plan views for each step are now available
-by clicking Mouse-Right on the desired step in the histogram
-("SequenceStepsView").  The histogram steps have a "mouse over" pop-up 
-showing the step number, the data base size, and the number of
-transactions.
+The "Planning Sequence" menu now expands only into the available
+sequence names.  Selecting a sequence name brings up two windows.
+The first, "SequenceQuery ...", allows the user to make data base
+queries over the sequence.  The second, the "SequenceStepsView",
+is a histogram of the partial plan data base size for each step.  
+Partial plan views for each step are available by clicking Mouse-
+Right on the desired step in the histogram.
 
-The Token Network View now is freshly layed out after applying a
-Content Spec filter.
-
-In all the partial plan views, Mouse-Right on the background offers
-"Find Token by Key" which allows the user to enter a token's key and
-have the view scroll to that token's location.
-
-The Partial Plan Content Spec has been enhanced to handle token keys.
-Click on either the "require" or "exclude" radio button, and then enter
-the key value in the input slot.  To include more keys, click on "Add";
-to remove keys from a previous "Apply Spec" set, click on "Remove".
-The "require" or "exclude" selections override the "Predicate",
-"Timeline", and "Time Interval" selections, with applied together.
-
-Test use cases have been defined to replace the "planWorksTest" JFCUnit 
-test which had become unusable.  A new unit test for the PlanWorks
-data access layer is now in its place and can be run with 
-"ant test".
-
-The current PartialPlanWriter (PlanWorks/cpp/integration/europa/README)
-requires a recent version of EUROPA.  The earliest known working
-version is tagged with the PlanWorks milestone release tag PW_M_8.  
-Note: Registering the PartialPlanWriter as a subscriber in
-simplePlan.cc breaks EUROPA's make tests.  This is being worked
-on.  
-
-Please note that the current database model invalidates all old
-data and will require a rebuilding of the database tables 
-("ant planWorksDbInstall").
 
 o  GNATS PRs and CRs completed:
-   #2079: Users not telepathic-need to specify MySQL version.
-   #2086: PlanWriter writes output files in wierd places.
-   #2092: The filter of free token, etc from the content spec should 
-          persist between window open and closes.
-   #2107: Issues with display of Token Network and other windows.
-   #2108: Changes in Token Network View.
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_8 PlanWorks
+> cvs co -r PW_M_9 PlanWorks
 
 
 PREREQUISITES
@@ -150,6 +114,7 @@ the database.
  planWorks          -- run PlanWorks application (compile dependency)
  planWorksDbInstall -- create all necessary databases and tables
  planWorksProf      -- run PlanWorks with profiling info
+ test               -- Data access layer JFCUnit test (compile, cleandb dependencies)
 
 Default target: planWorks
 
@@ -160,6 +125,56 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+16october03: Milestone 8
+========================
+Each sequence in the "Planning Sequence" menu now includes only the
+"Sequence Steps" view, which is a histogram of the partial plan
+data base size for each step.  The sequence step menu selections have
+been removed.  Partial plan views for each step are now available
+by clicking Mouse-Right on the desired step in the histogram
+("SequenceStepsView").  The histogram steps have a "mouse over" pop-up 
+showing the step number, the data base size, and the number of
+transactions.
+
+The Token Network View now is freshly layed out after applying a
+Content Spec filter.
+
+In all the partial plan views, Mouse-Right on the background offers
+"Find Token by Key" which allows the user to enter a token's key and
+have the view scroll to that token's location.
+
+The Partial Plan Content Spec has been enhanced to handle token keys.
+Click on either the "require" or "exclude" radio button, and then enter
+the key value in the input slot.  To include more keys, click on "Add";
+to remove keys from a previous "Apply Spec" set, click on "Remove".
+The "require" or "exclude" selections override the "Predicate",
+"Timeline", and "Time Interval" selections, with applied together.
+
+Test use cases have been defined to replace the "planWorksTest" JFCUnit 
+test which had become unusable.  A new unit test for the PlanWorks
+data access layer is now in its place and can be run with 
+"ant test".
+
+The current PartialPlanWriter (PlanWorks/cpp/integration/europa/README)
+requires a recent version of EUROPA.  The earliest known working
+version is tagged with the PlanWorks milestone release tag PW_M_8.  
+Note: Registering the PartialPlanWriter as a subscriber in
+simplePlan.cc breaks EUROPA's make tests.  This is being worked
+on.  
+
+Please note that the current database model invalidates all old
+data and will require a rebuilding of the database tables 
+("ant planWorksDbInstall").
+
+o  GNATS PRs and CRs completed:
+   #2079: Users not telepathic-need to specify MySQL version.
+   #2086: PlanWriter writes output files in wierd places.
+   #2092: The filter of free token, etc from the content spec should 
+          persist between window open and closes.
+   #2107: Issues with display of Token Network and other windows.
+   #2108: Changes in Token Network View.
+
 
 23september03: Milestone 7
 ==========================
