@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.6 2003-09-11 18:34:55 miatauro Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.7 2003-09-18 19:02:05 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -64,7 +64,6 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
     buildWindowMenu();
     this.setVisible(true);
   }
-
   /**
    * Creates a new MDIDynamicMenuBar with a set of initial constant menus and a set of initial
    * volatile menus.

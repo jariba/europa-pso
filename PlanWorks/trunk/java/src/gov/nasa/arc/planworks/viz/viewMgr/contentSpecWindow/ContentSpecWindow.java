@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.18 2003-09-11 23:41:55 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.19 2003-09-18 19:02:24 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -45,6 +45,8 @@ public class ContentSpecWindow extends JPanel {
   protected PredicateGroupBox predicateGroup;
   protected TimeIntervalGroupBox timeIntervalGroup;
   protected TimelineGroupBox timelineGroup;
+  protected MergeBox mergeBox;
+  protected TokenTypeBox tokenTypeBox;
   //protected VariableTypeGroupBox variableTypeGroup;
   //private McLaughlanGroupBox mcLaughlanGroup
 
@@ -97,6 +99,16 @@ public class ContentSpecWindow extends JPanel {
     gridBag.setConstraints(timeIntervalGroup, c);
     add(timeIntervalGroup);
 
+    mergeBox = new MergeBox();
+    c.gridy++;
+    gridBag.setConstraints(mergeBox, c);
+    add(mergeBox);
+    
+    tokenTypeBox = new TokenTypeBox();
+    c.gridy++;
+    gridBag.setConstraints(tokenTypeBox, c);
+    add(tokenTypeBox);
+
     /*variableTypeGroup = new VariableTypeGroupBox(window);
     c.gridx++;
     c.gridy++;
@@ -142,13 +154,17 @@ public class ContentSpecWindow extends JPanel {
     public void actionPerformed(ActionEvent ae) {
       if(ae.getActionCommand().equals("Apply Spec")) {
         StringBuffer output = new StringBuffer();
-        List /*constraint, */timeInterval, variableType, predicate, timeline;
+        List /*constraint, */timeInterval, /*variableType, */predicate, timeline;
+        boolean mergeTokens;
+        int tokenType;
         try {
           //constraint = specWindow.constraintGroup.getValues();
           timeInterval = specWindow.timeIntervalGroup.getValues();
           //variableType = specWindow.variableTypeGroup.getValues();
           predicate = specWindow.predicateGroup.getValues();
           timeline = specWindow.timelineGroup.getValues();
+          mergeTokens = specWindow.mergeBox.getValue();
+          tokenType = specWindow.tokenTypeBox.getValue();
         }
         catch(IllegalArgumentException e){return;}
         //if they're all null, put up a dialog
@@ -206,12 +222,15 @@ public class ContentSpecWindow extends JPanel {
             output.append(timelineIterator.next()).append(" ");
           }
         }
+        output.append(" merge ").append(mergeTokens);
+        output.append(" type ").append(tokenType);
         output.append("\n");
         System.err.println(output.toString());
         //timeline, predicate, constraint, variableType, timeInterval
         System.err.println("Applying Specification...");
         try {
-          specWindow.contentSpec.applySpec(timeline, predicate, timeInterval);
+          specWindow.contentSpec.applySpec(timeline, predicate, timeInterval, mergeTokens, 
+                                           tokenType);
         }
         catch(Exception e){
           System.err.println(e);
@@ -228,6 +247,8 @@ public class ContentSpecWindow extends JPanel {
         //specWindow.variableTypeGroup.reset();
         specWindow.predicateGroup.reset();
         specWindow.timelineGroup.reset();
+        specWindow.mergeBox.reset();
+        specWindow.tokenTypeBox.reset();
       }
     }
   }
