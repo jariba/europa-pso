@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: SpecBox.java,v 1.3 2003-06-16 16:28:08 miatauro Exp $
+//
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
 import java.awt.BorderLayout;
@@ -9,24 +17,22 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.regex.Pattern;
-//import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import java.util.regex.*;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class SpecBox extends JPanel implements ContentSpecElement
-{
+public class SpecBox extends JPanel implements ContentSpecElement {
   private LogicComboBox logicBox;
   private NegationCheckBox negationBox;
   private JTextField keyField;
   private String name;
   private static final Pattern keyPattern = Pattern.compile("[K|k]\\d+");
 
-  public SpecBox(boolean first, String name)
-  {
+  public SpecBox(boolean first, String name) {
     this.name = name.toString();
     GridBagLayout gridBag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
@@ -34,8 +40,9 @@ public class SpecBox extends JPanel implements ContentSpecElement
     
     logicBox = new LogicComboBox();
     logicBox.addItemListener(new LogicListener(this));
-    if(first)
+    if(first) {
       logicBox.setEnabled(false);
+    }
 
     c.weightx = 1;
     c.gridx = 0;
@@ -58,33 +65,33 @@ public class SpecBox extends JPanel implements ContentSpecElement
     gridBag.setConstraints(keyField, c);
     add(keyField);
   }
-  public List getValue() throws NullPointerException, IllegalArgumentException
-  {
+  public List getValue() throws NullPointerException, IllegalArgumentException {
     ArrayList retval = new ArrayList();
     StringBuffer connective = new StringBuffer();
-    if(keyField.getText().trim().equals(""))
+    if(keyField.getText().trim().equals("")) {
       return null;
-    if(!keyPattern.matcher(keyField.getText().trim()).matches())
-      {
-        JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), (new StringBuffer("Invalid ")).append(name).append(" key format.  Must be of the form [K|k]\\d+.").toString(), "Error!", JOptionPane.ERROR_MESSAGE);
-        throw new IllegalArgumentException();
+    }
+    if(!keyPattern.matcher(keyField.getText().trim()).matches()) {
+      JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), (new StringBuffer("Invalid ")).append(name).append(" key format.  Must be of the form [K|k]\\d+.").toString(), "Error!", JOptionPane.ERROR_MESSAGE);
+      throw new IllegalArgumentException();
+    }
+    if(logicBox.isEnabled()) {
+      if(((String)logicBox.getSelectedItem()).equals("")) {
+        return null;
       }
-    if(logicBox.isEnabled())
-      {
-	if(((String)logicBox.getSelectedItem()).equals(""))
-	  return null;
-	connective.append(((String)logicBox.getSelectedItem()).toLowerCase());
-      }
-    else
+      connective.append(((String)logicBox.getSelectedItem()).toLowerCase());
+    }
+    else {
       connective.append("or");
-    if(negationBox.isSelected())
+    }
+    if(negationBox.isSelected()) {
       connective.append(" not");
+    }
     retval.add(connective.toString());
     retval.add(keyField.getText().trim());
     return retval;
   }
-  protected void addSpecBox()
-  {
+  protected void addSpecBox() {
     GroupBox parent = (GroupBox) getParent();
     GridBagLayout gridBag = (GridBagLayout) parent.getLayout();
     GridBagConstraints c = new GridBagConstraints();
@@ -96,48 +103,41 @@ public class SpecBox extends JPanel implements ContentSpecElement
     parent.add((ContentSpecElement)box);
     parent.validate();
   }
-  protected void removeSpecBox()
-  {
+  protected void removeSpecBox() {
     GroupBox parent = (GroupBox) getParent();
     parent.remove(this);
     parent.validate();
     parent.repaint();
   }
-  public void reset()
-  {
+  public void reset() {
     negationBox.setSelected(false);
     keyField.setText("");
     logicBox.setSelectedItem("");
   }
-  class LogicListener implements ItemListener
-  {
+  class LogicListener implements ItemListener {
     private SpecBox box;
     private String itemStateChangedFrom;
-    public LogicListener(SpecBox box)
-    {
+    public LogicListener(SpecBox box) {
       super();
       this.box = box;
       itemStateChangedFrom = null;
     }
-    public void itemStateChanged(ItemEvent ie)
-    {
-      if(ie.getStateChange() == ItemEvent.DESELECTED)
+    public void itemStateChanged(ItemEvent ie) {
+      if(ie.getStateChange() == ItemEvent.DESELECTED) {
 	itemStateChangedFrom = (String) ie.getItem();
-      else if(ie.getStateChange() == ItemEvent.SELECTED)
-	{
-	  if(itemStateChangedFrom.equals("") && 
-	     (((String)ie.getItem()).equals("AND") || 
-	      ((String)ie.getItem()).equals("OR")))
-            {
-              box.addSpecBox();
-            }
-	  else if((itemStateChangedFrom.equals("AND") || 
-		   itemStateChangedFrom.equals("OR")) && 
-		  ((String)ie.getItem()).equals(""))
-            {
-              box.removeSpecBox();
-            }
-	}
+      }
+      else if(ie.getStateChange() == ItemEvent.SELECTED) {
+        if(itemStateChangedFrom.equals("") && 
+           (((String)ie.getItem()).equals("AND") || 
+            ((String)ie.getItem()).equals("OR"))) {
+          box.addSpecBox();
+        }
+        else if((itemStateChangedFrom.equals("AND") || 
+                 itemStateChangedFrom.equals("OR")) && 
+                ((String)ie.getItem()).equals("")) {
+          box.removeSpecBox();
+        }
+      }
     }
   }
 }

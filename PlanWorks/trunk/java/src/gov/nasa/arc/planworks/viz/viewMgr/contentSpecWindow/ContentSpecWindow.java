@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: ContentSpecWindow.java,v 1.3 2003-06-16 16:28:07 miatauro Exp $
+//
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
 import java.awt.Container;
@@ -14,8 +22,7 @@ import javax.swing.JPanel;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.viewMgr.ContentSpec;
 
-public class ContentSpecWindow extends JPanel
-{
+public class ContentSpecWindow extends JPanel {
   protected ConstraintGroupBox constraintGroup;
   protected PredicateGroupBox predicateGroup;
   protected TimeIntervalGroupBox timeIntervalGroup;
@@ -25,8 +32,7 @@ public class ContentSpecWindow extends JPanel
 
   protected ContentSpec contentSpec;
 
-  public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec)
-  {
+  public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec) {
     this.contentSpec = contentSpec;
 
     GridBagLayout gridBag = new GridBagLayout();
@@ -76,96 +82,95 @@ public class ContentSpecWindow extends JPanel
     gridBag.setConstraints(resetButton, c);
     add(resetButton);
   }
-  class SpecButtonListener implements ActionListener
-  {
+  class SpecButtonListener implements ActionListener {
     private ContentSpecWindow specWindow;
-    public SpecButtonListener(ContentSpecWindow specWindow)
-    {
+    public SpecButtonListener(ContentSpecWindow specWindow) {
       this.specWindow = specWindow;
     }
-    public void actionPerformed(ActionEvent ae)
-    {
-      if(ae.getActionCommand().equals("Apply Spec"))
-        {
-          StringBuffer output = new StringBuffer();
-          List constraint, timeInterval, variableType, predicate, timeline;
-          try
-            {
-              constraint = specWindow.constraintGroup.getValues();
-              timeInterval = specWindow.timeIntervalGroup.getValues();
-              variableType = specWindow.variableTypeGroup.getValues();
-              predicate = specWindow.predicateGroup.getValues();
-              timeline = specWindow.timelineGroup.getValues();
-            }
-          catch(IllegalArgumentException e){return;}
-          //if they're all null, put up a dialog
-          output.append("Constraint: ");
-          if(constraint == null)
-            output.append(" null");
-          else
-            {
-              ListIterator constraintIterator = constraint.listIterator();
-              while(constraintIterator.hasNext())
-                output.append(constraintIterator.next()).append(" ");
-            }
-          output.append("\n");
-          output.append("TimeInterval: ");
-          if(timeInterval == null)
-            output.append(" null");
-          else
-            {
-              ListIterator timeIntervalIterator = timeInterval.listIterator();
-              while(timeIntervalIterator.hasNext())
-                output.append(timeIntervalIterator.next()).append(" ");
-            }
-          output.append("\n");
-          output.append("VariableType: ");
-          if(variableType == null)
-            output.append(" null");
-          else
-            {
-              ListIterator variableTypeIterator = variableType.listIterator();
-              while(variableTypeIterator.hasNext())
-                output.append(variableTypeIterator.next()).append(" ");
-            }
-          output.append("\n");
-          output.append("Predicate: ");
-          if(predicate == null)
-            output.append(" null");
-          else
-            {
-              ListIterator predicateIterator = predicate.listIterator();
-              while(predicateIterator.hasNext())
-                output.append(predicateIterator.next()).append(" ");
-            }
-          output.append("\n");
-          output.append("Timeline: ");
-          if(timeline == null)
-            output.append(" null");
-          else
-            {
-              ListIterator timelineIterator = timeline.listIterator();
-              while(timelineIterator.hasNext())
-                output.append(timelineIterator.next()).append(" ");
-            }
-          output.append("\n");
-          System.err.println(output.toString());
-          //timeline, predicate, constraint, variableType, timeInterval
-          System.err.println("Applying Specification...");
-          specWindow.contentSpec.applySpec(timeline, predicate, constraint, variableType, 
-                                           timeInterval);
-          System.err.println("Done applying Specification.");
-          specWindow.contentSpec.printSpec();
+    public void actionPerformed(ActionEvent ae) {
+      if(ae.getActionCommand().equals("Apply Spec")) {
+        StringBuffer output = new StringBuffer();
+        List constraint, timeInterval, variableType, predicate, timeline;
+        try {
+          constraint = specWindow.constraintGroup.getValues();
+          timeInterval = specWindow.timeIntervalGroup.getValues();
+          variableType = specWindow.variableTypeGroup.getValues();
+          predicate = specWindow.predicateGroup.getValues();
+          timeline = specWindow.timelineGroup.getValues();
         }
-      else if(ae.getActionCommand().equals("Reset Spec"))
-        {
-          specWindow.contentSpec.resetSpec();
-          specWindow.constraintGroup.reset();
-          specWindow.timeIntervalGroup.reset();
-          specWindow.variableTypeGroup.reset();
-          specWindow.predicateGroup.reset();
-          specWindow.timelineGroup.reset();
+        catch(IllegalArgumentException e){return;}
+        //if they're all null, put up a dialog
+        output.append("Constraint: ");
+        if(constraint == null) {
+          output.append(" null");
         }
+        else {
+          ListIterator constraintIterator = constraint.listIterator();
+          while(constraintIterator.hasNext()) {
+            output.append(constraintIterator.next()).append(" ");
+          }
+        }
+        output.append("\n");
+        output.append("TimeInterval: ");
+        if(timeInterval == null) {
+          output.append(" null");
+        }
+        else {
+          ListIterator timeIntervalIterator = timeInterval.listIterator();
+          while(timeIntervalIterator.hasNext()) {
+            output.append(timeIntervalIterator.next()).append(" ");
+          }
+        }
+        output.append("\n");
+        output.append("VariableType: ");
+        if(variableType == null) {
+            output.append(" null");
+        }
+        else {
+          ListIterator variableTypeIterator = variableType.listIterator();
+          while(variableTypeIterator.hasNext()) {
+            output.append(variableTypeIterator.next()).append(" ");
+          }
+        }
+        output.append("\n");
+        output.append("Predicate: ");
+        if(predicate == null) {
+          output.append(" null");
+        }
+        else {
+          ListIterator predicateIterator = predicate.listIterator();
+          while(predicateIterator.hasNext()) {
+            output.append(predicateIterator.next()).append(" ");
+          }
+        }
+        output.append("\n");
+        output.append("Timeline: ");
+        if(timeline == null) {
+          output.append(" null");
+        }
+        else {
+          ListIterator timelineIterator = timeline.listIterator();
+          while(timelineIterator.hasNext()) {
+            output.append(timelineIterator.next()).append(" ");
+          }
+        }
+        output.append("\n");
+        System.err.println(output.toString());
+        //timeline, predicate, constraint, variableType, timeInterval
+        System.err.println("Applying Specification...");
+        specWindow.contentSpec.applySpec(timeline, predicate, constraint, variableType, 
+                                         timeInterval);
+        System.err.println("Done applying Specification.");
+        specWindow.contentSpec.printSpec();
+      }
+      else if(ae.getActionCommand().equals("Reset Spec")) {
+        specWindow.contentSpec.resetSpec();
+        specWindow.constraintGroup.reset();
+        specWindow.timeIntervalGroup.reset();
+        specWindow.variableTypeGroup.reset();
+        specWindow.predicateGroup.reset();
+        specWindow.timelineGroup.reset();
+      }
     }
   }
 }

@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: TimeIntervalBox.java,v 1.3 2003-06-16 16:28:08 miatauro Exp $
+//
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
 import java.awt.Container;
@@ -16,15 +24,13 @@ import javax.swing.JTextField;
 
 import javax.swing.JFrame;
 
-public class TimeIntervalBox extends JPanel implements ContentSpecElement
-{
+public class TimeIntervalBox extends JPanel implements ContentSpecElement {
   private LogicComboBox logicBox;
   private NegationCheckBox negationBox;
   private JTextField startValue, endValue;
   private static final Pattern valuePattern = Pattern.compile("\\d+");
 
-  public TimeIntervalBox(boolean first)
-  {
+  public TimeIntervalBox(boolean first) {
     GridBagLayout gridBag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
     setLayout(gridBag);
@@ -33,8 +39,9 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement
 
     logicBox = new LogicComboBox();
     logicBox.addItemListener(new LogicBoxListener(this));
-    if(first)
+    if(first) {
       logicBox.setEnabled(false);
+    }
     c.gridx = 0;
     gridBag.setConstraints(logicBox, c);
     add(logicBox);
@@ -64,8 +71,7 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement
     gridBag.setConstraints(endValue, c);
     add(endValue);
   }
-  protected void addTimeIntervalBox()
-  {
+  protected void addTimeIntervalBox() {
     GroupBox parent = (GroupBox) getParent();
     GridBagLayout gridBag = (GridBagLayout) parent.getLayout();
     GridBagConstraints c = new GridBagConstraints();
@@ -77,94 +83,79 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement
     parent.add((ContentSpecElement)box);
     parent.validate();
   }
-  protected void removeTimeIntervalBox()
-  {
+  protected void removeTimeIntervalBox() {
     GroupBox parent = (GroupBox) getParent();
     parent.remove(this);
     parent.validate();
     parent.repaint();
   }
-  public List getValue() throws NullPointerException, IllegalArgumentException
-  {
+  public List getValue() throws NullPointerException, IllegalArgumentException {
     ArrayList retval = new ArrayList();
     StringBuffer connective = new StringBuffer();
-    if(logicBox.isEnabled())
-      {
-        if(((String)logicBox.getSelectedItem()).equals(""))
-          return null;
-        connective.append(((String)logicBox.getSelectedItem()).toLowerCase());
+    if(logicBox.isEnabled()) {
+      if(((String)logicBox.getSelectedItem()).equals("")) {
+        return null;
       }
-    else
+      connective.append(((String)logicBox.getSelectedItem()).toLowerCase());
+    }
+    else {
       connective.append("or");
-    if(startValue.getText().trim().equals("") ^ endValue.getText().trim().equals(""))
-      {
-        JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Both start and end times must be filled in.",
-                                      "Error!", JOptionPane.ERROR_MESSAGE);
-        throw new IllegalArgumentException();
-      }
-    if(startValue.getText().trim().equals("") && endValue.getText().trim().equals(""))
+    }
+    if(startValue.getText().trim().equals("") ^ endValue.getText().trim().equals("")) {
+      JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Both start and end times must be filled in.",
+                                    "Error!", JOptionPane.ERROR_MESSAGE);
+      throw new IllegalArgumentException();
+    }
+    if(startValue.getText().trim().equals("") && endValue.getText().trim().equals("")) {
       return null;
-
-    if(!valuePattern.matcher(startValue.getText().trim()).matches())
-      {
-        JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Invalid start time format.  Must be only digits.",
-                                      "Error!", JOptionPane.ERROR_MESSAGE);
-        throw new IllegalArgumentException();
-      }
-    if(!valuePattern.matcher(endValue.getText().trim()).matches())
-      {
-        JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Invalid end time format.  Must be only digits.",
-                                      "Error!", JOptionPane.ERROR_MESSAGE);
-        throw new IllegalArgumentException();
-      }
-    if(negationBox.isSelected())
+    }
+    if(!valuePattern.matcher(startValue.getText().trim()).matches()) {
+      JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Invalid start time format.  Must be only digits.",
+                                    "Error!", JOptionPane.ERROR_MESSAGE);
+      throw new IllegalArgumentException();
+    }
+    if(!valuePattern.matcher(endValue.getText().trim()).matches()) {
+      JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Invalid end time format.  Must be only digits.",
+                                    "Error!", JOptionPane.ERROR_MESSAGE);
+      throw new IllegalArgumentException();
+    }
+    if(negationBox.isSelected()) {
       connective.append(" not");
+    }
     retval.add(connective.toString());
     retval.add(startValue.getText().trim());
     retval.add(endValue.getText().trim());
     return retval;
   }
-  public void reset()
-  {
+  public void reset() {
     logicBox.setSelectedItem("");
     negationBox.setSelected(false);
     startValue.setText("");
     endValue.setText("");
   }
-  public static void main(String [] args)
-  {
-    JFrame frame = new JFrame("test");
-    frame.setBounds(100, 100, 500, 200);
-    Container contentPane = frame.getContentPane();
-    //GridBagLayout gridBag = new GridBagLayout();
-    //GridBagConstraints c = new GridBagConstraints();
-    contentPane.add(new TimeIntervalBox(true));
-    frame.setVisible(true);
-  }
-  class LogicBoxListener implements ItemListener
-  {
+  class LogicBoxListener implements ItemListener {
     private TimeIntervalBox box;
     private String itemStateChangedFrom;
     
-    public LogicBoxListener(TimeIntervalBox box)
-    {
+    public LogicBoxListener(TimeIntervalBox box) {
       super();
       this.box = box;
       itemStateChangedFrom = null;
     }
-    public void itemStateChanged(ItemEvent ie)
-    {
-      if(ie.getStateChange() == ItemEvent.DESELECTED)
+    public void itemStateChanged(ItemEvent ie) {
+      if(ie.getStateChange() == ItemEvent.DESELECTED) {
         itemStateChangedFrom = (String) ie.getItem();
-      else if(ie.getStateChange() == ItemEvent.SELECTED)
-        {
-          if(itemStateChangedFrom.equals("") &&
-             (((String)ie.getItem()).equals("AND") || ((String)ie.getItem()).equals("OR")))
-            box.addTimeIntervalBox();
-          else if((itemStateChangedFrom.equals("AND") || itemStateChangedFrom.equals("OR")) &&
-                  ((String)ie.getItem()).equals(""))
-            box.removeTimeIntervalBox();
+      }
+      else if(ie.getStateChange() == ItemEvent.SELECTED) {
+        if(itemStateChangedFrom.equals("") &&
+           (((String)ie.getItem()).equals("AND") || ((String)ie.getItem()).equals("OR"))) {
+          box.addTimeIntervalBox();
         }
+        else if((itemStateChangedFrom.equals("AND") || itemStateChangedFrom.equals("OR")) &&
+                ((String)ie.getItem()).equals("")) {
+          box.removeTimeIntervalBox();
+        }
+      }
     }
   }
 }
