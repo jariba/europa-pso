@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.52 2003-11-06 22:45:18 miatauro Exp $
+# $Id: README,v 1.53 2003-11-07 00:04:58 taylor Exp $
 #
 
 SUMMARY
@@ -14,8 +14,8 @@ sequence names.  Selecting a sequence name brings up two windows.
 The first, "SequenceQuery ...", allows the user to make data base
 queries over the sequence.  The second, the "SequenceStepsView",
 is a histogram of the partial plan data base size for each step.  
-Partial plan views for each step are available by clicking Mouse-
-Right on the desired step in the histogram.
+Individual or all partial plan views for each step are available 
+by clicking Mouse-Right on the desired step in the histogram.
 
 The "SequenceQuery ..." dialog provides the user with queries which
 are in two groups, based on the primary kind of information returned.  
@@ -76,10 +76,10 @@ The PartialPlanWriter has changed since PW_M_8, and must be rebuilt.
 o  GNATS PRs and CRs completed:
    #2150: Constraint Network View: find constraint/variable nodes by key.
    #2157: Add window choices on pop-up menu for within Partial Plan.
-   #2159: Change option to Find By Key instead of Find Token By Key.
-   #2161: Project menu goes away after deleting a sequence.
    #2158: Need to greatly imporve load-times for sequences.
+   #2159: Change option to Find By Key instead of Find Token By Key.
    #2160: Time to delete a sequence is way too long   
+   #2161: Project menu goes away after deleting a sequence.
 
 
 CVS CHECKOUT

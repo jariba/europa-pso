@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintJGoView.java,v 1.1 2003-11-06 00:02:18 taylor Exp $
+// $Id: ConstraintJGoView.java,v 1.2 2003-11-07 00:04:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -28,6 +28,7 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -106,7 +107,10 @@ class ConstraintJGoView extends JGoView {
     createChangeLayoutItem(changeLayoutItem);
     mouseRightPopup.add(changeLayoutItem);
 
-    constraintNetworkView.createAllViewItems( partialPlan, mouseRightPopup);
+    String partialPlanName = partialPlan.getPartialPlanName();
+    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
+    constraintNetworkView.createAllViewItems( partialPlan, partialPlanName,
+                                              planSequence, mouseRightPopup);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

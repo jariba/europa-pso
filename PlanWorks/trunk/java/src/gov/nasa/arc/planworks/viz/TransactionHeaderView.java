@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.8 2003-11-06 00:02:18 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.9 2003-11-07 00:04:58 taylor Exp $
 //
 // PlanWorks
 //
@@ -257,12 +257,15 @@ public class TransactionHeaderView extends JGoView {
 
     if (vizView instanceof TransactionView) {
       PwPartialPlan partialPlan = ((TransactionView) vizView).getPartialPlan();
+      String partialPlanName = partialPlan.getPartialPlanName();
+      PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
       JMenuItem changeViewItem = new JMenuItem( "Open a View");
       ((TransactionView) vizView).createChangeViewItem( changeViewItem, partialPlan,
                                                         viewCoords);
       mouseRightPopup.add( changeViewItem);
 
-      ((TransactionView) vizView).createAllViewItems( partialPlan, mouseRightPopup);
+      ((TransactionView) vizView).createAllViewItems( partialPlan, partialPlanName,
+                                                      planSequence, mouseRightPopup);
     }
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);

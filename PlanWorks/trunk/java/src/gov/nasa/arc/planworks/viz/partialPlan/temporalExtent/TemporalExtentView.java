@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.11 2003-11-06 00:02:19 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.12 2003-11-07 00:04:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -49,6 +49,7 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -969,7 +970,9 @@ public class TemporalExtentView extends PartialPlanView  {
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
-    createAllViewItems( partialPlan, mouseRightPopup);
+    String partialPlanName = partialPlan.getPartialPlanName();
+    PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
+    createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

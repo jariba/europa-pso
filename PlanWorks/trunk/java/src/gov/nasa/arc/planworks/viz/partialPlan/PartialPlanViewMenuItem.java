@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenuItem.java,v 1.1 2003-10-09 22:07:45 taylor Exp $
+// $Id: PartialPlanViewMenuItem.java,v 1.2 2003-11-07 00:04:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,7 +24,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.Utilities;
 
 
-class PartialPlanViewMenuItem extends SequenceViewMenuItem {
+public class PartialPlanViewMenuItem extends SequenceViewMenuItem {
 
   private String partialPlanName;
 

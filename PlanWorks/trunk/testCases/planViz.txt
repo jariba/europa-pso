@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.8 2003-11-06 00:02:20 taylor Exp $
+// $Id: planViz.txt,v 1.9 2003-11-07 00:05:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -237,25 +237,28 @@ Pre-conditions:
 Method:
   1. Display "test-seq-1" Sequence Steps View using menu-bar selection
      "Planning Sequence->test-seq-1".
-  2. Display "test-seq-1" Constraint Network View by clicking Mouse-Right on the
+  2. Display "test-seq-1/step<nn>" Constraint Network View by clicking Mouse-Right on the
      "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "Constraint Network View".
-  3. Display "test-seq-1" Temporal Extent View by clicking Mouse-Right on the
+  3. Display "test-seq-1/step<nn>" Temporal Extent View by clicking Mouse-Right on the
      "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "Temporal Extent View".
-  4. Display "test-seq-1" Timeline View by clicking Mouse-Right on the
+  4. Display "test-seq-1/step<nn>" Timeline View by clicking Mouse-Right on the
      "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "Timeline View".
-  4. Display "test-seq-1" Token Network View by clicking Mouse-Right on the
+  4. Display "test-seq-1/step<nn>" Token Network View by clicking Mouse-Right on the
      "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "Token Network View".
-  5. Display "test-seq-1" Transaction View by clicking Mouse-Right on the
+  5. Display "test-seq-1/step<nn>" Transaction View by clicking Mouse-Right on the
      "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
      "TransactionView".
   6. Open the first two token nodes of the Constraint Network View, and then
      open the "closed" variable and constraint nodes that result.  Then 
      close the "opened" variable, constraint, and token nodes to return to the
      initial state.
+  7. On "step<nn>" element of "SequenceStepsView of test-seq-1", click
+     Mouse-Right and select "Hide All Views", then "Open All Views", and then
+     "Close All Views".
 
 Post-conditions:
   1. All token nodes (rectangles) appear in the Constraint Network View, and 
@@ -281,6 +284,8 @@ Post-conditions:
      VARIABLE_* and TOKEN_* have values for PREDICATE_NAME.  Entries with 
      TRANSACTION_TYPEs of VARIABLE_* and OBJ_NAME = PARAMETER_VAR have values 
      for PARAMETER_NAME.
+  6. Method:7 - first all the "step<nn>" windows should be iconified, then 
+     opened, and then deleted.
 
 Requirements: 4.2.1, 4.2.2, 4.2.3.d, 4.2.3.e, 4.2.3.f, 4.3.2.a
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.57 2003-11-06 21:52:37 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.58 2003-11-07 00:04:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -303,6 +303,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    *
    * @param planName - <code>String</code> - 
    * @return - <code>PwPartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
    */
   public PwPartialPlan getPartialPlan( String planName) throws ResourceNotFoundException {
     if(!partialPlans.containsKey(planName)) {
@@ -320,6 +321,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    *          maintain PwPartialPlanImpl instance ordering of partialPlanNames
    *
    * @param partialPlanName - <code>String</code> - 
+   * @return - <code>PwPartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
   private PwPartialPlan addPartialPlan(String partialPlanName) 
@@ -329,8 +331,24 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       partialPlans.put(partialPlanName, partialPlan);
       return partialPlan;
     }
-    throw new ResourceNotFoundException("Failed to find plan " + partialPlanName + " in sequence " +
-                                        name);
+    throw new ResourceNotFoundException("Failed to find plan " + partialPlanName +
+                                        " in sequence " + name);
+  }
+
+  /**
+   * <code>getPartialPlanIfLoaded</code>
+   *
+   * @param planName - <code>String</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   * @exception ResourceNotFoundException if an error occurs
+   */
+  public PwPartialPlan getPartialPlanIfLoaded( String planName)
+    throws ResourceNotFoundException {
+    if (! partialPlans.containsKey( planName)) {
+      throw new ResourceNotFoundException("plan name '" + planName +
+                                          "' not found in url " + url);
+    }
+    return (PwPartialPlan) partialPlans.get(planName);
   }
 
   public void delete() throws ResourceNotFoundException {

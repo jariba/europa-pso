@@ -280,7 +280,7 @@ public interface ViewConstants {
 
   public static final int STEP_VIEW_STEP_WIDTH = 10;
 
-  public static final int STEP_VIEW_DB_SIZE_SCALING = 10;
+  public static final int STEP_VIEW_Y_MAX = 100;
 
   public static final String TRANSACTION_KEY_HEADER =        "TX_KEY "; 
   public static final String TRANSACTION_TYPE_HEADER =       "      TRANSACTION_TYPE     "; 

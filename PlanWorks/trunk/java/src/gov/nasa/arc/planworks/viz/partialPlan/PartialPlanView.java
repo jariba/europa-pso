@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.5 2003-11-06 00:02:18 taylor Exp $
+// $Id: PartialPlanView.java,v 1.6 2003-11-07 00:04:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -22,8 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -257,64 +255,6 @@ public class PartialPlanView extends VizView {
       });
   } // end createRaiseContentSpecItem
 
-  /**
-   * <code>createAllViewItems</code>- partial plan background Mouse-Right items
-   *
-   * @param partialPlan - <code>PwPartialPlan</code> - 
-   * @param mouseRightPopup - <code>JPopupMenu</code> - 
-   */
-  public void createAllViewItems( PwPartialPlan partialPlan, JPopupMenu mouseRightPopup) {
-    mouseRightPopup.addSeparator();
-
-    JMenuItem closeAllItem = new JMenuItem( "Close All Views");
-    createCloseAllItem( closeAllItem);
-    mouseRightPopup.add( closeAllItem);
-
-    JMenuItem hideAllItem = new JMenuItem( "Hide All Views");
-    createHideAllItem( hideAllItem);
-    mouseRightPopup.add( hideAllItem);
-
-    JMenuItem openAllItem = new JMenuItem( "Open All Views");
-    createOpenAllItem( openAllItem, partialPlan);
-    mouseRightPopup.add( openAllItem);
-  } // end createAllViewItems
-
-  private void createCloseAllItem( JMenuItem closeAllItem) {
-    closeAllItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          PartialPlanView.this.viewSet.close();
-        }
-      });
-  } // end createCloseAllItem
- 
-  private void createHideAllItem( JMenuItem hideAllItem) {
-    hideAllItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          PartialPlanView.this.viewSet.iconify();
-        }
-      });
-  } // end createHideAllItem
- 
-  private void createOpenAllItem( JMenuItem openAllItem, final PwPartialPlan partialPlan) {
-    openAllItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          PwPlanningSequence planSequence =
-            PlanWorks.planWorks.getPlanSequence( partialPlan);
-          String seqUrl = planSequence.getUrl();
-          String seqName = planSequence.getName();
-          String partialPlanName = partialPlan.getPartialPlanName();
-
-          boolean isInvokeAndWait = true;
-          Iterator viewListItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
-          while (viewListItr.hasNext()) {
-            final String viewName = (String) viewListItr.next();
-            final PartialPlanViewMenuItem viewItem =
-              new PartialPlanViewMenuItem( viewName, seqUrl, seqName, partialPlanName);
-            new CreatePartialPlanViewThread( viewName, viewItem, isInvokeAndWait).start();
-          }
-        }
-      });
-  } // end createOpenAllItem
  
 } // end class PartialPlanView
 

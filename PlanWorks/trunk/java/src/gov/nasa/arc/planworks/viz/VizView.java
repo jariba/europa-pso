@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.4 2003-10-16 21:40:40 taylor Exp $
+// $Id: VizView.java,v 1.5 2003-11-07 00:04:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -16,11 +16,15 @@ package gov.nasa.arc.planworks.viz;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoText;
@@ -29,11 +33,15 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 // import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.partialPlan.CreatePartialPlanViewThread;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
@@ -156,6 +164,76 @@ public class VizView extends JPanel {
     return fontMetrics;
   }
 
+  /**
+   * <code>createAllViewItems</code>
+   *
+   * @param partialPlanIfLoaded - <code>PwPartialPlan</code> - StepElement may pass null
+   * @param partialPlanName - <code>String</code> - 
+   * @param planSequence - <code>PwPlanningSequence</code> - 
+   * @param mouseRightPopup - <code>JPopupMenu</code> - 
+   */
+  public void createAllViewItems( PwPartialPlan partialPlanIfLoaded,
+                                  String partialPlanName,
+                                  PwPlanningSequence planSequence,
+                                  JPopupMenu mouseRightPopup) { 
+    mouseRightPopup.addSeparator();
+    if (partialPlanIfLoaded != null) {
+      PartialPlanViewSet partialPlanViewSet =
+        (PartialPlanViewSet) viewSet.getViewManager().getViewSet( partialPlanIfLoaded);
+      if (partialPlanViewSet != null) {
+        JMenuItem closeAllItem = new JMenuItem( "Close All Views");
+        createCloseAllItem( closeAllItem, partialPlanViewSet);
+        mouseRightPopup.add( closeAllItem);
+
+        JMenuItem hideAllItem = new JMenuItem( "Hide All Views");
+        createHideAllItem( hideAllItem, partialPlanViewSet);
+        mouseRightPopup.add( hideAllItem);
+      }
+    }
+
+    JMenuItem openAllItem = new JMenuItem( "Open All Views");
+    createOpenAllItem( openAllItem, partialPlanIfLoaded, partialPlanName, planSequence);
+    mouseRightPopup.add( openAllItem);
+  } // end createAllViewItems
+
+  private void createCloseAllItem( JMenuItem closeAllItem,
+                                   final PartialPlanViewSet partialPlanViewSet) {
+    closeAllItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          partialPlanViewSet.close();
+        }
+      });
+  } // end createCloseAllItem
+ 
+  private void createHideAllItem( JMenuItem hideAllItem,
+                                  final PartialPlanViewSet partialPlanViewSet) {
+    hideAllItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          partialPlanViewSet.iconify();
+        }
+      });
+  } // end createHideAllItem
+ 
+  private void createOpenAllItem( JMenuItem openAllItem,
+                                  final PwPartialPlan partialPlanIfLoaded,
+                                  final String partialPlanName,
+                                  final PwPlanningSequence planSequence) {
+    openAllItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          String seqUrl = planSequence.getUrl();
+          String seqName = planSequence.getName();
+          boolean isInvokeAndWait = true;
+          Iterator viewListItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
+          while (viewListItr.hasNext()) {
+            final String viewName = (String) viewListItr.next();
+            final PartialPlanViewMenuItem viewItem =
+              new PartialPlanViewMenuItem( viewName, seqUrl, seqName, partialPlanName);
+
+            new CreatePartialPlanViewThread( viewName, viewItem, isInvokeAndWait).start();
+          }
+        }
+      });
+  } // end createOpenAllItem
 
 } // end class VizView
 
