@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryComparatorDescending.java,v 1.1 2003-12-20 01:54:52 taylor Exp $
+// $Id: TokenQueryComparatorDescending.java,v 1.2 2004-05-21 21:47:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -36,7 +36,7 @@ public class TokenQueryComparatorDescending implements Comparator {
       String s1 = ((PwTokenQuery) o1).getPredicateName();
       String s2 = ((PwTokenQuery) o2).getPredicateName();
       return SortStringComparator.compareTo(s2, s1, isAscending);
-    } else if (field.equals( ViewConstants.QUERY_TOKEN_STEP_NUM_HEADER)) {
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
       Integer s1 = ((PwTokenQuery) o1).getStepNumber();
       Integer s2 = ((PwTokenQuery) o2).getStepNumber();
       return s2.compareTo(s1);
@@ -56,7 +56,7 @@ public class TokenQueryComparatorDescending implements Comparator {
       String s1 = ((PwTokenQuery) o1).getPredicateName();
       String s2 = ((PwTokenQuery) o2).getPredicateName();
       return s2.equals(s1);
-    } else if (field.equals( ViewConstants.QUERY_TOKEN_STEP_NUM_HEADER)) {
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER)) {
       Integer s1 = ((PwTokenQuery) o1).getStepNumber();
       Integer s2 = ((PwTokenQuery) o2).getStepNumber();
       return s2.equals(s1);
