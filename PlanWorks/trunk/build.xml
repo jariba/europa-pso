@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.21 2003-07-12 01:36:29 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.22 2003-07-16 01:15:41 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -17,10 +17,13 @@
   <!-- property name="mysql.bindir" value="${mysql.solaris.bindir}"/ -->
   <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
   <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
+  <property name="jgo.home"  value="${planworks.root}/java/lib/JGo"/>
+  <property name="jgo.layout.home"  value="${planworks.root}/java/lib/JGo"/>
+  <!-- property name="jgo.layout.home"  value="/home/wtaylor/pub/JGo50"/ -->
 
-  <property name="default.project.name" value="test"/>
+  <property name="default.project.name" value="monkey"/>
   <property name="planworks.test.data.dir" value="${planworks.root}/java/src/gov/nasa/arc/planworks/test/data"/>
-  <property name="default.sequence.dir" value="${planworks.test.data.dir}/sqlseq"/>
+  <property name="default.sequence.dir" value="${planworks.test.data.dir}/monkey/seq0"/>
   <property environment="env"/>
 
   <target name="planWorksDbInstall" depends="chk_solaris_2,chk_linux_2"

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planworks-test.xml,v 1.2 2003-07-12 01:36:30 taylor Exp $ -->
+<!-- $Id: planworks-test.xml,v 1.3 2003-07-16 01:15:42 taylor Exp $ -->
 <project name="planworks-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
@@ -10,9 +10,9 @@
 
 	<path id="planworks.jars">
 		<pathelement path="${planworks.root}/java/classes"/>
-		<pathelement location="${planworks.root}/java/lib/JGo/JGo.jar"/>
-		<pathelement location="${planworks.root}/java/lib/JGo/JGoLayout.jar"/>
-		<pathelement location="${planworks.root}/java/lib/JGo/Classier.jar"/>
+		<pathelement location="${jgo.home}/JGo.jar"/>
+		<pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
+		<pathelement location="${jgo.home}/Classier.jar"/>
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
 		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
                 <pathelement location="${jfcunit.home}/junit.jar"/>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.33 2003-07-15 23:06:11 miatauro Exp $
+// $Id: PlanWorks.java,v 1.34 2003-07-16 01:15:42 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -349,6 +349,7 @@ public class PlanWorks extends MDIDesktopFrame {
           }
         }
         project = PwProject.createProject( inputName);
+        // System.err.println( "project.addPlanningSequence " + sequenceDirectory);
         project.addPlanningSequence( sequenceDirectory);
         isProjectCreated = true;
         currentProjectName = inputName;
@@ -388,13 +389,13 @@ public class PlanWorks extends MDIDesktopFrame {
         JOptionPane.showMessageDialog
           (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
         isProjectCreated = false; 
-      }/* catch(Exception e) {
+      } catch(Exception e) {
         int index = e.getMessage().indexOf(":");
         JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage().substring(index+1),
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
         isProjectCreated = false;
-        }*/
+        }
     }
     return project;
   } // end createProject
@@ -780,15 +781,16 @@ public class PlanWorks extends MDIDesktopFrame {
 
   private JMenu clearSeqPartialPlanViewMenu() {
     // clear out previous project's Partial Plan cascading menu
-    JMenu partialPlanMenu = null;
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
     for (int i = 0, n = dynamicMenuBar.getMenuCount(); i < n; i++) {
       if (((JMenu) dynamicMenuBar.getMenu( i)).getText().equals( "Partial Plan")) {
-        partialPlanMenu = (JMenu) dynamicMenuBar.getMenu( i);
-        partialPlanMenu.removeAll();
-        if(PwProject.listProjects().size() == 0) {
+        JMenu partialPlanMenu = (JMenu) dynamicMenuBar.getMenu( i);
+        if (PwProject.listProjects().size() == 0) {
           dynamicMenuBar.remove(partialPlanMenu);
+          partialPlanMenu = null;
+        } else {
+          partialPlanMenu.removeAll();
         }
         dynamicMenuBar.validate();
         dynamicMenuBar.repaint();
@@ -797,8 +799,6 @@ public class PlanWorks extends MDIDesktopFrame {
     }
     return null;
   } // end clearSeqPartialPlanViewMenu
-
-
 
 
   private void createPartialPlanViewThread( final String viewName,
@@ -887,8 +887,7 @@ public class PlanWorks extends MDIDesktopFrame {
           }
           viewFrame = viewManager.openTokenNetworkView( partialPlan, sequenceName +
                                                         System.getProperty( "file.separator") +
-                                                        partialPlanName);        
-          System.err.println("Finish view rendering..");
+                                                        partialPlanName, startTimeMSecs);        
           finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
         } else if (viewName.equals( "temporalExtentView")) {
           JOptionPane.showMessageDialog
@@ -920,9 +919,11 @@ public class PlanWorks extends MDIDesktopFrame {
     private void finishViewRendering( MDIInternalFrame viewFrame, String viewName,
                                       boolean viewExists, long startTimeMSecs) {
       if (! viewExists) {
-        long stopTimeMSecs = (new Date()).getTime();
-        System.err.println( "   ... elapsed time: " +
-                            (stopTimeMSecs - startTimeMSecs) + " msecs.");
+        if (! viewName.equals( "tokenNetworkView")) {
+          long stopTimeMSecs = (new Date()).getTime();
+          System.err.println( "   ... elapsed time: " +
+                              (stopTimeMSecs - startTimeMSecs) + " msecs.");
+        }
         viewFrame.setSize( INTERNAL_FRAME_WIDTH, INTERNAL_FRAME_HEIGHT);
         int viewIndex = 0;
         for (int i = 0, n = ViewConstants.orderedViewNames.length; i < n; i++) {
