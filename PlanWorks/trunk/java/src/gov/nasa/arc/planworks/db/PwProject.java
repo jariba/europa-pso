@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.24 2004-03-12 23:19:22 miatauro Exp $
+// $Id: PwProject.java,v 1.25 2004-08-05 00:24:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -28,6 +28,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  * @version 0.0
  */
 public abstract class PwProject {
+
   static {
     try {
       Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
@@ -42,36 +43,34 @@ public abstract class PwProject {
   }
 
   /**
-   * <code>createProject</code> - using user supplied url, load formatted
+   * <code>createProject</code> - using user supplied name, load formatted
    *                              partial plans into data base
    *
-   * @param url - <code>String</code> - 
+   * @param name - <code>String</code> - 
    * @return - <code>PwProject</code> - 
    * @exception DuplicateNameException if an error occurs
-   * @exception ResourceNotFoundException if an error occurs
    */
-  public static PwProject createProject( final String url)
-    throws DuplicateNameException, ResourceNotFoundException {
-    //return (new PwProjectImpl( url));
-    return PwProjectImpl.createProject(url);
+  public static PwProject createProject( final String name) throws DuplicateNameException {
+    return PwProjectImpl.createProject( name);
   }
 
   /**
    * <code>getProject</code> - get project instance after it is Created, or
    *                           Opened (restored)
    *
-   * @param url - <code>String</code> - 
+   * @param name - <code>String</code> - 
    * @return - <code>PwProject</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public static PwProject getProject( final String url)  throws ResourceNotFoundException {
-    return PwProjectImpl.getProject( url);
+  public static PwProject getProject( final String name)  throws ResourceNotFoundException {
+    return PwProjectImpl.getProject( name);
   }
 
   /**
-   * <code>listProjects</code> - list of the active project URLs
+   * <code>listProjects</code> - list of the active project names
    *
-   * @return - <code>List</code> - of String (url)
+   *
+   * @return - <code>List</code> - 
    */
   public static List listProjects() {
     return PwProjectImpl.listProjects();
@@ -154,7 +153,7 @@ public abstract class PwProject {
    * @exception Exception if an error occurs
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract void delete() throws Exception, ResourceNotFoundException;
+  public abstract void delete() throws ResourceNotFoundException;
 
 
 } // end class PwProject

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.75 2004-07-27 21:58:01 taylor Exp $
+# $Id: build-tags-file.csh,v 1.76 2004-08-05 00:24:19 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -162,6 +162,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNodePort.java \
     src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
+    src/gov/nasa/arc/planworks/viz/nodes/IncrementalNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
     src/gov/nasa/arc/planworks/viz/nodes/ObjectNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/ResourceNameNode.java \
@@ -200,7 +201,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ModelClassNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorViewLayout.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavNodeGenerics.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ResourceNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/navigator/RuleInstanceNavNode.java \
@@ -226,9 +226,12 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/timeline/TimelineViewTimelineNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenLink.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkGenerics.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkRuleInstanceNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/tokenNetwork/TokenNetworkViewState.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceView.java \
     src/gov/nasa/arc/planworks/viz/sequence/SequenceViewSet.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceSteps/SequenceStepsView.java \

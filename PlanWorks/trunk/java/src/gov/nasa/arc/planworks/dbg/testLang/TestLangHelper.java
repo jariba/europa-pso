@@ -22,6 +22,7 @@ import antlr.RecognitionException;
 import antlr.TokenStreamException;
 import antlr.collections.AST;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
@@ -65,7 +66,7 @@ public class TestLangHelper implements TestLangTokenTypes {
       throw new TestLangRuntimeException("Sequence URL '" + sequenceUrl + "' isn't in the database or the filesystem.");
     File testFile = null;
     try {
-      PwProject proj = proj = PwProject.getProject(projectName);
+      PwProject proj = PwProject.getProject(projectName);
       if(!MySQLDB.sequenceExists(sequenceUrl))
         proj.addPlanningSequence(sequenceUrl);
       testFile = new File(testUrl);
@@ -156,7 +157,8 @@ public class TestLangHelper implements TestLangTokenTypes {
     CommonAST child = (CommonAST) ast.getFirstChild();
     name = (String) evaluateString(child, null);
     this.projName = projName; 
-    try {seq = PwProject.getProject(projName).getPlanningSequence(seqId);}
+    try {seq = PlanWorks.getPlanWorks().getCurrentProject().getProject(projName).
+           getPlanningSequence(seqId);}
     catch(ResourceNotFoundException rnfe){throw new TestLangRuntimeException(rnfe);}
     //tracePrint = true;
   }

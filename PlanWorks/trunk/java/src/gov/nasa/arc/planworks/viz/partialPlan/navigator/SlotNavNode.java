@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNavNode.java,v 1.11 2004-06-16 22:09:15 taylor Exp $
+// $Id: SlotNavNode.java,v 1.12 2004-08-05 00:24:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -32,6 +32,7 @@ import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
+import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
@@ -44,7 +45,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewToolTip {
+public class SlotNavNode extends ExtendedBasicNode implements IncrementalNode, OverviewToolTip {
 
   private PwSlot slot;
   private PartialPlanView partialPlanView;
@@ -175,7 +176,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
   }
 
   /**
-   * <code>getTypeName</code> - implements NavNode
+   * <code>getTypeName</code> - implements IncrementalNode
    *
    * @return - <code>String</code> - 
    */
@@ -184,7 +185,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
   }
 
   /**
-   * <code>incrLinkCount</code> - implements NavNode
+   * <code>incrLinkCount</code> - implements IncrementalNode
    *
    */
   public final void incrLinkCount() {
@@ -192,7 +193,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
   }
 
   /**
-   * <code>decLinkCount</code> - implements NavNode
+   * <code>decLinkCount</code> - implements IncrementalNode
    *
    */
   public final void decLinkCount() {
@@ -200,7 +201,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
   }
 
   /**
-   * <code>getLinkCount</code> - implements NavNode
+   * <code>getLinkCount</code> - implements IncrementalNode
    *
    * @return - <code>int</code> - 
    */
@@ -209,7 +210,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
   }
 
   /**
-   * <code>inLayout</code> - implements NavNode
+   * <code>inLayout</code> - implements IncrementalNode
    *
    * @return - <code>boolean</code> - 
    */
@@ -218,7 +219,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
   }
 
   /**
-   * <code>setInLayout</code> - implements NavNode
+   * <code>setInLayout</code> - implements IncrementalNode
    *
    * @param value - <code>boolean</code> - 
    */
@@ -236,7 +237,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
   }
 
   /**
-   * <code>resetNode</code> - implements NavNode
+   * <code>resetNode</code> - implements IncrementalNode
    *
    * @param isDebug - <code>boolean</code> - 
    */
@@ -250,7 +251,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
   } // end resetNode
 
   /**
-   * <code>getParentEntityList</code> - implements NavNode
+   * <code>getParentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity
    */
@@ -261,7 +262,7 @@ public class SlotNavNode extends ExtendedBasicNode implements NavNode, OverviewT
   }
 
   /**
-   * <code>getComponentEntityList</code> - implements NavNode
+   * <code>getComponentEntityList</code> - implements IncrementalNode
    *
    * @return - <code>List</code> - of PwEntity
    */

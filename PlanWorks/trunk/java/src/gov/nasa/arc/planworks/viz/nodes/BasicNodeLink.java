@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodeLink.java,v 1.7 2004-01-16 19:05:35 taylor Exp $
+// $Id: BasicNodeLink.java,v 1.8 2004-08-05 00:24:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -81,15 +81,6 @@ public class BasicNodeLink extends JGoLabeledLink {
   }
 
   /**
-   * <code>getLinkName</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public String getLinkName() {
-    return linkName;
-  }
-
-  /**
    * <code>inLayout</code>
    *
    * @return - <code>boolean</code> - 
@@ -149,12 +140,30 @@ public class BasicNodeLink extends JGoLabeledLink {
   }
 
   /**
+   * <code>getLinkName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getLinkName() {
+    return linkName;
+  }
+
+  /**
    * <code>getLinkCount</code>
    *
    * @return - <code>int</code> - 
    */
   public int getLinkCount() {
     return linkCount;
+  }
+
+  /**
+   * <code>setLinkCount</code>
+   *
+   * @param cnt - <code>int</code> - 
+   */
+  public void setLinkCount( int cnt) {
+    linkCount = cnt;
   }
 
   /**

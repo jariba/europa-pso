@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.36 2004-07-30 18:54:53 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.37 2004-08-05 00:24:32 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -269,32 +269,37 @@ public class SequenceStepsView extends SequenceView {
       closeView( this);
       return;
     }
-    numOperations = 0;
-    heightScaleFactor = computeHeightScaleFactor();
-    if (heightScaleFactor == -1.0f) {
-      ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
-      closeView( this);
-      isProgressMonitorCancel = true;
-     return;
-    }
+    try {
+      ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
 
-    boolean isValid = renderHistogram();
-    if (! isValid) {
-      ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
-      closeView( this);
-      isProgressMonitorCancel = true;
-      return;
-    }
+      numOperations = 0;
+      heightScaleFactor = computeHeightScaleFactor();
+      if (heightScaleFactor == -1.0f) {
+        ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+        closeView( this);
+        isProgressMonitorCancel = true;
+        return;
+      }
 
-    expandViewFrame( viewFrame,
-                     (int) jGoView.getDocumentSize().getWidth(),
-                     (int) jGoView.getDocumentSize().getHeight());
-    long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
-                        (stopTimeMSecs -
-                         PlanWorks.getPlanWorks().getViewRenderingStartTime
-                         ( ViewConstants.SEQUENCE_STEPS_VIEW)) + " msecs.");
-    ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+      boolean isValid = renderHistogram();
+      if (! isValid) {
+        ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+        closeView( this);
+        isProgressMonitorCancel = true;
+        return;
+      }
+
+      expandViewFrame( viewFrame,
+                       (int) jGoView.getDocumentSize().getWidth(),
+                       (int) jGoView.getDocumentSize().getHeight());
+      long stopTimeMSecs = System.currentTimeMillis();
+      System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
+                          (stopTimeMSecs -
+                           PlanWorks.getPlanWorks().getViewRenderingStartTime
+                           ( ViewConstants.SEQUENCE_STEPS_VIEW)) + " msecs.");
+    } finally {
+      ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+    }
     startTimeMSecs = 0L;
     isProgressMonitorCancel = true;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
@@ -329,7 +334,7 @@ public class SequenceStepsView extends SequenceView {
       startTimeMSecs = System.currentTimeMillis();
     }
     try {
-      ViewGenerics.setRedrawCursor( viewFrame);
+      ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
 
       //document.deleteContents();
       for (Iterator it = statusIndicatorList.listIterator(); it.hasNext();) {
@@ -350,7 +355,7 @@ public class SequenceStepsView extends SequenceView {
       }
       boolean isValid = renderHistogram();
       if (! isValid) {
-       ViewGenerics.resetRedrawCursor( viewFrame);
+       ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
        closeView( this);
        isProgressMonitorCancel = true;
        return;
@@ -361,7 +366,7 @@ public class SequenceStepsView extends SequenceView {
                        (int) jGoView.getDocumentSize().getHeight());
 
     } finally {
-      ViewGenerics.resetRedrawCursor( viewFrame);
+      ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
     }
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
@@ -435,6 +440,7 @@ public class SequenceStepsView extends SequenceView {
     selectedStepElement = element;
   }
 
+  // calso alled by createRefreshItem with no progressMonitor
   private float computeHeightScaleFactor() {
     int maxDbSize = 0;
     Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
@@ -446,14 +452,16 @@ public class SequenceStepsView extends SequenceView {
       if (dbSize > maxDbSize) {
         maxDbSize = dbSize;
       }
-      if (progressMonitor.isCanceled()) {
+      if ((progressMonitor != null) && progressMonitor.isCanceled()) {
         String msg = "User Canceled Sequence Steps View Rendering";
         System.err.println( msg);
         isProgressMonitorCancel = true;
         return -1.0f;
       }
-      numOperations++;
-      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      if (progressMonitor != null) {
+        numOperations++;
+        progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      }
     }
 //     System.err.println( "computeHeightScaleFactor: " +
 //                         ViewConstants.STEP_VIEW_Y_MAX / (float) maxDbSize +

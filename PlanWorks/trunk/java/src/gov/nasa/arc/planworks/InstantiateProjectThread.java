@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.14 2004-07-29 20:31:43 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.15 2004-08-05 00:24:21 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -14,22 +14,18 @@
 
 package gov.nasa.arc.planworks;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
-import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwProject;
-import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 
 
@@ -73,13 +69,6 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
   } // end run
 
   private void instantiateProject() {
-    if (doProgMonitor) {
-      progressMonitorThread( type + "Project" + " ...", 0, 6);
-      if (! progressMonitorWait()) {
-        return;
-      }
-      progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
-    }
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
@@ -111,9 +100,6 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
 
     PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
-    if (doProgMonitor) {
-      isProgressMonitorCancel = true;
-    }
   } // end instantiateProject
 
 
@@ -133,9 +119,19 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
           throw new DuplicateNameException( "A project named '" + inputName +
                                             "' already exists.");
         }
+        ViewGenerics.setRedrawCursor( PlanWorks.getPlanWorks());
+
         List selectedAndInvalidUrls = PlanWorks.getPlanWorks().askSequenceDirectory();
         List selectedSequenceUrls = (List) selectedAndInvalidUrls.get( 0);
         List invalidSequenceUrls = (List) selectedAndInvalidUrls.get( 1);
+
+        if (doProgMonitor) {
+          progressMonitorThread( "Adding sequence(s) ...", 0, 6);
+          if (! progressMonitorWait()) {
+            return null;
+          }
+          progressMonitor.setProgress( 3 * ViewConstants.MONITOR_MIN_MAX_SCALING);
+        }
         project = PwProject.createProject( inputName);
         PlanWorks.getPlanWorks().currentProjectName = inputName;
         isProjectCreated = true;
@@ -154,6 +150,9 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
                                                          invalidSequenceUrls);
           PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         }
+        if (doProgMonitor) {
+          isProgressMonitorCancel = true;
+        }
 
       } catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
@@ -171,13 +170,18 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( dupExcep);
         // dupExcep.printStackTrace();
-        isProjectCreated = false; 
+        isProjectCreated = false;
       } catch (Exception e) {
         JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), e.getMessage(),
                                       "Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println(e);
         e.printStackTrace();
         isProjectCreated = false;
+      } finally {
+        ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
+        if (doProgMonitor) {
+          isProgressMonitorCancel = true;
+        }
       }
     }
     return project;

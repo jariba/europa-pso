@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkLayout.java,v 1.7 2004-05-08 01:44:17 taylor Exp $
+// $Id: TokenNetworkLayout.java,v 1.8 2004-08-05 00:24:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -139,21 +139,19 @@ public class TokenNetworkLayout extends JGoLayeredDigraphAutoLayout {
   }
 
 
-   
 
-
-  /**
-   * <code>progressUpdate</code>
-   *
-   * @param progress - <code>double</code> - 
-   */
-  public void progressUpdate( double progress) {
-    // System.err.println( "TokenNetworkLayout progress: " + progress);
-    if (progress == 1.0) {
-      long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... " + ViewConstants.TOKEN_NETWORK_VIEW + " elapsed time: " +
-                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    }
-  } // end progressUpdate
+//   /**
+//    * <code>progressUpdate</code>
+//    *
+//    * @param progress - <code>double</code> - 
+//    */
+//   public void progressUpdate( double progress) {
+//     // System.err.println( "TokenNetworkLayout progress: " + progress);
+//     if (progress == 1.0) {
+//       long stopTimeMSecs = System.currentTimeMillis();
+//       System.err.println( "   ... " + ViewConstants.TOKEN_NETWORK_VIEW + " elapsed time: " +
+//                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
+//     }
+//   } // end progressUpdate
 
 } // end class TokenNetworkLayout

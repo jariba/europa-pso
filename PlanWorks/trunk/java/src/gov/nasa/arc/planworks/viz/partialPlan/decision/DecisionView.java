@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.10 2004-07-29 01:36:39 taylor Exp $
+// $Id: DecisionView.java,v 1.11 2004-08-05 00:24:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -252,11 +252,7 @@ public class DecisionView extends PartialPlanView {
     stepJGoView = new JGoView();
     stepJGoView.setHorizontalScrollBar( null);
     stepJGoView.setVerticalScrollBar( null);
-    stepJGoView.validate();
-    stepJGoView.setVisible( true);
-
-    stepsPanel = new FixedHeightPanel( stepJGoView, this);
-    stepsPanel.setLayout( new BoxLayout( stepsPanel, BoxLayout.Y_AXIS));
+    stepJGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
 
     // force step icon to be in ~center of fixed height panel
     JGoStroke fixedHeightLine = new JGoStroke();
@@ -268,7 +264,11 @@ public class DecisionView extends PartialPlanView {
     // fixedHeightLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "black")));
     stepJGoView.getDocument().addObjectAtTail( fixedHeightLine);
 
-    stepJGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
+    stepJGoView.validate();
+    stepJGoView.setVisible( true);
+    stepsPanel = new FixedHeightPanel( stepJGoView, this);
+    stepsPanel.setLayout( new BoxLayout( stepsPanel, BoxLayout.Y_AXIS));
+
     stepsPanel.add( stepJGoView, BorderLayout.NORTH);
 
     add( stepsPanel, BorderLayout.NORTH);
@@ -475,8 +475,8 @@ public class DecisionView extends PartialPlanView {
         decisionNode.add( new ChoiceNode( choice, isCurrent));
 
 //         switch ( choice.getType()) {
-//         case DbConstants.C_TOKEN:
-//           System.err.println( "  DbConstants.C_TOKEN " + choice.toString());
+//         case DbConstants.C_OBJECT:
+//           System.err.println( "  DbConstants.C_OBJECT " + choice.toString());
 //           break;
 //         case DbConstants.C_VALUE:
 //           System.err.println( "  DbConstants.C_VALUE " + choice.toString());
@@ -500,9 +500,6 @@ public class DecisionView extends PartialPlanView {
       progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     } // end while decisionList
 
-    // prevents last node from being clipped off by bottom of scroll pane
-    DefaultMutableTreeNode dummyNode = new DefaultMutableTreeNode();
-    top.add( dummyNode);
     isProgressMonitorCancel = true;
     return top;
   } // end renderDecisions
@@ -568,15 +565,10 @@ public class DecisionView extends PartialPlanView {
       PwEntity entity = null;
       if (lastComponent instanceof DecisionView.DecisionNode) {
         PwDecision decision = ((DecisionView.DecisionNode) lastComponent).getDecision();
-        // System.err.println( "doSingleClick popup: " + "Find " + decision.toString());
+        // System.err.println( "doSingleClick popup: decision " + decision.toString() +
+	// 		    " type " + decision.getType());
         if (decision.getType() == DbConstants.D_OBJECT) {
-          if (partialPlan.getTimeline( decision.getEntityId()) != null) {
-            entity = partialPlan.getTimeline( decision.getEntityId());
-          } else if (partialPlan.getResource( decision.getEntityId()) != null) {
-            entity = partialPlan.getResource( decision.getEntityId());
-          } else {
-            entity = partialPlan.getObject( decision.getEntityId());
-          }
+          entity = partialPlan.getToken( decision.getEntityId());
         } else if (decision.getType() == DbConstants.D_TOKEN) {
           entity = partialPlan.getToken( decision.getEntityId());
         } else if (decision.getType() == DbConstants.D_VARIABLE) {
@@ -585,12 +577,24 @@ public class DecisionView extends PartialPlanView {
 
       } else if (lastComponent instanceof DecisionView.ChoiceNode) {
         PwChoice choice = ((DecisionView.ChoiceNode) lastComponent).getChoice();
-        if ((choice.getType() == DbConstants.C_TOKEN) ||
-            (choice.getType() == DbConstants.C_VALUE)) {
-          // System.err.println( "doSingleClick popup: " + "Find " + choice.toString());
-          entity = partialPlan.getToken( choice.getTokenId());
+        // System.err.println( "doSingleClick popup: choice " + choice.toString() +
+	// 		    " type " + choice.getType());
+        if (choice.getType() == DbConstants.C_OBJECT) {
+          if (partialPlan.getTimeline( choice.getEntityId()) != null) {
+            entity = partialPlan.getTimeline( choice.getEntityId());
+          } else if (partialPlan.getResource( choice.getEntityId()) != null) {
+            entity = partialPlan.getResource( choice.getEntityId());
+          } else {
+            entity = partialPlan.getObject( choice.getEntityId());
+          }
+
+	} else if (choice.getType() == DbConstants.C_VALUE) {
+	  if (choice.getEntityId().intValue() != -1) {
+	    entity = partialPlan.getToken( choice.getEntityId());
+	  }
         }
       }
+      // System.err.println( "doSingleClick popup: entity " + entity);
       mouseRightEntityPopupMenu( entity, viewCoords);
     } // end doSingleClick
 
@@ -780,14 +784,13 @@ public class DecisionView extends PartialPlanView {
         toolTip = "Mouse-Right: View " + decision.toString().substring( indx + 2);
       } else if (value instanceof DecisionView.ChoiceNode) {
         PwChoice choice = ((DecisionView.ChoiceNode) value).getChoice();
-        if (choice.getType() == DbConstants.C_TOKEN) {
+        if (choice.getType() == DbConstants.C_OBJECT) {
           toolTip = "Mouse-Right: View " + choice.toString();
         } else if (choice.getType() == DbConstants.C_VALUE) {
           int indx = choice.toString().indexOf( ";");
-          String choiceString = choice.toString().substring( 0, indx);
-          if (choiceString.indexOf( "key=-1") == -1) {
-            toolTip = "Mouse-Right: View " + choiceString;
-          }
+	  if (indx >= 0) {
+	    toolTip = "Mouse-Right: View " + choice.toString().substring( 0, indx);
+	  }
         }
       }
       setToolTipText( toolTip);

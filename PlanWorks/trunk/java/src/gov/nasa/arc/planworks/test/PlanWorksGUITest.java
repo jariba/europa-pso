@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.18 2004-07-29 20:31:45 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.19 2004-08-05 00:24:24 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -123,6 +123,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineTokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.StepQueryView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.DBTransactionQueryView;
@@ -1893,13 +1894,14 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
     throws Exception {
     ViewGenerics.raiseFrame( tokenNetworkView.getViewFrame());
     // try{Thread.sleep(6000);}catch(Exception e){}
-    TokenNode slottedTokenNode = null, freeTokenNode = null, resTransactionNode = null;
+    TokenNetworkTokenNode slottedTokenNode = null, freeTokenNode = null, resTransactionNode = null;
     RuleInstanceNode ruleInstanceNode = null;
     int numSlottedTokenNodes = 0, numFreeTokenNodes = 0, numResTransactionNodes = 0;
     int numRuleInstanceNodes = 0;
     Iterator tokenNodeKeyItr = tokenNetworkView.getTokenNodeKeyList().iterator();
     while (tokenNodeKeyItr.hasNext()) {
-      TokenNode tokenNode = tokenNetworkView.getTokenNode( (Integer) tokenNodeKeyItr.next());
+      TokenNetworkTokenNode tokenNode =
+        tokenNetworkView.getTokenNode( (Integer) tokenNodeKeyItr.next());
       if (tokenNode.getToken() instanceof PwResourceTransaction) {
         if (resTransactionNode == null) {
           resTransactionNode = tokenNode;
@@ -2452,10 +2454,11 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                       tokenNetworkView.getFocusNodeId().equals( ruleInstanceId), "not ");
 
    System.err.println( "Method 4 -------------");
-   TokenNode slottedTokenNode = null;
+   TokenNetworkTokenNode slottedTokenNode = null;
    Iterator nodeKeyItr = tokenNetworkView.getTokenNodeKeyList().iterator();
    while (nodeKeyItr.hasNext()) {
-     TokenNode tokenNode = tokenNetworkView.getTokenNode( (Integer) nodeKeyItr.next());
+     TokenNetworkTokenNode tokenNode =
+       tokenNetworkView.getTokenNode( (Integer) nodeKeyItr.next());
      if (tokenNode.getToken().isSlotted()) {
        slottedTokenNode = tokenNode;
        break;

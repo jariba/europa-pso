@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwChoiceImpl.java,v 1.4 2004-07-16 22:54:44 taylor Exp $
+// $Id: PwChoiceImpl.java,v 1.5 2004-08-05 00:24:22 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
@@ -15,26 +15,28 @@ import java.util.StringTokenizer;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwChoice;
 import gov.nasa.arc.planworks.db.PwDomain;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
 
 public class PwChoiceImpl implements PwChoice {
   private Integer id;
   private int type;
-  private Integer tokenId;
+  private Integer entityId;
   private double value;
   private PwDomain dom;
+  private PwPartialPlan partialPlan;
 
-  public PwChoiceImpl(String info) {
+  public PwChoiceImpl(String info, PwPartialPlan partialPlan) {
     // System.err.println( "PwChoiceImpl info '" + info + "'");
     StringTokenizer strTok = new StringTokenizer(info, ",");
     id = Integer.valueOf(strTok.nextToken());
     type = Integer.parseInt(strTok.nextToken());
     switch(type) {
-    case DbConstants.C_TOKEN:
-      tokenId = Integer.valueOf(strTok.nextToken());
+    case DbConstants.C_OBJECT:
+      entityId = Integer.valueOf(strTok.nextToken());
       break;
     case DbConstants.C_VALUE:
-      tokenId = Integer.valueOf(strTok.nextToken());
-      if (tokenId.intValue() != -1) {
+      entityId = Integer.valueOf(strTok.nextToken());
+      if (entityId.intValue() != -1) {
         value = Double.parseDouble(strTok.nextToken());
       }
       break;
@@ -53,21 +55,33 @@ public class PwChoiceImpl implements PwChoice {
     case DbConstants.C_CLOSE:
       break;
     }
+    this.partialPlan = partialPlan;
   }
 
   public final int getType(){return type;}
   public final Integer getId(){return id;}
-  public final Integer getTokenId(){return tokenId;}
+  public final Integer getEntityId(){return entityId;}
   public final double getValue(){return value;}
   public final PwDomain getDomain(){return dom;}
 
   public final String toString() {
     switch(type) {
-    case DbConstants.C_TOKEN:
-      return "Token key=" + tokenId.toString();
+    case DbConstants.C_OBJECT:
+      StringBuffer buf = new StringBuffer( "");
+      if (partialPlan.getResource( entityId) != null) {
+        buf.append( "Resource ");
+      } else if (partialPlan.getTimeline( entityId) != null) {
+        buf.append( "Timeline ");
+      } else if (partialPlan.getObject( entityId) != null) {
+        buf.append( "Object ");
+      }
+      return buf.append( "key=").append( entityId.toString()).toString();
     case DbConstants.C_VALUE:
-      StringBuffer buf = new StringBuffer( "Token key=");
-      buf.append( tokenId.toString()).append( "; ");
+      buf = new StringBuffer( "");
+      if (entityId.intValue() != -1) {
+	buf.append( "Token key=");
+	buf.append( entityId.toString()).append( "; ");
+      }
       if (value == 2.0) {
         buf.append( "activate");
       } else if (value == 3.0) {
@@ -92,11 +106,11 @@ public class PwChoiceImpl implements PwChoice {
   public final String toOutputString() {
     StringBuffer retval = new StringBuffer(id.toString()).append(",").append(type).append(",");
     switch(type) {
-    case DbConstants.C_TOKEN:
-      retval.append(tokenId.toString());
+    case DbConstants.C_OBJECT:
+      retval.append(entityId.toString());
       break;
     case DbConstants.C_VALUE:
-      retval.append(tokenId.toString()).append(",").append(value);
+      retval.append(entityId.toString()).append(",").append(value);
       break;
     case DbConstants.C_DOMAIN:
       if(dom instanceof PwEnumeratedDomainImpl) {

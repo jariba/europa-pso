@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.74 2004-07-29 01:36:38 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.75 2004-08-05 00:24:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -321,9 +321,9 @@ public class ConstraintNetworkView extends PartialPlanView {
     newLayout = new NewConstraintNetworkLayout(getContainerNodeList(), this);
     setState(s);
     s = null;
-    System.err.println("createContainerNodes took " + (System.currentTimeMillis() - t1) + "ms");
     // setVisible( true | false) depending on ContentSpec
     setNodesLinksVisible();
+    System.err.println("createContainerNodes took " + (System.currentTimeMillis() - t1) + "ms");
 
     double maxTokenWidth = 0.;
     int numContainerNodes = containerNodeMap.size() * 2;

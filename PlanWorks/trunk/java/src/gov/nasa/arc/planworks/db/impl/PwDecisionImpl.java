@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDecisionImpl.java,v 1.5 2004-06-21 22:42:58 taylor Exp $
+// $Id: PwDecisionImpl.java,v 1.6 2004-08-05 00:24:22 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
@@ -47,22 +47,15 @@ public class PwDecisionImpl implements PwDecision {
     // System.err.println( "PwDecisionImpl: choiceStr " + choiceStr);
     String [] choices = choiceStr.split("\\x1e");
     for(int i = 0; i < choices.length; i++) {
-      choiceList.add(new PwChoiceImpl(choices[i]));
+      choiceList.add( new PwChoiceImpl( choices[i], partialPlan));
     }
   }
 
   public final String toString() {
     StringBuffer buf =  new StringBuffer( "key=");
     buf.append( id.toString()).append( "; ");
-    if (type == DbConstants.D_OBJECT) {
-      if (partialPlan.getResource( entityId) != null) {
-        buf.append( "Resource ");
-      } else if (partialPlan.getTimeline( entityId) != null) {
-        buf.append( "Timeline ");
-      } else if (partialPlan.getObject( entityId) != null) {
-        buf.append( "Object ");
-      }
-    } else if (type == DbConstants.D_TOKEN) {
+    // System.err.println( "PwDecisionImpl: key = " + id.toString() + " type " + type);
+    if ((type == DbConstants.D_OBJECT) || (type == DbConstants.D_TOKEN)) {
       buf.append( "Token ");
     } else if (type == DbConstants.D_VARIABLE) {
       buf.append( "Variable ");

@@ -1,10 +1,10 @@
-    // 
+// 
 // * See the file "PlanWorks/disclaimers-and-notices.txt" for 
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.49 2004-07-29 01:36:38 taylor Exp $
+// $Id: PartialPlanView.java,v 1.50 2004-08-05 00:24:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -452,7 +452,7 @@ public class PartialPlanView extends VizView {
                                                           pView.getViewName());
       MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),
                                                             partialPlanViewState);
-      boolean isMoveValid =moveSequenceStepsViewHighlight( nextStep, pView.getViewName());
+      boolean isMoveValid = moveSequenceStepsViewHighlight( nextStep, pView.getViewName());
       if (! isMoveValid) {
         String message = "sequence step element index not found";
         JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
@@ -696,7 +696,7 @@ public class PartialPlanView extends VizView {
                                    final List viewListenerList,
                                    final String currentViewName) {
     if (viewListenerList.size() != PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()) {
-      System.err.println( "createOpenViewIxtems: num view listeners not = " +
+      System.err.println( "createOpenViewItems: num view listeners not = " +
                           PlanWorks.PARTIAL_PLAN_VIEW_LIST.size());
       System.exit( -1);
     }
