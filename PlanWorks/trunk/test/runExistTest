@@ -1,7 +1,7 @@
 #!/bin/tcsh -f
 # -f Fast start. do not read the  .cshrc  file
 
-# $Id: runExistTest,v 1.4 2003-05-20 18:25:36 taylor Exp $
+# $Id: runExistTest,v 1.5 2003-05-27 21:24:48 taylor Exp $
 
 set validOption = 1
 set arg_gcInit_seen = no
@@ -116,12 +116,12 @@ if (${?JAVA_HOME}) then
     set jdk_gt_eq_1_4 = true
     # note the expr -- : --
     set match_test = `expr $version_2 : '.*1\.4\.*'`
-    if ( $match_test == 0 ) then
-      echo "$JAVA_HOME not jdk1.4.*"
-      # note the expr -- : --
-      set match_test = `expr $version_2 : '.*1\.3\.*'`
-      set jdk_gt_eq_1_4 = false
-    endif
+#     if ( $match_test == 0 ) then
+#       echo "$JAVA_HOME not jdk1.4.*"
+#       # note the expr -- : --
+#       set match_test = `expr $version_2 : '.*1\.3\.*'`
+#       set jdk_gt_eq_1_4 = false
+#     endif
   else # Linux & Solaris
     set jdk_gt_eq_1_4 = true
     # note the expr match -- --
@@ -129,11 +129,7 @@ if (${?JAVA_HOME}) then
   endif
   # echo match_test $match_test 
   if ( $match_test == 0 ) then
-    if ("$OSTYPE" == "darwin") then # MacOSX
-      echo "$JAVA_HOME not jdk1.3.*"
-    else
-      echo "$JAVA_HOME not jdk1.4.*"
-    endif
+    echo "$JAVA_HOME not jdk1.4.*"
     exit 1
   endif
 else
@@ -188,6 +184,6 @@ ${JAVA_BIN}/java -verbose:gc -Xms${arg_gcInit}m -Xmx${arg_gcMax}m \
      -Dplanworks.root=$PLANWORKS_ROOT -Duser=$USER \
      -Dexist.initdb=true -Dexist.home=$EXIST_HOME \
      -Dexist.conf.xml=$eXist_conf_file \
-     gov.nasa.arc.planworks.db.test.ExistTest $OSTYPE $jdk_gt_eq_1_4 \
+     gov.nasa.arc.planworks.db.test.ExistTest $OSTYPE \
      ${PLANWORKS_ROOT}/$xml_files_dir
 

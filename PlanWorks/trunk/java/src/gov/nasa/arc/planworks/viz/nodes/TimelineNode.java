@@ -63,6 +63,7 @@ public class TimelineNode extends TextNode {
   private Point timelineLocation;
   private TimelineView view;
 
+  private List slotNodeList; // element SlotNode
 
   /**
    * <code>TimelineNode</code> - constructor 
@@ -79,6 +80,8 @@ public class TimelineNode extends TextNode {
     this.timelineLocation = timelineLocation;
     this.view = view;
     // System.err.println( "TimelineNode: timelineName " + timelineName);
+    this.slotNodeList = new ArrayList();
+
     configure();
 
   } // end constructor
@@ -96,6 +99,42 @@ public class TimelineNode extends TextNode {
     setLocation( (int) timelineLocation.getX(), (int) timelineLocation.getY());
     setInsets( NODE_INSETS);
   } // end configure
+
+  /**
+   * <code>getTimelineName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getTimelineName() {
+    return timelineName;
+  }
+
+  /**
+   * <code>getTimelineLocation</code>
+   *
+   * @return - <code>Point</code> - 
+   */
+  public Point getTimelineLocation() {
+    return timelineLocation;
+  }
+
+  /**
+   * <code>getSlotNodeList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getSlotNodeList() {
+    return slotNodeList;
+  }
+
+  /**
+   * <code>addToSlotNodeList</code>
+   *
+   * @param slotNode - <code>SlotNode</code> - 
+   */
+  public void addToSlotNodeList( SlotNode slotNode) {
+    slotNodeList.add( slotNode);
+  }
 
   // Event handlers to subclass
 

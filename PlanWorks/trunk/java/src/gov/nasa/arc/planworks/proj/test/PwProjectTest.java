@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectTest.java,v 1.6 2003-05-27 19:00:08 taylor Exp $
+// $Id: PwProjectTest.java,v 1.7 2003-05-27 21:24:47 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -66,7 +66,6 @@ public class PwProjectTest extends JFrame {
   private static PwProjectTest projectTest;
   private static String planWorksRoot;
   private static String userName;
-  private static boolean isJvmGtEq1_4;
   private static String osType;
 
   // XML XPath - eXist-0.9.1
@@ -142,10 +141,9 @@ public class PwProjectTest extends JFrame {
    *                     for TimelineViewTest invocation (args passed in)
    *
    */
-  public PwProjectTest( String osType, boolean isJvmGtEq1_4, String pathname) {
+  public PwProjectTest( String osType, String pathname) {
     super( "PlanWorks Timeline View");
     this.osType = osType;
-    this.isJvmGtEq1_4 = isJvmGtEq1_4;
     this.xmlFilesDirectory = FileUtils.getCanonicalPath( pathname);
     this.planWorksRoot = System.getProperty( "planworks.root");
     this.userName = System.getProperty( "user");
@@ -302,7 +300,6 @@ public class PwProjectTest extends JFrame {
 
   private static void processArguments( String[] args) {
     // input args - defaults
-    isJvmGtEq1_4 = true;
     xmlFilesDirectory = "";
     String pathname = "";
     for (int argc = 0; argc < args.length; argc++) {
@@ -311,16 +308,6 @@ public class PwProjectTest extends JFrame {
         // linux | solaris | darwin (MacOSX)
         osType = args[argc];
       } else if (argc == 1) {
-         if (args[argc].equals( "true")) {
-          isJvmGtEq1_4 = true;
-        } else if (args[argc].equals( "false")) {
-          isJvmGtEq1_4 = false;    
-        } else {
-          System.err.println( "isJvmGtEq1_4 '" + args[argc] +
-                              "' was not either 'true' or 'false'\n");
-          System.exit( 0);
-        }
-      } else if (argc == 2) {
         pathname = args[argc];
         if (! pathname.equals( "null")) {
            xmlFilesDirectory = FileUtils.getCanonicalPath( pathname);
