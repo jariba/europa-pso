@@ -121,8 +121,8 @@ abstract class PlanGenState
               {
                 try
                   {
-                    horizonHi = Integer.parseInt(args[i+1]);
-                    horizonLo = Integer.parseInt(args[i+2]);
+                    horizonLo = Integer.parseInt(args[i+1]);
+                    horizonHi = Integer.parseInt(args[i+2]);
                   }
                 catch(Exception e){System.out.println("Invalid horizon argument.");usage();}
                 i += 2;
@@ -539,7 +539,7 @@ abstract class PlanGenState
         low ^= hi;
       }
     return (int) ((Math.round(Math.random() * Math.pow(10, Integer.toString(hi).length()+1)) + 
-                  (low - 1)) % hi) + 1;
+                   (low - 1)) % hi) + 1;
   }
 
   private static void testNumOrRange(boolean range, int num, int rangeLo, int rangeHi)
@@ -588,6 +588,8 @@ abstract class PlanGenState
   }
   public static void printState()
   {
+    System.out.println("Destination: " + destDir);
+    System.out.println("Planning horizon: from " + horizonLo + " to " + horizonHi);
     System.out.println("Sequences: " + nsequences);
     if(stepRange)
       System.out.println("Steps: from " + stepRangeLo + " to " + stepRangeHi);
@@ -612,7 +614,19 @@ abstract class PlanGenState
     if(freeTokenRange)
       System.out.println("Free Tokens: from " + freeTokenRangeLo + " to " + freeTokenRangeHi);
     else
-      System.out.println("Free tokens: " + nfreeTokens);
+      System.out.println("Free Tokens: " + nfreeTokens);
+    if(predicateRange)
+      System.out.println("Predicates: from " + predicateRangeLo + " to " + predicateRangeHi);
+    else
+      System.out.println("Predicates: " + npredicates);
+    if(paramRange)
+      System.out.println("Parameters: from " + paramRangeLo + " to " + paramRangeHi);
+    else
+      System.out.println("Parameters: " + nparams);
+    if(tokenRelationRange)
+      System.out.println("Token Relations: from " + tokenRelationRangeLo + " to " + tokenRelationRangeHi);
+    else
+      System.out.println("Token Relations: " + ntokenRelations);
   }
 }
 
@@ -621,7 +635,21 @@ class KeyManager
   private int key;
   private HashMap partialPlans, tokens, objects, timelines, slots, tokenRelations, variables,
     constraints, predicates, params;
-  
+
+  public static final String defObject = "K-1";
+  public static final String defTimeline = "K-2";
+  public static final String defSlot = "K-3";
+  public static final String defToken1 = "K-4";
+  public static final String defToken2 = "K-5";
+  public static final String defTokenRelation = "K-6";
+  public static final String defDurationVar = "K-7";
+  public static final String defRejectVar = "K-8";
+  public static final String defStartVar = "K-9";
+  public static final String defEndVar = "K-10";
+  public static final String defParamVar = "K-11";
+  public static final String defConstraint = "K-12";
+  public static final String defPredicate = "K-13";
+  public static final String defParameter = "K-14";
   public KeyManager()
   {
     key = 0;
@@ -854,29 +882,56 @@ class PartialPlan
   }
   public String toXML()
   {
-    StringBuffer xmlBuf = (new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE PartialPlan SYSTEM 'PlanDb.dtd'>\n<PartialPlan key=\"")).append(key).append("\" model=\"Nemo.ddl\">\n  <Constraint key=\"K-3\" type=\"TEMPORAL\" name=\"eq\" variableIds=\"K-4 K-4\"/>\n  <Predicate key=\"K-1\" name=\"Nada\">\n    <Parameter key=\"K-2\" name=\"Nothing\"/>\n  </Predicate>\n  <Variable key=\"K-4\" type=\"DURATION_VAR\" constraintIds=\"K-3\" paramId=\"K-2\">\n    <IntervalDomain type=\"INTEGER_SORT\" lowerBound=\"0\" upperBound=\"_plus_infinity_\"/>\n  </Variable>\n  <Variable key=\"K-5\" type=\"REJECT_VAR\" constraintIds=\"K-3\" paramId=\"K-2\">\n    <EnumeratedDomain><![CDATA[True]]></EnumeratedDomain>\n  </Variable>\n  <Object key=\"K-6\" name=\"Zilch\">\n    <Timeline key=\"K-7\" name=\"Zip\">\n      <Slot key=\"K-8\"></Slot>\n    </Timeline>\n  </Object>\n");
+    StringBuffer xmlBuf = (new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE PartialPlan SYSTEM 'PlanDb.dtd'>\n<PartialPlan key=\"")).append(key).append("\" model=\"Nemo.ddl\">\n");
+    //free tokens
+    for(int i = 0; i < freeTokenIds.size(); i++) 
+      xmlBuf.append(PlanGen.keyManager.getToken((String)freeTokenIds.get(i)).toXML());
+    //objects->timelines->slots->tokens
     Collection objects = PlanGen.keyManager.getAllObjects();
     Iterator objectIterator = objects.iterator();
     while(objectIterator.hasNext())
       xmlBuf.append(((PwObject)objectIterator.next()).toXML());
+    //default object->timeline->slot->token
+    xmlBuf.append("  <Object key=\"").append(PlanGen.keyManager.defObject).append("\" name=\"Zip\">\n");
+    xmlBuf.append("    <Timeline key=\"").append(PlanGen.keyManager.defTimeline).append("\" name=\"Naught\">\n");
+    xmlBuf.append("      <Slot key=\"").append(PlanGen.keyManager.defSlot).append("\">\n");
+    xmlBuf.append("        <Token key=\"").append(PlanGen.keyManager.defToken1).append("\" isValueToken=\"N\" predicateId=\"").append(PlanGen.keyManager.defPredicate).append("\" startVarId=\"").append(PlanGen.keyManager.defStartVar).append("\" endVarId=\"").append(PlanGen.keyManager.defEndVar).append("\" durationVarId=\"").append(PlanGen.keyManager.defDurationVar).append("\" objectVarId=\"").append(PlanGen.keyManager.defObject).append("\" rejectVarId=\"").append(PlanGen.keyManager.defRejectVar).append("\" tokenRelationIds=\"").append(PlanGen.keyManager.defTokenRelation).append("\" paramVarIds=\"").append(PlanGen.keyManager.defParamVar).append("\" slotId=\"").append(PlanGen.keyManager.defSlot).append("\"/>\n");
+    xmlBuf.append("        <Token key=\"").append(PlanGen.keyManager.defToken2).append("\" isValueToken=\"N\" predicateId=\"").append(PlanGen.keyManager.defPredicate).append("\" startVarId=\"").append(PlanGen.keyManager.defStartVar).append("\" endVarId=\"").append(PlanGen.keyManager.defEndVar).append("\" durationVarId=\"").append(PlanGen.keyManager.defDurationVar).append("\" objectVarId=\"").append(PlanGen.keyManager.defObject).append("\" rejectVarId=\"").append(PlanGen.keyManager.defRejectVar).append("\" tokenRelationIds=\"").append(PlanGen.keyManager.defTokenRelation).append("\" paramVarIds=\"").append(PlanGen.keyManager.defParamVar).append("\" slotId=\"").append(PlanGen.keyManager.defSlot).append("\"/>\n");
+    xmlBuf.append("      </Slot>\n");
+    xmlBuf.append("    </Timeline>\n");
+    xmlBuf.append("  </Object>\n");
+    //variables
     Collection variables = PlanGen.keyManager.getAllVariables();
     Iterator variableIterator = variables.iterator();
     while(variableIterator.hasNext())
       xmlBuf.append(((Variable)variableIterator.next()).toXML());
+    //default variables (start, end, reject, duration, parameter)
+    xmlBuf.append("  <Variable key=\"").append(PlanGen.keyManager.defDurationVar).append("\" type=\"DURATION_VAR\" constraintIds=\"").append(PlanGen.keyManager.defConstraint).append("\" paramId=\"").append(PlanGen.keyManager.defParameter).append("\">\n    <IntervalDomain type=\"INTEGER_SORT\" lowerBound=\"0\" upperBound=\"_plus_infinity_\"/>\n  </Variable>");
+    xmlBuf.append("  <Variable key=\"").append(PlanGen.keyManager.defRejectVar).append("\" type=\"REJECT_VAR\" constraintIds=\"").append(PlanGen.keyManager.defConstraint).append("\" paramId=\"").append(PlanGen.keyManager.defParameter).append("\">\n    <EnumeratedDomain><![CDATA[True]]></EnumeratedDomain>\n  </Variable>");
+    xmlBuf.append("  <Variable key=\"").append(PlanGen.keyManager.defStartVar).append("\" type=\"START_VAR\" constraintIds=\"").append(PlanGen.keyManager.defConstraint).append("\" paramId=\"").append(PlanGen.keyManager.defParameter).append("\">\n    <EnumeratedDomain><![CDATA[0]]></EnumeratedDomain>\n  </Variable>\n");
+    xmlBuf.append("  <Variable key=\"").append(PlanGen.keyManager.defEndVar).append("\" type=\"END_VAR\" constraintIds=\"").append(PlanGen.keyManager.defConstraint).append("\" paramId=\"").append(PlanGen.keyManager.defParameter).append("\">\n    <EnumeratedDomain><![CDATA[_plus_infinity_]]></EnumeratedDomain>\n  </Variable>");
+    xmlBuf.append("  <Variable key=\"").append(PlanGen.keyManager.defParamVar).append("\" type=\"PARAMETER_VAR\" constraintIds=\"").append(PlanGen.keyManager.defConstraint).append("\" paramId=\"").append(PlanGen.keyManager.defParameter).append("\">\n    <EnumeratedDomain><![CDATA[0]]></EnumeratedDomain>\n  </Variable>");
+    //constraints 
     Collection constraints = PlanGen.keyManager.getAllConstraints();
     Iterator constraintIterator = constraints.iterator();
     while(constraintIterator.hasNext())
       xmlBuf.append(((Constraint)constraintIterator.next()).toXML());
+    //default constraint
+    xmlBuf.append("  <Constraint key=\"").append(PlanGen.keyManager.defConstraint).append("\" type=\"TEMPORAL\" name=\"eq\" variableIds=\"").append(PlanGen.keyManager.defStartVar).append(" ").append(PlanGen.keyManager.defEndVar).append("\"/>\n");
+    //tokenRelations
     Collection tokenRelations = PlanGen.keyManager.getAllTokenRelations();
     Iterator tokenRelationIterator = tokenRelations.iterator();
     while(tokenRelationIterator.hasNext())
       xmlBuf.append(((TokenRelation)tokenRelationIterator.next()).toXML());
+    //default tokenRelation
+    xmlBuf.append("  <TokenRelation key=\"").append(PlanGen.keyManager.defTokenRelation).append("\" masterToken=\"").append(PlanGen.keyManager.defToken1).append("\" slaveToken=\"").append(PlanGen.keyManager.defToken2).append("\"/>\n");
+    //predicates
     Collection predicates = PlanGen.keyManager.getAllPredicates();
     Iterator predicateIterator = predicates.iterator();
     while(predicateIterator.hasNext())
       xmlBuf.append(((Predicate)predicateIterator.next()).toXML());
-    for(int i = 0; i < freeTokenIds.size(); i++)
-      xmlBuf.append(PlanGen.keyManager.getToken((String)freeTokenIds.get(i)).toXML());
+    //default predicate/parameter
+    xmlBuf.append("  <Predicate key=\"").append(PlanGen.keyManager.defPredicate).append("\" name=\"blank\">\n    <Parameter key=\"").append(PlanGen.keyManager.defParameter).append("\" name=\"nix\"/>\n  </Predicate>\n");
     xmlBuf.append("</PartialPlan>");
     return xmlBuf.toString();
   }
@@ -1024,8 +1079,14 @@ class Token
       paramVarIds.add((new Variable(PlanGenState.getRandInRange(0, 10000), 
                                     PlanGenState.getRandInRange(0, 10000), "PARAMETER_VAR", 
                                     (String)paramIds.get(i))).getId());
-    startVarId = (new Variable(rangeLo, rangeLo + 1, "START_VAR")).getId();
-    endVarId = (new Variable(rangeHi - 1, rangeHi, "END_VAR")).getId();
+    if(rangeLo == PlanGenState.horizonLo)
+      startVarId = (new Variable(rangeLo, rangeLo, "START_VAR")).getId();
+    else
+      startVarId = (new Variable(rangeLo, rangeLo + 1, "START_VAR")).getId();
+    if(rangeHi == PlanGenState.horizonHi)
+      endVarId = (new Variable(rangeHi, rangeHi, "END_VAR")).getId();
+    else
+      endVarId = (new Variable(rangeHi - 1, rangeHi, "END_VAR")).getId();
   }
   public Token(int num, boolean free)
   {
@@ -1043,27 +1104,30 @@ class Token
   }
   public String toXML()
   {
-    StringBuffer xmlBuf = (new StringBuffer("        <Token key=\"")).append(key).append("\" isValueToken=\"Y\" predicateId=\"K-1\" startVarId=\"");
+    StringBuffer xmlBuf = (new StringBuffer("        <Token key=\"")).append(key).append("\" isValueToken=\"Y\" predicateId=\"").append(PlanGen.keyManager.defPredicate).append("\" startVarId=\"");
     if(startVarId == null)
-      xmlBuf.append("K-4");
+      xmlBuf.append(PlanGen.keyManager.defStartVar);
     else
       xmlBuf.append(startVarId);
     xmlBuf.append("\" endVarId=\"");
     if(endVarId == null)
-      xmlBuf.append("K-4");
+      xmlBuf.append(PlanGen.keyManager.defEndVar);
     else
       xmlBuf.append(endVarId);
-    xmlBuf.append("\" durationVarId=\"K-4\" objectVarId=\"");
+    xmlBuf.append("\" durationVarId=\"").append(PlanGen.keyManager.defDurationVar).append("\" objectVarId=\"");
     if(bornFree)
-      xmlBuf.append("K-4");
+      xmlBuf.append(PlanGen.keyManager.defObject);
     else
       xmlBuf.append(PwObject.currObject);
-    xmlBuf.append("\" rejectVarId=\"K-5\" tokenRelationIds=\"");
-    for(int i = 0; i < tokenRelationIds.size(); i++)
-      xmlBuf.append((String)tokenRelationIds.get(i)).append(" ");
-    xmlBuf.append("\" paramVarIds=\"K-2\" slotId=\"");
+    xmlBuf.append("\" rejectVarId=\"").append(PlanGen.keyManager.defRejectVar).append("\" tokenRelationIds=\"");
+    if(tokenRelationIds.size() == 0)
+      xmlBuf.append(PlanGen.keyManager.defTokenRelation);
+    else
+      for(int i = 0; i < tokenRelationIds.size(); i++)
+        xmlBuf.append((String)tokenRelationIds.get(i)).append(" ");
+    xmlBuf.append("\" paramVarIds=\"").append(PlanGen.keyManager.defParamVar).append("\" slotId=\"");
     if(slotId == null)
-      xmlBuf.append("K-8");
+      xmlBuf.append(PlanGen.keyManager.defSlot);
     else
       xmlBuf.append(slotId);
     xmlBuf.append("\" />\n");
