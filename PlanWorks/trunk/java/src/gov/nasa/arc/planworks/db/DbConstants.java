@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.27 2004-05-14 17:43:49 miatauro Exp $
+// $Id: DbConstants.java,v 1.28 2004-05-21 22:20:29 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -96,6 +96,8 @@ public interface DbConstants {
 
   public static final String PP_RESOURCE_INSTANTS_EXT = "instants";
 
+	public static final String PP_DECISIONS_EXT = "decisions";
+	
   public static final String SEQ_COL_SEP_HEX = "0x1e";
 
   public static final String SEQ_COL_SEP = "1E";
@@ -125,7 +127,7 @@ public interface DbConstants {
   public static final String [] PARTIAL_PLAN_FILE_EXTS =
     new String []
       { PP_PARTIAL_PLAN_EXT, PP_OBJECTS_EXT, PP_TOKENS_EXT, PP_VARIABLES_EXT, PP_CONSTRAINTS_EXT, 
-        PP_TOKEN_RELATIONS_EXT, PP_CONSTRAINT_VAR_MAP_EXT, PP_RESOURCE_INSTANTS_EXT};
+        PP_TOKEN_RELATIONS_EXT, PP_CONSTRAINT_VAR_MAP_EXT, PP_RESOURCE_INSTANTS_EXT, PP_DECISIONS_EXT};
 
   /**
    * constant <code>NUMBER_OF_PP_FILES</code>
@@ -388,10 +390,11 @@ public interface DbConstants {
   public static final String TBL_RULES = "Rules";
   public static final String TBL_RULE_TOKEN_MAP = "RuleTokenMap";
   public static final String TBL_PP_STATS = "PartialPlanStats";
+	public static final String TBL_DECISION = "Decision";
 
   public static final String [] PW_DB_TABLES = new String [] {
     TBL_PARTIALPLAN, TBL_OBJECT, TBL_TOKEN, TBL_VARIABLE, TBL_CONSTRAINT, TBL_TOKENREL,
-    TBL_CONSTVARMAP, TBL_INSTANTS, TBL_PROJECT, TBL_SEQUENCE, TBL_PP_STATS, TBL_TRANSACTION, TBL_RULES,
+    TBL_CONSTVARMAP, TBL_INSTANTS, TBL_DECISION, TBL_PROJECT, TBL_SEQUENCE, TBL_PP_STATS, TBL_TRANSACTION, TBL_RULES,
     TBL_RULE_TOKEN_MAP};
 
   // number of numeric characters in a type long value
@@ -422,6 +425,14 @@ public interface DbConstants {
 
   public static final int T_INTERVAL = 0;
   public static final int T_TRANSACTION = 1;
+
+	public static final int D_OBJECT = 0;
+	public static final int D_TOKEN = 1;
+	public static final int D_VARIABLE = 2;
+	public static final int C_TOKEN = 0;
+	public static final int C_VALUE = 1;
+	public static final int C_DOMAIN = 2;
+	public static final int C_CLOSE = 3;
 
   public static final Integer NO_ID = new Integer( -1);
 } // end interface DbConstants
