@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.32 2003-09-09 20:40:12 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.33 2003-09-30 19:18:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,7 +18,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;

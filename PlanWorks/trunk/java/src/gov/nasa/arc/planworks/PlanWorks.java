@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.59 2003-09-29 23:52:11 taylor Exp $
+// $Id: PlanWorks.java,v 1.60 2003-09-30 19:18:55 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -25,7 +25,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -56,7 +55,6 @@ import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.sequence.planDbSize.PlanDbSizeView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -74,19 +72,21 @@ public class PlanWorks extends MDIDesktopFrame {
   private static final int DESKTOP_FRAME_HEIGHT;// = 750;
   private static final int FRAME_X_LOCATION;// = 100;
   private static final int FRAME_Y_LOCATION;// = 125;
-  private static final int INTERNAL_FRAME_X_DELTA = 100;
-  private static final int INTERNAL_FRAME_Y_DELTA = 75;
-  private static final String PROJECT_MENU = "Project";
-  private static final String CREATE_MENU_ITEM = "Create ...";
-  private static final String OPEN_MENU_ITEM = "Open ...";
-  private static final String DELETE_MENU_ITEM = "Delete ...";
-  private static final String ADDSEQ_MENU_ITEM = "Add Sequence ...";
-  private static final String DELSEQ_MENU_ITEM = "Delete Sequence ...";
-  private static final String CREATE = "create";
-  private static final String OPEN = "open";
-  private static final String PLANSEQ_MENU = "Planning Sequence";
-  private static final String SEQSTEPS_MENU = "Sequence Steps";
-  private static final String PLAN_DB_SIZE_MENU_ITEM = "Plan Database Size Histogram";
+
+  protected static final int INTERNAL_FRAME_X_DELTA = 100;
+  protected static final int INTERNAL_FRAME_Y_DELTA = 75;
+  protected static final String PROJECT_MENU = "Project";
+  protected static final String CREATE_MENU_ITEM = "Create ...";
+  protected static final String OPEN_MENU_ITEM = "Open ...";
+  protected static final String DELETE_MENU_ITEM = "Delete ...";
+  protected static final String ADDSEQ_MENU_ITEM = "Add Sequence ...";
+  protected static final String DELSEQ_MENU_ITEM = "Delete Sequence ...";
+  protected static final String CREATE = "create";
+  protected static final String OPEN = "open";
+  protected static final String PLANSEQ_MENU = "Planning Sequence";
+  protected static final String SEQSTEPS_MENU = "Sequence Steps";
+  protected static final String PLAN_DB_SIZE_MENU_ITEM = "Plan Database Size Histogram";
+
   public static final Map viewClassNameMap;
   public static final String CONSTRAINT_NETWORK_VIEW = "Constraint Network View";
   public static final String TEMPORAL_EXTENT_VIEW = "Temporal Extent View";
@@ -167,10 +167,10 @@ public class PlanWorks extends MDIDesktopFrame {
 
   public static List supportedPartialPlanViewNames; // List of String
 
-  private static JMenu projectMenu;
-  private final DirectoryChooser sequenceDirChooser;
-  private static String sequenceParentDirectory; // pathname
-  private static File [] sequenceDirectories; // directory name
+  protected static JMenu projectMenu;
+  protected final DirectoryChooser sequenceDirChooser;
+  protected static String sequenceParentDirectory; // pathname
+  protected static File [] sequenceDirectories; // directory name
   private static boolean windowBuilt = false;
   private static boolean usingSplash;
 
@@ -188,10 +188,10 @@ public class PlanWorks extends MDIDesktopFrame {
   
   synchronized public static boolean isWindowBuilt() { return windowBuilt;}
 
-  private String currentProjectName;
-  private PwProject currentProject;
-  private ViewManager viewManager;
-  private Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
+  protected String currentProjectName;
+  protected PwProject currentProject;
+  protected ViewManager viewManager;
+  protected Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
 
 
   /**
@@ -309,7 +309,7 @@ public class PlanWorks extends MDIDesktopFrame {
     return sequenceDirChooser;
   }
 
-  private List getProjectsLessCurrent() {
+  protected List getProjectsLessCurrent() {
     List projectNames = PwProject.listProjects();
     List projectsLessCurrent = new ArrayList();
     for (int i = 0, n = projectNames.size(); i < n; i++) {
@@ -323,7 +323,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end getProjectsLessCurrent
 
 
-  private static void setProjectMenuEnabled( String textName, boolean isEnabled) {
+  protected static void setProjectMenuEnabled( String textName, boolean isEnabled) {
     for (int i = 0, n = projectMenu.getItemCount(); i < n; i++) {
       if ((projectMenu.getItem( i) != null) &&
           (projectMenu.getItem( i).getText().equals( textName))) {
@@ -333,7 +333,7 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end setProjectMenuEnabled
 
-  private void createSupportedPartialPlanViewNames() {
+  protected void createSupportedPartialPlanViewNames() {
     supportedPartialPlanViewNames = new ArrayList();
     Iterator viewsItr = viewClassNameMap.keySet().iterator();
     while (viewsItr.hasNext()) {
@@ -342,7 +342,7 @@ public class PlanWorks extends MDIDesktopFrame {
     Collections.sort( supportedPartialPlanViewNames, new ViewNameComparator());
   } // end createSupportedPartialPlanViewNames
 
-  private String trimView( String viewName) {
+  protected String trimView( String viewName) {
     return viewName.substring( 0, viewName.indexOf( " View"));
   }
 
@@ -422,448 +422,19 @@ public class PlanWorks extends MDIDesktopFrame {
     new InstantiateProjectThread( type).start();
   }
 
-  class InstantiateProjectThread extends Thread {
-
-    private String type;
-
-    public InstantiateProjectThread( String type) {
-      this.type = type;
-    }  // end constructor
-
-    public void run() {
-      
-      PwProject instantiatedProject = null;
-      if (type.equals( CREATE)) {
-        instantiatedProject = createProject();
-      } else if (type.equals( OPEN)) {
-        instantiatedProject = openProject();
-      } else {
-        System.err.println( "InstantiateProjectThread.run: " + type + " not handled");
-        System.exit( -1);
-      }
-      if (instantiatedProject != null) {
-        currentProject = instantiatedProject;
-        MDIDynamicMenuBar dynamicMenuBar =
-          (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-        int numProjects = PwProject.listProjects().size();
-        JMenu partialPlanMenu = dynamicMenuBar.clearMenu( PLANSEQ_MENU, numProjects);
-        addSeqPartialPlanViewMenu( instantiatedProject, partialPlanMenu);
-        JMenu planStepsMenu = dynamicMenuBar.clearMenu( SEQSTEPS_MENU, numProjects);
-        addPlanStepsMenu( instantiatedProject, planStepsMenu);
-        if (currentProject.listPlanningSequences().size() == 0) {
-          dynamicMenuBar.disableMenu( PLANSEQ_MENU);
-          dynamicMenuBar.disableMenu( SEQSTEPS_MENU);
-        }
-        // clear the old project's views
-        if (viewManager != null) {
-          viewManager.clearViewSets();
-        }
-        viewManager = new ViewManager( PlanWorks.this);
-      }
-    } //end run
-
-  } // end class InstantiateProjectThread
-
-
-  // projects can have 0 sequences: create project, even if selected sequences
-  // are invalid
-  private PwProject createProject() {
-    boolean isProjectCreated = false;
-    PwProject project = null;
-    while (! isProjectCreated) {
-      ProjectNameDialog projectNameDialog = new ProjectNameDialog( this);
-      String inputName = projectNameDialog.getTypedText();
-      if ((inputName == null) || (inputName.equals( ""))) {
-        return null;
-      }
-      try {
-        if (PwProject.listProjects().indexOf( inputName) >= 0) {
-          throw new DuplicateNameException( "A project named '" + inputName +
-                                            "' already exists.");
-        }
-        List invalidSequenceDirs = new ArrayList();
-        while (true) {
-          // ask user for a single sequence directory of partialPlan directories
-          int returnVal = sequenceDirChooser.showDialog( this, "");
-          if (returnVal == JFileChooser.APPROVE_OPTION) {
-            for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
-              String sequenceDirectory = sequenceParentDirectory +
-                System.getProperty( "file.separator") + sequenceDirectories[i].getName();
-              if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
-                JOptionPane.showMessageDialog
-                  (PlanWorks.this, sequenceDirectory, "Invalid Sequence Directory",
-                   JOptionPane.ERROR_MESSAGE);
-                invalidSequenceDirs.add( sequenceDirectory);
-              }
-            }
-            if (invalidSequenceDirs.size() == sequenceDirectories.length) {
-              continue; // user must reselect
-            } else {
-              break; // some sequences are valid
-            }
-          } else {
-            return null; // exit dialog
-          }
-        } // end while
-        project = PwProject.createProject( inputName);
-        currentProjectName = inputName;
-        isProjectCreated = true;
-        //System.err.println( "Create Project: " + currentProjectName);
-        this.setTitle( name + " of Project =>  " + currentProjectName);
-        setProjectMenuEnabled( DELETE_MENU_ITEM, true);
-        setProjectMenuEnabled( ADDSEQ_MENU_ITEM, true);
-        setProjectMenuEnabled(DELSEQ_MENU_ITEM, true);
-        if (PwProject.listProjects().size() > 1) {
-          setProjectMenuEnabled( OPEN_MENU_ITEM, true);
-        }
-        for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
-          String sequenceDirectory = sequenceParentDirectory +
-            System.getProperty( "file.separator") + sequenceDirectories[i].getName();
-          if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
-            System.err.println( "project.addPlanningSequence " + sequenceDirectory);
-            project.addPlanningSequence( sequenceDirectory);
-          }
-        }
-
-      } catch (ResourceNotFoundException rnfExcep) {
-        int index = rnfExcep.getMessage().indexOf( ":");
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
-           "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-        System.err.println( rnfExcep);
-        // rnfExcep.printStackTrace();
-        isProjectCreated = false;
-      } catch (DuplicateNameException dupExcep) {
-        // duplicate project name or duplicate sequence
-        int index = dupExcep.getMessage().indexOf( ":");
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, dupExcep.getMessage().substring( index + 1),
-           "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
-          System.err.println( dupExcep);
-          dupExcep.printStackTrace();
-          isProjectCreated = false; 
-      } catch(Exception e) {
-        //         int index = e.getMessage().indexOf(":");
-        //         JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage().substring(index+1),
-        //                                       "Exception", JOptionPane.ERROR_MESSAGE);
-        JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage(),
-                                      "Exception", JOptionPane.ERROR_MESSAGE);
-        System.err.println(e);
-        e.printStackTrace();
-        isProjectCreated = false;
-      }
-    }
-    return project;
-  } // end createProject
-
-  private PwProject openProject() {
-    PwProject project = null;
-    List projectUrls = PwProject.listProjects();
-    // System.err.println( "projectUrls " + projectUrls);
-    List namesLessCurrent = getProjectsLessCurrent();
-    // System.err.println( "namesLessCurrent " + namesLessCurrent);
-    Object[] options = new Object[namesLessCurrent.size()];
-    for (int i = 0, n = namesLessCurrent.size(); i < n; i++) {
-        options[i] = (String) namesLessCurrent.get( i);
-    }
-    Object response = JOptionPane.showInputDialog
-      ( this, "", "Open Project", JOptionPane.QUESTION_MESSAGE, null,
-        options, options[0]);
-    // System.err.println( "response " + response);
-    if (response instanceof String) {
-      for (int i = 0, n = options.length; i < n; i++) {
-        if (((String) options[i]).equals( response)) {
-          String projectName = (String) namesLessCurrent.get( i);
-          try {
-            project = PwProject.getProject( projectName);
-            currentProjectName = projectName;
-            //System.err.println( "Open Project: " + currentProjectName);
-            this.setTitle( name + " of Project =>  " + currentProjectName);
-            if (getProjectsLessCurrent().size() == 0) {
-              setProjectMenuEnabled( OPEN_MENU_ITEM, false);
-            }
-            setProjectMenuEnabled( ADDSEQ_MENU_ITEM, true);
-            setProjectMenuEnabled(DELSEQ_MENU_ITEM, true);
-          } catch (ResourceNotFoundException rnfExcep) {
-            // System.err.println( "Project " + projectName + " not found: " + rnfExcep1);
-            int index = rnfExcep.getMessage().indexOf( ":");
-            JOptionPane.showMessageDialog
-              (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
-               "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-            System.err.println( rnfExcep);
-            rnfExcep.printStackTrace();
-          }
-          break;
-        }
-      }
-    } 
-    // JOptionPane.showInputDialog returns null if user selected "cancel"
-    return project;
-  } // end openProject
-
-
   private void deleteProjectThread() {
     new DeleteProjectThread().start();
   }
-
-  class DeleteProjectThread extends Thread {
-
-    public DeleteProjectThread() {
-    }  // end constructor
-
-    public void run() {
-      deleteProject();
-    } //end run
-
-  } // end class DeleteProjectThread
-
-
-  private void deleteProject() {
-    List projectNames = PwProject.listProjects();
-    Object[] options = new Object[projectNames.size()];
-    MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-    for (int i = 0, n = projectNames.size(); i < n; i++) {
-      options[i] = (String) projectNames.get( i);
-    }
-    Object response = JOptionPane.showInputDialog
-      ( this, "", "Delete Project", JOptionPane.QUESTION_MESSAGE, null,
-        options, options[0]);
-    if (response instanceof String) {
-      for (int i = 0, n = options.length; i < n; i++) {
-        if (((String) options[i]).equals( response)) {
-          String projectName = (String) projectNames.get( i);
-          System.out.println( "Delete Project: " + projectName);
-          try {
-
-              PwProject.getProject( projectName).delete();
-
-            if ((! this.currentProjectName.equals( "")) &&
-                this.currentProjectName.equals( projectName)) {
-              viewManager.clearViewSets();
-              this.setTitle( name);
-              int numProjects = PwProject.listProjects().size();
-              dynamicMenuBar.clearMenu( PLANSEQ_MENU, numProjects);
-              dynamicMenuBar.clearMenu( SEQSTEPS_MENU, numProjects);
-            }
-            if (PwProject.listProjects().size() == 0) {
-              setProjectMenuEnabled( DELETE_MENU_ITEM, false);
-              setProjectMenuEnabled( OPEN_MENU_ITEM, false);
-              setProjectMenuEnabled( ADDSEQ_MENU_ITEM, false);
-              setProjectMenuEnabled(DELSEQ_MENU_ITEM, false);
-            } else if (getProjectsLessCurrent().size() == 0) {
-              setProjectMenuEnabled( OPEN_MENU_ITEM, false);
-            } else {
-              setProjectMenuEnabled( OPEN_MENU_ITEM, true);
-            }
-          } catch (ResourceNotFoundException rnfExcep) {
-            int index = rnfExcep.getMessage().indexOf( ":");
-            JOptionPane.showMessageDialog
-              (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
-               "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-            System.err.println( rnfExcep);
-            rnfExcep.printStackTrace();
-          } catch (Exception excep) {
-            excep.printStackTrace();
-            System.err.println( " delete: excep " + excep);
-            int index = excep.getMessage().indexOf( ":");
-            JOptionPane.showMessageDialog
-              (PlanWorks.this, excep.getMessage().substring( index + 1),
-               "Exception", JOptionPane.ERROR_MESSAGE);
-            System.err.println( excep);
-            excep.printStackTrace();
-          }
-          break;
-        }
-      }
-    }
-    // JOptionPane.showInputDialog returns null if user selected "cancel"
-  } // end deleteProject
-
 
   private void addSequenceThread() {
     new AddSequenceThread().start();
   }
 
-  class AddSequenceThread extends Thread {
-
-    public AddSequenceThread() {
-    }  // end constructor
-    
-    public void run() {
-      MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-      JMenu planSeqMenu = dynamicMenuBar.disableMenu( PLANSEQ_MENU);
-      JMenu seqStepsMenu = dynamicMenuBar.disableMenu( SEQSTEPS_MENU);
-      projectMenu.setEnabled(false);
-
-      addSequence();
-
-      projectMenu.setEnabled(true);
-      setProjectMenuEnabled(DELSEQ_MENU_ITEM, true);
-      dynamicMenuBar.enableMenu( planSeqMenu);
-      dynamicMenuBar.enableMenu( seqStepsMenu);
-    } //end run
-
-  } // end class AddSequenceThread
-
-  private void addSequence() {
-    boolean isSequenceAdded = false;
-    while (! isSequenceAdded) {
-      List invalidSequenceDirs = null;
-      while (true) {
-        invalidSequenceDirs = new ArrayList();
-        // ask user for one or more sequence directories of partialPlan directories
-        int returnVal = sequenceDirChooser.showDialog( this, "");
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-          for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
-            String sequenceDirectory = sequenceParentDirectory +
-              System.getProperty( "file.separator") + sequenceDirectories[i].getName();
-            if (! FileUtils.validateSequenceDirectory( sequenceDirectory)) {
-              JOptionPane.showMessageDialog
-                (PlanWorks.this, sequenceDirectory, "Invalid Sequence Directory",
-                 JOptionPane.ERROR_MESSAGE);
-              invalidSequenceDirs.add( sequenceDirectory);
-            }
-          }
-          if (invalidSequenceDirs.size() == sequenceDirectories.length) {
-            continue; // user must reselect
-          } else {
-            break; // some sequences are valid
-          }
-        } else {
-          return; // exit dialog
-        }
-      } // end while
-
-      try {
-        for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
-          String sequenceDirectory = sequenceParentDirectory +
-            System.getProperty( "file.separator") + sequenceDirectories[i].getName();
-          if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
-            currentProject.addPlanningSequence( sequenceDirectory);
-            System.err.println( "project.addPlanningSequence " + sequenceDirectory);
-            isSequenceAdded = true;
-         }
-        }
-        //System.err.println( "Adding sequence " + sequenceDirectory);
-      } catch (DuplicateNameException dupExcep) {
-        int index = dupExcep.getMessage().indexOf( ":");
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, dupExcep.getMessage().substring( index + 1),
-           "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
-        System.err.println( dupExcep);
-        // dupExcep.printStackTrace();
-      } catch (ResourceNotFoundException rnfExcep) {
-        int index = rnfExcep.getMessage().indexOf( ":");
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
-           "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-        System.err.println( rnfExcep);
-        rnfExcep.printStackTrace();
-      }
-      MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-      int numProjects = PwProject.listProjects().size();
-      JMenu partialPlanMenu = dynamicMenuBar.clearMenu( PLANSEQ_MENU, numProjects);
-      addSeqPartialPlanViewMenu( currentProject, partialPlanMenu);
-      JMenu planStepsMenu = dynamicMenuBar.clearMenu( SEQSTEPS_MENU, numProjects);
-      addPlanStepsMenu( currentProject, planStepsMenu);
-    }
-  } // end addSequence
-
-
   private void deleteSequenceThread() {
     new DeleteSequenceThread().start();
   }
 
-  class DeleteSequenceThread extends Thread {
-    public DeleteSequenceThread() {
-    }
-
-    public void run() {
-      MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-      JMenu planSeqMenu = dynamicMenuBar.disableMenu( PLANSEQ_MENU);
-      JMenu seqStepsMenu = dynamicMenuBar.disableMenu( SEQSTEPS_MENU);
-      projectMenu.setEnabled(false);
-
-      deleteSequence();
-
-      projectMenu.setEnabled(true);
-      dynamicMenuBar.enableMenu( planSeqMenu);
-      dynamicMenuBar.enableMenu( seqStepsMenu);
-    }
-  }
-
-  private void deleteSequence() {
-    List sequenceNames = currentProject.listPlanningSequences();
-    Object[] options = new Object[sequenceNames.size()];
-    for (int i = 0, n = sequenceNames.size(); i < n; i++) {
-      options[i] = (String) sequenceNames.get( i);
-    }
-    Object response = JOptionPane.showInputDialog
-      ( this, "", "Delete Sequence", JOptionPane.QUESTION_MESSAGE, null,
-        options, options[0]);
-    if (response instanceof String) {
-      for (int i = 0, n = options.length; i < n; i++) {
-        if (((String) options[i]).equals( response)) {
-          String sequenceName = (String) sequenceNames.get( i);
-          System.out.println( "Delete Sequence: " + sequenceName);
-          try {
-            PwPlanningSequence seq = currentProject.getPlanningSequence(sequenceName);
-            currentProject.deletePlanningSequence(sequenceName);
-            ListIterator partialPlanIterator = seq.listPartialPlans().listIterator();
-            while(partialPlanIterator.hasNext()) {
-              PwPartialPlan plan = (PwPartialPlan) partialPlanIterator.next();
-              if(viewManager.getViewSet(plan) != null) {
-                viewManager.getViewSet(plan).close();
-                viewManager.removeViewSet(plan);
-              }
-            }
-            seq.delete();
-            MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-            JMenu sequenceMenu = null;
-            for(int j = 0; j < dynamicMenuBar.getMenuCount(); j++) {
-              if(dynamicMenuBar.getMenu(j).getText().equals(PLANSEQ_MENU)) {
-                sequenceMenu = dynamicMenuBar.getMenu(j);
-              }
-            }
-            if(sequenceMenu == null) {
-              throw new Exception("Failed to find Planning Sequence menu when deleting sequence.");
-            }
-            String menuName = (String) sequenceNameMap.get(sequenceName);
-            for(int j = 0; j < sequenceMenu.getItemCount(); j++) {
-              if(sequenceMenu.getItem(j).getText().equals(menuName)) {
-                sequenceMenu.remove(j);
-                break;
-              }
-            }
-            if(sequenceMenu.getItemCount() == 0) {
-              dynamicMenuBar.remove(sequenceMenu);
-              setProjectMenuEnabled(DELSEQ_MENU_ITEM, false);
-            }
-          } catch (ResourceNotFoundException rnfExcep) {
-            int index = rnfExcep.getMessage().indexOf( ":");
-            JOptionPane.showMessageDialog
-              (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
-               "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-            System.err.println( rnfExcep);
-            rnfExcep.printStackTrace();
-            return;
-          } catch (Exception excep) {
-            excep.printStackTrace();
-            System.err.println( " delete: excep " + excep);
-            int index = excep.getMessage().indexOf( ":");
-            JOptionPane.showMessageDialog
-              (PlanWorks.this, excep.getMessage().substring( index + 1),
-               "Exception", JOptionPane.ERROR_MESSAGE);
-            System.err.println( excep);
-            excep.printStackTrace();
-          }
-          break;
-        }
-      }
-    }
-  }
-
-  private void addSeqPartialPlanViewMenu( PwProject project, JMenu partialPlanMenu) {
+  protected void addSeqPartialPlanViewMenu( PwProject project, JMenu partialPlanMenu) {
     // Create Dynamic Cascading Seq/PartialPlan/View Menu
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
     if (partialPlanMenu == null) {
@@ -876,7 +447,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end addSeqPartialPlanMenu
 
 
-  private JMenu buildSeqPartialPlanViewMenu( PwProject project,
+  protected JMenu buildSeqPartialPlanViewMenu( PwProject project,
                                              JMenu seqPartialPlanViewMenu) {
     if (seqPartialPlanViewMenu == null) {
       seqPartialPlanViewMenu = new JMenu( PLANSEQ_MENU);
@@ -998,7 +569,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end buildPartialPlanViewSubMenu
 
 
-  private void addPlanStepsMenu( PwProject project, JMenu planStepsMenu) {
+  protected void addPlanStepsMenu( PwProject project, JMenu planStepsMenu) {
     // Create Plan Steps histogram views menu
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
     if (planStepsMenu == null) {
@@ -1011,7 +582,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end addSeqPartialPlanMenu
 
 
-  private JMenu buildPlanStepsMenu( PwProject project, JMenu planStepsMenu) {
+  protected JMenu buildPlanStepsMenu( PwProject project, JMenu planStepsMenu) {
     if (planStepsMenu == null) {
       planStepsMenu = new JMenu( SEQSTEPS_MENU);
     }
@@ -1031,38 +602,6 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end buildPlanStepsMenu
 
 
-    private void createPlanStepsViewThread( final String viewName,
-                                            final JMenuItem menuItem) {
-    new PlanStepsViewThread( viewName, menuItem).start();
-  }
-
-  class PlanStepsViewThread extends Thread {
-
-    private String viewName;
-    private JMenuItem menuItem;
-
-    public PlanStepsViewThread( String viewName, JMenuItem menuItem) {
-      this.viewName = viewName;
-      this.menuItem = menuItem;
-    }
-
-    public void run() {
-      MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-      JMenu planSeqMenu = dynamicMenuBar.disableMenu( PLANSEQ_MENU);
-      JMenu seqStepsMenu = dynamicMenuBar.disableMenu( SEQSTEPS_MENU);
-      projectMenu.setEnabled( false);
-
-      if (viewName.equals( PLAN_DB_SIZE_MENU_ITEM)) {
-        new PlanDbSizeView();
-      }
-
-      projectMenu.setEnabled( true);
-      dynamicMenuBar.enableMenu( planSeqMenu);
-      dynamicMenuBar.enableMenu( seqStepsMenu);
-    }
-  } // end class PlanStepsViewThread
-
-
   private void createPartialPlanViewThread( final String viewName,
                                             final SeqPartPlanViewMenuItem menuItem) {
     (new Thread() {
@@ -1073,108 +612,11 @@ public class PlanWorks extends MDIDesktopFrame {
         }
       }
      ).start();
+  } // end createPartialPlanViewThread
+
+  private void createPlanStepsViewThread( String viewName, JMenuItem menuItem) {
+    new CreatePlanStepsViewThread( viewName, menuItem).start();
   }
-
-
-  class CreatePartialPlanViewThread implements Runnable {
-
-    private String seqUrl;
-    private String sequenceName;
-    private String partialPlanName;
-    private PwPartialPlan partialPlan;
-    private String viewName;
-
-    public CreatePartialPlanViewThread( String viewName, SeqPartPlanViewMenuItem menuItem) {
-      this.seqUrl = menuItem.getSeqUrl();
-      this.sequenceName = menuItem.getSequenceName();
-      this.partialPlanName = menuItem.getPartialPlanName();
-      this.viewName = viewName;
-    }  // end constructor
-
-    public void run() { 
-      try {
-        PwPlanningSequence planSequence =
-          currentProject.getPlanningSequence( seqUrl);
-        
-        PwPartialPlan partialPlan = planSequence.getPartialPlan(partialPlanName);
-        
-        renderPartialPlanView( viewName, sequenceName, partialPlanName, partialPlan);
-
-      } catch (ResourceNotFoundException rnfExcep) {
-        int index = rnfExcep.getMessage().indexOf( ":");
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
-           "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-        System.err.println( rnfExcep);
-        rnfExcep.printStackTrace();
-      }
-    } //end run
-
-    private void renderPartialPlanView( String viewName, String sequenceName,
-                                        String partialPlanName,
-                                        PwPartialPlan partialPlan) {
-      ViewSet viewSet = viewManager.getViewSet( partialPlan);
-      MDIInternalFrame viewFrame = null;
-      boolean viewExists = false;
-      String viewClassName = (String) viewClassNameMap.get( viewName);
-      if ((viewSet != null) && viewSet.viewExists( viewClassName)) {
-        viewExists = true;
-      }
-      if (supportedPartialPlanViewNames.contains( viewName)) {
-        if (! viewExists) {
-          partialPlan.setSeqName( sequenceName +
-                                  System.getProperty("file.separator") + partialPlanName);
-          System.err.println( "Rendering " + viewName + " ...");
-        }
-        System.err.println( "SeqName " + partialPlan.getName());
-        viewFrame = viewManager.openView( partialPlan, viewClassName);
-        finishPartPlanViewRendering( viewFrame, viewName, viewManager, viewExists,
-                                     partialPlan);
-      } else {
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, viewName, "View Not Supported", 
-           JOptionPane.INFORMATION_MESSAGE);
-      }
-    } // end renderPartialPlanView
-
-    private void finishPartPlanViewRendering( MDIInternalFrame viewFrame, String viewName,
-                                              ViewManager viewManager, boolean viewExists,
-                                              PwPartialPlan partialPlan) {
-      ViewSet viewSet = null;
-      if (! viewExists) {
-        while (viewSet == null) {
-          // System.err.println( "wait for ViewSet");
-          try {
-            Thread.currentThread().sleep(50);
-          } catch (InterruptedException excp) {
-          }
-          viewSet = viewManager.getViewSet( partialPlan);
-        }
-        viewFrame.setSize( INTERNAL_FRAME_WIDTH, INTERNAL_FRAME_HEIGHT);
-        int contentSpecFrameHeight =
-          (int) viewSet.getContentSpecWindow().getSize().getHeight();
-        Iterator viewItr = supportedPartialPlanViewNames.iterator();
-        int viewIndex = 0;
-        while (viewItr.hasNext()) {
-          if (viewItr.next().equals( viewName)) {
-            break;
-          }
-          viewIndex++;
-        }
-        viewFrame.setLocation( INTERNAL_FRAME_X_DELTA * viewIndex, contentSpecFrameHeight +
-                               INTERNAL_FRAME_Y_DELTA * viewIndex);
-        viewFrame.setVisible( true);
-      }
-      // make associated menus appear & bring window to the front
-      try {
-        viewFrame.setSelected( false);
-        viewFrame.setSelected( true);
-      } catch (PropertyVetoException excp) { };
-    } // end finishPartPlanViewRendering
-
-  } // end class CreatePartialPlanViewThread
-
-
 
   /**
    * <code>SeqPartPlanViewMenuItem</code> - class is public for JFCUnit Test classes
@@ -1247,46 +689,46 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end createDirectoryChooser
 
 
-class SequenceDirectoryFilter extends FileFilter {
+  class SequenceDirectoryFilter extends FileFilter {
 
-  public SequenceDirectoryFilter() {
-    super();
-  }
+    public SequenceDirectoryFilter() {
+      super();
+    }
 
-  /**
-   * accept - Accept all files, and directories which are not partial plan 
-   *          step directories
-   *
-   * @param file - a directory or file name
-   * @return true, if a directory is valid
-   */
-  public boolean accept( File file) {
-    boolean isValid = true;
-    if (! file.isDirectory()) {
-      // accept all files
-    } else if (file.isDirectory()) {
-      if (file.getName().equals( "CVS")) {
-        isValid = false;
-      } else {
-        String [] fileNames = file.list(new PwSQLFilenameFilter());
-        if (fileNames.length == DbConstants.NUMBER_OF_PP_FILES) {
+    /**
+     * accept - Accept all files, and directories which are not partial plan 
+     *          step directories
+     *
+     * @param file - a directory or file name
+     * @return true, if a directory is valid
+     */
+    public boolean accept( File file) {
+      boolean isValid = true;
+      if (! file.isDirectory()) {
+        // accept all files
+      } else if (file.isDirectory()) {
+        if (file.getName().equals( "CVS")) {
           isValid = false;
+        } else {
+          String [] fileNames = file.list(new PwSQLFilenameFilter());
+          if (fileNames.length == DbConstants.NUMBER_OF_PP_FILES) {
+            isValid = false;
+          }
         }
       }
-    }
-    // System.err.println( "accept " + file.getName() + " isValid " + isValid); 
-    return isValid;
-  } // end accept
+      // System.err.println( "accept " + file.getName() + " isValid " + isValid); 
+      return isValid;
+    } // end accept
 
-  /**
-   * getDescription - string to describe this filter
-   *
-   * @return string to describe this filter
-   */
-  public String getDescription() { 
-    return "Sequence Directories";
-  }
-} // end class SequenceDirectoryFilter
+    /**
+     * getDescription - string to describe this filter
+     *
+     * @return string to describe this filter
+     */
+    public String getDescription() { 
+      return "Sequence Directories";
+    }
+  } // end class SequenceDirectoryFilter
 
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.3 2003-09-28 00:19:30 taylor Exp $
+// $Id: TimelineView.java,v 1.4 2003-09-30 19:18:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -23,7 +23,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.BoxLayout;
@@ -161,7 +160,7 @@ public class TimelineView extends PartialPlanView {
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
 
-    long stopTimeMSecs = (new Date()).getTime();
+    long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
