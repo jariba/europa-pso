@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.41 2003-09-09 20:40:30 miatauro Exp $
+// $Id: MySQLDB.java,v 1.42 2003-10-02 23:16:55 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -324,7 +324,7 @@ public class MySQLDB {
     return false;
   }
 
-  synchronized public static boolean sequenceExists(Integer id) {
+  synchronized public static boolean sequenceExists(Long id) {
     try {
       ResultSet rows =
         queryDatabase("SELECT * FROM Sequence WHERE SequenceId=".concat(id.toString()));
@@ -343,7 +343,8 @@ public class MySQLDB {
    * @return boolean
    */
 
-  synchronized public static boolean partialPlanExists(Integer sequenceId, String name) {
+  synchronized public static boolean partialPlanExists(Long sequenceId, String name) {
+    System.err.println(sequenceId + " " + name);
     try {
       ResultSet rows =
         queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()).concat(" && PlanName='").concat(name).concat("'"));
@@ -389,7 +390,8 @@ public class MySQLDB {
    */
 
   synchronized public static void addSequence(String url, Integer projectId) {
-    updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId) VALUES ('".concat(url).concat("', ").concat(projectId.toString()).concat(")"));
+    String sequenceId = url.substring(url.length()-13);
+    updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId, SequenceId) VALUES ('".concat(url).concat("', ").concat(projectId.toString()).concat(", ").concat(sequenceId).concat(")"));
   }
 
   /**
@@ -398,11 +400,12 @@ public class MySQLDB {
    * @return Integer
    */
 
-  synchronized public static Integer latestSequenceId() {
+  synchronized public static Long latestSequenceId() {
     try {
-      ResultSet newId = queryDatabase("SELECT MAX(SequenceId) AS SequenceId from Sequence");
+      ResultSet newId = //queryDatabase("SELECT MAX(SequenceId) AS SequenceId from Sequence");
+        queryDatabase("SELECT SequenceId FROM Sequence ORDER BY SequenceOrdering");
       newId.last();
-      return new Integer(newId.getInt("SequenceId"));
+      return new Long(newId.getLong("SequenceId"));
     }
     catch(SQLException sqle) {
     }
@@ -445,7 +448,7 @@ public class MySQLDB {
         queryDatabase("SELECT SequenceURL, SequenceId FROM Sequence WHERE ProjectId=".concat(projectId.toString()));
       retval = new HashMap();
       while(sequences.next()) {
-        retval.put(new Integer(sequences.getInt("SequenceId")), sequences.getString("SequenceURL"));
+        retval.put(new Long(sequences.getLong("SequenceId")), sequences.getString("SequenceURL"));
       }
     }
     catch(SQLException sqle) {
@@ -464,7 +467,7 @@ public class MySQLDB {
       ResultSet sequenceIds = 
         queryDatabase("SELECT SequenceId FROM Sequence WHERE ProjectId=".concat(id.toString()));
       while(sequenceIds.next()) {
-        Integer sequenceId = new Integer(sequenceIds.getInt("SequenceId"));
+        Long sequenceId = new Long(sequenceIds.getLong("SequenceId"));
         deletePlanningSequence(sequenceId);
       }
       updateDatabase("DELETE FROM Project WHERE ProjectId=".concat(id.toString()));
@@ -473,7 +476,7 @@ public class MySQLDB {
     }
   }
 
-  synchronized public static void deletePlanningSequence(Integer sequenceId) throws ResourceNotFoundException{
+  synchronized public static void deletePlanningSequence(Long sequenceId) throws ResourceNotFoundException{
     if(!sequenceExists(sequenceId)) {
       throw new ResourceNotFoundException("Sequence with id " + sequenceId + " not in database.");
     }
@@ -509,7 +512,7 @@ public class MySQLDB {
    * @return List of Strings
    */
 
-  synchronized public static List getPlanNamesInSequence(Integer sequenceId) {
+  synchronized public static List getPlanNamesInSequence(Long sequenceId) {
     ArrayList retval = new ArrayList();
     try {
       ResultSet names = 
@@ -528,9 +531,9 @@ public class MySQLDB {
    * 
    * @param sequenceId
    */
-  synchronized public static void updatePartialPlanSequenceId(Integer sequenceId) {
-    updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceId.toString()).concat(" WHERE SequenceId=-1"));
-  }
+  //  synchronized public static void updatePartialPlanSequenceId(Integer sequenceId) {
+  //    updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceId.toString()).concat(" WHERE SequenceId=-1"));
+  //}
   
   /**
    * Get the Id for the most recently created partial plan
@@ -540,11 +543,29 @@ public class MySQLDB {
    * @return Long
    */
 
-  synchronized public static Long getNewPartialPlanId(Integer sequenceId, String name) {
+  synchronized public static Long getNewPartialPlanId(Long sequenceId, String name) {
     Long retval = null;
     try {
       ResultSet partialPlan = 
         queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()).concat(" && PlanName='").concat(name).concat("'"));
+      partialPlan.last();
+      retval = new Long(partialPlan.getLong("PartialPlanId"));
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+
+  synchronized public static Long getPartialPlanIdByName(Long sequenceId, String name) {
+    Long retval = null;
+    try {
+      StringBuffer temp = 
+        new StringBuffer("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=");
+      temp.append(sequenceId.toString()).append(" && PlanName='").append(name).append("'");
+      System.err.println(temp.toString());
+      ResultSet partialPlan =
+        //queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()).concat(" && PlanName=").concat(name));
+        queryDatabase(temp.toString());
       partialPlan.last();
       retval = new Long(partialPlan.getLong("PartialPlanId"));
     }

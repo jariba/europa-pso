@@ -119,9 +119,9 @@ CREATE TABLE PartialPlan (
   PlanName varchar(255) NOT NULL default 'ErrorPlan',
   PartialPlanId bigint(20) NOT NULL default '0',
   Model varchar(255) default NULL,
-  SequenceId int(11) NOT NULL default '-1',
-  PRIMARY KEY  (PartialPlanId,SequenceId),
-  INDEX (PartialPlanId)
+  SequenceId bigint(20) NOT NULL default '0',
+  PRIMARY KEY (PartialPlanId),
+  INDEX (SequenceId)
 ) TYPE=MyISAM;
 
 --
@@ -167,9 +167,10 @@ CREATE TABLE Project (
 
 CREATE TABLE Sequence (
   SequenceURL varchar(255) NOT NULL default 'ErrorURL',
-  SequenceId int(11) NOT NULL auto_increment,
+  SequenceId bigint(20) NOT NULL default '0',
   ProjectId int(11) NOT NULL default '-1',
-  PRIMARY KEY  (SequenceId)
+  SequenceOrdering int(11) NOT NULL auto_increment,
+  PRIMARY KEY  (SequenceId, SequenceOrdering)
 ) TYPE=MyISAM;
 
 --
@@ -299,4 +300,19 @@ CREATE TABLE Variable (
 -- Dumping data for table 'Variable'
 --
 
+--
+-- Table structure for table 'Transaction'
+--
 
+CREATE TABLE Transaction (
+  TransactionType enum('TOKEN_CREATED','TOKEN_DELETED','TOKEN_INSERTED','TOKEN_FREED','VARIABLE_CREATED','VARIABLE_DELETED','VARIABLE_DOMAIN_RELAXED','VARIABLE_DOMAIN_RESTRICTED','VARIABLE_DOMAIN_SPECIFIED','VARIABLE_DOMAIN_RESET','VARIABLE_DOMAIN_EMPTIED','CONSTRAINT_CREATED','CONSTRAINT_DELETED') NOT NULL,
+  ObjectId int(11) NOT NULL default '0',
+  Source enum('USER','SYSTEM','UNKNOWN') NOT NULL default 'UNKNOWN',
+  TransactionId int(11) NOT NULL default '0',
+  SequenceId bigint(20) NOT NULL default '0',
+  PartialPlanId bigint(20) NOT NULL default '0'
+) TYPE=MyISAM;
+
+--
+-- Dumping data for table 'Transaction'
+--
