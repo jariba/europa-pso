@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.7 2003-10-28 22:14:27 miatauro Exp $
+// $Id: NodeGenerics.java,v 1.8 2003-10-28 23:23:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -298,7 +298,7 @@ public class NodeGenerics {
    */
   public static String trimName( String name, TextNode headerNode, VizView vizView) {
     int columnWidth = (int) headerNode.getSize().getWidth();
-    System.err.println(name);
+    // System.err.println(name);
     int nameWidth = SwingUtilities.computeStringWidth( vizView.getFontMetrics(), name);
     // System.err.println( " name " + name + " " + nameWidth + " columnWidth " + columnWidth);
     if (nameWidth > columnWidth) {

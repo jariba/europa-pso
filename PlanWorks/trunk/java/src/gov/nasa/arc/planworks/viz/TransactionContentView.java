@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.8 2003-10-28 22:14:11 miatauro Exp $
+// $Id: TransactionContentView.java,v 1.9 2003-10-28 23:23:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -157,6 +157,12 @@ public class TransactionContentView extends JGoView {
       x += headerJGoView.getStepNumNode().getSize().getWidth();
 
       // String objectName = getObjectName( transaction.getObjectId());
+      if (transaction.getInfo()[0] == null) {
+        System.err.println( "0 key " + transaction.getId().toString() +
+                            " type " + transaction.getType() +
+                            " objectKey " + transaction.getObjectId().toString() +
+                            " step " + transaction.getStepNumber().toString());
+      }
       String objectName =
         NodeGenerics.trimName( transaction.getInfo()[0], headerJGoView.getObjectNameNode(),
                                vizView);
@@ -169,6 +175,12 @@ public class TransactionContentView extends JGoView {
       x += headerJGoView.getObjectNameNode().getSize().getWidth();
 
         // new TransactionField( getPredicateName( transaction.getObjectId()),
+      if (transaction.getInfo()[1] == null) {
+        System.err.println( "1 key " + transaction.getId().toString() +
+                            " type " + transaction.getType() +
+                            " objectKey " + transaction.getObjectId().toString() +
+                            " step " + transaction.getStepNumber().toString());
+      }
       String predicateName =
         NodeGenerics.trimName( transaction.getInfo()[1], headerJGoView.getPredicateNode(),
                                vizView);
@@ -181,6 +193,12 @@ public class TransactionContentView extends JGoView {
       x += headerJGoView.getPredicateNode().getSize().getWidth();
 
         // new TransactionField( getParameterName( transaction.getObjectId(), objectName),
+      if (transaction.getInfo()[2] == null) {
+        System.err.println( "2 key " + transaction.getId().toString() +
+                            " type " + transaction.getType() +
+                            " objectKey " + transaction.getObjectId().toString() +
+                            " step " + transaction.getStepNumber().toString());
+      }
       String parameterName =
          NodeGenerics.trimName( transaction.getInfo()[2], headerJGoView.getParameterNode(),
                                 vizView);
