@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.27 2004-01-12 19:46:22 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.28 2004-01-12 22:37:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -535,8 +535,8 @@ public class ConstraintNetworkView extends PartialPlanView {
         if((link = getVariableLink(linkName)) == null) {
           link = new BasicNodeLink(varNode, tokenNode, linkName);
           variableLinkMap.put(link.getLinkName(), link);
-          //document.addObjectAtTail(link);
-          document.insertObjectBefore(document.findObject(tokenNode), link);
+          document.addObjectAtHead(link);
+          //document.insertObjectBefore(document.findObject(tokenNode), link);
         }
         varNode.addLink(link);
         //document.removeObject(link);
@@ -568,8 +568,8 @@ public class ConstraintNetworkView extends PartialPlanView {
         String linkName = constr.getId() + "->" + var.getId();
         if((link = getConstraintLink(linkName)) == null) {
           link = new BasicNodeLink(constrNode, varNode, linkName);
-          //document.addObjectAtTail(link);
-          document.insertObjectBefore(document.findObject(varNode), link);
+          document.addObjectAtHead(link);
+          //document.insertObjectBefore(document.findObject(varNode), link);
         }
         constraintLinkMap.put(linkName, link);
         constrNode.addLink(link);
@@ -607,14 +607,14 @@ public class ConstraintNetworkView extends PartialPlanView {
         if((link1 = getConstraintLink(link1Name)) == null) {
           link1 = new BasicNodeLink(constrNode, varNode, link1Name);
           constraintLinkMap.put(link1Name, link1);
-          document.insertObjectBefore(document.findObject(tokenNode), link1);
-          //document.addObjectAtTail(link1);
+          //document.insertObjectBefore(document.findObject(tokenNode), link1);
+          document.addObjectAtHead(link1);
         }
         if((link2 = getVariableLink(link2Name)) == null) {
           link2 = new BasicNodeLink(varNode, tokenNode, link2Name);
           variableLinkMap.put(link2Name, link2);
-          //document.addObjectAtTail(link2);
-          document.insertObjectBefore(document.findObject(tokenNode), link2);
+          document.addObjectAtHead(link2);
+          //document.insertObjectBefore(document.findObject(tokenNode), link2);
         }
         constrNode.addLink(link1);
         varNode.addLink(link2);
@@ -827,7 +827,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     if (link != null) {
       // links are always behind any nodes
       //document.removeObject(link);
-      document.addObjectAtTail( link);
+      document.addObjectAtHead( link);
       //network.addConstraintLink( link, fromNode, toNode);
       link.setInLayout( true);
       link.incrLinkCount();
