@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.40 2004-03-02 02:34:19 taylor Exp $
+// $Id: TimelineView.java,v 1.41 2004-03-03 00:11:58 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -380,8 +380,12 @@ public class TimelineView extends PartialPlanView {
       PwSlot slot = (PwSlot) slotIterator.next();
       // overloaded tokens on slot - not displayed, put in displayedTokenIds
       List tokenList = slot.getTokenList();
-      for (int i = 1, n = tokenList.size(); i < n; i++) {
-        isTokenInContentSpec( (PwToken) tokenList.get( i));
+//       for (int i = 1, n = tokenList.size(); i < n; i++) {
+//         isTokenInContentSpec( (PwToken) tokenList.get( i));
+//       }
+      tokenList.remove(slot.getBaseToken());
+      for(int i = 0; i < tokenList.size(); i++) {
+        isTokenInContentSpec((PwToken) tokenList.get(i));
       }
       boolean isLastSlot = (! slotIterator.hasNext());
       PwToken token = slot.getBaseToken();
