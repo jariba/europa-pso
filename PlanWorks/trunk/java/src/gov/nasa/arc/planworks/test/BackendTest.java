@@ -12,10 +12,13 @@ import gov.nasa.arc.planworks.db.impl.*;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 
 public class BackendTest extends TestCase {
-  private static PwPartialPlanImpl plan1, plan2;
+  private static PwPartialPlanImpl plan1, plan2, plan3, plan4, plan5;
   private static PwPlanningSequenceImpl sequence;
   private static final String step1 = "step2";
   private static final String step2 = "step9";
+  private static final String step3 = "step0";
+  private static final String step4 = "step1";
+  private static final String step5 = "step8";
   private static final String sequenceName = "Camera1065545818740";
   private static final int numTests = 3;
   private static int testsRun = 0;
@@ -26,15 +29,27 @@ public class BackendTest extends TestCase {
       MySQLDB.loadFile(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat("test.sequence"), "Sequence");
       String p1 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step1).concat(System.getProperty("file.separator")).concat(step1).concat(".");
       String p2 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step2).concat(".");
+      String p3 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step3).concat(".");
+      String p4 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step4).concat(".");
+      String p5 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step5).concat(".");
       for(int i = 0; i < DbConstants.NUMBER_OF_PP_FILES; i++) {
         MySQLDB.loadFile(p1.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
                          DbConstants.PW_DB_TABLES[i]);
         MySQLDB.loadFile(p2.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
                          DbConstants.PW_DB_TABLES[i]);
+        MySQLDB.loadFile(p3.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
+                         DbConstants.PW_DB_TABLES[i]);
+        MySQLDB.loadFile(p4.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
+                         DbConstants.PW_DB_TABLES[i]);
+        MySQLDB.loadFile(p5.toString().concat(DbConstants.PARTIAL_PLAN_FILE_EXTS[i]),
+                         DbConstants.PW_DB_TABLES[i]);
       }
       sequence = new PwPlanningSequenceImpl(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName), MySQLDB.latestSequenceId(), new PwModelImpl());
       plan1 = (PwPartialPlanImpl) sequence.getPartialPlan(step1);
       plan2 = (PwPartialPlanImpl) sequence.getPartialPlan(step2);
+      plan3 = (PwPartialPlanImpl) sequence.getPartialPlan(step3);
+      plan4 = (PwPartialPlanImpl) sequence.getPartialPlan(step4);
+      plan5 = (PwPartialPlanImpl) sequence.getPartialPlan(step5);
     }
     catch(Exception e) {
       e.printStackTrace();
@@ -76,15 +91,22 @@ public class BackendTest extends TestCase {
     return suite;
   }
   public void testPlanLoad() {
+    System.err.println("IN TESTPLANLOAD");
     assertTrue("Plan 1 is null", plan1 != null);
     assertTrue("Plan 2 is null", plan2 != null);
+    assertTrue("Plan 3 is null", plan3 != null);
+    assertTrue("Plan 4 is null", plan4 != null);
+    assertTrue("Plan 5 is null", plan5 != null);
     assertTrue("Plan 1 is inconsistant", plan1.checkPlan());
     assertTrue("Plan 2 is inconsistant", plan2.checkPlan());
+    assertTrue("Plan 3 is inconsistant", plan3.checkPlan());
+    assertTrue("Plan 4 is inconsistant", plan4.checkPlan());
+    assertTrue("Plan 5 is inconsistant", plan5.checkPlan());
     //testsRun++;
     incTestsRun();
   }
   public void testDataConsistency() {
-    PwPartialPlanImpl [] temp = new PwPartialPlanImpl [] {plan1, plan2};
+    PwPartialPlanImpl [] temp = new PwPartialPlanImpl [] {plan1, plan2, plan3, plan4, plan5};
     for(int i = 0; i < temp.length; i++) {
       Map ids = MySQLDB.queryAllIdsForPartialPlan(temp[i].getId());
       List objectIdList = (List) ids.get(DbConstants.TBL_OBJECT);
