@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkGenerics.java,v 1.1 2004-08-05 00:24:30 taylor Exp $
+// $Id: TokenNetworkGenerics.java,v 1.2 2004-08-26 20:51:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -102,7 +102,7 @@ public final class TokenNetworkGenerics {
       }
       if ((parentTokNetNode != null) && parentTokNetNode.inLayout() &&
           (parentTokNetNode.getLinkCount() == 0)) {
-        removeTokNetNode( parentTokNetNode, isDebugPrint);
+        removeTokNetNode( parentTokNetNode, tokenNetworkView, isDebugPrint);
         areNodesChanged = true;
       }
     }
@@ -117,7 +117,7 @@ public final class TokenNetworkGenerics {
       }
       if ((childTokNetNode != null) && childTokNetNode.inLayout() &&
           (childTokNetNode.getLinkCount() == 0)) {
-        removeTokNetNode( childTokNetNode, isDebugPrint);
+        removeTokNetNode( childTokNetNode, tokenNetworkView, isDebugPrint);
         areNodesChanged = true;
       }
     }
@@ -126,7 +126,7 @@ public final class TokenNetworkGenerics {
 			  " linkCount " + tokNetNode.getLinkCount());
     }
     if (tokNetNode.inLayout() && (tokNetNode.getLinkCount() == 0)) {
-      removeTokNetNode( tokNetNode, isDebugPrint);
+      removeTokNetNode( tokNetNode, tokenNetworkView, isDebugPrint);
       areNodesChanged = true;
     }
     return areNodesChanged;
@@ -151,13 +151,17 @@ public final class TokenNetworkGenerics {
    * @param isDebugPrint - <code>boolean</code> - 
    */
   public static void removeTokNetNode( final IncrementalNode tokNetNode,
-                                    final boolean isDebugPrint) {
+                                       final TokenNetworkView tokenNetworkView,
+                                       final boolean isDebugPrint) {
     if (isDebugPrint) {
       System.err.println( "remove " + tokNetNode.getTypeName() + " TokNetNode = " +
                           tokNetNode.getId());
     }
+      System.err.println( "remove " + tokNetNode.getTypeName() + " TokNetNode = " +
+                          tokNetNode.getId());
     tokNetNode.setInLayout( false);
     tokNetNode.resetNode( isDebugPrint);
+    tokenNetworkView.getJGoView().removeObject( (ExtendedBasicNode) tokNetNode);
   } // end removeTokNetNode
 
 

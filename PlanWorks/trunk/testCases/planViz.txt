@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.59 2004-08-25 18:41:05 taylor Exp $
+// $Id: planViz.txt,v 1.60 2004-08-26 20:51:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -601,8 +601,9 @@ Method:
      of the "header" portion of the view, and select "Find Transaction by Obj_Key".  
      Enter an OBJ_KEY value.
   5. Using the "SequenceQuery" dialog, select "Steps" and then select in
-     turn the qualified "Steps" queries: With Non-unit Decisions/Restrictions/
-     Unit Decisions.  These queries do not expand.  Click on "Apply Query".
+     turn the qualified "Steps" queries: With Non-unit Variable Decisions/With
+     Restrictions/With Unit Variable Decisions.  These queries do not expand.
+     Click on "Apply Query".
   6. Using the "SequenceQuery" dialog, select "Transactions" and then select in
      turn the qualified "Transactions" queries: "For Constraint/Token/Variable",
      which expand into a "Key" field; and "In Range", which expands into
@@ -620,7 +621,7 @@ Method:
      enter a step number, and click on "Apply Query".
  11. In the "Unbound Variables" "QueryResults" window created by Method:10,
      Mouse-Right click on the background of the "header" portion of the view, 
-     and select "Find Token by Var_Key".  Enter an VAR_KEY value.
+     and select "Find Variable by Var_Key".  Enter an VAR_KEY value.
  12. Using the "SequenceQuery" dialog, select "All Decisions ... At Step ...",
      enter a step number, and click on "Apply Query".
  13. In each of the "QueryResults" windows, move the mouse over any of the 
@@ -731,8 +732,8 @@ Pre-conditions:
   3. "Sequence Steps View" is visible for a sequence with multiple steps.
 
 Method:
-  1. Open a view that is not the "DBTransaction View" for a plan step that is neither the first nor
-  the last step.
+  1. Open a view that is not the "DBTransaction View" for a plan step that is neither
+     the first nor the last step.
   2. Click on the "Step forward" button.
   3. Click on the "Step backward" button.
   4. Open the "Overview Window" for the view.
@@ -838,7 +839,8 @@ Pre-conditions:
   2. A project containing a sequence is open.
   3. The "Sequence Steps View" for the sequence is open.
   4. For any sequence step, select Mouse-Right "Open All Views".
-  5. Delete the "DBTransactionView" and "DecisionView" window.
+  5. Delete the "DBTransactionView", "DecisionView", "ResourceProfileView", and
+     'ResourceTransaction" windows.
 
 Method:
   1. In the Timeline View, Mouse-Right "Open Navigator View" on a
@@ -937,7 +939,8 @@ Method:
      Resource Profile".
   6. Display "test-seq-1/step<nn>" Token Network View by clicking Mouse-Right 
      on the "step<nn>" element of the "SequenceStepsView of test-seq-1", and 
-     selecting "Token Network View".
+     selecting "Token Network View".  Open nodes to display a resource transaction
+     node.
   7. On the Token Network View, Mouse-Right on an interval token and select
      "Set Active Token". On the Resource Profile View, and then on the Resource
      Transaction View, Mouse-Right on the "extent" background and select "Snap to
@@ -946,8 +949,8 @@ Method:
   8. On the Token Network View, Mouse-Right on a resource transaction and select
      "Set Active Token". On the Resource Profile View, and then on the Resource
      Transaction View, Mouse-Right on the "extent" background and select "Snap to
-     Active Resource" on the Resource Profile View, and "Snap to Active Resource
-     Transaction".
+     Active Resource Transaction" on the Resource Profile View, and "Snap to Active
+     Resource by Transaction".
   9. On both the Resource Profile View and the Resource Transaction View, click
      Mouse-Right on a resource name and select "Open Navigator View".
  10. On the Resource Transaction View, click Mouse-Right on a transaction node
@@ -972,8 +975,8 @@ Post-conditions:
      the time scale value. The Resource Profile View also has the same vertical
      red line, at the same time scale value.  If necessary, the Resource Profile
      View is scrolled to expose the vertical red line.
-  6. Method:6 - The Token Network View appears with the interval token and resource
-     transaction hierarchy.
+  6. Method:6 - The Token Network View appears with at least one interval token and
+     one resource transaction.
   7. Method:7 - In both cases, an advisory dialog appears: "Active Resource Transaction
      Not Found".
   8. Method:8 - In both cases, the view scrolls to expose the appropriate resource
@@ -1005,7 +1008,8 @@ Method:
      and choose a "zoom" factor.  Exercise "Step Forward", "Step Back",
      some Content Filter specifications, background Mouse-Right "Find 
      by Key", and with mouse over a slot node with at least one merged token
-     Mouse-Right "Set Active Token".
+     Mouse-Right "Set Active Token".  In the Temporal Extent View,
+     Mouse-Right "Snap to Active Token".
   2. In the Temporal Extent View, Mouse-Right "Zoom View" on the background,
      and choose a "zoom" factor.  Exercise "Step Forward", "Step Back",
      some Content Filter specifications, background Mouse-Right "Hide Node
@@ -1021,9 +1025,8 @@ Method:
      some Content Filter specifications, background Mouse-Right "Find 
      by Key", and "Snap to Active Token", and with mouse over a token node 
      Mouse-Right "Set Active Token".
-  5. In the Constraint Network View, Mouse-Right "Open Navigator View" on a
-     variable node.  In the Navigator View, Mouse-Right "Zoom View" on the 
-     background, and choose a "zoom" factor.
+  5. In the Navigator View, Mouse-Right "Zoom View" on the background, and
+     choose a "zoom" factor.
   6. In the Sequence Steps View, Mouse-Right "Zoom View" on the background,
      and choose a "zoom" factor.
 
@@ -1031,7 +1034,8 @@ Method:
 Post-conditions:
   1. Method: 1 - Verify that the functionality and visibility of the "full 
      scale" view is rendered in the Zoom View.  For "Find by Key", the node
-     is highlighted with bright green.
+     is highlighted with bright green.  For "Set Active Token", in the
+      Temporal Extent View, "Snap to Active Token" highlights the active token.
   2. Method: 2 - Verify that the functionality and visibility of the "full 
      scale" view is rendered in the Zoom View.  For "Snap to Active Token" 
      verify that base token is highlighted with bright green, and the merged 
@@ -1065,7 +1069,7 @@ Pre-conditions:
   3. "Sequence Steps View" is visible for a sequence with multiple steps.
 
 Method:
-  1. Open a view for a plan step that is neither the first nor the last step.
+  1. Open a view for a plan step (s1) that is neither the first nor the last step.
   2. On the Sequence Steps View, select Mouse-Right "Step Forward step nn 
      Active Views".
   3. On the Sequence Steps View, select Mouse-Right "Step Backward step nn 
@@ -1076,6 +1080,10 @@ Method:
      Active Views".
   6. On the Sequence Steps View, select Mouse-Right "Step Backward step nn 
      Active Views".
+  7. On the Sequence Steps View, over another step (s2), select Mouse-Right
+     "Open All Views".
+  8. On the Sequence Steps View, select Mouse-Right "Step Forward step s2
+     Active Views", and "Step Backward step s1 Active Views".
 
 Post-conditions:
   1. Method:1 - The selected view is visible and correct.  The plan step histogram
@@ -1086,13 +1094,16 @@ Post-conditions:
   3. Method:3 - The view is replaces with the same view of the step that was 
      originally opened.  The plan step histogram element highlighting is on the 
      original step.
-  4. Method:4 - The other six partial plan views appear for the selected step. 
+  4. Method:4 - The other partial plan views appear for step s1. 
   5. Method:5 - The six views are replaced with the same views for the next step 
      in the same positions with possibly different sizes. The plan step histogram 
      element highlighting is on the next step.
   6. Method:6 - The six views are replaced with the same views of the previous step 
      in the same positions with possibly different sizes.  The plan step histogram 
      element highlighting is on the previous step.
+  7. Method:7 - All partial plan views appear for step s2.
+  8. Method:8 - There is a full set of partial plan views at step s1-1, and another
+     complete set of views at step s2+1.
 
 Requirements: N/A
 
@@ -1115,17 +1126,17 @@ Method:
      selecting "Decision View".
   3. Step the Decision View to a step which has a current decision with choices.
      Open the choice list.
-  4. Mouse-Right on the decision node "Object|Resource|Object|Token|Variable key=nnn"
+  4. Mouse-Right on the decision node "Object|Resource|Timeline|Token|Variable key=nnn"
      and choose all available view options, one after another.
-  5. Mouse-Right on the choice node "Token key=nnn" and choose all available view
-     options, one after another.
+  5. Mouse-Right on a choice node item and choose all available view options, one
+     after another.
 
 Post-conditions:
   1. Method:1 - The SequenceStepsView of test-seq-1 appears.
   2. Method:2 - The Decision View appears with tree display of the step's decisions,
      the current decision in bold font, highlighted, and scrolled to be viewable.
   3. Method:3 - The current decision choice list should show one of four possible
-     choices: Token ("Token key=nnn"), Value ("Token key=nnn; activate|merge, etc",
+     choices: Entity ("Entity key=nnn"), Value ("Token key=nnn; activate|merge, etc",
      Domain ("{10 20 30} | [15 25]"), or Close ("Close").
   4. Method:4 - The selected views should open and scroll to the appropriate
      highlighted nodes for the decision key value to be viewed.

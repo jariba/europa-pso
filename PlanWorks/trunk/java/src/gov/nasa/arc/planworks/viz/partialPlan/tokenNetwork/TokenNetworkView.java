@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.69 2004-08-25 18:41:03 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.70 2004-08-26 20:51:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -202,7 +202,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     this.viewSet = (PartialPlanViewSet) viewSet;
     focusNodeId = null;
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
-    jGoView = new TokenNetworkJGoView();
+    jGoView = new TokenNetworkJGoView( this);
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -340,8 +340,8 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     tokenNodeMap = new HashMap();
     ruleInstanceNodeMap = new HashMap();
 
+    rootTokens = getRootTokens();
     if (state == null) {
-      rootTokens = getRootTokens();
       renderRootTokens();
     }
     setState( state);
@@ -453,9 +453,11 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 
       isLayoutNeeded = false;
     }
+    removeStepButtons( jGoView);
+    addStepButtons( jGoView);
 
-    System.err.println( "redrawView: focusNode " + focusNode + " highlightPathNodesList " +
-                        highlightPathNodesList);
+//     System.err.println( "redrawView: focusNode " + focusNode + " highlightPathNodesList " +
+//                         highlightPathNodesList);
     if ((focusNode == null) && (highlightPathNodesList != null)) {
       NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
     } else if (focusNode != null) {
@@ -820,15 +822,36 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
    * <code>TokenNetworkJGoView</code> - subclass JGoView to add doBackgroundClick
    *
    */
-  class TokenNetworkJGoView extends JGoView {
+  public class TokenNetworkJGoView extends JGoView {
 
+    private TokenNetworkView tokenNetworkView;
     /**
      * <code>TokenNetworkJGoView</code> - constructor 
      *
      */
-    public TokenNetworkJGoView() {
+    public TokenNetworkJGoView( final TokenNetworkView tokenNetworkView) {
       super();
+      this.tokenNetworkView = tokenNetworkView;
     }
+
+    /**
+     * <code>resetOpenNodes</code> - reset the nodes bounding rectangles highlight width
+     *                               to the current zoom factor
+     *
+     */
+    public final void resetOpenNodes() {
+      int penWidth = tokenNetworkView.getOpenJGoPenWidth( tokenNetworkView.getZoomFactor());
+      Iterator tokenNetworkNodeItr = entityTokNetNodeMap.values().iterator();
+      while (tokenNetworkNodeItr.hasNext()) {
+        ExtendedBasicNode tokenNetworkNode = (ExtendedBasicNode) tokenNetworkNodeItr.next();
+        if (tokenNetworkNode.areNeighborsShown()) {
+          tokenNetworkNode.setPen( new JGoPen( JGoPen.SOLID, penWidth,
+                                            ColorMap.getColor( "black")));
+        }
+        // force links to be redrawn to eliminate gaps when changing zoom factor
+        tokenNetworkNode.setLocation( tokenNetworkNode.getLocation());
+      }
+    } // end resetOpenNodes
 
     /**
      * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
@@ -916,7 +939,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
             ((PartialPlanViewSet) TokenNetworkView.this.getViewSet()).getActiveToken();
           if (activeToken != null) {
             boolean isByKey = false;
-            findAndSelectToken( activeToken, isByKey);
+            findAndSelectNode( activeToken.getId(), isByKey);
           }
         }
       });
@@ -974,25 +997,29 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
         MDIInternalFrame dialogWindowFrame = null;
         if (partialPlan.pathExists( rootToken, entityToFind.getId(), pathClasses)) {
           isFound = true;
+          disableEntityKeyPathDialog = true;
           invokeFindEntityPathClasses( rootToken.getId(), entityToFind.getId(),
                                        pathClasses, doPathExists, maxPathLength,
                                        dialogWindowFrame);
           break;
         }
       }
-      if (! isFound) {
+      if (isFound) {
+        isFound = waitForFindAndSelectNode( entityToFind, entityIsToken);
+      }
+      if (! isFound){
         if (entityIsToken) {
           String message = "Token " + tokenToFind.getPredicateName() +
             " (key=" + tokenToFind.getId().toString() + ") not found.";
           JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                         "Token Not Found in TokenNetworkView",
+                                         "Token Not Currrently Found in TokenNetworkView",
                                          JOptionPane.ERROR_MESSAGE);
           System.err.println( message);
         } else {
           String message = "RuleInstance 'rule " + ruleInstanceToFind.getRuleId() +
             "' (key=" + ruleInstanceToFind.getId().toString() + ") not found.";
           JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                         "RuleInstance Not Found in TokenNetworkView",
+                                         "RuleInstance Not Currrently Found in TokenNetworkView",
                                          JOptionPane.ERROR_MESSAGE);
           System.err.println( message);
         }
@@ -1000,9 +1027,43 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     }
   } // end findAndSelectNode
 
+  private boolean waitForFindAndSelectNode( PwEntity entityToFind, boolean entityIsToken) {
+    boolean isFound = true;
+    if (entityIsToken) {
+      TokenNetworkTokenNode tokenNode = null;
+      while ((tokenNode =
+              (TokenNetworkTokenNode) tokenNodeMap.get( entityToFind.getId())) == null) {
+        try {
+          Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
+        }
+        catch (InterruptedException ie) {}
+        // System.err.println( "waitForFindAndSelectNode: tokenNode " + entityToFind.getId());
+      }
+      if (! tokenNode.isVisible()) {
+        isFound = false;
+      }
+    } else {
+      TokenNetworkRuleInstanceNode ruleInstanceNode = null;
+      while ((ruleInstanceNode = (TokenNetworkRuleInstanceNode) ruleInstanceNodeMap.get
+              ( entityToFind.getId())) == null) {
+        try {
+          Thread.currentThread().sleep( ViewConstants.WAIT_INTERVAL);
+        }
+        catch (InterruptedException ie) {}
+        // System.err.println( "waitForFindAndSelectNode: ruleInstanceNode " +
+        //                     entityToFind.getId());
+      }
+      if (! ruleInstanceNode.isVisible()) {
+        isFound = false;
+      }
+    }
+    return isFound;
+  } // end waitForFindAndSelectNode
+
   private void createFindEntityPathItem( JMenuItem findEntityPathItem) {
     findEntityPathItem.addActionListener( new ActionListener() {
 	public void actionPerformed( ActionEvent evt) {
+          disableEntityKeyPathDialog = false;
           MDIInternalFrame twoEntityKeysWindow = 
             PlanWorks.getPlanWorks().createFrame( "Find Path in " + viewFrame.getTitle(),
                                                   getViewSet(), true, true, false, false);
@@ -1127,7 +1188,8 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     while (tokenNodeListItr.hasNext()) {
       TokenNetworkTokenNode tokenNode = (TokenNetworkTokenNode) tokenNodeListItr.next();
       if ((tokenNode.getToken() != null) &&
-          (tokenNode.getToken().getId().equals( tokenToFind.getId()))) {
+          (tokenNode.getToken().getId().equals( tokenToFind.getId())) &&
+          tokenNode.isVisible()) {
         System.err.println( "TokenNetworkView found token: " +
                             tokenToFind.getPredicateName() +
                             " (key=" + tokenToFind.getId().toString() + ")");
@@ -1171,7 +1233,8 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
       TokenNetworkRuleInstanceNode ruleInstanceNode =
         (TokenNetworkRuleInstanceNode) ruleInstanceNodeListItr.next();
       if ((ruleInstanceNode.getRuleInstance() != null) &&
-          (ruleInstanceNode.getRuleInstance().getId().equals( ruleInstanceToFind.getId()))) {
+          (ruleInstanceNode.getRuleInstance().getId().equals( ruleInstanceToFind.getId())) &&
+          ruleInstanceNode.isVisible()) {
         System.err.println( "TokenNetworkView found ruleInstance: rule " +
                             ruleInstanceToFind.getRuleId() +
                             " (key=" + ruleInstanceToFind.getId().toString() + ")");

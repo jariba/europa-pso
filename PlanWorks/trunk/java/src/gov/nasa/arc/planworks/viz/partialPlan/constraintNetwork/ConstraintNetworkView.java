@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.86 2004-08-25 18:41:01 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.87 2004-08-26 20:51:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1925,7 +1925,8 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
     while (contNodeListItr.hasNext()) {
       VariableContainerNode contNode = (VariableContainerNode) contNodeListItr.next();
       if ((contNode.getContainer() != null) &&
-	  (contNode.getContainer().getId().equals( contToFind.getId()))) {
+	  (contNode.getContainer().getId().equals( contToFind.getId())) &&
+          contNode.isVisible()) {
 	System.err.println( "ConstraintNetworkView found container: " +
 			    contToFind.getName() +
 			    " (key=" + contToFind.getId().toString() + ")");
@@ -1947,7 +1948,7 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
       String message = "Token " + contToFind.getName() +
 	" (key=" + contToFind.getId().toString() + ") not available.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-				     "Token Not Found in ConstraintNetworkView",
+				     "Token Not Currrently Found in ConstraintNetworkView",
 				     JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
     }

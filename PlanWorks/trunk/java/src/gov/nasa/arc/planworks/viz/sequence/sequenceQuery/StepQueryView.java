@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.13 2004-08-10 21:17:12 taylor Exp $
+// $Id: StepQueryView.java,v 1.14 2004-08-26 20:51:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -386,7 +386,8 @@ public class StepQueryView extends SequenceView {
         keyString = ViewConstants.QUERY_CONSTRAINT_KEY_HEADER;
       } else if (query.indexOf( "Token") >= 0) {
         keyString = ViewConstants.QUERY_TOKEN_KEY_HEADER;
-      } else if (query.indexOf( "Variable") >= 0) {
+      } else if ((query.indexOf( "Variable") >= 0) ||
+                 (query.indexOf( "Restrictions") >= 0)) {
         keyString = ViewConstants.QUERY_VARIABLE_KEY_HEADER;
       }
       JMenuItem transByKeyItem = new JMenuItem( "Find Transaction by " + keyString);

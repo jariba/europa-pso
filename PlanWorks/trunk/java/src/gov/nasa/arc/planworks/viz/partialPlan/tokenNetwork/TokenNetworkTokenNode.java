@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNetworkTokenNode.java,v 1.3 2004-08-25 18:41:03 taylor Exp $
+// $Id: TokenNetworkTokenNode.java,v 1.4 2004-08-26 20:51:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -410,7 +410,13 @@ public class TokenNetworkTokenNode extends ExtendedBasicNode
     return (areNodesChanged || areLinksChanged);
   } // end addTokenObjects
 
-  private boolean removeTokenObjects( final TokenNetworkTokenNode tokenNetworkTokenNode) {
+  /**
+   * <code>removeTokenObjects</code>
+   *
+   * @param tokenNetworkTokenNode - <code>TokenNetworkTokenNode</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  protected boolean removeTokenObjects( final TokenNetworkTokenNode tokenNetworkTokenNode) {
     boolean areLinksChanged = false;
     boolean isParentLinkChanged =
       TokenNetworkGenerics.removeParentToEntityTokNetLinks( tokenNetworkTokenNode,

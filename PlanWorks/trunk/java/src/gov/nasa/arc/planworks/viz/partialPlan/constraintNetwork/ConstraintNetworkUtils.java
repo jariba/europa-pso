@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ConstraintNetworkUtils.java,v 1.9 2004-08-25 18:41:01 taylor Exp $
+// $Id: ConstraintNetworkUtils.java,v 1.10 2004-08-26 20:51:25 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -114,22 +114,30 @@ public final class ConstraintNetworkUtils {
             MDIInternalFrame navFrame = view.openNavigatorViewFrame( viewSetKey);
             Container contentPane = navFrame.getContentPane();
             PwPartialPlan partialPlan = view.getPartialPlan();
-            Class [] constructorParams = {
-              // node.getClass(), 
-              Class.forName("gov.nasa.arc.planworks.viz.nodes.VariableContainerNode"),
-              Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"), 
-              Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet"),
-              viewSetKey.getClass(),
-              navFrame.getClass()
-            };
-            Class navClass = Class.
-              forName("gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView");
-            Constructor navConstructor = navClass.getConstructor(constructorParams);
-            Object [] constructorArgs = {node, partialPlan, view.getViewSet(), viewSetKey,
-                                         navFrame};
-            contentPane.add((NavigatorView)navConstructor.newInstance(constructorArgs));
-            //contentPane.add(new NavigatorView(node, partialPlan, view.getViewSet(),
-            //viewSetKey, navFrame));
+            if (node instanceof VariableContainerNode) {
+              Class [] constructorParams = {
+                // node.getClass(), 
+                Class.forName("gov.nasa.arc.planworks.viz.nodes.VariableContainerNode"),
+                Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"), 
+                Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet"),
+                viewSetKey.getClass(),
+                navFrame.getClass()
+              };
+              Class navClass = Class.
+                forName("gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView");
+              Constructor navConstructor = navClass.getConstructor(constructorParams);
+              Object [] constructorArgs = {node, partialPlan, view.getViewSet(), viewSetKey,
+                                           navFrame};
+              contentPane.add((NavigatorView)navConstructor.newInstance(constructorArgs));
+            } else if (node instanceof ConstraintNode) {
+              contentPane.add(new NavigatorView( ((ConstraintNode) node).getConstraint(),
+                                                 partialPlan, view.getViewSet(),
+                                                 viewSetKey, navFrame));
+            } else if (node instanceof VariableNode) {
+              contentPane.add(new NavigatorView( ((VariableNode) node).getVariable(),
+                                                 partialPlan, view.getViewSet(),
+                                                 viewSetKey, navFrame));
+            }
           }
           catch(Exception e) {
             e.printStackTrace();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.58 2004-08-21 00:31:57 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.59 2004-08-26 20:51:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1016,7 +1016,7 @@ public class TemporalExtentView extends PartialPlanView  {
       String message = "Token " + tokenToFind.getPredicateName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                     "Token Not Found in TemporalExtentView",
+                                     "Token Not Currrently Found in TemporalExtentView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
     }
