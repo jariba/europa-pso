@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIInternalFrame.java,v 1.4 2003-06-16 22:32:14 miatauro Exp $
+// $Id: MDIInternalFrame.java,v 1.5 2003-06-30 21:20:38 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -222,6 +222,41 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
     windowBar.add(button);
     addInternalFrameListener(new MDIInternalFrameListener(this, windowBar, menuBar));
   }
+
+  /**
+   * Creates a resizable, closable MDIInternalFrame with the given title and tells the MDIMenu and
+   * MDIWindowBar that it exists.
+   * @param title The displayed title of the window
+   * @param menuBar The menu bar onto which any associated menus will be drawn.
+   * @param windowBar The bar that will contain a button associated with this frame such that
+   *                  clicking on it will select the frame.
+   * @param resizable The boolean value of the frame's resizable attribute.
+   * @param closable The boolean value of the frame's closable attribute.
+   * @param maximizable The boolean value of the frame's maximizable attribute.
+   * @param iconifiable The boolean value of the frame's iconifiable attribute.
+   */  
+  public MDIInternalFrame(String title, MDIMenu menuBar, MDIWindowBar windowBar, 
+                          MDIWindowBar viewSet, boolean resizable, boolean closable,
+                          boolean maximizable, boolean iconifiable) {
+    super(title, resizable, closable, maximizable, iconifiable);
+    button = new JButton(title);
+    final MDIInternalFrame temp = this;
+    button.addActionListener(new ActionListener()
+      {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            if(temp.isIcon()) {
+              temp.setIcon(false);
+            }
+            temp.setSelected(true);
+          }
+          catch(PropertyVetoException pve){}
+        }
+      });
+    button.setToolTipText(title);
+    windowBar.add(button);
+    addInternalFrameListener(new MDIInternalFrameListener(this, windowBar, menuBar, viewSet));
+  }
   /**
    * Associates a menu with this frame.
    * @param menu The menu to associate.
@@ -301,6 +336,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
   class MDIInternalFrameListener implements InternalFrameListener {
     private MDIInternalFrame frame = null;
     private MDIWindowBar windowBar = null;
+    private MDIWindowBar viewSet = null;
     private MDIMenu menu = null;
     
     /**
@@ -314,6 +350,20 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
       this.windowBar = windowBar;
       this.menu = menu;
     }
+    /**
+     * Creates the MDIInternalFrameListener.
+     * @param frame The MDIInternalFrame on which this listener listens.
+     * @param windowBar The MDIWindowButtonBar on the MDIDesktopFrame.
+     * @param menu The MDIDynamicWindowBar on the MDIDesktopFrame
+     */
+    public MDIInternalFrameListener(MDIInternalFrame frame, MDIWindowBar windowBar, MDIMenu menu,
+                                    MDIWindowBar viewSet) {
+      this.frame = frame;
+      this.windowBar = windowBar;
+      this.menu = menu;
+      this.viewSet = viewSet;
+    }
+
     /**
      * Handles the closing of the frames children.
      */
@@ -345,6 +395,9 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
      */
     public void internalFrameClosed(InternalFrameEvent e){
       windowBar.notifyDeleted(frame);
+      if(viewSet != null) {
+        viewSet.notifyDeleted(frame);
+      }
     }
     public void internalFrameDeactivated(InternalFrameEvent e) {}
     public void internalFrameDeiconified(InternalFrameEvent e) {}
