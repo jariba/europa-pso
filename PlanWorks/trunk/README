@@ -4,19 +4,24 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.15 2003-07-24 20:57:10 taylor Exp $
+# $Id: README,v 1.16 2003-08-06 01:20:12 taylor Exp $
 #
 
 SUMMARY
 =======
-Milestone 4 adds the Temporal Extent View.  It also automatically
-expands the three view internal frame windows to display their
-content, without scrolling.
-
+Milestone 5 adds the Constraint Network View. Because of its
+complexity, initially only the token nodes are displayed.  They
+are mouse clickable: left, display and layout the token's
+variable and constraint nodes; right, remove the token's
+variable and constraint nodes.  The automatic expansion of the 
+four view internal frame windows, now restricts the expansion
+to the size of the enclosing PlanWorks frame.  The Content
+Specification processor now filters time intervals, as well as
+tokens, and predicates.  
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_4 PlanWorks
+> cvs co -r PW_M_5 PlanWorks
 
 
 PREREQUISITES
@@ -82,6 +87,10 @@ Default target: planWorks
 
 PREVIOUS MILESTONES
 ===================
+24july 03:Milestone 4 adds the Temporal Extent View.  It also automatically
+expands the three view internal frame windows to display their
+content, without scrolling.
+
 17july03: Milestone 3 changes the backend data base content from XML accessed by
 eXist using XPATH, to MySQL.  This results in a performance improvement 
 of at least a factor of 3, and much simpler and quicker data

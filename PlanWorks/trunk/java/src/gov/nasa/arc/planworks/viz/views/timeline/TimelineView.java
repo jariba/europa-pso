@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.26 2003-07-30 00:38:42 taylor Exp $
+// $Id: TimelineView.java,v 1.27 2003-08-06 01:20:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -41,7 +41,6 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
@@ -49,7 +48,6 @@ import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
-import gov.nasa.arc.planworks.util.ViewRenderingException;
 
 /**
  * <code>TimelineView</code> - render a partial plan's timelines and slots
@@ -245,11 +243,9 @@ public class TimelineView extends VizView {
         x = ViewConstants.TIMELINE_VIEW_X_INIT;
         slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        TimelineNode timelineNode = null;
         String timelineName = timeline.getName();
-        Integer timelineKey = timeline.getKey();
         String timelineNodeName = objectName + " : " + timelineName;
-        timelineNode =
+        TimelineNode timelineNode =
           new TimelineNode( timelineNodeName, timeline, new Point( x, y),
                             objectCnt, this);
         tmpTimelineNodeList.add( timelineNode);
@@ -270,11 +266,13 @@ public class TimelineView extends VizView {
     List freeTokenList = partialPlan.getFreeTokenList();
     // System.err.println( "freeTokenList " + freeTokenList);
     Iterator freeTokenItr = freeTokenList.iterator();
-    boolean isFreeToken = true; objectCnt = -1;
+    boolean isFreeToken = true, isDraggable = false;
+    objectCnt = -1;
     while (freeTokenItr.hasNext()) {
       TokenNode freeTokenNode = new TokenNode( (PwToken) freeTokenItr.next(),
                                                new Point( x, y), objectCnt,
-                                               isFreeToken, this);
+                                               isFreeToken, isDraggable,
+                                               viewName, this);
       freeTokenNodeList.add( freeTokenNode);
       jGoDocument.addObjectAtTail( freeTokenNode);
       x += freeTokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;

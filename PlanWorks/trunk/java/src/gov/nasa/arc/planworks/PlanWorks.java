@@ -4,10 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.36 2003-07-30 00:38:40 taylor Exp $
+// $Id: PlanWorks.java,v 1.37 2003-08-06 01:20:12 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -141,7 +142,7 @@ public class PlanWorks extends MDIDesktopFrame {
       }
     }
     this.setVisible( true);
-    
+
     setProjectMenuEnabled( "Create ...", true);
     setProjectMenuEnabled( "Add Sequence ...", false);
     if ((PwProject.listProjects() != null) && (PwProject.listProjects().size() > 0)) {
@@ -1015,6 +1016,7 @@ public class PlanWorks extends MDIDesktopFrame {
         }
       });
   } // end createDirectoryChooser
+
 
   /**
    * <code>isMacOSX</code>

@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.21 2003-07-30 00:38:40 taylor Exp $
+# $Id: build-tags-file.csh,v 1.22 2003-08-06 01:20:12 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -48,6 +48,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/db/impl/PwTokenRelationImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwTransactionImpl.java \
     src/gov/nasa/arc/planworks/db/impl/PwVariableImpl.java \
+    src/gov/nasa/arc/planworks/db/util/ContentSpec.java \
     src/gov/nasa/arc/planworks/db/util/FileUtils.java \
     src/gov/nasa/arc/planworks/mdi/EmptyDesktopIconUI.java \
     src/gov/nasa/arc/planworks/mdi/MDIDesktopFrame.java \
@@ -70,14 +71,15 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
     src/gov/nasa/arc/planworks/viz/ViewConstants.java \
     src/gov/nasa/arc/planworks/viz/nodes/BasicNodeLink.java \
+    src/gov/nasa/arc/planworks/viz/nodes/BasicNodePortWDiamond.java \
     src/gov/nasa/arc/planworks/viz/nodes/ConstraintNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/SlotNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TemporalNode.java \
+    src/gov/nasa/arc/planworks/viz/nodes/TimelineBasicNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenLink.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/VariableNode.java \
-    src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpec.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ContentSpecChecker.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/RedrawNotifier.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/ViewManager.java \
@@ -98,12 +100,12 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineBox.java \
     src/gov/nasa/arc/planworks/viz/viewMgr/contentSpecWindow/TimelineGroupBox.java \
     src/gov/nasa/arc/planworks/viz/views/VizView.java \
+    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/views/constraintNetwork/ConstraintNetworkView.java \
-    src/gov/nasa/arc/planworks/viz/views/constraintNetwork/LayeredDigraphAutoLayout.java \
     src/gov/nasa/arc/planworks/viz/views/temporalExtent/TemporalExtentView.java \
     src/gov/nasa/arc/planworks/viz/views/timeline/TimelineView.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/LayeredDigraphAutoLayout.java \
-    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java
+    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkView.java \
+    src/gov/nasa/arc/planworks/viz/views/tokenNetwork/TokenNetworkLayout.java
 
 
 echo "Writing `pwd`/planWorks.TAGS"
