@@ -1,0 +1,76 @@
+# 
+# * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+# * information on usage and redistribution of this file, 
+# * and for a DISCLAIMER OF ALL WARRANTIES. 
+# 
+
+# $Id: README,v 1.6 2003-06-19 20:57:31 taylor Exp $
+#
+
+SUMMARY
+=======
+Milestone 2 integates the Multiple Document Interface (MDI) for window
+management, project management (creating, saving, opening and deleting),
+and introduces the Content Specification functionality for filtering partial
+plan rendering in the user selected views, which is currently restricted
+to the Timeline View.
+
+
+CVS CHECKOUT
+============
+> cvs co -r PW_M_2 PlanWorks
+
+
+PREREQUISITES
+=============
+Set environment varibles:
+  o JAVA_HOME - location of J2SDK >= 1.4.1
+    e.g. setenv JAVA_HOME /home/wtaylor/pub/j2sdk1.4.1_02
+
+  o ANT_HOME - location of Apache Ant 
+    e.g. setenv ANT_HOME <root>/PlanWorks/java/lib/apache-ant
+
+  o PATH - should include Ant 
+    e.g. tcsh: set path = ($path <root>/PlanWorks/java/lib/apache-ant/bin)
+
+  o OSTYPE - linux, solaris, or darwin (MacOS)
+    should be set by user's standard environment
+
+  o USER - user's account name, used in defining the data base collection
+    should be set by user's standard environment
+
+
+BUILDING & RUNNING PLANWORKS
+============================
+> ant # default is to run the current general test case with
+      # compilation of all PlanWorks Java source as a dependency.
+
+> ant -projecthelp # lists available targets
+
+ cleanCls          -- delete the 'java/classes' directory tree
+ cleanDb           -- delete loaded projects from data base, unless -Dno.clean.db=yes
+ compile           -- compile 'java/src' tree into 'java/classes' tree
+ existTest         -- prototyping test (compile, cleanDb dependencies)
+ planWorks         -- run PlanWorks application (compile dependency)
+ planWorksProf     -- run PlanWorks with profiling info
+ timelineViewTest  -- JFCunit test (compile, cleanDb dependencies)
+
+Default target: planWorks
+
+
+DEVELOPING PLANWORKS
+====================
+Supports Emacs/XEmacs with JDE integrated development environment
+http://jde.sunsite.dk/    # version 2.3.2
+
+Additional Required environment varibles:
+  o JDE_HOME - location of JDE 
+    e.g. setenv JDE_HOME /home/wtaylor/pub/jde/jde-2.3.2
+  o PLANWORKS_ROOT - directory pathname of this file
+    e.g. setenv PLANWORKS_ROOT /home/wtaylor/PlanWorksProject/PlanWorks
+
+used by PlanWorks/java/prj.el -- JDE configuration file
+
+Other files used by  Emacs/XEmacs/JDE:
+  PlanWorks/java/build-tags-file.csh
+  PlanWorks/java/planWorks.TAGS

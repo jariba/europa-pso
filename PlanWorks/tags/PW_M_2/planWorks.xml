@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!-- $Id: planWorks.xml,v 1.4 2003-06-17 22:19:02 taylor Exp $ -->
+<project name="planWorks" default="launch" basedir=".">
+<target name="launch" depends="totalbuild">
+        <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
+	<property name="arg_gcInit" value="192"/>
+	<property name="arg_gcMax" value="975"/>
+	<property name="name.application" value="PlanWorks -- Plan Visualization"/>
+	<property environment="env"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/JGo.jar"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/JGoLayout.jar"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/Classier.jar"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+                <pathelement location="${exist.home}/exist.jar"/>
+                <fileset dir="${exist.home}/lib/core" includes="*.jar"/>
+	</path>
+
+	<java dir="${planworks.root}/java/src" 
+                classname="gov.nasa.arc.planworks.PlanWorks" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dexist.initdb=true"/>
+            <jvmarg value="-Dexist.home=${exist.home}"/>
+            <jvmarg value="-Dexist.conf.file=${exist.conf.file}"/>
+            <jvmarg value="-Ddefault.project.dir=${default.project.dir}"/>
+            <jvmarg value="-Dprojects.xml.data.dir=${projects.xml.data.dir}"/>
+            <jvmarg value="-Dprojects.xml.data.pathname=${projects.xml.data.pathname}"/>
+            <jvmarg value="-Dxml.dtd.pathname=${xml.dtd.pathname}"/>
+            <arg value="${name.application}"/>
+	</java>
+
+</target>
+
+<target name="planWorksProf" depends="totalbuild">
+        <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
+	<property name="arg_gcInit" value="192"/>
+	<property name="arg_gcMax" value="975"/>
+	<property environment="env"/>
+	<property name="name.application" value="PlanWorks -- Plan Visualization"/>
+	<property environment="env"/>
+
+	<path id="planworks.jars">
+		<pathelement path="${planworks.root}/java/classes"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/JGo.jar"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/JGoLayout.jar"/>
+		<pathelement location="${planworks.root}/java/lib/JGo/Classier.jar"/>
+		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+                <pathelement location="${exist.home}/exist.jar"/>
+                <fileset dir="${exist.home}/lib/core" includes="*.jar"/>
+	</path>
+
+	<java dir="${planworks.root}/java/src" 
+                classname="gov.nasa.arc.planworks.PlanWorks" fork="true">
+            <classpath refid="planworks.jars"/>
+            <jvmarg value="-verbose:gc"/>
+            <jvmarg value="-Xms${arg_gcInit}m"/>
+            <jvmarg value="-Xmx${arg_gcMax}m"/>
+<!--	    <jvmarg
+value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.txt,depth=0"/>
+-->
+	    <jvmarg value="-Xprof"/>
+            <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+            <jvmarg value="-Duser=${env.USER}"/>
+            <jvmarg value="-Dexist.initdb=true"/>
+            <jvmarg value="-Dexist.home=${exist.home}"/>
+            <jvmarg value="-Dexist.conf.file=${exist.conf.file}"/>
+            <jvmarg value="-Ddefault.project.dir=${default.project.dir}"/>
+            <jvmarg value="-Dprojects.xml.data.dir=${projects.xml.data.dir}"/>
+            <jvmarg value="-Dprojects.xml.data.pathname=${projects.xml.data.pathname}"/>
+            <jvmarg value="-Dxml.dtd.pathname=${xml.dtd.pathname}"/>
+            <arg value="${name.application}"/>
+	</java>
+</target>
+
+<target name="totalbuild" description="conditionally build class files">
+	<ant dir="./java"/>
+</target>
+</project>

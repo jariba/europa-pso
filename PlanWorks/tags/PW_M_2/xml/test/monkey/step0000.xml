@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE PartialPlan SYSTEM '../../dtd/PlanDb.dtd'>
+
+<PartialPlan key="K1" model="monkey.ddl">
+	<Object key="K2" name="Monkey1">
+		<Timeline key="K3" name="LOCATION_SV">
+			<Slot key="K6">
+<!--AT{ROCK}-->
+				<Token key="K19" isValueToken="Y" predicateId="K32" startVarId="K55" endVarId="K56" durationVarId="K102" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K97" paramVarIds="K81" slotId="K6" />
+			</Slot>
+			<Slot key="K7">
+<!--GOING{ROCK, TREE}-->
+				<Token key="K20" isValueToken="Y" predicateId="K33" startVarId="K57" endVarId="K58" durationVarId="K103" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K96 K97 K98" paramVarIds="K81 K82" slotId="K7" />
+			</Slot>
+			<Slot key="K8">
+<!--AT{TREE}-->
+				<Token key="K21" isValueToken="Y" predicateId="K32" startVarId="K59" endVarId="K60" durationVarId="K102" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K88 K90 K94 K96" paramVarIds="K82" slotId="K8" />
+			</Slot>
+			<Slot key="K9">
+<!--GOING{TREE, ROCK}-->
+				<Token key="K22" isValueToken="Y" predicateId="K33" startVarId="K61" endVarId="K62" durationVarId="K103" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K89 K90 K91" paramVarIds="K82 K81" slotId="K9" />
+			</Slot>
+			<Slot key="K10">
+<!--AT{ROCK}-->
+				<Token key="K23" isValueToken="Y" predicateId="K32" startVarId="K63" endVarId="K64" durationVarId="K102" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K89" paramVarIds="K81" slotId="K10" />
+			</Slot>
+		</Timeline>
+		<Timeline key="K4" name="ALTITUDE_SV">
+			<Slot key="K11">
+<!--LOW-->
+				<Token key="K24" isValueToken="Y" predicateId="K34" startVarId="K65" endVarId="K66" durationVarId="K-1" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K87 K98" paramVarIds="K-2" slotId="K11" />
+			</Slot>
+			<Slot key="K12">
+<!--CLIMBING-->
+				<Token key="K25" isValueToken="Y" predicateId="K36" startVarId="K67" endVarId="K68" durationVarId="K106" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K86 K87 K88" paramVarIds="K-2" slotId="K12" />
+			</Slot>
+			<Slot key="K13">
+<!--HIGH-->
+				<Token key="K26" isValueToken="Y" predicateId="K35" startVarId="K69" endVarId="K70" durationVarId="K104" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K85 K86 K95" paramVarIds="K-2" slotId="K13" />
+			</Slot>
+			<Slot key="K14">
+<!--CLIMBING_DOWN-->
+				<Token key="K27" isValueToken="Y" predicateId="K37" startVarId="K71" endVarId="K72" durationVarId="K107" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K84 K85" paramVarIds="K-2" slotId="K14" />
+			</Slot>
+			<Slot key="K15">
+<!--LOW-->
+				<Token key="K28" isValueToken="Y" predicateId="K34" startVarId="K73" endVarId="K74" durationVarId="K105" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K84 K91" paramVarIds="K-2" slotId="K15" />
+			</Slot>
+		</Timeline>
+		<Timeline key="K5" name="BANANA_SV">
+			<Slot key="K16">
+<!--NOT_HAVE_BANANA-->
+				<Token key="K29" isValueToken="Y" predicateId="K39" startVarId="K75" endVarId="K76" durationVarId="K99" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K93" paramVarIds="K-2" slotId="K16" />
+			</Slot>
+			<Slot key="K17">
+<!--GRABBING_BANANA-->
+				<Token key="K30" isValueToken="Y" predicateId="K41" startVarId="K77" endVarId="K78" durationVarId="K101" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K92 K93 K94 K95" paramVarIds="K-2" slotId="K17" />
+			</Slot>
+			<Slot key="K18">
+<!--HAVE_BANANA-->
+				<Token key="K31" isValueToken="Y" predicateId="K40" startVarId="K79" endVarId="K80" durationVarId="K100" objectVarId="K2" rejectVarId="K83" tokenRelationIds="K92" paramVarIds="K-2" slotId="K18" />
+			</Slot>
+		</Timeline>
+	</Object>
+<!--AT(ROCK) START-->
+	<Variable key="K55" type="START_VAR" constraintIds="K-1" paramId="K-2">
+		<EnumeratedDomain><![CDATA[0]]></EnumeratedDomain>
+	</Variable>
+<!--AT(ROCK) END-->
+	<Variable key="K56" type="END_VAR" constraintIds="K108" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="1" upperBound="177" />
+	</Variable>
+<!--GOING(ROCK,TREE) START-->
+	<Variable key="K57" type="START_VAR" constraintIds="K108" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="1" upperBound="177" />
+	</Variable>
+<!--GOING(ROCK,TREE) END-->
+	<Variable key="K58" type="END_VAR" constraintIds="K109" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="6" upperBound="182" />
+	</Variable>
+<!--AT(TREE) START-->
+	<Variable key="K59" type="START_VAR" constraintIds="K109" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="6" upperBound="182" />
+	</Variable>
+<!--AT(TREE) END-->
+	<Variable key="K60" type="END_VAR" constraintIds="K110" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="18" upperBound="194" />
+	</Variable>
+<!--GOING(TREE,ROCK) START-->
+	<Variable key="K61" type="START_VAR" constraintIds="K110" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="18" upperBound="194" />
+	</Variable>
+<!--GOING(TREE,ROCK) END-->
+	<Variable key="K62" type="END_VAR" constraintIds="K111" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="23" upperBound="199" />
+	</Variable>
+<!--AT(ROCK) START-->
+	<Variable key="K63" type="START_VAR" constraintIds="K111" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="23" upperBound="199" />
+	</Variable>
+<!--AT(ROCK) END-->
+	<Variable key="K64" type="END_VAR" constraintIds="K-1" paramId="K-2">
+		<EnumeratedDomain><![CDATA[200]]></EnumeratedDomain>
+	</Variable>
+<!--LOW START-->
+	<Variable key="K65" type="START_VAR" constraintIds="K-1" paramId="K-2">
+		<EnumeratedDomain><![CDATA[0]]></EnumeratedDomain>
+	</Variable>
+<!--LOW END-->
+	<Variable key="K66" type="END_VAR" constraintIds="K112" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="6" upperBound="182" />
+	</Variable>
+<!--CLIMBING START-->
+	<Variable key="K67" type="START_VAR" constraintIds="K112" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="6" upperBound="182" />
+	</Variable>
+<!--CLIMBING END-->
+	<Variable key="K68" type="END_VAR" constraintIds="K113" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="16" upperBound="192" />
+	</Variable>
+<!--HIGH START-->
+	<Variable key="K69" type="START_VAR" constraintIds="K113" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="16" upperBound="192" />
+	</Variable>
+<!--HIGH END-->
+	<Variable key="K70" type="END_VAR" constraintIds="K114" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="17" upperBound="193" />
+	</Variable>
+<!--CLIMBING_DOWN START-->
+	<Variable key="K71" type="START_VAR" constraintIds="K114" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="17" upperBound="193" />
+	</Variable>
+<!--CLIMBING_DOWN END-->
+	<Variable key="K72" type="END_VAR" constraintIds="K115" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="18" upperBound="194" />
+	</Variable>
+<!--LOW START-->
+	<Variable key="K73" type="START_VAR" constraintIds="K115" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="18" upperBound="194" />
+	</Variable>
+<!--LOW END-->
+	<Variable key="K74" type="END_VAR" constraintIds="K-1" paramId="K-2">
+		<EnumeratedDomain><![CDATA[200]]></EnumeratedDomain>
+	</Variable>
+<!--NOT_HAVE_BANANA START-->
+	<Variable key="K75" type="START_VAR" constraintIds="K-2" paramId="K-2">
+		<EnumeratedDomain><![CDATA[0]]></EnumeratedDomain>
+	</Variable>
+<!--NOT_HAVE_BANANA END-->
+	<Variable key="K76" type="END_VAR" constraintIds="K116" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="16" upperBound="192" />
+	</Variable>
+<!--GRABBING_BANANA START-->
+	<Variable key="K77" type="START_VAR" constraintIds="K116" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="16" upperBound="192" />
+	</Variable>
+<!--GRABBING_BANANA END-->
+	<Variable key="K78" type="END_VAR" constraintIds="K117" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="17" upperBound="193" />
+	</Variable>
+<!--HAVE_BANANA START-->
+	<Variable key="K79" type="START_VAR" constraintIds="K117" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="17" upperBound="193" />
+	</Variable>
+<!--HAVE_BANANA END-->
+	<Variable key="K80" type="START_VAR" constraintIds="K-1" paramId="K-2">
+		<EnumeratedDomain><![CDATA[200]]></EnumeratedDomain>
+	</Variable>
+	<Variable key="K81" type="PARAMETER_VAR" constraintIds="K-1" paramId="K-2">
+		<EnumeratedDomain><![CDATA[ROCK]]></EnumeratedDomain>
+	</Variable>
+	<Variable key="K82" type="PARAMETER_VAR" constraintIds="K-1" paramId="K-2">
+		<EnumeratedDomain><![CDATA[TREE]]></EnumeratedDomain>
+	</Variable>
+	<Variable key="K83" type="REJECT_VAR" constraintIds="K-1" paramId="K-2">
+		<EnumeratedDomain><![CDATA[True]]></EnumeratedDomain>
+	</Variable>
+	<Variable key="K99" type="DURATION_VAR" constraintIds="K-2" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="1" upperBound="_plus_infinity_"/>
+	</Variable>
+	<Variable key="K100" type="DURATION_VAR" constraintIds="K-1" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="1" upperBound="_plus_infinity_"/>
+	</Variable>
+	<Variable key="K101" type="DURATION_VAR" constraintIds="K-1" paramId="K-2">
+		<EnumeratedDomain><![CDATA[1 2]]></EnumeratedDomain>
+	</Variable>
+	<Variable key="K102" type="DURATION_VAR" constraintIds="K-1" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="1" upperBound="_plus_infinity_" />
+	</Variable>
+	<Variable key="K103" type="DURATION_VAR" constraintIds="K-1" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="5" upperBound="_plus_infinity_" />
+	</Variable>
+	<Variable key="K104" type="DURATION_VAR" constraintIds="K-1" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="1" upperBound="_plus_infinity_" />
+	</Variable>
+	<Variable key="K105" type="DURATION_VAR" constraintIds="K-1" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="1" upperBound="_plus_infinity_" />
+	</Variable>
+	<Variable key="K106" type="DURATION_VAR" constraintIds="K-1" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="10" upperBound="_plus_infinity_" />
+	</Variable>
+	<Variable key="K107" type="DURATION_VAR" constraintIds="K-1" paramId="K-2">
+		<IntervalDomain type="INTEGER_SORT" lowerBound="1" upperBound="_plus_infinity_" />
+	</Variable>
+	<Constraint key="K108" type="TEMPORAL" name="eq" variableIds="K56 K57" />
+	<Constraint key="K109" type="TEMPORAL" name="eq" variableIds="K58 K59" />
+	<Constraint key="K110" type="TEMPORAL" name="eq" variableIds="K60 K61" />
+	<Constraint key="K111" type="TEMPORAL" name="eq" variableIds="K62 K63" />
+	<Constraint key="K112" type="TEMPORAL" name="eq" variableIds="K66 K67" />
+	<Constraint key="K113" type="TEMPORAL" name="eq" variableIds="K68 K69" />
+	<Constraint key="K114" type="TEMPORAL" name="eq" variableIds="K70 K71" />
+	<Constraint key="K115" type="TEMPORAL" name="eq" variableIds="K72 K73" />
+	<Constraint key="K116" type="TEMPORAL" name="eq" variableIds="K76 K77" />
+	<Constraint key="K117" type="TEMPORAL" name="eq" variableIds="K78 K79" /> 
+	<Constraint key="K-1" type="TEMPORAL" name="eq" variableIds="K78 K79" /> 
+	<TokenRelation key="K84" masterToken="K28" slaveToken="K27" />	
+	<TokenRelation key="K85" masterToken="K27" slaveToken="K26" />	
+	<TokenRelation key="K86" masterToken="K26" slaveToken="K25" />	
+	<TokenRelation key="K87" masterToken="K25" slaveToken="K24" />	
+	<TokenRelation key="K88" masterToken="K25" slaveToken="K21" />	
+	<TokenRelation key="K89" masterToken="K23" slaveToken="K22" />	
+	<TokenRelation key="K90" masterToken="K22" slaveToken="K21" />	
+	<TokenRelation key="K91" masterToken="K22" slaveToken="K28" />	
+	<TokenRelation key="K92" masterToken="K31" slaveToken="K30" />	
+	<TokenRelation key="K93" masterToken="K30" slaveToken="K29" />	
+	<TokenRelation key="K94" masterToken="K30" slaveToken="K21" />	
+	<TokenRelation key="K95" masterToken="K30" slaveToken="K26" />
+	<TokenRelation key="K96" masterToken="K21" slaveToken="K20" />	
+	<TokenRelation key="K97" masterToken="K20" slaveToken="K19" />	
+	<TokenRelation key="K98" masterToken="K20" slaveToken="K24" />	
+	<Predicate key="K32" name="At">
+		<Parameter key="K52" name="Loc_Label" />
+	</Predicate>
+	<Predicate key="K33" name="Going">
+		<Parameter key="K53" name="From_Loc" />
+		<Parameter key="K54" name="To_Loc" />
+	</Predicate>
+	<Predicate key="K34" name="LOW" />
+	<Predicate key="K35" name="HIGH" />
+	<Predicate key="K36" name="CLIMBING" />
+	<Predicate key="K37" name="CLIMBING_DOWN" />
+	<Predicate key="K38" name="NO_BANANA" />
+	<Predicate key="K39" name="NOT_HAVE_BANANA" />
+	<Predicate key="K40" name="HAVE_BANANA" />
+	<Predicate key="K41" name="GRABBING_BANANA" />
+	<Predicate key="K-3" name="DUMMY">
+                <Parameter key="K-2" name="PARAM" />
+	</Predicate>
+</PartialPlan>
