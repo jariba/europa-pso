@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleNode.java,v 1.2 2003-12-31 01:02:26 taylor Exp $
+// $Id: RuleNode.java,v 1.3 2004-01-12 19:46:34 taylor Exp $
 //
 // PlanWorks
 //
@@ -40,7 +40,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.nodes.BasicNodeWDiamond;
+import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 
@@ -54,7 +54,7 @@ import gov.nasa.arc.planworks.viz.sequence.SequenceView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class RuleNode extends BasicNodeWDiamond {
+public class RuleNode extends ExtendedBasicNode {
 
   protected String paramName;
   protected String paramValue;
@@ -65,7 +65,7 @@ public class RuleNode extends BasicNodeWDiamond {
 
   public RuleNode( String paramName, String paramValue, String ruleName, Point ruleLocation,
                         Color backgroundColor, SequenceView sequenceView) {
-    super();
+    super(ViewConstants.DIAMOND);
     this.paramName = paramName;
     this.paramValue = paramValue;
     this.ruleName = ruleName;

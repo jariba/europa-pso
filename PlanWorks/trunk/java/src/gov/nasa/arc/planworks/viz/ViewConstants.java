@@ -150,34 +150,16 @@ public interface ViewConstants {
   public static final boolean TIMELINE_VIEW_IS_TEXT_EDITABLE = false;
 
   /**
-   * constant <code>EVEN_OBJECT_TIMELINE_BG_COLOR</code>
-   *
-   */
-  public static final String EVEN_OBJECT_TIMELINE_BG_COLOR = "cornflowerBlue";
-
-  /**
-   * constant <code>EVEN_OBJECT_SLOT_BG_COLOR</code>
-   *
-   */
-  public static final String EVEN_OBJECT_SLOT_BG_COLOR = "skyBlue";
-
-  /**
-   * constant <code>ODD_OBJECT_TIMELINE_BG_COLOR</code>
-   *
-   */
-  public static final String ODD_OBJECT_TIMELINE_BG_COLOR = "aquamarine3";
-
-  /**
-   * constant <code>ODD_OBJECT_SLOT_BG_COLOR</code>
-   *
-   */
-  public static final String ODD_OBJECT_SLOT_BG_COLOR = "paleGreen";
-
-  /**
    * constant <code>FREE_TOKEN_BG_COLOR</code>
    *
    */
   public static final String FREE_TOKEN_BG_COLOR = "lightGray";
+
+  /**
+   * constant <code>OBJECT_BG_COLOR</code>
+   *
+   */
+  public static final String OBJECT_BG_COLOR = "white";
 
   /**
    * constant <code>EMPTY_SLOT_WIDTH</code>
@@ -298,5 +280,14 @@ public interface ViewConstants {
   public static final String QUERY_VARIABLE_KEY_HEADER =      "VAR_KEY"; 
   public static final String QUERY_VARIABLE_NAME_HEADER =     "   VARIABLE_NAME  "; 
   public static final String QUERY_VARIABLE_STEP_NUM_HEADER = "  STEP  ";
+
+  // Extended BasicNode Shapes for viz/nodes/ExtendedBasicNode
+
+  public static final int RECTANGLE = 0;
+  public static final int ELLIPSE = 1;
+  public static final int DIAMOND = 2;
+  public static final int LEFT_TRAPEZOID = 3;
+  public static final int RIGHT_TRAPEZOID = 4;
+  public static final int HEXAGON = 5;
 
 } // end ViewConstants

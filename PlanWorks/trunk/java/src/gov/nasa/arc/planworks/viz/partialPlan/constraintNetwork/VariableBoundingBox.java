@@ -1,9 +1,19 @@
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: VariableBoundingBox.java,v 1.8 2004-01-12 19:46:24 taylor Exp $
+//
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+
+import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 
 /*
   VERTICAL LAYOUT:
@@ -113,7 +123,20 @@ public class VariableBoundingBox {
     if(!varNode.isVisible()) {
       return;
     }
+    if(constraintNodes.size() > varNode.getConstraintNodeList().size()) {
+      System.err.println("Too many constraint nodes in var node " + varNode);
+      System.err.println("box:  " + constraintNodes.size());
+      System.err.println("node: " + varNode.getConstraintNodeList());
+    }
+    if(constraintNodes.size() < varNode.getConstraintNodeList().size()) {
+      //constraintNodes = new LinkedList(varNode.getConstraintNodeList());
+      ListIterator constrNodeIterator = varNode.getConstraintNodeList().listIterator();
+      while(constrNodeIterator.hasNext()) {
+        addConstraint((ConstraintNode)constrNodeIterator.next());
+      }
+    }
     createNecessaryNodes();
+
     if(layout.layoutHorizontal()) {
       positionHorizontal(pos);
     }

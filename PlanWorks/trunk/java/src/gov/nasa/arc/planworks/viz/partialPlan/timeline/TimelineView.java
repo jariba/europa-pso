@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.26 2004-01-09 20:43:22 miatauro Exp $
+// $Id: TimelineView.java,v 1.27 2004-01-12 19:46:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -309,7 +309,8 @@ public class TimelineView extends PartialPlanView {
           Color timelineColor =
             ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
           TimelineNode timelineNode =
-            new TimelineNode( timelineLabel, timeline, new Point( x, y), timelineColor);
+            new TimelineNode( timelineLabel, timeline, object, new Point( x, y),
+                              timelineColor, this);
           tmpTimelineNodeList.add( timelineNode);
           // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
           jGoDocument.addObjectAtTail( timelineNode);
@@ -699,6 +700,12 @@ public class TimelineView extends PartialPlanView {
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
+    if (areThereNavigatorWindows()) {
+      mouseRightPopup.addSeparator();
+      JMenuItem discardWindowsItem = new JMenuItem( "Close Navigator Views");
+      createDiscardNavigatorWindowsItem( discardWindowsItem);
+      mouseRightPopup.add( discardWindowsItem);
+    }
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);

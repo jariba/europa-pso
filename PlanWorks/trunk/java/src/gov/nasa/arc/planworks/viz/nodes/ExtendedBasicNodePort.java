@@ -3,11 +3,11 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodePortWDiamond.java,v 1.3 2003-12-13 00:40:55 taylor Exp $
+// $Id: ExtendedBasicNodePort.java,v 1.1 2004-01-12 19:46:20 taylor Exp $
 //
 // PlanWorks
 //
-// Will Taylor -- started 05aug03
+// Will Taylor -- started 05jan04
 //
 
 package gov.nasa.arc.planworks.viz.nodes;
@@ -20,34 +20,43 @@ import com.nwoods.jgo.JGoDrawable;
 import com.nwoods.jgo.JGoEllipse;
 import com.nwoods.jgo.JGoRectangle;
 
-// PlanWorks/java/lib/com/nwoods/jgo/examples/Diamond.class
+// PlanWorks/java/lib/com/nwoods/jgo/examples/*.class
+// source /home/wtaylor/pub/JGo41/com/nwoods/jgo/examples/*.java
 import com.nwoods.jgo.examples.Diamond;
+import com.nwoods.jgo.examples.LeftTrapezoid;
+import com.nwoods.jgo.examples.RightTrapezoid;
+import com.nwoods.jgo.examples.Hexagon;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
 import com.nwoods.jgo.examples.BasicNodePort;
 
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.sequence.modelRules.ParamNode;
 
 
 /**
- * <code>BasicNodePortWDiamond</code> - subclass BasicNodePort to handle Diamond
+ * <code>ExtendedBasicNodePort</code> - subclass BasicNodePort to handle
+ *                                      ExtendedBasicNode
  *             Object->JGoObject->JGoDrawable->JGoPort->BasicNodePort
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class BasicNodePortWDiamond extends BasicNodePort {
+public class ExtendedBasicNodePort extends BasicNodePort {
 
+  private int nodeType;
 
   /**
-   * <code>BasicNodePortWDiamond</code> - constructor 
+   * <code>ExtendedBasicNodePort</code> - constructor 
    *
    */
-  public BasicNodePortWDiamond() {
+  public ExtendedBasicNodePort( int nodeType) {
     super();
+    this.nodeType = nodeType;
   }
 
   /**
@@ -80,14 +89,19 @@ public class BasicNodePortWDiamond extends BasicNodePort {
       if (node.isRectangular()) {
         JGoRectangle.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                   rect.height, x, y, cx, cy, p);
-      }
-      if (node instanceof ConstraintNode) {
+      } else if (node instanceof ConstraintNode) {
         ((Diamond) ((ConstraintNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
+        //         ((LeftTrapezoid) ((ConstraintNode) node).getDrawable()).
+        //           getNearestIntersectionPoint( x, y, cx, cy, p);
+        //         ((RightTrapezoid) ((ConstraintNode) node).getDrawable()).
+        //           getNearestIntersectionPoint( x, y, cx, cy, p);
+        //         ((Hexagon) ((ConstraintNode) node).getDrawable()).
+        //           getNearestIntersectionPoint( x, y, cx, cy, p);
       } else if (node instanceof ParamNode) {
         ((Diamond) ((ParamNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
-      } else {
+      } else  if (node instanceof VariableNode) {
         JGoEllipse.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                 rect.height, x, y, p);
       }
@@ -97,4 +111,4 @@ public class BasicNodePortWDiamond extends BasicNodePort {
 
 
 
-} // end class BasicNodePortWDiamond
+} // end class ExtendedBasicNodePort

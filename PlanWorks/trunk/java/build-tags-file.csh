@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.51 2003-12-31 01:02:20 taylor Exp $
+# $Id: build-tags-file.csh,v 1.52 2004-01-12 19:46:12 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -12,6 +12,10 @@ if ( "`/bin/uname -s`" == "SunOS" ) then # SUN-OS OR SOLARIS
 endif
 
 etags $etags_flag planWorks.TAGS \
+    ../../../pub/JGo41/com/nwoods/jgo/examples/Diamond.java \
+    ../../../pub/JGo41/com/nwoods/jgo/examples/Hexagon.java \
+    ../../../pub/JGo41/com/nwoods/jgo/examples/LeftTrapezoid.java \
+    ../../../pub/JGo41/com/nwoods/jgo/examples/RightTrapezoid.java \
     src/gov/nasa/arc/planworks/AddSequenceThread.java \
     src/gov/nasa/arc/planworks/CreateSequenceViewThread.java \
     src/gov/nasa/arc/planworks/CreateViewThread.java \
@@ -115,8 +119,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/ViewGenerics.java \
     src/gov/nasa/arc/planworks/viz/VizView.java \
     src/gov/nasa/arc/planworks/viz/VizViewOverview.java \
-    src/gov/nasa/arc/planworks/viz/nodes/BasicNodePortWDiamond.java \
-    src/gov/nasa/arc/planworks/viz/nodes/BasicNodeWDiamond.java \
+    src/gov/nasa/arc/planworks/viz/nodes/BasicNodeLink.java \
+    src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNodePort.java \
+    src/gov/nasa/arc/planworks/viz/nodes/ExtendedBasicNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/HistogramElement.java \
     src/gov/nasa/arc/planworks/viz/nodes/NodeGenerics.java \
     src/gov/nasa/arc/planworks/viz/nodes/QueryResultField.java \
@@ -130,17 +135,24 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenu.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenuItem.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewSet.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/BasicNodeLink.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewState.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetwork.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkTokenNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNetworkViewState.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/ConstraintNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/NewConstraintNetworkLayout.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/TokenBoundingBox.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableBoundingBox.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/constraintNetwork/VariableNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/ModelClassNavNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/NavigatorViewLayout.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/SlotNavNode.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/navigator/TimelineNavNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentView.java \
+    src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalExtentViewState.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNode.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNodeDurationBridge.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/temporalExtent/TemporalNodeTimeMark.java \

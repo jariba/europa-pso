@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.8 2004-01-07 23:02:21 miatauro Exp $
+// $Id: VariableNode.java,v 1.9 2004-01-12 19:46:24 taylor Exp $
 //
 // PlanWorks
 //
@@ -37,6 +37,9 @@ import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
+import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 
@@ -50,7 +53,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class VariableNode extends BasicNode {
+public class VariableNode extends ExtendedBasicNode {
 
   private static final boolean IS_FONT_BOLD = false;
   private static final boolean IS_FONT_UNDERLINED = false;
@@ -90,7 +93,7 @@ public class VariableNode extends BasicNode {
   public VariableNode( PwVariable variable, TokenNode tokenNode, Point variableLocation, 
                        Color backgroundColor, boolean isFreeToken, boolean isDraggable,
                        PartialPlanView partialPlanView) { 
-    super();
+    super( ViewConstants.ELLIPSE);
     this.variable = variable;
     this.isFreeToken = isFreeToken;
     this.partialPlanView = partialPlanView;
@@ -120,9 +123,8 @@ public class VariableNode extends BasicNode {
 
   private final void configure( Point variableLocation, Color backgroundColor,
                                 boolean isDraggable) {
-    boolean isRectangular = false;
     setLabelSpot( JGoObject.Center);
-    initialize( variableLocation, nodeLabel, isRectangular);
+    initialize( variableLocation, nodeLabel);
     setBrush( JGoBrush.makeStockBrush( backgroundColor));  
     getLabel().setEditable( false);
     setDraggable( isDraggable);

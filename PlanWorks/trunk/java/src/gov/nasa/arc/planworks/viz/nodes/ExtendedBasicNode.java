@@ -3,11 +3,11 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodeWDiamond.java,v 1.1 2003-12-13 00:40:55 taylor Exp $
+// $Id: ExtendedBasicNode.java,v 1.1 2004-01-12 19:46:19 taylor Exp $
 //
 // PlanWorks
 //
-// Will Taylor -- started 08dec03
+// Will Taylor -- started 05jan04
 //
 
 package gov.nasa.arc.planworks.viz.nodes;
@@ -21,40 +21,46 @@ import com.nwoods.jgo.JGoEllipse;
 import com.nwoods.jgo.JGoPort;
 import com.nwoods.jgo.JGoRectangle;
 
-// PlanWorks/java/lib/com/nwoods/jgo/examples/Diamond.class
+// PlanWorks/java/lib/JGo/com/nwoods/jgo/examples/*.class
+// source /home/wtaylor/pub/JGo41/com/nwoods/jgo/examples/*.java
 import com.nwoods.jgo.examples.Diamond;
+import com.nwoods.jgo.examples.LeftTrapezoid;
+import com.nwoods.jgo.examples.RightTrapezoid;
+import com.nwoods.jgo.examples.Hexagon;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
 import com.nwoods.jgo.examples.BasicNodePort;
 
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.sequence.modelRules.ParamNode;
 
 
 /**
- * <code>BasicNodeWDiamond</code> - subclass BasicNode to handle Diamond
+ * <code>ExtendedBasicNode</code> - subclass BasicNode to handle Diamond,
+ *                                  LeftTrapezoid, RightTrapezoid, Triangle
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class BasicNodeWDiamond extends BasicNode {
+public class ExtendedBasicNode extends BasicNode {
 
 
-  private boolean isDiamond;
+  private int nodeType;
 
   /**
-   * <code>BasicNodeWDiamond</code> - constructor 
+   * <code>ExtendedBasicNode</code> - constructor 
    *
    */
-  public BasicNodeWDiamond() {
+  public ExtendedBasicNode( int nodeType) {
     super();
-    isDiamond = true;
+    this.nodeType = nodeType;
   }
 
    /**
-   * <code>initialize</code> - modified from BasicNode to handle Diamond node shape
+   * <code>initialize</code> - modified from BasicNode to handle other node shapes
    *
    * @param loc - <code>Point</code> - 
    * @param labeltext - <code>String</code> - 
@@ -84,7 +90,7 @@ public class BasicNodeWDiamond extends BasicNode {
     // create a Port, which knows how to make sure
     // connected JGoLinks have a reasonable end point
     // myPort = new BasicNodePort();
-    myPort = new BasicNodePortWDiamond();
+    myPort = new ExtendedBasicNodePort( nodeType);
     myPort.setSize(7, 7);
     if (getLabelSpot() == Center) {
       getPort().setStyle(JGoPort.StyleHidden);
@@ -102,18 +108,24 @@ public class BasicNodeWDiamond extends BasicNode {
 
 
   /**
-   * <code>createDrawable</code> - modified from BasicNode to handle Diamond node shape
+   * <code>createDrawable</code> - modified from BasicNode to handle other node shapes
    *
    * @return - <code>JGoDrawable</code> - 
    */
   public JGoDrawable createDrawable() {
-    JGoDrawable d;
-    if (isRectangular()) {
+    JGoDrawable d = null;
+    if (nodeType == ViewConstants.RECTANGLE) {
       d = new JGoRectangle();
-    } else if (isDiamond) {
-      d = new Diamond();
-    } else {
+    } else if (nodeType == ViewConstants.ELLIPSE) {
       d = new JGoEllipse();
+    } else if (nodeType == ViewConstants.DIAMOND) {
+      d = new Diamond();
+    } else if (nodeType == ViewConstants.LEFT_TRAPEZOID) {
+      d = new LeftTrapezoid();
+    } else if (nodeType == ViewConstants.RIGHT_TRAPEZOID) {
+      d = new RightTrapezoid();
+    } else if (nodeType == ViewConstants.HEXAGON) {
+      d = new Hexagon();
     }
     d.setSelectable(false);
     d.setDraggable(false);
@@ -123,4 +135,6 @@ public class BasicNodeWDiamond extends BasicNode {
 
 
 
-} // end class BasicNodeWDiamond
+} // end class ExtendedBasicNode
+  
+ 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.80 2003-12-22 21:41:07 miatauro Exp $
+// $Id: PlanWorks.java,v 1.81 2004-01-12 19:46:15 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -92,7 +92,8 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String TEMPORAL_NETWORK_VIEW   = "Temporal Network View";
   public static final String TIMELINE_VIEW           = "Timeline View";
   public static final String TOKEN_NETWORK_VIEW      = "Token Network View";
-  public static final String TRANSACTION_VIEW      = "Transaction View";
+  public static final String TRANSACTION_VIEW        = "Transaction View";
+  public static final String NAVIGATOR_VIEW          = "Navigator View";
   public static final List PARTIAL_PLAN_VIEW_LIST;
 
   public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
@@ -129,6 +130,9 @@ public class PlanWorks extends MDIDesktopFrame {
     viewClassNameMap.put
       ( TRANSACTION_VIEW,
         "gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView");
+//     viewClassNameMap.put
+//       ( NAVIGATOR_VIEW,
+//         "gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView");
 
     viewClassNameMap.put
       ( SEQUENCE_STEPS_VIEW,
@@ -143,6 +147,8 @@ public class PlanWorks extends MDIDesktopFrame {
     PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
     PARTIAL_PLAN_VIEW_LIST.add( TRANSACTION_VIEW);
+    // not in list, since it is created from nodes in views, not from other views
+    // PARTIAL_PLAN_VIEW_LIST.add( NAVIGATOR_VIEW);
 
     SEQUENCE_VIEW_LIST = new ArrayList();
     SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);
