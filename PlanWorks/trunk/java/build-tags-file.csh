@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.76 2004-08-05 00:24:19 taylor Exp $
+# $Id: build-tags-file.csh,v 1.77 2004-08-05 03:30:16 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -149,6 +149,7 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
     src/gov/nasa/arc/planworks/viz/AskQueryEntityKey.java \
+    src/gov/nasa/arc/planworks/viz/AskQueryTwoEntityKeys.java \
     src/gov/nasa/arc/planworks/viz/NodeShapes.java \
     src/gov/nasa/arc/planworks/viz/OverviewToolTip.java \
     src/gov/nasa/arc/planworks/viz/StringViewSetKey.java \

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.75 2004-08-05 00:24:26 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.76 2004-08-05 03:30:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -38,6 +38,7 @@ import com.nwoods.jgo.JGoArea;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
+import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoView;
 
@@ -60,6 +61,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.SwingWorker;
+import gov.nasa.arc.planworks.viz.AskQueryTwoEntityKeys;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
@@ -1577,6 +1579,10 @@ public class ConstraintNetworkView extends PartialPlanView {
       createNodeByKeyItem( tokenByKeyItem);
       mouseRightPopup.add( tokenByKeyItem);
 
+      JMenuItem findVariablePathItem = new JMenuItem( "Find Variable Path");
+      createFindVariablePathItem( findVariablePathItem);
+      mouseRightPopup.add( findVariablePathItem);
+
       constraintNetworkView.createOpenViewItems( partialPlan, partialPlanName, planSequence,
                                                  mouseRightPopup, viewListenerList,
                                                  ViewConstants.CONSTRAINT_NETWORK_VIEW);
@@ -1709,6 +1715,68 @@ public class ConstraintNetworkView extends PartialPlanView {
         });
     }
 
+    private void createFindVariablePathItem( JMenuItem findVariablePathItem) {
+      findVariablePathItem.addActionListener( new ActionListener() {
+          public void actionPerformed(ActionEvent evt) {
+	    List variableNodeList = new ArrayList( variableNodeMap.values());
+	    AskQueryTwoEntityKeys twoKeysDialog =
+	      new AskQueryTwoEntityKeys( "Enter Ids for Find Variable Path", "variable",
+					 "start variable key (int)", "variable",
+					 "end variable key (int)", partialPlan);
+          Integer variableKey1 = twoKeysDialog.getEntityKey1();
+          Integer variableKey2 = twoKeysDialog.getEntityKey2();
+	  // System.err.println( "createFindVariablePathItem: variableKey1 " +
+	  // 		      variableKey1 + " variableKey2 " + variableKey2);
+	  List varConstrKeyList = partialPlan.getVariablePath( variableKey1, variableKey2);
+	  List nodeList = new ArrayList();
+	  Iterator vcItr = varConstrKeyList.iterator();
+	  boolean doRedraw = false, isVariableOpened = true;
+	  PwVariable variableToFind = null; PwConstraint constraintToFind = null;
+	  while (vcItr.hasNext()) {
+	    Integer vcKey = (Integer) vcItr.next();
+	    // System.err.println( "key " + vcKey);
+	    if ((variableToFind = partialPlan.getVariable( vcKey)) != null) {
+	      if (! findAndSelectVariable( variableToFind, doRedraw)) {
+		JOptionPane.showMessageDialog
+		  ( PlanWorks.getPlanWorks(), "variable key '" + vcKey + " is not found",
+		    "Find Variable Path Error", JOptionPane.ERROR_MESSAGE);
+		break;
+	      }
+	      // open variable
+	      VariableNode variableNode = (VariableNode) variableNodeMap.get( vcKey);
+	      nodeList.add( variableNode);
+	      variableNode.addVariableNodeContainersAndConstraints( variableNode,
+								    ConstraintNetworkView.this);
+	      variableNode.setAreNeighborsShown( true);
+	      
+	    } else if ((constraintToFind = partialPlan.getConstraint( vcKey)) != null) {
+	      if (! findAndSelectConstraint( constraintToFind, isVariableOpened)) {
+		JOptionPane.showMessageDialog
+		  ( PlanWorks.getPlanWorks(), "constraint key '" + vcKey + " is not found",
+		    "Find Variable Path Error", JOptionPane.ERROR_MESSAGE);
+		break;
+	      }
+	      ConstraintNode constraintNode = (ConstraintNode) constraintNodeMap.get( vcKey);
+	      nodeList.add( constraintNode);
+	    } else {
+	      JOptionPane.showMessageDialog
+		( PlanWorks.getPlanWorks(), "partial plan key '" + vcKey + " is not handled",
+		  "Find Variable Path Error", JOptionPane.ERROR_MESSAGE);
+	      break;
+	    }
+	    // MAJOR KLUDGE -- redraws must be synchronized 
+	    try{Thread.sleep(500);}catch(Exception e){}
+	  }
+	  JGoSelection selection = jGoView.getSelection();
+	  selection.clearSelection();
+	  Iterator nodeItr = nodeList.iterator();
+	  while (nodeItr.hasNext()) {
+	    selection.extendSelection( (JGoObject) nodeItr.next());
+	  }
+          }
+        });
+    } // end createFindVariablePathItem
+
     private void findAndSelectContainer( PwVariableContainer contToFind, boolean isByKey) {
       boolean isTokenFound = false;
       boolean isHighlightNode = true;
@@ -1819,8 +1887,8 @@ public class ConstraintNetworkView extends PartialPlanView {
       return isVariableFound;
     } // end findAndSelectVariable
 
-    private void findAndSelectConstraint( PwConstraint constraintToFind,
-                                          boolean isVariableOpened) {
+    private boolean findAndSelectConstraint( PwConstraint constraintToFind,
+					     boolean isVariableOpened) {
       boolean isConstraintFound = false, doRedraw = true, isHighlightNode = true;
       Iterator constraintNodeListItr = constraintNetworkView.getConstraintNodeList().iterator();
       while (constraintNodeListItr.hasNext()) {
@@ -1889,6 +1957,7 @@ public class ConstraintNetworkView extends PartialPlanView {
                                        JOptionPane.ERROR_MESSAGE);
         System.err.println( message);
       }
+      return isConstraintFound;
     } // end findAndSelectConstraint
 
     private VariableContainerNode getOpenContainerNode( VariableNode variableNode) {
