@@ -78,7 +78,8 @@ public class PlannerCommandLineDialog extends JDialog {
     gridBag.setConstraints(writeDest, c);
     contentPane.add(writeDest);
 
-    BrowseButton destButton = new BrowseButton(writeDest, false, JFileChooser.DIRECTORIES_ONLY);
+    BrowseButton destButton = new BrowseButton(writeDest, false, JFileChooser.DIRECTORIES_ONLY,
+                                               "Choose write destination ");
     c.gridx++;
     gridBag.setConstraints(destButton, c);
     contentPane.add(destButton);
@@ -94,7 +95,8 @@ public class PlannerCommandLineDialog extends JDialog {
     gridBag.setConstraints(plannerPath, c);
     contentPane.add(plannerPath);
 
-    BrowseButton pathButton = new BrowseButton(plannerPath, false, JFileChooser.DIRECTORIES_ONLY);
+    BrowseButton pathButton = new BrowseButton(plannerPath, false, JFileChooser.DIRECTORIES_ONLY,
+                                               "Choose planner path ");
     c.gridx++;
     gridBag.setConstraints(pathButton, c);
     contentPane.add(pathButton);
@@ -223,7 +225,8 @@ public class PlannerCommandLineDialog extends JDialog {
                                                dialog.getStepsPerWrite());
       thread.setPriority(Thread.MIN_PRIORITY);
       thread.start();
-      try {Thread.sleep(waitMillis);}
+
+      try {Thread.currentThread().sleep(waitMillis);}
       catch(Exception ex){System.err.println(ex); System.exit(-1);}
       try {
         String url = getNewSequenceUrl(dialog.getWriteDest(),
@@ -236,7 +239,8 @@ public class PlannerCommandLineDialog extends JDialog {
         PlanWorks.planWorks.addPlanSeqViewMenu(PlanWorks.planWorks.currentProject, planSeqMenu);
       }
       catch(Exception ex) {
-        System.err.println("Odd.  Bailing out: " + ex);  
+        System.err.println("Odd.  Bailing out: " + ex);
+        ex.printStackTrace();
         System.exit(-1);
       }
       dialog.hide();
@@ -257,7 +261,8 @@ public class PlannerCommandLineDialog extends JDialog {
           this.comp = comp;
         }
         public boolean accept(File dir, String name) {
-          return name.indexOf(comp) != -1;
+          File nameFile = new File( dir + System.getProperty( "file.separator") + name);
+          return (nameFile.isDirectory() && (name.indexOf(comp) != -1));
         }
       }
       /****END WEIRDLY SCOPED CLASS DEFINITION****/

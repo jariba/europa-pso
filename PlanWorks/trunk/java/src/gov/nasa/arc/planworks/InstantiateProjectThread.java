@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.6 2003-12-03 01:48:39 miatauro Exp $
+// $Id: InstantiateProjectThread.java,v 1.7 2003-12-15 18:40:21 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -128,7 +128,8 @@ public class InstantiateProjectThread extends Thread {
               break; // some sequences are valid
             }
           } else {
-            return null; // exit dialog
+            // return null; // exit dialog
+            break; // exit dialog with no sequences added - use New Sequence
           }
         } // end while
         project = PwProject.createProject( inputName);
@@ -144,13 +145,15 @@ public class InstantiateProjectThread extends Thread {
           PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
           PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         }
-        for (int i = 0, n = PlanWorks.planWorks.sequenceDirectories.length; i < n; i++) {
-          String sequenceDirectory = PlanWorks.planWorks.sequenceParentDirectory +
-            System.getProperty( "file.separator") +
-            PlanWorks.planWorks.sequenceDirectories[i].getName();
-          if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
-            System.err.println( "project.addPlanningSequence " + sequenceDirectory);
-            project.addPlanningSequence( sequenceDirectory);
+        if (PlanWorks.planWorks.sequenceDirectories != null) {
+          for (int i = 0, n = PlanWorks.planWorks.sequenceDirectories.length; i < n; i++) {
+            String sequenceDirectory = PlanWorks.planWorks.sequenceParentDirectory +
+              System.getProperty( "file.separator") +
+              PlanWorks.planWorks.sequenceDirectories[i].getName();
+            if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
+              System.err.println( "project.addPlanningSequence " + sequenceDirectory);
+              project.addPlanningSequence( sequenceDirectory);
+            }
           }
         }
 

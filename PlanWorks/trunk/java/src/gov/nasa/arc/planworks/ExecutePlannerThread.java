@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ExecutePlannerThread.java,v 1.5 2003-12-12 01:23:03 taylor Exp $
+// $Id: ExecutePlannerThread.java,v 1.6 2003-12-15 18:40:21 taylor Exp $
 //
 
 package gov.nasa.arc.planworks;
@@ -37,7 +37,8 @@ public class ExecutePlannerThread extends Thread {
       System.err.println("Done.  Returned value " + planner.exitValue() + ".\nExecution took " + (System.currentTimeMillis() - t1) + "ms");
     }
     catch(Exception e) {
-      System.err.println(e);
+      System.err.println( "ExecutePlannerThread failed: " + e);
+      e.printStackTrace();
       System.exit(-1);
     }
   }
