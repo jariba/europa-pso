@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.6 2003-09-11 18:19:10 taylor Exp $
+// $Id: FileUtils.java,v 1.7 2003-09-11 23:41:12 miatauro Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -78,6 +78,9 @@ public class FileUtils {
     String [] fileNames = new File( sequenceDirectory).list();
 //     System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
 //                         sequenceDirectory + "' numFiles " + fileNames.length);
+    if(fileNames == null) {
+      return false;
+    }
     for (int i = 0; i < fileNames.length; i++) {
       String fileName = fileNames[i];
       if ((! fileName.equals( "CVS")) &&

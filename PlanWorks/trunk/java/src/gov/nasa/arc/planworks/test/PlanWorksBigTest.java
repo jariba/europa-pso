@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksBigTest.java,v 1.3 2003-09-02 23:01:28 miatauro Exp $
+// $Id: PlanWorksBigTest.java,v 1.4 2003-09-11 23:41:29 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -73,7 +73,6 @@ public class PlanWorksBigTest extends JFCTestCase {
   private JMenu projectMenu;
   private JMenuBar menuBar;
   private PlanWorks planWorks;
-  
 
   /**
    * <code>PlanWorksTest</code> - constructor 
@@ -196,7 +195,13 @@ public class PlanWorksBigTest extends JFCTestCase {
       while(fileChooser == null);
       JButton okButton = null;
       okButton = (JButton) TestHelper.findComponent(JButton.class, fileChooser, 4);
-      fileChooser.setCurrentDirectory(new File(seqUrl));
+      //fileChooser.setCurrentDirectory(new File(seqUrl));
+      fileChooser.setCurrentDirectory(new File(seqUrl.substring(0, seqUrl.lastIndexOf(System.getProperty("file.separator")))));
+      //fileChooser.setSelectedFile(new File(seqUrl));
+      File [] temp = new File[1];
+      temp[0] = new File(seqUrl);
+      fileChooser.setSelectedFiles(temp);
+      System.err.println(fileChooser.getSelectedFile().getName());
       helper.enterClickAndLeave(new MouseEventData(this, okButton));
       first = false;
       viewTests(seqUrl);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: LogicComboBox.java,v 1.3 2003-06-16 18:51:09 miatauro Exp $
+// $Id: LogicComboBox.java,v 1.4 2003-09-11 23:41:56 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -23,7 +23,6 @@ import javax.swing.JComboBox;
 public class LogicComboBox extends JComboBox {
   public LogicComboBox() {
     addItem("");
-    addItem("AND");
     addItem("OR");
     setSize(58, 44);
   }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.17 2003-09-10 01:10:30 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.18 2003-09-11 23:41:55 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -85,17 +85,17 @@ public class ContentSpecWindow extends JPanel {
     gridBag.setConstraints(predicateGroup, c);
     add(predicateGroup);
 
-    timeIntervalGroup = new TimeIntervalGroupBox(window);
-    //c.gridx++;
-    c.gridy++;
-    gridBag.setConstraints(timeIntervalGroup, c);
-    add(timeIntervalGroup);
-
     timelineGroup = new TimelineGroupBox(window, timelineNames);
     //c.gridx = 0;
     c.gridy++;
     gridBag.setConstraints(timelineGroup, c);
     add(timelineGroup);
+
+    timeIntervalGroup = new TimeIntervalGroupBox(window);
+    //c.gridx++;
+    c.gridy++;
+    gridBag.setConstraints(timeIntervalGroup, c);
+    add(timeIntervalGroup);
 
     /*variableTypeGroup = new VariableTypeGroupBox(window);
     c.gridx++;
