@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
-<!-- $Id: planworks-test.xml,v 1.1 2003-07-08 22:57:32 taylor Exp $ -->
+<!-- $Id: planworks-test.xml,v 1.2 2003-07-12 01:36:30 taylor Exp $ -->
 <project name="planworks-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
-	<property name="name.application" value="PlanWorks -- Plan Visualization"/>
+	<property name="name.application" value="PlanWorks Plan Visualization"/>
 	<property environment="env"/>
 
 	<path id="planworks.jars">
@@ -38,6 +38,7 @@
 	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
             <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
             <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
+            <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
             <arg value="${name.application}"/>
 	</java>
 

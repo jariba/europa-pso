@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwEnumeratedDomainImpl.java,v 1.3 2003-05-18 00:02:25 taylor Exp $
+// $Id: PwEnumeratedDomainImpl.java,v 1.4 2003-07-12 01:36:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -70,7 +70,9 @@ public class PwEnumeratedDomainImpl extends PwDomainImpl implements PwEnumerated
       enumBuf.append( (String) enumeration.get(i));
       enumBuf.append( ", ");
     }
-    enumBuf.append( (String) enumeration.get(enumeration.size() - 1));
+    if (enumeration.size() > 0) {
+      enumBuf.append( (String) enumeration.get(enumeration.size() - 1));
+    }
     if (isSingleton) {
       enumBuf.append( "}");
     } else {

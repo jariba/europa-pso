@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.8 2003-07-07 17:30:23 taylor Exp $ -->
+<!-- $Id: planWorks.xml,v 1.9 2003-07-12 01:36:30 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 <target name="launch" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
 	<property name="arg_gcMax" value="975"/>
-	<property name="name.application" value="PlanWorks -- Plan Visualization"/>
+	<property name="name.application" value="PlanWorks Plan Visualization"/>
 	<property environment="env"/>
 
 	<path id="planworks.jars">

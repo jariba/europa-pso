@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.31 2003-07-11 01:22:19 taylor Exp $
+// $Id: PlanWorks.java,v 1.32 2003-07-12 01:36:30 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -93,18 +93,6 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public static PlanWorks planWorks;
 
-  /**
-   * variable <code>defaultProjectName</code> - make it accessible to JFCUnit tests
-   *
-   */
-  public static String defaultProjectName;
-
-  /**
-   * variable <code>defaultSequenceDirectory</code> - make it accessible to JFCUnit tests
-   *
-   */
-  public static String defaultSequenceDirectory;
-
   private static JMenu projectMenu;
   private final DirectoryChooser sequenceDirChooser;
   private static String sequenceDirectory; // pathname
@@ -168,16 +156,16 @@ public class PlanWorks extends MDIDesktopFrame {
   }
 
   /**
-   * <code>getDefaultProjectName</code>
+   * <code>setCurrentProjectName</code> - needed by PlanWorksTest (JFCUnit Test)
    *
-   * @return - <code>String</code> - 
+   * @param name - <code>String</code> - 
    */
-  public String getDefaultProjectName() {
-    return defaultProjectName;
+  public void setCurrentProjectName( String name) {
+    currentProjectName = name;
   }
 
   /**
-   * <code>getCurrentProject</code>
+   * <code>getCurrentProject</code> - needed by PlanWorksTest (JFCUnit Test)
    *
    * @return - <code>PwProject</code> - 
    */
@@ -186,7 +174,7 @@ public class PlanWorks extends MDIDesktopFrame {
   }
 
   /**
-   * <code>getViewManager</code>
+   * <code>getViewManager</code> - needed by PlanWorksTest (JFCUnit Test)
    *
    * @return - <code>ViewManager</code> - 
    */
@@ -195,12 +183,21 @@ public class PlanWorks extends MDIDesktopFrame {
   }
 
   /**
-   * <code>setPlanWorks</code> - needed by TimelineViewTest (JFCUnit Test)
+   * <code>setPlanWorks</code> - needed by PlanWorksTest (JFCUnit Test)
    *
    * @param planWorksInstance - <code>PlanWorks</code> - 
    */
   public static void setPlanWorks( PlanWorks planWorksInstance) {
     planWorks = planWorksInstance;
+  }
+
+  /**
+   * <code>getSequenceDirChooser</code> - needed by PlanWorksTest (JFCUnit Test)
+   *
+   * @return - <code>DirectoryChooser</code> - 
+   */
+  public DirectoryChooser getSequenceDirChooser() {
+    return sequenceDirChooser;
   }
 
   private List getProjectsLessCurrent() {
@@ -227,6 +224,17 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end setProjectMenuEnabled
 
+
+  /**
+   * <code>getUrlLeaf</code>
+   *
+   * @param seqUrl - <code>String</code> - 
+   * @return - <code>String</code> - 
+   */
+  public String getUrlLeaf( String seqUrl) {
+    int index = seqUrl.lastIndexOf( System.getProperty( "file.separator"));
+    return seqUrl.substring( index + 1);
+  }
 
   /**
    * <code>buildConstantMenus</code> - make it accessible to JFCUnit tests
@@ -345,7 +353,7 @@ public class PlanWorks extends MDIDesktopFrame {
         currentProjectName = inputName;
         currentSequenceDirectory = sequenceDirectory;
         System.err.println( "Create Project: " + currentProjectName);
-        this.setTitle( name + "  --  project: " + currentProjectName);
+        this.setTitle( name + " of Project =>  " + currentProjectName);
         setProjectMenuEnabled( "Delete ...", true);
         setProjectMenuEnabled( "Add Sequence ...", true);
         if (PwProject.listProjects().size() > 1) {
@@ -506,7 +514,7 @@ public class PlanWorks extends MDIDesktopFrame {
             project = PwProject.getProject( projectName);
             currentProjectName = projectName;
             System.err.println( "Open Project: " + currentProjectName);
-            this.setTitle( name + "  --  project: " + currentProjectName);
+            this.setTitle( name + " of Project =>  " + currentProjectName);
             if (getProjectsLessCurrent().size() == 0) {
               setProjectMenuEnabled( "Open ...", false);
             }
@@ -969,7 +977,8 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end class SeqPartPlanViewMenuItem
 
   private final void createDirectoryChooser() {
-    sequenceDirChooser.setCurrentDirectory( new File( defaultSequenceDirectory));
+    sequenceDirChooser.setCurrentDirectory
+      ( new File( System.getProperty( "default.sequence.dir")));
     sequenceDirChooser.setDialogTitle
       ( "Select Sequence Directory of Partial Plan Directory(ies)");
     sequenceDirChooser.getOkButton().addActionListener( new ActionListener()
@@ -991,11 +1000,6 @@ public class PlanWorks extends MDIDesktopFrame {
         }
       });
   } // end createDirectoryChooser
-
-  private String getUrlLeaf( String seqUrl) {
-    int index = seqUrl.lastIndexOf( System.getProperty( "file.separator"));
-    return seqUrl.substring( index + 1);
-  }
 
   /**
    * <code>isMacOSX</code>
@@ -1025,10 +1029,6 @@ public class PlanWorks extends MDIDesktopFrame {
     osType = System.getProperty("os.type");
     // System.err.println( "osType " + osType);
     planWorksRoot = System.getProperty( "planworks.root");
-    defaultProjectName = "";
-    defaultSequenceDirectory = "";
-    defaultProjectName = System.getProperty( "default.project.name");
-    defaultSequenceDirectory = System.getProperty( "default.sequence.dir");
 
     try {
       PwProject.initProjects();

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ProjectNameDialog.java,v 1.2 2003-07-02 19:17:22 taylor Exp $
+// $Id: ProjectNameDialog.java,v 1.3 2003-07-12 01:36:33 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -54,7 +54,7 @@ public class ProjectNameDialog extends JDialog {
     Object[] options = {btnString1, btnString2};
     // current value
     if (planWorks.getCurrentProjectName().equals( "")) {
-      textField.setText( planWorks.getDefaultProjectName());
+      textField.setText( System.getProperty( "default.project.name"));
     } else {
       textField.setText( planWorks.getCurrentProjectName());
     }

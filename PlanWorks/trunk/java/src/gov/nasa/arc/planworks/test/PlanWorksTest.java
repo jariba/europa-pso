@@ -4,12 +4,13 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.3 2003-07-10 00:39:07 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.4 2003-07-12 01:36:30 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
 import java.awt.Container;
 // import java.awt.event.KeyEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -69,6 +70,9 @@ public class PlanWorksTest extends JFCTestCase{
   private JFrame frame;
   private PlanWorks planWorks;
   private String testType;
+  private String projectName;
+  private String sequenceName;
+  private String partialPlanName;
 
   /**
    * <code>PlanWorksTest</code> - constructor 
@@ -96,16 +100,38 @@ public class PlanWorksTest extends JFCTestCase{
       System.err.println( rnfExcep);
       System.exit( -1);
     }
+
     planWorks = new PlanWorks( PlanWorks.buildConstantMenus());
     PlanWorks.setPlanWorks( planWorks);
-    /*
-      if (testType.equals( "create") || testType.equals( "open") || testType.equals("contentSpec")) {
-      CreateProjectTestCase
-      OpenProjectTestCase
-      } else {
-      throw new Exception( "setup: testType " + testType + " not handled");
-      }
-    */
+
+    planWorks.setCurrentProjectName( "");
+    // set proper test files
+    String[] args = {};
+    if ((testType.equals( "create")) || (testType.equals("contentSpec"))) {
+      // System.getProperty( "default.project.name")
+      // System.getProperty( "default.sequence.dir")
+      projectName = "test";
+      sequenceName = "sqlseq";
+      partialPlanName = "pp1";
+      System.setProperty( "default.project.name", projectName);
+      System.setProperty( "default.sequence.dir",
+                          System.getProperty( "planworks.test.data.dir") +
+                          System.getProperty( "file.separator") + sequenceName);
+    } else if (testType.equals( "planGen0")) {
+      projectName = "planGen0";
+      sequenceName = "seq0";
+      partialPlanName = "step0";
+      System.setProperty( "default.project.name", projectName);
+      System.setProperty( "default.sequence.dir",
+                          System.getProperty( "planworks.test.data.dir") +
+                          System.getProperty( "file.separator") + sequenceName);
+    } else {
+      throw new Exception( "setup: testType " + testType + " not handled"); 
+    }
+    planWorks.getSequenceDirChooser().setCurrentDirectory
+      ( new File( System.getProperty( "default.sequence.dir")));
+
+
     // Give a little extra time for the painting/construction
     Thread.currentThread().sleep(500);
     flushAWT();
@@ -131,6 +157,10 @@ public class PlanWorksTest extends JFCTestCase{
    */
   public void testCreateProject() throws Exception {
     System.err.println( "\n\nCreateProjectTestCase\n\n");
+    createProject();
+  } // end testCreateProject
+
+  private void createProject() throws Exception {
     awtSleep();
     Set windows = helper.getWindows();
     assertEquals("PlanWorks window failed to open", 1, windows.size());
@@ -149,8 +179,10 @@ public class PlanWorksTest extends JFCTestCase{
     assertTrue("Failed to get \"Project\" menu.", projectMenu.getText().equals("Project"));
     JMenuItem createItem = null;
     for(int i = 0; i < projectMenu.getItemCount(); i++) {
-      if(projectMenu.getItem(i).getText().equals("Create ...")) {
+      if ((projectMenu.getItem( i) != null) &&
+          (projectMenu.getItem(i).getText().equals("Create ..."))) {
         createItem = projectMenu.getItem(i);
+        break;
       }
     }
     assertNotNull("Failed to get \"Create ...\" item.", createItem);
@@ -158,58 +190,54 @@ public class PlanWorksTest extends JFCTestCase{
     helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
     helper.enterClickAndLeave(new MouseEventData(this, createItem));
 
-    String [] seqAndPlanNames = selectTimelineView();
-    TimelineView timelineView = getTimelineView( seqAndPlanNames);
-    validateTimelines( timelineView);
+    createProjectEnter();
 
-    seqAndPlanNames = selectTokenNetworkView();
+    String [] seqAndPlanNames = selectView( "Timeline");
+    // System.err.println( "\n\nGot to here 1\n\n");
+    TimelineView timelineView = getTimelineView( seqAndPlanNames);
+
+    if (testType.equals( "create")) {
+      validateMonkeyTimelines( timelineView);
+    } else if (testType.equals( "planGen0")) {
+      validatePlanGen0Timelines( timelineView);
+    }
+    seqAndPlanNames = selectView( "Token Network");
     TokenNetworkView tokenNetworkView = getTokenNetworkView( seqAndPlanNames);
 
     exitPlanWorks( menuBar);
   } // end testCreateProject
 
-  private String [] selectTimelineView() throws Exception {
-    // click enter on CreateProject dialog, which creates Partial Plan menu
+  private String [] selectView( String viewName) throws Exception {
+    // clicking enter on CreateProject or OpenProject dialog creates Partial Plan menu
     awtSleep();
     JMenu partialPlanMenu = null;
-    if (testType.equals( "create")) {
-      createProjectEnter();
-    } else if (testType.equals( "open") || testType.equals("contentSpec")) {
-      openProjectEnter();
-    } else {
-      throw new Exception( "selectTimelineView: testType " + testType + " not handled");
-    }
     partialPlanMenu = getPartialPlanMenu();
     assertNotNull( "Failed to get partialPlanMenu", partialPlanMenu);
     helper.enterClickAndLeave(new MouseEventData(this, partialPlanMenu));
     Thread.sleep( 1000);
-    // System.err.println( "\n\nGot to here 1\n\n");
     JMenu sequenceMenu = null;
     JMenu partialPlanSubMenu = null;
-    PlanWorks.SeqPartPlanViewMenuItem timelineViewItem = null;
-    String sequenceName = null;
-    String partialPlanName = null;
-    String seqUrl = null;
+    PlanWorks.SeqPartPlanViewMenuItem viewItem = null;
+    String menuSequenceName = null;
+    String menuPartialPlanName = null;
     found: for (int i = 0; i < partialPlanMenu.getItemCount(); i++) {
-      if (partialPlanMenu.getItem(i).getText().equals("sqlseq")) {
+      if (partialPlanMenu.getItem(i).getText().equals( sequenceName)) {
         sequenceMenu = (JMenu) partialPlanMenu.getItem(i);
-        assertNotNull( "Failed to get sequence \"sqlseq\"", sequenceMenu);
         helper.enterClickAndLeave(new MouseEventData(this, sequenceMenu));
         Thread.sleep( 1000);
-        sequenceName = partialPlanMenu.getItem(i).getText();
+        menuSequenceName = partialPlanMenu.getItem(i).getText();
         for (int j = 0; j < sequenceMenu.getItemCount(); j++) {
-          if (sequenceMenu.getItem(j).getText().equals("pp1")) {
+          if (sequenceMenu.getItem(j).getText().equals( partialPlanName)) {
             partialPlanSubMenu = (JMenu) sequenceMenu.getItem(j);
-            assertNotNull( "Failed to get partialPlan \"pp1\"", sequenceMenu);
             helper.enterClickAndLeave(new MouseEventData(this, partialPlanSubMenu));
             Thread.sleep( 1000);
-            partialPlanName = sequenceMenu.getItem(j).getText();
+            menuPartialPlanName = sequenceMenu.getItem(j).getText();
             for (int k = 0; k < partialPlanSubMenu.getItemCount(); k++) {
-              if (partialPlanSubMenu.getItem(k).getText().equals("Timeline")) {
-                timelineViewItem =
+              if (partialPlanSubMenu.getItem(k).getText().equals( viewName)) {
+                viewItem =
                   (PlanWorks.SeqPartPlanViewMenuItem) partialPlanSubMenu.getItem(k);
-                assertNotNull( "Failed to get view \"Timeline\"", sequenceMenu);
-                helper.enterClickAndLeave(new MouseEventData(this, timelineViewItem));
+                assertNotNull( "Failed to get view \"" + viewName + "\"", viewItem);
+                helper.enterClickAndLeave(new MouseEventData(this, viewItem));
                 break found;
               }
             }
@@ -217,63 +245,16 @@ public class PlanWorksTest extends JFCTestCase{
         }
       }
     }
-    assertNotNull("Failed to get any menu item.", timelineViewItem);
-    assertTrue("Failed to get \"Timeline\" submenu item.", 
-               timelineViewItem.getText().equals("Timeline"));
+    assertNotNull( "Failed to get sequence \"" + sequenceName + "\"", menuSequenceName);
+    assertNotNull( "Failed to get partialPlan \"" + partialPlanName + "\"",
+                   menuPartialPlanName);
+    assertNotNull( "Failed to get view \"" + viewName + "\"", viewItem);
+    assertTrue("Failed to get \"" + viewName + "\" submenu item.", 
+               viewItem.getText().equals( viewName));
     // System.err.println( "\n\nGot to here 2\n\n");
-    // helper.mousePressed(timelineViewItem, EventDataConstants.DEFAULT_MOUSE_MODIFIERS, 1, false);
-    return new String [] { sequenceName, partialPlanName , timelineViewItem.getSeqUrl()};
+    // helper.mousePressed(viewItem, EventDataConstants.DEFAULT_MOUSE_MODIFIERS, 1, false);
+    return new String [] { sequenceName, partialPlanName , viewItem.getSeqUrl()};
   } // end selectTimelineView
-
-
-  private String [] selectTokenNetworkView() throws Exception {
-    // click enter on CreateProject dialog, which creates Partial Plan menu
-    awtSleep();
-    JMenu partialPlanMenu = getPartialPlanMenu();
-    assertNotNull( "Failed to get partialPlanMenu", partialPlanMenu);
-    helper.enterClickAndLeave(new MouseEventData(this, partialPlanMenu));
-    Thread.sleep( 1000);
-    // System.err.println( "\n\nGot to here 1\n\n");
-    JMenu sequenceMenu = null;
-    JMenu partialPlanSubMenu = null;
-    PlanWorks.SeqPartPlanViewMenuItem tokenNetworkViewItem = null;
-    String sequenceName = null;
-    String partialPlanName = null;
-    String seqUrl = null;
-    found: for (int i = 0; i < partialPlanMenu.getItemCount(); i++) {
-      if (partialPlanMenu.getItem(i).getText().equals("sqlseq")) {
-        sequenceMenu = (JMenu) partialPlanMenu.getItem(i);
-        assertNotNull( "Failed to get sequence \"sqlseq\"", sequenceMenu);
-        helper.enterClickAndLeave(new MouseEventData(this, sequenceMenu));
-        Thread.sleep( 1000);
-        sequenceName = partialPlanMenu.getItem(i).getText();
-        for (int j = 0; j < sequenceMenu.getItemCount(); j++) {
-          if (sequenceMenu.getItem(j).getText().equals("pp1")) {
-            partialPlanSubMenu = (JMenu) sequenceMenu.getItem(j);
-            assertNotNull( "Failed to get partialPlan \"pp1\"", sequenceMenu);
-            helper.enterClickAndLeave(new MouseEventData(this, partialPlanSubMenu));
-            Thread.sleep( 1000);
-            partialPlanName = sequenceMenu.getItem(j).getText();
-            for (int k = 0; k < partialPlanSubMenu.getItemCount(); k++) {
-              if (partialPlanSubMenu.getItem(k).getText().equals("Token Network")) {
-                tokenNetworkViewItem =
-                  (PlanWorks.SeqPartPlanViewMenuItem) partialPlanSubMenu.getItem(k);
-                assertNotNull( "Failed to get view \"Token Network\"", sequenceMenu);
-                helper.enterClickAndLeave(new MouseEventData(this, tokenNetworkViewItem));
-                break found;
-              }
-            }
-          }
-        }
-      }
-    }
-    assertNotNull("Failed to get any menu item.", tokenNetworkViewItem);
-    assertTrue("Failed to get \"Token Network\" submenu item.", 
-               tokenNetworkViewItem.getText().equals("Token Network"));
-    // System.err.println( "\n\nGot to here 2\n\n");
-    // helper.mousePressed(tokenNetworkViewItem, EventDataConstants.DEFAULT_MOUSE_MODIFIERS, 1, false);
-    return new String [] { sequenceName, partialPlanName , tokenNetworkViewItem.getSeqUrl()};
-  } // end selectTokenNetworkView
 
 
   private void createProjectEnter() throws Exception {
@@ -382,24 +363,12 @@ public class PlanWorksTest extends JFCTestCase{
     String sequenceName = seqAndPlanNames[0];
     String partialPlanName = seqAndPlanNames[1];
     String sequenceUrl = seqAndPlanNames[2];
-    PwPlanningSequence planSequence =
-      planWorks.getCurrentProject().getPlanningSequence( sequenceUrl);
-    PwPartialPlan partialPlan = null;
-    while (partialPlan == null) {
-      // System.err.println( "partialPlan still null");
-      try {
-        Thread.currentThread().sleep(50);
-      } catch (InterruptedException excp) {
-      }
-      partialPlan = planSequence.getPartialPlan( partialPlanName);
-    }
+    PwPartialPlan partialPlan = getPartialPlan( sequenceUrl, partialPlanName);
 
-    assertNotNull( "Failed to get Partial Plan.", partialPlan);
     ViewManager viewManager = null;
     viewManager = planWorks.getViewManager();
     assertNotNull( "Failed to get ViewManager.", viewManager);
 
-    //System.err.println( "\n\nGot to here 3\n\n");
     MDIInternalFrame viewFrame = null;
     TimelineView timelineView = null;
     Thread.sleep( 3000);
@@ -420,13 +389,11 @@ public class PlanWorksTest extends JFCTestCase{
     return timelineView;
   } // end getTimelineView
 
-  private TokenNetworkView getTokenNetworkView( String [] seqAndPlanNames) throws Exception {
-    String sequenceName = seqAndPlanNames[0];
-    String partialPlanName = seqAndPlanNames[1];
-    String sequenceUrl = seqAndPlanNames[2];
+  private PwPartialPlan getPartialPlan( String sequenceUrl, String partialPlanName)
+    throws Exception {
+    PwPartialPlan partialPlan = null;
     PwPlanningSequence planSequence =
       planWorks.getCurrentProject().getPlanningSequence( sequenceUrl);
-    PwPartialPlan partialPlan = null;
     while (partialPlan == null) {
       // System.err.println( "partialPlan still null");
       try {
@@ -435,8 +402,16 @@ public class PlanWorksTest extends JFCTestCase{
       }
       partialPlan = planSequence.getPartialPlan( partialPlanName);
     }
-
     assertNotNull( "Failed to get Partial Plan.", partialPlan);
+    return partialPlan;
+  } // end getPartialPlan
+
+  private TokenNetworkView getTokenNetworkView( String [] seqAndPlanNames) throws Exception {
+    String sequenceName = seqAndPlanNames[0];
+    String partialPlanName = seqAndPlanNames[1];
+    String sequenceUrl = seqAndPlanNames[2];
+    PwPartialPlan partialPlan = getPartialPlan( sequenceUrl, partialPlanName);
+
     ViewManager viewManager = null;
     viewManager = planWorks.getViewManager();
     assertNotNull( "Failed to get ViewManager.", viewManager);
@@ -462,7 +437,7 @@ public class PlanWorksTest extends JFCTestCase{
     return tokenNetworkView;
   } // end getTokenNetworkView
 
-  private void validateTimelines( TimelineView timelineView) {
+  private void validateMonkeyTimelines( TimelineView timelineView) {
     List timelineNodes = timelineView.getTimelineNodeList();
     ListIterator timelineNodeIterator = timelineNodes.listIterator();
     while(timelineNodeIterator.hasNext()){
@@ -504,7 +479,11 @@ public class PlanWorksTest extends JFCTestCase{
         assertTrue("Invalid timeline name.", false);
       }
     }
-  } // end validateTimelines
+  } // end validateMonkeyTimelines
+
+  private void validatePlanGen0Timelines( TimelineView timelineView) {
+    System.err.println( "\n\nvalidatePlanGen0Timelines does nothing\n\n");
+  } // end validatePlanGen0Timelines
 
   private void exitPlanWorks( JMenuBar menuBar) throws Exception {
     // exit from CreateProject Test
@@ -654,63 +633,13 @@ public class PlanWorksTest extends JFCTestCase{
     while(timelineView.getTimelineNodeList() == null) {
       Thread.sleep(50);
     }
-    validateTimelines(timelineView);
+    validateMonkeyTimelines(timelineView);
     assertTrue("Reset spec didn't reset text box", keyBox.getText().trim().equals(""));
     assertTrue("Reset spec didn't reset check box", !negationBox.isSelected());
   }
 
-  /**
-   * <code>testOpenProject</code>
-   *
-   * @exception Exception if an error occurs
-   */
-  /*  public void testOpenProject() throws Exception {
-    System.err.println( "\n\nOpenProjectTestCase\n\n");
-    awtSleep();
-    Set windows = helper.getWindows();
-    assertEquals("PlanWorks window failed to open", 1, windows.size());
-    frame = (JFrame)(windows.toArray())[0];
-    assertNotNull("Failed to get frame from set", frame);
-    JMenuBar menuBar = frame.getJMenuBar();
-    assertNotNull("Failed to get menu bar from frame", menuBar);
-    JMenu projectMenu = null;
-    MenuElement [] elements = menuBar.getSubElements();
-    for(int i = 0; i < elements.length; i++) {
-      if(((JMenu)elements[i]).getText().equals("Project")) {
-        projectMenu = (JMenu) elements[i];
-      }
-    }
-    assertNotNull("Failed to get \"Project\" menu", projectMenu);
-    assertTrue("Failed to get \"Project\" menu.", projectMenu.getText().equals("Project"));
-    JMenuItem openItem = null;
-    for(int i = 0; i < projectMenu.getItemCount(); i++) {
-      if(projectMenu.getItem(i).getText().equals("Open ...")) {
-        openItem = projectMenu.getItem(i);
-      }
-    }
-    assertNotNull("Failed to get \"Open ...\" item.", openItem);
-    assertTrue("Failed to get \"Open ...\" item.", openItem.getText().equals("Open ..."));
-    helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
-    helper.enterClickAndLeave(new MouseEventData(this, openItem));
-
-    String [] seqAndPlanNames = selectTimelineView();
-
-    TimelineView timelineView = getTimelineView( seqAndPlanNames);
-
-    validateTimelines( timelineView);
-
-//     while ( true) {
-//       try {
-//         Thread.currentThread().sleep(50);
-//       } catch (InterruptedException excp) {
-//       }
-//     }
-    exitPlanWorks( menuBar);
-  } // end testOpenProject
-  */
-
   public void testOpenAndContentSpec() throws Exception {
-    System.err.println( "\n\nContentSpecTestCase\n\n");
+    System.err.println( "\n\nOpenAndContentSpecTestCase\n\n");
     awtSleep();
     Set windows = helper.getWindows();
     assertEquals("PlanWorks window failed to open", 1, windows.size());
@@ -729,8 +658,10 @@ public class PlanWorksTest extends JFCTestCase{
     assertTrue("Failed to get \"Project\" menu.", projectMenu.getText().equals("Project"));
     JMenuItem openItem = null;
     for(int i = 0; i < projectMenu.getItemCount(); i++) {
-      if(projectMenu.getItem(i).getText().equals("Open ...")) {
+      if ((projectMenu.getItem( i) != null) &&
+          (projectMenu.getItem(i).getText().equals("Open ..."))) {
         openItem = projectMenu.getItem(i);
+        break;
       }
     }
     assertNotNull("Failed to get \"Open ...\" item.", openItem);
@@ -738,9 +669,11 @@ public class PlanWorksTest extends JFCTestCase{
     helper.enterClickAndLeave(new MouseEventData(this, projectMenu));
     helper.enterClickAndLeave(new MouseEventData(this, openItem));
 
-    String [] seqAndPlanNames = selectTimelineView();
+    openProjectEnter();
+
+   String [] seqAndPlanNames = selectView( "Timeline");
     TimelineView timelineView = getTimelineView( seqAndPlanNames);
-    seqAndPlanNames = selectTokenNetworkView();
+    seqAndPlanNames = selectView( "Token Network");
     TokenNetworkView tokenNetworkView = getTokenNetworkView( seqAndPlanNames);
 
     Container contentPane = frame.getContentPane();
@@ -761,7 +694,7 @@ public class PlanWorksTest extends JFCTestCase{
       }
     }
     assertNotNull("Failed to get Content Specification frame.", contentSpecFrame);
-    validateTimelines( timelineView);
+    validateMonkeyTimelines( timelineView);
     contentSpecFrame.setSelected(true);
     contentPane = contentSpecFrame.getContentPane();
     ContentSpecWindow contentSpecWindow = null;
@@ -775,7 +708,17 @@ public class PlanWorksTest extends JFCTestCase{
     confirmTimelineSpec(contentSpecWindow, timelineView);
     exitPlanWorks( menuBar);
   }
-  
+
+  /**
+   * <code>testPlanGen0</code>
+   *
+   * @exception Exception if an error occurs
+   */
+  public void testPlanGen0() throws Exception {
+    System.err.println( "\n\nPlanGen0TestCase\n\n");
+    createProject();
+  } // end testPlanGen0
+
   /**
    * <code>suite</code> - create the test cases for the TestRunner
    *
@@ -784,8 +727,8 @@ public class PlanWorksTest extends JFCTestCase{
   public static TestSuite suite() {
     TestSuite testSuite = new TestSuite();
     testSuite.addTest( new PlanWorksTest( "testCreateProject", "create"));
-    //testSuite.addTest( new PlanWorksTest( "testOpenProject", "open"));
-    testSuite.addTest( new PlanWorksTest("testOpenAndContentSpec", "contentSpec"));
+    testSuite.addTest( new PlanWorksTest( "testOpenAndContentSpec", "contentSpec"));
+    // testSuite.addTest( new PlanWorksTest( "testPlanGen0", "planGen0"));
     return testSuite;
   }
 
@@ -807,8 +750,6 @@ public class PlanWorksTest extends JFCTestCase{
     }
     PlanWorks.osType = System.getProperty("os.type");
     PlanWorks.planWorksRoot = System.getProperty( "planworks.root");
-    PlanWorks.defaultProjectName = System.getProperty( "default.project.name");
-    PlanWorks.defaultSequenceDirectory = System.getProperty( "default.sequence.dir");
 
     TestRunner.run( suite());
   } // end main
