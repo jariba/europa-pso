@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.3 2003-06-16 16:28:07 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.4 2003-06-16 18:51:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -22,6 +22,15 @@ import javax.swing.JPanel;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.viewMgr.ContentSpec;
 
+/**
+ * <code>ContentSpecWindow</code> -
+ *                      JPanel->ContentSpecWindow
+ * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
+ * The complete, displayable window for defining a content specification for the associated 
+ * partial plan.  Provides input fields for specifying timelines, constraints, predicates,
+ * variables by type, and time intervals.
+ */
+
 public class ContentSpecWindow extends JPanel {
   protected ConstraintGroupBox constraintGroup;
   protected PredicateGroupBox predicateGroup;
@@ -32,6 +41,14 @@ public class ContentSpecWindow extends JPanel {
 
   protected ContentSpec contentSpec;
 
+  /**
+   * <code>ContentSpecWindow
+   * Constructs the entire content specification window.
+   * @param window The <code>MDIInternalFrame</code> to which this pane is added.  Used for the 
+   *               <code>pack()</code> method.
+   * @param contentSpec The ContentSpec with which this window is associated.  Instantiated in
+   *                    ViewSet
+   */
   public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec) {
     this.contentSpec = contentSpec;
 
@@ -82,6 +99,11 @@ public class ContentSpecWindow extends JPanel {
     gridBag.setConstraints(resetButton, c);
     add(resetButton);
   }
+  /**
+   * <code>SpecButtonListener</code> -
+   *                       ActionListener->SpecButtonListener
+   * The listener that provides the apply and reset functionality for the buttons.
+   */
   class SpecButtonListener implements ActionListener {
     private ContentSpecWindow specWindow;
     public SpecButtonListener(ContentSpecWindow specWindow) {

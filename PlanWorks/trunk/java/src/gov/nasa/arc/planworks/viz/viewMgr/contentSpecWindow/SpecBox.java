@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SpecBox.java,v 1.3 2003-06-16 16:28:08 miatauro Exp $
+// $Id: SpecBox.java,v 1.4 2003-06-16 18:51:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -25,6 +25,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+/**
+ * <code>SpecBox</code> -
+ *            JPanel->SpecBox
+ *            ContentSpecElement->SpecBox
+ * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
+ * A single element for specifying content.  Includes logical connectives for specification
+ * chaining.
+ */
+
+
 public class SpecBox extends JPanel implements ContentSpecElement {
   private LogicComboBox logicBox;
   private NegationCheckBox negationBox;
@@ -32,6 +42,13 @@ public class SpecBox extends JPanel implements ContentSpecElement {
   private String name;
   private static final Pattern keyPattern = Pattern.compile("[K|k]\\d+");
 
+  /**
+   * Constructs the SpecBox and arranges the appropriate input fields.
+   * @param first <code>boolean</code> value determining whether or not this SpecBox is the first
+   *              of its type.  If it is, the LogicComboBox is disabled--the connective is always 
+   *              OR.
+   * @param name the name of the type of SpecBox.  One of Timeline, Predicate, or Constraint.
+   */
   public SpecBox(boolean first, String name) {
     this.name = name.toString();
     GridBagLayout gridBag = new GridBagLayout();
@@ -65,6 +82,11 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     gridBag.setConstraints(keyField, c);
     add(keyField);
   }
+  /**
+   * Returns the value of the ContentSpecElement.  Always one of "and", "or", "and not", 
+   * or "or not" followed by the appropriate key.
+   * @return <code>List</code> containg the connective and key.
+   */
   public List getValue() throws NullPointerException, IllegalArgumentException {
     ArrayList retval = new ArrayList();
     StringBuffer connective = new StringBuffer();
@@ -91,6 +113,10 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     retval.add(keyField.getText().trim());
     return retval;
   }
+  /**
+   * Adds a new <code>ContentSpecElement</code> to the parent <code>GroupBox</code>.  Called when
+   * the LogicComboBox is moved from blank to one of the connectives.
+   */
   protected void addSpecBox() {
     GroupBox parent = (GroupBox) getParent();
     GridBagLayout gridBag = (GridBagLayout) parent.getLayout();
@@ -103,17 +129,30 @@ public class SpecBox extends JPanel implements ContentSpecElement {
     parent.add((ContentSpecElement)box);
     parent.validate();
   }
+  /**
+   * Removes the current <code>ContentSpecElement</code> from the parent <code>GroupBox</code>.
+   * Called when the LogicComboBox is moved from one of the connectives to the blank value.
+   */
   protected void removeSpecBox() {
     GroupBox parent = (GroupBox) getParent();
-    parent.remove(this);
+    parent.remove((ContentSpecElement)this);
     parent.validate();
     parent.repaint();
   }
+  /**
+   * Removes all values input by the user.
+   */
   public void reset() {
     negationBox.setSelected(false);
     keyField.setText("");
     logicBox.setSelectedItem("");
   }
+  /**
+   * <code>LogicListener</code> -
+   *                  ItemListener->LogicListener
+   * Class that adds or removes a ContentSpecElement from a GroupBox when the proper action is
+   * performed.
+   */
   class LogicListener implements ItemListener {
     private SpecBox box;
     private String itemStateChangedFrom;

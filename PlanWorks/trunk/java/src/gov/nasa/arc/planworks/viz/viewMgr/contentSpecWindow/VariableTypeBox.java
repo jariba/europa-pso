@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: VariableTypeBox.java,v 1.3 2003-06-16 16:28:09 miatauro Exp $
+// $Id: VariableTypeBox.java,v 1.4 2003-06-16 18:51:11 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -21,10 +21,26 @@ import javax.swing.JPanel;
 
 import javax.swing.JFrame;
 
+/**
+ * <code>VariableTypeBox</code> -
+ *            JPanel->VariableTypeBox
+ *            ContentSpecElement->VariableTypeBox
+ * @author <a href="mailto:miatauro@email.arc.nasa.gov">Michael Iatauro</a>
+ * A box for specifying variable types.  This and TimeIntervalBox don't inherit from the SpecBox
+ * class because they have special input concerns.
+ */
+
 public class VariableTypeBox extends JPanel implements ContentSpecElement {
   private LogicComboBox logicBox;
   private NegationCheckBox negationBox;
   private JComboBox typeBox;
+
+  /**
+   * Creates the VariableTypeBox and adds the input widgets.
+   * @param first <code>boolean</code> determining whether or not this is the first of its type.
+   *              if it is, the LogicComboBox is disabled--the connective is always "OR".
+   */
+
   public VariableTypeBox(boolean first) {
     GridBagLayout gridBag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
@@ -64,6 +80,12 @@ public class VariableTypeBox extends JPanel implements ContentSpecElement {
     gridBag.setConstraints(typeBox, c);
     add(typeBox);
   }
+  /**
+   * Gets the logical value of the VariableTypeBox, which is always of the form: "and", "or",
+   * "and not", or "or not" followed by one of "START_VAR", "END_VAR", "DURATION_VAR",
+   * "OBJECT_VAR", "REJECT_VAR", "PARAMETER_VAR".
+   * @return <code>List</code> containing the logical value of the VariableTypeBox.
+   */
   public List getValue() throws NullPointerException {
     ArrayList retval = new ArrayList();
     StringBuffer connective = new StringBuffer();
@@ -86,6 +108,10 @@ public class VariableTypeBox extends JPanel implements ContentSpecElement {
     retval.add((String)typeBox.getSelectedItem());
     return retval;
   }
+  /**
+   * Adds a new VariableTypeBox to the containing GroupBox.  This is done when a LogicComboBox's 
+   * value is changed from blank to a connective.
+   */
   protected void addVariableTypeBox() {
     GroupBox parent = (GroupBox) getParent();
     GridBagLayout gridBag = (GridBagLayout) parent.getLayout();
@@ -98,17 +124,28 @@ public class VariableTypeBox extends JPanel implements ContentSpecElement {
     parent.add((ContentSpecElement)box);
     parent.validate();
   }
+  /**
+   * Removes the current VariableTypeBox from the containing GroupBox.  This is done when a
+   * LogicComboBox's value is changed from a connective to blank.
+   */
   protected void removeVariableTypeBox() {
     GroupBox parent = (GroupBox) getParent();
-    parent.remove(this);
+    parent.remove((ContentSpecElement)this);
     parent.validate();
     parent.repaint();
   }
+  /**
+   * Resets the values input by the user.
+   */
   public void reset() {
     logicBox.setSelectedItem("");
     negationBox.setSelected(false);
     typeBox.setSelectedItem("");
   }
+  /**
+   * <code>LogicBoxListener</code> -
+   *    See the LogicBoxListener documentation in SpecBox.java
+   */
   class LogicBoxListener implements ItemListener {
     private VariableTypeBox box;
     private String itemStateChangedFrom;
