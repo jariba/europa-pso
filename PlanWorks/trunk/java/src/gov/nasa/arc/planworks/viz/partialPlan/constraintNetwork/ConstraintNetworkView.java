@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.11 2003-10-30 19:11:44 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.12 2003-10-30 22:12:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -262,6 +262,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       //  new ConstraintNetworkLayout( document, network, startTimeMSecs);
       //layout.performLayout();
       newLayout.performLayout();
+
       if (focusNode != null) {
         NodeGenerics.focusViewOnNode( focusNode, jGoView);
       }
