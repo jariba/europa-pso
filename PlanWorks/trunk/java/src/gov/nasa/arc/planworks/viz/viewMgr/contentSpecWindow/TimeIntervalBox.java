@@ -98,7 +98,7 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement
       connective.append("or");
     if(startValue.getText().trim().equals("") ^ endValue.getText().trim().equals(""))
       {
-        JOptionPane.showMessageDialog(null, "Both start and end times must be filled in.",
+        JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Both start and end times must be filled in.",
                                       "Error!", JOptionPane.ERROR_MESSAGE);
         throw new IllegalArgumentException();
       }
@@ -107,13 +107,13 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement
 
     if(!valuePattern.matcher(startValue.getText().trim()).matches())
       {
-        JOptionPane.showMessageDialog(null, "Invalid start time format.  Must be only digits.",
+        JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Invalid start time format.  Must be only digits.",
                                       "Error!", JOptionPane.ERROR_MESSAGE);
         throw new IllegalArgumentException();
       }
     if(!valuePattern.matcher(endValue.getText().trim()).matches())
       {
-        JOptionPane.showMessageDialog(null, "Invalid end time format.  Must be only digits.",
+        JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Invalid end time format.  Must be only digits.",
                                       "Error!", JOptionPane.ERROR_MESSAGE);
         throw new IllegalArgumentException();
       }
@@ -123,6 +123,13 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement
     retval.add(startValue.getText().trim());
     retval.add(endValue.getText().trim());
     return retval;
+  }
+  public void reset()
+  {
+    logicBox.setSelectedItem("");
+    negationBox.setSelected(false);
+    startValue.setText("");
+    endValue.setText("");
   }
   public static void main(String [] args)
   {

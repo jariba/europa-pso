@@ -66,7 +66,7 @@ public class SpecBox extends JPanel implements ContentSpecElement
       return null;
     if(!keyPattern.matcher(keyField.getText().trim()).matches())
       {
-        JOptionPane.showMessageDialog(null, (new StringBuffer("Invalid ")).append(name).append(" key format.  Must be of the form [K|k]\\d+.").toString(), "Error!", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), (new StringBuffer("Invalid ")).append(name).append(" key format.  Must be of the form [K|k]\\d+.").toString(), "Error!", JOptionPane.ERROR_MESSAGE);
         throw new IllegalArgumentException();
       }
     if(logicBox.isEnabled())
@@ -102,6 +102,12 @@ public class SpecBox extends JPanel implements ContentSpecElement
     parent.remove(this);
     parent.validate();
     parent.repaint();
+  }
+  public void reset()
+  {
+    negationBox.setSelected(false);
+    keyField.setText("");
+    logicBox.setSelectedItem("");
   }
   class LogicListener implements ItemListener
   {

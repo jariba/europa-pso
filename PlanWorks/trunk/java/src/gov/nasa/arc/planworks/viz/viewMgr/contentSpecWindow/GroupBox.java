@@ -60,4 +60,9 @@ public class GroupBox extends JPanel implements ContentSpecGroup
         return null;
       return retval;
     }
+  public void reset()
+  {
+    for(int i = 0; i < elements.size(); i++)
+      ((ContentSpecElement)elements.get(i)).reset();
+  }
 }

@@ -160,6 +160,11 @@ public class ContentSpecWindow extends JPanel
       else if(ae.getActionCommand().equals("Reset Spec"))
         {
           specWindow.contentSpec.resetSpec();
+          specWindow.constraintGroup.reset();
+          specWindow.timeIntervalGroup.reset();
+          specWindow.variableTypeGroup.reset();
+          specWindow.predicateGroup.reset();
+          specWindow.timelineGroup.reset();
         }
     }
   }
