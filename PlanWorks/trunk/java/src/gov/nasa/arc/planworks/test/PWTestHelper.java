@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.12 2004-07-15 21:24:46 taylor Exp $
+// $Id: PWTestHelper.java,v 1.13 2004-07-29 20:31:44 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -223,10 +223,10 @@ public abstract class PWTestHelper {
     // createProjects results in getSelectedFiles returning null
     planWorks.createDirectoryChooser();
     guiTest.flushAWT(); guiTest.awtSleep();
-//     System.err.println( "createProject sequenceDirectory " + sequenceDirectory);
-//     for (int i = 0, n = sequenceFileArray.length; i < n; i++) {
-//       System.err.println( "  i " + i + " sequenceFileArray " + sequenceFileArray[i].getName());
-//     }
+    System.err.println( "createProject sequenceDirectory " + sequenceDirectory);
+    for (int i = 0, n = sequenceFileArray.length; i < n; i++) {
+      System.err.println( "  i " + i + " sequenceFileArray " + sequenceFileArray[i].getName());
+    }
     planWorks.getSequenceDirChooser().setCurrentDirectory( new File( sequenceDirectory));
     planWorks.getSequenceDirChooser().setSelectedFiles( sequenceFileArray);
 

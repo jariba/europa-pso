@@ -24,6 +24,7 @@
           <jvmarg value="-Xms200m"/>
           <jvmarg value="-Xmx300m"/>
           <jvmarg value="-Dplanworks.root=${planworks.root}"/>
+          <jvmarg value="-Dplanworks.config=${planworks.config}"/>
           <jvmarg value="-Duser=${env.USER}"/>
           <jvmarg value="-Dos.type=${env.OSTYPE}"/>
           <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
@@ -40,6 +41,7 @@
           <jvmarg value="-Dname.application=${name.application}"/>
           <jvmarg value="-Dboolean.isMaxTestScreen=${boolean.isMaxScreen}"/>
 	  <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/>
+	  <jvmarg value="-Dant.target.test=true"/>
         </java>
 
 <!--         <junit fork="yes" printsummary="withOutAndErr" haltonfailure="yes" haltonerror="yes" -->

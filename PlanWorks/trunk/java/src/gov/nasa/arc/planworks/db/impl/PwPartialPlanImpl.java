@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.97 2004-07-29 01:36:37 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.98 2004-07-29 20:31:43 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -164,10 +164,16 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   private void createPartialPlan() throws ResourceNotFoundException, CreatePartialPlanException {
     boolean printTime = true;
     // boolean printTime = false;
+    boolean doProgMonitor = true;
+    if (System.getProperty("ant.target.test").equals( "true")) {
+      doProgMonitor = false;
+    }
     int numOperations = 6;
-    createProgressMonitorThread( "Partial Plan:", 0, numOperations, "");
-    if (! progressMonitorWait()) {
-      return;
+    if (doProgMonitor) {
+      createProgressMonitorThread( "Partial Plan:", 0, numOperations, "");
+      if (! progressMonitorWait()) {
+        return;
+      }
     }
     numOperations = 1;
     System.err.println( "Create PartialPlan ...");
@@ -182,30 +188,36 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     if(id == null) {
       File planDir = new File(sequence.getUrl() + System.getProperty("file.separator") +
                               name);
-
-      progressMonitor.setNote( "Loading files ...");
-      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      if (doProgMonitor) {
+        progressMonitor.setNote( "Loading files ...");
+        progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      }
       loadFiles(planDir);
       if (printTime) {
         t1 = System.currentTimeMillis();
         System.err.println( "   ... loadFiles elapsed time: " + (t1 - startTimeMSecs) + " msecs.");
       }
-      checkProgressMonitor(); numOperations++;
-      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
-
-      progressMonitor.setNote( "Analyzing Database ...");
+      if (doProgMonitor) {
+        checkProgressMonitor(); numOperations++;
+        progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+        progressMonitor.setNote( "Analyzing Database ...");
+      }
       MySQLDB.analyzeDatabase();
       if (printTime) {
         t2 = System.currentTimeMillis();
         System.err.println( "   ... analyzeDatabase elapsed time: " + (t2 - t1) + " msecs.");
       }
-       checkProgressMonitor(); numOperations++;
-      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      if (doProgMonitor) {
+        checkProgressMonitor(); numOperations++;
+        progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      }
       id = MySQLDB.getPartialPlanIdByName(sequence.getId(), name);
     }
     numOperations = 2;
-    progressMonitor.setNote( "Creating Objects ...");
-    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+    if (doProgMonitor) {
+      progressMonitor.setNote( "Creating Objects ...");
+      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+    }
     MySQLDB.createObjects(this);
     if (printTime) {
       t3 = System.currentTimeMillis();
@@ -213,29 +225,33 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     model = MySQLDB.queryPartialPlanModelById(id);
 
-     checkProgressMonitor(); numOperations++;
-    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
-
-    progressMonitor.setNote( "Query DB & Create Slot/Token Nodes ...");
+    if (doProgMonitor) {
+      checkProgressMonitor(); numOperations++;
+      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      progressMonitor.setNote( "Query DB & Create Slot/Token Nodes ...");
+    }
     MySQLDB.createSlotTokenNodesStructure(this, sequence.getId());
     if (printTime) {
       t4 = System.currentTimeMillis();
       System.err.println( "   ... createSlotTokenNodesStructure elapsed time: " +
                           (t4 - t3) + " msecs.");
     }
-     checkProgressMonitor(); numOperations++;
-    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+    if (doProgMonitor) {
+      checkProgressMonitor(); numOperations++;
+      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      progressMonitor.setNote( "Filling Element Maps ...");
+    }
     long start2TimeMSecs = System.currentTimeMillis();
 
-    progressMonitor.setNote( "Filling Element Maps ...");
     fillElementMaps();
     long stop2TimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... Fill PartialPlan element maps elapsed time: " +
                         (stop2TimeMSecs - start2TimeMSecs) + " msecs.");
-     checkProgressMonitor(); numOperations++;
-    progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
-
-    progressMonitor.setNote( "Cleaning Constraints ...");
+    if (doProgMonitor) {
+      checkProgressMonitor(); numOperations++;
+      progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
+      progressMonitor.setNote( "Cleaning Constraints ...");
+    }
     cleanConstraints();
     if (printTime) {
       t5 = System.currentTimeMillis();
@@ -246,7 +262,9 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... Create PartialPlan elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
-    isProgressMonitorCancel = true;
+    if (doProgMonitor) {
+      isProgressMonitorCancel = true;
+    }
   } // end createPartialPlan
 
   private void checkProgressMonitor() throws CreatePartialPlanException {

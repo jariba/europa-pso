@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.17 2004-07-15 21:24:46 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.18 2004-07-29 20:31:45 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -65,6 +65,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestSuite; 
 import junit.textui.TestRunner;
 
+import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwConstraint;
@@ -165,22 +166,14 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
   // there must be a listener for every partial plan view - with this view ordering
   // PlanWorks.PARTIAL_PLAN_VIEW_LIST.size()
 
-  private static final int CONSTRAINT_NETWORK_VIEW_INDEX =
-    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.CONSTRAINT_NETWORK_VIEW);
-  private static final int DB_TRANSACTION_VIEW_INDEX =
-    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DB_TRANSACTION_VIEW);
-  private static final int DECISION_VIEW_INDEX =
-    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DECISION_VIEW);
-  private static final int RESOURCE_PROFILE_VIEW_INDEX =
-    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_PROFILE_VIEW);
-  private static final int RESOURCE_TRANSACTION_VIEW_INDEX =
-    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_TRANSACTION_VIEW);
-  private static final int TEMPORAL_EXTENT_VIEW_INDEX =
-    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TEMPORAL_EXTENT_VIEW);
-  private static final int TIMELINE_VIEW_INDEX =
-    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TIMELINE_VIEW);
-  private static final int TOKEN_NETWORK_VIEW_INDEX =
-    PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TOKEN_NETWORK_VIEW);
+  private static int CONSTRAINT_NETWORK_VIEW_INDEX;
+  private static int DB_TRANSACTION_VIEW_INDEX;
+  private static int DECISION_VIEW_INDEX;
+  private static int RESOURCE_PROFILE_VIEW_INDEX;
+  private static int RESOURCE_TRANSACTION_VIEW_INDEX;
+  private static int TEMPORAL_EXTENT_VIEW_INDEX;
+  private static int TIMELINE_VIEW_INDEX;
+  private static int TOKEN_NETWORK_VIEW_INDEX;
 
   private PlanWorks planWorks;
   private JFCTestHelper helper;
@@ -283,6 +276,26 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       this.setHelper( helper);
 
       // assertNotNull( "before planworks ", null);
+
+      File configFile = new File( System.getProperty( "planworks.config") + ".template");
+      ConfigureAndPlugins.processPlanWorksConfigFile( configFile);
+
+      CONSTRAINT_NETWORK_VIEW_INDEX =
+        PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.CONSTRAINT_NETWORK_VIEW);
+      DB_TRANSACTION_VIEW_INDEX =
+        PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DB_TRANSACTION_VIEW);
+      DECISION_VIEW_INDEX =
+        PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.DECISION_VIEW);
+      RESOURCE_PROFILE_VIEW_INDEX =
+        PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_PROFILE_VIEW);
+      RESOURCE_TRANSACTION_VIEW_INDEX =
+        PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.RESOURCE_TRANSACTION_VIEW);
+      TEMPORAL_EXTENT_VIEW_INDEX =
+        PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TEMPORAL_EXTENT_VIEW);
+      TIMELINE_VIEW_INDEX =
+        PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TIMELINE_VIEW);
+      TOKEN_NETWORK_VIEW_INDEX =
+        PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf( ViewConstants.TOKEN_NETWORK_VIEW);
 
       planWorks = new PlanWorks( PlanWorks.buildConstantMenus(),
                                  System.getProperty( "name.application"),
