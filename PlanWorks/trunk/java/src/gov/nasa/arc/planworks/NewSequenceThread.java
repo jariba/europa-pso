@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.13 2004-09-29 23:52:19 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.14 2004-10-07 20:19:02 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -88,25 +88,18 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
   } // end run
 
   private String getNewSequenceUrl() {
-    String plannerPath = ConfigureAndPlugins.getProjectConfigValue
-      ( ConfigureAndPlugins.PROJECT_PLANNER_PATH, projectName);
+    String plannerControlJNIPath = System.getProperty( "integration.home") +
+      System.getProperty( "file.separator") + ConfigureAndPlugins.PLANNER_CONTROL_JNI_LIB;
     if (! currentProject.getJNIAdapterLoaded()) {
-      if (plannerPath.indexOf( ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH) == -1) {
-        JOptionPane.showMessageDialog
-          ( PlanWorks.getPlanWorks(),
-            "Library name '" +  (new File( plannerPath)).getName() +
-            "' does not match 'lib<planner-name>" +
-            ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH + "'",
-            "Invalid Planner JNI Library", JOptionPane.ERROR_MESSAGE);
-        return null;
-      }
       try {
-        System.load( plannerPath);
+        System.load( plannerControlJNIPath);
         currentProject.setJNIAdapterLoaded( true);
-        System.err.println( "Loading: " + plannerPath);
+        System.err.println( "Loading: " + plannerControlJNIPath);
       } catch (UnsatisfiedLinkError err) {
         JOptionPane.showMessageDialog
-          (PlanWorks.getPlanWorks(), err.getMessage(), "Planner Loading Error",
+          (PlanWorks.getPlanWorks(), err.getMessage() +
+           "\n                 Have you done  'ant createJNI'  ?",
+           "PlannerControlJNI Loading Error",
            JOptionPane.ERROR_MESSAGE);
         return null;
       }
@@ -116,7 +109,7 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       return null;
     }
 
-    if (PlannerControlJNI.initPlannerRun( modelPath, modelInitStatePath,
+    if (PlannerControlJNI.initPlannerRun( plannerPath, modelPath, modelInitStatePath,
                                           modelOutputDestDir) !=
         PlannerControlJNI.PLANNER_IN_PROGRESS) {
       JOptionPane.showMessageDialog
@@ -229,6 +222,8 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
 
   private boolean getConfigureParameters() {
     areConfigParamsChanged = false;
+    String plannerPathCurrent = ConfigureAndPlugins.getProjectConfigValue
+      ( ConfigureAndPlugins.PROJECT_PLANNER_PATH, projectName);
     String modelPathCurrent = ConfigureAndPlugins.getProjectConfigValue
       ( ConfigureAndPlugins.PROJECT_MODEL_PATH, projectName);
     String modelInitStatePathCurrent = ConfigureAndPlugins.getProjectConfigValue
@@ -245,13 +240,13 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
 
     workingDir = ConfigureAndPlugins.getProjectConfigValue
       ( ConfigureAndPlugins.PROJECT_WORKING_DIR, projectName);
-    plannerPath = ConfigureAndPlugins.getProjectConfigValue
-      ( ConfigureAndPlugins.PROJECT_PLANNER_PATH, projectName);
+    plannerPath = configureDialog.getPlannerPath();
 //     modelName = configureDialog.getModelName();
     modelPath = configureDialog.getModelPath();
     modelInitStatePath = configureDialog.getModelInitStatePath();
     modelOutputDestDir = configureDialog.getModelOutputDestDir();
-    if ((! modelPath.equals( modelPathCurrent)) ||
+    if ((! plannerPath.equals(  plannerPathCurrent)) ||
+        (! modelPath.equals( modelPathCurrent)) ||
         (! modelInitStatePath.equals( modelInitStatePathCurrent)) ||
         (! modelOutputDestDir.equals( modelOutputDestDirCurrent))) {
       areConfigParamsChanged = true;

@@ -4,19 +4,23 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWTestHelper.java,v 1.16 2004-09-21 21:37:51 taylor Exp $
+// $Id: PWTestHelper.java,v 1.17 2004-10-07 20:19:03 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
+import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -27,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.JTree;
@@ -75,6 +80,8 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
+import gov.nasa.arc.planworks.viz.util.AskQueryTwoEntityKeysClasses;
+import gov.nasa.arc.planworks.viz.util.EntityKeysBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -779,6 +786,36 @@ public abstract class PWTestHelper {
   } // end selectViewMenuItem
 
   /**
+   * <code>selectFrameMenuItem</code>
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @param frameMenuItemName - <code>String</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static void selectFrameMenuItem( MDIInternalFrame frame, String frameMenuItemName,
+                                         JFCTestHelper helper, PlanWorksGUITest guiTest)
+    throws Exception {  
+    guiTest.flushAWT(); guiTest.awtSleep();
+    JPopupMenu popupMenu =
+      (JPopupMenu) PWTestHelper.findComponentByClass( JPopupMenu.class);
+    Assert.assertNotNull( "Failed to get \"" + popupMenu + "\" popupMenu.", popupMenu);
+    JMenuItem frameMenuItem = PWTestHelper.getPopupViewMenuItem( frameMenuItemName, popupMenu);
+
+    // deprecated JMenuItem frameMenuItem =
+    //  (JMenuItem) helper.findComponent( new JMenuItemFinder( frameMenuItemName), 0);
+
+    // try{Thread.sleep(2000);}catch(Exception e){}
+
+    Assert.assertNotNull( frameMenuItemName + "' not found:", frameMenuItem); 
+    System.err.println( "'" + frame.getTitle() + "' frameMenuItem '" +
+                        frameMenuItem.getText() + "'");
+    helper.enterClickAndLeave( new MouseEventData( guiTest, frameMenuItem));
+    guiTest.flushAWT(); guiTest.awtSleep();
+  } // end selectFrameMenuItem
+
+  /**
    * <code>viewMenuItemExists</code>
    *
    * @param view - <code>VizView</code> - 
@@ -1242,10 +1279,117 @@ public abstract class PWTestHelper {
     helper.sendKeyAction( new KeyEventData( guiTest, field, KeyEvent.VK_ENTER));
   } // end setQueryField
 
+  /**
+   * <code>findEntityPath</code>
+   *
+   * @param entityId1 - <code>Integer</code> - 
+   * @param entityId2 - <code>Integer</code> - 
+   * @param viewMenuItemName - <code>String</code> - 
+   * @param partialPlanView - <code>PartialPlanView</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static void findEntityPath( Integer entityId1, Integer entityId2,
+                                     String viewMenuItemName, PartialPlanView partialPlanView,
+                                     JFCTestHelper helper, PlanWorksGUITest guiTest)
+    throws Exception {
+    PWTestHelper.viewBackgroundItemSelection( partialPlanView, viewMenuItemName, helper,
+                                              guiTest);
+    guiTest.flushAWT(); guiTest.awtSleep();
 
+    MDIInternalFrame findEntityFrame =
+      (MDIInternalFrame) PWTestHelper.findComponentByClass( MDIInternalFrame.class);
+    Assert.assertNotNull( "Failed to get \"" + findEntityFrame + "\" findEntityFrame.",
+                          findEntityFrame);
+    Container contentPane = findEntityFrame.getContentPane();
+    AskQueryTwoEntityKeysClasses entityPane = null;
+    for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
+      //System.err.println( "i " + i + " " +
+      //                    contentPane.getComponent( i).getClass().getName());
+      if (contentPane.getComponent(i) instanceof AskQueryTwoEntityKeysClasses) {
+        entityPane = (AskQueryTwoEntityKeysClasses) contentPane.getComponent(i);
+        break;
+      }
+    }
+    EntityKeysBox entityKeysBox = entityPane.getEntityKeysBox();
+    JTextField startField = entityKeysBox.getStartValue();
+    JTextField endField = entityKeysBox.getEndValue();
+    System.err.println( "findEntityPath startField set to " + entityId1.toString());
+    startField.setText( null);
+    helper.sendString( new StringEventData( guiTest, startField, entityId1.toString()));
+    System.err.println( "findEntityPath endField set to " + entityId2.toString());
+    endField.setText( null);
+    helper.sendString( new StringEventData( guiTest, endField, entityId2.toString()));
 
+    PWTestHelper.buttonLeftClick( entityPane.getPathExistsButton(), "Does Path Exist");
+    System.err.println( "findEntityPath: \"Does Path Exist\"");
+    guiTest.flushAWT(); guiTest.awtSleep();
+    PWTestHelper.selectJOptionPaneItem( "Entity Path Exists", "OK", helper, guiTest);
 
+    PWTestHelper.buttonLeftClick( entityPane.getFindPathButton(), "Find Path");
+    System.err.println( "findEntityPath: \"Find Path\"");
+    guiTest.flushAWT(); guiTest.awtSleep();
+    // need extra time for progress monitor to go away
+    try{Thread.sleep(1000);}catch(Exception e){}
+    PWTestHelper.selectJOptionPaneItem( "Found Entity Key Path", "OK", helper, guiTest);
+  } // end findEntityPath
 
+  /**
+   * <code>buttonLeftClick</code>
+   *
+   * @param button - <code>JButton</code> - 
+   * @param actionName - <code>String</code> - 
+   */
+  public static void buttonLeftClick( JButton button, String actionName) {
+    ActionListener [] actionList = button.getActionListeners();
+    ActionEvent evt = new ActionEvent( button, ActionEvent.ACTION_PERFORMED,
+                                       actionName, (int) AWTEvent.MOUSE_EVENT_MASK);
+    for (int i = 0, n = actionList.length; i < n; i++) {
+      ((ActionListener) actionList[i]).actionPerformed( evt);
+    }
+  } // end buttonLeftClick
+
+  /**
+   * <code>selectJDialogItem</code>
+   *
+   * @param dialogName - <code>String</code> - 
+   * @param dialogItemName - <code>String</code> - 
+   * @param helper - <code>JFCTestHelper</code> - 
+   * @param guiTest - <code>PlanWorksGUITest</code> - 
+   * @exception Exception if an error occurs
+   */
+  public static void selectJOptionPaneItem( String optionPaneName, String optionPaneItemName,
+                                        JFCTestHelper helper, PlanWorksGUITest guiTest)
+    throws Exception {  
+    guiTest.flushAWT(); guiTest.awtSleep();
+    JOptionPane optionPane = (JOptionPane) PWTestHelper.findComponentByClass( JOptionPane.class);
+    Assert.assertNotNull( "Failed to get \"" + optionPane + "\" optionPane.", optionPane);
+
+    JButton optionPaneItem = null;
+    for (int i = 0, n = optionPane.getComponentCount(); i < n; i++) {
+      // System.err.println( "optionPane i " + i + " " +
+      //                   optionPane.getComponent( i).getClass().getName());
+      if ((i == 1) && (optionPane.getComponent( i) instanceof JPanel)) {
+        JPanel buttonPanel = (JPanel) optionPane.getComponent( i);
+        for (int j = 0, m = buttonPanel.getComponentCount(); j < m; j++) {
+          // System.err.println( "buttonPanel j " + j + " " +
+          //                    buttonPanel.getComponent( j).getClass().getName());
+          if (buttonPanel.getComponent(j) instanceof JButton) {
+            if (((JButton) buttonPanel.getComponent(j)).getText().equals( optionPaneItemName)) {
+              optionPaneItem = (JButton) buttonPanel.getComponent(j);
+              break;
+            }
+          }
+        }
+      }
+    }
+    Assert.assertNotNull( optionPaneItemName + "' not found:", optionPaneItem); 
+    System.err.println( "'" + optionPaneName + "' optionPaneItem '" +
+                        optionPaneItem.getText() + "'");
+    helper.enterClickAndLeave( new MouseEventData( guiTest, optionPaneItem));
+    guiTest.flushAWT(); guiTest.awtSleep();
+  } // end selectViewMenuItem
 
 
 } // end abstract class PWTestHelper

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.30 2004-09-21 01:07:06 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.31 2004-10-07 20:19:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -134,6 +134,22 @@ public class ResourceProfileView extends ResourceView  {
                               ViewListener viewListener) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, viewListener,
            ViewConstants.RESOURCE_PROFILE_VIEW);
+    profileScalingList = null;
+    unaryResource = null;
+  } // end constructor
+
+  /**
+   * <code>ResourceProfileView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param vSet - <code>ViewSet</code> - 
+   * @param state - <code>PartialPlanViewState</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet, 
+                              final PartialPlanViewState state, ViewListener viewListener) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, state,
+           viewListener, ViewConstants.RESOURCE_PROFILE_VIEW);
     profileScalingList = null;
     unaryResource = null;
   } // end constructor

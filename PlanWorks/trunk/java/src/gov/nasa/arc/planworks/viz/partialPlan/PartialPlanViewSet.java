@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.23 2004-09-14 22:59:39 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.24 2004-10-07 20:19:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -174,6 +174,13 @@ public class PartialPlanViewSet extends ViewSet {
 
   public MDIInternalFrame openView(String viewClassName, PartialPlanViewState state) {
     MDIInternalFrame retval = super.openView(viewClassName, state);
+    Container contentPane = retval.getContentPane();
+    return retval;
+  }
+
+  public MDIInternalFrame openView(String viewClassName, PartialPlanViewState state,
+                                   ViewListener viewListener) {
+    MDIInternalFrame retval = super.openView(viewClassName, state, viewListener);
     Container contentPane = retval.getContentPane();
     return retval;
   }
@@ -359,7 +366,7 @@ public class PartialPlanViewSet extends ViewSet {
       }
     }
     return partialPlanViewList;
-  } // end getAllPartialPlanViews
+  } // end getPartialPlanViews
 
 } // end class PartialPlanViewSet
 

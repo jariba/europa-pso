@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.55 2004-09-30 22:03:46 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.56 2004-10-07 20:19:06 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -492,8 +492,13 @@ public class PartialPlanView extends VizView {
       }
       PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis(), 
                                                           pView.getViewName());
+//       MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),
+//                                                             partialPlanViewState);
+      ViewListener viewListener =
+        (ViewListener)  viewListenerList.get( PlanWorks.PARTIAL_PLAN_VIEW_LIST.indexOf
+                                              ( pView.getViewName()));
       MDIInternalFrame nextViewFrame = viewManager.openView(nextStep, pView.getClass().getName(),
-                                                            partialPlanViewState);
+                                                            partialPlanViewState, viewListener);
       boolean isMoveValid = moveSequenceStepsViewHighlight( nextStep, pView.getViewName());
       if (! isMoveValid) {
         String message = "sequence step element index not found";

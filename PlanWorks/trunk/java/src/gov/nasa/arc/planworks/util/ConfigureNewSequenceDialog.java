@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.7 2004-09-28 23:57:40 taylor Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.8 2004-10-07 20:19:05 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -44,6 +44,8 @@ public class ConfigureNewSequenceDialog extends JDialog {
   private static final int PATH_FIELD_WIDTH = 30;
 
   private JOptionPane optionPane;
+  private String plannerPath;
+  private JTextField plannerPathField;
   private String modelName;
   private JTextField modelNameField;
   private String modelPath;
@@ -67,6 +69,10 @@ public class ConfigureNewSequenceDialog extends JDialog {
     super( planWorks, true);
     setTitle( "Create New Sequence");
     String browseTitle = "browse ...";
+    final JLabel plannerPathLabel = new JLabel( "planner path");
+    plannerPathField = new JTextField( PATH_FIELD_WIDTH);
+    final JButton plannerPathBrowseButton = new JButton( browseTitle);
+    plannerPathBrowseButton.addActionListener( new PlannerPathButtonListener());
 //     final JLabel modelNameLabel = new JLabel( "model name");
 //     modelNameField = new JTextField( NAME_FIELD_WIDTH);
 
@@ -88,6 +94,9 @@ public class ConfigureNewSequenceDialog extends JDialog {
     // current values
     try {
       String currentProjectName = planWorks.getCurrentProjectName();
+      plannerPath = new File( ConfigureAndPlugins.getProjectConfigValue
+                              ( ConfigureAndPlugins.PROJECT_PLANNER_PATH,
+                                currentProjectName)).getCanonicalPath();
 //       modelName = ConfigureAndPlugins.getProjectConfigValue
 //         ( ConfigureAndPlugins.PROJECT_MODEL_NAME, currentProjectName);
       modelPath = new File( ConfigureAndPlugins.getProjectConfigValue
@@ -102,6 +111,7 @@ public class ConfigureNewSequenceDialog extends JDialog {
     } catch (IOException ioExcep) {
     }
 
+    plannerPathField.setText( plannerPath);
 //     modelNameField.setText( modelName);
     modelPathField.setText( modelPath);
     modelOutputDestDirField.setText( modelOutputDestDir);
@@ -119,6 +129,16 @@ public class ConfigureNewSequenceDialog extends JDialog {
     c.weighty = 0;
     c.gridx = 0;
     c.gridy = 0;
+
+    c.gridy++;
+    gridBag.setConstraints( plannerPathLabel, c);
+    dialogPanel.add( plannerPathLabel);
+    c.gridy++;
+    gridBag.setConstraints( plannerPathField, c);
+    dialogPanel.add( plannerPathField);
+    c.gridx++;
+    gridBag.setConstraints( plannerPathBrowseButton, c);
+    dialogPanel.add( plannerPathBrowseButton);
 
 //     c.gridy++;
 //     gridBag.setConstraints( modelNameLabel, c);
@@ -192,6 +212,19 @@ public class ConfigureNewSequenceDialog extends JDialog {
     setVisible( true);
   } // end constructor
 
+  class PlannerPathButtonListener implements ActionListener {
+    public PlannerPathButtonListener() {
+    }
+    public void actionPerformed(ActionEvent ae) {
+      FileChooser fileChooser = new FileChooser( "Select File", new File( plannerPath));
+      String currentSelectedFile = fileChooser.getValidSelectedFile();
+      if (currentSelectedFile == null) {
+        return;
+      }
+      plannerPathField.setText( currentSelectedFile);
+    }
+  } // end class PlannerPathButtonListener
+
   class ModelPathButtonListener implements ActionListener {
     public ModelPathButtonListener() {
     }
@@ -261,7 +294,8 @@ public class ConfigureNewSequenceDialog extends JDialog {
               setVisible( false);
 
             } else { // user closed dialog or clicked cancel
-              modelName = null;
+              plannerPath = null;
+              // modelName = null;
               modelPath = null;
               modelOutputDestDir = null;
               modelInitStatePath = null;
@@ -274,34 +308,51 @@ public class ConfigureNewSequenceDialog extends JDialog {
 
   private boolean handleTextFieldValues() {
     boolean haveSeenError = false;
+
+    String plannerPathTemp = plannerPathField.getText().trim();
+    // if (! plannerPath.equals( plannerPathTemp)) {
+      if (! doesPathExist( plannerPathTemp)) {
+        haveSeenError = true;
+      } else if (plannerPathTemp.indexOf( ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH) == -1) {
+        JOptionPane.showMessageDialog
+          ( PlanWorks.getPlanWorks(),
+            "Library name does not match 'lib<planner-name>" +
+            ConfigureAndPlugins.PLANNER_LIB_NAME_MATCH + "'",
+            "Invalid Planner Library", JOptionPane.ERROR_MESSAGE);
+        haveSeenError = true;
+      } else {
+        plannerPath = plannerPathTemp;
+      }
+      // }
+
 //     modelName = modelNameField.getText().trim();
 
     String modelPathTemp = modelPathField.getText().trim();
-    if (! modelPath.equals( modelPathTemp)) {
+    // if (! modelPath.equals( modelPathTemp)) {
       if (! doesPathExist( modelPathTemp)) {
         haveSeenError = true;
       } else {
         modelPath = modelPathTemp;
       }
-    }
+      // }
 
     String modelInitStatePathTemp = modelInitStatePathField.getText().trim();
-    if (! modelInitStatePath.equals( modelInitStatePathTemp)) {
+    // if (! modelInitStatePath.equals( modelInitStatePathTemp)) {
       if (! doesPathExist( modelInitStatePathTemp)) {
         haveSeenError = true;
       } else {
         modelInitStatePath = modelInitStatePathTemp;
       }
-    }
+      // }
 
     String modelOutputDestDirTemp = modelOutputDestDirField.getText().trim();
-    if (! modelOutputDestDir.equals( modelOutputDestDirTemp)) {
+    // if (! modelOutputDestDir.equals( modelOutputDestDirTemp)) {
       if (! doesPathExist( modelOutputDestDirTemp)) {
         haveSeenError = true;
       } else {
         modelOutputDestDir = modelOutputDestDirTemp;
       }
-    }
+      // }
 
     return haveSeenError;
   } // end handleTextFieldValues
@@ -316,6 +367,15 @@ public class ConfigureNewSequenceDialog extends JDialog {
     }
     return doesExist;
   } // end doesPathExist
+
+  /**
+   * <code>getPlannerPath</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getPlannerPath() {
+    return plannerPath;
+  }
 
   /**
    * <code>getModelName</code>

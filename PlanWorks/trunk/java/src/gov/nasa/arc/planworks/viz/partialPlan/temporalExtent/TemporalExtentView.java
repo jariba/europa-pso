@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.62 2004-09-24 22:40:00 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.63 2004-10-07 20:19:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -174,7 +174,6 @@ public class TemporalExtentView extends PartialPlanView  {
     if (viewListener != null) {
       addViewListener( viewListener);
     }
-
     // SwingUtilities.invokeLater( runInit);
     final SwingWorker worker = new SwingWorker() {
         public Object construct() {
@@ -184,6 +183,33 @@ public class TemporalExtentView extends PartialPlanView  {
     };
     worker.start();  
   } // end constructor
+
+  /**
+   * <code>TemporalExtentView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param s - <code>PartialPlanViewState</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public TemporalExtentView(ViewableObject partialPlan, ViewSet viewSet, 
+                            PartialPlanViewState s, ViewListener viewListener) {
+    super((PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    temporalExtentViewInit(viewSet);
+    isStepButtonView = true;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    setState(s);
+    // SwingUtilities.invokeLater(runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
+  }
 
   private void temporalExtentViewInit(ViewSet viewSet) {
     this.viewSet = (PartialPlanViewSet) viewSet;

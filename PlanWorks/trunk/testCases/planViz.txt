@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.63 2004-09-21 21:37:52 taylor Exp $
+// $Id: planViz.txt,v 1.64 2004-10-07 20:19:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -429,11 +429,13 @@ Method:
  16. In the Token Network, Mouse-Right click on the background and select
      "Close Rule Instance Views".
  17. In the Constraint Network View, Mouse-Right click on the background and select
-     "Find Entity Path", enter two variable keys, and click "Find Path".
+     "Find Entity Path", enter two variable keys, and click "Does Path Exist" and then
+     "Find Path".
  18. In the Constraint Network View, Mouse-Left click on the background, and then
      Mouse-Right click on the background and select "Highlight Current Path".
  19. In the Token Network View, Mouse-Right click on the background and select
-     "Find Entity Path", enter two token keys, and click "Find Path".
+     "Find Entity Path", enter two token keys, and click "Does Path Exist" and then
+     "Find Path".
  20. In the Token Network View, Mouse-Left click on the background, and then
      Mouse-Right click on the background and select "Highlight Current Path".
  21. Select Mouse-Right on the background of each view and in turn select "Step Backward

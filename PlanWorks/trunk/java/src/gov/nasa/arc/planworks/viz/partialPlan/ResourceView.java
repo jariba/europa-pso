@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.20 2004-09-24 22:39:59 taylor Exp $
+// $Id: ResourceView.java,v 1.21 2004-10-07 20:19:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -254,7 +254,6 @@ public abstract class ResourceView extends PartialPlanView  {
     if (viewListener != null) {
       addViewListener( viewListener);
     }
-
     // SwingUtilities.invokeLater( runInit);
     final SwingWorker worker = new SwingWorker() {
         public Object construct() {
@@ -264,6 +263,36 @@ public abstract class ResourceView extends PartialPlanView  {
     };
     worker.start();  
   } // end constructor
+
+  /**
+   * <code>ResourceView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param vSet - <code>ViewSet</code> - 
+   * @param state - <code>PartialPlanViewState</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   * @param viewName - <code>String</code> - 
+   */
+  public ResourceView( final ViewableObject partialPlan, final ViewSet vSet, 
+                       final PartialPlanViewState state, final ViewListener viewListener,
+                       final String viewName) {
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
+    this.viewName = viewName;
+    resourceViewInit( vSet);
+    isStepButtonView = true;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    setState( state);
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
+  }
 
   private void resourceViewInit( final ViewSet vSet,
                                  final MDIInternalFrame unaryResourceProfileFrame) {

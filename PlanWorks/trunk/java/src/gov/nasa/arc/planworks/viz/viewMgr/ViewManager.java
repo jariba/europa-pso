@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewManager.java,v 1.26 2004-06-16 22:09:19 taylor Exp $
+// $Id: ViewManager.java,v 1.27 2004-10-07 20:19:15 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -95,6 +95,31 @@ public class ViewManager implements ViewSetRemover {
     }
     if(viewable instanceof PwPartialPlan) {
       ((PartialPlanViewSet)viewSets.get(viewable)).openView(viewClassName, state);
+    }
+    return ((ViewSet)viewSets.get(viewable)).openView(viewClassName, viewListener);
+  }
+
+  public MDIInternalFrame openView(ViewableObject viewable, String viewClassName, 
+                                   PartialPlanViewState state, ViewListener viewListener) {
+    if (!viewSets.containsKey(viewable)) {
+	if (viewable instanceof PwPartialPlan) {
+	    viewSets.put(viewable,
+                         new PartialPlanViewSet(desktopFrame,
+                                                (PwPartialPlan) viewable, state, this));
+            // contentSpecWindowCnt++;
+	}
+	else if (viewable instanceof PwPlanningSequence) {
+	    viewSets.put(viewable,
+                         new SequenceViewSet(desktopFrame,
+                                             (PwPlanningSequence) viewable, this));
+            // contentSpecWindowCnt++;
+	}
+	else {
+	    viewSets.put(viewable, new ViewSet(desktopFrame, viewable, this));
+	}
+    }
+    if(viewable instanceof PwPartialPlan) {
+      ((PartialPlanViewSet)viewSets.get(viewable)).openView(viewClassName, state, viewListener);
     }
     return ((ViewSet)viewSets.get(viewable)).openView(viewClassName, viewListener);
   }

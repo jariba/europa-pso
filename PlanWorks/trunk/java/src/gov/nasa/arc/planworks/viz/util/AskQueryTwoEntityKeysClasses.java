@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskQueryTwoEntityKeysClasses.java,v 1.1 2004-08-21 00:31:58 taylor Exp $
+// $Id: AskQueryTwoEntityKeysClasses.java,v 1.2 2004-10-07 20:19:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -146,6 +146,17 @@ public class AskQueryTwoEntityKeysClasses extends JPanel {
     return twoEntityKeysWindow;
   }
 
+  public final EntityKeysBox getEntityKeysBox() {
+    return entityKeysBox;
+  }
+
+  public final JButton getFindPathButton() {
+    return findPathButton;
+  }
+
+  public final JButton getPathExistsButton() {
+    return pathExistsButton;
+  }
 
   class FindButtonListener implements ActionListener {
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.16 2004-09-21 01:07:08 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.17 2004-10-07 20:19:16 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -78,7 +78,8 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
 
   protected PartialPlanContentSpec contentSpec;
   protected PartialPlanViewSet partialPlanViewSet;
-  
+
+  private MDIInternalFrame frame;
   private JButton valueButton;
   private static boolean queryTestExists;
 
@@ -92,6 +93,7 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
    */
   public ContentSpecWindow(MDIInternalFrame window, ContentSpec contentSpec,
                            PartialPlanViewSet partialPlanViewSet) {
+    this.frame = window;
     this.contentSpec = (PartialPlanContentSpec) contentSpec;
     this.partialPlanViewSet = partialPlanViewSet;
     queryTestExists = false;
@@ -180,6 +182,10 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
     buildFromSpec();
     valueButton.doClick();
     addMouseListener( this);
+  }
+
+  public MDIInternalFrame getFrame() {
+    return frame;
   }
 
   public PartialPlanContentSpec getSpec() {
@@ -509,6 +515,32 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
                                             mouseRightPopup, "");
       aPartialPlanView.createAllViewItems( partialPlan, partialPlanName, planSequence,
                                            mouseRightPopup);
+      aPartialPlanView.createStepAllViewItems( partialPlan, mouseRightPopup);
+
+      ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+
+    }
+  } // end mouseRightPopupMenu
+
+  /**
+   * <code>mouseRightPopupMenu</code>
+   *
+   * @param viewListenerList - <code>List</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   */
+  public void mouseRightPopupMenu( List viewListenerList, Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    PwPartialPlan partialPlan = contentSpec.getPartialPlan();
+    String partialPlanName = partialPlan.getPartialPlanName();
+    PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
+    int numToReturn = 1;
+    List partialPlanViews = partialPlanViewSet.getPartialPlanViews( numToReturn);
+    if (partialPlanViews.size() > 0) {
+      PartialPlanView aPartialPlanView = (PartialPlanView) partialPlanViews.get(0);
+      aPartialPlanView.createOpenViewItems( partialPlan, partialPlanName, planSequence,
+                                            mouseRightPopup, viewListenerList, "");
+      aPartialPlanView.createAllViewItems( partialPlan, partialPlanName, planSequence,
+                                           viewListenerList, mouseRightPopup);
       aPartialPlanView.createStepAllViewItems( partialPlan, mouseRightPopup);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);

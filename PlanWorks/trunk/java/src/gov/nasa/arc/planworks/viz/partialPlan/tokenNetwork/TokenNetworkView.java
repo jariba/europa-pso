@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.78 2004-09-30 22:05:04 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.79 2004-10-07 20:19:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -201,6 +201,34 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     };
     worker.start();  
   } // end constructor
+
+  /**
+   * <code>TokenNetworkView</code> - constructor 
+   *
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
+   * @param state - <code>PartialPlanViewState</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
+   */
+  public TokenNetworkView( final ViewableObject partialPlan, final ViewSet viewSet,
+                           final PartialPlanViewState state, final ViewListener viewListener) {
+    super((PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
+    tokenNetworkViewInit( viewSet);
+    isStepButtonView = true;
+    // setState( state);
+    this.state = state;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    // SwingUtilities.invokeLater( runInit);
+    final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          init();
+          return null;
+        }
+    };
+    worker.start();  
+  }
 
   private void tokenNetworkViewInit( final ViewSet viewSet) {
     this.viewSet = (PartialPlanViewSet) viewSet;

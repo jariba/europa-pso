@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.58 2004-10-01 20:04:28 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.59 2004-10-07 20:18:56 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -83,7 +83,7 @@
     <ant dir="./java" antfile="build.xml" target="compile"/>
   </target>
 
-  <target name="createJNI" depends="chk_jvm_2"
+  <target name="createJNI" depends="chk_jvm_2,chk_ostype_2,chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2"
       description="-- create the JNI interface to Planners">
     <ant dir="./java" antfile="build.xml" target="createJNI"/>
   </target>
@@ -126,6 +126,7 @@
   </target>
 
   <target name="chk_solaris_2" depends="chk_solaris_1" if="os.solaris">
+    <property name="os" value="solaris"/>
 <!--Comment out the following line if you're on Solaris and set your own MySQL bindir-->
     <property name="mysql.bindir" value="${mysql.solaris.bindir}"/>
 <!--This works because properties are immutable, so this line is ignored.-->
@@ -144,6 +145,7 @@
   </target>
 
   <target name="chk_linux_2" depends="chk_linux_1" if="os.linux">
+    <property name="os" value="linux"/>
 <!--Comment out the following line if you're on Linux and set your own MySQL bindir-->
     <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
 <!--This works because properties are immutable, so this line is ignored.-->
@@ -158,6 +160,7 @@
   </target>
 
   <target name="chk_cygwin_2" depends="chk_cygwin_1" if="os.cygwin">
+    <property name="os" value="cygwin"/>
     <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
     <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
   </target>
@@ -170,6 +173,7 @@
   </target>
 
   <target name="chk_macosx_2" depends="chk_macosx_1" if="os.macosx">
+    <property name="os" value="macosx"/>
     <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
   </target>
 
