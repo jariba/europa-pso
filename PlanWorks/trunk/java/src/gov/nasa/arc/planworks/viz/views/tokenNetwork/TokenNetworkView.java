@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.22 2003-09-05 19:11:20 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.23 2003-09-15 23:47:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -75,8 +75,6 @@ public class TokenNetworkView extends VizView {
   private List linkList; // element TokenLink
   private Map relationships; // master, slave, self relationships
   private List linkNameList; // element String
-  private int maxViewWidth;
-  private int maxViewHeight;
 
   /**
    * <code>TokenNetworkView</code> - constructor - called by ViewSet.openTokenNetworkView.
@@ -99,12 +97,10 @@ public class TokenNetworkView extends VizView {
     this.linkList = new ArrayList();
     this.relationships = new HashMap();
     this.linkNameList = new ArrayList();
-    maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
-    maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
     buildTokenParentChildRelationships();
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     jGoView = new JGoView();
-    jGoView.setBackground( ColorMap.getColor( "lightGray"));
+    jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
     jGoView.setVisible( true);
@@ -165,9 +161,9 @@ public class TokenNetworkView extends VizView {
     //layout.ensureAllPositive();
     //layout.position(getWidth(), getHeight());
     System.err.println("Ring layout took " + (System.currentTimeMillis() - t1));*/
-    computeExpandedViewFrame();
-    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
-
+    expandViewFrame( viewSet, viewName,
+                     (int) jGoView.getDocumentSize().getWidth(),
+                     (int) jGoView.getDocumentSize().getHeight());
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
@@ -199,32 +195,6 @@ public class TokenNetworkView extends VizView {
     // setVisible(true | false) depending on ids
     setNodesVisible();
   } // end redrawView
-
-
-  private void computeExpandedViewFrame() {
-    int minx = Integer.MAX_VALUE;
-    int miny = Integer.MAX_VALUE;
-    int maxx = Integer.MIN_VALUE;
-    int maxy = Integer.MIN_VALUE;
-    Iterator tokenNodeIterator = nodeList.iterator();
-    while (tokenNodeIterator.hasNext()) {
-      TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-      /*int maxWidth = (int) tokenNode.getLocation().getX() +
-        (int) tokenNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;
-      maxViewWidth = Math.max( maxWidth, maxViewWidth);
-      int maxHeight = (int) tokenNode.getLocation().getY() +
-        ViewConstants.TIMELINE_VIEW_Y_INIT;
-        maxViewHeight = Math.max( maxHeight, maxViewHeight);*/
-      int x = (int)tokenNode.getLocation().getX();
-      int y = (int)tokenNode.getLocation().getY();
-      minx = Math.min(x, minx);
-      miny = Math.min(y, miny);
-      maxx = Math.max(x, maxx);
-      maxy = Math.max(y, maxy);
-    } 
-    maxViewWidth = maxx - minx + 300;
-    maxViewHeight = maxy - miny + 300;
-  } // end computeExpandedViewFrame
 
   /**
    * <code>getJGoDocument</code>
@@ -511,7 +481,7 @@ public class TokenNetworkView extends VizView {
 //     } else {
 //       System.err.println( "createTokenLink: type " + type + " not handled");
 //     }
-//     ((JGoText) link.getMidLabel()).setBkColor( ColorMap.getColor( "lightGray"));
+//     ((JGoText) link.getMidLabel()).setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
 
 //     System.err.println( fromTokenNode.getPredicateName() + " " +
 //                         fromTokenNode.getToken().getId().toString() + " => " +

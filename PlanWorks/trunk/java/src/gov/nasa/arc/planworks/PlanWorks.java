@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.51 2003-09-11 23:40:32 miatauro Exp $
+// $Id: PlanWorks.java,v 1.52 2003-09-15 23:47:18 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -172,7 +172,7 @@ public class PlanWorks extends MDIDesktopFrame {
       //                    contentPane.getComponent( i).getClass().getName());
       if (contentPane.getComponent(i) instanceof MDIDesktopPane) {
         ((MDIDesktopPane) contentPane.getComponent(i)).
-          setBackground( ColorMap.getColor( "lightGray"));
+          setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
         break;
       }
     }
@@ -644,9 +644,10 @@ public class PlanWorks extends MDIDesktopFrame {
   private void addSequence() {
     boolean isSequenceAdded = false;
     while (! isSequenceAdded) {
-      List invalidSequenceDirs = new ArrayList();
+      List invalidSequenceDirs = null;
       while (true) {
-        // ask user for a single sequence directory of partialPlan directories
+        invalidSequenceDirs = new ArrayList();
+        // ask user for one or more sequence directories of partialPlan directories
         int returnVal = sequenceDirChooser.showDialog( this, "");
         if (returnVal == JFileChooser.APPROVE_OPTION) {
           for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
@@ -660,10 +661,8 @@ public class PlanWorks extends MDIDesktopFrame {
             }
           }
           if (invalidSequenceDirs.size() == sequenceDirectories.length) {
-            // System.err.println( "continue");
             continue; // user must reselect
           } else {
-            // System.err.println( "break");
             break; // some sequences are valid
           }
         } else {
@@ -672,13 +671,12 @@ public class PlanWorks extends MDIDesktopFrame {
       } // end while
 
       try {
-        // System.err.println( "try");
         for (int i = 0, n = sequenceDirectories.length; i < n; i++) {
           String sequenceDirectory = sequenceParentDirectory +
             System.getProperty( "file.separator") + sequenceDirectories[i].getName();
           if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
-            System.err.println( "project.addPlanningSequence " + sequenceDirectory);
             currentProject.addPlanningSequence( sequenceDirectory);
+            System.err.println( "project.addPlanningSequence " + sequenceDirectory);
             isSequenceAdded = true;
          }
         }
@@ -1065,8 +1063,8 @@ public class PlanWorks extends MDIDesktopFrame {
       if (! viewExists) {
         viewFrame.setSize( INTERNAL_FRAME_WIDTH, INTERNAL_FRAME_HEIGHT);
         int viewIndex = 0;
-        for (int i = 0, n = ViewConstants.orderedViewNames.length; i < n; i++) {
-          if (ViewConstants.orderedViewNames[i].equals( viewName)) {
+        for (int i = 0, n = ViewConstants.ORDERED_VIEW_NAMES.length; i < n; i++) {
+          if (ViewConstants.ORDERED_VIEW_NAMES[i].equals( viewName)) {
             viewIndex = i;
             break;
           }
@@ -1140,9 +1138,14 @@ public class PlanWorks extends MDIDesktopFrame {
             PlanWorks.sequenceDirectories = seqDirs;
             sequenceDirChooser.approveSelection();
           } else {
+            String seqDir = "<null>";
+            if (seqDirs.length != 0) {
+              seqDir = seqDirs[0].getName();
+            }
             JOptionPane.showMessageDialog
-              ( PlanWorks.this,
-                "`" + dirChoice + "'\nis not a valid sequence directory.",
+              ( PlanWorks.this, "`" + dirChoice +
+                System.getProperty( "file.separator") +  seqDir +
+                "'\nis not a valid sequence directory.",
                 "No Directory Selected", JOptionPane.ERROR_MESSAGE);
           }
         }
@@ -1158,7 +1161,7 @@ class SequenceDirectoryFilter extends FileFilter {
   }
 
   /**
-   * accept - Accept all files and directories which are not partial plan 
+   * accept - Accept all files, and directories which are not partial plan 
    *          step directories
    *
    * @param file - a directory or file name
@@ -1172,24 +1175,9 @@ class SequenceDirectoryFilter extends FileFilter {
       if (file.getName().equals( "CVS")) {
         isValid = false;
       } else {
-        int fileCnt = 0;
-        File [] filePathNames = file.listFiles();
-        for (int i = 0, n = filePathNames.length; i < n; i++) {
-          if (! filePathNames[i].getName().equals( "CVS")) {
-            fileCnt++;
-          }
-        }
-        if (fileCnt != DbConstants.NUMBER_OF_PP_FILES) {
-          // accept all directories with != partial plan file count
-        } else {
-          for (int i = 0, n = filePathNames.length; i < n; i++) {
-            String ext = FileUtils.getExtension( filePathNames[i]);
-            // System.err.println( "ext " + ext );
-            if ((ext != null) && ext.equals( DbConstants.PP_PARTIAL_PLAN_EXT)) {
-              isValid = false;
-              break;
-            }
-          }
+        String [] fileNames = file.list(new PwSQLFilenameFilter());
+        if (fileNames.length == DbConstants.NUMBER_OF_PP_FILES) {
+          isValid = false;
         }
       }
     }

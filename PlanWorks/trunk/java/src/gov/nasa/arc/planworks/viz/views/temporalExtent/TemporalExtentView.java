@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.16 2003-09-11 00:25:48 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.17 2003-09-15 23:47:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,8 +19,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.awt.Point;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
@@ -77,6 +75,7 @@ public class TemporalExtentView extends VizView  {
   private ViewSet viewSet;
   private ExtentView jGoExtentView;
   private JGoView jGoRulerView;
+  private RulerPanel rulerPanel;
   private String viewName;
   private JGoSelection jGoSelection;
   // temporalNodeList & tmpTemporalNodeList used by JFCUnit test case
@@ -96,8 +95,6 @@ public class TemporalExtentView extends VizView  {
   private int tickTime;
   private int maxCellRow;
   private float timeScale;
-  private int maxViewWidth;
-  private int maxViewHeight;
   private JGoStroke timeScaleMark;
 
   /**
@@ -116,14 +113,10 @@ public class TemporalExtentView extends VizView  {
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
     viewName = "temporalExtentView";
-    temporalNodeList = new ArrayList();
-    tmpTemporalNodeList = new ArrayList();
 
     startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
     maxCellRow = 0;
-    maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
-    maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
     timeScaleMark = null;
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -131,20 +124,27 @@ public class TemporalExtentView extends VizView  {
 
     jGoExtentView = new ExtentView();
     // jGoSelection = new JGoSelection( jGoExtentView);
-    jGoExtentView.setBackground( ColorMap.getColor( "lightGray"));
+    jGoExtentView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoExtentView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
 
     add( jGoExtentView, BorderLayout.NORTH);
     jGoExtentView.validate();
     jGoExtentView.setVisible( true);
 
-    jGoRulerView = new RulerView();
-    jGoRulerView.setBackground( ColorMap.getColor( "lightGray"));
+    rulerPanel = new RulerPanel();
+    rulerPanel.setLayout( new BoxLayout( rulerPanel, BoxLayout.Y_AXIS));
+
+
+    // jGoRulerView = new RulerView();
+    jGoRulerView = new JGoView();
+    jGoRulerView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoRulerView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
-    add( jGoRulerView, BorderLayout.NORTH);
+    rulerPanel.add( jGoRulerView, BorderLayout.NORTH);
     jGoRulerView.validate();
     jGoRulerView.setVisible( true);
     this.setVisible( true);
+
+    add( rulerPanel, BorderLayout.SOUTH);
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -186,16 +186,15 @@ public class TemporalExtentView extends VizView  {
     graphics.dispose();
 
     collectAndComputeTimeScaleMetrics();
-    createTemporalNodes();
-    layoutTemporalNodes();
     createTimeScale();
+    boolean isRedraw = false;
+    renderTemporalExtent( isRedraw);
 
-    // equalize view widths so scrollbars are equal
-    equalizeViewWidths();
-
-    // setVisible( true | false) depending on ContentSpec
-    setNodesVisible();
-    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
+    expandViewFrame( viewSet, viewName,
+                     (int) Math.max( jGoExtentView.getDocumentSize().getWidth(),
+                                     jGoRulerView.getDocumentSize().getWidth()),
+                     (int) (jGoExtentView.getDocumentSize().getHeight() +
+                            jGoRulerView.getDocumentSize().getHeight()));
 
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
@@ -218,21 +217,38 @@ public class TemporalExtentView extends VizView  {
     new RedrawViewThread().start();
   }
 
+  /**
+   * <code>RedrawViewThread</code> - execute redraw in a new thread
+   *
+   */
   class RedrawViewThread extends Thread {
 
     public RedrawViewThread() {
     }  // end constructor
 
     public void run() {
-      redrawView();
+      boolean isRedraw = true;
+      renderTemporalExtent( isRedraw);
     } //end run
 
   } // end class RedrawViewThread
 
-  private void redrawView() {
-    // setVisible(true | false) depending on ids
-    setNodesVisible();
-  } // end redrawView
+  private void renderTemporalExtent( boolean isRedraw) {
+    jGoExtentView.getDocument().deleteContents();
+
+    validTokenIds = viewSet.getValidTokenIds();
+    displayedTokenIds = new ArrayList();
+
+    createTemporalNodes();
+
+    boolean showDialog = true;
+    isContentSpecRendered( "Temporal Extent View", showDialog);
+
+    layoutTemporalNodes();
+    // equalize view widths so scrollbars are equal
+    equalizeViewWidths( isRedraw);
+
+  } // end createTemporalExtentView
 
   /**
    * <code>getJGoDocument</code> - the temporal extent view document
@@ -308,7 +324,7 @@ public class TemporalExtentView extends VizView  {
    * @param xLoc - <code>int</code> - 
    * @return - <code>int</code> - 
    */
-  public int scaleXLoc( int xLoc) {
+  public int  scaleXLoc( int xLoc) {
     return (int) ((xLoc - xOrigin) / timeScale);
   }
 
@@ -334,7 +350,7 @@ public class TemporalExtentView extends VizView  {
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
         List slotList = timeline.getSlotList();
         Iterator slotIterator = slotList.iterator();
-        PwToken previousToken = null;
+        PwSlot previousSlot = null;
         int slotCnt = 0;
         while (slotIterator.hasNext()) {
           PwSlot slot = (PwSlot) slotIterator.next();
@@ -342,10 +358,10 @@ public class TemporalExtentView extends VizView  {
           PwToken token = slot.getBaseToken();
           slotCnt++;
           PwDomain[] intervalArray =
-            SlotNode.getStartEndIntervals( this, slot, previousToken, isLastSlot,
+            SlotNode.getStartEndIntervals( this, slot, previousSlot, isLastSlot,
                                            alwaysReturnEnd);
           collectTimeScaleMetrics( intervalArray[0], intervalArray[1]);
-          previousToken = token;
+          previousSlot = slot;
         }
         if (slotCnt > maxSlots) {
           maxSlots = slotCnt;
@@ -485,7 +501,6 @@ public class TemporalExtentView extends VizView  {
 
   private void createTimeScale() {
     int xLoc = (int) scaleTime( tickTime);
-    int maxRulerWidth = 0, maxRulerHeight = 0;
     // System.err.println( "createTimeScale: xLoc " + xLoc);
     int yRuler = startYLoc;
     int yLabelUpper = yRuler, yLabelLower = yRuler;
@@ -516,20 +531,8 @@ public class TemporalExtentView extends VizView  {
     timeScaleRuler.addPoint( xLoc, yRuler);
     timeScaleRuler.addPoint( xLoc, yRuler + tickHeight);
     addTickLabel( tickTime, xLoc, yLabel + 4);
-    int maxHeight = yLabelLower + (ViewConstants.TIMELINE_VIEW_Y_INIT * 3);
-    if (yLabelUpper != yLabelLower) {
-      maxHeight += ViewConstants.TIMELINE_VIEW_Y_INIT;
-    }
-    if (maxHeight > maxRulerHeight) {
-      maxRulerHeight = maxHeight;
-    }
-    int maxWidth = xLoc + ViewConstants.TIMELINE_VIEW_X_INIT;
-    if (maxWidth > maxRulerWidth) {
-      maxRulerWidth = maxWidth; 
-    }
+
     jGoRulerView.getDocument().addObjectAtTail( timeScaleRuler);
-    ((RulerView) jGoRulerView).setHeight( maxRulerHeight);
-    jGoRulerView.validate();
   } // end createTimeScale
 
   private void addTickLabel( int tickTime, int x, int y) {
@@ -546,12 +549,14 @@ public class TemporalExtentView extends VizView  {
     textObject.setResizable( false);
     textObject.setEditable( false);
     textObject.setDraggable( false);
-    textObject.setBkColor( ColorMap.getColor( "lightGray"));
+    textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoRulerView.getDocument().addObjectAtTail( textObject);
   } // end addTickLabel
 
 
   private void createTemporalNodes() {
+    temporalNodeList = new ArrayList();
+    tmpTemporalNodeList = new ArrayList();
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
     int objectCnt = 0;
@@ -565,33 +570,42 @@ public class TemporalExtentView extends VizView  {
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
         List slotList = timeline.getSlotList();
         Iterator slotIterator = slotList.iterator();
-        PwToken previousToken = null;
+        PwSlot previousSlot = null;
         boolean isFirstSlot = true;
         while (slotIterator.hasNext()) {
           PwSlot slot = (PwSlot) slotIterator.next();
+          // overloaded tokens on slot - not displayed, put in displayedTokenIds
+          List tokenList = slot.getTokenList();
+          for (int i = 1, n = tokenList.size(); i < n; i++) {
+            isTokenInContentSpec( (PwToken) tokenList.get( i));
+          }
           boolean isLastSlot = (! slotIterator.hasNext());
           PwToken token = slot.getBaseToken();
           if ((token == null) && (isFirstSlot || isLastSlot)) {
-            // discard leading and trailing empty slots
+            // discard leading and trailing empty slots (planworks/test/data/emptySlots)
           } else {
-            PwDomain[] intervalArray =
-              SlotNode.getStartEndIntervals( this, slot, previousToken, isLastSlot,
-                                             alwaysReturnEnd);
-            PwDomain startTimeIntervalDomain = intervalArray[0];
-            PwDomain endTimeIntervalDomain = intervalArray[1];
-            String earliestDurationString =
-              SlotNode.getShortestDuration( slot, startTimeIntervalDomain,
-                                            endTimeIntervalDomain);
-            String latestDurationString =
-              SlotNode.getLongestDuration( slot, startTimeIntervalDomain,
-                                           endTimeIntervalDomain);
-            TemporalNode temporalNode = 
-              new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
-                                earliestDurationString, latestDurationString, objectCnt,
-                                isFreeToken, this); 
-            tmpTemporalNodeList.add( temporalNode);
-            jGoExtentView.getDocument().addObjectAtTail( temporalNode);
-            previousToken = token;
+            // check for embedded empty slots - always show them
+            if ((token == null) ||
+                (token != null) && isTokenInContentSpec( token)) {
+              PwDomain[] intervalArray =
+                SlotNode.getStartEndIntervals( this, slot, previousSlot, isLastSlot,
+                                               alwaysReturnEnd);
+              PwDomain startTimeIntervalDomain = intervalArray[0];
+              PwDomain endTimeIntervalDomain = intervalArray[1];
+              String earliestDurationString =
+                SlotNode.getShortestDuration( slot, startTimeIntervalDomain,
+                                              endTimeIntervalDomain);
+              String latestDurationString =
+                SlotNode.getLongestDuration( slot, startTimeIntervalDomain,
+                                             endTimeIntervalDomain);
+              TemporalNode temporalNode = 
+                new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
+                                  earliestDurationString, latestDurationString, objectCnt,
+                                  isFreeToken, this); 
+              tmpTemporalNodeList.add( temporalNode);
+              jGoExtentView.getDocument().addObjectAtTail( temporalNode);
+              previousSlot = slot;
+            }
           }
           isFirstSlot = false;
         }
@@ -613,21 +627,23 @@ public class TemporalExtentView extends VizView  {
     PwSlot slot = null;
     while (freeTokenItr.hasNext()) {
       PwToken token = (PwToken) freeTokenItr.next();
-      PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
-      PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
-      String earliestDurationString =
-        SlotNode.getShortestDuration( slot, startTimeIntervalDomain,
-                                      endTimeIntervalDomain);
-      String latestDurationString =
-        SlotNode.getLongestDuration( slot, startTimeIntervalDomain,
-                                     endTimeIntervalDomain);
-      TemporalNode temporalNode = 
-        new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
-                          earliestDurationString, latestDurationString, objectCnt,
-                          isFreeToken, this); 
-      tmpTemporalNodeList.add(temporalNode );
-      // nodes are always in front of any links
-      jGoExtentView.getDocument().addObjectAtTail( temporalNode);
+      if (isTokenInContentSpec( token)) {
+        PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
+        PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
+        String earliestDurationString =
+          SlotNode.getShortestDuration( slot, startTimeIntervalDomain,
+                                        endTimeIntervalDomain);
+        String latestDurationString =
+          SlotNode.getLongestDuration( slot, startTimeIntervalDomain,
+                                       endTimeIntervalDomain);
+        TemporalNode temporalNode = 
+          new TemporalNode( token, slot, startTimeIntervalDomain, endTimeIntervalDomain,
+                            earliestDurationString, latestDurationString, objectCnt,
+                            isFreeToken, this); 
+        tmpTemporalNodeList.add(temporalNode );
+        // nodes are always in front of any links
+        jGoExtentView.getDocument().addObjectAtTail( temporalNode);
+      }
     }
   } // end createFreeTokenTemporalNodes
 
@@ -663,63 +679,49 @@ public class TemporalExtentView extends VizView  {
       // render the node
       temporalNode.configure();
     }
-    Iterator temporalNodeIterator = temporalNodeList.iterator();
-    while (temporalNodeIterator.hasNext()) {
-      TemporalNode temporalNode = (TemporalNode) temporalNodeIterator.next();
-      int maxHeight = (int) temporalNode.getLocation().getX() +
-        (int) temporalNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_Y_INIT;
-      if (maxHeight > maxViewHeight) {
-        maxViewHeight = maxHeight;
-      }
-      int maxWidth = (int) temporalNode.getLocation().getX() +
-        ViewConstants.TIMELINE_VIEW_X_INIT;
-      if (maxWidth > maxViewWidth) {
-        maxViewWidth = maxWidth;
-      }
-    }
   } // end layoutTemporalNodes
 
 
   // are temporal extents in content spec, in terms of their tokens --
   // set them visible
-  private void setNodesVisible() {
-    // print content spec
-    // System.err.println( "TemporalExtentView - contentSpec");
-    // viewSet.printSpec();
-    validTokenIds = viewSet.getValidTokenIds();
-    displayedTokenIds = new ArrayList();
-    Iterator temporalNodeIterator = temporalNodeList.iterator();
-    while (temporalNodeIterator.hasNext()) {
-      TemporalNode temporalNode = (TemporalNode) temporalNodeIterator.next();
-      Iterator markBridgeItr = temporalNode.getMarkAndBridgeList().iterator();
-      if (temporalNode.getToken() != null) { // not an empty slot
-        if (isTokenInContentSpec( temporalNode.getToken())) {
-          temporalNode.setVisible( true);
-          while (markBridgeItr.hasNext()) {
-            ((JGoStroke) markBridgeItr.next()).setVisible( true);
-          }
-        } else {
-          temporalNode.setVisible( false);
-          while (markBridgeItr.hasNext()) {
-            ((JGoStroke) markBridgeItr.next()).setVisible( false);
-          }
-        }
-      }
-      // overloaded tokens on slot - not displayed, put in list
-      PwSlot slot = (PwSlot) temporalNode.getSlot();
-      // check for free tokens (no slots!)
-      if (slot != null) {
-        List tokenList = slot.getTokenList();
-        if (tokenList.size() > 1) {
-          for (int i = 1, n = tokenList.size(); i < n; i++) {
-            isTokenInContentSpec( (PwToken) tokenList.get( i));
-          }
-        }
-      }
-    }
-    boolean showDialog = true;
-    isContentSpecRendered( "Temporal Extent View", showDialog);
-  } // end setNodesVisible
+//   private void setNodesVisible() {
+//     // print content spec
+//     // System.err.println( "TemporalExtentView - contentSpec");
+//     // viewSet.printSpec();
+//     validTokenIds = viewSet.getValidTokenIds();
+//     displayedTokenIds = new ArrayList();
+//     Iterator temporalNodeIterator = temporalNodeList.iterator();
+//     while (temporalNodeIterator.hasNext()) {
+//       TemporalNode temporalNode = (TemporalNode) temporalNodeIterator.next();
+//       Iterator markBridgeItr = temporalNode.getMarkAndBridgeList().iterator();
+//       if (temporalNode.getToken() != null) { // not an empty slot
+//         if (isTokenInContentSpec( temporalNode.getToken())) {
+//           temporalNode.setVisible( true);
+//           while (markBridgeItr.hasNext()) {
+//             ((JGoStroke) markBridgeItr.next()).setVisible( true);
+//           }
+//         } else {
+//           temporalNode.setVisible( false);
+//           while (markBridgeItr.hasNext()) {
+//             ((JGoStroke) markBridgeItr.next()).setVisible( false);
+//           }
+//         }
+//       }
+//       // overloaded tokens on slot - not displayed, put in list
+//       PwSlot slot = (PwSlot) temporalNode.getSlot();
+//       // check for free tokens (no slots!)
+//       if (slot != null) {
+//         List tokenList = slot.getTokenList();
+//         if (tokenList.size() > 1) {
+//           for (int i = 1, n = tokenList.size(); i < n; i++) {
+//             isTokenInContentSpec( (PwToken) tokenList.get( i));
+//           }
+//         }
+//       }
+//     }
+//     boolean showDialog = true;
+//     isContentSpecRendered( "Temporal Extent View", showDialog);
+//   } // end setNodesVisible
 
 
   private void iterateOverNodes() {
@@ -755,25 +757,50 @@ public class TemporalExtentView extends VizView  {
   } // end iterateOverJGoDocument
 
 
-  // write a line at the max extent in each view
-  private void equalizeViewWidths() {
+  // write a line at the max horizontal extent in each view, and
+  // at max vertical extent in jGoExtentView
+  private void equalizeViewWidths( boolean isRedraw) {
     Dimension extentViewDocument = jGoExtentView.getDocumentSize();
     Dimension rulerViewDocument = jGoRulerView.getDocumentSize();
 //     System.err.println( "extentViewDocumentWidth B" + extentViewDocument.getWidth() +
 //                         " rulerViewDocumentWidth B" + rulerViewDocument.getWidth());
-    int maxWidth = Math.max( (int) extentViewDocument.getWidth(),
-                             (int) rulerViewDocument.getWidth()) +
-      ViewConstants.TIMELINE_VIEW_X_INIT;
+    int xRulerMargin = ViewConstants.TIMELINE_VIEW_X_INIT;
+    int jGoDocBorderWidth = ViewConstants.JGO_DOC_BORDER_WIDTH;
+    if (isRedraw) {
+      xRulerMargin = 0;
+    }
+    int maxWidth = Math.max( (int) extentViewDocument.getWidth() - jGoDocBorderWidth,
+                             (int) rulerViewDocument.getWidth() + xRulerMargin -
+                             jGoDocBorderWidth);
+//     System.err.println( "maxWidth " + maxWidth);
     JGoStroke maxViewWidthPoint = new JGoStroke();
     maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT);
     maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
+    // make mark invisible
+    maxViewWidthPoint.setPen( new JGoPen( JGoPen.SOLID, 1, 
+                                          ViewConstants.VIEW_BACKGROUND_COLOR));
     jGoExtentView.getDocument().addObjectAtTail( maxViewWidthPoint);
-    maxViewWidthPoint = new JGoStroke();
-    maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT);
-    maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
-    jGoRulerView.getDocument().addObjectAtTail( maxViewWidthPoint);
-    jGoExtentView.validate();
-    jGoRulerView.validate();
+    // always put mark at max y location, so on redraw jGoRulerView does not expand
+    JGoStroke maxViewHeightPoint = new JGoStroke();
+    int maxYLoc = startYLoc + ((maxCellRow + 1) *
+                               ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2;
+    maxViewHeightPoint.addPoint( maxWidth, maxYLoc);
+    maxViewHeightPoint.addPoint( maxWidth - ViewConstants.TIMELINE_VIEW_X_INIT,
+                                 maxYLoc);
+    // make mark invisible
+    maxViewHeightPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
+                                           ViewConstants.VIEW_BACKGROUND_COLOR));
+    jGoExtentView.getDocument().addObjectAtTail( maxViewHeightPoint);
+
+    if (! isRedraw) {
+      maxViewWidthPoint = new JGoStroke();
+      maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT);
+      maxViewWidthPoint.addPoint( maxWidth, ViewConstants.TIMELINE_VIEW_Y_INIT * 2);
+      // make mark invisible
+      maxViewWidthPoint.setPen( new JGoPen( JGoPen.SOLID, 1,
+                                            ViewConstants.VIEW_BACKGROUND_COLOR));
+      jGoRulerView.getDocument().addObjectAtTail( maxViewWidthPoint);
+    }
 //     extentViewDocument = jGoExtentView.getDocumentSize();
 //     rulerViewDocument = jGoRulerView.getDocumentSize();
 //     System.err.println( "extentViewDocumentWidth A" + extentViewDocument.getWidth() +
@@ -781,58 +808,49 @@ public class TemporalExtentView extends VizView  {
   } // end equalizeViewWidths
 
 
+
   /**
-   * <code>RulerView</code> - require ruler view pane to be of fixed height
+   * <code>RulerPanel</code> - require ruler view panel to be of fixed height
    *
    */
-  class RulerView extends JGoView {
-
-    private int height;
+  class RulerPanel extends JPanel {
 
     /**
-     * <code>RulerView</code> - constructor 
+     * <code>RulerPanel</code> - constructor 
      *
      */
-    public RulerView() {
+    public RulerPanel() {
       super();
-      height = 0;
     }
 
     /**
-     * <code>setHeight</code> - set required fixed height
-     *
-     * @param maxRulerHeight - <code>int</code> - 
-     */
-    public void setHeight(int maxRulerHeight) {
-    int extentYMax = startYLoc +
-      ((maxCellRow + 1) * ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2;
-    if (extentYMax > 1000) {
-      maxRulerHeight = maxRulerHeight + (extentYMax - 1000) / 100;
-    }
-//     System.err.println( "RulerView.setHeight: maxRulerHeight " + maxRulerHeight +
-//                         " extentYMax " + extentYMax);
-      this.height = maxRulerHeight;
-    }
-
-    /**
-     * <code>getPreferredSize</code> - provide fixed height value to Swing layout
+     * <code>getMinimumSize</code>
      *
      * @return - <code>Dimension</code> - 
      */
-    public Dimension getPreferredSize() { 
-      // System.err.println( " RulerView getPreferredSize height " + height);
-      int h = height +
-        (int) getHorizontalScrollBar().getSize().getHeight();
-      int w = super.getSize().width; 
-      return new Dimension( w, h);
-    };
+    public Dimension getMinimumSize() {
+      return new Dimension( (int) TemporalExtentView.this.getSize().getWidth(),
+                            (int) jGoRulerView.getDocumentSize().getHeight() +
+                            (int) jGoRulerView.getHorizontalScrollBar().getSize().getHeight());
+    }
 
-  } // end class RulerView
+    /**
+     * <code>getMaximumSize</code>
+     *
+     * @return - <code>Dimension</code> - 
+     */
+    public Dimension getMaximumSize() {
+      return new Dimension( (int) TemporalExtentView.this.getSize().getWidth(),
+                            (int) jGoRulerView.getDocumentSize().getHeight() +
+                            (int) jGoRulerView.getHorizontalScrollBar().getSize().getHeight());
+    }
+
+  } // end class RulerPanel
 
 
   /**
    * <code>ScrollBarListener</code> - keep both jGoExtentView & jGoRulerView aligned,
-   *                                  even when user moves one scroll bar
+   *                                  when user moves one scroll bar
    *
    */
   class ScrollBarListener implements AdjustmentListener {
@@ -894,16 +912,15 @@ public class TemporalExtentView extends VizView  {
         // System.err.println( "doMouseClick: xLoc " + xLoc + " time " + scaleXLoc( xLoc));
         if (timeScaleMark != null) {
           jGoExtentView.getDocument().removeObject( timeScaleMark);
-          jGoExtentView.validate();
+          // jGoExtentView.validate();
         } 
-        timeScaleMark = new JGoStroke();
+        timeScaleMark = new TimeScaleMark( xLoc);
         timeScaleMark.addPoint( xLoc, startYLoc);
         timeScaleMark.addPoint( xLoc, startYLoc +
                                 ((maxCellRow + 1) *
                                  ViewConstants.TEMPORAL_NODE_CELL_HEIGHT) + 2);
-        timeScaleMark.setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "red")));
         jGoExtentView.getDocument().addObjectAtTail( timeScaleMark);
-        jGoExtentView.validate();
+        // jGoExtentView.validate();
 
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
         // do nothing
@@ -911,6 +928,35 @@ public class TemporalExtentView extends VizView  {
     } // end doBackgroundClick
 
   } // end class ExtentView
+
+
+  /**
+   * <code>TimeScaleMark</code> - color the mark and provide its time value
+   *                              as a tool tip.
+   *
+   */
+  class TimeScaleMark extends JGoStroke {
+
+    private int xLoc;
+
+    /**
+     * <code>TimeScaleMark</code> - constructor 
+     *
+     * @param xLoc - <code>int</code> - 
+     */
+    public TimeScaleMark( int xLoc) {
+      super();
+      this.xLoc = xLoc;
+      setDraggable( false);
+      setResizable( false);
+      setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "red")));
+    }
+
+    public String getToolTipText() {
+      return String.valueOf( scaleXLoc( xLoc) + 1);
+    }
+
+  } // end class TimeScaleMark
 
 
 } // end class TemporalExtentView

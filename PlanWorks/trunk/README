@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.25 2003-09-11 18:19:09 taylor Exp $
+# $Id: README,v 1.26 2003-09-15 23:47:17 taylor Exp $
 #
 
 SUMMARY
@@ -25,6 +25,8 @@ o  PRs and CRs completed:
    #2048: In large plans, may lose the time scale with current approach.
    #2049: Project vertical line on clicks for Temporal Extent View.
    #2051: Need better window management - how about a tiling option?
+   #2052: Need to handle redraw on content spec change to use space better.
+          Temporal Extent View & Timeline View are now redrawn.
    #2053: Post error message if trying to add sequence from other project.
    #2055: Bug creating project.
    #2057: Floating data left over filtering timeline view.

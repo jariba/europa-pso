@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.16 2003-09-02 21:49:17 taylor Exp $
+// $Id: VizView.java,v 1.17 2003-09-15 23:47:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -236,12 +236,12 @@ public class VizView extends JPanel {
         (PlanWorks.planWorks, viewName, "View Not Supported", 
          JOptionPane.INFORMATION_MESSAGE);
     }
-    maxViewWidth = Math.min( maxViewWidth,
+    maxViewWidth = Math.min( Math.max( maxViewWidth, PlanWorks.INTERNAL_FRAME_WIDTH),
                              (int) PlanWorks.planWorks.getSize().getWidth() -
                              (int) viewFrame.getLocation().getX() -
                              ViewConstants.MDI_FRAME_DECORATION_WIDTH -
                              ViewConstants.FRAME_DECORATION_WIDTH); 
-    maxViewHeight = Math.min( maxViewHeight,
+    maxViewHeight = Math.min( Math.max( maxViewHeight, PlanWorks.INTERNAL_FRAME_HEIGHT),
                               (int) PlanWorks.planWorks.getSize().getHeight() -
                               (int) viewFrame.getLocation().getY() -
                               ViewConstants.MDI_FRAME_DECORATION_HEIGHT -

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.38 2003-09-10 00:23:10 taylor Exp $
+// $Id: TimelineView.java,v 1.39 2003-09-15 23:47:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -76,8 +76,6 @@ public class TimelineView extends VizView {
   private Font font;
   private FontMetrics fontMetrics;
   private int slotLabelMinLength;
-  private int maxViewWidth;
-  private int maxViewHeight;
 
   /**
    * <code>TimelineView</code> - constructor - called by ViewSet.openTimelineView.
@@ -98,15 +96,13 @@ public class TimelineView extends VizView {
     this.timelineNodeList = null;
     this.freeTokenNodeList = new ArrayList();
     this.tmpTimelineNodeList = new ArrayList();
-    maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
-    maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
 
     jGoView = new JGoView();
     jGoSelection = new JGoSelection( jGoView);
-    jGoView.setBackground( ColorMap.getColor( "lightGray"));
+    jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
     jGoView.setVisible( true);
@@ -154,10 +150,11 @@ public class TimelineView extends VizView {
     jGoDocument = jGoView.getDocument();
 
     // create all nodes
-    createTimelineAndSlotNodes();
-    // setVisible( true | false) depending on ContentSpec
-    setNodesVisible();
-    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
+    renderTimelineAndSlotNodes();
+
+    expandViewFrame( viewSet, viewName,
+                     (int) jGoView.getDocumentSize().getWidth(),
+                     (int) jGoView.getDocumentSize().getHeight());
 
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
@@ -186,15 +183,22 @@ public class TimelineView extends VizView {
     }  // end constructor
 
     public void run() {
-      redrawView();
+      renderTimelineAndSlotNodes();
     } //end run
 
   } // end class RedrawViewThread
 
-  private void redrawView() {
-    // setVisible(true | false) depending on ids
-    setNodesVisible();
- } // end redrawView
+  private void renderTimelineAndSlotNodes() {
+    jGoView.getDocument().deleteContents();
+
+    validTokenIds = viewSet.getValidTokenIds();
+    displayedTokenIds = new ArrayList();
+
+    createTimelineAndSlotNodes();
+
+    boolean showDialog = true;
+    isContentSpecRendered( "Timeline View", showDialog);
+  } // end createTemporalExtentView
 
   /**
    * <code>getJGoDocument</code>
@@ -264,19 +268,21 @@ public class TimelineView extends VizView {
       while (timelineIterator.hasNext()) {
         x = ViewConstants.TIMELINE_VIEW_X_INIT;
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        String timelineName = timeline.getName();
-        String timelineNodeName = objectName + " : " + timelineName;
-        TimelineNode timelineNode =
-          new TimelineNode( timelineNodeName, timeline, new Point( x, y),
-                            objectCnt, this);
-        tmpTimelineNodeList.add( timelineNode);
-        // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
-        jGoDocument.addObjectAtTail( timelineNode);
-        timelineNode.setSize( timelineNodeWidth,
-                              (int) timelineNode.getSize().getHeight());
-        x += timelineNode.getSize().getWidth(); 
-        createSlotNodes( timeline, timelineNode, x, y, objectCnt);
-        y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        if (isTimelineInContentSpec( timeline)) {
+          String timelineName = timeline.getName();
+          String timelineNodeName = objectName + " : " + timelineName;
+          TimelineNode timelineNode =
+            new TimelineNode( timelineNodeName, timeline, new Point( x, y),
+                              objectCnt, this);
+          tmpTimelineNodeList.add( timelineNode);
+          // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
+          jGoDocument.addObjectAtTail( timelineNode);
+          timelineNode.setSize( timelineNodeWidth,
+                                (int) timelineNode.getSize().getHeight());
+          x += timelineNode.getSize().getWidth(); 
+          createSlotNodes( timeline, timelineNode, x, y, objectCnt);
+          y += ViewConstants.TIMELINE_VIEW_Y_DELTA; 
+        }
       }
       objectCnt += 1;
     }
@@ -288,14 +294,16 @@ public class TimelineView extends VizView {
     objectCnt = -1;
     while (freeTokenItr.hasNext()) {
       PwToken freeToken = (PwToken) freeTokenItr.next();
-      // increment by half the label width, since x is center, not left edge
-      x = x +  SwingUtilities.computeStringWidth( this.getFontMetrics(),
-                                                  freeToken.getPredicate().getName()) / 2;
-      TokenNode freeTokenNode = new TokenNode( freeToken, new Point( x, y), objectCnt,
-                                               isFreeToken, isDraggable, this);
-      freeTokenNodeList.add( freeTokenNode);
-      jGoDocument.addObjectAtTail( freeTokenNode);
-      x = x + (int) freeTokenNode.getSize().getWidth();
+      if (isTokenInContentSpec( freeToken))  {
+        // increment by half the label width, since x is center, not left edge
+        x = x +  SwingUtilities.computeStringWidth( this.getFontMetrics(),
+                                                    freeToken.getPredicate().getName()) / 2;
+        TokenNode freeTokenNode = new TokenNode( freeToken, new Point( x, y), objectCnt,
+                                                 isFreeToken, isDraggable, this);
+        freeTokenNodeList.add( freeTokenNode);
+        jGoDocument.addObjectAtTail( freeTokenNode);
+        x = x + (int) freeTokenNode.getSize().getWidth();
+      }
     }
     timelineNodeList = tmpTimelineNodeList;
   } // end createTimelineAndSlotNodes
@@ -306,46 +314,40 @@ public class TimelineView extends VizView {
 
     List slotList = timeline.getSlotList();
     Iterator slotIterator = slotList.iterator();
-    PwToken previousToken = null;
+    SlotNode previousSlotNode = null;
     SlotNode slotNode = null;
     boolean isFirstSlot = true, alwaysReturnEnd = false;
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
-      PwToken token = slot.getBaseToken();
+      // overloaded tokens on slot - not displayed, put in displayedTokenIds
+      List tokenList = slot.getTokenList();
+      for (int i = 1, n = tokenList.size(); i < n; i++) {
+        isTokenInContentSpec( (PwToken) tokenList.get( i));
+      }
       boolean isLastSlot = (! slotIterator.hasNext());
+      PwToken token = slot.getBaseToken();
       if ((token == null) && (isFirstSlot || isLastSlot)) {
-        // discard leading and trailing empty slots
+        // discard leading and trailing empty slots (planworks/test/data/emptySlots)
       } else {
-        String slotNodeLabel = getSlotNodeLabel( token, slot, isLastSlot);
-        slotNode = new SlotNode( slotNodeLabel, slot, new Point( x, y), previousToken,
-                                 isFirstSlot, isLastSlot, objectCnt, this);
-        timelineNode.addToSlotNodeList( slotNode);
-        // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
-        jGoDocument.addObjectAtTail( slotNode);
-        previousToken = token;
-        x += slotNode.getSize().getWidth();
+        // check for empty slots - always show them
+        if ((token == null) ||
+            (token != null) && isTokenInContentSpec( token)) {
+          String slotNodeLabel = getSlotNodeLabel( token, slot, isLastSlot);
+          slotNode = new SlotNode( slotNodeLabel, slot, new Point( x, y), previousSlotNode,
+                                   isFirstSlot, isLastSlot, objectCnt, this);
+          timelineNode.addToSlotNodeList( slotNode);
+          // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
+          jGoDocument.addObjectAtTail( slotNode);
+          previousSlotNode = slotNode;
+          // x += slotNode.getSize().getWidth();
+          // SlotNode code alters location due to Content Spec filtering
+          // System.err.println( "old x " + (x + (int) slotNode.getSize().getWidth()));
+          x = (int) (slotNode.getLocation().getX() + slotNode.getSize().getWidth()) +
+            ViewConstants.TIMELINE_VIEW_INSET_SIZE - 2;
+          // System.err.println( "new x " + x);
+          isFirstSlot = false;
+        }
       }
-      isFirstSlot = false;
-    }
-    int maxHeight = y + ViewConstants.TIMELINE_VIEW_Y_INIT;
-    if (maxHeight > maxViewHeight) {
-      maxViewHeight = maxHeight;
-    }
-    JGoText endIntervalTextObject = slotNode.getEndTimeIntervalObject();
-    // if last slot is empty, use label object
-    if (endIntervalTextObject != null) {
-      int maxWidth = (int) endIntervalTextObject.getLocation().getX() +
-        (int) endIntervalTextObject.getSize().getWidth() +
-        ViewConstants.TIMELINE_VIEW_X_INIT;
-      if (maxWidth > maxViewWidth) {
-        maxViewWidth = maxWidth;
-      }
-    } else {
-      int maxWidth = (int) slotNode.getLocation().getX() +
-        (int) slotNode.getSize().getWidth() + ViewConstants.TIMELINE_VIEW_X_INIT;
-      if (maxWidth > maxViewWidth) {
-        maxViewWidth = maxWidth;
-      }      
     }
   } // end createSlotNodes
 
@@ -358,7 +360,7 @@ public class TimelineView extends VizView {
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
     List slotList = timeline.getSlotList();
     Iterator slotIterator = slotList.iterator();
-    PwToken previousToken = null;
+    PwSlot previousSlot = null;
     SlotNode slotNode = null;
     boolean alwaysReturnEnd = true, foundEmptySlot = false;
     int earliestStartTime = PwDomain.MINUS_INFINITY_INT;
@@ -382,7 +384,7 @@ public class TimelineView extends VizView {
       }
       boolean isLastSlot = (! slotIterator.hasNext());
       PwDomain[] intervalArray =
-        SlotNode.getStartEndIntervals( this, slot, previousToken, isLastSlot, alwaysReturnEnd);
+        SlotNode.getStartEndIntervals( this, slot, previousSlot, isLastSlot, alwaysReturnEnd);
       PwDomain startTimeIntervalDomain = intervalArray[0];
       PwDomain endTimeIntervalDomain = intervalArray[1];
       if ((endTimeIntervalDomain != null) &&
@@ -410,7 +412,7 @@ public class TimelineView extends VizView {
           System.exit( 1);
         }
       }
-      previousToken = token;
+      previousSlot = slot;
     }
   } // end computeTimeIntervalLabelSize
 
@@ -434,7 +436,9 @@ public class TimelineView extends VizView {
 
 
   /**
-   * <code>getSlotNodeLabel</code>
+   * <code>getSlotNodeLabel</code> - pad slot label with blanks so that time
+   *                       interval lables underneath, do not overlap with
+   *                       adjacent slots
    *
    * @param token - <code>PwToken</code> - 
    * @param slot - <code>PwSlot</code> - 
@@ -449,101 +453,89 @@ public class TimelineView extends VizView {
       label.append( " (").append( String.valueOf( slot.getTokenList().size()));
       label.append( ")");
     }
-//     if (isLastSlot && (token == null)) {
-//       // do not expand final empty slot nodes
-//     } else {
-      if (label.length() < slotLabelMinLength) {
-        boolean prepend = true;
-        for (int i = 0, n = slotLabelMinLength - label.length(); i < n; i++) {
-          if (prepend) {
-            label.insert( 0, " ");
-          } else {
-            label.append( " ");
-          }
-          prepend = (! prepend);
+    if (label.length() < slotLabelMinLength) {
+      boolean prepend = true;
+      for (int i = 0, n = slotLabelMinLength - label.length(); i < n; i++) {
+        if (prepend) {
+          label.insert( 0, " ");
+        } else {
+          label.append( " ");
         }
+        prepend = (! prepend);
       }
-//     }
+    }
     return label.toString();
   } // end getSlotNodeLabel
 
 
   // is timelines and slots are in content spec, in terms of their tokens,
   // set them visible
-  private void setNodesVisible() {
-    // print content spec
-    // System.err.println( "TimelineView - contentSpec");
-    // viewSet.printSpec();
-    validTokenIds = viewSet.getValidTokenIds();
-    displayedTokenIds = new ArrayList();
-    Iterator timelineIterator = timelineNodeList.iterator();
-    Integer id = null;
-    while (timelineIterator.hasNext()) {
-      TimelineNode timelineNode = (TimelineNode) timelineIterator.next();
-      if (isTimelineInContentSpec( timelineNode.getTimeline())) {
-        timelineNode.setVisible( true);
-      } else {
-        timelineNode.setVisible( false);
-      }
-      List slotList = timelineNode.getSlotNodeList();
-      int numSlotNodes = slotList.size();
-      for (int i = 0, n = slotList.size(); i < n; i++) {
-        SlotNode slotNode = (SlotNode) slotList.get( i);
-        if (isSlotInContentSpec( slotNode.getSlot())) {
-          slotNode.setVisible( true);
+//   private void setNodesVisible() {
+//     // print content spec
+//     // System.err.println( "TimelineView - contentSpec");
+//     // viewSet.printSpec();
+//     validTokenIds = viewSet.getValidTokenIds();
+//     displayedTokenIds = new ArrayList();
+//     Iterator timelineIterator = timelineNodeList.iterator();
+//     Integer id = null;
+//     while (timelineIterator.hasNext()) {
+//       TimelineNode timelineNode = (TimelineNode) timelineIterator.next();
+//       if (isTimelineInContentSpec( timelineNode.getTimeline())) {
+//         timelineNode.setVisible( true);
+//       } else {
+//         timelineNode.setVisible( false);
+//       }
+//       List slotList = timelineNode.getSlotNodeList();
+//       int numSlotNodes = slotList.size();
+//       for (int i = 0, n = slotList.size(); i < n; i++) {
+//         SlotNode slotNode = (SlotNode) slotList.get( i);
+//         if (isSlotInContentSpec( slotNode.getSlot())) {
+//           slotNode.setVisible( true);
+//           if (slotNode.getStartTimeIntervalObject() != null) {
+//             slotNode.getStartTimeIntervalObject().setVisible( true);
+//           }
+//           if ((i == n - 1) && (slotNode.getEndTimeIntervalObject() != null)) {
+//             slotNode.getEndTimeIntervalObject().setVisible( true);
+//           }
+//         } else {
+//           // System.err.println("Setting slot " + slotNode.getSlot().getId() + " invisible");
+//           slotNode.setVisible( false);
+//           boolean visibleValue = false;
+//           // display interval time label, if previous slot is not being displayed
+//           if (i > 0) {
+//             SlotNode prevSlotNode = (SlotNode) slotList.get( i - 1);
+//             if (isSlotInContentSpec( prevSlotNode.getSlot())) {
+//               visibleValue = true;
+//             }
+//             if (slotNode.getStartTimeIntervalObject() != null) {
+//               slotNode.getStartTimeIntervalObject().setVisible( visibleValue);
+//             }
+//           } else {
+//             slotNode.getStartTimeIntervalObject().setVisible( false);
+//           }
+//           if ((i == n - 1) && (slotNode.getEndTimeIntervalObject() != null)) {
+//             slotNode.getEndTimeIntervalObject().setVisible( false);
+//           }
+//         }
+//       }
+//     }
+//     setFreeTokensVisible();
+//     boolean showDialog = true;
+//     isContentSpecRendered( "Timeline View", showDialog);
+//   } // end setNodesVisible
 
-//           System.err.println( "views " + slotNode.getView() + " and " + jGoView);
-//           System.err.println( "docs " + slotNode.getDocument() + " and " + jGoView.getDocument());
-//           System.err.println( "redirect " + slotNode.redirectSelection());
-//           JGoObject object = jGoSelection.extendSelection( slotNode);
-//           System.err.println( "setNodesVisible: object " + slotNode);
-//           jGoSelection.showHandles( slotNode);
-
-          if (slotNode.getStartTimeIntervalObject() != null) {
-            slotNode.getStartTimeIntervalObject().setVisible( true);
-          }
-          if ((i == n - 1) && (slotNode.getEndTimeIntervalObject() != null)) {
-            slotNode.getEndTimeIntervalObject().setVisible( true);
-          }
-        } else {
-          // System.err.println("Setting slot " + slotNode.getSlot().getId() + " invisible");
-          slotNode.setVisible( false);
-          boolean visibleValue = false;
-          // display interval time label, if previous slot is not being displayed
-          if (i > 0) {
-            SlotNode prevSlotNode = (SlotNode) slotList.get( i - 1);
-            if (isSlotInContentSpec( prevSlotNode.getSlot())) {
-              visibleValue = true;
-            }
-            if (slotNode.getStartTimeIntervalObject() != null) {
-              slotNode.getStartTimeIntervalObject().setVisible( visibleValue);
-            }
-          } else {
-            slotNode.getStartTimeIntervalObject().setVisible( false);
-          }
-          if ((i == n - 1) && (slotNode.getEndTimeIntervalObject() != null)) {
-            slotNode.getEndTimeIntervalObject().setVisible( false);
-          }
-        }
-      }
-    }
-    setFreeTokensVisible();
-    boolean showDialog = true;
-    isContentSpecRendered( "Timeline View", showDialog);
-  } // end setNodesVisible
-
-  private void setFreeTokensVisible() {
-    Iterator freeTokenNodeItr = freeTokenNodeList.iterator();
-    while (freeTokenNodeItr.hasNext()) {
-      TokenNode node = (TokenNode) freeTokenNodeItr.next();
-      // System.err.println( "setFreeTokensVisible " + node.getToken().getId());
-      if (isTokenInContentSpec( node.getToken())) {
-        node.setVisible( true);
-      } else {
-        node.setVisible( false);
-      }
-    }
-  } // end setFreeTokensVisible
+//   private void setFreeTokensVisible() {
+//     Iterator freeTokenNodeItr = freeTokenNodeList.iterator();
+//     while (freeTokenNodeItr.hasNext()) {
+//       TokenNode node = (TokenNode) freeTokenNodeItr.next();
+//       // System.err.println( "setFreeTokensVisible " + node.getToken().getId());
+//       if (isTokenInContentSpec( node.getToken())) {
+//         node.setVisible( true);
+//       } else {
+//         node.setVisible( false);
+//       }
+//     }
+//   } // end setFreeTokensVisible
 
   private void iterateOverNodes() {
     int numTimelineNodes = timelineNodeList.size();
