@@ -4,11 +4,15 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.99 2004-05-08 01:44:11 taylor Exp $
+// $Id: MySQLDB.java,v 1.100 2004-05-11 22:45:46 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.StreamTokenizer;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,9 +28,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.DbConstants;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.impl.PwConstraintImpl;
 import gov.nasa.arc.planworks.db.impl.PwDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwDBTransactionImpl;
@@ -1573,31 +1579,77 @@ public class MySQLDB {
     return retval;
   }
   
-  synchronized public static List queryConstraintTransactionNames() {
-    return queryTransactionNames("'CONSTRAINT%'");
-  }
+//   synchronized public static List queryConstraintTransactionNames() {
+//     return queryTransactionNames("'CONSTRAINT%'");
+//   }
 
-  synchronized public static List queryTokenTransactionNames() {
-    return queryTransactionNames("'TOKEN%'");
-  }
+//   synchronized public static List queryTokenTransactionNames() {
+//     return queryTransactionNames("'TOKEN%'");
+//   }
 
-  synchronized public static List queryVariableTransactionNames() {
-    return queryTransactionNames("'VAR%'");
-  }
+//   synchronized public static List queryVariableTransactionNames() {
+//     return queryTransactionNames("'VAR%'");
+//   }
 
-  synchronized public static List queryTransactionNames(String type) {
-    List retval = new ArrayList();
-    try {
-      ResultSet names = 
-        queryDatabase("SELECT DISTINCT TransactionName FROM Transaction WHERE TransactionName LIKE " + type);
-      while(names.next()) {
-        retval.add(names.getString("TransactionName"));
-      }
-    }
-    catch(SQLException sqle) {
-    }
-    return retval;
-  }
+//   synchronized public static List queryTransactionNames(String type) {
+//     List retval = new ArrayList();
+//     try {
+//       ResultSet names = 
+//         queryDatabase("SELECT DISTINCT TransactionName FROM Transaction WHERE TransactionName LIKE " + type);
+//       while(names.next()) {
+//         retval.add(names.getString("TransactionName"));
+//       }
+//     }
+//     catch(SQLException sqle) {
+//     }
+//     return retval;
+//   }
+	synchronized public static void queryTransactionNames(PwPlanningSequence seq, Set constrTrans, Set tokTrans, Set varTrans) {
+		try {
+			ResultSet names = queryDatabase("SELECT DISTINCT TransactionName FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()));
+			while(names.next()) {
+				String name = names.getString("TransactionName");
+				if(name.indexOf("CONSTRAINT_") != -1) {
+					constrTrans.add(name);
+				}
+				else if(name.indexOf("TOKEN_") != -1) {
+					tokTrans.add(name);
+				}
+				else if(name.indexOf("VARIABLE_") != -1) {
+					varTrans.add(name);
+				}
+			}
+		}
+		catch(SQLException sqle) {
+			sqle.printStackTrace();
+		}
+		System.err.println("=====>File: " + seq.getUrl() + System.getProperty("file.separator") + "transactions");
+		File transFile = new File(seq.getUrl() + System.getProperty("file.separator") + "transactions");
+		if(!transFile.exists() || !transFile.canRead()) {
+			return;
+		}
+
+		try {
+			StreamTokenizer strTok = new StreamTokenizer(new BufferedReader(new FileReader(transFile)));
+			strTok.wordChars('_', '_');
+			while(strTok.nextToken() != StreamTokenizer.TT_EOF) {
+				if(strTok.ttype == StreamTokenizer.TT_WORD && strTok.sval != null) {
+					if(strTok.sval.indexOf("CONSTRAINT_") != -1) {
+						constrTrans.add(strTok.sval);
+					}
+					else if(strTok.sval.indexOf("TOKEN_") != -1) {
+						tokTrans.add(strTok.sval);
+					}
+					else if(strTok.sval.indexOf("VARIABLE_") != -1) {
+						varTrans.add(strTok.sval);
+					}
+				}
+			}
+		}
+		catch(IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
 }
 
 class ObjectIdComparator implements Comparator {
