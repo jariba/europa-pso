@@ -309,6 +309,7 @@ CREATE TABLE Transaction (
   ObjectId int(11) NOT NULL default '0',
   Source enum('USER','SYSTEM','UNKNOWN') NOT NULL default 'UNKNOWN',
   TransactionId int(11) NOT NULL default '0',
+  StepNumber int(11) NOT NULL default '0',
   SequenceId bigint(20) NOT NULL default '0',
   PartialPlanId bigint(20) NOT NULL default '0'
 ) TYPE=MyISAM;
