@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.1 2003-05-15 22:16:23 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.2 2003-05-16 18:22:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -44,6 +44,8 @@ public class PwTokenImpl implements PwToken {
   private List paramVarIds; // element String
   private String slotId;
   private PwPredicateImpl predicate;
+	private PwVariableImpl startVar;
+	private PwVariableImpl endVar;
   private List paramVarsList; // element String
 
 
@@ -96,7 +98,14 @@ public class PwTokenImpl implements PwToken {
     }
   } // end constructor
 
- 
+	public PwPredicate getPredicate()
+	{
+		return predicate;
+	}
+
+	public PwVariable getStartVariable()
+	{
+	}
 
 } // end class PwTokenImpl
 

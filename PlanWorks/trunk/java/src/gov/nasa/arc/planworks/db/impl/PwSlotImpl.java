@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.1 2003-05-15 22:16:23 taylor Exp $
+// $Id: PwSlotImpl.java,v 1.2 2003-05-16 18:22:13 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -60,5 +60,15 @@ public class PwSlotImpl implements PwSlot {
     return token;
   } // end addToken
 
+	/**
+	 * <code>getTokenList</code>
+	 *
+	 * @return - <code>List</code> -
+	 */
+
+	public List getTokenList()
+	{
+		return tokenList;
+	}
 
 } // end class PwSlotImpl
