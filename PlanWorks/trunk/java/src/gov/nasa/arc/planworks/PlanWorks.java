@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.6 2003-06-13 18:51:26 taylor Exp $
+// $Id: PlanWorks.java,v 1.7 2003-06-13 19:04:55 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -142,21 +142,11 @@ public class PlanWorks extends MDIDesktopFrame {
         break;
       }
     }
-    // disable Project menu until init is done
-    setProjectMenuEnabled( "Create ...", false);
-    setProjectMenuEnabled( "Open ...", false);
-    setProjectMenuEnabled( "Delete ...", false);
     // default project url
     defaultProjectUrl =
       FileUtils.getCanonicalPath( System.getProperty( "default.project.dir"));
     this.setVisible( true);
 
-    try {
-      PwProject.initProjects();
-    } catch (ResourceNotFoundException rnfExcep) {
-      System.err.println( rnfExcep);
-      System.exit( -1);
-    }
     setProjectMenuEnabled( "Create ...", true);
     if (PwProject.listProjects().size() > 0) {
       setProjectMenuEnabled( "Open ...", true);
@@ -347,7 +337,7 @@ public class PlanWorks extends MDIDesktopFrame {
     Object response = JOptionPane.showInputDialog
       ( this, "", "Open Project", JOptionPane.QUESTION_MESSAGE, null,
         options, options[0]);
-    System.err.println( "response " + response);
+    // System.err.println( "response " + response);
     if (response instanceof String) {
       for (int i = 0, n = options.length; i < n; i++) {
         if (((String) options[i]).equals( response)) {
@@ -807,6 +797,13 @@ public class PlanWorks extends MDIDesktopFrame {
     osName = System.getProperty("os.name");
     planWorksRoot = System.getProperty( "planworks.root");
     userCollectionName = System.getProperty( "file.separator") + System.getProperty( "user");
+
+    try {
+      PwProject.initProjects();
+    } catch (ResourceNotFoundException rnfExcep) {
+      System.err.println( rnfExcep);
+      System.exit( -1);
+    }
 
     planWorks = new PlanWorks( buildConstantMenus());
 
