@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNodePort.java,v 1.1 2004-01-12 19:46:20 taylor Exp $
+// $Id: ExtendedBasicNodePort.java,v 1.2 2004-01-12 22:21:12 miatauro Exp $
 //
 // PlanWorks
 //
@@ -34,6 +34,9 @@ import com.nwoods.jgo.examples.BasicNodePort;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.ModelClassNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
 import gov.nasa.arc.planworks.viz.sequence.modelRules.ParamNode;
 
 
@@ -85,11 +88,13 @@ public class ExtendedBasicNodePort extends BasicNodePort {
     p.x = x;
     p.y = y;
     // if (x,y) is inside the object, just return it instead of finding the edge intersection
-    if (! obj.isPointInObj(p)) {
+    //if (! obj.isPointInObj(p)) {
       if (node.isRectangular()) {
+        System.err.println("node is rectangular");
         JGoRectangle.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                   rect.height, x, y, cx, cy, p);
       } else if (node instanceof ConstraintNode) {
+        System.err.println("node is constraint node.");
         ((Diamond) ((ConstraintNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
         //         ((LeftTrapezoid) ((ConstraintNode) node).getDrawable()).
@@ -99,13 +104,27 @@ public class ExtendedBasicNodePort extends BasicNodePort {
         //         ((Hexagon) ((ConstraintNode) node).getDrawable()).
         //           getNearestIntersectionPoint( x, y, cx, cy, p);
       } else if (node instanceof ParamNode) {
+        System.err.println("node is param node");
         ((Diamond) ((ParamNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
       } else  if (node instanceof VariableNode) {
+        System.err.println("node is variable node");
         JGoEllipse.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
                                                 rect.height, x, y, p);
       }
-    }
+      else if(node instanceof ModelClassNavNode) {
+        ((LeftTrapezoid) ((ModelClassNavNode)node).getDrawable()).
+          getNearestIntersectionPoint(x, y, cx, cy, p);
+      }
+      else if(node instanceof TimelineNavNode) {
+        ((RightTrapezoid)((TimelineNavNode)node).getDrawable()).
+          getNearestIntersectionPoint(x, y, cx, cy, p);
+      }
+      else if(node instanceof SlotNavNode) {
+        ((Hexagon)((SlotNavNode)node).getDrawable()).
+          getNearestIntersectionPoint(x, y, cx, cy, p);
+      }
+      // }
     return p;
   } // end getLinkPointFromPoint
 
