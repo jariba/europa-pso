@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.29 2003-07-09 23:14:38 taylor Exp $
+// $Id: PlanWorks.java,v 1.30 2003-07-11 00:02:30 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -45,6 +45,7 @@ import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -58,41 +59,15 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class PlanWorks extends MDIDesktopFrame {
 
-  /**
-   * constant <code>DESKTOP_FRAME_WIDTH</code>
-   *
-   */
-  public static final int DESKTOP_FRAME_WIDTH = 900;
+  private static final int DESKTOP_FRAME_WIDTH = 900;
+  private static final int DESKTOP_FRAME_HEIGHT = 850;
+  private static final int INTERNAL_FRAME_WIDTH = 400;
+  private static final int INTERNAL_FRAME_HEIGHT = 350;
+  private static final int FRAME_X_LOCATION = 100;
+  private static final int FRAME_Y_LOCATION = 125;
+  private static final int INTERNAL_FRAME_X_DELTA = 100;
+  private static final int INTERNAL_FRAME_Y_DELTA = 75;
 
-  /**
-   * constant <code>DESKTOP_FRAME_HEIGHT</code>
-   *
-   */
-  public static final int DESKTOP_FRAME_HEIGHT = 850;
-
-  /**
-   * constant <code>INTERNAL_FRAME_WIDTH</code>
-   *
-   */
-  public static final int INTERNAL_FRAME_WIDTH = 400;
-
-  /**
-   * constant <code>INTERNAL_FRAME_HEIGHT</code>
-   *
-   */
-  public static final int INTERNAL_FRAME_HEIGHT = 350;
-
-  /**
-   * constant <code>FRAME_X_LOCATION</code>
-   *
-   */
-  public static final int FRAME_X_LOCATION = 100;
-
-  /**
-   * constant <code>FRAME_Y_LOCATION</code>
-   *
-   */
-  public static final int FRAME_Y_LOCATION = 125;
 
   /**
    * variable <code>name</code> - make it accessible to JFCUnit tests
@@ -815,7 +790,7 @@ public class PlanWorks extends MDIDesktopFrame {
           viewFrame = viewManager.openTimelineView( partialPlan, sequenceName +
                                                     System.getProperty( "file.separator") +
                                                     partialPlanName);
-          finishViewRendering( viewFrame, viewExists, startTimeMSecs);
+          finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
         } else if (viewName.equals( "tokenNetworkView")) {
           if (! viewExists) {
             System.err.println( "Rendering Token Network View ...");
@@ -824,7 +799,7 @@ public class PlanWorks extends MDIDesktopFrame {
                                                         System.getProperty( "file.separator") +
                                                         partialPlanName);        
           System.err.println("Finish view rendering..");
-          finishViewRendering( viewFrame, viewExists, startTimeMSecs);
+          finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
         } else if (viewName.equals( "temporalExtentView")) {
           JOptionPane.showMessageDialog
             (PlanWorks.this, viewName, "View Not Supported", 
@@ -846,17 +821,28 @@ public class PlanWorks extends MDIDesktopFrame {
         StringBuffer errorOutput =
           new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
                                                            indexOf(":") + 1));
+        JOptionPane.showMessageDialog
+          (PlanWorks.this, errorOutput.toString(), "SQL Exception", JOptionPane.ERROR_MESSAGE);
+        System.err.println(sqlExcep);
       }
     } // end renderView
 
-    private void finishViewRendering( MDIInternalFrame viewFrame, boolean viewExists,
-                                      long startTimeMSecs) {
+    private void finishViewRendering( MDIInternalFrame viewFrame, String viewName,
+                                      boolean viewExists, long startTimeMSecs) {
       if (! viewExists) {
         long stopTimeMSecs = (new Date()).getTime();
         System.err.println( "   ... elapsed time: " +
                             (stopTimeMSecs - startTimeMSecs) + " msecs.");
         viewFrame.setSize( INTERNAL_FRAME_WIDTH, INTERNAL_FRAME_HEIGHT);
-        viewFrame.setLocation( FRAME_X_LOCATION, FRAME_Y_LOCATION);
+        int viewIndex = 0;
+        for (int i = 0, n = ViewConstants.orderedViewNames.length; i < n; i++) {
+          if (ViewConstants.orderedViewNames[i].equals( viewName)) {
+            viewIndex = i;
+            break;
+          }
+        }
+        viewFrame.setLocation( INTERNAL_FRAME_X_DELTA * viewIndex,
+                               FRAME_Y_LOCATION + INTERNAL_FRAME_Y_DELTA * viewIndex);
         viewFrame.setVisible( true);
       }
       // make associated menus appear & bring window to the front

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.15 2003-07-09 23:14:38 taylor Exp $
+// $Id: SlotNode.java,v 1.16 2003-07-11 00:02:31 taylor Exp $
 //
 // PlanWorks
 //
@@ -104,14 +104,21 @@ public class SlotNode extends TextNode {
     this.view = view;
     this.timeIntervalLabels = new ArrayList();
     // System.err.println( "SlotNode: predicateName " + predicateName);
-    configure( slotLocation);
+    configure( nodeLabel, slotLocation);
   } // end constructor
 
 
-  private final void configure( Point slotLocation) {
-    String backGroundColor = ((objectCnt % 2) == 0) ?
-      ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
-      ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
+  private final void configure( String nodeLabel, Point slotLocation) {
+    String backGroundColor = null;
+    if (nodeLabel.indexOf( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL) >= 0) {
+      backGroundColor = ((objectCnt % 2) == 0) ?
+        ViewConstants.EVEN_OBJECT_TIMELINE_BG_COLOR :
+        ViewConstants.ODD_OBJECT_TIMELINE_BG_COLOR;
+    } else {
+      backGroundColor = ((objectCnt % 2) == 0) ?
+        ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
+        ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
+    }
     setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
     getLabel().setEditable( false);
     setDraggable( false);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.17 2003-07-09 23:14:38 taylor Exp $
+// $Id: TimelineView.java,v 1.18 2003-07-11 00:02:31 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,6 +45,8 @@ import gov.nasa.arc.planworks.viz.nodes.SlotNode;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
+import gov.nasa.arc.planworks.util.ViewRenderingException;
+
 
 /**
  * <code>TimelineView</code> - render a partial plan's timelines and slots
@@ -315,15 +317,16 @@ public class TimelineView extends VizView {
   } // end getSlotNodeLabel
 
 
-  // is timelines and slots are in content spec, interms of their tokens,
+  // is timelines and slots are in content spec, in terms of their tokens,
   // set them visible
   private void setNodesVisible() {
-    List validTokenIds = viewSet.getValidTokenIds();
-    int numTimelineNodes = timelineNodeList.size();
+    validTokenIds = viewSet.getValidTokenIds();
+    displayedTokenIds = new ArrayList();
     Iterator timelineIterator = timelineNodeList.iterator();
+    Integer key = null;
     while (timelineIterator.hasNext()) {
       TimelineNode timelineNode = (TimelineNode) timelineIterator.next();
-      if (isTimelineInContentSpec( timelineNode.getTimeline(), validTokenIds)) {
+      if (isTimelineInContentSpec( timelineNode.getTimeline())) {
         timelineNode.setVisible( true);
       } else {
         timelineNode.setVisible( false);
@@ -333,7 +336,7 @@ public class TimelineView extends VizView {
       for (int i = 0, n = slotList.size(); i < n; i++) {
         SlotNode slotNode = (SlotNode) slotList.get( i);
         List timeLabels = slotNode.getTimeIntervalLabels();
-        if (isSlotInContentSpec( slotNode.getSlot(), validTokenIds)) {
+        if (isSlotInContentSpec( slotNode.getSlot())) {
           slotNode.setVisible( true);
 
 //           System.err.println( "views " + slotNode.getView() + " and " + jGoView);
@@ -353,7 +356,7 @@ public class TimelineView extends VizView {
           // display interval time label, if previous slot is not being displayed
           if (i > 0) {
             SlotNode prevSlotNode = (SlotNode) slotList.get( i - 1);
-            if (isSlotInContentSpec( prevSlotNode.getSlot(), validTokenIds)) {
+            if (isSlotInContentSpec( prevSlotNode.getSlot())) {
               visibleValue = true;
             }
             ((JGoText) timeLabels.get( 0)).setVisible( visibleValue);
@@ -366,7 +369,9 @@ public class TimelineView extends VizView {
         }
       }
     }
-  } // end iterateOverNodes
+    boolean showDialog = true;
+    isContentSpecRendered( "Timeline View", showDialog);
+  } // end setNodesVisible
 
 
   private void iterateOverNodes() {

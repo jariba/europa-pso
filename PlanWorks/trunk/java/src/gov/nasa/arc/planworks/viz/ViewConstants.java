@@ -20,6 +20,14 @@ import com.nwoods.jgo.JGoText;
 
 public interface ViewConstants {
 
+  /**
+   * constant <code>orderedViewNames - String []</code>
+   *
+   */
+  public static final String[] orderedViewNames = 
+    new String [] { "constraintNetworkView", "temporalExtentView", "temporalNetworkView",
+                    "timelineView", "tokenNetworkView" };
+
   // views.timeline.TimelineView
 
   /**
@@ -152,6 +160,12 @@ public interface ViewConstants {
    *
    */
   public static final String ODD_OBJECT_SLOT_BG_COLOR = "paleGreen";
+
+  /**
+   * constant <code>EMPTY_SLOT_WIDTH</code>
+   *
+   */
+  public static final int EMPTY_SLOT_WIDTH = 10;
 
 
 } // end ViewConstants

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.5 2003-07-09 23:14:38 taylor Exp $
+// $Id: VizView.java,v 1.6 2003-07-11 00:02:31 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,9 +14,12 @@
 package gov.nasa.arc.planworks.viz.views;
 
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
@@ -33,6 +36,9 @@ import gov.nasa.arc.planworks.db.PwToken;
 public class VizView extends JPanel {
 
   protected PwPartialPlan partialPlan;
+  protected List validTokenIds;
+  protected List displayedTokenIds;
+
 
   /**
    * <code>VizView</code> - constructor 
@@ -42,6 +48,8 @@ public class VizView extends JPanel {
   public VizView( PwPartialPlan partialPlan) {
     super();
     this.partialPlan = partialPlan;
+    validTokenIds = null;
+    displayedTokenIds = null;
   }
 
   /**
@@ -53,15 +61,41 @@ public class VizView extends JPanel {
 
 
   /**
-   * <code>isTimelineInContentSpec</code> - does timeline have a least one token
-   *                  in content spec
+   * <code>isContentSpecRendered</code>
    *
-   * @param timeline - <code>PwTimeline</code> - 
-   * @param validTokenIds - <code>List</code> - 
+   * @param viewName - <code>String</code> - 
+   * @param showDialog - <code>boolean</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean isTimelineInContentSpec( PwTimeline timeline, List validTokenIds) {
-    boolean inSpec = false;
+  public boolean isContentSpecRendered( String viewName, boolean showDialog) {
+    Iterator validIterator = validTokenIds.iterator();
+    List unDisplayedIds = new ArrayList();
+    while (validIterator.hasNext()) {
+      Integer key = (Integer) validIterator.next();
+      if (displayedTokenIds.indexOf( key) == -1) {
+        unDisplayedIds.add( key);
+      }
+    }
+    if (unDisplayedIds.size() != 0) {
+      if (showDialog) {
+        String msg = viewName + ": validTokenIds " + unDisplayedIds  + " not displayed";
+        JOptionPane.showMessageDialog
+          (PlanWorks.planWorks, msg, "View Rendering Exception",
+           JOptionPane.ERROR_MESSAGE);
+      }
+      return false;
+    } else {
+      return true;
+    }
+  } // end isContentSpecRendered
+
+  /**
+   * <code>isTimelineInContentSpec</code> - does timeline have a least one token
+   *
+   * @param timeline - <code>PwTimeline</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public boolean isTimelineInContentSpec( PwTimeline timeline) {
     List slotList = timeline.getSlotList();
     Iterator slotIterator = slotList.iterator();
     while (slotIterator.hasNext()) {
@@ -71,7 +105,11 @@ public class VizView extends JPanel {
         Iterator tokenIterator = tokenList.iterator();
         while (tokenIterator.hasNext()) {
           PwToken token = (PwToken) tokenIterator.next();
-          if (validTokenIds.indexOf( token.getKey()) >= 0) {
+          Integer key = token.getKey();
+          if (validTokenIds.indexOf( key) >= 0) {
+            if (displayedTokenIds.indexOf( key) == -1) {
+              displayedTokenIds.add( key);
+            }
             return true;
           }
         }
@@ -81,27 +119,35 @@ public class VizView extends JPanel {
         continue;
       }
     }
-    return inSpec;
+    return false;
   } // end isTimelineInContentSpec
 
   /**
    * <code>isSlotInContentSpec</code> - is one of slot's tokens in content spec
    *
    * @param slot - <code>PwSlot</code> - 
-   * @param validTokenIds - <code>List</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean isSlotInContentSpec( PwSlot slot, List validTokenIds) {
+  public boolean isSlotInContentSpec( PwSlot slot) {
+    boolean foundMatch = false;
     List tokenList = slot.getTokenList();
     if (tokenList.size() > 0) {
       Iterator tokenIterator = tokenList.iterator();
       while (tokenIterator.hasNext()) {
         PwToken token = (PwToken) tokenIterator.next();
-        if (validTokenIds.indexOf( token.getKey()) >= 0) {
-          return true;
+        Integer key = token.getKey();
+        if (validTokenIds.indexOf( key) >= 0) {
+          foundMatch = true;
+          if (displayedTokenIds.indexOf( key) == -1) {
+            displayedTokenIds.add( key);
+          }
         }
       }
-      return false;
+      if (foundMatch) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       // empty slot -- do not display
       return false;
@@ -112,11 +158,18 @@ public class VizView extends JPanel {
    * <code>isTokenInContentSpec</code> - is token in content spec
    *
    * @param token - <code>PwToken</code> - 
-   * @param validTokenIds - <code>List</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean isTokenInContentSpec( PwToken token, List validTokenIds) {
-    return (validTokenIds.indexOf( token.getKey()) >= 0);
+  public boolean isTokenInContentSpec( PwToken token) {
+    Integer key = token.getKey();
+    if (validTokenIds.indexOf( key) >= 0) {
+      if (displayedTokenIds.indexOf( key) == -1) {
+        displayedTokenIds.add( key);
+      }
+      return true;
+    } else {
+      return false;
+    }
   } // end isTokenInContentSpec
 
 
