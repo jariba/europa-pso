@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.26 2004-05-08 01:44:09 taylor Exp $
+// $Id: DbConstants.java,v 1.27 2004-05-14 17:43:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -134,7 +134,7 @@ public interface DbConstants {
   public static final int NUMBER_OF_PP_FILES = PARTIAL_PLAN_FILE_EXTS.length;
 
 
-  public static final String [] SEQUENCE_FILES =  new String [] { SEQ_PP_STATS, SEQ_FILE, 
+  public static final String [] SEQUENCE_FILES =  new String [] { SEQ_FILE, SEQ_PP_STATS,  
                                                                   SEQ_TRANSACTIONS, SEQ_RULES,
                                                                   SEQ_RULES_MAP};
 
@@ -391,8 +391,8 @@ public interface DbConstants {
 
   public static final String [] PW_DB_TABLES = new String [] {
     TBL_PARTIALPLAN, TBL_OBJECT, TBL_TOKEN, TBL_VARIABLE, TBL_CONSTRAINT, TBL_TOKENREL,
-    TBL_CONSTVARMAP, TBL_TRANSACTION, TBL_SEQUENCE, TBL_PROJECT, TBL_INSTANTS, TBL_RULES,
-    TBL_RULE_TOKEN_MAP, TBL_PP_STATS};
+    TBL_CONSTVARMAP, TBL_INSTANTS, TBL_PROJECT, TBL_SEQUENCE, TBL_PP_STATS, TBL_TRANSACTION, TBL_RULES,
+    TBL_RULE_TOKEN_MAP};
 
   // number of numeric characters in a type long value
   public static final int LONG_INT_LENGTH = 13;
