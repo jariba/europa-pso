@@ -4,6 +4,8 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
+// $Id: TimelineNode.java,v 1.4 2003-06-19 00:31:20 taylor Exp $
+//
 // PlanWorks
 //
 // Will Taylor -- started 18may03
@@ -11,25 +13,14 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
-import java.awt.Container;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGo3DRect;
 import com.nwoods.jgo.JGoBrush;
-import com.nwoods.jgo.JGoObject;
-import com.nwoods.jgo.JGoPort;
-import com.nwoods.jgo.JGoText;
-import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.TextNode;
@@ -37,12 +28,13 @@ import com.nwoods.jgo.examples.TextNode;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 
 
 /**
- * <code>TimelineNode</code> -
+ * <code>TimelineNode</code> - JGo widget to render a timeline as a rectangle,
+ *                             with a label consisting of the PwObject name,
+ *                             and the PwTimeline name
  *             Object->JGoObject->JGoArea->TextNode->TimelineNode
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
@@ -70,7 +62,8 @@ public class TimelineNode extends TextNode {
    *
    * @param timelineName - <code>String</code> - 
    * @param timeline - <code>PwTimeline</code> - 
-   * @param view - <code>VizView</code> - 
+   * @param timelineLocation - <code>Point</code> - 
+   * @param view - <code>TimelineView</code> - 
    */
   public TimelineNode( String timelineName, PwTimeline timeline, Point timelineLocation,
                        TimelineView view) {
@@ -119,9 +112,9 @@ public class TimelineNode extends TextNode {
   }
 
   /**
-   * <code>getSlotNodeList</code>
+   * <code>getSlotNodeList</code> - return list of this timeline's slot node objects
    *
-   * @return - <code>List</code> - 
+   * @return - <code>List</code> - of SlotNode
    */
   public List getSlotNodeList() {
     return slotNodeList;

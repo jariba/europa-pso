@@ -3,7 +3,8 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-
+// $Id: SlotNode.java,v 1.7 2003-06-19 00:31:20 taylor Exp $
+//
 // PlanWorks
 //
 // Will Taylor -- started 18may03
@@ -11,29 +12,15 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGo3DRect;
 import com.nwoods.jgo.JGoBrush;
-import com.nwoods.jgo.JGoObject;
-import com.nwoods.jgo.JGoPort;
 import com.nwoods.jgo.JGoText;
-import com.nwoods.jgo.JGoDocument;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.TextNode;
@@ -45,15 +32,16 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.ColorMap;
-import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
-import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 
 
 /**
- * <code>SlotNode</code> - 
-*             Object->JGoObject->JGoArea->TextNode->SlotNode
+ * <code>SlotNode</code> - JGo widget to render a timeline slot with a
+ *                         label consisting of the slot's predicate name,
+ *                         or "<empty>".  Below each slot's border with
+ *                         the next one, the start/end time interval is displayed
+ *             Object->JGoObject->JGoArea->TextNode->SlotNode
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
@@ -215,7 +203,7 @@ public class SlotNode extends TextNode {
     if ((lastIntervalVariable != null) || (lastIntervalDomain != null)) {
       if (lastIntervalVariable == null) {
         endTimeIntervalDomain = lastIntervalDomain;
-      } else if (view.getViewSet().isInContentSpec( lastIntervalVariable.getKey())){
+      } else if (view.getViewSet().isInContentSpec( lastIntervalVariable.getKey())) {
         endTimeIntervalDomain = lastIntervalVariable.getDomain();
       } else {
         endTimeIntervalDomain = DbConstants.NULL_DOMAIN;

@@ -4,13 +4,12 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimelineViewTest.java,v 1.12 2003-06-18 22:55:02 taylor Exp $
+// $Id: TimelineViewTest.java,v 1.13 2003-06-19 00:31:20 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.views.test;
 
-import java.awt.Color;
 import java.awt.Container;
-import java.awt.event.KeyEvent;
+// import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -20,12 +19,12 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JTextField;
+// import javax.swing.JTextField;
 import javax.swing.MenuElement;
 
 import junit.extensions.jfcunit.*;
-import junit.extensions.jfcunit.eventdata.EventDataConstants;
-import junit.extensions.jfcunit.eventdata.KeyEventData;
+// import junit.extensions.jfcunit.eventdata.EventDataConstants;
+// import junit.extensions.jfcunit.eventdata.KeyEventData;
 import junit.extensions.jfcunit.eventdata.MouseEventData;
 import junit.framework.*;
 import junit.textui.TestRunner;
@@ -35,13 +34,11 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
-import gov.nasa.arc.planworks.util.ParseProjectUrl;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
-import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
 /**
@@ -395,7 +392,11 @@ public class TimelineViewTest extends JFCTestCase{
   } // end exitPlanWorks
 
 
-  // all methods with names starting with test are executed automatically by Junit
+  /**
+   * <code>testOpenProject</code>
+   *
+   * @exception Exception if an error occurs
+   */
   public void testOpenProject() throws Exception {
     System.err.println( "\n\nOpenProjectTestCase\n\n");
     awtSleep();
@@ -441,6 +442,11 @@ public class TimelineViewTest extends JFCTestCase{
   } // end testOpenProject
 
 
+  /**
+   * <code>suite</code> - create the test cases for the TestRunner
+   *
+   * @return - <code>TestSuite</code> - 
+   */
   public static TestSuite suite() {
     TestSuite testSuite = new TestSuite();
     testSuite.addTest( new TimelineViewTest( "testCreateProject", "create"));
@@ -448,6 +454,11 @@ public class TimelineViewTest extends JFCTestCase{
     return testSuite;
   }
 
+  /**
+   * <code>main</code> - run the test suite
+   *
+   * @param args - <code>String[]</code> - 
+   */
   public static void main( String[] args) {
     PlanWorks.name = "";
     for (int argc = 0; argc < args.length; argc++) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.11 2003-06-18 21:44:10 taylor Exp $
+// $Id: PlanWorks.java,v 1.12 2003-06-19 00:31:19 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -213,8 +213,7 @@ public class PlanWorks extends MDIDesktopFrame {
   /**
    * <code>setPlanWorks</code> - needed by TimelineViewTest (JFCUnit Test)
    *
-   * @param planWorks - <code>PlanWorks</code> - 
-   * @return - <code>PlanWorks</code> - 
+   * @param planWorksInstance - <code>PlanWorks</code> - 
    */
   public static void setPlanWorks( PlanWorks planWorksInstance) {
     planWorks = planWorksInstance;
@@ -611,8 +610,7 @@ public class PlanWorks extends MDIDesktopFrame {
         public void run() {
           try {
             SwingUtilities.invokeAndWait(new CreatePartialPlanViewThread(viewName, menuItem));
-          }
-          catch(Exception e){}
+          } catch(Exception e) { }
         }
       }
      ).start();
