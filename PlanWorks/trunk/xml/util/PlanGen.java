@@ -1091,9 +1091,10 @@ class Slot
       timeRangeHi = PlanGenState.horizonHi;
     ArrayList startVariableIds = new ArrayList();
     ArrayList endVariableIds = new ArrayList();
+    String predicateKey = PlanGen.keyManager.getRandomPredicateId();
     for(int i = 0; i < ntokens; i++)
       {
-        Token token = new Token(i, timeRangeLo, timeRangeHi, key, objKey);
+        Token token = new Token(i, timeRangeLo, timeRangeHi, key, objKey, predicateKey);
         tokenIds.add(token.getId());
         startVariableIds.add(token.getStartVarId());
         endVariableIds.add(token.getEndVarId());
@@ -1124,13 +1125,15 @@ class Token
   private String key, startVarId, endVarId, slotId, predicateId, objectVarId;
   private ArrayList tokenRelationIds, paramVarIds;
   boolean bornFree = false;
-  public Token(int num, int rangeLo, int rangeHi, String slotKey, String objKey)
+  public Token(int num, int rangeLo, int rangeHi, String slotKey, String objKey, 
+               String predicateKey)
   {
     key = PlanGen.keyManager.getKeyForToken(this);
     slotId = slotKey;
     tokenRelationIds = new ArrayList();
     paramVarIds = new ArrayList();
-    predicateId = PlanGen.keyManager.getRandomPredicateId();
+    predicateId = predicateKey;
+    //predicateId = PlanGen.keyManager.getRandomPredicateId();
     List paramIds = PlanGen.keyManager.getPredicate(predicateId).getParamIds();
     paramVarIds = new ArrayList(paramIds.size());
     for(int i = 0; i < paramIds.size(); i++)
