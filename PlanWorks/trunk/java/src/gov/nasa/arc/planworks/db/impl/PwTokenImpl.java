@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.46 2004-06-08 21:48:54 pdaley Exp $
+// $Id: PwTokenImpl.java,v 1.47 2004-06-08 23:01:31 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -360,6 +360,15 @@ public class PwTokenImpl implements PwToken {
       return "No rule text";
     }
     return rule.getText();
+  }
+
+  /**
+   * <code>getRuleId</code>
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public Integer getRuleId() {
+    return ruleId;
   }
 
   /**
