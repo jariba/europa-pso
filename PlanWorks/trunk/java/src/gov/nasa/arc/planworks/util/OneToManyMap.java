@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 public class OneToManyMap extends HashMap {
@@ -58,5 +59,31 @@ public class OneToManyMap extends HashMap {
     }
     valueList.add(value);
     return value;
+  }
+  public List getList(Object key) {
+    if(!super.containsKey(key)) {
+      return null;
+    }
+    return (List) super.get(key);
+  }
+  public String toString() {
+    StringBuffer retval = new StringBuffer();
+    Iterator keyIterator = keySet().iterator();
+    while(keyIterator.hasNext()) {
+      Object key = keyIterator.next();
+      List values = getList(key);
+      retval.append(key.toString()).append(": ");
+      System.err.println(key);
+      System.err.println(values.size());
+      ListIterator valueIterator = values.listIterator();
+      while(valueIterator.hasNext()) {
+        retval.append(valueIterator.next().toString());
+        if(valueIterator.hasNext()) {
+          retval.append(", ");
+        }
+      }
+      retval.append("\n");
+    }
+    return retval.toString();
   }
 }

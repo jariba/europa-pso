@@ -30,6 +30,7 @@ import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 public class MySQLDB {
   
   protected static boolean dbIsStarted;
+  protected static boolean dbIsConnected;
   private static Connection conn;
   private static long queryTime;
   public static final MySQLDB INSTANCE = new MySQLDB();
@@ -37,9 +38,10 @@ public class MySQLDB {
   private static final Integer M1 = new Integer(-1);
   private MySQLDB() {
     dbIsStarted = false;
+    dbIsConnected = false;
     queryTime = 0;
   }
-  public static void startDatabase() throws IllegalArgumentException, IOException, SecurityException
+  synchronized public static void startDatabase() throws IllegalArgumentException, IOException, SecurityException
   {
     if(dbIsStarted) {
       return;
@@ -52,6 +54,7 @@ public class MySQLDB {
     dbStartString.append(System.getProperty("mysql.log.err")).append(" --skip-symlink ");
     dbStartString.append("--socket=").append(System.getProperty("mysql.sock"));
     dbStartString.append(" --tmpdir=").append(System.getProperty("mysql.tmpdir"));
+    dbStartString.append(" --key_buffer_size=64M --join_buffer_size=16M --query_cache_size=16M");
     System.err.println("Starting db with: " + dbStartString.toString());
     Runtime.getRuntime().exec(dbStartString.toString());
     //    try{Thread.sleep(100000);}catch(Exception e){}
@@ -68,7 +71,7 @@ public class MySQLDB {
         }
       });
   }
-  public static void stopDatabase() throws IllegalArgumentException, IOException, SecurityException
+  synchronized public static void stopDatabase() throws IllegalArgumentException, IOException, SecurityException
   {
     if(!dbIsStarted) {
       return;
@@ -78,7 +81,7 @@ public class MySQLDB {
     dbStopString.append(System.getProperty("mysql.sock")).append(" shutdown");
     Runtime.getRuntime().exec(dbStopString.toString());
   }
-  public static void registerDatabase() throws IOException {
+  synchronized public static void registerDatabase() throws IOException {
     if(!dbIsStarted) {
       startDatabase();
     }
@@ -97,13 +100,14 @@ public class MySQLDB {
           Thread.sleep(500);
         }
       }
+      dbIsConnected = true;
     }
     catch(Exception e) {
       System.err.println(e);
       System.exit(-1);
     }
   }
-  public static void unregisterDatabase() {
+  synchronized public static void unregisterDatabase() {
     if(!dbIsStarted) {
       return;
     }
@@ -116,7 +120,8 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
-  public static ResultSet queryDatabase(String query) {
+  synchronized public static boolean isConnected(){return dbIsConnected;}
+  synchronized public static ResultSet queryDatabase(String query) {
     Statement stmt = null;
     ResultSet result = null;
     try {
@@ -132,7 +137,7 @@ public class MySQLDB {
     }
     return result;
   }
-  public static int updateDatabase(String update) {
+  synchronized public static int updateDatabase(String update) {
     Statement stmt = null;
     int result = -1;
     try {
@@ -148,10 +153,52 @@ public class MySQLDB {
     }
     return result;
   }
-  public static void loadFile(String file, String tableName) {
+  /* this may prove useful later, but just slows things down right now
+  public static void analyzeDatabase() {
+    Statement stmt = null;
+    try {
+      stmt = conn.createStatement();
+      long t1 = System.currentTimeMillis();
+      System.err.println("Analyzing PartialPlan...");
+      stmt.execute("ANALYZE TABLE PartialPlan");
+      System.err.println("Analyzing Object...");
+      stmt.execute("ANALYZE TABLE Object");
+      System.err.println("Analyzing Timeline...");
+      stmt.execute("ANALYZE TABLE Timeline");
+      System.err.println("Analyzing Slot...");
+      stmt.execute("ANALYZE TABLE Slot");
+      System.err.println("Analyzing Token...");
+      stmt.execute("ANALYZE TABLE Token");
+      System.err.println("Analyzing Variable...");
+      stmt.execute("ANALYZE TABLE Variable");
+      System.err.println("Analyzing EnumeratedDomain...");
+      stmt.execute("ANALYZE TABLE EnumeratedDomain");
+      System.err.println("Analyzing IntervalDomain...");
+      stmt.execute("ANALYZE TABLE IntervalDomain");
+      System.err.println("Analyzing VConstraint...");
+      stmt.execute("ANALYZE TABLE VConstraint");
+      System.err.println("Analyzing ConstraintVarMap...");
+      stmt.execute("ANALYZE TABLE ConstraintVarMap");
+      System.err.println("Analyzing Predicate...");
+      stmt.execute("ANALYZE TABLE Predicate");
+      System.err.println("Analyzing Parameter...");
+      stmt.execute("ANALYZE TABLE Parameter");
+      System.err.println("Analyzing ParamVarTokenMap...");
+      stmt.execute("ANALYZE TABLE ParamVarTokenMap");
+      System.err.println("Analyzing TokenRelation...");
+      stmt.execute("ANALYZE TABLE TokenRelation");
+      System.err.println((System.currentTimeMillis() - t1) + "ms in database analysis.");
+    }
+    catch(SQLException sqle) {
+      System.err.println(sqle);
+      sqle.printStackTrace();
+    }
+  }
+  */
+  synchronized public static void loadFile(String file, String tableName) {
     updateDatabase("LOAD DATA INFILE '".concat(file).concat("' IGNORE INTO TABLE ").concat(tableName));
   }
-  public static String queryPartialPlanModelByKey(Long partialPlanKey) {
+  synchronized public static String queryPartialPlanModelByKey(Long partialPlanKey) {
     try {
       ResultSet model = 
         queryDatabase("SELECT (Model) FROM PartialPlan WHERE PartialPlanId=".concat(partialPlanKey.toString()));
@@ -164,7 +211,7 @@ public class MySQLDB {
       return null;
     }
   }
-  public static List getProjectNames() {
+  synchronized public static List getProjectNames() {
     ArrayList retval = new ArrayList();
     try {
       ResultSet names = queryDatabase("SELECT ProjectName FROM Project");
@@ -176,7 +223,7 @@ public class MySQLDB {
     }
     return retval;
   }
-  public static boolean projectExists(String name) {
+  synchronized public static boolean projectExists(String name) {
     try {
       ResultSet rows = 
         queryDatabase("SELECT ProjectId FROM Project WHERE ProjectName='".concat(name).concat("'"));
@@ -187,7 +234,7 @@ public class MySQLDB {
     }
     return false;
   }
-  public static boolean sequenceExists(String url) {
+  synchronized public static boolean sequenceExists(String url) {
     try {
       ResultSet rows =
         queryDatabase("SELECT * FROM Sequence WHERE SequenceURL='".concat(url).concat("'"));
@@ -197,7 +244,7 @@ public class MySQLDB {
     catch(SQLException sqle){}
     return false;
   }
-  public static boolean partialPlanExists(Integer sequenceKey, String name) {
+  synchronized public static boolean partialPlanExists(Integer sequenceKey, String name) {
     try {
       ResultSet rows =
         queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
@@ -207,10 +254,10 @@ public class MySQLDB {
     catch(SQLException sqle){}
     return false;
   }
-  public static void addProject(String name) {
+  synchronized public static void addProject(String name) {
     updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("')"));
   }
-  public static Integer latestProjectKey() {
+  synchronized public static Integer latestProjectKey() {
     try {
       ResultSet newKey = queryDatabase("SELECT MAX(ProjectId) AS ProjectId from Project");
       newKey.last();
@@ -220,10 +267,10 @@ public class MySQLDB {
     }
     return null;
   }
-  public static void addSequence(String url, Integer projectId) {
+  synchronized public static void addSequence(String url, Integer projectId) {
     updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId) VALUES ('".concat(url).concat("', ").concat(projectId.toString()).concat(")"));
   }
-  public static Integer latestSequenceKey() {
+  synchronized public static Integer latestSequenceKey() {
     try {
       ResultSet newKey = queryDatabase("SELECT MAX(SequenceId) AS SequenceId from Sequence");
       newKey.last();
@@ -233,7 +280,7 @@ public class MySQLDB {
     }
     return null;
   }
-  public static Integer getProjectIdByName(String name) {
+  synchronized public static Integer getProjectIdByName(String name) {
     try {
       ResultSet projectId = queryDatabase("SELECT ProjectId FROM Project WHERE ProjectName='".concat(name).concat("'"));
       projectId.first();
@@ -247,7 +294,7 @@ public class MySQLDB {
     }
     return null;
   }
-  public static HashMap getSequences(Integer projectId) {
+  synchronized public static HashMap getSequences(Integer projectId) {
     HashMap retval = null;
     try {
       ResultSet sequences = 
@@ -261,7 +308,7 @@ public class MySQLDB {
     }
     return retval;
   }
-  public static void deleteProject(Integer key) {
+  synchronized public static void deleteProject(Integer key) {
     try {
       ResultSet sequenceIds = 
         queryDatabase("SELECT SequenceId FROM Sequence WHERE ProjectId=".concat(key.toString()));
@@ -292,7 +339,7 @@ public class MySQLDB {
     catch(SQLException sqle) {
     }
   }
-  public static List getPlanNamesInSequence(Integer sequenceKey) {
+  synchronized public static List getPlanNamesInSequence(Integer sequenceKey) {
     ArrayList retval = new ArrayList();
     try {
       ResultSet names = 
@@ -305,10 +352,10 @@ public class MySQLDB {
     }
     return retval;
   }
-  public static void updatePartialPlanSequenceId(Integer sequenceKey) {
+  synchronized public static void updatePartialPlanSequenceId(Integer sequenceKey) {
     updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceKey.toString()).concat(" WHERE SequenceId=-1"));
   }
-  public static Long getNewPartialPlanKey(Integer sequenceKey, String name) {
+  synchronized public static Long getNewPartialPlanKey(Integer sequenceKey, String name) {
     Long retval = null;
     try {
       ResultSet partialPlan = 
@@ -320,7 +367,7 @@ public class MySQLDB {
     }
     return retval;
   }
-  public static void createObjects(PwPartialPlanImpl partialPlan) {
+  synchronized public static void createObjects(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet objects = 
         queryDatabase("SELECT ObjectName, ObjectId FROM Object WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
@@ -334,7 +381,7 @@ public class MySQLDB {
     catch(SQLException sqle) {
     }
   }
-  public static void createTimelineSlotTokenNodesStructure(PwPartialPlanImpl partialPlan) {
+  synchronized public static void createTimelineSlotTokenNodesStructure(PwPartialPlanImpl partialPlan) {
     List objectIdList = partialPlan.getObjectIdList();
     ListIterator objectIdIterator = objectIdList.listIterator();
     PwObjectImpl object = null;
@@ -559,7 +606,7 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
-  public static void queryConstraints(PwPartialPlanImpl partialPlan) {
+  synchronized public static void queryConstraints(PwPartialPlanImpl partialPlan) {
     try {
       long t1 = System.currentTimeMillis();
       ResultSet constraints = 
@@ -608,7 +655,7 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
-  public static void queryPredicates(PwPartialPlanImpl partialPlan) {
+  synchronized public static void queryPredicates(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet predicates = 
         queryDatabase("SELECT PredicateId, PredicateName FROM Predicate WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));
@@ -633,13 +680,14 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
-  public static void queryVariables(PwPartialPlanImpl partialPlan) {
+  synchronized public static void queryVariables(PwPartialPlanImpl partialPlan) {
     PwDomainImpl domainImpl = null;
     try {
       System.err.println("Executing variable query...");
       long t1 = System.currentTimeMillis();
       ResultSet variables =
-        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" ORDER BY Variable.VariableId, ConstraintVarMap.ConstraintId"));
+        //        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getKey().toString()).concat(" ORDER BY Variable.VariableId, ConstraintVarMap.ConstraintId"));
+        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getKey().toString()));
       System.err.println("Time spent in variable query: " +
                          (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
@@ -752,7 +800,7 @@ public class MySQLDB {
       sqle.printStackTrace();
     }
   }
-  public static void queryTokenRelations(PwPartialPlanImpl partialPlan) {
+  synchronized public static void queryTokenRelations(PwPartialPlanImpl partialPlan) {
     try {
       ResultSet tokenRelations = 
         queryDatabase("SELECT TokenRelationId, TokenAId, TokenBId, RelationType FROM TokenRelation WHERE PartialPlanId=".concat(partialPlan.getKey().toString()));

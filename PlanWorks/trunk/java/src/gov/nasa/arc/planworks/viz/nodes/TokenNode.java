@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.11 2003-08-06 17:11:09 miatauro Exp $
+// $Id: TokenNode.java,v 1.12 2003-08-12 21:34:49 miatauro Exp $
 //
 // PlanWorks
 //
@@ -117,6 +117,10 @@ public class TokenNode extends BasicNode {
     // do not allow user links
     getPort().setVisible( false);
   } // end configure
+
+  public String toString() {
+    return token.getKey().toString();
+  }
 
   /**
    * <code>equals</code>

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.22 2003-08-01 18:21:01 miatauro Exp $
+// $Id: ViewSet.java,v 1.23 2003-08-12 21:35:05 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -28,6 +28,7 @@ import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.views.tokenNetwork.TokenNetworkView;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 
 /**
@@ -38,7 +39,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 
 //maybe the hashmap should be changed.  is that much flexibility really necessary?
 //the MDIWindowBar is just for the notifyDeleted method
-public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar {
+public class ViewSet implements RedrawNotifier, MDIWindowBar {
   private MDIDesktopFrame desktopFrame;
   private HashMap views;
   private ContentSpec contentSpec;
@@ -80,12 +81,12 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    * @return MDIInternalFrame the frame containing the vew.
    */
   public MDIInternalFrame openTimelineView( long startTimeMSecs) {
-    if(viewExists("timelineView")) {
-      return (MDIInternalFrame) views.get("timelineView");
+    if(viewExists(ViewManager.TIMELINE_VIEW)) {
+      return (MDIInternalFrame) views.get(ViewManager.TIMELINE_VIEW);
     }
     MDIInternalFrame timelineViewFrame = 
       desktopFrame.createFrame("Timeline view of ".concat(planName), this, true, true, true, true);
-    views.put("timelineView", timelineViewFrame);
+    views.put(ViewManager.TIMELINE_VIEW, timelineViewFrame);
     Container contentPane = timelineViewFrame.getContentPane();
     contentPane.add(new TimelineView(partialPlan, startTimeMSecs, this));
     return timelineViewFrame;
@@ -98,13 +99,13 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    * @return MDIInternalFrame the frame containing the vew.
    */
   public MDIInternalFrame openTokenNetworkView( long startTimeMSecs) {
-    if(viewExists("tokenNetworkView")) {
-      return (MDIInternalFrame) views.get("tokenNetworkView");
+    if(viewExists(ViewManager.TNET_VIEW)) {
+      return (MDIInternalFrame) views.get(ViewManager.TNET_VIEW);
     }
     MDIInternalFrame tokenNetworkViewFrame = 
       desktopFrame.createFrame("Token Network view of ".concat(planName), this, true, true,
                                true, true);
-    views.put("tokenNetworkView", tokenNetworkViewFrame);
+    views.put(ViewManager.TNET_VIEW, tokenNetworkViewFrame);
     Container contentPane = tokenNetworkViewFrame.getContentPane();
     contentPane.add(new TokenNetworkView(partialPlan, startTimeMSecs, this));
     return tokenNetworkViewFrame;
@@ -117,13 +118,13 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    * @return MDIInternalFrame the frame containing the vew.
    */
   public MDIInternalFrame openTemporalExtentView( long startTimeMSecs) {
-    if(viewExists("temporalExtentView")) {
-      return (MDIInternalFrame) views.get("temporalExtentView");
+    if(viewExists(ViewManager.TEMPEXT_VIEW)) {
+      return (MDIInternalFrame) views.get(ViewManager.TEMPEXT_VIEW);
     }
     MDIInternalFrame temporalExtentViewFrame = 
       desktopFrame.createFrame("Temporal Extent view of ".concat(planName), this, true, true,
                                true, true);
-    views.put("temporalExtentView", temporalExtentViewFrame);
+    views.put(ViewManager.TEMPEXT_VIEW, temporalExtentViewFrame);
     Container contentPane = temporalExtentViewFrame.getContentPane();
     contentPane.add(new TemporalExtentView(partialPlan, startTimeMSecs, this));
     return temporalExtentViewFrame;
@@ -136,13 +137,13 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    * @return MDIInternalFrame the frame containing the vew.
    */
   public MDIInternalFrame openConstraintNetworkView( long startTimeMSecs) {
-    if(viewExists("constraintNetworkView")) {
-      return (MDIInternalFrame) views.get("constraintNetworkView");
+    if(viewExists(ViewManager.CNET_VIEW)) {
+      return (MDIInternalFrame) views.get(ViewManager.CNET_VIEW);
     }
     MDIInternalFrame constraintNetworkViewFrame = 
       desktopFrame.createFrame("Constraint Network view of ".concat(planName), this, true, true,
                                true, true);
-    views.put("constraintNetworkView", constraintNetworkViewFrame);
+    views.put(ViewManager.CNET_VIEW, constraintNetworkViewFrame);
     Container contentPane = constraintNetworkViewFrame.getContentPane();
     contentPane.add(new ConstraintNetworkView(partialPlan, startTimeMSecs, this));
     return constraintNetworkViewFrame;
@@ -163,13 +164,13 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
       Container contentPane = viewFrame.getContentPane();
       for(int i = 0; i < contentPane.getComponentCount(); i++) {
         if(contentPane.getComponent(i) instanceof TimelineView) {
-          views.remove("timelineView");
+          views.remove(ViewManager.TIMELINE_VIEW);
         } else if(contentPane.getComponent(i) instanceof TokenNetworkView) {
-          views.remove("tokenNetworkView");
+          views.remove(ViewManager.TNET_VIEW);
         } else if(contentPane.getComponent(i) instanceof TemporalExtentView) {
-          views.remove("temporalExtentView");
+          views.remove(ViewManager.TEMPEXT_VIEW);
         } else if(contentPane.getComponent(i) instanceof ConstraintNetworkView) {
-          views.remove("constraintNetworkView");
+          views.remove(ViewManager.CNET_VIEW);
         }
       }
     }
@@ -194,15 +195,6 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
         }
       }
     }
-  }
-  /**
-   * Determines whether or not a key is in the current content specification.  Used by VizView to
-   * determine which elements to draw.
-   * @param key the key being checked.
-   * @return boolean the truth value of the statement "This key is in the specification."
-   */
-  public boolean isInContentSpec(Integer key) {
-    return contentSpec.isInContentSpec(key);
   }
   public List getValidTokenIds() {
     return contentSpec.getValidTokenIds();

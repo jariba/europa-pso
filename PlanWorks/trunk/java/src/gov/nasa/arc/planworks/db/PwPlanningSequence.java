@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.10 2003-06-26 20:09:18 miatauro Exp $
+// $Id: PwPlanningSequence.java,v 1.11 2003-08-12 21:32:48 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -87,18 +87,5 @@ public interface PwPlanningSequence {
    */
   public abstract PwPartialPlan getPartialPlan( String planName)
     throws ResourceNotFoundException;
-
-  
-  /**
-   * <code>addPartialPlan</code> -
-   *          maintain PwPartialPlanImpl instance ordering with partialPlanNames
-   *
-   * @param url - <code>String</code> - 
-   * @param partialPlanName - <code>String</code> - 
-   * @return - <code>PwPartialPlan</code> - 
-   * @exception ResourceNotFoundException if an error occurs
-   */
-  public abstract PwPartialPlan addPartialPlan( String partialPlanName)
-    throws ResourceNotFoundException, SQLException;
 
 } // end interface PwPlanningSequence

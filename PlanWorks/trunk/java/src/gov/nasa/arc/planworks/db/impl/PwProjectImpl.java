@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.26 2003-08-01 22:28:12 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.27 2003-08-12 21:33:17 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -45,11 +45,19 @@ public class PwProjectImpl extends PwProject {
 
   private static HashMap projects;
 
+  /*  static {
+    try {
+      initProjects();
+    }
+    }*/
+
   /**
    * <code>initProjects</code> - 
    *
    */
-  public static void initProjects() throws ResourceNotFoundException, SQLException, IOException {
+  //private static void initProjects() throws ResourceNotFoundException, SQLException, IOException {
+  synchronized public static void initProjects() 
+    throws ResourceNotFoundException, SQLException, IOException {
     projects = new HashMap();
     connectToDataBase();
 
@@ -76,12 +84,12 @@ public class PwProjectImpl extends PwProject {
   private static void connectToDataBase() throws SQLException, IOException {
     System.err.println("Starting MySQL...");
     long startTime = System.currentTimeMillis();
-    MySQLDB.INSTANCE.startDatabase();
+    MySQLDB.startDatabase();
     startTime = System.currentTimeMillis() - startTime;
     System.err.println("   ... elapsed time: " + startTime + "ms.");
     System.err.println("Connecting to MySQL...");
     long connectTime = System.currentTimeMillis();
-    MySQLDB.INSTANCE.registerDatabase();
+    MySQLDB.registerDatabase();
     connectTime = System.currentTimeMillis() - connectTime;
     System.err.println("   ... elapsed time: " + connectTime + "ms.");
   } // end connectToExistDataBase

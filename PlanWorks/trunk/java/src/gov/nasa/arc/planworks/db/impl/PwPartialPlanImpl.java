@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.29 2003-08-07 01:16:49 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.30 2003-08-12 21:33:16 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -108,13 +108,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
         loadTime += System.currentTimeMillis() - time1;
       }
       MySQLDB.updatePartialPlanSequenceId(sequenceKey);
+      //MySQLDB.analyzeDatabase();
     }
     key = MySQLDB.getNewPartialPlanKey(sequenceKey, name);
     System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
     MySQLDB.createObjects(this);
-    model = MySQLDB.INSTANCE.queryPartialPlanModelByKey(key);
+    model = MySQLDB.queryPartialPlanModelByKey(key);
     System.err.println("Creating Timeline/Slot/Token structure");
-    MySQLDB.INSTANCE.createTimelineSlotTokenNodesStructure(this);
+    MySQLDB.createTimelineSlotTokenNodesStructure(this);
     System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
     long start2TimeMSecs = (new Date()).getTime();
     fillElementMaps();
@@ -130,14 +131,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   private final void fillElementMaps() {
 
     
-    MySQLDB.INSTANCE.queryConstraints( this);
+    MySQLDB.queryConstraints( this);
     
     // parameters are inside predicates
-    MySQLDB.INSTANCE.queryPredicates( this);
+    MySQLDB.queryPredicates( this);
 
-    MySQLDB.INSTANCE.queryTokenRelations( this);
+    MySQLDB.queryTokenRelations( this);
 
-    MySQLDB.INSTANCE.queryVariables( this);
+    MySQLDB.queryVariables( this);
 
     System.err.println( "Partial Plan keys:");
     System.err.println( "  objectMap        " + objectMap.keySet().size());
