@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.20 2003-07-03 23:44:13 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.21 2003-07-11 22:33:23 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -94,6 +94,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   private void createPartialPlan(Integer sequenceKey) throws ResourceNotFoundException, SQLException  {
     System.err.println( "Creating PwPartialPlan  ..." + url);
     long startTimeMSecs = System.currentTimeMillis();
+    long loadTime = 0L;
     ResultSet existingPartialPlan =
       MySQLDB.queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
     existingPartialPlan.last();
@@ -121,14 +122,16 @@ public class PwPartialPlanImpl implements PwPartialPlan {
           tableName = "VConstraint";
         }
         System.err.println("Loading " + fileNames[i] + " into " + tableName);
+        long time1 = System.currentTimeMillis();
         MySQLDB.updateDatabase("LOAD DATA INFILE '".concat(url).concat(System.getProperty("file.separator")).concat(fileNames[i]).concat("' IGNORE INTO TABLE ").concat(tableName));
+        loadTime += System.currentTimeMillis() - time1;
       }
       MySQLDB.updateDatabase("UPDATE PartialPlan SET SequenceId=".concat(sequenceKey.toString()).concat(" WHERE SequenceId=-1"));
       existingPartialPlan =
         MySQLDB.queryDatabase("SELECT PartialPlanId, MinKey, MaxKey FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" && PlanName='").concat(name).concat("'"));
     }
+    System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
     existingPartialPlan.first();
-    System.err.println("Got partial plan key " + existingPartialPlan.getLong("PartialPlanId"));
     key = new Long(existingPartialPlan.getLong("PartialPlanId"));
     minKey = existingPartialPlan.getInt("MinKey");
     maxKey = existingPartialPlan.getInt("MaxKey");

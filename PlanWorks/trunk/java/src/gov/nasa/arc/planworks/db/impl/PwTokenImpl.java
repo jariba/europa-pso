@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.11 2003-07-09 16:51:36 miatauro Exp $
+// $Id: PwTokenImpl.java,v 1.12 2003-07-11 22:33:35 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -44,6 +44,7 @@ public class PwTokenImpl implements PwToken {
   private Integer endVarId;
   private Integer durationVarId;
   private Integer objectVarId;
+  private Integer objectId;
   private Integer rejectVarId;
   private Integer timelineId;
   private List tokenRelationIds; // element String
@@ -55,8 +56,9 @@ public class PwTokenImpl implements PwToken {
 
   public PwTokenImpl(Integer key, boolean isValueToken, Integer slotId, Integer predicateId, 
                      Integer startVarId, Integer endVarId, Integer durationVarId, 
-                     Integer objectVarId, Integer rejectVarId, Integer timelineId,
-                     List tokenRelationIds, List paramVarIds, PwPartialPlanImpl partialPlan)
+                     Integer objectId, Integer rejectVarId, Integer objectVarId,
+                     Integer timelineId, List tokenRelationIds, List paramVarIds, 
+                     PwPartialPlanImpl partialPlan)
   {
     this.key = key;
     this.isValueToken = isValueToken;
@@ -66,6 +68,7 @@ public class PwTokenImpl implements PwToken {
     this.endVarId = endVarId;
     this.durationVarId = durationVarId;
     this.objectVarId = objectVarId;
+    this.objectId = objectId;
     this.rejectVarId = rejectVarId;
     this.tokenRelationIds = tokenRelationIds;
     this.paramVarIds = paramVarIds;
@@ -84,6 +87,10 @@ public class PwTokenImpl implements PwToken {
 
   public Integer getTimelineId() {
     return timelineId;
+  }
+  
+  public Integer getObjectId() {
+    return objectId;
   }
   /**
    * <code>getPredicate</code>
