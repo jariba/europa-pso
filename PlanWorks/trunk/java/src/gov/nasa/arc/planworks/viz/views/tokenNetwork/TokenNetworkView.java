@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.1 2003-06-25 17:04:06 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.2 2003-06-25 17:42:55 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -228,8 +228,8 @@ public class TokenNetworkView extends VizView {
   class TokenRelations {
 
     private PwToken token;
-    private List masterTokenIds; // element String
-    private List slaveTokenIds; // element String
+    private List masterTokenIds; // element Integer
+    private List slaveTokenIds; // element Integer
 
     public TokenRelations( PwToken token) {
       this.token = token;
@@ -241,7 +241,7 @@ public class TokenNetworkView extends VizView {
       return masterTokenIds;
     }
 
-    public void addMasterTokenId( String id) {
+    public void addMasterTokenId( Integer id) {
       masterTokenIds.add( id);
     }
 
@@ -249,12 +249,13 @@ public class TokenNetworkView extends VizView {
       return slaveTokenIds;
     }
 
-    public void addSlaveTokenId( String id) {
+    public void addSlaveTokenId( Integer id) {
       slaveTokenIds.add( id);
     }
 
     public String toString() {
-      StringBuffer buffer = new StringBuffer( "tokenKey: " + token.getKey());
+      StringBuffer buffer = new StringBuffer( "tokenKey: " +
+                                              String.valueOf( token.getKey()));
       buffer.append( "\n  masterTokenIds: " + masterTokenIds);
       buffer.append( "\n  slaveTokenIds: " + slaveTokenIds);
       return buffer.toString();
@@ -279,20 +280,20 @@ public class TokenNetworkView extends VizView {
           while (tokenIterator.hasNext()) {
             PwToken token = (PwToken) tokenIterator.next();
             if (token != null) { // empty slot
-             String tokenId = token.getKey();
+             Integer tokenId = token.getKey();
              TokenRelations tokenRelations =
                 (TokenRelations) relationships.get( tokenId);
               Iterator tokenRelationIterator = token.getTokenRelationsList().iterator();
               while (tokenRelationIterator.hasNext()) {
                 PwTokenRelation tokenRelation =
                   (PwTokenRelation) tokenRelationIterator.next();
-                String key = tokenRelation.getKey();
+                Integer key = tokenRelation.getKey();
                 // buildTokenParentChildRelationships printout is complete with
                 // this commented out -- same links are drawn
 //                 if (tokenRelationKeys.indexOf( key) == -1) {
 //                   tokenRelationKeys.add( key);
-                  String masterTokenId = tokenRelation.getMasterTokenId();
-                  String slaveTokenId = tokenRelation.getSlaveTokenId();
+                  Integer masterTokenId = tokenRelation.getTokenAId();
+                  Integer slaveTokenId = tokenRelation.getTokenBId();
                   if (masterTokenId.equals( tokenId)) {
                     tokenRelations.addSlaveTokenId( slaveTokenId);
                   }
@@ -363,12 +364,12 @@ public class TokenNetworkView extends VizView {
     Iterator tokenNodeIterator = tmpNodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-      String tokenKey = tokenNode.getToken().getKey();
+      Integer tokenKey = tokenNode.getToken().getKey();
       TokenRelations tokenRelations =
         (TokenRelations) relationships.get( tokenKey);
       Iterator masterTokenItr = tokenRelations.getMasterTokenIds().iterator();
       while (masterTokenItr.hasNext()) {
-        String masterTokenId = (String) masterTokenItr.next();
+        Integer masterTokenId = (Integer) masterTokenItr.next();
         if (viewSet.isInContentSpec( tokenKey) &&
             viewSet.isInContentSpec( masterTokenId)) {
           createTokenLink( getTokenNode( masterTokenId), tokenNode, "master");
@@ -376,7 +377,7 @@ public class TokenNetworkView extends VizView {
       }
       Iterator slaveTokenItr = tokenRelations.getSlaveTokenIds().iterator();
       while (slaveTokenItr.hasNext()) {
-        String slaveTokenId = (String) slaveTokenItr.next();
+        Integer slaveTokenId = (Integer) slaveTokenItr.next();
         if (viewSet.isInContentSpec( tokenKey) &&
             viewSet.isInContentSpec( slaveTokenId)) {
           createTokenLink( tokenNode, getTokenNode( slaveTokenId), "slave");
@@ -385,7 +386,7 @@ public class TokenNetworkView extends VizView {
     }
   } // end createTokenParentChildRelationships
 
-  private TokenNode getTokenNode( String nodeId) {
+  private TokenNode getTokenNode( Integer nodeId) {
     TokenNode tokenNode = null;
     Iterator tokenNodeItr = tmpNodeList.iterator();
     while (tokenNodeItr.hasNext()) {
@@ -400,8 +401,8 @@ public class TokenNetworkView extends VizView {
  
   private void createTokenLink( TokenNode fromTokenNode, TokenNode toTokenNode,
                                 String type) {
-    String linkName = fromTokenNode.getToken().getKey() + "->" +
-      toTokenNode.getToken().getKey();
+    String linkName = fromTokenNode.getToken().getKey().toString() + "->" +
+      toTokenNode.getToken().getKey().toString();
     Iterator linkItr = links.iterator();
     while (linkItr.hasNext()) {
       if (linkName.equals( (String) linkItr.next())) {
@@ -421,9 +422,9 @@ public class TokenNetworkView extends VizView {
 //     }
 //     ((JGoText) link.getMidLabel()).setBkColor( ColorMap.getColor( "lightGray"));
     System.err.println( fromTokenNode.getPredicateName() + " " +
-                        fromTokenNode.getToken().getKey() + " => " +
+                        fromTokenNode.getToken().getKey().toString() + " => " +
                         toTokenNode.getPredicateName() + " " +
-                        toTokenNode.getToken().getKey() + " " + type);
+                        toTokenNode.getToken().getKey().toString() + " " + type);
     link.setArrowHeads( false, true); // fromArrowHead toArrowHead
     jGoDocument.addObjectAtTail( link);
     links.add( linkName);
