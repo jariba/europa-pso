@@ -4,10 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.27 2004-04-09 23:11:24 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.28 2004-05-04 01:27:15 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.Enumeration;
 
 import junit.extensions.jfcunit.JFCTestCase;
@@ -21,7 +25,9 @@ public class PlanWorksTest extends JFCTestCase {
   public static String [] args;
   public static void main(String [] args) {
     PlanWorksTest.args = args;
+
     TestRunner.run(suite());
+
     //TestResult result = new TestResult();
     //BackendTest.suite().run(result);
     //while(TEST_RUNNING == 1) {

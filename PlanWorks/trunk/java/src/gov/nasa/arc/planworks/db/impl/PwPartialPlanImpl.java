@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.85 2004-04-30 21:49:38 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.86 2004-05-04 01:27:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -228,14 +228,16 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
     System.err.println( "Partial Plan: " + url);
     System.err.println( "Ids:");
-    System.err.println( "  objects        " + objectMap.keySet().size());
-    System.err.println( "  resources      " + resourceMap.keySet().size());
-    System.err.println( "  timelines      " + timelineMap.keySet().size());
-    System.err.println( "  slots          " + slotMap.keySet().size());
-    System.err.println( "  tokens         " + tokenMap.keySet().size());
-    System.err.println( "  constraints    " + constraintMap.keySet().size());
-    System.err.println( "  tokenRelations " + tokenRelationMap.keySet().size());
-    System.err.println( "  variables      " + variableMap.keySet().size());
+    System.err.println( "  objects              " + objectMap.keySet().size());
+    System.err.println( "  resources            " + resourceMap.keySet().size());
+    System.err.println( "  timelines            " + timelineMap.keySet().size());
+    System.err.println( "  slots                " + slotMap.keySet().size());
+    System.err.println( "  tokens               " + tokenMap.keySet().size());
+    System.err.println( "  constraints          " + constraintMap.keySet().size());
+    System.err.println( "  tokenRelations       " + tokenRelationMap.keySet().size());
+    System.err.println( "  variables            " + variableMap.keySet().size());
+    System.err.println( "  resourceTransactions " + resTransactionMap.keySet().size());
+    System.err.println( "  resourceInstants     " + instantMap.keySet().size());
 
   } // end fillElementMaps
 
@@ -312,6 +314,28 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   public List getTimelineList() {
     List retval = new ArrayList();
     retval.addAll(timelineMap.values());
+    return retval;
+  }
+
+  /**
+   * <code>getTokenRelationList</code>
+   *
+   * @return - <code>List</code> - of PwTokenRelationImpl
+   */
+  public List getTokenRelationList() {
+    List retval = new ArrayList();
+    retval.addAll(tokenRelationMap.values());
+    return retval;
+  }
+
+  /**
+   * <code>getResTransactionList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getResTransactionList() {
+    List retval = new ArrayList();
+    retval.addAll(resTransactionMap.values());
     return retval;
   }
 

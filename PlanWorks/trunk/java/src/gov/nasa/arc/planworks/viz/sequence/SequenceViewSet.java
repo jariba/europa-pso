@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.18 2004-03-12 23:23:59 miatauro Exp $
+// $Id: SequenceViewSet.java,v 1.19 2004-05-04 01:27:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -53,7 +53,7 @@ public class SequenceViewSet extends ViewSet {
                              ViewSetRemover remover) {
     super( desktopFrame, viewable, remover);
 
-    this.contentSpecWindow = desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_TITLE +
+    this.contentSpecWindow = desktopFrame.createFrame( ViewConstants.SEQUENCE_QUERY_TITLE +
                                                        " for " + viewable.getName(),
                                                        this, true, false, false, true);
     Container contentPane = this.contentSpecWindow.getContentPane();

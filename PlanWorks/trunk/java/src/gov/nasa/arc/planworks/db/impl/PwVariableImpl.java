@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwVariableImpl.java,v 1.23 2004-04-02 00:58:28 miatauro Exp $
+// $Id: PwVariableImpl.java,v 1.24 2004-05-04 01:27:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -149,7 +149,7 @@ public class PwVariableImpl implements PwVariable {
     retval.append("\t").append(partialPlan.getId()).append("\t").append(parentId).append("\t");
     retval.append(parameterNameList.get(0)).append("\t");
     if(domain instanceof PwEnumeratedDomainImpl) {
-      retval.append("EnumeratedDomain").append("\t");
+      retval.append(DbConstants.ENUMERATED_DOMAIN).append("\t");
       PwEnumeratedDomainImpl eDom = (PwEnumeratedDomainImpl) domain;
       for(ListIterator it = eDom.getEnumeration().listIterator(); it.hasNext();) {
         retval.append(it.next()).append(" ");
@@ -158,7 +158,7 @@ public class PwVariableImpl implements PwVariable {
     }
     else if(domain instanceof PwIntervalDomainImpl) {
       PwIntervalDomainImpl iDom = (PwIntervalDomainImpl) domain;
-      retval.append("IntervalDomain\t\\N\t").append(iDom.getType()).append("\t");
+      retval.append(DbConstants.INTERVAL_DOMAIN).append("\t\\N\t").append(iDom.getType()).append("\t");
       retval.append(iDom.getLowerBound()).append("\t").append(iDom.getUpperBound()).append("\t");
     }
     retval.append(type).append("\n");

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransactionImpl.java,v 1.2 2004-03-23 18:20:43 miatauro Exp $
+// $Id: PwDBTransactionImpl.java,v 1.3 2004-05-04 01:27:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -16,6 +16,7 @@ package gov.nasa.arc.planworks.db.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
 
 
@@ -123,8 +124,9 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   }
   
   public String toOutputString() {
-    StringBuffer retval = new StringBuffer(type);
-    retval.append("\t").append(objectId).append("\t").append(source).append("\t");
+    StringBuffer retval = new StringBuffer(type); retval.append("\t");
+    retval.append(getTypeCategory(type)).append("\t");
+    retval.append(objectId).append("\t").append(source).append("\t");
     retval.append(transactionId).append("\t").append(stepNumber).append("\t").append(sequenceId);
     retval.append("\t").append(partialPlanId).append("\t");
     for(int i = 0; i < info.length; i++) {
@@ -132,6 +134,45 @@ public class PwDBTransactionImpl implements PwDBTransaction {
     }
     retval.append("\n");
     return retval.toString();
+  }
+
+  private String getTypeCategory( String type) {
+    String typeCategory = null;
+    if (findElementInStringArray( DbConstants.TT_CREATION_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_CREATION;
+    } else if (findElementInStringArray( DbConstants.TT_DELETION_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_DELETION;
+    } else if (findElementInStringArray( DbConstants.TT_ADDITION_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_ADDITION;
+    } else if (findElementInStringArray( DbConstants.TT_REMOVAL_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_REMOVAL;
+    } else if (findElementInStringArray( DbConstants.TT_CLOSURE_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_CLOSURE;
+    } else if (findElementInStringArray( DbConstants.TT_RESTRICTION_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_RESTRICTION;
+    } else if (findElementInStringArray( DbConstants.TT_RELAXATION_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_RELAXATION;
+    } else if (findElementInStringArray( DbConstants.TT_EXECUTION_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_EXECUTION;
+    } else if (findElementInStringArray( DbConstants.TT_SPECIFICATION_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_SPECIFICATION;
+    } else if (findElementInStringArray( DbConstants.TT_UNDO_TYPES, type) != null) {
+      typeCategory = DbConstants.TT_UNDO;
+    }
+    if (typeCategory == null) {
+      System.err.println( "PwDBTransactionImpl.toOutputString.getTypeCategory" +
+                          " returns null for " + type);
+    }
+    return typeCategory;
+  }
+
+  private String findElementInStringArray( String [] stringArray, String element) {
+    for (int i = 0, n = stringArray.length; i < n; i++) {
+      if (stringArray[i].equals( element)) {
+        return stringArray[i];
+      }
+    }
+    return null;
   }
 
 } // end class PwDBTransactionImpl

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.57 2004-04-22 19:26:23 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.58 2004-05-04 01:27:18 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -110,7 +110,6 @@ public class ConstraintNetworkView extends PartialPlanView {
 
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private MDIInternalFrame viewFrame;
   private ConstraintJGoView jGoView;
   private JGoDocument document;
   //private Map tokenNodeMap;
@@ -126,7 +125,6 @@ public class ConstraintNetworkView extends PartialPlanView {
   private JGoArea focusNode; // ConstraintNetworkTokenNode/ConstraintNode/VariableNode
   private NewConstraintNetworkLayout newLayout;
   private boolean isStepButtonView;
-  private ViewListener viewListener;
 
   /**
    * <code>ConstraintNetworkView</code> - constructor -
@@ -188,7 +186,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     constraintLinkMap = new HashMap();
     variableLinkMap = new HashMap();
     containerNodeMap = new HashMap();
-    this.viewListener = null;
+    ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
@@ -442,7 +440,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   }
 
   /**
-   * <code>getTokenNodeList</code> - used by PlanWorksTest
+   * <code>getContainerNodeList</code> - used by PlanWorksTest
    *
    * @return - <code>List</code> - 
    */
@@ -1348,7 +1346,7 @@ public class ConstraintNetworkView extends PartialPlanView {
     }
     setLinksVisible();
     boolean showDialog = true;
-    isContentSpecRendered( PlanWorks.CONSTRAINT_NETWORK_VIEW, showDialog);
+    isContentSpecRendered( ViewConstants.CONSTRAINT_NETWORK_VIEW, showDialog);
   } // end setNodesLinksVisible
 
   private void setLinksVisible() {
@@ -1478,7 +1476,7 @@ public class ConstraintNetworkView extends PartialPlanView {
 
       constraintNetworkView.createOpenViewItems( partialPlan, partialPlanName, planSequence,
                                                  mouseRightPopup,
-                                                 PlanWorks.CONSTRAINT_NETWORK_VIEW);
+                                                 ViewConstants.CONSTRAINT_NETWORK_VIEW);
     
       JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
       createOverviewWindowItem( overviewWindowItem, constraintNetworkView, viewCoords);
@@ -1508,7 +1506,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       constraintNetworkView.createZoomItem( jGoView, zoomFactor, mouseRightPopup,
                                             ConstraintNetworkView.this);
 
-      if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
+      if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
         mouseRightPopup.addSeparator();
         JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
         createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -1770,7 +1768,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       overviewWindowItem.addActionListener( new ActionListener() { 
           public void actionPerformed( ActionEvent evt) {
             VizViewOverview currentOverview =
-              ViewGenerics.openOverviewFrame( PlanWorks.CONSTRAINT_NETWORK_VIEW, partialPlan,
+              ViewGenerics.openOverviewFrame( ViewConstants.CONSTRAINT_NETWORK_VIEW, partialPlan,
                                               constraintNetworkView,
                                               constraintNetworkView.getViewSet(),
                                               ConstraintJGoView.this, viewCoords);

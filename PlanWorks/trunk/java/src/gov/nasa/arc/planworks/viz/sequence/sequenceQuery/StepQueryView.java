@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepQueryView.java,v 1.8 2004-04-22 19:26:26 taylor Exp $
+// $Id: StepQueryView.java,v 1.9 2004-05-04 01:27:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -32,6 +32,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.StepContentView;
 import gov.nasa.arc.planworks.viz.StepHeaderView;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -54,7 +55,6 @@ public class StepQueryView extends SequenceView {
   private String key;
   private String query;
   private SequenceQueryWindow sequenceQueryWindow;
-  private MDIInternalFrame stepQueryFrame;
 
   private long startTimeMSecs;
   private ViewSet viewSet;
@@ -62,6 +62,7 @@ public class StepQueryView extends SequenceView {
   private StepHeaderPanel stepHeaderPanel;
   private StepContentView contentJGoView;
   private JGoDocument jGoDocument;
+  private ViewListener viewListener;
 
 
   /**
@@ -75,10 +76,12 @@ public class StepQueryView extends SequenceView {
    * @param sequenceQueryWindow - <code>JPanel</code> - 
    * @param stepQueryFrame - <code>MDIInternalFrame</code> - 
    * @param startTimeMSecs - <code>long</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
    */
   public StepQueryView( List stepList, String key, String query, ViewableObject planSequence,
                         ViewSet viewSet, JPanel sequenceQueryWindow,
-                        MDIInternalFrame stepQueryFrame, long startTimeMSecs) {
+                        MDIInternalFrame stepQueryFrame, long startTimeMSecs,
+                        ViewListener viewListener) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.stepList = stepList;
     this.key = key;
@@ -89,10 +92,14 @@ public class StepQueryView extends SequenceView {
     this.planSequence = (PwPlanningSequence) planSequence;
     this.viewSet = (SequenceViewSet) viewSet;
     this.sequenceQueryWindow = (SequenceQueryWindow) sequenceQueryWindow;
-    this.stepQueryFrame = stepQueryFrame;
+    viewFrame = stepQueryFrame;
     // for PWTestHelper.findComponentByName
     this.setName( stepQueryFrame.getTitle());
     this.startTimeMSecs = startTimeMSecs;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
+    this.viewListener = viewListener;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -117,6 +124,7 @@ public class StepQueryView extends SequenceView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -150,9 +158,8 @@ public class StepQueryView extends SequenceView {
                                 // contentJGoView.getDocumentSize().getHeight());
                                 // keep contentJGoView small
                                 (ViewConstants.INTERNAL_FRAME_X_DELTA));
-    stepQueryFrame.setSize
-      ( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
-        maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
+    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
+                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
     int maxQueryFrameY =
       (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
              sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
@@ -161,10 +168,10 @@ public class StepQueryView extends SequenceView {
                           (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
                                  maxQueryFrameY -
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
-    stepQueryFrame.setLocation
-      ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta, maxQueryFrameY + delta);
+    viewFrame.setLocation( ViewConstants.INTERNAL_FRAME_X_DELTA + delta,
+                           maxQueryFrameY + delta);
     // prevent right edge from going outside the MDI frame
-    expandViewFrame( stepQueryFrame,
+    expandViewFrame( viewFrame,
                      (int) headerJGoView.getDocumentSize().getWidth(),
                      (int) (headerJGoView.getDocumentSize().getHeight() +
                             contentJGoView.getDocumentSize().getHeight()));
@@ -172,6 +179,7 @@ public class StepQueryView extends SequenceView {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 

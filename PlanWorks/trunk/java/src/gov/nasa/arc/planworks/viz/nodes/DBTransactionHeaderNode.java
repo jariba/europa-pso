@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionHeaderNode.java,v 1.1 2004-02-03 20:43:52 taylor Exp $
+// $Id: DBTransactionHeaderNode.java,v 1.2 2004-05-04 01:27:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -128,7 +128,7 @@ public class DBTransactionHeaderNode extends TextNode {
       stepContentView = ((StepQueryView) vizView).getStepContentView();
       transactionList = stepContentView.getTransactionList();
     } else {
-      System.err.println( "DBTransactionHeaderNode.sortTransactionList: vizView " +
+      System.err.println( "DBTransactionHeaderNode.sortTransactionList1: vizView " +
                           vizView + " not handled");
       System.exit( -1);
     }

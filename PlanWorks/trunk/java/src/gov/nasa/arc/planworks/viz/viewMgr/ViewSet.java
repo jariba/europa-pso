@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.59 2004-04-22 19:26:28 taylor Exp $
+// $Id: ViewSet.java,v 1.60 2004-05-04 01:27:23 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -34,6 +34,7 @@ import gov.nasa.arc.planworks.db.util.ContentSpec;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.StringViewSetKey;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
@@ -117,7 +118,8 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
         testConstructorArgs[0] = viewable;
         testConstructorArgs[1] = this;
         testConstructorArgs[2] = viewListener;
-        if (viewable instanceof DBTransactionView) {
+        if (viewClassName.equals( PlanWorks.getViewClassName
+                                  ( ViewConstants.DB_TRANSACTION_VIEW))) {
           view = (VizView) constructors[1].newInstance( testConstructorArgs);
         } else if (viewable instanceof PwPartialPlan) {
           view = (VizView) constructors[2].newInstance( testConstructorArgs);

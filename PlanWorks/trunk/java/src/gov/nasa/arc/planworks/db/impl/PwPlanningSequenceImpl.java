@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.79 2004-04-30 21:49:39 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.80 2004-05-04 01:27:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -203,6 +203,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   
 
   private void urlsDontMatchDialog(String fsUrl, String dbUrl) {
+    System.err.println( "fsUrl '" + fsUrl + "'");
+    System.err.println( "dbUrl '" + dbUrl + "'");
     Frame f = new Frame();
     String [] urls = {fsUrl, dbUrl};
     int choice = JOptionPane.showOptionDialog(f, "The URL in the sequence files and the URL from the file selecter don't match.  Please choose one.", "URL Mismatch", JOptionPane.YES_NO_OPTION,
@@ -447,7 +449,8 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   public void delete() throws ResourceNotFoundException {
     long t1 = System.currentTimeMillis();
     MySQLDB.deletePlanningSequence(id);
-    System.err.println("Deleting sequence took " + (System.currentTimeMillis() - t1));
+    System.err.println("Deleting sequence took " + (System.currentTimeMillis() - t1) +
+                       " msecs.");
   }
 
   // implement ViewableObject
@@ -705,7 +708,12 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
       pps.append(partialPlan.getConstraintList().size()).append("\t0\n");
     }
     StringBuffer seq = new StringBuffer(url);
-    seq.append("\t").append(id.toString()).append("\t-1\n");
+    seq.append((char) Integer.parseInt(DbConstants.SEQ_COL_SEP, 16));
+    seq.append(id.toString()).append((char) Integer.parseInt(DbConstants.SEQ_COL_SEP, 16));
+    seq.append("-1").append((char) Integer.parseInt(DbConstants.SEQ_COL_SEP, 16));
+    // rule text -- null for now
+    seq.append("\\N").append((char) Integer.parseInt(DbConstants.SEQ_LINE_SEP, 16));
+
     StringBuffer trans = new StringBuffer();
     for(Iterator it = transactions.values().iterator(); it.hasNext();) {
       PwDBTransaction t = (PwDBTransaction) it.next();

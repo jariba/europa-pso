@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.33 2004-03-27 01:04:05 miatauro Exp $
+// $Id: PwPartialPlan.java,v 1.34 2004-05-04 01:27:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -50,17 +50,21 @@ public interface PwPartialPlan extends ViewableObject {
 
   public abstract List getResourceList();
 
+  public abstract List getTimelineList();
+
   /**
    * <code>getFreeTokenList</code>
    *
    * @return - <code>List</code> - of PwToken
    */
-
   public abstract List getFreeTokenList();
 
   public abstract List getSlottedTokenList();
 
   public abstract List getTokenList();
+
+  public abstract List getResTransactionList();
+
   /**
    * <code>getObject</code> - 
    *

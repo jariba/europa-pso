@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.46 2004-04-22 19:26:26 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.47 2004-05-04 01:27:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -69,7 +69,6 @@ public class TokenNetworkView extends PartialPlanView {
 
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private MDIInternalFrame viewFrame;
   private TokenNetworkJGoView jGoView;
   private JGoDocument jGoDocument;
   private Map tokenNodeMap; // key = tokenId, element TokenNode
@@ -77,7 +76,6 @@ public class TokenNetworkView extends PartialPlanView {
   private boolean isStepButtonView;
   private TokenLink mouseOverLink;
   private List rootNodes;
-  private ViewListener viewListener;
 
   /**
    * <code>TokenNetworkView</code> - constructor - 
@@ -91,7 +89,6 @@ public class TokenNetworkView extends PartialPlanView {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     tokenNetworkViewInit( viewSet);
     isStepButtonView = false;
-    viewListener = null;
     // print content spec
     // viewSet.printSpec();
 
@@ -119,7 +116,6 @@ public class TokenNetworkView extends PartialPlanView {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     tokenNetworkViewInit( viewSet);
     isStepButtonView = false;
-    viewListener = null;
     // print content spec
     // viewSet.printSpec();
     if (viewListener != null) {
@@ -139,6 +135,7 @@ public class TokenNetworkView extends PartialPlanView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
+    ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
@@ -266,7 +263,7 @@ public class TokenNetworkView extends PartialPlanView {
     createTokenNodes();
 
     boolean showDialog = true;
-    isContentSpecRendered( PlanWorks.TOKEN_NETWORK_VIEW, showDialog);
+    isContentSpecRendered( ViewConstants.TOKEN_NETWORK_VIEW, showDialog);
 
     TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
@@ -458,7 +455,7 @@ public class TokenNetworkView extends PartialPlanView {
     mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         PlanWorks.TOKEN_NETWORK_VIEW);
+                         ViewConstants.TOKEN_NETWORK_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -480,7 +477,7 @@ public class TokenNetworkView extends PartialPlanView {
 
     this.createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
-    if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
+    if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -561,7 +558,7 @@ public class TokenNetworkView extends PartialPlanView {
     overviewWindowItem.addActionListener( new ActionListener() { 
         public final void actionPerformed( final ActionEvent evt) {
           VizViewOverview currentOverview =
-            ViewGenerics.openOverviewFrame( PlanWorks.TOKEN_NETWORK_VIEW, partialPlan,
+            ViewGenerics.openOverviewFrame( ViewConstants.TOKEN_NETWORK_VIEW, partialPlan,
                                             tokenNetworkView, viewSet, jGoView, viewCoords);
           if (currentOverview != null) {
             overview = currentOverview;

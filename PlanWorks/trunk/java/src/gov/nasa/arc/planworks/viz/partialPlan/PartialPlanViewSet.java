@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.18 2004-04-22 19:26:23 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.19 2004-05-04 01:27:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -120,7 +120,7 @@ public class PartialPlanViewSet extends ViewSet {
     if (this.contentSpecWindow != null) {
       windowLocation = this.contentSpecWindow.getLocation();
     }
-    this.contentSpecWindow = desktopFrame.createFrame( ContentSpec.CONTENT_SPEC_TITLE +
+    this.contentSpecWindow = desktopFrame.createFrame( ViewConstants.CONTENT_SPEC_TITLE +
                                                        " for " + viewable.getName(),
                                                        this, true, false, false, true);
     Container contentPane = this.contentSpecWindow.getContentPane();

@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.7 2004-04-22 19:26:17 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.8 2004-05-04 01:27:10 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -18,6 +18,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewListener;
 
 
@@ -102,7 +103,7 @@ public class CreateSequenceViewThread extends CreateViewThread {
 
       MDIInternalFrame viewFrame = renderView( sequenceName, planSequence, viewListener);
 
-      if (viewName.equals( PlanWorks.SEQUENCE_STEPS_VIEW)) {
+      if (viewName.equals( ViewConstants.SEQUENCE_STEPS_VIEW)) {
         PlanWorks.getPlanWorks().setSequenceStepsViewFrame( seqUrl, viewFrame);
       }
 

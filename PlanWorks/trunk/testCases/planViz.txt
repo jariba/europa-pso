@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.39 2004-04-22 19:26:29 taylor Exp $
+// $Id: planViz.txt,v 1.40 2004-05-04 01:27:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -295,7 +295,7 @@ Method:
      "Token Network View".
   5. Display "test-seq-1/step<nn>" Transaction View by clicking Mouse-Right on the
      "step<nn>" element of the "SequenceStepsView of test-seq-1", and selecting
-     "TransactionView".
+     "DBTransactionView".
   6. Open the first two token nodes of the Constraint Network View, and then
      open the "closed" variable and constraint nodes that result.  Then 
      close the "opened" variable, constraint, and token nodes to return to the
@@ -310,28 +310,27 @@ Method:
      a new location.  
 
 Post-conditions:
-  1. Method:6 - All token nodes (rectangles) appear in the Constraint Network 
-     View, and variable nodes ("pinched" rectangles) and constraint nodes (left/right pointed 
-     rectangles) are linked to the token nodes "opened".  
-     Token node labels consist of the predicate name and the token key value.  Mouse 
-     cursor over token nodes displays "predicateName( parameterValues)" on the 
-     first line, its slot key value on the second line, and "Mouse-L: open/close 
-     nearest variables" on the third line.  
+  1. Method:6 - All variable containing nodes: interval tokens and resource transactions
+     (rectangles); resources (pinched/peaked rectangles); timelines (forward
+     trapezoids); and objects (backward trapezoids) appear in the Constraint Network 
+     View.  Variable nodes ("pinched" rectangles) and constraint nodes (left/right pointed 
+     rectangles) are linked to the variable containing nodes "opened".  
+     Interval token node labels consist of the predicate name and the token key value.
+     Mouse cursor over interval token nodes displays "predicateName( parameterValues)" 
+     on the first line, its slot key value on the second line, and "Mouse-L: open/close" 
+     on the third line.  The second line is absent for the other variable containing nodes.
      Variable node labels consist of the variable value and the variable key value.  
      Mouse cursor over variable nodes displays "variableType" on the first line, 
-     and "Mouse-L: open/close nearest token links/constraints" on the second line,
-     for all variable types except  PARAMETER_VAR and OBJECT_VAR.
-     Mouse cursor over PARAMETER_VAR type variable nodes displays
-     "variableType: parameterVariableName" on the first line, and
-     "Mouse-L: open/close nearest token links/constraints" on the second line.  
-     Mouse cursor over OBJECT_VAR type variable nodes displays "variableType" on
-     the first line, "objectName: objectId" on the second and subsequent lines
-     for each of 1 to n objects, and "Mouse-L: open/close nearest token links/constraints" 
-     on the lastline.  
+     and "Mouse-L: open/close" on the second line, for all variable types except
+     PARAMETER_VAR and OBJECT_VAR.  Mouse cursor over PARAMETER_VAR type variable
+     nodes displays "variableType: parameterVariableName" on the first line, and
+     "Mouse-L: open/close" on the second line.  Mouse cursor over OBJECT_VAR type 
+     variable nodes displays "variableType" on the first line, "objectName: objectId" 
+     on the second and subsequent lines for each of 1 to n objects, and
+     "Mouse-L: open/close" on the last line.  
      Constraint node labels consist of the constraint name and the constraint key value.
      Mouse cursor over constraint nodes displays "constraintType" on the first 
-     line, and "Mouse-L: open/close nearest token variables" on the second line, 
-     if the constraint is not unary.
+     line, and "Mouse-L: open/close" on the second line, if the constraint is not unary.
   2. All token nodes appear in the Temporal Extent View.  Token node labels 
      consist of the predicate name and the token key value.  Mouse cursor over 
      a token node displays "predicateName( parameterValues)", and its slot 

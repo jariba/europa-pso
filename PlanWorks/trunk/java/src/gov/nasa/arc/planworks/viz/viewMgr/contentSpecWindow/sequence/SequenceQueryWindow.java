@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.24 2004-04-30 21:52:06 miatauro Exp $
+// $Id: SequenceQueryWindow.java,v 1.25 2004-05-04 01:27:23 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -63,46 +63,50 @@ import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.VariableQueryView;
  */
 public class SequenceQueryWindow extends JPanel implements MouseListener { 
 
-  private static final String QUERY_RESULT_FRAME = "QueryResultFrame";
-  private static final String QUERY_FOR_STEPS = "Steps ...";
-  private static final String QUERY_FOR_TRANSACTIONS = "Transactions ...";
-  private static final String QUERY_FOR_FREE_TOKENS = "Free Tokens ...";
-  private static final String QUERY_FOR_UNBOUND_VARIABLES = "Unbound Variables ...";
-  private static final String QUERY_FOR_ALL_DECISIONS = "All Decisions ...";
+  public static final String QUERY_RESULT_FRAME = "QueryResultFrame";
+  public static final String QUERY_FOR_STEPS = "Steps ...";
+  public static final String QUERY_FOR_TRANSACTIONS = "Transactions ...";
+  public static final String QUERY_FOR_FREE_TOKENS = "Free Tokens ...";
+  public static final String QUERY_FOR_UNBOUND_VARIABLES = "Unbound Variables ...";
+  public static final String QUERY_FOR_ALL_DECISIONS = "All Decisions ...";
 
-  private static final String STEPS_WHERE_CONSTRAINT_TRANSACTED =
+  public static final String STEPS_WHERE_CONSTRAINT_TRANSACTED =
     "Where Constraint Transacted ...";
-  private static final String STEPS_WHERE_TOKEN_TRANSACTED = "Where Token Transacted ...";
-  private static final String STEPS_WHERE_VARIABLE_TRANSACTED =
+  public static final String STEPS_WHERE_TOKEN_TRANSACTED = "Where Token Transacted ...";
+  public static final String STEPS_WHERE_VARIABLE_TRANSACTED =
     "Where Variable Transacted ...";
-  private static final String STEPS_WITH_NON_UNIT_VARIABLE_DECISIONS =
+  public static final String STEPS_WITH_NON_UNIT_VARIABLE_DECISIONS =
     "With Non-Unit Variable Decisions";
-  private static final String STEPS_WITH_RELAXATIONS = "With Relaxations";
-  private static final String STEPS_WITH_RESTRICTIONS = "With Restrictions";
-  private static final String STEPS_WITH_UNIT_VARIABLE_DECISIONS =
+  public static final String STEPS_WITH_RELAXATIONS = "With Relaxations";
+  public static final String STEPS_WITH_RESTRICTIONS = "With Restrictions";
+  public static final String STEPS_WITH_UNIT_VARIABLE_DECISIONS =
     "With Unit Variable Decisions";
-  private static final List STEP_QUERIES;
+  public static final List STEP_QUERIES;
 
-  private static final String TRANSACTIONS_FOR_CONSTRAINT = "For Constraint ...";
-  private static final String TRANSACTIONS_FOR_TOKEN = "For Token ...";
-  private static final String TRANSACTIONS_FOR_VARIABLE = "For Variable ...";
-  private static final String TRANSACTIONS_IN_RANGE = "In Range ...";
-  private static final String TRANSACTIONS_OF_TYPE = "Of Type ...";
-  private static final List DB_TRANSACTION_QUERIES;
+  public static final String TRANSACTIONS_FOR_CONSTRAINT = "For Constraint ...";
+  public static final String TRANSACTIONS_FOR_TOKEN = "For Token ...";
+  public static final String TRANSACTIONS_FOR_VARIABLE = "For Variable ...";
+  public static final String TRANSACTIONS_IN_RANGE = "In Range ...";
+  public static final String TRANSACTIONS_OF_TYPE = "Of Type ...";
+  public static final List DB_TRANSACTION_QUERIES;
 
-  private static final List CONSTRAINT_TRANSACTION_TYPES;
-  private static final List TOKEN_TRANSACTION_TYPES;
-  private static final List VARIABLE_TRANSACTION_TYPES;
+  public static final List CONSTRAINT_TRANSACTION_TYPES;
+  public static final String CONSTRAINT_TRANSACTION_TYPE_ALL = "CONSTRAINT_ALL";
+  public static final List TOKEN_TRANSACTION_TYPES;
+  public static final String TOKEN_TRANSACTION_TYPE_ALL = "TOKEN_ALL";
+  public static final List VARIABLE_TRANSACTION_TYPES;
+  public static final String VARIABLE_TRANSACTION_TYPE_ALL = "VARIABLE_ALL";
 
-  private static final String FREE_TOKENS_AT_STEP = "At ...";
-  private static final List FREE_TOKEN_QUERIES;
+  public static final String FREE_TOKENS_AT_STEP = "At ...";
+  public static final List FREE_TOKEN_QUERIES;
 
-  private static final String UNBOUND_VARIABLES_AT_STEP = "At ...";
-  private static final List UNBOUND_VARIABLE_QUERIES;
+  public static final String UNBOUND_VARIABLES_AT_STEP = "At ...";
+  public static final List UNBOUND_VARIABLE_QUERIES;
 
-  private static final String ALL_DECISIONS_AT_STEP = "At ...";
-  private static final List ALL_DECISIONS_QUERIES;
+  public static final String ALL_DECISIONS_AT_STEP = "At ...";
+  public static final List ALL_DECISIONS_QUERIES;
 
+  public static final String APPLY_QUERY_BUTTON = "Apply Query";
   static {
     STEP_QUERIES = new ArrayList();
     STEP_QUERIES.add( STEPS_WHERE_CONSTRAINT_TRANSACTED);
@@ -170,6 +174,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   protected TokenTransComboBox tokenTransComboBox;
   protected VariableTransComboBox variableTransComboBox;
   protected int queryResultFrameCnt;
+  protected ViewListener viewListener;
 
 
   /**
@@ -188,8 +193,9 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     this.desktopFrame = desktopFrame;
     this.viewable = viewable;
     this.viewSet = (SequenceViewSet) viewSet;
+    viewListener = null;
     
-    queryResultFrameCnt = 0;
+    queryResultFrameCnt = 1;
 
     GridBagLayout gridBag = new GridBagLayout();
     constraints = new GridBagConstraints();
@@ -225,7 +231,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     buttonConstraints.gridx = 0;
     buttonConstraints.gridy = 0;
 
-    JButton queryButton = new JButton("Apply Query");
+    JButton queryButton = new JButton(APPLY_QUERY_BUTTON);
     queryButton.addActionListener(new QueryListener(this));
     buttonGridBag.setConstraints(queryButton, buttonConstraints);
     buttonPanel.add(queryButton);
@@ -301,12 +307,20 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   }
 
   /**
-   * <code>setQueryResultFrameCnt</code>
+   * <code>resetQueryResultFrameCnt</code>
    *
-   * @param cnt - <code>int</code> - 
    */
-  public void setQueryResultFrameCnt( int cnt) {
-    queryResultFrameCnt = cnt;
+  public void resetQueryResultFrameCnt() {
+    queryResultFrameCnt = 1;
+  }
+
+  /**
+   * <code>setViewListener</code> - to be passed to Query Results views
+   *
+   * @param listener - <code>ViewListener</code> - 
+   */
+  public final void setViewListener( ViewListener listener) {
+    viewListener = listener;
   }
 
   /**
@@ -324,7 +338,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
 
     public void actionPerformed(ActionEvent ae) {
       String stepsQuery = "", transactionsQuery = "";
-      if (ae.getActionCommand().equals("Apply Query")) {
+      if (ae.getActionCommand().equals( APPLY_QUERY_BUTTON)) {
         long startTimeMSecs = System.currentTimeMillis();
         System.err.println( "Querying and Rendering Sequence Query View ...");
         if (((String) queryWindow.majorTypeBox.getSelectedItem()).
@@ -421,20 +435,20 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
             renderFreeTokenQueryFrame(decisionQuery, tokenList, startTimeMSecs);
           }
         }
-      } else if (ae.getActionCommand().equals("Reset Query")) {
-        if (majorTypeBox != null) {
-          majorTypeBox.setSelectedItem( QUERY_FOR_STEPS);
-        }
-        if (minorTypeBox != null) {
-          minorTypeBox.removeAllItems();
-          Iterator stepsItr = STEP_QUERIES.iterator();
-          while (stepsItr.hasNext()) {
-            minorTypeBox.addItem( (String) stepsItr.next());
-          }
-          SequenceQueryWindow.this.removeExtendedQueryComponents( 1);
-          SequenceQueryWindow.this.extendQueryForStepsWhereConstraintTransacted();
-        }
-        queryWindow.refresh();
+//       } else if (ae.getActionCommand().equals("Reset Query")) {
+//         if (majorTypeBox != null) {
+//           majorTypeBox.setSelectedItem( QUERY_FOR_STEPS);
+//         }
+//         if (minorTypeBox != null) {
+//           minorTypeBox.removeAllItems();
+//           Iterator stepsItr = STEP_QUERIES.iterator();
+//           while (stepsItr.hasNext()) {
+//             minorTypeBox.addItem( (String) stepsItr.next());
+//           }
+//           SequenceQueryWindow.this.removeExtendedQueryComponents( 1);
+//           SequenceQueryWindow.this.extendQueryForStepsWhereConstraintTransacted();
+//         }
+//         queryWindow.refresh();
       }
     } // end actionPerformed
 
@@ -448,19 +462,18 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         Object windowKey = (Object) windowListItr.next();
         if ((windowKey instanceof Class) &&
             ((Class) windowKey).getName().equals
-            ( PlanWorks.getViewClassName( PlanWorks.SEQUENCE_STEPS_VIEW))) {
+            ( PlanWorks.getViewClassName( ViewConstants.SEQUENCE_STEPS_VIEW))) {
           sequenceStepsViewExists = true;
         }
       }
       if (! sequenceStepsViewExists) {
         String seqName = ((PwPlanningSequence) viewable).getName();
         String seqUrl = ((PwPlanningSequence) viewable).getUrl();
-        ViewListener viewListener = null;
         SequenceViewMenuItem seqViewItem =
           new SequenceViewMenuItem( seqName, seqUrl, seqName);
         boolean isInvokeAndWait = true;
         Thread thread =
-          new CreateSequenceViewThread( PlanWorks.SEQUENCE_STEPS_VIEW, seqViewItem,
+          new CreateSequenceViewThread( ViewConstants.SEQUENCE_STEPS_VIEW, seqViewItem,
                                         isInvokeAndWait);
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
@@ -469,10 +482,10 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
 
     private void renderStepQueryFrame( String stepsQuery, List stepList,
                                        long startTimeMSecs) {
+      String frameTitle = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE + " for " +
+        viewable.getName() + " - " + String.valueOf( queryResultFrameCnt);
       MDIInternalFrame stepQueryFrame =
-        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
-                                  " for " + viewable.getName(),
-                                  viewSet, true, true, true, true);
+        desktopFrame.createFrame( frameTitle, viewSet, true, true, true, true);
       viewSet.getViews().put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt),
                               stepQueryFrame);
       Container contentPane = stepQueryFrame.getContentPane();
@@ -490,16 +503,16 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       contentPane.add( new StepQueryView
                        ( stepList, keyString, queryStringBuf.toString(), viewable,
                          viewSet, SequenceQueryWindow.this, stepQueryFrame,
-                         startTimeMSecs));
+                         startTimeMSecs, viewListener));
       queryResultFrameCnt++;
     } // end renderStepQueryFrame
 
     private void renderTransactionQueryFrame( String transactionsQuery,
                                               List transactionList, long startTimeMSecs) {
+      String frameTitle = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE + " for " +
+        viewable.getName() + " - " + String.valueOf( queryResultFrameCnt);
       MDIInternalFrame transactionQueryFrame =
-        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
-                                  " for " + viewable.getName(),
-                                  viewSet, true, true, true, true);
+        desktopFrame.createFrame( frameTitle, viewSet, true, true, true, true);
       viewSet.getViews().put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt),
                               transactionQueryFrame);
       Container contentPane = transactionQueryFrame.getContentPane();
@@ -514,16 +527,16 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       contentPane.add( new DBTransactionQueryView
                        ( transactionList, queryStringBuf.toString(), viewable,
                          viewSet, SequenceQueryWindow.this, transactionQueryFrame,
-                         startTimeMSecs));
+                         startTimeMSecs, viewListener));
       queryResultFrameCnt++;
     } // end renderTransactionQueryFrame
 
     private void renderFreeTokenQueryFrame( String tokenQuery, List tokenList,
                                             long startTimeMSecs) {
+      String frameTitle = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE + " for " +
+        viewable.getName() + " - " + String.valueOf( queryResultFrameCnt);
       MDIInternalFrame tokenQueryFrame =
-        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
-                                  " for " + viewable.getName(),
-                                  viewSet, true, true, true, true);
+        desktopFrame.createFrame( frameTitle, viewSet, true, true, true, true);
       viewSet.getViews().put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt),
                               tokenQueryFrame);
       Container contentPane = tokenQueryFrame.getContentPane();
@@ -533,16 +546,16 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       contentPane.add( new TokenQueryView
                        ( tokenList, queryStringBuf.toString(), viewable,
                          viewSet, SequenceQueryWindow.this, tokenQueryFrame,
-                         startTimeMSecs));
+                         startTimeMSecs, viewListener));
       queryResultFrameCnt++;
     } // end renderTokenQueryFrame
 
     private void renderUnboundVariableQueryFrame( String variableQuery, List variableList,
                                                   long startTimeMSecs) {
+      String frameTitle = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE + " for " +
+        viewable.getName() + " - " + String.valueOf( queryResultFrameCnt);
       MDIInternalFrame variablesQueryFrame =
-        desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE +
-                                  " for " + viewable.getName(),
-                                  viewSet, true, true, true, true);
+        desktopFrame.createFrame( frameTitle, viewSet, true, true, true, true);
       viewSet.getViews().put( new String( QUERY_RESULT_FRAME + queryResultFrameCnt),
                               variablesQueryFrame);
       Container contentPane = variablesQueryFrame.getContentPane();
@@ -552,23 +565,24 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       contentPane.add( new VariableQueryView
                        ( variableList, queryStringBuf.toString(), viewable,
                          viewSet, SequenceQueryWindow.this, variablesQueryFrame,
-                         startTimeMSecs));
+                         startTimeMSecs, viewListener));
       queryResultFrameCnt++;
     } // end renderVariableQueryFrame
 
     private void renderDecisionQueryFrame(String decisionQuery, List decisionList, 
                                           long startTimeMSecs) {
+      String frameTitle = ViewConstants.SEQUENCE_QUERY_RESULTS_TITLE + " for " +
+        viewable.getName() + " - " + String.valueOf( queryResultFrameCnt);
       MDIInternalFrame decisionsQueryFrame = 
-        desktopFrame.createFrame(ContentSpec.SEQUENCE_QUERY_RESULTS_TITLE + " for " + 
-                                 viewable.getName(), viewSet, true, true, true, true);
+        desktopFrame.createFrame( frameTitle, viewSet, true, true, true, true);
       viewSet.getViews().put(new String(QUERY_RESULT_FRAME + queryResultFrameCnt), 
                              decisionsQueryFrame);
       Container contentPane = decisionsQueryFrame.getContentPane();
       StringBuffer queryStringBuf = getQueryStringBuf(QUERY_FOR_ALL_DECISIONS, decisionQuery);
       queryStringBuf.append(" Step ").append(stepString);
-      // contentPane.add(new DecisionQueryView(decisionList, queryStringBuf.toString(), viewable,
-//                                             viewSet, SequenceQueryWindow.this, 
-//                                             decisionsQueryFrame, startTimeMSecs));
+// contentPane.add(new DecisionQueryView(decisionList, queryStringBuf.toString(), viewable,
+//                                       viewSet, SequenceQueryWindow.this, 
+//                                       decisionsQueryFrame, startTimeMSecs, viewListener));
       queryResultFrameCnt++;
     }
 
@@ -617,7 +631,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         String constraintKeyString = getKeyString( "Constraint");
         transactionType = (String) queryWindow.constraintTransComboBox.getSelectedItem();
         String queryTransactionType = transactionType;
-        if (transactionType.equals( "CONSTRAINT_ALL")) {
+        if (transactionType.equals( CONSTRAINT_TRANSACTION_TYPE_ALL)) {
           queryTransactionType = DbConstants.CONSTRAINT_ALL_TYPES;
         }
         if (! constraintKeyString.equals( "")) {
@@ -640,7 +654,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         String tokenKeyString = getKeyString( "Token");
         transactionType = (String) queryWindow.tokenTransComboBox.getSelectedItem();
         String queryTransactionType = transactionType;
-        if (transactionType.equals( "TOKEN_ALL")) {
+        if (transactionType.equals( TOKEN_TRANSACTION_TYPE_ALL)) {
           queryTransactionType = DbConstants.TOKEN_ALL_TYPES;
         }
         if (! tokenKeyString.equals( "")) {
@@ -664,7 +678,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         String queryTransactionType = transactionType;
         //FIXME: cheesy hack to get restrictions/relaxations in the steps query.
         //change query method to be more flexible with types and names
-        if (transactionType.equals( "VARIABLE_ALL")) {
+        if (transactionType.equals( VARIABLE_TRANSACTION_TYPE_ALL)) {
           queryTransactionType = DbConstants.VARIABLE_ALL_TYPES;
         }
         else if(transactionType.equals("VARIABLE_RESTRICTED")) {
@@ -850,7 +864,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
   } // end class QueryListener
 
 
-  class MajorTypeComboBox extends JComboBox {
+  public class MajorTypeComboBox extends JComboBox {
 
     public MajorTypeComboBox() {
       addItem( QUERY_FOR_STEPS);
@@ -859,11 +873,12 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
       addItem( QUERY_FOR_UNBOUND_VARIABLES);
       addItem(QUERY_FOR_ALL_DECISIONS);
       setSize(58, 44);
+      setEditable( false); // needed for JFCUnit JComboBoxMouseEventData
     }
   }
 
 
-  class MinorTypeComboBox extends JComboBox {
+  public class MinorTypeComboBox extends JComboBox {
 
     public MinorTypeComboBox() {
       Iterator stepsItr = STEP_QUERIES.iterator();
@@ -871,45 +886,49 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         addItem( (String) stepsItr.next());
       }
       setSize(108, 44);
+      setEditable( false); // needed for JFCUnit JComboBoxMouseEventData
     }
   }
 
 
-  class ConstraintTransComboBox extends JComboBox {
+  public class ConstraintTransComboBox extends JComboBox {
 
     public ConstraintTransComboBox() {
-      addItem( "CONSTRAINT_ALL");
+      addItem( CONSTRAINT_TRANSACTION_TYPE_ALL);
       Iterator typesItr = CONSTRAINT_TRANSACTION_TYPES.iterator();
       while (typesItr.hasNext()) {
         addItem( (String) typesItr.next());
       }
       setSize(108, 44);
+      setEditable( false); // needed for JFCUnit JComboBoxMouseEventData
     }
   }
 
 
-  class TokenTransComboBox extends JComboBox {
+  public class TokenTransComboBox extends JComboBox {
 
     public TokenTransComboBox() {
-      addItem( "TOKEN_ALL");
+      addItem( TOKEN_TRANSACTION_TYPE_ALL);
       Iterator typesItr = TOKEN_TRANSACTION_TYPES.iterator();
       while (typesItr.hasNext()) {
         addItem( (String) typesItr.next());
       }
       setSize(108, 44);
+      setEditable( false); // needed for JFCUnit JComboBoxMouseEventData
     }
   }
 
 
-  class VariableTransComboBox extends JComboBox {
+  public class VariableTransComboBox extends JComboBox {
 
     public VariableTransComboBox() {
-      addItem( "VARIABLE_ALL");
+      addItem( VARIABLE_TRANSACTION_TYPE_ALL);
       Iterator typesItr = VARIABLE_TRANSACTION_TYPES.iterator();
       while (typesItr.hasNext()) {
         addItem( (String) typesItr.next());
       }
       setSize(108, 44);
+      setEditable( false); // needed for JFCUnit JComboBoxMouseEventData
     }
   }
 
@@ -1136,7 +1155,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
             }
           }
           // force query window x,y coords back to near top of MDI frame
-          SequenceQueryWindow.this.setQueryResultFrameCnt( 0);
+          SequenceQueryWindow.this.resetQueryResultFrameCnt();
         }
       });
   } // end createCloseWindowsItem

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionHeaderView.java,v 1.1 2004-02-03 20:43:50 taylor Exp $
+// $Id: DBTransactionHeaderView.java,v 1.2 2004-05-04 01:27:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -281,7 +281,7 @@ public class DBTransactionHeaderView extends JGoView {
 
       ((DBTransactionView) vizView).createOpenViewItems( partialPlan, partialPlanName,
                                                        planSequence, mouseRightPopup,
-                                                       PlanWorks.DB_TRANSACTION_VIEW);
+                                                       ViewConstants.DB_TRANSACTION_VIEW);
     
       ((DBTransactionView) vizView).createAllViewItems( partialPlan, partialPlanName,
                                                       planSequence, mouseRightPopup);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.11 2004-04-09 23:11:26 taylor Exp $
+// $Id: TimeScaleView.java,v 1.12 2004-05-04 01:27:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -335,11 +335,11 @@ public class TimeScaleView extends JGoView  {
   private void iterationCntError( int timeScaleRange, PartialPlanView partPlanView) {
     String dialogTitle = null;
     if (partPlanView instanceof TemporalExtentView) {
-      dialogTitle = PlanWorks.TEMPORAL_EXTENT_VIEW;
+      dialogTitle = ViewConstants.TEMPORAL_EXTENT_VIEW;
     } else if (partPlanView instanceof ResourceProfileView) {
-      dialogTitle = PlanWorks.RESOURCE_PROFILE_VIEW;
+      dialogTitle = ViewConstants.RESOURCE_PROFILE_VIEW;
     } else if (partPlanView instanceof ResourceTransactionView) {
-      dialogTitle = PlanWorks.RESOURCE_TRANSACTION_VIEW;
+      dialogTitle = ViewConstants.RESOURCE_TRANSACTION_VIEW;
     } else {
       System.err.println( "TimeScaleView.computeTimeScaleMetrics: view " +
                           partialPlanView + " not handled");

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ContentSpec.java,v 1.17 2004-02-25 02:30:14 taylor Exp $
+// $Id: ContentSpec.java,v 1.18 2004-05-04 01:27:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,11 +13,6 @@ package gov.nasa.arc.planworks.db.util;
 import java.util.List;
 
 public interface ContentSpec {
-
-  public static final String CONTENT_SPEC_TITLE = "ContentFilter";
-  // the next two must be unique as far as String/indexOf()
-  public static final String SEQUENCE_QUERY_TITLE = "SequenceQuery";
-  public static final String SEQUENCE_QUERY_RESULTS_TITLE = "QueryResults";
 
   public List getValidIds();
   public List getCurrentSpec();

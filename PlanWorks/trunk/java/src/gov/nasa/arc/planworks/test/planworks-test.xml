@@ -38,6 +38,7 @@
           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
           <jvmarg value="-Dname.application=${name.application}"/>
           <jvmarg value="-Dboolean.isMaxTestScreen=${boolean.isMaxScreen}"/>
+	  <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/>
         </java>
 
 <!--         <junit fork="yes" printsummary="withOutAndErr" haltonfailure="yes" haltonerror="yes" -->
@@ -77,6 +78,7 @@
 <!--           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/> -->
 <!--           <jvmarg value="-Dname.application=${name.application}"/> -->
 <!--           <jvmarg value="-Dboolean.isMaxTestScreen=${boolean.isMaxScreen}"/> -->
+<!-- 	       <jvmarg value="-Dmodel.rule.delimiter=${model.rule.delimiter}"/> -->
 
 <!--         </junit> -->
 

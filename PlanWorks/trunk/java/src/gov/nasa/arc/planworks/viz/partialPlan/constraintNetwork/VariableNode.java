@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.15 2004-03-16 02:24:11 taylor Exp $
+// $Id: VariableNode.java,v 1.16 2004-05-04 01:27:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -217,9 +217,9 @@ public class VariableNode extends ExtendedBasicNode {
   } // end getToolTipText
 
   /**
-   * <code>getTokenNodeList</code>
+   * <code>getContainerNodeList</code>
    *
-   * @return - <code>List</code> - of TokenNode
+   * @return - <code>List</code> - of VariableContainerNode
    */
   public List getContainerNodeList() {
     return containerNodeList;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.8 2004-04-22 19:26:23 taylor Exp $
+// $Id: ResourceView.java,v 1.9 2004-05-04 01:27:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -134,14 +134,7 @@ public abstract class ResourceView extends PartialPlanView  {
    */
   protected List resourceNameNodeList;  
 
-  /**
-   * variable <code>viewListener</code>
-   *
-   */
-  protected ViewListener viewListener;
-
   private long startTimeMSecs;
-  private MDIInternalFrame viewFrame;
   private JGoView jGoLevelScaleView;
   private Component horizontalStrut;
   private int slotLabelMinLength;
@@ -212,7 +205,6 @@ public abstract class ResourceView extends PartialPlanView  {
   private void resourceViewInit( final ViewSet vSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) vSet;
-    this.viewListener = null;
     
     // startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startXLoc = 1;
@@ -224,6 +216,7 @@ public abstract class ResourceView extends PartialPlanView  {
     maxLevelViewHeightPoint = null;
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
     resourceNameNodeList = new ArrayList();
+    ViewListener viewListener = null;
     viewFrame = vSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());

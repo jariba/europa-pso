@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.43 2004-04-22 19:26:25 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.44 2004-05-04 01:27:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -89,7 +89,6 @@ public class TemporalExtentView extends PartialPlanView  {
 
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private MDIInternalFrame viewFrame;
   private ExtentView jGoExtentView;
   private TimeScaleView jGoRulerView;
   private RulerPanel rulerPanel;
@@ -104,7 +103,6 @@ public class TemporalExtentView extends PartialPlanView  {
   private boolean isShowLabels;
   private int temporalDisplayMode;
   private boolean isStepButtonView;
-  private ViewListener viewListener;
 
 
   /**
@@ -154,7 +152,6 @@ public class TemporalExtentView extends PartialPlanView  {
   private void temporalExtentViewInit(ViewSet viewSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewListener = null;
 
     startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
@@ -162,6 +159,8 @@ public class TemporalExtentView extends PartialPlanView  {
     timeScaleMark = null;
     isShowLabels = true;
     temporalDisplayMode = SHOW_INTERVALS;
+    
+    ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
@@ -334,7 +333,7 @@ public class TemporalExtentView extends PartialPlanView  {
 
     createTemporalNodes();
     boolean showDialog = true;
-    isContentSpecRendered( PlanWorks.TEMPORAL_EXTENT_VIEW, showDialog);
+    isContentSpecRendered( ViewConstants.TEMPORAL_EXTENT_VIEW, showDialog);
 
     layoutTemporalNodes();
     // equalize view widths so scrollbars are equal
@@ -727,7 +726,7 @@ public class TemporalExtentView extends PartialPlanView  {
     mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         PlanWorks.TEMPORAL_EXTENT_VIEW);
+                         ViewConstants.TEMPORAL_EXTENT_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -749,7 +748,7 @@ public class TemporalExtentView extends PartialPlanView  {
 
     this.createZoomItem( jGoExtentView, zoomFactor, mouseRightPopup, this);
 
-    if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
+    if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -966,7 +965,7 @@ public class TemporalExtentView extends PartialPlanView  {
     overviewWindowItem.addActionListener( new ActionListener() { 
         public void actionPerformed( ActionEvent evt) {
           VizViewOverview currentOverview =
-            ViewGenerics.openOverviewFrame( PlanWorks.TEMPORAL_EXTENT_VIEW, partialPlan,
+            ViewGenerics.openOverviewFrame( ViewConstants.TEMPORAL_EXTENT_VIEW, partialPlan,
                                             temporalExtentView, viewSet, jGoExtentView,
                                             viewCoords);
           if (currentOverview != null) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.25 2004-04-22 19:26:27 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.26 2004-05-04 01:27:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -125,7 +125,6 @@ public class SequenceStepsView extends SequenceView {
   private List stepRepresentedList;
   private List statusIndicatorList;
   private List stepNumberList;
-  private ViewListener viewListener;
 
   /**
    * variable <code>selectedStepElement</code>
@@ -204,7 +203,6 @@ public class SequenceStepsView extends SequenceView {
 
     stepElementList = new ArrayList();
     selectedStepElement = null;
-    this.viewListener = null;
 
     jGoView = new SequenceStepsJGoView();
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
@@ -212,6 +210,10 @@ public class SequenceStepsView extends SequenceView {
     jGoView.validate();
     jGoView.setVisible( true);
     this.setVisible( true);
+    ViewListener viewListener = null;
+    viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
+    // for PWTestHelper.findComponentByName
+    this.setName( viewFrame.getTitle());
 
     ((PwPlanningSequence) planSequence).addListener( new SequenceChangeListener( this));
 
@@ -261,10 +263,7 @@ public class SequenceStepsView extends SequenceView {
     heightScaleFactor = computeHeightScaleFactor();
     renderHistogram();
 
-    MDIInternalFrame frame = viewSet.openView( this.getClass().getName(), viewListener);
-    // for PWTestHelper.findComponentByName
-    this.setName( frame.getTitle());
-    expandViewFrame( frame,
+    expandViewFrame( viewFrame,
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
     long stopTimeMSecs = System.currentTimeMillis();
@@ -310,7 +309,7 @@ public class SequenceStepsView extends SequenceView {
     
     renderHistogram();
 
-    expandViewFrame( viewSet.openView( this.getClass().getName(), viewListener),
+    expandViewFrame( viewFrame,
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
 
@@ -571,7 +570,7 @@ public class SequenceStepsView extends SequenceView {
     overviewWindowItem.addActionListener( new ActionListener() { 
         public final void actionPerformed( final ActionEvent evt) {
           VizViewOverview currentOverview =
-            ViewGenerics.openOverviewFrame( PlanWorks.SEQUENCE_STEPS_VIEW, planSequence,
+            ViewGenerics.openOverviewFrame( ViewConstants.SEQUENCE_STEPS_VIEW, planSequence,
                                             sequenceStepsView, viewSet, jGoView, viewCoords);
           if (currentOverview != null) {
             overview = currentOverview;

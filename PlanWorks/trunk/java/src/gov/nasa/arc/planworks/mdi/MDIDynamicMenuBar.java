@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDynamicMenuBar.java,v 1.11 2004-04-22 19:26:20 taylor Exp $
+// $Id: MDIDynamicMenuBar.java,v 1.12 2004-05-04 01:27:14 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -176,7 +176,7 @@ public class MDIDynamicMenuBar extends JMenuBar implements MDIMenu {
       windowMenu = new JMenu( PlanWorks.WINDOW_MENU);
     }
     JMenuItem tileItem = new JMenuItem( PlanWorks.TILE_WINDOWS_MENU_ITEM);
-    JMenuItem cascadeItem = new JMenuItem( PlanWorks.CASCADE_MENU_ITEM);
+    JMenuItem cascadeItem = new JMenuItem( PlanWorks.CASCADE_WINDOWS_MENU_ITEM);
     tileItem.addActionListener(new TileActionListener(tileCascader));
     cascadeItem.addActionListener(new CascadeActionListener(tileCascader));
     windowMenu = new JMenu( PlanWorks.WINDOW_MENU);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.37 2004-04-22 19:26:22 taylor Exp $
+// $Id: PartialPlanView.java,v 1.38 2004-05-04 01:27:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -52,6 +52,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.ViewRenderingException;
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizView;
@@ -624,7 +625,7 @@ public class PartialPlanView extends VizView {
                                    final PwPlanningSequence planSequence,
                                    JPopupMenu mouseRightPopup, String currentViewName) {
     PartialPlanViewMenu viewMenu = new PartialPlanViewMenu();
-    Iterator viewNamesItr = PlanWorks.PARTIAL_PLAN_VIEW_LIST.iterator();
+    Iterator viewNamesItr = ViewConstants.PARTIAL_PLAN_VIEW_LIST.iterator();
     while (viewNamesItr.hasNext()) {
       String viewName = (String) viewNamesItr.next();
       if (! viewName.equals( currentViewName)) {
@@ -657,7 +658,7 @@ public class PartialPlanView extends VizView {
    */
   public String getNavigatorViewSetKey() {
     ((PartialPlanViewSet) viewSet).incrNavigatorFrameCnt();
-    return new String( PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "") +
+    return new String( ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "") +
                        ((PartialPlanViewSet) viewSet).getNavigatorFrameCnt());
   }
 
@@ -667,7 +668,7 @@ public class PartialPlanView extends VizView {
    * @return - <code>MDIInternalFrame</code> - 
    */
   public MDIInternalFrame openNavigatorViewFrame( String viewSetKey) {
-    String viewName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
+    String viewName = ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "");
     String rootNavigatorViewName = viewName + " for " + partialPlan.getName();
     String navigatorViewName = getNavigatorViewName( rootNavigatorViewName);
       MDIInternalFrame navigatorFrame = 
@@ -748,7 +749,7 @@ public class PartialPlanView extends VizView {
   public void createCloseNavigatorWindowsItem( JMenuItem closeWindowsItem) {
     closeWindowsItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent evt) {
-          String navigatorWindowName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
+          String navigatorWindowName = ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "");
           List windowKeyList = new ArrayList( viewSet.getViews().keySet());
           CollectionUtils.lMap(new NavViewClose((PartialPlanViewSet) viewSet, navigatorWindowName),
                                windowKeyList);

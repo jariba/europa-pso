@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionQueryView.java,v 1.3 2004-04-22 19:26:26 taylor Exp $
+// $Id: DBTransactionQueryView.java,v 1.4 2004-05-04 01:27:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -31,7 +31,8 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.DBTransactionContentView;
 import gov.nasa.arc.planworks.viz.DBTransactionHeaderView;
-import gov.nasa.arc.planworks.viz.ViewConstants    ;
+import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
@@ -54,7 +55,6 @@ public class DBTransactionQueryView extends SequenceView {
   private List transactionList; // element PwDBTransaction
   private String query;
   private SequenceQueryWindow sequenceQueryWindow;
-  private MDIInternalFrame transactionQueryFrame;
 
   private long startTimeMSecs;
   private ViewSet viewSet;
@@ -74,12 +74,13 @@ public class DBTransactionQueryView extends SequenceView {
    * @param sequenceQueryWindow - <code>JPanel</code> - 
    * @param transactionQueryFrame - <code>MDIInternalFrame</code> - 
    * @param startTimeMSecs - <code>long</code> - 
+   * @param viewListener - <code>ViewListener</code> - 
    */
   public DBTransactionQueryView( List transactionList, String query,
                                ViewableObject planSequence,  ViewSet viewSet,
                                JPanel sequenceQueryWindow,
                                MDIInternalFrame transactionQueryFrame,
-                               long startTimeMSecs) {
+                               long startTimeMSecs, ViewListener viewListener) {
     super( (PwPlanningSequence) planSequence, (SequenceViewSet) viewSet);
     this.transactionList = transactionList;
     Collections.sort( transactionList,
@@ -89,10 +90,13 @@ public class DBTransactionQueryView extends SequenceView {
     this.planSequence = (PwPlanningSequence) planSequence;
     this.viewSet = (SequenceViewSet) viewSet;
     this.sequenceQueryWindow = (SequenceQueryWindow) sequenceQueryWindow;
-    this.transactionQueryFrame = transactionQueryFrame;
+    viewFrame = transactionQueryFrame;
     // for PWTestHelper.findComponentByName
     this.setName( transactionQueryFrame.getTitle());
     this.startTimeMSecs = startTimeMSecs;
+    if (viewListener != null) {
+      addViewListener( viewListener);
+    }
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -117,6 +121,7 @@ public class DBTransactionQueryView extends SequenceView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
+    handleEvent( ViewListener.EVT_INIT_BEGUN_DRAWING);
     // wait for TimelineView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -150,9 +155,8 @@ public class DBTransactionQueryView extends SequenceView {
                                 // contentJGoView.getDocumentSize().getHeight());
                                 // keep contentJGoView small
                                 (ViewConstants.INTERNAL_FRAME_X_DELTA));
-    transactionQueryFrame.setSize
-      ( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
-        maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
+    viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
+                       maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
     int maxQueryFrameY =
       (int) (sequenceQueryWindow.getSequenceQueryFrame().getLocation().getY() +
              sequenceQueryWindow.getSequenceQueryFrame().getSize().getHeight());
@@ -161,16 +165,17 @@ public class DBTransactionQueryView extends SequenceView {
                           (int) (PlanWorks.getPlanWorks().getSize().getHeight() -
                                  maxQueryFrameY -
                                  (ViewConstants.MDI_FRAME_DECORATION_HEIGHT * 2)));
-    transactionQueryFrame.setLocation
-      ( ViewConstants.INTERNAL_FRAME_X_DELTA + delta, maxQueryFrameY + delta);
+    viewFrame.setLocation( ViewConstants.INTERNAL_FRAME_X_DELTA + delta,
+                           maxQueryFrameY + delta);
     // prevent right edge from going outside the MDI frame
-    expandViewFrame( transactionQueryFrame,
+    expandViewFrame( viewFrame,
                      (int) headerJGoView.getDocumentSize().getWidth(),
                      (int) (headerJGoView.getDocumentSize().getHeight() +
                             contentJGoView.getDocumentSize().getHeight()));
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    handleEvent( ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
 

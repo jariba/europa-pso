@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ModelRulesView.java,v 1.5 2004-04-22 19:26:26 taylor Exp $
+// $Id: ModelRulesView.java,v 1.6 2004-05-04 01:27:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -457,7 +457,7 @@ public class ModelRulesView extends SequenceView {
     overviewWindowItem.addActionListener( new ActionListener() { 
         public void actionPerformed( ActionEvent evt) {
           VizViewOverview currentOverview =
-            ViewGenerics.openOverviewFrame( PlanWorks.MODEL_RULES_VIEW, planSequence,
+            ViewGenerics.openOverviewFrame( ViewConstants.MODEL_RULES_VIEW, planSequence,
                                             modelRulesView, viewSet, jGoView, viewCoords);
           if (currentOverview != null) {
             overview = currentOverview;

@@ -13,6 +13,9 @@ package gov.nasa.arc.planworks.viz;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
+
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoText;
@@ -27,7 +30,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
  *        NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface ViewConstants {
+public abstract class ViewConstants {
 
   /**
    * constant <code>VIEW_BACKGROUND_COLOR - java.awt.Color</code> 
@@ -265,7 +268,7 @@ public interface ViewConstants {
   public static final int STEP_VIEW_Y_MAX = 100;
 
   public static final String DB_TRANSACTION_KEY_HEADER =        "TX_KEY "; 
-  public static final String DB_TRANSACTION_TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
+  public static final String DB_TRANSACTION_TYPE_HEADER =       "            TRANSACTION_TYPE           "; 
   public static final String DB_TRANSACTION_SOURCE_HEADER =     " SOURCE  ";   
   public static final String DB_TRANSACTION_OBJECT_KEY_HEADER = "OBJ_KEY";
   public static final String DB_TRANSACTION_STEP_NUM_HEADER =   "  STEP  ";
@@ -323,7 +326,48 @@ public interface ViewConstants {
   public static final int RESOURCE_TRANSACTION_HEIGHT = 10;
 
 
+  public static final String CONSTRAINT_NETWORK_VIEW   = "Constraint Network View";
+  public static final String TEMPORAL_EXTENT_VIEW      = "Temporal Extent View";
+  public static final String TEMPORAL_NETWORK_VIEW     = "Temporal Network View";
+  public static final String TIMELINE_VIEW             = "Timeline View";
+  public static final String TOKEN_NETWORK_VIEW        = "Token Network View";
+  public static final String DB_TRANSACTION_VIEW       = "DB Transaction View";
+  public static final String NAVIGATOR_VIEW            = "Navigator View";
+  public static final String RESOURCE_PROFILE_VIEW     = "Resource Profile View";
+  public static final String RESOURCE_TRANSACTION_VIEW = "Resource Transaction View";
+  public static List PARTIAL_PLAN_VIEW_LIST = null;
 
+  public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
+  public static final String OBJECT_TREE_VIEW        = "Object Tree View";
+  public static final String MODEL_RULES_VIEW        = "Model Rules View";
+  public static List SEQUENCE_VIEW_LIST = null;
+
+  public static final String CONTENT_SPEC_TITLE = "ContentFilter";
+  // the next two must be unique as far as String/indexOf()
+  public static final String SEQUENCE_QUERY_TITLE = "SequenceQuery";
+  public static final String SEQUENCE_QUERY_RESULTS_TITLE = "QueryResults";
+
+  static {
+
+    PARTIAL_PLAN_VIEW_LIST = new ArrayList();
+    PARTIAL_PLAN_VIEW_LIST.add( CONSTRAINT_NETWORK_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_PROFILE_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( RESOURCE_TRANSACTION_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( TEMPORAL_EXTENT_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( TIMELINE_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
+    PARTIAL_PLAN_VIEW_LIST.add( DB_TRANSACTION_VIEW);
+    // not in list, since it is created from nodes in views, not from other views
+    // PARTIAL_PLAN_VIEW_LIST.add( NAVIGATOR_VIEW);
+
+    SEQUENCE_VIEW_LIST = new ArrayList();
+    SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);
+    // not in list, since it is created by M-R on SequenceStepsView
+    // SEQUENCE_VIEW_LIST.add( OBJECT_TREE_VIEW);
+    // not implemented yet
+    // SEQUENCE_VIEW_LIST.add( MODEL_RULES_VIEW);
+
+  }
 
 
 

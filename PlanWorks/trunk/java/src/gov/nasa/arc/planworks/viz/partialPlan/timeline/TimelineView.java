@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.50 2004-04-22 19:26:26 taylor Exp $
+// $Id: TimelineView.java,v 1.51 2004-05-04 01:27:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -80,7 +80,6 @@ public class TimelineView extends PartialPlanView {
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
   private ViewSet viewSet;
-  private MDIInternalFrame viewFrame;
   private TimelineJGoView jGoView;
   private JGoDocument jGoDocument;
   // timelineNodeList & tmpTimelineNodeList used by JFCUnit test case
@@ -91,7 +90,6 @@ public class TimelineView extends PartialPlanView {
   private JGoArea mouseOverNode;
   private boolean isAutoSnapEnabled;
   private boolean isStepButtonView;
-  private ViewListener viewListener;
 
   /**
    * <code>TimelineView</code> - constructor - 
@@ -146,7 +144,7 @@ public class TimelineView extends PartialPlanView {
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    this.viewListener = null;
+    ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
@@ -228,6 +226,7 @@ public class TimelineView extends PartialPlanView {
                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
     } else {
       try {
+        ViewListener viewListener = null;
         viewSet.openView( this.getClass().getName(), viewListener).setClosed( true);
       } catch (PropertyVetoException excp) {
       }
@@ -285,7 +284,7 @@ public class TimelineView extends PartialPlanView {
     boolean isValid = createTimelineAndSlotNodes();
     if (isValid) {
       boolean showDialog = true;
-      isContentSpecRendered( PlanWorks.TIMELINE_VIEW, showDialog);
+      isContentSpecRendered( ViewConstants.TIMELINE_VIEW, showDialog);
     }
     return isValid;
   } // end createTemporalExtentView
@@ -351,15 +350,6 @@ public class TimelineView extends PartialPlanView {
    */
   public boolean isAutoSnapEnabled() {
     return isAutoSnapEnabled;
-  }
-
-  /**
-   * <code>getViewFrame</code> - for PWTestHelper
-   *
-   * @return - <code>MDIInternalFrame</code> - 
-   */
-  public MDIInternalFrame getViewFrame() {
-    return viewFrame;
   }
 
   private boolean createTimelineAndSlotNodes() {
@@ -723,7 +713,7 @@ public class TimelineView extends PartialPlanView {
     PwPlanningSequence planSequence = PlanWorks.getPlanWorks().getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
-    String className = PlanWorks.getViewClassName( PlanWorks.TEMPORAL_EXTENT_VIEW);
+    String className = PlanWorks.getViewClassName( ViewConstants.TEMPORAL_EXTENT_VIEW);
     if (viewSet.viewExists( className)) {
       if (! isAutoSnapEnabled) {
         JMenuItem enableAutoSnapItem = new JMenuItem( "Enable Auto Snap");
@@ -742,7 +732,7 @@ public class TimelineView extends PartialPlanView {
     mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         PlanWorks.TIMELINE_VIEW);
+                         ViewConstants.TIMELINE_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -760,7 +750,7 @@ public class TimelineView extends PartialPlanView {
 
     this.createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
-    if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
+    if (doesViewFrameExist( ViewConstants.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);
@@ -916,7 +906,7 @@ public class TimelineView extends PartialPlanView {
     overviewWindowItem.addActionListener( new ActionListener() { 
         public void actionPerformed( ActionEvent evt) {
           VizViewOverview currentOverview =
-            ViewGenerics.openOverviewFrame( PlanWorks.TIMELINE_VIEW, partialPlan,
+            ViewGenerics.openOverviewFrame( ViewConstants.TIMELINE_VIEW, partialPlan,
                                             timelineView, viewSet, jGoView, viewCoords);
           if (currentOverview != null) {
             overview = currentOverview;

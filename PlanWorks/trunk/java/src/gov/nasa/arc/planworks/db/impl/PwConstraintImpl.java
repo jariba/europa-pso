@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.12 2004-03-23 18:20:42 miatauro Exp $
+// $Id: PwConstraintImpl.java,v 1.13 2004-05-04 01:27:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -117,10 +117,32 @@ public class PwConstraintImpl implements PwConstraint {
     variableIds.add(variableId);
   }
 
+  /**
+   * <code>toOutputString</code> step<n>.constraints 
+   *
+   * @return - <code>String</code> - 
+   */
   public String toOutputString() {
     StringBuffer retval = new StringBuffer(id.toString());
     retval.append("\t").append(partialPlan.getId()).append("\t").append(name).append("\t");
     retval.append(type).append("\n");
     return retval.toString();
   }
+
+  /**
+   * <code>toOutputStringVarMap</code> - step<n>.constraintVarMap
+   *
+   * @return - <code>String</code> - 
+   */
+  public String toOutputStringVarMap() {
+    Iterator variableItr = getVariableIdList().iterator();
+    StringBuffer retval = new StringBuffer();
+    while (variableItr.hasNext()) {
+      retval.append(id.toString()).append("\t");
+      retval.append( ((Integer) variableItr.next()).toString()).append("\t");
+      retval.append(partialPlan.getId()).append("\t").append("\n");
+    }
+    return retval.toString();
+  }
+
 } // end class PwConstraintImpl

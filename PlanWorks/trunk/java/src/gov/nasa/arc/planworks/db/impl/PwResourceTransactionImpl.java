@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwResourceTransactionImpl.java,v 1.5 2004-04-22 19:26:19 taylor Exp $
+// $Id: PwResourceTransactionImpl.java,v 1.6 2004-05-04 01:27:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -70,7 +70,7 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
   }
 
   public PwIntervalDomain getInterval() {
-    String type = "INTEGER_SORT";
+    String type = DbConstants.INTEGER_INTERVAL_DOMAIN_TYPE;
     PwIntervalDomain startDomain = (PwIntervalDomain) getStartVariable().getDomain();
     PwIntervalDomain endDomain = (PwIntervalDomain) getEndVariable().getDomain();
     return new PwIntervalDomainImpl(type, startDomain.getLowerBound(), endDomain.getUpperBound());
@@ -80,6 +80,7 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
     StringBuffer retval = new StringBuffer(id.toString());
     retval.append("\t").append(DbConstants.T_TRANSACTION).append("\t");
     retval.append("\\N").append("\t").append("\\N").append("\t");
+    retval.append( partialPlan.getId()).append("\t");
     
     if(isFree()) {
       retval.append("1").append("\t");
@@ -93,13 +94,18 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
     else {
       retval.append("0").append("\t");
     }
-    retval.append(startVarId).append("\t").append(endVarId).append("\t").append(durationVarId);
-    retval.append(stateVarId).append("\t").append(predicateName).append("\t").append(parentId);
-    retval.append("\t").append(partialPlan.getObject(parentId).getName()).append("\t");
+    retval.append(startVarId).append("\t");
+    // no endVarId
+    retval.append(startVarId).append("\t");
+    retval.append(durationVarId).append("\t");
+    retval.append(stateVarId).append("\t");
+    retval.append(predicateName).append("\t");
+    retval.append(parentId).append("\t");
+    retval.append(partialPlan.getObject(parentId).getName()).append("\t");
     retval.append(objectVarId).append("\t");
     if(!tokenRelationIds.isEmpty()) {
       for(ListIterator it = tokenRelationIds.listIterator(); it.hasNext();) {
-        retval.append(it.next()).append(",");
+        retval.append(it.next()).append(":");
       }
     }
     else {
@@ -108,14 +114,14 @@ public class PwResourceTransactionImpl extends PwTokenImpl implements PwResource
     retval.append("\t");
     if(!paramVarIds.isEmpty()) {
       for(ListIterator it = paramVarIds.listIterator(); it.hasNext();) {
-        retval.append(it.next()).append(",");
+        retval.append(it.next()).append(":");
       }
     }
     else {
       retval.append("\\N");
     }
     retval.append("\t");
-    retval.append(quantityMin).append(":").append(quantityMax);
+    retval.append( (int) quantityMin).append(",").append( (int) quantityMax);
     retval.append("\n");
     return retval.toString();
   }
