@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.24 2003-11-06 00:02:17 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.25 2003-12-16 23:18:27 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -107,7 +107,7 @@ public interface PwPartialPlan extends ViewableObject {
    * @param id - <code>Integer</code> - 
    * @return - <code>PwParameter</code> - 
    */
-  public abstract PwParameter getParameter( Integer id);
+  public abstract PwParameter getParameter( Integer predId, Integer paramId);
 
 
   /**

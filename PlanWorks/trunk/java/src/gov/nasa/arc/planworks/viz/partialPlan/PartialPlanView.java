@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.7 2003-11-11 02:44:52 taylor Exp $
+// $Id: PartialPlanView.java,v 1.8 2003-12-16 23:18:32 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -16,13 +16,20 @@ package gov.nasa.arc.planworks.viz.partialPlan;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JPopupMenu;
 import javax.swing.JOptionPane;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -48,7 +55,8 @@ public class PartialPlanView extends VizView {
   protected PwPartialPlan partialPlan;
   protected List validTokenIds;
   protected List displayedTokenIds;
-
+  private final String FORWARD_STEP = "forward";
+  private final String BACKWARD_STEP = "backward";
 
   /**
    * <code>PartialPlanView</code> - constructor 
@@ -61,6 +69,12 @@ public class PartialPlanView extends VizView {
     this.partialPlan = partialPlan;
     validTokenIds = null;
     displayedTokenIds = null;
+    getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK, false), FORWARD_STEP);
+    getActionMap().put(FORWARD_STEP, new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          System.err.println("FOO!");
+        }
+      });
   }
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.59 2003-11-26 01:24:26 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.60 2003-12-16 23:18:28 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -64,8 +64,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   private Map slotMap; // key = attribute id, value = PwSlotImpl instance
   private Map tokenMap; // key = attribute id, value = PwTokenImpl instance
   private Map constraintMap; // key = attribute id, value = PwConstraintImpl instance
-  private Map parameterMap; // key = attribute id, value = PwParameterImpl instance
-  private Map predicateMap; // key = attribute id, value = PwPredicateImpl instance
+    private Map predicateMap; // key = attribute id, value = PwPredicateImpl instance
   private Map tokenRelationMap; // key = attribute id, value = PwTokenRelationImpl instance
   private Map variableMap; // key = attribute id, value = PwVariableImpl instance
   private List contentSpec;
@@ -88,7 +87,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     slotMap = new HashMap();
     tokenMap = new HashMap();
     constraintMap = new HashMap();
-    parameterMap = new HashMap(); 
     predicateMap = new HashMap();
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
@@ -182,7 +180,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     System.err.println( "  tokens         " + tokenMap.keySet().size());
     System.err.println( "  constraints    " + constraintMap.keySet().size());
     System.err.println( "  predicates     " + predicateMap.keySet().size());
-    System.err.println( "  parameters     " + parameterMap.keySet().size());
     System.err.println( "  tokenRelations " + tokenRelationMap.keySet().size());
     System.err.println( "  variables      " + variableMap.keySet().size());
 
@@ -321,8 +318,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @param id - <code>Id</code> - 
    * @return - <code>PwParameter</code> - 
    */
-  public PwParameter getParameter( Integer id) {
-    return (PwParameter) parameterMap.get(id);
+  public PwParameter getParameter( Integer predId, Integer paramId) {
+    PwPredicate pred = (PwPredicate) predicateMap.get(predId);
+    if(pred == null) {
+      return null;
+    }
+    return pred.getParameter(paramId);
   } // end getParameter
 
 
@@ -397,19 +398,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       return;
     }
     constraintMap.put( id, constraint);
-  }
-
-  /**
-   * <code>addParameter</code>
-   *
-   * @param id - <code>Integer</code> - 
-   * @param parameter - <code>PwParameterImpl</code> - 
-   */
-  public void addParameter( Integer id, PwParameterImpl parameter) {
-    if(parameterMap.containsKey(id)) {
-      return;
-    }
-    parameterMap.put( id, parameter);
   }
 
   /**
@@ -958,8 +946,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return (objectMap.keySet().size() + timelineMap.keySet().size() +
             slotMap.keySet().size() + tokenMap.keySet().size() +
             constraintMap.keySet().size() + predicateMap.keySet().size() +
-            parameterMap.keySet().size() + tokenRelationMap.keySet().size() +
-            variableMap.keySet().size());
+            tokenRelationMap.keySet().size() + variableMap.keySet().size());
   } // end getDataBaseSize
 
   /**

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicateImpl.java,v 1.9 2003-08-19 00:24:28 miatauro Exp $
+// $Id: PwPredicateImpl.java,v 1.10 2003-12-16 23:18:29 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,9 +14,16 @@
 package gov.nasa.arc.planworks.db.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
+import gov.nasa.arc.planworks.db.PwParameter;
 import gov.nasa.arc.planworks.db.PwPredicate;
 
 
@@ -31,7 +38,7 @@ public class PwPredicateImpl implements PwPredicate {
 
   private String name;
   private Integer id;
-  private List parameterIdList; // element String
+  private Map params;
   private PwPartialPlanImpl partialPlan;
 
   /**
@@ -44,7 +51,7 @@ public class PwPredicateImpl implements PwPredicate {
   public PwPredicateImpl( Integer id, String name, PwPartialPlanImpl partialPlan) {
     this.name = name;
     this.id = id;
-    this.parameterIdList = new ArrayList();
+    this.params = new HashMap();
     this.partialPlan = partialPlan;
   } // end constructor
 
@@ -72,11 +79,19 @@ public class PwPredicateImpl implements PwPredicate {
    * @return - <code>List</code> - of PwParameter
    */
   public List getParameterList() {
-    List retval = new ArrayList( parameterIdList.size());
-    for (int i = 0; i < parameterIdList.size(); i++) {
-      retval.add( partialPlan.getParameter( (Integer)parameterIdList.get( i)));
+    List retval = new ArrayList( params.keySet().size());
+    Set temp = params.keySet();
+    List keys = new ArrayList(temp);
+    Collections.sort(keys);
+    Iterator keyIterator = keys.iterator();
+    while(keyIterator.hasNext()) {
+      retval.add(params.get(keyIterator.next()));
     }
     return retval;
+  }
+
+  public PwParameter getParameter(Integer id) {
+    return (PwParameter) params.get(id);
   }
 
   /**
@@ -88,7 +103,7 @@ public class PwPredicateImpl implements PwPredicate {
    */
   public PwParameterImpl addParameter( Integer id, String name) {
     PwParameterImpl parameter = new PwParameterImpl(id, name);
-    parameterIdList.add( id);
+    params.put(id, parameter);
     return parameter;
   } // end addParameter
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIInternalFrame.java,v 1.6 2003-09-10 00:32:15 miatauro Exp $
+// $Id: MDIInternalFrame.java,v 1.7 2003-12-16 23:18:31 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -12,7 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
@@ -126,7 +129,7 @@ public class MDIInternalFrame extends JInternalFrame implements MDIFrame {
     windowBar.add(button);
     menuBar.addWindow(this);
     addInternalFrameListener(new MDIInternalFrameListener(this, windowBar, menuBar));
-  }
+ }
   /**
    * Creates a resizable, closable MDIInternalFrame with the given title and tells the MDIMenu and
    * MDIWindowBar that it exists.
