@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksBigTest.java,v 1.7 2003-09-29 23:52:11 taylor Exp $
+// $Id: PlanWorksBigTest.java,v 1.8 2003-09-30 00:16:03 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -255,19 +255,19 @@ public class PlanWorksBigTest extends JFCTestCase {
       while((viewManager = planWorks.getViewManager()) == null);
       assertNotNull("Failed to get view manager.", viewManager);
       MDIInternalFrame timelineViewFrame =
-        viewManager.openView(plan, (String) PlanWorks.viewNameToViewClassMap.
+        viewManager.openView(plan, (String) PlanWorks.viewClassNameMap.
                              get( PlanWorks.TIMELINE_VIEW));
       assertNotNull("Failed to open timeline view", timelineViewFrame);
       MDIInternalFrame temporalExtentViewFrame =
-        viewManager.openView(plan, (String) PlanWorks.viewNameToViewClassMap.
+        viewManager.openView(plan, (String) PlanWorks.viewClassNameMap.
                              get( PlanWorks.TEMPORAL_EXTENT_VIEW));
       assertNotNull("Failed to open temporal extent view", temporalExtentViewFrame);
       MDIInternalFrame tokenNetworkViewFrame =
-        viewManager.openView(plan, (String) PlanWorks.viewNameToViewClassMap.
+        viewManager.openView(plan, (String) PlanWorks.viewClassNameMap.
                              get( PlanWorks.TOKEN_NETWORK_VIEW));
       assertNotNull("Failed to open token network view", tokenNetworkViewFrame);
       MDIInternalFrame constraintNetworkViewFrame =
-        viewManager.openView(plan, (String) PlanWorks.viewNameToViewClassMap.
+        viewManager.openView(plan, (String) PlanWorks.viewClassNameMap.
                              get( PlanWorks.CONSTRAINT_NETWORK_VIEW));
       assertNotNull("Failed to open constraint network view", constraintNetworkViewFrame);
       timelineViewTest(timelineViewFrame);
