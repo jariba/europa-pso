@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.6 2003-10-28 18:01:25 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.7 2003-11-03 19:02:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,8 +24,6 @@ import javax.swing.JPopupMenu;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDocument;
-import com.nwoods.jgo.JGoPen;
-import com.nwoods.jgo.JGoStroke;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
@@ -33,11 +31,12 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.util.ColorMap;
+import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TransactionHeaderNode;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
 import gov.nasa.arc.planworks.viz.partialPlan.transaction.TransactionView;
 import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
 
@@ -80,7 +79,7 @@ public class TransactionHeaderView extends JGoView {
   public TransactionHeaderView( List transactionList, String query, VizView vizView) {
     super();
     this.transactionList = transactionList;
-    this.vizView= vizView;
+    this.vizView = vizView;
 
     setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
 
@@ -256,6 +255,12 @@ public class TransactionHeaderView extends JGoView {
     createTransByKeyItem( transByKeyItem);
     mouseRightPopup.add( transByKeyItem);
 
+    if (vizView instanceof TransactionView) {
+      JMenuItem changeViewItem = new JMenuItem( "Get Partial Plan View");
+      createChangeViewItem( changeViewItem, viewCoords);
+      mouseRightPopup.add( changeViewItem);
+    }
+
     NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
 
@@ -285,6 +290,29 @@ public class TransactionHeaderView extends JGoView {
       });
   } // end createTokenByKeyItem
 
+
+  private void createChangeViewItem( JMenuItem changeViewItem, final Point viewCoords) {
+    changeViewItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          PwPartialPlan partialPlan = ((TransactionView) vizView).getPartialPlan();
+          String seqName = partialPlan.getName();
+          String partialPlanName =
+            seqName.substring( seqName.lastIndexOf( System.getProperty( "file.separator")) + 1);
+          int stepNumber = partialPlan.getStepNumber();
+          PwPlanningSequence planSequence =
+            PlanWorks.planWorks.getPlanSequence( partialPlan);
+
+          PartialPlanViewMenu mouseRightPopup = new PartialPlanViewMenu();
+          JMenuItem header = new JMenuItem( "step" + stepNumber);
+          mouseRightPopup.add( header);
+          mouseRightPopup.addSeparator();
+
+          mouseRightPopup.buildPartialPlanViewMenu( partialPlanName, planSequence);
+          mouseRightPopup.show( PlanWorks.planWorks, (int) viewCoords.getX(),
+                    (int) viewCoords.getY());
+        }
+      });
+  } // end createChangeViewItem
 
 
 } // end class TransactionHeaderView

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.14 2003-10-28 20:41:59 taylor Exp $
+# $Id: GETTING_STARTED,v 1.15 2003-11-03 19:02:38 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -50,7 +50,15 @@ the desired step in the histogram ("SequenceStepsView").  The histogram
 steps have a "mouse over" pop-up showing the step number, the data base 
 size, and the number of transactions.  The key values for tokens, 
 constraints, variables, timelines, and slots appear in the appropriate node 
-labels.  There are five active views:
+labels.  
+
+All partial plan view's  Mouse-Right pop-ups offer the user a second
+pop-up selection ("Get Partial Plan View") of the other partial plan views, 
+which will create them as needed.  All views, except for Transaction View,
+also offer "Raise Content Spec", which will set focus on the appropriate
+partial plan Content Spec window.
+
+There are five active views:
 
 Constraint Network View
 -----------------------

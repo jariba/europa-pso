@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.9 2003-10-25 00:58:18 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.10 2003-11-03 19:02:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -55,7 +55,6 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.AskTokenByKey;
@@ -110,7 +109,7 @@ public class TemporalExtentView extends PartialPlanView  {
    * @param viewSet - <code>ViewSet</code> - 
    */
   public TemporalExtentView( ViewableObject partialPlan, ViewSet viewSet) {
-    super( (PwPartialPlan)partialPlan, (PartialPlanViewSet)viewSet);
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
@@ -956,6 +955,14 @@ public class TemporalExtentView extends PartialPlanView  {
     createTokenByKeyItem( tokenByKeyItem);
     mouseRightPopup.add( tokenByKeyItem);
 
+    JMenuItem changeViewItem = new JMenuItem( "Get Partial Plan View");
+    createChangeViewItem( changeViewItem, partialPlan, viewCoords);
+    mouseRightPopup.add( changeViewItem);
+    
+    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
+    createRaiseContentSpecItem( raiseContentSpecItem);
+    mouseRightPopup.add( raiseContentSpecItem);
+    
     JMenuItem timeMarkItem = new JMenuItem( "Set Time Scale Line");
     createTimeMarkItem( timeMarkItem);
     mouseRightPopup.add( timeMarkItem);

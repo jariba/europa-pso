@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.3 2003-10-16 21:40:41 taylor Exp $
+// $Id: PartialPlanView.java,v 1.4 2003-11-03 19:02:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,21 +13,24 @@
 
 package gov.nasa.arc.planworks.viz.partialPlan;
 
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JMenuItem;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 // import gov.nasa.arc.planworks.util.Utilities;
-import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -80,15 +83,15 @@ public class PartialPlanView extends VizView {
       }
     }
     Iterator displayedIterator = displayedTokenIds.iterator();
-    while(displayedIterator.hasNext()) {
+    while (displayedIterator.hasNext()) {
       Integer id = (Integer) displayedIterator.next();
-      if(validTokenIds.indexOf(id) == -1) {
+      if (validTokenIds.indexOf(id) == -1) {
         extraDisplayedIds.add(id);
       }
     }
     message.append("\n");
-    if(extraDisplayedIds.size() != 0) {
-      if(showDialog) {
+    if (extraDisplayedIds.size() != 0) {
+      if (showDialog) {
         message.append(viewName).append(": invalidTokenIds ").append(extraDisplayedIds.toString());
         message.append(" displayed.");
       }
@@ -101,8 +104,8 @@ public class PartialPlanView extends VizView {
       }
       error = true;
     }
-    if(error) {
-      if(showDialog) {
+    if (error) {
+      if (showDialog) {
         JOptionPane.showMessageDialog(PlanWorks.planWorks, message.toString(),
                                       "View Rendering Exception", JOptionPane.ERROR_MESSAGE);
       }
@@ -192,6 +195,58 @@ public class PartialPlanView extends VizView {
       return false;
     }
   } // end isTokenInContentSpec
+
+
+  /**
+   * <code>createChangeViewItem</code> - partial plan background Mouse-Right item
+   *
+   * @param changeViewItem - <code>JMenuItem</code> - 
+   * @param partialPlan - <code>PwPartialPlan</code> - 
+   * @param viewCoords - <code>Point</code> - 
+   */
+  protected void createChangeViewItem( JMenuItem changeViewItem,
+                                       final PwPartialPlan partialPlan,
+                                       final Point viewCoords) {
+    changeViewItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          String seqName = partialPlan.getName();
+          String partialPlanName =
+            seqName.substring( seqName.lastIndexOf( System.getProperty( "file.separator")) + 1);
+          int stepNumber = partialPlan.getStepNumber();
+          PwPlanningSequence planSequence =
+            PlanWorks.planWorks.getPlanSequence( partialPlan);
+
+          PartialPlanViewMenu mouseRightPopup = new PartialPlanViewMenu();
+          JMenuItem header = new JMenuItem( "step" + stepNumber);
+          mouseRightPopup.add( header);
+          mouseRightPopup.addSeparator();
+
+          mouseRightPopup.buildPartialPlanViewMenu( partialPlanName, planSequence);
+          mouseRightPopup.show( PlanWorks.planWorks, (int) viewCoords.getX(),
+                                (int) viewCoords.getY());
+        }
+      });
+  } // end createChangeViewItem
+
+
+  /**
+   * <code>createRaiseContentSpecItem</code> - partial plan background Mouse-Right item
+   *
+   * @param raiseContentSpecItem - <code>JMenuItem</code> - 
+   */
+  protected void createRaiseContentSpecItem( JMenuItem raiseContentSpecItem) {
+    raiseContentSpecItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          MDIInternalFrame contentSpecWindow = viewSet.getContentSpecWindow();
+          // bring window to the front
+          try {
+            contentSpecWindow.setSelected( false);
+            contentSpecWindow.setSelected( true);
+          } catch (PropertyVetoException excp) {
+          }
+        }
+      });
+  } // end createRaiseContentSpecItem
 
 
 

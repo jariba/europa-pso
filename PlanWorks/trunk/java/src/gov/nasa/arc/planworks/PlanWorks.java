@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.70 2003-10-25 00:58:09 taylor Exp $
+// $Id: PlanWorks.java,v 1.71 2003-11-03 19:02:39 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -52,6 +52,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.SplashWindow;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.ProjectNameDialog;
+import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
@@ -451,6 +452,32 @@ public class PlanWorks extends MDIDesktopFrame {
   private void deleteSequenceThread() {
     new DeleteSequenceThread().start();
   }
+
+  /**
+   * <code>getPlanSequence</code>
+   *
+   * @return - <code>PwPlanningSequence</code> - 
+   */
+  public PwPlanningSequence getPlanSequence( PwPartialPlan partialPlan) {
+    PwPlanningSequence planSequence = null;
+    String partialPlanUrl = partialPlan.getUrl();
+    String seqUrl =
+      partialPlanUrl.substring( 0,
+                                partialPlanUrl.lastIndexOf
+                                ( System.getProperty( "file.separator")));
+    try {
+      planSequence = currentProject.getPlanningSequence( seqUrl);
+    } catch (ResourceNotFoundException rnfExcep) {
+      int index = rnfExcep.getMessage().indexOf( ":");
+      JOptionPane.showMessageDialog
+        (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
+         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
+      System.err.println( rnfExcep);
+      rnfExcep.printStackTrace();
+    }
+    return planSequence;
+  } // end getPlanSequence
+
 
   protected void addPlanSeqViewMenu( PwProject project, JMenu planSeqMenu) {
     // Create Dynamic Cascading Seq/PartialPlan/View Menu

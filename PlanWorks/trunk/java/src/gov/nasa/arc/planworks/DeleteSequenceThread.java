@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteSequenceThread.java,v 1.4 2003-10-10 23:59:52 taylor Exp $
+// $Id: DeleteSequenceThread.java,v 1.5 2003-11-03 19:02:39 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -69,7 +69,8 @@ public class DeleteSequenceThread extends Thread {
       for (int i = 0, n = options.length; i < n; i++) {
         if (((String) options[i]).equals( response)) {
           String sequenceName = (String) sequenceNames.get( i);
-          System.out.println( "Delete Sequence: " + sequenceName);
+          System.out.println( "Deleting Sequence: " + sequenceName + " ...");
+          long startTimeMSecs = System.currentTimeMillis();
           try {
             PwPlanningSequence seq =
               PlanWorks.planWorks.currentProject.getPlanningSequence( sequenceName);
@@ -109,6 +110,9 @@ public class DeleteSequenceThread extends Thread {
               dynamicMenuBar.remove(sequenceMenu);
               PlanWorks.planWorks.setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, false);
             }
+            long stopTimeMSecs = System.currentTimeMillis();
+            System.err.println( "   ... elapsed time: " +
+                                (stopTimeMSecs - startTimeMSecs) + " msecs.");
           } catch (ResourceNotFoundException rnfExcep) {
             int index = rnfExcep.getMessage().indexOf( ":");
             JOptionPane.showMessageDialog

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionView.java,v 1.5 2003-10-28 18:01:25 taylor Exp $
+// $Id: TransactionView.java,v 1.6 2003-11-03 19:02:41 taylor Exp $
 //
 // PlanWorks
 //
@@ -80,21 +80,7 @@ public class TransactionView extends PartialPlanView {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
 
-    String partialPlanUrl = this.partialPlan.getUrl();
-    String seqUrl =
-      partialPlanUrl.substring( 0,
-                                partialPlanUrl.lastIndexOf
-                                ( System.getProperty( "file.separator")));
-    try {
-      planSequence = PlanWorks.planWorks.currentProject.getPlanningSequence( seqUrl);
-    } catch (ResourceNotFoundException rnfExcep) {
-      int index = rnfExcep.getMessage().indexOf( ":");
-      JOptionPane.showMessageDialog
-        (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
-         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-      System.err.println( rnfExcep);
-      rnfExcep.printStackTrace();
-    }
+    planSequence = PlanWorks.planWorks.getPlanSequence( this.partialPlan);
 
     transactionList = planSequence.getTransactionsList( this.partialPlan.getId());
     Collections.sort( transactionList,
@@ -167,6 +153,15 @@ public class TransactionView extends PartialPlanView {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end init
 
+
+  /**
+   * <code>getPartialPlan</code>
+   *
+   * @return - <code>PwPartialPlan</code> - 
+   */
+  public PwPartialPlan getPartialPlan() {
+    return partialPlan;
+  }
 
   /**
    * <code>getTransactionContentView</code>

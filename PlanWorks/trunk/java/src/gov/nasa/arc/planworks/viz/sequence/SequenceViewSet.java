@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.8 2003-10-18 01:27:55 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.9 2003-11-03 19:02:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.sequence;
 
 import java.awt.Container;
+import java.util.HashMap;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
@@ -38,6 +39,13 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQue
  */
 public class SequenceViewSet extends ViewSet {
 
+  /**
+   * <code>SequenceViewSet</code> - constructor 
+   *
+   * @param desktopFrame - <code>MDIDesktopFrame</code> - 
+   * @param viewable - <code>ViewableObject</code> - 
+   * @param remover - <code>ViewSetRemover</code> - 
+   */
   public SequenceViewSet( MDIDesktopFrame desktopFrame, ViewableObject viewable,
                              ViewSetRemover remover) {
     super( desktopFrame, viewable, remover);
@@ -63,7 +71,17 @@ public class SequenceViewSet extends ViewSet {
   }
 
 
-
+  /**
+   * <code>getViews</code> - make views accessible to SequenceQueryWindow, so that
+   *                         MDIInternalFrames which it creates for QueryResults,
+   *                         can be added to the view set -- and hence be deleted
+   *                         when the view set is deleted.
+   *
+   * @return - <code>HashMap</code> - 
+   */
+  public HashMap getViews() {
+    return views;
+  }
 
 } // end class SequenceViewSet
 
