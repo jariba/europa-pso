@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: build.xml,v 1.7 2003-07-30 23:56:00 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.8 2003-09-28 00:19:29 taylor Exp $ -->
 <project name="PlanWorks" default="compile" basedir=".">
     <description>
         Planworks Build Targets
@@ -18,7 +18,7 @@
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
-    <echo message="init completed"/>
+    <!-- echo message="init completed"/ -->
   </target>
 
   <target name="compile" depends="init"

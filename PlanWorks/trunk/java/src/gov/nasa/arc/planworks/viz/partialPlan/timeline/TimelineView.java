@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.2 2003-09-26 22:47:07 miatauro Exp $
+// $Id: TimelineView.java,v 1.3 2003-09-28 00:19:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -61,6 +61,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
+
 /**
  * <code>TimelineView</code> - render a partial plan's timelines and slots
  *
@@ -72,9 +73,8 @@ public class TimelineView extends PartialPlanView {
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
-  private PartialPlanViewSet viewSet;
+  private ViewSet viewSet;
   private TimelineJGoView jGoView;
-  private String viewName;
   private JGoDocument jGoDocument;
   private JGoSelection jGoSelection;
   // timelineNodeList & tmpTimelineNodeList used by JFCUnit test case
@@ -90,18 +90,14 @@ public class TimelineView extends PartialPlanView {
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
-   * @param partialPlan - <code>PwPartialPlan</code> - 
-   * @param startTimeMSecs - <code>long</code> - 
-   * @param viewSet - <code>PartialPlanViewSet</code> - 
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
    */
   public TimelineView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
-
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    //viewName = "timelineView";
-    viewName = (String) PlanWorks.viewNameMap.get(PlanWorks.TIMELINE_VIEW);
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
@@ -157,7 +153,7 @@ public class TimelineView extends PartialPlanView {
     // create all nodes
     renderTimelineAndSlotNodes();
 
-    expandViewFrame( viewName,
+    expandViewFrame( this.getClass().getName(),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
 
@@ -205,7 +201,7 @@ public class TimelineView extends PartialPlanView {
     createTimelineAndSlotNodes();
 
     boolean showDialog = true;
-    isContentSpecRendered( "Timeline View", showDialog);
+    isContentSpecRendered( PlanWorks.TIMELINE_VIEW, showDialog);
   } // end createTemporalExtentView
 
   /**
@@ -285,7 +281,8 @@ public class TimelineView extends PartialPlanView {
           String timelineName = timeline.getName();
           String timelineNodeName = objectName + " : " + timelineName +
             "\nkey=" + timeline.getId().toString();
-          Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
+          Color timelineColor =
+            ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
           TimelineNode timelineNode =
             new TimelineNode( timelineNodeName, timeline, new Point( x, y),
                               timelineColor);

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.18 2003-09-25 21:27:47 miatauro Exp $
+// $Id: PwPartialPlan.java,v 1.19 2003-09-28 00:19:29 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -136,10 +136,25 @@ public interface PwPartialPlan extends ViewableObject {
    */
   public abstract PwVariable getVariable( Integer id);
 
-  public abstract void setContentSpec(List spec);
+  /**
+   * <code>setContentSpec</code>
+   *
+   * @param spec - <code>List</code> - 
+   */
+  public abstract void setContentSpec( List spec);
 
+  /**
+   * <code>getContentSpec</code>
+   *
+   * @return - <code>List</code> - 
+   */
   public abstract List getContentSpec();
 
+  /**
+   * <code>getName</code>
+   *
+   * @return - <code>String</code> - 
+   */
   public abstract String getName();
   
 } // end interface PwPartialPlan

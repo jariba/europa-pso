@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanViewSet.java,v 1.1 2003-09-25 23:52:44 taylor Exp $
+// $Id: PartialPlanViewSet.java,v 1.2 2003-09-28 00:19:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.viz.partialPlan;
 
+import java.awt.Container;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,11 +26,14 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.db.util.PartialPlanContentSpec;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 // import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.util.ColorStream;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSetRemover;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
 
 
 /**
@@ -46,11 +50,20 @@ public class PartialPlanViewSet extends ViewSet {
   private List secondaryTokens; // in timeline view, the overloaded tokens
 
 
-  public PartialPlanViewSet( MDIDesktopFrame desktopFrame, PwPartialPlan partialPlan,
+  public PartialPlanViewSet( MDIDesktopFrame desktopFrame, ViewableObject viewable,
                              ViewSetRemover remover) {
-    super( desktopFrame, partialPlan, remover);
+    super( desktopFrame, viewable, remover);
     this.colorStream = new ColorStream();
     this.activeToken = null;
+    this.contentSpecWindow = desktopFrame.createFrame( "Content specification for " +
+                                                       viewable.getName(),
+                                                       this, true, false, false, true);
+    Container contentPane = this.contentSpecWindow.getContentPane();
+    this.contentSpec = new PartialPlanContentSpec( viewable, this);
+    ((PwPartialPlan) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
+    contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec));
+    this.contentSpecWindow.pack();
+    this.contentSpecWindow.setVisible(true);
   }
 
   /**

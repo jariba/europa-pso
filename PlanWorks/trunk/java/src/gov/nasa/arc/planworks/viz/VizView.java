@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.1 2003-09-25 23:52:43 taylor Exp $
+// $Id: VizView.java,v 1.2 2003-09-28 00:19:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -90,12 +90,12 @@ public class VizView extends JPanel {
   /**
    * <code>expandViewFrame</code> - expand up to size of PlanWorks frame
    *
-   * @param viewName - <code>String</code> - 
+   * @param viewClassName - <code>String</code> - 
    * @param maxViewWidth - <code>int</code> - 
    * @param maxViewHeight - <code>int</code> - 
    */
-  protected void expandViewFrame( String viewName, int maxViewWidth, int maxViewHeight) {
-    MDIInternalFrame viewFrame = viewSet.openView( viewName);
+  protected void expandViewFrame( String viewClassName, int maxViewWidth, int maxViewHeight) {
+    MDIInternalFrame viewFrame = viewSet.openView( viewClassName);
     maxViewWidth = Math.min( maxViewWidth, 
                              (int) PlanWorks.planWorks.getSize().getWidth() -
                              (int) viewFrame.getLocation().getX() -

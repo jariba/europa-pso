@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.2 2003-09-26 22:47:07 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.3 2003-09-28 00:19:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -78,11 +78,10 @@ public class TemporalExtentView extends PartialPlanView  {
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
-  private PartialPlanViewSet viewSet;
+  private ViewSet viewSet;
   private ExtentView jGoExtentView;
   private JGoView jGoRulerView;
   private RulerPanel rulerPanel;
-  private String viewName;
   private JGoSelection jGoSelection;
   // temporalNodeList & tmpTemporalNodeList used by JFCUnit test case
   private List temporalNodeList; // element TemporalNode
@@ -110,16 +109,14 @@ public class TemporalExtentView extends PartialPlanView  {
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
-   * @param partialPlan - <code>PwPartialPlan</code> - 
-   * @param startTimeMSecs - <code>long</code> - 
-   * @param viewSet - <code>PartialPlanViewSet</code> - 
+   * @param partialPlan - <code>ViewableObject</code> - 
+   * @param viewSet - <code>ViewSet</code> - 
    */
   public TemporalExtentView( ViewableObject partialPlan, ViewSet viewSet) {
     super( (PwPartialPlan)partialPlan, (PartialPlanViewSet)viewSet);
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    viewName = (String) PlanWorks.viewNameMap.get(PlanWorks.TEMPORAL_EXTENT_VIEW);
 
     startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
@@ -197,7 +194,7 @@ public class TemporalExtentView extends PartialPlanView  {
     boolean isRedraw = false;
     renderTemporalExtent( isRedraw);
 
-    expandViewFrame( viewName,
+    expandViewFrame( this.getClass().getName(),
                      (int) Math.max( jGoExtentView.getDocumentSize().getWidth(),
                                      jGoRulerView.getDocumentSize().getWidth()),
                      (int) (jGoExtentView.getDocumentSize().getHeight() +
@@ -251,7 +248,7 @@ public class TemporalExtentView extends PartialPlanView  {
     createTemporalNodes();
 
     boolean showDialog = true;
-    isContentSpecRendered( "Temporal Extent View", showDialog);
+    isContentSpecRendered( PlanWorks.TEMPORAL_EXTENT_VIEW, showDialog);
 
     layoutTemporalNodes();
     // equalize view widths so scrollbars are equal
@@ -575,7 +572,8 @@ public class TemporalExtentView extends PartialPlanView  {
       Iterator timelineIterator = timelineList.iterator();
       while (timelineIterator.hasNext()) {
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
+        Color timelineColor =
+          ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
         List slotList = timeline.getSlotList();
         Iterator slotIterator = slotList.iterator();
         PwSlot previousSlot = null;
@@ -731,7 +729,7 @@ public class TemporalExtentView extends PartialPlanView  {
 //       }
 //     }
 //     boolean showDialog = true;
-//     isContentSpecRendered( "Temporal Extent View", showDialog);
+//     isContentSpecRendered( PlanWorks.TEMPORAL_EXTENT_VIEW, showDialog);
 //   } // end setNodesVisible
 
 

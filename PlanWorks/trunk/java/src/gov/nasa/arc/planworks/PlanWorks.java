@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.57 2003-09-25 23:52:43 taylor Exp $
+// $Id: PlanWorks.java,v 1.58 2003-09-28 00:19:29 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -87,9 +88,10 @@ public class PlanWorks extends MDIDesktopFrame {
   private static final String SEQSTEPS_MENU = "Sequence Steps";
   private static final String PLAN_DB_SIZE_MENU_ITEM = "Plan Database Size Histogram";
   private static final String PLAN_DEPTH_MENU_ITEM = "Plan Depth Histogram";
-  public static final Map viewNameMap;
+  public static final Map viewNameToViewClassMap;
   public static final String CONSTRAINT_NETWORK_VIEW = "Constraint Network View";
   public static final String TEMPORAL_EXTENT_VIEW = "Temporal Extent View";
+  public static final String TEMPORAL_NETWORK_VIEW = "Temporal Network View";
   public static final String TIMELINE_VIEW = "Timeline View";
   public static final String TOKEN_NETWORK_VIEW = "Token Network View";
 
@@ -104,15 +106,19 @@ public class PlanWorks extends MDIDesktopFrame {
     FRAME_Y_LOCATION = devices[0].getDisplayMode().getHeight() - DESKTOP_FRAME_HEIGHT;
     System.err.println(FRAME_X_LOCATION + " " + FRAME_Y_LOCATION);
 
-    viewNameMap = new HashMap();
-    viewNameMap.put( CONSTRAINT_NETWORK_VIEW,
-                     "gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView");
-    viewNameMap.put( TEMPORAL_EXTENT_VIEW,
-                     "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView");
-    viewNameMap.put( TIMELINE_VIEW,
-                     "gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView");
-    viewNameMap.put( TOKEN_NETWORK_VIEW,
-                     "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView");
+    viewNameToViewClassMap = new HashMap();
+    viewNameToViewClassMap.put
+      ( CONSTRAINT_NETWORK_VIEW,
+        "gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView");
+    viewNameToViewClassMap.put
+      ( TEMPORAL_EXTENT_VIEW,
+        "gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView");
+    viewNameToViewClassMap.put
+      ( TIMELINE_VIEW,
+        "gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView");
+    viewNameToViewClassMap.put
+      ( TOKEN_NETWORK_VIEW,
+        "gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView");
   }
 
   /**
@@ -157,6 +163,8 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public static PlanWorks planWorks;
 
+  public static List supportedPartialPlanViewNames; // List of String
+
   private static JMenu projectMenu;
   private final DirectoryChooser sequenceDirChooser;
   private static String sequenceParentDirectory; // pathname
@@ -182,6 +190,7 @@ public class PlanWorks extends MDIDesktopFrame {
   private PwProject currentProject;
   private ViewManager viewManager;
   private Map sequenceNameMap;
+
 
   /**
    * <code>PlanWorks</code> - constructor 
@@ -220,6 +229,7 @@ public class PlanWorks extends MDIDesktopFrame {
         break;
       }
     }
+    createSupportedPartialPlanViewNames();
     this.setVisible( true);
     if(usingSplash) {
       this.toBack();
@@ -321,6 +331,18 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end setProjectMenuEnabled
 
+  private void createSupportedPartialPlanViewNames() {
+    supportedPartialPlanViewNames = new ArrayList();
+    Iterator viewsItr = viewNameToViewClassMap.keySet().iterator();
+    while (viewsItr.hasNext()) {
+      supportedPartialPlanViewNames.add( (String) viewsItr.next());
+    }
+    Collections.sort( supportedPartialPlanViewNames, new ViewNameComparator());
+  } // end createSupportedPartialPlanViewNames
+
+  private String trimView( String viewName) {
+    return viewName.substring( 0, viewName.indexOf( " View"));
+  }
 
   /**
    * <code>getUrlLeaf</code>
@@ -917,53 +939,53 @@ public class PlanWorks extends MDIDesktopFrame {
   private void buildViewSubMenu( JMenu partialPlanMenu, String seqUrl, String seqName,
                                  String partialPlanName) {
     SeqPartPlanViewMenuItem constraintNetworkViewItem =
-      //          new SeqPartPlanViewMenuItem( "Constraint Network", seqUrl, partialPlanName);
-      new SeqPartPlanViewMenuItem( "Constraint Network", seqUrl, seqName, partialPlanName);
+      new SeqPartPlanViewMenuItem( trimView( CONSTRAINT_NETWORK_VIEW),
+                                   seqUrl, seqName, partialPlanName);
 
     constraintNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
-                ( ViewManager.CNET_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
+                ( CONSTRAINT_NETWORK_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
             }});
     partialPlanMenu.add( constraintNetworkViewItem);
 
     SeqPartPlanViewMenuItem temporalExtentViewItem =
-      //          new SeqPartPlanViewMenuItem( "Temporal Extent", seqUrl, partialPlanName);
-          new SeqPartPlanViewMenuItem( "Temporal Extent", seqUrl, seqName, partialPlanName);
+      new SeqPartPlanViewMenuItem( trimView( TEMPORAL_EXTENT_VIEW),
+                                   seqUrl, seqName, partialPlanName);
     temporalExtentViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
-                ( ViewManager.TEMPEXT_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
+                ( TEMPORAL_EXTENT_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
             }});
     partialPlanMenu.add( temporalExtentViewItem);
 
     SeqPartPlanViewMenuItem temporalNetworkViewItem =
-      //new SeqPartPlanViewMenuItem( "Temporal Network", seqUrl, partialPlanName);
-      new SeqPartPlanViewMenuItem( "Temporal Network", seqUrl, seqName, partialPlanName);
+      new SeqPartPlanViewMenuItem( trimView( TEMPORAL_NETWORK_VIEW),
+                                   seqUrl, seqName, partialPlanName);
     temporalNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
-                ( ViewManager.TEMPNET_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
+                ( TEMPORAL_NETWORK_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
             }});
     partialPlanMenu.add( temporalNetworkViewItem);
     temporalNetworkViewItem.setEnabled(false);
     SeqPartPlanViewMenuItem timelineViewItem =
-      //          new SeqPartPlanViewMenuItem( "Timeline", seqUrl, partialPlanName);
-      new SeqPartPlanViewMenuItem( "Timeline", seqUrl, seqName, partialPlanName);
+      new SeqPartPlanViewMenuItem( trimView( TIMELINE_VIEW),
+                                   seqUrl, seqName, partialPlanName);
     timelineViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
-                ( ViewManager.TIMELINE_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
+                ( TIMELINE_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
             }});
     partialPlanMenu.add( timelineViewItem);
 
     SeqPartPlanViewMenuItem tokenNetworkViewItem =
-      //          new SeqPartPlanViewMenuItem( "Token Network", seqUrl, partialPlanName);
-      new SeqPartPlanViewMenuItem( "Token Network", seqUrl, seqName, partialPlanName);
+      new SeqPartPlanViewMenuItem( trimView( TOKEN_NETWORK_VIEW),
+                                   seqUrl, seqName, partialPlanName);
     tokenNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
-                ( ViewManager.TNET_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
+                ( TOKEN_NETWORK_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
             }});
     partialPlanMenu.add( tokenNetworkViewItem);
 
@@ -1070,7 +1092,7 @@ public class PlanWorks extends MDIDesktopFrame {
         //PwPartialPlan partialPlan = planSequence.addPartialPlan( partialPlanName);
         PwPartialPlan partialPlan = planSequence.getPartialPlan(partialPlanName);
 
-        renderView( viewName, sequenceName, partialPlanName, partialPlan);
+        renderPartialPlanView( viewName, sequenceName, partialPlanName, partialPlan);
 
       } catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
@@ -1082,68 +1104,56 @@ public class PlanWorks extends MDIDesktopFrame {
       }
     } //end run
 
-    private void renderView( String viewName, String sequenceName, String partialPlanName,
-                             PwPartialPlan partialPlan) {
+    private void renderPartialPlanView( String viewName, String sequenceName,
+                                        String partialPlanName,
+                                        PwPartialPlan partialPlan) {
       ViewSet viewSet = viewManager.getViewSet( partialPlan);
       MDIInternalFrame viewFrame = null;
       boolean viewExists = false;
-      long startTimeMSecs = (new Date()).getTime();
-      if ((viewSet != null) && viewSet.viewExists( viewName)) {
+      String viewClassName = (String) viewNameToViewClassMap.get( viewName);
+      if ((viewSet != null) && viewSet.viewExists( viewClassName)) {
         viewExists = true;
       }
-      if (viewName.equals( ViewManager.TIMELINE_VIEW)) {
+      if (supportedPartialPlanViewNames.contains( viewName)) {
         if (! viewExists) {
-          System.err.println( "Rendering Timeline View ...");
+          System.err.println( "Rendering " + viewName + " ...");
         }
-        viewFrame = viewManager.openView( partialPlan,
-                                          (String) viewNameMap.get( TIMELINE_VIEW));
-        finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
-      } else if (viewName.equals( ViewManager.TNET_VIEW)) {
-        if (! viewExists) {
-          System.err.println( "Rendering Token Network View ...");
-        }
-        viewFrame = viewManager.openView( partialPlan,
-                                          (String) viewNameMap.get( TOKEN_NETWORK_VIEW));
-        finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);
-      } else if (viewName.equals( ViewManager.TEMPEXT_VIEW)) {
-        if (! viewExists) {
-          System.err.println( "Rendering Temporal Extent View ...");
-        }
-        viewFrame = viewManager.openView( partialPlan,
-                                          (String) viewNameMap.get( TEMPORAL_EXTENT_VIEW));
-        finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
-      } else if (viewName.equals( ViewManager.CNET_VIEW)) {
-        if (! viewExists) {
-          System.err.println( "Rendering Constraint Network View ...");
-        }
-        viewFrame = viewManager.openView( partialPlan,
-                                          (String) viewNameMap.get( CONSTRAINT_NETWORK_VIEW));
-        finishViewRendering( viewFrame, viewName, viewExists, startTimeMSecs);          
-      } else if (viewName.equals( ViewManager.TEMPNET_VIEW)) {
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, viewName, "View Not Supported", 
-           JOptionPane.INFORMATION_MESSAGE);
+        viewFrame = viewManager.openView( partialPlan, viewClassName);
+        finishPartPlanViewRendering( viewFrame, viewName, viewManager, viewExists,
+                                     partialPlan);
       } else {
         JOptionPane.showMessageDialog
           (PlanWorks.this, viewName, "View Not Supported", 
            JOptionPane.INFORMATION_MESSAGE);
       }
-      //}
-    } // end renderView
+    } // end renderPartialPlanView
 
-    private void finishViewRendering( MDIInternalFrame viewFrame, String viewName,
-                                      boolean viewExists, long startTimeMSecs) {
+    private void finishPartPlanViewRendering( MDIInternalFrame viewFrame, String viewName,
+                                              ViewManager viewManager, boolean viewExists,
+                                              PwPartialPlan partialPlan) {
+      ViewSet viewSet = null;
       if (! viewExists) {
+        while (viewSet == null) {
+          // System.err.println( "wait for ViewSet");
+          try {
+            Thread.currentThread().sleep(50);
+          } catch (InterruptedException excp) {
+          }
+          viewSet = viewManager.getViewSet( partialPlan);
+        }
         viewFrame.setSize( INTERNAL_FRAME_WIDTH, INTERNAL_FRAME_HEIGHT);
+        int contentSpecFrameHeight =
+          (int) viewSet.getContentSpecWindow().getSize().getHeight();
+        Iterator viewItr = supportedPartialPlanViewNames.iterator();
         int viewIndex = 0;
-        for (int i = 0, n = ViewConstants.ORDERED_VIEW_NAMES.length; i < n; i++) {
-          if (ViewConstants.ORDERED_VIEW_NAMES[i].equals( viewName)) {
-            viewIndex = i;
+        while (viewItr.hasNext()) {
+          if (viewItr.next().equals( viewName)) {
             break;
           }
+          viewIndex++;
         }
-        viewFrame.setLocation( INTERNAL_FRAME_X_DELTA * viewIndex,
-                               FRAME_Y_LOCATION + INTERNAL_FRAME_Y_DELTA * viewIndex);
+        viewFrame.setLocation( INTERNAL_FRAME_X_DELTA * viewIndex, contentSpecFrameHeight +
+                               INTERNAL_FRAME_Y_DELTA * viewIndex);
         viewFrame.setVisible( true);
       }
       // make associated menus appear & bring window to the front
@@ -1151,7 +1161,7 @@ public class PlanWorks extends MDIDesktopFrame {
         viewFrame.setSelected( false);
         viewFrame.setSelected( true);
       } catch (PropertyVetoException excp) { };
-    } // end finishViewRendering
+    } // end finishPartPlanViewRendering
 
   } // end class CreatePartialPlanViewThread
 
@@ -1168,7 +1178,8 @@ public class PlanWorks extends MDIDesktopFrame {
     private String partialPlanName;
 
     //public SeqPartPlanViewMenuItem( String viewName, String seqUrl, String partialPlanName) {
-    public SeqPartPlanViewMenuItem( String viewName, String seqUrl, String seqName, String partialPlanName) {
+    public SeqPartPlanViewMenuItem( String viewName, String seqUrl, String seqName,
+                                    String partialPlanName) {
       super( viewName);
       this.seqUrl = seqUrl;
       this.sequenceName = seqName;
@@ -1327,6 +1338,21 @@ class SequenceDirectoryFilter extends FileFilter {
     public boolean equals(Object o1, Object o2) {
       String s1 = getUrlLeaf((String)o1);
       String s2 = getUrlLeaf((String)o2);
+      return s1.equals(s2);
+    }
+  }
+
+  private class ViewNameComparator implements Comparator {
+    public ViewNameComparator() {
+    }
+    public int compare(Object o1, Object o2) {
+      String s1 = (String) o1;
+      String s2 = (String) o2;
+      return s1.compareTo(s2);
+    }
+    public boolean equals(Object o1, Object o2) {
+      String s1 = (String)o1;
+      String s2 = (String)o2;
       return s1.equals(s2);
     }
   }

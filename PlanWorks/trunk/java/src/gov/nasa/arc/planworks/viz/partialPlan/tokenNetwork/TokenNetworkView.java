@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.2 2003-09-26 22:47:07 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.3 2003-09-28 00:19:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -67,9 +67,8 @@ public class TokenNetworkView extends PartialPlanView {
 
   private PwPartialPlan partialPlan;
   private long startTimeMSecs;
-  private PartialPlanViewSet viewSet;
+  private ViewSet viewSet;
   private TokenNetworkJGoView jGoView;
-  private String viewName;
   private JGoDocument jGoDocument;
   // private JGoLayer hiddenLayer;
   private Font font;
@@ -86,16 +85,14 @@ public class TokenNetworkView extends PartialPlanView {
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
-   * @param partialPlan - <code>PwPartialPlan</code> -
-   * @param startTimeMSecs - <code>long</code> - 
-   * @param viewSet - <code>PartialPlanViewSet</code> - 
+   * @param partialPlan - <code>ViewableObject</code> -
+   * @param viewSet - <code>ViewSet</code> - 
    */
   public TokenNetworkView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan)partialPlan, (PartialPlanViewSet) viewSet);
     this.partialPlan = (PwPartialPlan) partialPlan;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
-    viewName = (String) PlanWorks.viewNameMap.get(PlanWorks.TOKEN_NETWORK_VIEW);
     this.nodeList = null;
     this.tmpNodeList = new ArrayList();
     this.linkList = new ArrayList();
@@ -165,7 +162,7 @@ public class TokenNetworkView extends PartialPlanView {
     //layout.ensureAllPositive();
     //layout.position(getWidth(), getHeight());
     System.err.println("Ring layout took " + (System.currentTimeMillis() - t1));*/
-    expandViewFrame( viewName,
+    expandViewFrame( this.getClass().getName(),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
     // print out info for created nodes
@@ -373,7 +370,8 @@ public class TokenNetworkView extends PartialPlanView {
       while (timelineIterator.hasNext()) {
         int x = ViewConstants.TIMELINE_VIEW_X_INIT;
         PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
+        Color timelineColor =
+          ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
         createTokenNodesOfTimeline( timeline, x, y, timelineColor);
         y += 2 * ViewConstants.TIMELINE_VIEW_Y_DELTA;
         timelineCnt++;
@@ -523,7 +521,7 @@ public class TokenNetworkView extends PartialPlanView {
       }
     }
     boolean showDialog = true;
-    isContentSpecRendered( "Token Network View", showDialog);
+    isContentSpecRendered( PlanWorks.TOKEN_NETWORK_VIEW, showDialog);
   } // end setNodesVisible
 
 
