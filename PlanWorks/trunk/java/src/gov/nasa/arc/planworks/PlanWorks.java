@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.103 2004-06-22 22:37:47 miatauro Exp $
+// $Id: PlanWorks.java,v 1.104 2004-07-09 23:00:47 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -189,7 +190,19 @@ public class PlanWorks extends MDIDesktopFrame {
     String imagePath = null;
     if((imagePath = System.getProperty("splash.image")) != null) {
       usingSplash = true;
-      Image splashImage = Toolkit.getDefaultToolkit().createImage(imagePath);
+      File splashImageDir = new File(imagePath);
+      if(!splashImageDir.isDirectory()) {
+        System.err.println("'" + imagePath + "' is not a directory!");
+        System.exit(-1);
+      }
+      String [] imagePaths = splashImageDir.list(new FilenameFilter() {
+          public boolean accept(File dir, String name) {
+            return name.endsWith(".png");
+          }
+        });
+      int imageIndex = (int) (Math.random() * 100) % imagePaths.length;
+      Image splashImage = Toolkit.getDefaultToolkit().createImage(imagePath + System.getProperty("file.separator")
+                                                                  + imagePaths[imageIndex]);
       SplashWindow.splash(splashImage);
     }
     else {
