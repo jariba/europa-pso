@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.3 2003-05-15 22:16:23 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -34,7 +34,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-class PwPartialPlanImpl implements PwPartialPlan {
+public class PwPartialPlanImpl implements PwPartialPlan {
 
   private String url; // pathaname of xml file
   private String projectCollectionName; // e.g. test
@@ -98,6 +98,16 @@ class PwPartialPlanImpl implements PwPartialPlan {
   } // end constructor
 
 
+  /**
+   * <code>getObjectList</code>
+   *
+   * @return - <code>List of PwObject</code> - 
+   */
+  public List getObjectList() {
+    return objectList;
+  }
+
+
   private void createPartialPlan( String collectionName) {
     List partialPlanKeys = XmlDBeXist.INSTANCE.getPartialPlanKeys( collectionName);
     // should only be one with collection structure of
@@ -115,13 +125,66 @@ class PwPartialPlanImpl implements PwPartialPlan {
         objectList.add( new PwObjectImpl( (String) objectNameAndKeyList.get( i),
                                           (String) objectNameAndKeyList.get( i)));
       }
-      List queryList = XmlDBeXist.INSTANCE.getTimelinesSlotsTokens( collectionName);
+      XmlDBeXist.INSTANCE.createTimelineSlotTokenNodesStructure( this, collectionName);
  
   
     }
   } // end createPartialPlan
 
 
+  /**
+   * <code>getVariableHashMap</code>
+   *
+   * @return variableHashMap - <code>Map</code> - 
+   */
+  public Map getVariableHashMap() {
+    return variableHashMap;
+  }
+
+
+  /**
+   * <code>getVariable</code> - if not in HashMap, query
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwVariableImpl</code> - 
+   */
+  public PwVariableImpl getVariable( String key, String collectionName) {
+    PwVariableImpl variable = (PwVariableImpl) variableHashMap.get( key);
+    // System.err.println( "getVariable: key  " + key + " variable " + variable);
+    if (variable == null) {
+      variable = XmlDBeXist.queryVariable( key, collectionName);
+      variableHashMap.put( key, variable);
+    }
+    return variable;
+  } // end getVariable
+
+
+  /**
+   * <code>getPredicateHashMap</code>
+   *
+   * @return predicateHashMap - <code>Map</code> - 
+   */
+  public Map getPredicateHashMap() {
+    return predicateHashMap;
+  }
+
+
+  /**
+   * <code>getPredicate</code> - if not in HashMap, query
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwPredicateImpl</code> - 
+   */
+  public PwPredicateImpl getPredicate( String key, String collectionName) {
+    PwPredicateImpl predicate = (PwPredicateImpl) predicateHashMap.get( key);
+    if (predicate == null) {
+      predicate = XmlDBeXist.queryPredicate( key, collectionName);
+      predicateHashMap.put( key, predicate);
+    }
+    return predicate;
+  } // end getPredicate
 
 
 } // end class PwPartialPlanImpl

@@ -1,0 +1,18 @@
+#!/bin/tcsh -f
+# -f Fast start. do not read the  .cshrc  file
+
+# $Id: runDBClient,v 1.1 2003-05-15 22:16:24 taylor Exp $
+
+if (! -f runDBClient) then
+  # needed for relative directory usage
+  echo "current directory is not <root>/PlanWorks/test"
+  exit
+endif
+
+set currentDir = `pwd`
+
+cd ../java/lib/eXist
+bin/client.sh -C conf-nolog.xml
+
+cd $currentDir
+
