@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureNewSequenceDialog.java,v 1.6 2004-09-24 22:39:58 taylor Exp $
+// $Id: ConfigureNewSequenceDialog.java,v 1.7 2004-09-28 23:57:40 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -52,8 +52,6 @@ public class ConfigureNewSequenceDialog extends JDialog {
   private JTextField modelOutputDestDirField;
   private String modelInitStatePath;
   private JTextField modelInitStatePathField;
-  private String [] transactionTypes;
-  private int[] transactionTypeStates; // i = enabled; 0 = disabled
 
   private String btnString1;
   private String btnString2;
@@ -87,9 +85,6 @@ public class ConfigureNewSequenceDialog extends JDialog {
     final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
     modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
 
-    final JButton transactionTypesButton = new JButton( "transaction types to log");
-    transactionTypesButton.addActionListener( new TransactionTypesButtonListener());
-    
     // current values
     try {
       String currentProjectName = planWorks.getCurrentProjectName();
@@ -107,30 +102,6 @@ public class ConfigureNewSequenceDialog extends JDialog {
     } catch (IOException ioExcep) {
     }
 
-    try {
-      transactionTypes = PlannerControlJNI.getTransactionTypes();
-//     for (int i = 0, n = transactionTypes.length; i < n; i++) {
-//       String transType = (String) transactionTypes[i];
-//       System.err.println( "transType i=" + i + " " + transType);
-//     }
-      transactionTypeStates = PlannerControlJNI.getTransactionTypeStates();
-//     for (int i = 0, n = transactionTypeStates.length; i < n; i++) {
-//       int transTypeState = (int) transactionTypeStates[i];
-//       System.err.println( "transTypeState i=" + i + " " + transTypeState);
-//     }
-    } catch (UnsatisfiedLinkError ule) {
-      JOptionPane.showMessageDialog
-        (PlanWorks.getPlanWorks(), "JNI method '" + ule.getMessage() + "' has not been loaded",
-         "Planner Loading Error", JOptionPane.ERROR_MESSAGE);
-      modelPath = null; // abort New Sequence operation
-      return;
-    }
-    if (transactionTypes.length != transactionTypeStates.length) {
-      System.err.println( "ConfigureNewSequenceDialog: num transactionTypes (" +
-                          transactionTypes.length + ") is != num transactionTypeStates (" +
-                          transactionTypeStates.length + ") from PlannerControlJNI");
-      System.exit( -1);
-    }
 //     modelNameField.setText( modelName);
     modelPathField.setText( modelPath);
     modelOutputDestDirField.setText( modelOutputDestDir);
@@ -188,12 +159,6 @@ public class ConfigureNewSequenceDialog extends JDialog {
     c.gridx++;
     gridBag.setConstraints( modelOutputDestDirBrowseButton, c);
     dialogPanel.add( modelOutputDestDirBrowseButton);
-
-    c.gridx = 0;  
-    c.gridy++;
-    gridBag.setConstraints( transactionTypesButton, c);
-    dialogPanel.add( transactionTypesButton);
-
 
     optionPane = new JOptionPane
       ( dialogPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
@@ -268,23 +233,6 @@ public class ConfigureNewSequenceDialog extends JDialog {
     }
   } // end class ModelOutputDestDirButtonListener
 
-  class TransactionTypesButtonListener implements ActionListener {
-    public TransactionTypesButtonListener() {
-    }
-    public void actionPerformed( ActionEvent ae) {
-      TransactionTypesDialog transactionTypesDialog =
-        new TransactionTypesDialog( PlanWorks.getPlanWorks(), transactionTypes,
-                                    transactionTypeStates);
-      int[] transStates = transactionTypesDialog.getTransactionTypeStates();
-      if (transStates == null) {
-        // user chose cancel
-        return;
-      } else {
-        transactionTypeStates = transStates;
-      }
-    }
-  } // end class TransactionTypesButtonListener
-
 
 
   private void addInputListener() {
@@ -309,8 +257,6 @@ public class ConfigureNewSequenceDialog extends JDialog {
               if (handleTextFieldValues()) {
                 return;
               }
-              PlannerControlJNI.setTransactionTypeStates( transactionTypeStates);
-
               // we're done; dismiss the dialog
               setVisible( false);
 
