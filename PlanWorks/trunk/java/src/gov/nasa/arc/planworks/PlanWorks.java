@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.21 2003-07-02 19:17:21 taylor Exp $
+// $Id: PlanWorks.java,v 1.22 2003-07-02 21:10:48 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -911,7 +911,7 @@ public class PlanWorks extends MDIDesktopFrame {
     planWorksRoot = System.getProperty( "planworks.root");
     defaultProjectName = "";
     defaultSequenceDirectory = "";
-    defaultProjectName = System.getProperty( "default.project.name");
+    //defaultProjectName = System.getProperty( "default.project.name");
     defaultSequenceDirectory = System.getProperty( "default.sequence.dir");
 
     try {
