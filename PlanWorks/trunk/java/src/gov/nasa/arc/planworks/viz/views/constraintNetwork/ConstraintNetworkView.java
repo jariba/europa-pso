@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.2 2003-07-30 17:21:36 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.3 2003-07-30 18:09:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -350,16 +350,16 @@ public class ConstraintNetworkView extends VizView {
     Iterator tokenNodeIterator = tmpNodeList.iterator();
     while (tokenNodeIterator.hasNext()) {
       TokenNode tokenNode = (TokenNode) tokenNodeIterator.next();
-      System.err.println( "tokenNode " + tokenNode.getToken().getKey());
+      // System.err.println( "tokenNode " + tokenNode.getToken().getKey());
       Iterator variableItr = tokenNode.getVariableNodeList().iterator();
       while (variableItr.hasNext()) {
         VariableNode variableNode = (VariableNode) variableItr.next();
-        System.err.println( "  variableNode " + variableNode.getVariable().getKey());
+        // System.err.println( "  variableNode " + variableNode.getVariable().getKey());
         createConstraintLink( variableNode, tokenNode, "variable");
         Iterator constraintNodeItr = variableNode.getConstraintNodeList().iterator();
         while (constraintNodeItr.hasNext()) {
           ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
-          System.err.println( "    constraintNode " + constraintNode.getConstraint().getKey());
+          // System.err.println( "    constraintNode " + constraintNode.getConstraint().getKey());
           createConstraintLink( constraintNode, variableNode, "constraint");
         }
       }
@@ -411,7 +411,7 @@ public class ConstraintNetworkView extends VizView {
       Iterator linkItr = constraintLinkNameList.iterator();
       while (linkItr.hasNext()) {
         if (linkName.equals( (String) linkItr.next())) {
-          System.err.println( "discard " + linkName + " fromNodeType " + fromNodeType);
+          // System.err.println( "discard " + linkName + " fromNodeType " + fromNodeType);
           return;
         }
       }
@@ -424,7 +424,7 @@ public class ConstraintNetworkView extends VizView {
       Iterator linkItr = variableLinkNameList.iterator();
       while (linkItr.hasNext()) {
         if (linkName.equals( (String) linkItr.next())) {
-          System.err.println( "discard " + linkName + " fromNodeType " + fromNodeType);
+          // System.err.println( "discard " + linkName + " fromNodeType " + fromNodeType);
           return;
         }
       }
@@ -496,7 +496,7 @@ public class ConstraintNetworkView extends VizView {
         }
       }
     }
-  } // end LinksVisible
+  } // end setLinksVisible
 
 
 

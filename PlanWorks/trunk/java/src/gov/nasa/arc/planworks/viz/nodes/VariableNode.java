@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.1 2003-07-30 00:38:41 taylor Exp $
+// $Id: VariableNode.java,v 1.2 2003-07-30 18:09:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -75,8 +75,10 @@ public class VariableNode extends BasicNode {
     tokenNodeList = new ArrayList();
     tokenNodeList.add( tokenNode);
     constraintNodeList = new ArrayList();
-    nodeLabel = variable.getType().substring( 0, 1) + "_" + variable.getKey().toString();
-    System.err.println( "VariableNode: " + nodeLabel);
+    // debug
+    // nodeLabel = variable.getType().substring( 0, 1) + "_" + variable.getKey().toString();
+    nodeLabel = variable.getDomain().toString();
+    // System.err.println( "VariableNode: " + nodeLabel);
 
     configure( variableLocation);
   } // end constructor
