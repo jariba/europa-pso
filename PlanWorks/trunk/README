@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.47 2003-10-29 00:30:03 taylor Exp $
+# $Id: README,v 1.48 2003-10-29 00:34:25 taylor Exp $
 #
 
 SUMMARY
@@ -38,6 +38,12 @@ header section of the window brings up this dialog.
 The column header nodes of the "Transaction View", and "Query Results for ..."
 windows, offer sorting of that columns's values, alternately in
 ascending order and descending order.
+
+The current PartialPlanWriter (PlanWorks/cpp/integration/europa/README)
+requires a recent version of EUROPA.  The earliest known working
+version is tagged with the PlanWorks milestone release tag PW_M_8.  
+
+The PartialPlanWriter has changed since PW_M_8, and must be rebuilt.
 
 o  GNATS PRs and CRs completed:
 
