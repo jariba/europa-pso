@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.2 2003-09-11 00:25:47 taylor Exp $
+# $Id: GETTING_STARTED,v 1.3 2003-09-11 18:19:09 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -41,12 +41,12 @@ the selected sequence from the current project, and the MySQL data base.
 Plan Sequence Views
 ===================
 
-The "Plannning Sequence" cascading menu allows the user to select the 
+The "Planning Sequence" cascading menu allows the user to select the 
 sequence, the partial plan, and the plan view to be displayed.  There are 
 four active views:
 
-Constraint Network
-------------------
+Constraint Network View
+-----------------------
 An incrementally built directed graph of tokens, variables, and constraints.
 Because of its complexity, initially only the token nodes are displayed.  
 They are "opened" by mouse clicks which lay out the token's variable nodes. 
@@ -56,8 +56,8 @@ neighbors (constraints or tokens).  Similarly, clicking on constraint nodes
 "closes" that nodes nearest neighbor nodes/links, provided the link counts
 are 1.  Then the node becomes "closed" and has an unbold border.
 
-Temporal Extent
----------------
+Temporal Extent View
+--------------------
 Lays out all predicates on a time scale, with triangles denoting the start 
 and end variable values.  The range of extent is shown by a horizontal line.
 The extent line and associated triangles are displayed immediately below 
@@ -67,12 +67,36 @@ are end times, leftward triangles are -Infinity, and rightward triangles are
 will cause a vertical time scale mark line to be drawn.  Clicking at another
 location will move the time scale mark line.
 
-Timeline
---------
+Timeline View
+-------------
 Lays out the plan's objects, timelines, and slots.  Start/end time intervals
 are displayed at slot boundaries.
 
-Token Network
--------------
+Token Network View
+------------------
 Lays out the plan's token relations in directed graphs whose root nodes
 are the "supreme" master tokens.
+
+
+Content Specification
+=====================
+
+The information displayed in the partial plan views may be filtered by
+predicate, by timeline, and by time interval using the partial plan's
+Content Specification dialog.  Selections applied from this dialog
+result, internally, in a set of valid tokens, which are used by the 
+views to filter their displays.
+
+
+Screen Management
+=================
+
+The "Window" pull-down menu offers the user the ability to rearrange the
+partial plan content spec and view internal windows by horizontal "tiling", 
+vertical "tiling", or "cascading".  This menu also provides for the 
+selection of all active windows.
+
+Note that the Multiple Document Interface (MDI) implementation presents
+the user with a line of click-able icons along the bottom of the PlanWorks
+frame for all internal windows.
+

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.6 2003-09-10 00:23:09 taylor Exp $
+// $Id: DbConstants.java,v 1.7 2003-09-11 18:19:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,7 +32,7 @@ public interface DbConstants {
    * constant <code>PP_PARTIAL_PLAN_EXT</code>
    *
    */
-  public static final String PP_PARTIAL_PLAN_EXT = "partialplan";
+  public static final String PP_PARTIAL_PLAN_EXT = "partialPlan";
 
   /**
    * constant <code>PP_OBJECTS_EXT</code>
@@ -80,13 +80,13 @@ public interface DbConstants {
    * constant <code>PP_ENUMERATED_DOMAINS_EXT</code>
    *
    */
-  public static final String PP_ENUMERATED_DOMAINS_EXT = "enumerateddomains";
+  public static final String PP_ENUMERATED_DOMAINS_EXT = "enumeratedDomains";
 
   /**
    * constant <code>PP_INTERVAL_DOMAINS_EXT</code>
    *
    */
-  public static final String PP_INTERVAL_DOMAINS_EXT = "intervaldomains";
+  public static final String PP_INTERVAL_DOMAINS_EXT = "intervalDomains";
 
   /**
    * constant <code>PP_CONSTRAINTS_EXT</code>
@@ -98,19 +98,19 @@ public interface DbConstants {
    * constant <code>PP_TOKEN_RELATIONS_EXT</code>
    *
    */
-  public static final String PP_TOKEN_RELATIONS_EXT = "tokenrelations";
+  public static final String PP_TOKEN_RELATIONS_EXT = "tokenRelations";
 
   /**
    * constant <code>PP_PARAM_VAR_TOKEN_MAP_EXT</code>
    *
    */
-  public static final String PP_PARAM_VAR_TOKEN_MAP_EXT = "paramvartokenmap";
+  public static final String PP_PARAM_VAR_TOKEN_MAP_EXT = "paramVarTokenMap";
 
   /**
    * constant <code>PP_CONSTRAINT_VAR_MAP_EXT</code>
    *
    */
-  public static final String PP_CONSTRAINT_VAR_MAP_EXT = "constraintvarmap";
+  public static final String PP_CONSTRAINT_VAR_MAP_EXT = "constraintVarMap";
 
   /**
    * constant <code>PARTIAL_PLAN_FILE_EXTS</code> - List of Strings
