@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.42 2003-09-18 20:48:50 taylor Exp $
+// $Id: TimelineView.java,v 1.43 2003-09-19 01:47:32 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -100,9 +100,6 @@ public class TimelineView extends VizView {
     this.startTimeMSecs = startTimeMSecs;
     this.viewSet = viewSet;
     viewName = "timelineView";
-    this.timelineNodeList = null;
-    this.freeTokenNodeList = new ArrayList();
-    this.tmpTimelineNodeList = new ArrayList();
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
@@ -199,6 +196,9 @@ public class TimelineView extends VizView {
 
     validTokenIds = viewSet.getValidTokenIds();
     displayedTokenIds = new ArrayList();
+    timelineNodeList = null;
+    freeTokenNodeList = new ArrayList();
+    tmpTimelineNodeList = new ArrayList();
 
     createTimelineAndSlotNodes();
 
@@ -265,7 +265,6 @@ public class TimelineView extends VizView {
   }
 
   private void createTimelineAndSlotNodes() {
-    timelineNodeList = null;
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
     List objectList = partialPlan.getObjectList();
