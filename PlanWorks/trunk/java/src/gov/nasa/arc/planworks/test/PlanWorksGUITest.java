@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.11 2004-06-14 22:11:24 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.12 2004-06-17 20:38:02 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -226,7 +226,7 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
       // 1-4 used by planViz01 & planViz02 (destructively modified)
       // 5-6 used by planViz03, planViz04 & planViz05
       // 5-7 used by planViz06, planViz07, & planViz08
-      sequenceUrls = PWSetupHelper.buildTestData( numSequences, numSteps, this);
+      sequenceUrls = PWSetupHelper.buildTestData( numSequences, numSteps, this, PWTestHelper.GUI_TEST_DIR);
 
       // System.exit( 0);
 

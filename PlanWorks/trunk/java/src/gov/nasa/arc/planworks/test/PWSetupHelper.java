@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.9 2004-06-14 22:11:23 taylor Exp $
+// $Id: PWSetupHelper.java,v 1.10 2004-06-17 20:38:02 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -74,38 +74,38 @@ public abstract class PWSetupHelper {
 
 
   public static List buildTestData( final int numSequences, final int numSteps,
-                                    final IdSource idSource) {
-    String guiSequencesUrl = System.getProperty( "planworks.test.data.dir") +
-      System.getProperty( "file.separator") + PWTestHelper.GUI_TEST_DIR;
-    File guiSequencesUrlFile = new File( guiSequencesUrl);
+                                    final IdSource idSource, final String dest) {
+    String sequencesUrl = System.getProperty( "planworks.test.data.dir") +
+      System.getProperty( "file.separator") + dest;
+    File sequencesUrlFile = new File( sequencesUrl);
     boolean success = false;
-    if (guiSequencesUrlFile.isDirectory()) {
-      success = FileUtils.deleteDir( guiSequencesUrlFile);
+    if (sequencesUrlFile.isDirectory()) {
+      success = FileUtils.deleteDir( sequencesUrlFile);
       if (! success) {
-        System.err.println( "PWSetupHelper.buildTestData: deleting '" + guiSequencesUrl +
+        System.err.println( "PWSetupHelper.buildTestData: deleting '" + sequencesUrl +
                             "' failed"); System.exit( -1);
       }
     }
-    success = guiSequencesUrlFile.mkdir();
+    success = sequencesUrlFile.mkdir();
     if (! success) {
-      System.err.println( "PWSetupHelper.buildTestData: creating '" + guiSequencesUrl +
+      System.err.println( "PWSetupHelper.buildTestData: creating '" + sequencesUrl +
                           "' failed"); System.exit( -1);
     }
     List sequenceUrls = new ArrayList();
     for (int i = 0; i < numSequences; i++) {
-      sequenceUrls.add( createSequence( guiSequencesUrl, numSteps, idSource));
+      sequenceUrls.add( createSequence( sequencesUrl, numSteps, idSource));
     }
     return sequenceUrls;
   } // end buildTestData
 
-  private static String createSequence( final String guiSequencesUrl, final int numSteps,
+  private static String createSequence( final String sequencesUrl, final int numSteps,
                                         final IdSource idSource) {
     boolean forTesting = true;
     idSource.resetEntityIdInt();
     Long sequenceId = new Long( System.currentTimeMillis());
     String sequenceIdString = sequenceId.toString();
     String sequenceName = PWTestHelper.SEQUENCE_NAME + sequenceIdString;
-    String sequenceUrl = guiSequencesUrl + System.getProperty( "file.separator") + sequenceName;
+    String sequenceUrl = sequencesUrl + System.getProperty( "file.separator") + sequenceName;
     System.err.println( "sequenceUrl " + sequenceUrl);
     writeDirectory( sequenceUrl);
     PwPlanningSequenceImpl planSequence = null;
@@ -332,7 +332,7 @@ public abstract class PWSetupHelper {
       StringBuffer resourceVarIds = new StringBuffer();
       for (int i = 0; i < NUM_VARS_PER_RESOURCE; i++) {
         List constraintIds = new ArrayList();
-        List parameterNames = new ArrayList(); parameterNames.add( "member");
+        List parameterNames = new ArrayList(); parameterNames.add( "member" + i);
         Integer resourceVarId = new Integer( idSource.incEntityIdInt());
         if (isFirst) { isFirst = false; } else { resourceVarIds.append( ","); }
         resourceVarIds.append( resourceVarId.toString());
@@ -491,7 +491,7 @@ public abstract class PWSetupHelper {
     StringBuffer variableIds = new StringBuffer();
     for (int i = 0; i < NUM_VARS_PER_OBJECT; i++) {
       List constraintIds = new ArrayList();
-      List parameterNames = new ArrayList(); parameterNames.add( "member");
+      List parameterNames = new ArrayList(); parameterNames.add( "member" + i);
       Integer variableId = new Integer( idSource.incEntityIdInt());
       if (isFirst) { isFirst = false; } else { variableIds.append( ","); }
       variableIds.append( variableId.toString());
@@ -519,7 +519,7 @@ public abstract class PWSetupHelper {
     StringBuffer variableIds = new StringBuffer();
     for (int i = 0; i < NUM_VARS_PER_TIMELINE; i++) {
       List constraintIds = new ArrayList();
-      List parameterNames = new ArrayList(); parameterNames.add( "member");
+      List parameterNames = new ArrayList(); parameterNames.add( "member" + i);
       Integer variableId = new Integer( idSource.incEntityIdInt());
       if (isFirst) { isFirst = false; } else { variableIds.append( ","); }
       variableIds.append( variableId.toString());
