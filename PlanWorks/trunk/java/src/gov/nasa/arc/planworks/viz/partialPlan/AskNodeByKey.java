@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.7 2004-05-29 00:31:38 taylor Exp $
+// $Id: AskNodeByKey.java,v 1.8 2004-06-14 22:11:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -190,9 +190,13 @@ public class AskNodeByKey extends JDialog {
   private boolean isNodeKeyValid( Integer nodeKey) {
     boolean isValid = false;
     PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
-    if ((partialPlanView instanceof TemporalExtentView) ||
-        (partialPlanView instanceof TokenNetworkView)) {
+    if (partialPlanView instanceof TemporalExtentView) {
       if (partialPlan.getToken( nodeKey) != null) {
+        return true;
+      }
+    } else if (partialPlanView instanceof TokenNetworkView) {
+      if ((partialPlan.getToken( nodeKey) != null) ||
+          (partialPlan.getRuleInstance( nodeKey) != null)) {
         return true;
       }
     } else if (partialPlanView instanceof TimelineView) {
@@ -205,6 +209,7 @@ public class AskNodeByKey extends JDialog {
       if ((partialPlan.getToken( nodeKey) != null) ||
           (partialPlan.getVariable( nodeKey) != null) ||
           (partialPlan.getConstraint( nodeKey) != null) ||
+          (partialPlan.getRuleInstance( nodeKey) != null) ||
           (partialPlan.getObject(nodeKey) != null)) {
         return true;
       }

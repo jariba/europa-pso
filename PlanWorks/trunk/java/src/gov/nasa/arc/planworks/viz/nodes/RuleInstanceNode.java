@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNode.java,v 1.1 2004-06-10 19:11:06 taylor Exp $
+// $Id: RuleInstanceNode.java,v 1.2 2004-06-14 22:11:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -90,9 +90,9 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
 
     this.backgroundColor = backgroundColor;
 
-    StringBuffer labelBuf = new StringBuffer( "rule key=");
+    StringBuffer labelBuf = new StringBuffer( "rule ");
     labelBuf.append( ruleInstance.getRuleId().toString());
-    labelBuf.append( "\ninst key=");
+    labelBuf.append( "\nkey=");
     labelBuf.append( ruleInstance.getId().toString());
     nodeLabel = labelBuf.toString();
     // System.err.println( "RuleInstanceNode: " + nodeLabel);
@@ -138,9 +138,9 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
   public String getToolTipText() {
     if (partialPlanView.getZoomFactor() > 1) {
       StringBuffer tip = new StringBuffer( "<html> ");
-      tip.append( "rule key=");
+      tip.append( "rule ");
       tip.append( ruleInstance.getRuleId().toString());
-      tip.append( "<br>inst key=");
+      tip.append( "<br>key=");
       tip.append( ruleInstance.getId().toString());
       tip.append( "</html>");
       return tip.toString();
@@ -156,9 +156,9 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    */
   public String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html> ");
-    tip.append( "rule key=");
+    tip.append( "rule ");
     tip.append( ruleInstance.getRuleId().toString());
-    tip.append( "<br>inst key=");
+    tip.append( "<br>key=");
     tip.append( ruleInstance.getId().toString());
     tip.append( "</html>");
     return tip.toString();

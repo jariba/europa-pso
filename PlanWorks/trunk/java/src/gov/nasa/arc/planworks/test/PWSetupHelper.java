@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PWSetupHelper.java,v 1.8 2004-06-10 18:50:44 miatauro Exp $
+// $Id: PWSetupHelper.java,v 1.9 2004-06-14 22:11:23 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -31,10 +31,11 @@ import gov.nasa.arc.planworks.db.impl.PwPlanningSequenceImpl;
 import gov.nasa.arc.planworks.db.impl.PwPartialPlanImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceTransactionImpl;
+import gov.nasa.arc.planworks.db.impl.PwRuleImpl;
+import gov.nasa.arc.planworks.db.impl.PwRuleInstanceImpl;
 import gov.nasa.arc.planworks.db.impl.PwSlotImpl;
 import gov.nasa.arc.planworks.db.impl.PwTimelineImpl;
 import gov.nasa.arc.planworks.db.impl.PwTokenImpl;
-//import gov.nasa.arc.planworks.db.impl.PwTokenRelationImpl;
 import gov.nasa.arc.planworks.db.impl.PwVariableImpl;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
@@ -67,6 +68,7 @@ public abstract class PWSetupHelper {
   public static final int NUM_VARS_PER_TOKEN = 6;
   public static final int NUM_VARS_PER_RESOURCE = 4;
   public static final int NUM_VARS_PER_RESOURCE_TRANS = 5;
+  public static final int NUM_VARS_PER_RULE_INSTANCE = 2;
   public static final int NUM_CONSTRAINTS_PER_TOKEN = 1;
   public static final int NUM_CONSTRAINTS_PER_RESOURCE = 0;
 
@@ -178,16 +180,6 @@ public abstract class PWSetupHelper {
                           objectsBuffer.toString());
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_PARTIAL_PLAN_EXT,
                           partialPlan.toOutputString());
-    
-    //TokenRelation table has been removed
-    //StringBuffer tokenRelationsBuffer = new StringBuffer();
-    //Iterator tokenRelationsItr = partialPlan.getTokenRelationList().iterator();
-    //while (tokenRelationsItr.hasNext()) {
-    //  tokenRelationsBuffer.append( ((PwTokenRelationImpl) tokenRelationsItr.next()).
-    //                               toOutputString());
-    //}
-    //writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_TOKEN_RELATIONS_EXT,
-    //                      tokenRelationsBuffer.toString());
     StringBuffer tokensBuffer = new StringBuffer();
     Iterator tokensItr = partialPlan.getTokenList().iterator();
     while (tokensItr.hasNext()) {
@@ -211,9 +203,15 @@ public abstract class PWSetupHelper {
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_RESOURCE_INSTANTS_EXT,
                           "");
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_DECISIONS_EXT,
-                          "");
+                          "");    
+    StringBuffer ruleInstancesBuffer = new StringBuffer();
+    Iterator ruleInstancesItr = partialPlan.getRuleInstanceList().iterator();
+    while (ruleInstancesItr.hasNext()) {
+      ruleInstancesBuffer.append( ((PwRuleInstanceImpl) ruleInstancesItr.next()).
+                                   toOutputString());
+    }
     writePartialPlanFile( partialPlanUrl, partialPlanName, DbConstants.PP_RULE_INSTANCE_EXT,
-                           "");
+                           ruleInstancesBuffer.toString());
     return partialPlan;
   } // end createPartialPlan
 
@@ -369,6 +367,7 @@ public abstract class PWSetupHelper {
     boolean isFirstMerge = true;
     int time = 0, timeIncrement = 20;
     Integer previousTokenId = null, previousSlotId = null;
+    Integer ruleId = new Integer( idSource.incEntityIdInt());
     for (int i = 0; i < numTokens; i++) {
       int tokenInt = idSource.incEntityIdInt();
       if (isFirst) { isFirst = false; } else { tokenIds.append( ","); }
@@ -450,7 +449,7 @@ public abstract class PWSetupHelper {
         addToken( tokenId, isValueToken, slotId, "predicate" +
                   String.valueOf( tokenInt), startVarId, endVarId, durationVarId,
                   stateVarId, objectVarId, parentId, paramVarIds, tokenInfo,
-                  partialPlan, planSequence, stepNum, previousTokenId, idSource);
+                  partialPlan, planSequence, stepNum, previousTokenId, idSource, ruleId);
         List variablesList = new ArrayList();
         variablesList.add( startVarId); variablesList.add( endVarId);
         variablesList.add( durationVarId);
@@ -552,27 +551,24 @@ public abstract class PWSetupHelper {
                                 final Integer slotId, final String predicateName,
                                 final Integer startVarId, final Integer endVarId, 
                                 final Integer durationVarId, final Integer stateVarId, 
-                                final Integer objectVarId, final Integer parentId, 
+                                final Integer objectVarId, final Integer parentId,
                                 final String paramVarIds, final String tokenInfo,
                                 final PwPartialPlanImpl partialPlan,
                                 final PwPlanningSequenceImpl planSequence,
                                 final int stepNum, final Integer previousTokenId,
-                                final IdSource idSource) {
-    //String tokenRelationIds = null;
-    //Integer tokenRelationId = null;
-    //if (previousTokenId != null) {
-    //  tokenRelationId = new Integer( idSource.incEntityIdInt());
-    //  tokenRelationIds = String.valueOf( tokenRelationId);
-    //}
-    Integer ruleInstanceId = null; //dummy value until this code is fixed
+                                final IdSource idSource, Integer ruleId) {
+    Integer ruleInstanceId = null;
+    if (previousTokenId != null) {
+      ruleInstanceId = new Integer( idSource.incEntityIdInt());
+    }
     new PwTokenImpl( id, isValueToken, slotId, predicateName,
                      startVarId, endVarId, durationVarId,
                      stateVarId, objectVarId, parentId,
                      ruleInstanceId, paramVarIds, tokenInfo, partialPlan);
-    //if (previousTokenId != null) {
-    //  addTokenRelation( tokenRelationId, previousTokenId, id,
-    //                    DbConstants.TOKEN_RELATION_TYPE, partialPlan);
-    //}
+    if (previousTokenId != null) {
+      addRuleInstance( ruleInstanceId, ruleId, previousTokenId, String.valueOf( id),
+                       partialPlan, planSequence, stepNum, idSource);
+    }
     addTransaction( DbConstants.TOKEN_CREATED, new Integer( idSource.incEntityIdInt()),
                     DbConstants.SOURCE_UNKNOWN, id, new Integer( stepNum),
                     partialPlan.getId(), null, planSequence);
@@ -584,8 +580,9 @@ public abstract class PWSetupHelper {
                                              final PwPartialPlanImpl partialPlan,
                                              final PwPlanningSequenceImpl planSequence,
                                              final int stepNum, final IdSource idSource) {
-    PwVariableImpl variable = new PwVariableImpl( id, type, constraintIds, parameterNames,
-                                                  parentId, domain, partialPlan);
+    PwVariableImpl variable = new PwVariableImpl( id, type, parentId, domain, partialPlan);
+    variable.addParameter( (String) parameterNames.get( 0));
+
     partialPlan.addVariable( id, variable);
     String [] info = new String [] { type, "variable" + id.toString(), "" };
     if (type.equals( DbConstants.PARAMETER_VAR)) {
@@ -597,13 +594,31 @@ public abstract class PWSetupHelper {
     return variable;
   } // end addVariable
 
-//  private static void addTokenRelation( final Integer id, final Integer tokenAId,
-//                                        final Integer tokenBId, final String type,
-//                                        final PwPartialPlanImpl partialPlan) {
-//    partialPlan.addTokenRelation( id,
-//                                  new PwTokenRelationImpl( id, tokenAId, tokenBId,
-//                                                           type, partialPlan));
-//  } // end addTokenRelation
+ private static void addRuleInstance( final Integer id, final Integer ruleId,
+                                      final Integer masterId, final String slaveIds,
+                                      final PwPartialPlanImpl partialPlan,
+                                      final PwPlanningSequenceImpl planSequence,
+                                      final int stepNum, final IdSource idSource) {
+   StringBuffer ruleVarIds = new StringBuffer();
+   int enumValue = 1;
+   boolean isFirst = true;
+   for (int i = 0; i < NUM_VARS_PER_RULE_INSTANCE; i++) {
+     List constraintIds = new ArrayList();
+     List parameterNames = new ArrayList(); parameterNames.add( "member");
+     Integer ruleVarId = new Integer( idSource.incEntityIdInt());
+     if (isFirst) { isFirst = false; } else { ruleVarIds.append( ","); }
+     ruleVarIds.append( ruleVarId.toString());
+     addVariable( ruleVarId, DbConstants.MEMBER_VAR, constraintIds,
+                  parameterNames, ruleId,
+                  new PwEnumeratedDomainImpl( String.valueOf( enumValue)),
+                  partialPlan, planSequence, stepNum, idSource);
+     enumValue += 1;
+   }
+
+   partialPlan.addRuleInstance( id,
+                                 new PwRuleInstanceImpl( id, ruleId, masterId, slaveIds,
+                                                         ruleVarIds.toString(), partialPlan));
+ } // end addRuleInstance
 
   private static PwConstraintImpl addConstraint( final String name, final Integer id,
                                                  final String type, final List variableIds,

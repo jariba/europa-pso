@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.46 2004-06-10 01:36:12 taylor Exp $
+// $Id: planViz.txt,v 1.47 2004-06-14 22:11:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -310,24 +310,21 @@ Method:
 Post-conditions:
   1. Method:6 - All variable containing nodes: interval tokens and resource transactions
      (rectangles); resources (pinched/peaked rectangles); timelines (forward
-     trapezoids); and objects (backward trapezoids) appear in the Constraint Network 
-     View.  Variable nodes ("pinched" rectangles) and constraint nodes (left/right pointed 
-     rectangles) are linked to the variable containing nodes "opened".  
-     Interval token node labels consist of the predicate name and the token key value.
-     Mouse cursor over interval token nodes displays "predicateName( parameterValues)" 
-     on the first line, its slot key value on the second line, and "Mouse-L: open/close" 
-     on the third line.  The second line is absent for the other variable containing nodes.
-     Variable node labels consist of the variable value and the variable key value.  
-     Mouse cursor over variable nodes displays "variableType" on the first line, 
-     and "Mouse-L: open/close" on the second line, for all variable types except
-     PARAMETER_VAR and OBJECT_VAR.  Mouse cursor over PARAMETER_VAR type variable
-     nodes displays "variableType: parameterVariableName" on the first line, and
-     "Mouse-L: open/close" on the second line.  Mouse cursor over OBJECT_VAR type 
-     variable nodes displays "variableType" on the first line, "objectName: objectId" 
-     on the second and subsequent lines for each of 1 to n objects, and
-     "Mouse-L: open/close" on the last line.  
-     Constraint node labels consist of the constraint name and the constraint key value.
-     Mouse cursor over constraint nodes displays "constraintType" on the first 
+     trapezoids); objects (backward trapezoids); and rule instances (ellipses)  appear in
+     the Constraint Network View.  Variable nodes ("pinched" rectangles) and constraint
+     nodes (left/right pointed rectangles) are linked to the variable containing nodes
+     "opened".  Node labels consist of the node name and the node key value.
+     Mouse cursor over interval token nodes displays "predicateName ( parameterValues)"
+     on the first line, its slot key value on the second line, and
+     "Mouse-L: open/close" on the third line.  The second line is absent for the other
+     variable containing nodes.  Variable node labels consist of the variable value and 
+     the variable key value.  Mouse cursor over variable nodes displays "variableType:
+     variableName" on the first line, and "Mouse-L: open/close" on the second line, for
+     all variable types except OBJECT_VAR. Mouse cursor over OBJECT_VAR type variable
+     nodes displays "variableType" on the first line, "value: <value>" on the second and
+     subsequent lines for each of 1 to n objects, and "Mouse-L: open/close" on the last
+     line.  Constraint node labels consist of the constraint name and the constraint key
+     value.  Mouse cursor over constraint nodes displays "constraintType" on the first 
      line, and "Mouse-L: open/close" on the second line, if the constraint is not unary.
   2. All slotted and free interval token nodes appear in the Temporal Extent View
      as temporal nodes.  Temporal node labels consist of the predicate name and the 
@@ -346,13 +343,13 @@ Post-conditions:
      Free token labels consist of the predicate name, and the token key value.  The
      mouse cursor over free token nodes displays the free token's
      "predicateName( parameterValues)".
-  4. Interval tokens (slotted and free) and resource transactions appear as nodes, 
-     with "master roots" in the Token Network View.  Interval token node labels consist
-     of the predicate name and the key value.  Resource transaction node labels consist 
-     of the transaction name and the key value.  Mouse cursor over interval token nodes 
+  4. Interval tokens (slotted and free), resource transactions, abd rule instances appear
+     as nodes, with interval tokens as "master roots" in the Token Network View.  Node
+     labels consist of the name and the key value.  Mouse cursor over interval token nodes 
      displays "predicateName( parameterValues)", and the second line displays its 
      slot key, if the token is slotted.  Mouse cursor over resource transaction nodes 
-     displays the transaction name and argument.
+     displays the transaction name and argument.  The rule instance nodes have no
+     mouse over "tool tip text".
   5. Transaction entries appear in the DBTransaction View.  All transaction
      entries have values for TX_KEY, TRANSACTION_NAME, SOURCE, OBJ_KEY, and
      OBJ_NAME.  Entries with TRANSACTION_NAMEs of VARIABLE_* have values for 
@@ -429,8 +426,8 @@ Method:
  14. In the Timeline View, Mouse-Right click on the background and select
      "Enable Auto Snap". Then move the mouse cursor over slots, and free tokens.
      (empty slots are not recognized)
- 15. In the Token Network, Mouse-Right click on rule instance nodes and select
-     "Open Rule Instance View".
+ 15. In the Token Network, Mouse-Right click on several rule instance nodes, selecting
+     "Open Rule Instance View" for each.
  16. In the Token Network, Mouse-Right click on the background and select
      "Close Rule Instance Views".
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.67 2004-06-10 19:11:06 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.68 2004-06-14 22:11:25 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -715,7 +715,7 @@ public class ConstraintNetworkView extends PartialPlanView {
   /**
    * <code>addVariableNodes</code>
    *
-   * @param tokenNode - <code>TokenNode</code> - 
+   * @param parentNode - <code>VariableContainerNode</code> - 
    * @return - <code>boolean</code> - 
    */
   public boolean addVariableNodes( VariableContainerNode parentNode) { 
@@ -740,7 +740,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
     }
     return areNodesChanged;
-  } // end addVariableNodes( TokenNode tokenNode)
+  } // end addVariableNodes( VariableContainerNode parentNode)
 
   /**
    * <code>addConstraintNodes</code>
@@ -1565,9 +1565,9 @@ public class ConstraintNetworkView extends PartialPlanView {
      * @param nodeKey - <code>Integer</code> - 
      */
     public void findAndSelectNodeKey( Integer nodeKey) {
+      boolean isByKey = true;
       PwToken tokenToFind = partialPlan.getToken( nodeKey);
       if (tokenToFind != null) {
-        boolean isByKey = true;
         findAndSelectContainer( tokenToFind, isByKey);
       } 
       else {
@@ -1581,12 +1581,18 @@ public class ConstraintNetworkView extends PartialPlanView {
             findAndSelectConstraint( constraintToFind);
           }
           else {
-            PwObject objToFind = partialPlan.getObject(nodeKey);
-            if(objToFind != null) {
-              findAndSelectContainer(objToFind, true);
-            } else {
-              System.err.println( "ConstaintNetworkView.findAndSelectNodeKey: nodeKey " +
-                                  nodeKey.toString() + " not found");
+            PwRuleInstance ruleInstanceToFind = partialPlan.getRuleInstance( nodeKey);
+            if (ruleInstanceToFind != null) {
+              findAndSelectContainer( ruleInstanceToFind, isByKey);
+            }
+            else {
+              PwObject objToFind = partialPlan.getObject(nodeKey);
+              if(objToFind != null) {
+                findAndSelectContainer(objToFind, isByKey);
+              } else {
+                System.err.println( "ConstaintNetworkView.findAndSelectNodeKey: nodeKey " +
+                                    nodeKey.toString() + " not found");
+              }
             }
           }
         }

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.101 2004-06-10 19:11:04 taylor Exp $
+# $Id: README,v 1.102 2004-06-14 22:11:22 taylor Exp $
 #
 
 SUMMARY
@@ -27,7 +27,8 @@ o The Token Network View handling of rules has been revised:
     node in the Token Network View;
   - Mouse-Right: "Close Rule Instance Views" on the view background has been added.
 
-o
+o Rule Instance nodes, which have variables, now appear rendered as ovals in the
+  Constraint Network View.
 
 o  GNATS PRs and CRs completed:
 
