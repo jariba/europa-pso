@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.23 2004-04-22 19:26:18 taylor Exp $
+// $Id: DbConstants.java,v 1.24 2004-04-30 21:48:40 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -96,11 +96,19 @@ public interface DbConstants {
 
   public static final String PP_RESOURCE_INSTANTS_EXT = "instants";
 
+  public static final String SEQ_COL_SEP = "0x1e";
+ 
+  public static final String SEQ_LINE_SEP = "0x1f";
+
   public static final String SEQ_PP_STATS = "partialPlanStats";
 
   public static final String SEQ_FILE = "sequence";
   
   public static final String SEQ_TRANSACTIONS = "transactions";
+
+  public static final String SEQ_RULES = "rules";
+
+  public static final String SEQ_RULES_MAP = "rulesMap";
 
   public static final String SEQ_MODEL_PATH = "modelUrl";
 
@@ -121,7 +129,8 @@ public interface DbConstants {
 
 
   public static final String [] SEQUENCE_FILES =  new String [] { SEQ_PP_STATS, SEQ_FILE, 
-                                                                  SEQ_TRANSACTIONS};
+                                                                  SEQ_TRANSACTIONS, SEQ_RULES,
+                                                                  SEQ_RULES_MAP};
 
   public static final int NUMBER_OF_SEQ_FILES = SEQUENCE_FILES.length;
     
@@ -251,7 +260,18 @@ public interface DbConstants {
    *
    */
   public static final String PROPOGATION_ENDED = "PROPOGATION_ENDED";
-
+  
+  public static final String TT_CREATION = "CREATION";
+  public static final String TT_DELETION = "DELETION";
+  public static final String TT_ADDITION = "ADDITION";
+  public static final String TT_REMOVAL = "REMOVAL";
+  public static final String TT_CLOSURE = "CLOSURE";
+  public static final String TT_RESTRICTION = "RESTRICTION";
+  public static final String TT_RELAXATION = "RELAXATION";
+  public static final String TT_EXECUTION = "EXECUTION";
+  public static final String TT_SPECIFICATION = "SPECIFICATION";
+  public static final String TT_UNDO = "UNDO";
+  
 
   public static final String TBL_CONSTRAINT = "VConstraint";
   public static final String TBL_CONSTVARMAP = "ConstraintVarMap";
@@ -264,10 +284,14 @@ public interface DbConstants {
   public static final String TBL_VARIABLE = "Variable";
   public static final String TBL_TRANSACTION = "Transaction";
   public static final String TBL_INSTANTS = "ResourceInstants";
+  public static final String TBL_RULES = "Rules";
+  public static final String TBL_RULE_TOKEN_MAP = "RuleTokenMap";
+  public static final String TBL_PP_STATS = "PartialPlanStats";
 
   public static final String [] PW_DB_TABLES = new String [] {
     TBL_PARTIALPLAN, TBL_OBJECT, TBL_TOKEN, TBL_VARIABLE, TBL_CONSTRAINT, TBL_TOKENREL,
-    TBL_CONSTVARMAP, TBL_TRANSACTION, TBL_SEQUENCE, TBL_PROJECT, TBL_INSTANTS};
+    TBL_CONSTVARMAP, TBL_TRANSACTION, TBL_SEQUENCE, TBL_PROJECT, TBL_INSTANTS, TBL_RULES,
+    TBL_RULE_TOKEN_MAP, TBL_PP_STATS};
 
   // number of numeric characters in a type long value
   public static final int LONG_INT_LENGTH = 13;
