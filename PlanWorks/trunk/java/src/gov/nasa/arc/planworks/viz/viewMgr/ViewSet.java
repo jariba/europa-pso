@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.27 2003-09-10 01:10:22 miatauro Exp $
+// $Id: ViewSet.java,v 1.28 2003-09-16 19:29:13 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -23,6 +23,7 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIWindowBar;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
+import gov.nasa.arc.planworks.util.ColorStream;
 import gov.nasa.arc.planworks.viz.views.VizView;
 import gov.nasa.arc.planworks.viz.views.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.views.temporalExtent.TemporalExtentView;
@@ -47,6 +48,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   private ViewSetRemover remover;
   private String planName;
   private MDIInternalFrame contentSpecWindow;
+  private ColorStream colorStream;
 
   /**
    * Creates the ViewSet object, creates a new ContentSpec, and creates storage for the new views.
@@ -71,6 +73,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     contentPane.add(new ContentSpecWindow(this.contentSpecWindow, contentSpec));
     this.contentSpecWindow.pack();
     this.contentSpecWindow.setVisible(true);
+    this.colorStream = new ColorStream();
   }
 
   /**
@@ -228,4 +231,9 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
   }
   public void add(JButton button) {
   }
+
+  public ColorStream getColorStream() {
+    return colorStream;
+  }
+
 }

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.9 2003-09-05 16:52:41 miatauro Exp $
+// $Id: VariableNode.java,v 1.10 2003-09-16 19:29:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,6 +12,7 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -56,7 +57,6 @@ public class VariableNode extends BasicNode {
 
   private PwVariable variable;
   private TokenNode tokenNode;
-  private int objectCnt;
   private boolean isFreeToken;
   private VizView vizView;
   private String nodeLabel;
@@ -77,17 +77,16 @@ public class VariableNode extends BasicNode {
    * @param variable - <code>PwVariable</code> - 
    * @param tokenNode - <code>TokenNode</code> - 
    * @param variableLocation - <code>Point</code> - 
-   * @param objectCnt - <code>int</code> - 
+   * @param backgroundColor - <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param vizView - <code>VizView</code> - 
    */
   public VariableNode( PwVariable variable, TokenNode tokenNode, Point variableLocation, 
-                       int objectCnt, boolean isFreeToken, boolean isDraggable,
+                       Color backgroundColor, boolean isFreeToken, boolean isDraggable,
                        VizView vizView) { 
     super();
     this.variable = variable;
-    this.objectCnt = objectCnt;
     this.isFreeToken = isFreeToken;
     this.vizView = vizView;
     tokenNodeList = new ArrayList();
@@ -112,22 +111,15 @@ public class VariableNode extends BasicNode {
     }
     // System.err.println( "VariableNode: " + nodeLabel);
 
-    configure( variableLocation, isDraggable);
+    configure( variableLocation, backgroundColor, isDraggable);
   } // end constructor
 
-  private final void configure( Point variableLocation, boolean isDraggable) {
+  private final void configure( Point variableLocation, Color backgroundColor,
+                                boolean isDraggable) {
     boolean isRectangular = false;
     setLabelSpot( JGoObject.Center);
     initialize( variableLocation, nodeLabel, isRectangular);
-    String backGroundColor = null;
-    if (isFreeToken) {
-      backGroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
-    } else {
-      backGroundColor = ((objectCnt % 2) == 0) ?
-        ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
-        ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
-    }
-    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
+    setBrush( JGoBrush.makeStockBrush( backgroundColor));  
     getLabel().setEditable( false);
     setDraggable( isDraggable);
     // do not allow user links

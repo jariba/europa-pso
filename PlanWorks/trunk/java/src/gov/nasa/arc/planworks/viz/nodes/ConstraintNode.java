@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.9 2003-09-05 16:52:40 miatauro Exp $
+// $Id: ConstraintNode.java,v 1.10 2003-09-16 19:29:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -12,6 +12,7 @@
 
 package gov.nasa.arc.planworks.viz.nodes;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +63,6 @@ public class ConstraintNode extends BasicNode {
 
   private PwConstraint constraint;
   private VariableNode variableNode;
-  private int objectCnt;
   private boolean isFreeToken;
   private VizView vizView;
   private String nodeLabel;
@@ -82,18 +82,17 @@ public class ConstraintNode extends BasicNode {
    * @param constraint - <code>PwConstraint</code> - 
    * @param variableNode - <code>VariableNode</code> - 
    * @param constraintLocation - <code>Point</code> - 
-   * @param objectCnt - <code>int</code> - 
+   * @param backgroundColor- <code>Color</code> - 
    * @param isFreeToken - <code>boolean</code> - 
    * @param isDraggable - <code>boolean</code> - 
    * @param vizView - <code>VizView</code> - 
    */
   public ConstraintNode( PwConstraint constraint, VariableNode variableNode,
-                         Point constraintLocation, int objectCnt, boolean isFreeToken,
-                         boolean isDraggable, VizView vizView) { 
+                         Point constraintLocation, Color backgroundColor,
+                         boolean isFreeToken, boolean isDraggable, VizView vizView) { 
     super();
     this.constraint = constraint;
     this.variableNode = variableNode;
-    this.objectCnt = objectCnt;
     this.isFreeToken = isFreeToken;
     this.vizView = vizView;
     variableNodeList = new ArrayList();
@@ -118,22 +117,14 @@ public class ConstraintNode extends BasicNode {
     hasBeenVisited = false;
     resetNode( false);
 
-    configure( constraintLocation, isDraggable);
+    configure( constraintLocation, backgroundColor, isDraggable);
   } // end constructor
 
-  private final void configure( Point constraintLocation, boolean isDraggable) {
+  private final void configure( Point constraintLocation, Color backgroundColor,
+                                boolean isDraggable) {
     setLabelSpot( JGoObject.Center);
     initialize( constraintLocation, nodeLabel);
-    // 
-    String backGroundColor = null;
-    if (isFreeToken) {
-      backGroundColor = ViewConstants.FREE_TOKEN_BG_COLOR;
-    } else {
-      backGroundColor = ((objectCnt % 2) == 0) ?
-        ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
-        ViewConstants.ODD_OBJECT_SLOT_BG_COLOR;
-    }
-    setBrush( JGoBrush.makeStockBrush( ColorMap.getColor( backGroundColor)));  
+    setBrush( JGoBrush.makeStockBrush( backgroundColor));  
     getLabel().setEditable( false);
     setDraggable( isDraggable);
     // do not allow user links
@@ -236,15 +227,6 @@ public class ConstraintNode extends BasicNode {
     return constraint;
   }
 
-  /**
-   * <code>getObjectCnt</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public int getObjectCnt() {
-    return objectCnt;
-  }
- 
   /**
    * <code>getVizView</code>
    *

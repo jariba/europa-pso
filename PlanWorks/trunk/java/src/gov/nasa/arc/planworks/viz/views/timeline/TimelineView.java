@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.39 2003-09-15 23:47:19 taylor Exp $
+// $Id: TimelineView.java,v 1.40 2003-09-16 19:29:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.views.timeline;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -258,7 +259,7 @@ public class TimelineView extends VizView {
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
-    int objectCnt = 0;
+    int timelineCnt = 0;
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
       String objectName = object.getName();
@@ -271,35 +272,37 @@ public class TimelineView extends VizView {
         if (isTimelineInContentSpec( timeline)) {
           String timelineName = timeline.getName();
           String timelineNodeName = objectName + " : " + timelineName;
+          Color timelineColor = viewSet.getColorStream().getColor( timelineCnt);
           TimelineNode timelineNode =
             new TimelineNode( timelineNodeName, timeline, new Point( x, y),
-                              objectCnt, this);
+                              timelineColor, this);
           tmpTimelineNodeList.add( timelineNode);
           // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
           jGoDocument.addObjectAtTail( timelineNode);
           timelineNode.setSize( timelineNodeWidth,
                                 (int) timelineNode.getSize().getHeight());
           x += timelineNode.getSize().getWidth(); 
-          createSlotNodes( timeline, timelineNode, x, y, objectCnt);
+          createSlotNodes( timeline, timelineNode, x, y, timelineColor);
           y += ViewConstants.TIMELINE_VIEW_Y_DELTA; 
         }
+        timelineCnt += 1;
       }
-      objectCnt += 1;
     }
     y += ViewConstants.TIMELINE_VIEW_Y_INIT;
     List freeTokenList = partialPlan.getFreeTokenList();
     // System.err.println( "freeTokenList " + freeTokenList);
     Iterator freeTokenItr = freeTokenList.iterator();
     boolean isFreeToken = true, isDraggable = false;
-    objectCnt = -1;
+    Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
     while (freeTokenItr.hasNext()) {
       PwToken freeToken = (PwToken) freeTokenItr.next();
       if (isTokenInContentSpec( freeToken))  {
         // increment by half the label width, since x is center, not left edge
         x = x +  SwingUtilities.computeStringWidth( this.getFontMetrics(),
                                                     freeToken.getPredicate().getName()) / 2;
-        TokenNode freeTokenNode = new TokenNode( freeToken, new Point( x, y), objectCnt,
-                                                 isFreeToken, isDraggable, this);
+        TokenNode freeTokenNode = new TokenNode( freeToken, new Point( x, y),
+                                                 backgroundColor, isFreeToken,
+                                                 isDraggable, this);
         freeTokenNodeList.add( freeTokenNode);
         jGoDocument.addObjectAtTail( freeTokenNode);
         x = x + (int) freeTokenNode.getSize().getWidth();
@@ -309,7 +312,7 @@ public class TimelineView extends VizView {
   } // end createTimelineAndSlotNodes
 
   private void createSlotNodes( PwTimeline timeline, TimelineNode timelineNode,
-                                int x, int y, int objectCnt) {
+                                int x, int y, Color backgroundColor) {
     computeTimeIntervalLabelSize( timeline);
 
     List slotList = timeline.getSlotList();
@@ -334,7 +337,7 @@ public class TimelineView extends VizView {
             (token != null) && isTokenInContentSpec( token)) {
           String slotNodeLabel = getSlotNodeLabel( token, slot, isLastSlot);
           slotNode = new SlotNode( slotNodeLabel, slot, new Point( x, y), previousSlotNode,
-                                   isFirstSlot, isLastSlot, objectCnt, this);
+                                   isFirstSlot, isLastSlot, backgroundColor, this);
           timelineNode.addToSlotNodeList( slotNode);
           // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
           jGoDocument.addObjectAtTail( slotNode);

@@ -1,12 +1,12 @@
 General questions/comments:
 1. How would I add another view?
-2. How can I disable some views?
+2. How can I disable some views? (configure file ?)
 3. What if I wanted to customize or change a view? Could I?
 4. One could imagine a generic graph navigation model that would allow navigation of the whole partial plan in one view. May be a stupid idea.
 5. What is .place-holder for?
 
 PlanWorks:
-1. renderView - invokes open<ViewName> with a fixed patter and a fixed set of views hard-coded.
+1. renderView - invokes open<ViewName> with a fixed pattern and a fixed set of views hard-coded.
 2. menu handling - could we factor out common patterns for dyanmica menu bar handling. For example, the code in buildViewSubMenu
 3. Is MySQLDB required for import? Could not find a reference - happy to see :-)
 4. Note that this is quite a large file.
