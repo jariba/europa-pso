@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.17 2003-07-09 16:50:48 miatauro Exp $
+// $Id: ViewSet.java,v 1.18 2003-07-15 23:06:23 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -169,12 +169,11 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    * Closes all of the views in the ViewSet.
    */
   public void close() {
-    Collection viewSet = views.values();
-    Iterator viewIterator = viewSet.iterator();
+    Object [] viewSet = views.values().toArray();
     try
       {
-        while(viewIterator.hasNext()) {
-          ((MDIInternalFrame)viewIterator.next()).setClosed(true);
+        for(int i = 0; i < viewSet.length; i++) {
+          ((MDIInternalFrame)viewSet[i]).setClosed(true);
         }
         contentSpecWindow.setClosed(true);
       }

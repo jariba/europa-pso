@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.32 2003-07-12 01:36:30 taylor Exp $
+// $Id: PlanWorks.java,v 1.33 2003-07-15 23:06:11 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -269,6 +269,7 @@ public class PlanWorks extends MDIDesktopFrame {
     deleteProjectItem.addActionListener( new ActionListener() {
         public void actionPerformed( ActionEvent e) {
           PlanWorks.planWorks.deleteProjectThread();
+          Thread.yield();
         }});
     projectMenu.add( deleteProjectItem);
     projectMenu.addSeparator();
@@ -789,7 +790,7 @@ public class PlanWorks extends MDIDesktopFrame {
         if(PwProject.listProjects().size() == 0) {
           dynamicMenuBar.remove(partialPlanMenu);
         }
-        //dynamicMenuBar.validate();
+        dynamicMenuBar.validate();
         dynamicMenuBar.repaint();
         return partialPlanMenu;
       }
