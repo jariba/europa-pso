@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.31 2003-09-23 21:54:20 miatauro Exp $
+// $Id: ViewSet.java,v 1.32 2003-09-25 21:29:10 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JButton;
 
@@ -39,19 +40,21 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.ContentSpecWindow;
  * A class to manage the views associated with a partial plan.
  */
 
-//maybe the hashmap should be changed.  is that much flexibility really necessary?
-//the MDIWindowBar is just for the notifyDeleted method
+//implements MDIWindowBar for the notifyDeleted method
 public class ViewSet implements RedrawNotifier, MDIWindowBar {
   private MDIDesktopFrame desktopFrame;
   private HashMap views;
+  //private List views;
   private ContentSpec contentSpec;
-  private PwPartialPlan partialPlan;
+  //private PwPartialPlan partialPlan;
+  private ViewableObject viewable;
   private ViewSetRemover remover;
-  private String planName;
+  //private String planName;
   private MDIInternalFrame contentSpecWindow;
-  private ColorStream colorStream;
-  private PwToken activeToken; // in timeline view, the base token
-  private List secondaryTokens; // in timeline view, the overloaded tokens
+  private Object [] constructorArgs;
+  //private ColorStream colorStream;
+  //private PwToken activeToken; // in timeline view, the base token
+  //private List secondaryTokens; // in timeline view, the overloaded tokens
 
   /**
    * Creates the ViewSet object, creates a new ContentSpec, and creates storage for the new views.
@@ -61,98 +64,123 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
    *                 partial plans.
    * @param remover the interface which is responsible for removing entire ViewSets.
    */
-  public ViewSet(MDIDesktopFrame desktopFrame, PwPartialPlan partialPlan, String planName, 
-                 ViewSetRemover remover) {
-    this.views = new HashMap();
-    this.partialPlan = partialPlan;
-    this.planName = planName;
+  public ViewSet(MDIDesktopFrame desktopFrame,/* PwPartialPlan partialPlan*/ViewableObject viewable,
+                 /*String planName,*/ ViewSetRemover remover) {
+    this.views = new HashMap();//new LinkedList(); 
+    //this.partialPlan = partialPlan;
+    this.viewable = viewable;
+    //this.planName = planName;
     this.remover = remover;
     this.desktopFrame = desktopFrame;
-    this.contentSpec = new ContentSpec(partialPlan, this);
-    this.contentSpecWindow = 
-      desktopFrame.createFrame("Content specification for ".concat(planName), this, true, false,
-                               false, true);
-    Container contentPane = this.contentSpecWindow.getContentPane();
-    contentPane.add(new ContentSpecWindow(this.contentSpecWindow, contentSpec));
-    this.contentSpecWindow.pack();
-    this.contentSpecWindow.setVisible(true);
-    this.colorStream = new ColorStream();
-    this.activeToken = null;
+    /*content spec specified in PartialPlanViewSet and SequenceViewSet*/
+    //this.contentSpec = new ContentSpec(viewable, this);
+    this.contentSpec = null;
+    constructorArgs = new Object[2];
+    constructorArgs[0] = this;
+    constructorArgs[1] = viewable;
+    //this.contentSpecWindow = 
+    //  desktopFrame.createFrame("Content specification for " + viewable.getName(), this, true, false,
+    //                          false, true);
+    //Container contentPane = this.contentSpecWindow.getContentPane();
+    //contentPane.add(new ContentSpecWindow(this.contentSpecWindow, contentSpec));
+    //this.contentSpecWindow.pack();
+    //this.contentSpecWindow.setVisible(true);
+    //this.colorStream = new ColorStream();
+    //this.activeToken = null;
   }
 
-  /**
-   * Opens a new TimelineView, stuffs it in an MDIInternalFrame, adds it to the hash of frames,
-   * then returns it.  If a TimelineView already exists for this partial plan, returns that.
-   * @return MDIInternalFrame the frame containing the vew.
-   */
-  public MDIInternalFrame openTimelineView( long startTimeMSecs) {
-    if(viewExists(ViewManager.TIMELINE_VIEW)) {
-      return (MDIInternalFrame) views.get(ViewManager.TIMELINE_VIEW);
+  public MDIInternalFrame openView(String viewName) {
+    Class viewClass = Class.forName(viewName);
+    if(viewExists(viewClass)) {
+      return getViewByClass(viewClass);
     }
-    MDIInternalFrame timelineViewFrame = 
-      desktopFrame.createFrame("Timeline view of ".concat(planName), this, true, true, true, true);
-    views.put(ViewManager.TIMELINE_VIEW, timelineViewFrame);
-    Container contentPane = timelineViewFrame.getContentPane();
-    contentPane.add(new TimelineView(partialPlan, startTimeMSecs, this));
-    return timelineViewFrame;
+    Constructor [] constructors = viewClass.getDeclaredConstructors();
+    MDIInternalFrame viewFrame = desktopFrame.createFrame(viewName + " view of " + planName,
+                                                          this, true, true, true, true);
+    views.put(viewClass, viewFrame);
+    Container contentPane = viewFrame.getContentPane();
+    VizView view = constructors[0].newInstance(constructorArgs);
+    contentPane.add(view);
+    return viewFrame;
   }
 
-  /**
-   * Opens a new TokenNetworkView, stuffs it in an MDIInternalFrame, adds it to the hash
-   * of frames, then returns it.  If a TokenNetworkView already exists for this partial
-   * plan, returns that.
-   * @return MDIInternalFrame the frame containing the vew.
-   */
-  public MDIInternalFrame openTokenNetworkView( long startTimeMSecs) {
-    if(viewExists(ViewManager.TNET_VIEW)) {
-      return (MDIInternalFrame) views.get(ViewManager.TNET_VIEW);
-    }
-    MDIInternalFrame tokenNetworkViewFrame = 
-      desktopFrame.createFrame("Token Network view of ".concat(planName), this, true, true,
-                               true, true);
-    views.put(ViewManager.TNET_VIEW, tokenNetworkViewFrame);
-    Container contentPane = tokenNetworkViewFrame.getContentPane();
-    contentPane.add(new TokenNetworkView(partialPlan, startTimeMSecs, this));
-    return tokenNetworkViewFrame;
+  private MDIInternalFrame getViewByClass(Class viewClass) {
+    return (MDIInternalFrame) views.get(viewClass);
   }
 
-  /**
-   * Opens a new TemporalExtentView, stuffs it in an MDIInternalFrame, adds it to the hash
-   * of frames, then returns it.  If a TemporalExtentView already exists for this partial
-   * plan, returns that.
-   * @return MDIInternalFrame the frame containing the vew.
-   */
-  public MDIInternalFrame openTemporalExtentView( long startTimeMSecs) {
-    if(viewExists(ViewManager.TEMPEXT_VIEW)) {
-      return (MDIInternalFrame) views.get(ViewManager.TEMPEXT_VIEW);
-    }
-    MDIInternalFrame temporalExtentViewFrame = 
-      desktopFrame.createFrame("Temporal Extent view of ".concat(planName), this, true, true,
-                               true, true);
-    views.put(ViewManager.TEMPEXT_VIEW, temporalExtentViewFrame);
-    Container contentPane = temporalExtentViewFrame.getContentPane();
-    contentPane.add(new TemporalExtentView(partialPlan, startTimeMSecs, this));
-    return temporalExtentViewFrame;
-  }
+//   /**
+//    * Opens a new TimelineView, stuffs it in an MDIInternalFrame, adds it to the hash of frames,
+//    * then returns it.  If a TimelineView already exists for this partial plan, returns that.
+//    * @return MDIInternalFrame the frame containing the vew.
+//    */
+//   public MDIInternalFrame openTimelineView( long startTimeMSecs) {
+//     if(viewExists(ViewManager.TIMELINE_VIEW)) {
+//       return (MDIInternalFrame) views.get(ViewManager.TIMELINE_VIEW);
+//     }
+//     MDIInternalFrame timelineViewFrame = 
+//       desktopFrame.createFrame("Timeline view of ".concat(planName), this, true, true, true, true);
+//     views.put(ViewManager.TIMELINE_VIEW, timelineViewFrame);
+//     Container contentPane = timelineViewFrame.getContentPane();
+//     contentPane.add(new TimelineView(partialPlan, startTimeMSecs, this));
+//     return timelineViewFrame;
+//   }
 
-  /**
-   * Opens a new ConstraintNetworkView, stuffs it in an MDIInternalFrame, adds it to the hash
-   * of frames, then returns it.  If a ConstraintNetworkView already exists for this partial
-   * plan, returns that.
-   * @return MDIInternalFrame the frame containing the vew.
-   */
-  public MDIInternalFrame openConstraintNetworkView( long startTimeMSecs) {
-    if(viewExists(ViewManager.CNET_VIEW)) {
-      return (MDIInternalFrame) views.get(ViewManager.CNET_VIEW);
-    }
-    MDIInternalFrame constraintNetworkViewFrame = 
-      desktopFrame.createFrame("Constraint Network view of ".concat(planName), this, true, true,
-                               true, true);
-    views.put(ViewManager.CNET_VIEW, constraintNetworkViewFrame);
-    Container contentPane = constraintNetworkViewFrame.getContentPane();
-    contentPane.add(new ConstraintNetworkView(partialPlan, startTimeMSecs, this));
-    return constraintNetworkViewFrame;
-  }
+//   /**
+//    * Opens a new TokenNetworkView, stuffs it in an MDIInternalFrame, adds it to the hash
+//    * of frames, then returns it.  If a TokenNetworkView already exists for this partial
+//    * plan, returns that.
+//    * @return MDIInternalFrame the frame containing the vew.
+//    */
+//   public MDIInternalFrame openTokenNetworkView( long startTimeMSecs) {
+//     if(viewExists(ViewManager.TNET_VIEW)) {
+//       return (MDIInternalFrame) views.get(ViewManager.TNET_VIEW);
+//     }
+//     MDIInternalFrame tokenNetworkViewFrame = 
+//       desktopFrame.createFrame("Token Network view of ".concat(planName), this, true, true,
+//                                true, true);
+//     views.put(ViewManager.TNET_VIEW, tokenNetworkViewFrame);
+//     Container contentPane = tokenNetworkViewFrame.getContentPane();
+//     contentPane.add(new TokenNetworkView(partialPlan, startTimeMSecs, this));
+//     return tokenNetworkViewFrame;
+//   }
+
+//   /**
+//    * Opens a new TemporalExtentView, stuffs it in an MDIInternalFrame, adds it to the hash
+//    * of frames, then returns it.  If a TemporalExtentView already exists for this partial
+//    * plan, returns that.
+//    * @return MDIInternalFrame the frame containing the vew.
+//    */
+//   public MDIInternalFrame openTemporalExtentView( long startTimeMSecs) {
+//     if(viewExists(ViewManager.TEMPEXT_VIEW)) {
+//       return (MDIInternalFrame) views.get(ViewManager.TEMPEXT_VIEW);
+//     }
+//     MDIInternalFrame temporalExtentViewFrame = 
+//       desktopFrame.createFrame("Temporal Extent view of ".concat(planName), this, true, true,
+//                                true, true);
+//     views.put(ViewManager.TEMPEXT_VIEW, temporalExtentViewFrame);
+//     Container contentPane = temporalExtentViewFrame.getContentPane();
+//     contentPane.add(new TemporalExtentView(partialPlan, startTimeMSecs, this));
+//     return temporalExtentViewFrame;
+//   }
+
+//   /**
+//    * Opens a new ConstraintNetworkView, stuffs it in an MDIInternalFrame, adds it to the hash
+//    * of frames, then returns it.  If a ConstraintNetworkView already exists for this partial
+//    * plan, returns that.
+//    * @return MDIInternalFrame the frame containing the vew.
+//    */
+//   public MDIInternalFrame openConstraintNetworkView( long startTimeMSecs) {
+//     if(viewExists(ViewManager.CNET_VIEW)) {
+//       return (MDIInternalFrame) views.get(ViewManager.CNET_VIEW);
+//     }
+//     MDIInternalFrame constraintNetworkViewFrame = 
+//       desktopFrame.createFrame("Constraint Network view of ".concat(planName), this, true, true,
+//                                true, true);
+//     views.put(ViewManager.CNET_VIEW, constraintNetworkViewFrame);
+//     Container contentPane = constraintNetworkViewFrame.getContentPane();
+//     contentPane.add(new ConstraintNetworkView(partialPlan, startTimeMSecs, this));
+//     return constraintNetworkViewFrame;
+//   }
 
   //  public void addViewFrame(MDIInternalFrame viewFrame) {
   // if(!views.contains(viewFrame)) {
@@ -168,23 +196,26 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     if(views.containsValue(viewFrame)) {
       Container contentPane = viewFrame.getContentPane();
       for(int i = 0; i < contentPane.getComponentCount(); i++) {
-        if(contentPane.getComponent(i) instanceof TimelineView) {
-          views.remove(ViewManager.TIMELINE_VIEW);
-        } else if(contentPane.getComponent(i) instanceof TokenNetworkView) {
-          views.remove(ViewManager.TNET_VIEW);
-        } else if(contentPane.getComponent(i) instanceof TemporalExtentView) {
-          views.remove(ViewManager.TEMPEXT_VIEW);
-        } else if(contentPane.getComponent(i) instanceof ConstraintNetworkView) {
-          views.remove(ViewManager.CNET_VIEW);
+        if(contentPane.getComponent(i) instanceof VizView) {
+          views.remove(contentPane.getComponent(i).getClass());
         }
+//         if(contentPane.getComponent(i) instanceof TimelineView) {
+//           views.remove(ViewManager.TIMELINE_VIEW);
+//         } else if(contentPane.getComponent(i) instanceof TokenNetworkView) {
+//           views.remove(ViewManager.TNET_VIEW);
+//         } else if(contentPane.getComponent(i) instanceof TemporalExtentView) {
+//           views.remove(ViewManager.TEMPEXT_VIEW);
+//         } else if(contentPane.getComponent(i) instanceof ConstraintNetworkView) {
+//           views.remove(ViewManager.CNET_VIEW);
+//         }
       }
     }
     if(views.isEmpty()) {
-      try {contentSpecWindow.setClosed(true);}
-      catch(PropertyVetoException pve){}
-      remover.removeViewSet(partialPlan);
-      System.err.println("Saving content spec...");
-      partialPlan.setContentSpec(contentSpec.getCurrentSpec());
+      //try {contentSpecWindow.setClosed(true);}
+      //catch(PropertyVetoException pve){}
+      remover.removeViewSet(viewable);
+      //System.err.println("Saving content spec...");
+      //partialPlan.setContentSpec(contentSpec.getCurrentSpec());
     }
   }
   /**
@@ -203,12 +234,14 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       }
     }
   }
-  public List getValidTokenIds() {
-    return contentSpec.getValidTokenIds();
-  }
-  public void printSpec() {
-    contentSpec.printSpec();
-  }
+  //public List getValidTokenIds() {
+  //  return contentSpec.getValidTokenIds();
+  //}
+  public abstract List getValidIds();
+
+  //public void printSpec() {
+  //  contentSpec.printSpec();
+  //}
   /**
    * Closes all of the views in the ViewSet.
    */
@@ -229,59 +262,61 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
    * @return boolean whether or not the view exists.
    */
   public boolean viewExists(String viewName) {
-    return views.containsKey(viewName);
+    //return views.containsKey(viewName);
+    return views.containsKey(Class.forName(viewName));
   }
   
   public void notifyDeleted(MDIFrame frame) {
     removeViewFrame((MDIInternalFrame) frame);
   }
-  public void add(JButton button) {
-  }
 
-  /**
-   * <code>getColorStream</code> - manages timeline colors
-   *
-   * @return - <code>ColorStream</code> - 
-   */
-  public ColorStream getColorStream() {
-    return colorStream;
-  }
+   public void add(JButton button) {
+   }
 
-  /** 
-   * <code>getActiveToken</code> - user selected view focus
-   *
-   * @return - <code>PwToken</code>
-   */
-  public PwToken getActiveToken() {
-    return activeToken;
-  }
+//    /**
+//     * <code>getColorStream</code> - manages timeline colors
+//     *
+//     * @return - <code>ColorStream</code> - 
+//     */
+//    public ColorStream getColorStream() {
+//      return colorStream;
+//    }
 
-  /**
-   * <code>setActiveToken</code> - make this token the view focus
-   *
-   * @param token - <code>PwToken</code>
-   */
-  public void setActiveToken( PwToken token) {
-    activeToken = token;
-  }
+//   /** 
+//    * <code>getActiveToken</code> - user selected view focus
+//    *
+//    * @return - <code>PwToken</code>
+//    */
+//   public PwToken getActiveToken() {
+//     return activeToken;
+//   }
 
-  /**
-   * <code>getSecondaryTokens</code> - in timeline view, the overloaded tokens
-   *
-   * @return - <code>List</code> - 
-   */
-  public List getSecondaryTokens() {
-    return secondaryTokens;
-  }
+//   /**
+//    * <code>setActiveToken</code> - make this token the view focus
+//    *
+//    * @param token - <code>PwToken</code>
+//    */
+//   public void setActiveToken( PwToken token) {
+//     activeToken = token;
+//   }
 
-  /**
-   * <code>setSecondaryTokens</code> - in timeline view, the overloaded tokens
-   *
-   * @param tokenList - <code>List</code> 
-   */
-  public void setSecondaryTokens( List tokenList) {
-    secondaryTokens = tokenList;
-  }
+//   /**
+//    * <code>getSecondaryTokens</code> - in timeline view, the overloaded tokens
+//    *
+//    * @return - <code>List</code> - 
+//    */
+//   public List getSecondaryTokens() {
+//     return secondaryTokens;
+//   }
+
+//   /**
+//    * <code>setSecondaryTokens</code> - in timeline view, the overloaded tokens
+//    *
+//    * @param tokenList - <code>List</code> 
+//    */
+//   public void setSecondaryTokens( List tokenList) {
+//     secondaryTokens = tokenList;
+//   }
 
 
 }

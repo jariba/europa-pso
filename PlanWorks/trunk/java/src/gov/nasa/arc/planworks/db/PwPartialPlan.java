@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.17 2003-09-23 21:53:36 miatauro Exp $
+// $Id: PwPartialPlan.java,v 1.18 2003-09-25 21:27:47 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,6 +15,7 @@ package gov.nasa.arc.planworks.db;
 
 import java.util.List;
 
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 /**
  * <code>PwPartialPlan</code> - 
@@ -23,7 +24,7 @@ import java.util.List;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public interface PwPartialPlan {
+public interface PwPartialPlan extends ViewableObject {
 
   /**
    * <code>getUrl</code>
@@ -138,5 +139,7 @@ public interface PwPartialPlan {
   public abstract void setContentSpec(List spec);
 
   public abstract List getContentSpec();
+
+  public abstract String getName();
   
 } // end interface PwPartialPlan

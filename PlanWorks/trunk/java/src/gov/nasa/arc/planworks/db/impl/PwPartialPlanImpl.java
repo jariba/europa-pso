@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.42 2003-09-23 21:53:45 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.43 2003-09-25 21:27:56 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -40,6 +40,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
 /**
@@ -49,7 +50,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class PwPartialPlanImpl implements PwPartialPlan {
+public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
 
   private String url; 
   private Integer projectId;
@@ -57,6 +58,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
   private String model;
   private String name;
+  private String seqName;
   private Long id; // PartialPlan id
   private Map objectMap; // key = attribute id, value = PwObjectImpl instance
   private Map timelineMap; // key = attribute id, value = PwTimelineImpl instance
@@ -91,6 +93,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
+    this.seqName = url.substring(url.lastIndexOf(System.getProperty("file.separator"))).concat("/").concat(name);
     contentSpec = new ArrayList();
     this.name = planName;
     createPartialPlan(sequenceId);
@@ -820,6 +823,10 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   
   public List getContentSpec() {
     return new ArrayList(contentSpec);
+  }
+
+  public String getName() {
+    return seqName;
   }
 
 } // end class PwPartialPlanImpl
