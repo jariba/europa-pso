@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.23 2003-07-15 23:14:19 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.24 2003-07-16 23:25:24 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -414,6 +414,10 @@ return object;*/
 
   // END IMPLEMENT PwPartialPlan INTERFACE 
     
+
+  public boolean tokenExists(Integer key) {
+    return tokenMap.containsKey(key);
+  }
 
   /**
    * <code>addConstraint</code>
