@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.22 2003-07-02 23:04:41 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.23 2003-07-02 23:18:04 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -157,8 +157,7 @@ public class PwProjectImpl extends PwProject {
     planningSequences = new ArrayList();
     
     //ResultSet sequences = MySQLDB.queryDatabase("SELECT (Sequence.SequenceURL, Sequence.SequenceId) FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
-    ResultSet sequences = MySQLDB.queryDatabase("SELECT Sequence.SequenceURL, ProjectSequenceMap.SequenceId FROM Sequence, ProjectSequenceMap WHERE ProjectSequenceMap.ProjectId=".concat(key.toString()).concat(" && Sequence.SequenceId=ProjectSequenceMap.SequenceId"));
-    //    ResultSet sequences = MySQLDB.queryDatabase("SELECT SequenceURL, SequenceId FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
+    ResultSet sequences = MySQLDB.queryDatabase("SELECT SequenceURL, SequenceId FROM Sequence WHERE ProjectId=".concat(this.key.toString()));
     while(sequences.next()) {
       planningSequences.add(new PwPlanningSequenceImpl(sequences.getString("SequenceURL"),
                                                        new Integer(sequences.getInt("SequenceId")),
@@ -222,8 +221,13 @@ public class PwProjectImpl extends PwProject {
   } // end getPlanningSequence
 
   public PwPlanningSequence addPlanningSequence(String url) 
-    throws ResourceNotFoundException, SQLException {
+    throws DuplicateNameException, ResourceNotFoundException, SQLException {
     PwPlanningSequenceImpl retval = null;
+    ResultSet dupCheck = MySQLDB.queryDatabase("SELECT * FROM Sequence WHERE SequenceURL='".concat(url).concat("'"));
+    dupCheck.last();
+    if(dupCheck.getRow() != 0) {
+      throw new DuplicateNameException("Sequence at " + url + " already in database.");
+    }
     planningSequences.add(retval = new PwPlanningSequenceImpl(url, this, new PwModelImpl()));
     return retval;
   }
@@ -240,14 +244,14 @@ public class PwProjectImpl extends PwProject {
 
     try {
       ResultSet sequenceIds = 
-        MySQLDB.queryDatabase("SELECT SequenceId FROM ProjectSequenceMap WHERE ProjectId=".concat(key.toString()));
+        MySQLDB.queryDatabase("SELECT SequenceId FROM Sequence WHERE ProjectId=".concat(key.toString()));
       while(sequenceIds.next()) {
         Integer sequenceId = new Integer(sequenceIds.getInt("SequenceId"));
         ResultSet partialPlanIds =
           MySQLDB.queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
         while(partialPlanIds.next()) {
           Long partialPlanId = new Long(partialPlanIds.getLong("PartialPlanId"));
-          MySQLDB.updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()).concat();
+          MySQLDB.updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()));
           MySQLDB.updateDatabase("DELETE FROM Timeline WHERE PartialPlanId=".concat(partialPlanId.toString()));
           MySQLDB.updateDatabase("DELETE FROM Slot WHERE PartialPlanId=".concat(partialPlanId.toString()));
           MySQLDB.updateDatabase("DELETE FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
