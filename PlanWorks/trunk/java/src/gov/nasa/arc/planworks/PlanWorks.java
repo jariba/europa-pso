@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.23 2003-07-02 22:49:57 taylor Exp $
+// $Id: PlanWorks.java,v 1.24 2003-07-02 23:02:07 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -328,9 +328,8 @@ public class PlanWorks extends MDIDesktopFrame {
         return null;
       }
       try {
-        // check for duplicate project name
         if (PwProject.listProjects().indexOf( inputName) >= 0) {
-          throw new ResourceNotFoundException( "A project named '" + inputName +
+          throw new DuplicateNameException( "A project named '" + inputName +
                                                "' already exists.");
         }
         while (true) {
