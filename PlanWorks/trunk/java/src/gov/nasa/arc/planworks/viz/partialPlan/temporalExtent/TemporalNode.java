@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.22 2004-05-28 20:21:21 taylor Exp $
+// $Id: TemporalNode.java,v 1.23 2004-06-10 01:36:06 taylor Exp $
 //
 // PlanWorks
 //
@@ -42,6 +42,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.Extent;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -62,7 +63,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TemporalNode extends BasicNode implements Extent {
+public class TemporalNode extends BasicNode implements Extent, OverviewToolTip {
 
   private static final boolean IS_FONT_BOLD = false;
   private static final boolean IS_FONT_UNDERLINED = false;
@@ -439,7 +440,7 @@ public class TemporalNode extends BasicNode implements Extent {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview temporal node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

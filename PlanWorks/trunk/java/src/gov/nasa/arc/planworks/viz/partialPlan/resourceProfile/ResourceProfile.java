@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.13 2004-03-20 01:00:39 taylor Exp $
+// $Id: ResourceProfile.java,v 1.14 2004-06-10 01:36:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
@@ -181,16 +182,18 @@ public class ResourceProfile extends BasicNode {
     // System.err.println( "profileYOrigin " + profileYOrigin);
     levelScaleWidth = resourceProfileView.getLevelScaleViewWidth() -
       ViewConstants.RESOURCE_LEVEL_SCALE_WIDTH_OFFSET;
-    ResourceView.renderBordersUpper
-      ( resourceProfileView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
+    resourceProfileView.renderBordersUpper
+      ( resource,
+        resourceProfileView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
         resourceProfileView.getJGoRulerView().scaleTimeNoZoom( latestEndTime), currentYLoc,
         resourceProfileView.getJGoExtentDocument());
-    ResourceView.renderBordersUpper
-      ( 0, levelScaleWidth, currentYLoc, resourceProfileView.getJGoLevelScaleDocument());
-    ResourceView.renderResourceName( resource, resourceProfileView.getLevelScaleViewWidth() -
-                                     nodeLabelWidth, currentYLoc,
-                                     resourceProfileView.getJGoLevelScaleDocument(),
-                                     resourceProfileView);
+    resourceProfileView.renderBordersUpper( resource, 0, levelScaleWidth, currentYLoc,
+                                            resourceProfileView.getJGoLevelScaleDocument());
+    resourceProfileView.renderResourceName( resource,
+                                            resourceProfileView.getLevelScaleViewWidth() -
+                                            nodeLabelWidth, currentYLoc,
+                                            resourceProfileView.getJGoLevelScaleDocument(),
+                                            resourceProfileView);
 
     currentYLoc = currentYLoc + ViewConstants.RESOURCE_PROFILE_MAX_Y_OFFSET +
       (int) (2 * ResourceView.Y_MARGIN);
@@ -215,12 +218,13 @@ public class ResourceProfile extends BasicNode {
     renderLevels();
 
     currentYLoc += (int) (2 * ResourceView.Y_MARGIN);
-    ResourceView.renderBordersLower
-      ( resourceProfileView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
+    resourceProfileView.renderBordersLower
+      ( resource,
+        resourceProfileView.getJGoRulerView().scaleTimeNoZoom( earliestStartTime),
         resourceProfileView.getJGoRulerView().scaleTimeNoZoom( latestEndTime), currentYLoc,
         resourceProfileView.getJGoExtentDocument());
-    ResourceView.renderBordersLower
-      ( 0, levelScaleWidth, currentYLoc, resourceProfileView.getJGoLevelScaleDocument());
+    resourceProfileView.renderBordersLower( resource, 0, levelScaleWidth, currentYLoc,
+                                            resourceProfileView.getJGoLevelScaleDocument());
 
     currentYLoc += ViewConstants.RESOURCE_PROFILE_MIN_Y_OFFSET;
     resourceProfileView.setCurrentYLoc( currentYLoc);
@@ -414,7 +418,7 @@ public class ResourceProfile extends BasicNode {
    * <code>ProfileLine</code> - render profile segment as a line
    *
    */
-  public class ProfileLine extends JGoStroke {
+  public class ProfileLine extends JGoStroke implements OverviewToolTip {
 
     private double quantity;
     private String type;
@@ -450,7 +454,7 @@ public class ResourceProfile extends BasicNode {
 
     /**
      * <code>getToolTipText</code>
-     *
+     *                               implements OverviewToolTip
      * @param isOverview - <code>boolean</code> - 
      * @return - <code>String</code> - 
      */

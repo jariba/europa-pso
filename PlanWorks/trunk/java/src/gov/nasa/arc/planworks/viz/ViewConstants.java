@@ -266,7 +266,7 @@ public abstract class ViewConstants {
   // Extended BasicNode Shapes for viz/nodes/ExtendedBasicNode
 
   public static final int RECTANGLE = 0;         // PwToken
-  public static final int ELLIPSE = 1;           // not used - long text goes outside border
+  public static final int ELLIPSE = 1;           // PwRule
   public static final int DIAMOND = 2;           // PwConstraint
   public static final int LEFT_TRAPEZOID = 3;    // PwObject
   public static final int RIGHT_TRAPEZOID = 4;   // PwTimeline
@@ -315,16 +315,14 @@ public abstract class ViewConstants {
   public static final String RESOURCE_PROFILE_VIEW     = "Resource Profile View";
   public static final String RESOURCE_TRANSACTION_VIEW = "Resource Transaction View";
   public static final String DECISION_VIEW             = "Decision View";
+  public static final String RULE_INSTANCE_VIEW                 = "Rule Instance View";
   public static List PARTIAL_PLAN_VIEW_LIST = null;
 
   public static final String SEQUENCE_STEPS_VIEW     = "Sequence Steps View";
-  public static final String OBJECT_TREE_VIEW        = "Object Tree View";
-  public static final String MODEL_RULES_VIEW        = "Model Rules View";
   public static List SEQUENCE_VIEW_LIST = null;
 
   public static final String VIEW_TITLE = "View for ";
   public static final String OVERVIEW_TITLE = "Overview for ";
-  public static final String RULE_VIEW_TITLE = "RuleView for ";
 
   public static final String CONTENT_SPEC_TITLE = "ContentFilter";
   // the next two must be unique as far as String/indexOf()
@@ -344,13 +342,11 @@ public abstract class ViewConstants {
     PARTIAL_PLAN_VIEW_LIST.add( TOKEN_NETWORK_VIEW);
     // not in list, since it is created from nodes in views, not from other views
     // PARTIAL_PLAN_VIEW_LIST.add( NAVIGATOR_VIEW);
+    // not in list, since it is created from nodes in views, not from other views
+    // PARTIAL_PLAN_VIEW_LIST.add( RULE_INSTANCE_VIEW);
 
     SEQUENCE_VIEW_LIST = new ArrayList();
     SEQUENCE_VIEW_LIST.add( SEQUENCE_STEPS_VIEW);
-    // not in list, since it is created by M-R on SequenceStepsView
-    // SEQUENCE_VIEW_LIST.add( OBJECT_TREE_VIEW);
-    // not implemented yet
-    // SEQUENCE_VIEW_LIST.add( MODEL_RULES_VIEW);
 
   }
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNavNode.java,v 1.10 2004-03-20 01:00:39 taylor Exp $
+// $Id: VariableNavNode.java,v 1.11 2004-06-10 01:36:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -31,6 +31,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -45,7 +46,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class VariableNavNode extends ExtendedBasicNode implements NavNode {
+public class VariableNavNode extends ExtendedBasicNode implements NavNode, OverviewToolTip {
 
   private PwVariable variable;
   private NavigatorView navigatorView;
@@ -283,7 +284,7 @@ public class VariableNavNode extends ExtendedBasicNode implements NavNode {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview variable node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

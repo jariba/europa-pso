@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.37 2004-06-08 21:48:51 pdaley Exp $
+// $Id: PwPartialPlan.java,v 1.38 2004-06-10 01:35:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -216,6 +216,13 @@ public interface PwPartialPlan extends ViewableObject {
    */
   public abstract int getStepNumber();
 
+  /**
+   * <code>getSequence</code>
+   *
+   * @return - <code>PwPlanningSequence</code> - 
+   */
+  public abstract PwPlanningSequence getSequence();
+  
   /**
    * <code>getSequenceUrl</code>
    *

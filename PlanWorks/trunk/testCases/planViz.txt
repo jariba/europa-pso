@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.45 2004-06-03 17:33:38 taylor Exp $
+// $Id: planViz.txt,v 1.46 2004-06-10 01:36:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -429,8 +429,10 @@ Method:
  14. In the Timeline View, Mouse-Right click on the background and select
      "Enable Auto Snap". Then move the mouse cursor over slots, and free tokens.
      (empty slots are not recognized)
- 15. In the Token Network, Mouse-Right click on the background and select
-     "Rule Window".  Then move the mouse cursor over token links.
+ 15. In the Token Network, Mouse-Right click on rule instance nodes and select
+     "Open Rule Instance View".
+ 16. In the Token Network, Mouse-Right click on the background and select
+     "Close Rule Instance Views".
 
 Post-conditions:
   1. Method:2 - In turn, each of the views should re-oriented itself to
@@ -469,9 +471,10 @@ Post-conditions:
      follow the movement of the mouse cursor over the Timeline View's non-
      empty slots (base tokens) and free tokens.  If a slot has merged tokens, 
      the merged tokens will be highlighted turquoise.
- 14. Method:15 - The "Rule View for <sequence-name>/step<nn>" will show the "to" 
-     token's predicate and parameter list, its key, and the model rule which is 
-     responsible for its creation.
+ 14. Method:15 - The "Rule Instance View for <sequence-name>/step<nn> - n" will 
+     show the "to" and "from" token predicates and parameter lists, their keys, 
+     and the model rule which is responsible for their creation.
+ 15. Method:16 - All "Rule Instance View"s will be removed.
 
 Requirements: TBD
 

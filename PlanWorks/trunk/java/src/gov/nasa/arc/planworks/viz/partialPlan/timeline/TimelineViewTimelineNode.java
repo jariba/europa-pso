@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineViewTimelineNode.java,v 1.5 2004-05-28 20:21:22 taylor Exp $
+// $Id: TimelineViewTimelineNode.java,v 1.6 2004-06-10 01:36:07 taylor Exp $
 //
 // PlanWorks
 //
@@ -39,6 +39,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
@@ -56,7 +57,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  *        NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TimelineViewTimelineNode extends TextNode {
+public class TimelineViewTimelineNode extends TextNode implements OverviewToolTip {
 
   // top left bottom right
   private static final Insets NODE_INSETS =
@@ -212,7 +213,7 @@ public class TimelineViewTimelineNode extends TextNode {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview token node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

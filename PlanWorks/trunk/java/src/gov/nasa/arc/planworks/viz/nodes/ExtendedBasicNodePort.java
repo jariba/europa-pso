@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNodePort.java,v 1.6 2004-03-02 02:34:12 taylor Exp $
+// $Id: ExtendedBasicNodePort.java,v 1.7 2004-06-10 01:36:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -43,7 +43,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.SlotNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TimelineNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.TokenNavNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.VariableNavNode;
-import gov.nasa.arc.planworks.viz.sequence.modelRules.ParamNode;
+import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.RuleInstanceNode;
 
 
 /**
@@ -105,13 +105,9 @@ public class ExtendedBasicNodePort extends BasicNodePort {
       } else if (node instanceof ConstraintNavNode) {
         ((Diamond) ((ConstraintNavNode) node).getDrawable()).
           getNearestIntersectionPoint( x, y, cx, cy, p);
-      } else if (node instanceof ParamNode) {
-        ((Diamond) ((ParamNode) node).getDrawable()).
-          getNearestIntersectionPoint( x, y, cx, cy, p);
-//       } else if ((node instanceof VariableNode) ||
-//                  (node instanceof VariableNavNode)) {
-//         JGoEllipse.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
-//                                                 rect.height, x, y, p);
+      } else if (node instanceof RuleInstanceNode) {
+        JGoEllipse.getNearestIntersectionPoint( rect.x, rect.y, rect.width,
+                                                rect.height, x, y, p);
       } else if (node instanceof VariableNode) {
         ((PinchedRectangle) ((VariableNode) node).getDrawable()).
           getNearestIntersectionPoint(x, y, cx, cy, p);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.9 2004-03-17 01:45:22 taylor Exp $
+// $Id: ConstraintNavNode.java,v 1.10 2004-06-10 01:36:03 taylor Exp $
 //
 // PlanWorks
 //
@@ -27,6 +27,7 @@ import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
@@ -40,7 +41,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
+public class ConstraintNavNode extends ExtendedBasicNode implements NavNode, OverviewToolTip {
 
   private PwConstraint constraint;
   private NavigatorView navigatorView;
@@ -269,7 +270,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview constraint node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

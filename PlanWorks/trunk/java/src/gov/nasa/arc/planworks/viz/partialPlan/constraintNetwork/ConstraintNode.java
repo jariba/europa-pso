@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.14 2004-05-29 00:31:38 taylor Exp $
+// $Id: ConstraintNode.java,v 1.15 2004-06-10 01:36:03 taylor Exp $
 //
 // PlanWorks
 //
@@ -41,6 +41,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
@@ -58,7 +59,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ConstraintNode extends ExtendedBasicNode {
+public class ConstraintNode extends ExtendedBasicNode implements OverviewToolTip {
 
   private static final boolean IS_FONT_BOLD = false;
   private static final boolean IS_FONT_UNDERLINED = false;
@@ -74,7 +75,6 @@ public class ConstraintNode extends ExtendedBasicNode {
   private String nodeLabel;
   private List variableNodeList; // element VariableNode
   private List constraintVariableLinkList; // element BasicNodeLink
-  //fix me.
   private Map constraintVariableLinkMap;
   private boolean inLayout;
   private boolean isUnaryConstraint;
@@ -285,7 +285,7 @@ public class ConstraintNode extends ExtendedBasicNode {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview constraint node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

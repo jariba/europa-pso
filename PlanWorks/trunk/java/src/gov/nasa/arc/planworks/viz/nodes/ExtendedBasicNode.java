@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ExtendedBasicNode.java,v 1.3 2004-03-16 02:24:09 taylor Exp $
+// $Id: ExtendedBasicNode.java,v 1.4 2004-06-10 01:36:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -36,12 +36,12 @@ import com.nwoods.jgo.examples.BasicNodePort;
 
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
-import gov.nasa.arc.planworks.viz.sequence.modelRules.ParamNode;
 
 
 /**
  * <code>ExtendedBasicNode</code> - subclass BasicNode to handle Diamond,
- *                                  LeftTrapezoid, RightTrapezoid, Triangle
+ *                                  LeftTrapezoid, RightTrapezoid, Hexagon,
+ *                                  PinchedRectangle, PinchedHexagon
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
@@ -116,21 +116,21 @@ public class ExtendedBasicNode extends BasicNode {
    */
   public JGoDrawable createDrawable() {
     JGoDrawable d = null;
-    if (nodeType == ViewConstants.RECTANGLE) {
+    if (nodeType == ViewConstants.RECTANGLE) { // PwToken
       d = new JGoRectangle();
-    } else if (nodeType == ViewConstants.ELLIPSE) {
+    } else if (nodeType == ViewConstants.ELLIPSE) { // PwRule
       d = new JGoEllipse();
-    } else if (nodeType == ViewConstants.DIAMOND) {
+    } else if (nodeType == ViewConstants.DIAMOND) { // PwConstraint
       d = new Diamond();
-    } else if (nodeType == ViewConstants.LEFT_TRAPEZOID) {
+    } else if (nodeType == ViewConstants.LEFT_TRAPEZOID) { // PwObject
       d = new LeftTrapezoid();
-    } else if (nodeType == ViewConstants.RIGHT_TRAPEZOID) {
+    } else if (nodeType == ViewConstants.RIGHT_TRAPEZOID) { // PwTimeline
       d = new RightTrapezoid();
-    } else if (nodeType == ViewConstants.HEXAGON) {
+    } else if (nodeType == ViewConstants.HEXAGON) { // PwSlot
       d = new Hexagon();
-    } else if (nodeType == ViewConstants.PINCHED_RECTANGLE) {
+    } else if (nodeType == ViewConstants.PINCHED_RECTANGLE) {//  PwVariable
       d = new PinchedRectangle();
-    } else if (nodeType == ViewConstants.PINCHED_HEXAGON) {
+    } else if (nodeType == ViewConstants.PINCHED_HEXAGON) { // PwResource
       d = new PinchedHexagon();
     }
     d.setSelectable(false);

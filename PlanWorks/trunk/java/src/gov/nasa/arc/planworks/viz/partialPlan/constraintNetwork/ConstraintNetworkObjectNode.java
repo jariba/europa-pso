@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkObjectNode.java,v 1.9 2004-05-28 20:21:19 taylor Exp $
+// $Id: ConstraintNetworkObjectNode.java,v 1.10 2004-06-10 01:36:01 taylor Exp $
 //
 
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
@@ -48,6 +48,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.ObjectNode;
@@ -59,7 +60,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
-public class ConstraintNetworkObjectNode extends ObjectNode implements VariableContainerNode{
+public class ConstraintNetworkObjectNode extends ObjectNode implements VariableContainerNode, OverviewToolTip {
 
   private Map connectedContainerMap;
   private List variableNodeList;

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.18 2004-03-16 02:24:10 taylor Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.19 2004-06-10 01:36:02 taylor Exp $
 //
 // PlanWorks
 //
@@ -47,6 +47,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
@@ -63,7 +64,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ConstraintNetworkTokenNode extends TokenNode implements VariableContainerNode {
+public class ConstraintNetworkTokenNode extends TokenNode implements VariableContainerNode, OverviewToolTip {
 
   private PwSlot slot;
   private Map connectedContainerMap;
@@ -164,7 +165,7 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview token node
-   *
+   *                               implements OverviewToolTip 
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.30 2004-06-04 23:09:00 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.31 2004-06-10 01:36:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -538,10 +538,6 @@ public class SequenceStepsView extends SequenceView {
   private void mouseRightPopupMenu( final Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
-//     JMenuItem modelRulesViewItem = new JMenuItem( "Open Model Rules View");
-//     createModelRulesViewItem( modelRulesViewItem, this, viewCoords);
-//     mouseRightPopup.add( modelRulesViewItem);
-
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
     mouseRightPopup.add( overviewWindowItem);
@@ -638,22 +634,6 @@ public class SequenceStepsView extends SequenceView {
       });
   } // end createOverviewWindowItem
 
-
-//   private void createModelRulesViewItem( JMenuItem modelRulesViewItem,
-//                                          final SequenceStepsView sequenceStepsView,
-//                                          final Point viewCoords) {
-//     modelRulesViewItem.addActionListener( new ActionListener() { 
-//         public final void actionPerformed( ActionEvent evt) {
-//           String seqName = planSequence.getName();
-//           SequenceViewMenuItem modelRulesItem =
-//             new SequenceViewMenuItem( seqName, planSequence.getUrl(), seqName, viewListener);
-//           Thread thread = new CreateSequenceViewThread(PlanWorks.MODEL_RULES_VIEW,
-//                                                        modelRulesItem);
-//           thread.setPriority( Thread.MIN_PRIORITY);
-//           thread.start();
-//         }
-//       });
-//   } // end createModelRulesViewItem
 
   private void createRefreshItem( JMenuItem refreshItem, 
                                   final SequenceStepsView sequenceStepsView) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.26 2004-06-03 17:33:35 taylor Exp $
+// $Id: VizView.java,v 1.27 2004-06-10 01:35:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -84,7 +84,6 @@ public class VizView extends JPanel {
   protected Font font;
   protected FontMetrics fontMetrics;
   protected VizViewOverview overview;
-  protected VizViewRuleView ruleView;
   protected int zoomFactor;
   protected MDIInternalFrame viewFrame;
 
@@ -102,7 +101,6 @@ public class VizView extends JPanel {
                      ViewConstants.VIEW_FONT_SIZE);
     fontMetrics = null;  // see computeFontMetrics
     overview = null;
-    ruleView = null;
     zoomFactor = 1;
     viewFrame = null;
 
@@ -142,24 +140,6 @@ public class VizView extends JPanel {
    */
   public void setOverview( VizViewOverview overview) {
     this.overview = overview;
-  }
-
-  /**
-   * <code>getRuleView</code>
-   *
-   * @return - <code>VizViewRuleView</code> - 
-   */
-  public VizViewRuleView getRuleView() {
-    return ruleView;
-  }
-
-  /**
-   * <code>setRuleView</code>
-   *
-   * @param view - <code>VizViewRuleView</code> - 
-   */
-  public void setRuleView( VizViewRuleView view) {
-    this.ruleView = view;
   }
 
   /**

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.16 2004-05-04 01:27:18 taylor Exp $
+// $Id: VariableNode.java,v 1.17 2004-06-10 01:36:03 taylor Exp $
 //
 // PlanWorks
 //
@@ -42,6 +42,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
@@ -61,7 +62,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class VariableNode extends ExtendedBasicNode {
+public class VariableNode extends ExtendedBasicNode implements OverviewToolTip {
 
   private static final boolean IS_FONT_BOLD = false;
   private static final boolean IS_FONT_UNDERLINED = false;
@@ -203,7 +204,7 @@ public class VariableNode extends ExtendedBasicNode {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview variable node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.14 2004-06-03 17:33:36 taylor Exp $
+// $Id: ResourceView.java,v 1.15 2004-06-10 01:36:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -43,6 +43,7 @@ import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
@@ -367,7 +368,8 @@ public abstract class ResourceView extends PartialPlanView  {
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + viewName + " elapsed time: " +
                         (stopTimeMSecs -
-                         PlanWorks.getPlanWorks().getViewRenderingStartTime( viewName)) + " msecs.");
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime( viewName)) +
+                        " msecs.");
     startTimeMSecs = 0L;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
@@ -956,14 +958,16 @@ public abstract class ResourceView extends PartialPlanView  {
   /**
    * <code>renderBordersUpper</code>
    *
+   * @param resource - <code>PwResource</code> - 
    * @param xLeft - <code>int</code> - 
    * @param xRight - <code>int</code> - 
    * @param yLoc - <code>int</code> - 
    * @param jGoDocument - <code>JGoDocument</code> - 
    * @return - <code>int</code> - 
    */
-  public static int renderBordersUpper( final int xLeft, final int xRight,
-                                        final int yLoc, final JGoDocument jGoDocument) {
+  public final int renderBordersUpper( final PwResource resource, final int xLeft,
+                                       final int xRight, final int yLoc,
+                                       final JGoDocument jGoDocument) {
     JGoStroke divider = new JGoStroke();
     divider.addPoint( xLeft, yLoc);
     divider.addPoint( xRight, yLoc);
@@ -973,7 +977,7 @@ public abstract class ResourceView extends PartialPlanView  {
     jGoDocument.addObjectAtTail( divider);
 
     int extentYTop = yLoc + ViewConstants.RESOURCE_PROFILE_MAX_Y_OFFSET;
-    JGoStroke extentTop = new JGoStroke();
+    JGoStroke extentTop = new ResourceLine( resource);
     extentTop.addPoint( xLeft, extentYTop);
     extentTop.addPoint( xRight, extentYTop);
     extentTop.setDraggable( false); extentTop.setResizable( false);
@@ -986,15 +990,17 @@ public abstract class ResourceView extends PartialPlanView  {
   /**
    * <code>renderBordersLower</code>
    *
+   * @param resource - <code>PwResource</code> - 
    * @param xLeft - <code>int</code> - 
    * @param xRight - <code>int</code> - 
    * @param yLoc - <code>int</code> - 
    * @param jGoDocument - <code>JGoDocument</code> - 
    */
-  public static void renderBordersLower( final int xLeft, final int xRight,
-                                         final int yLoc, final JGoDocument jGoDocument) {
+  public final void renderBordersLower( final PwResource resource, final int xLeft,
+                                        final int xRight, final int yLoc,
+                                        final JGoDocument jGoDocument) {
     int extentYBottom = yLoc;
-    JGoStroke extentBottom = new JGoStroke();
+    JGoStroke extentBottom = new ResourceLine( resource);
     extentBottom.addPoint( xLeft, extentYBottom);
     extentBottom.addPoint( xRight, extentYBottom);
     extentBottom.setDraggable( false); extentBottom.setResizable( false);
@@ -1009,9 +1015,9 @@ public abstract class ResourceView extends PartialPlanView  {
    * @param yLoc - <code>int</code> - 
    * @param jGoDocument - <code>JGoDocument</code> - 
    */
-  public static void renderResourceName( final PwResource resource, final int nameXOffset,
-                                         final int yLoc, final JGoDocument jGoDocument,
-                                         ResourceView resourceView) {
+  public final void renderResourceName( final PwResource resource, final int nameXOffset,
+                                        final int yLoc, final JGoDocument jGoDocument,
+                                        ResourceView resourceView) {
     int xTop = nameXOffset + (int) (ViewConstants.TIMELINE_VIEW_INSET_SIZE *
                                     ONE_HALF_MULTIPLIER);
     Point nameLoc = new Point( xTop, yLoc + RESOURCE_NAME_Y_OFFSET);
@@ -1025,6 +1031,36 @@ public abstract class ResourceView extends PartialPlanView  {
     resourceView.addResourceNameNode( nameNode);
   } // end renderResourceName
 
+
+  public class ResourceLine extends JGoStroke implements OverviewToolTip {
+
+    private PwResource resource;
+
+    public ResourceLine( final PwResource resource) {
+      super();
+      this.resource = resource;
+    }
+
+    public final String getToolTipText() {
+      return null;
+    } // end getToolTipText
+
+    /**
+     * <code>getToolTipText</code> - implements OverviewToolTip
+     *
+     * @param isOverview - <code>boolean</code> - 
+     * @return - <code>String</code> - 
+     */
+    public final String getToolTipText( final boolean isOverview) {
+    StringBuffer tip = new StringBuffer( "<html> ");
+    tip.append( resource.getName());
+    tip.append( "<br>key=");
+    tip.append( resource.getId().toString());
+    tip.append( "</html>");
+    return tip.toString();
+    } // end getToolTipText
+
+  } // end class ResourceLine
 
 } // end class ResourceView
  

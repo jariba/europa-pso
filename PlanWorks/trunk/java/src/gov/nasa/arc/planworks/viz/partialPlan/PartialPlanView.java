@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.42 2004-06-03 17:33:35 taylor Exp $
+// $Id: PartialPlanView.java,v 1.43 2004-06-10 01:36:01 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -701,7 +701,7 @@ public class PartialPlanView extends VizView {
    */
   public MDIInternalFrame openNavigatorViewFrame( String viewSetKey) {
     String viewName = ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "");
-    String rootNavigatorViewName = viewName + " for " + partialPlan.getName();
+    String rootNavigatorViewName = viewName + " of " + partialPlan.getName();
     int indx = viewSetKey.indexOf( "-") + 1;
     String navigatorViewName =
       rootNavigatorViewName.concat(" - ").concat( viewSetKey.substring( indx));
@@ -714,15 +714,15 @@ public class PartialPlanView extends VizView {
   } // end openNavigatorViewFrame
 
 
-  class NavViewClose implements UnaryFunctor {
+  class ViewClose implements UnaryFunctor {
     private PartialPlanViewSet viewSet;
-    private String navName;
-    public NavViewClose(PartialPlanViewSet viewSet, String navName) {
+    private String viewName;
+    public ViewClose(PartialPlanViewSet viewSet, String viewName) {
       this.viewSet = viewSet;
-      this.navName = navName;
+      this.viewName = viewName;
     }
     public final Object func(Object o) {
-      if(o instanceof String && ((String) o).indexOf(navName) >= 0) {
+      if(o instanceof String && ((String) o).indexOf(viewName) >= 0) {
         MDIInternalFrame viewFrame = 
           (MDIInternalFrame) viewSet.getView(o);
         try {
@@ -733,7 +733,7 @@ public class PartialPlanView extends VizView {
       }
       return o;
     }
-  }
+  } // end class ViewClose
 
 
   /**
@@ -746,12 +746,62 @@ public class PartialPlanView extends VizView {
         public void actionPerformed( ActionEvent evt) {
           String navigatorWindowName = ViewConstants.NAVIGATOR_VIEW.replaceAll( " ", "");
           List windowKeyList = new ArrayList( viewSet.getViews().keySet());
-          CollectionUtils.lMap(new NavViewClose((PartialPlanViewSet) viewSet, navigatorWindowName),
+          CollectionUtils.lMap(new ViewClose((PartialPlanViewSet) viewSet, navigatorWindowName),
                                windowKeyList);
           ((PartialPlanViewSet) viewSet).setNavigatorFrameCnt( 0);
         }
       });
   } // end createCloseNavigatorWindowsItem
+
+
+  /**
+   * <code>getRuleViewSetKey</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public String getRuleViewSetKey() {
+    ((PartialPlanViewSet) viewSet).incrRuleFrameCnt();
+    return new String( ViewConstants.RULE_INSTANCE_VIEW.replaceAll( " ", "") + "-" +
+                       ((PartialPlanViewSet) viewSet).getRuleFrameCnt());
+  }
+
+  /**
+   * <code>openRuleViewFrame</code>
+   *
+   * @return - <code>MDIInternalFrame</code> - 
+   */
+  public MDIInternalFrame openRuleViewFrame( String viewSetKey) {
+    String rootRuleViewName = ViewConstants.RULE_INSTANCE_VIEW.replaceAll( " ", "") +
+      " of " + partialPlan.getName();
+    int indx = viewSetKey.indexOf( "-") + 1;
+    String ruleViewName =
+      rootRuleViewName.concat(" - ").concat( viewSetKey.substring( indx));
+    MDIInternalFrame ruleFrame = 
+      ((MDIDesktopFrame) PlanWorks.getPlanWorks()).createFrame( ruleViewName,
+                                                                viewSet, true, true,
+                                                                true, true);
+    viewSet.getViews().put( viewSetKey, ruleFrame);
+    return ruleFrame;
+  } // end openRuleViewFrame
+
+  /**
+   * <code>createCloseRuleWindowsItem</code>
+   *
+   * @param closeWindowsItem - <code>JMenuItem</code> - 
+   */
+  public void createCloseRuleWindowsItem( JMenuItem closeWindowsItem) {
+    closeWindowsItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          List windowKeyList = new ArrayList( viewSet.getViews().keySet());
+          CollectionUtils.lMap(new ViewClose( (PartialPlanViewSet) viewSet,
+                                              ViewConstants.RULE_INSTANCE_VIEW.
+                                              replaceAll( " ", "")),
+                               windowKeyList);
+          ((PartialPlanViewSet) viewSet).setRuleFrameCnt( 0);
+        }
+      });
+  } // end createCloseRuleWindowsItem
+
 
   /**
    * <code>getTimelineColor</code>

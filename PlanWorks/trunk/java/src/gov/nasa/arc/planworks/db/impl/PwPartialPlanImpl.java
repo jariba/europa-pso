@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.91 2004-06-08 21:48:52 pdaley Exp $
+// $Id: PwPartialPlanImpl.java,v 1.92 2004-06-10 01:35:58 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -30,6 +30,7 @@ import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceInstant;
@@ -1144,6 +1145,15 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   } // end getStepNumber
 
   /**
+   * <code>getSequence</code>
+   *
+   * @return - <code>PwPlanningSequence</code> - 
+   */
+  public PwPlanningSequence getSequence() {
+    return sequence;
+  }
+  
+  /**
    * <code>getSequenceUrl</code>
    *
    * @return - <code>String</code> - 
@@ -1176,13 +1186,27 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     // 3) get the rule instance for this ruleInstanceId
     // 4) get the master token of the rule instance
 
+//     System.err.println( "\ngetMasterTokenId tokenId " + tokenId);
+//     List ruleInstList = new ArrayList( ruleInstanceMap.keySet());
+//     Iterator ruleInstItr = ruleInstList.iterator();
+//     while (ruleInstItr.hasNext()) {
+//       System.err.println( "  ruleInstKey " + (Integer) ruleInstItr.next());
+//     }
+
     PwToken token =  getToken(tokenId);
     if (token == null) {
       System.err.println("tokenId " + tokenId + " has nonexistant Token");
     } else {
+
+//       System.err.println( "RuleInstanceId " + getToken(tokenId).getRuleInstanceId());
+
       Integer ruleInstanceId = token.getRuleInstanceId();
       PwRuleInstance ruleInstance = getRuleInstance(ruleInstanceId); 
       if (ruleInstance != null) {
+
+//         System.err.println( "RuleInstanceMasterId " +
+//                             getRuleInstance( getToken(tokenId).getRuleInstanceId()).getMasterId());
+
         return ruleInstance.getMasterId();
       }
     }

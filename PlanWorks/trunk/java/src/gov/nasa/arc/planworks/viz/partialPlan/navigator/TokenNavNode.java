@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.10 2004-04-22 19:26:24 taylor Exp $
+// $Id: TokenNavNode.java,v 1.11 2004-06-10 01:36:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -35,6 +35,7 @@ import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariableContainer;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
+import gov.nasa.arc.planworks.viz.OverviewToolTip;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.BasicNodeLink;
 import gov.nasa.arc.planworks.viz.nodes.ExtendedBasicNode;
@@ -49,7 +50,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class TokenNavNode extends ExtendedBasicNode implements NavNode {
+public class TokenNavNode extends ExtendedBasicNode implements NavNode, OverviewToolTip {
 
   private PwToken token;
   private PwSlot slot;
@@ -298,7 +299,7 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview token node
-   *
+   *                               implements OverviewToolTip
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
