@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.10 2003-08-06 01:20:14 taylor Exp $
+// $Id: TokenNode.java,v 1.11 2003-08-06 17:11:09 miatauro Exp $
 //
 // PlanWorks
 //
@@ -96,6 +96,9 @@ public class TokenNode extends BasicNode {
     configure( tokenLocation, isDraggable);
   } // end constructor
 
+  public TokenNode() {
+    super();
+  }
   private final void configure( Point tokenLocation, boolean isDraggable) {
     boolean isRectangular = true;
     setLabelSpot( JGoObject.Center);
