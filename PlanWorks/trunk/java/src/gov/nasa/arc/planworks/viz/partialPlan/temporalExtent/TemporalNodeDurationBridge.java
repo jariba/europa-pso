@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNodeDurationBridge.java,v 1.5 2004-03-20 01:00:41 taylor Exp $
+// $Id: TemporalNodeDurationBridge.java,v 1.6 2004-05-08 01:44:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,6 +46,24 @@ public class TemporalNodeDurationBridge extends JGoStroke {
     setDraggable( false);
     setResizable(false);
     setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
+  }
+
+  /**
+   * <code>getMinDurationTime</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getMinDurationTime() {
+    return minDurationTime;
+  }
+
+  /**
+   * <code>getMaxDurationTime</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getMaxDurationTime() {
+    return maxDurationTime;
   }
 
   /**

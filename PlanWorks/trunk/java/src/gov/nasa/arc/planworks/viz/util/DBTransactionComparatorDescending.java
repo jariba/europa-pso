@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionComparatorDescending.java,v 1.1 2004-02-03 20:44:02 taylor Exp $
+// $Id: DBTransactionComparatorDescending.java,v 1.2 2004-05-08 01:44:18 taylor Exp $
 //
 // PlanWorks
 //
@@ -32,9 +32,9 @@ public class DBTransactionComparatorDescending implements Comparator {
       Integer s1 = ((PwDBTransaction) o1).getId();
       Integer s2 = ((PwDBTransaction) o2).getId();
       return s2.compareTo(s1);
-    } else if (field.equals( ViewConstants.DB_TRANSACTION_TYPE_HEADER)) {
-      String s1 = ((PwDBTransaction) o1).getType();
-      String s2 = ((PwDBTransaction) o2).getType();
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_NAME_HEADER)) {
+      String s1 = ((PwDBTransaction) o1).getName();
+      String s2 = ((PwDBTransaction) o2).getName();
       return SortStringComparator.compareTo(s2, s1, isAscending);
     } else if (field.equals( ViewConstants.DB_TRANSACTION_SOURCE_HEADER)) {
       String s1 = ((PwDBTransaction) o1).getSource();
@@ -72,9 +72,9 @@ public class DBTransactionComparatorDescending implements Comparator {
       Integer s1 = ((PwDBTransaction) o1).getId();
       Integer s2 = ((PwDBTransaction) o2).getId();
       return s2.equals(s1);
-    } else if (field.equals( ViewConstants.DB_TRANSACTION_TYPE_HEADER)) {
-      String s1 = ((PwDBTransaction) o1).getType();
-      String s2 = ((PwDBTransaction) o2).getType();
+    } else if (field.equals( ViewConstants.DB_TRANSACTION_NAME_HEADER)) {
+      String s1 = ((PwDBTransaction) o1).getName();
+      String s2 = ((PwDBTransaction) o2).getName();
       return s2.equals(s1);
     } else if (field.equals( ViewConstants.DB_TRANSACTION_SOURCE_HEADER)) {
       String s1 = ((PwDBTransaction) o1).getSource();

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.13 2004-04-22 19:26:21 taylor Exp $
+// $Id: ViewGenerics.java,v 1.14 2004-05-08 01:44:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,6 +46,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
+import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
@@ -68,7 +69,6 @@ import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
-
 
 /**
  * <code>ViewGenerics</code> - generic static methods for view operations
@@ -459,6 +459,41 @@ public class ViewGenerics {
   }
 
 
-      
+  /**
+   * <code>computeTransactionNameHeader</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public static String computeTransactionNameHeader() {
+    List nameList = MySQLDB.queryConstraintTransactionNames();
+    nameList.addAll( MySQLDB.queryTokenTransactionNames());
+    nameList.addAll( MySQLDB.queryVariableTransactionNames());
+    StringBuffer transactionNameHeader =
+      new StringBuffer( ViewConstants.DB_TRANSACTION_NAME_HEADER);
+    int minLength = ViewConstants.DB_TRANSACTION_NAME_HEADER.length();
+    int maxLength = 0;
+    Iterator nameItr = nameList.iterator();
+    while (nameItr.hasNext()) {
+      String name = (String) nameItr.next();
+      if (name.length() > maxLength) {
+        maxLength = name.length();
+      }
+    }
+    if (maxLength > minLength) { 
+      boolean prepend = true;
+      for (int i = 0, n = maxLength - minLength; i < n; i++) {
+        if (prepend) {
+          transactionNameHeader.insert( 0, " ");
+        } else {
+          transactionNameHeader.append( " ");
+        }
+        prepend = (! prepend);
+      }
+    }
+    return transactionNameHeader.toString();
+  } // end computeTransactionNameHeader
+
+
+
 } // end class ViewGenerics 
 

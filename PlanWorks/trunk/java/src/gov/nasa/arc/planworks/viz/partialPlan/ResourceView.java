@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceView.java,v 1.10 2004-05-07 19:54:01 miatauro Exp $
+// $Id: ResourceView.java,v 1.11 2004-05-08 01:44:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -148,7 +148,7 @@ public abstract class ResourceView extends PartialPlanView  {
   private JGoStroke maxLevelViewHeightPoint;
   private Font levelScaleFont;
   private boolean isStepButtonView;
-
+  private String viewName;
 
   /**
    * <code>ResourceView</code> - constructor 
@@ -157,9 +157,11 @@ public abstract class ResourceView extends PartialPlanView  {
    *
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param vSet - <code>ViewSet</code> - 
+   * @param viewName - <code>String</code> - 
    */
-  public ResourceView( final ViewableObject partialPlan, final ViewSet vSet) {
+  public ResourceView( final ViewableObject partialPlan, final ViewSet vSet, final String viewName) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
+    this.viewName = viewName;
     resourceViewInit( vSet);
     isStepButtonView = false;
 
@@ -173,10 +175,12 @@ public abstract class ResourceView extends PartialPlanView  {
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param vSet - <code>ViewSet</code> - 
    * @param state - <code>PartialPlanViewState</code> - 
+   * @param viewName - <code>String</code> - 
    */
   public ResourceView( final ViewableObject partialPlan, final ViewSet vSet, 
-                       final PartialPlanViewState state) {
+                       final PartialPlanViewState state, final String viewName) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
+    this.viewName = viewName;
     resourceViewInit( vSet);
     isStepButtonView = true;
     setState( state);
@@ -189,10 +193,12 @@ public abstract class ResourceView extends PartialPlanView  {
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param vSet - <code>ViewSet</code> - 
    * @param viewListener - <code>ViewListener</code> - 
+   * @param viewName - <code>String</code> - 
    */
   public ResourceView( final ViewableObject partialPlan, final ViewSet vSet,
-                       final ViewListener viewListener) {
+                       final ViewListener viewListener, final String viewName) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
+    this.viewName = viewName;
     resourceViewInit( vSet);
     isStepButtonView = false;
     if (viewListener != null) {
@@ -203,7 +209,6 @@ public abstract class ResourceView extends PartialPlanView  {
   } // end constructor
 
   private void resourceViewInit( final ViewSet vSet) {
-    this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) vSet;
     
     // startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
@@ -221,7 +226,7 @@ public abstract class ResourceView extends PartialPlanView  {
     // for PWTestHelper.findComponentByName
     this.setName( viewFrame.getTitle());
     // create panels/views after fontMetrics available
-   } // end resourceProfileViewInit
+  } // end resourceProfileViewInit
 
   private void createLevelScaleAndExtentPanel() {
     LevelScalePanel levelScalePanel = new LevelScalePanel();
@@ -361,8 +366,10 @@ public abstract class ResourceView extends PartialPlanView  {
     equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
 
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    System.err.println( "   ... " + viewName + " elapsed time: " +
+                        (stopTimeMSecs -
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+    startTimeMSecs = 0L;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
@@ -390,6 +397,10 @@ public abstract class ResourceView extends PartialPlanView  {
 
     public final void run() {
       handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+      System.err.println( "Redrawing " + viewName + " ...");
+      if (startTimeMSecs == 0L) {
+        startTimeMSecs = System.currentTimeMillis();
+      }
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
         boolean isRedraw = true, isScrollBarAdjustment = false;
@@ -405,6 +416,10 @@ public abstract class ResourceView extends PartialPlanView  {
       } finally {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
+      long stopTimeMSecs = System.currentTimeMillis();
+      System.err.println( "   ... " + viewName + " elapsed time: " +
+                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
+      startTimeMSecs = 0L;
       handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } // end run
 

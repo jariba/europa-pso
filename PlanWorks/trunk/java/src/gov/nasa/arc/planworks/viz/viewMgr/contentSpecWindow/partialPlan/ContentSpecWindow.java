@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.11 2004-04-22 19:26:28 taylor Exp $
+// $Id: ContentSpecWindow.java,v 1.12 2004-05-08 01:44:18 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan;
 
@@ -391,7 +391,8 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
         }
         catch(IllegalArgumentException e){return;}
 
-        System.err.println("Applying Filter ...");
+        System.err.println("   Applying Filter ...");
+        long startTimeMSecs = System.currentTimeMillis();
         forceConstraintNetworkViewLayout();
         try {
           List specList = new ArrayList();
@@ -411,7 +412,9 @@ public class ContentSpecWindow extends JPanel implements MouseListener {
           e.printStackTrace();
         }
         scrollViewsToZeroZero();
-        System.err.println("Done applying Filter.");
+        long stopTimeMSecs = System.currentTimeMillis();
+        System.err.println( "      ... elapsed time: " +
+                            (stopTimeMSecs - startTimeMSecs) + " msecs.");
         //specWindow.contentSpec.printSpec();
       }
       else if(ae.getActionCommand().equals("Reset Filter")) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.20 2004-03-03 02:14:21 taylor Exp $
+// $Id: PartialPlanContentSpec.java,v 1.21 2004-05-08 01:44:11 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -415,7 +415,7 @@ public class PartialPlanContentSpec implements ContentSpec {
   public Map getPredicateNames() {
     Map predicates = new HashMap();
     
-    System.err.println("Getting predicate names...");
+    System.err.println("   ... Getting predicate names");
     try {
       ResultSet predicateNames = 
         MySQLDB.queryDatabase(PREDICATENAME_QUERY.concat(partialPlanId.toString()));
@@ -437,7 +437,7 @@ public class PartialPlanContentSpec implements ContentSpec {
   public Map getTimelineNames() {
     HashMap timelines = new HashMap();
     long t1 = System.currentTimeMillis();
-    System.err.println("Getting timeline names...");
+    System.err.println("   ... Getting timeline names");
     try {
       ResultSet timelineNames =
         MySQLDB.queryDatabase(TIMELINENAME_QUERY.concat(partialPlanId.toString()));

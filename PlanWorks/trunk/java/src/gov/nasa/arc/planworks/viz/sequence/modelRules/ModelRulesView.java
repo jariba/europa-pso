@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ModelRulesView.java,v 1.6 2004-05-04 01:27:22 taylor Exp $
+// $Id: ModelRulesView.java,v 1.7 2004-05-08 01:44:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -165,7 +165,6 @@ public class ModelRulesView extends SequenceView {
    *    JGoView.setVisible( true) must be completed -- use runInit in constructor
    */
   public void init() {
-    jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
     // wait for ModelRulesView instance to become displayable
     while (! this.isDisplayable()) {
       try {
@@ -192,7 +191,6 @@ public class ModelRulesView extends SequenceView {
     expandViewFrame( viewSet.openView( this.getClass().getName(), viewListener),
                      (int) jGoView.getDocumentSize().getWidth(),
                      (int) jGoView.getDocumentSize().getHeight());
-    jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
 
@@ -220,7 +218,6 @@ public class ModelRulesView extends SequenceView {
 
   private void renderModelRules( boolean isRedraw) {
     if (isRedraw) {
-      jGoView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
       jGoDocument.deleteContents();
       System.err.println( "Redrawing Model Rules View ...");
       startTimeMSecs = System.currentTimeMillis();
@@ -242,7 +239,6 @@ public class ModelRulesView extends SequenceView {
 
     if (isRedraw) {
       this.setVisible( true);
-      jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
     }
   } // end renderModelRules
 

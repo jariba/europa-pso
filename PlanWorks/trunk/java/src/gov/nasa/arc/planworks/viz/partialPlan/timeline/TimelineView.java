@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.52 2004-05-07 19:54:02 miatauro Exp $
+// $Id: TimelineView.java,v 1.53 2004-05-08 01:44:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -142,7 +142,6 @@ public class TimelineView extends PartialPlanView {
 
   private void timelineViewInit(ViewableObject partialPlan, ViewSet viewSet) {
     this.partialPlan = (PwPartialPlan) partialPlan;
-    this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     ViewListener viewListener = null;
     viewFrame = viewSet.openView( this.getClass().getName(), viewListener);
@@ -218,8 +217,10 @@ public class TimelineView extends PartialPlanView {
       }
 
       long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... TimelineView elapsed time: " +
-                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
+      System.err.println( "   ... " + ViewConstants.TIMELINE_VIEW + " elapsed time: " +
+                          (stopTimeMSecs -
+                           PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+      startTimeMSecs = 0L;
     } else {
       try {
         ViewListener viewListener = null;
@@ -251,6 +252,10 @@ public class TimelineView extends PartialPlanView {
 
     public void run() {
       handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+      System.err.println( "Redrawing Constraint Network View ...");
+      if (startTimeMSecs == 0L) {
+        startTimeMSecs = System.currentTimeMillis();
+      }
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
 
@@ -263,6 +268,10 @@ public class TimelineView extends PartialPlanView {
       } finally {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
+      long stopTimeMSecs = System.currentTimeMillis();
+      System.err.println( "   ... " + ViewConstants.TIMELINE_VIEW + " elapsed time: " +
+                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
+      startTimeMSecs = 0L;
       handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } //end run
 

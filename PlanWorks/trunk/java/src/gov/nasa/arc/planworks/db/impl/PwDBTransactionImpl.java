@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDBTransactionImpl.java,v 1.3 2004-05-04 01:27:12 taylor Exp $
+// $Id: PwDBTransactionImpl.java,v 1.4 2004-05-08 01:44:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -29,7 +29,7 @@ import gov.nasa.arc.planworks.db.PwDBTransaction;
  */
 public class PwDBTransactionImpl implements PwDBTransaction {
 
-  private String type;
+  private String name;
   private Integer transactionId;
   private String source;
   private String [] info;
@@ -38,11 +38,11 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   private Long sequenceId;
   private Long partialPlanId;
 
-  public PwDBTransactionImpl( final String type, final Integer transactionId,
+  public PwDBTransactionImpl( final String name, final Integer transactionId,
                               final String source, final Integer objectId,
                               final Integer stepNumber, final Long sequenceId,
                               final Long partialPlanId) {
-    this.type = type;
+    this.name = name;
     this.transactionId = transactionId;
     this.source = source;
     this.objectId = objectId;
@@ -54,12 +54,12 @@ public class PwDBTransactionImpl implements PwDBTransaction {
 
 
   /**
-   * <code>getType</code>
+   * <code>getName</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getType() {
-    return type;
+  public String getName() {
+    return name;
   }
 
   /**
@@ -124,8 +124,8 @@ public class PwDBTransactionImpl implements PwDBTransaction {
   }
   
   public String toOutputString() {
-    StringBuffer retval = new StringBuffer(type); retval.append("\t");
-    retval.append(getTypeCategory(type)).append("\t");
+    StringBuffer retval = new StringBuffer(name); retval.append("\t");
+    retval.append(getTransactionType(name)).append("\t");
     retval.append(objectId).append("\t").append(source).append("\t");
     retval.append(transactionId).append("\t").append(stepNumber).append("\t").append(sequenceId);
     retval.append("\t").append(partialPlanId).append("\t");
@@ -136,34 +136,34 @@ public class PwDBTransactionImpl implements PwDBTransaction {
     return retval.toString();
   }
 
-  private String getTypeCategory( String type) {
-    String typeCategory = null;
-    if (findElementInStringArray( DbConstants.TT_CREATION_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_CREATION;
-    } else if (findElementInStringArray( DbConstants.TT_DELETION_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_DELETION;
-    } else if (findElementInStringArray( DbConstants.TT_ADDITION_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_ADDITION;
-    } else if (findElementInStringArray( DbConstants.TT_REMOVAL_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_REMOVAL;
-    } else if (findElementInStringArray( DbConstants.TT_CLOSURE_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_CLOSURE;
-    } else if (findElementInStringArray( DbConstants.TT_RESTRICTION_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_RESTRICTION;
-    } else if (findElementInStringArray( DbConstants.TT_RELAXATION_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_RELAXATION;
-    } else if (findElementInStringArray( DbConstants.TT_EXECUTION_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_EXECUTION;
-    } else if (findElementInStringArray( DbConstants.TT_SPECIFICATION_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_SPECIFICATION;
-    } else if (findElementInStringArray( DbConstants.TT_UNDO_TYPES, type) != null) {
-      typeCategory = DbConstants.TT_UNDO;
+  private String getTransactionType( String name) {
+    String transactionType = null;
+    if (findElementInStringArray( DbConstants.TT_CREATION_NAMES, name) != null) {
+      transactionType = DbConstants.TT_CREATION;
+    } else if (findElementInStringArray( DbConstants.TT_DELETION_NAMES, name) != null) {
+      transactionType = DbConstants.TT_DELETION;
+    } else if (findElementInStringArray( DbConstants.TT_ADDITION_NAMES, name) != null) {
+      transactionType = DbConstants.TT_ADDITION;
+    } else if (findElementInStringArray( DbConstants.TT_REMOVAL_NAMES, name) != null) {
+      transactionType = DbConstants.TT_REMOVAL;
+    } else if (findElementInStringArray( DbConstants.TT_CLOSURE_NAMES, name) != null) {
+      transactionType = DbConstants.TT_CLOSURE;
+    } else if (findElementInStringArray( DbConstants.TT_RESTRICTION_NAMES, name) != null) {
+      transactionType = DbConstants.TT_RESTRICTION;
+    } else if (findElementInStringArray( DbConstants.TT_RELAXATION_NAMES, name) != null) {
+      transactionType = DbConstants.TT_RELAXATION;
+    } else if (findElementInStringArray( DbConstants.TT_EXECUTION_NAMES, name) != null) {
+      transactionType = DbConstants.TT_EXECUTION;
+    } else if (findElementInStringArray( DbConstants.TT_SPECIFICATION_NAMES, name) != null) {
+      transactionType = DbConstants.TT_SPECIFICATION;
+    } else if (findElementInStringArray( DbConstants.TT_UNDO_NAMES, name) != null) {
+      transactionType = DbConstants.TT_UNDO;
     }
-    if (typeCategory == null) {
-      System.err.println( "PwDBTransactionImpl.toOutputString.getTypeCategory" +
-                          " returns null for " + type);
+    if (transactionType == null) {
+      System.err.println( "PwDBTransactionImpl.toOutputString.getTransactionType" +
+                          " returns null for transaction name " + name);
     }
-    return typeCategory;
+    return transactionType;
   }
 
   private String findElementInStringArray( String [] stringArray, String element) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.45 2004-05-07 19:54:02 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.46 2004-05-08 01:44:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -72,7 +72,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 /**
  * <code>TemporalExtentView</code> - render the temporal extents of a
- *                partial plan's tokens
+ *                partial plan's slotted and free interval tokens.
+ *                Empty slots are not rendered.
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
@@ -92,9 +93,7 @@ public class TemporalExtentView extends PartialPlanView  {
   private ExtentView jGoExtentView;
   private TimeScaleView jGoRulerView;
   private RulerPanel rulerPanel;
-  // temporalNodeList & tmpTemporalNodeList used by JFCUnit test case
   private List temporalNodeList; // element TemporalNode
-  private List tmpTemporalNodeList; // element TemporalNode
   private int startXLoc;
   private int startYLoc;
   private int maxCellRow;
@@ -150,7 +149,6 @@ public class TemporalExtentView extends PartialPlanView  {
   } // end constructor
 
   private void temporalExtentViewInit(ViewSet viewSet) {
-    this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
 
     startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
@@ -266,8 +264,10 @@ public class TemporalExtentView extends PartialPlanView  {
     }
 
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    System.err.println( "   ... " + ViewConstants.TEMPORAL_EXTENT_VIEW + " elapsed time: " +
+                        (stopTimeMSecs -
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
+    startTimeMSecs = 0L;
     handleEvent(ViewListener.EVT_INIT_ENDED_DRAWING);
   } // end init
 
@@ -294,6 +294,10 @@ public class TemporalExtentView extends PartialPlanView  {
 
     public void run() {
       handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+      System.err.println( "Redrawing Temporal Extent View ...");
+      if (startTimeMSecs == 0L) {
+        startTimeMSecs = System.currentTimeMillis();
+      }
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
         // redraw jGoRulerView, in case zoomFactor changed
@@ -311,7 +315,11 @@ public class TemporalExtentView extends PartialPlanView  {
       } finally {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
-    handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
+      long stopTimeMSecs = System.currentTimeMillis();
+      System.err.println( "   ... elapsed time: " +
+                          (stopTimeMSecs - startTimeMSecs) + " msecs.");
+      startTimeMSecs = 0L;
+      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
     } //end run
 
   } // end class RedrawViewThread
@@ -321,12 +329,7 @@ public class TemporalExtentView extends PartialPlanView  {
 
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
-    temporalNodeList = null;
-    //tmpTemporalNodeList = new ArrayList();
-    if(tmpTemporalNodeList != null) {
-      tmpTemporalNodeList.clear();
-    }
-    tmpTemporalNodeList = new UniqueSet();
+    temporalNodeList = new UniqueSet();
 
     createTemporalNodes();
     boolean showDialog = true;
@@ -448,12 +451,11 @@ public class TemporalExtentView extends PartialPlanView  {
                               earliestDurationString, latestDurationString,
                               backgroundColor, isFreeToken, isShowLabels,
                               temporalDisplayMode, this); 
-          tmpTemporalNodeList.add( temporalNode);
+          temporalNodeList.add( temporalNode);
           jGoExtentView.getDocument().addObjectAtTail( temporalNode);
         }
       }
     }
-    temporalNodeList = tmpTemporalNodeList;
   } // end createTemporalNodes
 
   private void layoutTemporalNodes() {
@@ -837,8 +839,7 @@ public class TemporalExtentView extends PartialPlanView  {
             ((PartialPlanViewSet) TemporalExtentView.this.getViewSet()).getActiveToken();
           if (activeToken != null) {
             boolean isByKey = false;
-            PwSlot slot = null;
-            findAndSelectToken( activeToken, slot, isByKey);
+            findAndSelectToken( activeToken, isByKey);
           }
         }
       });
@@ -855,8 +856,7 @@ public class TemporalExtentView extends PartialPlanView  {
             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
             PwToken tokenToFind = partialPlan.getToken( nodeKey);
             boolean isByKey = true;
-            PwSlot slot = null;
-            findAndSelectToken( tokenToFind, slot, isByKey);
+            findAndSelectToken( tokenToFind, isByKey);
           }
         }
       });
@@ -864,14 +864,13 @@ public class TemporalExtentView extends PartialPlanView  {
 
 
   /**
-   * <code>findAndSelectToken</code> - handles empty slots and free tokens, as well
+   * <code>findAndSelectToken</code> - handles free tokens, as well
    *                                   as slotted tokens
    *
-   * @param tokenToFind - <code>PwToken</code> - null for empty slots
-   * @param slotToFind - <code>PwSlot</code> - null for free tokens
+   * @param tokenToFind - <code>PwToken</code> - 
    * @param isByKey - <code>boolean</code> - 
    */
-  public void findAndSelectToken( PwToken tokenToFind, PwSlot slotToFind, boolean isByKey) {
+  public void findAndSelectToken( PwToken tokenToFind, boolean isByKey) {
     boolean isTokenFound = false;
     boolean isHighlightNode = true;
     Iterator temporalNodeListItr = temporalNodeList.iterator();
@@ -880,33 +879,8 @@ public class TemporalExtentView extends PartialPlanView  {
     foundMatch:
     while (temporalNodeListItr.hasNext()) {
       temporalNode = (TemporalNode) temporalNodeListItr.next();
-      if (temporalNode.getToken() != null) {
-
-
-        if ((tokenToFind != null) &&
-            temporalNode.getToken().getId().equals( tokenToFind.getId())) {
-          isTokenFound = true;
-          break;          
-        }
-//         if (temporalNode.getSlot() != null) {
-//           // check overloaded tokens, since only base tokens are rendered
-//           Iterator tokenListItr = temporalNode.getSlot().getTokenList().iterator();
-//           while (tokenListItr.hasNext()) {
-//             PwToken token = (PwToken) tokenListItr.next();
-//             if ((tokenToFind != null) && token.getId().equals( tokenToFind.getId())) {
-//               isTokenFound = true;
-//               break foundMatch;
-//             }
-//           }
-//         } else if ((tokenToFind != null) &&
-//                    temporalNode.getToken().getId().equals( tokenToFind.getId())) {
-//           // free token
-//           isTokenFound = true;
-//           break;          
-//         }
-      } else if ((slotToFind != null) &&
-                 temporalNode.getSlot().getId().equals( slotToFind.getId()))  {
-        // empty slot
+      if ((tokenToFind != null) &&
+          temporalNode.getToken().getId().equals( tokenToFind.getId())) {
         isTokenFound = true;
         break;          
       }

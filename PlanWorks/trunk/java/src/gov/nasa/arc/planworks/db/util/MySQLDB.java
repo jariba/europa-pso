@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.98 2004-05-04 01:27:13 taylor Exp $
+// $Id: MySQLDB.java,v 1.99 2004-05-08 01:44:11 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -131,7 +131,7 @@ public class MySQLDB {
       Class.forName("com.mysql.jdbc.Driver").newInstance();
       for(int triedConnections = 0; triedConnections <= 10 && !dbIsConnected; triedConnections++) {
         try {
-          System.err.println("Connecting to database...");
+          System.err.println("   ... connecting to database");
           conn = DriverManager.getConnection("jdbc:mysql://localhost/PlanWorks?user=root&autoReconnect=true");
           dbIsConnected = true;
         }
@@ -812,14 +812,12 @@ public class MySQLDB {
           t = new PwResourceTransactionImpl(tokenId, isValueToken, predName, startVarId, endVarId,
                                             durationVarId, stateVarId, objectVarId, parentId, 
                                             tokenRelIds, paramVarIds, extraInfo, partialPlan);
-          System.err.println( "MySQLDB T_TRANSACTION id = " + tokenId);
         }
         else if(tokens.getInt("Token.TokenType") == DbConstants.T_INTERVAL) {
           t = new PwTokenImpl(tokenId, isValueToken, new Integer(tokens.getInt("Token.SlotId")),
                               predName, startVarId, endVarId, durationVarId, stateVarId, 
                               objectVarId, parentId, tokenRelIds, paramVarIds, extraInfo, 
                               partialPlan);
-          System.err.println( "MySQLDB T_INTERVAL id = " + tokenId);
         }
         int ruleKey = tokens.getInt("RuleTokenMap.RuleId");
         if(!tokens.wasNull()) {

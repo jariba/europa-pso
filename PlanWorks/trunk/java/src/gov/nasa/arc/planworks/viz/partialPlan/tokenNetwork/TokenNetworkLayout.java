@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkLayout.java,v 1.6 2004-03-31 22:27:05 taylor Exp $
+// $Id: TokenNetworkLayout.java,v 1.7 2004-05-08 01:44:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -24,6 +24,7 @@ import com.nwoods.jgo.layout.JGoLayeredDigraphAutoLayout;
 import com.nwoods.jgo.layout.JGoNetworkLink;
 import com.nwoods.jgo.layout.JGoNetworkNode;
 
+import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 
 
@@ -150,7 +151,7 @@ public class TokenNetworkLayout extends JGoLayeredDigraphAutoLayout {
     // System.err.println( "TokenNetworkLayout progress: " + progress);
     if (progress == 1.0) {
       long stopTimeMSecs = System.currentTimeMillis();
-      System.err.println( "   ... elapsed time: " +
+      System.err.println( "   ... " + ViewConstants.TOKEN_NETWORK_VIEW + " elapsed time: " +
                           (stopTimeMSecs - startTimeMSecs) + " msecs.");
     }
   } // end progressUpdate

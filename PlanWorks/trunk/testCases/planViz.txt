@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.40 2004-05-04 01:27:23 taylor Exp $
+// $Id: planViz.txt,v 1.41 2004-05-08 01:44:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -331,14 +331,13 @@ Post-conditions:
      Constraint node labels consist of the constraint name and the constraint key value.
      Mouse cursor over constraint nodes displays "constraintType" on the first 
      line, and "Mouse-L: open/close" on the second line, if the constraint is not unary.
-  2. All token nodes appear in the Temporal Extent View.  Token node labels 
-     consist of the predicate name and the token key value.  Mouse cursor over 
-     a token node displays "predicateName( parameterValues)", and its slot 
-     key value on the second line, if it is a slotted token.  All empty slots
-     appear in this view with labels of "-empty-".  Mouse cursor over an empty slot 
-     displays only its slot key value.  Mouse cursor over start/end interval
-     "triangles" displays their time scale value.  Mouse cursor over a token's 
-     duration line displays the duration time interval.
+  2. All slotted and free interval token nodes appear in the Temporal Extent View
+     as temporal nodes.  Temporal node labels consist of the predicate name and the 
+     token key value.  Mouse cursor over a temporal node displays "predicateName(
+     parameterValues)", and its slot key value on the second line, if it is a slotted 
+     token.  Mouse cursor over start/end interval "triangles" displays their time 
+     scale value.  Mouse cursor over a token's duration line displays the duration 
+     time interval.
   3. Timeline nodes and slot nodes appear in the Timeline View.  Timeline node
      labels consist of the object name, the timeline name, and the timeline key
      value.  Slot node labels consist of the slotted token predicate name, the

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.59 2004-05-07 19:54:01 miatauro Exp $
+// $Id: ConstraintNetworkView.java,v 1.60 2004-05-08 01:44:14 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -179,7 +179,6 @@ public class ConstraintNetworkView extends PartialPlanView {
   } // end constructor
 
   private void constraintNetworkViewInit(ViewSet viewSet) {
-    this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) viewSet;
     variableNodeMap = new HashMap();
     constraintNodeMap = new HashMap();
@@ -329,8 +328,9 @@ public class ConstraintNetworkView extends PartialPlanView {
       expandViewFrameForStepButtons( viewFrame, jGoView);
     }
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
-                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
+    System.err.println( "   ... " + ViewConstants.CONSTRAINT_NETWORK_VIEW + " elapsed time: " +
+                        (stopTimeMSecs -
+                         PlanWorks.getPlanWorks().getViewRenderingStartTime()) + " msecs.");
     startTimeMSecs = 0L;
     isLayoutNeeded = false;
     focusNode = null;
@@ -393,7 +393,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       isLayoutNeeded = false;
     }
     long stopTimeMSecs = System.currentTimeMillis();
-    System.err.println( "   ... elapsed time: " +
+    System.err.println( "   ... " + ViewConstants.CONSTRAINT_NETWORK_VIEW + " elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     startTimeMSecs = 0L;
     this.setVisible( true);

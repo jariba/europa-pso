@@ -267,8 +267,9 @@ public abstract class ViewConstants {
 
   public static final int STEP_VIEW_Y_MAX = 100;
 
-  public static final String DB_TRANSACTION_KEY_HEADER =        "TX_KEY "; 
-  public static final String DB_TRANSACTION_TYPE_HEADER =       "            TRANSACTION_TYPE           "; 
+  public static final String DB_TRANSACTION_KEY_HEADER =        "TX_KEY ";
+  // ViewGenerics.computeTransactionNameHeader pads this appropriately with blanks 
+  public static final String DB_TRANSACTION_NAME_HEADER =       "TRANSACTION_NAME"; 
   public static final String DB_TRANSACTION_SOURCE_HEADER =     " SOURCE  ";   
   public static final String DB_TRANSACTION_OBJECT_KEY_HEADER = "OBJ_KEY";
   public static final String DB_TRANSACTION_STEP_NUM_HEADER =   "  STEP  ";

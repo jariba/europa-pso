@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.8 2004-05-04 01:27:10 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.9 2004-05-08 01:44:09 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -32,7 +32,6 @@ import gov.nasa.arc.planworks.viz.ViewListener;
 public class CreateSequenceViewThread extends CreateViewThread {
 
   private PwPlanningSequence planSequence;
-  private boolean isInvokeAndWait;
   private ViewListener viewListener;
 
 
@@ -48,23 +47,6 @@ public class CreateSequenceViewThread extends CreateViewThread {
     this.seqUrl = menuItem.getSeqUrl();
     this.sequenceName = menuItem.getSequenceName();
     this.viewListener = menuItem.getViewListener();
-    this.isInvokeAndWait = false;
-  }
-
-  /**
-   * <code>CreateSequenceViewThread</code> - constructor 
-   *
-   * @param viewName - <code>String</code> - 
-   * @param menuItem - <code>JMenuItem</code> - 
-   */
-  public CreateSequenceViewThread( final String viewName,
-                                   final SequenceViewMenuItem menuItem,
-                                   final boolean isInvokeAndWait) {
-    super( viewName);
-    this.seqUrl = menuItem.getSeqUrl();
-    this.sequenceName = menuItem.getSequenceName();
-    this.viewListener = menuItem.getViewListener();
-    this.isInvokeAndWait = isInvokeAndWait;
   }
 
   /**
@@ -72,27 +54,23 @@ public class CreateSequenceViewThread extends CreateViewThread {
    *
    */
   public void run() {
-    if (isInvokeAndWait) {
-      // needed by SequenceQueryWindow.ensureSequenceStepsViewExists
-      try {
-        SwingUtilities.invokeAndWait( new Runnable() {
-            public void run() {
-              createSequenceView();
-            }
-          });
-      } catch (InterruptedException ie) {
-        System.err.println( "CreateSequenceViewThread: InterruptedException");
-        ie.printStackTrace();
-      } catch (InvocationTargetException ite) {
-        System.err.println( "CreateSequenceViewThread: InvocationTargetException");
-        ite.printStackTrace();
-      }
-    } else {
-      createSequenceView();
+    try {
+      SwingUtilities.invokeAndWait( new Runnable() {
+          public void run() {
+            createSequenceView();
+          }
+        });
+    } catch (InterruptedException ie) {
+      System.err.println( "CreateSequenceViewThread: InterruptedException");
+      ie.printStackTrace();
+    } catch (InvocationTargetException ite) {
+      System.err.println( "CreateSequenceViewThread: InvocationTargetException");
+      ite.printStackTrace();
     }
   } // run
 
   private void createSequenceView() {
+    PlanWorks.getPlanWorks().setViewRenderingStartTime( System.currentTimeMillis());
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);

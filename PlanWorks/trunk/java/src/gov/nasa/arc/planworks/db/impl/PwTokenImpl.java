@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.44 2004-05-04 01:27:13 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.45 2004-05-08 01:44:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -130,7 +130,7 @@ public class PwTokenImpl implements PwToken {
   }
 
   /**
-   * <code>getTimelineId</code>
+   * <code>getParentId</code>
    *
    * @return <code>Integer</code>
    */

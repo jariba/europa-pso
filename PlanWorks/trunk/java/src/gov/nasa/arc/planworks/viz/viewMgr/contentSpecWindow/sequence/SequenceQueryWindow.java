@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.25 2004-05-04 01:27:23 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.26 2004-05-08 01:44:18 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -471,10 +471,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         String seqUrl = ((PwPlanningSequence) viewable).getUrl();
         SequenceViewMenuItem seqViewItem =
           new SequenceViewMenuItem( seqName, seqUrl, seqName);
-        boolean isInvokeAndWait = true;
         Thread thread =
-          new CreateSequenceViewThread( ViewConstants.SEQUENCE_STEPS_VIEW, seqViewItem,
-                                        isInvokeAndWait);
+          new CreateSequenceViewThread( ViewConstants.SEQUENCE_STEPS_VIEW, seqViewItem);
         thread.setPriority(Thread.MIN_PRIORITY);
         thread.start();
       }

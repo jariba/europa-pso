@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepContentView.java,v 1.12 2004-02-03 20:43:50 taylor Exp $
+// $Id: StepContentView.java,v 1.13 2004-05-08 01:44:13 taylor Exp $
 //
 // PlanWorks
 //
@@ -133,13 +133,13 @@ public class StepContentView extends JGoView {
                         (int) keyField.getSize().getHeight());
       x += headerJGoView.getKeyNode().getSize().getWidth();
 
-      QueryResultField typeField =
-        new QueryResultField( transaction.getType(),
+      QueryResultField nameField =
+        new QueryResultField( transaction.getName(),
                               new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
-      jGoDocument.addObjectAtTail( typeField);
-      typeField.setSize( (int) headerJGoView.getTypeNode().getSize().getWidth(),
-                         (int) typeField.getSize().getHeight());
-      x += headerJGoView.getTypeNode().getSize().getWidth();
+      jGoDocument.addObjectAtTail( nameField);
+      nameField.setSize( (int) headerJGoView.getNameNode().getSize().getWidth(),
+                         (int) nameField.getSize().getHeight());
+      x += headerJGoView.getNameNode().getSize().getWidth();
 
       if ((query.indexOf( " With ") >= 0) ||
           ((query.indexOf( " With ") == -1) && key.equals( ""))) {

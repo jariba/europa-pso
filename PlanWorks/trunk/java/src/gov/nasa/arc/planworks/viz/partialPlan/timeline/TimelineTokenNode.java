@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineTokenNode.java,v 1.5 2004-05-04 01:27:21 taylor Exp $
+// $Id: TimelineTokenNode.java,v 1.6 2004-05-08 01:44:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -98,7 +98,7 @@ public class TimelineTokenNode extends TokenNode {
           ViewGenerics.getTemporalExtentView( timelineView.getViewSet().
                                               openView( className, viewListener));
         boolean isByKey = false;
-        temporalExtentView.findAndSelectToken( freeToken, slot, isByKey);
+        temporalExtentView.findAndSelectToken( freeToken, isByKey);
       }
       return true;
     } else {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.17 2004-05-04 01:27:19 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.18 2004-05-08 01:44:15 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -73,7 +73,8 @@ public class ResourceProfileView extends ResourceView  {
    * @param vSet - <code>ViewSet</code> - 
    */
   public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet,
+           ViewConstants.RESOURCE_PROFILE_VIEW);
   } // end constructor
 
 
@@ -86,7 +87,8 @@ public class ResourceProfileView extends ResourceView  {
    */
   public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet, 
                               final PartialPlanViewState state) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, state);
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, state,
+           ViewConstants.RESOURCE_PROFILE_VIEW);
   } // end constructor
 
   /**
@@ -98,7 +100,8 @@ public class ResourceProfileView extends ResourceView  {
    */
   public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet,
                               ViewListener viewListener) {
-    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, viewListener);
+    super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet, viewListener,
+           ViewConstants.RESOURCE_PROFILE_VIEW);
   } // end constructor
 
   /**

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionContentView.java,v 1.2 2004-03-12 23:21:55 miatauro Exp $
+// $Id: DBTransactionContentView.java,v 1.3 2004-05-08 01:44:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -125,13 +125,13 @@ public class DBTransactionContentView extends JGoView {
                        (int) keyField.getSize().getHeight());
       x += headerJGoView.getKeyNode().getSize().getWidth();
 
-      QueryResultField typeField =
-        new QueryResultField( transaction.getType(), new Point( x, y),
+      QueryResultField nameField =
+        new QueryResultField( transaction.getName(), new Point( x, y),
                               JGoText.ALIGN_CENTER, bgColor, viewableObject);
-      jGoDocument.addObjectAtTail( typeField);
-      typeField.setSize( (int) headerJGoView.getTypeNode().getSize().getWidth(),
-                         (int) typeField.getSize().getHeight());
-      x += headerJGoView.getTypeNode().getSize().getWidth();
+      jGoDocument.addObjectAtTail( nameField);
+      nameField.setSize( (int) headerJGoView.getNameNode().getSize().getWidth(),
+                         (int) nameField.getSize().getHeight());
+      x += headerJGoView.getNameNode().getSize().getWidth();
 
       QueryResultField sourceField =
         new QueryResultField( transaction.getSource(), new Point( x, y),
@@ -165,7 +165,7 @@ public class DBTransactionContentView extends JGoView {
       // String objectName = getObjectName( transaction.getObjectId());
       if (transaction.getInfo()[0] == null) {
         System.err.println( "0 key " + transaction.getId().toString() +
-                            " type " + transaction.getType() +
+                            " name " + transaction.getName() +
                             " objectKey " + transaction.getObjectId().toString() +
                             " step " + transaction.getStepNumber().toString());
       }
@@ -183,7 +183,7 @@ public class DBTransactionContentView extends JGoView {
         // new QueryResultField( getPredicateName( transaction.getObjectId()),
       if (transaction.getInfo()[1] == null) {
         System.err.println( "1 key " + transaction.getId().toString() +
-                            " type " + transaction.getType() +
+                            " name " + transaction.getName() +
                             " objectKey " + transaction.getObjectId().toString() +
                             " step " + transaction.getStepNumber().toString());
       }
@@ -201,7 +201,7 @@ public class DBTransactionContentView extends JGoView {
         // new QueryResultField( getParameterName( transaction.getObjectId(), objectName),
       if (transaction.getInfo()[2] == null) {
         System.err.println( "2 key " + transaction.getId().toString() +
-                            " type " + transaction.getType() +
+                            " name " + transaction.getName() +
                             " objectKey " + transaction.getObjectId().toString() +
                             " step " + transaction.getStepNumber().toString());
       }
