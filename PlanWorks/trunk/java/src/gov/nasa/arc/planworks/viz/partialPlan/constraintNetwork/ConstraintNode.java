@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.1 2003-09-25 23:52:45 taylor Exp $
+// $Id: ConstraintNode.java,v 1.2 2003-10-30 19:11:45 miatauro Exp $
 //
 // PlanWorks
 //
@@ -15,7 +15,9 @@ package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -67,6 +69,8 @@ public class ConstraintNode extends BasicNode {
   private List variableNodeList; // element VariableNode
   private boolean isDiamond = true;
   private List constraintVariableLinkList; // element BasicNodeLink
+  //fix me.
+  private Map constraintVariableLinkMap;
   private boolean areNeighborsShown;
   private boolean inLayout;
   private boolean isUnaryConstraint;
@@ -96,6 +100,7 @@ public class ConstraintNode extends BasicNode {
     variableNodeList = new ArrayList();
     variableNodeList.add( variableNode);
     constraintVariableLinkList = new ArrayList();
+    constraintVariableLinkMap = new HashMap();
 
     inLayout = false;
     isUnaryConstraint = true;
@@ -395,9 +400,13 @@ public class ConstraintNode extends BasicNode {
   public void addLink( BasicNodeLink link) {
     if (constraintVariableLinkList.indexOf( link) == -1) {
       constraintVariableLinkList.add( link);
+      constraintVariableLinkMap.put(link.getToNode(), link);
     }
   }
 
+  public BasicNodeLink getLinkToNode(BasicNode node) {
+    return (BasicNodeLink) constraintVariableLinkMap.get(node);
+  }
   /**
    * <code>setHasBeenVisited</code>
    *

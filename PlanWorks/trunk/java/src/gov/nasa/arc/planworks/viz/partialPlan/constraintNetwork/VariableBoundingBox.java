@@ -41,33 +41,30 @@ public class VariableBoundingBox {
     constraintNodes.addLast(constraint);
   }
   public boolean isVisible() { return varNode.isVisible();}
+
   public double getHeight() {
     double retval = 0.;
     if(layout.layoutHorizontal()) {
-      retval = ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y - 
-        ConstraintNetworkView.HORIZONTAL_VARIABLE_BAND_Y;
+      retval = ConstraintNetworkView.HORIZONTAL_VARIABLE_BAND_Y - 
+        ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y;
     }
     else {
       if(varNode.isVisible()) {
         ListIterator constraintIterator = constraintNodes.listIterator();
-        double topConstraint = Double.MIN_VALUE;
-        double bottomConstraint = Double.MAX_VALUE;
+        double constraintsHeight = 0.;
         int visibleConstraints = 0;
         while(constraintIterator.hasNext()) {
           ConstraintNode node = (ConstraintNode) constraintIterator.next();
           if(node.isVisible()) {
-            if(node.getLocation().getY() > topConstraint) {
-              topConstraint = node.getLocation().getY();
+            BasicNodeLink link = node.getLinkToNode(varNode);
+            if(link != null && link.isVisible()) {
+              constraintsHeight += node.getSize().getHeight();
+              visibleConstraints++;
             }
-            if(node.getLocation().getY() < bottomConstraint) {
-              bottomConstraint = node.getLocation().getY();
-            }
-            visibleConstraints++;
           }
         }
         retval = Math.max(varNode.getSize().getHeight() + ConstraintNetworkView.NODE_SPACING,
-                          (topConstraint - bottomConstraint) + 
-                          (ConstraintNetworkView.NODE_SPACING * (visibleConstraints - 1)));
+                          constraintsHeight + (ConstraintNetworkView.NODE_SPACING * visibleConstraints));
       }
     }
     return retval;
@@ -77,17 +74,20 @@ public class VariableBoundingBox {
     if(layout.layoutHorizontal()) {
       if(varNode.isVisible()) {
         ListIterator constraintIterator = constraintNodes.listIterator();
-        double constraintsWidth = 0;
+        double constraintsWidth = 0.;
         int visibleConstraints = 0;
         while(constraintIterator.hasNext()) {
           ConstraintNode node = (ConstraintNode) constraintIterator.next();
           if(node.isVisible()) {
-            constraintsWidth += node.getSize().getWidth();
-            visibleConstraints++;
+            BasicNodeLink link = node.getLinkToNode(varNode);
+            if(link != null && link.isVisible()) {
+              constraintsWidth += node.getSize().getWidth();
+              visibleConstraints++;
+            }
           }
         }
         retval = Math.max(varNode.getSize().getWidth() + ConstraintNetworkView.NODE_SPACING,
-                          constraintsWidth + ConstraintNetworkView.NODE_SPACING);
+                          constraintsWidth + (ConstraintNetworkView.NODE_SPACING*visibleConstraints));
       }
     }
     else {
@@ -110,37 +110,25 @@ public class VariableBoundingBox {
 
   private void positionVertical(double boxY) { //200310211500 happy b-day rory mcgann!
     double boxHeight = getHeight();
-    //varNode.setLocation(new Point(ConstraintNetworkView.VERTICAL_VARIABLE_BAND_X, 
-    //                              boxY - (boxHeight / 2)));
     varNode.setLocation((int)ConstraintNetworkView.VERTICAL_VARIABLE_BAND_X,
                         (int)(boxY - (boxHeight / 2)));
-    int visibleConstraints = 0;
     ListIterator constraintIterator = constraintNodes.listIterator();
+    double lastConstraintHeight = 0;
     while(constraintIterator.hasNext()) {
       ConstraintNode node = (ConstraintNode) constraintIterator.next();
       if(node.isVisible()) {
-        visibleConstraints++;
-      }
-    }
-    double constraintYInc = 
-      boxHeight / (((ConstraintNode)constraintNodes.get(0)).getSize().getHeight() * visibleConstraints);
-    constraintIterator = constraintNodes.listIterator();
-    int multiplier = 0;
-    while(constraintIterator.hasNext()) {
-      ConstraintNode node = (ConstraintNode) constraintIterator.next();
-      if(node.isVisible()) {
-        //node.setLocation(new Point(ConstraintNetworkView.VERTICAL_CONSTRAINT_BAND_X,
-        //                           boxY - (constraintYInc * multiplier)));
-        node.setLocation((int) ConstraintNetworkView.VERTICAL_CONSTRAINT_BAND_X,
-                         (int)(boxY - (constraintYInc * multiplier)));
+        BasicNodeLink link = node.getLinkToNode(varNode);
+        if(link != null && link.isVisible()) {
+          node.setLocation((int) ConstraintNetworkView.VERTICAL_CONSTRAINT_BAND_X,
+                           (int) (boxY - lastConstraintHeight - (node.getSize().getHeight() / 2)));
+          lastConstraintHeight += node.getSize().getHeight() + ConstraintNetworkView.NODE_SPACING;
+        }
       }
     }
   }
 
   private void positionHorizontal(double boxX) {
     double boxWidth = getWidth();
-    //varNode.setLocation(new Point(boxX - (boxWidth / 2),
-    //                              ConstraintNetworkView.HORIZONTAL_VARIABLE_BAND_Y));
     varNode.setLocation((int) (boxX - (boxWidth / 2)),
                         (int) ConstraintNetworkView.HORIZONTAL_VARIABLE_BAND_Y);
     ListIterator constraintIterator = constraintNodes.listIterator();
@@ -148,31 +136,14 @@ public class VariableBoundingBox {
     while(constraintIterator.hasNext()) {
       ConstraintNode node = (ConstraintNode) constraintIterator.next();
       if(node.isVisible()) {
-        node.setLocation((int) (boxX - lastConstraintWidth - (node.getSize().getWidth() / 2)),
-                         (int) ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y);
-        lastConstraintWidth += node.getSize().getWidth() + ConstraintNetworkView.NODE_SPACING;
+        BasicNodeLink link = node.getLinkToNode(varNode);
+        if(link != null && link.isVisible()) {
+          node.setLocation((int) (boxX - lastConstraintWidth - (node.getSize().getWidth() / 2)),
+                           (int) ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y);
+          lastConstraintWidth += node.getSize().getWidth() + ConstraintNetworkView.NODE_SPACING;
+        }
       }
     }
-    /*int visibleConstraints = 0;
-    ListIterator constraintIterator = constraintNodes.listIterator();
-    while(constraintIterator.hasNext()) {
-      ConstraintNode node = (ConstraintNode) constraintIterator.next();
-      if(node.isVisible()) {
-        visibleConstraints++;
-      }
-    }
-    double constraintXInc = boxWidth / visibleConstraints;
-    constraintIterator = constraintNodes.listIterator();
-    int multiplier = 0;
-    while(constraintIterator.hasNext()) {
-      ConstraintNode node = (ConstraintNode) constraintIterator.next();
-      if(node.isVisible()) {
-        //node.setLocation(new Point(boxX - (constraintXInc * multiplier), 
-        //                           ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y));
-        node.setLocation((int) (boxX - (constraintXInc * multiplier)),
-                         (int) ConstraintNetworkView.HORIZONTAL_CONSTRAINT_BAND_Y);
-      }
-      }*/
   }
   public void setVisited() {
     visited = true;
