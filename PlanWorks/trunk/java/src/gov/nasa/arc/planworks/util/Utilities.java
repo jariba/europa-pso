@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.12 2004-06-22 22:45:00 miatauro Exp $
+// $Id: Utilities.java,v 1.13 2004-08-26 23:03:23 miatauro Exp $
 //
 // PlanWorks
 //
@@ -32,11 +32,7 @@ import javax.swing.JFrame;
  *              NASA Ames Research Center - Code IC
  * @version 1.4
  */
-public class Utilities {
-
-  // constructor
-  private Utilities() {
-  } // end constructor 
+public abstract class Utilities {
 
   /**
    * <code>computeNestedLocation</code> - 
@@ -178,9 +174,15 @@ public class Utilities {
 
   public static final void tracePrint(final boolean print) {
     if(print) {
-      StackTraceElement st = (new Throwable()).getStackTrace()[1];
+      StackTraceElement st = null;
+      System.err.println("-------------------");
+      st = (new Throwable()).getStackTrace()[2];
       System.err.println(st.getClassName() + "." + st.getMethodName() + "() | " +
                          st.getFileName() + ":" + st.getLineNumber());
+      st = (new Throwable()).getStackTrace()[1];
+      System.err.println(st.getClassName() + "." + st.getMethodName() + "() | " +
+                         st.getFileName() + ":" + st.getLineNumber());
+      System.err.println("-------------------");
     }
   }
 
@@ -195,5 +197,10 @@ public class Utilities {
   public static final void debugPrint(final boolean print, final String text) {
     if(print)
       System.err.println(text);
+  }
+
+  public static final int currentLineNumber() {
+    StackTraceElement st = (new Throwable()).getStackTrace()[1];
+    return st.getLineNumber();
   }
 } // end class Utilities
