@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.15 2003-11-21 00:41:52 taylor Exp $
+// $Id: planViz.txt,v 1.16 2003-11-25 01:40:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -41,21 +41,29 @@ Exercise error handling for missing partial plan files.
 
 Pre-conditions:
   1. PlanWorks is not running.
-  2. Plan sequence step test data contains all files named step<nn> with 
-     required extensions, except for step<nn>.slots.
-  3. PlanWorks data base is "clean".
+  2. PlanWorks data base is "clean".
+  3. cd PlanWorks/java/src/nasa/gov/arc/planworks/test/data/seqTest/roverempty1069466207744
+     /bin/rm -rf CVS
 
 Method:
   1. Start PlanWorks:
   2. Create a project with menu-bar selection "Project->Create ...",
-     adding the test sequence.
-  3. Add a valid sequence to the project.
-  4. Delete a step in the sequence.
-  5. Open a view on the deleted step.
+     try to add test sequence: 
+     PlanWorks/java/src/nasa/gov/arc/planworks/test/data/seqTest/roverempty1069466207744
+     then
+     PlanWorks/java/src/nasa/gov/arc/planworks/test/data/seqTest/rover2seqfiles1069466207744
+     then
+     PlanWorks/java/src/nasa/gov/arc/planworks/test/data/seqTest/rovershortpartplan1069466207744
+     and finally
+     PlanWorks/java/src/nasa/gov/arc/planworks/test/data/Camera1065545818740
+  4. Open a view on the step 40.
 
 Post-conditions:
-  1. Method: 2 - Error dialog "Invalid Sequence Directory" appears.
-  2. Method: 5 - Error dialog "Failed to get file listing" appears.
+  1. Method: 2 - Error dialog appears: "Invalid Sequence Directory" first with,
+     "<....roverempty1069466207744>   No files in directory", then
+     "<....rover2seqfiles1069466207744>   2 sequence files in directory -- 3 are required", then
+     "<....rovershortpartplan1069466207744> Has 13 files -- 14 are required".
+  2. Method: 4 - Error dialog "Failed to get file listing" appears.
 
 Requirements: N/A
 

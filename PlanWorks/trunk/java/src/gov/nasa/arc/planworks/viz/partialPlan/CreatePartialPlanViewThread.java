@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: CreatePartialPlanViewThread.java,v 1.3 2003-11-13 23:21:17 taylor Exp $
+// $Id: CreatePartialPlanViewThread.java,v 1.4 2003-11-25 01:40:40 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -116,7 +116,7 @@ public class CreatePartialPlanViewThread extends CreateViewThread {
         (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
       System.err.println( rnfExcep);
-      rnfExcep.printStackTrace();
+      // rnfExcep.printStackTrace();
     }
 
     PlanWorks.planWorks.projectMenu.setEnabled( true);

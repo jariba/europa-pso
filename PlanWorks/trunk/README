@@ -4,54 +4,17 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.56 2003-11-20 19:11:23 taylor Exp $
+# $Id: README,v 1.57 2003-11-25 01:40:37 taylor Exp $
 #
 
 SUMMARY
 =======
-o Sequence Steps windows are now closeable.
-o Query Results windows are now maximizable.
-o If the Content Spec window is iconified using the icon in the window's
-  title bar, and the user selects Mouse-Right "Raise Content Spec", the
-   Content Spec window is de-iconified and given focus.
-o Partial Plan view's Mouse-Right selection "Open a View" no longer
-  creates a seconday menu of views.  The available views are added
-  "in-line" to the primary menu.
-o Partial Plan view's Mouse-Right selections of views to open no longer
-  includes the current view.
-o The Content Spec window's background areas now offer Mouse-Right
-  selections for opening individual or all partial plan views.
-o The Sequence Query dialog for "Steps" queries now accepts an empty
-  key slot, which will return the steps for all keys for the specified 
-  contraint, token, or variable transaction type.
-o The Sequence Query dialog no longer requires the use of the "Reset Query"
-  button between successive queries.
-o The object key values displayed in the Timeline view are now specified as
-  to type: timeline, slot, and token.  The token key(s) are displayed as
-  the second line of the slot node tooltip.
-o Slotted tokens in all partial plan views, except for Transaction view,
-  have a tooltip with a second line which displays their slot key value.
-o Clicking on the "Apply Spec" and "Reset Spec" buttons of the Content
-  Spec dialog cause the Constraint Network view to displayed with a
-  fresh layout.
-o The "Step" column values of Query Results windows for "Steps" and 
-  "Transactions" queries, now offer a Mouse-Right popup with actions
-  on the partial plan views for that step.
-o The partial plan views, except for Transaction View, and the Sequence
-  Steps View, now have a Mouse-Right popup named "Overview Window" which
-  opens a 1/8th scaled view of the entire "observed" view.  There is a
-  rectangle in the overview which can be dragged to cause the "observed" 
-  view to be scrolled to new locations.  Mouse-Left clicking in the
-  overview outside of the rectangle will cause the "observed" view to
-  "jump" to that location.
-
-o  GNATS PRs and CRs completed:
-   #2172: Invalid behaviour for sequence windows after closing and opening.
+o Improved diagnostics for "Invalid Sequence Directory" error dialog.
 
 
 CVS CHECKOUT
 ============
-> cvs co -r PW_M_10 PlanWorks
+> cvs co -r PW_M_11 PlanWorks
 
 
 PREREQUISITES
@@ -160,6 +123,48 @@ See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 PREVIOUS MILESTONES
 ===================
 ===================
+
+21november03: Milestone 10
+==========================
+o Sequence Steps windows are now closeable.
+o Query Results windows are now maximizable.
+o If the Content Spec window is iconified using the icon in the window's
+  title bar, and the user selects Mouse-Right "Raise Content Spec", the
+   Content Spec window is de-iconified and given focus.
+o Partial Plan view's Mouse-Right selection "Open a View" no longer
+  creates a seconday menu of views.  The available views are added
+  "in-line" to the primary menu.
+o Partial Plan view's Mouse-Right selections of views to open no longer
+  includes the current view.
+o The Content Spec window's background areas now offer Mouse-Right
+  selections for opening individual or all partial plan views.
+o The Sequence Query dialog for "Steps" queries now accepts an empty
+  key slot, which will return the steps for all keys for the specified 
+  contraint, token, or variable transaction type.
+o The Sequence Query dialog no longer requires the use of the "Reset Query"
+  button between successive queries.
+o The object key values displayed in the Timeline view are now specified as
+  to type: timeline, slot, and token.  The token key(s) are displayed as
+  the second line of the slot node tooltip.
+o Slotted tokens in all partial plan views, except for Transaction view,
+  have a tooltip with a second line which displays their slot key value.
+o Clicking on the "Apply Spec" and "Reset Spec" buttons of the Content
+  Spec dialog cause the Constraint Network view to displayed with a
+  fresh layout.
+o The "Step" column values of Query Results windows for "Steps" and 
+  "Transactions" queries, now offer a Mouse-Right popup with actions
+  on the partial plan views for that step.
+o The partial plan views, except for Transaction View, and the Sequence
+  Steps View, now have a Mouse-Right popup named "Overview Window" which
+  opens a 1/8th scaled view of the entire "observed" view.  There is a
+  rectangle in the overview which can be dragged to cause the "observed" 
+  view to be scrolled to new locations.  Mouse-Left clicking in the
+  overview outside of the rectangle will cause the "observed" view to
+  "jump" to that location.
+
+o  GNATS PRs and CRs completed:
+   #2172: Invalid behaviour for sequence windows after closing and opening.
+
 
 07november03: Milestone 9
 =========================

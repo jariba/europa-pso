@@ -1,4 +1,4 @@
-;;; $Id: prj.el,v 1.5 2003-10-18 01:27:54 taylor Exp $
+;;; $Id: prj.el,v 1.6 2003-11-25 01:40:37 taylor Exp $
 ;;;
 ;;; JAVA_HOME ANT_HOME JDE_HOME & PLANWORKS_HOME must be set properly
 ;;;
@@ -84,7 +84,7 @@
  (jde-javadoc-code type) \" - \"")
  '(jde-javadoc-return-tag-template "\"* @return - \" 
  (jde-javadoc-code type) \" - \"")
- '(jde-javadoc-version-tag-template "\"* @version 1.4\"")
+ '(jde-javadoc-version-tag-template "\"* @version 0.0\"")
  '(jde-jdk-registry (list (cons "1.4.1_02" (getenv "JAVA_HOME"))))
  '(jde-run-application-class "gov.nasa.arc.planworks.PlanWorks")
  '(jde-run-executable-args nil)
