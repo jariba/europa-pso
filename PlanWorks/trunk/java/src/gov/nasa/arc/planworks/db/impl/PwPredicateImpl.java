@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPredicateImpl.java,v 1.1 2003-05-15 22:16:23 taylor Exp $
+// $Id: PwPredicateImpl.java,v 1.2 2003-05-16 20:06:20 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -33,7 +33,8 @@ public class PwPredicateImpl implements PwPredicate {
   private String name;
   private String key;
   private List parameterList; // element PwParameter
-
+	private PwPartialPlanImpl partialPlan;
+		private String collectionName;
 
   /**
    * <code>Predicate</code> - constructor 
@@ -41,11 +42,12 @@ public class PwPredicateImpl implements PwPredicate {
    * @param name - <code>String</code> - 
    * @param key - <code>String</code> - 
    */
-  public PwPredicateImpl( String name, String key) {
+  public PwPredicateImpl( String name, String key, PwPartialPlanImpl partialPlan, String collectionName) {
     this.name = name;
     this.key = key;
     this.parameterList = new ArrayList();
-
+		this.partialPlan = partialPlan;
+		this.collectionName = collectionName;
   } // end constructor
 
 
@@ -56,10 +58,14 @@ public class PwPredicateImpl implements PwPredicate {
    * @param key - <code>String</code> - 
    * @return parameter - <code>PwParameter</code> - 
    */
-  public PwParameter addParameter( String name, String key) {
-    PwParameter parameter = new PwParameterImpl( name, key);
-    parameterList.add( parameter);
-    return parameter;
+	//  public PwParameter addParameter( String name, String key) {
+	public PwParameter addParameter(String key)
+	{
+		//PwParameter parameter = new PwParameterImpl( name, key);
+		parameterList.add(key);
+		PwParameter parameter = partialPlan.getParameter(key, collectionName);
+		//parameterList.add( parameter);
+		return parameter;
   } // end addParameter
 
 
