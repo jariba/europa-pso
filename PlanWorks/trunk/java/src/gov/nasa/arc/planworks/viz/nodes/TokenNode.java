@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.16 2003-08-29 22:08:59 taylor Exp $
+// $Id: TokenNode.java,v 1.17 2003-09-05 16:52:41 miatauro Exp $
 //
 // PlanWorks
 //
@@ -267,14 +267,14 @@ public class TokenNode extends BasicNode {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       if (vizView instanceof ConstraintNetworkView) {
         if (! areNeighborsShown) {
-          System.err.println( "doMouseClick: Mouse-L show variable nodes of " +
-                              tokenNode.getPredicateName());
+          //System.err.println( "doMouseClick: Mouse-L show variable nodes of " +
+          //                    tokenNode.getPredicateName());
           addTokenNodeVariables( this);
           setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
           areNeighborsShown = true;
         } else {
-          System.err.println( "doMouseClick: Mouse-L hide variable nodes of " +
-                              tokenNode.getPredicateName());
+          //System.err.println( "doMouseClick: Mouse-L hide variable nodes of " +
+          //                    tokenNode.getPredicateName());
           removeTokenNodeVariables( this);
           setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
           areNeighborsShown = false;

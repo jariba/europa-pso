@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.8 2003-09-04 00:27:36 taylor Exp $
+// $Id: VariableNode.java,v 1.9 2003-09-05 16:52:41 miatauro Exp $
 //
 // PlanWorks
 //
@@ -419,15 +419,15 @@ public class VariableNode extends BasicNode {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       if ((! hasZeroConstraints) && (vizView instanceof ConstraintNetworkView)) {
         if (! areNeighborsShown) {
-          System.err.println
-            ( "doMouseClick: Mouse-L show constraint/token nodes of variable id " +
-              variableNode.getVariable().getId());
+          //System.err.println
+          //  ( "doMouseClick: Mouse-L show constraint/token nodes of variable id " +
+          //    variableNode.getVariable().getId());
           addVariableNodeTokensAndConstraints( this);
           setNodeOpen();
         } else {
-          System.err.println
-            ( "doMouseClick: Mouse-L hide constraint/token nodes of variable id " +
-              variableNode.getVariable().getId());
+          //System.err.println
+          //  ( "doMouseClick: Mouse-L hide constraint/token nodes of variable id " +
+          //    variableNode.getVariable().getId());
           removeVariableNodeTokensAndConstraints( this);
           setNodeClosed();
         }

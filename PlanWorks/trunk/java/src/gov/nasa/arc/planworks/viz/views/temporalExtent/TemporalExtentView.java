@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.12 2003-09-04 00:27:36 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.13 2003-09-05 16:53:31 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -371,10 +371,10 @@ public class TemporalExtentView extends VizView {
                         (maxSlots * slotLabelMinLength * fontMetrics.charWidth( 'A')),
                         ViewConstants.TEMPORAL_MIN_END_X_LOC);
     timeScale = ((float) (endXLoc - startXLoc)) / ((float) (timeScaleEnd - timeScaleStart));
-    System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
-                        " endXLoc " + endXLoc);
-    System.err.println( "Temporal Extent View time scale: " + timeScaleStart + " " +
-                        timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
+    //System.err.println( "computeTimeScaleMetrics: startXLoc " + startXLoc +
+    //                    " endXLoc " + endXLoc);
+    //System.err.println( "Temporal Extent View time scale: " + timeScaleStart + " " +
+    //                   timeScaleEnd + " maxSlots " + maxSlots + " timeScale " + timeScale);
     int timeScaleRange = timeScaleEnd - timeScaleStart;
     timeDelta = 5;
     int maxIterationCnt = 25, iterationCnt = 0;
@@ -682,7 +682,7 @@ public class TemporalExtentView extends VizView {
 
   private void iterateOverNodes() {
     int numTemporalNodes = temporalNodeList.size();
-    System.err.println( "iterateOverNodes: numTemporalNodes " + numTemporalNodes);
+    //System.err.println( "iterateOverNodes: numTemporalNodes " + numTemporalNodes);
     Iterator temporalIterator = temporalNodeList.iterator();
     while (temporalIterator.hasNext()) {
       TemporalNode temporalNode = (TemporalNode) temporalIterator.next();
@@ -698,8 +698,8 @@ public class TemporalExtentView extends VizView {
     while (position != null) {
       JGoObject object = jGoDocument.getObjectAtPos( position);
       position = jGoDocument.getNextObjectPosAtTop( position);
-      System.err.println( "iterateOverJGoDoc: position " + position +
-                          " className " + object.getClass().getName());
+      //System.err.println( "iterateOverJGoDoc: position " + position +
+      //                   " className " + object.getClass().getName());
       if (object instanceof TemporalNode) {
         TemporalNode temporalNode = (TemporalNode) object;
 
@@ -709,7 +709,7 @@ public class TemporalExtentView extends VizView {
 //         break;
 //       }
     }
-    System.err.println( "iterateOverJGoDoc: cnt " + cnt);
+    //System.err.println( "iterateOverJGoDoc: cnt " + cnt);
   } // end iterateOverJGoDocument
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.44 2003-08-29 21:57:24 miatauro Exp $
+// $Id: PlanWorks.java,v 1.45 2003-09-05 16:50:48 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -430,7 +430,7 @@ public class PlanWorks extends MDIDesktopFrame {
         isProjectCreated = true;
         currentProjectName = inputName;
         currentSequenceDirectory = sequenceDirectory;
-        System.err.println( "Create Project: " + currentProjectName);
+        //System.err.println( "Create Project: " + currentProjectName);
         this.setTitle( name + " of Project =>  " + currentProjectName);
         setProjectMenuEnabled( DELETE_MENU, true);
         setProjectMenuEnabled( ADDSEQ_MENU, true);
@@ -503,7 +503,7 @@ public class PlanWorks extends MDIDesktopFrame {
           try {
             project = PwProject.getProject( projectName);
             currentProjectName = projectName;
-            System.err.println( "Open Project: " + currentProjectName);
+            //System.err.println( "Open Project: " + currentProjectName);
             this.setTitle( name + " of Project =>  " + currentProjectName);
             if (getProjectsLessCurrent().size() == 0) {
               setProjectMenuEnabled( OPEN_MENU, false);
@@ -655,7 +655,7 @@ public class PlanWorks extends MDIDesktopFrame {
       try {
         currentProject.addPlanningSequence( sequenceDirectory);
         isSequenceAdded = true;
-        System.err.println( "Adding sequence " + sequenceDirectory);
+        //System.err.println( "Adding sequence " + sequenceDirectory);
       } catch (DuplicateNameException dupExcep) {
         int index = dupExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog
@@ -812,7 +812,7 @@ public class PlanWorks extends MDIDesktopFrame {
     }
     seqPartialPlanViewMenu.removeAll();
     sequenceNameMap = new HashMap();
-    System.err.println( "buildSeqPartialPlanViewMenu");
+    //System.err.println( "buildSeqPartialPlanViewMenu");
     List planSeqNames = project.listPlanningSequences();
     Collections.sort(planSeqNames, new SeqNameComparator());
     Iterator seqUrlsItr = planSeqNames.iterator();
@@ -834,7 +834,7 @@ public class PlanWorks extends MDIDesktopFrame {
       if(nameCount > 0) {
         seqName = seqName.concat(" (").concat(Integer.toString(nameCount)).concat(")");
       }
-      System.err.println( "  sequenceName " + seqName);
+      //System.err.println( "  sequenceName " + seqName);
       sequenceNameMap.put(seqUrl, seqName);
       JMenu seqMenu = new JMenu( seqName);
       seqPartialPlanViewMenu.add( seqMenu);
@@ -844,7 +844,7 @@ public class PlanWorks extends MDIDesktopFrame {
           project.getPlanningSequence( seqUrl).listPartialPlanNames().iterator();
         while (ppNamesItr.hasNext()) {
           String partialPlanName = (String) ppNamesItr.next();
-          System.err.println( "    partialPlanName " + partialPlanName);
+          //System.err.println( "    partialPlanName " + partialPlanName);
           JMenu partialPlanMenu = new JMenu( partialPlanName);
           buildViewSubMenu( partialPlanMenu, seqUrl, partialPlanName);
           seqMenu.add( partialPlanMenu);

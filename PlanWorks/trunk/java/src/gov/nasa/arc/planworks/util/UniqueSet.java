@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: UniqueSet.java,v 1.3 2003-09-05 16:52:22 miatauro Exp $
+//
 package gov.nasa.arc.planworks.util;
 
 import java.util.ArrayList;

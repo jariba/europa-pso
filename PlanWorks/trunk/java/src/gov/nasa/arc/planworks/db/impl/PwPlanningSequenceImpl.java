@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.28 2003-08-28 20:45:23 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.29 2003-09-05 16:51:10 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -65,7 +65,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    */
   public PwPlanningSequenceImpl( String url, Integer id, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException, SQLException {
-    System.err.println("In PwPlanningSequenceImpl(String, Integer, PwProjectImpl, PwModelImpl");
+    //System.err.println("In PwPlanningSequenceImpl(String, Integer, PwProjectImpl, PwModelImpl");
     this.url = url;
     this.id = id;
     this.projectName = project.getName();
@@ -104,7 +104,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    */ 
   public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException, SQLException {
-    System.err.println("In PwPlanningSequenceImpl(String, PwProjectImpl, PwModelImpl)");
+    //System.err.println("In PwPlanningSequenceImpl(String, PwProjectImpl, PwModelImpl)");
     this.url = url;
     this.projectName = project.getName();
     this.model = model;
@@ -264,7 +264,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    */
   public PwPartialPlan addPartialPlan(String partialPlanName) 
     throws ResourceNotFoundException, SQLException {
-    System.err.println("In addPartialPlan");
+    //System.err.println("In addPartialPlan");
     int index = -1;
     if((index = partialPlanNames.indexOf(partialPlanName)) != -1) {
       PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, id);

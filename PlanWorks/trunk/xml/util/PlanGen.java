@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: PlanGen.java,v 1.8 2003-09-05 16:54:15 miatauro Exp $
+//
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
