@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwParameterImpl.java,v 1.4 2003-06-25 17:04:04 taylor Exp $
+// $Id: PwParameterImpl.java,v 1.5 2003-06-26 18:19:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -29,7 +29,7 @@ import gov.nasa.arc.planworks.db.PwParameter;
 public class PwParameterImpl implements PwParameter {
 
   private String name;
-  private int key;
+  private Integer key;
 
   /**
    * <code>Parameter</code> - constructor 
@@ -37,7 +37,7 @@ public class PwParameterImpl implements PwParameter {
    * @param name - <code>String</code> - 
    * @param key - <code>int</code> - 
    */
-  public PwParameterImpl( String name, int key) {
+  public PwParameterImpl( Integer key, String name) {
     this.name = name;
     this.key = key;
   } // end constructor
@@ -56,7 +56,7 @@ public class PwParameterImpl implements PwParameter {
    *
    * @return name - <code>int</code> -
    */
-  public int getKey() {
+  public Integer getKey() {
     return key;
   }
 	

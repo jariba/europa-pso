@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwSlotImpl.java,v 1.8 2003-06-12 23:49:46 taylor Exp $
+// $Id: PwSlotImpl.java,v 1.9 2003-06-26 18:19:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -29,17 +29,17 @@ import gov.nasa.arc.planworks.db.PwSlot;
  */
 public class PwSlotImpl implements PwSlot {
 
-  private String key;
+  private Integer key;
   private List tokenIdList; // element String
   private PwPartialPlanImpl partialPlan;
 
   /**
    * <code>PwSlotImpl</code> - constructor 
    *
-   * @param key - <code>String</code> - 
+   * @param key - <code>int</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwSlotImpl( String key, PwPartialPlanImpl partialPlan) {
+  public PwSlotImpl( Integer key, PwPartialPlanImpl partialPlan) {
     this.key = key;
     this.partialPlan = partialPlan;
     tokenIdList = new ArrayList();
@@ -49,9 +49,9 @@ public class PwSlotImpl implements PwSlot {
   /**
    * <code>getKey</code>
    *
-   * @return name - <code>String</code> -
+   * @return name - <code>int</code> -
    */
-  public String getKey() {
+  public Integer getKey() {
     return key;
   }
 	
@@ -63,7 +63,7 @@ public class PwSlotImpl implements PwSlot {
   public List getTokenList() {
     List retval = new ArrayList( tokenIdList.size());
     for (int i = 0; i < tokenIdList.size(); i++)
-      retval.add( partialPlan.getToken( (String)tokenIdList.get( i)));
+      retval.add( partialPlan.getToken( (Integer)tokenIdList.get( i)));
     return retval;
   }
 
@@ -73,11 +73,15 @@ public class PwSlotImpl implements PwSlot {
    * @param attributeList - <code>List</code> - 
    * @return - <code>PwTokenImpl</code> - 
    */
-  public PwTokenImpl addToken( List attributeList) {
-    String tokenKey = (String) attributeList.get( 0);
-    PwTokenImpl token = new PwTokenImpl( attributeList, partialPlan);
-    tokenIdList.add( tokenKey);
-    partialPlan.addToken( tokenKey, token);
+  public PwTokenImpl addToken(Integer key, boolean isValueToken, Integer slotId, 
+                              Integer predicateId, Integer startVarId, Integer endVarId, 
+                              Integer durationVarId, Integer objectVarId, Integer rejectVarId, 
+                              List tokenRelationIds, List paramVarIds) {
+    PwTokenImpl token = new PwTokenImpl(key, isValueToken, slotId, predicateId, startVarId, 
+                                        endVarId, durationVarId, objectVarId, rejectVarId, 
+                                        tokenRelationIds, paramVarIds);
+    tokenIdList.add( key);
+    partialPlan.addToken( key, token);
     return token;
   } // end addToken
 

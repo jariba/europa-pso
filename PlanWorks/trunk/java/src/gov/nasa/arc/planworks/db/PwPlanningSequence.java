@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.7 2003-06-19 00:31:19 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.8 2003-06-26 18:18:28 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,7 @@
 
 package gov.nasa.arc.planworks.db;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
@@ -93,7 +94,7 @@ public interface PwPlanningSequence {
    * @return - <code>PwPartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract PwPartialPlan addPartialPlan( String url, String partialPlanName)
-    throws ResourceNotFoundException;
+  public abstract PwPartialPlan addPartialPlan( String partialPlanName)
+    throws ResourceNotFoundException, SQLException;
 
 } // end interface PwPlanningSequence

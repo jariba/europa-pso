@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.10 2003-06-25 16:40:01 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.11 2003-06-26 18:19:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -15,7 +15,10 @@ package gov.nasa.arc.planworks.db.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -23,8 +26,7 @@ import gov.nasa.arc.planworks.db.PwModel;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwTransaction;
-import gov.nasa.arc.planworks.db.util.XmlFileFilter;
-import gov.nasa.arc.planworks.db.util.XmlFilenameFilter;
+import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.util.FileCopy;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
@@ -38,8 +40,9 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  */
 class PwPlanningSequenceImpl implements PwPlanningSequence {
 
+  private Integer key;
   private String projectName;
-  private String url; //directory containing the partialplan.* files
+  private String url; //directory containing the partialplan directories
   private PwModel model;
 
   private int stepCount;
@@ -56,13 +59,15 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * @param model - <code>PwModelImpl</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
-    throws ResourceNotFoundException {
+  //from new PwProject(blah, true);
+  public PwPlanningSequenceImpl( String url, Integer key, PwProjectImpl project, PwModelImpl model)
+    throws ResourceNotFoundException, SQLException {
     this.url = url;
+    this.key = key;
     this.projectName = project.getName();
     this.model = model;
     stepCount = 0;
-    partialPlans = new ArrayList();
+    partialPlanNames = new ArrayList();
     transactions = new ArrayList();
 
     int index = url.lastIndexOf( System.getProperty( "file.separator"));
@@ -72,60 +77,16 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
                                            System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
-    /*
-    // determine sequences's partial plans (steps)
-    String[] xmlFileNames = new File( url).list( new XmlFilenameFilter());
-    partialPlanNames = new ArrayList();
-    for (int i = 0; i < xmlFileNames.length; i++) {
-      String xmlFileName = xmlFileNames[i];
+    
+    ResultSet partialPlans = 
+      MySQLDB.queryDatabase("SELECT (PlanName) FROM PartialPlan WHERE SequenceId=".concat(key.toString()));
+    while(partialPlans.next()) {
+      partialPlanNames.add(partialPlans.getString("PlanName"));
+      //partialPlans.add(new PwPartialPlan(new Long(partialPlans.getLong("PartialPlanId"))));
       stepCount++;
-      index = xmlFileName.lastIndexOf( ".");
-      partialPlanNames.add( xmlFileName.substring( 0, index));
     }
-    if (xmlFileNames.length == 0) {
-      throw new ResourceNotFoundException( "sequence url '" + url +
-                                           "' does not have any xml files");
-    }
-    // ensure that DTD file is in this directory
-    File dtdFile = new File( url + System.getProperty( "file.separator") +
-                             DbConstants.XML_DTD_FILENAME);
-    if (! dtdFile.exists()) {
-      try {
-        FileCopy.copy( System.getProperty( "xml.dtd.pathname"), dtdFile.getPath());
-      } catch (IOException e) {
-         throw new ResourceNotFoundException( "copying " +
-                                              System.getProperty( "xml.dtd.pathname") +
-                                              " to " + dtdFile.getPath() + " failed");
-      }
-    }
-    for (int i = 0; i < stepCount; i++) {
-      partialPlans.add( null);
-      }*/
-    String [] fileNames = new File(url).list(new FilenameFilter ()
-      {
-        public boolean accept(File dir, String name) {
-          return (name.indexOf(".partialPlan") != -1 || name.indexOf(".objects") != -1 ||
-                  name.indexOf(".timelines") != -1 || name.indexOf(".slots") != -1 ||
-                  name.indexOf(".tokens") != -1 || name.indexOf(".variables") != -1 ||
-                  name.indexOf(".predicates") != -1 || name.indexOf(".parameters") != -1 ||
-                  name.indexOf(".enumeratedDomains") != -1 ||
-                  name.indexOf(".intervalDomains") != -1 || name.indexOf(".constraints") != -1 ||
-                  name.indexOf(".tokenRelations") != -1 ||
-                  name.indexOf(".paramVarTokenMap") != -1 ||
-                  name.indexOf(".constraintVarMap") != -1); 
-        }
-      });
-    HashMap temp = new HashMap();
-    for(int i = 0; i < fileNames.length; i++) {
-      String planName = filenames[i].substring(0, filenames.lastIndexOf("."));
-      if(!temp.containsKey(planName)) {
-        temp.put(planName, new Integer(1));
-      }
-    }
-    partialPlanNames.addAll(temp.keySet());
-    // put these in PwProjectImpl so that its XMLDecode/Encode can access them
-    project.addPartialPlanNames( partialPlanNames);
-  } // end constructor for CreateProject call
+    this.partialPlans = new ArrayList(partialPlanNames.size());
+  }
 
 
   /**
@@ -136,15 +97,14 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * @param model - <code>PwModelImpl</code> - 
    * @param partialPlanNames - <code>List</code> - 
    * @exception ResourceNotFoundException if an error occurs
-   */
-  public PwPlanningSequenceImpl( String url, PwProjectImpl project,
-                                 PwModelImpl model, List partialPlanNames)
+   */ 
+  //from addPlanningSequence(url)
+  public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException {
     this.url = url;
     this.projectName = project.getName();
     this.model = model;
-    this.partialPlanNames = partialPlanNames;
-    partialPlans = new ArrayList();
+    partialPlanNames = new ArrayList();
     transactions = new ArrayList();
 
     int index = url.lastIndexOf( System.getProperty( "file.separator"));
@@ -154,14 +114,27 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
                                            System.getProperty( "file.separator") + "'");
     } 
     name = url.substring( index + 1);
-    stepCount = this.partialPlanNames.size();
-    for (int i = 0; i < stepCount; i++) {
-      partialPlans.add( null);
+    
+    File sequenceDir = new File(url);
+    if(!sequenceDir.isDirectory()) {
+      throw new ResourceNotFoundException("sequence url '" + url + "' is not a directory.");
     }
+    HashMap temp = new HashMap();
+    File [] planDirs = sequenceDir.listFiles();
+    for(int i = 0; i < planDirs.length; i++) {
+      if(planDirs[i].isDirectory()) {
+        temp.put(planDirs[i].getName(), new Integer(0));
+        stepCount++;
+      }
+    }
+    partialPlanNames.addAll(temp.keySet());
+    this.partialPlans = new ArrayList(partialPlanNames.size());
+    // put these in PwProjectImpl so that its XMLDecode/Encode can access them
+    //project.addPartialPlanNames( partialPlanNames);
   } // end constructor for OpenProject call
-
-
-
+  
+  
+  
   // IMPLEMENT INTERFACE 
 
 
@@ -252,28 +225,18 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
    * <code>addPartialPlan</code> -
    *          maintain PwPartialPlanImpl instance ordering of partialPlanNames
    *
-   * @param url - <code>String</code> - 
    * @param partialPlanName - <code>String</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPartialPlan addPartialPlan( String url, String partialPlanName)
-    throws ResourceNotFoundException {
-    for (int index = 0, n = partialPlanNames.size(); index < n; index++) {
-      if (((String) partialPlanNames.get( index)).equals( partialPlanName)) {
-        PwPartialPlan partialPlan =
-          new PwPartialPlanImpl( url + System.getProperty( "file.separator") +
-                                 partialPlanName, projectName, name);
-        partialPlans.set( index, partialPlan);
-        return partialPlan;
-      }
+  public PwPartialPlan addPartialPlan(String partialPlanName) 
+    throws ResourceNotFoundException, SQLException {
+    int index = -1;
+    if((index = partialPlanNames.indexOf(partialPlanName)) != -1) {
+      PwPartialPlan partialPlan =
+        new PwPartialPlanImpl(url, partialPlanName, key);
+      partialPlans.set(index, partialPlan);
+      return partialPlan;
     }
-    return null;
-  } // end addPartialPlan
-
-
-  // END INTERFACE IMPLEMENTATION 
-
-
-
-
-} // end class PwPlanningSequenceImpl
+    throw new ResourceNotFoundException("Failed to find plan " + partialPlanName + " in sequence " + name);
+  }
+}

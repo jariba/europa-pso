@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.8 2003-06-19 00:31:20 taylor Exp $
+// $Id: PwProject.java,v 1.9 2003-06-26 18:18:45 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,8 @@
 
 package gov.nasa.arc.planworks.db;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import gov.nasa.arc.planworks.db.impl.PwProjectImpl;
@@ -37,7 +39,7 @@ public abstract class PwProject {
    *
    * @exception ResourceNotFoundException if an error occurs
    */
-  public static void initProjects() throws ResourceNotFoundException {
+  public static void initProjects() throws ResourceNotFoundException, SQLException, IOException {
     PwProjectImpl.initProjects();
   }
 
@@ -52,7 +54,7 @@ public abstract class PwProject {
    * @exception ResourceNotFoundException if an error occurs
    */
   public static PwProject createProject( String url)
-    throws DuplicateNameException, ResourceNotFoundException {
+    throws DuplicateNameException, ResourceNotFoundException, SQLException {
     return (new PwProjectImpl( url));
   }
 
@@ -76,23 +78,6 @@ public abstract class PwProject {
   public static List listProjects() {
     return PwProjectImpl.listProjects();
   }
-
-  /**
-   * <code>saveProjects</code> - save project names & urls in /xml/proj/projects.xml
-   *                             and save project specific info in separate files
-   *
-   * @exception Exception if an error occurs
-   */
-  public static void saveProjects() throws Exception {
-    PwProjectImpl.saveProjects();
-  }
-
-  /**
-   * <code>getUrl</code> - return project URL 
-   *
-   * @return - <code>String</code> - 
-   */
-  public abstract String getUrl();
 
   /**
    * <code>getName</code> - return project name (directory containing
@@ -121,47 +106,13 @@ public abstract class PwProject {
     throws ResourceNotFoundException;
 
   /**
-   * <code>getPlanningSequenceNames</code> - return project's sequence names
-   *
-   * @return - <code>List</code> - of String
-   */
-  public abstract List getPlanningSequenceNames();
-
-  /**
-   * <code>getPartialPlanNames</code> - return project's partial plan names for
-   *                                    specified <code>seqName</code>
-   *
-   * @param seqName - <code>String</code> - 
-   * @return - <code>List</code> - of List of String
-   */
-  public abstract List getPartialPlanNames( String seqName);
-
-  /**
    * <code>close</code> - remove project from /xml/proj/projects.xml, and
    *                      remove /xml/proj/<projectName>.xml
    *
    * @exception Exception if an error occurs
    * @exception ResourceNotFoundException if an error occurs
    */
-  public abstract void close() throws Exception, ResourceNotFoundException;
-
-  /**
-   * <code>requiresSaving</code> - indicates to <code>save</code> that this
-   *                               project's info should be written to
-   *                               /xml/proj/<projectName>.xml
-   *
-   * @return - <code>boolean</code> - 
-   */
-  public abstract boolean requiresSaving();
-
-  /**
-   * <code>save</code> - save project url, name, & seqNames in /xml/proj/<projectName>.xml
-   *
-   * @exception Exception if an error occurs
-   */
-  public abstract void save() throws Exception;
-
-
+  public abstract void delete() throws Exception, ResourceNotFoundException;
 
 
 } // end class PwProject

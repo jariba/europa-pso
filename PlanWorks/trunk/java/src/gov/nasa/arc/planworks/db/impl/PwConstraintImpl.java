@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwConstraintImpl.java,v 1.5 2003-06-25 17:04:04 taylor Exp $
+// $Id: PwConstraintImpl.java,v 1.6 2003-06-26 18:20:07 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,7 +30,7 @@ import gov.nasa.arc.planworks.db.PwConstraint;
 public class PwConstraintImpl implements PwConstraint {
 
   private String name;
-  private int key;
+  private Integer key;
   private String type;
   private List variableIds; // element Integer
   private PwPartialPlanImpl partialPlan;
@@ -45,7 +45,7 @@ public class PwConstraintImpl implements PwConstraint {
    * @param variableIds - <code>List of Integer</code> -
    * @param partialPlan - <code>PwPartialPlan</code> - 
    */
-  public PwConstraintImpl( String name, int key, String type, List variableIds,
+  public PwConstraintImpl( String name, Integer key, String type, List variableIds,
                            PwPartialPlanImpl partialPlan) {
     this.name = name;
     this.key = key;
@@ -69,7 +69,7 @@ public class PwConstraintImpl implements PwConstraint {
    *
    * @return name - <code>int</code> -
    */
-  public int getKey() {
+  public Integer getKey() {
     return key;
   }
 	
@@ -90,7 +90,7 @@ public class PwConstraintImpl implements PwConstraint {
   public List getVariablesList() {
     List retval = new ArrayList( variableIds.size());
     for (int i = 0; i < variableIds.size(); i++) {
-      retval.add( partialPlan.getVariable( ((Integer) variableIds.get( i)).intValue()));
+      retval.add( partialPlan.getVariable((Integer) variableIds.get( i)));
     }
     return retval;
   }

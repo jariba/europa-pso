@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTimelineImpl.java,v 1.8 2003-06-12 23:49:46 taylor Exp $
+// $Id: PwTimelineImpl.java,v 1.9 2003-06-26 18:19:50 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -30,17 +30,17 @@ import gov.nasa.arc.planworks.db.PwTimeline;
 public class PwTimelineImpl implements PwTimeline {
 
   private String name;
-  private String key;
+  private Integer key;
   private List slotIdList;
   private PwPartialPlanImpl partialPlan;
   /**
    * <code>Timeline</code> - constructor 
    *
    * @param name - <code>String</code> - 
-   * @param key - <code>String</code> - 
+   * @param key - <code>int</code> - 
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
-  public PwTimelineImpl( String name, String key, PwPartialPlanImpl partialPlan) {
+  public PwTimelineImpl( String name, Integer key, PwPartialPlanImpl partialPlan) {
     this.name = name;
     this.key = key;
     this.partialPlan = partialPlan;
@@ -59,9 +59,9 @@ public class PwTimelineImpl implements PwTimeline {
   /**
    * <code>getKey</code>
    *
-   * @return name - <code>String</code> -
+   * @return name - <code>int</code> -
    */
-  public String getKey() {
+  public Integer getKey() {
     return key;
   }
 	
@@ -73,7 +73,7 @@ public class PwTimelineImpl implements PwTimeline {
   public List getSlotList() {
     List retval = new ArrayList( slotIdList.size());
     for (int i = 0; i < slotIdList.size(); i++) {
-      retval.add( partialPlan.getSlot( (String) slotIdList.get(i)));
+      retval.add( partialPlan.getSlot( (Integer) slotIdList.get(i)));
     }
     return retval;
   }
@@ -81,10 +81,10 @@ public class PwTimelineImpl implements PwTimeline {
   /**
    * <code>addSlot</code>
    *
-   * @param key - <code>String</code> - 
+   * @param key - <code>int</code> - 
    * @return slot - <code>PwSlotImpl</code> - 
    */
-  public PwSlotImpl addSlot( String key) {
+  public PwSlotImpl addSlot( Integer key) {
     PwSlotImpl slot = new PwSlotImpl( key, partialPlan);
     slotIdList.add( key);
     partialPlan.addSlot( key, slot);
