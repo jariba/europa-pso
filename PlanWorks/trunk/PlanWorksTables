@@ -457,12 +457,31 @@ CREATE TABLE Transaction (
   TransactionId int(11) NOT NULL default '0',
   StepNumber int(11) NOT NULL default '0',
   SequenceId bigint(20) NOT NULL default '0',
-  PartialPlanId bigint(20) NOT NULL default '0'
+  PartialPlanId bigint(20) NOT NULL default '0',
+  TransactionInfo blob NOT NULL,
+  PRIMARY KEY (PartialPlanId,TransactionId),
+  INDEX (SequenceId), INDEX (StepNumber)
 ) TYPE=MyISAM;
 
 --
 -- Dumping data for table 'Transaction'
 --
+
+--
+-- Table structure for table 'PartialPlanStats'
+--
+
+CREATE TABLE PartialPlanStats (
+  SequenceId bigint(20) NOT NULL default '0',
+  PartialPlanId bigint(20) NOT NULL default '0',
+  StepNum int(11) NOT NULL default '0',
+  NumTokens int(11) NOT NULL default '0',
+  NumVariables int(11) NOT NULL default '0',
+  NumConstraints int(11) NOT NULL default '0',
+  NumTransactions int(11) NOT NULL default '0',
+  PRIMARY KEY (SequenceId, PartialPlanId),
+  INDEX (StepNum)
+) TYPE=MyISAM;
 
 --------------060506080005040106060505--
 

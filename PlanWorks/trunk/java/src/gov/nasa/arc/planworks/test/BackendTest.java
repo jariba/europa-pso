@@ -26,7 +26,9 @@ public class BackendTest extends TestCase {
     try {
       MySQLDB.startDatabase();
       MySQLDB.registerDatabase();
-      MySQLDB.loadFile(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat("test.sequence"), "Sequence");
+      MySQLDB.loadFile(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat("sequence"), "Sequence");
+      MySQLDB.loadFile(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat("transactions"), "Transaction");
+      MySQLDB.loadFile(System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat("partialPlanStats"), "PartialPlanStats");
       String p1 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step1).concat(System.getProperty("file.separator")).concat(step1).concat(".");
       String p2 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step2).concat(System.getProperty("file.separator")).concat(step2).concat(".");
       String p3 = System.getProperty("planworks.test.data.dir").concat(System.getProperty("file.separator")).concat(sequenceName).concat(System.getProperty("file.separator")).concat(step3).concat(System.getProperty("file.separator")).concat(step3).concat(".");
@@ -313,9 +315,9 @@ public class BackendTest extends TestCase {
         plan2TransactionIterator.remove();
       }
     }
-    assertTrue("Failed to instantiate all transactions in db.", plan1TransactionIds.size() == 0);
+    assertTrue("Failed to instantiate all transactions in db", plan1TransactionIds.size() == 0);
     assertTrue("Instantiated transactions not in db.", plan1Transactions.size() == 0);
-    assertTrue("Failed to instantiate all transactions in db.", plan2TransactionIds.size() == 0);
+    assertTrue("Failed to instantiate all transactions in db " + plan2TransactionIds.size(), plan2TransactionIds.size() == 0);
     assertTrue("Instantiated transactions not in db.", plan2Transactions.size() == 0);
     testQueriesForConstraint();
     testQueriesForToken();
@@ -335,9 +337,10 @@ public class BackendTest extends TestCase {
                transactions.size() == 1);
     List steps = MySQLDB.queryStepsWithConstraintTransaction(sequence.getId(), new Integer(53), 
                                                              "CONSTRAINT_CREATED");
+    String check = "106814074228136";
     assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 1", steps.size() == 1);
-    assertTrue("Incorret step.  Is " + ((Integer)steps.get(0)) + " should be 2", 
-               ((Integer)steps.get(0)).equals(new Integer(2)));
+    assertTrue("Incorret step.  Is " + steps.get(0) + " should be " + check, 
+               ((String)steps.get(0)).equals(check));
   }
 
   private void testQueriesForToken() {
@@ -348,35 +351,37 @@ public class BackendTest extends TestCase {
                transactions.size() == 2);
     List steps = MySQLDB.queryStepsWithTokenTransaction(sequence.getId(), new Integer(21),
                                                         "TOKEN_INSERTED");
+    String check = "106814074228134";
     assertTrue("Wrong number of steps.  Is " + steps.size() + " should be 1", steps.size() == 1);
-    assertTrue("Incorrect step.  Is " + ((Integer)steps.get(0)) + " should be 2", 
-               ((Integer)steps.get(0)).equals(new Integer(2)));
+    assertTrue("Incorrect step.  Is " + steps.get(0) + " should be " + check, 
+               ((String)steps.get(0)).equals(check));
   }
 
   private void testQueriesForVariable() {
     List transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(2));
     assertTrue(transactions.size() == 0);
     transactions = MySQLDB.queryTransactionsForVariable(sequence.getId(), new Integer(50));
-    assertTrue(transactions.size() == 1);
+    assertTrue(transactions.size() == 3);
     List steps = MySQLDB.queryStepsWithVariableTransaction(sequence.getId(), new Integer(50),
                                                            "VARIABLE_CREATED");
+    String check = "106814074228140";
     assertTrue(steps.size() == 1);
-    assertTrue(((Integer)steps.get(0)).equals(new Integer(2)));
+    assertTrue(((String)steps.get(0)).equals(check));
   }
 
   private void testQueriesForRestrictionsAndRelaxations() {
     List steps = MySQLDB.queryStepsWithRestrictions(sequence.getId());
-    assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 4", steps.size() == 4);
-    assertTrue(((Integer)steps.get(0)).equals(new Integer(2)));
+    assertTrue("Wrong number of steps.  Was " + steps.size() + " should be 1264", 
+               steps.size() == 1264);
+    String check = "106814073957715";
+    assertTrue(((String)steps.get(0)).equals(check));
     steps = MySQLDB.queryStepsWithRelaxations(sequence.getId());
     assertTrue(steps.size() == 0);
   }
   private void testQueriesForDecisions() {
     List steps = MySQLDB.queryStepsWithUnitVariableDecisions(sequence);
-    assertTrue(steps.size() == 1);
-    assertTrue(((Integer)steps.get(0)).equals(new Integer(9)));
+    assertTrue(steps.size() == 0);
     steps = MySQLDB.queryStepsWithNonUnitVariableDecisions(sequence);
-    assertTrue(steps.size() == 1);
-    assertTrue(((Integer)steps.get(0)).equals(new Integer(1)));
+    assertTrue(steps.size() == 0);
   }
 }

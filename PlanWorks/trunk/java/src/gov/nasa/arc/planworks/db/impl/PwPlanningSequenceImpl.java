@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.56 2003-11-06 00:02:17 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.57 2003-11-06 21:52:37 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -90,7 +90,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     contentSpec = new ArrayList();
    
     partialPlans = new HashMap();
-    ListIterator planNameIterator = MySQLDB.getPlanNamesInSequence(id).listIterator();
+    //ListIterator planNameIterator = MySQLDB.getPlanNamesInSequence(id).listIterator();
+    ListIterator planNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
     while(planNameIterator.hasNext()) {
       partialPlans.put((String) planNameIterator.next(), null);
       stepCount++;
@@ -122,60 +123,37 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     } 
     name = url.substring( index + 1);
     contentSpec = new ArrayList();
-    
-    MySQLDB.addSequence(url, project.getId());
-    this.id = MySQLDB.latestSequenceId();
     File sequenceDir = new File(url);
     if(!sequenceDir.isDirectory()) {
       throw new ResourceNotFoundException("sequence url '" + url + "' is not a directory.");
     }
-    HashMap temp = new HashMap();
-    File [] planDirs = sequenceDir.listFiles();
-    long t1 = 0;
-    timeSpentLoadingFiles = 0L;
-    timeSpentAnalyzingDatabase = 0L;
-    for(int i = 0; i < planDirs.length; i++) {
-      if(planDirs[i].isDirectory()) {
-        String [] names = planDirs[i].list(new PwSQLFilenameFilter());
-        if(names.length == DbConstants.NUMBER_OF_PP_FILES) {
-          partialPlans.put(planDirs[i].getName(), null);
-          stepCount++;
-          long start = System.currentTimeMillis();
-          loadFiles(planDirs[i]);
-          t1 += System.currentTimeMillis() - start;
-        }
-      }
-    }
-    System.err.println("Loading files took " + t1 + "ms");
-    System.err.println("Spent " + timeSpentLoadingFiles + "ms loading files.");
-    t1 = System.currentTimeMillis();
+
+    this.id = MySQLDB.addSequence(url, project.getId());
+    loadTransactionFile();
+    loadStatsFile();
     MySQLDB.analyzeDatabase();
-    timeSpentAnalyzingDatabase += System.currentTimeMillis() - t1;
-    System.err.println("Spent " + timeSpentAnalyzingDatabase + "ms analyzing the database");
     loadTransactions();
+    ListIterator ppNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();
+    while(ppNameIterator.hasNext()) {
+      partialPlans.put(ppNameIterator.next(), null);
+      stepCount++;
+    }
   } // end constructor for OpenProject call
   
 
-  private void loadFiles(File planDir) {
-    String [] fileNames = planDir.list(new PwSQLFilenameFilter());
-    for(int i = 0; i < fileNames.length; i++) {
-      String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".") + 1);
-      tableName = tableName.substring(0,1).toUpperCase().concat(tableName.substring(1));
-      if(tableName.lastIndexOf("s") == tableName.length() - 1) {
-        tableName = tableName.substring(0, tableName.length() - 1);
-      }
-      if(tableName.equals("Constraint")) {
-        tableName = "VConstraint";
-      }
-      long t1 = System.currentTimeMillis();
-      MySQLDB.loadFile(planDir.getAbsolutePath().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
-      timeSpentLoadingFiles += System.currentTimeMillis() - t1;
-    }
+  private void loadTransactionFile() {
+    MySQLDB.loadFile(url + System.getProperty("file.separator") + "transactions", "Transaction");
+  }
+
+  private void loadStatsFile() {
+    MySQLDB.loadFile(url + System.getProperty("file.separator") + "partialPlanStats",
+                     "PartialPlanStats");
   }
 
   private void loadTransactions() {
     long t1 = System.currentTimeMillis();
     transactions = MySQLDB.queryTransactions(id);
+    System.err.println(transactions.keySet().size() + " transactions.");
     System.err.println("Loading transactions took " + (System.currentTimeMillis() - t1) + "ms");
   }
   
@@ -487,8 +465,9 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     return getTransactionsById(MySQLDB.queryStepsWithNonUnitVariableDecisions(this));
   }
 
-  public int getPlanDBSize(int stepNum) throws IndexOutOfBoundsException {
+  public int [] getPlanDBSize(int stepNum) throws IndexOutOfBoundsException {
     if(stepNum < 0 || stepNum > stepCount) {
+      System.err.println(stepNum + " is OOB");
       throw new IndexOutOfBoundsException();
     }
     return MySQLDB.queryPartialPlanSize(getPartialPlanId(stepNum));
@@ -499,7 +478,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   }
 
   private Long getPartialPlanId(int stepNum) {
-    return getPartialPlanId("step".concat(Integer.toString(stepNum)));
+    //return getPartialPlanId("step".concat(Integer.toString(stepNum)));
+    return MySQLDB.queryPartialPlanId(id, stepNum);
   }
 
   private Long getPartialPlanId(String stepName) {

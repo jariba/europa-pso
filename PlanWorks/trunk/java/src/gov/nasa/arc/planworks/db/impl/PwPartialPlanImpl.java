@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.55 2003-11-06 00:02:17 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.56 2003-11-06 21:52:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -92,9 +92,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     predicateMap = new HashMap();
     tokenRelationMap = new HashMap(); 
     variableMap = new HashMap();
-    // PlanWorks.renderPartialPlanView invokes setName() to set this.seqName
-//     this.seqName = url.substring(url.lastIndexOf(System.getProperty("file.separator")) + 1).
-//       concat(System.getProperty("file.separator")).concat(planName);    
+
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
     contentSpec = new ArrayList();
     this.name = planName;
@@ -109,36 +107,21 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    */
 
   private void createPartialPlan() throws ResourceNotFoundException {
-    //System.err.println( "Creating PwPartialPlan  ..." + url);
     long startTimeMSecs = System.currentTimeMillis();
     long loadTime = 0L;
     HashMap existingPartialPlan = null;
-    /*if(!MySQLDB.partialPlanExists(sequenceId, name)) {
-      String [] fileNames = new File(url).list(new PwSQLFilenameFilter());
-      for(int i = 0; i < fileNames.length; i++) {
-        String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".")+1);
-        tableName = tableName.substring(0,1).toUpperCase().concat(tableName.substring(1));
-        if(tableName.lastIndexOf("s") == tableName.length()-1) {
-          tableName = tableName.substring(0, tableName.length()-1);
-        }
-        if(tableName.equals("Constraint")) {
-          tableName = "VConstraint";
-        }
-        long time1 = System.currentTimeMillis();
-        MySQLDB.loadFile(url.toString().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
-        loadTime += System.currentTimeMillis() - time1;
-      }
-      //MySQLDB.updatePartialPlanSequenceId(sequenceId);
-      MySQLDB.analyzeDatabase();
-      }*/
-    //id = MySQLDB.getNewPartialPlanId(sequenceId, name);
     id = MySQLDB.getPartialPlanIdByName(sequence.getId(), name);
-    //System.err.println("LOAD DATA INFILE time " + loadTime + "ms.");
+    if(id == null) {
+      File planDir = new File(sequence.getUrl() + System.getProperty("file.separator") +
+                              name);
+      loadFiles(planDir);
+      MySQLDB.analyzeDatabase();
+      id = MySQLDB.getPartialPlanIdByName(sequence.getId(), name);
+    }
     MySQLDB.createObjects(this);
     model = MySQLDB.queryPartialPlanModelById(id);
-    //System.err.println("Creating Timeline/Slot/Token structure");
     MySQLDB.createTimelineSlotTokenNodesStructure(this);
-    //System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
+    System.err.println( "Creating constraint, predicate, tokenRelation, & variable ...");
     long start2TimeMSecs = System.currentTimeMillis();
     fillElementMaps();
     long stop2TimeMSecs = System.currentTimeMillis();
@@ -150,8 +133,22 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     cleanConstraints();
     cleanTransactions();
     //checkPlan();
-    //reorderSlots();
   } // end createPartialPlan
+
+  private void loadFiles(File planDir) {
+    String [] fileNames = planDir.list(new PwSQLFilenameFilter());
+    for(int i = 0; i < fileNames.length; i++) {
+      String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".") + 1);
+      tableName = tableName.substring(0,1).toUpperCase().concat(tableName.substring(1));
+      if(tableName.lastIndexOf("s") == tableName.length() - 1) {
+        tableName = tableName.substring(0, tableName.length() - 1);
+      }
+      if(tableName.equals("Constraint")) {
+        tableName = "VConstraint";
+      }
+      MySQLDB.loadFile(planDir.getAbsolutePath().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
+    }
+  }
 
   /**
    * <code>fillElementMaps</code> - construct constraint, predicate, token relation, and variable
@@ -191,14 +188,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * @return - <code>List</code> - of Integer
    */
   public List getObjectIdList() {
-    /*Object [] temp = objectMap.keySet().toArray();
-    Integer [] objectIds = new Integer[temp.length];
-    System.arraycopy(temp, 0, objectIds, 0, temp.length);
-    ArrayList retval = new ArrayList();
-    for(int i = 0; i < objectIds.length; i++) {
-      retval.add(objectIds[i]);
-      }
-      return retval;*/
     return new ArrayList(objectMap.keySet());
   }
 
@@ -507,7 +496,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
       while(variableIdIterator.hasNext()) {
         Integer variableId = (Integer) variableIdIterator.next();
         if(!variableMap.containsKey(variableId)) {
-          //constraintMap.remove(constraint.getId());
           constraintIterator.remove();
           removedConstraint = true;
           break;

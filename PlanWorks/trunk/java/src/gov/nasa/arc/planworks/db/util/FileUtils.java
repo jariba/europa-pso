@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.9 2003-10-02 23:16:54 miatauro Exp $
+// $Id: FileUtils.java,v 1.10 2003-11-06 21:52:52 miatauro Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -82,6 +82,7 @@ public class FileUtils {
     }
     //System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
     //                     sequenceDirectory + "' numFiles " + fileNames.length);
+    int seenSequenceFiles = 0;
     for (int i = 0; i < fileNames.length; i++) {
       String fileName = fileNames[i];
       if ((! fileName.equals( "CVS")) &&
@@ -90,6 +91,10 @@ public class FileUtils {
         //System.err.println( "Sequence " + sequenceDirectory +
         //                    " => partialPlanDirName: " + fileName);
         partialPlanDirs.add( fileName);
+      }
+      if(fileName.equals(DbConstants.SEQ_PP_STATS) || fileName.equals(DbConstants.SEQ_FILE) ||
+         fileName.equals(DbConstants.SEQ_TRANSACTIONS)) {
+        seenSequenceFiles++;
       }
     }
     if (partialPlanDirs.size() == 0) {
@@ -107,7 +112,7 @@ public class FileUtils {
         return false;
       }
     }
-    return true;
+    return true && seenSequenceFiles == DbConstants.NUMBER_OF_SEQ_FILES;
   } // end validateSequenceDirectory
 
 } // class FileUtils

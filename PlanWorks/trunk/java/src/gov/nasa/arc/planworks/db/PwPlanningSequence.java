@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.21 2003-11-06 00:02:17 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.22 2003-11-06 21:52:21 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -162,7 +162,7 @@ public interface PwPlanningSequence extends ViewableObject {
 
   public List getStepsWithNonUnitVariableBindingDecisions();
 
-  public int getPlanDBSize(int stepNum) throws IndexOutOfBoundsException;
+  public int [] getPlanDBSize(int stepNum) throws IndexOutOfBoundsException;
   
   public List getPlanDBSizeList();
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.61 2003-10-31 00:50:37 miatauro Exp $
+// $Id: MySQLDB.java,v 1.62 2003-11-06 21:52:52 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -398,9 +398,14 @@ public class MySQLDB {
    * @param projectId The project to which the sequence will be added
    */
 
-  synchronized public static void addSequence(String url, Integer projectId) {
-    String sequenceId = url.substring(url.length()-13);
-    updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId, SequenceId) VALUES ('".concat(url).concat("', ").concat(projectId.toString()).concat(", ").concat(sequenceId).concat(")"));
+  synchronized public static Long addSequence(String url, Integer projectId) {
+    //String sequenceId = url.substring(url.length()-13);
+    //updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId, SequenceId) VALUES ('".concat(url).concat("', ").concat(projectId.toString()).concat(", ").concat(sequenceId).concat(")"));
+    //updateDatabase("INSERT INTO Sequence (SequenceURL, ProjectId)
+    loadFile(url + System.getProperty("file.separator") + "sequence", "Sequence");
+    Long latestSequenceId = latestSequenceId();
+    updateDatabase("UPDATE Sequence SET ProjectId=".concat(projectId.toString()).concat(" WHERE SequenceId=").concat(latestSequenceId.toString()));
+    return latestSequenceId;
   }
 
   /**
@@ -574,12 +579,28 @@ public class MySQLDB {
         queryDatabase(temp.toString());
       partialPlan.last();
       retval = new Long(partialPlan.getLong("PartialPlanId"));
+      if(partialPlan.wasNull()) {
+        return null;
+      }
     }
     catch(SQLException sqle) {
     }
     return retval;
   }
 
+  synchronized public static List queryPartialPlanNames(Long sequenceId) {
+    List retval = new ArrayList();
+    try {
+      ResultSet stepNums = queryDatabase("SELECT StepNum FROM PartialPlanStats WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
+      while(stepNums.next()) {
+        retval.add("step" + stepNums.getInt("StepNum"));
+      }
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
+  
   /**
    * Instantiate PwObjectImpl objects from data in the database
    * 
@@ -605,62 +626,28 @@ public class MySQLDB {
     Map retval = new HashMap();
     try {
       ResultSet transactions =
-        queryDatabase("SELECT Transaction.TransactionType, Transaction.ObjectId, Transaction.Source, Transaction.StepNumber, Transaction.TransactionId, Transaction.PartialPlanId, Token.TokenId, Variable.VariableId, VConstraint.ConstraintId FROM Transaction LEFT JOIN Token ON Token.PartialPlanId=Transaction.PartialPlanId && Token.TokenId=Transaction.ObjectId LEFT JOIN Variable ON Variable.PartialPlanId=Transaction.PartialPlanId && Variable.VariableId=Transaction.ObjectId LEFT JOIN VConstraint ON VConstraint.PartialPlanId=Transaction.PartialPlanId && VConstraint.ConstraintId=Transaction.ObjectId WHERE Transaction.SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY Transaction.PartialPlanId, Transaction.TransactionId"));
-      String [] info = new String [] {"", "", ""};
+        queryDatabase("SELECT TransactionType, ObjectId, Source, TransactionId, StepNumber, PartialPlanId, TransactionInfo FROM Transaction WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY StepNumber, TransactionId"));
+      String [] info = new String [3];
       while(transactions.next()) {
-        if(transactions.getInt("Token.TokenId") == 0 && 
-           transactions.getInt("Variable.VariableId") == 0 &&
-           transactions.getInt("VConstraint.ConstraintId") == 0) {
-          continue;
-        }
-
+        info[0] = info[1] = info[2] = "";
         Long partialPlanId = new Long(transactions.getLong("PartialPlanId"));
         Integer transactionId = new Integer(transactions.getInt("TransactionId"));
         PwTransactionImpl transaction = 
-          new PwTransactionImpl(transactions.getString("TransactionType"),
-                                transactionId, transactions.getString("Source"),
+          new PwTransactionImpl(transactions.getString("TransactionType"), 
+                                transactionId,
+                                transactions.getString("Source"),
                                 new Integer(transactions.getInt("ObjectId")),
                                 new Integer(transactions.getInt("StepNumber")),
                                 sequenceId, partialPlanId);
-        if(transaction.getType().indexOf("TOKEN") != -1) {
-          ResultSet transactionInfo = 
-            queryDatabase("SELECT Token.TokenId, Token.PartialPlanId, Predicate.PredicateName FROM Token LEFT JOIN Predicate ON Predicate.PartialPlanId=Token.PartialPlanId && Predicate.PredicateId=Token.PredicateId WHERE Token.PartialPlanId=".concat(partialPlanId.toString()).concat(" && Token.TokenId=").concat(transaction.getObjectId().toString()).concat(" ORDER BY Token.PartialPlanId, Token.TokenId"));
-          transactionInfo.last();
-          info[0] = transactionInfo.getString("Predicate.PredicateName");
-          info[1] = "";
-          info[2] = "";
-          transaction.setInfo(info);
+        Blob blob = transactions.getBlob("TransactionInfo");
+        String infoStr = new String(blob.getBytes(1, (int) blob.length()));
+        StringTokenizer strTok = new StringTokenizer(infoStr, ",");
+        int index = 0;
+        while(strTok.hasMoreTokens()) {
+          info[index] = strTok.nextToken();
+          index++;
         }
-        else if(transaction.getType().indexOf("VARIABLE") != -1) {
-          ResultSet transactionInfo = 
-            queryDatabase("SELECT Variable.VariableId , Variable.PartialPlanId , Variable.VariableType, Predicate.PredicateName, Predicate.PredicateId, Parameter.ParameterName, Token.PredicateId, ParamVarTokenMap.ParameterId FROM Variable LEFT JOIN Token ON Token.PartialPlanId=Variable.PartialPlanId && Token.TokenId=Variable.TokenId LEFT JOIN Predicate ON Predicate.PartialPlanId=Variable.PartialPlanId && Predicate.PredicateId=Token.PredicateId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId LEFT JOIN Parameter ON Parameter.PartialPlanId=Variable.PartialPlanId && Parameter.PredicateId=Predicate.PredicateId && Parameter.ParameterId=ParamVarTokenMap.ParameterId WHERE Variable.PartialPlanId=".concat(partialPlanId.toString()).concat(" && Variable.VariableId=").concat(transaction.getObjectId().toString()).concat(" ORDER BY Variable.PartialPlanId, Variable.VariableId"));
-          transactionInfo.last();
-          info[0] = transactionInfo.getString("Variable.VariableType");
-          info[1] = transactionInfo.getString("Predicate.PredicateName");
-          if(transactionInfo.wasNull()) {
-            info[1] = "";
-          }
-          info[2] = transactionInfo.getString("Parameter.ParameterName");
-          if(transactionInfo.wasNull()) {
-            info[2] = "";
-          }
-          transaction.setInfo(info);
-        }
-        else if(transaction.getType().indexOf("CONSTRAINT") != -1) {
-          ResultSet transactionInfo =
-            queryDatabase("SELECT ConstraintVarMap.VariableId, ConstraintVarMap.ConstraintId, ConstraintVarMap.PartialPlanId, VConstraint.ConstraintName, Variable.VariableType FROM ConstraintVarMap LEFT JOIN VConstraint ON VConstraint.PartialPlanId=ConstraintVarMap.PartialPlanId && VConstraint.ConstraintId=ConstraintVarMap.ConstraintId LEFT JOIN Variable ON Variable.PartialPlanId=ConstraintVarMap.PartialPlanId && Variable.VariableId=ConstraintVarMap.VariableId WHERE ConstraintVarMap.PartialPlanId=".concat(partialPlanId.toString()).concat(" && ConstraintVarMap.ConstraintId=").concat(transaction.getObjectId().toString()).concat(" ORDER BY ConstraintVarMap.PartialPlanId, ConstraintVarMap.ConstraintId"));
-          transactionInfo.last();
-          info[0] = transactionInfo.getString("VConstraint.ConstraintName");
-          info[1] = transactionInfo.getString("Variable.VariableType");
-          if(transactionInfo.wasNull()) {
-            continue;
-          }
-          info[2] = "";
-          transaction.setInfo(info);
-        }
-        else {
-          System.err.println("Invalid transaction type " + transaction.getType());
-        }
+        transaction.setInfo(info);
         retval.put(partialPlanId.toString() + transactionId.toString(), transaction);
       }
     }
@@ -1131,12 +1118,16 @@ public class MySQLDB {
 
   synchronized public static List queryPartialPlanSizes(Long sequenceId) {
     List retval = new ArrayList();
+    int [] data;
     try {
       ResultSet steps = 
-        queryDatabase("SELECT PartialPlanId FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
+        queryDatabase("SELECT PartialPlanId, NumTokens, NumVariables, NumConstraints FROM PartialPlanStats WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY PartialPlanId"));
       while(steps.next()) {
-        Long stepId = new Long(steps.getLong("PartialPlanId"));
-        retval.add(new Integer(queryPartialPlanSize(stepId)));
+        data = new int[3];
+        data[0] = steps.getInt("NumTokens");
+        data[1] = steps.getInt("NumVariables");
+        data[2] = steps.getInt("NumConstraints");
+        retval.add(data);
       }
     }
     catch(SQLException sqle) {
@@ -1144,25 +1135,32 @@ public class MySQLDB {
     return retval;
   }
 
-  synchronized public static int queryPartialPlanSize(Long partialPlanId) {
-    int retval = 0;
+  synchronized public static int [] queryPartialPlanSize(Long partialPlanId) {
+    int [] retval = new int[3];
     try {
-      ResultSet tokens = 
-        queryDatabase("SELECT COUNT(*) as Size FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
-      ResultSet variables =
-        queryDatabase("SELECT COUNT(*) as Size FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()));
-      ResultSet constraints =
-        queryDatabase("SELECT COUNT(*) as Size FROM VConstraint WHERE PartialPlanId=".concat(partialPlanId.toString())); 
-      tokens.last();
-      variables.last();
-      constraints.last();
-      retval = tokens.getInt("Size") + variables.getInt("Size") + constraints.getInt("Size");
+      ResultSet sizes = 
+        queryDatabase("SELECT NumTokens, NumVariables, NumConstraints FROM PartialPlanStats WHERE PartialPlanId=".concat(partialPlanId.toString()));
+      sizes.last();
+      retval[0] = sizes.getInt("NumTokens");
+      retval[1] = sizes.getInt("NumVaraibles");
+      retval[2] = sizes.getInt("NumConstraints");
     }
     catch(SQLException sqle) {
     }
     return retval;
   }
 
+  synchronized public static Long queryPartialPlanId(Long seqId, int stepNum) {
+    Long retval = null;
+    try {
+      ResultSet ppId = queryDatabase("SELECT PartialPlanId FROM PartialPlanStats WHERE SequenceId=".concat(seqId.toString()).concat(" && StepNum=").concat(Integer.toString(stepNum)));
+      ppId.last();
+      retval = new Long(ppId.getLong("PartialPlanId"));
+    }
+    catch(SQLException sqle) {
+    }
+    return retval;
+  }
   synchronized public static Long queryPartialPlanId(Long seqId, String stepName) {
     Long retval = null;
     try {
