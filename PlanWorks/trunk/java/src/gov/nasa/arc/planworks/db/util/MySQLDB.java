@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.113 2004-07-19 22:28:23 taylor Exp $
+// $Id: MySQLDB.java,v 1.114 2004-07-20 17:42:07 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -464,6 +464,7 @@ public class MySQLDB {
 
   synchronized public static Integer latestProjectId() {
     try {
+      //LAST_INSERT_ID
       ResultSet newId = queryDatabase("SELECT MAX(ProjectId) AS ProjectId from Project");
       newId.last();
       return new Integer(newId.getInt("ProjectId"));
@@ -1170,8 +1171,10 @@ public class MySQLDB {
         List ruleText = rulesText.getList(fileIndex[0]);
         int delimCounter = 0;
         String textArg = "";
-        if(startIndex > ruleText.size()) {
-          throw new IllegalStateException("Start index OOB: " + startIndex + " " + ruleText.size());
+        Integer id = new Integer(rules.getInt("RuleId"));
+        if(ruleText == null || startIndex > ruleText.size()) {
+          retval.put(id, new PwRuleImpl(new Long(rules.getLong("SequenceId")), id, ""));
+          continue;
         }
         if(Utilities.countOccurrences(startDelim, (String) ruleText.get(startIndex)) > 0) {
           for(; endIndex < ruleText.size(); endIndex++) {
@@ -1184,12 +1187,11 @@ public class MySQLDB {
               break;
             }
           }
-          Integer id = new Integer(rules.getInt("RuleId"));
           if(Utilities.countOccurrences(startDelim, textArg) != 
              Utilities.countOccurrences(endDelim, textArg)) {
             throw new IllegalStateException("Close/end delims for rule don't match");
           }
-          retval.put(id, new PwRuleImpl(new Long(rules.getInt("SequenceId")), id, textArg));
+          retval.put(id, new PwRuleImpl(new Long(rules.getLong("SequenceId")), id, textArg));
         }
       }
     }
@@ -1432,23 +1434,17 @@ public class MySQLDB {
   }
 
   //NOTE: these should be changed to just take sequence Ids ~MJI
-  synchronized public static List queryStepsWithUnitVariableDecisions(final PwPlanningSequenceImpl seq) {
+  synchronized public static List queryStepsWithUnitDecisions(final PwPlanningSequenceImpl seq) {
     List retval = new UniqueSet();
     try {
-      ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
-      while(transactedSteps.next()) {
-	int stepNum = transactedSteps.getInt("StepNumber");
-        int varId = transactedSteps.getInt("ObjectId");
-        ResultSet previousSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && ObjectId=").concat(Integer.toString(varId)).concat(" && StepNumber < ").concat(Integer.toString(stepNum)).concat(" ORDER BY StepNumber"));
-        previousSteps.last();
-          int lastStepNum = previousSteps.getInt("StepNumber");
-          if(previousSteps.wasNull()) {
-            continue;
-          }
-          if(varSpecDomainIsSingleton(transactedSteps.getBlob("TransactionInfo")) &&
-             varDerivedDomainIsSingleton(previousSteps.getBlob("TransactionInfo"))) {
-            retval.add(instantiateTransaction(transactedSteps));
-          }
+      ResultSet currentDecisions = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName REGEXP '^(ASSIGN|RETRACT).+DECISION_(SUCCEEDED|FAILED)$'"));
+      currentDecisions.last();
+      System.err.println("Got " + currentDecisions.getRow());
+      currentDecisions.beforeFirst();
+      while(currentDecisions.next()) {
+        ResultSet unitDec = queryDatabase("SELECT DecisionId FROM Decision WHERE PartialPlanId=".concat(Long.toString(currentDecisions.getLong("PartialPlanId"))).concat(" && IsUnit=1"));
+        if(unitDec.last())
+          retval.add(instantiateTransaction(currentDecisions));
       }
     }
     catch(SQLException sqle) {
@@ -1458,16 +1454,14 @@ public class MySQLDB {
     return new ArrayList( retval);
   }
 
-  synchronized public static List queryStepsWithNonUnitVariableDecisions(final PwPlanningSequenceImpl seq) {
+  synchronized public static List queryStepsWithNonUnitDecisions(final PwPlanningSequenceImpl seq) {
     List retval = new ArrayList();
     try {
-      ResultSet transactedSteps = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName='").concat(DbConstants.VARIABLE_DOMAIN_SPECIFIED).concat("'"));
-      while(transactedSteps.next()) {
-	int stepNum = transactedSteps.getInt("StepNumber");
-        int varId = transactedSteps.getInt("ObjectId");
-        if(!varDerivedDomainIsSingleton(transactedSteps.getBlob("TransactionInfo"))) {
-          retval.add(instantiateTransaction(transactedSteps));
-        }
+      ResultSet currentDecisions = queryDatabase("SELECT * FROM Transaction WHERE SequenceId=".concat(seq.getId().toString()).concat(" && TransactionName REGEXP '^(ASSIGN|RETRACT).+DECISION_(SUCCEEDED|FAILED)$'"));
+      while(currentDecisions.next()) {
+        ResultSet unitDec = queryDatabase("SELECT DecisionId FROM Decision WHERE PartialPlanId=".concat(Long.toString(currentDecisions.getLong("PartialPlanId"))).concat(" && IsUnit=0"));
+        if(unitDec.last())
+          retval.add(instantiateTransaction(currentDecisions));
       }
     }
     catch(SQLException sqle) {
