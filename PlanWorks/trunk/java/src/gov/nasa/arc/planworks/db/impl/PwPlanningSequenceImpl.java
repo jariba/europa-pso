@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.21 2003-08-01 22:28:11 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.22 2003-08-07 01:16:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -29,6 +29,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwTransaction;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.FileCopy;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
@@ -130,19 +131,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence {
     File [] planDirs = sequenceDir.listFiles();
     for(int i = 0; i < planDirs.length; i++) {
       if(planDirs[i].isDirectory()) {
-        String [] names = planDirs[i].list(new FilenameFilter () 
-          {
-            public boolean accept(File dir, String name) {
-              return (name.endsWith(".partialPlan") || name.endsWith(".objects") || 
-                      name.endsWith(".timelines") || name.endsWith(".slots") ||
-                      name.endsWith(".tokens") || name.endsWith(".variables") ||
-                      name.endsWith(".predicates") || name.endsWith(".parameters") ||
-                      name.endsWith(".enumeratedDomains") || name.endsWith(".intervalDomains") ||
-                      name.endsWith(".constraints") || name.endsWith(".tokenRelations") || 
-                      name.endsWith(".paramVarTokenMap") || name.endsWith(".constraintVarMap"));
-            }
-          });
-        if(names.length == 14) {
+        String [] names = planDirs[i].list(new PwSQLFilenameFilter());
+        if(names.length == DbConstants.NUMBER_OF_PP_FILES) {
           temp.put(planDirs[i].getName(), new Integer(0));
           stepCount++;
         }

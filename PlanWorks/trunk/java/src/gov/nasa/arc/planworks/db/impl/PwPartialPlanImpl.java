@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.28 2003-08-06 00:22:56 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.29 2003-08-07 01:16:49 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwObject;
@@ -37,6 +38,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 //import gov.nasa.arc.planworks.db.util.XmlDBeXist;
 //import gov.nasa.arc.planworks.db.util.XmlFilenameFilter;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 
 
@@ -91,17 +93,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     long loadTime = 0L;
     HashMap existingPartialPlan = null;
     if(!MySQLDB.partialPlanExists(sequenceKey, name)) {
-      String [] fileNames = new File(url).list(new FilenameFilter () {
-          public boolean accept(File dir, String name) {
-            return (name.endsWith(".partialPlan") || name.endsWith(".objects") || 
-                    name.endsWith(".timelines") || name.endsWith(".slots") ||
-                    name.endsWith(".tokens") || name.endsWith(".variables") ||
-                    name.endsWith(".predicates") || name.endsWith(".parameters") ||
-                    name.endsWith(".enumeratedDomains") || name.endsWith(".intervalDomains") ||
-                    name.endsWith(".constraints") || name.endsWith(".tokenRelations") || 
-                    name.endsWith(".paramVarTokenMap") || name.endsWith(".constraintVarMap"));
-          }
-        });
+      String [] fileNames = new File(url).list(new PwSQLFilenameFilter());
       for(int i = 0; i < fileNames.length; i++) {
         String tableName = fileNames[i].substring(fileNames[i].lastIndexOf(".")+1);
         tableName = tableName.substring(0,1).toUpperCase().concat(tableName.substring(1));
