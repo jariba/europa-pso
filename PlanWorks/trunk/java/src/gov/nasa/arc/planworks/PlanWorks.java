@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.15 2003-06-30 21:52:46 taylor Exp $
+// $Id: PlanWorks.java,v 1.16 2003-06-30 22:18:22 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -15,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -395,14 +396,24 @@ public class PlanWorks extends MDIDesktopFrame {
     for (int i = 0, n = partialPlanDirs.size(); i < n; i++) {
       String partialPlanPath = sequenceDirectory + System.getProperty( "file.separator") +
         partialPlanDirs.get( i);
-      fileNames = new File( partialPlanPath).list();
-//       if (fileNames.length != DbConstants.NUMBER_OF_PP_FILES) {
-//         JOptionPane.showMessageDialog
-//           (PlanWorks.this, partialPlanPath,
-//            "Partial Plan Directory Does Not Have " + DbConstants.NUMBER_OF_PP_FILES +
-//            " files", JOptionPane.ERROR_MESSAGE);
-//         return false;
-//       } else
+      fileNames = new File( partialPlanPath).list( new FilenameFilter () {
+          public boolean accept(File dir, String name) {
+            return (name.indexOf( DbConstants.PP_PARTIAL_PLAN_EXT) != -1 ||
+                    name.indexOf( DbConstants.PP_OBJECTS_EXT) != -1 ||
+                    name.indexOf( DbConstants.PP_TIMELINES_EXT) != -1 ||
+                    name.indexOf( DbConstants.PP_SLOTS_EXT) != -1 || 
+                    name.indexOf( DbConstants.PP_TOKENS_EXT) != -1 ||
+                    name.indexOf( DbConstants.PP_VARIABLES_EXT) != -1 || 
+                    name.indexOf( DbConstants.PP_PREDICATES_EXT) != -1 ||
+                    name.indexOf( DbConstants.PP_PARAMETERS_EXT) != -1 ||
+                    name.indexOf( DbConstants.PP_ENUMERATED_DOMAINS_EXT) != -1 ||
+                    name.indexOf( DbConstants.PP_INTERVAL_DOMAINS_EXT) != -1 ||
+                    name.indexOf( DbConstants.PP_CONSTRAINTS_EXT) != -1 ||
+                    name.indexOf( DbConstants.PP_TOKEN_RELATIONS_EXT) != -1 || 
+                    name.indexOf( DbConstants.PP_PARAM_VAR_TOKEN_MAP_EXT) != -1 || 
+                    name.indexOf( DbConstants.PP_CONSTRAINT_VAR_MAP_EXT) != -1);
+          }
+        });
       if (! validateSQLInputFiles( partialPlanPath, fileNames)) {
         return false;
       }
