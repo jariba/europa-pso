@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.3 2003-10-23 18:28:11 taylor Exp $
+// $Id: TransactionContentView.java,v 1.4 2003-10-23 19:22:33 taylor Exp $
 //
 // PlanWorks
 //
@@ -136,7 +136,7 @@ public class TransactionContentView extends JGoView {
       transactionFieldList.add( objectNameField);
 
       TransactionField predicateField =
-        new TransactionField( "",
+        new TransactionField( getPredicateName( transaction.getObjectId()),
                               new Point( x, y), JGoText.ALIGN_CENTER, bgColor, viewableObject);
       jGoDocument.addObjectAtTail( predicateField);
       predicateField.setSize( (int) headerJGoView.getPredicateNode().getSize().getWidth(),
@@ -181,17 +181,64 @@ public class TransactionContentView extends JGoView {
     }
     if (isNameFound) {
       // check name is less than column width
-      int columnWidth = (int) headerJGoView.getObjectNameNode().getSize().getWidth();
-      int objectNameWidth =
-        SwingUtilities.computeStringWidth( vizView.getFontMetrics(), objectName);
-      if (objectNameWidth > columnWidth) {
-        objectName =
-          objectName.substring( 0, TransactionHeaderView.OBJ_NAME_HEADER_LENGTH - 2).
-          concat( "..");
-      }
+      trimName( objectName, TransactionHeaderView.OBJ_NAME_HEADER);
     }
     return objectName;
   } // end getObjectName 
+
+  private String getPredicateName( Integer objectId) {
+    String predicateName = "";
+    boolean isNameFound = false;
+    System.err.println( "\ngetPredicateName: objectId " + objectId.toString());
+    if (viewableObject instanceof PwPartialPlan) {
+      PwConstraint constraint = ((PwPartialPlan) viewableObject).getConstraint( objectId);
+      if (constraint != null) {
+        // predicateName = constraint.getName();
+        isNameFound = true;
+        // System.err.println( "  isConstraint");
+      }
+      if (! isNameFound) {
+        PwToken token = ((PwPartialPlan) viewableObject).getToken( objectId);
+        if (token != null) {
+          predicateName = token.getPredicate().getName();
+          isNameFound = true;
+          // System.err.println( "  isToken");
+        }
+        if (! isNameFound) {
+          PwVariable variable = ((PwPartialPlan) viewableObject).getVariable( objectId);
+          if (variable != null) {
+            List predicateNameList = new ArrayList();
+            List tokenList = variable.getTokenList();
+            System.err.println( "  tokenList.size " + tokenList.size());
+            Iterator tokenListItr = tokenList.iterator();
+            while (tokenListItr.hasNext()) {
+              predicateNameList.add( ((PwToken) tokenListItr.next()).getPredicate().getName());
+            }
+            System.err.println( "  isVariable");
+            System.err.println( "  predicateNameList " + predicateNameList);
+            isNameFound = true;
+          }
+        }
+      }
+    } else if (viewableObject instanceof PwPlanningSequence) {
+      // accessing a step of a planSequence will cause Java data structures to be built
+    }
+    if (isNameFound) {
+      // check name is less than column width
+      trimName( predicateName, TransactionHeaderView.PREDICATE_HEADER);
+    }
+    return predicateName;
+  } // end getPredicateName 
+
+  private String trimName( String name, String columnHeader) {
+    int columnWidth = (int) headerJGoView.getObjectNameNode().getSize().getWidth();
+    int nameWidth = SwingUtilities.computeStringWidth( vizView.getFontMetrics(), name);
+    if (nameWidth > columnWidth) {
+      name = name.substring( 0, columnHeader.length() - 2).concat( "..");
+    }
+    return name;
+  } // end trimName
+
 
 
 } // end class TransactionContentView

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.3 2003-10-23 18:28:11 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.4 2003-10-23 19:22:33 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,15 +46,13 @@ public class TransactionHeaderView extends JGoView {
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE_HALF,
                 ViewConstants.TIMELINE_VIEW_INSET_SIZE);
 
-  private static final String KEY_HEADER =        "TX_KEY "; 
-  private static final String TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
-  private static final String SOURCE_HEADER =     " SOURCE  ";   
-  private static final String OBJECT_KEY_HEADER = "OBJ_KEY";
-  private static final String STEP_NUM_HEADER =   "  STEP  ";
-  private static final String OBJ_NAME_HEADER =   "     OBJ_NAME     ";
-  private static final String PREDICATE_HEADER =  "  PREDICATE  ";
-
-  public static final int OBJ_NAME_HEADER_LENGTH = 18; 
+  protected static final String KEY_HEADER =        "TX_KEY "; 
+  protected static final String TYPE_HEADER =       "      TRANSACTION_TYPE     "; 
+  protected static final String SOURCE_HEADER =     " SOURCE  ";   
+  protected static final String OBJECT_KEY_HEADER = "OBJ_KEY";
+  protected static final String STEP_NUM_HEADER =   "  STEP  ";
+  protected static final String OBJ_NAME_HEADER =   "     OBJ_NAME     ";
+  protected static final String PREDICATE_HEADER =  "  PREDICATE  ";
 
 
   private VizView vizView; // PartialPlanView  or SequenceView
