@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.2 2003-10-18 01:27:55 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.3 2003-10-21 01:29:19 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -72,10 +72,10 @@ public class SequenceQueryWindow extends JPanel {
     STEP_QUERIES.add( STEPS_WHERE_CONSTRAINT_TRANSACTED);
     STEP_QUERIES.add( STEPS_WHERE_TOKEN_TRANSACTED);
     STEP_QUERIES.add( STEPS_WHERE_VARIABLE_TRANSACTED);
-    // STEP_QUERIES.add( STEPS_WITH_NON_UNIT_DECISIONS); // no MySql query yet
+    STEP_QUERIES.add( STEPS_WITH_NON_UNIT_DECISIONS); 
     STEP_QUERIES.add( STEPS_WITH_RELAXATIONS);
     STEP_QUERIES.add( STEPS_WITH_RESTRICTIONS);
-    // STEP_QUERIES.add( STEPS_WITH_UNIT_DECISIONS); // no MySql query yet
+    STEP_QUERIES.add( STEPS_WITH_UNIT_DECISIONS); 
     TRANSACTION_QUERIES = new ArrayList();
     TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_CONSTRAINT);
     TRANSACTION_QUERIES.add( TRANSACTIONS_FOR_TOKEN);
@@ -249,7 +249,7 @@ public class SequenceQueryWindow extends JPanel {
               stepList = getStepsWhereVariableTransacted();
             } else if (stepsQuery.equals( STEPS_WITH_NON_UNIT_DECISIONS)) {
               stepList = ((PwPlanningSequence) queryWindow.viewable).
-                getStepsWithNonUnitDecisions();
+                getStepsWithNonUnitVariableBindingDecisions();
             } else if (stepsQuery.equals( STEPS_WITH_RELAXATIONS)) {
               stepList = ((PwPlanningSequence) queryWindow.viewable).
                 getStepsWithRelaxations();
@@ -258,7 +258,7 @@ public class SequenceQueryWindow extends JPanel {
                 getStepsWithRestrictions();
             } else if (stepsQuery.equals( STEPS_WITH_UNIT_DECISIONS)) {
               stepList = ((PwPlanningSequence) queryWindow.viewable).
-                getStepsWithUnitDecisions();
+                getStepsWithUnitVariableBindingDecisions();
             }
             if (stepList != null) {
               renderStepQueryFrame( stepsQuery, stepList, startTimeMSecs);
@@ -366,7 +366,7 @@ public class SequenceQueryWindow extends JPanel {
         transactionType = (String) queryWindow.constraintTransComboBox.getSelectedItem();
         String queryTransactionType = transactionType;
         if (transactionType.equals( "ALL")) {
-          queryTransactionType = "%";
+          queryTransactionType = DbConstants.CONSTRAINT_ALL_TYPES;
         } 
         stepList = ((PwPlanningSequence) queryWindow.viewable).
           getStepsWhereConstraintTransacted( new Integer( constraintKeyString),
@@ -384,7 +384,7 @@ public class SequenceQueryWindow extends JPanel {
         transactionType = (String) queryWindow.tokenTransComboBox.getSelectedItem();
         String queryTransactionType = transactionType;
         if (transactionType.equals( "ALL")) {
-          queryTransactionType = "%";
+          queryTransactionType = DbConstants.TOKEN_ALL_TYPES;
         } 
         stepList = ((PwPlanningSequence) queryWindow.viewable).
           getStepsWhereTokenTransacted( new Integer( tokenKeyString), queryTransactionType);
@@ -401,7 +401,7 @@ public class SequenceQueryWindow extends JPanel {
         transactionType = (String) queryWindow.variableTransComboBox.getSelectedItem();
         String queryTransactionType = transactionType;
         if (transactionType.equals( "ALL")) {
-          queryTransactionType = "%";
+          queryTransactionType = DbConstants.VARIABLE_ALL_TYPES;
         } 
         stepList = ((PwPlanningSequence) queryWindow.viewable).
           getStepsWhereVariableTransacted( new Integer( variableKeyString),

@@ -174,8 +174,9 @@ The Debugger is a tool to support analysis of a Planning Sequence for the purpos
 \begin{enumerate}
 \item The system must support queries returning Steps, of the form ``What are the Steps where'':
 \begin{enumerate}
-\item Token T was created, inserted, freed, deleted
-\item Variable V was changed, restricted, relaxed
+\item Constraint C was created, deleted
+\item Token T was created, deleted, freed, inserted
+\item Variable V was created, deleted, domain_emptied, domain_relaxed, domain_reset, domain_restricted, domain_specified
 \item Relaxations were made?
 \item Restrictions were made?
 \item Unit Decisions were made?
@@ -184,6 +185,7 @@ The Debugger is a tool to support analysis of a Planning Sequence for the purpos
 \item The system must support queries returning Transactions, of the form ``What are the Transactions'':
 \begin{enumerate}
 \item at step S.
+\item on Constraint C
 \item on Variable V
 \item on Token T
 \item between step s1 and step s2.

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README.release,v 1.2 2003-10-16 21:02:59 miatauro Exp $
+# $Id: README.release,v 1.3 2003-10-21 01:29:19 taylor Exp $
 #
 
 Releasing the PlanWorks Plan Visualization Application
@@ -21,6 +21,9 @@ o Update PlanWorks/cpp/integration/europa/README
 o Perform test cases outlined in PlanWorks/testCases/planViz.txt
 
 o Run "ant test"
+
+o Build PartialPlanWriter, integrate into freshly checked-out
+  Europa, and run Europa "make tests".  View a generated sequence.
 
 o Tag the Release
   - In a clean directory, do a fresh checkout of the CVS "head":

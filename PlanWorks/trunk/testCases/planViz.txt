@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.1 2003-10-10 23:59:53 taylor Exp $
+// $Id: planViz.txt,v 1.2 2003-10-21 01:29:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -141,22 +141,28 @@ Pre-conditions:
      as sequences.
 
 Method:
-  1. Display "monkey" Timeline View using menu-bar selection "Planning Sequence->
-     monkey.....->Sequence Steps" and selecting "Timeline" from the "step0"
-     element of the "SequenceStepsView of monkey....".
-  2. Display "emptySlots" Timeline View using menu-bar selection "Planning Sequence->
-     emptySlots.....->Sequence Steps" and selecting "Timeline" from the "step0"
-     element of the "SequenceStepsView of emptySlots....".
-  3. Display "freeTokens" Timeline View using menu-bar selection "Planning Sequence->
-     freeTokens.....->Sequence Steps" and selecting "Timeline" from the "step0"
-     element of the "SequenceStepsView of freeTokens....".
-  4. Display "monkey" Timeline View using menu-bar selection "Planning Sequence->
-     monkey.....->Sequence Steps" and selecting "Timeline" from the "step0"
-     element of the "SequenceStepsView of monkey....".
+  1. Display "monkey" Sequence Steps View using menu-bar selection
+     "Planning Sequence->monkey.....".
+  2. Display "monkey" Timeline View by clicking Mouse-Right on the "step0"
+     element of the "SequenceStepsView of monkey....", and selecting 
+     "Timeline View".
+  3. Display "emptySlots" Sequence Steps View using menu-bar selection
+     "Planning Sequence->emptySlots.....".
+  4. Display "emptySlots" Timeline View by clicking Mouse-Right on the "step0"
+     element of the "SequenceStepsView of emptySlots....", and selecting
+     "Timeline View"".
+  5. Display "freeTokens" Sequence Steps View using menu-bar selection
+     "Planning Sequence->freeTokens.....".
+  6. Display "freeTokens" Timeline View by clicking Mouse-Right on the "step0"
+     element of the "SequenceStepsView of freeTokens....", and selecting
+     "Timeline View"".
+  7. Display "monkey" Timeline View by clicking Mouse-Right on the "step0"
+     element of the "SequenceStepsView of monkey....", and selecting 
+     "Timeline View"".
 
 Post-conditions:
   1. Three Content Spec windows exist, three TimelineView windows exist, and
-     the "TimelineView of monkey..." was brought to the front by method step 4.
+     the "TimelineView of monkey..." was brought to the front by method step 7.
 
 Requirements: 4.0.2, 4.0.3, 4.2.1, 4.2.2
 
@@ -169,16 +175,22 @@ Pre-conditions:
   1. PlanWorks is running.
   2. "emptySlots", and "freeTokens" have been added to the "monkey" project
      as sequences.
-  3. Each sequence has its Content Spec and Timeline View displayed.
+  3. Each sequence has its Content Spec, SequenceQuery, Timeline View and
+     Sequence Steps View windows displayed.
 
 Method:
   1. Layout the windows using menu-bar selection "Window->Tile Windows".
+  2. Layout the windows using menu-bar selection "Window->Cascade".
 
 Post-conditions:
-  1. All nine windows are non-overlapping "tiles", after Method:1.
-  2. The three Content Spec windows are tiled across the top of the frame,
-     and six Sequence Steps Views and Timeline Views are an overlapping
-     cascade from the upper left to the lower right, under the Content Specs.
+  1. All twelve windows are non-overlapping "tiles", after Method:1.  The
+     ContentSpec and SequenceQuery windows are tiled across the top row of
+     the frame.  The TimelineView and SequenceStepsView windows are tiled
+     in the second thru fourth rows.
+  2. After Method:2, the six Content Spec and windows are tiled across the 
+     top of the frame, and six Sequence Steps Views and Timeline Views are 
+     an overlapping cascade from the upper left to the lower right, under 
+     the Content Spec and Sequence Query windows.
 
 Requirements: 4.2.3.f
 
@@ -191,7 +203,8 @@ Pre-conditions:
   1. PlanWorks is running.
   2. "emptySlots", and "freeTokens" have been added to the "monkey" project
      as sequences.
-  3. Each sequence has its Content Spec and Timeline View displayed.
+  3. Each sequence has its Content Spec, SequenceQuery, Timeline View and
+     Sequence Steps View windows displayed.
 
 Method:
   1. Delete "emptySlots" sequence by using menu-bar selection of
@@ -200,8 +213,8 @@ Method:
      "Project->Delete Sequence ...".
 
 Post-conditions:
-  1. Three windows remain: the ContentSpec, the TimelineView, and the
-     SequenceStepsView of "monkey".
+  1. Four windows remain: the ContentSpec, the SequenceQuery, the TimelineView, 
+     and the SequenceStepsView of "monkey".
 
 Requirements: 3.10
 
@@ -216,16 +229,24 @@ Pre-conditions:
   3. No partial plan views are displayed.
 
 Method:
-  1. Display "monkey" Constraint Network View using menu-bar selection
-     "Planning Sequence->monkey.....->Sequence Steps" and selecting
-     "Timeline" from the "step0" element of the "SequenceStepsView of monkey....".
-  2. Display "monkey" Temporal Extent View by selecting "Temporal Extent"
-     from the "step0" element of the "SequenceStepsView of monkey....".
-  3. Display "monkey" Timeline View by selecting "Timeline" from the "step0"
-     element of the "SequenceStepsView of monkey....".
-  4. Display "monkey" Token Network View by selecting "Token Network" from the
-     "step0" element of the "SequenceStepsView of monkey....".
-  5. Open the first two token nodes of the Constraint Network View, and then
+  1. Display "monkey" Sequence Steps View using menu-bar selection
+     "Planning Sequence->monkey.....".
+  2. Display "monkey" Constraint Network View by clicking Mouse-Right on the
+     "step0" element of the "SequenceStepsView of monkey....", and selecting
+     "Constraint Network View".
+  3. Display "monkey" Temporal Extent View by clicking Mouse-Right on the
+     "step0" element of the "SequenceStepsView of monkey....", and selecting
+     "Temporal Extent View".
+  4. Display "monkey" Timeline View by clicking Mouse-Right on the
+     "step0" element of the "SequenceStepsView of monkey....", and selecting
+     "Timeline View".
+  4. Display "monkey" Token Network View by clicking Mouse-Right on the
+     "step0" element of the "SequenceStepsView of monkey....", and selecting
+     "Token Network View".
+  5. Display "monkey" Transaction View by clicking Mouse-Right on the
+     "step0" element of the "SequenceStepsView of monkey....", and selecting
+     "TransactionView".
+  6. Open the first two token nodes of the Constraint Network View, and then
      open the "closed" variable and constraint nodes that result.  Then 
      close the "opened" variable, constraint, and token nodes to return to the
      initial state.
@@ -235,7 +256,8 @@ Post-conditions:
   2. Thirteen token nodes appear in the Temporal Extent View.
   3. Three timeline nodes and thirteen slot nodes appear in the Timeline View.
   4. Seventeen token nodes, with two "master roots" appear in the Token Network View.
-  5. The initial state of the Constraint Network View is not completely
+  5. One transaction entry appears in the Transaction View.
+  6. The initial state of the Constraint Network View is not completely
      achievable, because the manually-generated sample partial plan has some
      inconsistencies.
 
@@ -244,7 +266,7 @@ Requirements: 4.2.3.e
 
 PLANVIZ-11
 --------------------
-Use Content Specification to filter which tokens are displayed on the 
+Use the Content Specification to filter which tokens are displayed on the 
 partial plan views.
 
 Pre-conditions:
@@ -315,3 +337,24 @@ Note: In the Constraint Network View, variable and constraint nodes are
 
 Requirements: 4.1.1, 4.1.2.a, 4.1.2.b, 4.1.2.c, 4.1.3, 4.1.4, 4.1.5,
      4.1.7, 4.1.8, 4.1.9
+
+
+PLANVIZ-12
+--------------------
+Use Sequence Query dialog window to display windows with sequence query information.
+
+Pre-conditions:
+  1. PlanWorks is running.
+  2. The "Camera" project is open.
+
+Method:
+  1. Select "Camera....." from "Planning Sequence".
+  2. 
+
+Post-conditions:
+  1. Methjod:1 - the "Camera...." Sequence Query and Sequence Steps View
+     windows appear.
+  2.
+
+Requirements: 4.3.1.a-g, 4.3.2.b-e
+
