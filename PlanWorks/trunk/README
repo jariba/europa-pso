@@ -4,8 +4,15 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.106 2004-06-22 21:40:26 miatauro Exp $
+# $Id: README,v 1.107 2004-06-22 22:57:58 miatauro Exp $
 #
+
+NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
+construct the PlanWorks database.  Do not use this version of MySQL.
+The current known-good MySQL versions are:
+4.0.13
+4.0.18
+4.1.1
 
 SUMMARY
 =======
@@ -13,8 +20,8 @@ o If you are using PlanWorks with PLASMA, this revision requires PLASMA
   from the CVS head.  The PartialPlanWriter has been modified to capture
   rule instances.
 
-o This revision requires an upgrade in MySQL version.  You *must* be working with
-  MySQL 4.1 or later.
+o Usage of the test language requires an updated version of MySQL.  You 
+  *must* be working with MySQL 4.1 or later.
 
 o The Token Network View handling of rules has been revised:
   - Mouse-Right: "Rule Window" on the view background has been removed;
