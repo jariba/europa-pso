@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpecWindow.java,v 1.7 2003-07-08 20:29:13 miatauro Exp $
+// $Id: ContentSpecWindow.java,v 1.8 2003-07-08 20:44:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -91,24 +91,35 @@ public class ContentSpecWindow extends JPanel {
     gridBag.setConstraints(timelineGroup, c);
     add(timelineGroup);
     
-    variableTypeGroup = new VariableTypeGroupBox(window);
+    /*variableTypeGroup = new VariableTypeGroupBox(window);
     c.gridx++;
-    //c.gridy++;
+    c.gridy++;
     gridBag.setConstraints(variableTypeGroup, c);
-    add(variableTypeGroup);
+    add(variableTypeGroup);*/
     
+    GridBagLayout buttonGridBag = new GridBagLayout();
+    GridBagConstraints buttonConstraints = new GridBagConstraints();
+    JPanel buttonPanel = new JPanel(buttonGridBag);
+
+    buttonConstraints.weightx = 0;
+    buttonConstraints.weighty = 0;
+    buttonConstraints.gridx = 0;
+    buttonConstraints.gridy = 0;
+
     JButton valueButton = new JButton("Apply Spec");
     valueButton.addActionListener(new SpecButtonListener(this));
-    c.gridx = 0;
-    c.gridy++;
-    gridBag.setConstraints(valueButton, c);
-    add(valueButton);
+    buttonGridBag.setConstraints(valueButton, buttonConstraints);
+    buttonPanel.add(valueButton);
 
     JButton resetButton = new JButton("Reset Spec");
     resetButton.addActionListener(new SpecButtonListener(this));
+    buttonConstraints.gridx++;
+    buttonGridBag.setConstraints(resetButton, buttonConstraints);
+    buttonPanel.add(resetButton);
+    
     c.gridx++;
-    gridBag.setConstraints(resetButton, c);
-    add(resetButton);
+    gridBag.setConstraints(buttonPanel, c);
+    add(buttonPanel);
 
     getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Q, 
                                              InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK, false),
@@ -176,7 +187,7 @@ public class ContentSpecWindow extends JPanel {
         try {
           //constraint = specWindow.constraintGroup.getValues();
           timeInterval = specWindow.timeIntervalGroup.getValues();
-          variableType = specWindow.variableTypeGroup.getValues();
+          //variableType = specWindow.variableTypeGroup.getValues();
           predicate = specWindow.predicateGroup.getValues();
           timeline = specWindow.timelineGroup.getValues();
         }
@@ -204,7 +215,7 @@ public class ContentSpecWindow extends JPanel {
           }
         }
         output.append("\n");
-        output.append("VariableType: ");
+        /*output.append("VariableType: ");
         if(variableType == null) {
             output.append(" null");
         }
@@ -214,7 +225,7 @@ public class ContentSpecWindow extends JPanel {
             output.append(variableTypeIterator.next()).append(" ");
           }
         }
-        output.append("\n");
+        output.append("\n");*/
         output.append("Predicate: ");
         if(predicate == null) {
           output.append(" null");
@@ -240,7 +251,7 @@ public class ContentSpecWindow extends JPanel {
         System.err.println(output.toString());
         //timeline, predicate, constraint, variableType, timeInterval
         System.err.println("Applying Specification...");
-        specWindow.contentSpec.applySpec(timeline, predicate, /*constraint, */variableType, 
+        specWindow.contentSpec.applySpec(timeline, predicate, /*constraint, variableType, */
                                          timeInterval);
         System.err.println("Done applying Specification.");
         specWindow.contentSpec.printSpec();
@@ -250,7 +261,7 @@ public class ContentSpecWindow extends JPanel {
         specWindow.contentSpec.resetSpec();
         //specWindow.constraintGroup.reset();
         specWindow.timeIntervalGroup.reset();
-        specWindow.variableTypeGroup.reset();
+        //specWindow.variableTypeGroup.reset();
         specWindow.predicateGroup.reset();
         specWindow.timelineGroup.reset();
       }
