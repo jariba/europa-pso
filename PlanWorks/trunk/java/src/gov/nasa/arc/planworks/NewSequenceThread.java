@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.15 2004-10-13 17:32:33 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.16 2004-11-23 23:08:51 pdaley Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -82,6 +82,16 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
         newSequence( seqUrl);
       }
     } catch (Exception excp) {
+      /*
+       * We can arrive here when an exception occured durring model loading, 
+       * or initializing planner 
+       * In both cases, tell the planner to cleanup and unload model library if necessary  
+       */
+      PlannerControlJNI.terminatePlannerRun();
+      JOptionPane.showMessageDialog
+        ( PlanWorks.getPlanWorks(), "An exception occured while initializing the planner.",
+          "Planner Exception", JOptionPane.INFORMATION_MESSAGE);
+
     } finally {
       PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
       PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.DELSEQ_MENU_ITEM, true);
@@ -304,18 +314,19 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
       new TransactionTypesDialog( PlanWorks.getPlanWorks(), transactionTypes,
                                   transactionTypeStates);
     int[] transStates = transactionTypesDialog.getTransactionTypeStates();
-    boolean areTransStatesChanged = false;
-    for (int i = 0, n = transactionTypeStates.length; i < n; i++) {
-      if (transactionTypeStates[i] != transStates[i]) {
-        areTransStatesChanged = true;
-        break;
+    if ( transStates != null ) {
+      boolean areTransStatesChanged = false;
+      for (int i = 0, n = transactionTypeStates.length; i < n; i++) {
+        if (transactionTypeStates[i] != transStates[i]) {
+          areTransStatesChanged = true;
+          break;
+        }
       }
-    }
-    if (areTransStatesChanged == false) {
-      return;
-    } else {
-      PlannerControlJNI.setTransactionTypeStates( transStates);
-
+      if (areTransStatesChanged == false) {
+        return;
+      } else {
+        PlannerControlJNI.setTransactionTypeStates( transStates);
+      }
     }
   } // end getTransactionTypeStates
 
