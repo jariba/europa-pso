@@ -1,5 +1,5 @@
 // 
-// $Id: CreateSequenceViewThread.java,v 1.10 2004-05-13 20:24:03 taylor Exp $
+// $Id: CreateSequenceViewThread.java,v 1.11 2004-07-19 22:28:23 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -80,7 +80,7 @@ public class CreateSequenceViewThread extends CreateViewThread {
 
     try {
       planSequence = PlanWorks.getPlanWorks().currentProject.getPlanningSequence( seqUrl);
-
+ 
       MDIInternalFrame viewFrame = renderView( sequenceName, planSequence, viewListener);
 
       if (viewName.equals( ViewConstants.SEQUENCE_STEPS_VIEW)) {
