@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryView.java,v 1.11 2004-08-10 21:17:12 taylor Exp $
+// $Id: TokenQueryView.java,v 1.12 2004-09-27 23:27:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -236,8 +236,8 @@ public class TokenQueryView extends SequenceView {
       JPopupMenu mouseRightPopup = new JPopupMenu();
       JMenuItem transByKeyItem = new JMenuItem( "Find Token by " +
                                                 ViewConstants.QUERY_TOKEN_KEY_HEADER);
-      createTransByKeyItem( transByKeyItem, freeTokenList, contentScrollPane,
-                            freeTokenTable, objectKeyColumnIndx, TokenQueryView.this);
+      createTransByKeyItem( transByKeyItem, contentScrollPane, freeTokenTable,
+                            objectKeyColumnIndx, TokenQueryView.this);
       mouseRightPopup.add( transByKeyItem);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionQueryView.java,v 1.9 2004-08-26 20:51:27 taylor Exp $
+// $Id: DBTransactionQueryView.java,v 1.10 2004-09-27 23:27:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -345,9 +345,8 @@ public class DBTransactionQueryView extends SequenceView {
         keyString = ViewConstants.DB_TRANSACTION_ENTITY_KEY_HEADER;
       }
       JMenuItem transByKeyItem = new JMenuItem( "Find Transaction by " + keyString);
-      createTransByKeyItem( transByKeyItem, dbTransactionList, contentScrollPane,
-                            dbTransactionTable, objectKeyColumnIndx,
-                            DBTransactionQueryView.this);
+      createTransByKeyItem( transByKeyItem, contentScrollPane, dbTransactionTable,
+                            objectKeyColumnIndx, DBTransactionQueryView.this);
       mouseRightPopup.add( transByKeyItem);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.18 2004-09-21 01:07:06 taylor Exp $
+// $Id: DBTransactionView.java,v 1.19 2004-09-27 23:27:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -386,8 +386,8 @@ public class DBTransactionView extends PartialPlanView {
     private void mouseRightPopupMenu( final Point viewCoords) {
       JPopupMenu mouseRightPopup = new JPopupMenu();
       JMenuItem transByKeyItem = new JMenuItem( "Find Transaction by Entity_Key");
-      createTransByKeyItem( transByKeyItem, dbTransactionList, contentScrollPane,
-                            dbTransactionTable, objectKeyColumnIndx, DBTransactionView.this);
+      createTransByKeyItem( transByKeyItem, contentScrollPane, dbTransactionTable,
+                            objectKeyColumnIndx, DBTransactionView.this);
       mouseRightPopup.add( transByKeyItem);
 
       PwPartialPlan partialPlan = DBTransactionView.this.getPartialPlan();

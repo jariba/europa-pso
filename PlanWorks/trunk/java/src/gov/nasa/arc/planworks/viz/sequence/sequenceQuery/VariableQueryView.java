@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableQueryView.java,v 1.11 2004-08-10 21:17:12 taylor Exp $
+// $Id: VariableQueryView.java,v 1.12 2004-09-27 23:27:28 taylor Exp $
 //
 // PlanWorks
 //
@@ -263,8 +263,8 @@ public class VariableQueryView extends SequenceView {
       JPopupMenu mouseRightPopup = new JPopupMenu();
       JMenuItem transByKeyItem = new JMenuItem( "Find Variable by " +
                                                 ViewConstants.QUERY_VARIABLE_KEY_HEADER);
-      createTransByKeyItem( transByKeyItem, variableList, contentScrollPane,
-                            variableTable, objectKeyColumnIndx, VariableQueryView.this);
+      createTransByKeyItem( transByKeyItem, contentScrollPane, variableTable,
+                            objectKeyColumnIndx, VariableQueryView.this);
       mouseRightPopup.add( transByKeyItem);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
