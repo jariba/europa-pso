@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.17 2003-12-12 01:23:05 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.18 2003-12-19 18:55:36 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -956,6 +956,8 @@ public class TemporalExtentView extends PartialPlanView  {
     String partialPlanName = partialPlan.getPartialPlanName();
     PwPlanningSequence planSequence = PlanWorks.planWorks.getPlanSequence( partialPlan);
     JPopupMenu mouseRightPopup = new JPopupMenu();
+
+    createSteppingItems(mouseRightPopup);
 
     JMenuItem nodeByKeyItem = new JMenuItem( "Find by Key");
     createNodeByKeyItem( nodeByKeyItem);

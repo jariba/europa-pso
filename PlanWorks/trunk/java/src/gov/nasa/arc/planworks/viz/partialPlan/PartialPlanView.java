@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.8 2003-12-16 23:18:32 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.9 2003-12-19 18:54:01 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -14,6 +14,7 @@
 package gov.nasa.arc.planworks.viz.partialPlan;
 
 import java.awt.Point;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -38,9 +39,11 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
+import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 // import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 
 
 /**
@@ -55,8 +58,6 @@ public class PartialPlanView extends VizView {
   protected PwPartialPlan partialPlan;
   protected List validTokenIds;
   protected List displayedTokenIds;
-  private final String FORWARD_STEP = "forward";
-  private final String BACKWARD_STEP = "backward";
 
   /**
    * <code>PartialPlanView</code> - constructor 
@@ -69,12 +70,6 @@ public class PartialPlanView extends VizView {
     this.partialPlan = partialPlan;
     validTokenIds = null;
     displayedTokenIds = null;
-    getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK, false), FORWARD_STEP);
-    getActionMap().put(FORWARD_STEP, new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          System.err.println("FOO!");
-        }
-      });
   }
 
   /**
@@ -268,6 +263,108 @@ public class PartialPlanView extends VizView {
       });
   } // end createRaiseContentSpecItem
 
- 
+  public void createSteppingItems(JPopupMenu mouseRightPopup) {
+    JMenuItem nextItem = new JMenuItem("Step forward");
+    JMenuItem prevItem = new JMenuItem("Step backward");
+
+    nextItem.addActionListener(new StepForwardListener(this));
+    prevItem.addActionListener(new StepBackwardListener(this));
+    mouseRightPopup.add(nextItem);
+    mouseRightPopup.add(prevItem);
+  }
+  class StepForwardListener implements ActionListener {
+    private PartialPlanView view;
+    public StepForwardListener(PartialPlanView view) {
+      this.view = view;
+    }
+    public void actionPerformed(ActionEvent e) {
+      ViewSet viewSet = view.getViewSet();
+      MDIInternalFrame viewFrame = viewSet.getViewByClass(view.getClass());
+      ViewManager viewManager = viewSet.getViewManager();
+      int prevStepNumber = getPartialPlan().getStepNumber();
+      PwPartialPlan nextStep;
+      try {
+        nextStep = PlanWorks.planWorks.getCurrentProject().
+          getPlanningSequence(getPartialPlan().getSequenceUrl()).
+          getNextPartialPlan(prevStepNumber);
+      }
+      catch(IndexOutOfBoundsException ibe) {
+        ibe.printStackTrace();
+        return;
+      }
+      catch(ResourceNotFoundException rnfe) {
+        rnfe.printStackTrace();
+        return;
+      }
+      if(nextStep.getName() == null) {
+        String [] title = viewFrame.getTitle().split("\\s+");
+        String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
+        nextStep.setName(seqName[0] + System.getProperty("file.separator") + "step" + (prevStepNumber + 1));
+      }
+      MDIInternalFrame nextView = viewManager.openView(nextStep, view.getClass().getName());
+      try {
+        if(viewFrame.isMaximum()) {
+          nextView.setNormalBounds(viewFrame.getNormalBounds());
+          nextView.setMaximum(true);
+        }
+        else {
+          nextView.setMaximum(false);
+        }
+        nextView.setBounds(viewFrame.getBounds());
+        nextView.setIcon(viewFrame.isIcon());
+        nextView.setSelected(true);
+        viewSet.removeViewFrame(viewFrame);
+        viewFrame.setClosed(true);
+      }
+      catch(Exception ack){ack.printStackTrace();}
+    }
+  }
+  class StepBackwardListener implements ActionListener {
+    private PartialPlanView view;
+    public StepBackwardListener(PartialPlanView view) {
+      this.view = view;
+    }
+    public void actionPerformed(ActionEvent e) {
+      ViewSet viewSet = view.getViewSet();
+      MDIInternalFrame viewFrame = viewSet.getViewByClass(view.getClass());
+      ViewManager viewManager = viewSet.getViewManager();
+      int nextStepNumber = getPartialPlan().getStepNumber();
+      PwPartialPlan prevStep;
+      try {
+        prevStep = PlanWorks.planWorks.getCurrentProject().
+          getPlanningSequence(getPartialPlan().getSequenceUrl()).
+          getPrevPartialPlan(nextStepNumber);
+      }
+      catch(IndexOutOfBoundsException ibe) {
+        ibe.printStackTrace();
+        return;
+      }
+      catch(ResourceNotFoundException rnfe) {
+        rnfe.printStackTrace();
+        return;
+      }
+      if(prevStep.getName() == null) {
+        String [] title = viewFrame.getTitle().split("\\s+");
+        String [] seqName = title[title.length - 1].split(System.getProperty("file.separator"));
+        prevStep.setName(seqName[0] + System.getProperty("file.separator") + "step" + (nextStepNumber - 1));
+      }
+      MDIInternalFrame prevView = viewManager.openView(prevStep, view.getClass().getName());
+      try {
+        if(viewFrame.isMaximum()) {
+          prevView.setNormalBounds(viewFrame.getNormalBounds());
+          prevView.setMaximum(true);
+        }
+        else {
+          prevView.setBounds(viewFrame.getBounds());
+          prevView.setMaximum(false);
+        }
+        prevView.setIcon(viewFrame.isIcon());
+        prevView.setSelected(true);
+        viewSet.removeViewFrame(viewFrame);
+        viewFrame.setClosed(true);
+      }
+      catch(Exception ack){ack.printStackTrace();}
+    }
+  }
 } // end class PartialPlanView
 
