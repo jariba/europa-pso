@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: ViewSet.java,v 1.2 2003-06-10 20:34:23 miatauro Exp $
+//
 package gov.nasa.arc.planworks.viz.viewMgr;
 
 import java.awt.Container;
@@ -34,7 +42,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker {
     }
     MDIInternalFrame timelineViewFrame = desktopFrame.createFrame(planName,true, true, true, true);
     Container contentPane = timelineViewFrame.getContentPane();
-    contentPane.add(new TimelineView(partialPlan));
+    contentPane.add(new TimelineView(partialPlan, this));
     views.put("timelineView", timelineViewFrame);
     return timelineViewFrame;
   }
