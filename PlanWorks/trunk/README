@@ -4,13 +4,15 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.29 2003-09-18 20:48:41 taylor Exp $
+# $Id: README,v 1.30 2003-09-19 00:33:59 taylor Exp $
 #
 
 SUMMARY
 =======
 Milestone 6
 ===========
+File "PlanWorks/GETTING_STARTED" has been added to assist new users.
+
 The sequence directory chooser invoked by "Project->Create ..." and 
 "Project->Add Sequence" now supports multiple selection of sequence
 directories, by using Ctrl-Mouse-Left for the second and subsequent
@@ -18,22 +20,45 @@ selections.  Mouse-left is used for the first selection and Mouse-
 Left-Double is used to open directories.  When selection is complete,
 click on "OK".
 
-File "PlanWorks/GETTING_STARTED" has been added to assist new users.
+The Temporal Extent View's time scale is now in a separate pane, so
+that scrolling the token pane does not lose the time scale.  A
+Mouse-Right selection "Set Time Scale Line" has been added.
 
-o  PRs and CRs completed:
+The Temporal Extent View and  Timeline View are now redrawn after
+Content Spec filtering is applied, so as to use screen space more
+efficiently.
+
+Each timeline now has a unique color, such that its tokens, in all
+views, will have that same color.  In the Constraint Network View,
+the variable and constraint nodes associated with a particular token 
+will have that token's color.
+
+The "Window" pull-down menu offers screen management with "Tile Windows"
+and "Cascade".
+
+Using the Content Specification, it is also possible to limit the set of 
+valid tokens to, only free tokens, or only slotted tokens, as well as 
+the first token on a slot ("Merge tokens").
+
+Token focus in views has been implemented using Mouse-Right selections
+on token or slot nodes to make them "active", and by Mouse-Right selections
+on view backgrounds to "snap" the view to the active token.
+
+
+o  GNATS PRs and CRs completed:
    #2044: Need a minimal getting started guide.
    #2048: In large plans, may lose the time scale with current approach.
    #2049: Project vertical line on clicks for Temporal Extent View.
    #2050: Synchronize focus among views.
-          See PlanWorks/GETTING_STARTED - "Token Focus in Views"
    #2051: Need better window management - how about a tiling option?
    #2052: Need to handle redraw on content spec change to use space better.
-          Temporal Extent View & Timeline View are now redrawn.
    #2053: Post error message if trying to add sequence from other project.
    #2055: Bug creating project.
    #2057: Floating data left over filtering timeline view.
    #2058: Timeline color coding incorrect.  
-          Each timeline now has unique color.
+   #2081: Must be able to filter free tokens in the content spec.
+   #2082: Need to be able to filter merged Tokens.
+
 
 CVS CHECKOUT
 ============
@@ -170,7 +195,7 @@ PlanWorks database.
 PlanWorks now has a splash screen at startup.  The current image is not
 permanent.
 
-PRs fixed:
+GNATS PRs fixed:
    #2011: Temporal extent view is wrong
 
 

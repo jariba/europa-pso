@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.7 2003-09-11 18:34:54 miatauro Exp $
+// $Id: MDIDesktopFrame.java,v 1.8 2003-09-19 00:33:59 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -216,8 +216,8 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
           while(frames[i].isIcon() || frames[i].getTitle().indexOf("Content specification") != -1) {
             i++;
           }
-          System.err.println("Setting bounds.  (" + (curCol * frameWidth) + ", " +
-                             ((curRow * height) + ymin) + ") <" + frameWidth + ", " + height + ">");
+          // System.err.println("Setting bounds.  (" + (curCol * frameWidth) + ", " +
+          //                    ((curRow * height) + ymin) + ") <" + frameWidth + ", " + height + ">");
           frames[i].setBounds(curCol * frameWidth, (curRow * height) + ymin, frameWidth, height);
         }
       }
