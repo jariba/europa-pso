@@ -6,49 +6,48 @@ import java.util.Map;
 
 public class ColorStream {
 
+  private static final float H_DIFF = 0.15f;
+  private static final float SAT = 1.0f;
+  private static final float B_DIFF = 0.09f;
+  private static final float B_MIN = 0.75f;
+
   private Map hashMap;
-  private static final int COLOR_INC = 69/*51*/;
-  private static final float MIN_BRIGHTNESS = 0.75f;
-  private int r, g, b;
+  private float h, b;
+  private int multiplier;
 
   public ColorStream() {
     hashMap = new HashMap();
-    r = 255;
-    g = 153;
-    b = 204;
+    //h = 0.9166667f;
+    h = 0.0f;
+    b = B_MIN;
+    multiplier = 1;
   }
   public ColorStream(int r, int g, int b) {
     this();
+    float [] hsb = Color.RGBtoHSB(r, g, b, null);
+    h = hsb[0];
+    this.b = hsb[2];
   }
   public ColorStream(Color startColor) {
-    this();
+    this(startColor.getRed(), startColor.getGreen(), startColor.getBlue());
   }
   public Color nextColor() {
-    float [] HSB = Color.RGBtoHSB(r, g, b, null);
-    Color retval = new Color(r, g, b);
-    while(HSB[2] < MIN_BRIGHTNESS) {
-      retval = retval.brighter();
-      HSB = Color.RGBtoHSB(retval.getRed(), retval.getGreen(), retval.getBlue(), null);
+    Color retval;
+    if((h == 0.6f || h == 0.75f) && b == 0.75) {
+        retval = Color.getHSBColor(h + 0.09f, SAT, b);
     }
-    System.err.println("Color <" + r + ", " + g + ", " + b + "> {" + HSB[0] + ", " + HSB[1] + ", " +
-                       HSB[2] + "}");
-    r = retval.getRed();
-    g = retval.getGreen();
-    b = retval.getBlue();
-
-    r += COLOR_INC;
-    if(r > 255) {
-      r %= 255;
-      g += COLOR_INC;
+    else {
+      retval = Color.getHSBColor(h, SAT, b);
     }
-    if(g > 255) {
-      g %= 255;
-      b += COLOR_INC;
+    System.err.println("<" + h + ", " + b + ">");
+    h += H_DIFF;
+    if(h >= 1.0f) {
+      h = 0.014f * multiplier;
+      b += B_DIFF;
+      multiplier++;
     }
-    if(b > 255) {
-      b %= 255;
-      r = COLOR_INC;
-      g = COLOR_INC * 2;
+    if(b >= 1.0f) {
+      b = B_MIN;
     }
     return retval;
   }
@@ -64,15 +63,13 @@ public class ColorStream {
   }
 
   public void setColor(Color color) {
-    r = color.getRed();
-    g = color.getGreen();
-    b = color.getBlue();
+    setColor(color.getRed(), color.getGreen(), color.getBlue());
   }
 
   public void setColor(int r, int g, int b) {
-    this.r = r;
-    this.g = g;
-    this.b = b;
+    float [] hsb = Color.RGBtoHSB(r, g, b, null);
+    h = hsb[0];
+    this.b = hsb[2];
   }
 }
 
