@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.55 2004-04-01 22:51:18 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.56 2004-04-06 01:31:44 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -330,9 +330,12 @@ public class ConstraintNetworkView extends PartialPlanView {
     }  // end constructor
 
     public void run() {
-      ViewGenerics.setRedrawCursor( viewFrame);
-      redrawView();
-      ViewGenerics.resetRedrawCursor( viewFrame);
+      try {
+        ViewGenerics.setRedrawCursor( viewFrame);
+        redrawView();
+      } finally {
+        ViewGenerics.resetRedrawCursor( viewFrame);
+      }
     } //end run
 
   } // end class RedrawViewThread

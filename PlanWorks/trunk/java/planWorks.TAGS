@@ -193,47 +193,48 @@ public class NewSequenceThread NewSequenceThread7,114
   public void run(NewSequenceThread.run11,198
   private void newSequence(NewSequenceThread.newSequence22,659
 
-src/gov/nasa/arc/planworks/PlanWorks.java,3192
+src/gov/nasa/arc/planworks/PlanWorks.java,3261
 public class PlanWorks PlanWorks67,2364
   public static synchronized boolean isWindowBuilt(PlanWorks.isWindowBuilt224,9154
   public PlanWorks(PlanWorks.PlanWorks236,9491
   private PlanWorks getPlanWorksInternal(PlanWorks.getPlanWorksInternal304,12270
   public static PlanWorks getPlanWorks(PlanWorks.getPlanWorks313,12480
-  public static String getPlanWorksTitle(PlanWorks.getPlanWorksTitle322,12668
-  public final ViewManager getViewManager(PlanWorks.getViewManager331,12838
-  public final String getCurrentProjectName(PlanWorks.getCurrentProjectName340,13008
-  public void setCurrentProjectName(PlanWorks.setCurrentProjectName344,13092
-  public final PwProject getCurrentProject(PlanWorks.getCurrentProject353,13283
-  public static JMenu getProjectMenu(PlanWorks.getProjectMenu362,13449
-  public static String getViewClassName(PlanWorks.getViewClassName372,13655
-  public static void setPlanWorks(PlanWorks.setPlanWorks376,13782
-  protected final List getProjectsLessCurrent(PlanWorks.getProjectsLessCurrent385,13988
-  public final MDIInternalFrame getSequenceStepsViewFrame(PlanWorks.getSequenceStepsViewFrame396,14372
-  protected final void setSequenceStepsViewFrame(PlanWorks.setSequenceStepsViewFrame406,14684
-  public final String getSequenceMenuName(PlanWorks.getSequenceMenuName417,15025
-  protected static void setProjectMenuEnabled(PlanWorks.setProjectMenuEnabled427,15297
-  private String getSequenceMenuItemName(PlanWorks.getSequenceMenuItemName437,15693
-  public static JMenu[] buildConstantMenus(PlanWorks.buildConstantMenus466,16801
-  private void instantiateProjectThread(PlanWorks.instantiateProjectThread528,19402
-  private void deleteProjectThread(PlanWorks.deleteProjectThread537,19679
-  private void newSequenceThread(PlanWorks.newSequenceThread543,19835
-  private void addSequenceThread(PlanWorks.addSequenceThread549,19987
-  private void deleteSequenceThread(PlanWorks.deleteSequenceThread555,20139
-  public final PwPlanningSequence getPlanSequence(PlanWorks.getPlanSequence567,20454
-  public final void addPlanSeqViewMenu(PlanWorks.addPlanSeqViewMenu594,21466
-  protected final JMenu buildPlanSeqViewMenu(PlanWorks.buildPlanSeqViewMenu614,22158
-  private void createSequenceViewThread(PlanWorks.createSequenceViewThread645,23522
-  private final void createDirectoryChooser(PlanWorks.createDirectoryChooser652,23839
-  class SequenceDirectoryFilter PlanWorks.SequenceDirectoryFilter692,25721
-    public SequenceDirectoryFilter(PlanWorks.SequenceDirectoryFilter.SequenceDirectoryFilter694,25775
-    public final boolean accept(PlanWorks.SequenceDirectoryFilter.accept705,26061
-    public final String getDescription(PlanWorks.SequenceDirectoryFilter.getDescription728,26780
-  public static boolean isMacOSX(PlanWorks.isMacOSX739,26993
-  public static void main PlanWorks.main748,27180
-  private class SeqNameComparator PlanWorks.SeqNameComparator781,28289
-    public SeqNameComparator(PlanWorks.SeqNameComparator.SeqNameComparator782,28347
-    public final int compare(PlanWorks.SeqNameComparator.compare784,28386
-    public final boolean equals(PlanWorks.SeqNameComparator.equals789,28595
+  public static void setPlanWorks(PlanWorks.setPlanWorks322,12683
+  public static String getPlanWorksTitle(PlanWorks.getPlanWorksTitle331,12886
+  public final ViewManager getViewManager(PlanWorks.getViewManager340,13056
+  public final String getCurrentProjectName(PlanWorks.getCurrentProjectName349,13226
+  public void setCurrentProjectName(PlanWorks.setCurrentProjectName353,13310
+  public final PwProject getCurrentProject(PlanWorks.getCurrentProject362,13501
+  public static JMenu getProjectMenu(PlanWorks.getProjectMenu371,13667
+  public static String getViewClassName(PlanWorks.getViewClassName381,13873
+  protected final List getProjectsLessCurrent(PlanWorks.getProjectsLessCurrent390,14094
+  public final MDIInternalFrame getSequenceStepsViewFrame(PlanWorks.getSequenceStepsViewFrame401,14478
+  protected final void setSequenceStepsViewFrame(PlanWorks.setSequenceStepsViewFrame411,14790
+  public final String getSequenceMenuName(PlanWorks.getSequenceMenuName422,15131
+  public final void makeMaxScreen(PlanWorks.makeMaxScreen430,15301
+  protected static void setProjectMenuEnabled(PlanWorks.setProjectMenuEnabled443,15717
+  private String getSequenceMenuItemName(PlanWorks.getSequenceMenuItemName453,16113
+  public static JMenu[] buildConstantMenus(PlanWorks.buildConstantMenus482,17221
+  private void instantiateProjectThread(PlanWorks.instantiateProjectThread544,19822
+  private void deleteProjectThread(PlanWorks.deleteProjectThread553,20099
+  private void newSequenceThread(PlanWorks.newSequenceThread559,20255
+  private void addSequenceThread(PlanWorks.addSequenceThread565,20407
+  private void deleteSequenceThread(PlanWorks.deleteSequenceThread571,20559
+  public final PwPlanningSequence getPlanSequence(PlanWorks.getPlanSequence583,20874
+  public final void addPlanSeqViewMenu(PlanWorks.addPlanSeqViewMenu610,21886
+  protected final JMenu buildPlanSeqViewMenu(PlanWorks.buildPlanSeqViewMenu630,22578
+  private void createSequenceViewThread(PlanWorks.createSequenceViewThread661,23942
+  private final void createDirectoryChooser(PlanWorks.createDirectoryChooser668,24259
+  class SequenceDirectoryFilter PlanWorks.SequenceDirectoryFilter708,26141
+    public SequenceDirectoryFilter(PlanWorks.SequenceDirectoryFilter.SequenceDirectoryFilter710,26195
+    public final boolean accept(PlanWorks.SequenceDirectoryFilter.accept721,26481
+    public final String getDescription(PlanWorks.SequenceDirectoryFilter.getDescription744,27200
+  public static boolean isMacOSX(PlanWorks.isMacOSX755,27413
+  public static void main PlanWorks.main764,27600
+  private class SeqNameComparator PlanWorks.SeqNameComparator797,28709
+    public SeqNameComparator(PlanWorks.SeqNameComparator.SeqNameComparator798,28767
+    public final int compare(PlanWorks.SeqNameComparator.compare800,28806
+    public final boolean equals(PlanWorks.SeqNameComparator.equals805,29015
 
 src/gov/nasa/arc/planworks/SequenceViewMenuItem.java,285
 public class SequenceViewMenuItem SequenceViewMenuItem14,321
@@ -277,9 +278,6 @@ public interface PwModel PwModel26,547
 
 src/gov/nasa/arc/planworks/db/PwObject.java,43
 public interface PwObject PwObject26,552
-
-src/gov/nasa/arc/planworks/db/PwParameter.java,49
-public interface PwParameter PwParameter26,557
 
 src/gov/nasa/arc/planworks/db/PwPartialPlan.java,53
 public interface PwPartialPlan PwPartialPlan27,620
@@ -416,208 +414,209 @@ public class PwObjectImpl PwObjectImpl33,789
   public String toString(PwObjectImpl.toString133,3563
   public String toOutputString(PwObjectImpl.toOutputString137,3623
 
-src/gov/nasa/arc/planworks/db/impl/PwParameterImpl.java,229
-public class PwParameterImpl PwParameterImpl29,645
-  public PwParameterImpl(PwParameterImpl.PwParameterImpl40,889
-  public String getName(PwParameterImpl.getName50,1091
-  public Integer getId(PwParameterImpl.getId59,1225
+src/gov/nasa/arc/planworks/db/impl/PwPartialPlanImpl.java,6663
+public class PwPartialPlanImpl PwPartialPlanImpl60,1964
+  public PwPartialPlanImpl(PwPartialPlanImpl.PwPartialPlanImpl92,3758
+  private void createPartialPlan(PwPartialPlanImpl.createPartialPlan123,4941
+  public static void loadFiles(PwPartialPlanImpl.loadFiles152,6188
+  class TimelineSlotCreator PwPartialPlanImpl.TimelineSlotCreator177,7303
+    public TimelineSlotCreator(PwPartialPlanImpl.TimelineSlotCreator.TimelineSlotCreator178,7357
+    public Object func(PwPartialPlanImpl.TimelineSlotCreator.func179,7392
+  private final void fillElementMaps(PwPartialPlanImpl.fillElementMaps188,7676
+  public List getObjectIdList(PwPartialPlanImpl.getObjectIdList218,8835
+  public PwObjectImpl getObjectImpl(PwPartialPlanImpl.getObjectImpl228,9157
+  public String getUrl(PwPartialPlanImpl.getUrl242,9425
+  public Long getId(PwPartialPlanImpl.getId251,9580
+  public List getObjectList(PwPartialPlanImpl.getObjectList260,9722
+  public List getResourceList(PwPartialPlanImpl.getResourceList266,9852
+  class FreeTokenFunctor PwPartialPlanImpl.FreeTokenFunctor272,9986
+    public FreeTokenFunctor(PwPartialPlanImpl.FreeTokenFunctor.FreeTokenFunctor273,10039
+    public boolean func(PwPartialPlanImpl.FreeTokenFunctor.func274,10071
+  public List getFreeTokenList(PwPartialPlanImpl.getFreeTokenList283,10282
+  class SlottedTokenFunctor PwPartialPlanImpl.SlottedTokenFunctor287,10414
+    public SlottedTokenFunctor(PwPartialPlanImpl.SlottedTokenFunctor.SlottedTokenFunctor288,10470
+    public boolean func(PwPartialPlanImpl.SlottedTokenFunctor.func289,10505
+  public List getSlottedTokenList(PwPartialPlanImpl.getSlottedTokenList292,10578
+  public List getTokenList(PwPartialPlanImpl.getTokenList296,10716
+  public List getVariableList(PwPartialPlanImpl.getVariableList300,10797
+  public List getConstraintList(PwPartialPlanImpl.getConstraintList304,10884
+  public List getObjectList(PwPartialPlanImpl.getObjectList308,10975
+  public List getVariableList(PwPartialPlanImpl.getVariableList312,11088
+  public List getTokenList(PwPartialPlanImpl.getTokenList316,11199
+  public List getSlotList(PwPartialPlanImpl.getSlotList320,11308
+  public List getInstantList(PwPartialPlanImpl.getInstantList324,11413
+  public List getConstraintList(PwPartialPlanImpl.getConstraintList328,11524
+  public List getResourceTransactionList(PwPartialPlanImpl.getResourceTransactionList332,11645
+  public PwObject getObject(PwPartialPlanImpl.getObject342,11928
+  public PwTimeline getTimeline(PwPartialPlanImpl.getTimeline353,12191
+  public PwSlot getSlot(PwPartialPlanImpl.getSlot364,12452
+  public PwToken getToken(PwPartialPlanImpl.getToken375,12696
+  public PwConstraint getConstraint(PwPartialPlanImpl.getConstraint386,12961
+  public PwTokenRelation getTokenRelation(PwPartialPlanImpl.getTokenRelation396,13260
+  public PwResourceInstant getInstant(PwPartialPlanImpl.getInstant401,13408
+  public PwVariable getVariable(PwPartialPlanImpl.getVariable411,13673
+  public PwResource getResource(PwPartialPlanImpl.getResource422,13926
+  public PwResourceTransaction getResourceTransaction(PwPartialPlanImpl.getResourceTransaction432,14180
+  public boolean tokenExists(PwPartialPlanImpl.tokenExists445,14549
+  public void addObject(PwPartialPlanImpl.addObject456,14848
+  public void addConstraint(PwPartialPlanImpl.addConstraint469,15204
+  public void addSlot(PwPartialPlanImpl.addSlot482,15523
+  public void addTimeline(PwPartialPlanImpl.addTimeline495,15818
+  public void addToken(PwPartialPlanImpl.addToken510,16195
+  public void addTokenRelation(PwPartialPlanImpl.addTokenRelation522,16510
+  public void addVariable(PwPartialPlanImpl.addVariable535,16859
+  public void addResource(PwPartialPlanImpl.addResource542,17036
+  public void addResourceInstant(PwPartialPlanImpl.addResourceInstant551,17278
+  public void addResourceTransaction(PwPartialPlanImpl.addResourceTransaction557,17452
+  private void cleanConstraints(PwPartialPlanImpl.cleanConstraints571,17948
+  public boolean checkPlan(PwPartialPlanImpl.checkPlan601,19069
+  private boolean checkVariables(PwPartialPlanImpl.checkVariables608,19332
+  private boolean checkRelations(PwPartialPlanImpl.checkRelations654,21273
+  private boolean checkConstraints(PwPartialPlanImpl.checkConstraints676,22126
+  private boolean checkTokens(PwPartialPlanImpl.checkTokens703,23423
+  private boolean checkTokenVars(PwPartialPlanImpl.checkTokenVars749,25340
+  private boolean checkTokenParamVars(PwPartialPlanImpl.checkTokenParamVars830,28252
+  private boolean checkTokenRelations(PwPartialPlanImpl.checkTokenRelations857,29337
+  private boolean checkVariable(PwPartialPlanImpl.checkVariable919,32120
+  private boolean checkObjectVariable(PwPartialPlanImpl.checkObjectVariable972,34347
+  public void setContentSpec(PwPartialPlanImpl.setContentSpec988,34922
+  public List getContentSpec(PwPartialPlanImpl.getContentSpec993,35032
+  public void setName(PwPartialPlanImpl.setName1003,35279
+  public String getName(PwPartialPlanImpl.getName1013,35457
+  public String getPartialPlanName(PwPartialPlanImpl.getPartialPlanName1024,35647
+  public int getPlanDBSize(PwPartialPlanImpl.getPlanDBSize1034,35961
+  public int getStepNumber(PwPartialPlanImpl.getStepNumber1046,36410
+  public String getSequenceUrl(PwPartialPlanImpl.getSequenceUrl1058,36777
+  public Integer getObjectIdByName(PwPartialPlanImpl.getObjectIdByName1062,36906
+  class TokenRelations PwPartialPlanImpl.TokenRelations1074,37229
+    public TokenRelations(PwPartialPlanImpl.TokenRelations.TokenRelations1080,37370
+    public Integer getMasterTokenId PwPartialPlanImpl.TokenRelations.getMasterTokenId1086,37539
+    public void setMasterTokenId(PwPartialPlanImpl.TokenRelations.setMasterTokenId1090,37615
+    public List getSlaveTokenIds PwPartialPlanImpl.TokenRelations.getSlaveTokenIds1099,37944
+    public void addSlaveTokenId(PwPartialPlanImpl.TokenRelations.addSlaveTokenId1103,38017
+    public String toString(PwPartialPlanImpl.TokenRelations.toString1107,38107
+  private void initTokenRelationships(PwPartialPlanImpl.initTokenRelationships1117,38471
+  private void buildTokenRelationships(PwPartialPlanImpl.buildTokenRelationships1126,38843
+  private void printTokenRelationships(PwPartialPlanImpl.printTokenRelationships1170,41087
+  public Integer getMasterTokenId(PwPartialPlanImpl.getMasterTokenId1184,41533
+  public List getSlaveTokenIds(PwPartialPlanImpl.getSlaveTokenIds1194,41826
+  public String toOutputString(PwPartialPlanImpl.toOutputString1198,41972
+  public PwRule getRule(PwPartialPlanImpl.getRule1205,42218
 
-src/gov/nasa/arc/planworks/db/impl/PwPartialPlanImpl.java,6509
-public class PwPartialPlanImpl PwPartialPlanImpl61,2010
-  public PwPartialPlanImpl(PwPartialPlanImpl.PwPartialPlanImpl93,3804
-  private void createPartialPlan(PwPartialPlanImpl.createPartialPlan124,4987
-  public static void loadFiles(PwPartialPlanImpl.loadFiles153,6234
-  class TimelineSlotCreator PwPartialPlanImpl.TimelineSlotCreator178,7349
-    public TimelineSlotCreator(PwPartialPlanImpl.TimelineSlotCreator.TimelineSlotCreator179,7403
-    public Object func(PwPartialPlanImpl.TimelineSlotCreator.func180,7438
-  private final void fillElementMaps(PwPartialPlanImpl.fillElementMaps189,7722
-  public List getObjectIdList(PwPartialPlanImpl.getObjectIdList219,8881
-  public PwObjectImpl getObjectImpl(PwPartialPlanImpl.getObjectImpl229,9203
-  public String getUrl(PwPartialPlanImpl.getUrl243,9471
-  public Long getId(PwPartialPlanImpl.getId252,9626
-  public List getObjectList(PwPartialPlanImpl.getObjectList261,9768
-  public List getResourceList(PwPartialPlanImpl.getResourceList267,9898
-  class FreeTokenFunctor PwPartialPlanImpl.FreeTokenFunctor273,10032
-    public FreeTokenFunctor(PwPartialPlanImpl.FreeTokenFunctor.FreeTokenFunctor274,10085
-    public boolean func(PwPartialPlanImpl.FreeTokenFunctor.func275,10117
-  public List getFreeTokenList(PwPartialPlanImpl.getFreeTokenList284,10328
-  class SlottedTokenFunctor PwPartialPlanImpl.SlottedTokenFunctor288,10460
-    public SlottedTokenFunctor(PwPartialPlanImpl.SlottedTokenFunctor.SlottedTokenFunctor289,10516
-    public boolean func(PwPartialPlanImpl.SlottedTokenFunctor.func290,10551
-  public List getSlottedTokenList(PwPartialPlanImpl.getSlottedTokenList293,10624
-  public List getTokenList(PwPartialPlanImpl.getTokenList297,10762
-  public List getObjectList(PwPartialPlanImpl.getObjectList301,10843
-  public List getVariableList(PwPartialPlanImpl.getVariableList305,10956
-  public List getTokenList(PwPartialPlanImpl.getTokenList309,11067
-  public List getSlotList(PwPartialPlanImpl.getSlotList313,11176
-  public List getInstantList(PwPartialPlanImpl.getInstantList317,11281
-  public List getConstraintList(PwPartialPlanImpl.getConstraintList321,11392
-  public List getResourceTransactionList(PwPartialPlanImpl.getResourceTransactionList325,11513
-  public PwObject getObject(PwPartialPlanImpl.getObject335,11796
-  public PwTimeline getTimeline(PwPartialPlanImpl.getTimeline346,12059
-  public PwSlot getSlot(PwPartialPlanImpl.getSlot357,12320
-  public PwToken getToken(PwPartialPlanImpl.getToken368,12564
-  public PwConstraint getConstraint(PwPartialPlanImpl.getConstraint379,12829
-  public PwTokenRelation getTokenRelation(PwPartialPlanImpl.getTokenRelation389,13128
-  public PwResourceInstant getInstant(PwPartialPlanImpl.getInstant394,13276
-  public PwVariable getVariable(PwPartialPlanImpl.getVariable404,13541
-  public PwResource getResource(PwPartialPlanImpl.getResource415,13794
-  public PwResourceTransaction getResourceTransaction(PwPartialPlanImpl.getResourceTransaction425,14048
-  public boolean tokenExists(PwPartialPlanImpl.tokenExists438,14417
-  public void addObject(PwPartialPlanImpl.addObject449,14716
-  public void addConstraint(PwPartialPlanImpl.addConstraint462,15072
-  public void addSlot(PwPartialPlanImpl.addSlot475,15391
-  public void addTimeline(PwPartialPlanImpl.addTimeline488,15686
-  public void addToken(PwPartialPlanImpl.addToken503,16063
-  public void addTokenRelation(PwPartialPlanImpl.addTokenRelation515,16378
-  public void addVariable(PwPartialPlanImpl.addVariable528,16727
-  public void addResource(PwPartialPlanImpl.addResource535,16904
-  public void addResourceInstant(PwPartialPlanImpl.addResourceInstant544,17146
-  public void addResourceTransaction(PwPartialPlanImpl.addResourceTransaction550,17320
-  private void cleanConstraints(PwPartialPlanImpl.cleanConstraints564,17816
-  public boolean checkPlan(PwPartialPlanImpl.checkPlan594,18937
-  private boolean checkVariables(PwPartialPlanImpl.checkVariables601,19200
-  private boolean checkRelations(PwPartialPlanImpl.checkRelations647,21141
-  private boolean checkConstraints(PwPartialPlanImpl.checkConstraints669,21994
-  private boolean checkTokens(PwPartialPlanImpl.checkTokens696,23291
-  private boolean checkTokenVars(PwPartialPlanImpl.checkTokenVars742,25208
-  private boolean checkTokenParamVars(PwPartialPlanImpl.checkTokenParamVars823,28120
-  private boolean checkTokenRelations(PwPartialPlanImpl.checkTokenRelations850,29205
-  private boolean checkVariable(PwPartialPlanImpl.checkVariable912,31988
-  private boolean checkObjectVariable(PwPartialPlanImpl.checkObjectVariable965,34215
-  public void setContentSpec(PwPartialPlanImpl.setContentSpec981,34790
-  public List getContentSpec(PwPartialPlanImpl.getContentSpec986,34900
-  public void setName(PwPartialPlanImpl.setName996,35147
-  public String getName(PwPartialPlanImpl.getName1006,35325
-  public String getPartialPlanName(PwPartialPlanImpl.getPartialPlanName1017,35515
-  public int getPlanDBSize(PwPartialPlanImpl.getPlanDBSize1027,35829
-  public int getStepNumber(PwPartialPlanImpl.getStepNumber1039,36278
-  public String getSequenceUrl(PwPartialPlanImpl.getSequenceUrl1051,36645
-  public Integer getObjectIdByName(PwPartialPlanImpl.getObjectIdByName1055,36774
-  class TokenRelations PwPartialPlanImpl.TokenRelations1067,37097
-    public TokenRelations(PwPartialPlanImpl.TokenRelations.TokenRelations1073,37238
-    public Integer getMasterTokenId PwPartialPlanImpl.TokenRelations.getMasterTokenId1079,37407
-    public void setMasterTokenId(PwPartialPlanImpl.TokenRelations.setMasterTokenId1083,37483
-    public List getSlaveTokenIds PwPartialPlanImpl.TokenRelations.getSlaveTokenIds1092,37812
-    public void addSlaveTokenId(PwPartialPlanImpl.TokenRelations.addSlaveTokenId1096,37885
-    public String toString(PwPartialPlanImpl.TokenRelations.toString1100,37975
-  private void initTokenRelationships(PwPartialPlanImpl.initTokenRelationships1110,38339
-  private void buildTokenRelationships(PwPartialPlanImpl.buildTokenRelationships1119,38711
-  private void printTokenRelationships(PwPartialPlanImpl.printTokenRelationships1163,40955
-  public Integer getMasterTokenId(PwPartialPlanImpl.getMasterTokenId1177,41401
-  public List getSlaveTokenIds(PwPartialPlanImpl.getSlaveTokenIds1187,41694
-  public String toOutputString(PwPartialPlanImpl.toOutputString1191,41840
-  public PwRule getRule(PwPartialPlanImpl.getRule1198,42086
-
-src/gov/nasa/arc/planworks/db/impl/PwPlanningSequenceImpl.java,6327
+src/gov/nasa/arc/planworks/db/impl/PwPlanningSequenceImpl.java,6656
 public class PwPlanningSequenceImpl PwPlanningSequenceImpl62,1966
   public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl89,3013
-  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl132,4634
-  private void urlsDontMatchDialog(PwPlanningSequenceImpl.urlsDontMatchDialog180,6513
-  private void loadTransactionFile(PwPlanningSequenceImpl.loadTransactionFile189,7006
-  private void loadStatsFile(PwPlanningSequenceImpl.loadStatsFile193,7148
-  private void loadTransactions(PwPlanningSequenceImpl.loadTransactions198,7314
-  public int getStepCount(PwPlanningSequenceImpl.getStepCount219,7957
-  public String getUrl(PwPlanningSequenceImpl.getUrl228,8094
-  public Long getId(PwPlanningSequenceImpl.getId232,8142
-  public PwModel getModel(PwPlanningSequenceImpl.getModel242,8347
-  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList255,8612
-  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList259,8768
-  public List getPartialPlansList(PwPlanningSequenceImpl.getPartialPlansList269,9080
-  public List getPartialPlanNamesList(PwPlanningSequenceImpl.getPartialPlanNamesList279,9332
-  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan291,9709
-  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan314,10547
-  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan325,10993
-  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan329,11155
-  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan334,11363
-  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan338,11524
-  private PwPartialPlan addPartialPlan(PwPlanningSequenceImpl.addPartialPlan351,12023
-  public PwPartialPlan getPartialPlanIfLoaded(PwPlanningSequenceImpl.getPartialPlanIfLoaded378,12993
-  public boolean isPartialPlanLoaded(PwPlanningSequenceImpl.isPartialPlanLoaded387,13358
-  public boolean isPartialPlanInDb(PwPlanningSequenceImpl.isPartialPlanInDb390,13469
-  public boolean isPartialPlanInFilesystem(PwPlanningSequenceImpl.isPartialPlanInFilesystem393,13576
-  public void delete(PwPlanningSequenceImpl.delete398,13794
-  public void setContentSpec(PwPlanningSequenceImpl.setContentSpec406,14057
-  public List getContentSpec(PwPlanningSequenceImpl.getContentSpec411,14167
-  public void setName(PwPlanningSequenceImpl.setName421,14403
-  public String getName(PwPlanningSequenceImpl.getName430,14569
-  public List getTransactionsForConstraint(PwPlanningSequenceImpl.getTransactionsForConstraint436,14654
-  public List getTransactionsForToken(PwPlanningSequenceImpl.getTransactionsForToken440,14786
-  public List getTransactionsForVariable(PwPlanningSequenceImpl.getTransactionsForVariable444,14909
-  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange448,15039
-  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange468,15483
-  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted472,15638
-  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted477,15832
-  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted482,16033
-  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted487,16238
-  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted491,16405
-  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted496,16584
-  public List getStepsWithRestrictions(PwPlanningSequenceImpl.getStepsWithRestrictions501,16767
-  public List getStepsWithRelaxations(PwPlanningSequenceImpl.getStepsWithRelaxations505,16866
-  public List getStepsWithUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithUnitVariableBindingDecisions509,16963
-  public List getStepsWithNonUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithNonUnitVariableBindingDecisions513,17089
-  public List getFreeTokensAtStep(PwPlanningSequenceImpl.getFreeTokensAtStep523,17354
-  private List getTokensById(PwPlanningSequenceImpl.getTokensById530,17642
-  public List getUnboundVariablesAtStep(PwPlanningSequenceImpl.getUnboundVariablesAtStep551,18577
-  private void loadPartialPlanFiles(PwPlanningSequenceImpl.loadPartialPlanFiles558,18910
-  private List getVariablesById(PwPlanningSequenceImpl.getVariablesById564,19166
-  public int [] getPlanDBSize(PwPlanningSequenceImpl.getPlanDBSize579,19966
-  public List getPlanDBSizeList(PwPlanningSequenceImpl.getPlanDBSizeList587,20268
-  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId591,20355
-  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId596,20538
-  public void refresh(PwPlanningSequenceImpl.refresh600,20653
-  private void fakeRules(PwPlanningSequenceImpl.fakeRules624,21572
-  public PwRule getRule(PwPlanningSequenceImpl.getRule633,21794
-  private class PartialPlanNameComparator PwPlanningSequenceImpl.PartialPlanNameComparator637,21876
-    public PartialPlanNameComparator(PwPlanningSequenceImpl.PartialPlanNameComparator.PartialPlanNameComparator638,21942
-    public int compare(PwPlanningSequenceImpl.PartialPlanNameComparator.compare641,22018
-    public boolean equals(PwPlanningSequenceImpl.PartialPlanNameComparator.equals646,22226
-  private String validateSequenceDirectory(PwPlanningSequenceImpl.validateSequenceDirectory652,22438
-  class StepDirectoryFilter PwPlanningSequenceImpl.StepDirectoryFilter668,22994
-    public StepDirectoryFilter(PwPlanningSequenceImpl.StepDirectoryFilter.StepDirectoryFilter669,23050
-    public boolean accept(PwPlanningSequenceImpl.StepDirectoryFilter.accept670,23085
-  class StepDirectoryComparator PwPlanningSequenceImpl.StepDirectoryComparator676,23220
-    public StepDirectoryComparator(PwPlanningSequenceImpl.StepDirectoryComparator.StepDirectoryComparator677,23276
-    public int compare(PwPlanningSequenceImpl.StepDirectoryComparator.compare679,23321
-    public boolean equals(PwPlanningSequenceImpl.StepDirectoryComparator.equals696,23840
+  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl125,4337
+  public PwPlanningSequenceImpl(PwPlanningSequenceImpl.PwPlanningSequenceImpl155,5432
+  private void urlsDontMatchDialog(PwPlanningSequenceImpl.urlsDontMatchDialog203,7311
+  private void loadTransactionFile(PwPlanningSequenceImpl.loadTransactionFile212,7804
+  private void loadStatsFile(PwPlanningSequenceImpl.loadStatsFile216,7946
+  private void loadTransactions(PwPlanningSequenceImpl.loadTransactions221,8112
+  public int getStepCount(PwPlanningSequenceImpl.getStepCount242,8755
+  public String getUrl(PwPlanningSequenceImpl.getUrl251,8892
+  public Long getId(PwPlanningSequenceImpl.getId255,8940
+  public PwModel getModel(PwPlanningSequenceImpl.getModel265,9145
+  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList278,9410
+  public List getTransactionsList(PwPlanningSequenceImpl.getTransactionsList282,9566
+  public List getPartialPlansList(PwPlanningSequenceImpl.getPartialPlansList292,9878
+  public List getPartialPlanNamesList(PwPlanningSequenceImpl.getPartialPlanNamesList302,10130
+  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan314,10507
+  public PwPartialPlan getPartialPlan(PwPlanningSequenceImpl.getPartialPlan337,11345
+  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan348,11791
+  public PwPartialPlan getNextPartialPlan(PwPlanningSequenceImpl.getNextPartialPlan352,11953
+  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan357,12161
+  public PwPartialPlan getPrevPartialPlan(PwPlanningSequenceImpl.getPrevPartialPlan361,12322
+  public void addPartialPlan(PwPlanningSequenceImpl.addPartialPlan366,12529
+  private PwPartialPlan addPartialPlan(PwPlanningSequenceImpl.addPartialPlan380,13015
+  public PwPartialPlan getPartialPlanIfLoaded(PwPlanningSequenceImpl.getPartialPlanIfLoaded407,13985
+  public boolean isPartialPlanLoaded(PwPlanningSequenceImpl.isPartialPlanLoaded416,14350
+  public boolean isPartialPlanInDb(PwPlanningSequenceImpl.isPartialPlanInDb419,14461
+  public boolean isPartialPlanInFilesystem(PwPlanningSequenceImpl.isPartialPlanInFilesystem422,14568
+  public void delete(PwPlanningSequenceImpl.delete427,14786
+  public void setContentSpec(PwPlanningSequenceImpl.setContentSpec435,15049
+  public List getContentSpec(PwPlanningSequenceImpl.getContentSpec440,15159
+  public void setName(PwPlanningSequenceImpl.setName450,15395
+  public String getName(PwPlanningSequenceImpl.getName459,15561
+  public List getTransactionsForConstraint(PwPlanningSequenceImpl.getTransactionsForConstraint465,15646
+  public List getTransactionsForToken(PwPlanningSequenceImpl.getTransactionsForToken469,15778
+  public List getTransactionsForVariable(PwPlanningSequenceImpl.getTransactionsForVariable473,15901
+  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange477,16031
+  public List getTransactionsInRange(PwPlanningSequenceImpl.getTransactionsInRange497,16475
+  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted501,16630
+  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted506,16824
+  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted511,17025
+  public List getStepsWhereTokenTransacted(PwPlanningSequenceImpl.getStepsWhereTokenTransacted516,17230
+  public List getStepsWhereVariableTransacted(PwPlanningSequenceImpl.getStepsWhereVariableTransacted520,17397
+  public List getStepsWhereConstraintTransacted(PwPlanningSequenceImpl.getStepsWhereConstraintTransacted525,17576
+  public List getStepsWithRestrictions(PwPlanningSequenceImpl.getStepsWithRestrictions530,17759
+  public List getStepsWithRelaxations(PwPlanningSequenceImpl.getStepsWithRelaxations534,17858
+  public List getStepsWithUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithUnitVariableBindingDecisions538,17955
+  public List getStepsWithNonUnitVariableBindingDecisions(PwPlanningSequenceImpl.getStepsWithNonUnitVariableBindingDecisions542,18081
+  public List getFreeTokensAtStep(PwPlanningSequenceImpl.getFreeTokensAtStep552,18346
+  private List getTokensById(PwPlanningSequenceImpl.getTokensById559,18634
+  public List getUnboundVariablesAtStep(PwPlanningSequenceImpl.getUnboundVariablesAtStep580,19569
+  private void loadPartialPlanFiles(PwPlanningSequenceImpl.loadPartialPlanFiles587,19902
+  private List getVariablesById(PwPlanningSequenceImpl.getVariablesById593,20158
+  public int [] getPlanDBSize(PwPlanningSequenceImpl.getPlanDBSize608,20958
+  public List getPlanDBSizeList(PwPlanningSequenceImpl.getPlanDBSizeList616,21260
+  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId620,21347
+  private Long getPartialPlanId(PwPlanningSequenceImpl.getPartialPlanId625,21530
+  public void refresh(PwPlanningSequenceImpl.refresh629,21645
+  private void fakeRules(PwPlanningSequenceImpl.fakeRules653,22564
+  public PwRule getRule(PwPlanningSequenceImpl.getRule662,22786
+  public void addTransaction(PwPlanningSequenceImpl.addTransaction666,22868
+  public String [] toOutputString(PwPlanningSequenceImpl.toOutputString671,23037
+  private class PartialPlanNameComparator PwPlanningSequenceImpl.PartialPlanNameComparator691,24041
+    public PartialPlanNameComparator(PwPlanningSequenceImpl.PartialPlanNameComparator.PartialPlanNameComparator692,24107
+    public int compare(PwPlanningSequenceImpl.PartialPlanNameComparator.compare695,24183
+    public boolean equals(PwPlanningSequenceImpl.PartialPlanNameComparator.equals700,24391
+  private String validateSequenceDirectory(PwPlanningSequenceImpl.validateSequenceDirectory706,24603
+  class StepDirectoryFilter PwPlanningSequenceImpl.StepDirectoryFilter722,25159
+    public StepDirectoryFilter(PwPlanningSequenceImpl.StepDirectoryFilter.StepDirectoryFilter723,25215
+    public boolean accept(PwPlanningSequenceImpl.StepDirectoryFilter.accept724,25250
+  class StepDirectoryComparator PwPlanningSequenceImpl.StepDirectoryComparator730,25385
+    public StepDirectoryComparator(PwPlanningSequenceImpl.StepDirectoryComparator.StepDirectoryComparator731,25441
+    public int compare(PwPlanningSequenceImpl.StepDirectoryComparator.compare733,25486
+    public boolean equals(PwPlanningSequenceImpl.StepDirectoryComparator.equals750,26005
 
-src/gov/nasa/arc/planworks/db/impl/PwPredicateImpl.java,452
-public class PwPredicateImpl PwPredicateImpl37,884
-  public PwPredicateImpl(PwPredicateImpl.PwPredicateImpl51,1257
-  public String getName(PwPredicateImpl.getName63,1559
-  public Integer getId(PwPredicateImpl.getId72,1693
-  public List getParameterList(PwPredicateImpl.getParameterList81,1843
-  public PwParameter getParameter(PwPredicateImpl.getParameter93,2192
-  public PwParameterImpl addParameter(PwPredicateImpl.addParameter104,2464
+src/gov/nasa/arc/planworks/db/impl/PwPredicateImpl.java,303
+public class PwPredicateImpl PwPredicateImpl36,838
+  public PwPredicateImpl(PwPredicateImpl.PwPredicateImpl50,1211
+  public String getName(PwPredicateImpl.getName62,1513
+  public Integer getId(PwPredicateImpl.getId71,1647
+  public List getParameterList(PwPredicateImpl.getParameterList80,1797
 
-src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java,2140
+src/gov/nasa/arc/planworks/db/impl/PwProjectImpl.java,2366
 public class PwProjectImpl PwProjectImpl50,1482
   synchronized public static void initProjects(PwProjectImpl.initProjects58,1652
   public static PwProject createProject(PwProjectImpl.createProject78,2403
   private static void connectToDataBase(PwProjectImpl.connectToDataBase96,2971
   public static PwProject getProject(PwProjectImpl.getProject116,3885
   public static List listProjects(PwProjectImpl.listProjects128,4266
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl145,4775
-  public PwProjectImpl(PwProjectImpl.PwProjectImpl162,5415
-  private void invalidSequenceDialog(PwProjectImpl.invalidSequenceDialog191,6511
-  public Integer getId(PwProjectImpl.getId211,7329
-  protected void setId(PwProjectImpl.setId215,7378
-  public String getName(PwProjectImpl.getName224,7541
-  public List listPlanningSequences(PwProjectImpl.listPlanningSequences234,7809
-  class PlanningSequenceNameEquals PwProjectImpl.PlanningSequenceNameEquals238,7936
-    public PlanningSequenceNameEquals(PwProjectImpl.PlanningSequenceNameEquals.PlanningSequenceNameEquals240,8024
-    public final boolean func(PwProjectImpl.PlanningSequenceNameEquals.func241,8094
-  class PlanningSequenceIdEquals PwProjectImpl.PlanningSequenceIdEquals244,8194
-    public PlanningSequenceIdEquals(PwProjectImpl.PlanningSequenceIdEquals.PlanningSequenceIdEquals246,8276
-    public final boolean func(PwProjectImpl.PlanningSequenceIdEquals.func247,8336
-  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence256,8579
-  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence271,9290
-  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence285,9936
-  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence296,10399
-  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence303,10640
-  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence310,10875
-  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence327,11536
-  public void delete(PwProjectImpl.delete349,12322
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl139,4530
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl154,4993
+  public PwProjectImpl(PwProjectImpl.PwProjectImpl171,5633
+  private void invalidSequenceDialog(PwProjectImpl.invalidSequenceDialog200,6729
+  public Integer getId(PwProjectImpl.getId220,7547
+  protected void setId(PwProjectImpl.setId224,7596
+  public String getName(PwProjectImpl.getName233,7759
+  public List listPlanningSequences(PwProjectImpl.listPlanningSequences243,8027
+  class PlanningSequenceNameEquals PwProjectImpl.PlanningSequenceNameEquals247,8154
+    public PlanningSequenceNameEquals(PwProjectImpl.PlanningSequenceNameEquals.PlanningSequenceNameEquals249,8242
+    public final boolean func(PwProjectImpl.PlanningSequenceNameEquals.func250,8312
+  class PlanningSequenceIdEquals PwProjectImpl.PlanningSequenceIdEquals253,8412
+    public PlanningSequenceIdEquals(PwProjectImpl.PlanningSequenceIdEquals.PlanningSequenceIdEquals255,8494
+    public final boolean func(PwProjectImpl.PlanningSequenceIdEquals.func256,8554
+  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence265,8797
+  public PwPlanningSequence getPlanningSequence(PwProjectImpl.getPlanningSequence280,9508
+  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence294,10154
+  public PwPlanningSequence addPlanningSequence(PwProjectImpl.addPlanningSequence306,10646
+  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence312,10836
+  public void deletePlanningSequence(PwProjectImpl.deletePlanningSequence319,11077
+  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence326,11312
+  public PwPlanningSequence closePlanningSequence(PwProjectImpl.closePlanningSequence343,11973
+  public void delete(PwProjectImpl.delete365,12759
+  public String toOutputString(PwProjectImpl.toOutputString372,13040
 
 src/gov/nasa/arc/planworks/db/impl/PwResourceImpl.java,690
 public class PwResourceImpl PwResourceImpl33,805
@@ -736,20 +735,20 @@ public class PwTokenRelationImpl PwTokenRelationImpl32,760
   public String toOutputString(PwTokenRelationImpl.toOutputString109,2424
 
 src/gov/nasa/arc/planworks/db/impl/PwVariableImpl.java,915
-public class PwVariableImpl PwVariableImpl39,1301
-  public PwVariableImpl(PwVariableImpl.PwVariableImpl60,2048
-  public PwVariableImpl(PwVariableImpl.PwVariableImpl72,2579
-  public Integer getId(PwVariableImpl.getId88,3083
-  public String getType(PwVariableImpl.getType97,3217
-  public PwDomain getDomain(PwVariableImpl.getDomain106,3357
-  public List getParameterNameList(PwVariableImpl.getParameterNameList111,3420
-  public List getConstraintList(PwVariableImpl.getConstraintList120,3613
-  public PwVariableContainer getParent(PwVariableImpl.getParent124,3714
-  public void removeConstraint(PwVariableImpl.removeConstraint132,3969
-  public void addConstraint(PwVariableImpl.addConstraint136,4078
-  public void addParameter(PwVariableImpl.addParameter140,4181
-  public void setParent(PwVariableImpl.setParent144,4277
-  public String toOutputString(PwVariableImpl.toOutputString148,4362
+public class PwVariableImpl PwVariableImpl38,1255
+  public PwVariableImpl(PwVariableImpl.PwVariableImpl59,2002
+  public PwVariableImpl(PwVariableImpl.PwVariableImpl71,2533
+  public Integer getId(PwVariableImpl.getId87,3037
+  public String getType(PwVariableImpl.getType96,3171
+  public PwDomain getDomain(PwVariableImpl.getDomain105,3311
+  public List getParameterNameList(PwVariableImpl.getParameterNameList110,3374
+  public List getConstraintList(PwVariableImpl.getConstraintList119,3567
+  public PwVariableContainer getParent(PwVariableImpl.getParent123,3668
+  public void removeConstraint(PwVariableImpl.removeConstraint131,3923
+  public void addConstraint(PwVariableImpl.addConstraint135,4032
+  public void addParameter(PwVariableImpl.addParameter139,4135
+  public void setParent(PwVariableImpl.setParent143,4231
+  public String toOutputString(PwVariableImpl.toOutputString147,4316
 
 src/gov/nasa/arc/planworks/db/impl/PwVariableQueryImpl.java,547
 public class PwVariableQueryImpl PwVariableQueryImpl26,603
@@ -771,83 +770,83 @@ public class FileUtils FileUtils30,667
   public static String validateSequenceDirectory(FileUtils.validateSequenceDirectory75,1947
 
 src/gov/nasa/arc/planworks/db/util/MySQLDB.java,7348
-public class MySQLDB MySQLDB52,2005
-  private MySQLDB(MySQLDB.MySQLDB61,2343
-  synchronized public static void startDatabase(MySQLDB.startDatabase71,2583
-  synchronized public static void stopDatabase(MySQLDB.stopDatabase109,4336
-  synchronized public static void registerDatabase(MySQLDB.registerDatabase124,4860
-  synchronized public static void unregisterDatabase(MySQLDB.unregisterDatabase156,5785
-  synchronized public static ResultSet queryDatabase(MySQLDB.queryDatabase175,6101
-  synchronized public static int updateDatabase(MySQLDB.updateDatabase204,6808
-  synchronized public static void analyzeDatabase(MySQLDB.analyzeDatabase227,7409
-  synchronized public static void loadFile(MySQLDB.loadFile248,7958
-  synchronized public static String queryPartialPlanModelById(MySQLDB.queryPartialPlanModelById259,8314
-  synchronized public static List getProjectNames(MySQLDB.getProjectNames279,8846
-  synchronized public static boolean projectExists(MySQLDB.projectExists299,9305
-  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists318,9764
-  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists329,10074
-  synchronized public static String getSequenceUrl(MySQLDB.getSequenceUrl340,10377
-  synchronized public static void setSequenceUrl(MySQLDB.setSequenceUrl352,10731
-  synchronized public static boolean partialPlanExists(MySQLDB.partialPlanExists364,11100
-  synchronized public static List queryPlanNamesInDatabase(MySQLDB.queryPlanNamesInDatabase375,11506
-  synchronized public static void addProject(MySQLDB.addProject394,12015
-  synchronized public static Integer latestProjectId(MySQLDB.latestProjectId404,12266
-  synchronized public static Long addSequence(MySQLDB.addSequence422,12738
-  synchronized public static Long latestSequenceId(MySQLDB.latestSequenceId435,13230
-  synchronized public static Integer getProjectIdByName(MySQLDB.getProjectIdByName454,13641
-  synchronized public static Map getSequences(MySQLDB.getSequences476,14208
-  synchronized public static void deleteProject(MySQLDB.deleteProject497,14803
-  synchronized public static void deletePlanningSequence(MySQLDB.deletePlanningSequence511,15331
-  synchronized public static List getPlanNamesInSequence(MySQLDB.getPlanNamesInSequence554,17294
-  synchronized public static Long getNewPartialPlanId(MySQLDB.getNewPartialPlanId576,17874
-  synchronized public static Long getPartialPlanIdByName(MySQLDB.getPartialPlanIdByName589,18355
-  synchronized public static Long getPartialPlanIdByStepNum(MySQLDB.getPartialPlanIdByStepNum608,18983
-  synchronized public static List queryPartialPlanNames(MySQLDB.queryPartialPlanNames627,19632
-  synchronized public static void createObjects(MySQLDB.createObjects647,20272
-  synchronized public static int countTransactions(MySQLDB.countTransactions703,22880
-  synchronized private static PwDBTransactionImpl instantiateTransaction(MySQLDB.instantiateTransaction716,23267
-  synchronized public static Map queryTransactions(MySQLDB.queryTransactions747,24505
-  synchronized public static void createSlotTokenNodesStructure(MySQLDB.createSlotTokenNodesStructure768,25447
-  synchronized public static void queryConstraints(MySQLDB.queryConstraints871,31331
-  synchronized public static void queryVariables(MySQLDB.queryVariables903,32992
-  synchronized public static void queryTokenRelations(MySQLDB.queryTokenRelations951,35526
-  synchronized public static void queryResourceInstants(MySQLDB.queryResourceInstants970,36493
-  synchronized public static List queryTransactionsForStep(MySQLDB.queryTransactionsForStep997,37744
-  synchronized public static List queryTransactionsForConstraint(MySQLDB.queryTransactionsForConstraint1009,38367
-  synchronized public static List queryTransactionsForToken(MySQLDB.queryTransactionsForToken1024,39126
-  synchronized public static List queryTransactionsForVariable(MySQLDB.queryTransactionsForVariable1039,39861
-  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1054,40601
-  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1070,41424
-  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1086,42252
-  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1102,43100
-  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1117,43784
-  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1132,44474
-  synchronized public static List queryStepsWithRestrictions(MySQLDB.queryStepsWithRestrictions1147,45168
-  synchronized public static List queryStepsWithRelaxations(MySQLDB.queryStepsWithRelaxations1160,45784
-  synchronized public static List queryStepsWithUnitVariableDecisions(MySQLDB.queryStepsWithUnitVariableDecisions1175,46470
-  synchronized public static List queryStepsWithNonUnitVariableDecisions(MySQLDB.queryStepsWithNonUnitVariableDecisions1199,47752
-  synchronized public static List queryFreeTokensAtStep(MySQLDB.queryFreeTokensAtStep1217,48508
-  synchronized public static List queryUnboundVariablesAtStep(MySQLDB.queryUnboundVariablesAtStep1243,49758
-  synchronized private static boolean varDerivedDomainIsSingleton(MySQLDB.varDerivedDomainIsSingleton1279,51304
-  synchronized private static boolean varSpecDomainIsSingleton(MySQLDB.varSpecDomainIsSingleton1294,51793
-  synchronized private static boolean varDomainIsSingleton(MySQLDB.varDomainIsSingleton1314,52484
-  synchronized public static List queryPartialPlanSizes(MySQLDB.queryPartialPlanSizes1326,52883
-  synchronized public static int [] queryPartialPlanSize(MySQLDB.queryPartialPlanSize1345,53530
-  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1360,54061
-  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1371,54512
-  synchronized public static Map queryAllIdsForPartialPlan(MySQLDB.queryAllIdsForPartialPlan1383,54960
-  synchronized public static List queryTimelineIdsForObject(MySQLDB.queryTimelineIdsForObject1409,56081
-  synchronized public static List querySlotIdsForTimeline(MySQLDB.querySlotIdsForTimeline1427,56786
-  synchronized public static List queryTokenRelationIdsForToken(MySQLDB.queryTokenRelationIdsForToken1453,57890
-  synchronized public static List queryTransactionIdsForPartialPlan(MySQLDB.queryTransactionIdsForPartialPlan1469,58450
-  synchronized public static List queryConstraintTransactionNames(MySQLDB.queryConstraintTransactionNames1483,59008
-  synchronized public static List queryTokenTransactionNames(MySQLDB.queryTokenTransactionNames1487,59134
-  synchronized public static List queryVariableTransactionNames(MySQLDB.queryVariableTransactionNames1491,59250
-  synchronized public static List queryTransactionNames(MySQLDB.queryTransactionNames1495,59367
-class ObjectIdComparator ObjectIdComparator1511,59801
-  public ObjectIdComparator(ObjectIdComparator.ObjectIdComparator1512,59850
-  public boolean equals(ObjectIdComparator.equals1514,59886
-  public int compare(ObjectIdComparator.compare1517,59944
+public class MySQLDB MySQLDB51,1950
+  private MySQLDB(MySQLDB.MySQLDB60,2288
+  synchronized public static void startDatabase(MySQLDB.startDatabase70,2528
+  synchronized public static void stopDatabase(MySQLDB.stopDatabase108,4281
+  synchronized public static void registerDatabase(MySQLDB.registerDatabase123,4805
+  synchronized public static void unregisterDatabase(MySQLDB.unregisterDatabase155,5730
+  synchronized public static ResultSet queryDatabase(MySQLDB.queryDatabase174,6046
+  synchronized public static int updateDatabase(MySQLDB.updateDatabase203,6753
+  synchronized public static void analyzeDatabase(MySQLDB.analyzeDatabase226,7354
+  synchronized public static void loadFile(MySQLDB.loadFile247,7903
+  synchronized public static String queryPartialPlanModelById(MySQLDB.queryPartialPlanModelById258,8259
+  synchronized public static List getProjectNames(MySQLDB.getProjectNames278,8791
+  synchronized public static boolean projectExists(MySQLDB.projectExists298,9250
+  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists317,9709
+  synchronized public static boolean sequenceExists(MySQLDB.sequenceExists328,10019
+  synchronized public static String getSequenceUrl(MySQLDB.getSequenceUrl339,10322
+  synchronized public static void setSequenceUrl(MySQLDB.setSequenceUrl351,10676
+  synchronized public static boolean partialPlanExists(MySQLDB.partialPlanExists363,11045
+  synchronized public static List queryPlanNamesInDatabase(MySQLDB.queryPlanNamesInDatabase374,11451
+  synchronized public static void addProject(MySQLDB.addProject393,11960
+  synchronized public static Integer latestProjectId(MySQLDB.latestProjectId403,12211
+  synchronized public static Long addSequence(MySQLDB.addSequence421,12683
+  synchronized public static Long latestSequenceId(MySQLDB.latestSequenceId434,13175
+  synchronized public static Integer getProjectIdByName(MySQLDB.getProjectIdByName453,13586
+  synchronized public static Map getSequences(MySQLDB.getSequences475,14153
+  synchronized public static void deleteProject(MySQLDB.deleteProject496,14748
+  synchronized public static void deletePlanningSequence(MySQLDB.deletePlanningSequence510,15276
+  synchronized public static List getPlanNamesInSequence(MySQLDB.getPlanNamesInSequence553,17239
+  synchronized public static Long getNewPartialPlanId(MySQLDB.getNewPartialPlanId575,17819
+  synchronized public static Long getPartialPlanIdByName(MySQLDB.getPartialPlanIdByName588,18300
+  synchronized public static Long getPartialPlanIdByStepNum(MySQLDB.getPartialPlanIdByStepNum607,18928
+  synchronized public static List queryPartialPlanNames(MySQLDB.queryPartialPlanNames626,19577
+  synchronized public static void createObjects(MySQLDB.createObjects646,20217
+  synchronized public static int countTransactions(MySQLDB.countTransactions702,22825
+  synchronized private static PwDBTransactionImpl instantiateTransaction(MySQLDB.instantiateTransaction715,23212
+  synchronized public static Map queryTransactions(MySQLDB.queryTransactions746,24450
+  synchronized public static void createSlotTokenNodesStructure(MySQLDB.createSlotTokenNodesStructure767,25392
+  synchronized public static void queryConstraints(MySQLDB.queryConstraints870,31276
+  synchronized public static void queryVariables(MySQLDB.queryVariables902,32937
+  synchronized public static void queryTokenRelations(MySQLDB.queryTokenRelations950,35471
+  synchronized public static void queryResourceInstants(MySQLDB.queryResourceInstants969,36438
+  synchronized public static List queryTransactionsForStep(MySQLDB.queryTransactionsForStep996,37689
+  synchronized public static List queryTransactionsForConstraint(MySQLDB.queryTransactionsForConstraint1008,38312
+  synchronized public static List queryTransactionsForToken(MySQLDB.queryTransactionsForToken1023,39071
+  synchronized public static List queryTransactionsForVariable(MySQLDB.queryTransactionsForVariable1038,39806
+  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1053,40546
+  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1069,41369
+  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1085,42197
+  synchronized public static List queryStepsWithTokenTransaction(MySQLDB.queryStepsWithTokenTransaction1101,43045
+  synchronized public static List queryStepsWithVariableTransaction(MySQLDB.queryStepsWithVariableTransaction1116,43729
+  synchronized public static List queryStepsWithConstraintTransaction(MySQLDB.queryStepsWithConstraintTransaction1131,44419
+  synchronized public static List queryStepsWithRestrictions(MySQLDB.queryStepsWithRestrictions1146,45113
+  synchronized public static List queryStepsWithRelaxations(MySQLDB.queryStepsWithRelaxations1159,45729
+  synchronized public static List queryStepsWithUnitVariableDecisions(MySQLDB.queryStepsWithUnitVariableDecisions1174,46415
+  synchronized public static List queryStepsWithNonUnitVariableDecisions(MySQLDB.queryStepsWithNonUnitVariableDecisions1198,47697
+  synchronized public static List queryFreeTokensAtStep(MySQLDB.queryFreeTokensAtStep1216,48453
+  synchronized public static List queryUnboundVariablesAtStep(MySQLDB.queryUnboundVariablesAtStep1242,49703
+  synchronized private static boolean varDerivedDomainIsSingleton(MySQLDB.varDerivedDomainIsSingleton1278,51249
+  synchronized private static boolean varSpecDomainIsSingleton(MySQLDB.varSpecDomainIsSingleton1293,51738
+  synchronized private static boolean varDomainIsSingleton(MySQLDB.varDomainIsSingleton1313,52429
+  synchronized public static List queryPartialPlanSizes(MySQLDB.queryPartialPlanSizes1325,52828
+  synchronized public static int [] queryPartialPlanSize(MySQLDB.queryPartialPlanSize1344,53475
+  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1359,54006
+  synchronized public static Long queryPartialPlanId(MySQLDB.queryPartialPlanId1370,54457
+  synchronized public static Map queryAllIdsForPartialPlan(MySQLDB.queryAllIdsForPartialPlan1382,54905
+  synchronized public static List queryTimelineIdsForObject(MySQLDB.queryTimelineIdsForObject1408,56026
+  synchronized public static List querySlotIdsForTimeline(MySQLDB.querySlotIdsForTimeline1426,56731
+  synchronized public static List queryTokenRelationIdsForToken(MySQLDB.queryTokenRelationIdsForToken1452,57835
+  synchronized public static List queryTransactionIdsForPartialPlan(MySQLDB.queryTransactionIdsForPartialPlan1468,58395
+  synchronized public static List queryConstraintTransactionNames(MySQLDB.queryConstraintTransactionNames1482,58953
+  synchronized public static List queryTokenTransactionNames(MySQLDB.queryTokenTransactionNames1486,59079
+  synchronized public static List queryVariableTransactionNames(MySQLDB.queryVariableTransactionNames1490,59195
+  synchronized public static List queryTransactionNames(MySQLDB.queryTransactionNames1494,59312
+class ObjectIdComparator ObjectIdComparator1510,59746
+  public ObjectIdComparator(ObjectIdComparator.ObjectIdComparator1511,59795
+  public boolean equals(ObjectIdComparator.equals1513,59831
+  public int compare(ObjectIdComparator.compare1516,59889
 
 src/gov/nasa/arc/planworks/db/util/PartialPlanContentSpec.java,1267
 public class PartialPlanContentSpec PartialPlanContentSpec37,1276
@@ -1051,23 +1050,22 @@ public class MySQLDBTest MySQLDBTest12,239
   private void checkVariableLoad(MySQLDBTest.checkVariableLoad291,10313
   private void checkTransactionLoad(MySQLDBTest.checkTransactionLoad308,10964
 
-src/gov/nasa/arc/planworks/test/PlanWorksGUITest.java,650
-public class PlanWorksGUITest PlanWorksGUITest19,626
-  public PlanWorksGUITest(PlanWorksGUITest.PlanWorksGUITest27,860
-  public void setUp(PlanWorksGUITest.setUp31,925
-  public void tearDown(PlanWorksGUITest.tearDown41,1183
-  public void testPlanWorks(PlanWorksGUITest.testPlanWorks47,1302
-  public static TestSuite suite(PlanWorksGUITest.suite59,1980
-  private JMenu findMenu(PlanWorksGUITest.findMenu65,2136
-  private JMenuItem findMenuItem(PlanWorksGUITest.findMenuItem70,2281
-  private AbstractButton findCancelButton(PlanWorksGUITest.findCancelButton81,2649
-  private void buildTestData(PlanWorksGUITest.buildTestData86,2813
+src/gov/nasa/arc/planworks/test/PlanWorksGUITest.java,583
+public class PlanWorksGUITest PlanWorksGUITest27,817
+  public PlanWorksGUITest(PlanWorksGUITest.PlanWorksGUITest35,1051
+  public void setUp(PlanWorksGUITest.setUp39,1116
+  public void tearDown(PlanWorksGUITest.tearDown56,1463
+  public void testPlanWorks(PlanWorksGUITest.testPlanWorks62,1582
+  public static TestSuite suite(PlanWorksGUITest.suite74,2260
+  private JMenu findMenu(PlanWorksGUITest.findMenu80,2416
+  private JMenuItem findMenuItem(PlanWorksGUITest.findMenuItem85,2561
+  private AbstractButton findCancelButton(PlanWorksGUITest.findCancelButton96,2929
 
-src/gov/nasa/arc/planworks/test/PlanWorksTest.java,232
-public class PlanWorksTest PlanWorksTest7,96
-  public static void main(PlanWorksTest.main10,212
-  public static TestSuite suite(PlanWorksTest.suite22,604
-  private static void printFailures(PlanWorksTest.printFailures30,885
+src/gov/nasa/arc/planworks/test/PlanWorksTest.java,235
+public class PlanWorksTest PlanWorksTest15,287
+  public static void main(PlanWorksTest.main18,403
+  public static TestSuite suite(PlanWorksTest.suite30,795
+  private static void printFailures(PlanWorksTest.printFailures38,1076
 
 src/gov/nasa/arc/planworks/test/PlanWorksUtilsTest.java,2230
 public class PlanWorksUtilsTest PlanWorksUtilsTest17,403
@@ -1099,22 +1097,9 @@ public class PlanWorksUtilsTest PlanWorksUtilsTest17,403
     public GreaterThanFunctor(PlanWorksUtilsTest.GreaterThanFunctor.GreaterThanFunctor242,9410
     public final boolean func(PlanWorksUtilsTest.GreaterThanFunctor.func245,9479
 
-src/gov/nasa/arc/planworks/test/TestHelper.java,941
-public class TestHelper TestHelper13,287
-  public static void critAssertTrue(TestHelper.critAssertTrue18,494
-  public static void assertTrue(TestHelper.assertTrue24,633
-  public static Component findComponent(TestHelper.findComponent31,779
-  public static Component findComponent(TestHelper.findComponent40,1004
-  public static void enter(TestHelper.enter61,1687
-  public static void press(TestHelper.press68,1990
-  public static void press(TestHelper.press72,2103
-  public static void release(TestHelper.release79,2457
-  public static void release(TestHelper.release83,2574
-  public static void click(TestHelper.click90,2931
-  public static void click(TestHelper.click94,3044
-  public static void enterClickAndLeave(TestHelper.enterClickAndLeave102,3399
-  public static void enterClickAndLeave(TestHelper.enterClickAndLeave106,3514
-  public static void enterClickAndLeave(TestHelper.enterClickAndLeave110,3682
+src/gov/nasa/arc/planworks/test/PWTestHelper.java,126
+public abstract class PWTestHelper PWTestHelper14,272
+  public static void buildTestData(PWTestHelper.buildTestData16,310
 
 src/gov/nasa/arc/planworks/util/Algorithms.java,909
 public class AlgorithmsAlgorithms25,566

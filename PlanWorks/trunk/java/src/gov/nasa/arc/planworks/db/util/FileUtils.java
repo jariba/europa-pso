@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.12 2004-02-03 19:22:40 miatauro Exp $
+// $Id: FileUtils.java,v 1.13 2004-04-06 01:31:42 taylor Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -27,7 +27,7 @@ import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
  * @version 0.0
  * @author Will Taylor NASA Ames Research Center, Code IC
  */
-public class FileUtils {
+public abstract class FileUtils {
 
   /**
    * getExtension - get the extension of a file.
@@ -125,6 +125,31 @@ public class FileUtils {
     }
     return msg;
   } // end validateSequenceDirectory
+
+  /**
+   * <code>deleteDir</code> - http://www.javaalmanac.com/egs/java.io/DeleteDir.html
+   *
+   * Deletes all files and subdirectories under dir.
+   * Returns true if all deletions were successful.
+   * If a deletion fails, the method stops attempting to delete and returns false.
+   *
+   * @param dir - <code>File</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public static boolean deleteDir( File dir) {
+    if (dir.isDirectory()) {
+      String[] children = dir.list();
+      for (int i = 0; i < children.length; i++) {
+        boolean success = deleteDir( new File( dir, children[i]));
+        if (! success) {
+          return false;
+        }
+      }
+    }
+    // The directory is now empty so delete it
+    return dir.delete();
+  } // end deleteDir
+
 
 } // class FileUtils
 

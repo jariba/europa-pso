@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.91 2004-03-31 23:46:20 miatauro Exp $
+// $Id: PlanWorks.java,v 1.92 2004-04-06 01:31:41 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -44,7 +44,6 @@ import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.SplashWindow;
-import gov.nasa.arc.planworks.test.TestHelper;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
@@ -196,7 +195,7 @@ public class PlanWorks extends MDIDesktopFrame {
   private Map sequenceStepsViewMap;
   private Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
 
-  protected final DirectoryChooser sequenceDirChooser;
+  protected final DirectoryChooser sequenceDirChooser; 
   //protected final PlannerCommandLineDialog executeDialog;
   protected static String sequenceParentDirectory; // pathname
   protected static File [] sequenceDirectories; // directory name
@@ -235,11 +234,28 @@ public class PlanWorks extends MDIDesktopFrame {
    */                                
   public PlanWorks( final JMenu[] constantMenus) {
     super( planWorksTitle, constantMenus);
+    sequenceDirChooser = new DirectoryChooser();
+    planWorksCommon();
+  }
+
+  /**
+   * <code>PlanWorks</code> - constructor for PlanWorksGUITest
+   *
+   * @param constantMenus - <code>JMenu[]</code> - 
+   * @param title - <code>String</code> - 
+   */
+  public PlanWorks( final JMenu[] constantMenus, String title) {
+    super( title, constantMenus);
+    planWorksTitle = title;
+    sequenceDirChooser = new DirectoryChooser();
+    planWorksCommon();
+  }
+
+  private void planWorksCommon() {
     projectMenu.setEnabled(false);
     currentProjectName = "";
     currentProject = null;
     viewManager = null;
-    sequenceDirChooser = new DirectoryChooser();
     createDirectoryChooser();
     // Closes from title bar 
     addWindowListener( new WindowAdapter() {
@@ -315,6 +331,15 @@ public class PlanWorks extends MDIDesktopFrame {
   }
     
   /**
+   * <code>setPlanWorks</code>
+   *
+   * @param planWorksInstance - <code>PlanWorks</code> - 
+   */
+  public static void setPlanWorks( final PlanWorks planWorksInstance) {
+    planWorks = planWorksInstance;
+  }
+
+  /**
    * <code>getPlanWorksTitle</code>
    *
    * @return - <code>String</code> - 
@@ -373,10 +398,6 @@ public class PlanWorks extends MDIDesktopFrame {
     return (String) VIEW_CLASS_NAME_MAP.get( viewName);
   }
 
-  public static void setPlanWorks( final PlanWorks planWorksInstance) {
-    planWorks = planWorksInstance;
-  }
-
   /**
    * <code>getProjectsLessCurrent</code>
    *
@@ -416,6 +437,26 @@ public class PlanWorks extends MDIDesktopFrame {
    */
   public final String getSequenceMenuName( final String seqUrl) {
     return (String) sequenceNameMap.get( seqUrl);
+  }
+
+  /**
+   * <code>getSequenceDirChooser</code> - for PlanWorksGUITest
+   *
+   * @return - <code>DirectoryChooser</code> - 
+   */
+  public final DirectoryChooser getSequenceDirChooser() {
+    return sequenceDirChooser;
+  }
+    
+  /**
+   * <code>makeMaxScreen</code>
+   *
+   */
+  public final void makeMaxScreen() {
+    Rectangle maxRectangle =
+      GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+    this.setSize( (int) maxRectangle.getWidth(), (int) maxRectangle.getHeight());
+    this.setLocation( 0, 0);
   }
 
   /**

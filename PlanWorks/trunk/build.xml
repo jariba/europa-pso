@@ -1,11 +1,13 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.39 2004-03-31 23:44:39 miatauro Exp $ -->
+<!-- $Id: build.xml,v 1.40 2004-04-06 01:31:39 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
   </description>
 
   <property environment="env"/>
+  <property name="name.application" value="PlanWorks (pre-PW_M_14): Plan Visualization"/>
+  <property name="boolean.isMaxScreen" value="false"/>
   <property name="planworks.root" value="${basedir}"/>
   <property name="mysql.basedir" value="${planworks.root}/lib/mysql"/>
   <property name="mysql.datadir" value="${mysql.basedir}/data"/>
@@ -160,8 +162,8 @@
     <fail message="Wrong JVM version: ${ant.java.version} => require jdk1.4.*"/>
   </target>
 
-  <target name="test" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2,compile"
-    description="-- Data access layer JFCUnit test (compile, cleandb dependencies)">
+  <target name="test" depends="chk_jvm_2,chk_solaris_2,chk_linux_2,chk_macosx_2,chk_cygwin_2,compile,cleanDb"
+    description="-- All PlanWorks tests, including JFCUnit test (compile, cleandb dependencies)">
           <ant dir="./java/src/gov/nasa/arc/planworks/test" antfile="planworks-test.xml"/>
   </target>
 

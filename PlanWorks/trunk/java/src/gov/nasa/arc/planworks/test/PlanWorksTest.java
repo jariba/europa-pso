@@ -1,3 +1,11 @@
+//
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for
+// * information on usage and redistribution of this file,
+// * and for a DISCLAIMER OF ALL WARRANTIES.
+//
+
+// $Id: PlanWorksTest.java,v 1.26 2004-04-06 01:31:43 taylor Exp $
+//
 package gov.nasa.arc.planworks.test;
 
 import java.util.Enumeration;
