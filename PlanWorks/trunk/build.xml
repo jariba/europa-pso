@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.61 2005-02-15 23:04:45 miatauro Exp $ -->
+<!-- $Id: build.xml,v 1.62 2005-02-17 23:06:58 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -150,7 +150,7 @@
   <target name="chk_linux_2" depends="chk_linux_1" if="os.linux">
     <property name="os" value="linux"/>
 <!--Comment out the following line if you're on Linux and set your own MySQL bindir-->
-    <!--property name="mysql.bindir" value="${mysql.basedir}/bin"/-->
+    <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
 <!--This works because properties are immutable, so this line is ignored.-->
     <property name="mysql.bindir" value="${mysql.custom.bindir}"/>
   </target>
