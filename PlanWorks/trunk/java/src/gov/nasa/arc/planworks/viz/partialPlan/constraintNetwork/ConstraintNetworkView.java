@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.34 2004-02-10 02:35:54 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.35 2004-02-12 21:42:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -278,11 +278,12 @@ public class ConstraintNetworkView extends PartialPlanView {
     newLayout.performLayout();
 
     viewFrame = viewSet.openView( this.getClass().getName());
-    Rectangle documentBounds = jGoView.getDocument().computeBounds();
-    jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
-                                           (ViewConstants.TIMELINE_VIEW_X_INIT * 2),
-                                           (int) documentBounds.getHeight() +
-                                           (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
+    // this constricts, unduly, the width of the frame, for small numbers of tokens
+//     Rectangle documentBounds = jGoView.getDocument().computeBounds();
+//     jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
+//                                            (ViewConstants.TIMELINE_VIEW_X_INIT * 2),
+//                                            (int) documentBounds.getHeight() +
+//                                            (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
     if (! isStepButtonView) {
       expandViewFrame( viewFrame, (int) jGoView.getDocumentSize().getWidth(), VIEW_HEIGHT);
     }

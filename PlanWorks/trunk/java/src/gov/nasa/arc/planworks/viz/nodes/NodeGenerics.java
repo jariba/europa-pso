@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.16 2004-02-04 20:16:38 taylor Exp $
+// $Id: NodeGenerics.java,v 1.17 2004-02-12 21:42:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -366,6 +366,8 @@ public class NodeGenerics {
                                                  PartialPlanView partialPlanView,
                                                  StringBuffer tip) {
     String typeName = variable.getType();
+//     System.err.println( "getVariableNodeToolTipText id " + variable.getId().toString() +
+//                         " typeName '" + typeName + "'");
     tip.append( typeName);
     if (typeName.equals( DbConstants.OBJECT_VAR)) {
       //String objectName = "_not_found_";

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.5 2004-02-11 02:29:30 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.6 2004-02-12 21:42:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -764,12 +764,13 @@ public class ResourceProfileView extends PartialPlanView  {
      * @return - <code>Dimension</code> - 
      */
     public final Dimension getPreferredSize() {
-      if ((jGoLevelScaleView.getVerticalScrollBar() == null) ||
-          (jGoRulerView.getHorizontalScrollBar() == null)) {
+//       System.err.println( "jGoLevelScaleView " + jGoLevelScaleView);
+//       System.err.println( "jGoRulerView " + jGoRulerView);
+      if (jGoRulerView == null) {
         return new Dimension
-          ( (int) jGoLevelScaleView.getDocumentSize().getWidth(),
-            (int) (ResourceProfileView.this.getSize().getHeight() -
-                   jGoRulerView.getDocumentSize().getHeight()));
+          ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
+                   jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
+            (int) ResourceProfileView.this.getSize().getHeight());
       } else {
         return new Dimension
           ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
