@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.19 2004-04-01 22:51:17 taylor Exp $
+// $Id: VizView.java,v 1.20 2004-04-09 23:11:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -280,7 +280,7 @@ public class VizView extends JPanel {
     createOpenAllItem( openAllItem, partialPlanIfLoaded, partialPlanName, planSequence);
     mouseRightPopup.add( openAllItem);
 
-    if (partialPlanIfLoaded != null) {
+    if ((partialPlanIfLoaded != null) && (partialPlanViewSet != null)) {
       JMenuItem showAllItem = new JMenuItem( "Show All Views");
       createShowAllItem( showAllItem, partialPlanViewSet);
       mouseRightPopup.add( showAllItem);

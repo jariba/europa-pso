@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.18 2004-03-30 22:01:04 taylor Exp $
+// $Id: TemporalNode.java,v 1.19 2004-04-09 23:11:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -82,6 +82,7 @@ public class TemporalNode extends BasicNode implements Extent {
   private boolean isFreeToken;
   private TemporalExtentView temporalExtentView;
   private boolean isEarliestStartMinusInf;
+  private boolean isEarliestStartPlusInf;
   private boolean isLatestStartPlusInf;
   private boolean isEarliestEndMinusInf;
   private boolean isEarliestEndPlusInf;
@@ -137,13 +138,19 @@ public class TemporalNode extends BasicNode implements Extent {
 //     System.err.println( "Temporal Node: " + tokenId + " eS " +
 //                         earliestStartTime + " lS " + latestStartTime + " eE " +
 //                         earliestEndTime + " lE " + latestEndTime);
+//     System.err.println( "earliestDurationString " + earliestDurationString +
+//                         " latestDurationString " + latestDurationString);
     if (earliestDurationString.equals( DbConstants.MINUS_INFINITY)) {
       earliestDurationTime = DbConstants.MINUS_INFINITY_INT;
+    } else if (earliestDurationString.equals( DbConstants.PLUS_INFINITY)) {
+      earliestDurationTime = DbConstants.PLUS_INFINITY_INT;
     } else {
       earliestDurationTime = Integer.parseInt( earliestDurationString);
     }
     if (latestDurationString.equals( DbConstants.PLUS_INFINITY)) {
       latestDurationTime = DbConstants.PLUS_INFINITY_INT;
+    } else if (latestDurationString.equals( DbConstants.MINUS_INFINITY)) {
+      latestDurationTime = DbConstants.MINUS_INFINITY_INT;
     } else {
       latestDurationTime = Integer.parseInt( latestDurationString);
     }
@@ -170,15 +177,21 @@ public class TemporalNode extends BasicNode implements Extent {
 
   private void checkIntervalDomains() {
     isEarliestStartMinusInf = false;
+    isEarliestStartPlusInf = false;
     if (earliestStartTime == DbConstants.MINUS_INFINITY_INT) {
       isEarliestStartMinusInf = true;
       earliestStartTime = temporalExtentView.getTimeScaleStart();
+    } else if (earliestStartTime == DbConstants.PLUS_INFINITY_INT) {
+      isEarliestStartPlusInf = true;
+      earliestStartTime = temporalExtentView.getTimeScaleEnd();
     }
+
     isLatestStartPlusInf = false;
     if (latestStartTime == DbConstants.PLUS_INFINITY_INT) {
       isLatestStartPlusInf = true;
       latestStartTime = temporalExtentView.getTimeScaleEnd();
     }
+
     isEarliestEndMinusInf = false;
     isEarliestEndPlusInf = false;
     if (earliestEndTime == DbConstants.MINUS_INFINITY_INT) {
@@ -188,6 +201,7 @@ public class TemporalNode extends BasicNode implements Extent {
       isEarliestEndPlusInf = true;
       earliestEndTime = temporalExtentView.getTimeScaleEnd();
     }
+
     isLatestEndPlusInf = false;
     if (latestEndTime == DbConstants.PLUS_INFINITY_INT) {
       isLatestEndPlusInf = true;
@@ -284,6 +298,8 @@ public class TemporalNode extends BasicNode implements Extent {
     if (temporalDisplayMode != TemporalExtentView.SHOW_LATEST) {
       if (isEarliestStartMinusInf) {
         renderMinusInfinityMark( earliestStartTime, yLoc);
+      } else if (isEarliestStartPlusInf) {
+        renderPlusInfinityMark( earliestStartTime, yLoc);
       } else {
         renderStartMark( earliestStartTime, yLoc);
       }
@@ -331,7 +347,7 @@ public class TemporalNode extends BasicNode implements Extent {
     int endDurationTime = latestDurationTime;
     if (temporalDisplayMode == TemporalExtentView.SHOW_EARLIEST) {
       endTime = earliestEndTime;
-      if (isEarliestStartMinusInf || isEarliestEndMinusInf) {
+      if (isEarliestStartMinusInf || isEarliestStartPlusInf || isEarliestEndMinusInf) {
         startDurationTime = DbConstants.PLUS_INFINITY_INT;
       } else {
         startDurationTime = earliestEndTime - earliestStartTime;
@@ -346,6 +362,9 @@ public class TemporalNode extends BasicNode implements Extent {
       }
       endDurationTime = startDurationTime;
     }
+//     System.err.println( "token " + token.getId().toString());
+//     System.err.println( "startDurationTime " + startDurationTime + " endDurationTime " +
+//                         endDurationTime);
     if (isShowLabels) {
       yLoc = scaleY() + ViewConstants.TEMPORAL_NODE_Y_END_OFFSET +
         ((temporalExtentView.getZoomFactor() - 1) * 3);

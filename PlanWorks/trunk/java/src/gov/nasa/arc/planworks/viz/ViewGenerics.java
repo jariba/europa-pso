@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.11 2004-04-01 22:51:17 taylor Exp $
+// $Id: ViewGenerics.java,v 1.12 2004-04-09 23:11:25 taylor Exp $
 //
 // PlanWorks
 //
@@ -109,7 +109,8 @@ public class ViewGenerics {
         (PlanWorks.getPlanWorks(), rnfExcep.getMessage().substring( index + 1),
          "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
       System.err.println( rnfExcep);
-      rnfExcep.printStackTrace();
+      // rnfExcep.printStackTrace();
+      return;
     }
     vizView.createAllViewItems( partialPlanIfLoaded, partialPlanName,
                                 planSequence, mouseRightPopup);

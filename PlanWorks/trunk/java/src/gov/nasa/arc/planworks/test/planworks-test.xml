@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <project name="planworks-test" default="test" basedir=".">
+<property name="boolean.isMaxTestScreen" value="false"/>
 <target name="test">
         <path id="planworks.jars">
           <pathelement path="${planworks.root}/java/classes"/>
@@ -34,7 +35,7 @@
           <jvmarg value="-Dsplash.image=${splash.image}"/>
           <jvmarg value="-Dplanworks.test.data.dir=${planworks.test.data.dir}"/>
           <jvmarg value="-Dname.application=${name.application}"/>
-          <jvmarg value="-Dboolean.isMaxScreen=${boolean.isMaxScreen}"/>
+          <jvmarg value="-Dboolean.isMaxTestScreen=${boolean.isMaxScreen}"/>
         </java>
 
 </target>

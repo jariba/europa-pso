@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.85 2004-04-06 01:31:39 taylor Exp $
+# $Id: README,v 1.86 2004-04-09 23:11:22 taylor Exp $
 #
 
 SUMMARY
@@ -142,7 +142,14 @@ the database.
 
 Default target: planWorks
 
+
+USER DOCUMENTATION
+==================
 See file "PlanWorks/GETTING_STARTED" for PlanWorks usage.
+
+
+TESTING DOCUMENTATION
+=====================
 See file "PlanWorks/testCases/planViz.txt" for testing use cases.
 
 

@@ -4,20 +4,24 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.26 2004-04-06 01:31:43 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.27 2004-04-09 23:11:24 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
 import java.util.Enumeration;
 
-import junit.framework.*;
+import junit.extensions.jfcunit.JFCTestCase;
+import junit.framework.TestFailure;
+import junit.framework.TestResult;
+import junit.framework.TestSuite; 
+import junit.textui.TestRunner;
 
-public class PlanWorksTest extends TestCase {
+public class PlanWorksTest extends JFCTestCase {
   public static int TEST_RUNNING = 0;
   public static String [] args;
   public static void main(String [] args) {
     PlanWorksTest.args = args;
-    junit.textui.TestRunner.run(suite());
+    TestRunner.run(suite());
     //TestResult result = new TestResult();
     //BackendTest.suite().run(result);
     //while(TEST_RUNNING == 1) {
@@ -28,7 +32,7 @@ public class PlanWorksTest extends TestCase {
     //printFailures(result);
   }
   public static TestSuite suite() {
-    final TestSuite suite = new TestSuite();
+    TestSuite suite = new TestSuite();
     //suite.addTest(BackendTest.suite());
     //suite.addTest(MySQLDBTest.suite());
     //suite.addTest(PlanWorksUtilsTest.suite());
