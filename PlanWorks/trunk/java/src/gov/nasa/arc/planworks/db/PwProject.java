@@ -1,4 +1,10 @@
-// $Id: PwProject.java,v 1.1 2003-05-10 01:00:31 taylor Exp $
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: PwProject.java,v 1.2 2003-05-15 18:38:44 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -9,8 +15,8 @@ package gov.nasa.arc.planworks.db;
 
 import java.util.List;
 
+import gov.nasa.arc.planworks.db.impl.PwProjectImpl;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-
 
 /**
  * <code>PwProject</code> - 
@@ -20,6 +26,28 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  * @version 0.0
  */
 public abstract class PwProject {
+
+
+  /**
+   * <code>createInstance</code>
+   *
+   * @param url - <code>String</code> - 
+   * @return - <code>PwProject</code> - 
+   */
+  public static PwProject createInstance( String url) throws ResourceNotFoundException {
+    return (new PwProjectImpl( url));
+  }
+
+  /**
+   * <code>createInstance</code>
+   *
+   * @param url - <code>String</code> - 
+   * @return - <code>PwProject</code> - 
+   */
+  public static PwProject createInstance( String url, boolean isInDb)
+    throws ResourceNotFoundException {
+    return (new PwProjectImpl( url, isInDb));
+  }
 
   /**
    * <code>getUrl</code>

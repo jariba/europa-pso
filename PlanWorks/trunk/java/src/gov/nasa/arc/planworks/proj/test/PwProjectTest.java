@@ -1,4 +1,10 @@
-// $Id: PwProjectTest.java,v 1.1 2003-05-10 01:00:34 taylor Exp $
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: PwProjectTest.java,v 1.2 2003-05-15 18:38:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,8 +23,8 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.proj.PwProjectMgmt;
+import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
-
 
 /**
  * <code>PwProjectTest</code> - 
@@ -47,11 +53,53 @@ public class PwProjectTest {
    */
   public PwProjectTest() {
 
-    PwPartialPlan pwPartialPlan = getTestPartialPlan();
+    // ONE PROJECT FOR NOW, WITH ONE SEQUENCE, WITH ONE PARTIAL PLAN
+    // PlanWorks/xml/test/monkey/monkey.xml
+
+    // PwProjectMgmt.openProject
+    // PwPartialPlan pwPartialPlan = getTestPartialPlan();
+
+    // PwProjectMgmt.createProject
+    String url = System.getProperty( "planworks.root") + "/xml/test";
+    PwPartialPlan pwPartialPlan = createTestPartialPlan( url);
+
     System.out.println( "Test partialPlan " + pwPartialPlan);
 
   } // end constructor
 
+
+  private PwPartialPlan createTestPartialPlan( String url) {
+    PwProject pwProject = null; PwPlanningSequence pwPlanSeq = null;
+    PwPartialPlan pwPartialPlan = null;
+    try {
+      pwProject = PwProjectMgmt.createProject( url);
+    } catch (ResourceNotFoundException rnfExcep1) {
+      rnfExcep1.printStackTrace();
+    } catch (DuplicateNameException dupExcep) {
+      dupExcep.printStackTrace();
+    }
+    List sequenceList = pwProject.listPlanningSequences();
+    Iterator seqIterator = sequenceList.iterator();
+    while (seqIterator.hasNext()) {
+      String sequenceName = (String) seqIterator.next();
+      System.out.println( "Sequence: " + sequenceName);
+      try {
+        pwPlanSeq = pwProject.getPlanningSequence( sequenceName);
+      } catch (ResourceNotFoundException rnfExcep2) {
+        rnfExcep2.printStackTrace();
+      }
+      int stepCount = pwPlanSeq.getStepCount();
+      for (int step = 0; step < stepCount; step++) {
+        try {
+          pwPartialPlan = pwPlanSeq.getPartialPlan( step);
+          System.out.println( "step " + step + " partialPlan " + pwPartialPlan);
+        } catch (IndexOutOfBoundsException indExcep) {
+          indExcep.printStackTrace();
+        }
+      }
+    }
+    return pwPartialPlan;
+  } // end createTestPartialPlan
 
   private PwPartialPlan getTestPartialPlan() {
     String projectName = "", sequenceName = "";
@@ -67,7 +115,7 @@ public class PwProjectTest {
       try {
         pwProject = PwProjectMgmt.openProject( projectName);
       } catch (ResourceNotFoundException rnfExcep1) {
-        System.err.println( "Project " + projectName + " not found: " + rnfExcep1);
+        // System.err.println( "Project " + projectName + " not found: " + rnfExcep1);
         rnfExcep1.printStackTrace();
         System.exit( 1);
       }
@@ -79,7 +127,7 @@ public class PwProjectTest {
         try {
           pwPlanSeq = pwProject.getPlanningSequence( sequenceName);
         } catch (ResourceNotFoundException rnfExcep2) {
-          System.err.println( "Sequence " + sequenceName + " not found: " + rnfExcep2 );
+          // System.err.println( "Sequence " + sequenceName + " not found: " + rnfExcep2 );
           rnfExcep2.printStackTrace();
           System.exit( 1);
         }
@@ -89,7 +137,7 @@ public class PwProjectTest {
             pwPartialPlan = pwPlanSeq.getPartialPlan( step);
             System.out.println( "step " + step + " partialPlan " + pwPartialPlan);
           } catch (IndexOutOfBoundsException indExcep) {
-            System.err.println( "Step " + step + " not found: " + indExcep);
+            // System.err.println( "Step " + step + " not found: " + indExcep);
             indExcep.printStackTrace();
             System.exit( 1);
           }
@@ -97,7 +145,7 @@ public class PwProjectTest {
       }
     }
     return pwPartialPlan;
-  } // end performTest
+  } // end getTestPartialPlan
 
   private static void processArguments( String[] args) {
     // input args - defaults

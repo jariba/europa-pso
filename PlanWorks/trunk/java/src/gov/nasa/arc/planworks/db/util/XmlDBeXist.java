@@ -1,4 +1,10 @@
-// $Id: XmlDBeXist.java,v 1.1 2003-05-10 01:00:33 taylor Exp $
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: XmlDBeXist.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -32,8 +38,6 @@ import org.xmldb.api.modules.CollectionManagementService;
 import org.xmldb.api.modules.XMLResource;
 import org.xmldb.api.modules.XPathQueryService;
 
-import gov.nasa.arc.planworks.db.util.XmlDBAccess;
-
 // import gov.nasa.arc.planviz.xmlStructure.Domain;
 // import gov.nasa.arc.planviz.xmlStructure.EnumeratedDomain;
 // import gov.nasa.arc.planviz.xmlStructure.IntervalDomain;
@@ -54,7 +58,7 @@ import gov.nasa.arc.planworks.db.util.XmlDBAccess;
  *                     NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class XmlDBeXist implements XmlDBAccess {
+public class XmlDBeXist {
 
   private static final String DRIVER_NAME = "org.exist.xmldb.DatabaseImpl";
   private static final String URI = "xmldb:exist://";
@@ -176,7 +180,7 @@ public class XmlDBeXist implements XmlDBAccess {
    *          to clear data base
    *          rm -f ~/pub/eXist-0.9/webapp/WEB-INF/data/*
    */
-  public void registerDataBase() {
+  public static void registerDataBase() {
     String xmlDbExcepStr = "XML:DB Exception in registerDataBase";
     Collection collection = null;
     try {
@@ -240,7 +244,7 @@ public class XmlDBeXist implements XmlDBAccess {
    * @param collectionName - <code>String</code> - 
    * @return collection - <code>Collection</code> -
    */
-  public Collection createCollection( String collectionName) {
+  public static Collection createCollection( String collectionName) {
     if (collectionName.startsWith( ROOT_COLLECTION_NAME)) {
       // remove /db if specified
       collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
@@ -301,7 +305,7 @@ public class XmlDBeXist implements XmlDBAccess {
    * @param collectionName - <code>String</code> - 
    * @param filePathname - <code>String</code> - 
    */
-  public void addXMLFileToCollection( String collectionName,
+  public static void addXMLFileToCollection( String collectionName,
                                              String filePathname) {
     // System.err.println("addXMLFileToCollection: collectionName " +
     //                    collectionName + " filePathname " + filePathname);
@@ -345,7 +349,7 @@ public class XmlDBeXist implements XmlDBAccess {
    * @param query - <code>String</code> - 
    * @return nodeContentList - <code>List of ParsedDomNode</code> - 
    */
-  public List queryCollection( String collectionName, String query) {
+  public static List queryCollection( String collectionName, String query) {
     if (collectionName.startsWith( ROOT_COLLECTION_NAME)) {
       // remove /db if specified
       collectionName = collectionName.substring( ROOT_COLLECTION_NAME.length());
@@ -405,7 +409,7 @@ public class XmlDBeXist implements XmlDBAccess {
   } // end queryCollection
 
 
-  private void parseDomNode( org.w3c.dom.Node domNode) {
+  private static void parseDomNode( org.w3c.dom.Node domNode) {
     String nodeName = domNode.getNodeName();
     String nodeValue = domNode.getNodeValue();
     short nodeType = domNode.getNodeType();
@@ -444,7 +448,7 @@ public class XmlDBeXist implements XmlDBAccess {
    *
    * @param nodeContentList - <code>List</code> - 
    */
-  public void printDomNodeTriplets( List nodeContentList) {
+  public static void printDomNodeTriplets( List nodeContentList) {
     for (int i = 0, n = nodeContentList.size(); i < n; i++) {
       ParsedDomNode domNode = (ParsedDomNode) nodeContentList.get( i);
       String typeStr = getNodeTypeString( domNode.getNodeType().shortValue());
@@ -464,7 +468,7 @@ public class XmlDBeXist implements XmlDBAccess {
   } // end printDomNodeTriplets
 
 
-  class ParsedDomNode {
+  static class ParsedDomNode {
 
     private Short nodeType;
     private String nodeName;
@@ -507,7 +511,7 @@ public class XmlDBeXist implements XmlDBAccess {
   } // end class ParsedDomNode
 
 
-  private final String getNodeTypeString( short nodeType) {
+  private static final String getNodeTypeString( short nodeType) {
     switch (nodeType) {
     case org.w3c.dom.Node.ATTRIBUTE_NODE:
       return "ATTRIBUTE_NODE: "; 
@@ -547,7 +551,7 @@ public class XmlDBeXist implements XmlDBAccess {
    * @param collectionName - <code>String</code> - 
    * @return partialPlanKeys - <code>List of String</code> - 
    */
-  public List getPartialPlanKeys( String collectionName) {
+  public static List getPartialPlanKeys( String collectionName) {
     StringBuffer partialPlanQuery = new StringBuffer( "/");
     partialPlanQuery.append( PARTIAL_PLAN_ELEMENT).append( "/@");
     List partialPlanKeys = 
@@ -558,6 +562,33 @@ public class XmlDBeXist implements XmlDBAccess {
 
 
   /**
+   * <code>queryAttributeValue</code> - return attributeName value for
+   *                        element, selected by [@<att>="<value>"]
+   *                        /PartialPlan/.../[@<att>="<value>"]@<attributeName>
+   *
+   * @param query - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @param xmlParserLog - <code>ParserLog</code> - 
+   * @return attributeValues - <code>List of String</code> - 
+   */
+  public static String queryAttributeValue( String query, String collectionName) {
+    List contentList = queryCollection( collectionName, query);
+    String attributeValue = "";
+    for (int i = 0, n = contentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) contentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( " type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        return nodeValue;
+      }
+    }
+    return attributeValue;
+  } // end queryAttributeValueOfElements
+
+
+  /**
    * <code>queryAttributeValueOfElements</code>
    *
    * @param query - <code>String</code> - 
@@ -565,7 +596,7 @@ public class XmlDBeXist implements XmlDBAccess {
    * @param collectionName - <code>String</code> - 
    * @return - <code>List</code> - 
    */
-  public List queryAttributeValueOfElements( String query, String attributeName,
+  public static List queryAttributeValueOfElements( String query, String attributeName,
                                                     String collectionName) {
     List contentList = queryCollection( collectionName, query);
     List attributeValues = new ArrayList();
@@ -582,6 +613,123 @@ public class XmlDBeXist implements XmlDBAccess {
     }
     return attributeValues;
   } // end queryAttributeValueOfElements
+
+
+  /**
+   * <code>getPartialPlanModelByKey</code>
+   *
+   * @param partialPlanKey - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>String</code> - 
+   */
+  public static String getPartialPlanModelByKey( String partialPlanKey,
+                                                 String collectionName) {
+    StringBuffer partialPlanQuery = new StringBuffer( MODEL_KEY_QUERY_PRE);
+    partialPlanQuery.append( partialPlanKey).append( MODEL_KEY_QUERY_POST);
+    return queryAttributeValue( partialPlanQuery.toString(), collectionName);
+  } // end getPartialPlanModel
+
+
+  /**
+   * <code>getPartialPlanObjectsByKey</code>
+   *
+   * @param partialPlanKey - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>List of String</code> - name, key, name, key, ...
+   */
+  public static List getPartialPlanObjectsByKey( String partialPlanKey,
+                                                 String collectionName) {
+    List objectList = new ArrayList();
+    StringBuffer objectQuery = new StringBuffer( "/");
+    objectQuery.append( PARTIAL_PLAN_ELEMENT).append( "/");
+    objectQuery.append( OBJECT_ELEMENT).append( "/@");
+    List objectNameList =
+      queryAttributeValueOfElements( objectQuery + OBJECT_NAME_ATTRIBUTE,
+                                     OBJECT_NAME_ATTRIBUTE, collectionName);
+    List objectKeyList =
+      queryAttributeValueOfElements( objectQuery + OBJECT_KEY_ATTRIBUTE,
+                                     OBJECT_KEY_ATTRIBUTE, collectionName);
+    for (int i = 0, n = objectNameList.size(); i < n; i++) {
+      objectList.add( (String) objectNameList.get( i));
+      objectList.add( (String) objectKeyList.get( i));
+    }
+    return objectList;
+  } // end getPartialPlanObjectsByKey
+
+
+  public static List getTimelinesSlotsTokens( String collectionName) {
+    List nodeContentList = queryCollection( collectionName, PARTIAL_PLAN_OBJECT_QUERY);
+
+    System.err.println( "\nDOM tree:");
+    printDomNodeTriplets( nodeContentList);
+
+    return new ArrayList();
+  } // end getTimelinesSlotsTokens
+
+
+    /**
+   * <code>createTimelineSlotTokenNodesStructure</code>
+   *              query => /PartialPlan/Object
+   *
+   * @param objectContentList - <code>List of ParsedDomNode</code> - 
+   * @param objectNodeList - <code>List of Object</code> - 
+   */
+  private static void createTimelineSlotTokenNodesStructure( List objectContentList,
+                                                             PartialPlan partialPlan,
+                                                             String collectionName,
+                                                             ParserLog xmlParserLog) {
+    String timelineName = "", timelineKey = "";
+    int objectIndex = -1; String currentNodeName = "";
+    gov.nasa.arc.planviz.xmlStructure.Object object = null;
+    Timeline timeline = null; Slot slot = null; List tokenAttributeList = null;
+    List objectNodeList = partialPlan.getObjectList();
+    for (int i = 0, n = objectContentList.size(); i < n; i++) {
+      ParsedDomNode domNode = (ParsedDomNode) objectContentList.get( i);
+      short nodeType = domNode.getNodeType().shortValue();
+      String nodeName = domNode.getNodeName();
+      String nodeValue = domNode.getNodeValue();
+      // System.err.println( "type " + nodeType + " name " + nodeName + " value " + nodeValue);
+      if (nodeType == org.w3c.dom.Node.ELEMENT_NODE) {
+        if (nodeName.equals( OBJECT_ELEMENT)) {
+          objectIndex += 1;
+          object = (gov.nasa.arc.planviz.xmlStructure.Object)
+            objectNodeList.get( objectIndex);
+          currentNodeName = OBJECT_ELEMENT;
+        } else if (nodeName.equals( TIMELINE_ELEMENT)) {
+          timelineName = ""; timelineKey = "";
+          currentNodeName = TIMELINE_ELEMENT;
+        } else if (nodeName.equals( SLOT_ELEMENT)) {
+          currentNodeName = SLOT_ELEMENT; 
+        } else if (nodeName.equals( TOKEN_ELEMENT)) {
+          currentNodeName = TOKEN_ELEMENT; tokenAttributeList = new ArrayList();
+        } else {
+          currentNodeName = "";
+        }
+      } else if (nodeType == org.w3c.dom.Node.ATTRIBUTE_NODE) {
+        if (currentNodeName.equals( TIMELINE_ELEMENT) &&
+            nodeName.equals( TIMELINE_KEY_ATTRIBUTE)) {
+          timelineKey = nodeValue;
+        } else if (currentNodeName.equals( TIMELINE_ELEMENT) &&
+                   nodeName.equals( TIMELINE_NAME_ATTRIBUTE)) {
+          timelineName = nodeValue;
+        } else if (currentNodeName.equals( SLOT_ELEMENT) &&
+                   nodeName.equals( SLOT_KEY_ATTRIBUTE)) {
+          slot = timeline.addSlot( nodeValue);
+        } else if (currentNodeName.equals( TOKEN_ELEMENT)) {
+          tokenAttributeList.add( nodeValue);
+          if (tokenAttributeList.size() == NUM_TOKEN_ATTRIBUTES) {
+            slot.addToken( tokenAttributeList, partialPlan, collectionName,
+                           xmlParserLog);
+          }
+        }
+      }
+      if (currentNodeName.equals(TIMELINE_ELEMENT) &&
+          (! timelineName.equals( "")) && (! timelineKey.equals( ""))) {
+        timeline = object.addTimeline( timelineName, timelineKey);
+      }
+    }
+  } // end createTimelineSlotTokenNodesStructure
+
 
 
 } // end class XmlDBeXist

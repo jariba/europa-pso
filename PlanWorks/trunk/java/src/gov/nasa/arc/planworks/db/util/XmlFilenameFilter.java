@@ -1,4 +1,10 @@
-// $Id: XmlFilenameFilter.java,v 1.1 2003-05-10 01:00:33 taylor Exp $
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: XmlFilenameFilter.java,v 1.2 2003-05-15 18:38:46 taylor Exp $
 //
 // JFileChooser filter for XML files
 //

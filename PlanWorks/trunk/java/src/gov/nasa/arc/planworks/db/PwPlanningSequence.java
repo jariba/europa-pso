@@ -1,4 +1,10 @@
-// $Id: PwPlanningSequence.java,v 1.2 2003-05-10 01:19:37 taylor Exp $
+// 
+// * See the file "PlanWorks/disclaimers-and-notices.txt" for 
+// * information on usage and redistribution of this file, 
+// * and for a DISCLAIMER OF ALL WARRANTIES. 
+// 
+
+// $Id: PwPlanningSequence.java,v 1.3 2003-05-15 18:38:44 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -19,7 +25,7 @@ import gov.nasa.arc.planworks.util.ResourceNotFoundException;
  *                         NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public abstract class PwPlanningSequence {
+public interface PwPlanningSequence {
 
 
   /**
@@ -27,21 +33,21 @@ public abstract class PwPlanningSequence {
    *
    * @return - <code>int</code> - 
    */
-  public abstract int getStepCount();
+  public int getStepCount();
 
   /**
    * <code>getUrl</code>
    *
    * @return - <code>String</code> - 
    */
-  public abstract String getUrl();
+  public String getUrl();
 
   /**
    * <code>getModel</code>
    *
    * @return - <code>PwModel</code> - 
    */
-  public abstract PwModel getModel();
+  public PwModel getModel();
 
   /**
    * <code>listTransactions</code>
@@ -50,7 +56,7 @@ public abstract class PwPlanningSequence {
    * @return - <code>List</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
    */
-  public abstract List listTransactions( int step) throws IndexOutOfBoundsException;
+  public List listTransactions( int step) throws IndexOutOfBoundsException;
 
   /**
    * <code>getPartialPlan</code>
@@ -59,7 +65,7 @@ public abstract class PwPlanningSequence {
    * @return - <code>PartialPlan</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
    */
-  public abstract PwPartialPlan getPartialPlan( int step) throws IndexOutOfBoundsException;
+  public PwPartialPlan getPartialPlan( int step) throws IndexOutOfBoundsException;
 
   /**
    * <code>addPartialPlan</code>
@@ -68,6 +74,6 @@ public abstract class PwPlanningSequence {
    * @param transactionList - <code>List</code> - of PwTransaction
    * @return - <code>int</code> - length of partial plan set
    */
-  public abstract int addPartialPlan( PwPartialPlan partialPlan, List transactionList);
+  public int addPartialPlan( PwPartialPlan partialPlan, List transactionList);
 
-} // end class PwPlanningSequence
+} // end interface PwPlanningSequence
