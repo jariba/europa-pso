@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.12 2003-12-30 01:11:33 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.13 2003-12-30 21:09:58 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -37,6 +37,8 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import com.nwoods.jgo.JGoView;
+import com.nwoods.jgo.JGoViewEvent;
+import com.nwoods.jgo.JGoViewListener;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -248,11 +250,12 @@ public class PartialPlanView extends VizView {
     //view.addObjectAtTail(backwardButton);
     //view.addObjectAtTail(forwardButton);
 
-    view.getHorizontalScrollBar().
-      addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
-    view.getVerticalScrollBar().
-      addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
+     view.getHorizontalScrollBar().
+       addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
+     view.getVerticalScrollBar().
+       addAdjustmentListener(new ButtonAdjustmentListener(view, backwardButton, forwardButton));
 
+    view.addViewListener(new ButtonViewListener(view, backwardButton, forwardButton));
     backwardButton.addActionListener(new StepButtonListener(-1, view, this));
     forwardButton.addActionListener(new StepButtonListener(1, view, this));
   }
@@ -392,6 +395,27 @@ public class PartialPlanView extends VizView {
                              back.getSize().getHeight()));
       forward.setLocation((int)(back.getLocation().getX() + back.getWidth()),
                           (int)(back.getLocation().getY()));
+    }
+  }
+  class ButtonViewListener implements JGoViewListener {
+    private JGoView view;
+    private JGoButton back;
+    private JGoButton forward;
+    public ButtonViewListener(JGoView view, JGoButton back, JGoButton forward) {
+      this.view = view;
+      this.back = back;
+      this.forward = forward;
+    }
+    public void viewChanged(JGoViewEvent e) {
+      if(e.getHint() == JGoViewEvent.POSITION_CHANGED) {
+        Rectangle viewRect = view.getViewRect();
+        view.getSelection().clearSelection();
+        back.setLocation((int)(viewRect.getX() + back.getSize().getWidth()),
+                         (int)(viewRect.getY() + viewRect.getHeight() -
+                               back.getSize().getHeight()));
+        forward.setLocation((int)(back.getLocation().getX() + back.getWidth()),
+                            (int)(back.getLocation().getY()));
+      }
     }
   }
   /**
