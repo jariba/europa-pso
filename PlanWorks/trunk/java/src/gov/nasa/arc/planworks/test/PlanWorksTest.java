@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.1 2003-07-08 22:57:32 taylor Exp $
+// $Id: PlanWorksTest.java,v 1.2 2003-07-10 00:05:47 miatauro Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -22,6 +22,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.MenuElement;
 
@@ -535,17 +536,20 @@ public class PlanWorksTest extends JFCTestCase{
     JButton resetSpecButton = null;
     GroupBox timelineGroup = null;
     for(int i = 0; i < contentSpecWindow.getComponentCount(); i++) {
-      if(contentSpecWindow.getComponent(i) instanceof JButton) {
-        if(((JButton)contentSpecWindow.getComponent(i)).getText().equals("Apply Spec")) {
-          activateSpecButton = (JButton) contentSpecWindow.getComponent(i);
+      JPanel panel = (JPanel)contentSpecWindow.getComponent(i);
+      for(int j = 0; j < panel.getComponentCount(); j++) {
+        if(panel.getComponent(j) instanceof JButton) {
+          if(((JButton)panel.getComponent(j)).getText().equals("Apply Spec")) {
+            activateSpecButton = (JButton) panel.getComponent(j);
+          }
+          else if(((JButton)panel.getComponent(j)).getText().equals("Reset Spec")) {
+            System.err.println("found reset spec button");
+            resetSpecButton = (JButton) panel.getComponent(j);
+          }
         }
-        else if(((JButton)contentSpecWindow.getComponent(i)).getText().equals("Reset Spec")) {
-          System.err.println("found reset spec button");
-          resetSpecButton = (JButton) contentSpecWindow.getComponent(i);
+        else if(contentSpecWindow.getComponent(i) instanceof TimelineGroupBox) {
+          timelineGroup = (GroupBox) contentSpecWindow.getComponent(i);
         }
-      }
-      else if(contentSpecWindow.getComponent(i) instanceof TimelineGroupBox) {
-        timelineGroup = (GroupBox) contentSpecWindow.getComponent(i);
       }
     }
     assertNotNull("Failed to get \"Apply Spec\" button.", activateSpecButton);
