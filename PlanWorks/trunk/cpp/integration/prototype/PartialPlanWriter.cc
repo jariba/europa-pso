@@ -1,3 +1,7 @@
+#ifdef __BEOS__
+#include <Path.h>
+#endif
+
 #include "PartialPlanWriter.hh"
 
 #include "../ConstraintEngine/Constraint.hh"
@@ -41,14 +45,22 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifdef __sun
-#include <strstream>
-typedef std::strstream std::stringstream;
-#define streamIsEmpty(s) !(s).str()
-#else
+// These differences have to do with changes to the C++ standard,
+//   not the operating system in use. --wedgingt 15 Mar 2004
+#ifdef __GNUC__
+#if __GNUC__ > 2
 #include <sstream>
 //typedef std::stringstream sstream;
 #define streamIsEmpty(s) (s).str() == ""
+#else
+#include <strstream>
+typedef std::strstream std::stringstream;
+#define streamIsEmpty(s) !(s).str()
+#endif
+#else
+#include <strstream>
+typedef std::strstream std::stringstream;
+#define streamIsEmpty(s) !(s).str()
 #endif
 
 #define FatalError(s) { std::cerr << "At " << __FILE__ << ":" << __PRETTY_FUNCTION__ << ", line " << __LINE__ << std::endl; std::cerr << (s) << std::endl; exit(-1);}
@@ -136,6 +148,17 @@ const std::string CAUSAL("CAUSAL");
 const std::string ENUM_DOMAIN("EnumeratedDomain");
 const std::string INT_DOMAIN("IntervalDomain");
 
+#ifdef __BEOS__
+#define NBBY 8
+static char *realpath(const char *path, char *resolved_path) {
+    BPath tempPath(path,NULL,true);
+    if (tempPath.Path() == NULL) {
+        return NULL;
+    }
+    strcpy(resolved_path,tempPath.Path());
+    return resolved_path;
+}
+#endif
 
 namespace Prototype {
   namespace PlanWriter {
@@ -348,15 +371,17 @@ namespace Prototype {
           int emptySlots = 0;
           for(std::list<TokenId>::const_iterator tokenIterator = orderedTokens.begin();
               tokenIterator != orderedTokens.end(); ++tokenIterator) {
+            int slotOrder = 0;
             const TokenId &token = *tokenIterator;
-            outputToken(token, T_INTERVAL, slotId, slotIndex, (ObjectId) tId, tokOut, tokRelOut, 
-                        varOut);
+            outputToken(token, T_INTERVAL, slotId, slotIndex, slotOrder, (ObjectId) tId, tokOut,
+                        tokRelOut, varOut);
             tokens.erase(token);
             std::set<TokenId>::const_iterator mergedTokenIterator = 
               token->getMergedTokens().begin();
             for(;mergedTokenIterator != token->getMergedTokens().end(); ++mergedTokenIterator) {
-              outputToken(*mergedTokenIterator, T_INTERVAL, slotId, slotIndex, (ObjectId &) tId, 
-                          tokOut, tokRelOut, varOut);
+              slotOrder++;
+              outputToken(*mergedTokenIterator, T_INTERVAL, slotId, slotIndex, slotOrder,
+                          (ObjectId &) tId, tokOut, tokRelOut, varOut);
               tokens.erase(*mergedTokenIterator);
             }
             slotId++;
@@ -392,7 +417,7 @@ namespace Prototype {
           for(std::list<TransactionId>::iterator transIt = resTrans.begin();
               transIt != resTrans.end(); ++transIt) {
             TransactionId trans = *transIt;
-            outputToken(trans, T_TRANSACTION, 0, 1, rId, tokOut, tokRelOut, varOut);
+            outputToken(trans, T_TRANSACTION, 0, 1, 0, rId, tokOut, tokRelOut, varOut);
             tokens.erase(trans);
           }
           std::list<InstantId> insts;
@@ -415,7 +440,7 @@ namespace Prototype {
           tokenIterator != tokens.end(); ++tokenIterator) {
 	TokenId token = *tokenIterator;
 	check_error(token.isValid());
-	outputToken(token, T_INTERVAL, 0, 0, ObjectId::noId(), tokOut, tokRelOut, varOut);
+	outputToken(token, T_INTERVAL, 0, 0, 0, ObjectId::noId(), tokOut, tokRelOut, varOut);
       }
 
       (*statsOut) << seqId << TAB << ppId << TAB << nstep << TAB << numTokens << TAB << numVariables
@@ -484,9 +509,9 @@ namespace Prototype {
     }
 
     void PartialPlanWriter::outputToken(const TokenId &token, const int type, const int slotId, 
-                                        const int slotIndex, const ObjectId &tId, 
-                                        std::ofstream &tokOut, std::ofstream &tokRelOut,
-                                        std::ofstream &varOut) {
+                                        const int slotIndex, const int slotOrder, 
+                                        const ObjectId &tId, std::ofstream &tokOut, 
+                                        std::ofstream &tokRelOut, std::ofstream &varOut) {
       check_error(token.isValid());
       if(token->isIncomplete()) {
 	std::cerr << "Token " << token->getKey() << " is incomplete.  Skipping. " << std::endl;
@@ -531,7 +556,7 @@ namespace Prototype {
 	ConstrainedVariableId varId = *paramVarIterator;
 	check_error(varId.isValid());
 	outputConstrVar(varId, token->getKey(), I_PARAMETER, varOut);
-	bzero(paramIdStr, NBBY * sizeof(int) * 28/93 + 4);
+	memset(paramIdStr, '\0', NBBY * sizeof(int) * 28/93 + 4);
 	sprintf(paramIdStr, "%d", varId->getKey());
 	paramVarIds += std::string(paramIdStr) + COLON;
       }
@@ -541,14 +566,18 @@ namespace Prototype {
       else {
 	tokOut << paramVarIds << TAB;
       }
-      /*ExtraData: QuantityMin:QuantityMax*/
+      /*ExtraInfo: QuantityMin:QuantityMax*/
       if(type == T_TRANSACTION) {
         TransactionId trans = (TransactionId) token;
+        //std::cerr << "=====>" << trans->getMin() << "->" << trans->getMax() << std::endl;
+        //std::cerr << "=====>" << (double) MINUS_INFINITY << "=>" << (double) PLUS_INFINITY << std::endl;
         tokOut << trans->getMin() << COMMA << trans->getMax();
       }
+      /*ExtraInfo: SlotOrder*/
       else {
-        tokOut << SNULL;
+        tokOut << slotOrder;
       }
+      
       tokOut << std::endl;
       numTokens++;
     }
@@ -792,7 +821,7 @@ namespace Prototype {
 
     void PartialPlanWriter::notifyClosed(const TokenId &tokId) {
       if(stepsPerWrite) {
-        transactionList->push_back(Transaction(TOKEN_CREATED, tokId->getKey(), UNKNOWN,
+        transactionList->push_back(Transaction(TOKEN_CLOSED, tokId->getKey(), UNKNOWN,
                                                transactionId++, seqId, nstep,
                                                tokId->getPredicateName().toString()));
         numTransactions++;
