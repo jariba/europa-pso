@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.28 2003-07-08 22:57:32 taylor Exp $
+// $Id: PlanWorks.java,v 1.29 2003-07-09 23:14:38 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -92,7 +92,7 @@ public class PlanWorks extends MDIDesktopFrame {
    * constant <code>FRAME_Y_LOCATION</code>
    *
    */
-  public static final int FRAME_Y_LOCATION = 100;
+  public static final int FRAME_Y_LOCATION = 125;
 
   /**
    * variable <code>name</code> - make it accessible to JFCUnit tests
@@ -807,39 +807,45 @@ public class PlanWorks extends MDIDesktopFrame {
       if ((viewSet != null) && viewSet.viewExists( viewName)) {
         viewExists = true;
       }
-      if (viewName.equals( "timelineView")) {
-        if (! viewExists) {
-          System.err.println( "Rendering Timeline View ...");
+      try {
+        if (viewName.equals( "timelineView")) {
+          if (! viewExists) {
+            System.err.println( "Rendering Timeline View ...");
+          }
+          viewFrame = viewManager.openTimelineView( partialPlan, sequenceName +
+                                                    System.getProperty( "file.separator") +
+                                                    partialPlanName);
+          finishViewRendering( viewFrame, viewExists, startTimeMSecs);
+        } else if (viewName.equals( "tokenNetworkView")) {
+          if (! viewExists) {
+            System.err.println( "Rendering Token Network View ...");
+          }
+          viewFrame = viewManager.openTokenNetworkView( partialPlan, sequenceName +
+                                                        System.getProperty( "file.separator") +
+                                                        partialPlanName);        
+          System.err.println("Finish view rendering..");
+          finishViewRendering( viewFrame, viewExists, startTimeMSecs);
+        } else if (viewName.equals( "temporalExtentView")) {
+          JOptionPane.showMessageDialog
+            (PlanWorks.this, viewName, "View Not Supported", 
+             JOptionPane.INFORMATION_MESSAGE);
+        } else if (viewName.equals( "constraintNetworkView")) {
+          JOptionPane.showMessageDialog
+            (PlanWorks.this, viewName, "View Not Supported", 
+             JOptionPane.INFORMATION_MESSAGE);
+        } else if (viewName.equals( "temporalNetworkView")) {
+          JOptionPane.showMessageDialog
+            (PlanWorks.this, viewName, "View Not Supported", 
+             JOptionPane.INFORMATION_MESSAGE);
+        } else {
+          JOptionPane.showMessageDialog
+            (PlanWorks.this, viewName, "View Not Supported", 
+             JOptionPane.INFORMATION_MESSAGE);
         }
-        viewFrame = viewManager.openTimelineView( partialPlan, sequenceName +
-                                                  System.getProperty( "file.separator") +
-                                                  partialPlanName);
-        finishViewRendering( viewFrame, viewExists, startTimeMSecs);
-      } else if (viewName.equals( "tokenNetworkView")) {
-        if (! viewExists) {
-          System.err.println( "Rendering Token Network View ...");
-        }
-        viewFrame = viewManager.openTokenNetworkView( partialPlan, sequenceName +
-                                                      System.getProperty( "file.separator") +
-                                                      partialPlanName);        
-        System.err.println("Finish view rendering..");
-        finishViewRendering( viewFrame, viewExists, startTimeMSecs);
-      } else if (viewName.equals( "temporalExtentView")) {
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, viewName, "View Not Supported", 
-           JOptionPane.INFORMATION_MESSAGE);
-      } else if (viewName.equals( "constraintNetworkView")) {
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, viewName, "View Not Supported", 
-           JOptionPane.INFORMATION_MESSAGE);
-      } else if (viewName.equals( "temporalNetworkView")) {
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, viewName, "View Not Supported", 
-           JOptionPane.INFORMATION_MESSAGE);
-      } else {
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, viewName, "View Not Supported", 
-           JOptionPane.INFORMATION_MESSAGE);
+      } catch (SQLException sqlExcep) {
+        StringBuffer errorOutput =
+          new StringBuffer(sqlExcep.getMessage().substring(sqlExcep.getMessage().
+                                                           indexOf(":") + 1));
       }
     } // end renderView
 
