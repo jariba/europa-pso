@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.27 2004-03-16 02:24:06 taylor Exp $ -->
+<!-- $Id: planWorks.xml,v 1.28 2004-03-31 22:27:04 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -106,7 +106,7 @@
 	<path id="planworks.jars">
 		<pathelement path="${planworks.root}/java/classes"/>
 		<pathelement location="${jgo.home}/JGo.jar"/>
-		<pathelement location="${jgo.home}/JGoLayout.jar"/>
+		<pathelement location="${jgo.layout.home}/JGoLayout.jar"/>
 		<pathelement location="${jgo.home}/Classier.jar"/>
                 <pathelement location="${jgo.home}"/>
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
