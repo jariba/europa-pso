@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTransaction.java,v 1.2 2003-05-15 18:38:44 taylor Exp $
+// $Id: PwTransaction.java,v 1.3 2003-10-02 23:24:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -12,8 +12,6 @@
 //
 
 package gov.nasa.arc.planworks.db;
-
-import java.util.List;
 
 
 /**
@@ -25,7 +23,54 @@ import java.util.List;
  */
 public interface PwTransaction {
 
+  /**
+   * <code>getType</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getType();
 
+  /**
+   * <code>getId</code>
+   *
+   * @return - <code>Integer</code> - transaction id
+   */
+  public abstract Integer getId();
+
+  /**
+   * <code>getSource</code> - one of SOURCE_USER/SOURCE_SYSTEM/SOURCE_UNKNOWN
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getSource();
+
+  /**
+   * <code>getObjectId</code> - id of object acted on by this transaction
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public abstract Integer getObjectId();
+
+  /**
+   * <code>getStepNumber</code> - step number of sequence in which transaction occurred
+   *
+   * @return - <code>Integer</code> - 
+   */
+  public abstract Integer getStepNumber();
+
+  /**
+   * <code>getSequenceId</code> - id of sequence of object acted on by this transaction
+   *
+   * @return - <code>Long</code> - 
+   */
+  public abstract Long getSequenceId();
+
+  /**
+   * <code>getPartialPlanId</code>
+   *
+   * @return - <code>Long</code> - id of partial plan of object acted on by this transaction
+   */
+  public abstract Long getPartialPlanId();
 
 
 } // end interface PwTransaction

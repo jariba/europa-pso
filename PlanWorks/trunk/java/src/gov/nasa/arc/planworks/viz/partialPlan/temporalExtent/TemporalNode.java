@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.1 2003-09-25 23:52:45 taylor Exp $
+// $Id: TemporalNode.java,v 1.2 2003-10-02 23:24:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -33,6 +33,7 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
@@ -110,29 +111,29 @@ public class TemporalNode extends BasicNode implements Extent {
     this.slot = slot;
     earliestStartTime = startTimeIntervalDomain.getLowerBoundInt();
     isEarliestStartMinusInf = false;
-    if (earliestStartTime == PwDomain.MINUS_INFINITY_INT) {
+    if (earliestStartTime == DbConstants.MINUS_INFINITY_INT) {
       isEarliestStartMinusInf = true;
       earliestStartTime = temporalExtentView.getTimeScaleStart();
     }
     latestStartTime = startTimeIntervalDomain.getUpperBoundInt();
     isLatestStartPlusInf = false;
-    if (latestStartTime == PwDomain.PLUS_INFINITY_INT) {
+    if (latestStartTime == DbConstants.PLUS_INFINITY_INT) {
       isLatestStartPlusInf = true;
       latestStartTime = temporalExtentView.getTimeScaleEnd();
     }
     earliestEndTime = endTimeIntervalDomain.getLowerBoundInt();
     isEarliestEndMinusInf = false;
     isEarliestEndPlusInf = false;
-    if (earliestEndTime == PwDomain.MINUS_INFINITY_INT) {
+    if (earliestEndTime == DbConstants.MINUS_INFINITY_INT) {
       isEarliestEndMinusInf = true;
       earliestEndTime = temporalExtentView.getTimeScaleStart();
-    } else if (earliestEndTime == PwDomain.PLUS_INFINITY_INT) {
+    } else if (earliestEndTime == DbConstants.PLUS_INFINITY_INT) {
       isEarliestEndPlusInf = true;
       earliestEndTime = temporalExtentView.getTimeScaleEnd();
     }
     latestEndTime = endTimeIntervalDomain.getUpperBoundInt();
     isLatestEndPlusInf = false;
-    if (latestEndTime == PwDomain.PLUS_INFINITY_INT) {
+    if (latestEndTime == DbConstants.PLUS_INFINITY_INT) {
       isLatestEndPlusInf = true;
       latestEndTime = temporalExtentView.getTimeScaleEnd();
     }
@@ -143,13 +144,13 @@ public class TemporalNode extends BasicNode implements Extent {
 //     System.err.println( "Temporal Node: " + tokenId + " eS " +
 //                         earliestStartTime + " lS " + latestStartTime + " eE " +
 //                         earliestEndTime + " lE " + latestEndTime);
-    if (earliestDurationString.equals( PwDomain.MINUS_INFINITY)) {
-      earliestDurationTime = PwDomain.MINUS_INFINITY_INT;
+    if (earliestDurationString.equals( DbConstants.MINUS_INFINITY)) {
+      earliestDurationTime = DbConstants.MINUS_INFINITY_INT;
     } else {
       earliestDurationTime = Integer.parseInt( earliestDurationString);
     }
-    if (latestDurationString.equals( PwDomain.PLUS_INFINITY)) {
-      latestDurationTime = PwDomain.PLUS_INFINITY_INT;
+    if (latestDurationString.equals( DbConstants.PLUS_INFINITY)) {
+      latestDurationTime = DbConstants.PLUS_INFINITY_INT;
     } else {
       latestDurationTime = Integer.parseInt( latestDurationString);
     }
@@ -371,7 +372,7 @@ public class TemporalNode extends BasicNode implements Extent {
   // left pointing triangle
   private void renderMinusInfinityMark( int time, int y) {
     TemporalNodeTimeMark minusInfinityMark =
-      new TemporalNodeTimeMark( PwDomain.MINUS_INFINITY_INT);
+      new TemporalNodeTimeMark( DbConstants.MINUS_INFINITY_INT);
     minusInfinityMark.setDraggable( false);
     minusInfinityMark.setResizable(false);
     // offset to the left to prevent overlap with earliestStartMark
@@ -408,7 +409,7 @@ public class TemporalNode extends BasicNode implements Extent {
   // right pointing triangle
   private void renderPlusInfinityMark( int time, int y) {
     TemporalNodeTimeMark plusInfinityMark =
-      new TemporalNodeTimeMark( PwDomain.PLUS_INFINITY_INT);
+      new TemporalNodeTimeMark( DbConstants.PLUS_INFINITY_INT);
     plusInfinityMark.setDraggable( false);
     plusInfinityMark.setResizable(false);
     // offset to the right to prevent overlap with earliestEndMark

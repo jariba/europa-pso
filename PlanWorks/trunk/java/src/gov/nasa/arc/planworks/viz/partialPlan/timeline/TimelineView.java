@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.4 2003-09-30 19:18:56 taylor Exp $
+// $Id: TimelineView.java,v 1.5 2003-10-02 23:24:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -44,6 +44,7 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwObject;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
@@ -375,7 +376,7 @@ public class TimelineView extends PartialPlanView {
     PwSlot previousSlot = null;
     SlotNode slotNode = null;
     boolean alwaysReturnEnd = true, foundEmptySlot = false;
-    int earliestStartTime = PwDomain.MINUS_INFINITY_INT;
+    int earliestStartTime = DbConstants.MINUS_INFINITY_INT;
     while (slotIterator.hasNext()) {
       PwSlot slot = (PwSlot) slotIterator.next();
       PwToken token = slot.getBaseToken();

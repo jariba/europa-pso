@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwDomain.java,v 1.6 2003-09-15 23:47:18 taylor Exp $
+// $Id: PwDomain.java,v 1.7 2003-10-02 23:24:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -22,30 +22,6 @@ package gov.nasa.arc.planworks.db;
  * @version 0.0
  */
 public interface PwDomain {
-
-  /**
-   * constant <code>PLUS_INFINITY</code> - String
-   *
-   */
-  public static final String PLUS_INFINITY = "Infinity";
-
-  /**
-   * constant <code>MINUS_INFINITY</code> - String
-   *
-   */
-  public static final String MINUS_INFINITY = "-Infinity";
-
-  /**
-   * constant <code>PLUS_INFINITY_INT</code>
-   *
-   */
-  public static final int PLUS_INFINITY_INT = Integer.MAX_VALUE;
-
-  /**
-   * constant <code>MINUS_INFINITY_INT</code>
-   *
-   */
-  public static final int MINUS_INFINITY_INT = Integer.MIN_VALUE;
 
   /**
    * <code>getLowerBound</code>

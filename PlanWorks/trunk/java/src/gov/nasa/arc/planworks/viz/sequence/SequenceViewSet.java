@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.2 2003-10-01 23:53:56 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.3 2003-10-02 23:24:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -42,9 +42,6 @@ public class SequenceViewSet extends ViewSet {
                                                        viewable.getName(),
                                                        this, true, false, false, true);
     Container contentPane = this.contentSpecWindow.getContentPane();
-
-    System.err.println( "SequenceViewSet currentSpec " +
-                        ((PwPlanningSequence) viewable).getContentSpec());
 
     this.contentSpec = new SequenceContentSpec( viewable, this);
     ((PwPlanningSequence) viewable).setContentSpec( this.contentSpec.getCurrentSpec());

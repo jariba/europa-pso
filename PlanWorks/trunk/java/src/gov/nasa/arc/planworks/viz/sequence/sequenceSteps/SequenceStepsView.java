@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.1 2003-10-01 23:53:57 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.2 2003-10-02 23:24:22 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -59,7 +59,6 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.VizView;
-import gov.nasa.arc.planworks.viz.nodes.HistogramElement;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
@@ -85,6 +84,8 @@ public class SequenceStepsView extends SequenceView {
   private Graphics graphics;
   private FontMetrics fontMetrics;
   private Font font;
+  private List tmpStepList; // of StepElement
+  private List stepList; // of StepElement
 
   /**
    * <code>SequenceStepsView</code> - constructor 
@@ -99,6 +100,8 @@ public class SequenceStepsView extends SequenceView {
     this.planSequence = (PwPlanningSequence) planSequence;
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (SequenceViewSet) viewSet;
+    tmpStepList = new ArrayList();
+    stepList = null;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
@@ -221,19 +224,31 @@ public class SequenceStepsView extends SequenceView {
 
 
   private void renderHistogram() {
-    int x = 10, y = 10, width = 10, height = 5;
-    int lineWidth = 1;
-    int lineType = JGoPen.SOLID;
-    Color lineColor = ColorMap.getColor( "black");
-    Color bgColor = ColorMap.getColor( "green3");
-    while (x < 300) {
-      HistogramElement element =
-        new HistogramElement( x, y, width, height, lineWidth, lineType, lineColor, bgColor);
-      document.addObjectAtTail( element);
+    int x = 10, y = 10, height = 5;
+    PwToken activeToken = null;
+    String tokenTransaction = "transaction";
+    int stepNumber = 1;
+    while (x < 500) {
+      if (stepNumber == 23) {
+        tokenTransaction = "tokenCreated";
+      } else if (stepNumber == 30) {
+        tokenTransaction = "tokenInserted";
+      } else if (stepNumber == 33) {
+        tokenTransaction = "tokenFreed";
+      } else if (stepNumber == 40) {
+        tokenTransaction = "tokenDeleted";
+      } else {
+        tokenTransaction = "transaction";
+      }
+      StepElement stepElement = new StepElement( x, y, height, stepNumber, activeToken,
+                                                 tokenTransaction);
+      document.addObjectAtTail( stepElement);
+      stepNumber++;
       x += 10;
       height += 5;
+      tmpStepList.add( stepElement);
     }
-
+    stepList = tmpStepList;
   } // end renderHistogram
 
 
@@ -262,12 +277,33 @@ public class SequenceStepsView extends SequenceView {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
         // do nothing
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-        // mouseRightPopupMenu( viewCoords);
+        mouseRightPopupMenu( viewCoords);
       }
     } // end doBackgroundClick
 
   } // end class SequenceStepsJGoView
 
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem activeTokenItem = new JMenuItem( "Snap to Active Token");
+    createActiveTokenItem( activeTokenItem);
+    mouseRightPopup.add( activeTokenItem);
 
+    NodeGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
+  } // end mouseRightPopupMenu
+
+
+  private void createActiveTokenItem( JMenuItem activeTokenItem) {
+    activeTokenItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          // get activeToken from viewManager -- Michael will write accessor
+//           PwToken activeToken =
+//             ((SequenceViewSet) SequenceStepsView.this.getViewSet()).getActiveToken();
+//           if (activeToken != null) {
+
+//           }
+        }
+      });
+  } // end createActiveTokenItem
 
 } // end class SequenceStepsView

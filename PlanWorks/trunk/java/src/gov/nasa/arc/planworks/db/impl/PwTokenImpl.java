@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.22 2003-08-26 01:37:11 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.23 2003-10-02 23:24:21 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import javax.swing.SwingUtilities;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwPredicate;
@@ -157,11 +158,11 @@ public class PwTokenImpl implements PwToken {
 
   public Integer getEarliestStart() {
     String earliestStart = partialPlan.getVariable(startVarId).getDomain().getLowerBound();
-    if(earliestStart.equals(PwDomain.PLUS_INFINITY)) {
-      return new Integer(PwDomain.PLUS_INFINITY_INT);
+    if(earliestStart.equals(DbConstants.PLUS_INFINITY)) {
+      return new Integer(DbConstants.PLUS_INFINITY_INT);
     }
-    else if(earliestStart.equals(PwDomain.MINUS_INFINITY)) {
-      return new Integer(PwDomain.MINUS_INFINITY_INT);
+    else if(earliestStart.equals(DbConstants.MINUS_INFINITY)) {
+      return new Integer(DbConstants.MINUS_INFINITY_INT);
     }
     return new Integer(earliestStart);
   }
@@ -174,11 +175,11 @@ public class PwTokenImpl implements PwToken {
 
   public Integer getLatestEnd() {
     String latestEnd = partialPlan.getVariable(endVarId).getDomain().getUpperBound();
-    if(latestEnd.equals(PwDomain.PLUS_INFINITY)) {
-      return new Integer(PwDomain.PLUS_INFINITY_INT);
+    if(latestEnd.equals(DbConstants.PLUS_INFINITY)) {
+      return new Integer(DbConstants.PLUS_INFINITY_INT);
     }
-    else if(latestEnd.equals(PwDomain.MINUS_INFINITY)) {
-      return new Integer(PwDomain.MINUS_INFINITY_INT);
+    else if(latestEnd.equals(DbConstants.MINUS_INFINITY)) {
+      return new Integer(DbConstants.MINUS_INFINITY_INT);
     }
     return new Integer(latestEnd);
 }
