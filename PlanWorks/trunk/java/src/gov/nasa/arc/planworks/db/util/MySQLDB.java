@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.118 2004-08-14 01:39:12 taylor Exp $
+// $Id: MySQLDB.java,v 1.119 2004-08-26 23:00:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1873,6 +1873,22 @@ public class MySQLDB {
       while(ppIds.next()) {
         retval.add(new Long(ppIds.getLong("PartialPlanId")));
       }
+    }
+    catch(SQLException sqle) {
+      sqle.printStackTrace();
+    }
+    return retval;
+  }
+
+  synchronized public static Map queryStepNumPartialPlanIds(Long seqId, String comparison) {
+    Map retval = new HashMap();
+    try {
+      StringBuffer query = new StringBuffer("SELECT PartialPlanId, StepNum FROM PartialPlanStats WHERE SequenceId=");
+      query.append(seqId.toString()).append(" && ").append(comparison);
+      System.err.println(query);
+      ResultSet ppIds = queryDatabase(query.toString());
+      while(ppIds.next())
+        retval.put(new Integer(ppIds.getInt("StepNum")), new Long(ppIds.getLong("PartialPlanId")));
     }
     catch(SQLException sqle) {
       sqle.printStackTrace();
