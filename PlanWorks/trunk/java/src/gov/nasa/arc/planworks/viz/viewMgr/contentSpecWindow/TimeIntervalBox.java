@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: TimeIntervalBox.java,v 1.4 2003-06-16 18:51:10 miatauro Exp $
+// $Id: TimeIntervalBox.java,v 1.5 2003-07-31 21:53:08 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow;
 
@@ -85,6 +85,12 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement {
     c.gridx++;
     gridBag.setConstraints(endValue, c);
     add(endValue);
+
+    if(!first) {
+      negationBox.setEnabled(false);
+      startValue.setEnabled(false);
+      endValue.setEnabled(false);
+    }
   }
   /**
    * Adds a new TimeIntervalBox to the containing GroupBox.  This is done when a LogicComboBox's 
@@ -147,12 +153,18 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement {
                                     "Error!", JOptionPane.ERROR_MESSAGE);
       throw new IllegalArgumentException();
     }
+    Integer startTime = new Integer(startValue.getText().trim());
+    Integer endTime = new Integer(endValue.getText().trim());
+    if(startTime.compareTo(endTime) != -1) {
+      JOptionPane.showMessageDialog(getParent().getParent().getParent().getParent().getParent().getParent().getParent(), "Invalid times--start time must be earlier than end time.",
+                                    "Error!", JOptionPane.ERROR_MESSAGE);
+    }
     if(negationBox.isSelected()) {
       connective.append(" not");
     }
     retval.add(connective.toString());
-    retval.add(startValue.getText().trim());
-    retval.add(endValue.getText().trim());
+    retval.add(startTime);
+    retval.add(endTime);
     return retval;
   }
   /**
@@ -185,6 +197,9 @@ public class TimeIntervalBox extends JPanel implements ContentSpecElement {
         if(itemStateChangedFrom.equals("") &&
            (((String)ie.getItem()).equals("AND") || ((String)ie.getItem()).equals("OR"))) {
           box.addTimeIntervalBox();
+          box.startValue.setEnabled(true);
+          box.endValue.setEnabled(true);
+          box.negationBox.setEnabled(true);
         }
         else if((itemStateChangedFrom.equals("AND") || itemStateChangedFrom.equals("OR")) &&
                 ((String)ie.getItem()).equals("")) {

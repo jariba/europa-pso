@@ -92,7 +92,7 @@ public class MySQLDB {
             e.printStackTrace();
             System.exit(-1);
           }
-          System.err.println("Connection faled.  Trying again...");
+          System.err.println("Connection failed.  Trying again...");
           Thread.sleep(500);
         }
       }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.18 2003-07-15 16:12:09 miatauro Exp $
+// $Id: ContentSpec.java,v 1.19 2003-07-31 21:52:59 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -22,6 +22,7 @@ import java.util.StringTokenizer;
 //import gov.nasa.arc.planworks.db.util.XmlDBeXist;
 //import gov.nasa.arc.planworks.db.util.ParsedDomNode;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
+import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 //import org.w3c.dom.Node;
 
@@ -37,6 +38,7 @@ import gov.nasa.arc.planworks.db.util.MySQLDB;
 public class ContentSpec {
   private ArrayList validTokenIds;
   private Long partialPlanKey;
+  private PwPartialPlan partialPlan;
   private RedrawNotifier redrawNotifier;
   /**
    * Creates the ContentSpec object, then makes a query to determine the size of the
@@ -51,6 +53,7 @@ public class ContentSpec {
   public ContentSpec(PwPartialPlan partialPlan, RedrawNotifier redrawNotifier) 
     throws SQLException {
     this.partialPlanKey = partialPlan.getKey();
+    this.partialPlan = partialPlan;
     this.redrawNotifier = redrawNotifier;
     this.validTokenIds = new ArrayList();
     ResultSet validTokens = MySQLDB.queryDatabase("SELECT TokenId FROM Token WHERE PartialPlanId=".concat(partialPlanKey.toString()));
@@ -157,8 +160,65 @@ public class ContentSpec {
     while(tokenIds.next()) {
       validTokenIds.add(new Integer(tokenIds.getInt("TokenId")));
     }
+    //this probably takes too long
+    if(timeInterval != null) {
+      System.err.println(timeInterval);
+      ListIterator tokenIdIterator = validTokenIds.listIterator();
+      while(tokenIdIterator.hasNext()) {
+        Integer tokenId = (Integer) tokenIdIterator.next();
+        String connective = (String) timeInterval.get(0);
+        Integer start = (Integer) timeInterval.get(1);
+        Integer end = (Integer) timeInterval.get(2);
+        Integer earliestStart = partialPlan.getToken(tokenId).getEarliestStart();
+        Integer latestEnd = partialPlan.getToken(tokenId).getLatestEnd();
+
+        boolean leftIsTrue = false;
+
+        for(int i = 0; i < timeInterval.size(); i += 3) {
+          
+          if(connective.indexOf("and") > -1) {
+            System.err.println("AND!");
+            if(!leftIsTrue) {
+              System.err.println("left side is false.  breaking.");
+              break;
+            }
+            leftIsTrue = evaluateTimeInterval(connective, start, end, earliestStart, latestEnd);
+            if(!leftIsTrue) {
+              System.err.println("extended left side is false.  breaking.");
+              break;
+            }
+          }
+          else if(connective.indexOf("or") > -1) {
+            System.err.println("OR!");
+            leftIsTrue = 
+              (evaluateTimeInterval(connective, start, end, earliestStart, latestEnd) || 
+               leftIsTrue);
+          }
+        }
+        System.err.println(leftIsTrue);
+        if(!leftIsTrue) {
+          tokenIdIterator.remove();
+        }
+      }
+    }
     redrawNotifier.notifyRedraw();
   }
+
+  private boolean evaluateTimeInterval(String connective, Integer start, Integer end, 
+                                       Integer earliestStart, Integer latestEnd) {
+    boolean negation = (connective.indexOf("not") > -1);
+    if(earliestStart.compareTo(start) >= 0 && earliestStart.compareTo(end) <= 0) {
+      return true ^ negation;
+    }
+    if(latestEnd.compareTo(start) >= 0 && latestEnd.compareTo(end) <= 0) {
+      return true ^ negation;
+    }
+    if(earliestStart.compareTo(start) <= 0 && latestEnd.compareTo(end) >= 0) {
+      return true ^ negation;
+    }
+    return false;
+  }
+
   public Map getPredicateNames() throws SQLException {
     HashMap predicates = new HashMap();
     
