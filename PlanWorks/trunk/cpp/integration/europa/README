@@ -1,0 +1,36 @@
+For the moment, there is no makefile to build the PartialPlanWriter
+class.  This is in my TODO, but not really important at the moment.
+To build the PartialPlanWriter, you must have checked out a reasonably
+recent version of Europa (cvs co NewPlan).  Execute the following
+commands (it helps to have put the path to Europa in the $EUROPA_HOME
+environment variable and the path to PlanWorks in the $PLANWORKS_HOME
+environment variable, unless you don't mind typing the paths or lots of
+"../"s):
+
+cd PlanWorks/cpp/integration/europa
+g++ -c PartialPlanWriter.cc -I$EUROPA_HOME/Includes -I$EUROPA_HOME/ConstraintNetwork -ggdb3 -Wall
+
+The following modifications must be made to your planner's source to
+utilize the PartialPlanWriter:
+1) include PartialPlanWriter.hh
+2) construct the PartialPlanWriter.  It requires two arguments--a pointer
+to the TokenNetwork (so do this after the TokenNetwork is constructed) and
+a String containing the destination for output.  My construction line
+looks like this:
+PartialPlanWriter *planWriter = new PartialPlanWriter(&tokNet, String("./")); 
+3) everywhere you want the planner to stop and write the output, call
+planWriter->write();
+For the moment, the only place I do this is right before the return 0 in
+simplePlan's main() function.
+
+You also must modify the makefile to include the path to the
+PartialPlanWriter's header and object file.  For SimplePlanner, just add
+-I$(PLANWORKS_HOME)/cpp/integration/europa
+to the DIRFLAG line as well as
+$(PLANWORKS_HOME)/cpp/integration/europa/PartialPlanWriter.o
+to the OBJECTS line.
+
+Finally, execute
+make
+make simple
+and the simplePlan will work as it's supposed to.  
