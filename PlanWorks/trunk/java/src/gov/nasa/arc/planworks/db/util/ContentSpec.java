@@ -4,9 +4,9 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.20 2003-08-01 16:59:14 miatauro Exp $
+// $Id: ContentSpec.java,v 1.1 2003-08-01 18:10:26 miatauro Exp $
 //
-package gov.nasa.arc.planworks.viz.viewMgr;
+package gov.nasa.arc.planworks.db.util;
 
 import java.sql.Blob;
 import java.sql.ResultSet;
