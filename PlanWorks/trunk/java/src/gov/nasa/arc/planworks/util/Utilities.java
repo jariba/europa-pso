@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.11 2004-05-21 21:38:57 taylor Exp $
+// $Id: Utilities.java,v 1.12 2004-06-22 22:45:00 miatauro Exp $
 //
 // PlanWorks
 //
@@ -174,5 +174,26 @@ public class Utilities {
       }
     }
     return retval;
+  }
+
+  public static final void tracePrint(final boolean print) {
+    if(print) {
+      StackTraceElement st = (new Throwable()).getStackTrace()[1];
+      System.err.println(st.getClassName() + "." + st.getMethodName() + "() | " +
+                         st.getFileName() + ":" + st.getLineNumber());
+    }
+  }
+
+  public static final void tracePrint(final boolean print, final String extra) {
+    if(print) {
+      StackTraceElement st = (new Throwable()).getStackTrace()[1];
+      System.err.println(st.getClassName() + "." + st.getMethodName() + "() | " +
+                         st.getFileName() + ":" + st.getLineNumber() + " (" + extra + ")");
+    }
+  }
+
+  public static final void debugPrint(final boolean print, final String text) {
+    if(print)
+      System.err.println(text);
   }
 } // end class Utilities
