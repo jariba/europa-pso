@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksTest.java,v 1.2 2003-07-10 00:05:47 miatauro Exp $
+// $Id: PlanWorksTest.java,v 1.3 2003-07-10 00:39:07 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -580,15 +580,21 @@ public class PlanWorksTest extends JFCTestCase{
     }
     assertNotNull("Failed to get key text field.", keyBox);
     assertNotNull("Failed to get negation check box.", negationBox);
-    keyBox.setText("K3");
+    keyBox.setText("3");
     helper.enterClickAndLeave(new MouseEventData(this, activateSpecButton));
     List timelineNodes;
     while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
       Thread.sleep(50);
     }
     //Thread.sleep(2000);
+    int timelineNodeCnt = 0;
+    for (int i = 0; i < timelineNodes.size(); i++) {
+      if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
+        timelineNodeCnt++;
+      }
+    }
     assertTrue("Content spec not specing correctly: Too many timeline nodes.",
-               timelineNodes.size() == 1);
+               timelineNodeCnt == 1);
     TimelineNode timeline = (TimelineNode) timelineNodes.toArray()[0];
     assertTrue("Content spec specified incorrect timeline.", 
                timeline.getTimelineName().indexOf("Monkey1 : LOCATION_SV") != -1);
@@ -606,9 +612,17 @@ public class PlanWorksTest extends JFCTestCase{
     while((timelineNodes = timelineView.getTimelineNodeList()) == null) {
       Thread.sleep(50);
     }
+    timelineNodeCnt = 0;
+    List visibleTimelines = new ArrayList();
+    for (int i = 0; i < timelineNodes.size(); i++) {
+      if (((TimelineNode) timelineNodes.get( i)).isVisible()) {
+        visibleTimelines.add( (TimelineNode) timelineNodes.get( i));
+        timelineNodeCnt++;
+      }
+    }
     assertTrue("Content spec not specing correctly: incorrect number of timelines.",
-               timelineNodes.size() == 2);
-    Object [] temp = timelineNodes.toArray();
+               timelineNodeCnt == 2);
+    Object [] temp = visibleTimelines.toArray();
     TimelineNode [] timelines = new TimelineNode[temp.length];
     System.arraycopy(temp, 0, timelines, 0, temp.length);
     for(int i = 0; i < timelines.length; i++) {
