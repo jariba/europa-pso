@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.9 2003-09-02 00:52:10 taylor Exp $
+// $Id: TemporalNode.java,v 1.10 2003-09-05 19:11:19 taylor Exp $
 //
 // PlanWorks
 //
@@ -175,7 +175,7 @@ public class TemporalNode extends BasicNode implements Extent {
     setLabelSpot( JGoObject.Center);
     initialize( tokenLocation, nodeLabel, isRectangular);
     // BasicNode's initial location is its center
-    setLocation( Math.max( (int) (view.scaleTime( earliestStartTime) +
+    setLocation( Math.max( (int) (view.scaleTime( earliestStartTime) -
                                   (getSize().getWidth() * 0.5)),
                            (int) (getLocation().getX())),
                  (int) getLocation().getY());

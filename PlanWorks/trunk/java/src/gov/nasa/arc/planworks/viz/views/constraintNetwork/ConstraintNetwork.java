@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetwork.java,v 1.1 2003-08-20 18:52:37 taylor Exp $
+// $Id: ConstraintNetwork.java,v 1.2 2003-09-05 19:11:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -18,6 +18,8 @@ import com.nwoods.jgo.JGoLabeledLink;
 import com.nwoods.jgo.JGoLink;
 import com.nwoods.jgo.JGoObject;
 
+// PlanWorks/java/lib/JGo/Classier.jar
+import com.nwoods.jgo.examples.BasicNode;
 
 // PlanWorks/java/lib/JGo/JGoLayout.jar
 import com.nwoods.jgo.layout.JGoNetwork;
@@ -84,12 +86,17 @@ public class ConstraintNetwork extends JGoNetwork {
       JGoNetworkNode pFromNode = (JGoNetworkNode) getGoObjToNodeMap().get( pFromObject);
       JGoNetworkNode pToNode = (JGoNetworkNode) getGoObjToNodeMap().get( pToObject);
       pNetworkLink = linkNodes( pFromNode, pToNode, pGoObject);
+//       System.err.println( "ADD_CONSTRAINT_LINK: from " +
+//                           ((BasicNode) pFromNode.getJGoObject()).getLabel().getText() +
+//                           " to " +
+//                           ((BasicNode) pToNode.getJGoObject()).getLabel().getText());
     }
-    if (pNetworkLink != null) {
-      addLink( pNetworkLink);
-    } else {
-      System.err.println( "INVALID link: " + ((BasicNodeLink) pGoObject).toString());
-    }
+    // causes duplicate link to be added
+//     if (pNetworkLink != null) {
+//       addLink( pNetworkLink);
+//     } else {
+//       System.err.println( "INVALID link: " + ((BasicNodeLink) pGoObject).toString());
+//     }
   } // end addConstraintLink
 
   /**
@@ -101,6 +108,23 @@ public class ConstraintNetwork extends JGoNetwork {
     JGoNetworkLink link = findLink( pGoObject);
     deleteLink( link);
   } // end removeConstraintLink
+
+  public void validateConstraintNetwork() {
+    JGoNetworkNode[] nodeArray = getNodeArray();
+    for (int i = 0, n = nodeArray.length; i < n; i++) {
+      String nodeName =
+        ((BasicNode) ((JGoNetworkNode) nodeArray[i]).getJGoObject()).getLabel().getText();
+      System.err.println( "network nodeName " + nodeName);
+    }
+    JGoNetworkLink[] linkArray = getLinkArray();
+    for (int i = 0, n = linkArray.length; i < n; i++) {
+      String linkName =
+        ((BasicNodeLink) ((JGoNetworkLink) linkArray[i]).getJGoObject()).toString();
+      System.err.println( "network linkName " + linkName);
+    }
+
+
+  } // end validateConstraintNetwork
 
 
 } // end class ConstraintNetwork

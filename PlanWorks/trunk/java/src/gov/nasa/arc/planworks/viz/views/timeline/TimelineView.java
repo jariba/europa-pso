@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.36 2003-09-05 16:53:45 miatauro Exp $
+// $Id: TimelineView.java,v 1.37 2003-09-05 19:11:20 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -194,7 +194,6 @@ public class TimelineView extends VizView {
   private void redrawView() {
     // setVisible(true | false) depending on ids
     setNodesVisible();
-    expandViewFrame( viewSet, viewName, maxViewWidth, maxViewHeight);
  } // end redrawView
 
   /**

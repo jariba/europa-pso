@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkLayout.java,v 1.3 2003-08-29 01:21:40 taylor Exp $
+// $Id: ConstraintNetworkLayout.java,v 1.4 2003-09-05 19:11:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -84,7 +84,7 @@ public class ConstraintNetworkLayout extends JGoLayeredDigraphAutoLayout {
    * @param progress - <code>double</code> - 
    */
   public void progressUpdate( double progress) {
-    System.err.println( "ConstraintNetworkLayout progress: " + progress);
+    // System.err.println( "ConstraintNetworkLayout progress: " + progress);
     if (progress == 1.0) {
       long stopTimeMSecs = (new Date()).getTime();
       System.err.println( "   ... elapsed time: " +
