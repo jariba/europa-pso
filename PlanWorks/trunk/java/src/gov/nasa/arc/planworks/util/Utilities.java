@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: Utilities.java,v 1.6 2003-10-09 22:07:45 taylor Exp $
+// $Id: Utilities.java,v 1.7 2003-10-16 21:40:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -133,6 +133,17 @@ public class Utilities {
    */
   public static String trimView( String viewName) {
     return viewName.substring( 0, viewName.indexOf( " View"));
+  }
+
+
+  /**
+   * <code>getStepNumber</code> - strip "step" prefix and make into int
+   *
+   * @param partialPlanName - <code>String</code> - 
+   * @return - <code>int</code> - 
+   */
+  public static int getStepNumber( String partialPlanName) {
+    return Integer.parseInt( partialPlanName.substring( 4)); // strip off step
   }
 
 

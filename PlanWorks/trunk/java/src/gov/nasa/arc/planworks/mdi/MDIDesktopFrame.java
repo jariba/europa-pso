@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.9 2003-10-10 23:59:52 taylor Exp $
+// $Id: MDIDesktopFrame.java,v 1.10 2003-10-16 21:40:40 taylor Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -185,8 +185,9 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     int numNotIcon = 0;
     int numContentSpecWindows = 0;
     for(int i = 0; i < frames.length; i++) {
-      if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
-        ymin = frames[i].getHeight();
+      if((frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) ||
+         (frames[i].getTitle().indexOf(ContentSpec.SEQUENCE_QUERY_TITLE) != -1)) {
+        ymin = Math.max( ymin, frames[i].getHeight());
         numContentSpecWindows++;
       }
       else if(!frames[i].isIcon()) {
@@ -197,8 +198,10 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
       int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
       int contentSpecX = 0;
       for(int i = 0; i < frames.length; i++) {
-        if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
-          frames[i].setSize(Math.min(contentSpecWidth, frames[i].getWidth()), frames[i].getHeight());
+        if((frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) ||
+           (frames[i].getTitle().indexOf(ContentSpec.SEQUENCE_QUERY_TITLE) != -1)) {
+          frames[i].setSize(Math.min(contentSpecWidth, frames[i].getWidth()),
+                            frames[i].getHeight());
           frames[i].setLocation(contentSpecX, 0);
           contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
         }
@@ -218,7 +221,9 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
         }
         int height = (desktopPane.getHeight() - ymin) / numRows;
         for(curRow = 0; curRow < numRows; curRow++, i++) {
-          while(frames[i].isIcon() || frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
+          while(frames[i].isIcon() ||
+                (frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) ||
+                (frames[i].getTitle().indexOf(ContentSpec.SEQUENCE_QUERY_TITLE) != -1)) {
             i++;
           }
           // System.err.println("Setting bounds.  (" + (curCol * frameWidth) + ", " +
@@ -236,23 +241,27 @@ public class MDIDesktopFrame extends JFrame implements TileCascader {
     int contentSpecHeight = 0;
     int numContentSpecWindows = 0;
     for(int i = 0; i < frames.length; i++) {
-      if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
+      if((frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) ||
+         (frames[i].getTitle().indexOf(ContentSpec.SEQUENCE_QUERY_TITLE) != -1)) {
         numContentSpecWindows++;
-        ymin = contentSpecHeight = frames[i].getHeight();
+        ymin = Math.max( ymin, frames[i].getHeight());
       }
     }
+    contentSpecHeight = ymin;
     if (numContentSpecWindows > 0) {
       int contentSpecWidth = desktopPane.getWidth() / numContentSpecWindows;
       int contentSpecX = 0;
       for(int i = 0; i < frames.length; i++) {
-        if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
+        if((frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) ||
+           (frames[i].getTitle().indexOf(ContentSpec.SEQUENCE_QUERY_TITLE) != -1)) {
           frames[i].setLocation(contentSpecX, 0);
           contentSpecX += Math.min(contentSpecWidth, frames[i].getWidth());
         }
       }
     }
     for(int i = 0; i < frames.length; i++) {
-      if(frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) {
+      if((frames[i].getTitle().indexOf(ContentSpec.CONTENT_SPEC_TITLE) != -1) ||
+         (frames[i].getTitle().indexOf(ContentSpec.SEQUENCE_QUERY_TITLE) != -1)) {
         continue;
       }
       frames[i].setLocation(xmin, ymin);

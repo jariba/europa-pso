@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.7 2003-10-08 19:10:28 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.8 2003-10-16 21:40:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -17,9 +17,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -87,8 +84,6 @@ public class TemporalExtentView extends PartialPlanView  {
   // temporalNodeList & tmpTemporalNodeList used by JFCUnit test case
   private List temporalNodeList; // element TemporalNode
   private List tmpTemporalNodeList; // element TemporalNode
-  private Font font;
-  private FontMetrics fontMetrics;
   private int slotLabelMinLength;
   private int timeScaleStart;
   private int timeScaleEnd;
@@ -129,7 +124,6 @@ public class TemporalExtentView extends PartialPlanView  {
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
 
     jGoExtentView = new ExtentView();
-    // jGoSelection = new JGoSelection( jGoExtentView);
     jGoExtentView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoExtentView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
 
@@ -140,17 +134,16 @@ public class TemporalExtentView extends PartialPlanView  {
     rulerPanel = new RulerPanel();
     rulerPanel.setLayout( new BoxLayout( rulerPanel, BoxLayout.Y_AXIS));
 
-
-    // jGoRulerView = new RulerView();
     jGoRulerView = new JGoView();
     jGoRulerView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     jGoRulerView.getHorizontalScrollBar().addAdjustmentListener( new ScrollBarListener());
-    rulerPanel.add( jGoRulerView, BorderLayout.NORTH);
     jGoRulerView.validate();
     jGoRulerView.setVisible( true);
-    this.setVisible( true);
 
+    rulerPanel.add( jGoRulerView, BorderLayout.NORTH);
     add( rulerPanel, BorderLayout.SOUTH);
+
+    this.setVisible( true);
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -182,14 +175,7 @@ public class TemporalExtentView extends PartialPlanView  {
       }
       // System.err.println( "timelineView displayable " + this.isDisplayable());
     }
-    Graphics graphics = ((JPanel) this).getGraphics();
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-    // does nothing
-    // jGoExtentView.setFont( font);
-    fontMetrics = graphics.getFontMetrics( font);
-    graphics.dispose();
+    this.computeFontMetrics( this);
 
     leftMarginAdjust = new ArrayList();
     collectAndComputeTimeScaleMetrics();
@@ -266,15 +252,6 @@ public class TemporalExtentView extends PartialPlanView  {
    */
   public JGoDocument getJGoDocument()  {
     return this.jGoExtentView.getDocument();
-  }
-
-  /**
-   * <code>getFontMetrics</code>
-   *
-   * @return - <code>FontMetrics</code> - 
-   */
-  public FontMetrics getFontMetrics()  {
-    return fontMetrics;
   }
 
   /**

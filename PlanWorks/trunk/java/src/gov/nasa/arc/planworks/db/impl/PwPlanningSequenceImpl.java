@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.43 2003-10-16 16:39:40 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.44 2003-10-16 21:40:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -467,8 +467,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   }
   
   public List getStepsWhereTokenTransacted(Integer id, String type) throws IllegalArgumentException {
-    if(!type.equals(DbConstants.TOKEN_CREATED) || !type.equals(DbConstants.TOKEN_DELETED) ||
-       !type.equals(DbConstants.TOKEN_FREED) || !type.equals(DbConstants.TOKEN_INSERTED)) {
+    if(!type.equals(DbConstants.TOKEN_CREATED) && !type.equals(DbConstants.TOKEN_DELETED) &&
+       !type.equals(DbConstants.TOKEN_FREED) && !type.equals(DbConstants.TOKEN_INSERTED)) {
       throw new IllegalArgumentException("transaction type");
     }
     return MySQLDB.queryStepsWithTokenTransaction(this.id, id, type);
@@ -476,11 +476,11 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
 
   public List getStepsWhereVariableTransacted(Integer id, String type) 
     throws IllegalArgumentException  {
-    if(!type.equals(DbConstants.VARIABLE_CREATED) || !type.equals(DbConstants.VARIABLE_DELETED) ||
-       !type.equals(DbConstants.VARIABLE_DOMAIN_EMPTIED) || 
-       !type.equals(DbConstants.VARIABLE_DOMAIN_RELAXED) || 
-       !type.equals(DbConstants.VARIABLE_DOMAIN_RESET) ||  
-       !type.equals(DbConstants.VARIABLE_DOMAIN_RESTRICTED) ||
+    if(!type.equals(DbConstants.VARIABLE_CREATED) && !type.equals(DbConstants.VARIABLE_DELETED) &&
+       !type.equals(DbConstants.VARIABLE_DOMAIN_EMPTIED) && 
+       !type.equals(DbConstants.VARIABLE_DOMAIN_RELAXED) && 
+       !type.equals(DbConstants.VARIABLE_DOMAIN_RESET) &&  
+       !type.equals(DbConstants.VARIABLE_DOMAIN_RESTRICTED) &&
        !type.equals(DbConstants.VARIABLE_DOMAIN_SPECIFIED)){
       throw new IllegalArgumentException("transaction type");
     }
@@ -489,7 +489,7 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
 
   public List getStepsWhereConstraintTransacted(Integer id, String type) 
     throws IllegalArgumentException  {
-    if(!type.equals(DbConstants.CONSTRAINT_CREATED) || 
+    if(!type.equals(DbConstants.CONSTRAINT_CREATED) && 
        !type.equals(DbConstants.CONSTRAINT_DELETED)) { 
       throw new IllegalArgumentException("transaction type");
     }

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.7 2003-10-09 00:29:39 taylor Exp $
+// $Id: TimelineView.java,v 1.8 2003-10-16 21:40:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -16,9 +16,6 @@ package gov.nasa.arc.planworks.viz.partialPlan.timeline;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -76,8 +73,6 @@ public class TimelineView extends PartialPlanView {
   private List timelineNodeList; // element TimelineNode
   private List freeTokenNodeList; // element TokenNode
   private List tmpTimelineNodeList; // element TimelineNode
-  private Font font;
-  private FontMetrics fontMetrics;
   private int slotLabelMinLength;
 
   /**
@@ -133,15 +128,7 @@ public class TimelineView extends PartialPlanView {
       }
       // System.err.println( "timelineView displayable " + this.isDisplayable());
     }
-    Graphics graphics = ((JPanel) this).getGraphics();
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-    fontMetrics = graphics.getFontMetrics( font);
-    graphics.dispose();
-
-    // does not do anything
-    // jGoView.setFont( font);
+    this.computeFontMetrics( this);
 
     jGoDocument = jGoView.getDocument();
 
@@ -206,15 +193,6 @@ public class TimelineView extends PartialPlanView {
    */
   public JGoDocument getJGoDocument()  {
     return this.jGoDocument;
-  }
-
-  /**
-   * <code>getFontMetrics</code>
-   *
-   * @return - <code>FontMetrics</code> - 
-   */
-  public FontMetrics getFontMetrics()  {
-    return fontMetrics;
   }
 
   /**
@@ -303,7 +281,7 @@ public class TimelineView extends PartialPlanView {
       PwToken freeToken = (PwToken) freeTokenItr.next();
       if (isTokenInContentSpec( freeToken))  {
         // increment by half the label width, since x is center, not left edge
-        x = x +  SwingUtilities.computeStringWidth( this.getFontMetrics(),
+        x = x +  SwingUtilities.computeStringWidth( this.fontMetrics,
                                                     freeToken.getPredicate().getName()) / 2;
         TokenNode freeTokenNode = new TokenNode( freeToken, new Point( x, y),
                                                  backgroundColor, isFreeToken,
@@ -435,9 +413,9 @@ public class TimelineView extends PartialPlanView {
       String timelineName = timeline.getName();
       String timelineNodeName = objectName + " : " + timelineName;
       String timelineKey = "key=" + timeline.getId().toString();
-      int nodeWidth = Math.max( SwingUtilities.computeStringWidth( this.getFontMetrics(),
+      int nodeWidth = Math.max( SwingUtilities.computeStringWidth( this.fontMetrics,
                                                                    timelineNodeName),
-                                SwingUtilities.computeStringWidth( this.getFontMetrics(),
+                                SwingUtilities.computeStringWidth( this.fontMetrics,
                                                                    timelineKey));
       if (nodeWidth > maxNodeWidth) {
         maxNodeWidth = nodeWidth;

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.3 2003-10-01 23:53:56 taylor Exp $
+// $Id: VizView.java,v 1.4 2003-10-16 21:40:40 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,6 +13,9 @@
 
 package gov.nasa.arc.planworks.viz;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +47,8 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 public class VizView extends JPanel {
 
   protected ViewSet viewSet;
-
+  protected Font font;
+  protected FontMetrics fontMetrics;
 
   /**
    * <code>VizView</code> - constructor 
@@ -55,6 +59,16 @@ public class VizView extends JPanel {
   public VizView( ViewSet viewSet) {
     super();
     this.viewSet = viewSet;
+
+    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
+                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
+                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+    fontMetrics = null;  // see computeFontMetrics
+    
+    JGoText.setDefaultFontFaceName( "Monospaced");
+    JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
+
+    // Utilities.printFontNames();
   }
 
   /**
@@ -117,6 +131,30 @@ public class VizView extends JPanel {
     viewFrame.setSize( maxViewWidth + ViewConstants.MDI_FRAME_DECORATION_WIDTH,
                        maxViewHeight + ViewConstants.MDI_FRAME_DECORATION_HEIGHT);
   } // end expandViewFrame
+
+
+  /**
+   * <code>getFontMetrics</code> - called in "leaf" view class's init method
+   *                       view must be displayable, before graphics is non-null
+   *
+   * @param view - <code>VizView</code> - 
+   * @return - <code>FontMetrics</code> - 
+   */
+  protected void computeFontMetrics( VizView view) {
+    Graphics graphics = ((JPanel) view).getGraphics();
+    fontMetrics = graphics.getFontMetrics( font);
+    graphics.dispose();
+  } // end getFontMetrics
+
+
+  /**
+   * <code>getFontMetrics</code> - public so that node classes can have access
+   *
+   * @return - <code>FontMetrics</code> - 
+   */
+  public FontMetrics getFontMetrics()  {
+    return fontMetrics;
+  }
 
 
 } // end class VizView

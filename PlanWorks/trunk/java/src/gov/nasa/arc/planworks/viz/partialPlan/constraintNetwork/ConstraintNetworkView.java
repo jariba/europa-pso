@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.5 2003-10-08 19:10:28 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.6 2003-10-16 21:40:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -16,9 +16,6 @@ package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -90,8 +87,6 @@ public class ConstraintNetworkView extends PartialPlanView {
   private ConstraintJGoView jGoView;
   private JGoDocument document;
   private ConstraintNetwork network;
-  private Font font;
-  private FontMetrics fontMetrics;
   // tokenNodeList & tmpTokenNodeList used by JFCUnit test case
   private List tokenNodeList; // element ConstraintNetworkTokenNode
   private List tmpTokenNodeList; // element ConstraintNetworkTokenNode
@@ -172,14 +167,7 @@ public class ConstraintNetworkView extends PartialPlanView {
       }
       // System.err.println( "constraintNetworkView displayable " + this.isDisplayable());
     }
-    Graphics graphics = ((JPanel) this).getGraphics();
-    font = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                     ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                     ViewConstants.TIMELINE_VIEW_FONT_SIZE);
-    // does nothing
-    // jGoView.setFont( font);
-    fontMetrics = graphics.getFontMetrics( font);
-    graphics.dispose();
+    this.computeFontMetrics( this);
 
     document = jGoView.getDocument();
     network = new ConstraintNetwork();
@@ -268,15 +256,6 @@ public class ConstraintNetworkView extends PartialPlanView {
    */
   public JGoView getJGoView()  {
     return jGoView;
-  }
-
-  /**
-   * <code>getFontMetrics</code>
-   *
-   * @return - <code>FontMetrics</code> - 
-   */
-  public FontMetrics getFontMetrics()  {
-    return fontMetrics;
   }
 
   /**

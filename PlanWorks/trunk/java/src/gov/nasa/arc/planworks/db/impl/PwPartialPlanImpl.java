@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.50 2003-10-16 16:39:24 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.51 2003-10-16 21:40:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -909,6 +909,19 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
             parameterMap.keySet().size() + tokenRelationMap.keySet().size() +
             variableMap.keySet().size());
   } // end getDataBaseSize
+
+
+  /**
+   * <code>getStepNumber</code> - strip "step" prefix off stepDir and create int
+   *
+   * @return - <code>int</code> - 
+   */
+  public int getStepNumber() {
+    String stepDir =
+      this.seqName.substring( this.seqName.lastIndexOf( System.getProperty("file.separator")) +
+                              1);
+    return Integer.parseInt( stepDir.substring( 4)); // strip off step
+  } // end getStepNumber
 
 
 } // end class PwPartialPlanImpl

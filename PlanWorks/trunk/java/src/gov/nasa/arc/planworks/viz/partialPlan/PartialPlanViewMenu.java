@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: PartialPlanViewMenu.java,v 1.1 2003-10-09 22:07:45 taylor Exp $
+// $Id: PartialPlanViewMenu.java,v 1.2 2003-10-16 21:40:41 taylor Exp $
 //
 // PlanWorks
 //
@@ -42,7 +42,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
 
   public void buildPartialPlanViewMenu( String partialPlanName,
                                         PwPlanningSequence planSequence) {
-    int stepNumber = Integer.parseInt( partialPlanName.substring( 4)); // discard prefix "step"
+    int stepNumber = Utilities.getStepNumber( partialPlanName);
     String seqUrl = planSequence.getUrl();
     String seqName = planSequence.getName();
     Iterator viewNamesItr = PlanWorks.planWorks.supportedViewNames.iterator();
@@ -50,7 +50,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
       String viewName = (String) viewNamesItr.next();
       if (viewName.equals( PlanWorks.CONSTRAINT_NETWORK_VIEW)) {
         PartialPlanViewMenuItem constraintNetworkViewItem =
-          new PartialPlanViewMenuItem( Utilities.trimView( PlanWorks.CONSTRAINT_NETWORK_VIEW),
+          new PartialPlanViewMenuItem( PlanWorks.CONSTRAINT_NETWORK_VIEW,
                                        seqUrl, seqName, partialPlanName);
         constraintNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -60,7 +60,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
         this.add( constraintNetworkViewItem);
       } else if (viewName.equals( PlanWorks.TEMPORAL_EXTENT_VIEW)) {
         PartialPlanViewMenuItem temporalExtentViewItem =
-          new PartialPlanViewMenuItem( Utilities.trimView( PlanWorks.TEMPORAL_EXTENT_VIEW),
+          new PartialPlanViewMenuItem( PlanWorks.TEMPORAL_EXTENT_VIEW,
                                        seqUrl, seqName, partialPlanName);
         temporalExtentViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -70,7 +70,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
         this.add( temporalExtentViewItem);
       } else if (viewName.equals( PlanWorks.TEMPORAL_NETWORK_VIEW)) {
         PartialPlanViewMenuItem temporalNetworkViewItem =
-          new PartialPlanViewMenuItem( Utilities.trimView( PlanWorks.TEMPORAL_NETWORK_VIEW),
+          new PartialPlanViewMenuItem( PlanWorks.TEMPORAL_NETWORK_VIEW,
                                        seqUrl, seqName, partialPlanName);
         temporalNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -81,7 +81,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
         temporalNetworkViewItem.setEnabled(false);
       } else if (viewName.equals( PlanWorks.TIMELINE_VIEW)) {
         PartialPlanViewMenuItem timelineViewItem =
-          new PartialPlanViewMenuItem( Utilities.trimView( PlanWorks.TIMELINE_VIEW),
+          new PartialPlanViewMenuItem( PlanWorks.TIMELINE_VIEW,
                                        seqUrl, seqName, partialPlanName);
         timelineViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -91,7 +91,7 @@ public class PartialPlanViewMenu extends JPopupMenu{
         this.add( timelineViewItem);
       } else if (viewName.equals( PlanWorks.TOKEN_NETWORK_VIEW)) {
         PartialPlanViewMenuItem tokenNetworkViewItem =
-          new PartialPlanViewMenuItem( Utilities.trimView( PlanWorks.TOKEN_NETWORK_VIEW),
+          new PartialPlanViewMenuItem( PlanWorks.TOKEN_NETWORK_VIEW,
                                        seqUrl, seqName, partialPlanName);
         tokenNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -99,6 +99,16 @@ public class PartialPlanViewMenu extends JPopupMenu{
                 ( PlanWorks.TOKEN_NETWORK_VIEW, (PartialPlanViewMenuItem) e.getSource());
             }});
         this.add( tokenNetworkViewItem);
+      } else if (viewName.equals( PlanWorks.TRANSACTION_VIEW)) {
+        PartialPlanViewMenuItem transactionViewItem =
+          new PartialPlanViewMenuItem( PlanWorks.TRANSACTION_VIEW,
+                                       seqUrl, seqName, partialPlanName);
+        transactionViewItem.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+              PartialPlanViewMenu.this.createPartialPlanViewThread
+                ( PlanWorks.TRANSACTION_VIEW, (PartialPlanViewMenuItem) e.getSource());
+            }});
+        this.add( transactionViewItem);
       }
     }
 

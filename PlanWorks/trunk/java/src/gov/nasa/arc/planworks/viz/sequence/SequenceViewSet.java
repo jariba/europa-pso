@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceViewSet.java,v 1.6 2003-10-10 23:59:52 taylor Exp $
+// $Id: SequenceViewSet.java,v 1.7 2003-10-16 21:40:42 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -26,7 +26,7 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSetRemover;
-import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.ContentSpecWindow;
+import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
 
 /**
@@ -42,30 +42,24 @@ public class SequenceViewSet extends ViewSet {
                              ViewSetRemover remover) {
     super( desktopFrame, viewable, remover);
 
-    this.contentSpecWindow = null; // until we have a real sequence content spec
-
-//     this.contentSpecWindow = desktopFrame.createFrame( ContentSpec.CONTENT_SPEC_TITLE +
-//                                                        " for " + viewable.getName(),
-//                                                        this, true, false, false, true);
-//     Container contentPane = this.contentSpecWindow.getContentPane();
+    this.contentSpecWindow = desktopFrame.createFrame( ContentSpec.SEQUENCE_QUERY_TITLE +
+                                                       " for " + viewable.getName(),
+                                                       this, true, false, false, true);
+    Container contentPane = this.contentSpecWindow.getContentPane();
 
 //     this.contentSpec = new SequenceContentSpec( viewable, this);
 //     ((PwPlanningSequence) viewable).setContentSpec( this.contentSpec.getCurrentSpec());
-//     contentPane.add( new ContentSpecWindow( this.contentSpecWindow, this.contentSpec));
-//     this.contentSpecWindow.pack();
+    contentPane.add( new SequenceQueryWindow( this.contentSpecWindow, desktopFrame,
+                                              viewable));
+    this.contentSpecWindow.pack();
 
-//     this.contentSpecWindow.setSize( 300, 100); // until contentSpec created
+    int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
+                                 ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
+                          (int) ((PlanWorks.planWorks.getSize().getHeight() -
+                                  ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
 
-//     int delta = Math.min( (int) (((ViewManager) remover).getContentSpecWindowCnt() *
-//                                  ViewConstants.INTERNAL_FRAME_X_DELTA_DIV_4),
-//                           (int) ((PlanWorks.planWorks.getSize().getHeight() -
-//                                   ViewConstants.MDI_FRAME_DECORATION_HEIGHT) * 0.5));
-//         int sequenceStepsViewHeight =
-//           (int) ((MDIInternalFrame) PlanWorks.planWorks.
-//                  sequenceStepsViewMap.get( seqUrl)).getSize().getHeight();
-
-//     this.contentSpecWindow.setLocation( delta, sequenceStepsViewHeight + delta);
-//     this.contentSpecWindow.setVisible(true);
+    this.contentSpecWindow.setLocation( delta, delta);
+    this.contentSpecWindow.setVisible(true);
   }
 
 
