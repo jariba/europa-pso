@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.54 2003-10-29 00:11:08 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.55 2003-10-31 00:50:23 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -57,18 +57,13 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   private PwModel model;
 
   private int stepCount;
-  //private List transactions; 
-  //private Map planToTransactionMap;
   private Map transactions;
   private String name;
-  //private List partialPlanNames; // List of String
   private List contentSpec;
   private Map partialPlans; // partialPlanName Map of PwPartialPlan
 
-  //these should go away
   private long timeSpentLoadingFiles;
   private long timeSpentAnalyzingDatabase;
-
   /**
    * <code>PwPlanningSequenceImpl</code> - constructor - for CreateProject
    *
@@ -80,14 +75,10 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    */
   public PwPlanningSequenceImpl( String url, Long id, PwModelImpl model)
     throws ResourceNotFoundException {
-    //System.err.println("In PwPlanningSequenceImpl(String, Integer, PwProjectImpl, PwModelImpl");
     this.url = url;
     this.id = id;
     this.model = model;
     stepCount = 0;
-    //partialPlanNames = new ArrayList();
-    //transactions = new ArrayList();
-    //transactions = new OneToManyMap();
 
     int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
@@ -105,17 +96,6 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       stepCount++;
     }
     loadTransactions();
-    //cleanTransactions();
-    //List planNames = MySQLDB.getPlanNamesInSequence(id);
-    //partialPlanNames.addAll(MySQLDB.getPlanNamesInSequence(id));
-    //stepCount = partialPlanNames.size();
-    //partialPlans = new ArrayList(partialPlanNames.size());
-    //ListIterator planNameIterator = partialPlanNames.listIterator();
-    //while(planNameIterator.hasNext()) {
-    //  partialPlans.add(null);
-    //  addPartialPlan((String) planNameIterator.next());
-    //}
-    
   }
 
 
@@ -129,12 +109,8 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    */ 
   public PwPlanningSequenceImpl( String url, PwProjectImpl project, PwModelImpl model)
     throws ResourceNotFoundException {
-    //System.err.println("In PwPlanningSequenceImpl(String, PwProjectImpl, PwModelImpl)");
     this.url = url;
     this.model = model;
-    //partialPlanNames = new ArrayList();
-    //transactions = new ArrayList();
-    //transactions = new OneToManyMap();
 
     partialPlans = new HashMap();
 
@@ -162,7 +138,6 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       if(planDirs[i].isDirectory()) {
         String [] names = planDirs[i].list(new PwSQLFilenameFilter());
         if(names.length == DbConstants.NUMBER_OF_PP_FILES) {
-          //temp.put(planDirs[i].getName(), new Integer(0));
           partialPlans.put(planDirs[i].getName(), null);
           stepCount++;
           long start = System.currentTimeMillis();
@@ -178,16 +153,6 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     timeSpentAnalyzingDatabase += System.currentTimeMillis() - t1;
     System.err.println("Spent " + timeSpentAnalyzingDatabase + "ms analyzing the database");
     loadTransactions();
-    //cleanTransactions();
-    //partialPlanNames.addAll(temp.keySet());
-    //this.partialPlans = new ArrayList(partialPlanNames.size());
-    //ListIterator partialPlanIterator = partialPlanNames.listIterator();
-    //while(partialPlanIterator.hasNext()) {
-    //  partialPlans.add(null);
-    //  addPartialPlan((String)partialPlanIterator.next());
-    // }
-    // put these in PwProjectImpl so that its XMLDecode/Encode can access them
-    //project.addPartialPlanNames( partialPlanNames);
   } // end constructor for OpenProject call
   
 
@@ -205,20 +170,13 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
       long t1 = System.currentTimeMillis();
       MySQLDB.loadFile(planDir.getAbsolutePath().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
       timeSpentLoadingFiles += System.currentTimeMillis() - t1;
-      //MySQLDB.loadFile(url.toString().concat(System.getProperty("file.separator")).concat(fileNames[i]), tableName);
     }
-    //long t1 = System.currentTimeMillis();
-    //MySQLDB.analyzeDatabase();
-    //timeSpentAnalyzingDatabase += System.currentTimeMillis() - t1;
   }
 
   private void loadTransactions() {
     long t1 = System.currentTimeMillis();
     transactions = MySQLDB.queryTransactions(id);
     System.err.println("Loading transactions took " + (System.currentTimeMillis() - t1) + "ms");
-    //List info = MySQLDB.queryTransactions(id);
-    //transactions = (List) info.get(0);
-    //planToTransactionMap = (Map) info.get(1);
   }
   
   public void cleanTransactions(PwPartialPlanImpl pp) {
@@ -307,33 +265,10 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
         retval.add(transactions.get(key));
       }
     }
-    /*ListIterator transactionIdIterator = 
-      ((List) planToTransactionMap.get(partialPlanId)).listIterator();
-    List retval = new ArrayList();
-    while(transactionIdIterator.hasNext()) {
-      retval.add(transactions.get(((Integer)transactionIdIterator.next()).intValue()));
-      }*/
     return retval;
   } // end listTransactions
 
   public List getTransactionsList(int stepNum) throws IndexOutOfBoundsException {
-    //if (planToTransactionMap.keySet().size() == 0) {
-    //  return null;
-    // }
-    //if(stepNum < 0 || stepNum >= planToTransactionMap.keySet().size()) {
-    //  throw new IndexOutOfBoundsException();
-    //}
-    //List ppIds = new ArrayList(planToTransactionMap.keySet());
-    //Collections.sort(ppIds);
-    //return getTransactionsList((Long) ppIds.get(stepNum));
-    //Long temp = null;
-    //try {
-    //  temp = getPartialPlan(stepNum).getId();
-    //}
-    //catch(ResourceNotFoundException rnfe) {
-    //  throw new IndexOutOfBoundsException();
-    //}
-    //return getTransactionsList(temp);
     return getTransactionsList(getPartialPlanId(stepNum));
   }
 
@@ -401,11 +336,6 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    * @return - <code>PwPartialPlan</code> - 
    */
   public PwPartialPlan getPartialPlan( String planName) throws ResourceNotFoundException {
-    //for (int index = 0, n = partialPlanNames.size(); index < n; index++) {
-    //  if (((String) partialPlanNames.get( index)).equals( planName)) {
-    //    return (PwPartialPlan) partialPlans.get( index);
-    //  }
-    //}
     if(!partialPlans.containsKey(planName)) {
       throw new ResourceNotFoundException("plan name '" + planName + "' not found in url " + url);
     }
@@ -425,17 +355,6 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
    */
   private PwPartialPlan addPartialPlan(String partialPlanName) 
     throws ResourceNotFoundException {
-    //System.err.println("In addPartialPlan");
-    /*int index = -1;
-      if((index = partialPlanNames.indexOf(partialPlanName)) != -1) {
-      PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, id);
-      if(System.getProperty("plan.check") != null) {
-      partialPlan.checkPlan();
-      }
-      partialPlans.set(index, partialPlan);
-      return partialPlan;
-      }
-      throw new ResourceNotFoundException("Failed to find plan " + partialPlanName + " in sequence " + name);*/
     if(partialPlans.containsKey(partialPlanName)) {
       PwPartialPlanImpl partialPlan = new PwPartialPlanImpl(url, partialPlanName, this);
       partialPlans.put(partialPlanName, partialPlan);
@@ -446,7 +365,9 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
   }
 
   public void delete() throws ResourceNotFoundException {
+    long t1 = System.currentTimeMillis();
     MySQLDB.deletePlanningSequence(id);
+    System.err.println("Deleting sequence took " + (System.currentTimeMillis() - t1));
   }
 
   // implement ViewableObject
@@ -571,17 +492,6 @@ public class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObjec
     if(stepNum < 0 || stepNum > stepCount) {
       throw new IndexOutOfBoundsException();
     }
-    //List ids = new ArrayList(planToTransactionMap.keySet());
-    //Collections.sort(ids);
-    //return MySQLDB.queryPartialPlanSize((Long)ids.get(stepNum));
-    //Long temp = gnull;
-    //try {
-    //  temp = getPartialPlan(stepNum).getId();
-    // }
-    //catch(ResourceNotFoundException rnfe) {
-    //  throw new IndexOutOfBoundsException();
-    //}
-    //return MySQLDB.queryPartialPlanSize(temp);
     return MySQLDB.queryPartialPlanSize(getPartialPlanId(stepNum));
   }
   
