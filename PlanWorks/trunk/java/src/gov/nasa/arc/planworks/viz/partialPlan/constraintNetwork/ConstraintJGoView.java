@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintJGoView.java,v 1.5 2003-11-21 00:41:50 taylor Exp $
+// $Id: ConstraintJGoView.java,v 1.6 2003-12-19 18:30:32 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -98,7 +98,7 @@ class ConstraintJGoView extends JGoView {
     createOverviewWindowItem( overviewWindowItem, constraintNetworkView, viewCoords);
     mouseRightPopup.add( overviewWindowItem);
 
-    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Spec");
+    JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Filter");
     constraintNetworkView.createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
     
