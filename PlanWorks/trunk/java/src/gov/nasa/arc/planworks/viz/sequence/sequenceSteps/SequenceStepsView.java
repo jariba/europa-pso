@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.35 2004-07-29 01:36:41 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.36 2004-07-30 18:54:53 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -274,13 +274,15 @@ public class SequenceStepsView extends SequenceView {
     if (heightScaleFactor == -1.0f) {
       ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
       closeView( this);
-      return;
+      isProgressMonitorCancel = true;
+     return;
     }
 
     boolean isValid = renderHistogram();
     if (! isValid) {
       ViewGenerics.resetRedrawCursor( PlanWorks.getPlanWorks());
       closeView( this);
+      isProgressMonitorCancel = true;
       return;
     }
 
@@ -350,7 +352,8 @@ public class SequenceStepsView extends SequenceView {
       if (! isValid) {
        ViewGenerics.resetRedrawCursor( viewFrame);
        closeView( this);
-        return;
+       isProgressMonitorCancel = true;
+       return;
       }
 
       expandViewFrame( viewFrame,
@@ -461,30 +464,17 @@ public class SequenceStepsView extends SequenceView {
   private boolean renderHistogram() {
     // System.err.println( "stepNumbers " + planSequence.getPartialPlanNamesList());
     int x = ViewConstants.STEP_VIEW_X_INIT;
-    List partialPlanNameList = planSequence.getPartialPlanNamesList();
-    List planDBSizeList = planSequence.getPlanDBSizeList();
-    if (partialPlanNameList.size() != planDBSizeList.size()) {
-      String message = "Plan sequence '" + planSequence.getName() + "':\n" +
-        "   partialPlanNameList and planDBSizeList are not of equal lengths";
-      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                     "Sequence Steps View Exception",
-                                     JOptionPane.ERROR_MESSAGE);
-      System.err.println( message);
-      return false;
-    }
-    Iterator nameItr = partialPlanNameList.iterator();
-    Iterator sizeItr = planDBSizeList.iterator();
-    int stepIndx = 0;
+    Iterator sizeItr = planSequence.getPlanDBSizeList().iterator();
+    int stepNumber = 0;
     while (sizeItr.hasNext()) {
       int y = ViewConstants.STEP_VIEW_Y_INIT;
-      String partialPlanName = (String) nameItr.next();
-      int stepNumber = Integer.parseInt( partialPlanName.substring( 4));
+      String partialPlanName = "step" + String.valueOf( stepNumber);
 
       addStepStatusIndicator( stepNumber, x, document);
       
       int [] planDbSizes = (int[]) sizeItr.next();
       if(stepRepresentedList.contains(partialPlanName)) {
-        ArrayList elementList = (ArrayList) stepElementList.get( stepIndx);
+        ArrayList elementList = (ArrayList) stepElementList.get( stepNumber);
         for(int i = 0; i < 3; i++) {
           int height = Math.max(1, (int) (planDbSizes[i] * heightScaleFactor));
           StepElement elem = (StepElement) elementList.get(i);
@@ -547,7 +537,7 @@ public class SequenceStepsView extends SequenceView {
         isProgressMonitorCancel = true;
         return false;
       }
-      stepIndx++;
+      stepNumber++;
       numOperations++;
       progressMonitor.setProgress( numOperations * ViewConstants.MONITOR_MIN_MAX_SCALING);
     }
