@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.4 2003-09-16 00:13:45 taylor Exp $
+# $Id: GETTING_STARTED,v 1.5 2003-09-18 19:20:55 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -63,18 +63,20 @@ and end variable values.  The range of extent is shown by a horizontal line.
 The extent line and associated triangles are displayed immediately below 
 each predicate node.  Downward triangles are start times, upward triangles 
 are end times, leftward triangles are -Infinity, and rightward triangles are 
-+Infinity.  Clicking Mouse-Left on the temporal node extent pane background
-will cause a vertical time scale mark line to be drawn.  Clicking at another
-location will move the time scale mark line.  Applying a Content Specification
-filter will cause the view to be redrawn with only the selected predicates.
++Infinity.  Clicking Mouse-Right on the view background will popup a menu,
+one of whose selections is "Set Time Scale Line".  Selecting it will cause a
+red vertical time scale line to be drawn.  A Mouse-Right "Set Time Scale Line"
+selection at another location will move the time scale line.  Applying a 
+Content Specification filter will cause the view to be redrawn with only the 
+filtered predicates.
 
 Timeline View
 -------------
 Lays out the plan's objects, timelines, and slots.  Start/end time intervals
 are displayed at slot boundaries.  Applying a Content Specification filter 
-will cause the view to be redrawn with only the selected slots.  Adjacent
-slots whose end and start intervals are equal will be drawn abutting each
-other.  Those that are not, will be drawn with a fixed space between them,
+will cause the view to be redrawn with only the filtered timelines and slots.
+Adjacent slots whose end and start intervals are equal will be drawn abutting 
+each other.  Those that are not, will be drawn with a fixed space between them,
 and the later slot will have its time interval labels drawn "lower" than
 the previous slot, to prevent overlap.
 
@@ -82,6 +84,18 @@ Token Network View
 ------------------
 Lays out the plan's token relations in directed graphs whose root nodes
 are the "supreme" master tokens.
+
+
+Token Focus in Views
+====================
+Token nodes (slot nodes in the Timeline View) in all views, have a
+Mouse-Right popup menu with the possible selection: "Set Active Token".
+When the "active token" has been set, the other views have a
+"background" Mouse-Right popup menu with the possible selection of
+"Snap to Active Token".  Making this selection will cause the view
+to scroll to a position where the "active token" will be shown,
+highlighted, in the approximate center of the view.  A Mouse-Left click
+in any view will erase node selection highlighting.
 
 
 Content Specification
