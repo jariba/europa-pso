@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.36 2003-10-07 02:13:34 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.37 2003-10-07 22:19:06 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -57,7 +57,8 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
   private PwModel model;
 
   private int stepCount;
-  private Map transactions; // stepNumber Map of List of PwTransaction
+  private List transactions; 
+  private Map planToTransactionMap;
   private String name;
   //private List partialPlanNames; // List of String
   private List contentSpec;
@@ -82,7 +83,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     stepCount = 0;
     //partialPlanNames = new ArrayList();
     //transactions = new ArrayList();
-    transactions = new OneToManyMap();
+    //transactions = new OneToManyMap();
 
     int index = url.lastIndexOf( System.getProperty( "file.separator"));
     if (index == -1) {
@@ -129,7 +130,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     this.model = model;
     //partialPlanNames = new ArrayList();
     //transactions = new ArrayList();
-    transactions = new OneToManyMap();
+    //transactions = new OneToManyMap();
 
     partialPlans = new HashMap();
 
@@ -192,7 +193,9 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
   }
 
   private void loadTransactions() {
-    transactions = MySQLDB.queryTransactions(id);
+    List info = MySQLDB.queryTransactions(id);
+    transactions = (List) info.get(0);
+    planToTransactionMap = (Map) info.get(1);
   }
   
   // IMPLEMENT INTERFACE 
@@ -240,21 +243,29 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
   }
 
   /**
-   * <code>listTransactions</code>
+   * <code>getTransactionsList</code>
    *
    * @param step - <code>int</code> - 
    * @return - <code>List</code> - of PwTransaction
    */
-  public List listTransactions( int step) throws IndexOutOfBoundsException {
-    if ((step >= 0) && (step < stepCount)) {
-	//return (List) transactions.get( step);
-	return (List) transactions.get("step" + step);
-    } else {
-      throw new IndexOutOfBoundsException( "step " + step + ", not >= 0 and < " +
-                                           transactions.size());
+  public List getTransactionsList( Long partialPlanId) {
+    ListIterator transactionIdIterator = 
+      ((List) planToTransactionMap.get(partialPlanId)).listIterator();
+    List retval = new ArrayList();
+    while(transactionIdIterator.hasNext()) {
+      retval.add(transactions.get(((Integer)transactionIdIterator.next()).intValue()));
     }
+    return retval;
   } // end listTransactions
 
+  public List getTransactionsList(int stepNum) throws IndexOutOfBoundsException {
+    if(stepNum < 0 || stepNum >= partialPlans.keySet().size()) {
+      throw new IndexOutOfBoundsException();
+    }
+    List ppIds = new ArrayList(partialPlans.keySet());
+    Collections.sort(ppIds);
+    return getTransactionsList((Long) ppIds.get(stepNum));
+  }
 
   /**
    * <code>listPartialPlans</code>
@@ -262,7 +273,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
    *
    * @return List of PwPartialPlan objects
    */
-  public List listPartialPlans() {
+  public List getPartialPlansList() {
     List retval = new ArrayList();
     Iterator nameIterator = partialPlans.keySet().iterator();
     while(nameIterator.hasNext()) {
@@ -280,7 +291,7 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
    *
    * @return List of Strings
    */
-  public List listPartialPlanNames() {
+  public List getPartialPlanNamesList() {
     // return new ArrayList(partialPlans.keySet());
     List names = new ArrayList();
     Iterator keyItr = partialPlans.keySet().iterator();
@@ -393,6 +404,92 @@ class PwPlanningSequenceImpl implements PwPlanningSequence, ViewableObject {
     this.name = seqName;
   }
 
+  private List getTransactionsById(List ids) {
+    List retval = new ArrayList();
+    ListIterator idIterator = ids.listIterator();
+    while(idIterator.hasNext()) {
+      retval.add(transactions.get(((Integer)idIterator.next()).intValue()));
+    }
+    return retval;
+  }
+
+  public List getTransactionsForConstraint(Integer id) {
+    return getTransactionsById(MySQLDB.queryTransactionsForConstraint(this.id, id));
+  }
+
+  public List getTransactionsForToken(Integer id) {
+    return getTransactionsById(MySQLDB.queryTransactionsForToken(this.id, id));
+  }
+ 
+  public List getTransactionsForVariable(Integer id) {
+    return getTransactionsById(MySQLDB.queryTransactionsForVariable(this.id, id));
+  }
+  
+  public List getTransactionsInRange(int start, int end) {
+    if(start == end) {
+      return getTransactionsList(start);
+    }
+    if(start == end) {
+      start ^= end;
+      end ^= start;
+      start ^= end;
+    }
+    List retval = new ArrayList();
+    for(int i = start; i <= end; i++) {
+      retval.addAll(getTransactionsList(i));
+    }
+    return retval;
+  }
+
+  public List getTransactionsInRange(Integer start, Integer end) {
+    return getTransactionsInRange(start.intValue(), end.intValue());
+  }
+  
+  public List getStepsWhereTokenTransacted(Integer id, String type) throws IllegalArgumentException {
+    if(!type.equals(DbConstants.TOKEN_CREATED) || !type.equals(DbConstants.TOKEN_DELETED) ||
+       !type.equals(DbConstants.TOKEN_FREED) || !type.equals(DbConstants.TOKEN_INSERTED)) {
+      throw new IllegalArgumentException("transaction type");
+    }
+    return MySQLDB.queryStepsWithTokenTransaction(this.id, id, type);
+  }
+
+  public List getStepsWhereVariableTransacted(Integer id, String type) 
+    throws IllegalArgumentException  {
+    if(!type.equals(DbConstants.VARIABLE_CREATED) || !type.equals(DbConstants.VARIABLE_DELETED) ||
+       !type.equals(DbConstants.VARIABLE_DOMAIN_EMPTIED) || 
+       !type.equals(DbConstants.VARIABLE_DOMAIN_RELAXED) || 
+       !type.equals(DbConstants.VARIABLE_DOMAIN_RESET) ||  
+       !type.equals(DbConstants.VARIABLE_DOMAIN_RESTRICTED) ||
+       !type.equals(DbConstants.VARIABLE_DOMAIN_SPECIFIED)){
+      throw new IllegalArgumentException("transaction type");
+    }
+    return MySQLDB.queryStepsWithVariableTransaction(this.id, id, type);
+  }
+
+  public List getStepsWhereConstraintTransacted(Integer id, String type) 
+    throws IllegalArgumentException  {
+    if(!type.equals(DbConstants.CONSTRAINT_CREATED) || 
+       !type.equals(DbConstants.CONSTRAINT_DELETED)) { 
+      throw new IllegalArgumentException("transaction type");
+    }
+    return MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type);
+  }
+
+  public List getStepsWithRestrictions() {
+    return MySQLDB.queryStepsWithRestrictions(id);
+  }
+
+  public List getStepsWithRelaxations() {
+    return MySQLDB.queryStepsWithRelaxations(id);
+  }
+
+  public List getStepsWithUnitDecisions() {
+    return new ArrayList();
+  }
+
+  public List getStepsWithNonUnitDecisions() {
+    return new ArrayList();
+  }
 
   private class PartialPlanNameComparator implements Comparator {
     public PartialPlanNameComparator() {
