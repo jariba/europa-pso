@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.14 2003-11-13 17:46:44 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.15 2003-11-13 22:03:33 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -694,6 +694,37 @@ void PartialPlanWriter::notifyOfDeletedToken(TokenId tokenId) {
     transactionList->append(Transaction(TOKEN_DELETED, tokenId->getKey(), UNKNOWN, transactionId++,
                                         sequenceId, nstep, info));
     numTransactions++;
+    if(tokenId->getTokenClass() == valueTokenClass) {
+      transactionList->append(Transaction(VAR_DELETED, tokenId->getStartVariable()->getKey(),
+                                          UNKNOWN, transactionId++, sequenceId, nstep, 
+                                          getVarInfo(tokenId->getStartVariable())));
+      numTransactions++;
+      transactionList->append(Transaction(VAR_DELETED, tokenId->getEndVariable()->getKey(),
+                                          UNKNOWN, transactionId++, sequenceId, nstep, 
+                                          getVarInfo(tokenId->getEndVariable())));
+      numTransactions++;
+      transactionList->append(Transaction(VAR_DELETED, tokenId->getObjectVariable()->getKey(),
+                                          UNKNOWN, transactionId++, sequenceId, nstep, 
+                                          getVarInfo(tokenId->getObjectVariable())));
+      numTransactions++;
+      transactionList->append(Transaction(VAR_DELETED, tokenId->getDurationVariable()->getKey(),
+                                          UNKNOWN, transactionId++, sequenceId, nstep, 
+                                          getVarInfo(tokenId->getDurationVariable())));
+      numTransactions++;
+      transactionList->append(Transaction(VAR_DELETED, tokenId->getRejectVariable()->getKey(),
+                                          UNKNOWN, transactionId++, sequenceId, nstep, 
+                                          getVarInfo(tokenId->getRejectVariable())));
+      numTransactions++;
+      List<VarId> paramVars = tokenId->getParameterVariables();
+      ListIterator<VarId> paramVarIterator(paramVars);
+      while(!paramVarIterator.isDone()) {
+        transactionList->append(Transaction(VAR_DELETED, paramVarIterator.item()->getKey(),
+                                            UNKNOWN, transactionId++, sequenceId, nstep, 
+                                            getVarInfo(paramVarIterator.item())));
+        paramVarIterator.step();
+        numTransactions++;
+      }
+    }
   }
 }
 void PartialPlanWriter::notifyOfNewVariable(VarId varId) {
@@ -737,14 +768,14 @@ void PartialPlanWriter::notifyDerivedDomainChanged(VarId varId) {
   }
 }
 void PartialPlanWriter::notifyOfDeletedVariable(VarId varId) {
-  if(stepsPerWrite) {
-    if(varId->getParentToken().isNoId()) {
-      return;
-    }
-    transactionList->append(Transaction(VAR_DELETED, varId->getKey(), UNKNOWN, transactionId++,
-                                        sequenceId, nstep, getVarInfo(varId)));
-    numTransactions++;
-  }
+//   if(stepsPerWrite) {
+//     if(varId->getParentToken().isNoId()) {
+//       return;
+//     }
+//     transactionList->append(Transaction(VAR_DELETED, varId->getKey(), UNKNOWN, transactionId++,
+//                                         sequenceId, nstep, getVarInfo(varId)));
+//     numTransactions++;
+//   }
 }
 void PartialPlanWriter::notifyConstraintInserted(ConstraintId& constrId) {
   if(stepsPerWrite) {
@@ -774,6 +805,7 @@ void PartialPlanWriter::notifyFlushed(void) {
 }
 
 String PartialPlanWriter::getVarInfo(const VarId &varId) {
+  static int count = 0;
   TokenId parentToken = varId->getParentToken();
   String type("");
   String paramName("");
@@ -822,12 +854,14 @@ String PartialPlanWriter::getVarInfo(const VarId &varId) {
 
   String retval = type + String(",");
   if(parentToken->getTokenClass() == valueTokenClass) {
-    retval += modelId.getPredicateName(parentToken->getPredicate());
+    //retval += modelId.getPredicateName(parentToken->getPredicate());
+    retval += parentToken->getPredicate().getName();
   }
   else {
     retval += String("notValueToken");
     }
   retval += String(",") + paramName;
+  count++;
   return retval;
 }
 
