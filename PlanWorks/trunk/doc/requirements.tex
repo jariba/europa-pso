@@ -12,11 +12,11 @@
 \section{Introduction}
 This document outlines the requirements to be addressed in FY2003, the first year, for the PlanWorks project. The main elements of this work are:
 \begin{enumerate}
+\item An Application Framework in which various tools can be integrated.
 \item A new Domain Description Language to make modeling more productive
 \item A Plan Visualization Tool.
 \item A Planning Debugger, for analysis of planner traces.
 \item A Test Harness to manage regression testing of planners based on output.
-\item An Application Framework in which the various tools can be integrated.
 \end{enumerate}
 
 \section{New Domain Description Language (NDDL)}
@@ -24,35 +24,37 @@ This document outlines the requirements to be addressed in FY2003, the first yea
 \item A domain description language must be provided that subsumes the functionality of DDL.
 \item In addition to parity with DDL, it must be possible to:
 \begin{enumerate}
-\item define variables whose values are constant throughout planning. Such variables shall be referred to as Constants.
-\item define Constants outside the scope of a Predicate or Timeline. Such constants are Global.
-\item define Constants at the level of a Timeline/Class.
-\item reference all Constants within the model.
-\item specify initial values for such variables in the model.
-\item specify the initial values for Constants as part of the problem definition. This definition will over-ride any definition provided in the model.
-\item define a class that may or may not have predicates associated with it. A class with predicates is said to be a Timeline.
-\item define a class which composes 0 or more classes.
-\item define a class which inherits from 0 or 1 other class.
-\item define references to classes within a compatibility. In defining such a reference, the part-of relationships may be traveresed upwards or downwards from the class of fthe compatibility.
-\item reference constants within a compatibility. In defining such a reference, the part-of relation may be used to access constants defined for classes.
-\item define references to variables within a compatibility without reuiring that variable to be defined in the compatibility head.
-\item define references for sub-goals within a compatibility. Such a reference may bu sed in further temporal relations of the compatibility. 
+\item define Constants. Such Constants are initialized during instantiation and thereafter are immutable. Constants may be defined:
+\begin{enumerate}
+\item for a Class. The scope and lifetime of the Constant is the Class instance.
+\item for a Predicate. The scope and lifetime of the Constant is the Predicate instance.
+\item globally. The scope and lifetime of the Constant is the problem instance.
+\end{enumerate}
+\item specify initial values for Constants in the model.
+\item specify initial values for Constants as part of the problem definition. This definition will over-ride any definition provided in the model.
+\item define a Class that may or may not have predicates associated with it. A Class with Predicates defines a Timeline.
+\item define a Class which composes 0 or more Classes.
+\item define a Class which inherits from 0 or 1 other Class.
+\item define 0 or more Variables in a Compatibility.
+\item reference Class instances in a Compatibility by traversing the part-of relationship (strictly downwards) of any Class instance in the scope of the Compatibility.
+\item reference instance Variables in a Compatibility by traversing the part-of relationship (strictly downwards) of any Class instance in the scope of the Compatibility.
+\item reference constants in a Compatibility by traversing the part-of relationship (strictly downwards) of any Class instance in the scope of the Compatibility.
+\item pass any reference in a Compatibility as a parameter in a sub-goal relation.
 \item create composite objects during instantiation by explicit use of constructors with arguments.
-\item define references to sub-goals within a compatibility, and pass these references in other temporal relations.
 \end{enumerate}
 \item A translator must be provided to translate DDL to NDDL without changing the semantics of the model.
 \item A parser must be provided to parse and validate models written in NDDL.
 \item A model loader must be provided to ingest NDDL into the EUROPA Model Manager.
 \item The existing EUROPA initial state language must continue to be supported when using only DDL equivalent functionality of NDDL.
-\item An initial state description langauge must be provided that has the full power of NDDL.
+\item An initial state description language must be provided that has the full power of NDDL.
 \item A loader must be provided to ingest problem definitions written in the new problem definition language.
-\item Exisitng initial state descriptions for DDL models must be translated into the new state description language.
-\item A users guide must be provided to explain the feautures of NDDL and the Initial State language.
+\item Existing initial state descriptions for DDL models must be translated into the new state description language.
+\item A users guide must be provided to explain the features of NDDL and the Initial State language.
 \end{enumerate}
 
 \section{Application Framework}
 \begin{enumerate}
-\item The PlanWorks Application Framework shall integrate the following tools:
+\item The PlanWorks Application Framework shall integrate the following Tools:
 \begin{enumerate}
 \item Plan Viz - for visualization of single Partial Plans.
 \item Test Case Manager - for capture and execution of planner regression tests.
@@ -75,10 +77,21 @@ This document outlines the requirements to be addressed in FY2003, the first yea
 \item The system shall prohibit use of any Tools unless a Project is open.
 \item The system will be started with no Project open.
 \item At most one Project may be open at any time.
-\item A Project shall contain 0 or more named planning sequences.
+\item A Project shall contain 0 or more named Planning Sequences.
 \item A Planning Sequence shall contain 1 or more Steps.
 \item Each Step of a Planning Sequence must contain a Partial Plan.
-\item Each step of a Planning Sequence may contain one or more Transactions.
+\item Each step of a Planning Sequence may contain one or more Transactions. A Transaction is an operation on a Partial Plan. The following Transactions must be supported:
+\begin{enumerate}
+\item \begin{verbatim}RESTRICT_SPECIFIED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
+\item \begin{verbatim}RESTRICT_DERIVED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
+\item \begin{verbatim}RELAX_SPECIFIED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
+\item \begin{verbatim}RELAX_DERIVED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
+\item \begin{verbatim}EMPTY_DOMAIN. Constraint, Variable.\end{verbatim}
+\item \begin{verbatim}CREATE_TOKEN. Token\end{verbatim}
+\item \begin{verbatim}DELETE_TOKEN. Token\end{verbatim}
+\item \begin{verbatim}INSERT_TOKEN. Token, Timeline, Slot, Alternative Slots.\end{verbatim}
+\item \begin{verbatim}FREE_TOKEN. Token.\end{verbatim}
+\end{enumerate}
 \item All Partial Plans in a Planning Sequence share the same Model.
 \item The Partial Plan of the first Step is the initial state of a planning process.
 \end{enumerate}
@@ -91,6 +104,7 @@ PlanViz is a tool to explore and visualize Partial Plans. This section describes
 \item The system will allow multiple Partial Plans to be visualized at once.
 \end{enumerate}
 \subsection{Content Specification}
+A Content Specification defines a subset of data in a Partial Plan.
 \begin{enumerate}
 \item The user must be able to define a Content Specification which will identify a subset of content in a given partial plan.
 \item The user must be able to restrict content according to:
@@ -99,14 +113,17 @@ PlanViz is a tool to explore and visualize Partial Plans. This section describes
 \item Predicate
 \item Time Interval
 \item Constraint
-\item Variable Type - Temporal, Object, Reject, Parameter
+\item Variable Type - Temporal, Object, Reject, Parameter, Local
+\item Variable Value
 \end{enumerate}
-\item A variable is excluded if its token is excluded.
-\item A constraint is excluded if all of its variables are excluded.
+\item A Variable is excluded if its Token is excluded.
+\item A Constraint is excluded if all of its Variables are excluded. Note, exclusion of a Constraint does not cause Exclusion of its Variables.
+\item Exclusion of a Timeline implies exclusion of all Tokens of all Slots in that Timeline.
+\item Exclusion of an Object implies exclusion of all its Timelines. 
 \item At most one Content Specification will apply for a Partial Plan.
 \item The user may edit the current Content Specification of a Partial Plan at any time.
 \item The user must explicitly apply any changes in a Content Specification for them to take affect. Once applied, their effects will be immediate.
-\item A Content Specifcation may be saved in a Project.
+\item A Content Specification may be saved in a Project.
 \item A stored Content Specification may be selected and re-applied to a Partial Plan.
 \end{enumerate}
 
@@ -122,7 +139,7 @@ PlanViz is a tool to explore and visualize Partial Plans. This section describes
 \item Timeline (including no Timeline)
 \item Predicate
 \item MasterOf
-\item SubgoalOf
+\item SlaveOf
 \item Time Interval
 \item Slot
 \end{enumerate}
@@ -139,7 +156,7 @@ PlanViz is a tool to explore and visualize Partial Plans. This section describes
 \item Token
 \end{enumerate}
 \item No two instances of the same view may be open if they share the same content specification. For now this means we are restricting ourselves to at most one instance of each view at once.
-\item Barring other restrictions alread defined, it must be possible to open multiple views of the same partial plan at once.
+\item Barring other restrictions already defined, it must be possible to open multiple views of the same partial plan at once.
 \item The user must be able to open, close, re-size and position all views.
 \item Changes to the Content Specification of a View take affect as soon as they are applied by the user.
 \end{enumerate}
@@ -148,18 +165,7 @@ PlanViz is a tool to explore and visualize Partial Plans. This section describes
 \subsection{Planner Debugger}
 The Debugger is a tool to support analysis of a Planning Sequence for the purposes of verification and troubleshooting of Planner, Model, Heuristic and Constraint Behavior.
 \begin{enumerate}
-\item The following Transactions must be supported:
-\begin{enumerate}
-\item \begin{verbatim}RESTRICT_SPECIFIED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
-\item \begin{verbatim}RESTRICT_DERIVED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
-\item \begin{verbatim}RELAX_SPECIFIED_DOMAIN. Variable, Old Domain, New Domain\end{verbatim}
-\item \begin{verbatim}EMPTY_DOMAIN. Constraint, Variable.\end{verbatim}
-\item \begin{verbatim}CREATE_TOKEN. Token\end{verbatim}
-\item \begin{verbatim}DELETE_TOKEN. Token\end{verbatim}
-\item \begin{verbatim}INSERT_TOKEN. Token, Timeline, Slot, Alternative Slots.\end{verbatim}
-\item \begin{verbatim}FREE_TOKEN. Token.\end{verbatim}
-\end{enumerate}
-\item What are the Steps where:
+\item The system must support queries returning Steps, of the form ``What are the Steps where'':
 \begin{enumerate}
 \item Token T was created, inserted, freed, deleted
 \item Variable V was changed, restricted, relaxed
@@ -168,7 +174,7 @@ The Debugger is a tool to support analysis of a Planning Sequence for the purpos
 \item Unit Decisions were made?
 \item Non-unit decisions were made?
 \end{enumerate}
-\item The system must support queries returning Transactions, of the form ``What are the Transactions:
+\item The system must support queries returning Transactions, of the form ``What are the Transactions'':
 \begin{enumerate}
 \item at step S.
 \item on Variable V
@@ -183,7 +189,7 @@ The Test Harness is a tool to allow capture and execution of regression tests.
 \begin{enumerate}
 \item A Project shall have 0 or more Test Suites. A Test Suite:
 \begin{enumerate}
-\item must contain 0 or more Test Suites.
+\item must contain 0 or more Test Suites, i.e. Test Suites may be nested.
 \item must have a name. The fully qualified name (name + path from project) must be unique within the project.
 \item must have a description.
 \item must be in exactly one Project.
@@ -201,15 +207,15 @@ The Test Harness is a tool to allow capture and execution of regression tests.
 \item An Assertion:
 \begin{enumerate}
 \item is a statement that evaluates to true or false.
-\item shall be expressed in a declarative scriptiong language to be provided by the system.
+\item shall be expressed in a declarative scripting language to be provided by the system.
 \item shall be evaluated by the system in the context of the active Planning Sequence, i.e. the Planning Sequence named in the containing Test Case. 
 \end{enumerate}
 \item It must be possible to create and delete Test Suites, Test Cases and Assertions.
 \item It must be possible to select and execute a Test Suite in PlanWorks.
 \item It must be possible to select and execute a Test Suite from the command line.
 \item Execution of a Test Suite shall cause execution of all contained Test Suites and Test Cases.
-\item A Test Case may only be executed through execution of its enclosing
-\item A Test Case execution will record success if and only if all assertions it contined were evaluated to true.
+\item A Test Case may only be executed through execution of its enclosing Test Suite.
+\item A Test Case execution will record success if and only if all assertions it contained were evaluated to true.
 \item A Test Suite will record success if and only if all all contained Test Cases and Test Suites record success.
 \item Upon completion of execution of a Test Case, a Report shall be produced.
 \item The Report for a Test Suite must be stored in the Project.
