@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.18 2003-07-02 19:05:19 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.19 2003-07-02 19:13:04 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -62,7 +62,7 @@ public class PwProjectImpl extends PwProject {
   public static PwProject createProject(String name) throws DuplicateNameException, SQLException {
     ResultSet projects = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName='".concat(name).concat("'"));
     projects.last();
-    if(projects.getRow() > 1) {
+    if(projects.getRow() > 0) {
       throw new DuplicateNameException(projects.getRow() + " projects with name '" + name +
                                        "were found.");
     }
