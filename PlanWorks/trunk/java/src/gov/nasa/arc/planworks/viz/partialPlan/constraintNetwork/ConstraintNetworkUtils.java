@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ConstraintNetworkUtils.java,v 1.1 2004-03-12 23:22:59 miatauro Exp $
+// $Id: ConstraintNetworkUtils.java,v 1.2 2004-03-30 22:01:03 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -107,21 +107,25 @@ public final class ConstraintNetworkUtils {
     navItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           try {
-            MDIInternalFrame navFrame = view.openNavigatorViewFrame();
+            String viewSetKey = view.getNavigatorViewSetKey();
+            MDIInternalFrame navFrame = view.openNavigatorViewFrame( viewSetKey);
             Container contentPane = navFrame.getContentPane();
             PwPartialPlan partialPlan = view.getPartialPlan();
             Class [] constructorParams = {
               node.getClass(), 
               Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject"), 
               Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet"),
+              viewSetKey.getClass(),
               navFrame.getClass()
             };
             Class navClass = Class.
               forName("gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView");
             Constructor navConstructor = navClass.getConstructor(constructorParams);
-            Object [] constructorArgs = {node, partialPlan, view.getViewSet(), navFrame};
+            Object [] constructorArgs = {node, partialPlan, view.getViewSet(), viewSetKey,
+                                         navFrame};
             contentPane.add((NavigatorView)navConstructor.newInstance(constructorArgs));
-            //contentPane.add(new NavigatorView(node, partialPlan, view.getViewSet(), navFrame));
+            //contentPane.add(new NavigatorView(node, partialPlan, view.getViewSet(),
+            //viewSetKey, navFrame));
           }
           catch(Exception e) {
             e.printStackTrace();

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.16 2004-03-23 20:05:58 taylor Exp $
+// $Id: SlotNode.java,v 1.17 2004-03-30 22:01:04 taylor Exp $
 //
 // PlanWorks
 //
@@ -385,12 +385,14 @@ public class SlotNode extends TextNode {
       JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
       navigatorItem.addActionListener( new ActionListener() {
           public void actionPerformed( ActionEvent evt) {
-            MDIInternalFrame navigatorFrame = timelineView.openNavigatorViewFrame();
+            String viewSetKey = timelineView.getNavigatorViewSetKey();
+            MDIInternalFrame navigatorFrame =
+              timelineView.openNavigatorViewFrame( viewSetKey);
             Container contentPane = navigatorFrame.getContentPane();
             PwPartialPlan partialPlan = timelineView.getPartialPlan();
             contentPane.add( new NavigatorView( SlotNode.this, partialPlan,
                                                 timelineView.getViewSet(),
-                                                navigatorFrame));
+                                                viewSetKey, navigatorFrame));
           }
         });
       mouseRightPopup.add( navigatorItem);

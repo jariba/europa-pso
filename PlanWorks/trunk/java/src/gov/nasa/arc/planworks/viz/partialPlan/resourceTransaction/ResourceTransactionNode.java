@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceTransactionNode.java,v 1.3 2004-03-09 19:59:30 taylor Exp $
+// $Id: ResourceTransactionNode.java,v 1.4 2004-03-30 22:01:03 taylor Exp $
 //
 // PlanWorks
 //
@@ -200,11 +200,12 @@ public  class ResourceTransactionNode extends JGoRectangle implements Extent {
     JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
     navigatorItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent evt) {
-          MDIInternalFrame navigatorFrame = resourceView.openNavigatorViewFrame();
+          String viewSetKey = resourceView.getNavigatorViewSetKey();
+          MDIInternalFrame navigatorFrame = resourceView.openNavigatorViewFrame( viewSetKey);
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = resourceView.getPartialPlan();
           contentPane.add( new NavigatorView( ResourceTransactionNode.this, partialPlan,
-                                              resourceView.getViewSet(),
+                                              resourceView.getViewSet(), viewSetKey,
                                               navigatorFrame));
         }
       });
