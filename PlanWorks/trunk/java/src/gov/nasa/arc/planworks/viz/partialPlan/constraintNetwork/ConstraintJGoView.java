@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintJGoView.java,v 1.4 2003-11-20 19:11:23 taylor Exp $
+// $Id: ConstraintJGoView.java,v 1.5 2003-11-21 00:41:50 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -204,13 +204,13 @@ class ConstraintJGoView extends JGoView {
            getSecondaryTokens(), constraintNetworkView.getTokenNodeList()), this);
     }
     if (! isTokenFound) {
+      // Content Spec filtering may cause this to happen
       String message = "Token " + tokenToFind.getPredicate().getName() +
         " (key=" + tokenToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Token Not Found in ConstraintNetworkView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
-      System.exit( 1);
     }
   } // end findAndSelectToken
 
@@ -241,13 +241,13 @@ class ConstraintJGoView extends JGoView {
       }
     }
     if (! isVariableFound) {
+      // Content Spec filtering may cause this to happen
       String message = "Variable " + variableToFind.getDomain().toString() +
         " (key=" + variableToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Variable Not Found in ConstraintNetworkView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
-      System.exit( 1);
     }
   } // end findAndSelectVariable
 
@@ -299,13 +299,13 @@ class ConstraintJGoView extends JGoView {
       }
     }
     if (! isConstraintFound) {
+      // Content Spec filtering may cause this to happen
       String message = "Constraint " + constraintToFind.getName() +
         " (key=" + constraintToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.planWorks, message,
                                      "Constraint Not Found in ConstraintNetworkView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
-      System.exit( 1);
     }
   } // end findAndSelectConstraint
 

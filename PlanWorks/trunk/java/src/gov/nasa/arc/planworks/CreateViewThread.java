@@ -1,5 +1,5 @@
 // 
-// $Id: CreateViewThread.java,v 1.7 2003-11-11 02:44:51 taylor Exp $
+// $Id: CreateViewThread.java,v 1.8 2003-11-21 00:41:50 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -18,6 +18,7 @@ import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
@@ -65,7 +66,8 @@ public class CreateViewThread extends Thread {
 
       viewFrame = PlanWorks.planWorks.viewManager.openView( viewable, viewClassName);
 
-      finishViewRendering( viewFrame, PlanWorks.planWorks.viewManager, viewExists, viewable);
+      finishViewRendering( viewFrame, PlanWorks.planWorks.viewManager, viewExists,
+                           viewName, viewable);
 
     } else {
       JOptionPane.showMessageDialog
@@ -76,7 +78,8 @@ public class CreateViewThread extends Thread {
   } // end renderPartialPlanView
 
   protected void finishViewRendering( MDIInternalFrame viewFrame, ViewManager viewManager,
-                                      boolean viewExists, ViewableObject viewable) {
+                                      boolean viewExists, String viewName,
+                                      ViewableObject viewable) {
     ViewSet viewSet = null;
     while (viewSet == null) {
       // System.err.println( "wait for ViewSet");
@@ -141,9 +144,11 @@ public class CreateViewThread extends Thread {
       if (viewFrame.isIcon()) {
         viewFrame.setIcon( false);
       }
-
       viewFrame.setSelected( false);
       viewFrame.setSelected( true);
+
+      ViewGenerics.openExistingOverviewFrame( viewName, viewable, viewSet);
+
     } catch (PropertyVetoException excp) {
     }
   } // end finishViewRendering

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.46 2003-11-18 23:54:16 taylor Exp $
+// $Id: ViewSet.java,v 1.47 2003-11-21 00:41:51 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -232,18 +232,21 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
       for(int i = 0; i < contentPane.getComponentCount(); i++) {
         if(contentPane.getComponent(i) instanceof VizView) {
           views.remove(contentPane.getComponent(i).getClass());
-          String overviewTitle =
-            ((VizView) contentPane.getComponent(i)).getOverview().getTitle();
+          String overviewTitle = null;
+          VizViewOverview overview =
+            ((VizView) contentPane.getComponent(i)).getOverview();
+          if (overview != null) {
+            overviewTitle = overview.getTitle();
           // System.err.println( "VizView overviewTitle " + overviewTitle);
-          MDIInternalFrame overviewFrame = (MDIInternalFrame) views.get( overviewTitle);
-          if (overviewFrame != null) {
-            try {
-              overviewFrame.setClosed( true);
-            } catch(PropertyVetoException pve){
+            MDIInternalFrame overviewFrame = (MDIInternalFrame) views.get( overviewTitle);
+            if (overviewFrame != null) {
+              try {
+                overviewFrame.setClosed( true);
+              } catch(PropertyVetoException pve){
+              }
+              views.remove( overviewTitle);
             }
-            views.remove( overviewTitle);
           }
-            
         } else if (contentPane.getComponent(i) instanceof VizViewOverview) {
           ((VizViewOverview) contentPane.getComponent(i)).removeNotifyFromViewSet();
           views.remove( ((VizViewOverview) contentPane.getComponent(i)).getTitle());

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VizViewOverview.java,v 1.2 2003-11-20 19:11:23 taylor Exp $
+// $Id: VizViewOverview.java,v 1.3 2003-11-21 00:41:50 taylor Exp $
 //
 // PlanWorks
 //
@@ -113,6 +113,9 @@ public class VizViewOverview extends Overview {
       observed.getDocument().removeDocumentListener(this);
       observed.removeViewListener(overviewRect);
       observed.getCanvas().removeComponentListener(overviewRect);
+      observed = null;
+      vizView.setOverview( null);
+      super.removeNotify();
     }
   }
 
