@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.90 2004-05-28 20:21:16 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.91 2004-06-08 21:48:52 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -38,10 +38,11 @@ import gov.nasa.arc.planworks.db.PwRule;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
-import gov.nasa.arc.planworks.db.PwTokenRelation;
+import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
+import gov.nasa.arc.planworks.util.OneToManyMap;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.FunctorFactory;
@@ -74,12 +75,12 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   private Map tokenMap; // key = attribute id, value = PwTokenImpl instance
   private Map constraintMap; // key = attribute id, value = PwConstraintImpl instance
   //private Map predicateMap; // key = attribute id, value = PwPredicateImpl instance
-  private Map tokenRelationMap; // key = attribute id, value = PwTokenRelationImpl instance
+  private Map ruleInstanceMap; // key = attribute id, value = PwRuleInstanceImpl instance
   private Map variableMap; // key = attribute id, value = PwVariableImpl instance
   private List contentSpec;
-  private Map tokenMasterSlaveMap; // key = tokenId, value TokenRelations instance
   private Map instantMap; //just add water.  key = tokenId, value = PwResourceInstantImpl instance
   private Map resTransactionMap; //key = transactionId, value = PwResourceTransactionImpl instance
+  private Map tokenChildRuleInstIdMap; // key = masterTokenId, value = List RuleInstanceId
 
   /**
    * <code>PwPartialPlanImpl</code> - initialize storage structures then call createPartialPlan()
@@ -101,11 +102,11 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     tokenMap = new HashMap();
     constraintMap = new HashMap();
     //predicateMap = new HashMap();
-    tokenRelationMap = new HashMap(); 
+    ruleInstanceMap = new HashMap(); 
+    tokenChildRuleInstIdMap = new OneToManyMap();
     resourceMap = new HashMap();
     resTransactionMap = new HashMap();
     variableMap = new HashMap();
-    tokenMasterSlaveMap = new HashMap();
     instantMap = new HashMap();
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).append(planName).toString();
     contentSpec = new ArrayList();
@@ -127,11 +128,11 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     tokenMap = new HashMap();
     constraintMap = new HashMap();
     //predicateMap = new HashMap();
-    tokenRelationMap = new HashMap(); 
+    ruleInstanceMap = new HashMap(); 
+    tokenChildRuleInstIdMap = new OneToManyMap();
     resourceMap = new HashMap();
     resTransactionMap = new HashMap();
     variableMap = new HashMap();
-    tokenMasterSlaveMap = new HashMap();
     instantMap = new HashMap();
     this.url = (new StringBuffer(url)).append(System.getProperty("file.separator")).
       append(planName).toString();
@@ -219,14 +220,11 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   private final void fillElementMaps() {
     MySQLDB.queryConstraints( this);
 
-    MySQLDB.queryTokenRelations( this);
+    MySQLDB.queryRuleInstances( this);
     MySQLDB.queryVariables( this);
     MySQLDB.queryResourceInstants(this);
+    tokenChildRuleInstIdMap = MySQLDB.queryAllChildRuleInstanceIds(this);
     CollectionUtils.cInPlaceMap(new TimelineSlotCreator(), objectMap.values());
-
-    initTokenRelationships();
-    buildTokenRelationships();
-    // printTokenRelationships();
 
     System.err.println( "Partial Plan: " + url);
     System.err.println( "Ids:");
@@ -245,7 +243,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     System.err.println( "  slots                " + slotMap.keySet().size());
     System.err.println( "  tokens               " + tokenMap.keySet().size());
     System.err.println( "  constraints          " + constraintMap.keySet().size());
-    System.err.println( "  tokenRelations       " + tokenRelationMap.keySet().size());
+    System.err.println( "  ruleInstances        " + ruleInstanceMap.keySet().size());
     System.err.println( "  variables            " + variableMap.keySet().size());
     System.err.println( "  resourceTransactions " + resTransactionMap.keySet().size());
     System.err.println( "  resourceInstants     " + instantMap.keySet().size());
@@ -340,13 +338,13 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   }
 
   /**
-   * <code>getTokenRelationList</code>
+   * <code>getRuleInstanceList</code>
    *
-   * @return - <code>List</code> - of PwTokenRelationImpl
+   * @return - <code>List</code> - of PwRuleInstanceImpl
    */
-  public List getTokenRelationList() {
+  public List getRuleInstanceList() {
     List retval = new ArrayList();
-    retval.addAll(tokenRelationMap.values());
+    retval.addAll(ruleInstanceMap.values());
     return retval;
   }
 
@@ -481,14 +479,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   } // end getConstraint
 
   /**
-   * <code>getTokenRelation</code> - get token relation by id
+   * <code>getRuleInstance</code> - get rule instance by id
    *
    * @param id - <code>Integer</code> - 
-   * @return - <code>PwTokenRelation</code> - 
+   * @return - <code>PwRuleInstance</code> - 
    */
-  public PwTokenRelation getTokenRelation( final Integer id) {
-    return (PwTokenRelation) tokenRelationMap.get(id);
-  } // end getTokenRelation
+  public PwRuleInstance getRuleInstance( final Integer id) {
+    return (PwRuleInstance) ruleInstanceMap.get(id);
+  } // end getRuleInstance
 
 
   public PwResourceInstant getInstant(final Integer id) {
@@ -606,17 +604,18 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     tokenMap.put( id, token);
   }
+
   /**
-   * <code>addTokenRelation</code>
+   * <code>addRuleInstance</code>
    *
    * @param id - <code>Integer</code> - 
-   * @param tokenRelation - <code>PwTokenRelationImpl</code> - 
+   * @param ruleInstance - <code>PwRuleInstanceImpl</code> - 
    */
-  public void addTokenRelation( final Integer id, final PwTokenRelationImpl tokenRelation) {
-    if(tokenRelationMap.containsKey(id)) {
+  public void addRuleInstance( final Integer id, final PwRuleInstanceImpl ruleInstance) {
+    if(ruleInstanceMap.containsKey(id)) {
       return;
     }
-    tokenRelationMap.put( id, tokenRelation);
+    ruleInstanceMap.put( id, ruleInstance);
   }
 
   /**
@@ -690,14 +689,14 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   /**
    * <code>checkPlan</code> - verify that the PwPartialPlan structure is internally consistent.
    */
-
+/*
   public boolean checkPlan() {
     System.err.println("Checking plan internal consistency.");
     boolean retval = checkRelations() && checkConstraints() && checkTokens() && checkVariables();
     System.err.println("Done checking plan.");
     return retval;
   }
-
+*/
   private boolean checkVariables() {
     Iterator variableIterator = variableMap.values().iterator();
     boolean retval = true;
@@ -744,7 +743,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   /**
    * <code>checkRelations</code> - verify that all tokens related by token relations exist
    */
-  private boolean checkRelations() {
+/*  private boolean checkRelations() {
     Iterator relationIterator = tokenRelationMap.values().iterator();
     boolean retval = true;
     while(relationIterator.hasNext()) {
@@ -762,7 +761,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     return retval;
   }
-
+*/
   /**
    * <code>checkConstraints</code> - verify that all constrained variables exist
    */
@@ -785,7 +784,6 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     return retval;
   }
-  
   /**
    * <code>checkTokens</code> - verify that all tokens have predicates, the correct number of parameter
    *                            variables, that all variables exist and are of the right type, that 
@@ -831,8 +829,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
           retval = false;
         }
       }
-      retval = retval && checkTokenVars(token) && checkTokenParamVars(token) && 
-        checkTokenRelations(token);
+      retval = retval && checkTokenVars(token) && checkTokenParamVars(token) /* && 
+        checkTokenRelations(token)*/;
     }
     return retval;
   }
@@ -947,7 +945,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    * <code>checkTokenRelations</code> - ensure that all tokens related exist, are in the relations they
    *                                    have, and are in only the relations they have.
    */
-  private boolean checkTokenRelations(final PwTokenImpl token) {
+/*  private boolean checkTokenRelations(final PwTokenImpl token) {
     List relations = token.getTokenRelationIdsList();
     boolean retval = true;
     if(relations.size() == 0) {
@@ -1005,6 +1003,8 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     }
     return retval;
   }
+
+
   /**
    * <code>checkVariable</code> - verify that a variable is of a valid type, has constraints that exist,
    *                              is in the constraints that is has, and is only in those constraints
@@ -1127,7 +1127,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
   public int getPlanDBSize() {
     return (objectMap.keySet().size() + timelineMap.keySet().size() +
             slotMap.keySet().size() + tokenMap.keySet().size() +
-            constraintMap.keySet().size() + tokenRelationMap.keySet().size() + 
+            constraintMap.keySet().size() + ruleInstanceMap.keySet().size() + 
             variableMap.keySet().size());
   } // end getDataBaseSize
 
@@ -1163,130 +1163,67 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
     return null;
   }
 
-
-  class TokenRelations {
-
-    private PwToken token;
-    private Integer masterTokenId; 
-    private List slaveTokenIds; // element Integer
-
-    public TokenRelations( final PwToken token) {
-      this.token = token;
-      masterTokenId = null;
-      slaveTokenIds = new ArrayList();
-    } // end constructor
-
-    public Integer getMasterTokenId () {
-      return masterTokenId;
-    }
-
-    public void setMasterTokenId(final  Integer id) {
-      if (masterTokenId != null) {
-        System.err.println( "PwPartialPlanImpl.setMasterTokenId conflict: oldValue " +
-                            masterTokenId.toString() + " newValue " + id.toString());
-        System.exit( -1);
-      }
-      masterTokenId = id;
-    }
-
-    public List getSlaveTokenIds () {
-      return slaveTokenIds;
-    }
-
-    public void addSlaveTokenId( final Integer id) {
-      slaveTokenIds.add( id);
-    }
-
-    public String toString() {
-      StringBuffer buffer = new StringBuffer( "tokenId: " +
-                                              String.valueOf( token.getId()));
-      buffer.append( "\n  masterTokenId: " + masterTokenId);
-      buffer.append( "\n  slaveTokenIds: " + slaveTokenIds);
-      return buffer.toString();
-    }
-
-  } // end class TokenRelations
-
-  private void initTokenRelationships() {
-    List tokenKeyList = new ArrayList( tokenMap.keySet());
-    Iterator tokenKeyItr = tokenKeyList.iterator();
-    while (tokenKeyItr.hasNext()) {
-      PwToken token = (PwToken) tokenMap.get( tokenKeyItr.next());
-      tokenMasterSlaveMap.put( token.getId(), new TokenRelations( token));
-    }
-  } // end initTokenRelationships
-
-  private void buildTokenRelationships() {
-    // process each token relation only once
-    List tokenKeyList = new ArrayList( tokenMap.keySet());
-    Iterator tokenKeyItr = tokenKeyList.iterator();
-    while (tokenKeyItr.hasNext()) {
-      PwToken token = (PwToken) tokenMap.get( tokenKeyItr.next());
-      // System.err.println( "\nTOKENID " + token.getId());
-      if (token.getTokenRelationIdsList().size() != 0) {
-        Integer tokenId = token.getId();
-        TokenRelations tokenRelations =
-          (TokenRelations) tokenMasterSlaveMap.get( tokenId);
-        Iterator tokenRelationIdIterator = token.getTokenRelationIdsList().iterator();
-        while (tokenRelationIdIterator.hasNext()) {
-          PwTokenRelation tokenRelation =
-            getTokenRelation( (Integer) tokenRelationIdIterator.next());
-          if (tokenRelation != null) {
-            // buildTokenParentChildRelationships printout is complete with
-            // this commented out -- same links are drawn
-            //                 Integer id = tokenRelation.getId();
-            //                 if (tokenRelationIds.indexOf( id) == -1) {
-            //                   tokenRelationIds.add( id);
-            Integer masterTokenId = tokenRelation.getTokenAId();
-            Integer slaveTokenId = tokenRelation.getTokenBId();
-            // System.err.println( "tokenId " + tokenId + " masterTokenId " + masterTokenId +
-            //                     " slaveTokenId " + slaveTokenId);
-            // masterTokenIds do not have tokenRelations - this does nothing
-            if (masterTokenId.equals( tokenId)) {
-              tokenRelations.addSlaveTokenId( slaveTokenId);
-            }
-            if (slaveTokenId.equals( tokenId)) {
-              tokenRelations.setMasterTokenId( masterTokenId);
-              TokenRelations masterTokenRelations =
-                (TokenRelations) tokenMasterSlaveMap.get( masterTokenId);
-              masterTokenRelations.addSlaveTokenId( slaveTokenId);
-              tokenMasterSlaveMap.put( masterTokenId, masterTokenRelations);
-            }
-            //                 }
-          }
-        }
-        tokenMasterSlaveMap.put( tokenId, tokenRelations);
-      }
-    }
-  } // end buildTokenRelationships
-
-  private void printTokenRelationships() {
-    Iterator relationsItr = tokenMasterSlaveMap.values().iterator();
-    while (relationsItr.hasNext()) {
-      TokenRelations relation = (TokenRelations) relationsItr.next();
-      System.err.println( relation.toString());
-    }
-  } // end printTokenRelationships
-
   /**
    * <code>getMasterTokenId</code>
    *
    * @param tokenId - <code>Integer</code> - 
    * @return - <code>Integer</code> - 
    */
-  public Integer getMasterTokenId( final Integer tokenId) {
-    return ((TokenRelations) tokenMasterSlaveMap.get( tokenId)).getMasterTokenId();
+  public Integer getMasterTokenId(final Integer tokenId) {
+
+    // 1) get token for this tokenId
+    // 2) get the rule instance id for this token
+    // 3) get the rule instance for this ruleInstanceId
+    // 4) get the master token of the rule instance
+
+    PwToken token =  getToken(tokenId);
+    if (token == null) {
+      System.err.println("tokenId " + tokenId + " has nonexistant Token");
+    } else {
+      Integer ruleInstanceId = token.getRuleInstanceId();
+      PwRuleInstance ruleInstance = getRuleInstance(ruleInstanceId); 
+      if (ruleInstance != null) {
+        return ruleInstance.getMasterId();
+      }
+    }
+    return null;
   }
 
   /**
    * <code>getSlaveTokenIds</code>
    *
    * @param tokenId - <code>Integer</code> - 
-   * @return - <code>List</code> - of Integer
+   * @return - <code>List</code> - 
    */
-  public List getSlaveTokenIds( final Integer tokenId) {
-    return ((TokenRelations) tokenMasterSlaveMap.get( tokenId)).getSlaveTokenIds();
+  public List getSlaveTokenIds(final Integer masterTokenId) {
+   
+    List retval = new ArrayList();
+    List childRuleInstanceIdList = (List) tokenChildRuleInstIdMap.get(masterTokenId);
+    if(childRuleInstanceIdList == null) {
+      //System.err.println("Token " + masterTokenId + " has nonexistant rule instance list");
+      return retval;
+    }
+
+    //System.err.println("Token " + masterTokenId + " has a rule instance list");
+    Iterator cridIterator = childRuleInstanceIdList.iterator();
+    while (cridIterator.hasNext()) {
+      Integer ruleInstanceId = (Integer)cridIterator.next();
+      PwRuleInstance ruleInstance = getRuleInstance(ruleInstanceId); 
+
+      //Next 7 lines are for command window trace and can be removed
+      //System.err.println("MasterTokenId " + masterTokenId + " RuleInstanceId " + ruleInstanceId);
+      //List slaves = ruleInstance.getSlaveIdsList();
+      //Iterator sidIterator = slaves.iterator();
+      //while (sidIterator.hasNext()) {
+      //  Integer slaveId = (Integer)sidIterator.next();
+      //  System.err.println("SlaveId " + slaveId);
+      //}
+
+      retval.addAll(ruleInstance.getSlaveIdsList());
+    }    
+    return retval;
   }
+
 
   public String toOutputString() {
     StringBuffer retval = new StringBuffer(name);

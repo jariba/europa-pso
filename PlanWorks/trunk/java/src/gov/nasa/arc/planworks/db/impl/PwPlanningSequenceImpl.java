@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.87 2004-06-04 23:09:00 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.88 2004-06-08 21:48:53 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -186,7 +186,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     //loadTransactionFile();
     loadStatsFile();
     loadRulesFile();
-    loadRulesMapFile();
     MySQLDB.analyzeDatabase();
     //loadTransactions();
     transactions = null;
@@ -236,11 +235,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   private void loadRulesFile() {
     MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_RULES, 
                      DbConstants.TBL_RULES);
-  }
-
-  private void loadRulesMapFile() {
-    MySQLDB.loadFile(url + System.getProperty("file.separator") + DbConstants.SEQ_RULES_MAP,
-                     DbConstants.TBL_RULE_TOKEN_MAP);
   }
 
   private void loadTransactions() {
@@ -696,8 +690,6 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     loadStatsFile();
     //System.err.println("Loading transactions...");
     //loadTransactions();
-    System.err.println("Loading rule information...");
-    loadRulesMapFile();
     System.err.println("Loading new partial plan info...");
     planNamesInFilesystem.clear();
     ListIterator planNameIterator = MySQLDB.queryPartialPlanNames(id).listIterator();

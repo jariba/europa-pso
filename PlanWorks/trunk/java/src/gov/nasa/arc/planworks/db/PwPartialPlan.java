@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.36 2004-05-21 21:38:55 taylor Exp $
+// $Id: PwPartialPlan.java,v 1.37 2004-06-08 21:48:51 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -131,12 +131,12 @@ public interface PwPartialPlan extends ViewableObject {
 
 
   /**
-   * <code>getTokenRelation</code> - 
+   * <code>getRuleInstance</code> - 
    *
    * @param id - <code>Integer</code> - 
-   * @return - <code>PwTokenRelation</code> - 
+   * @return - <code>PwRuleInstance</code> - 
    */
-  public abstract PwTokenRelation getTokenRelation( final Integer id);
+  public abstract PwRuleInstance getRuleInstance( final Integer id);
 
 
   /**
@@ -244,7 +244,6 @@ public interface PwPartialPlan extends ViewableObject {
   public abstract PwRule getRule(Integer rId);
 
   public abstract String getVariableParentName( final Integer parentId);
-
 
 } // end interface PwPartialPlan
 

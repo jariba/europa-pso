@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.29 2004-05-28 20:21:14 taylor Exp $
+// $Id: DbConstants.java,v 1.30 2004-06-08 21:48:50 pdaley Exp $
 //
 // PlanWorks -- 
 //
@@ -78,10 +78,10 @@ public interface DbConstants {
   public static final String PP_CONSTRAINTS_EXT = "constraints";
 
   /**
-   * constant <code>PP_TOKEN_RELATIONS_EXT</code>
+   * constant <code>PP_RULE_INSTANCE_EXT</code>
    *
    */
-  public static final String PP_TOKEN_RELATIONS_EXT = "tokenRelations";
+  public static final String PP_RULE_INSTANCE_EXT = "ruleInstances";
 
   /**
    * constant <code>PP_PARAM_VAR_TOKEN_MAP_EXT</code>
@@ -116,8 +116,6 @@ public interface DbConstants {
 
   public static final String SEQ_RULES = "rules";
 
-  public static final String SEQ_RULES_MAP = "rulesMap";
-
   public static final String SEQ_MODEL_PATH = "modelUrl";
 
   /**
@@ -127,7 +125,7 @@ public interface DbConstants {
   public static final String [] PARTIAL_PLAN_FILE_EXTS =
     new String []
       { PP_PARTIAL_PLAN_EXT, PP_OBJECTS_EXT, PP_TOKENS_EXT, PP_VARIABLES_EXT, PP_CONSTRAINTS_EXT, 
-        PP_TOKEN_RELATIONS_EXT, PP_CONSTRAINT_VAR_MAP_EXT, PP_RESOURCE_INSTANTS_EXT, PP_DECISIONS_EXT};
+        PP_RULE_INSTANCE_EXT, PP_CONSTRAINT_VAR_MAP_EXT, PP_RESOURCE_INSTANTS_EXT, PP_DECISIONS_EXT};
 
   /**
    * constant <code>NUMBER_OF_PP_FILES</code>
@@ -137,8 +135,7 @@ public interface DbConstants {
 
 
   public static final String [] SEQUENCE_FILES =  new String [] { SEQ_FILE, SEQ_PP_STATS,  
-                                                                  SEQ_TRANSACTIONS, SEQ_RULES,
-                                                                  SEQ_RULES_MAP};
+                                                                  SEQ_TRANSACTIONS, SEQ_RULES};
 
   public static final int NUMBER_OF_SEQ_FILES = SEQUENCE_FILES.length;
     
@@ -383,19 +380,18 @@ public interface DbConstants {
   public static final String TBL_PROJECT = "Project";
   public static final String TBL_SEQUENCE = "Sequence";
   public static final String TBL_TOKEN = "Token";
-  public static final String TBL_TOKENREL = "TokenRelation";
+  public static final String TBL_RULE_INSTANCE = "RuleInstance";
   public static final String TBL_VARIABLE = "Variable";
   public static final String TBL_TRANSACTION = "Transaction";
   public static final String TBL_INSTANTS = "ResourceInstants";
   public static final String TBL_RULES = "Rules";
-  public static final String TBL_RULE_TOKEN_MAP = "RuleTokenMap";
   public static final String TBL_PP_STATS = "PartialPlanStats";
-	public static final String TBL_DECISION = "Decision";
+  public static final String TBL_DECISION = "Decision";
 
   public static final String [] PW_DB_TABLES = new String [] {
-    TBL_PARTIALPLAN, TBL_OBJECT, TBL_TOKEN, TBL_VARIABLE, TBL_CONSTRAINT, TBL_TOKENREL,
-    TBL_CONSTVARMAP, TBL_INSTANTS, TBL_DECISION, TBL_PROJECT, TBL_SEQUENCE, TBL_PP_STATS, TBL_TRANSACTION, TBL_RULES,
-    TBL_RULE_TOKEN_MAP};
+    TBL_PARTIALPLAN, TBL_OBJECT, TBL_TOKEN, TBL_VARIABLE, TBL_CONSTRAINT, TBL_RULE_INSTANCE,
+    TBL_CONSTVARMAP, TBL_INSTANTS, TBL_DECISION, TBL_PROJECT, TBL_SEQUENCE, TBL_PP_STATS, 
+    TBL_TRANSACTION, TBL_RULES};
 
   // number of numeric characters in a type long value
   public static final int LONG_INT_LENGTH = 13;
@@ -413,10 +409,11 @@ public interface DbConstants {
   public static final String STATE_VAR = "STATE_VAR";
   public static final String GLOBAL_VAR = "GLOBAL_VAR";
   public static final String MEMBER_VAR = "MEMBER_VAR";
+  public static final String RULE_VAR = "RULE_VAR";
 
   public static final String [] DB_VARIABLE_TYPES = new String [] {
     START_VAR, END_VAR, DURATION_VAR, OBJECT_VAR, PARAMETER_VAR, STATE_VAR, GLOBAL_VAR,
-    MEMBER_VAR};
+    MEMBER_VAR, RULE_VAR};
 
   //object types
   public static final int O_OBJECT = 0;
