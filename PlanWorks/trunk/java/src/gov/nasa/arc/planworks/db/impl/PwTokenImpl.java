@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenImpl.java,v 1.38 2004-03-24 02:31:04 taylor Exp $
+// $Id: PwTokenImpl.java,v 1.39 2004-03-27 00:30:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -54,6 +54,7 @@ public class PwTokenImpl implements PwToken {
   private Integer slotId;
   private int slotIndex;
   protected PwPartialPlanImpl partialPlan;
+  protected Integer ruleId;
 
 
   public PwTokenImpl(final Integer id, final boolean isValueToken, final Integer slotId, 
@@ -344,7 +345,17 @@ public class PwTokenImpl implements PwToken {
    * @return - <code>String</code> - 
    */
   public String getModelRule() {
+    // return partialPlan.getModelRule( ruleId);
     return "n/a";
+  }
+
+  /**
+   * <code>setRuleId</code>
+   *
+   * @param id - <code>Integer</code> - 
+   */
+  public void setRuleId( Integer id) {
+    ruleId = id;
   }
 
   /**

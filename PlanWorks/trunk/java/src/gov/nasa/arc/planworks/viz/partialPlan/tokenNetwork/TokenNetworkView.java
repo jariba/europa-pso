@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.39 2004-03-25 01:01:54 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.40 2004-03-27 00:30:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -34,6 +34,8 @@ import javax.swing.SwingUtilities;
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoView;
+
+import org.jgraph.graph.ParentMap;
 
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.DbConstants;
@@ -77,6 +79,8 @@ public class TokenNetworkView extends PartialPlanView {
   private Map tokenNodeMap; // key = tokenId, element TokenNode
   private Map tokenLinkMap; // key = linkName, element TokenLink
   private boolean isStepButtonView;
+  // radial private Object[] rootNodes;
+  // radial private ParentMap parentMap;
 
   /**
    * <code>TokenNetworkView</code> - constructor - 
@@ -222,7 +226,9 @@ public class TokenNetworkView extends PartialPlanView {
 
     jGoDocument = jGoView.getDocument();
 
-   // create all nodes
+    // create all nodes
+    // radial rootNodes = new Object [] { };
+    // radial parentMap = null;
     createTokenNodes();
 
     boolean showDialog = true;
@@ -230,6 +236,11 @@ public class TokenNetworkView extends PartialPlanView {
 
     TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
+
+    // radial TokenNetworkLayout layout =
+    // radial   new TokenNetworkLayout( jGoDocument, rootNodes, parentMap, startTimeMSecs);
+    // radial layout.performLayout();
+
     /*long t1 = System.currentTimeMillis();
     TreeRingLayout layout = new TreeRingLayout(linkList, getWidth(), getHeight());
     //layout.ensureAllPositive();
@@ -301,6 +312,8 @@ public class TokenNetworkView extends PartialPlanView {
    } // end createTokenNodes
 
   private void createTokenParentChildRelationships() {
+    // radial List rootList = new ArrayList();
+    // radial this.parentMap = new ParentMap();
     List tokenNodeKeyList = new ArrayList( tokenNodeMap.keySet());
     Iterator tokenNodeKeyItr = tokenNodeKeyList.iterator();
     while (tokenNodeKeyItr.hasNext()) {
@@ -312,7 +325,10 @@ public class TokenNetworkView extends PartialPlanView {
         TokenNode masterToken = (TokenNode) tokenNodeMap.get( masterTokenId);
         if ((masterToken != null) && (! masterTokenId.equals( tokenId))) {
           createTokenLink( masterToken, tokenNode, "master");
+          // radial this.parentMap.addEntry( tokenNode, masterToken);
         }
+      // radial } else {
+      // radial   rootList.add( tokenNode);
       }
       // redundant
 //       Iterator slaveTokenIdItr = partialPlan.getSlaveTokenIds( tokenId).iterator();
@@ -324,6 +340,11 @@ public class TokenNetworkView extends PartialPlanView {
 //         }
 //       }
     }
+    // radial Iterator rootListItr = rootList.iterator();
+    // radial while (rootListItr.hasNext()) {
+    // radial   System.err.println( "root id " + ((TokenNode)rootListItr.next()).getToken().getId());
+    // radial }
+    // radial this.rootNodes = rootList.toArray();
   } // end createTokenParentChildRelationships
 
   private void createTokenLink( TokenNode fromTokenNode, TokenNode toTokenNode,
