@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!-- $Id: build.xml,v 1.13 2003-06-13 21:07:43 miatauro Exp $ -->
+<project name="PlanWorks" default="planWorks" basedir=".">
+  <description>
+    PlanWorks Build and Run Targets
+  </description>
+
+  <property name="planworks.root" value="${basedir}"/>
+  <property name="exist.home" location="${planworks.root}/java/lib/eXist"/>
+  <property name="exist.conf.file" value="conf-nolog.xml"/>
+  <property name="default.project.dir" location="${planworks.root}/xml/test"/>
+  <property name="projects.xml.data.dir" location="${planworks.root}/xml/db/proj"/>
+  <property name="projects.xml.data.pathname" 
+      location="${planworks.root}/xml/db/proj/projects.xml"/>
+  <property name="xml.dtd.pathname" 
+      location="${planworks.root}/xml/dtd/PlanDb.dtd"/>
+  <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
+  <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
+
+  <target name="planWorks"  depends="check_jvm_2"
+    description="-- launch application (compile dependency)">
+    <ant dir="./" antfile="planWorks.xml"/>
+  </target>
+
+  <target name="planWorksProf" depends="check_jvm_2"
+    description="-- launch application with profiling info">
+    <ant dir="./" antfile="planWorks.xml" target="planWorksProf"/>
+  </target>
+
+  <target name="existTest"  depends="check_jvm_2, cleanDb"
+    description="-- prototyping test (compile, cleanDb dependencies)">
+    <ant dir="./test" antfile="exist-test.xml"/>
+  </target>
+
+  <target name="timelineViewTest" depends="check_jvm_2, cleanDb" 
+      description="-- JFCunit test (compile, cleanDb dependencies)">
+    <ant dir="./java/src/gov/nasa/arc/planworks/viz/views/test" 
+       antfile="timeline-view-test.xml"/>
+  </target>
+
+  <target name="cleanCls" depends="check_jvm_2"
+      description="-- delete the 'java/classes' directory tree">
+    <ant dir="./java" antfile="build.xml" target="clean"/>
+  </target>
+
+  <target name="compile" depends="check_jvm_2"
+      description="-- compile 'java/src' tree into 'java/classes' tree">
+    <ant dir="./java" antfile="build.xml" target="compile"/>
+  </target>
+
+  <target name="cleanDb" unless="no.clean.db"
+      description="-- delete loaded projects from data base, unless -Dno.clean.db=yes">
+    <delete>
+      <fileset dir="${planworks.root}/xml/db/data" includes="*.dbx"/>
+      <fileset dir="${planworks.root}/xml/db/logs" includes="*.log"/>
+      <fileset dir="${planworks.root}/xml/db/logs" includes="*.log*"/>
+      <fileset dir="${planworks.root}/xml/db/proj" includes="*.xml"/>
+    </delete>
+  </target>
+
+  <!-- JVM checking from Tarang Patel -->
+
+  <target name="check_jvm_1">
+    <available property="jdk1.4+" classname="java.lang.CharSequence" />
+    <condition property="correct.java">
+      <equals arg1="${jdk1.4+}" arg2="true"/>
+    </condition>
+    <echo message="ant.java.version ${ant.java.version}"/>
+  </target>
+
+  <target name="check_jvm_2" depends="check_jvm_1" unless="correct.java">
+    <fail message="Wrong JVM version: ${ant.java.version} => require jdk1.4.*"/>
+  </target>
+
+</project>
