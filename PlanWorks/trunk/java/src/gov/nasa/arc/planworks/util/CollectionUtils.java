@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: CollectionUtils.java,v 1.3 2004-06-22 22:44:31 miatauro Exp $
+// $Id: CollectionUtils.java,v 1.4 2004-08-26 23:03:23 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -192,4 +192,24 @@ public class CollectionUtils {
 		Collections.sort(temp, c);
 		return temp;
 	}
+
+  public static final String join(final String sep, final Object [] items) {
+    StringBuffer retval = new StringBuffer();
+    for(int i = 0; i < items.length; i++) {
+      retval.append(items[i].toString());
+      if(i != items.length - 1)
+        retval.append(sep);
+    }
+    return retval.toString();
+  }
+
+  public static final String join(final String sep, final Collection c) {
+    StringBuffer retval = new StringBuffer();
+    for(Iterator it = c.iterator(); it.hasNext();) {
+      retval.append(it.next().toString());
+      if(it.hasNext())
+        retval.append(sep);
+    }
+    return retval.toString();
+  }
 }
