@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.32 2004-07-30 18:24:26 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.33 2004-07-30 19:12:25 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -833,11 +833,8 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     } // end getTransactionsInRange
 
     private boolean isStepNumberValid( int stepNumber) {
-      List partialPlanNameList =
-        ((PwPlanningSequence) queryWindow.viewable).getPartialPlanNamesList();
       int maxStepNumber =
-        Integer.parseInt( ((String) partialPlanNameList.get
-                           ( partialPlanNameList.size() - 1)).substring( 4));
+        ((PwPlanningSequence) queryWindow.viewable).getPlanDBSizeList().size() - 1;
       // System.err.println ( "isStepNumberValid: maxStepNumber " + maxStepNumber);
       if ((stepNumber >= 0) && (stepNumber <= maxStepNumber)) {
         return true;
