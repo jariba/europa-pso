@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NewSequenceThread.java,v 1.14 2004-10-07 20:19:02 taylor Exp $
+// $Id: NewSequenceThread.java,v 1.15 2004-10-13 17:32:33 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -68,26 +68,29 @@ public class NewSequenceThread extends ThreadWithProgressMonitor {
    *
    */
   public void run() {
-    handleEvent( ThreadListener.EVT_THREAD_BEGUN);
-    MDIDynamicMenuBar dynamicMenuBar =
-      (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
-    // JMenu planSeqMenu = dynamicMenuBar.disableMenu(PlanWorks.PLANSEQ_MENU);
-    PlanWorks.getPlanWorks().projectMenu.setEnabled( false);
+    try {
+      handleEvent( ThreadListener.EVT_THREAD_BEGUN);
+      MDIDynamicMenuBar dynamicMenuBar =
+        (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
+      // JMenu planSeqMenu = dynamicMenuBar.disableMenu(PlanWorks.PLANSEQ_MENU);
+      PlanWorks.getPlanWorks().projectMenu.setEnabled( false);
 
-    currentProject = PlanWorks.getPlanWorks().getCurrentProject();
-    projectName = currentProject.getName();
-    String seqUrl = null;
-    if ((seqUrl = getNewSequenceUrl()) != null) {
-      newSequence( seqUrl);
+      currentProject = PlanWorks.getPlanWorks().getCurrentProject();
+      projectName = currentProject.getName();
+      String seqUrl = null;
+      if ((seqUrl = getNewSequenceUrl()) != null) {
+        newSequence( seqUrl);
+      }
+    } catch (Exception excp) {
+    } finally {
+      PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
+      PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.DELSEQ_MENU_ITEM, true);
+      // dynamicMenuBar.enableMenu( planSeqMenu);
+      handleEvent( ThreadListener.EVT_THREAD_ENDED);
     }
-
-    PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
-    PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.DELSEQ_MENU_ITEM, true);
-    // dynamicMenuBar.enableMenu( planSeqMenu);
-    handleEvent( ThreadListener.EVT_THREAD_ENDED);
   } // end run
 
-  private String getNewSequenceUrl() {
+  private String getNewSequenceUrl() throws Exception {
     String plannerControlJNIPath = System.getProperty( "integration.home") +
       System.getProperty( "file.separator") + ConfigureAndPlugins.PLANNER_CONTROL_JNI_LIB;
     if (! currentProject.getJNIAdapterLoaded()) {
