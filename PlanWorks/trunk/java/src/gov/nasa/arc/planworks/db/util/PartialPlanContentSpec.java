@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanContentSpec.java,v 1.3 2003-09-29 23:52:11 taylor Exp $
+// $Id: PartialPlanContentSpec.java,v 1.4 2003-10-08 01:29:35 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -65,6 +65,8 @@ public class PartialPlanContentSpec implements ContentSpec {
   public static final int FREE_ONLY = -1;
   public static final int SLOTTED_ONLY = 0;
   public static final int ALL = 1;
+  public static final String REQUIRE = "req";
+  public static final String EXCLUDE = "ex";
 
   /**
    * Creates the ContentSpec object, then makes a query for all valid tokens
@@ -86,6 +88,7 @@ public class PartialPlanContentSpec implements ContentSpec {
     currentSpec.add( null); // time interval
     currentSpec.add( new Boolean( false)); // merge
     currentSpec.add( new Integer( ALL)); // tokenTypes
+    currentSpec.add(null);
 
 //     if (currentSpec.size() != 0) {
 //       applySpec((List)currentSpec.get(0), (List)currentSpec.get(1), (List)currentSpec.get(2),
@@ -152,6 +155,7 @@ public class PartialPlanContentSpec implements ContentSpec {
     List timeInterval = (List) spec.get(2);
     boolean mergeTokens = ((Boolean)spec.get(3)).booleanValue();
     int tokenTypes = ((Integer)spec.get(4)).intValue();
+    List uniqueKeys = (List) spec.get(5);
     currentSpec = spec;
 //     currentSpec.clear();
 //     currentSpec.add(timeline);
@@ -279,6 +283,18 @@ public class PartialPlanContentSpec implements ContentSpec {
           }
           if(!leftIsTrue) {
             tokenIdIterator.remove();
+          }
+        }
+      }
+      if(uniqueKeys != null) {
+        for(int i = 0; i < uniqueKeys.size(); i += 2) {
+          String op = (String) uniqueKeys.get(i);
+          Integer key = (Integer) uniqueKeys.get(i+1);
+          if(op.equals(REQUIRE)) {
+            validTokenIds.add(key);
+          }
+          else if(op.equals(EXCLUDE)) {
+            validTokenIds.remove(key);
           }
         }
       }
