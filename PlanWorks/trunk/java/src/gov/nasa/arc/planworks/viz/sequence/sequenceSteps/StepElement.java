@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.12 2004-03-23 20:06:00 taylor Exp $
+// $Id: StepElement.java,v 1.13 2004-04-09 23:11:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -165,12 +165,11 @@ public class StepElement extends HistogramElement {
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
                                JGoView view) {
     JGoObject obj = view.pickDocObject( docCoords, false);
-    //         System.err.println( "doMouseClick obj class " +
-    //                             obj.getTopLevelObject().getClass().getName());
+    // System.err.println( "doMouseClick obj class " +
+    //                     obj.getTopLevelObject().getClass().getName());
     StepElement stepElement = (StepElement) obj.getTopLevelObject();
     ((SequenceStepsView) sequenceView).setSelectedStepElement( stepElement);
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
-
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       ViewGenerics.partialPlanViewsPopupMenu( stepNumber, planSequence, sequenceView,
                                               viewCoords);

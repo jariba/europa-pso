@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.40 2004-03-30 22:00:58 taylor Exp $
+# $Id: GETTING_STARTED,v 1.41 2004-04-09 23:11:22 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -12,15 +12,15 @@ Projects and Plan Sequences
 "Project->Create ..." brings up the "Create Project" dialog requesting
 a project name.  
 
-Clicking "OK" on the "Create Project" dialog brings up the "Select Sequence 
-Directory of Partial Plan Directory(ies)" chooser.  The sequence directory 
-chooser (also invoked by "Project->Add Sequence") supports multiple 
-selection of sequence directories, by using Ctrl-Mouse-Left for the second 
-and subsequent selections.  Mouse-left is used for the fir selection and 
-Mouse-Left-Double is used to open directories.  When selection is complete,
-click on "OK".  The selected sequence(s) are then loaded into the MySQL
-data base.  Pull-down menu "Planning Sequence" will be created, which is a 
-cascading menu of "sequence names".
+Clicking "OK" on the "Create Project" dialog brings up the "Select Planning
+Sequence Directory(ies)" chooser.  The sequence directory chooser (also
+ invoked by "Project->Add Sequence") supports multiple selection of sequence 
+directories, by using Ctrl-Mouse-Left for the second and subsequent selections.  
+Mouse-left is used for the for selection and Mouse-Left-Double is used to 
+open directories.  When selection is complete, click on "OK".  The selected 
+sequence(s) are then loaded into the MySQL data base.  Pull-down menu 
+"Planning Sequence" will be created, which is a cascading menu of loaded 
+"sequence names".
 
 "Project->Open ..." will bring up pre-loaded plan sequences for a pre-
 defined project, and allow them the be viewed using the "Planning

@@ -4,20 +4,26 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.3 2004-04-06 21:27:50 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.4 2004-04-09 23:11:24 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
+import java.util.ListIterator;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 import junit.extensions.jfcunit.JFCTestCase;
@@ -27,9 +33,6 @@ import junit.extensions.jfcunit.eventdata.JMenuMouseEventData;
 import junit.extensions.jfcunit.eventdata.KeyEventData;
 import junit.extensions.jfcunit.eventdata.MouseEventData;
 import junit.extensions.jfcunit.eventdata.StringEventData;
-import junit.extensions.jfcunit.finder.AbstractButtonFinder;
-import junit.extensions.jfcunit.finder.ComponentFinder;
-import junit.extensions.jfcunit.finder.NamedComponentFinder;
 import junit.framework.TestSuite; 
 
 import gov.nasa.arc.planworks.PlanWorks;
@@ -37,6 +40,12 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.impl.PwProjectImpl;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.db.util.MySQLDB;
+import gov.nasa.arc.planworks.viz.ViewGenerics;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenu;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
+import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.StepElement;
+
 
 public class PlanWorksGUITest extends JFCTestCase {
   
@@ -46,7 +55,8 @@ public class PlanWorksGUITest extends JFCTestCase {
   private static final String PROJECT1 = "testProject1";
   private static final String PROJECT2 = "testProject2";
 
-  private List sequenceUrls;
+  private List sequenceUrls; // element String
+  private Point popUpLocation;
 
   public PlanWorksGUITest(String test) {
     super(test);
@@ -57,20 +67,22 @@ public class PlanWorksGUITest extends JFCTestCase {
     helper = new JFCTestHelper();
 
     planWorks = new PlanWorks( PlanWorks.buildConstantMenus(),
-                               System.getProperty( "name.application"));
+                               System.getProperty( "name.application"),
+                               System.getProperty( "boolean.isMaxTestScreen"),
+                               System.getProperty( "os.type"),
+                               System.getProperty( "planworks.root"));
     PlanWorks.setPlanWorks( planWorks);
-
-    // planWorks.makeMaxScreen();
+    popUpLocation = new Point( (int) (PlanWorks.getPlanWorks().getWidth() / 2),
+                               (int) (PlanWorks.getPlanWorks().getHeight() / 2));
 
     int numSequences = 4, numSteps = 2;
     sequenceUrls = PWTestHelper.buildTestData( numSequences, numSteps, planWorks);
 
     // System.exit( 0);
 
-    flushAWT();
-    awtSleep();
-    
+    flushAWT(); awtSleep();
   }
+
   public void tearDown() throws Exception {
     super.tearDown();
     helper.cleanUp(this);
@@ -84,25 +96,23 @@ public class PlanWorksGUITest extends JFCTestCase {
     File [] sequenceFileArray = new File [1];
     sequenceFileArray[0] = new File( sequenceDirectory + System.getProperty("file.separator") +
                                      sequenceUrls.get( 0));
-    createProject( PROJECT1, sequenceDirectory, sequenceFileArray);
+    PWTestHelper.createProject( PROJECT1, sequenceDirectory, sequenceFileArray, helper,
+                                this, planWorks);
     // post condition 1
-    String planWorksTitle = null;
-    planWorksTitle = PlanWorks.getPlanWorks().getTitle();
-    if (planWorksTitle.endsWith( PROJECT1)) {
-      planWorksTitle = PlanWorks.getPlanWorks().getPlanWorksTitle();
-    }
-    assertNotNull( "PlanWorks title does not contain " + PROJECT1, planWorksTitle);
+    assertTrue("PlanWorks title does not contain " + PROJECT1,
+               PlanWorks.getPlanWorks().getTitle().endsWith( PROJECT1));
+
     // post condition 2
-    getPlanSequenceMenu();
+    PWTestHelper.getPlanSequenceMenu();
 
     // try{Thread.sleep(5000);}catch(Exception e){}
 
     // post condition 3
-    deleteProject();
+    PWTestHelper.deleteProject( helper, this);
 
-    System.err.println( "\nPLANVIZ_01 COMPLETE\n");
+    System.err.println( "\nPLANVIZ_01 COMPLETED\n");
 
-    // try{Thread.sleep(5000);}catch(Exception e){}
+    planViz02();
   } // end planViz01
 
   public void planViz02() throws Exception {
@@ -112,9 +122,7 @@ public class PlanWorksGUITest extends JFCTestCase {
     int numSequences = 4;
     File [] sequenceFileArray = new File [numSequences];
     for (int i = 0; i < numSequences; i++) {
-      sequenceFileArray[i] =
-        new File( sequenceDirectory + System.getProperty("file.separator") +
-                  sequenceUrls.get( i));
+      sequenceFileArray[i] = new File( (String) sequenceUrls.get( i));
     }
     // modify sequence #1
     (new File( sequenceFileArray[0] + System.getProperty("file.separator") +
@@ -139,93 +147,83 @@ public class PlanWorksGUITest extends JFCTestCase {
     (new File( sequenceFileArray[1] + System.getProperty("file.separator") +
                DbConstants.SEQ_FILE)).delete();
     // modify sequence #3
-    String stepName = "step1";
+    String stepName = "step1"; int stepNumber = 1;
     (new File( sequenceFileArray[2] + System.getProperty("file.separator") + stepName +
                System.getProperty("file.separator") + stepName + "." +
                DbConstants.PP_PARTIAL_PLAN_EXT)).delete();
     // modify sequence #4
-    String stepDir = sequenceFileArray[2] + System.getProperty("file.separator") + stepName;
+    String stepDir = sequenceFileArray[3] + System.getProperty("file.separator") + stepName;
     success = FileUtils.deleteDir( new File( stepDir));
     if (! success) {
       System.err.println( "PlanWorksGUITest.planViz02: deleting '" + stepDir +
                           "' failed"); System.exit( -1);
     }
-    createProject( PROJECT1, sequenceDirectory, sequenceFileArray);
-
-    try{Thread.sleep(10000);}catch(Exception e){}
-
-
-
-
-
-    deleteProject();
-
-    System.err.println( "\nPLANVIZ_02 COMPLETE\n");
-
+    File [] seqFileArray = new File [1];
+    // try sequence #1
+    seqFileArray[0] = sequenceFileArray[0];
+    PWTestHelper.createProject( PROJECT1, sequenceDirectory, seqFileArray, helper,
+                                this, planWorks);
+    PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK",
+                               "0 sequence files in directory -- 3 are required",
+                               helper, this);
+    AbstractButton cancelButton = PWTestHelper.findButton( "Cancel");
+    assertNotNull( "'Project->Create' cancel button not found:", cancelButton);
+    helper.enterClickAndLeave(new MouseEventData(this, cancelButton));
+    PWTestHelper.deleteProject( helper, this);
     // try{Thread.sleep(5000);}catch(Exception e){}
+
+    // try sequences #2, #3, #4
+    File [] seq3FileArray = new File [3];
+    seq3FileArray[0] = sequenceFileArray[1];
+    seq3FileArray[1] = sequenceFileArray[2];
+    seq3FileArray[2] = sequenceFileArray[3];
+    PWTestHelper.createProject( PROJECT1, sequenceDirectory, seq3FileArray, helper,
+                                this, planWorks);
+    PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK",
+                               "2 sequence files in directory -- 3 are required",
+                               helper, this);
+    // try{Thread.sleep(2000);}catch(Exception e){}
+
+    PWTestHelper.handleDialog( "Invalid Sequence Directory", "OK",
+                               "Has 7 files -- 8 are required", helper, this);
+    // try{Thread.sleep(2000);}catch(Exception e){}
+
+    SequenceStepsView seqStepsView =
+      PWTestHelper.getSequenceStepsView( "sequence", helper, this);
+    StepElement stepElement =
+      (StepElement) ((List) seqStepsView.getStepElementList().get( stepNumber)).get( 0);
+    // 2nd arg to enterClickAndLeave must be of class Component
+//     helper.enterClickAndLeave( new MouseEventData( this, stepElement, 1,
+//                                                    MouseEvent.BUTTON3_MASK));
+    stepElement.doMouseClick( MouseEvent.BUTTON3_MASK, stepElement.getLocation(),
+                              new Point( 0, 0), seqStepsView.getJGoView());
+    flushAWT(); awtSleep();
+    // try{Thread.sleep(2000);}catch(Exception e){}
+
+    PartialPlanViewMenu popupMenu =
+      (PartialPlanViewMenu) PWTestHelper.findComponentByClass( PartialPlanViewMenu.class);
+    assertNotNull( "Failed to get \"" + popupMenu + "\" popupMenu.", popupMenu); 
+
+    String viewMenuItemName = "Open " + PlanWorks.TIMELINE_VIEW;
+    PartialPlanViewMenuItem viewMenuItem =
+      PWTestHelper.getPopupViewMenuItem( viewMenuItemName, popupMenu);
+    // try{Thread.sleep(2000);}catch(Exception e){}
+
+    System.err.println( "viewMenuItem " + viewMenuItem.getText());
+    assertNotNull( viewMenuItemName + "' not found:", viewMenuItem); 
+    helper.enterClickAndLeave( new MouseEventData( this, viewMenuItem));
+    flushAWT(); awtSleep();
+    PWTestHelper.handleDialog( "Resource Not Found Exception", "OK",
+                               "Failed to get file listing for " + stepName, helper, this);
+    // try{Thread.sleep(2000);}catch(Exception e){}
+
+    PWTestHelper.deleteProject( helper, this);
+
+    System.err.println( "\nPLANVIZ_02 COMPLETED\n");
   } // end planViz02
 
-  private void createProject( String projectName, String sequenceDirectory,
-                              File [] sequenceFileArray) throws Exception {
-    JMenuItem createItem = findMenuItem(PlanWorks.PROJECT_MENU, PlanWorks.CREATE_MENU_ITEM);
-    // System.err.println("Found create menu item: " + createItem);
-    assertNotNull( "'Project->Create' not found:", createItem);
-    helper.enterClickAndLeave( new MouseEventData( this, createItem));
-    awtSleep();
 
-    planWorks.getSequenceDirChooser().setCurrentDirectory( new File( sequenceDirectory));
-    planWorks.getSequenceDirChooser().setSelectedFiles( sequenceFileArray);
 
-    // JTextField field = (JTextField) findComponentByClass( JTextField.class);
-    JTextField field = (JTextField) findComponentByName( JTextField.class, "OK");
-    System.err.println( "createProject field " + field);
-    assertNotNull( "Could not find \"name (string)\" field", field);
-    helper.sendString( new StringEventData( this, field, projectName));
-    helper.sendKeyAction( new KeyEventData( this, field, KeyEvent.VK_ENTER));
-    
-    JFileChooser fileChooser = null;
-    fileChooser = helper.getShowingJFileChooser( planWorks);
-    assertNotNull( "Select Sequence Directory Dialog not found:", fileChooser);
-    Container projectSeqDialog = (Container) fileChooser;
-
-    JButton okButton = (JButton) findComponentByName( JButton.class, "OK");
-    assertNotNull("Could not find projectSeqDialog \"OK\" button", okButton);
-    helper.enterClickAndLeave( new MouseEventData( this, okButton));
-    awtSleep();
-
-//     AbstractButton cancelButton = findCancelButton();
-//     System.err.println("Found cancel button: " + cancelButton);
-//     helper.enterClickAndLeave(new MouseEventData(this, cancelButton));
-  } // end createProject
-
-  private void deleteProject() throws Exception {
-    JMenuItem deleteItem = findMenuItem(PlanWorks.PROJECT_MENU, PlanWorks.DELETE_MENU_ITEM);
-    // System.err.println("Found delete menu item: " + deleteItem);
-    assertNotNull( "'Project->Delete' not found:", deleteItem);
-    helper.enterClickAndLeave( new MouseEventData( this, deleteItem));
-    awtSleep();
-
-    List dialogs = null;
-    dialogs = helper.getShowingDialogs( "Delete Project");
-    assertEquals( "Delete Project Dialog not found:", 1, dialogs.size());
-    Container deleteDialog = (Container) dialogs.get( 0);
-
-    JButton okButton = (JButton) findComponentByName( JButton.class, "OK");
-    // System.err.println( "deleteDialog " + okButton.getText());
-    assertNotNull( "Could not find deleteDialog \"OK\" button", okButton);
-    helper.enterClickAndLeave( new MouseEventData( this, okButton));
-    awtSleep();
-  } // end deleteProject
-
-  private JMenu getPlanSequenceMenu() throws Exception {
-    JMenu planSequenceMenu = null;
-    planSequenceMenu = findMenu( PlanWorks.PLANSEQ_MENU);
-    assertNotNull("Failed to get \"Planning Sequence\" menu.", planSequenceMenu);
-    assertTrue("Failed to get \"Planning Sequence\" menu.",
-               planSequenceMenu.getText().equals("Planning Sequence"));
-    // System.err.println( "planSequenceMenu " + planSequenceMenu);
-    return planSequenceMenu;
-  } // end getPlanSequenceMenu
 
 
 
@@ -233,40 +231,9 @@ public class PlanWorksGUITest extends JFCTestCase {
   public static TestSuite suite() {
     TestSuite suite = new TestSuite();
     suite.addTest(new PlanWorksGUITest("planViz01"));
-    suite.addTest(new PlanWorksGUITest("planViz02"));
+    // this does not work -- so just chain the tests onto planViz01
+    // suite.addTest(new PlanWorksGUITest("planViz02"));
     return suite;
-  }
-
-  private JMenu findMenu(String name) {
-    AbstractButtonFinder finder = new AbstractButtonFinder(name);
-    return (JMenu) finder.find();
-  }
-
-  private JMenuItem findMenuItem(String menuName, String itemName) {
-    JMenu parent = findMenu(menuName);
-    assertTrue(parent != null);
-    if(parent == null) {
-      return null;
-    }
-    helper.enterClickAndLeave(new MouseEventData(this, parent));
-    AbstractButtonFinder finder = new AbstractButtonFinder(itemName);
-    return (JMenuItem) finder.find();
-  }
-
-  private AbstractButton findCancelButton() {
-    AbstractButtonFinder finder = new AbstractButtonFinder("Cancel");
-    return (AbstractButton) finder.find();
-  }
-
-  private Component findComponentByClass( Class componentClass) {
-    ComponentFinder finder = new ComponentFinder( componentClass);
-    return (Component) finder.find();
-  }
-
-  private Component findComponentByName( Class componentClass, String compLabel) {
-    NamedComponentFinder finder =
-      new NamedComponentFinder( componentClass, compLabel);
-    return (Component) finder.find();
   }
 
 

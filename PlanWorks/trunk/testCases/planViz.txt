@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.37 2004-03-30 22:01:05 taylor Exp $
+// $Id: planViz.txt,v 1.38 2004-04-09 23:11:27 taylor Exp $
 //
 // PlanWorks
 //
@@ -52,23 +52,34 @@ Pre-conditions:
 Method:
   1. Start PlanWorks:
   2. Create a project with menu-bar selection "Project->Create ...",
-     try to add test sequence: work1/<seq-name>nnnnnnnnnnnnn
-     then
+     try to add test sequence: work1/<seq-name>nnnnnnnnnnnnn.
+  3. Click "OK" on the error dialog and then "Project->Delete-><project-name>.
+  4. Create a project with menu-bar selection "Project->Create ...", and select
      work2/<seq-name>nnnnnnnnnnnnn
      then
      work3/<seq-name>nnnnnnnnnnnnn
      and finally
-     work4/<seq-name>nnnnnnnnnnnnn.
-  3. Select "Planning Sequence-><seq-name> and in the SequenceStepsView, Mouse-Right
-     on the <m>'th step and choose "Open Timeline View.
+     work4/<seq-name>nnnnnnnnnnnnn.  Click on "OK".
+  5. Click "OK" on the error dialog.
+  6. Click "OK" on the error dialog.
+  7. Select "Planning Sequence-><seq-name> and in the SequenceStepsView, Mouse-Right
+     on the <m>'th step and choose "Open Timeline View".
+  8.  Click "OK" on the error dialog and then "Project->Delete-><project-name>.
 
 Post-conditions:
-  1. Method: 2 - Error dialog appears: "Invalid Sequence Directory" first with,
-     "<..../work1/<seq-name>nnnnnnnnnnnnn>  No files in directory", then
-     "<..../work2/<seq-name>nnnnnnnnnnnnn>  2 sequence files in directory -- 3 are required",
-     then "<..../work3/<seq-name>nnnnnnnnnnnnn/step<m>>  Has 8 files -- 9 are required",
-     and finally the sequence is loaded successfully.
-  2. Method:3 - Error dialog appears: "Failed to get file listing for step<m>".
+  1. Method: 2 - Error dialog appears: "Invalid Sequence Directory" with
+     "<..../work1/<seq-name>nnnnnnnnnnnnn>  0 sequence files in directory -- 3 are required".
+  2. Method: 3 - Error dialog disappears and PlanWorks frame title has <project-name>
+     removed.
+  3. Method: 4 - Error dialog appears: "Invalid Sequence Directory" with
+     "<..../work2/<seq-name>nnnnnnnnnnnnn>  2 sequence files in directory -- 3 are required".
+  4. Method: 5 - Error dialog disappears and new error dialog appears: "Invalid Sequence 
+     Directory" with "<..../work3/<seq-name>nnnnnnnnnnnnn/step<m>>  
+     Has 7 files -- 8 are required".
+  5. Method: 6 - Error dialog disappears and the fourth sequence is loaded successfully.
+  6. Method: 7 - Error dialog appears: "Failed to get file listing for step<m>".
+  7. Method: 8 - Error dialog disappears and PlanWorks frame title has <project-name>
+     removed.
 
 Requirements: N/A
 

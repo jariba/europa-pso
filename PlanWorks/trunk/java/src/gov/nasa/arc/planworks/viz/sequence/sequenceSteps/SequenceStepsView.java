@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.23 2004-04-09 20:47:27 miatauro Exp $
+// $Id: SequenceStepsView.java,v 1.24 2004-04-09 23:11:27 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -286,6 +286,15 @@ public class SequenceStepsView extends SequenceView {
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end redrawView
 
+
+  /**
+   * <code>getPlanningSequence</code>
+   *
+   * @return - <code>PwPlanningSequence</code> - 
+   */
+  public final PwPlanningSequence getPlanningSequence() {
+    return planSequence;
+  }
 
   /**
    * <code>getJGoDocument</code>

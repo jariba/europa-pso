@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.24 2004-03-23 20:05:57 taylor Exp $
+// $Id: NodeGenerics.java,v 1.25 2004-04-09 23:11:26 taylor Exp $
 //
 // PlanWorks
 //
@@ -107,7 +107,12 @@ public class NodeGenerics {
       if (valueEnd == DbConstants.PLUS_INFINITY_INT) {
         valueEnd = valueStart;
       }
-      return String.valueOf( Math.abs( valueEnd - valueStart));
+      if ((valueStart == DbConstants.PLUS_INFINITY_INT) &&
+          (valueEnd == DbConstants.PLUS_INFINITY_INT)) {
+        return String.valueOf( DbConstants.PLUS_INFINITY_INT);
+      } else {
+        return String.valueOf( Math.abs( valueEnd - valueStart));
+      }
     } else {
       durationVariable = baseToken.getDurationVariable();
       if (durationVariable != null) {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimeScaleView.java,v 1.10 2004-03-20 01:00:38 taylor Exp $
+// $Id: TimeScaleView.java,v 1.11 2004-04-09 23:11:26 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -174,9 +174,10 @@ public class TimeScaleView extends JGoView  {
                                         final PwDomain endTimeIntervalDomain,
                                         final PwToken token) {
     int leftMarginTime = 0;
+//     System.err.println( "\ntoken " + token.getId().toString());
     if (startTimeIntervalDomain != null) {
-//       System.err.println( "collectTimeScaleMetrics earliest " +
-//                           startTimeIntervalDomain.getLowerBound() + " latest " +zoomFactor
+//       System.err.println( "collectTimeScaleMetrics start earliest " +
+//                           startTimeIntervalDomain.getLowerBound() + " start latest " +
 //                           startTimeIntervalDomain.getUpperBound());
       int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
       leftMarginTime = earliestTime;
@@ -195,9 +196,9 @@ public class TimeScaleView extends JGoView  {
       }
     }
     if (endTimeIntervalDomain != null) {
-//       System.err.println( "collectTimeScaleMetrics latest " +
-//                           endTimeIntervalDomain.getUpperBound() + " earliest " +
-//                           endTimeIntervalDomain.getLowerBound());
+//       System.err.println( "collectTimeScaleMetrics end earliest " +
+//                           endTimeIntervalDomain.getLowerBound() + " end latest " +
+//                           endTimeIntervalDomain.getUpperBound());
       int latestTime = endTimeIntervalDomain.getUpperBoundInt();
       if (latestTime != DbConstants.PLUS_INFINITY_INT) {
         if (latestTime > timeScaleEnd) {
@@ -211,6 +212,7 @@ public class TimeScaleView extends JGoView  {
         timeScaleEnd = earliestTime;
       }
     }
+//     System.err.println( "timeScaleStart " + timeScaleStart + " timeScaleEnd " + timeScaleEnd);
   } // end collectTimeScaleMetrics
 
   private void collectFreeTokenMetrics() {
@@ -219,17 +221,19 @@ public class TimeScaleView extends JGoView  {
     while (tokenIterator.hasNext()) {
       PwToken token = (PwToken) tokenIterator.next();
       if (token.isFree()) {
+//         System.err.println( "\nfree token " + token.getId().toString());
         PwDomain startTimeIntervalDomain = token.getStartVariable().getDomain();
         PwDomain endTimeIntervalDomain = token.getEndVariable().getDomain();
 
         int leftMarginTime = 0;
         if (startTimeIntervalDomain != null) {
-          //         System.err.println( "collectFreeTokenMetrics earliest " +
-          //                             startTimeIntervalDomain.getLowerBound() + " latest " +
-          //                             startTimeIntervalDomain.getUpperBound());
+//           System.err.println( "collectFreeTokenMetrics earliest " +
+//                               startTimeIntervalDomain.getLowerBound() + " latest " +
+//                               startTimeIntervalDomain.getUpperBound());
           int earliestTime = startTimeIntervalDomain.getLowerBoundInt();
           leftMarginTime = earliestTime;
           if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
+              (earliestTime != DbConstants.PLUS_INFINITY_INT) &&
               (earliestTime < timeScaleStart)) {
             timeScaleStart = earliestTime;
           }
@@ -238,26 +242,30 @@ public class TimeScaleView extends JGoView  {
             leftMarginTime = latestTime;
           }
           if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
+              (latestTime != DbConstants.MINUS_INFINITY_INT) &&
               (latestTime < timeScaleStart)) {
             timeScaleStart = latestTime;
           }
         }
         if (endTimeIntervalDomain != null) {
-          //         System.err.println( "collectFreeTokenMetrics latest " +
-          //                             endTimeIntervalDomain.getUpperBound() + " earliest " +
-          //                             endTimeIntervalDomain.getLowerBound());
+//           System.err.println( "collectFreeTokenMetrics latest " +
+//                               endTimeIntervalDomain.getUpperBound() + " earliest " +
+//                               endTimeIntervalDomain.getLowerBound());
           int latestTime = endTimeIntervalDomain.getUpperBoundInt();
-          if (latestTime != DbConstants.PLUS_INFINITY_INT) {
-            if (latestTime > timeScaleEnd) {
+          if ((latestTime != DbConstants.PLUS_INFINITY_INT) &&
+              (latestTime != DbConstants.MINUS_INFINITY_INT) &&
+              (latestTime > timeScaleEnd)) {
               timeScaleEnd = latestTime;
-            }
           }
           int earliestTime = endTimeIntervalDomain.getLowerBoundInt();
           if ((earliestTime != DbConstants.MINUS_INFINITY_INT) &&
+              (earliestTime != DbConstants.PLUS_INFINITY_INT) &&
               (earliestTime > timeScaleEnd)) {
             timeScaleEnd = earliestTime;
           }
         }
+//         System.err.println( "timeScaleStart " + timeScaleStart + " timeScaleEnd " +
+//                             timeScaleEnd);
       }
     }
   } // end collectFreeTokenMetrics
@@ -338,7 +346,7 @@ public class TimeScaleView extends JGoView  {
       System.exit( 1);
     }
     String message = "TimeScaleView.computeTimeScaleMetrics: " +
-      "range (" + timeScaleRange + ") execeeds functionality";
+      "range (" + timeScaleRange + ") exceeds functionality";
     JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
                                    dialogTitle + " Exception",
                                    JOptionPane.ERROR_MESSAGE);

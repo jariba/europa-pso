@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.92 2004-04-06 01:31:41 taylor Exp $
+// $Id: PlanWorks.java,v 1.93 2004-04-09 23:11:23 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -38,6 +39,7 @@ import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwProject;
+import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.db.util.PwSQLFilenameFilter;
 import gov.nasa.arc.planworks.mdi.MDIDesktopFrame;
 import gov.nasa.arc.planworks.mdi.MDIDesktopPane;
@@ -47,6 +49,7 @@ import gov.nasa.arc.planworks.mdi.SplashWindow;
 import gov.nasa.arc.planworks.util.BooleanFunctor;
 import gov.nasa.arc.planworks.util.CollectionUtils;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
+import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.FunctorFactory;
 import gov.nasa.arc.planworks.util.PlannerCommandLineDialog;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
@@ -197,8 +200,6 @@ public class PlanWorks extends MDIDesktopFrame {
 
   protected final DirectoryChooser sequenceDirChooser; 
   //protected final PlannerCommandLineDialog executeDialog;
-  protected static String sequenceParentDirectory; // pathname
-  protected static File [] sequenceDirectories; // directory name
 
   private static boolean windowBuilt = false;
   private static boolean usingSplash;
@@ -244,9 +245,18 @@ public class PlanWorks extends MDIDesktopFrame {
    * @param constantMenus - <code>JMenu[]</code> - 
    * @param title - <code>String</code> - 
    */
-  public PlanWorks( final JMenu[] constantMenus, String title) {
+  public PlanWorks( final JMenu[] constantMenus, final String title,
+                    final String maxScreenValue, final String osType,
+                    final String planWorksRoot) {
+
     super( title, constantMenus);
     planWorksTitle = title;
+    this.isMaxScreen = false;
+    if (maxScreenValue.equals( "true")) {
+      this.isMaxScreen = true;
+    }
+    this.osType = osType;
+    this.planWorksRoot = planWorksRoot;
     sequenceDirChooser = new DirectoryChooser();
     planWorksCommon();
   }
@@ -448,17 +458,6 @@ public class PlanWorks extends MDIDesktopFrame {
     return sequenceDirChooser;
   }
     
-  /**
-   * <code>makeMaxScreen</code>
-   *
-   */
-  public final void makeMaxScreen() {
-    Rectangle maxRectangle =
-      GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-    this.setSize( (int) maxRectangle.getWidth(), (int) maxRectangle.getHeight());
-    this.setLocation( 0, 0);
-  }
-
   /**
    * <code>setProjectMenuEnabled</code>
    *
@@ -696,7 +695,7 @@ public class PlanWorks extends MDIDesktopFrame {
         ( new File( System.getProperty( "default.sequence.dir")));
     }
     sequenceDirChooser.setDialogTitle
-      ( "Select Sequence Directory of Partial Plan Directory(ies)");
+      ( "Select Planning Sequence Directory(ies)");
     sequenceDirChooser.setMultiSelectionEnabled( true);
     sequenceDirChooser.getOkButton().addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent e) {
@@ -710,8 +709,6 @@ public class PlanWorks extends MDIDesktopFrame {
           if ((dirChoice != null) && (dirChoice.length() > 0) &&
               (new File( dirChoice)).isDirectory() &&
               (seqDirs.length != 0)) {
-            PlanWorks.sequenceParentDirectory = dirChoice;
-            PlanWorks.sequenceDirectories = seqDirs;
             sequenceDirChooser.approveSelection();
           } else {
             String seqDir = "<null>";
@@ -737,22 +734,23 @@ public class PlanWorks extends MDIDesktopFrame {
     }
 
     /**
-     * accept - Accept all files, and directories which are not partial plan 
+     * accept - Do not accept files, and only directories which are not partial plan 
      *          step directories
      *
      * @param file - a directory or file name
      * @return true, if a directory is valid
      */
     public final boolean accept( final File file) {
-      boolean isValid = true;
-      if (! file.isDirectory()) {
-        // accept all files
-      } else if (file.isDirectory()) {
+      boolean isValid = false;
+      if (file.isDirectory()) {
+        isValid = true;
         if (file.getName().equals( "CVS")) {
           isValid = false;
         } else {
-          String [] fileNames = file.list(new PwSQLFilenameFilter());
-          if (fileNames.length == DbConstants.NUMBER_OF_PP_FILES) {
+          String [] allFileNames = file.list();
+          String [] ppFileNames = file.list( new PwSQLFilenameFilter());
+          if ((ppFileNames.length == DbConstants.NUMBER_OF_PP_FILES) ||
+              (ppFileNames.length == allFileNames.length)) {
             isValid = false;
           }
         }
@@ -771,6 +769,89 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end class SequenceDirectoryFilter
 
+
+  /**
+   * <code>askSequenceDirectory</code>
+   *
+   * @return - <code>List</code> - of  List selectedSequenceUrls & List invalidSequenceUrls 
+   */
+  protected List askSequenceDirectory() {
+    List returnList = new ArrayList();
+    List invalidSequenceUrls = null, selectedSequenceUrls = null;
+    while (true) {
+      selectedSequenceUrls = new ArrayList(); invalidSequenceUrls = new ArrayList();
+      // ask user for a single or multiple sequence directory(ies) of partialPlans
+      int returnVal =
+        PlanWorks.planWorks.sequenceDirChooser.showDialog( PlanWorks.planWorks, "");
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+        String currentSelectedDir =
+          PlanWorks.planWorks.getSequenceDirChooser().getCurrentDirectory().
+          getAbsolutePath();
+        File [] selectedFiles =
+          PlanWorks.planWorks.sequenceDirChooser.getSelectedFiles();
+        for (int i = 0, n = selectedFiles.length; i < n; i++) {
+          // System.err.println( "i " + i + " name " + selectedFiles[i].getName());
+          String sequenceUrl = currentSelectedDir +
+            System.getProperty( "file.separator") + selectedFiles[i].getName();
+          selectedSequenceUrls.add( sequenceUrl);
+          // System.err.println( "sequenceUrl " + sequenceUrl);
+          String validateMsg = FileUtils.validateSequenceDirectory( sequenceUrl);
+          // System.err.println( "validateMsg " + validateMsg);
+          if (validateMsg != null) {
+            JOptionPane.showMessageDialog
+              (PlanWorks.getPlanWorks(), validateMsg, "Invalid Sequence Directory",
+               JOptionPane.ERROR_MESSAGE);
+            invalidSequenceUrls.add( sequenceUrl);
+          }
+        }
+        // System.err.println( "invalid size " + invalidSequenceUrls.size() +
+        //                     " selected size " + selectedSequenceUrls.size());
+        if (invalidSequenceUrls.size() == selectedSequenceUrls.size()) {
+          continue; // user may reselect
+        } else {
+          break; // some sequences are valid
+        }
+      } else {
+        break; // exit dialog with no sequences added - use Project->Add Sequence
+      }
+    } // end while
+    returnList.add( selectedSequenceUrls);
+    returnList.add( invalidSequenceUrls);
+    return returnList;
+  } // end askSequenceDirectory
+
+  /**
+   * <code>addPlanningSequences</code>
+   *
+   * @param project - <code>PwProject</code> - 
+   * @param selectedSequenceUrls - <code>List</code> - 
+   * @param invalidSequenceUrls - <code>List</code> - 
+   * @return - <code>boolean</code> - 
+   * @exception DuplicateNameException if an error occurs
+   * @exception ResourceNotFoundException if an error occurs
+   */
+  protected boolean addPlanningSequences( PwProject project, List selectedSequenceUrls,
+                                          List invalidSequenceUrls)
+    throws DuplicateNameException, ResourceNotFoundException {
+    boolean isSequenceAdded = false;
+    for (int i = 0, n = selectedSequenceUrls.size(); i < n; i++) {
+      String sequenceUrl = (String) selectedSequenceUrls.get( i);
+      boolean isValidSequence = true;
+      for (int j = 0, m = invalidSequenceUrls.size(); j < m; j++) {
+                                  
+        if (((String) invalidSequenceUrls.get( j)).indexOf( sequenceUrl) >= 0) {
+          isValidSequence = false;
+          break;
+        }
+      }
+      if (isValidSequence) {
+        System.err.println( "project.addPlanningSequence " + sequenceUrl);
+        project.addPlanningSequence( sequenceUrl);
+        isSequenceAdded = true;
+      }
+    }
+    return isSequenceAdded;
+  } // end addPlanningSequences
 
   /**
    * <code>isMacOSX</code>

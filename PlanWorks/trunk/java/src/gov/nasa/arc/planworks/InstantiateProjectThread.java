@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.11 2004-03-26 22:07:17 miatauro Exp $
+// $Id: InstantiateProjectThread.java,v 1.12 2004-04-09 23:11:23 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -14,6 +14,7 @@
 
 package gov.nasa.arc.planworks;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFileChooser;
@@ -23,8 +24,8 @@ import javax.swing.JOptionPane;
 import gov.nasa.arc.planworks.db.PwProject;
 import gov.nasa.arc.planworks.db.util.FileUtils;
 import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
-import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
+import gov.nasa.arc.planworks.util.ProjectNameDialog;
 import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 
@@ -104,36 +105,9 @@ public class InstantiateProjectThread extends Thread {
           throw new DuplicateNameException( "A project named '" + inputName +
                                             "' already exists.");
         }
-        List invalidSequenceDirs = null;
-        while (true) {
-          invalidSequenceDirs = new ArrayList();
-          // ask user for a single sequence directory of partialPlan directories
-          int returnVal =
-            PlanWorks.getPlanWorks().sequenceDirChooser.showDialog( PlanWorks.getPlanWorks(), "");
-          if (returnVal == JFileChooser.APPROVE_OPTION) {
-            for (int i = 0, n = PlanWorks.getPlanWorks().sequenceDirectories.length; i < n; i++) {
-              String sequenceDirectory = PlanWorks.getPlanWorks().sequenceParentDirectory +
-                System.getProperty( "file.separator") +
-                PlanWorks.getPlanWorks().sequenceDirectories[i].getName();
-              String validateMsg = FileUtils.validateSequenceDirectory( sequenceDirectory);
-              if (validateMsg != null) {
-                JOptionPane.showMessageDialog
-                  (PlanWorks.getPlanWorks(), validateMsg, "Invalid Sequence Directory",
-                   JOptionPane.ERROR_MESSAGE);
-                invalidSequenceDirs.add( sequenceDirectory);
-              }
-            }
-            if (invalidSequenceDirs.size() ==
-                PlanWorks.getPlanWorks().sequenceDirectories.length) {
-              continue; // user must reselect
-            } else {
-              break; // some sequences are valid
-            }
-          } else {
-            // return null; // exit dialog
-            break; // exit dialog with no sequences added - use New Sequence
-          }
-        } // end while
+        List selectedAndInvalidUrls = PlanWorks.getPlanWorks().askSequenceDirectory();
+        List selectedSequenceUrls = (List) selectedAndInvalidUrls.get( 0);
+        List invalidSequenceUrls = (List) selectedAndInvalidUrls.get( 1);
         project = PwProject.createProject( inputName);
         PlanWorks.getPlanWorks().currentProjectName = inputName;
         isProjectCreated = true;
@@ -142,24 +116,15 @@ public class InstantiateProjectThread extends Thread {
                                       PlanWorks.getPlanWorks().currentProjectName);
         PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELETE_MENU_ITEM, true);
         PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.ADDSEQ_MENU_ITEM, true);
-        PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.NEWSEQ_MENU_ITEM, true);
+        PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.NEWSEQ_MENU_ITEM, true);
         if (PwProject.listProjects().size() > 1) {
           PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.OPEN_MENU_ITEM, true);
           PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         }
-        if (PlanWorks.getPlanWorks().sequenceDirectories != null) {
-          boolean isSequenceAdded = false;
-          for (int i = 0, n = PlanWorks.getPlanWorks().sequenceDirectories.length; i < n; i++) {
-            String sequenceDirectory = PlanWorks.getPlanWorks().sequenceParentDirectory +
-              System.getProperty( "file.separator") +
-              PlanWorks.getPlanWorks().sequenceDirectories[i].getName();
-            if (invalidSequenceDirs.indexOf( sequenceDirectory) == -1) {
-              System.err.println( "project.addPlanningSequence " + sequenceDirectory);
-              project.addPlanningSequence( sequenceDirectory);
-              isSequenceAdded = true;
-            }
-          }
-          PlanWorks.getPlanWorks().setProjectMenuEnabled(PlanWorks.DELSEQ_MENU_ITEM, true);
+        if (selectedSequenceUrls.size() > 0) {
+          PlanWorks.getPlanWorks().addPlanningSequences( project, selectedSequenceUrls,
+                                                         invalidSequenceUrls);
+          PlanWorks.getPlanWorks().setProjectMenuEnabled( PlanWorks.DELSEQ_MENU_ITEM, true);
         }
 
       } catch (ResourceNotFoundException rnfExcep) {
@@ -176,9 +141,9 @@ public class InstantiateProjectThread extends Thread {
         JOptionPane.showMessageDialog
           (PlanWorks.getPlanWorks(), dupExcep.getMessage().substring( index + 1),
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
-          System.err.println( dupExcep);
-          // dupExcep.printStackTrace();
-          isProjectCreated = false; 
+        System.err.println( dupExcep);
+        // dupExcep.printStackTrace();
+        isProjectCreated = false; 
       } catch (Exception e) {
         JOptionPane.showMessageDialog(PlanWorks.getPlanWorks(), e.getMessage(),
                                       "Exception", JOptionPane.ERROR_MESSAGE);
