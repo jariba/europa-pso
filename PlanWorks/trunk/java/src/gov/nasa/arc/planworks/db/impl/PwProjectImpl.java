@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.20 2003-07-02 21:09:58 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.21 2003-07-02 22:48:44 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -245,9 +245,22 @@ public class PwProjectImpl extends PwProject {
           MySQLDB.queryDatabase("SELECT (PartialPlanId) FROM PartialPlan WHERE SequenceId=".concat(sequenceId.toString()));
         while(partialPlanIds.next()) {
           Long partialPlanId = new Long(partialPlanIds.getLong("PartialPlanId"));
-          MySQLDB.updateDatabase("DELETE FROM Object, Timeline, Slot, Token, Variable, EnumeratedDomain, IntervalDomain, VConstraint, TokenRelation, ParamVarTokenMap, ConstraintVarMap, Predicate, Parameter WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM Object WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM Timeline WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM Slot WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM Token WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM Variable WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM EnumeratedDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM IntervalDomain WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM VConstraint WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM TokenRelation WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM ParamVarTokenMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM ConstraintVarMap WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM Predicate WHERE PartialPlanId=".concat(partialPlanId.toString()));
+          MySQLDB.updateDatabase("DELETE FROM Parameter WHERE PartialPlanId=".concat(partialPlanId.toString()));
         }
         MySQLDB.updateDatabase("DELETE FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
+        MySQLDB.updateDatabase("DELETE FROM ProjectSequenceMap WHERE SequenceId=".concat(sequenceId.toString()).concat(" AND ProjectId=").concat(key.toString()));
       }
       MySQLDB.updateDatabase("DELETE FROM Project WHERE ProjectId=".concat(key.toString()));
     }
