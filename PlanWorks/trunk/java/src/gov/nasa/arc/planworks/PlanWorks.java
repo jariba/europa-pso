@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.10 2003-06-17 22:19:02 taylor Exp $
+// $Id: PlanWorks.java,v 1.11 2003-06-18 21:44:10 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -210,6 +210,16 @@ public class PlanWorks extends MDIDesktopFrame {
     return defaultProjectUrl;
   }
 
+  /**
+   * <code>setPlanWorks</code> - needed by TimelineViewTest (JFCUnit Test)
+   *
+   * @param planWorks - <code>PlanWorks</code> - 
+   * @return - <code>PlanWorks</code> - 
+   */
+  public static void setPlanWorks( PlanWorks planWorksInstance) {
+    planWorks = planWorksInstance;
+  }
+
   private List getUrlsLessCurrent() {
     List projectUrls = PwProject.listProjects();
     List urlsLessCurrent = new ArrayList();
@@ -339,7 +349,6 @@ public class PlanWorks extends MDIDesktopFrame {
       if (inputUrl == null) { // user selected Cancel
         return null;
       } else {
-        currentProjectUrl = urlMenuItem.getTypedText();
         if (! (new File( inputUrl)).exists()) {
           JOptionPane.showMessageDialog
             (PlanWorks.this, inputUrl, "URL Not Found", JOptionPane.ERROR_MESSAGE);
@@ -348,8 +357,9 @@ public class PlanWorks extends MDIDesktopFrame {
       }
       try {
         isProjectCreated = true;
+        project = PwProject.createProject( inputUrl);
+        currentProjectUrl = inputUrl;
         System.err.println( "Create Project: " + currentProjectUrl);
-        project = PwProject.createProject( currentProjectUrl);
         this.setTitle( name + "  --  project: " + currentProjectUrl);
         setProjectMenuEnabled( "Delete ...", true);
         if (PwProject.listProjects().size() > 1) {
