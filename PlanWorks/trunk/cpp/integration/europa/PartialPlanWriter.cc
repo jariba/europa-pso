@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.7 2003-10-16 20:29:06 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.8 2003-10-21 01:29:19 taylor Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -41,7 +41,7 @@ const char *transactionTypeNames[13] = {"TOKEN_CREATED", "TOKEN_DELETED", "TOKEN
                                         "VARIABLE_DOMAIN_RELAXED", "VARIABLE_DOMAIN_RESTRICTED",
                                         "VARIABLE_DOMAIN_SPECIFIED", "VARIABLE_DOMAIN_RESET",
                                         "VARIABLE_DOMAIN_EMPTIED", "CONSTRAINT_CREATED",
-                                        "CONSTRIAINT_DELETED"};
+                                        "CONSTRAINT_DELETED"};
 enum transactionTypes {TOKEN_CREATED = 0, TOKEN_DELETED, TOKEN_INSERTED, TOKEN_FREED,
                              VAR_CREATED, VAR_DELETED, VAR_DOMAIN_RELAXED, VAR_DOMAIN_RESTRICTED,
                              VAR_DOMAIN_SPECIFIED, VAR_DOMAIN_RESET, VAR_DOMAIN_EMPTIED,

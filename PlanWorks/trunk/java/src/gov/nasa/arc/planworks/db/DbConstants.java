@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DbConstants.java,v 1.11 2003-10-18 01:27:54 taylor Exp $
+// $Id: DbConstants.java,v 1.12 2003-10-21 01:29:19 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -192,16 +192,16 @@ public interface DbConstants {
   public static final String TOKEN_FREED = "TOKEN_FREED";
 
   /**
-   * constant <code>TOKEN_ALL_TYPES</code> - String - transaction type
-   *
-   */
-  public static final String TOKEN_ALL_TYPES = "%";
-
-  /**
    * constant <code>TOKEN_INSERTED</code> - String - transaction type
    *
    */
   public static final String TOKEN_INSERTED = "TOKEN_INSERTED";
+
+  /**
+   * constant <code>TOKEN_ALL_TYPES</code> - String - transaction type
+   *
+   */
+  public static final String TOKEN_ALL_TYPES = "%";
 
   /**
    * constant <code>VARIABLE_CREATED</code> - String - transaction type

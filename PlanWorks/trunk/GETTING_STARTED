@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.10 2003-10-18 01:27:53 taylor Exp $
+# $Id: GETTING_STARTED,v 1.11 2003-10-21 01:29:19 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -50,7 +50,7 @@ the desired step in the histogram ("SequenceStepsView").  The histogram
 steps have a "mouse over" pop-up showing the step number, the data base 
 size, and the number of transactions.  The key values for tokens, 
 constraints, variables, timelines, and slots appear in the appropriate node 
-labels.  There are four active views:
+labels.  There are five active views:
 
 Constraint Network View
 -----------------------
@@ -95,13 +95,18 @@ Lays out the plan's token relations in directed graphs whose root nodes are the
 "supreme" master tokens.  The Token Network View now is freshly layed out after 
 a  Content Spec filter is applied.
 
+Transaction View
+----------------
+Lists the transactions for this partial plan step.  The information includes the
+transaction type and the key of the object on which the transaction was acting.
+
 
 Token Focus in Views
 ====================
-Token nodes (slot nodes in the Timeline View) in all views, have a
-Mouse-Right pop-up menu with the possible selection: "Set Active Token".
-When the "active token" has been set, the other views have a
-"background" Mouse-Right pop-up menu with the possible selection of
+Token nodes (slot nodes in the Timeline View) in all views (except the
+Transaction View), have a Mouse-Right pop-up menu with the possible selection: 
+"Set Active Token".  When the "active token" has been set, the other views 
+have a "background" Mouse-Right pop-up menu with the possible selection of
 "Snap to Active Token".  Making this selection will cause the view
 to scroll to a position where the "active token" will be shown,
 highlighted, in the approximate center of the view.  A Mouse-Left click
@@ -113,9 +118,9 @@ Token Network View, these secondary tokens will be given secondary
 highlighting (turquoise).  The basic token will have the primary highlighting
 color (light green).
 
-In all the partial plan views, Mouse-Right on the background offers
-"Find Token by Key" which allows the user to enter a token's key and
-have the view scroll to that token's location.
+In all the partial plan views (except the Transaction View), Mouse-Right on 
+the background offers "Find Token by Key" which allows the user to enter a 
+token's key and have the view scroll to that token's location.
 
 
 Content Specification
