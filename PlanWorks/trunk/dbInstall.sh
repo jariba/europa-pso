@@ -1,5 +1,8 @@
 #!/bin/sh
 
+/bin/rm -f $PLANWORKS_HOME/lib/mysql/data/mysql/*
+/bin/rm -rf $PLANWORKS_HOME/lib/mysql/data/PlanWorks
+
 #utility database creation code taken from mysql_install_db.
 
 # Initialize variables

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.39 2003-10-10 23:59:51 taylor Exp $
+# $Id: README,v 1.40 2003-10-16 20:28:41 miatauro Exp $
 #
 
 SUMMARY
@@ -33,7 +33,13 @@ The "require" or "exclude" selections override the "Predicate",
 "Timeline", and "Time Interval" selections, with applied together.
 
 Test use cases have been defined to replace the "planWorksTest" JFCUnit 
-test which had become unusable.
+test which had become unusable.  A new unit test for the PlanWorks
+data access layer is now in its place and can be run with 
+"ant test".
+
+Please note that the current database model invalidates all old
+data and will require a rebuilding of the database tables 
+("ant planWorksDbInstall").
 
 o  GNATS PRs and CRs completed:
    #2107: Issues with display of Token Network and other windows.

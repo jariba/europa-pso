@@ -4,11 +4,11 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.hh,v 1.6 2003-10-02 23:14:54 miatauro Exp $
+// $Id: PartialPlanWriter.hh,v 1.7 2003-10-16 20:29:08 miatauro Exp $
 //
+
 #ifndef PARTIALPLANWRITER_H
 #define PARTIALPLANWRITER_H
-
 #include "ConstraintNetwork.hh"
 #include "List.hh"
 #include "String.hh"
@@ -22,9 +22,9 @@ class Transaction {
 public:
   //Transaction(enum transactionTypes type, int key, enum sourceTypes source, int id,
   //            long long int seqid) 
-  Transaction(int type, int key, int source, int id, long long int seqid)
+  Transaction(int type, int key, int source, int id, long long int seqid, int nstep)
   {transactionType = type; objectKey = key; this->source = source; this->id = id;
-  sequenceId = seqid;}
+  sequenceId = seqid; stepNum = nstep;}
   Transaction() {transactionType = -1; objectKey = -1; source = -1; id = -1; sequenceId = -1;}
   Transaction(Transaction &other) {
     transactionType = other.transactionType;
@@ -39,6 +39,7 @@ private:
   int objectKey;
   int source;
   int id;
+  int stepNum;
   long long int sequenceId;
 };
 
@@ -56,6 +57,7 @@ public:
   void notifyOfDeletedVariable(VarId);
   void notifyConstraintInserted(ConstraintId&);
   void notifyConstraintRemoved(ConstraintId&);
+  void notifyFlushed(void);
   void write();
 private:
   int nstep;
@@ -64,6 +66,8 @@ private:
   int enumeratedDomainId;
   int intervalDomainId;
   int transactionId;
+  int stepsPerWrite;
+  int writeCounter;
   String dest;
   TokenNetwork *tnet;
   Value izero, rzero;
