@@ -4,57 +4,28 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.98 2004-06-05 00:32:29 taylor Exp $
+# $Id: README,v 1.99 2004-06-10 01:35:55 taylor Exp $
 #
 
 SUMMARY
 =======
-o If you are using PlanWorks with PLASMA, this revision requires PLASMA
-  version PW_PLASMA_1 or later.
+o The Token Network View handling of rule instances has been revised:
+  - Mouse-Right: "Rule Window" on the view background has been removed;
+  - links between token nodes are no longer mouse sensitive;
+  - rule instance nodes, rendered as ovals, with the instance key and the
+    rule key values in the label, now are linked bewteen token nodes;
+  - Mouse-Right on the rule instance nodes brings up the selection 
+    "Open Rule Instance View".  Selecting it creates an internal frame titled
+    "RuleInstanceView of <plan-name>/stepnn - n", which displays the "from" token,
+    and "to" token key values and predicates, followed by the text of
+    the rule;
+  - A "RuleInstanceView ..." internal frame may be created for every rule instance
+    node in the Token Network View;
+  - Mouse-Right: "Close Rule Instance Views" on the view background has been added.
 
-o The partial plan DBTransaction View and the Sequence Query result views for
-  Steps, Transactions, Free Tokens, Unbound Variables, and All Decisions - have
-  all been reimplemented using Swing JTable, instead of JGo widgets.  A
-  significant performance improvement has been realized, and additional
-  capabilities now exist.  The table column widths can be resized by dragging
-  the column header boundaries.  The row sorting by column values is now more
-  advanced: Mouse-Left clicks cycle through sortAscending, sortDescending, &
-  noSort - while clearing other column sorts; Control-Mouse-Left clicks cycle
-  through sortAscending, sortDescending, & noSort - while not clearing other 
-  column sorts.  "Find Object/Token/Variable by Key" is available with
-  Mouse-Right, where appropriate, on the panel between the window title and the
-  table header.  Mouse-Right on "Step" column cells offers to open partial plan
-  views for that step.
-
-o The PLASMA PartialPlanWriter now uses a configuration file and one environment
-  variable rather than a set of environment vars.  Set the PPW_CONFIG environment
-  variable to the path of the configuration file you want.  A sample configuration 
-  file is available at PLASMA/System/component/sample-ppw-config.  The GeneralConfigSection 
-  is for things like allowing the PPW to write automatically, how often it should write,
-  where it should write, and how many choices should be written per decision.  The
-  TransactionConfigSection is a list of all of the transactions that should be logged.
-  A '#' as the first character on a line causes the PPW to ignore the entire line.
-
-o The Decision View has been added which lists the current plan decision and pending 
-  decisions in a "tree" format.  Decisions with choices are "openable".  Objects, 
-  resources, timelines, interval tokens, resource transactions, and variables can be 
-  viewed in other appropriate views by choosing from Mouse-Right click selections
-  on decision and choice entity key values.  A Mouse-Right click on the background 
-  offers the user "Find Decision by Key" and opening other views, as choices.
-
-o Previously, the DB Transaction View was not "steppable".  It now is, as are all the
-  other partial plan views.
-
-o The PlanWorks "Window" pull-down menu of all active windows is now ordered thusly:
-  - menu separators divide different plan sequence window groups;
-  - within each plan sequence group, the ordering is SequenceQueryView, SequenceStepsView,
-    and any QueryResults windows;
-  - then a cascading sort by step number, and by view name of all partial plan views,
-    including the NavigatorView.
+o
 
 o  GNATS PRs and CRs completed:
-   #2332: Need resizable column width in DB transaction view.
-   #2385: Crash while trying to sort transactions by name in the DBTransaction window.
 
 
 CVS CHECKOUT
@@ -175,8 +146,58 @@ PREVIOUS MILESTONES
 ===================
 ===================
 
+04june04: Milestone 15
+=====================
+o If you are using PlanWorks with PLASMA, this revision requires PLASMA
+  version PW_PLASMA_1 or later.
+
+o The partial plan DBTransaction View and the Sequence Query result views for
+  Steps, Transactions, Free Tokens, Unbound Variables, and All Decisions - have
+  all been reimplemented using Swing JTable, instead of JGo widgets.  A
+  significant performance improvement has been realized, and additional
+  capabilities now exist.  The table column widths can be resized by dragging
+  the column header boundaries.  The row sorting by column values is now more
+  advanced: Mouse-Left clicks cycle through sortAscending, sortDescending, &
+  noSort - while clearing other column sorts; Control-Mouse-Left clicks cycle
+  through sortAscending, sortDescending, & noSort - while not clearing other 
+  column sorts.  "Find Object/Token/Variable by Key" is available with
+  Mouse-Right, where appropriate, on the panel between the window title and the
+  table header.  Mouse-Right on "Step" column cells offers to open partial plan
+  views for that step.
+
+o The PLASMA PartialPlanWriter now uses a configuration file and one environment
+  variable rather than a set of environment vars.  Set the PPW_CONFIG environment
+  variable to the path of the configuration file you want.  A sample configuration 
+  file is available at PLASMA/System/component/sample-ppw-config.  The GeneralConfigSection 
+  is for things like allowing the PPW to write automatically, how often it should write,
+  where it should write, and how many choices should be written per decision.  The
+  TransactionConfigSection is a list of all of the transactions that should be logged.
+  A '#' as the first character on a line causes the PPW to ignore the entire line.
+
+o The Decision View has been added which lists the current plan decision and pending 
+  decisions in a "tree" format.  Decisions with choices are "openable".  Objects, 
+  resources, timelines, interval tokens, resource transactions, and variables can be 
+  viewed in other appropriate views by choosing from Mouse-Right click selections
+  on decision and choice entity key values.  A Mouse-Right click on the background 
+  offers the user "Find Decision by Key" and opening other views, as choices.
+
+o Previously, the DB Transaction View was not "steppable".  It now is, as are all the
+  other partial plan views.
+
+o The PlanWorks "Window" pull-down menu of all active windows is now ordered thusly:
+  - menu separators divide different plan sequence window groups;
+  - within each plan sequence group, the ordering is SequenceQueryView, SequenceStepsView,
+    and any QueryResults windows;
+  - then a cascading sort by step number, and by view name of all partial plan views,
+    including the NavigatorView.
+
+o  GNATS PRs and CRs completed:
+   #2332: Need resizable column width in DB transaction view.
+   #2385: Crash while trying to sort transactions by name in the DBTransaction window.
+
+
 14may04: Milestone 14
-=======================
+=====================
 o This release *does* require a total rebuild of the PlanWorks data base,
   using "ant planWorksDbInstall".  All plans to be loaded must be
   regenerated using the PartialPlanWriter.
@@ -230,7 +251,7 @@ o  GNATS PRs and CRs completed:
    #2398: Transaction types too long for space: Query-Steps-Where Variable Transacted.
 
 
-10March04: Milestone 13
+10march04: Milestone 13
 =======================
 o This release *does* require a total rebuild of the PlanWorks data base,
   using "ant planWorksDbInstall".  All plans to be loaded must be
@@ -281,7 +302,7 @@ o  GNATS PRs and CRs completed:
    #2285: PLASMA:PPW: Incorrect data about merged tokens being displayed.
 
 
-20January04: Milestone 12
+20january04: Milestone 12
 =========================
 o In the Temporal Extent View, Mouse-Right on the background now offers
   "Show Earliest" and "Show Latest", as options to "Show Intervals".
