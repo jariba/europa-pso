@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: FileUtils.java,v 1.16 2004-07-29 20:31:44 taylor Exp $
+// $Id: FileUtils.java,v 1.17 2004-09-03 00:35:35 taylor Exp $
 //
 // Utilities for JFileChooser 
 //
@@ -74,8 +74,7 @@ public abstract class FileUtils {
    * @param sequenceDirChooser - <code>DirectoryChooser</code> - 
    */
   public static void validateMultiSequenceDirectory(final DirectoryChooser sequenceDirChooser) {
-    String currentSelectedDir =
-      PlanWorks.getPlanWorks().getSequenceDirChooser().getCurrentDirectory().
+    String currentSelectedDir = sequenceDirChooser.getCurrentDirectory().
       getAbsolutePath();
     File [] selectedFiles = sequenceDirChooser.getSelectedFiles();
     if (selectedFiles.length == 0) {
@@ -170,23 +169,24 @@ public abstract class FileUtils {
       System.err.println( msg);
       return msg;
     }
-    if (partialPlanDirs.size() == 0) {
-      msg = sequenceDirectory + "\n    No partial plans in directory.";
-      System.err.println( msg);
-      return msg;
-    }
-    // determine existence of the N SQL-input files in partial plan directories (steps)
-    for (int i = 0, n = partialPlanDirs.size(); i < n; i++) {
-      String partialPlanPath = sequenceDirectory + System.getProperty( "file.separator") +
-        partialPlanDirs.get( i);
-      fileNames = new File(partialPlanPath).list(new PwSQLFilenameFilter());
-      if (fileNames.length != DbConstants.NUMBER_OF_PP_FILES) { 
-         msg = partialPlanPath + "\n    Has " + fileNames.length +
-           " files -- " + DbConstants.NUMBER_OF_PP_FILES + " are required.";
-        System.err.println( msg);
-        return msg;
-      }
-    }
+    // allow sequences with no step directories
+//     if (partialPlanDirs.size() == 0) {
+//       msg = sequenceDirectory + "\n    No partial plans in directory.";
+//       System.err.println( msg);
+//       return msg;
+//     }
+//     // determine existence of the N SQL-input files in partial plan directories (steps)
+//     for (int i = 0, n = partialPlanDirs.size(); i < n; i++) {
+//       String partialPlanPath = sequenceDirectory + System.getProperty( "file.separator") +
+//         partialPlanDirs.get( i);
+//       fileNames = new File(partialPlanPath).list(new PwSQLFilenameFilter());
+//       if (fileNames.length != DbConstants.NUMBER_OF_PP_FILES) { 
+//          msg = partialPlanPath + "\n    Has " + fileNames.length +
+//            " files -- " + DbConstants.NUMBER_OF_PP_FILES + " are required.";
+//         System.err.println( msg);
+//         return msg;
+//       }
+//     }
     return msg;
   } // end validateSequenceDirectory
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProject.java,v 1.25 2004-08-05 00:24:22 taylor Exp $
+// $Id: PwProject.java,v 1.26 2004-09-03 00:35:33 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -50,8 +50,9 @@ public abstract class PwProject {
    * @return - <code>PwProject</code> - 
    * @exception DuplicateNameException if an error occurs
    */
-  public static PwProject createProject( final String name) throws DuplicateNameException {
-    return PwProjectImpl.createProject( name);
+  public static PwProject createProject( final String name, final String workingDir)
+    throws DuplicateNameException {
+    return PwProjectImpl.createProject( name, workingDir);
   }
 
   /**
@@ -77,12 +78,53 @@ public abstract class PwProject {
   }
 
   /**
-   * <code>getName</code> - return project name (directory containing
-   *                               planning sequences)
+   * <code>getName</code> - return project name 
    *
    * @return - <code>String</code> - 
    */
   public abstract String getName();
+
+  /**
+   * <code>getWorkingDir</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getWorkingDir();
+
+  /**
+   * <code>getPlannerPath</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getPlannerPath();
+
+  /**
+   * <code>getModelName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getModelName();
+
+  /**
+   * <code>getModelPath</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getModelPath();
+
+  /**
+   * <code>getModelOutputDestDir</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getModelOutputDestDir();
+
+  /**
+   * <code>getModelInitStatePath</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public abstract String getModelInitStatePath();
 
   /**
    * <code>listPlanningSequences</code>
@@ -155,5 +197,8 @@ public abstract class PwProject {
    */
   public abstract void delete() throws ResourceNotFoundException;
 
+  public abstract boolean getJNIAdapterLoaded();
+
+  public abstract void setJNIAdapterLoaded( boolean value);
 
 } // end class PwProject

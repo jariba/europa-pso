@@ -4,26 +4,35 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ProjectNameDialog.java,v 1.5 2004-05-21 21:38:57 taylor Exp $
+// $Id: ProjectNameDialog.java,v 1.6 2004-09-03 00:35:39 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
-import java.awt.Point;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent; 
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import gov.nasa.arc.planworks.ConfigureAndPlugins;
 import gov.nasa.arc.planworks.PlanWorks;
 
 
 /**
- * <code>ProjectNameDialog</code> - create JOptionPane for user to enter project name
+ * <code>ProjectNameDialog</code> - create JOptionPane for user to enter project name, &
+ *                                  working directory for CreateProject
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
                     NASA Ames Research Center - Code IC
@@ -31,9 +40,15 @@ import gov.nasa.arc.planworks.PlanWorks;
  */
 public class ProjectNameDialog extends JDialog {
 
-  private String typedText = null;
+  private static final int NAME_FIELD_WIDTH = 15;
+  private static final int WORKING_DIR_FIELD_WIDTH = 30;
+
   private JOptionPane optionPane;
-  private JTextField textField;
+  private String projectName;
+  private JTextField projectNameField;
+  private String workingDir;
+  private JTextField workingDirField;
+
   private String btnString1;
   private String btnString2;
 
@@ -46,25 +61,65 @@ public class ProjectNameDialog extends JDialog {
     // modal dialog - blocks other activity
     super( planWorks, true);
     setTitle( "Create Project");
-    final String msgString1 = "name (string)";
-    textField = new JTextField( 30);
-    Object[] array = {msgString1, textField};
+    final JLabel projectNameLabel = new JLabel( "name");
+    projectNameField = new JTextField( NAME_FIELD_WIDTH);
+    final JLabel workingDirLabel =  new JLabel( "working directory");
+    workingDirField = new JTextField( WORKING_DIR_FIELD_WIDTH);
+    String workingDirBrowseLabel = "browse ...";
+    // current values
+    try {
+      String currentProjectName = planWorks.getCurrentProjectName();
+      projectNameField.setText( currentProjectName);
+      projectNameField.setSelectionStart( 0);
+      projectNameField.setSelectionEnd( currentProjectName.length());
+      workingDir = new File( ConfigureAndPlugins.getProjectConfigValue
+                             ( ConfigureAndPlugins.PROJECT_WORKING_DIR,
+                               ConfigureAndPlugins.DEFAULT_PROJECT_NAME)).getCanonicalPath();
+    } catch (IOException ioExcep) {
+    }
+    workingDirField.setText( workingDir);
+    final JButton workingDirBrowseButton = new JButton( workingDirBrowseLabel);
     btnString1 = "Enter";
     btnString2 = "Cancel";
     Object[] options = {btnString1, btnString2};
-    // current value
-    if (planWorks.getCurrentProjectName().equals( "")) {
-      textField.setText( System.getProperty( "default.project.name"));
-    } else {
-      textField.setText( planWorks.getCurrentProjectName());
-    }
+
+    JPanel dialogPanel = new JPanel();
+    GridBagLayout gridBag = new GridBagLayout();
+    GridBagConstraints c = new GridBagConstraints();
+    dialogPanel.setLayout( gridBag);
+    
+    c.weightx = 0;
+    c.weighty = 0;
+    c.gridx = 0;
+    c.gridy = 0;
+
+    c.gridy++;
+    gridBag.setConstraints( projectNameLabel, c);
+    dialogPanel.add( projectNameLabel);
+
+    c.gridy++;
+    gridBag.setConstraints( projectNameField, c);
+    dialogPanel.add( projectNameField);
+
+    c.gridy++;
+    gridBag.setConstraints( workingDirLabel, c);
+    dialogPanel.add( workingDirLabel);
+
+    c.gridy++;
+    gridBag.setConstraints( workingDirField, c);
+    dialogPanel.add( workingDirField);
+
+    c.gridx++;
+    gridBag.setConstraints( workingDirBrowseButton, c);
+    dialogPanel.add( workingDirBrowseButton);
+
     optionPane = new JOptionPane
-      ( array, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
+      ( dialogPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
         null, options, options[0]);
     setContentPane( optionPane);
     setDefaultCloseOperation( DO_NOTHING_ON_CLOSE);
     addWindowListener( new WindowAdapter() {
-        public void windowClosing(WindowEvent we) {
+        public final void windowClosing(final WindowEvent we) {
           /*
            * Instead of directly closing the window,
            * we're going to change the JOptionPane's
@@ -74,9 +129,22 @@ public class ProjectNameDialog extends JDialog {
         }
       });
 
-    textField.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent e) {
+    projectNameField.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent e) {
           optionPane.setValue( btnString1);
+        }
+      });
+
+    workingDirBrowseButton.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent e) {
+          DirectoryChooser dirChooser =
+            PlanWorks.getPlanWorks().createDirectoryChooser( new File( workingDir));
+          int returnVal = dirChooser.showDialog( PlanWorks.getPlanWorks(), "");
+          if (returnVal == JFileChooser.APPROVE_OPTION) {
+            String currentSelectedDir = dirChooser.getCurrentDirectory().getAbsolutePath();
+            workingDir = currentSelectedDir;
+            workingDirField.setText( workingDir);
+          }
         }
       });
 
@@ -93,11 +161,11 @@ public class ProjectNameDialog extends JDialog {
 
   private void addInputListener() {
     optionPane.addPropertyChangeListener( new PropertyChangeListener() {
-        public void propertyChange( PropertyChangeEvent e) {
+        public final void propertyChange( final PropertyChangeEvent e) {
           String prop = e.getPropertyName();
           if (isVisible() && (e.getSource() == optionPane) &&
-              (prop.equals(JOptionPane.VALUE_PROPERTY) ||
-               prop.equals(JOptionPane.INPUT_VALUE_PROPERTY))) {
+              (prop.equals( JOptionPane.VALUE_PROPERTY) ||
+               prop.equals( JOptionPane.INPUT_VALUE_PROPERTY))) {
             Object value = optionPane.getValue();
             if (value == JOptionPane.UNINITIALIZED_VALUE) {
               //ignore reset
@@ -110,11 +178,27 @@ public class ProjectNameDialog extends JDialog {
             optionPane.setValue( JOptionPane.UNINITIALIZED_VALUE);
 
             if (value.equals( btnString1)) {
-              typedText = textField.getText();
+              projectName = projectNameField.getText();
+              if (projectName.equals( ConfigureAndPlugins.DEFAULT_PROJECT_NAME)) {
+                JOptionPane.showMessageDialog
+                  ( PlanWorks.getPlanWorks(),
+                   "Choose another project name, other than '" +
+                   ConfigureAndPlugins.DEFAULT_PROJECT_NAME + "'",
+                   "Invalid Name", JOptionPane.ERROR_MESSAGE);
+                return;
+              }
+              if (! (new File( workingDir)).exists()) {
+                JOptionPane.showMessageDialog
+                  ( PlanWorks.getPlanWorks(),
+                   "Path does not exist: '" + workingDir + "'",
+                   "Invalid Path", JOptionPane.ERROR_MESSAGE);
+                return;
+              }
               // we're done; dismiss the dialog
               setVisible( false);
             } else { // user closed dialog or clicked cancel
-              typedText = null;
+              projectName = null;
+              workingDir = null;
               setVisible( false);
             }
           }
@@ -122,13 +206,24 @@ public class ProjectNameDialog extends JDialog {
       });
   } // end addInputListener
 
-    /**
-     * <code>getTypedText</code> - get user entered project url
-     *
-     * @return - <code>String</code> - 
-     */
-  public String getTypedText() {
-    return typedText;
+  /**
+   * <code>getProjectName</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getProjectName() {
+    return projectName;
+  }
+
+  /**
+   * <code>getWorkingDir</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String getWorkingDir() {
+    return workingDir;
   }
 
 } // end class ProjectNameDialog
+
+ 

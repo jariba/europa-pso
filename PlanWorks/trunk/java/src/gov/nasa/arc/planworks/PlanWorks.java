@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.111 2004-08-26 22:59:24 miatauro Exp $
+// $Id: PlanWorks.java,v 1.112 2004-09-03 00:35:32 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -23,6 +23,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,6 +58,7 @@ import gov.nasa.arc.planworks.mdi.MDIDynamicMenuBar;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.mdi.SplashWindow;
 import gov.nasa.arc.planworks.util.CollectionUtils;
+import gov.nasa.arc.planworks.util.ConfigureProjectDialog;
 import gov.nasa.arc.planworks.util.DirectoryChooser;
 import gov.nasa.arc.planworks.util.DuplicateNameException;
 import gov.nasa.arc.planworks.util.FunctorFactory;
@@ -79,6 +81,7 @@ public class PlanWorks extends MDIDesktopFrame {
   public static Map VIEW_CLASS_NAME_MAP;
   public static Map VIEW_MOUSE_RIGHT_MAP;
   public static List PARTIAL_PLAN_VIEW_LIST;
+  public static Map PROJECT_CONFIG_MAP;
 
   private static final int DESKTOP_FRAME_WIDTH;// = 900;
   private static final int DESKTOP_FRAME_HEIGHT;// = 750;
@@ -91,6 +94,7 @@ public class PlanWorks extends MDIDesktopFrame {
   public static final String PROJECT_MENU = "Project";
   public static final String CREATE_MENU_ITEM = "Create ...";
   public static final String OPEN_MENU_ITEM = "Open ...";
+  public static final String CONFIGURE_MENU_ITEM = "Configure ...";
   public static final String DELETE_MENU_ITEM = "Delete ...";
   public static final String NEWSEQ_MENU_ITEM = "New Sequence ...";
   public static final String ADDSEQ_MENU_ITEM = "Add Sequence ...";
@@ -127,6 +131,7 @@ public class PlanWorks extends MDIDesktopFrame {
     VIEW_CLASS_NAME_MAP = new HashMap();
     VIEW_MOUSE_RIGHT_MAP = new HashMap();
     PARTIAL_PLAN_VIEW_LIST = new ArrayList();
+    PROJECT_CONFIG_MAP = new HashMap();
 
     VIEW_CLASS_NAME_MAP.put
       ( ViewConstants.SEQUENCE_STEPS_VIEW,
@@ -203,8 +208,6 @@ public class PlanWorks extends MDIDesktopFrame {
   private Map sequenceStepsViewMap;
   private Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
 
-  private DirectoryChooser sequenceDirChooser; // not final, since PlanWorksGUITest
-                                               // creates multiple instances
   //protected final PlannerCommandLineDialog executeDialog;
   private long [] viewRenderingStartTime;
   private JFrame nodeShapesFrame;
@@ -251,11 +254,18 @@ public class PlanWorks extends MDIDesktopFrame {
 
   private void planWorksCommon() {
     projectMenu.setEnabled(false);
-    currentProjectName = ""; currentProject = null; viewManager = null;
-    createDirectoryChooser();
+    currentProjectName = ConfigureAndPlugins.DEFAULT_PROJECT_NAME;
+    currentProject = null; viewManager = null;
     // Closes from title bar 
     addWindowListener( new WindowAdapter() {
         public final void windowClosing( final WindowEvent e) {
+          try {
+            System.err.println( "Writing Projects configure file: " +
+                                (new File( System.getProperty( "projects.config"))).
+                                getCanonicalPath());
+          } catch (IOException ioExcep) {
+          }
+          ConfigureAndPlugins.writeProjectConfigMap();
           System.exit( 0);
         }});
     if (isMaxScreen) {
@@ -286,6 +296,7 @@ public class PlanWorks extends MDIDesktopFrame {
       this.toBack();
     }
     setProjectMenuEnabled(CREATE_MENU_ITEM, true);
+    setProjectMenuEnabled( CONFIGURE_MENU_ITEM, false);
     setProjectMenuEnabled( ADDSEQ_MENU_ITEM, false);
     setProjectMenuEnabled(DELSEQ_MENU_ITEM, false);
     setProjectMenuEnabled(NEWSEQ_MENU_ITEM, false);
@@ -474,15 +485,6 @@ public class PlanWorks extends MDIDesktopFrame {
   }
 
   /**
-   * <code>getSequenceDirChooser</code> - for PlanWorksGUITest
-   *
-   * @return - <code>DirectoryChooser</code> - 
-   */
-  public final DirectoryChooser getSequenceDirChooser() {
-    return sequenceDirChooser;
-  }
-
-  /**
    * <code>getViewRenderingStartTime</code>
    *
    * @param viewName - <code>String</code> - 
@@ -598,6 +600,13 @@ public class PlanWorks extends MDIDesktopFrame {
     JMenuItem exitItem = new JMenuItem( EXIT_MENU_ITEM);
     exitItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent e) {
+          try {
+            System.err.println( "Writing Projects configure file: " +
+                                (new File( System.getProperty( "projects.config"))).
+                                getCanonicalPath());
+          } catch (IOException ioExcep) {
+          }
+          ConfigureAndPlugins.writeProjectConfigMap();
           System.exit(0);
         } });
     fileMenu.add( exitItem);
@@ -605,8 +614,9 @@ public class PlanWorks extends MDIDesktopFrame {
     projectMenu = new JMenu( PROJECT_MENU);
     JMenuItem createProjectItem = new JMenuItem( CREATE_MENU_ITEM);
     JMenuItem openProjectItem = new JMenuItem( OPEN_MENU_ITEM);
+    JMenuItem configureProjectItem = new JMenuItem( CONFIGURE_MENU_ITEM);
     JMenuItem deleteProjectItem = new JMenuItem( DELETE_MENU_ITEM);
-    //JMenuItem newSequenceItem = new JMenuItem( NEWSEQ_MENU_ITEM);
+    JMenuItem newSequenceItem = new JMenuItem( NEWSEQ_MENU_ITEM);
     JMenuItem addSequenceItem = new JMenuItem( ADDSEQ_MENU_ITEM);
     JMenuItem deleteSequenceItem = new JMenuItem(DELSEQ_MENU_ITEM);
 
@@ -628,18 +638,27 @@ public class PlanWorks extends MDIDesktopFrame {
           PlanWorks.planWorks.instantiateProjectThread( OPEN);
         }});
     projectMenu.add( openProjectItem);
+    configureProjectItem.addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent e) {
+          while(PlanWorks.planWorks == null) {
+            Thread.yield();
+          }
+          PlanWorks.planWorks.configureProject();
+        }});
+    projectMenu.add( configureProjectItem);
     deleteProjectItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent e) {
           PlanWorks.planWorks.deleteProjectThread();
           Thread.yield();
         }});
     projectMenu.add( deleteProjectItem);
+
     projectMenu.addSeparator();
-//     newSequenceItem.addActionListener(new ActionListener() {
-//         public void actionPerformed(ActionEvent e) {
-//           PlanWorks.planWorks.newSequenceThread();
-//         }});
-//     projectMenu.add(newSequenceItem);
+    newSequenceItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          PlanWorks.planWorks.newSequenceThread();
+        }});
+    projectMenu.add(newSequenceItem);
     addSequenceItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent e) {
           PlanWorks.planWorks.addSequenceThread();
@@ -652,6 +671,7 @@ public class PlanWorks extends MDIDesktopFrame {
       });
     projectMenu.add(deleteSequenceItem);
 
+    projectMenu.addSeparator();
     runTestItem.addActionListener(new ActionListener() {
         public final void actionPerformed(final ActionEvent e) {
           PlanWorks.planWorks.runTestWindow();
@@ -680,12 +700,11 @@ public class PlanWorks extends MDIDesktopFrame {
     thread.start();
   }
 
-//   private void newSequenceThread() {
-//     // Thread thread = new NewSequenceThread( newSequenceThreadListener);
-//     Thread thread = new NewSequenceThread();
-//     thread.setPriority(Thread.MIN_PRIORITY);
-//     thread.start();
-//   }
+  private void newSequenceThread() {
+    Thread thread = new NewSequenceThread( newSequenceThreadListener);
+    thread.setPriority(Thread.MIN_PRIORITY);
+    thread.start();
+  }
 
   private void addSequenceThread() {
     Thread thread = new AddSequenceThread( addSequenceThreadListener);
@@ -698,6 +717,29 @@ public class PlanWorks extends MDIDesktopFrame {
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
   }
+
+  private void configureProject() {
+    String projectName = currentProject.getName();
+    ConfigureProjectDialog configureDialog = new ConfigureProjectDialog( this);
+    if (configureDialog.getProjectName() == null) {
+      // user chose cancel
+      return;
+    }
+    List nameValueList = new ArrayList();
+    nameValueList.add( ConfigureAndPlugins.PROJECT_WORKING_DIR);
+    nameValueList.add( configureDialog.getWorkingDir());
+    nameValueList.add( ConfigureAndPlugins.PROJECT_PLANNER_PATH);
+    nameValueList.add( configureDialog.getPlannerPath());
+    nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_NAME);
+    nameValueList.add( configureDialog.getModelName());
+    nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_PATH);
+    nameValueList.add( configureDialog.getModelPath());
+    nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_OUTPUT_DEST_DIR);
+    nameValueList.add( configureDialog.getModelOutputDestDir());
+    nameValueList.add( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH);
+    nameValueList.add( configureDialog.getModelInitStatePath());
+    ConfigureAndPlugins.updateProjectConfigMap( projectName, nameValueList);
+  } // end configureProject
 
   /**
    * <code>getPlanSequence</code>
@@ -783,25 +825,22 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end buildPlanSeqViewMenu
 
 
-  private void createSequenceViewThread( final String viewName, 
-                                         final SequenceViewMenuItem menuItem) {
+  protected void createSequenceViewThread( final String viewName, 
+                                           final SequenceViewMenuItem menuItem) {
     Thread thread = new CreateSequenceViewThread(viewName, menuItem);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
   } // end createSequenceViewThread
 
   /**
-   * <code>createDirectoryChooser</code> - public for PWTestHelper
+   * <code>createSequenceDirChooser</code>
    *
+   * @param currentDirectory - <code>File</code> - 
+   * @return - <code>DirectoryChooser</code> - 
    */
-  public final void createDirectoryChooser() {
-    sequenceDirChooser = new DirectoryChooser();
-    if (! System.getProperty( "default.sequence.dir").equals( "")) {
-      sequenceDirChooser.setCurrentDirectory
-        ( new File( System.getProperty( "default.sequence.dir")));
-    }
-    sequenceDirChooser.setDialogTitle
-      ( "Select Planning Sequence Directory(ies)");
+  public final DirectoryChooser createSequenceDirChooser( File currentDirectory) {
+    final DirectoryChooser sequenceDirChooser = new DirectoryChooser( currentDirectory);
+    sequenceDirChooser.setDialogTitle( "Select Planning Sequence Directory(ies)");
     sequenceDirChooser.setMultiSelectionEnabled( true);
     sequenceDirChooser.getOkButton().addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent e) {
@@ -830,6 +869,40 @@ public class PlanWorks extends MDIDesktopFrame {
         }
       });
     sequenceDirChooser.setFileFilter( new SequenceDirectoryFilter());
+    return sequenceDirChooser;
+  } // end createSequenceDirChooser
+
+  public final DirectoryChooser createDirectoryChooser( File currentDirectory) {
+    final DirectoryChooser dirChooser = new DirectoryChooser( currentDirectory);
+    dirChooser.setDialogTitle( "Select Directory");
+    dirChooser.setMultiSelectionEnabled( false);
+    dirChooser.getOkButton().addActionListener( new ActionListener() {
+        public final void actionPerformed( final ActionEvent e) {
+          String dirChoice = dirChooser.getCurrentDirectory().getAbsolutePath();
+          File [] childDirs = dirChooser.getSelectedFiles();
+          // System.err.println( "createDirectoryChooser parent directory" + dirChoice);
+          // System.err.println( "childDirectories");
+          for (int i = 0, n = childDirs.length; i < n; i++) {
+            System.err.println( "i " + i + " " + childDirs[i].getName());
+          }
+          if ((dirChoice != null) && (dirChoice.length() > 0) &&
+              (new File( dirChoice)).isDirectory() &&
+              (childDirs.length == 0)) {
+            dirChooser.approveSelection();
+          } else {
+            String childDir = "<null>";
+            if (childDirs.length != 0) {
+              childDir = childDirs[0].getName();
+            }
+            JOptionPane.showMessageDialog
+              ( PlanWorks.this, "`" + dirChoice +
+                System.getProperty( "file.separator") +  childDir +
+                "'\nis not a valid directory.",
+                "No Directory Selected", JOptionPane.ERROR_MESSAGE);
+          }
+        }
+      });
+    return dirChooser;
   } // end createDirectoryChooser
 
 
@@ -881,24 +954,22 @@ public class PlanWorks extends MDIDesktopFrame {
   /**
    * <code>askSequenceDirectory</code>
    *
+   * @param workingDirectory - <code>File</code> - 
    * @return - <code>List</code> - of  List selectedSequenceUrls & List invalidSequenceUrls 
    */
-  protected List askSequenceDirectory() {
+  protected List askSequenceDirectory( File workingDirectory) {
     List returnList = new ArrayList();
     List invalidSequenceUrls = null, selectedSequenceUrls = null;
     while (true) {
       selectedSequenceUrls = new ArrayList(); invalidSequenceUrls = new ArrayList();
       // ask user for a single or multiple sequence directory(ies) of partialPlans
-      int returnVal =
-        PlanWorks.planWorks.sequenceDirChooser.showDialog( PlanWorks.planWorks, "");
+      DirectoryChooser dirChooser = createSequenceDirChooser( workingDirectory);
+      int returnVal = dirChooser.showDialog( PlanWorks.planWorks, "");
       if (returnVal == JFileChooser.APPROVE_OPTION) {
-        FileUtils.validateMultiSequenceDirectory( PlanWorks.planWorks.getSequenceDirChooser());
-        String currentSelectedDir =
-          PlanWorks.planWorks.getSequenceDirChooser().getCurrentDirectory().
-          getAbsolutePath();
+        FileUtils.validateMultiSequenceDirectory( dirChooser);
+        String currentSelectedDir = dirChooser.getCurrentDirectory().getAbsolutePath();
         // System.err.println( "currentSelectedDir " + currentSelectedDir);
-        File [] selectedFiles =
-          PlanWorks.planWorks.sequenceDirChooser.getSelectedFiles();
+        File [] selectedFiles = dirChooser.getSelectedFiles();
         for (int i = 0, n = selectedFiles.length; i < n; i++) {
           // System.err.println( "i " + i + " name " + selectedFiles[i].getName());
           String sequenceUrl = currentSelectedDir +
@@ -1148,6 +1219,13 @@ public class PlanWorks extends MDIDesktopFrame {
       configFile = new File( System.getProperty( "planworks.config") + ".template");
     }
     ConfigureAndPlugins.processPlanWorksConfigFile( configFile);
+
+    configFile = new File( System.getProperty( "projects.config"));
+    if (! configFile.isFile()) {
+      // projects.config not yet created from projects.config.template
+      configFile = new File( System.getProperty( "projects.config") + ".template");
+    }
+    ConfigureAndPlugins.processProjectsConfigFile( configFile);
 
     planWorks = new PlanWorks( buildConstantMenus());
 

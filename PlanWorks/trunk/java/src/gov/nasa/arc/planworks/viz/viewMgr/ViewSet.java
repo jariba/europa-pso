@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.64 2004-06-10 01:36:12 taylor Exp $
+// $Id: ViewSet.java,v 1.65 2004-09-03 00:35:42 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -188,7 +188,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
    * @param MDIInternalFrame the frame containing the view.
    */
   public void removeViewFrame(MDIInternalFrame viewFrame) {
-    //System.err.println("in removeViewFrame");
+    // System.err.println("in removeViewFrame " + viewFrame);
     if(views.containsValue(viewFrame)) {
       //System.err.println("have frame");
       Container contentPane = viewFrame.getContentPane();
@@ -239,7 +239,8 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
         getViewManager().removeViewSet(viewable);
       }
     }
-    if(viewFrame.getTitle().indexOf("SequenceStepsView") != -1 && 
+    String seqStepsViewName = ViewConstants.SEQUENCE_STEPS_VIEW.replaceAll( " ", "");
+    if(viewFrame.getTitle().indexOf( seqStepsViewName) != -1 && 
        this instanceof SequenceViewSet) {
       close();
       getViewManager().removeViewSet(viewable);

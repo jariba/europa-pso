@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.98 2004-08-14 01:39:10 taylor Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.99 2004-09-03 00:35:34 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -937,9 +937,10 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
     if(files.length < DbConstants.NUMBER_OF_SEQ_FILES) {
       return "Sequence file(s) missing.";
     }
-    if(files.length == DbConstants.NUMBER_OF_SEQ_FILES) {
-      return "No step directories.";
-    }
+    // allow sequences with no step directories
+//     if(files.length == DbConstants.NUMBER_OF_SEQ_FILES) {
+//       return "No step directories.";
+//     }
     return null;
   }
   private static final Pattern stepPattern = Pattern.compile("step(\\d+)");

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.40 2004-08-21 00:31:58 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.41 2004-09-03 00:35:41 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -292,10 +292,12 @@ public class SequenceStepsView extends SequenceView {
 	initPMThread.setProgressMonitorCancel();
         return;
       }
-
-      expandViewFrame( viewFrame,
-                       (int) jGoView.getDocumentSize().getWidth(),
-                       (int) jGoView.getDocumentSize().getHeight());
+      // PlannerController creates a view with no steps -- do not squish it
+      if (planSequence.getPlanDBSizeList().size() > 0) {
+        expandViewFrame( viewFrame,
+                         (int) jGoView.getDocumentSize().getWidth(),
+                         (int) jGoView.getDocumentSize().getHeight());
+      }
       long stopTimeMSecs = System.currentTimeMillis();
       System.err.println( "   ... " + ViewConstants.SEQUENCE_STEPS_VIEW + " elapsed time: " +
                           (stopTimeMSecs -
@@ -707,12 +709,20 @@ public class SequenceStepsView extends SequenceView {
                                   final SequenceStepsView sequenceStepsView) {
     refreshItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent evt) {
-          planSequence.refresh();
-          heightScaleFactor = computeHeightScaleFactor();
-          redraw();
+          refreshView();
         }
       });
   }
+
+  /**
+   * <code>refreshView</code>
+   *
+   */
+  public void refreshView() {
+    planSequence.refresh();
+    heightScaleFactor = computeHeightScaleFactor();
+    redraw();
+  } // end refreshView
 
   private List getPartialPlanViewList( int stepNumber) {
     List partialPlanViewList = new ArrayList();

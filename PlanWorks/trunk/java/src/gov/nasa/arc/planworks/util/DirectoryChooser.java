@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DirectoryChooser.java,v 1.4 2004-02-03 19:23:55 miatauro Exp $
+// $Id: DirectoryChooser.java,v 1.5 2004-09-03 00:35:38 taylor Exp $
 //
 //
 // Will Taylor -- started 26mar03
@@ -32,14 +32,32 @@ import javax.swing.plaf.basic.BasicFileChooserUI;
 public class DirectoryChooser extends JFileChooser {
 
   private JButton okButton;
+  private File currentDirectory;
 
   /**
    * <code>DirectoryChooser</code> - constructor 
    *
+   * @param currentDirectory - <code>File</code> - 
    */
   public DirectoryChooser() {
     super();
-    okButton = new JButton( "OK");
+    this.currentDirectory = null;
+    commonConstructor();
+  }
+    
+  /**
+   * <code>DirectoryChooser</code> - constructor 
+   *
+   * @param currentDirectory - <code>File</code> - 
+   */
+  public DirectoryChooser( File currentDirectory) {
+    super( currentDirectory);
+    this.currentDirectory = currentDirectory;
+    commonConstructor();
+  }
+
+  private void commonConstructor() {
+     okButton = new JButton( "OK");
     JButton canButton = new JButton( "Cancel");
     JPanel buttonPanel = new JPanel( new GridLayout( 2, 1));
     // with this, files do not show up
@@ -59,15 +77,15 @@ public class DirectoryChooser extends JFileChooser {
           cancelSelection();
         }
       });
-  } // end constructor
+  } // end commonConstructor
 
-  public DirectoryChooser(final int mode) throws IllegalArgumentException {
-    this();
-    if(mode != JFileChooser.DIRECTORIES_ONLY && mode != JFileChooser.FILES_ONLY && 
-       mode != JFileChooser.FILES_AND_DIRECTORIES) {
-      throw new IllegalArgumentException();
-    }
-  }
+//   public DirectoryChooser(final int mode) throws IllegalArgumentException {
+//     this();
+//     if(mode != JFileChooser.DIRECTORIES_ONLY && mode != JFileChooser.FILES_ONLY && 
+//        mode != JFileChooser.FILES_AND_DIRECTORIES) {
+//       throw new IllegalArgumentException();
+//     }
+//   }
 
     /**
      * <code>getOkButton</code>
@@ -77,6 +95,5 @@ public class DirectoryChooser extends JFileChooser {
   public JButton getOkButton() {
     return okButton;
   }
-
 
 } // end class DirectoryChooser

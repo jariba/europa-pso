@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ViewGenerics.java,v 1.24 2004-08-14 01:39:12 taylor Exp $
+// $Id: ViewGenerics.java,v 1.25 2004-09-03 00:35:40 taylor Exp $
 //
 // PlanWorks
 //
@@ -79,6 +79,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
+import gov.nasa.arc.planworks.viz.sequence.sequenceSteps.SequenceStepsView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -513,6 +514,27 @@ public class ViewGenerics {
   private final RuleInstanceView _getRuleInstanceView(MDIInternalFrame frame) {
     return (RuleInstanceView) CollectionUtils.findFirst
       ( new RuleInstanceViewFinder(), frame.getContentPane().getComponents());
+  }
+
+
+  class SequenceStepsViewFinder implements BooleanFunctor {
+    public SequenceStepsViewFinder(){}
+    public final boolean func(Object o){return (o instanceof SequenceStepsView);}
+  }
+
+  /**
+   * <code>getSequenceStepsView</code> - cannot be generalized (jdk1.4)
+   *
+   * @param frame - <code>MDIInternalFrame</code> - 
+   * @return - <code>SequenceStepsView</code> - 
+   */
+  public static SequenceStepsView getSequenceStepsView( MDIInternalFrame frame) {
+    return generics._getSequenceStepsView(frame);
+  } // end getRuleView
+
+  private final SequenceStepsView _getSequenceStepsView(MDIInternalFrame frame) {
+    return (SequenceStepsView) CollectionUtils.findFirst
+      ( new SequenceStepsViewFinder(), frame.getContentPane().getComponents());
   }
 
 
