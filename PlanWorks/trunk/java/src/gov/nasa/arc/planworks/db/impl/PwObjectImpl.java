@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObjectImpl.java,v 1.18 2004-02-13 21:22:55 miatauro Exp $
+// $Id: PwObjectImpl.java,v 1.19 2004-02-17 19:01:17 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -19,6 +19,7 @@ import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 import gov.nasa.arc.planworks.db.PwObject;
+import gov.nasa.arc.planworks.db.PwVariable;
 
 
 /**
@@ -35,6 +36,7 @@ public class PwObjectImpl implements PwObject {
   private String name;
   //private String emptySlotInfo;
   private List componentIdList; // element Integer
+  private List variableIdList;
   protected PwPartialPlanImpl partialPlan;
   //  private boolean haveCreatedSlots;
   //   private boolean haveCalculatedSlotTimes;
@@ -47,7 +49,7 @@ public class PwObjectImpl implements PwObject {
    * @param partialPlan - <code>PwPartialPlanImpl</code> - 
    */
   public PwObjectImpl( final Integer id, final int objectType, final Integer parentId,
-                       final String name, final String componentIds, 
+                       final String name, final String componentIds, final String variableIds,
                        final PwPartialPlanImpl partialPlan) {
     this.id = id;
     this.name = name;
@@ -62,6 +64,13 @@ public class PwObjectImpl implements PwObject {
       StringTokenizer strTok = new StringTokenizer(componentIds, ",");
       while(strTok.hasMoreTokens()) {
         componentIdList.add(Integer.valueOf(strTok.nextToken()));
+      }
+    }
+    variableIdList = new ArrayList();
+    if(variableIds != null) {
+      StringTokenizer strTok = new StringTokenizer(variableIds, ",");
+      while(strTok.hasMoreTokens()) {
+        variableIdList.add(Integer.valueOf(strTok.nextToken()));
       }
     }
   } // end constructor
@@ -125,6 +134,20 @@ public class PwObjectImpl implements PwObject {
 
   public int getObjectType(){return type;}
 
-  public List getVariablesList(){return new ArrayList();}
+  public List getVariablesList() {
+    List retval = new ArrayList(variableIdList.size());
+    ListIterator varIdIterator = variableIdList.listIterator();
+    while(varIdIterator.hasNext()) {
+      Integer varId = (Integer) varIdIterator.next();
+      PwVariable var = partialPlan.getVariable(varId);
+      if(var != null) {
+        retval.add(var);
+      }
+      else {
+        System.err.println("PwObjectImpl.getVariablesList: VarId " + varId + " is null.");
+      }
+    }
+    return retval;
+  }
 
 } // end class PwObjectImpl
