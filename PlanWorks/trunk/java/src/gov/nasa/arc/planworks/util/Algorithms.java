@@ -16,6 +16,10 @@ class Algorithms
      * numbers are assumed to begin at 0. This algorithm ensures that no temporal overlap occurs
      * on any given row and that the minimum number of rows are required. Extents whcih do not
      * overlap the horizon defined by horizonStart and horizonEnd will be given a row of -1.
+     * @param horizonStart Will ignore rows that cannot occur at or after this time.
+     * @param horizonEnd Will ignore rows that cannot occur at or before this time.
+     * @param extents A list of objects implementing the Extent interface whose rows are to be set (thus may be changed)
+     * @return A susbet of extents which intersected the time horizon, and for which rows have been assigned.
      */
     public static List allocateRows(int horizonStart, int horizonEnd, List extents)
     {
