@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.31 2004-05-13 20:24:02 taylor Exp $ -->
+<!-- $Id: planWorks.xml,v 1.32 2004-06-22 21:43:17 miatauro Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -20,6 +20,7 @@
                 <pathelement location="${jgo.home}"/>
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
 		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+		<pathelement location="${antlr.home}/antlr.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -64,6 +65,7 @@
                 <pathelement location="${jgo.home}"/>
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
 		<pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+		<pathelement location="${antlr.home}/antlr.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -108,6 +110,7 @@
                 <pathelement location="${jgo.home}"/>
 		<pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
                 <pathelement location="${planworks.root}/java/lib/mysql/mysql-connector.jar"/>
+		<pathelement location="${antlr.home}/antlr.jar"/>
 	</path>
 
 	<java dir="${planworks.root}/java/src" 
@@ -148,6 +151,7 @@ value="-Xrunhprof:heap=all,cpu=times,format=a,file=${planworks.root}/java/prof.t
 <target name="cleanCls">
         <ant dir="./" target="cleanCls"/>
 </target>
+
   <target name="chk_jvm_gcMax">
     <!-- not able to check for arbitrary integer, so for now, require 975 
          to be the only overrride value -->
