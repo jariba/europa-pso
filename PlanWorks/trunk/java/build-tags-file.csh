@@ -1,5 +1,5 @@
 #! /bin/tcsh -f
-# $Id: build-tags-file.csh,v 1.78 2004-08-06 20:05:28 taylor Exp $
+# $Id: build-tags-file.csh,v 1.79 2004-08-07 01:18:23 taylor Exp $
 #
 # build xemacs tags file on unix/linux based systems
 #
@@ -148,8 +148,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/util/UniqueSet.java \
     src/gov/nasa/arc/planworks/util/Utilities.java \
     src/gov/nasa/arc/planworks/util/ViewRenderingException.java \
-    src/gov/nasa/arc/planworks/viz/AskQueryEntityKey.java \
-    src/gov/nasa/arc/planworks/viz/AskQueryTwoEntityKeys.java \
     src/gov/nasa/arc/planworks/viz/NodeShapes.java \
     src/gov/nasa/arc/planworks/viz/OverviewToolTip.java \
     src/gov/nasa/arc/planworks/viz/StringViewSetKey.java \
@@ -172,7 +170,6 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/nodes/TimelineNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/TokenNode.java \
     src/gov/nasa/arc/planworks/viz/nodes/VariableContainerNode.java \
-    src/gov/nasa/arc/planworks/viz/partialPlan/AskNodeByKey.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/CreatePartialPlanViewThread.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanView.java \
     src/gov/nasa/arc/planworks/viz/partialPlan/PartialPlanViewMenu.java \
@@ -241,6 +238,9 @@ etags $etags_flag planWorks.TAGS \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/StepQueryView.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/TokenQueryView.java \
     src/gov/nasa/arc/planworks/viz/sequence/sequenceQuery/VariableQueryView.java \
+    src/gov/nasa/arc/planworks/viz/util/AskNodeByKey.java \
+    src/gov/nasa/arc/planworks/viz/util/AskQueryEntityKey.java \
+    src/gov/nasa/arc/planworks/viz/util/AskQueryTwoEntityKeys.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionComparatorAscending.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionComparatorDescending.java \
     src/gov/nasa/arc/planworks/viz/util/DBTransactionTable.java \

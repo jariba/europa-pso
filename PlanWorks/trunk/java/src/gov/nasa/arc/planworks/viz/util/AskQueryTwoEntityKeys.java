@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskQueryTwoEntityKeys.java,v 1.1 2004-08-05 03:30:17 taylor Exp $
+// $Id: AskQueryTwoEntityKeys.java,v 1.1 2004-08-07 01:18:31 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 04aug04
 //
 
-package gov.nasa.arc.planworks.viz;
+package gov.nasa.arc.planworks.viz.util;
 
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +28,8 @@ import javax.swing.JTextField;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.util.Utilities;
+import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 
 

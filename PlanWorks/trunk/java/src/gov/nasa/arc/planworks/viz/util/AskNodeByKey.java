@@ -4,14 +4,14 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: AskNodeByKey.java,v 1.8 2004-06-14 22:11:25 taylor Exp $
+// $Id: AskNodeByKey.java,v 1.1 2004-08-07 01:18:30 taylor Exp $
 //
 // PlanWorks -- 
 //
 // Will Taylor -- started 07oct03
 //
 
-package gov.nasa.arc.planworks.viz.partialPlan;
+package gov.nasa.arc.planworks.viz.util;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -30,6 +30,7 @@ import gov.nasa.arc.planworks.db.PwEntity;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
 import gov.nasa.arc.planworks.viz.partialPlan.decision.DecisionView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
