@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.46 2003-09-10 00:23:09 taylor Exp $
+// $Id: PlanWorks.java,v 1.47 2003-09-10 00:31:58 miatauro Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -470,8 +470,9 @@ public class PlanWorks extends MDIDesktopFrame {
         JOptionPane.showMessageDialog
           (PlanWorks.this, dupExcep.getMessage().substring( index + 1),
            "Duplicate Name Exception", JOptionPane.ERROR_MESSAGE);
-        System.err.println( dupExcep);
-        // dupExcep.printStackTrace();
+          System.err.println( dupExcep);
+          dupExcep.printStackTrace();
+          isProjectCreated = false; 
       } catch(Exception e) {
         //         int index = e.getMessage().indexOf(":");
         //         JOptionPane.showMessageDialog(PlanWorks.this, e.getMessage().substring(index+1),
@@ -695,7 +696,7 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
            "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
         System.err.println( rnfExcep);
-        // rnfExcep.printStackTrace();
+        rnfExcep.printStackTrace();
       }
       JMenu partialPlanMenu = clearSeqPartialPlanViewMenu();
       addSeqPartialPlanViewMenu( currentProject, partialPlanMenu);
@@ -858,7 +859,10 @@ public class PlanWorks extends MDIDesktopFrame {
           String partialPlanName = (String) ppNamesItr.next();
           //System.err.println( "    partialPlanName " + partialPlanName);
           JMenu partialPlanMenu = new JMenu( partialPlanName);
-          buildViewSubMenu( partialPlanMenu, seqUrl, partialPlanName);
+          //change seqUrl
+          //buildViewSubMenu( partialPlanMenu, seqUrl, partialPlanName);
+          System.err.println("PartialPlan name: " + partialPlanName);
+          buildViewSubMenu(partialPlanMenu, seqUrl, (String) sequenceNameMap.get(seqUrl), partialPlanName);
           seqMenu.add( partialPlanMenu);
         }
       } catch (ResourceNotFoundException rnfExcep) {
@@ -874,10 +878,14 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end buildSeqPartialPlanViewMenu
 
 
-  private void buildViewSubMenu( JMenu partialPlanMenu, String seqUrl,
+  /*  private void buildViewSubMenu( JMenu partialPlanMenu, String seqUrl,
+      String partialPlanName) {*/
+  private void buildViewSubMenu( JMenu partialPlanMenu, String seqUrl, String seqName,
                                  String partialPlanName) {
     SeqPartPlanViewMenuItem constraintNetworkViewItem =
-          new SeqPartPlanViewMenuItem( "Constraint Network", seqUrl, partialPlanName);
+      //          new SeqPartPlanViewMenuItem( "Constraint Network", seqUrl, partialPlanName);
+      new SeqPartPlanViewMenuItem( "Constraint Network", seqUrl, seqName, partialPlanName);
+
     constraintNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -886,7 +894,8 @@ public class PlanWorks extends MDIDesktopFrame {
     partialPlanMenu.add( constraintNetworkViewItem);
 
     SeqPartPlanViewMenuItem temporalExtentViewItem =
-          new SeqPartPlanViewMenuItem( "Temporal Extent", seqUrl, partialPlanName);
+      //          new SeqPartPlanViewMenuItem( "Temporal Extent", seqUrl, partialPlanName);
+          new SeqPartPlanViewMenuItem( "Temporal Extent", seqUrl, seqName, partialPlanName);
     temporalExtentViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -895,7 +904,8 @@ public class PlanWorks extends MDIDesktopFrame {
     partialPlanMenu.add( temporalExtentViewItem);
 
     SeqPartPlanViewMenuItem temporalNetworkViewItem =
-          new SeqPartPlanViewMenuItem( "Temporal Network", seqUrl, partialPlanName);
+      //new SeqPartPlanViewMenuItem( "Temporal Network", seqUrl, partialPlanName);
+      new SeqPartPlanViewMenuItem( "Temporal Network", seqUrl, seqName, partialPlanName);
     temporalNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -904,7 +914,8 @@ public class PlanWorks extends MDIDesktopFrame {
     partialPlanMenu.add( temporalNetworkViewItem);
     temporalNetworkViewItem.setEnabled(false);
     SeqPartPlanViewMenuItem timelineViewItem =
-          new SeqPartPlanViewMenuItem( "Timeline", seqUrl, partialPlanName);
+      //          new SeqPartPlanViewMenuItem( "Timeline", seqUrl, partialPlanName);
+      new SeqPartPlanViewMenuItem( "Timeline", seqUrl, seqName, partialPlanName);
     timelineViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -913,7 +924,8 @@ public class PlanWorks extends MDIDesktopFrame {
     partialPlanMenu.add( timelineViewItem);
 
     SeqPartPlanViewMenuItem tokenNetworkViewItem =
-          new SeqPartPlanViewMenuItem( "Token Network", seqUrl, partialPlanName);
+      //          new SeqPartPlanViewMenuItem( "Token Network", seqUrl, partialPlanName);
+      new SeqPartPlanViewMenuItem( "Token Network", seqUrl, seqName, partialPlanName);
     tokenNetworkViewItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
               PlanWorks.planWorks.createPartialPlanViewThread
@@ -1045,6 +1057,7 @@ public class PlanWorks extends MDIDesktopFrame {
           (PlanWorks.this, viewName, "View Not Supported", 
            JOptionPane.INFORMATION_MESSAGE);
       }
+      //}
     } // end renderView
 
     private void finishViewRendering( MDIInternalFrame viewFrame, String viewName,
@@ -1083,10 +1096,11 @@ public class PlanWorks extends MDIDesktopFrame {
     private String sequenceName;
     private String partialPlanName;
 
-    public SeqPartPlanViewMenuItem( String viewName, String seqUrl, String partialPlanName) {
+    //public SeqPartPlanViewMenuItem( String viewName, String seqUrl, String partialPlanName) {
+    public SeqPartPlanViewMenuItem( String viewName, String seqUrl, String seqName, String partialPlanName) {
       super( viewName);
       this.seqUrl = seqUrl;
-      this.sequenceName = getUrlLeaf( seqUrl);
+      this.sequenceName = seqName;
       this.partialPlanName = partialPlanName;
     }
 

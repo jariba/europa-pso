@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.25 2003-09-09 20:40:51 miatauro Exp $
+// $Id: ViewSet.java,v 1.26 2003-09-10 00:32:31 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -64,8 +64,6 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     this.remover = remover;
     this.desktopFrame = desktopFrame;
     this.contentSpec = new ContentSpec(partialPlan, this);
-    //change the arguments to something more sensible
-    //System.err.println(planName);
     this.contentSpecWindow = 
       desktopFrame.createFrame("Content specification for ".concat(planName), this, false, false,
                                false, true);

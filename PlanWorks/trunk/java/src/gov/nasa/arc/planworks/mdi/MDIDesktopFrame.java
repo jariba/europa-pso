@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.4 2003-06-30 21:20:46 miatauro Exp $
+// $Id: MDIDesktopFrame.java,v 1.5 2003-09-10 00:32:15 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -13,6 +13,7 @@ import java.awt.Container;
 import java.awt.Rectangle;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
@@ -24,7 +25,7 @@ import javax.swing.UIManager;
  * Toplevel frame that contains an MDIDynamicMenuBar, an MDIWindowButtonBar, and MDIInternalFrames.
  */
 
-public class MDIDesktopFrame extends JFrame {
+public class MDIDesktopFrame extends JFrame implements TileCascader {
   private MDIDynamicMenuBar menuBar = null;
   private MDIWindowButtonBar windowBar = null;
   private MDIDesktopPane desktopPane = null;
@@ -37,7 +38,7 @@ public class MDIDesktopFrame extends JFrame {
   public MDIDesktopFrame(String name) {
     super(name);
     Container contentPane = getContentPane();
-    menuBar = new MDIDynamicMenuBar();
+    menuBar = new MDIDynamicMenuBar(this);
     windowBar = new MDIWindowButtonBar(30, 80);
     desktopPane = new MDIDesktopPane();
     // contentPane.add(menuBar, BorderLayout.NORTH);
@@ -59,7 +60,7 @@ public class MDIDesktopFrame extends JFrame {
   public MDIDesktopFrame(String name, JMenu [] constantMenus) {
     super(name);
     Container contentPane = getContentPane();
-    menuBar = new MDIDynamicMenuBar(constantMenus, true);
+    menuBar = new MDIDynamicMenuBar(constantMenus, true, this);
     windowBar = new MDIWindowButtonBar(30, 80);
     desktopPane = new MDIDesktopPane();
     // contentPane.add(menuBar, BorderLayout.NORTH);
@@ -162,7 +163,69 @@ public class MDIDesktopFrame extends JFrame {
     MDIInternalFrame newFrame = new MDIInternalFrame(title, menuBar, windowBar, viewSet, resizable,
                                                      closable, maximizable, iconifiable);
     desktopPane.add(newFrame);
-    newFrame.setVisible(true);
+    try {
+      newFrame.setVisible(true);
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
     return newFrame;
+  }
+
+  public void tileWindows(boolean isHorizontal) {
+    JInternalFrame [] frames = desktopPane.getAllFrames();
+    int xmin = 0;
+    int ymin = 0;
+    for(int i = 0; i < frames.length; i++) {
+      if(frames[i].getTitle().indexOf("Content specification") != -1) {
+        frames[i].setLocation(0, 0);
+        ymin = frames[i].getHeight();
+      }
+    }
+    if(isHorizontal) {
+      int xmax = getX() + getWidth() - 110;
+      int height = getHeight() - ymin - 90;
+      int xinc = (xmax - xmin) / (frames.length - 1);
+      for(int i = 0; i < frames.length; i++) {
+        if(frames[i].getTitle().indexOf("Content specification") != -1) {
+          continue;
+        }
+        frames[i].setBounds(xmin, ymin, xinc, height);
+        xmin += xinc;
+      }
+    }
+    else {
+      int ymax = getY() + getHeight() - 190;
+      int width = getWidth() - 15;
+      int yinc = (ymax - ymin) / (frames.length - 1);
+      for(int i = 0; i < frames.length; i++) {
+        if(frames[i].getTitle().indexOf("Content specification") != -1) {
+          continue;
+        }
+        frames[i].setBounds(xmin, ymin, width, yinc);
+        ymin += yinc;
+      }
+    }
+  }
+
+  public void cascadeWindows() {
+    JInternalFrame [] frames = desktopPane.getAllFrames();
+    int xmin = 0;
+    int ymin = 0;
+    for(int i = 0; i < frames.length; i++) {
+      if(frames[i].getTitle().indexOf("Content specification") != -1) {
+        frames[i].setLocation(0, 0);
+        ymin = frames[i].getHeight();
+      }
+    }
+    for(int i = 0; i < frames.length; i++) {
+      if(frames[i].getTitle().indexOf("Content specification") != -1) {
+        continue;
+      }
+      frames[i].setLocation(xmin, ymin);
+      try{frames[i].setSelected(true);}catch(Exception e){}
+      xmin += 50;
+      ymin += 50;
+    }
   }
 }

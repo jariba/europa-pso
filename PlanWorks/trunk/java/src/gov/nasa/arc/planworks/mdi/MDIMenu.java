@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIMenu.java,v 1.2 2003-06-16 22:32:15 miatauro Exp $
+// $Id: MDIMenu.java,v 1.3 2003-09-10 00:32:15 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -21,4 +21,6 @@ public interface MDIMenu {
    * should be drawn.
    */
   public void notifyActivated(MDIFrame frame);
+  public void notifyDeleted(MDIFrame frame);
+  public void addWindow(MDIInternalFrame frame);
 }
