@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.65 2004-09-03 00:35:42 taylor Exp $
+// $Id: ViewSet.java,v 1.66 2004-09-21 01:07:08 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -141,9 +141,14 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
 
   public MDIInternalFrame openView(String viewClassName, PartialPlanViewState viewState) {
     Class viewClass = null;
+    Class [] constructorParams = new Class [3];
     // System.err.println( "ViewSet.openView viewClassName " + viewClassName);
     try {
       viewClass = Class.forName(viewClassName);
+      constructorParams[0] = Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewableObject");
+      constructorParams[1] = Class.forName("gov.nasa.arc.planworks.viz.viewMgr.ViewSet");
+      constructorParams[2] =
+        Class.forName("gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState");
     } catch (ClassNotFoundException excp) {
       excp.printStackTrace();
       System.exit(1);
@@ -151,7 +156,7 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     if(views.containsKey(viewClass)) {
       return getViewByClass(viewClass);
     }
-    Constructor [] constructors = viewClass.getDeclaredConstructors();
+    // Constructor [] constructors = viewClass.getDeclaredConstructors();
     String frameViewName = viewClassName.substring( viewClassName.lastIndexOf( ".") + 1);
     MDIInternalFrame viewFrame = desktopFrame.createFrame( frameViewName + " of " +
                                                            viewable.getName(),
@@ -164,8 +169,19 @@ public class ViewSet implements RedrawNotifier, MDIWindowBar {
     stateConstructorArgs[0] = viewable;
     stateConstructorArgs[1] = this;
     stateConstructorArgs[2] = viewState;
+
+    Constructor constructor = null;
     try {
-      view = (VizView) constructors[1].newInstance(stateConstructorArgs);
+      constructor = viewClass.getConstructor(constructorParams);
+    }
+    catch (NoSuchMethodException nsme) {
+      nsme.printStackTrace();
+      System.exit(1);
+    }
+
+    try {
+      view = (VizView) constructor.newInstance(stateConstructorArgs);
+      // view = (VizView) constructors[1].newInstance(stateConstructorArgs);
     } 
     catch (InvocationTargetException ite) {
 	ite.getCause().printStackTrace();

@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.127 2004-09-14 22:59:35 taylor Exp $
+# $Id: README,v 1.128 2004-09-21 01:07:02 taylor Exp $
 #
 
 NOTE:  Due to some SQL syntax irregularities, MySQL 4.0.20 fails to correctly
@@ -29,9 +29,14 @@ o In the Resource Profile View, Mouse-Right "Rescale '<resource-name>' Profile" 
   values and create a new view of the selected resource.  It is also possible to
   "Reset" the created "unary" resource view to its original scaling.
 
+o All partial plan views, and Content Filter dialogs now have the background 
+  Mouse-Right selections: "Step Backward All Views" and "Step Forward All Views" 
+  which "step" all active views for the partial plan step upon which it is invoked.
+
 
 o GNATS PRs and CRs completed:
   #2556: Scale for resource view.
+  #2566: Find Path should highlight links.
 
 
 CVS CHECKOUT

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.67 2004-09-16 19:01:49 taylor Exp $
+// $Id: TimelineView.java,v 1.68 2004-09-21 01:07:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -858,6 +858,8 @@ public class TimelineView extends PartialPlanView {
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
                         mouseRightPopup);
+
+    createStepAllViewItems( partialPlan, mouseRightPopup);
 
     ViewGenerics.createConfigPopupItems( ViewConstants.TIMELINE_VIEW, this, mouseRightPopup);
 

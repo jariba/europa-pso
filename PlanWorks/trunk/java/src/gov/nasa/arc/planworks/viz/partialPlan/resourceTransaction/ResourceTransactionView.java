@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.26 2004-09-14 22:59:41 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.27 2004-09-21 01:07:06 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -409,14 +409,16 @@ public class ResourceTransactionView extends ResourceView  {
     JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Filter");
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
-    
-    String timeMarkTitle = "Set Time Scale Line";
-    if (viewSet.doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
-      timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Profile");
+
+    if (resource != null) {
+      String timeMarkTitle = "Set Time Scale Line";
+      if (viewSet.doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
+        timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Profile");
+      }
+      JMenuItem timeMarkItem = new JMenuItem( timeMarkTitle);
+      createTimeMarkItem( timeMarkItem, resource);
+      mouseRightPopup.add( timeMarkItem);
     }
-    JMenuItem timeMarkItem = new JMenuItem( timeMarkTitle);
-    createTimeMarkItem( timeMarkItem, resource);
-    mouseRightPopup.add( timeMarkItem);
 
     if (((PartialPlanViewSet) this.getViewSet()).getActiveResource() != null) {
       JMenuItem activeResourceItem = new JMenuItem( "Snap to Active Resource");
@@ -439,6 +441,8 @@ public class ResourceTransactionView extends ResourceView  {
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
                         mouseRightPopup);
+
+    createStepAllViewItems( partialPlan, mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

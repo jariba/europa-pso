@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DecisionView.java,v 1.14 2004-08-21 00:31:55 taylor Exp $
+// $Id: DecisionView.java,v 1.15 2004-09-21 01:07:06 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -704,6 +704,8 @@ public class DecisionView extends PartialPlanView {
 
       createAllViewItems( partialPlan, partialPlanName, planSequence,
                           viewListenerList, mouseRightPopup);
+
+      createStepAllViewItems( partialPlan, mouseRightPopup);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     } // end mouseRightPopupMenu

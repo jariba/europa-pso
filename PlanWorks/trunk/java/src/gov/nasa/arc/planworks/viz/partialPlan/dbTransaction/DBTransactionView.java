@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: DBTransactionView.java,v 1.17 2004-08-21 00:31:55 taylor Exp $
+// $Id: DBTransactionView.java,v 1.18 2004-09-21 01:07:06 taylor Exp $
 //
 // PlanWorks
 //
@@ -402,6 +402,8 @@ public class DBTransactionView extends PartialPlanView {
       DBTransactionView.this.createAllViewItems( partialPlan, partialPlanName,
                                                  planSequence, viewListenerList,
                                                  mouseRightPopup);
+
+      DBTransactionView.this.createStepAllViewItems( partialPlan, mouseRightPopup);
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     } // end mouseRightPopupMenu

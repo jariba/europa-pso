@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.60 2004-09-09 22:45:06 taylor Exp $
+// $Id: TemporalExtentView.java,v 1.61 2004-09-21 01:07:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -866,6 +866,7 @@ public class TemporalExtentView extends PartialPlanView  {
     }
     createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
                         mouseRightPopup);
+    createStepAllViewItems( partialPlan, mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.29 2004-09-15 22:26:49 taylor Exp $
+// $Id: ResourceProfileView.java,v 1.30 2004-09-21 01:07:06 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -359,19 +359,21 @@ public class ResourceProfileView extends ResourceView  {
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
 
-    JMenuItem rescaleProfileItem =  new JMenuItem( "Rescale '" + resource.getName() +
-                                                   "' Profile");
-    createRescaleProfileItem( rescaleProfileItem, resource, this);
-    mouseRightPopup.add( rescaleProfileItem);
+    if (resource != null) {
+      JMenuItem rescaleProfileItem =  new JMenuItem( "Rescale '" + resource.getName() +
+                                                     "' Profile");
+      createRescaleProfileItem( rescaleProfileItem, resource, this);
+      mouseRightPopup.add( rescaleProfileItem);
     
-    String timeMarkTitle = "Set Time Scale Line";
-    if (viewSet.doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
-      timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Transactions");
+      String timeMarkTitle = "Set Time Scale Line";
+      if (viewSet.doesViewFrameExist( ViewConstants.RESOURCE_TRANSACTION_VIEW)) {
+        timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Transactions");
+      }
+      JMenuItem timeMarkItem = new JMenuItem( timeMarkTitle);
+      createTimeMarkItem( timeMarkItem, resource);
+      mouseRightPopup.add( timeMarkItem);
     }
-    JMenuItem timeMarkItem = new JMenuItem( timeMarkTitle);
-    createTimeMarkItem( timeMarkItem, resource);
-    mouseRightPopup.add( timeMarkItem);
-
+    
     if (((PartialPlanViewSet) this.getViewSet()).getActiveResource() != null) {
       JMenuItem activeResourceItem = new JMenuItem( "Snap to Active Resource");
       createActiveResourceItem( activeResourceItem);
@@ -391,8 +393,9 @@ public class ResourceProfileView extends ResourceView  {
       createCloseNavigatorWindowsItem( closeWindowsItem);
       mouseRightPopup.add( closeWindowsItem);
     }
-    createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
-                        mouseRightPopup);
+    createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList, mouseRightPopup);
+
+    createStepAllViewItems( partialPlan, mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

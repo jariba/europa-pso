@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.43 2004-09-09 22:45:07 taylor Exp $
+// $Id: SequenceStepsView.java,v 1.44 2004-09-21 01:07:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -13,10 +13,8 @@
 
 package gov.nasa.arc.planworks.viz.sequence.sequenceSteps;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -29,13 +27,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoBrush;
@@ -47,29 +41,20 @@ import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.CreateSequenceViewThread;
-import gov.nasa.arc.planworks.SequenceViewMenuItem;
 import gov.nasa.arc.planworks.db.PwListener;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
-import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
-import gov.nasa.arc.planworks.util.CreatePartialPlanException;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
-import gov.nasa.arc.planworks.util.ResourceNotFoundException;
 import gov.nasa.arc.planworks.util.SwingWorker;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
-import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
-import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.sequence.SequenceView;
 import gov.nasa.arc.planworks.viz.sequence.SequenceViewSet;
 import gov.nasa.arc.planworks.viz.util.ProgressMonitorThread;
-import gov.nasa.arc.planworks.viz.util.StepButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
@@ -626,14 +611,19 @@ public class SequenceStepsView extends SequenceView {
     createRefreshItem( refreshItem, this);
     mouseRightPopup.add( refreshItem);
 
+    createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
+
+    createCloseHideShowViewItems( mouseRightPopup);
+
+    mouseRightPopup.addSeparator();
+
     List allPartialPlansViewList = new ArrayList();
     List partialPlansOfViews = getPartialPlansOfViews();
     Iterator partialPlanItr = partialPlansOfViews.iterator();
     while (partialPlanItr.hasNext()) {
       PwPartialPlan partialPlan = (PwPartialPlan) partialPlanItr.next();
       List partialPlanViewList = null;
-      if ((partialPlanViewList =
-           getPartialPlanViewList( partialPlan.getStepNumber())).size() != 0) {
+      if ((partialPlanViewList = getPartialPlanViewList( partialPlan)).size() != 0) {
         allPartialPlansViewList.addAll( partialPlanViewList);
         String stepTitle = partialPlan.getPartialPlanName() + " Active Views";
         String stepBackwardTitle = "Step Backward " + stepTitle;
@@ -655,10 +645,6 @@ public class SequenceStepsView extends SequenceView {
       createStepForwardItem( stepForwardAllItem, allPartialPlansViewList);
       mouseRightPopup.add( stepForwardAllItem);
     }
-
-    createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
-
-    createCloseHideShowViewItems( mouseRightPopup);
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu
@@ -734,73 +720,6 @@ public class SequenceStepsView extends SequenceView {
     redraw();
   } // end refreshView
 
-  private List getPartialPlanViewList( int stepNumber) {
-    List partialPlanViewList = new ArrayList();
-    // System.err.println( "getPartialPlanViewList stepNumber " + stepNumber);
-    PwPartialPlan partialPlan = null;
-    try {
-      partialPlan = planSequence.getPartialPlan( stepNumber);
-    } catch (IndexOutOfBoundsException excp) {
-    } catch (ResourceNotFoundException excpR) {
-    } catch (CreatePartialPlanException excpPP) {
-    }
-    PartialPlanViewSet partialPlanViewSet =
-      (PartialPlanViewSet) PlanWorks.getPlanWorks().getViewManager().getViewSet( partialPlan);
-    if (partialPlanViewSet != null) {
-      int numToReturn = 0; // return all
-      List partialPlanViews = partialPlanViewSet.getPartialPlanViews( numToReturn);
-      Iterator viewsItr = partialPlanViews.iterator();
-      while (viewsItr.hasNext()) {
-        PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
-        StepButton backwardButton = partialPlanView.getBackwardButton();
-        // System.err.println( "partialPlanView " + partialPlanView);
-        partialPlanViewList.add( partialPlanView);
-      }
-    }
-    return partialPlanViewList;
-  } // end getPartialPlanViewList
-
-  private void createStepBackwardItem( JMenuItem stepBackwardItem, 
-                                       final List partialPlanViewList) {
-    stepBackwardItem.addActionListener( new ActionListener() {
-        public final void actionPerformed( final ActionEvent evt) {
-          Iterator viewsItr = partialPlanViewList.iterator();
-          while (viewsItr.hasNext()) {
-            PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
-            StepButton backwardButton = partialPlanView.getBackwardButton();
-            ListIterator actionList =
-              backwardButton.getActionListeners().listIterator();
-            ActionEvent e =
-              new ActionEvent( backwardButton, ActionEvent.ACTION_PERFORMED, "LeftClick", 
-                               (int) AWTEvent.MOUSE_EVENT_MASK);
-            while (actionList.hasNext()) {
-              ((ActionListener) actionList.next()).actionPerformed( e);
-            }
-          }
-        }
-      });
-  } // end createStepBackwardItem
-
-  private void createStepForwardItem( JMenuItem stepForwardItem, 
-                                      final List partialPlanViewList) {
-    stepForwardItem.addActionListener( new ActionListener() {
-        public final void actionPerformed( final ActionEvent evt) {
-          Iterator viewsItr = partialPlanViewList.iterator();
-          while (viewsItr.hasNext()) {
-            PartialPlanView partialPlanView = (PartialPlanView) viewsItr.next();
-            StepButton forwardButton = partialPlanView.getForwardButton();
-            ListIterator actionList =
-              forwardButton.getActionListeners().listIterator();
-            ActionEvent e =
-              new ActionEvent( forwardButton, ActionEvent.ACTION_PERFORMED, "LeftClick", 
-                               (int) AWTEvent.MOUSE_EVENT_MASK);
-            while (actionList.hasNext()) {
-              ((ActionListener) actionList.next()).actionPerformed( e);
-            }
-          }
-        }
-      });
-  } // end createStepForwardItem
 
 
 } // end class SequenceStepsView

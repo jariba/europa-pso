@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.59 2004-08-26 20:51:24 taylor Exp $
+# $Id: GETTING_STARTED,v 1.60 2004-09-21 01:07:02 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -108,7 +108,8 @@ Decision View, the Resource Profile View, and Resource Transaction View,
 also offer "Raise Content Filter", which will set focus on the appropriate
 partial plan Content Filter window.  In addition, all partial plan view's  
 Mouse-Right pop-ups offer the user "Close All Views", "Hide All Views", 
-"Open All Views", and "Show All Views".
+"Open All Views", "Show All Views", "Step Backward All Views", and
+"Step Forward All Views".
 
 Applying a Content Filter specification will cause the views to be redrawn 
 with only the filtered predicates, timelines, time intervals, and their
@@ -393,7 +394,8 @@ Selections applied from this dialog result, internally, in a set of
 valid tokens, which are used by the views to filter their displays.
 
 The Content Filter window's background areas offer Mouse-Right
-selections for opening individual or all partial plan views.
+selections for opening individual or all partial plan views, and for
+"stepping" all active views.
 
 
 Querying Sequences

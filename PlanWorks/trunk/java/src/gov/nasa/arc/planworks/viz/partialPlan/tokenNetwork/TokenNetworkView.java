@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.71 2004-09-09 22:45:07 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.72 2004-09-21 01:07:07 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -348,7 +348,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     }
     setState( state);
 
-    setNodesLinksVisible();
+   setNodesLinksVisible();
 
     TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
     layout.performLayout();
@@ -358,7 +358,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 //                                            (ViewConstants.TIMELINE_VIEW_X_INIT * 4),
 //                                            (int) documentBounds.getHeight() +
 //                                            (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
-    if (! isStepButtonView) {
+   if (! isStepButtonView) {
       expandViewFrame( viewFrame, (int) jGoView.getDocumentSize().getWidth(),
                        (int) jGoView.getDocumentSize().getHeight());
     }
@@ -613,7 +613,9 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
       PwToken token = (PwToken) tokenIterator.next();
       if (isTokenInContentSpec( token)) {
         Integer masterTokenId = partialPlan.getMasterTokenId( token.getId());
-        if (masterTokenId == null) {
+        // no parent; and one or more rule instance children
+        if ((masterTokenId == null) &&
+            (partialPlan.getSlaveTokenIds( token.getId()).size() > 0)) {
           rootTokens.add( token);
         }
       }
@@ -935,6 +937,8 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 
     createAllViewItems( partialPlan, partialPlanName, planSequence, viewListenerList,
                         mouseRightPopup);
+    createStepAllViewItems( partialPlan, mouseRightPopup);
+
 
     ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
   } // end mouseRightPopupMenu

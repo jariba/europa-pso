@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.88 2004-09-09 22:45:06 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.89 2004-09-21 01:07:05 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -1679,6 +1679,8 @@ public class ConstraintNetworkView extends PartialPlanView implements FindEntity
       constraintNetworkView.createAllViewItems( partialPlan, partialPlanName,
                                                 planSequence, viewListenerList,
                                                 mouseRightPopup);
+      constraintNetworkView.createStepAllViewItems( partialPlan, mouseRightPopup);
+
 
       ViewGenerics.showPopupMenu( mouseRightPopup, this, viewCoords);
     } // end mouseRightPopupMenu
