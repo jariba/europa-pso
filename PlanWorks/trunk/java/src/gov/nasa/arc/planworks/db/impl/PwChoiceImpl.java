@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwChoiceImpl.java,v 1.7 2004-09-30 22:03:00 miatauro Exp $
+// $Id: PwChoiceImpl.java,v 1.8 2004-12-06 22:03:24 pdaley Exp $
 //
 package gov.nasa.arc.planworks.db.impl;
 
@@ -116,8 +116,8 @@ public class PwChoiceImpl implements PwChoice {
     case DbConstants.C_DOMAIN:
       if(dom instanceof PwEnumeratedDomainImpl) {
         retval.append("E,");
-        List enum = ((PwEnumeratedDomainImpl)dom).getEnumeration();
-        for(Iterator it = enum.iterator(); it.hasNext();) {
+        List enumer = ((PwEnumeratedDomainImpl)dom).getEnumeration();
+        for(Iterator it = enumer.iterator(); it.hasNext();) {
           retval.append(it.next().toString()).append(" ");
         }
       }
