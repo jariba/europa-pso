@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest12.java,v 1.2 2004-10-07 20:19:05 taylor Exp $
+// $Id: PlanWorksGUITest12.java,v 1.3 2004-10-09 00:28:16 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -33,6 +33,7 @@ import gov.nasa.arc.planworks.db.PwConstraint;
 import gov.nasa.arc.planworks.db.PwDBTransaction;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
+import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
@@ -43,9 +44,11 @@ import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.nodes.VariableContainerNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkTokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
 import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.dbTransaction.DBTransactionView;    
@@ -54,6 +57,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileVie
 import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
 import gov.nasa.arc.planworks.viz.partialPlan.rule.RuleInstanceView;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalExtentView;
+import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.SlotNode;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineView;
 import gov.nasa.arc.planworks.viz.partialPlan.timeline.TimelineViewTimelineNode;
@@ -80,9 +84,12 @@ import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.TokenTyp
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.UniqueKeyBox;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.UniqueKeyGroupBox;
 
-// complete for TimelineView
-//              ConstraintNetwork, TemporalExtent, & TokenNetwork -- not yet
 public class PlanWorksGUITest12 {
+
+  private static ConstraintNetworkView constraintNetworkView;
+  private static TemporalExtentView temporalExtentView;
+  private static TimelineView timelineView;
+  private static TokenNetworkView tokenNetworkView;
 
   private PlanWorksGUITest12() {
   }
@@ -157,20 +164,30 @@ public class PlanWorksGUITest12 {
 
    ContentSpecWindow contentSpecWindow =
      PWTestHelper.getContentSpecWindow( viewNameSuffix, helper, guiTest);
-   ConstraintNetworkView constraintNetworkView =
+   constraintNetworkView =
      (ConstraintNetworkView) PWTestHelper.getPartialPlanView
      ( ViewConstants.CONSTRAINT_NETWORK_VIEW, viewNameSuffix, guiTest);
-   TemporalExtentView temporalExtentView = (TemporalExtentView) PWTestHelper.getPartialPlanView
+   temporalExtentView = (TemporalExtentView) PWTestHelper.getPartialPlanView
      ( ViewConstants.TEMPORAL_EXTENT_VIEW, viewNameSuffix, guiTest);
-   TimelineView timelineView = (TimelineView) PWTestHelper.getPartialPlanView
+   timelineView = (TimelineView) PWTestHelper.getPartialPlanView
      ( ViewConstants.TIMELINE_VIEW, viewNameSuffix, guiTest);
-   TokenNetworkView tokenNetworkView = (TokenNetworkView) PWTestHelper.getPartialPlanView
+   tokenNetworkView = (TokenNetworkView) PWTestHelper.getPartialPlanView
      ( ViewConstants.TOKEN_NETWORK_VIEW, viewNameSuffix, guiTest);
 
-   // validateConstraintsOpen( constraintNetworkView);
+   // since Token Network is incremental, do "Find Key" to ensure that all the
+   // tokens are rendered
+   boolean isByKey = true;
+   Iterator temporalNodeItr = temporalExtentView.getTemporalNodeList().iterator();
+   while (temporalNodeItr.hasNext()) {
+     TemporalNode temporalNode = (TemporalNode) temporalNodeItr.next();
+     PwToken token = temporalNode.getToken();
+     tokenNetworkView.findAndSelectNode( token.getId(), isByKey);
+     guiTest.flushAWT(); guiTest.awtSleep();
+   }
 
-   confirmSpecForViews( contentSpecWindow, timelineView, viewNameSuffix, planWorks,
-                        helper, guiTest);
+   validateConstraintsOpen( constraintNetworkView, helper, guiTest);
+
+   confirmSpecForViews( contentSpecWindow, viewNameSuffix, planWorks, helper, guiTest);
 
    // try{Thread.sleep(4000);}catch(Exception e){}
 
@@ -180,71 +197,72 @@ public class PlanWorksGUITest12 {
   } // end planViz12
 
 
-//   private static void validateConstraintsOpen( ConstraintNetworkView constraintNetworkView)
-//     throws Exception {
-//     List containerNodeList = constraintNetworkView.getContainerNodeList();
-//     ConstraintNetworkTokenNode t1303 = null;
-//     Iterator containerNodeItr = containerNodeList.iterator();
-//     while (containerNodeItr.hasNext()) {
-//       VariableContainerNode containNode = (VariableContainerNode) containerNodeItr.next();
-//       // System.err.println( "containNode " + containNode.getClass().getName());
-//       if (containNode instanceof ConstraintNetworkTokenNode) {
-//         ConstraintNetworkTokenNode tokenNode = (ConstraintNetworkTokenNode) containNode;
-//         if (((PwToken) tokenNode.getContainer()).getId().equals( new Integer( 1303))) {
-//           t1303 = tokenNode;
-//           break;
-//         }
-//       }
-//     }
-//     guiTest.assertTrueVerbose( "tokenNode id=1303 not found", (t1303 != null), "not ");
-//     t1303.doMouseClick( MouseEvent.BUTTON1_MASK,
-//                         new Point( (int) t1303.getLocation().getX(),
-//                                    (int) t1303.getLocation().getY()),
-//                         new Point( 0, 0), constraintNetworkView.getJGoView());
-//     guiTest.flushAWT(); guiTest.awtSleep();
+  private static void validateConstraintsOpen( ConstraintNetworkView constraintNetworkView,
+                                               JFCTestHelper helper,
+                                               PlanWorksGUITest guiTest)
+    throws Exception {
+    List containerNodeList = constraintNetworkView.getContainerNodeList();
+    ConstraintNetworkTokenNode t1483 = null;
+    Iterator containerNodeItr = containerNodeList.iterator();
+    while (containerNodeItr.hasNext()) {
+      VariableContainerNode containNode = (VariableContainerNode) containerNodeItr.next();
+      // System.err.println( "containNode " + containNode.getClass().getName());
+      if (containNode instanceof ConstraintNetworkTokenNode) {
+        ConstraintNetworkTokenNode tokenNode = (ConstraintNetworkTokenNode) containNode;
+        if (((PwToken) tokenNode.getContainer()).getId().equals( new Integer( 1483))) {
+          t1483 = tokenNode;
+          break;
+        }
+      }
+    }
+    guiTest.assertTrueVerbose( "tokenNode id=1483 not found", (t1483 != null), "not ");
+    t1483.doMouseClick( MouseEvent.BUTTON1_MASK,
+                        new Point( (int) t1483.getLocation().getX(),
+                                   (int) t1483.getLocation().getY()),
+                        new Point( 0, 0), constraintNetworkView.getJGoView());
+    guiTest.flushAWT(); guiTest.awtSleep();
 
-//     List variableNodeList = constraintNetworkView.getVariableNodeList();
-//     VariableNode v1305 = null;
-//     Iterator variableNodeItr = variableNodeList.iterator();
-//     while (variableNodeItr.hasNext()) {
-//       VariableNode variableNode = (VariableNode) variableNodeItr.next();
-//       if (variableNode.getVariable().getId().equals( new Integer( 1305)) &&
-//           variableNode.isVisible()) {
-//         v1305 = variableNode;
-//         break;
-//       }
-//     }
-//     guiTest.assertTrueVerbose( "variableNode id=1305 not found", (v1305 != null), "not ");
-//     v1305.doMouseClick( MouseEvent.BUTTON1_MASK,
-//                         new Point( (int) v1305.getLocation().getX(),
-//                                    (int) v1305.getLocation().getY()),
-//                         new Point( 0, 0), constraintNetworkView.getJGoView());
-//     guiTest.flushAWT(); guiTest.awtSleep();
+    List variableNodeList = constraintNetworkView.getVariableNodeList();
+    VariableNode v1487 = null;
+    Iterator variableNodeItr = variableNodeList.iterator();
+    while (variableNodeItr.hasNext()) {
+      VariableNode variableNode = (VariableNode) variableNodeItr.next();
+      if (variableNode.getVariable().getId().equals( new Integer( 1487)) &&
+          variableNode.isVisible()) {
+        v1487 = variableNode;
+        break;
+      }
+    }
+    guiTest.assertTrueVerbose( "variableNode id=1487 not found", (v1487 != null), "not ");
+    v1487.doMouseClick( MouseEvent.BUTTON1_MASK,
+                        new Point( (int) v1487.getLocation().getX(),
+                                   (int) v1487.getLocation().getY()),
+                        new Point( 0, 0), constraintNetworkView.getJGoView());
+    guiTest.flushAWT(); guiTest.awtSleep();
 
-//     List constraintNodeList = constraintNetworkView.getConstraintNodeList();
-//     ConstraintNode c1323 = null;
-//     Iterator constraintNodeItr = constraintNodeList.iterator();
-//     while (constraintNodeItr.hasNext()) {
-//       ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
-//       if (constraintNode.getConstraint().getId().equals( new Integer( 1323)) &&
-//           constraintNode.isVisible()) {
-//         c1323 = constraintNode;
-//         break;
-//       }
-//     }
-//     guiTest.assertTrueVerbose( "constraintNode id=1323 not found", (c1323 != null), "not ");
-//     c1323.doMouseClick( MouseEvent.BUTTON1_MASK,
-//                        new Point( (int) c1323.getLocation().getX(),
-//                                   (int) c1323.getLocation().getY()),
-//                        new Point( 0, 0), constraintNetworkView.getJGoView());
-//     guiTest.flushAWT(); guiTest.awtSleep();
-//   } // end validateConstraintsOpen
+    List constraintNodeList = constraintNetworkView.getConstraintNodeList();
+    ConstraintNode c1502 = null;
+    Iterator constraintNodeItr = constraintNodeList.iterator();
+    while (constraintNodeItr.hasNext()) {
+      ConstraintNode constraintNode = (ConstraintNode) constraintNodeItr.next();
+      if (constraintNode.getConstraint().getId().equals( new Integer( 1502)) &&
+          constraintNode.isVisible()) {
+        c1502 = constraintNode;
+        break;
+      }
+    }
+    guiTest.assertTrueVerbose( "constraintNode id=1502 not found", (c1502 != null), "not ");
+    c1502.doMouseClick( MouseEvent.BUTTON1_MASK,
+                       new Point( (int) c1502.getLocation().getX(),
+                                  (int) c1502.getLocation().getY()),
+                       new Point( 0, 0), constraintNetworkView.getJGoView());
+    guiTest.flushAWT(); guiTest.awtSleep();
+  } // end validateConstraintsOpen
 
 
   private static void confirmSpecForViews( ContentSpecWindow contentSpecWindow,
-                                           TimelineView timelineView, String viewNameSuffix,
-                                           PlanWorks planWorks, JFCTestHelper helper,
-                                           PlanWorksGUITest guiTest)
+                                           String viewNameSuffix, PlanWorks planWorks,
+                                           JFCTestHelper helper, PlanWorksGUITest guiTest)
     throws Exception {
     JButton activateFilterButton = null;
     JButton resetFilterButton = null;
@@ -312,7 +330,7 @@ public class PlanWorksGUITest12 {
 
     guiTest.assertNotNullVerbose("Did not find predicate field.", predKeyBox0, "not ");
     guiTest.assertNotNullVerbose("Did not find negation check box.", predNegationBox0, "not ");
-    int predicateNodeIndex = 1;
+    int predicateNodeIndex = 1; // predicate1253
     predKeyBox0.setSelectedIndex( predicateNodeIndex);
     System.err.println( "selected predicate name " + predKeyBox0.getSelectedItem());
     String selectedPredicateName = (String) predKeyBox0.getSelectedItem();
@@ -325,8 +343,14 @@ public class PlanWorksGUITest12 {
     boolean isToBeFound = true;
     validateTimelineViewPredicate( selectedPredicateNameList, timelineView, isToBeFound,
                                    planWorks, helper, guiTest);
+    validateConstraintNetPredicate( selectedPredicateNameList, isToBeFound,
+                                    planWorks, helper, guiTest);
+    validateTemporalExtentPredicate( selectedPredicateNameList, isToBeFound,
+                                    planWorks, helper, guiTest);
+    validateTokenNetworkPredicate( selectedPredicateNameList, isToBeFound,
+                                   planWorks, helper, guiTest);
 
-   System.err.println( "Method 2 -------------");
+    System.err.println( "Method 2 -------------");
     // not predicate
     predNegationBox0.setSelected(true);
     System.err.println( "selected NOT 'selected predicate name'");
@@ -336,6 +360,12 @@ public class PlanWorksGUITest12 {
 
     isToBeFound = false;
     validateTimelineViewPredicate( selectedPredicateNameList, timelineView, isToBeFound,
+                                   planWorks, helper, guiTest);
+    validateConstraintNetPredicate( selectedPredicateNameList,isToBeFound,
+                                    planWorks, helper, guiTest);
+    validateTemporalExtentPredicate( selectedPredicateNameList, isToBeFound,
+                                    planWorks, helper, guiTest);
+    validateTokenNetworkPredicate( selectedPredicateNameList, isToBeFound,
                                    planWorks, helper, guiTest);
 
     System.err.println( "Method 3 -------------");
@@ -348,7 +378,7 @@ public class PlanWorksGUITest12 {
     System.err.println( "selected predLogicBox1 " + predLogicBox1.getSelectedItem());
     predNegationBox1.setSelected( true);
     System.err.println( "selected NOT 'selected predicate name 1'");
-    predicateNodeIndex = 10;
+    predicateNodeIndex = 5; // predicate1335
     predKeyBox1.setSelectedIndex( predicateNodeIndex);
     System.err.println( "selected predicate name 1 " + predKeyBox1.getSelectedItem());
     String selectedPredicateName1 = (String) predKeyBox1.getSelectedItem();
@@ -359,6 +389,12 @@ public class PlanWorksGUITest12 {
     isToBeFound = false;
     selectedPredicateNameList.add( selectedPredicateName1);
     validateTimelineViewPredicate( selectedPredicateNameList, timelineView, isToBeFound,
+                                   planWorks, helper, guiTest);
+    validateConstraintNetPredicate( selectedPredicateNameList,isToBeFound,
+                                    planWorks, helper, guiTest);
+    validateTemporalExtentPredicate( selectedPredicateNameList, isToBeFound,
+                                    planWorks, helper, guiTest);
+    validateTokenNetworkPredicate( selectedPredicateNameList, isToBeFound,
                                    planWorks, helper, guiTest);
 
     System.err.println( "Method 4 -------------");
@@ -373,6 +409,12 @@ public class PlanWorksGUITest12 {
     guiTest.flushAWT(); guiTest.awtSleep();
     isToBeFound = true;
     validateTimelineViewPredicate( selectedPredicateNameList, timelineView, isToBeFound,
+                                   planWorks, helper, guiTest);
+    validateConstraintNetPredicate( selectedPredicateNameList,isToBeFound,
+                                    planWorks, helper, guiTest);
+    validateTemporalExtentPredicate( selectedPredicateNameList, isToBeFound,
+                                    planWorks, helper, guiTest);
+    validateTokenNetworkPredicate( selectedPredicateNameList, isToBeFound,
                                    planWorks, helper, guiTest);
 
     System.err.println( "Method 5 -------------");
@@ -412,11 +454,17 @@ public class PlanWorksGUITest12 {
     helper.enterClickAndLeave(new MouseEventData(guiTest, activateFilterButton));
     guiTest.flushAWT(); guiTest.awtSleep();
 
-    boolean hasSlotsSelected = true;
+    boolean hasSlotsSelected = true; isToBeFound = true;
     List selectedTimelineNameList = new ArrayList();
     selectedTimelineNameList.add( selectedTimelineName);
     validateTimelineViewTimeline( selectedTimelineNameList, timelineView, hasSlotsSelected,
                                   planWorks, helper, guiTest);
+    validateConstraintNetTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                   helper, guiTest);
+    validateTemporalExtentTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                    helper, guiTest);
+    validateTokenNetworkTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                  helper, guiTest);
 
     System.err.println( "Method 7 -------------");
     // not timeline 
@@ -426,9 +474,15 @@ public class PlanWorksGUITest12 {
     helper.enterClickAndLeave(new MouseEventData(guiTest, activateFilterButton));
     guiTest.flushAWT(); guiTest.awtSleep();
 
-    hasSlotsSelected = false;
+    hasSlotsSelected = false; isToBeFound = false;
     validateTimelineViewTimeline( selectedTimelineNameList, timelineView, hasSlotsSelected,
                                   planWorks, helper, guiTest);
+    validateConstraintNetTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                   helper, guiTest);
+    validateTemporalExtentTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                    helper, guiTest);
+    validateTokenNetworkTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                  helper, guiTest);
 
     timelineGroupIndx = 1;
     timelineGroupBoxes = getTimelineGroupBoxes( timelineGroup, timelineGroupIndx);
@@ -450,6 +504,12 @@ public class PlanWorksGUITest12 {
     selectedTimelineNameList.add( selectedTimelineName1);
     validateTimelineViewTimeline( selectedTimelineNameList, timelineView, hasSlotsSelected,
                                   planWorks, helper, guiTest);
+    validateConstraintNetTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                   helper, guiTest);
+    validateTemporalExtentTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                    helper, guiTest);
+    validateTokenNetworkTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                  helper, guiTest);
 
     // AND => OR & invert NOTs
     logicBox1.setSelectedIndex( 2);
@@ -461,9 +521,15 @@ public class PlanWorksGUITest12 {
     System.err.println( "Apply Filter");
     helper.enterClickAndLeave(new MouseEventData(guiTest, activateFilterButton));
     guiTest.flushAWT(); guiTest.awtSleep();
-    hasSlotsSelected = true;
+    hasSlotsSelected = true; isToBeFound = true;
     validateTimelineViewTimeline( selectedTimelineNameList, timelineView, hasSlotsSelected,
                                   planWorks, helper, guiTest);
+    validateConstraintNetTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                   helper, guiTest);
+    validateTemporalExtentTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                    helper, guiTest);
+    validateTokenNetworkTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                  helper, guiTest);
 
     System.err.println( "Method 8 -------------");
     // reset
@@ -485,9 +551,15 @@ public class PlanWorksGUITest12 {
                       (logicBox0.getSelectedItem().equals( "")), "not ");
     selectedTimelineNameList = new ArrayList();
     selectedTimelineNameList.add( "noTimelineSelected");
-    hasSlotsSelected = false;
+    hasSlotsSelected = false; isToBeFound = true;
     validateTimelineViewTimeline( selectedTimelineNameList, timelineView, hasSlotsSelected,
                                   planWorks, helper, guiTest);
+    validateConstraintNetTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                   helper, guiTest);
+    validateTemporalExtentTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                    helper, guiTest);
+    validateTokenNetworkTimeline( selectedTimelineNameList, isToBeFound, planWorks,
+                                  helper, guiTest);
 
     System.err.println( "Method 9 -------------");
     // apply time interval
@@ -512,6 +584,10 @@ public class PlanWorksGUITest12 {
     guiTest.flushAWT(); guiTest.awtSleep();
     int numSlotsToFind = 2;
     validateTimelineViewTimeInterval( numSlotsToFind, timelineView, planWorks, helper, guiTest);
+    int numTokensToFind = 24;
+    validateConstraintNetTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTemporalExtentTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTokenNetworkTokens( numTokensToFind, planWorks, helper, guiTest);
 
     intNegationBox0.setSelected( true);
     System.err.println( "selected NOT 'selected time interval 0'");
@@ -520,6 +596,10 @@ public class PlanWorksGUITest12 {
     guiTest.flushAWT(); guiTest.awtSleep();
     numSlotsToFind = 4;
     validateTimelineViewTimeInterval( numSlotsToFind, timelineView, planWorks, helper, guiTest);
+    numTokensToFind = 16;
+    validateConstraintNetTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTemporalExtentTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTokenNetworkTokens( numTokensToFind, planWorks, helper, guiTest);
 
     timeIntervalGroupIndx = 1;
     timeIntervalGroupBoxes = getTimeIntervalGroupBoxes( timeIntervalGroup, timeIntervalGroupIndx);
@@ -545,6 +625,10 @@ public class PlanWorksGUITest12 {
     guiTest.flushAWT(); guiTest.awtSleep();
     numSlotsToFind = 2;
     validateTimelineViewTimeInterval( numSlotsToFind, timelineView, planWorks, helper, guiTest);
+    numTokensToFind = 8;
+    validateConstraintNetTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTemporalExtentTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTokenNetworkTokens( numTokensToFind, planWorks, helper, guiTest);
 
     intLogicBox1.setSelectedIndex( 2);
     System.err.println( "selected intLogicbox1 " + intLogicBox1.getSelectedItem());
@@ -557,6 +641,10 @@ public class PlanWorksGUITest12 {
     guiTest.flushAWT(); guiTest.awtSleep();
     numSlotsToFind = 4;
     validateTimelineViewTimeInterval( numSlotsToFind, timelineView, planWorks, helper, guiTest);
+    numTokensToFind = 32;
+    validateConstraintNetTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTemporalExtentTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTokenNetworkTokens( numTokensToFind, planWorks, helper, guiTest);
 
     System.err.println( "Method 11 -------------");
     // reset
@@ -581,25 +669,49 @@ public class PlanWorksGUITest12 {
                       (logicBox0.getSelectedItem().equals( "")), "not ");
     numSlotsToFind = 6;
     validateTimelineViewTimeInterval( numSlotsToFind, timelineView, planWorks, helper, guiTest);
+    numTokensToFind = 40;
+    validateConstraintNetTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTemporalExtentTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTokenNetworkTokens( numTokensToFind, planWorks, helper, guiTest);
 
     System.err.println( "Method 12 -------------");
-    // "Merge tokens" does not effect the TimelineView
     // mergeBox
+    mergeBox.getMergeCheckBox().setSelected( true);
+    guiTest.assertTrueVerbose("Content Filter: merge check box is not selected",
+                              mergeBox.getMergeCheckBox().isSelected(), "not ");
+    System.err.println( "Apply Filter");
+    helper.enterClickAndLeave(new MouseEventData(guiTest, activateFilterButton));
+    guiTest.flushAWT(); guiTest.awtSleep();
+   // "Merge tokens" does not effect the TimelineView
+    numTokensToFind = 36;
+    validateConstraintNetTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTemporalExtentTokens( numTokensToFind, planWorks, helper, guiTest);
+    validateTokenNetworkTokens( numTokensToFind, planWorks, helper, guiTest);
 
     System.err.println( "Method 13 -------------");
     // "View slotted"
+    mergeBox.getMergeCheckBox().setSelected( false);
+    guiTest.assertTrueVerbose("Content Filter: merge check box is not unchecked",
+                              (! mergeBox.getMergeCheckBox().isSelected()), "not ");
     helper.enterClickAndLeave(new MouseEventData(guiTest, tokenTypeBox.getSlottedButton()));
     System.err.println( "Content Filter: 'view slotted' selected");
     System.err.println( "Apply Filter");
     helper.enterClickAndLeave(new MouseEventData(guiTest, activateFilterButton));
     guiTest.flushAWT(); guiTest.awtSleep();
     boolean isBaseTokenOnly = false;
-    guiTest.assertTrueVerbose("TimelineView slotted token count is not non-zero",
-                      (getTimelineViewSlottedTokenList( timelineView, "",
-                                                        isBaseTokenOnly, planWorks,
-                                                        helper, guiTest).size() != 0), "not ");
+    int numSlottedTokens = 24;
+    int numFreeTokens = 16;
+    guiTest.assertTrueVerbose("TimelineView slotted token count is not " + numSlottedTokens,
+                      (getTimelineViewSlottedTokenList
+                       ( timelineView, "", isBaseTokenOnly, planWorks,
+                         helper, guiTest).size() == numSlottedTokens), "not ");
     guiTest.assertTrueVerbose("TimelineView free token count is not zero",
-                      (getTimelineViewFreeTokenList( timelineView).size() == 0), "not ");
+                              (getTimelineViewFreeTokenList( timelineView).size() == 0),
+                              "not ");
+    validateConstraintNetTokens( numSlottedTokens, planWorks, helper, guiTest);
+    validateTemporalExtentTokens( numSlottedTokens, planWorks, helper, guiTest);
+    validateTokenNetworkTokens( numSlottedTokens, planWorks, helper, guiTest);
+
     // "View free tokens"
     helper.enterClickAndLeave(new MouseEventData(guiTest, tokenTypeBox.getFreeTokensButton()));
     System.err.println( "Content Filter: 'view slotted' selected");
@@ -610,20 +722,30 @@ public class PlanWorksGUITest12 {
                       (getTimelineViewSlottedTokenList( timelineView, "",
                                                         isBaseTokenOnly, planWorks,
                                                         helper, guiTest).size() == 0), "not ");
-    guiTest.assertTrueVerbose("TimelineView free token count is not non-zero",
-                      (getTimelineViewFreeTokenList( timelineView).size() != 0), "not ");
-
+     System.err.println( "TimelineView free token count " +
+                         getTimelineViewFreeTokenList( timelineView).size());
+    guiTest.assertTrueVerbose("TimelineView free token count is not " + numFreeTokens,
+                              (getTimelineViewFreeTokenList( timelineView).size() ==
+                               numFreeTokens), "not ");
+    validateConstraintNetTokens( numFreeTokens, planWorks, helper, guiTest);
+    validateTemporalExtentTokens( numFreeTokens, planWorks, helper, guiTest);
+    validateTokenNetworkTokens( numFreeTokens, planWorks, helper, guiTest);
+  
     System.err.println( "Method 14 -------------");
     // reset
     helper.enterClickAndLeave(new MouseEventData(guiTest, resetFilterButton));
     System.err.println( "Reset Filter");
     guiTest.flushAWT(); guiTest.awtSleep();
-    guiTest.assertTrueVerbose("TimelineView slotted token count is not non-zero",
-                      (getTimelineViewSlottedTokenList( timelineView, "",
-                                                        isBaseTokenOnly, planWorks,
-                                                        helper, guiTest).size() != 0), "not ");
-    guiTest.assertTrueVerbose("TimelineView free token count is not non-zero",
-                      (getTimelineViewFreeTokenList( timelineView).size() != 0), "not ");
+    guiTest.assertTrueVerbose("TimelineView slotted token count is not " + numSlottedTokens,
+                              (getTimelineViewSlottedTokenList
+                               ( timelineView, "", isBaseTokenOnly, planWorks,
+                                 helper, guiTest).size() == numSlottedTokens), "not ");
+    guiTest.assertTrueVerbose("TimelineView free token count is not " + numFreeTokens,
+                              (getTimelineViewFreeTokenList( timelineView).size() ==
+                               numFreeTokens), "not ");
+    validateConstraintNetTokens( (numSlottedTokens + numFreeTokens), planWorks, helper, guiTest);
+    validateTemporalExtentTokens( (numSlottedTokens + numFreeTokens), planWorks, helper, guiTest);
+    validateTokenNetworkTokens( (numSlottedTokens + numFreeTokens), planWorks, helper, guiTest);
 
     System.err.println( "Method 15 -------------");
     // require Add
@@ -686,6 +808,24 @@ public class PlanWorksGUITest12 {
     guiTest.assertTrueVerbose( "Timeline '" + selectedTimelineName + "' does not show token '" +
                                requiredToken2 + "'", slottedTokens.contains( requiredToken2),
                                "not ");
+    guiTest.assertTrueVerbose( "Constraint Network View does not show token '" +
+                               requiredToken1 + "'",
+                               constraintNetTokenShown( requiredToken1), "not ");
+    guiTest.assertTrueVerbose( "Constraint Network View does not show token '" +
+                               requiredToken2 + "'",
+                               constraintNetTokenShown( requiredToken2), "not ");
+    guiTest.assertTrueVerbose( "Temporal Extent View does not show token '" +
+                               requiredToken1 + "'",
+                               temporalExtentTokenShown( requiredToken1), "not ");
+    guiTest.assertTrueVerbose( "Temporal Extent View does not show token '" +
+                               requiredToken2 + "'",
+                               temporalExtentTokenShown( requiredToken2), "not ");
+    guiTest.assertTrueVerbose( "Token Network View does not show token '" +
+                               requiredToken1 + "'",
+                               tokenNetworkTokenShown( requiredToken1), "not ");
+    guiTest.assertTrueVerbose( "TokenNetwork View does not show token '" +
+                               requiredToken2 + "'",
+                               tokenNetworkTokenShown( requiredToken2), "not ");
 
     System.err.println( "Method 16 -------------");
     // Select "Remove" for the second required key, and change "require"
@@ -708,16 +848,30 @@ public class PlanWorksGUITest12 {
                                "' does not show only four non-empty slots",
                                (slottedTokens.size() == 4), "not ");
     guiTest.assertFalseVerbose( "Timeline '" + selectedTimelineName +
-                                "' does not not show token '" + requiredToken1 + "'",
+                                "' does not exclude token '" + requiredToken1 + "'",
                                 slottedTokens.contains( requiredToken1),
                                "not ");
     guiTest.assertTrueVerbose( "Timeline '" + selectedTimelineName + "' does not show token '" +
                                requiredToken2 + "'", slottedTokens.contains( requiredToken2),
                                "not ");
-
-//     JRadioButton excludeButton = uniqueKeyGroupBox.getUniqueKeyBox().getExcludeButton();
-//     JButton removeButton = uniqueKeyGroupBox.getUniqueKeyBox().getRemoveButton();
-//     keyField = uniqueKeyGroupBox.getUniqueKeyBox().getKeyField();
+    guiTest.assertTrueVerbose( "Constraint Network View does not exclude token '" +
+                               requiredToken1 + "'",
+                               (! constraintNetTokenShown( requiredToken1)), "not ");
+    guiTest.assertTrueVerbose( "Constraint Network View does not show token '" +
+                               requiredToken2 + "'",
+                               constraintNetTokenShown( requiredToken2), "not ");
+    guiTest.assertTrueVerbose( "Temproal Extent View does not exclude token '" +
+                               requiredToken1 + "'",
+                               (! temporalExtentTokenShown( requiredToken1)), "not ");
+    guiTest.assertTrueVerbose( "Temporal Extent View does not show token '" +
+                               requiredToken2 + "'",
+                               temporalExtentTokenShown( requiredToken2), "not ");
+    guiTest.assertTrueVerbose( "Token Network View does not exclude token '" +
+                               requiredToken1 + "'",
+                               (! tokenNetworkTokenShown( requiredToken1)), "not ");
+    guiTest.assertTrueVerbose( "Token Network View does not show token '" +
+                               requiredToken2 + "'",
+                               tokenNetworkTokenShown( requiredToken2), "not ");
 
     System.err.println( "Method 17 -------------");
     // reset
@@ -921,6 +1075,7 @@ public class PlanWorksGUITest12 {
                                                      JFCTestHelper helper,
                                                      PlanWorksGUITest guiTest)
     throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
     List predFoundInTimeline = new ArrayList();
     for (int i = 0; i < selectedPredicateNameList.size(); i++) {
       predFoundInTimeline.add( null);
@@ -982,7 +1137,7 @@ public class PlanWorksGUITest12 {
     Iterator timelineNodeItr = timelineView.getTimelineNodeList().iterator();
     while (timelineNodeItr.hasNext()) {
       TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineNodeItr.next();
-      System.err.println( "timelineNode " + timelineNode.getLabel().getText());
+      // System.err.println( "timelineNode " + timelineNode.getLabel().getText());
       boolean hasSlots = ! hasSlotsSelected;
       if (selectedTimelineNameList.contains( timelineNode.getTimeline().getName())) {
         hasSlots = hasSlotsSelected;
@@ -1037,6 +1192,7 @@ public class PlanWorksGUITest12 {
                                                        PlanWorks planWorks,
                                                        JFCTestHelper helper,
                                                        PlanWorksGUITest guiTest) {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
     List tokenList = new ArrayList();
     List slotIdList = new ArrayList();
     Iterator timelineNodeItr = timelineView.getTimelineNodeList().iterator();
@@ -1068,6 +1224,7 @@ public class PlanWorksGUITest12 {
   } // end getTimelineViewSlottedTokenList
 
   private static List getTimelineViewFreeTokenList( TimelineView timelineView) {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
     List tokenList = new ArrayList();
     Iterator freeTokenNodeItr = timelineView.getFreeTokenNodeList().iterator();
     while (freeTokenNodeItr.hasNext()) {
@@ -1076,5 +1233,297 @@ public class PlanWorksGUITest12 {
     }
     return tokenList;
   } // end getTimelineViewFreeTokenList
+
+  private static void validateConstraintNetPredicate( List selectedPredicateNameList,
+                                                      boolean isToBeFound,
+                                                      PlanWorks planWorks,
+                                                      JFCTestHelper helper,
+                                                      PlanWorksGUITest guiTest)
+    throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    List predFoundInConstraintNetwork = new ArrayList();
+    Iterator containerNodeItr = constraintNetworkView.getContainerNodeList().iterator();
+    while (containerNodeItr.hasNext()) {
+      VariableContainerNode containerNode = (VariableContainerNode) containerNodeItr.next();
+      // System.err.println( "containerNode " + containerNode.getLabel().getText());
+      if (containerNode instanceof ConstraintNetworkTokenNode) {
+        ConstraintNetworkTokenNode tokenNode = (ConstraintNetworkTokenNode) containerNode;
+        PwToken token = tokenNode.getToken();
+        String predicateName = token.getPredicateName();
+        if ((selectedPredicateNameList.contains( predicateName)) &&
+            tokenNode.isVisible()) {
+          predFoundInConstraintNetwork.add( predicateName);
+        }
+      }
+    }
+    Iterator selectedPredItr = selectedPredicateNameList.iterator();
+    while (selectedPredItr.hasNext()) {
+      String selectedPred = (String) selectedPredItr.next();
+      if (isToBeFound) {
+        guiTest.assertTrueVerbose( "Predicate " + selectedPred +
+                                   " is not found in Constraint Network",
+                                   predFoundInConstraintNetwork.contains( selectedPred),
+                                   "not ");
+      } else {
+        guiTest.assertTrueVerbose( "Predicate " + selectedPred +
+                                   " is not absent in Constraint Network",
+                                   (! predFoundInConstraintNetwork.contains( selectedPred)),
+                                   "not ");
+      }
+    }
+  } // end validateConstraintNetPredicate
+
+  private static void validateConstraintNetTimeline( List selectedTimelineNameList,
+                                                     boolean isToBeFound,
+                                                     PlanWorks planWorks,
+                                                     JFCTestHelper helper,
+                                                     PlanWorksGUITest guiTest)
+    throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    validateConstraintNetPredicate( getSelectedPredicateNames( selectedTimelineNameList),
+                                    isToBeFound, planWorks, helper, guiTest);
+  } // end validateConstraintNetTimeline
+
+  private static List getSelectedPredicateNames( List selectedTimelineNameList) {
+    List selectedPredicateNames = new ArrayList();
+    Iterator timelineNodeItr = timelineView.getTimelineNodeList().iterator();
+    while (timelineNodeItr.hasNext()) {
+      TimelineViewTimelineNode timelineNode = (TimelineViewTimelineNode) timelineNodeItr.next();
+      if (selectedTimelineNameList.contains( timelineNode.getTimeline().getName()) ||
+          selectedTimelineNameList.contains( "noTimelineSelected")) {
+        Iterator slotNodeItr = timelineNode.getSlotNodeList().iterator();
+        while (slotNodeItr.hasNext()) {
+          SlotNode slotNode = (SlotNode) slotNodeItr.next();
+          List tokenList = slotNode.getSlot().getTokenList();
+          Iterator tokenItr = tokenList.iterator();
+          while (tokenItr.hasNext()) {
+            PwToken token = (PwToken) tokenItr.next();
+            String predicateName = token.getPredicateName();
+            selectedPredicateNames.add( predicateName);
+          }
+        }
+      }
+    }
+    return selectedPredicateNames;
+  } // end getSelectedPredicateNames
+
+  private static void validateConstraintNetTokens( int numTokensToFind,
+                                                        PlanWorks planWorks,
+                                                        JFCTestHelper helper,
+                                                        PlanWorksGUITest guiTest)
+    throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    int numTokens = 0;
+    Iterator containerNodeItr = constraintNetworkView.getContainerNodeList().iterator();
+    while (containerNodeItr.hasNext()) {
+      VariableContainerNode containerNode = (VariableContainerNode) containerNodeItr.next();
+      // System.err.println( "containerNode " + containerNode.getLabel().getText());
+      if (containerNode instanceof ConstraintNetworkTokenNode) {
+        ConstraintNetworkTokenNode tokenNode = (ConstraintNetworkTokenNode) containerNode;
+        if (tokenNode.isVisible()) {
+          PwToken token = tokenNode.getToken();
+          if (! (token instanceof PwResourceTransaction)) {
+            numTokens++;
+          }
+        }
+      }
+    }
+    guiTest.assertTrueVerbose( "Constraint Network View does not have " + numTokensToFind + 
+                               " tokens", (numTokens == numTokensToFind), "not ");
+  } // end validateConstraintNetTokens
+
+  private static boolean constraintNetTokenShown( PwToken requiredToken) {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    boolean isFound = false;
+    Iterator containerNodeItr = constraintNetworkView.getContainerNodeList().iterator();
+    while (containerNodeItr.hasNext()) {
+      VariableContainerNode containerNode = (VariableContainerNode) containerNodeItr.next();
+      // System.err.println( "containerNode " + containerNode.getLabel().getText());
+      if (containerNode instanceof ConstraintNetworkTokenNode) {
+        ConstraintNetworkTokenNode tokenNode = (ConstraintNetworkTokenNode) containerNode;
+        if (tokenNode.isVisible()) {
+          PwToken token = tokenNode.getToken();
+          if (token.getId().equals( requiredToken.getId())) {
+            return true;
+          }
+        }
+      }
+    }
+    return isFound;
+  } // end constraintNetTokenShown
+
+  private static void validateTemporalExtentPredicate( List selectedPredicateNameList,
+                                                       boolean isToBeFound,
+                                                       PlanWorks planWorks,
+                                                       JFCTestHelper helper,
+                                                       PlanWorksGUITest guiTest)
+    throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    List predFoundInTemporalExtent = new ArrayList();
+    Iterator temporalNodeItr = temporalExtentView.getTemporalNodeList().iterator();
+    while (temporalNodeItr.hasNext()) {
+      TemporalNode temporalNode = (TemporalNode) temporalNodeItr.next();
+      // System.err.println( "temporalNode " + temporalNode.getLabel().getText());
+      PwToken token = temporalNode.getToken();
+      String predicateName = token.getPredicateName();
+      if ((selectedPredicateNameList.contains( predicateName)) &&
+          temporalNode.isVisible()) {
+        predFoundInTemporalExtent.add( predicateName);
+      }
+    }
+    Iterator selectedPredItr = selectedPredicateNameList.iterator();
+    while (selectedPredItr.hasNext()) {
+      String selectedPred = (String) selectedPredItr.next();
+      if (isToBeFound) {
+        guiTest.assertTrueVerbose( "Predicate " + selectedPred +
+                                   " is not found in Temporal Extent",
+                                   predFoundInTemporalExtent.contains( selectedPred),
+                                   "not ");
+      } else {
+        guiTest.assertTrueVerbose( "Predicate " + selectedPred +
+                                   " is not absent in Temporal Extent",
+                                   (! predFoundInTemporalExtent.contains( selectedPred)),
+                                   "not ");
+      }
+    }
+  } // end validateTemporalExtentPredicate
+
+  private static void validateTemporalExtentTimeline( List selectedTimelineNameList,
+                                                      boolean isToBeFound,
+                                                      PlanWorks planWorks,
+                                                      JFCTestHelper helper,
+                                                      PlanWorksGUITest guiTest)
+    throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    validateTemporalExtentPredicate( getSelectedPredicateNames( selectedTimelineNameList),
+                                     isToBeFound, planWorks, helper, guiTest);
+  } // end validateTemporalExtentTimeline
+
+  private static void validateTemporalExtentTokens( int numTokensToFind,
+                                                    PlanWorks planWorks,
+                                                    JFCTestHelper helper,
+                                                    PlanWorksGUITest guiTest)
+    throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    int numTokens = 0;
+    Iterator temporalNodeItr = temporalExtentView.getTemporalNodeList().iterator();
+    while (temporalNodeItr.hasNext()) {
+      TemporalNode temporalNode = (TemporalNode) temporalNodeItr.next();
+      // System.err.println( "temporalNode " + temporalNode.getLabel().getText());
+      if (temporalNode.isVisible()) {
+        PwToken token = temporalNode.getToken();
+        if (! (token instanceof PwResourceTransaction)) {
+          numTokens++;
+        }
+      }
+    }
+    guiTest.assertTrueVerbose( "Temporal Extent View does not have " + numTokensToFind + 
+                               " tokens", (numTokens == numTokensToFind), "not ");
+  } // end validateTemporalExtentTokens
+
+  private static boolean temporalExtentTokenShown( PwToken requiredToken) {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    boolean isFound = false;
+    Iterator temporalNodeItr = temporalExtentView.getTemporalNodeList().iterator();
+    while (temporalNodeItr.hasNext()) {
+      TemporalNode temporalNode = (TemporalNode) temporalNodeItr.next();
+      // System.err.println( "temporalNode " + temporalNode.getLabel().getText());
+      if (temporalNode.isVisible()) {
+        PwToken token = temporalNode.getToken();
+        if (token.getId().equals( requiredToken.getId())) {
+          return true;
+        }
+      }
+    }
+    return isFound;
+  } // end temporalExtentTokenShown
+
+  private static void validateTokenNetworkPredicate( List selectedPredicateNameList,
+                                                     boolean isToBeFound,
+                                                     PlanWorks planWorks,
+                                                     JFCTestHelper helper,
+                                                     PlanWorksGUITest guiTest)
+    throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    List predFoundInTokenNetwork = new ArrayList();
+    Iterator tokenNodeItr = tokenNetworkView.getTokenNodeValueList().iterator();
+    while (tokenNodeItr.hasNext()) {
+      TokenNetworkTokenNode tokenNode = (TokenNetworkTokenNode) tokenNodeItr.next();
+      // System.err.println( "tokenNode " + tokenNode.getLabel().getText());
+      PwToken token = tokenNode.getToken();
+      String predicateName = token.getPredicateName();
+      if ((selectedPredicateNameList.contains( predicateName)) &&
+          tokenNode.isVisible()) {
+        predFoundInTokenNetwork.add( predicateName);
+      }
+    }
+    Iterator selectedPredItr = selectedPredicateNameList.iterator();
+    while (selectedPredItr.hasNext()) {
+      String selectedPred = (String) selectedPredItr.next();
+      if (isToBeFound) {
+        guiTest.assertTrueVerbose( "Predicate " + selectedPred +
+                                   " is not found in Token Network",
+                                   predFoundInTokenNetwork.contains( selectedPred),
+                                   "not ");
+      } else {
+        guiTest.assertTrueVerbose( "Predicate " + selectedPred +
+                                   " is not absent in Token Network",
+                                   (! predFoundInTokenNetwork.contains( selectedPred)), "not ");
+      }
+    }
+  } // end validateTokenNetworkPredicate
+
+  private static void validateTokenNetworkTimeline( List selectedTimelineNameList,
+                                                    boolean isToBeFound,
+                                                    PlanWorks planWorks,
+                                                    JFCTestHelper helper,
+                                                    PlanWorksGUITest guiTest)
+    throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    validateTokenNetworkPredicate( getSelectedPredicateNames( selectedTimelineNameList),
+                                   isToBeFound, planWorks, helper, guiTest);
+  } // end validateTokenNetworkTimeline
+
+  private static void validateTokenNetworkTokens( int numTokensToFind,
+                                                  PlanWorks planWorks,
+                                                  JFCTestHelper helper,
+                                                  PlanWorksGUITest guiTest)
+    throws Exception {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    int numTokens = 0;
+    Iterator tokenNodeItr = tokenNetworkView.getTokenNodeValueList().iterator();
+    while (tokenNodeItr.hasNext()) {
+      TokenNetworkTokenNode tokenNode = (TokenNetworkTokenNode) tokenNodeItr.next();
+      // System.err.println( "tokenNode " + tokenNode.getLabel().getText());
+      if (tokenNode.isVisible()) {
+        PwToken token = tokenNode.getToken();
+        if (! (token instanceof PwResourceTransaction)) {
+          numTokens++;
+        }
+      }
+    }
+    guiTest.assertTrueVerbose( "Token Network View does not have " + numTokensToFind + 
+                               " tokens", (numTokens == numTokensToFind), "not ");
+  } // end validateTokenNetworkTokens
+
+  private static boolean tokenNetworkTokenShown( PwToken requiredToken) {
+    try{Thread.sleep(500);}catch(Exception e){} // more time needed
+    boolean isFound = false;
+    Iterator tokenNodeItr = tokenNetworkView.getTokenNodeValueList().iterator();
+    while (tokenNodeItr.hasNext()) {
+      TokenNetworkTokenNode tokenNode = (TokenNetworkTokenNode) tokenNodeItr.next();
+      // System.err.println( "tokenNode " + tokenNode.getLabel().getText());
+      if (tokenNode.isVisible()) {
+        PwToken token = tokenNode.getToken();
+        if (token.getId().equals( requiredToken.getId())) {
+          return true;
+        }
+      }
+    }
+    return isFound;
+  } // end tokenNetworkTokenShown
+
+
+
 
 } // end class PlanWorksGUITest12

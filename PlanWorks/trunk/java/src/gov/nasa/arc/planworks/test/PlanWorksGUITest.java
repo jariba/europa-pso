@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PlanWorksGUITest.java,v 1.28 2004-10-07 20:19:04 taylor Exp $
+// $Id: PlanWorksGUITest.java,v 1.29 2004-10-09 00:28:15 taylor Exp $
 //
 package gov.nasa.arc.planworks.test;
 
@@ -365,9 +365,9 @@ public class PlanWorksGUITest extends JFCTestCase implements IdSource {
                                             planWorks, helper, this);
       PlanWorksGUITest10.planViz10( sequenceUrls, planWorks, helper, this);
       PlanWorksGUITest11.planViz11( sequenceUrls, planWorks, helper, this);
-      // planViz12 methods complete for TimelineView;
-      //       ConstraintNetwork, TemporalExtent, & TokenNetwork -- not yet
       PlanWorksGUITest12.planViz12( sequenceUrls, planWorks, helper, this);
+      // to do
+      // PlanWorksGUITest13 - PlanWorksGUITest25
 
       PWTestHelper.exitPlanWorks( helper, this);
 

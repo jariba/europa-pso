@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.79 2004-10-07 20:19:14 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.80 2004-10-09 00:28:16 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -585,6 +585,15 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
    */
   public final List getTokenNodeKeyList() {
     return new ArrayList( tokenNodeMap.keySet());
+  }
+
+  /**
+   * <code>getTokenNodeValueList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public final List getTokenNodeValueList() {
+    return new ArrayList( tokenNodeMap.values());
   }
 
   /**
