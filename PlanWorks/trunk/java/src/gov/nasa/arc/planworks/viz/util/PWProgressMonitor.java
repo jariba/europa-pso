@@ -8,7 +8,7 @@
 // modified by Will Taylor starting 26july04
 // monitoredThread passed in and stopped when cancel is received
 
-// $Id: PWProgressMonitor.java,v 1.8 2004-08-23 22:51:42 taylor Exp $
+// $Id: PWProgressMonitor.java,v 1.9 2004-08-25 18:41:04 taylor Exp $
 
 
 package gov.nasa.arc.planworks.viz.util;
@@ -34,10 +34,8 @@ import javax.swing.ProgressMonitor;
 import javax.swing.UIManager;
 
 import gov.nasa.arc.planworks.viz.VizView;
-import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
-import gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork.TokenNetworkView;
-import gov.nasa.arc.planworks.viz.util.FindEntityPath;
+import gov.nasa.arc.planworks.viz.partialPlan.FindEntityPathAdapter;
+import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence.SequenceQueryWindow;
 
 /** A class to monitor the progress of some operation. If it looks
@@ -246,19 +244,11 @@ public class PWProgressMonitor extends Object
 			// added will taylor
                         if ((monitoredThread != null) && (view != null)) { 
                           System.err.print( "PWProgressMonitor stopped thread for '");
-			  if ((view instanceof ConstraintNetworkView) &&
-                                     (findEntityPath != null)) {
-			    System.err.println( "FindEntityPath' (ConstraintNetworkView)");
-			    findEntityPath.setEntityKeyList( new ArrayList());
-			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
-			  } else if ((view instanceof NavigatorView) &&
-                                     (findEntityPath != null)) {
-			    System.err.println( "FindEntityPath' (NavigatorView)");
-			    findEntityPath.setEntityKeyList( new ArrayList());
-			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
-			  } else if ((view instanceof TokenNetworkView) &&
-                                     (findEntityPath != null)) {
-			    System.err.println( "FindTokenPath' (TokenNetworkView)");
+
+                          if ((view instanceof FindEntityPathAdapter) &&
+                              (findEntityPath != null)) {
+                            System.err.println( "FindEntityPath' (" +
+                                                ((PartialPlanView) view).getViewName() + ")");
 			    findEntityPath.setEntityKeyList( new ArrayList());
 			    ((ProgressMonitorThread) thisThread).setPMThreadCancel();
 			  } else if (view instanceof VizView) {

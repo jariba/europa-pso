@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: RuleInstanceNode.java,v 1.8 2004-07-08 21:33:23 taylor Exp $
+// $Id: RuleInstanceNode.java,v 1.9 2004-08-25 18:41:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -261,8 +261,8 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    */
   public void doMouseClickWithListener( final int modifiers, final Point docCoords,
                                         final Point viewCoords, final JGoView view,
-                                        final ViewListener viewListener) {
-    this.viewListener = viewListener;
+                                        final ViewListener listener) {
+    viewListener = listener;
     doMouseClick( modifiers, docCoords, viewCoords, view);
   } // end doMouseClickWithListener
 
@@ -287,7 +287,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       // do nothing
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      mouseRightPopupMenu( ruleInstanceNode, viewCoords, viewListener);
+      mouseRightPopupMenu( ruleInstanceNode, viewCoords);
       return true;
     }
     return false;
@@ -300,8 +300,7 @@ public class RuleInstanceNode extends ExtendedBasicNode implements OverviewToolT
    * @param viewCoords - <code>Point</code> - 
    */
   public final void mouseRightPopupMenu( final RuleInstanceNode ruleInstanceNode,
-                                         final Point viewCoords,
-                                         final ViewListener viewListener) {
+                                         final Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
     if (ruleInstanceNode.getRuleInstance().getVariables().size() > 0) {

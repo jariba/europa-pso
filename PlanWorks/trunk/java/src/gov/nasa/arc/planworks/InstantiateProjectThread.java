@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: InstantiateProjectThread.java,v 1.15 2004-08-05 00:24:21 taylor Exp $
+// $Id: InstantiateProjectThread.java,v 1.16 2004-08-25 18:40:58 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -46,11 +46,14 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
    *
    * @param type - <code>String</code> - 
    */
-  public InstantiateProjectThread( final String type) {
+  public InstantiateProjectThread( final String type, ThreadListener threadListener) {
     this.type = type;
     doProgMonitor = true;
     if (System.getProperty("ant.target.test").equals( "true")) {
       doProgMonitor = false;
+    }
+    if (threadListener != null) {
+      addThreadListener( threadListener);
     }
   }  // end constructor
 
@@ -69,6 +72,7 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
   } // end run
 
   private void instantiateProject() {
+    handleEvent( ThreadListener.EVT_THREAD_BEGUN);
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
@@ -100,6 +104,7 @@ public class InstantiateProjectThread extends ThreadWithProgressMonitor {
 
     PlanWorks.getPlanWorks().projectMenu.setEnabled( true);
     dynamicMenuBar.enableMenu( planSeqMenu);
+    handleEvent( ThreadListener.EVT_THREAD_ENDED);
   } // end instantiateProject
 
 

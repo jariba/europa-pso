@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.109 2004-08-10 21:17:06 taylor Exp $
+// $Id: PlanWorks.java,v 1.110 2004-08-25 18:40:59 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -202,7 +202,11 @@ public class PlanWorks extends MDIDesktopFrame {
   protected PwProject currentProject;
   protected String currentProjectName;
   protected ViewManager viewManager;
-
+  protected ThreadListener instantiateProjectThreadListener;
+  protected ThreadListener deleteProjectThreadListener;
+  protected ThreadListener newSequenceThreadListener;
+  protected ThreadListener addSequenceThreadListener;
+  protected ThreadListener deleteSequenceThreadListener;
 
   /**
    * <code>PlanWorks</code> - constructor 
@@ -300,6 +304,12 @@ public class PlanWorks extends MDIDesktopFrame {
     //executeDialog = new PlannerCommandLineDialog(this);
     //executeDialog.hide();
     this.nodeShapesFrame = null;
+    // for PlanWorksGUITest
+    instantiateProjectThreadListener = null;
+    deleteProjectThreadListener = null;
+    newSequenceThreadListener = null;
+    addSequenceThreadListener = null;
+    deleteSequenceThreadListener = null;
   } // end planWorksCommon
 
   private PlanWorks getPlanWorksInternal() {
@@ -482,6 +492,51 @@ public class PlanWorks extends MDIDesktopFrame {
      viewRenderingStartTime[supportedViewNames.indexOf( viewName)] = time;
   }
 
+  /**
+   * <code>setInstantiateProjectThreadListener</code> - for PlanWorksGUITest
+   *
+   * @param listener - <code>ThreadListener</code> - 
+   */
+  public void setInstantiateProjectThreadListener( ThreadListener listener) {
+    instantiateProjectThreadListener = listener;
+  }
+
+  /**
+   * <code>setDeleteProjectThreadListener</code> - for PlanWorksGUITest
+   *
+   * @param listener - <code>ThreadListener</code> - 
+   */
+  public void setDeleteProjectThreadListener( ThreadListener listener) {
+    deleteProjectThreadListener = listener;
+  }
+
+  /**
+   * <code>setNewSequenceThreadListener</code> - for PlanWorksGUITest
+   *
+   * @param listener - <code>ThreadListener</code> - 
+   */
+  public void setNewSequenceThreadListener( ThreadListener listener) {
+    newSequenceThreadListener = listener;
+  }
+
+  /**
+   * <code>setAddSequenceThreadListener</code> - for PlanWorksGUITest
+   *
+   * @param listener - <code>ThreadListener</code> - 
+   */
+  public void setAddSequenceThreadListener( ThreadListener listener) {
+    addSequenceThreadListener = listener;
+  }
+
+  /**
+   * <code>setDeleteSequenceThreadListener</code>
+   *
+   * @param listener - <code>ThreadListener</code> - for PlanWorksGUITest
+   */
+  public void setDeleteSequenceThreadListener( ThreadListener listener) {
+    deleteSequenceThreadListener = listener;
+  }
+
  /**
    * <code>setProjectMenuEnabled</code>
    *
@@ -604,31 +659,32 @@ public class PlanWorks extends MDIDesktopFrame {
     if(sequenceStepsViewMap == null) {
       sequenceStepsViewMap = new HashMap();
     }
-    Thread thread = new InstantiateProjectThread(type);
+    Thread thread = new InstantiateProjectThread( type, instantiateProjectThreadListener);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
   }
 
   private void deleteProjectThread() {
-    Thread thread = new DeleteProjectThread();
+    Thread thread = new DeleteProjectThread( deleteProjectThreadListener);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
   }
 
-  private void newSequenceThread() {
-    Thread thread = new NewSequenceThread();
-    thread.setPriority(Thread.MIN_PRIORITY);
-    thread.start();
-  }
+//   private void newSequenceThread() {
+//     // Thread thread = new NewSequenceThread( newSequenceThreadListener);
+//     Thread thread = new NewSequenceThread();
+//     thread.setPriority(Thread.MIN_PRIORITY);
+//     thread.start();
+//   }
 
   private void addSequenceThread() {
-    Thread thread = new AddSequenceThread();
+    Thread thread = new AddSequenceThread( addSequenceThreadListener);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
   }
 
   private void deleteSequenceThread() {
-    Thread thread = new DeleteSequenceThread();
+    Thread thread = new DeleteSequenceThread( deleteSequenceThreadListener);
     thread.setPriority(Thread.MIN_PRIORITY);
     thread.start();
   }

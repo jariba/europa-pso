@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNetworkTokenNode.java,v 1.2 2004-08-10 21:17:11 taylor Exp $
+// $Id: TokenNetworkTokenNode.java,v 1.3 2004-08-25 18:41:03 taylor Exp $
 //
 // PlanWorks
 //
@@ -374,7 +374,7 @@ public class TokenNetworkTokenNode extends ExtendedBasicNode
         if (areObjectsChanged) {
           tokenNetworkView.setLayoutNeeded();
           tokenNetworkView.setFocusNode( this);
-          tokenNetworkView.redraw();
+          tokenNetworkView.redraw( true);
         }
         return true;
       }

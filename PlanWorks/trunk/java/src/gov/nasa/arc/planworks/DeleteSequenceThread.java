@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: DeleteSequenceThread.java,v 1.11 2004-08-14 01:39:08 taylor Exp $
+// $Id: DeleteSequenceThread.java,v 1.12 2004-08-25 18:40:58 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -41,10 +41,13 @@ public class DeleteSequenceThread extends ThreadWithProgressMonitor {
    * <code>DeleteSequenceThread</code> - constructor 
    *
    */
-  public DeleteSequenceThread() {
+  public DeleteSequenceThread( ThreadListener threadListener) {
     doProgMonitor = true;
     if (System.getProperty("ant.target.test").equals( "true")) {
       doProgMonitor = false;
+    }
+    if (threadListener != null) {
+      addThreadListener( threadListener);
     }
   }
 
@@ -53,6 +56,7 @@ public class DeleteSequenceThread extends ThreadWithProgressMonitor {
    *
    */
   public void run() {
+    handleEvent( ThreadListener.EVT_THREAD_BEGUN);
     MDIDynamicMenuBar dynamicMenuBar =
       (MDIDynamicMenuBar) PlanWorks.getPlanWorks().getJMenuBar();
     JMenu planSeqMenu = dynamicMenuBar.disableMenu( PlanWorks.PLANSEQ_MENU);
@@ -74,7 +78,8 @@ public class DeleteSequenceThread extends ThreadWithProgressMonitor {
     if (doProgMonitor) {
       isProgressMonitorCancel = true;
     }
-  }
+    handleEvent( ThreadListener.EVT_THREAD_ENDED);
+  } // end run
 
   private void deleteSequence() {
     List sequenceNames = PlanWorks.getPlanWorks().currentProject.listPlanningSequences();

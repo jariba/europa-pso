@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNetworkRuleInstanceNode.java,v 1.2 2004-08-10 21:17:11 taylor Exp $
+// $Id: TokenNetworkRuleInstanceNode.java,v 1.3 2004-08-25 18:41:03 taylor Exp $
 //
 // PlanWorks
 //
@@ -13,15 +13,10 @@
 package gov.nasa.arc.planworks.viz.partialPlan.tokenNetwork;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoObject;
@@ -31,19 +26,12 @@ import com.nwoods.jgo.JGoView;
 import gov.nasa.arc.planworks.PlanWorks;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwRuleInstance;
-import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.db.PwVariableContainer;
-import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.OverviewToolTip;
-import gov.nasa.arc.planworks.viz.ViewGenerics;
-import gov.nasa.arc.planworks.viz.ViewListener;
 import gov.nasa.arc.planworks.viz.nodes.IncrementalNode;
 import gov.nasa.arc.planworks.viz.nodes.RuleInstanceNode;
-import gov.nasa.arc.planworks.viz.nodes.TokenNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
@@ -284,7 +272,7 @@ public class TokenNetworkRuleInstanceNode extends RuleInstanceNode
       if (areObjectsChanged) {
         tokenNetworkView.setLayoutNeeded();
         tokenNetworkView.setFocusNode( this);
-        tokenNetworkView.redraw();
+        tokenNetworkView.redraw( true);
       }
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -337,30 +325,6 @@ public class TokenNetworkRuleInstanceNode extends RuleInstanceNode
     return (areNodesChanged || areLinksChanged);
   } // end removeRuleInstanceObjects
 
-  public final void mouseRightPopupMenu( final RuleInstanceNode ruleInstanceNode,
-                                         final Point viewCoords) {
-    JPopupMenu mouseRightPopup = new JPopupMenu();
-
-    JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
-    navigatorItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
-          String viewSetKey = partialPlanView.getNavigatorViewSetKey();
-          MDIInternalFrame navigatorFrame = partialPlanView.openNavigatorViewFrame( viewSetKey);
-          Container contentPane = navigatorFrame.getContentPane();
-          PwPartialPlan partialPlan = partialPlanView.getPartialPlan();
-          contentPane.add( new NavigatorView( ruleInstanceNode.getRuleInstance(),
-                                              partialPlan, partialPlanView.getViewSet(),
-                                              viewSetKey, navigatorFrame));
-        }
-      });
-    mouseRightPopup.add( navigatorItem);
-
-    ViewListener viewListener = null;
-    mouseRightPopup.add( ViewGenerics.createRuleInstanceViewItem
-                         ( (RuleInstanceNode) ruleInstanceNode, partialPlanView, viewListener));
-
-    ViewGenerics.showPopupMenu( mouseRightPopup, partialPlanView, viewCoords);
-  } // end mouseRightPopupMenu
 
 
 } // end class TokenNetworkRuleInstanceNode

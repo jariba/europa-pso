@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.58 2004-08-23 22:07:41 taylor Exp $
+// $Id: planViz.txt,v 1.59 2004-08-25 18:41:05 taylor Exp $
 //
 // PlanWorks
 //
@@ -433,13 +433,13 @@ Method:
      "Open Rule Instance View" for each.
  16. In the Token Network, Mouse-Right click on the background and select
      "Close Rule Instance Views".
- 17. In the Constraint Network, Mouse-Right click on the background and select
-     "Find Entity Path", enter two variable keys, and click "OK".
- 18. In the Constraint Network, Mouse-Left click on the background, and then
+ 17. In the Constraint Network View, Mouse-Right click on the background and select
+     "Find Entity Path", enter two variable keys, and click "Find Path".
+ 18. In the Constraint Network View, Mouse-Left click on the background, and then
      Mouse-Right click on the background and select "Highlight Current Path".
- 19. In the Token Network, Mouse-Right click on the background and select
-     "Find Entity Path", enter two token keys, and click "OK".
- 20. In the Token Network, Mouse-Left click on the background, and then
+ 19. In the Token Network View, Mouse-Right click on the background and select
+     "Find Entity Path", enter two token keys, and click "Find Path".
+ 20. In the Token Network View, Mouse-Left click on the background, and then
      Mouse-Right click on the background and select "Highlight Current Path".
 
 Post-conditions:
@@ -502,10 +502,10 @@ partial plan views.
 
 Pre-conditions:
   1. PlanWorks is running.
-  2. The "test1" project is open, and all partial plan views, except DBTransaction
-     and Decision views, are being displayed for step<nn> in a "tiled" layout 
-     arrangement.  Create overview windows for each partial plan view to
-     aid to monitoring the effects of Content Filter application.
+  2. The "test1" project is open, and all partial plan views, except DBTransaction,
+     Decision, Resource Profile, and Resource Transaction views, are being displayed
+     for step<nn> in a "tiled" layout arrangement.  Create overview windows for each 
+     partial plan view to aid to monitoring the effects of Content Filter application.
   3. The Constraint Network View has been expanded for at least two tokens,
      and all their variable and constraint nodes.
 
@@ -866,7 +866,8 @@ Method:
      Show|Hide All Views".
  10. On the background of any of the Navigator Views, click Mouse-Right and select
      "Find Entity Path", entering in turn all the permutations of token, variable,
-     constraint, rule instance, slot, object, resource, and timeline keys
+     constraint, rule instance, slot, object, resource, and timeline keys.  Click
+     on "Find Path".
  11. On the background of any of the Navigator Views, click Mouse-Right and select
      "Find by Key", entering any appropriate entity key.
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ThreadWithProgressMonitor.java,v 1.2 2004-07-29 01:36:36 taylor Exp $
+// $Id: ThreadWithProgressMonitor.java,v 1.3 2004-08-25 18:41:00 taylor Exp $
 //
 //
 // PlanWorks -- 
@@ -14,6 +14,9 @@
 
 package gov.nasa.arc.planworks;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import javax.swing.ProgressMonitor;
 
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -28,6 +31,8 @@ import gov.nasa.arc.planworks.viz.ViewConstants;
  */
 public class ThreadWithProgressMonitor extends Thread {
 
+  private  List listenerList;
+
   protected ProgressMonitor progressMonitor;
   protected boolean isProgressMonitorCancel;
 
@@ -38,8 +43,26 @@ public class ThreadWithProgressMonitor extends Thread {
    */
   public ThreadWithProgressMonitor() {
     super();
+    listenerList = new LinkedList();
   }  // end constructor
 
+  /**
+   * <code>addThreadListener</code>
+   *
+   * @param l - <code>ThreadListener</code> - 
+   */
+  protected void addThreadListener(ThreadListener l) {
+    // System.err.println( "ThreadWithProgressMonitor.addThreadListener " + l);
+    listenerList.add(l);
+  }
+
+  /**
+   * <code>progressMonitorThread</code>
+   *
+   * @param title - <code>String</code> - 
+   * @param minValue - <code>int</code> - 
+   * @param maxValue - <code>int</code> - 
+   */
   protected void progressMonitorThread( String title, int minValue, int maxValue) {
     Thread thread = new ProgressMonitorThread( title, minValue, maxValue);
     thread .setPriority(Thread.MAX_PRIORITY);
@@ -80,6 +103,11 @@ public class ThreadWithProgressMonitor extends Thread {
 
   } // end class ProgressMonitorThread
 
+  /**
+   * <code>progressMonitorWait</code>
+   *
+   * @return - <code>boolean</code> - 
+   */
   protected boolean progressMonitorWait() {
     int numCycles = ViewConstants.WAIT_NUM_CYCLES;
     while ((progressMonitor == null) && numCycles != 0) {
@@ -97,5 +125,40 @@ public class ThreadWithProgressMonitor extends Thread {
     }
     return numCycles != 0;
   } // end progressMonitorWait
+
+  /**
+   * <code>handleEvent</code>
+   *
+   * @param eventName - <code>String</code> - 
+   * @param params - <code>Object[]</code> - 
+   */
+  protected void handleEvent(String eventName, Object [] params) {
+    Class [] paramTypes = new Class [params.length];
+    for(int i = 0; i < params.length; i++) {
+      paramTypes[i] = params[i].getClass();
+    }
+    for(Iterator it = listenerList.iterator(); it.hasNext();) {
+      ThreadListener l = (ThreadListener) it.next();
+      try {
+        // System.err.println("Accessing method " + l.getClass().getName() + "." + eventName + "("
+        //                    + paramTypes + ")");
+        l.getClass().getMethod(eventName, paramTypes).invoke(l, params);
+        
+      }
+      catch(Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * <code>handleEvent</code>
+   *
+   * @param eventName - <code>String</code> - 
+   */
+  protected void handleEvent(String eventName) {
+    Object [] params = {};
+    handleEvent(eventName, params);
+  }
 
 } // end class ThreadWithProgressMonitor

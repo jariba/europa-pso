@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.68 2004-08-23 22:51:41 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.69 2004-08-25 18:41:03 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,6 +33,7 @@ import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
+import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
 import com.nwoods.jgo.JGoView;
 
@@ -116,6 +117,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
   private List highlightPathNodesList;
   private ProgressMonitorThread findPathPMThread;
   private ProgressMonitorThread redrawPMThread;
+  private boolean disableEntityKeyPathDialog;  // for PlanWorksGUITest
 
   /**
    * <code>TokenNetworkView</code> - constructor - 
@@ -214,6 +216,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     // isDebugPrint = true;
     isDebugPrint = false;
     highlightPathNodesList = null;
+    disableEntityKeyPathDialog = false;
   }
 
   /**
@@ -381,20 +384,36 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
    *
    */
   public final void redraw() {
-    Thread thread = new RedrawViewThread();
+    setFocusNode( null);
+    highlightPathNodesList = null;
+    boolean isContentSpecRedraw = true;
+    createRedrawViewThread( isContentSpecRedraw);
+  }
+
+  protected final void redraw( boolean isFindEntityPath) {
+    boolean isContentSpecRedraw = false;
+    createRedrawViewThread( isContentSpecRedraw);
+  }
+
+  private  final void createRedrawViewThread( boolean isContentSpecRedraw) {
+    Thread thread = new RedrawViewThread( isContentSpecRedraw);
     thread.setPriority( Thread.MIN_PRIORITY);
     thread.start();
   }
 
+
   class RedrawViewThread extends Thread {
 
-    public RedrawViewThread() {
+    private boolean isContentSpecRedraw;
+
+    public RedrawViewThread( boolean isContentSpecRedraw) {
+      this.isContentSpecRedraw = isContentSpecRedraw;
     }  // end constructor
 
     public final void run() {
       try {
         ViewGenerics.setRedrawCursor( viewFrame);
-        redrawView();
+        redrawView( isContentSpecRedraw);
       } finally {
         ViewGenerics.resetRedrawCursor( viewFrame);
       }
@@ -403,15 +422,19 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
   } // end class RedrawViewThread
 
 
-  private void redrawView() {
-    System.err.println( "Redrawing Token Network View ...");
+  private void redrawView( boolean isContentSpecRedraw) {
+    handleEvent(ViewListener.EVT_REDRAW_BEGUN_DRAWING);
+     System.err.println( "Redrawing Token Network View ...");
     if (startTimeMSecs == 0L) {
       startTimeMSecs = System.currentTimeMillis();
     }
     this.setVisible( false);
+    validTokenIds = viewSet.getValidIds();
+    displayedTokenIds = new ArrayList();
 
     redrawPMThread = 
-      createProgressMonitorThread( "Redrawing Token Network View ...", 0, 6, Thread.currentThread(),
+      createProgressMonitorThread( "Redrawing Token Network View ...", 0, 6,
+                                   Thread.currentThread(),
 			     this);
     if (! progressMonitorWait( redrawPMThread, this)) {
       System.err.println( "progressMonitorWait failed");
@@ -424,19 +447,24 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 
     setNodesLinksVisible();
 
-    if (isLayoutNeeded) {
+    if (isContentSpecRedraw || ((! isContentSpecRedraw) && isLayoutNeeded)) {
       TokenNetworkLayout layout = new TokenNetworkLayout( jGoDocument, startTimeMSecs);
       layout.performLayout();
 
       isLayoutNeeded = false;
     }
 
+    System.err.println( "redrawView: focusNode " + focusNode + " highlightPathNodesList " +
+                        highlightPathNodesList);
     if ((focusNode == null) && (highlightPathNodesList != null)) {
       NodeGenerics.highlightPathNodes( highlightPathNodesList, jGoView);
     } else if (focusNode != null) {
       // do not highlight node, if it has been removed
       NodeGenerics.focusViewOnNode( focusNode, ((IncrementalNode) focusNode).inLayout(),
 				    jGoView);
+    } else {
+      JGoObject node = null; boolean isHighlightNode = false;
+      NodeGenerics.focusViewOnNode( node, isHighlightNode, jGoView);
     }
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... " + ViewConstants.TOKEN_NETWORK_VIEW + " elapsed time: " +
@@ -444,6 +472,10 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     startTimeMSecs = 0L;
     this.setVisible( true);
     redrawPMThread.setProgressMonitorCancel();
+    // since this view is incremental, do not check that all tokens are displayed
+    // boolean showDialog = true;
+    // isContentSpecRendered( ViewConstants.TOKEN_NETWORK_VIEW, showDialog);
+      handleEvent(ViewListener.EVT_REDRAW_ENDED_DRAWING);
   } // end redrawView
 
   /**
@@ -546,7 +578,29 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     return focusNodeId;
   }
 
-  private List getRootTokens() {
+  /**
+   * <code>getHighlightPathNodesList</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public final List getHighlightPathNodesList() {
+    return highlightPathNodesList;
+  }
+
+  /**
+   * <code>setDisableEntityKeyPathDialog</code> - for PlanWorksGUITest
+   *
+   */
+  public final void setDisableEntityKeyPathDialog() {
+    disableEntityKeyPathDialog = true;
+  }
+
+  /**
+   * <code>getRootTokens</code>
+   *
+   * @return - <code>List</code> - 
+   */
+  public List getRootTokens() {
     List rootTokens = new ArrayList();
     Iterator tokenIterator = partialPlan.getTokenList().iterator();
     while (tokenIterator.hasNext()) {
@@ -641,7 +695,8 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
    * @param ruleInstance - <code>PwRuleInstance</code> - 
    * @return - <code>TokenNetworkRuleInstanceNode</code> - 
    */
-  protected final TokenNetworkRuleInstanceNode addRuleInstanceTokNetNode ( final PwRuleInstance ruleInstance) {
+  protected final TokenNetworkRuleInstanceNode addRuleInstanceTokNetNode
+    ( final PwRuleInstance ruleInstance) {
     boolean isDraggable = true;
     TokenNetworkRuleInstanceNode ruleInstanceTokNetNode =
       (TokenNetworkRuleInstanceNode) entityTokNetNodeMap.get( ruleInstance.getId());
@@ -690,15 +745,48 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
   } // end addNavigatorLinkNew
 
   private void setNodesLinksVisible() {
-    List objectNodeKeyList = new ArrayList( entityTokNetNodeMap.keySet());
-    Iterator objectNodeKeyItr = objectNodeKeyList.iterator();
-    while (objectNodeKeyItr.hasNext()) {
-      ExtendedBasicNode objectTokNetNode =
-        (ExtendedBasicNode) entityTokNetNodeMap.get( (Integer) objectNodeKeyItr.next());
-      if (((IncrementalNode) objectTokNetNode).inLayout()) {
-        objectTokNetNode.setVisible( true);
+    List tokenNodeKeyList = new ArrayList( tokenNodeMap.keySet());
+    Iterator tokenNodeKeyItr = tokenNodeKeyList.iterator();
+    while (tokenNodeKeyItr.hasNext()) {
+      TokenNetworkTokenNode tokenNode =
+        (TokenNetworkTokenNode) tokenNodeMap.get( (Integer) tokenNodeKeyItr.next());
+      boolean inContentSpec = false;
+      if (isTokenInContentSpec( tokenNode.getToken())) {
+        inContentSpec = true;
+      }
+      if (tokenNode.inLayout() && inContentSpec) {
+        tokenNode.setVisible( true);
       } else {
-        objectTokNetNode.setVisible( false);
+        tokenNode.setVisible( false);
+      }
+    }
+    List ruleInstanceNodeKeyList = new ArrayList( ruleInstanceNodeMap.keySet());
+    Iterator ruleInstanceNodeKeyItr = ruleInstanceNodeKeyList.iterator();
+    while (ruleInstanceNodeKeyItr.hasNext()) {
+      TokenNetworkRuleInstanceNode ruleInstanceNode =
+        (TokenNetworkRuleInstanceNode) ruleInstanceNodeMap.get
+        ( (Integer) ruleInstanceNodeKeyItr.next());
+      boolean isOneNodeVisible = false;
+      Iterator parentItr = ruleInstanceNode.getParentEntityList().iterator();
+      while (parentItr.hasNext()) {
+        if (isTokenInContentSpec( (PwToken) parentItr.next())) {
+          isOneNodeVisible = true;
+          break;
+        }
+      }
+      if (! isOneNodeVisible) {
+        Iterator componentItr = ruleInstanceNode.getComponentEntityList().iterator();
+        while (componentItr.hasNext()) {
+          if (isTokenInContentSpec( (PwToken) componentItr.next())) {
+            isOneNodeVisible = true;
+            break;
+          }
+        }
+      }
+      if (ruleInstanceNode.inLayout() && isOneNodeVisible) {
+        ruleInstanceNode.setVisible( true);
+      } else {
+        ruleInstanceNode.setVisible( false);
       }
     }
     List tokNetLinkKeyList = new ArrayList( tokNetLinkMap.keySet());
@@ -706,7 +794,14 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
     while (tokNetLinkKeyItr.hasNext()) {
       BasicNodeLink tokNetLink =
         (BasicNodeLink) tokNetLinkMap.get( (String) tokNetLinkKeyItr.next());
-      if (tokNetLink.inLayout()) {
+      boolean isOneNodeVisible = false;
+      ExtendedBasicNode fromNode = (ExtendedBasicNode) tokNetLink.getFromNode();
+      ExtendedBasicNode toNode = (ExtendedBasicNode) tokNetLink.getToNode();
+      if (((fromNode instanceof TokenNetworkTokenNode) && fromNode.isVisible()) ||
+          ((toNode instanceof TokenNetworkTokenNode) && toNode.isVisible())) {
+        isOneNodeVisible = true;
+      }
+      if (tokNetLink.inLayout() && isOneNodeVisible) {
         tokNetLink.setVisible( true);
         if (isDebugPrint && (tokNetLink.getMidLabel() != null)) {
           tokNetLink.getMidLabel().setVisible( true);
@@ -834,6 +929,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
             new AskNodeByKey( "Find by Key", "key (int)", TokenNetworkView.this);
           Integer nodeKey = nodeByKeyDialog.getNodeKey();
           if (nodeKey != null) {
+            highlightPathNodesList = null;
             boolean isByKey = true;
             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
             findAndSelectNode( nodeKey, isByKey);
@@ -953,7 +1049,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
             new FindEntityPath( entityKey1, entityKey2, pathClasses, doPathExists,
                                 maxPathLength, partialPlan, TokenNetworkView.this,
                                 dialogWindowFrame);
-          findEntityPath.invokeAndWait();
+          findEntityPath.invokeAndWait( disableEntityKeyPathDialog);
          return null;
         }
       };
@@ -967,7 +1063,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
    * @return - <code>List</code> - 
    */
   public List renderEntityPathNodes( final FindEntityPath findEntityPath) {
-    boolean isLayoutNeeded = false;
+    boolean layoutNeeded = false, isFindEntityPath = true;
     List nodeList =  new ArrayList();
       Iterator tokenRuleItr = findEntityPath.getEntityKeyList().iterator();
       PwToken token = null; PwRuleInstance ruleInstance = null;
@@ -980,7 +1076,7 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 	  nodeList.add( tokenNode);
 	  if (! tokenNode.areNeighborsShown()) {
 	    if (tokenNode.addTokenObjects( tokenNode)) {
-	      isLayoutNeeded = true;
+	      layoutNeeded = true;
 	    }
 	    tokenNode.setAreNeighborsShown( true);
 	  }
@@ -990,18 +1086,19 @@ public class TokenNetworkView extends PartialPlanView implements FindEntityPathA
 	  nodeList.add( ruleInstanceNode);
 	  if (! ruleInstanceNode.areNeighborsShown()) {
 	    if (ruleInstanceNode.addRuleInstanceObjects( ruleInstanceNode)) {
-	      isLayoutNeeded = true;
+	      layoutNeeded = true;
 	    }
 	    ruleInstanceNode.setAreNeighborsShown( true);
 	  }
 	}
       }
-      if (isLayoutNeeded) {
+      if (layoutNeeded) {
 	setLayoutNeeded();
       }
       setFocusNode( null);
       highlightPathNodesList = nodeList;
-      redraw();
+      
+      redraw( isFindEntityPath);
       return nodeList;
   } // end renderEntityPathNodes
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ConstraintNetworkUtils.java,v 1.8 2004-07-08 21:33:24 taylor Exp $
+// $Id: ConstraintNetworkUtils.java,v 1.9 2004-08-25 18:41:01 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork;
 
@@ -86,7 +86,7 @@ public final class ConstraintNetworkUtils {
     if(doRedraw && (areNodesChanged || areLinksChanged)) {
       view.setLayoutNeeded();
       view.setFocusNode((JGoArea) node);
-      view.redraw();
+      view.redraw( true);
     }
   }
 
@@ -98,7 +98,7 @@ public final class ConstraintNetworkUtils {
     if(areNodesChanged || areLinksChanged) {
       view.setLayoutNeeded();
       view.setFocusNode((JGoArea) node);
-      view.redraw();
+      view.redraw( true);
     }
   }
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.16 2004-06-16 22:09:13 taylor Exp $
+// $Id: ConstraintNode.java,v 1.17 2004-08-25 18:41:01 taylor Exp $
 //
 // PlanWorks
 //
@@ -450,7 +450,7 @@ public class ConstraintNode extends ExtendedBasicNode implements OverviewToolTip
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();
       constraintNetworkView.setFocusNode( constraintNode);
-      constraintNetworkView.redraw();
+      constraintNetworkView.redraw( true);
     }
     int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
     setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
@@ -465,7 +465,7 @@ public class ConstraintNode extends ExtendedBasicNode implements OverviewToolTip
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();
       constraintNetworkView.setFocusNode( constraintNode);
-      constraintNetworkView.redraw();
+      constraintNetworkView.redraw( true);
     }
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
   } // end addConstraintnodeVariablesConstraints
