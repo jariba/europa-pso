@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenQueryView.java,v 1.7 2004-05-21 21:39:10 taylor Exp $
+// $Id: TokenQueryView.java,v 1.8 2004-05-21 21:47:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -88,7 +88,7 @@ public class TokenQueryView extends SequenceView {
     this.freeTokenList = freeTokenList;
     Collections.sort( freeTokenList,
                       new TokenQueryComparatorAscending
-                      ( ViewConstants.QUERY_TOKEN_STEP_NUM_HEADER));
+                      ( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER));
     this.query = query;
     this.planSequence = (PwPlanningSequence) planSequence;
     this.viewSet = (SequenceViewSet) viewSet;
@@ -144,7 +144,7 @@ public class TokenQueryView extends SequenceView {
     freeTokenHeaderPanel.add( headerJGoView, BorderLayout.NORTH);
     add( freeTokenHeaderPanel, BorderLayout.NORTH);
 
-    String[] columnNames = { ViewConstants.QUERY_TOKEN_STEP_NUM_HEADER,
+    String[] columnNames = { ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
                              ViewConstants.QUERY_TOKEN_KEY_HEADER,
                              ViewConstants.QUERY_TOKEN_PREDICATE_HEADER,
                              // empty last column to allow user adjusting of column widths

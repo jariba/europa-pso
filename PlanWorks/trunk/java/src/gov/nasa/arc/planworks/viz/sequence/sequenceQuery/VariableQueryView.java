@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableQueryView.java,v 1.7 2004-05-21 21:39:10 taylor Exp $
+// $Id: VariableQueryView.java,v 1.8 2004-05-21 21:47:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -94,7 +94,7 @@ public class VariableQueryView extends SequenceView {
     this.variableList = variableList;
     Collections.sort( variableList,
                       new VariableQueryComparatorAscending
-                      ( ViewConstants.QUERY_VARIABLE_STEP_NUM_HEADER));
+                      ( ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER));
     this.query = query;
     this.planSequence = (PwPlanningSequence) planSequence;
     stepNumber = Integer.parseInt( stepString);
@@ -152,10 +152,10 @@ public class VariableQueryView extends SequenceView {
     variableHeaderPanel.add( headerJGoView, BorderLayout.NORTH);
     add( variableHeaderPanel, BorderLayout.NORTH);
 
-    String[] columnNames = { ViewConstants.QUERY_VARIABLE_STEP_NUM_HEADER,
+    String[] columnNames = { ViewConstants.DB_TRANSACTION_STEP_NUM_HEADER,
                              ViewConstants.QUERY_VARIABLE_KEY_HEADER,
                              ViewConstants.QUERY_VARIABLE_TYPE_HEADER,
-                             ViewConstants.QUERY_VARIABLE_PARENT_NAME_HEADER,
+                             ViewConstants.DB_TRANSACTION_PARENT_HEADER,
                              // empty last column to allow user adjusting of column widths
                              "" };
     PwPartialPlan partialPlan = null;
