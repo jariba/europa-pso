@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.11 2004-02-13 00:26:07 miatauro Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.12 2004-02-13 00:49:41 miatauro Exp $
 //
 // PlanWorks
 //
@@ -296,19 +296,15 @@ public class ConstraintNetworkTokenNode extends TokenNode {
 	    continue;
 	  }
           //THIS NEEDS TO CHANGE
-	  ListIterator tokenNodeIterator = constrVar.getTokenList().listIterator();
-	  while(tokenNodeIterator.hasNext()) {
-	    PwToken varToken = (PwToken) tokenNodeIterator.next();
-	    if(varToken == null || varToken.equals(token)) {
-	      continue;
-	    }
-	    if(!connectedTokenMap.containsKey(varToken)) {
-	      connectedTokenMap.put(varToken, new Integer(0));
-	    }
-	    connectedTokenMap.put(varToken, new Integer(((Integer)connectedTokenMap.
-                                                         get(varToken)).intValue() + 1));
-	    connectedTokenCount++;
-	  }
+	  //ListIterator tokenNodeIterator = constrVar.getTokenList().listIterator();
+	  //while(tokenNodeIterator.hasNext()) {
+          PwToken varToken = (PwToken) constrVar.getParent();
+          if(!connectedTokenMap.containsKey(varToken)) {
+            connectedTokenMap.put(varToken, new Integer(0));
+          }
+          connectedTokenMap.put(varToken, new Integer(((Integer)connectedTokenMap.
+                                                       get(varToken)).intValue() + 1));
+          connectedTokenCount++;
 	}
       }
     }

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.3 2004-02-13 00:26:24 miatauro Exp $
+// $Id: ConstraintNavNode.java,v 1.4 2004-02-13 00:50:12 miatauro Exp $
 //
 // PlanWorks
 //
@@ -344,7 +344,7 @@ public class ConstraintNavNode extends ExtendedBasicNode {
       if (variableNavNode == null) {
         Color nodeColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
         //THIS NEEDS TO CHANGE!!!
-        PwToken token = (PwToken) variable.getTokenList().get( 0);
+        PwToken token = (PwToken) variable.getParent();
         if (! token.isFreeToken()) {
           PwTimeline timeline =
             navigatorView.getPartialPlan().getTimeline( token.getTimelineId());
