@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.45 2004-03-12 23:19:52 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.46 2004-03-26 22:09:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -133,7 +133,7 @@ public class PwProjectImpl extends PwProject {
   private Integer id;
   private List planningSequences; // element PwPlanningSequence
   private Map sequenceIdUrlMap;
-
+  
   /**
    * <code>PwProjectImpl</code> - constructor 
    *                  create a new project from an url
@@ -146,6 +146,7 @@ public class PwProjectImpl extends PwProject {
     this.name = name;
     id = new Integer(-1);
     planningSequences = new ArrayList();
+    //sequenceIdUrlMap = new HashMap();
     sequenceIdUrlMap = new HashMap();
   } // end  constructor PwProjectImpl.createProject
 
@@ -173,7 +174,6 @@ public class PwProjectImpl extends PwProject {
     while(seqIdIterator.hasNext()) {
       Long sequenceId = (Long) seqIdIterator.next();
       String seqUrl = (String) sequenceIdUrlMap.get(sequenceId);
-      System.err.println(sequenceId + " : " + seqUrl);
       try {
         planningSequences.add(new PwPlanningSequenceImpl(seqUrl, sequenceId));
       }
@@ -259,16 +259,12 @@ public class PwProjectImpl extends PwProject {
     if(!sequenceIdUrlMap.containsValue(url)) {
       throw new ResourceNotFoundException("getPlanningSequence could not find " + url);
     }
-    List temp = CollectionUtils.lGrep(new PlanningSequenceNameEquals(url), planningSequences);
-
-    if(temp.size() > 1) {
-      throw new ResourceNotFoundException("Found multiple sequences with names equal to '" + url + 
-                                          "'");
+    //List temp = CollectionUtils.lGrep(new PlanningSequenceNameEquals(url), planningSequences);
+    retval = (PwPlanningSequence) CollectionUtils.findFirst(new PlanningSequenceNameEquals(url),
+                                                            planningSequences);
+    if(retval == null) {
+      planningSequences.add(retval = new PwPlanningSequenceImpl(url, this));
     }
-    else if(temp.size() == 1) {
-      return (PwPlanningSequence) temp.get(0);
-    }
-    planningSequences.add(retval = new PwPlanningSequenceImpl(url, this));
     return retval;
   } // end getPlanningSequence
 
@@ -277,16 +273,12 @@ public class PwProjectImpl extends PwProject {
     if(!sequenceIdUrlMap.containsKey(seqId)) {
       throw new ResourceNotFoundException("getPlanning sequence could not find " + seqId);
     }
-    List temp = CollectionUtils.lGrep(new PlanningSequenceIdEquals(seqId), planningSequences);
-
-    if(temp.size() > 1) {
-      throw new ResourceNotFoundException("Multiple sequences found with id " + seqId);
+    retval = (PwPlanningSequence) CollectionUtils.findFirst(new PlanningSequenceIdEquals(seqId),
+                                                            planningSequences);
+    if(retval == null) {
+      planningSequences.add(retval = 
+                            new PwPlanningSequenceImpl((String) sequenceIdUrlMap.get(seqId),this));
     }
-    else if(temp.size() == 1) {
-      return (PwPlanningSequence) temp.get(0);
-    }
-    planningSequences.add(retval = 
-                          new PwPlanningSequenceImpl((String) sequenceIdUrlMap.get(seqId), this));
     return retval;
   }
 
@@ -320,14 +312,14 @@ public class PwProjectImpl extends PwProject {
     if(!sequenceIdUrlMap.containsValue(seqName)) {
       throw new ResourceNotFoundException("Failed to find a sequence with url " + seqName);
     }
-    List temp = CollectionUtils.lGrep(new PlanningSequenceNameEquals(seqName), planningSequences);
-    if(temp.size() > 1) {
-      throw new ResourceNotFoundException("Found more than one sequence with url " + seqName);
-    }
-    else if(temp.size() == 1) {
-      planningSequences.removeAll(temp);
+    PwPlanningSequence seq = 
+      (PwPlanningSequence) CollectionUtils.findFirst(new PlanningSequenceNameEquals(seqName),
+                                                     planningSequences);
+    if(seq != null) {
+      planningSequences.remove(seq);
       System.gc();
-      return (PwPlanningSequence) temp.get(0);
+      planningSequences.add(new PwPlanningSequenceImpl(seqName, seq.getId()));
+      return seq;
     }
     return null;
   }
@@ -337,14 +329,14 @@ public class PwProjectImpl extends PwProject {
     if(!sequenceIdUrlMap.containsKey(seqId)) {
       throw new ResourceNotFoundException("Failed to find sequence with id " + seqId);
     }
-    List temp = CollectionUtils.lGrep(new PlanningSequenceIdEquals(seqId), planningSequences);
-    if(temp.size() > 1) {
-      throw new ResourceNotFoundException("Found more than one sequence with id " + seqId);
-    }
-    else if(temp.size() == 1) {
-      planningSequences.removeAll(temp);
+    PwPlanningSequence seq = 
+      (PwPlanningSequence) CollectionUtils.findFirst(new PlanningSequenceIdEquals(seqId),
+                                                     planningSequences);
+    if(seq != null) {
+      planningSequences.remove(seq);
       System.gc();
-      return (PwPlanningSequence) temp.get(0);
+      planningSequences.add(new PwPlanningSequenceImpl(seq.getUrl(), seqId));
+      return seq;
     }
     return null;
   }

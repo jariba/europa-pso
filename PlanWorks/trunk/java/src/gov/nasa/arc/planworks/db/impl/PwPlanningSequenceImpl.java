@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequenceImpl.java,v 1.73 2004-03-23 18:20:46 miatauro Exp $
+// $Id: PwPlanningSequenceImpl.java,v 1.74 2004-03-26 22:09:02 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -253,17 +253,7 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
    * @return - <code>List</code> - of PwDBTransaction
    */
   public List getTransactionsList( final Long partialPlanId) {
-    if(transactions == null) {
-      loadTransactions();
-    }
-    List temp = CollectionUtils.lGrep(FunctorFactory.containsStrFunctor(partialPlanId.toString()),
-                                        new ArrayList(transactions.keySet()));
-    List retval = new ArrayList();
-    ListIterator transactionKeyIterator = temp.listIterator();
-    while(transactionKeyIterator.hasNext()) {
-      retval.add(transactions.get(transactionKeyIterator.next()));
-    }
-    return retval;
+    return MySQLDB.queryTransactionsForStep(id, partialPlanId);
   } // end listTransactions
 
   public List getTransactionsList(final int stepNum) throws IndexOutOfBoundsException {
@@ -443,32 +433,16 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
 
   // end implement ViewableObject
 
-
-  private List getTransactionsById(final List ids) {
-    if(transactions == null) {
-      loadTransactions();
-    }
-    List retval = new ArrayList();
-    ListIterator idIterator = ids.listIterator();
-    while(idIterator.hasNext()) {
-      String id = (String) idIterator.next();
-      if(transactions.containsKey(id)) {
-        retval.add(transactions.get(id));
-      }
-    }
-    return retval;
-  }
-
   public List getTransactionsForConstraint(final Integer id) {
-    return getTransactionsById(MySQLDB.queryTransactionsForConstraint(this.id, id));
+    return MySQLDB.queryTransactionsForConstraint(this.id, id);
   }
 
   public List getTransactionsForToken(final Integer id) {
-    return getTransactionsById(MySQLDB.queryTransactionsForToken(this.id, id));
+    return MySQLDB.queryTransactionsForToken(this.id, id);
   }
  
   public List getTransactionsForVariable(final Integer id) {
-    return getTransactionsById(MySQLDB.queryTransactionsForVariable(this.id, id));
+    return MySQLDB.queryTransactionsForVariable(this.id, id);
   }
   
   public List getTransactionsInRange(final int istart, final int iend) {
@@ -497,47 +471,47 @@ public class PwPlanningSequenceImpl extends PwListenable implements PwPlanningSe
   
   public List getStepsWhereTokenTransacted(final Integer id, final String type) 
     throws IllegalArgumentException {
-    return getTransactionsById(MySQLDB.queryStepsWithTokenTransaction(this.id, id, type));
+    return MySQLDB.queryStepsWithTokenTransaction(this.id, id, type);
   }
 
   public List getStepsWhereVariableTransacted(final Integer id, final String type) 
     throws IllegalArgumentException  {
-    return getTransactionsById(MySQLDB.queryStepsWithVariableTransaction(this.id, id, type));
+    return MySQLDB.queryStepsWithVariableTransaction(this.id, id, type);
   }
 
   public List getStepsWhereConstraintTransacted(final Integer id, final String type) 
     throws IllegalArgumentException  {
-    return getTransactionsById(MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type));
+    return MySQLDB.queryStepsWithConstraintTransaction(this.id, id, type);
   }
 
   public List getStepsWhereTokenTransacted(final String type) throws IllegalArgumentException {
-    return getTransactionsById(MySQLDB.queryStepsWithTokenTransaction(this.id, type));
+    return MySQLDB.queryStepsWithTokenTransaction(this.id, type);
   }
 
   public List getStepsWhereVariableTransacted(final String type) 
     throws IllegalArgumentException  {
-    return getTransactionsById(MySQLDB.queryStepsWithVariableTransaction(this.id, type));
+    return MySQLDB.queryStepsWithVariableTransaction(this.id, type);
   }
 
   public List getStepsWhereConstraintTransacted(final String type) 
     throws IllegalArgumentException  {
-    return getTransactionsById(MySQLDB.queryStepsWithConstraintTransaction(this.id, type));
+    return MySQLDB.queryStepsWithConstraintTransaction(this.id, type);
   }
 
   public List getStepsWithRestrictions() {
-    return getTransactionsById(MySQLDB.queryStepsWithRestrictions(id));
+    return MySQLDB.queryStepsWithRestrictions(id);
   }
 
   public List getStepsWithRelaxations() {
-    return getTransactionsById(MySQLDB.queryStepsWithRelaxations(id));
+    return MySQLDB.queryStepsWithRelaxations(id);
   }
 
   public List getStepsWithUnitVariableBindingDecisions() {
-    return getTransactionsById(MySQLDB.queryStepsWithUnitVariableDecisions(this));
+    return MySQLDB.queryStepsWithUnitVariableDecisions(this);
   }
 
   public List getStepsWithNonUnitVariableBindingDecisions() {
-    return getTransactionsById(MySQLDB.queryStepsWithNonUnitVariableDecisions(this));
+    return MySQLDB.queryStepsWithNonUnitVariableDecisions(this);
   }
 
   /**

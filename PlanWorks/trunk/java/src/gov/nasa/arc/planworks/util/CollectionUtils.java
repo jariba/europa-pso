@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: CollectionUtils.java,v 1.1 2004-03-12 23:21:29 miatauro Exp $
+// $Id: CollectionUtils.java,v 1.2 2004-03-26 22:10:42 miatauro Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -45,32 +45,38 @@ public class CollectionUtils {
   public static final Set sMap(final UnaryFunctor f, final Set a) {
     return (Set) cMap(f,a);
   }
-  public static final Object [] aInPlaceMap(final UnaryFunctor f, Object [] a) {
+  public static final void aInPlaceMap(final UnaryFunctor f, Object [] a) {
     for(int i = 0; i < a.length; i++) {
       a[i] = f.func(a[i]);
     }
-    return a;
   }
-  public static final Collection cInPlaceMap(final UnaryFunctor f, Collection a) {
-    Object [] temp = aInPlaceMap(f, a.toArray());
-    a = Arrays.asList(temp);
-    //a.clear();
-    //a.addAll(Arrays.asList(temp));
-    return a;
+
+  //note: all of the collection in-place map functions require that the functor
+  //actually modify the element, rather than this method
+  public static final void cInPlaceMap(final UnaryFunctor f, Collection c) {
+    for(Iterator i = c.iterator(); i.hasNext();) {
+      f.func(i.next());
+    }
   }
-  public static final List lInPlaceMap(final UnaryFunctor f, List a) {
-    return (List) cInPlaceMap(f, a);
+  public static final void lInPlaceMap(final UnaryFunctor f, List a) {
+    cInPlaceMap(f, a);
   }
-  public static final Set sInPlaceMap(final UnaryFunctor f, Set a) {
-    return (Set) cInPlaceMap(f, a);
+  public static final void sInPlaceMap(final UnaryFunctor f, Set a) {
+    cInPlaceMap(f, a);
   }
   public static final Object [] aGrep(final BooleanFunctor f, final Object [] a) {
-    return cGrep(f, Arrays.asList(a)).toArray();
+    ArrayList retval = new ArrayList();
+    for(int i  = 0; i < a.length; i++) {
+      if(f.func(a[i])) {
+        retval.add(a[i]);
+      }
+    }
+    return retval.toArray();
   }
   public static final Collection cGrep(final BooleanFunctor f, final Collection a) {
     Collection retval = null;
     try {retval = (Collection) a.getClass().newInstance();}
-    catch(Exception e) {return null;}
+    catch(Exception e) {e.printStackTrace();return null;}
     for(Iterator i = a.iterator(); i.hasNext();) {
       Object temp = i.next();
       if(f.func(temp)) {
@@ -85,25 +91,21 @@ public class CollectionUtils {
   public static final Set sGrep(final BooleanFunctor f, final Set a) {
     return (Set) cGrep(f,a);
   }
-  public static final Object [] aInPlaceGrep(final BooleanFunctor f, Object [] a) {
-    return cInPlaceGrep(f, Arrays.asList(a)).toArray();
-  }
-  public static final Collection cInPlaceGrep(final BooleanFunctor f, Collection a) {
+  public static final void cInPlaceGrep(final BooleanFunctor f, Collection a) {
     for(Iterator i = a.iterator(); i.hasNext();) {
       if(!f.func(i.next())) {
         i.remove();
       }
     }
-    return a;
   }
-  public static final List lInPlaceGrep(final BooleanFunctor f, List a) {
-    return (List) cInPlaceGrep(f,a);
+  public static final void lInPlaceGrep(final BooleanFunctor f, List a) {
+    cInPlaceGrep(f,a);
   }
-  public static final Set sInPlaceGrep(final BooleanFunctor f, Set a) {
-    return (Set) cInPlaceGrep(f,a);
+  public static final void sInPlaceGrep(final BooleanFunctor f, Set a) {
+    cInPlaceGrep(f,a);
   }
-
-  public static final List validValues(Map m) {
+  //get all non-null values in the map
+  public static final List validValues(final Map m) {
     List retval = new ArrayList();
     for(Iterator i = m.keySet().iterator(); i.hasNext();) {
       Object k = i.next();
@@ -114,8 +116,8 @@ public class CollectionUtils {
     }
     return retval;
   }
-
-  public static final List validKeys(Map m, List k) {
+  //given a list of possible keys, return a list of keys with non-null values in the map
+  public static final List validKeys(final Map m, final List k) {
     List retval = new ArrayList();
     for(Iterator i = k.iterator(); i.hasNext();) {
       Object o = i.next();
@@ -125,8 +127,8 @@ public class CollectionUtils {
     }
     return retval;
   }
-  
-  public static final List validValues(Map m, List k) {
+  //given a list of possible keys, return a list of the non-null values to which they are mapped
+  public static final List validValues(final Map m, final List k) {
     List retval = new ArrayList();
     for(Iterator i = k.iterator(); i.hasNext();) {
       Object o = i.next();
@@ -138,7 +140,7 @@ public class CollectionUtils {
     return retval;
   }
 
-  public static final Object findFirst(BooleanFunctor f, List l) {
+  public static final Object findFirst(final BooleanFunctor f, final List l) {
     for(Iterator i = l.iterator(); i.hasNext();) {
       Object o = i.next();
       if(f.func(o)) {
@@ -148,7 +150,7 @@ public class CollectionUtils {
     return null;
   }
 
-  public static final Object findFirst(BooleanFunctor f, Object [] a) {
+  public static final Object findFirst(final BooleanFunctor f, final Object [] a) {
     for(int i = 0; i < a.length; i++) {
       if(f.func(a[i])) {
         return a[i];
