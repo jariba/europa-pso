@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: planViz.txt,v 1.29 2004-03-07 01:49:30 taylor Exp $
+// $Id: planViz.txt,v 1.30 2004-03-09 19:59:31 taylor Exp $
 //
 // PlanWorks
 //
@@ -888,6 +888,11 @@ Method:
      Mouse-Right on a resource name and select "Open Navigator View".
  10. On the Resource Transaction View, click Mouse-Right on a transaction node
      and select "Open Navigator View".
+ 11. On both the Resource Profile View and the Resource Transaction View, click 
+     Mouse-Right on the background and select "Find by Key".  Enter the id of a 
+     resource.
+ 12. On the Resource Transaction View, click Mouse-Right on the background and 
+     select "Find by Key".  Enter the id of a resource transaction.
 
 Post-conditions:
   1. Method:1 - The SequenceStepsView of test-seq-1 appears.
@@ -914,7 +919,9 @@ Post-conditions:
      resource node with its parent and children nodes, as appropriate.
  10. Method:10 - A Navigator View appers, displaying the selected resource transaction 
      node with its parent and children nodes, as appropriate.
-
+ 11. Method:11 - In both cases, the resource name node with the entered id will be 
+     highlighted.
+ 12. Method:11 - The resource transaction node with the entered id will be highlighted.
 
 
 

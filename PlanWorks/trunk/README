@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.76 2004-03-04 21:30:25 taylor Exp $
+# $Id: README,v 1.77 2004-03-09 19:59:29 taylor Exp $
 #
 
 SUMMARY
@@ -15,7 +15,7 @@ o This release *does* require a total rebuild of the PlanWorks data base,
 
 o Automatic location offsets for partial plan views and Content Filter
   windows will no longer be used -- the user will relocate overlaying 
-  windows, manually.
+  windows manually.
 
 o The SequenceStepsView has these Mouse-Right selections: "Close/
   Hide/Show <sequence-name>/step Views", which will close/hide/show 

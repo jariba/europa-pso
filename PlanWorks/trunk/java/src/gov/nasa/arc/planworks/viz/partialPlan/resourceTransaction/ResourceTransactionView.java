@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceTransactionView.java,v 1.12 2004-03-09 01:48:29 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.13 2004-03-09 19:59:30 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -50,6 +50,7 @@ import gov.nasa.arc.planworks.viz.partialPlan.AskNodeByKey;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.ResourceView;
+import gov.nasa.arc.planworks.viz.partialPlan.TimeScaleView;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;

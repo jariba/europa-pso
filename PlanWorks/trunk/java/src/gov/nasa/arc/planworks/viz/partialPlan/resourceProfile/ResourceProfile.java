@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.10 2004-03-09 01:48:28 taylor Exp $
+// $Id: ResourceProfile.java,v 1.11 2004-03-09 19:59:29 taylor Exp $
 //
 // PlanWorks
 //
@@ -353,8 +353,8 @@ public class ResourceProfile extends BasicNode {
       yLeftMaxLine = yRightMaxLine; yLeftMinLine = yRightMinLine; xLeft = xRight;
       double currentLevelMax = instant.getLevelMax();
       double currentLevelMin = instant.getLevelMin();
-      System.err.println( "renderLevels time " + time + " currentLevelMax " +
-                          currentLevelMax + " currentLevelMin " + currentLevelMin);
+//       System.err.println( "renderLevels time " + time + " currentLevelMax " +
+//                           currentLevelMax + " currentLevelMin " + currentLevelMin);
       yRightMaxLine =  scaleResourceLevel( currentLevelMax);
       yRightMinLine =  scaleResourceLevel( currentLevelMin);
       addLineSegment( xLeft, yLeftMaxLine, xRight, yRightMaxLine, currentLevelMax, "max");
