@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ViewSet.java,v 1.14 2003-06-30 21:06:53 miatauro Exp $
+// $Id: ViewSet.java,v 1.15 2003-06-30 21:29:09 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -154,7 +154,7 @@ public class ViewSet implements RedrawNotifier, ContentSpecChecker, MDIWindowBar
    * @param key the key being checked.
    * @return boolean the truth value of the statement "This key is in the specification."
    */
-  public boolean isInContentSpec(String key) {
+  public boolean isInContentSpec(Integer key) {
     return contentSpec.isInContentSpec(key);
   }
   public void printSpec() {

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: ContentSpec.java,v 1.12 2003-06-30 21:06:53 miatauro Exp $
+// $Id: ContentSpec.java,v 1.13 2003-06-30 21:25:07 miatauro Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr;
 
@@ -63,7 +63,7 @@ public class ContentSpec {
   private BitSet currentSpec;
   private Long partialPlanKey;
   private RedrawNotifier redrawNotifier;
-
+  private int offset;
   /**
    * Creates the ContentSpec object, then makes a query to determine the size of the
    * <code>BitSet</code> that represents the current specification, and sets all of the bits
@@ -77,7 +77,7 @@ public class ContentSpec {
   public ContentSpec(PwPartialPlan partialPlan, RedrawNotifier redrawNotifier) {
     this.partialPlanKey = partialPlan.getKey();
     this.redrawNotifier = redrawNotifier;
-    
+    offset = partialPlan.getMinKey();
     currentSpec = new BitSet(partialPlan.getMaxKey() - partialPlan.getMinKey() + 1);
     currentSpec.set(0, partialPlan.getMaxKey()-partialPlan.getMinKey(), true);
   }
@@ -94,10 +94,8 @@ public class ContentSpec {
    * spec.
    * @param key the key being tested.
    */
-  public boolean isInContentSpec(String key) {
-    int index;
-    try{index = keyToIndex(key);}
-    catch(NumberFormatException nfe){return false;} //maybe this should do something else
+  public boolean isInContentSpec(Integer key) {
+    int index = keyToIndex(key);
     if(index > currentSpec.length()) {
       currentSpec.clear(index);
     }
@@ -117,8 +115,8 @@ public class ContentSpec {
    * Given a key, returns the integer part.  Used to index into the BitSet.
    * @param key the key being converted.
    */
-  private int keyToIndex(String key) throws NumberFormatException {
-    return Integer.parseInt(key.substring(1)); //i hope the key format never changes
+  private int keyToIndex(Integer key) throws NumberFormatException {
+    return key.intValue() - offset;
   }
   /**
    * Given the parametes specified by the user in the ContentSpecWindow, constructs the entire

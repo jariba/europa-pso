@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MDIDesktopFrame.java,v 1.3 2003-06-16 22:32:13 miatauro Exp $
+// $Id: MDIDesktopFrame.java,v 1.4 2003-06-30 21:20:46 miatauro Exp $
 //
 package gov.nasa.arc.planworks.mdi;
 
@@ -143,6 +143,23 @@ public class MDIDesktopFrame extends JFrame {
   public MDIInternalFrame createFrame(String title, boolean resizable, boolean closable, 
                                       boolean maximizable, boolean iconifiable) {
     MDIInternalFrame newFrame = new MDIInternalFrame(title, menuBar, windowBar, resizable,
+                                                     closable, maximizable, iconifiable);
+    desktopPane.add(newFrame);
+    newFrame.setVisible(true);
+    return newFrame;
+  }
+  /**
+   * Creates a new, resizable, closable, maximizable, iconifiable (minimizable) MDIInternalFrame
+   * with the given title.
+   * @param title The displayed title of the MDIInternalFrame
+   * @param resizable The boolean value of the resizable attribute of the frame.
+   * @param closable The boolean value of the closable attribute of the frame.
+   * @param maximizable The boolean value of the maximizable attribute of the frame.
+   * @param iconifiable The boolean value of the iconifiable attribute of the frame.
+   */
+  public MDIInternalFrame createFrame(String title, MDIWindowBar viewSet, boolean resizable,
+                                      boolean closable, boolean maximizable, boolean iconifiable) {
+    MDIInternalFrame newFrame = new MDIInternalFrame(title, menuBar, windowBar, viewSet, resizable,
                                                      closable, maximizable, iconifiable);
     desktopPane.add(newFrame);
     newFrame.setVisible(true);
