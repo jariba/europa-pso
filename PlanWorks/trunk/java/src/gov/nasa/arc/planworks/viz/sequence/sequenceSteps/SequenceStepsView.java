@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: SequenceStepsView.java,v 1.4 2003-10-07 20:19:55 miatauro Exp $
+// $Id: SequenceStepsView.java,v 1.5 2003-10-09 00:29:39 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -225,8 +225,8 @@ public class SequenceStepsView extends SequenceView {
 
 
   private void renderHistogram() {
-    System.err.println( "stepCount " + planSequence.getStepCount());
-    System.err.println( "stepNumbers " + planSequence.getPartialPlanNamesList());
+    // System.err.println( "stepCount " + planSequence.getStepCount());
+    // System.err.println( "stepNumbers " + planSequence.getPartialPlanNamesList());
     
     int x = ViewConstants.STEP_VIEW_X_INIT, y = ViewConstants.STEP_VIEW_Y_INIT;
     Iterator stepItr = planSequence.getPartialPlanNamesList().iterator();
@@ -238,10 +238,10 @@ public class SequenceStepsView extends SequenceView {
       try {
         partialPlan = planSequence.getPartialPlan( partialPlanName);
         transactionList = planSequence.getTransactionsList( stepNumber);
-        System.err.println( "stepNum " + stepNumber);
-        if (transactionList != null) {
-          System.err.println( "transactionList size " + transactionList.size());
-        }
+        // System.err.println( "stepNum " + stepNumber);
+        // if (transactionList != null) {
+        //   System.err.println( "transactionList size " + transactionList.size());
+        // }
       } catch (ResourceNotFoundException rnfExcep) {
         int index = rnfExcep.getMessage().indexOf( ":");
         JOptionPane.showMessageDialog
@@ -253,7 +253,7 @@ public class SequenceStepsView extends SequenceView {
       }
       StepElement stepElement = new StepElement( x, y, partialPlan.getPlanDBSize(),
                                                  partialPlanName, partialPlan,
-                                                 transactionList);
+                                                 transactionList, this);
 
       document.addObjectAtTail( stepElement);
       x += ViewConstants.STEP_VIEW_STEP_WIDTH;
@@ -288,7 +288,9 @@ public class SequenceStepsView extends SequenceView {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
         // do nothing
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-        mouseRightPopupMenu( viewCoords);
+
+        // mouseRightPopupMenu( viewCoords);
+
       }
     } // end doBackgroundClick
 

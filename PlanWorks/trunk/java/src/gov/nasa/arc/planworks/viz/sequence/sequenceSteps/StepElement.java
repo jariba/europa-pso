@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.2 2003-10-07 02:13:35 taylor Exp $
+// $Id: StepElement.java,v 1.3 2003-10-09 00:29:39 taylor Exp $
 //
 // PlanWorks
 //
@@ -44,6 +44,9 @@ import gov.nasa.arc.planworks.util.Extent;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.HistogramElement;
+import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.sequence.SequenceView;
+import gov.nasa.arc.planworks.viz.sequence.ViewTransactionsFrame;
 
 
 /**
@@ -62,12 +65,14 @@ public class StepElement extends HistogramElement {
   private static final Color STEP_LINE_COLOR = ColorMap.getColor( "black");
   private static final Color STEP_BG_COLOR = ViewConstants.VIEW_BACKGROUND_COLOR;
 
-  private int stepNumber;
   private String partialPlanName;
   private PwPartialPlan partialPlan;
-  private int planDBSize;
-  private int height;
   private List transactionList;
+  private SequenceView sequenceView;
+  private int planDBSize;
+
+  private int stepNumber;
+  private int height;
   private int numTransactions;
 
   /**
@@ -79,9 +84,11 @@ public class StepElement extends HistogramElement {
    * @param partialPlanName - <code>String</code> - 
    * @param partialPlan - <code>PwPartialPlan</code> - 
    * @param transactionList - <code>List</code> - 
+   * @param sequenceView - <code>SequenceView</code> - 
    */
   public StepElement( int x, int y, int planDBSize, String partialPlanName,
-                      PwPartialPlan partialPlan, List transactionList) {
+                      PwPartialPlan partialPlan, List transactionList,
+                      SequenceView sequenceView) {
     super( x, y, STEP_WIDTH, planDBSize / ViewConstants.STEP_VIEW_DB_SIZE_SCALING,
            STEP_LINE_WIDTH, STEP_LINE_TYPE, STEP_LINE_COLOR, STEP_BG_COLOR);
     this.planDBSize = planDBSize;
@@ -90,6 +97,7 @@ public class StepElement extends HistogramElement {
     this.stepNumber = Integer.parseInt( partialPlanName.substring( 4)); // discard prefix "step"
     this.partialPlan = partialPlan;
     this.transactionList = transactionList;
+    this.sequenceView = sequenceView;
 
     numTransactions = 0;
     if (transactionList != null) {
@@ -113,12 +121,9 @@ public class StepElement extends HistogramElement {
   public String getToolTipText() {
     StringBuffer tip = new StringBuffer( "<html>Step #");
     tip.append( String.valueOf( stepNumber));
-    tip.append( ": ");
-    // tip.append( activeToken.toString());
-    tip.append( "token-predicate-name");
-    tip.append( "<br>planDBSize: ");
+    tip.append( " planDBSize: ");
     tip.append( String.valueOf( planDBSize));
-    tip.append( "; numTransactions: ");
+    tip.append( "<br>numTransactions: ");
     tip.append( String.valueOf( numTransactions));
     tip.append( "</html>");
     return tip.toString();
@@ -142,11 +147,33 @@ public class StepElement extends HistogramElement {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      // mouseRightPopupMenu( viewCoords);
-      // return true;
+      mouseRightPopupMenu( viewCoords);
+      return true;
     }
     return false;
   } // end doMouseClick   
+
+
+  private void mouseRightPopupMenu( Point viewCoords) {
+    JPopupMenu mouseRightPopup = new JPopupMenu();
+    JMenuItem viewTransactionsItem =
+      new JMenuItem( "View Step# " + stepNumber + " Transactions");
+    createViewTransactionsItem( viewTransactionsItem);
+    mouseRightPopup.add( viewTransactionsItem);
+
+    NodeGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
+  } // end mouseRightPopupMenu
+
+  private void createViewTransactionsItem( JMenuItem viewTransactionsItem) {
+    viewTransactionsItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+
+          new ViewTransactionsFrame( "Step# " + stepNumber + " Transactions",
+                                     partialPlan, transactionList, stepNumber,
+                                     sequenceView);
+        }
+      });
+  } // end createViewTransactionsItem
 
 
 } // end class StepElement
