@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwProjectImpl.java,v 1.17 2003-07-02 00:08:54 miatauro Exp $
+// $Id: PwProjectImpl.java,v 1.18 2003-07-02 19:05:19 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -60,6 +60,12 @@ public class PwProjectImpl extends PwProject {
   } // end initProjects
 
   public static PwProject createProject(String name) throws DuplicateNameException, SQLException {
+    ResultSet projects = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName='".concat(name).concat("'"));
+    projects.last();
+    if(projects.getRow() > 1) {
+      throw new DuplicateNameException(projects.getRow() + " projects with name '" + name +
+                                       "were found.");
+    }
     PwProjectImpl retval = null;
     retval = new PwProjectImpl(name);
     MySQLDB.updateDatabase("INSERT INTO Project (ProjectName) VALUES ('".concat(name).concat("')"));
@@ -117,12 +123,6 @@ public class PwProjectImpl extends PwProject {
    * @exception DuplicateNameException if an error occurs
    */
   public PwProjectImpl( String name)  throws DuplicateNameException, SQLException {
-    ResultSet projects = MySQLDB.queryDatabase("SELECT (ProjectId) FROM Project WHERE ProjectName='".concat(name).concat("'"));
-    projects.last();
-    if(projects.getRow() > 1) {
-      throw new DuplicateNameException(projects.getRow() + " projects with name '" + name +
-                                       "were found.");
-    }
     this.name = name;
     key = new Integer(-1);
     planningSequences = new ArrayList();
