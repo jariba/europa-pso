@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.53 2003-10-23 19:22:33 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.54 2003-10-23 20:22:17 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -149,7 +149,7 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     cleanConstraints();
     cleanTransactions();
-    checkPlan();
+    //checkPlan();
     //reorderSlots();
   } // end createPartialPlan
 
@@ -534,7 +534,44 @@ public class PwPartialPlanImpl implements PwPartialPlan, ViewableObject {
    */
 
   public boolean checkPlan() {
-    return checkRelations() && checkConstraints() && checkTokens();
+    return checkRelations() && checkConstraints() && checkTokens() && checkVariables();
+  }
+
+  private boolean checkVariables() {
+    Iterator variableIterator = variableMap.values().iterator();
+    boolean retval = true;
+    while(variableIterator.hasNext()) {
+      PwVariableImpl variable = (PwVariableImpl) variableIterator.next();
+      if(variable.getTokenList().size() != 1) {
+        System.err.println("Variable " + variable.getId() + " has no tokens.");
+        retval = false;
+      }
+      if(variable.getDomain() == null) {
+        System.err.println("Variable " + variable.getId() + " has null domain.");
+        retval = false;
+      }
+      if(variable.getType().equals("START_VAR") || variable.getType().equals("END_VAR") ||
+         variable.getType().equals("DURATION_VAR") || variable.getType().equals("OBJECT_VAR") ||
+         variable.getType().equals("REJECT_VAR")) {
+        if(variable.getParameterList().size() != 0) {
+          System.err.println(variable.getType() + " " + variable.getId() +
+                             " has parameter list of size " + variable.getParameterList().size());
+          retval = false;
+        }
+      }
+      else if(variable.getType().equals("PARAMETER_VAR")) {
+        if(variable.getParameterList().size() == 0) {
+          System.err.println("Parameter variable " + variable.getId() + " has no parameters.");
+          retval = false;
+        }
+      }
+      else {
+        System.err.println("Variable " + variable.getId() + " has unsupported variable type " +
+                           variable.getType());
+        retval = false;
+      }
+    }
+    return retval;
   }
 
   /**

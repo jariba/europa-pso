@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.55 2003-10-23 18:28:10 taylor Exp $
+// $Id: MySQLDB.java,v 1.56 2003-10-23 20:22:31 miatauro Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -833,7 +833,7 @@ public class MySQLDB {
       //System.err.println("Executing variable query...");
       long t1 = System.currentTimeMillis();
       ResultSet variables =
-        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId WHERE Variable.PartialPlanId=".concat(partialPlan.getId().toString()));
+        queryDatabase("SELECT Variable.VariableId, Variable.VariableType, Variable.DomainType, Variable.DomainId, IntervalDomain.IntervalDomainType, IntervalDomain.LowerBound, IntervalDomain.UpperBound, EnumeratedDomain.Domain, ConstraintVarMap.ConstraintId, ParamVarTokenMap.ParameterId, ParamVarTokenMap.TokenId, Token.TokenId FROM Variable LEFT JOIN IntervalDomain ON IntervalDomain.PartialPlanId=Variable.PartialPlanId && IntervalDomain.IntervalDomainId=Variable.DomainId LEFT JOIN EnumeratedDomain ON EnumeratedDomain.PartialPlanId=Variable.PartialPlanId && EnumeratedDomain.EnumeratedDomainId=Variable.DomainId LEFT JOIN ConstraintVarMap ON ConstraintVarMap.PartialPlanId=Variable.PartialPlanId && ConstraintVarMap.VariableId=Variable.VariableId LEFT JOIN ParamVarTokenMap ON ParamVarTokenMap.PartialPlanId=Variable.PartialPlanId && ParamVarTokenMap.VariableId=Variable.VariableId LEFT JOIN Token ON Token.PartialPlanId=Variable.PartialPlanId && (Token.StartVarId=Variable.VariableId || Token.EndVarId=Variable.VariableId || Token.DurationVarId=Variable.VariableId || Token.RejectVarId=Variable.VariableId || Token.ObjectVarId=Variable.VariableId) WHERE Variable.PartialPlanId=".concat(partialPlan.getId().toString()));
       //System.err.println("Time spent in variable query: " +
       //                   (System.currentTimeMillis() - t1));
       t1 = System.currentTimeMillis();
@@ -866,9 +866,10 @@ public class MySQLDB {
           variable.addParameter(parameterId);
         }
         Integer tokenId = new Integer(variables.getInt("ParamVarTokenMap.TokenId"));
-        if(!variables.wasNull()) {
-          variable.addToken(tokenId);
+        if(variables.wasNull()) {
+          tokenId = new Integer(variables.getInt("Token.TokenId"));
         }
+        variable.addToken(tokenId);
       }
       //System.err.println("Time spent creating variables: " +
       //                   (System.currentTimeMillis() - t1));
