@@ -162,6 +162,12 @@ public interface ViewConstants {
   public static final String ODD_OBJECT_SLOT_BG_COLOR = "paleGreen";
 
   /**
+   * constant <code>FREE_TOKEN_BG_COLOR</code>
+   *
+   */
+  public static final String FREE_TOKEN_BG_COLOR = "lightGray";
+
+  /**
    * constant <code>EMPTY_SLOT_WIDTH</code>
    *
    */
