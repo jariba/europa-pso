@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: timeline-view-test.xml,v 1.7 2003-06-30 21:52:47 taylor Exp $ -->
+<!-- $Id: timeline-view-test.xml,v 1.8 2003-07-01 01:27:22 taylor Exp $ -->
 <project name="timeline-view-test" default="test" basedir=".">
 <target name="test" depends="totalbuild">
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
@@ -27,7 +27,15 @@
             <jvmarg value="-Xmx${arg_gcMax}m"/>
             <jvmarg value="-Dplanworks.root=${planworks.root}"/>
             <jvmarg value="-Duser=${env.USER}"/>
-            <jvmarg value="-Dxml.dtd.pathname=${xml.dtd.pathname}"/>
+	    <jvmarg value="-Dmysql.basedir=${mysql.basedir}"/>
+	    <jvmarg value="-Dmysql.datadir=${mysql.datadir}"/>
+	    <jvmarg value="-Dmysql.log=${mysql.log}"/>
+	    <jvmarg value="-Dmysql.log.err=${mysql.log.err}"/>
+	    <jvmarg value="-Dmysql.sock=${mysql.sock}"/>
+	    <jvmarg value="-Dmysql.tmpdir=${mysql.tmpdir}"/>
+	    <jvmarg value="-Dmysql.bindir=${mysql.bindir}"/>
+            <jvmarg value="-Ddefault.project.name=${default.project.name}"/>
+            <jvmarg value="-Ddefault.sequence.dir=${default.sequence.dir}"/>
             <arg value="${name.application}"/>
 	</java>
 

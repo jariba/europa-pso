@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: build.xml,v 1.15 2003-06-30 21:52:45 taylor Exp $ -->
+<!-- $Id: build.xml,v 1.16 2003-07-01 01:27:21 taylor Exp $ -->
 <project name="PlanWorks" default="planWorks" basedir=".">
   <description>
     PlanWorks Build and Run Targets
@@ -15,6 +15,9 @@
   <property name="mysql.bindir" value="${mysql.basedir}/bin"/>
   <!-- property name="junit.home" location="${env.JUNIT_HOME}"/ -->
   <property name="jfcunit.home" location="${planworks.root}/java/lib/JFCUnit"/>
+
+  <property name="default.project.name" value="test"/>
+  <property name="default.sequence.dir" value="${planworks.root}/sqlseq"/>
 
   <target name="planWorks"  depends="check_jvm_2"
     description="-- launch application (compile dependency)">

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.17 2003-07-01 00:27:42 miatauro Exp $
+// $Id: PlanWorks.java,v 1.18 2003-07-01 01:27:22 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -107,12 +107,6 @@ public class PlanWorks extends MDIDesktopFrame {
   public static String osName;
 
   /**
-   * variable <code>userCollectionName</code> - make it accessible to JFCUnit tests
-   *                e.g. /wtaylor 
-   */
-  public static String userCollectionName; 
-
-  /**
    * variable <code>planWorksRoot</code> - make it accessible to JFCUnit tests
    *
    */
@@ -125,11 +119,15 @@ public class PlanWorks extends MDIDesktopFrame {
   public static PlanWorks planWorks;
   private static JMenu projectMenu;
   private final DirectoryChooser sequenceDirChooser;
+  private static String sequenceDirectory; // pathname
 
   private String currentProjectName;
-  private static String sequenceDirectory;
+  private String currentSequenceDirectory; // pathname
   private PwProject currentProject;
   private ViewManager viewManager;
+
+  private static String defaultProjectName;
+  private static String defaultSequenceDirectory;
 
   /**
    * <code>PlanWorks</code> - constructor 
@@ -138,12 +136,12 @@ public class PlanWorks extends MDIDesktopFrame {
    */                                
   public PlanWorks( JMenu[] constantMenus) {
     super( name, constantMenus);
-    sequenceDirChooser = new DirectoryChooser();
-    createDirectoryChooser();
-    sequenceDirectory = "";
-    currentProjectName = "";
+    currentSequenceDirectory = PlanWorks.defaultSequenceDirectory;
+    currentProjectName = PlanWorks.defaultProjectName;
     currentProject = null;
     viewManager = null;
+    sequenceDirChooser = new DirectoryChooser();
+    createDirectoryChooser();
     // Closes from title bar 
     addWindowListener( new WindowAdapter() {
         public void windowClosing( WindowEvent e) {
@@ -337,6 +335,7 @@ public class PlanWorks extends MDIDesktopFrame {
         project.addPlanningSequence( sequenceDirectory);
         isProjectCreated = true;
         currentProjectName = inputName;
+        currentSequenceDirectory = sequenceDirectory;
         System.err.println( "Create Project: " + currentProjectName);
         this.setTitle( name + "  --  project: " + currentProjectName);
         setProjectMenuEnabled( "Delete ...", true);
@@ -376,8 +375,8 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end createProject
 
   private boolean validateSequenceDirectory( String sequenceDirectory) {
-    System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
-                        sequenceDirectory + "'");
+    // System.err.println( "validateSequenceDirectory: sequenceDirectory '" +
+    //                    sequenceDirectory + "'");
     // determine sequence's partial plan directories
     List partialPlanDirs = new ArrayList();
     String [] fileNames = new File( sequenceDirectory).list();
@@ -606,8 +605,9 @@ public class PlanWorks extends MDIDesktopFrame {
     Iterator seqUrlsItr = project.listPlanningSequences().iterator();
     while (seqUrlsItr.hasNext()) {
       String seqUrl = (String) seqUrlsItr.next();
-      System.err.println( " seqUrl " + seqUrl);
+      // System.err.println( " seqUrl " + seqUrl);
       String seqName = getUrlLeaf( seqUrl);
+      System.err.println( "  sequenceName " + seqName);
       JMenu seqMenu = new JMenu( seqName);
       seqPartialPlanViewMenu.add( seqMenu);
 
@@ -845,7 +845,7 @@ public class PlanWorks extends MDIDesktopFrame {
   } // end class SeqPartPlanViewMenuItem
 
   private final void createDirectoryChooser() {
-    sequenceDirChooser.setCurrentDirectory( new File( planWorksRoot));
+    sequenceDirChooser.setCurrentDirectory( new File( currentSequenceDirectory));
     sequenceDirChooser.setDialogTitle
       ( "Select Sequence Directory of Partial Plan Directorie(s)");
     sequenceDirChooser.getOkButton().addActionListener( new ActionListener()
@@ -891,7 +891,10 @@ public class PlanWorks extends MDIDesktopFrame {
     }
     osName = System.getProperty("os.name");
     planWorksRoot = System.getProperty( "planworks.root");
-    userCollectionName = System.getProperty( "file.separator") + System.getProperty( "user");
+    defaultProjectName = "";
+    defaultSequenceDirectory = "";
+    defaultProjectName = System.getProperty( "default.project.name");
+    defaultSequenceDirectory = System.getProperty( "default.sequence.dir");
 
     planWorks = new PlanWorks( buildConstantMenus());
 
