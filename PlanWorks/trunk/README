@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.20 2003-09-05 22:09:27 taylor Exp $
+# $Id: README,v 1.21 2003-09-05 22:19:42 miatauro Exp $
 #
 
 SUMMARY
@@ -25,7 +25,23 @@ four view internal frame windows, now restricts the expansion to
 the size of the enclosing PlanWorks frame.  
 
 The Content Specification processor now filters time intervals, as 
-well as tokens, and predicates.  
+well as tokens and predicates.  
+
+Massive performance improvements have been made on database end, often on
+the order of 400%.
+
+The first stage in Europa integration, the PartialPlanWriter is
+included.  Instructions for its use are in
+PlanWorks/cpp/integration/europa/README.
+
+A new build target, hurtPlanWorks, has been added.  It finds all
+directories containing planning sequences under the path pointed to by the
+EUROPA_HOME environment variable, opens all available views for each
+sequence, validates the views, then deletes the sequence from the
+PlanWorks database.
+
+PlanWorks now has a splash screen at startup.  The current image is not
+permanent.
 
 PRs fixed:
 o #2011: Temporal extent view is wrong
@@ -60,6 +76,9 @@ Set environment varibles:
 
   o USER - user's account name, used in defining the data base collection
     Should be set by user's standard environment
+
+  o EUROPA_HOME - path to the root Europa directory
+    e.g. setenv EUROPA_HOME ~/NewPlan
 
 BUILDING THE PARTIAL PLAN WRITER
 ================================
