@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlan.java,v 1.9 2003-06-26 18:18:21 miatauro Exp $
+// $Id: PwPartialPlan.java,v 1.10 2003-06-30 18:31:11 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -31,6 +31,10 @@ public interface PwPartialPlan {
    * @return - <code>String</code> - 
    */
   public abstract String getUrl();
+
+  public abstract int getMinKey();
+
+  public abstract int getMaxKey();
 
   /**
    * <code>getObjectList</code>

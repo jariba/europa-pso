@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.15 2003-06-30 18:03:43 miatauro Exp $
+// $Id: PwPartialPlanImpl.java,v 1.16 2003-06-30 18:30:59 miatauro Exp $
 //
 // PlanWorks -- 
 //
@@ -73,7 +73,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   private Map variableMap; // key = attribute key, value = PwVariableImpl instance
 
   private List objectIdList; // PwObjectImpl keys
-
+  private int minKey, maxKey;
 
   public PwPartialPlanImpl(String url, String planName, Integer sequenceKey)  
     throws ResourceNotFoundException, SQLException {
@@ -96,7 +96,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     System.err.println( "Creating PwPartialPlan  ...");
     long startTimeMSecs = System.currentTimeMillis();
     ResultSet existingPartialPlan =
-      MySQLDB.queryDatabase("SELECT (PartialPlanId) FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" AND PlanName='").concat(name).concat("'"));
+      MySQLDB.queryDatabase("SELECT (PartialPlanId, MinKey, MaxKey) FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" AND PlanName='").concat(name).concat("'"));
     if(existingPartialPlan.getFetchSize() < 1) {
       String [] fileNames = new File(url).list(new FilenameFilter () {
           public boolean accept(File dir, String name) {
@@ -116,8 +116,13 @@ public class PwPartialPlanImpl implements PwPartialPlan {
         tableName = tableName.substring(0,1).toUpperCase().concat(tableName.substring(1));
         MySQLDB.updateDatabase("LOAD DATA INFILE '".concat(url).concat(System.getProperty("file.separator")).concat(fileNames[i]).concat("' INTO TABLE ").concat(tableName));
       }
+      existingPartialPlan =
+        MySQLDB.queryDatabase("SELECT (PartialPlanId, MinKey, MaxKey) FROM PartialPlan WHERE SequenceId=".concat(sequenceKey.toString()).concat(" AND PlanName='").concat(name).concat("'"));
     }
 
+    key = new Long(existingPartialPlan.getLong("PartialPlanId"));
+    minKey = existingPartialPlan.getInt("MinKey");
+    maxKey = existingPartialPlan.getInt("MaxKey");
     ResultSet dbObject =
       MySQLDB.queryDatabase("SELECT (ObjectName, ObjectId) FROM Object WHERE PartialPlanId=".concat(key.toString()));
     while(dbObject.next()) {
@@ -200,6 +205,13 @@ public class PwPartialPlanImpl implements PwPartialPlan {
     return key;
   }
 
+  public int getMinKey() {
+    return minKey;
+  }
+
+  public int getMaxKey() {
+    return maxKey;
+  }
   /**
    * <code>getObjectList</code> -
    *
