@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.3 2003-05-15 22:16:23 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.4 2003-05-16 19:19:46 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -45,10 +45,16 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   private String xmlFileName; // with no extension
 
   private String model;
-  private String key;
-  private List objectList; // element PwObjectImpl
-  private Map variableHashMap;
-  private Map predicateHashMap;
+  private String key; // PartialPlan key
+  private Map objectMap; // key = attribute key, value = PwObjectImpl instance
+  private Map timelineMap; // key = attribute key, value = PwTimelineImpl instance
+  private Map slotMap; // key = attribute key, value = PwSlotImpl instance
+  private Map tokenMap; // key = attribute key, value = PwTokenImpl instance
+  private Map constraintMap; // key = attribute key, value = PwConstraintImpl instance
+  private Map parameterMap; // key = attribute key, value = PwParameterImpl instance
+  private Map predicateMap; // key = attribute key, value = PwPredicateImpl instance
+  private Map tokenRelationMap; // key = attribute key, value = PwTokenRelationImpl instance
+  private Map variableMap; // key = attribute key, value = PwVariableImpl instance
 
   /**
    * <code>PwPartialPlanImpl</code> - constructor 
@@ -60,9 +66,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   public PwPartialPlanImpl( String url, String projectCollectionName,
                             String sequenceCollectionName)
     throws ResourceNotFoundException {
-    objectList = new ArrayList();
-    variableHashMap = new HashMap(); // key = key attribute, value = Variable instance
-    predicateHashMap = new HashMap(); // key = key attribute, value = Predicate instance
+    objectMap = new HashMap();
+    timelineMap = new HashMap();
+    slotMap = new HashMap();
+    tokenMap = new HashMap();
+    constraintMap = new HashMap();
+    parameterMap = new HashMap(); 
+    predicateMap = new HashMap();
+    tokenRelationMap = new HashMap(); 
+    variableMap = new HashMap(); 
     userCollectionName = "/" + System.getProperty( "user");
     this.projectCollectionName = projectCollectionName;
     this.sequenceCollectionName = sequenceCollectionName;
@@ -98,16 +110,6 @@ public class PwPartialPlanImpl implements PwPartialPlan {
   } // end constructor
 
 
-  /**
-   * <code>getObjectList</code>
-   *
-   * @return - <code>List of PwObject</code> - 
-   */
-  public List getObjectList() {
-    return objectList;
-  }
-
-
   private void createPartialPlan( String collectionName) {
     List partialPlanKeys = XmlDBeXist.INSTANCE.getPartialPlanKeys( collectionName);
     // should only be one with collection structure of
@@ -122,69 +124,212 @@ public class PwPartialPlanImpl implements PwPartialPlan {
       List objectNameAndKeyList = XmlDBeXist.INSTANCE.getPartialPlanObjectsByKey
         ( partialPlanKey, collectionName);
       for (int i = 0, n = objectNameAndKeyList.size(); i < n; i++) {
-        objectList.add( new PwObjectImpl( (String) objectNameAndKeyList.get( i),
+         objectMap.put( key, 
+                        new PwObjectImpl( (String) objectNameAndKeyList.get( i),
                                           (String) objectNameAndKeyList.get( i)));
       }
       XmlDBeXist.INSTANCE.createTimelineSlotTokenNodesStructure( this, collectionName);
  
-  
+      // constraintKeyList = XmlDBeXist.INSTANCE.fillElementMap( "constraint",
     }
   } // end createPartialPlan
 
 
-  /**
-   * <code>getVariableHashMap</code>
-   *
-   * @return variableHashMap - <code>Map</code> - 
-   */
-  public Map getVariableHashMap() {
-    return variableHashMap;
-  }
+//   private final void fillElementMaps() {
+//     constraintKeyList =
+//       queryAttributeValueOfElements( constraintQuery + CONSTRAINT_KEY_ATTRIBUTE,
+//                                      CONSTRAINT_KEY_ATTRIBUTE, collectionName);
+//     Iterator keysIterator = constraintKeyList.iterator();
+//     while (keysIterator.hasNext()) {
+//       getConstraint( (String) keysIterator.next(), collectionName);
+//     }
+
+//     parameterKeyList =
+//       queryAttributeValueOfElements( parameterQuery + PARAMETER_KEY_ATTRIBUTE,
+//                                      PARAMETER_KEY_ATTRIBUTE, collectionName);
+//     keysIterator = parameterKeyList.iterator();
+//     while (keysIterator.hasNext()) {
+//       getParameter( (String) keysIterator.next(), collectionName);
+//     }
+
+//     predicateKeyList =
+//       queryAttributeValueOfElements( predicateQuery + PREDICATE_KEY_ATTRIBUTE,
+//                                      PREDICATE_KEY_ATTRIBUTE, collectionName);
+//     keysIterator = predicateKeyList.iterator();
+//     while (keysIterator.hasNext()) {
+//       getPredicate( (String) keysIterator.next(), collectionName);
+//     }
+
+//     tokenRelationKeyList =
+//       queryAttributeValueOfElements( tokenRelationQuery + TOKEN_RELATION_KEY_ATTRIBUTE,
+//                                      TOKEN_RELATION_KEY_ATTRIBUTE, collectionName);
+//     keysIterator = tokenRelationKeyList.iterator();
+//     while (keysIterator.hasNext()) {
+//       getTokenRelation( (String) keysIterator.next(), collectionName);
+//     }
+
+//     variableKeyList =
+//       queryAttributeValueOfElements( variableQuery + VARIABLE_KEY_ATTRIBUTE,
+//                                      VARIABLE_KEY_ATTRIBUTE, collectionName);
+//     keysIterator = variableKeyList.iterator();
+//     while (keysIterator.hasNext()) {
+//       getVariable( (String) keysIterator.next(), collectionName);
+//     }
+//   } // end fillElementMaps
 
 
   /**
-   * <code>getVariable</code> - if not in HashMap, query
+   * <code>getObject</code> - if not in Map, query
    *
    * @param key - <code>String</code> - 
    * @param collectionName - <code>String</code> - 
-   * @return - <code>PwVariableImpl</code> - 
+   * @return - <code>PwObjectImpl</code> - 
    */
-  public PwVariableImpl getVariable( String key, String collectionName) {
-    PwVariableImpl variable = (PwVariableImpl) variableHashMap.get( key);
-    // System.err.println( "getVariable: key  " + key + " variable " + variable);
-    if (variable == null) {
-      variable = XmlDBeXist.queryVariable( key, collectionName);
-      variableHashMap.put( key, variable);
+  public PwObjectImpl getObject( String key, String collectionName) {
+    PwObjectImpl object = (PwObjectImpl) objectMap.get( key);
+    if (object == null) {
+//       object = XmlDBeXist.queryObject( key, collectionName);
+      objectMap.put( key, object);
     }
-    return variable;
-  } // end getVariable
+    return object;
+  } // end getObject
 
 
   /**
-   * <code>getPredicateHashMap</code>
+   * <code>getTimeline</code> - if not in Map, query
    *
-   * @return predicateHashMap - <code>Map</code> - 
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwTimelineImpl</code> - 
    */
-  public Map getPredicateHashMap() {
-    return predicateHashMap;
-  }
+  public PwTimelineImpl getTimeline( String key, String collectionName) {
+    PwTimelineImpl timeline = (PwTimelineImpl) timelineMap.get( key);
+    if (timeline == null) {
+//       timeline = XmlDBeXist.queryTimeline( key, collectionName);
+      timelineMap.put( key, timeline);
+    }
+    return timeline;
+  } // end getTimeline
 
 
   /**
-   * <code>getPredicate</code> - if not in HashMap, query
+   * <code>getSlot</code> - if not in Map, query
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwSlotImpl</code> - 
+   */
+  public PwSlotImpl getSlot( String key, String collectionName) {
+    PwSlotImpl slot = (PwSlotImpl) slotMap.get( key);
+    if (slot == null) {
+//       slot = XmlDBeXist.querySlot( key, collectionName);
+      slotMap.put( key, slot);
+    }
+    return slot;
+  } // end getSlot
+
+
+  /**
+   * <code>getToken</code> - if not in Map, query
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwTokenImpl</code> - 
+   */
+  public PwTokenImpl getToken( String key, String collectionName) {
+    PwTokenImpl token = (PwTokenImpl) tokenMap.get( key);
+    if (token == null) {
+//       token = XmlDBeXist.queryToken( key, collectionName);
+      tokenMap.put( key, token);
+    }
+    return token;
+  } // end getToken
+
+
+  /**
+   * <code>getConstraint</code> - if not in Map, query
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwConstraintImpl</code> - 
+   */
+  public PwConstraintImpl getConstraint( String key, String collectionName) {
+    PwConstraintImpl constraint = (PwConstraintImpl) constraintMap.get( key);
+    if (constraint == null) {
+//       constraint = XmlDBeXist.queryConstraint( key, collectionName);
+      constraintMap.put( key, constraint);
+    }
+    return constraint;
+  } // end getConstraint
+
+
+  /**
+   * <code>getParameter</code> - if not in Map, query
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwParameterImpl</code> - 
+   */
+  public PwParameterImpl getParameter( String key, String collectionName) {
+    PwParameterImpl parameter = (PwParameterImpl) parameterMap.get( key);
+    if (parameter == null) {
+//       parameter = XmlDBeXist.queryParameter( key, collectionName);
+      parameterMap.put( key, parameter);
+    }
+    return parameter;
+  } // end getParameter
+
+
+  /**
+   * <code>getPredicate</code> - if not in Map, query
    *
    * @param key - <code>String</code> - 
    * @param collectionName - <code>String</code> - 
    * @return - <code>PwPredicateImpl</code> - 
    */
   public PwPredicateImpl getPredicate( String key, String collectionName) {
-    PwPredicateImpl predicate = (PwPredicateImpl) predicateHashMap.get( key);
+    PwPredicateImpl predicate = (PwPredicateImpl) predicateMap.get( key);
     if (predicate == null) {
       predicate = XmlDBeXist.queryPredicate( key, collectionName);
-      predicateHashMap.put( key, predicate);
+      predicateMap.put( key, predicate);
     }
     return predicate;
   } // end getPredicate
+
+
+  /**
+   * <code>getTokenRelation</code> - if not in Map, query
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwTokenRelationImpl</code> - 
+   */
+  public PwTokenRelationImpl getTokenRelation( String key, String collectionName) {
+    PwTokenRelationImpl tokenRelation = (PwTokenRelationImpl) tokenRelationMap.get( key);
+    if (tokenRelation == null) {
+//       tokenRelation = XmlDBeXist.queryTokenRelation( key, collectionName);
+      tokenRelationMap.put( key, tokenRelation);
+    }
+    return tokenRelation;
+  } // end getTokenRelation
+
+
+  /**
+   * <code>getVariable</code> - if not in Map, query
+   *
+   * @param key - <code>String</code> - 
+   * @param collectionName - <code>String</code> - 
+   * @return - <code>PwVariableImpl</code> - 
+   */
+  public PwVariableImpl getVariable( String key, String collectionName) {
+    PwVariableImpl variable = (PwVariableImpl) variableMap.get( key);
+    // System.err.println( "getVariable: key  " + key + " variable " + variable);
+    if (variable == null) {
+      variable = XmlDBeXist.queryVariable( key, collectionName);
+      variableMap.put( key, variable);
+    }
+    return variable;
+  } // end getVariable
 
 
 } // end class PwPartialPlanImpl
