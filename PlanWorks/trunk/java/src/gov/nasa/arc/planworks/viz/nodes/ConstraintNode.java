@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.2 2003-07-30 18:09:26 taylor Exp $
+// $Id: ConstraintNode.java,v 1.3 2003-07-30 23:56:00 taylor Exp $
 //
 // PlanWorks
 //
@@ -24,6 +24,9 @@ import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPolygon;
 import com.nwoods.jgo.JGoRectangle;
 import com.nwoods.jgo.JGoText;
+
+// PlanWorks/java/lib/com/nwoods/jgo/examples/Diamond.class
+import com.nwoods.jgo.examples.Diamond;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.BasicNode;
@@ -60,6 +63,7 @@ public class ConstraintNode extends BasicNode {
   private VizView view;
   private String nodeLabel;
   private List variableNodeList;
+  private boolean isDiamond = true;
 
   public ConstraintNode( PwConstraint constraint, VariableNode variableNode,
                          Point constraintLocation, int objectCnt, VizView view) { 
@@ -80,9 +84,8 @@ public class ConstraintNode extends BasicNode {
   } // end constructor
 
   private final void configure( Point constraintLocation) {
-    boolean isRectangular = true;
     setLabelSpot( JGoObject.Center);
-    initialize( constraintLocation, nodeLabel, isRectangular);
+    initialize( constraintLocation, nodeLabel);
     String backGroundColor = null;
     backGroundColor = ((objectCnt % 2) == 0) ?
       ViewConstants.EVEN_OBJECT_SLOT_BG_COLOR :
@@ -94,6 +97,23 @@ public class ConstraintNode extends BasicNode {
     getPort().setVisible( false);
   } // end configure
 
+
+  // extend BasicNode to use Diamond
+
+  public JGoDrawable createDrawable() {
+    JGoDrawable d;
+    if (isRectangular())
+      d = new JGoRectangle();
+    else if (isDiamond)
+      d = new Diamond();
+    else
+      d = new JGoEllipse();
+    d.setSelectable(false);
+    d.setDraggable(false);
+    d.setSize(20, 20);
+    return d;
+  } // end createDrawable
+  
 
   /**
    * <code>equals</code>
