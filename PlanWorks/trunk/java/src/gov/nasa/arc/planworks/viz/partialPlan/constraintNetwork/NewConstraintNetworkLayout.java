@@ -20,8 +20,8 @@ public class NewConstraintNetworkLayout {
   private List variableBoundingBoxes;
   private boolean horizontalLayout;
   public NewConstraintNetworkLayout(List tokenNodes, List variableNodes, List constraintNodes) {
-    //horizontalLayout = true;
-    horizontalLayout = false;
+    horizontalLayout = true;
+    //horizontalLayout = false;
     this.variableNodes = variableNodes;
     this.constraintNodes = constraintNodes;
     orderedTokenNodes = new ArrayList();
@@ -105,7 +105,7 @@ public class NewConstraintNetworkLayout {
     else {
       performVerticalLayout();
     }
-    System.err.println("New layout took " + (System.currentTimeMillis() - t1) + "ms");
+    System.err.println("   ... New layout took " + (System.currentTimeMillis() - t1) + "ms");
   }
   private void performHorizontalLayout() {
     ListIterator tokenBoxIterator = tokenBoundingBoxes.listIterator();

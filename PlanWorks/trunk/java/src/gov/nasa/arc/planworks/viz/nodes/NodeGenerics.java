@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.8 2003-10-28 23:23:25 taylor Exp $
+// $Id: NodeGenerics.java,v 1.9 2003-10-30 22:12:22 taylor Exp $
 //
 // PlanWorks
 //
@@ -37,6 +37,8 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.nodes.TokenNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNode;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.VariableNode;
 import gov.nasa.arc.planworks.viz.partialPlan.temporalExtent.TemporalNode;
 
 
@@ -224,6 +226,16 @@ public class NodeGenerics {
   public static void focusViewOnNode( JGoArea node, JGoView jGoView) {
     // System.err.println( "focusViewOnNode: loc " + node.getLocation().getX() +
     //                     " extent " + jGoView.getExtentSize().getWidth());
+//     if (node instanceof TokenNode) {
+//       System.err.println( "focusViewOnNode: token " +
+//                           ((TokenNode) node).toString());
+//     } else if (node instanceof ConstraintNode) {
+//       System.err.println( "focusViewOnNode: constraint " +
+//                           ((ConstraintNode) node).toString());
+//     } else if (node instanceof VariableNode) {
+//       System.err.println( "focusViewOnNode: variable " +
+//                           ((VariableNode) node).toString());
+//     }
     jGoView.getHorizontalScrollBar().
       setValue( Math.max( 0,
                           (int) (node.getLocation().getX() -

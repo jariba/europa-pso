@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.2 2003-10-30 19:11:45 miatauro Exp $
+// $Id: ConstraintNode.java,v 1.3 2003-10-30 22:12:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -445,15 +445,14 @@ public class ConstraintNode extends BasicNode {
         if (! areNeighborsShown) {
           //System.err.println( "doMouseClick: Mouse-L show variable nodes of constraint id " +
           //                    constraintNode.getConstraint().getId());
-          addConstraintNodeVariables( this);
+          addConstraintNodeVariables( this, (ConstraintNetworkView) partialPlanView);
           setNodeOpen();
         } else {
           //System.err.println( "doMouseClick: Mouse-L hide variable nodes of constraint id " +
           //                    constraintNode.getConstraint().getId());
-          removeConstraintNodeVariables( this);
+          removeConstraintNodeVariables( this, (ConstraintNetworkView) partialPlanView);
           setNodeClosed();
         }
-        ((ConstraintNetworkView) partialPlanView).setFocusNode( constraintNode);
         return true;
       }
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
@@ -461,26 +460,26 @@ public class ConstraintNode extends BasicNode {
     return false;
   } // end doMouseClick   
 
-  private void addConstraintNodeVariables( ConstraintNode constraintNode) {
-    ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) constraintNode.getPartialPlanView();
+  private void addConstraintNodeVariables( ConstraintNode constraintNode,
+                                           ConstraintNetworkView constraintNetworkView) {
     boolean areNodesChanged = constraintNetworkView.addVariableNodes( constraintNode);
     boolean areLinksChanged =
       constraintNetworkView.addConstraintToVariableLinks( constraintNode);
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.setFocusNode( constraintNode);
       constraintNetworkView.redraw();
     }
   } // end addConstraintNodeVariables
 
-  private void removeConstraintNodeVariables( ConstraintNode constraintNode) {
-    ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) constraintNode.getPartialPlanView();
+  private void removeConstraintNodeVariables( ConstraintNode constraintNode,
+                                           ConstraintNetworkView constraintNetworkView) {
     boolean areLinksChanged =
       constraintNetworkView.removeConstraintToVariableLinks( constraintNode);
     boolean areNodesChanged = constraintNetworkView.removeVariableNodes( constraintNode);
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.setFocusNode( constraintNode);
       constraintNetworkView.redraw();
     }
   } // end addConstraintnodeVariablesConstraints

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.3 2003-10-21 14:22:07 miatauro Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.4 2003-10-30 22:12:23 taylor Exp $
 //
 // PlanWorks
 //
@@ -171,15 +171,14 @@ public class ConstraintNetworkTokenNode extends TokenNode {
       if (! areNeighborsShown) {
         //System.err.println( "doMouseClick: Mouse-L show variable nodes of " +
         //                    tokenNode.getPredicateName());
-        addTokenNodeVariables( this);
+        addTokenNodeVariables( this, (ConstraintNetworkView) partialPlanView);
         areNeighborsShown = true;
       } else {
         // System.err.println( "doMouseClick: Mouse-L hide variable nodes of " +
         //                    tokenNode.getPredicateName());
-        removeTokenNodeVariables( this);
+        removeTokenNodeVariables( this, (ConstraintNetworkView) partialPlanView);
         areNeighborsShown = false;
       }
-      ((ConstraintNetworkView) partialPlanView).setFocusNode( tokenNode);
       return true;
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
       super.doMouseClick( modifiers, docCoords, viewCoords, view);
@@ -188,25 +187,25 @@ public class ConstraintNetworkTokenNode extends TokenNode {
     return false;
   } // end doMouseClick   
 
-  private void addTokenNodeVariables( ConstraintNetworkTokenNode tokenNode) {
-    ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) tokenNode.getPartialPlanView();
+  private void addTokenNodeVariables( ConstraintNetworkTokenNode tokenNode,
+                                      ConstraintNetworkView constraintNetworkView) {
     boolean areNodesChanged = constraintNetworkView.addVariableNodes( tokenNode);
     boolean areLinksChanged = constraintNetworkView.addVariableToTokenLinks( tokenNode);
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.setFocusNode( tokenNode);
       constraintNetworkView.redraw();
     }
     setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
   } // end addTokenNodeVariables
 
-  private void removeTokenNodeVariables( ConstraintNetworkTokenNode tokenNode) {
-    ConstraintNetworkView constraintNetworkView =
-      (ConstraintNetworkView) tokenNode.getPartialPlanView();
+  private void removeTokenNodeVariables( ConstraintNetworkTokenNode tokenNode,
+                                         ConstraintNetworkView constraintNetworkView) {
     boolean areLinksChanged = constraintNetworkView.removeVariableToTokenLinks( tokenNode);
     boolean areNodesChanged = constraintNetworkView.removeVariableNodes( tokenNode);
     if (areNodesChanged || areLinksChanged) {
       constraintNetworkView.setLayoutNeeded();
+      constraintNetworkView.setFocusNode( tokenNode);
       constraintNetworkView.redraw();
     }
     setPen( new JGoPen( JGoPen.SOLID, 1,  ColorMap.getColor( "black")));
