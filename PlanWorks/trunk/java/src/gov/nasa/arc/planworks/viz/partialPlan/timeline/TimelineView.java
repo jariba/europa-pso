@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.43 2004-03-07 01:49:30 taylor Exp $
+// $Id: TimelineView.java,v 1.44 2004-03-16 02:24:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -684,6 +684,8 @@ public class TimelineView extends PartialPlanView {
       createActiveTokenItem( activeTokenItem);
       mouseRightPopup.add( activeTokenItem);
     }
+
+    this.createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
     if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();

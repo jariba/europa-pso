@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNode.java,v 1.12 2004-03-12 23:23:00 miatauro Exp $
+// $Id: ConstraintNode.java,v 1.13 2004-03-16 02:24:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -75,7 +75,6 @@ public class ConstraintNode extends ExtendedBasicNode {
   private List constraintVariableLinkList; // element BasicNodeLink
   //fix me.
   private Map constraintVariableLinkMap;
-  private boolean areNeighborsShown;
   private boolean inLayout;
   private boolean isUnaryConstraint;
   private int variableLinkCount;
@@ -123,7 +122,6 @@ public class ConstraintNode extends ExtendedBasicNode {
     // System.err.println( "ConstraintNode: " + nodeLabel);
 
     hasBeenVisited = false;
-    resetNode( false);
     configure( constraintLocation, backgroundColor, isDraggable);
   } // end constructor
 
@@ -138,7 +136,9 @@ public class ConstraintNode extends ExtendedBasicNode {
     getPort().setVisible( false);
     getLabel().setMultiline( true);
     if (isUnaryConstraint) {
-      setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+      setAreNeighborsShown( true);
+      int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+      setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
     }
   } // end configure
 
@@ -180,12 +180,13 @@ public class ConstraintNode extends ExtendedBasicNode {
     int width = 1;
     inLayout = value;
     if (value == false) {
-      if (isUnaryConstraint) {
-        width = 2;
-      }
-      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
-      areNeighborsShown = false;
+      setAreNeighborsShown( false);
     }
+    if (isUnaryConstraint) {
+      setAreNeighborsShown( true);
+      width = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    }
+    setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
   /**
@@ -237,7 +238,7 @@ public class ConstraintNode extends ExtendedBasicNode {
    * @param isDebug - <code>boolean</code> - 
    */
   public void resetNode( boolean isDebug) {
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     if (isDebug && (variableLinkCount != 0)) {
       System.err.println( "reset constraint node: " + constraint.getId() +
                           "; variableLinkCount != 0: " + variableLinkCount);
@@ -252,7 +253,7 @@ public class ConstraintNode extends ExtendedBasicNode {
    */
   public String getToolTipText() {
       String operation = null;
-      if (areNeighborsShown) {
+      if (areNeighborsShown()) {
         operation = "close";
       } else {
         operation = "open";
@@ -263,8 +264,12 @@ public class ConstraintNode extends ExtendedBasicNode {
       if (isDebug) {
         tip.append( " linkCnt ").append( String.valueOf( variableLinkCount));
       }
-       tip.append( "<br> Mouse-L: ").append( operation);
-       return tip.append("</html>").toString();
+      if (partialPlanView.getZoomFactor() > 1) {
+        tip.append( "<br>key=");
+        tip.append( constraint.getId().toString());
+      }
+      tip.append( "<br> Mouse-L: ").append( operation);
+      return tip.append("</html>").toString();
     } else {
       return constraint.getType();
     }
@@ -284,14 +289,6 @@ public class ConstraintNode extends ExtendedBasicNode {
     tip.append( "</html>");
     return tip.toString();
   } // end getToolTipText
-
-
-  public void setAreNeighborsShown(boolean shown) {
-    areNeighborsShown = shown;
-  }
-  public boolean areNeighborsShown() {
-    return areNeighborsShown;
-  }
 
   /**
    * <code>getVariableNodeList</code>
@@ -378,16 +375,16 @@ public class ConstraintNode extends ExtendedBasicNode {
     ConstraintNode constraintNode = (ConstraintNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       if ((! isUnaryConstraint) && (partialPlanView instanceof ConstraintNetworkView)) {
-        if (! areNeighborsShown) {
+        if (! areNeighborsShown()) {
           //System.err.println( "doMouseClick: Mouse-L show variable nodes of constraint id " +
           //                    constraintNode.getConstraint().getId());
           addConstraintNodeVariables( this, (ConstraintNetworkView) partialPlanView);
-          areNeighborsShown = true;
+          setAreNeighborsShown( true);
         } else {
           //System.err.println( "doMouseClick: Mouse-L hide variable nodes of constraint id " +
           //                    constraintNode.getConstraint().getId());
           removeConstraintNodeVariables( this, (ConstraintNetworkView) partialPlanView);
-          areNeighborsShown = false;
+          setAreNeighborsShown( false);
         }
         return true;
       }
@@ -413,7 +410,8 @@ public class ConstraintNode extends ExtendedBasicNode {
       constraintNetworkView.setFocusNode( constraintNode);
       constraintNetworkView.redraw();
     }
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
   } // end addConstraintNodeVariables
 
   private void removeConstraintNodeVariables( ConstraintNode constraintNode,

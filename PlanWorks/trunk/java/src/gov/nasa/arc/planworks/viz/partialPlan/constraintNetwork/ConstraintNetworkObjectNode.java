@@ -67,7 +67,7 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
           isDraggable, partialPlanView);
     this.partialPlanView = partialPlanView;
     variableNodeList = new UniqueSet();
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     hasDiscoveredLinks = false;
     variableLinkCount = 0;
     connectedContainerCount = 0;
@@ -90,7 +90,7 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
   public String getToolTipText() {
     StringBuffer tip = new StringBuffer( "<html> ");
     String operation = null;
-    if (areNeighborsShown) {
+    if (areNeighborsShown()) {
       operation = "close";
     } else {
       operation = "open";
@@ -130,14 +130,6 @@ public class ConstraintNetworkObjectNode extends ObjectNode implements VariableC
     if(!variableNodeList.contains(varNode)) {
       variableNodeList.add(varNode);
     }
-  }
-
-  public  void setAreNeighborsShown( boolean areShown) {
-    areNeighborsShown = areShown;
-  }
-
-  public boolean areNeighborsShown() {
-    return areNeighborsShown;
   }
 
   public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,

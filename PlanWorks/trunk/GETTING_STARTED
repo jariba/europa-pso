@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: GETTING_STARTED,v 1.33 2004-03-09 01:48:26 taylor Exp $
+# $Id: GETTING_STARTED,v 1.34 2004-03-16 02:24:06 taylor Exp $
 #
 
 Projects and Plan Sequences
@@ -39,13 +39,23 @@ the selected sequence from the current project, and the MySQL data base.
 
 Overviews of Plan Sequence and Partial Plan Views
 =================================================
-The partial plan views, except for Transaction View, and the Sequence
-Steps View, have a Mouse-Right popup named "Overview Window" which
-opens a 1/8th scaled view of the entire "observed" view.  There is a
-rectangle in the overview which can be dragged to cause the "observed" 
-view to be scrolled to new locations.  Mouse-Left clicking in the
-overview outside of the rectangle will cause the "observed" view to
-"jump" to that location.
+The Sequence Steps view, and the partial plan views, except for Transaction 
+View, have a Mouse-Right popup named "Overview Window" which opens a 1/8th 
+scaled view of the entire "observed" view.  There is a rectangle in the 
+overview which can be dragged to cause the "observed" view to be scrolled 
+to new locations.  Mouse-Left clicking in the overview outside of the 
+rectangle will cause the "observed" view to "jump" to that location.
+
+
+Zooming of Plan Sequence and Partial Plan Views
+=================================================
+Mouse-Right "Zoom View" is available for the Constraint Network, Navigator, 
+Timeline, and Token Network views. The zoom out factors are x2, x4, x6, 
+and x8 (the same scaling as the Overview windows).  Whereas Mouse-Right 
+"Overview Window" creates a new window and allows the coordinated viewing 
+of the paired windows, "Zoom View" does not create a new window, rather it 
+changes scaling in the existing window.  Thus the existing Mouse-Right 
+functionality on the view background and the view nodes is maintained.
 
 
 Plan Sequence Views

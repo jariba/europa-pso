@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNavNode.java,v 1.7 2004-02-26 19:02:00 taylor Exp $
+// $Id: ConstraintNavNode.java,v 1.8 2004-03-16 02:24:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,7 +46,6 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
   private NavigatorView navigatorView;
   private String nodeLabel;
   private boolean isDebug;
-  private boolean areNeighborsShown;
   private int linkCount;
   private boolean inLayout;
   private boolean isUnaryConstraint;
@@ -79,7 +78,7 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
     if (constraint.getVariablesList().size() > 1) {
       isUnaryConstraint = false;
     }
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     linkCount = 0;
 
     configure( constraintLocation, backgroundColor, isDraggable);
@@ -96,7 +95,9 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
     getPort().setVisible( false);
     getLabel().setMultiline( true);
     if (isUnaryConstraint) {
-      setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+      setAreNeighborsShown( true);
+      int penWidth = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
+      setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     }
   } // end configure
 
@@ -161,12 +162,13 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
     int width = 1;
     inLayout = value;
     if (value == false) {
-      if (isUnaryConstraint) {
-        width = 2;
-      }
-      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
-      areNeighborsShown = false;
+      setAreNeighborsShown( false);
     }
+    if (isUnaryConstraint) {
+      setAreNeighborsShown( true);
+      width = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
+    }
+    setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
   /**
@@ -175,22 +177,13 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
    * @param isDebug - <code>boolean</code> - 
    */
   public final void resetNode( final boolean isDbg) {
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     if (isDbg && (linkCount != 0)) {
       System.err.println( "reset constraint node: " + constraint.getId() +
                           "; linkCount != 0: " + linkCount);
     }
     linkCount = 0;
   } // end resetNode
-
- /**
-   * <code>setAreNeighborsShown</code> - implements NavNode
-   *
-   * @param value - <code>boolean</code> - 
-   */
-  public final void setAreNeighborsShown( final boolean value) {
-    areNeighborsShown = value;
-  }
 
   /**
    * <code>getParentEntityList</code> - implements NavNode
@@ -248,14 +241,21 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
    */
   public final String getToolTipText() {
     String operation = "";
-    if (areNeighborsShown) {
+    if (areNeighborsShown()) {
       operation = "close";
     } else {
       operation = "open";
     }
     if (! isUnaryConstraint) {
-      StringBuffer tip = new StringBuffer( "<html>constraint<br>");
+      // StringBuffer tip = new StringBuffer( "<html>constraint <br>");
+      StringBuffer tip = new StringBuffer( "<html>");
       tip.append( constraint.getType());
+      if (navigatorView.getZoomFactor() > 1) {
+        tip.append( "<br>");
+        tip.append( constraint.getName());
+        tip.append( "<br>key=");
+        tip.append( constraint.getId().toString());
+      }
       if (isDebug) {
         tip.append( " linkCntVariable ").append( String.valueOf( linkCount));
       }
@@ -275,6 +275,8 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
    */
   public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html>");
+    tip.append( constraint.getType());
+    tip.append( "<br>");
     tip.append( constraint.getName());
     tip.append( "<br>key=");
     tip.append( constraint.getId().toString());
@@ -301,12 +303,12 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       navigatorView.setStartTimeMSecs( System.currentTimeMillis());
       boolean areObjectsChanged = false;
-      if (! areNeighborsShown) {
+      if (! areNeighborsShown()) {
         areObjectsChanged = addConstraintObjects( this);
-        areNeighborsShown = true;
+        setAreNeighborsShown( true);
       } else {
         areObjectsChanged = removeConstraintObjects( this);
-        areNeighborsShown = false;
+        setAreNeighborsShown( false);
       }
       if (areObjectsChanged) {
         navigatorView.setLayoutNeeded();
@@ -330,7 +332,8 @@ public class ConstraintNavNode extends ExtendedBasicNode implements NavNode {
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
   } // end addConstraintObjects
 

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: NodeGenerics.java,v 1.22 2004-03-12 23:22:15 miatauro Exp $
+// $Id: NodeGenerics.java,v 1.23 2004-03-16 02:24:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -21,8 +21,12 @@ import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
+// PlanWorks/java/lib/JGo/com/**/*
+import com.nwoods.jgo.JGoSelection;
+
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoArea;
+import com.nwoods.jgo.JGoObject;
+import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoView;
 
 // PlanWorks/java/lib/JGo/Classier.jar
@@ -153,11 +157,11 @@ public class NodeGenerics {
    * <code>focusViewOnNode</code> - scroll view's scroll bars to put node in middle,
    *                                and optionally highlight node
    *
-   * @param node - <code>JGoArea</code> - 
+   * @param node - <code>JGoObject</code> - 
    * @param isHighlightNode - <code>boolean</code> - 
    * @param jGoView - <code>JGoView</code> - 
    */
-  public static void focusViewOnNode( JGoArea node, boolean isHighlightNode, JGoView jGoView) {
+  public static void focusViewOnNode( JGoObject node, boolean isHighlightNode, JGoView jGoView) {
     // System.err.println( "focusViewOnNode: loc " + node.getLocation().getX() +
     //                     " extent " + jGoView.getExtentSize().getWidth());
 //     if (node instanceof TokenNode) {
@@ -170,18 +174,17 @@ public class NodeGenerics {
 //       System.err.println( "focusViewOnNode: variable " +
 //                           ((VariableNode) node).toString());
 //     }
-    jGoView.getSelection().clearSelection();
+    JGoSelection selection = jGoView.getSelection();
+    selection.clearSelection();
     if (node != null) {
       jGoView.getHorizontalScrollBar().
-        setValue( Math.max( 0,
-                            (int) (node.getLocation().getX() -
-                                   (jGoView.getExtentSize().getWidth() / 2))));
+        setValue( Math.max( 0, (int) (node.getLocation().getX() -
+                                      (jGoView.getExtentSize().getWidth() / 2))));
       jGoView.getVerticalScrollBar().
-        setValue( Math.max( 0,
-                            (int) (node.getLocation().getY() -
-                                   (jGoView.getExtentSize().getHeight() / 2))));
+        setValue( Math.max( 0, (int) (node.getLocation().getY() -
+                                      (jGoView.getExtentSize().getHeight() / 2))));
       if (isHighlightNode) {
-        jGoView.getSelection().extendSelection( node);
+        selection.extendSelection( node);
       }
     } else {
       jGoView.getHorizontalScrollBar().setValue( 0);
@@ -195,14 +198,14 @@ public class NodeGenerics {
    *                        Assumes that focusViewOnNode is called first,
    *                        to set the primary selection
    *
-   * @param nodeList - <code>List of JGoArea (e.g. TokenNode)</code> -
+   * @param nodeList - <code>List of JGoObject (e.g. TokenNode)</code> -
    * @param jGoView - <code>JGoView</code> - 
    */
   public static void selectSecondaryNodes( List nodeList, JGoView jGoView) {
     if (nodeList != null) {
       Iterator nodeIterator = nodeList.iterator();
       while (nodeIterator.hasNext()) {
-        jGoView.getSelection().extendSelection( (JGoArea) nodeIterator.next());
+        jGoView.getSelection().extendSelection( (JGoObject) nodeIterator.next());
       }
     }
   } // end selectSecondaryNodes

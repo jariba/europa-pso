@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavNode.java,v 1.1 2004-02-25 02:30:15 taylor Exp $
+// $Id: NavNode.java,v 1.2 2004-03-16 02:24:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -78,13 +78,6 @@ public interface NavNode {
    * @param isDebug - <code>boolean</code> - 
    */
   public void resetNode( boolean isDebug);
-
-  /**
-   * <code>setAreNeighborsShown</code>
-   *
-   * @param value - <code>boolean</code> - 
-   */
-  public void setAreNeighborsShown( boolean value);
 
   /**
    * <code>getParentEntityList</code>

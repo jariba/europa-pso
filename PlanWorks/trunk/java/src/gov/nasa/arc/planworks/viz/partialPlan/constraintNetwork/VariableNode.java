@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: VariableNode.java,v 1.14 2004-03-12 23:23:01 miatauro Exp $
+// $Id: VariableNode.java,v 1.15 2004-03-16 02:24:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -78,7 +78,6 @@ public class VariableNode extends ExtendedBasicNode {
   private List containerNodeList; // element TokenNode
   private List constraintNodeList; // element ConstraintNode
   private List variableContainerLinkList; // element BasicNodeLink
-  private boolean areNeighborsShown;
   private boolean inLayout;
   private boolean hasZeroConstraints;
   private int containerLinkCount;
@@ -117,7 +116,6 @@ public class VariableNode extends ExtendedBasicNode {
       hasZeroConstraints = false;
     }
     hasBeenVisited = false;
-    resetNode( false);
 
     isDebug = false;
     // isDebug = true;
@@ -139,8 +137,11 @@ public class VariableNode extends ExtendedBasicNode {
     // do not allow user links
     getPort().setVisible( false);
     getLabel().setMultiline( true);
+    setAreNeighborsShown( false);
     if (hasZeroConstraints) {
-      setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+      setAreNeighborsShown( true);
+      int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+      setPen( new JGoPen( JGoPen.SOLID, penWidth,  ColorMap.getColor( "black")));
     }
   } // end configure
 
@@ -171,24 +172,33 @@ public class VariableNode extends ExtendedBasicNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-      String operation = null;
-      if (areNeighborsShown) {
-        operation = "close";
-      } else {
-        operation = "open";
-      }
-    if ((! hasZeroConstraints) && (partialPlanView instanceof ConstraintNetworkView)) {
-      StringBuffer tip = new StringBuffer( "<html> ");
+    String operation = null;
+    if (areNeighborsShown()) {
+      operation = "close";
+    } else {
+      operation = "open";
+    }
+    StringBuffer tip = new StringBuffer( "<html> ");
+    boolean isVariableWithConstraints =
+      (! hasZeroConstraints) && (partialPlanView instanceof ConstraintNetworkView);
+    if (isVariableWithConstraints) {
       NodeGenerics.getVariableNodeToolTipText( variable, partialPlanView, tip);
       if (isDebug) {
         tip.append( " linkCnt ").append( String.valueOf( containerLinkCount +
                                                          constraintLinkCount));
       }
-       tip.append( "<br> Mouse-L: ").append( operation);
-       return tip.append("</html>").toString();
     } else {
-      return variable.getType();
+      tip.append( variable.getType());
     }
+    if (partialPlanView.getZoomFactor() > 1) {
+      tip.append( "<br>key=");
+      tip.append( variable.getId().toString());
+    }
+    if (isVariableWithConstraints) {
+      tip.append( "<br> Mouse-L: ").append( operation);
+    }
+    return tip.append("</html>").toString();
+
   } // end getToolTipText
 
   /**
@@ -284,30 +294,13 @@ public class VariableNode extends ExtendedBasicNode {
     int width = 1;
     inLayout = value;
     if (value == false) {
-      if (hasZeroConstraints) {
-        width = 2;
-      }
-      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
-      areNeighborsShown = false;
+      setAreNeighborsShown( false);
     }
-  }
-
-  /**
-   * <code>setAreNeighborsShown</code>
-   *
-   * @param areShown - <code>boolean</code> - 
-   */
-  protected void setAreNeighborsShown( boolean areShown) {
-    areNeighborsShown = areShown;
-  }
-
-  /**
-   * <code>areNeighborsShown</code>
-   *
-   * @return - <code>boolean</code> - 
-   */
-  protected boolean areNeighborsShown() {
-    return areNeighborsShown;
+    if (hasZeroConstraints) {
+      setAreNeighborsShown( true);
+      width = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    }
+    setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
   /**
@@ -384,7 +377,7 @@ public class VariableNode extends ExtendedBasicNode {
    * @param isDebug - <code>boolean</code> - 
    */
   public void resetNode( boolean isDebug) {
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     if (isDebug && (constraintLinkCount != 0)) {
       System.err.println( "reset variable node: " + variable.getId() +
                           "; constraintLinkCount != 0: " + constraintLinkCount);
@@ -432,18 +425,19 @@ public class VariableNode extends ExtendedBasicNode {
     VariableNode variableNode = (VariableNode) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       if ((! hasZeroConstraints) && (partialPlanView instanceof ConstraintNetworkView)) {
-        if (! areNeighborsShown) {
+        if (! areNeighborsShown()) {
           //System.err.println
           //  ( "doMouseClick: Mouse-L show constraint/token nodes of variable id " +
           //    variableNode.getVariable().getId());
           addVariableNodeContainersAndConstraints( this, (ConstraintNetworkView) partialPlanView);
-          areNeighborsShown = true;
+          setAreNeighborsShown( true);
         } else {
           //System.err.println
           //  ( "doMouseClick: Mouse-L hide constraint/token nodes of variable id " +
           //    variableNode.getVariable().getId());
-          removeVariableNodeContainersAndConstraints( this, (ConstraintNetworkView) partialPlanView);
-          areNeighborsShown = false;
+          removeVariableNodeContainersAndConstraints( this,
+                                                      (ConstraintNetworkView) partialPlanView);
+          setAreNeighborsShown( false);
         }
         return true;
       }
@@ -476,7 +470,8 @@ public class VariableNode extends ExtendedBasicNode {
       constraintNetworkView.setFocusNode( variableNode);
       constraintNetworkView.redraw();
     }
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
   } // end addVariableNodeTokensAndConstraints
 
   private void removeVariableNodeContainersAndConstraints

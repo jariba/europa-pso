@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: NavigatorView.java,v 1.17 2004-03-12 23:23:40 miatauro Exp $
+// $Id: NavigatorView.java,v 1.18 2004-03-16 02:24:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -321,7 +321,7 @@ public class NavigatorView extends PartialPlanView {
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 
-    jGoView = new NavigatorJGoView();
+    jGoView = new NavigatorJGoView( this);
     jGoView.setBackground( ViewConstants.VIEW_BACKGROUND_COLOR);
     add( jGoView, BorderLayout.NORTH);
     jGoView.validate();
@@ -564,8 +564,9 @@ public class NavigatorView extends PartialPlanView {
     NavNodeGenerics.addParentToEntityNavLinks( navNode, this, isDebugPrint);
     NavNodeGenerics.addEntityToChildNavLinks( navNode, this, isDebugPrint);
 
-    node.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "black")));
-    navNode.setAreNeighborsShown( true);
+    int penWidth = this.getOpenJGoPenWidth( this.getZoomFactor());
+    node.setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
+    node.setAreNeighborsShown( true);
   } // end renderInitialNode
 
 
@@ -850,15 +851,35 @@ public class NavigatorView extends PartialPlanView {
    * <code>NavigatorJGoView</code> - subclass JGoView to add doBackgroundClick
    *
    */
-  class NavigatorJGoView extends JGoView {
+  public class NavigatorJGoView extends JGoView {
+
+    private NavigatorView navigatorView;
 
     /**
      * <code>NavigatorJGoView</code> - constructor 
      *
      */
-    public NavigatorJGoView() {
+    public NavigatorJGoView( NavigatorView navigatorView) {
       super();
+      this.navigatorView = navigatorView;
     }
+
+    /**
+     * <code>resetOpenNodes</code> - reset the nodes bounding rectangles highlight width
+     *                               to the current zoom factor
+     *
+     */
+    public void resetOpenNodes() {
+      int penWidth = navigatorView.getOpenJGoPenWidth( navigatorView.getZoomFactor());
+      Iterator navigatorNodeItr = entityNavNodeMap.values().iterator();
+      while (navigatorNodeItr.hasNext()) {
+        ExtendedBasicNode navigatorNode = (ExtendedBasicNode) navigatorNodeItr.next();
+        if (navigatorNode.areNeighborsShown()) {
+          navigatorNode.setPen( new JGoPen( JGoPen.SOLID, penWidth,
+                                            ColorMap.getColor( "black")));
+        }
+      }
+    } // end resetOpenNodes
 
     /**
      * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
@@ -889,6 +910,8 @@ public class NavigatorView extends PartialPlanView {
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
     mouseRightPopup.add( overviewWindowItem);
+
+    this.createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
     createAllViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup);
 

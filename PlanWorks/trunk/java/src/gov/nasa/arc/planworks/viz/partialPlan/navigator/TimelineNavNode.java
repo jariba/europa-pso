@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TimelineNavNode.java,v 1.7 2004-02-26 19:02:01 taylor Exp $
+// $Id: TimelineNavNode.java,v 1.8 2004-03-16 02:24:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -46,7 +46,6 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
   private PwTimeline timeline;
   private NavigatorView navigatorView;
 
-  private boolean areNeighborsShown;
   private int linkCount;
   private boolean inLayout;
   private boolean isDebugPrint;
@@ -70,7 +69,7 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
     // isDebugPrint = true;
 
     inLayout = false;
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     linkCount = 0;
   } // end constructor
 
@@ -135,9 +134,9 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
     int width = 1;
     inLayout = value;
     if (value == false) {
-      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
-      areNeighborsShown = false;
+      setAreNeighborsShown( false);
     }
+    setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
   /**
@@ -146,22 +145,13 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
    * @param isDebug - <code>boolean</code> - 
    */
   public final void resetNode( final boolean isDebug) {
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     if (isDebug && (linkCount != 0)) {
       System.err.println( "reset timeline node: " + timeline.getId() +
                           "; linkCount != 0: " + linkCount);
     }
     linkCount = 0;
   } // end resetNode
-
-  /**
-   * <code>setAreNeighborsShown</code> - implements NavNode
-   *
-   * @param value - <code>boolean</code> - 
-   */
-  public final void setAreNeighborsShown( final boolean value) {
-    areNeighborsShown = value;
-  }
 
   /**
    * <code>getParentEntityList</code> - implements NavNode
@@ -196,12 +186,19 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
    */
   public final String getToolTipText() {
     String operation = "";
-    if (areNeighborsShown) {
+    if (areNeighborsShown()) {
       operation = "close";
     } else {
       operation = "open";
     }
-    StringBuffer tip = new StringBuffer( "<html>timeline<br>");
+    // StringBuffer tip = new StringBuffer( "<html>timeline<br>");
+    StringBuffer tip = new StringBuffer( "<html>");
+    tip.append( timeline.getName());
+    if (partialPlanView.getZoomFactor() > 1) {
+      tip.append( "<br>key=");
+      tip.append( timeline.getId().toString());
+      tip.append( "<br>");
+    }
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
       tip.append( "<br>");
@@ -247,12 +244,12 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
       NavigatorView navigatorView = (NavigatorView) partialPlanView;
       navigatorView.setStartTimeMSecs( System.currentTimeMillis());
       boolean areObjectsChanged = false;
-      if (! areNeighborsShown) {
+      if (! areNeighborsShown()) {
         areObjectsChanged = addTimelineObjects( this);
-        areNeighborsShown = true;
+        setAreNeighborsShown( true);
       } else {
         areObjectsChanged = removeTimelineObjects( this);
-        areNeighborsShown = false;
+        setAreNeighborsShown( false);
       }
       if (areObjectsChanged) {
         navigatorView.setLayoutNeeded();
@@ -276,7 +273,8 @@ public class TimelineNavNode extends TimelineNode implements NavNode {
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
   } // end addTimelineObjects
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: VizView.java,v 1.11 2004-03-12 23:21:54 miatauro Exp $
+// $Id: VizView.java,v 1.12 2004-03-16 02:24:08 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -28,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 // PlanWorks/java/lib/JGo/JGo.jar
+import com.nwoods.jgo.JGoPen;
+import com.nwoods.jgo.JGoSelection;
 import com.nwoods.jgo.JGoText;
 import com.nwoods.jgo.JGoView;
 
@@ -45,6 +47,8 @@ import gov.nasa.arc.planworks.util.UnaryFunctor;
 import gov.nasa.arc.planworks.viz.partialPlan.CreatePartialPlanViewThread;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewMenuItem;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
+import gov.nasa.arc.planworks.viz.partialPlan.constraintNetwork.ConstraintNetworkView;
+import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 
@@ -57,10 +61,23 @@ import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
  */
 public class VizView extends JPanel {
 
+  /**
+   * constant <code>ZOOM_FACTORS</code>
+   *
+   */
+  public static final int[] ZOOM_FACTORS = new int[] { 1, 2, 4, 8 };
+
+  private static final String[] ZOOM_ITEM_NAMES = new String[] { "Full Size",
+                                                                  "Zoom Out x 2",
+                                                                  "Zoom Out x 4",
+                                                                  "Zoom Out x 8" };
+
   protected ViewSet viewSet;
   protected Font font;
   protected FontMetrics fontMetrics;
   protected VizViewOverview overview;
+  protected int zoomFactor;
+
 
   /**
    * <code>VizView</code> - constructor 
@@ -77,7 +94,8 @@ public class VizView extends JPanel {
                      ViewConstants.TIMELINE_VIEW_FONT_SIZE);
     fontMetrics = null;  // see computeFontMetrics
     overview = null;
-   
+    zoomFactor = 1;
+
     JGoText.setDefaultFontFaceName( "Monospaced");
     JGoText.setDefaultFontSize( ViewConstants.TIMELINE_VIEW_FONT_SIZE);
 
@@ -109,6 +127,15 @@ public class VizView extends JPanel {
    */
   public void setOverview( VizViewOverview overview) {
     this.overview = overview;
+  }
+
+  /**
+   * <code>getZoomFactor</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getZoomFactor() {
+    return zoomFactor;
   }
 
   /**
@@ -296,6 +323,92 @@ public class VizView extends JPanel {
         }
       });
   } // end createOpenAllItem
+
+  /**
+   * <code>getZoomIndex</code>
+   *
+   * @param zoomFactor - <code>int</code> - 
+   * @return - <code>int</code> - 
+   */
+  public int getZoomIndex( final int zoomFactor) {
+    int zoomIndex = 0;
+    for (int i = 0, n = ZOOM_FACTORS.length; i < n; i++) {
+      if (ZOOM_FACTORS[i] == zoomFactor) {
+        zoomIndex = i;
+      }
+    }
+    return zoomIndex;
+  } // end getZoomIndex
+
+  /**
+   * <code>getOpenJGoPenWidth</code>
+   *
+   * @param zoomFactor - <code>int</code> - 
+   * @return - <code>int</code> - 
+   */
+  public int getOpenJGoPenWidth( final int zoomFactor) {
+    return 2 + 2 * getZoomIndex( zoomFactor);
+  }
+
+  /**
+   * <code>createZoomItem</code>
+   *
+   * @param jGoView - <code>JGoView</code> - 
+   * @param currentZoomFactor - <code>int</code> - 
+   * @param mouseRightPopup - <code>JPopupMenu</code> - 
+   * @param partialPlanView - <code>VizView</code> - 
+   */
+  protected void createZoomItem( final JGoView jGoView, final int currentZoomFactor,
+                                 JPopupMenu mouseRightPopup, final VizView partialPlanView) {
+    JMenuItem zoomItem = new JMenuItem( "Zoom View");
+    final int optionIndex = getZoomIndex( currentZoomFactor);
+
+    zoomItem.addActionListener( new ActionListener() {
+        public void actionPerformed( ActionEvent evt) {
+          Object[] options = new Object[ZOOM_FACTORS.length];
+          for (int i = 0, n = ZOOM_FACTORS.length; i < n; i++) {
+            options[i] = ZOOM_ITEM_NAMES[i];
+          }
+          Object response = JOptionPane.showInputDialog
+            ( PlanWorks.getPlanWorks(), "", "Zoom View",
+              JOptionPane.QUESTION_MESSAGE, null, options, options[optionIndex]);
+          if (response instanceof String) {
+            for (int i = 0, n = options.length; i < n; i++) {
+              if (((String) options[i]).equals( response)) {
+                // String zoomName = ZOOM_ITEM_NAMES[i];
+                // System.err.println( zoomName);
+                zoomFactor = ZOOM_FACTORS[i];
+                int penWidth = getOpenJGoPenWidth( zoomFactor);
+                JGoSelection selection = jGoView.getSelection();
+                // for primary selection pen
+                selection.setBoundingHandlePen
+                  ( new JGoPen( JGoPen.SOLID, penWidth, jGoView.getPrimarySelectionColor()));
+                // for secondary selection pens
+                selection.setBoundingHandlePenWidth( penWidth);
+                boolean isRedraw = false;
+                if (jGoView instanceof ConstraintNetworkView.ConstraintJGoView) {
+                  ((ConstraintNetworkView.ConstraintJGoView) jGoView).resetOpenNodes();
+                  ((ConstraintNetworkView) partialPlanView).setLayoutNeeded();
+                  isRedraw = true;
+                } else if (jGoView instanceof NavigatorView.NavigatorJGoView) {
+                  ((NavigatorView.NavigatorJGoView) jGoView).resetOpenNodes();
+                  ((NavigatorView) partialPlanView).setLayoutNeeded();
+                   isRedraw = true;
+                }
+                jGoView.setScale( 1.0d / zoomFactor);
+                if (isRedraw) {
+                  partialPlanView.redraw();
+                }
+                break;
+              }
+            }
+          }
+        }
+      });
+
+    mouseRightPopup.add( zoomItem);
+  } // createZoomItems
+
 
 } // end class VizView
 

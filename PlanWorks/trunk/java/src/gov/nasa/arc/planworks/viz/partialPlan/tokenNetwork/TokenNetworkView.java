@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.33 2004-03-09 20:20:21 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.34 2004-03-16 02:24:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -377,6 +377,8 @@ public class TokenNetworkView extends PartialPlanView {
       createActiveTokenItem( activeTokenItem);
       mouseRightPopup.add( activeTokenItem);
     }
+
+    this.createZoomItem( jGoView, zoomFactor, mouseRightPopup, this);
 
     if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();

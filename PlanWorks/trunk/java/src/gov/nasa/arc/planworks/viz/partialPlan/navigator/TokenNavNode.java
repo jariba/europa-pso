@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNavNode.java,v 1.8 2004-03-02 02:34:17 taylor Exp $
+// $Id: TokenNavNode.java,v 1.9 2004-03-16 02:24:12 taylor Exp $
 //
 // PlanWorks
 //
@@ -53,12 +53,12 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
 
   private PwToken token;
   private PwSlot slot;
+  private PartialPlanView partialPlanView;
   private PwObject object;
   private PwPartialPlan partialPlan;
   private NavigatorView navigatorView;
   private String nodeLabel;
   private boolean isDebug;
-  private boolean areNeighborsShown;
   private int linkCount;
   private boolean inLayout;
 
@@ -76,6 +76,7 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
                        final PartialPlanView partialPlanView) { 
     super( ViewConstants.RECTANGLE);
     this.token = token;
+    this.partialPlanView = partialPlanView;
     partialPlan = partialPlanView.getPartialPlan();
     slot = null; object = null;
     if (token.getSlotId() != null && !token.getSlotId().equals(DbConstants.noId)) {
@@ -99,7 +100,7 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
     // System.err.println( "TokenNavNode: " + nodeLabel);
 
     inLayout = false;
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     linkCount = 0;
 
     configure( tokenLocation, backgroundColor, isDraggable);
@@ -178,9 +179,9 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
     int width = 1;
     inLayout = value;
     if (value == false) {
-      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
-      areNeighborsShown = false;
+      setAreNeighborsShown( false);
     }
+    setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
   /**
@@ -189,22 +190,13 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
    * @param isDebug - <code>boolean</code> - 
    */
   public final void resetNode( final boolean isDbg) {
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     if (isDbg && (linkCount != 0)) {
       System.err.println( "reset slot node: " + slot.getId() +
                           "; linkCount != 0: " + linkCount);
     }
     linkCount = 0;
   } // end resetNode
-
- /**
-   * <code>setAreNeighborsShown</code> - implements NavNode
-   *
-   * @param value - <code>boolean</code> - 
-   */
-  public final void setAreNeighborsShown( final boolean value) {
-    areNeighborsShown = value;
-  }
 
   /**
    * <code>getParentEntityList</code> - implements NavNode
@@ -279,19 +271,23 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
    */
   public final String getToolTipText() {
     String operation = "";
-    if (areNeighborsShown) {
+    if (areNeighborsShown()) {
       operation = "close";
     } else {
       operation = "open";
     }
     StringBuffer tip = new StringBuffer( "<html>");
-    if (token instanceof PwResourceTransaction) {
-      tip.append( "resourceTransaction");
-    } else {
-      tip.append( "token");
-    }
-      tip.append( "<br>");
+//     if (token instanceof PwResourceTransaction) {
+//       tip.append( "resourceTransaction");
+//     } else {
+//       tip.append( "token");
+//     }
+//     tip.append( "<br>");
     tip.append( token.toString());
+    if (partialPlanView.getZoomFactor() > 1) {
+      tip.append( "<br>key=");
+      tip.append( token.getId().toString());
+    }
     if (isDebug) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
     }
@@ -334,12 +330,12 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
       navigatorView.setStartTimeMSecs( System.currentTimeMillis());
       boolean areObjectsChanged = false;
-      if (! areNeighborsShown) {
+      if (! areNeighborsShown()) {
         areObjectsChanged = addTokenObjects( this);
-        areNeighborsShown = true;
+        setAreNeighborsShown( true);
       } else {
         areObjectsChanged = removeTokenObjects( this);
-        areNeighborsShown = false;
+        setAreNeighborsShown( false);
       }
       if (areObjectsChanged) {
         navigatorView.setLayoutNeeded();
@@ -363,7 +359,8 @@ public class TokenNavNode extends ExtendedBasicNode implements NavNode {
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
   } // end addTokenObjects
 

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- $Id: planWorks.xml,v 1.26 2004-03-10 02:21:19 taylor Exp $ -->
+<!-- $Id: planWorks.xml,v 1.27 2004-03-16 02:24:06 taylor Exp $ -->
 <project name="planWorks" default="launch" basedir=".">
 
 <property name="default_gcMax" value="200"/>
@@ -8,7 +8,7 @@
          <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
 	<!-- property name="arg_gcMax" value="975"/ -->
-	<property name="name.application" value="PlanWorks (PW_M_13): Plan Visualization"/>
+	<property name="name.application" value="PlanWorks (pre-PW_M_14): Plan Visualization"/>
 	<property name="boolean.isMaxScreen" value="false"/>
 	<property environment="env"/>
 
@@ -53,7 +53,7 @@
         <!-- planworks.root and others are inherited properties from PlanWorks/build.xml -->
 	<property name="arg_gcInit" value="192"/>
 	<!-- property name="arg_gcMax" value="975"/ -->
-	<property name="name.application" value="PlanWorks (PW_M_13): Plan Visualization"/>
+	<property name="name.application" value="PlanWorks (pre-PW_M_14): Plan Visualization"/>
 	<property name="boolean.isMaxScreen" value="false"/>
 	<property environment="env"/>
 

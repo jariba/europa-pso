@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkResourceNode.java,v 1.2 2004-03-12 23:22:58 miatauro Exp $
+// $Id: ConstraintNetworkResourceNode.java,v 1.3 2004-03-16 02:24:10 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -81,7 +81,7 @@ public class ConstraintNetworkResourceNode extends ResourceNode implements Varia
     this.backgroundColor = backgroundColor;
     this.partialPlanView = partialPlanView;
     variableNodeList = new UniqueSet();
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     hasDiscoveredLinks = false;
     variableLinkCount = 0;
     connectedContainerCount = 0;
@@ -104,16 +104,20 @@ public class ConstraintNetworkResourceNode extends ResourceNode implements Varia
   public String getToolTipText() {
     StringBuffer tip = new StringBuffer( "<html> ");
     String operation = null;
-    if (areNeighborsShown) {
+    if (areNeighborsShown()) {
       operation = "close";
     } else {
       operation = "open";
     }
     if (resource != null) {
       // tip.append( resource.toString());
-      tip.append( "resource");
+      tip.append( resource.getName());
     } else {
       tip.append( "This is a bug");
+    }
+    if (partialPlanView.getZoomFactor() > 1) {
+      tip.append( "<br>key=");
+      tip.append( resource.getId().toString());
     }
     tip.append( "<br> Mouse-L: ").append( operation).append( "</html>");
     return tip.toString();
@@ -159,7 +163,6 @@ public class ConstraintNetworkResourceNode extends ResourceNode implements Varia
                                                         this, 
                                                         (ConstraintNetworkView) partialPlanView);
   } // end doMouseClick 
-
   public void mouseRightPopupMenu( Point viewCoords) {
     ConstraintNetworkUtils.mouseRightPopupMenu(viewCoords, this, partialPlanView);
   } // end mouseRightPopupMenu
@@ -171,7 +174,8 @@ public class ConstraintNetworkResourceNode extends ResourceNode implements Varia
   public void addContainerNodeVariables( VariableContainerNode objNode,
                                              ConstraintNetworkView constraintNetworkView) {
     ConstraintNetworkUtils.addContainerNodeVariables(objNode, constraintNetworkView);
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
   } // end addTokenNodeVariables 
 
   public void removeContainerNodeVariables( VariableContainerNode objNode,

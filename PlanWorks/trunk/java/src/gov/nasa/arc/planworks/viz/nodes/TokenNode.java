@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.37 2004-03-12 23:22:16 miatauro Exp $
+// $Id: TokenNode.java,v 1.38 2004-03-16 02:24:09 taylor Exp $
 //
 // PlanWorks
 //
@@ -182,6 +182,10 @@ public class TokenNode extends BasicNode {
     StringBuffer tip = new StringBuffer( "<html> ");
     if (token != null) {
       tip.append( token.toString());
+      if (partialPlanView.getZoomFactor() > 1) {
+        tip.append( "<br>key=");
+        tip.append( token.getId().toString());
+      }
     } else {
       tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
     }

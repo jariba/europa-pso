@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConstraintNetworkTokenNode.java,v 1.17 2004-03-12 23:22:59 miatauro Exp $
+// $Id: ConstraintNetworkTokenNode.java,v 1.18 2004-03-16 02:24:10 taylor Exp $
 //
 // PlanWorks
 //
@@ -94,7 +94,7 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
            partialPlanView);
     this.slot = slot;
     variableNodeList = new UniqueSet();
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     hasDiscoveredLinks = false;
     variableLinkCount = 0;
     connectedContainerCount = 0;
@@ -138,13 +138,17 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
   public String getToolTipText() {
     StringBuffer tip = new StringBuffer( "<html> ");
     String operation = null;
-    if (areNeighborsShown) {
+    if (areNeighborsShown()) {
       operation = "close";
     } else {
       operation = "open";
     }
     if (token != null) {
       tip.append( token.toString());
+      if (partialPlanView.getZoomFactor() > 1) {
+        tip.append( "<br>key=");
+        tip.append( token.getId().toString());
+      }
     } else {
       tip.append( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
     }
@@ -254,7 +258,8 @@ public class ConstraintNetworkTokenNode extends TokenNode implements VariableCon
   public void addContainerNodeVariables( VariableContainerNode tokenNode,
                                             ConstraintNetworkView constraintNetworkView) {
     ConstraintNetworkUtils.addContainerNodeVariables(tokenNode, constraintNetworkView);
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
   } // end addTokenNodeVariables
 
   public void removeContainerNodeVariables( VariableContainerNode tokenNode,

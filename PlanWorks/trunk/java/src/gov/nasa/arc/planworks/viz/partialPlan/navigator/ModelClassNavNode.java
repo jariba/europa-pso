@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ModelClassNavNode.java,v 1.9 2004-02-26 19:02:00 taylor Exp $
+// $Id: ModelClassNavNode.java,v 1.10 2004-03-16 02:24:11 taylor Exp $
 //
 // PlanWorks
 //
@@ -44,7 +44,6 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
   private PwObject object;
   private NavigatorView navigatorView;
 
-  private boolean areNeighborsShown;
   private int linkCount;
   private boolean inLayout;
   private boolean hasSingleTimeline;
@@ -79,11 +78,13 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
     // isDebugPrint = true;
 
     inLayout = false;
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     linkCount = 0;
 
     if (hasSingleTimeline) {
-      setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor("black")));
+      setAreNeighborsShown( true);
+      int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+      setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     }
   } // end constructor
 
@@ -148,12 +149,13 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
     int width = 1;
     inLayout = value;
     if (value == false) {
-      if (hasSingleTimeline) {
-        width = 2;
-      }
-      setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
-      areNeighborsShown = false;
+      setAreNeighborsShown( false);
     }
+    if (hasSingleTimeline) {
+      setAreNeighborsShown( true);
+      width = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    }
+    setPen( new JGoPen( JGoPen.SOLID, width,  ColorMap.getColor( "black")));
   }
 
   /**
@@ -162,22 +164,13 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
    * @param isDebug - <code>boolean</code> - 
    */
   public final void resetNode( final boolean isDebug) {
-    areNeighborsShown = false;
+    setAreNeighborsShown( false);
     if (isDebug && (linkCount != 0)) {
       System.err.println( "reset object node: " + object.getId() +
                           "; linkCount != 0: " + linkCount);
     }
     linkCount = 0;
   } // end resetNode
-
-  /**
-   * <code>setAreNeighborsShown</code> - implements NavNode
-   *
-   * @param value - <code>boolean</code> - 
-   */
-  public final void setAreNeighborsShown( final boolean value) {
-    areNeighborsShown = value;
-  }
 
   /**
    * <code>getParentEntityList</code> - implements NavNode
@@ -211,12 +204,19 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
    */
   public final String getToolTipText() {
     String operation = "";
-    if (areNeighborsShown) {
+    if (areNeighborsShown()) {
       operation = "close";
     } else {
       operation = "open";
     }
-    StringBuffer tip = new StringBuffer( "<html>object<br>");
+    // StringBuffer tip = new StringBuffer( "<html>object<br>");
+    StringBuffer tip = new StringBuffer( "<html>");
+    tip.append( object.getName());
+    if (partialPlanView.getZoomFactor() > 1) {
+      tip.append( "<br>key=");
+      tip.append( object.getId().toString());
+      tip.append( "<br>");
+   }
     if (isDebugPrint) {
       tip.append( " linkCnt ").append( String.valueOf( linkCount));
       tip.append( "<br>");
@@ -263,12 +263,12 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
          NavigatorView navigatorView = (NavigatorView) partialPlanView;
          navigatorView.setStartTimeMSecs( System.currentTimeMillis());
          boolean areObjectsChanged = false;
-        if (! areNeighborsShown) {
+        if (! areNeighborsShown()) {
           areObjectsChanged = addObjects( this);
-          areNeighborsShown = true;
+          setAreNeighborsShown( true);
         } else {
           areObjectsChanged = removeObjects( this);
-          areNeighborsShown = false;
+          setAreNeighborsShown( false);
         }
         if (areObjectsChanged) {
           navigatorView.setLayoutNeeded();
@@ -293,7 +293,8 @@ public class ModelClassNavNode extends ObjectNode implements NavNode {
      if (isParentLinkChanged || areChildLinksChanged) {
        areLinksChanged = true;
      }
-    setPen( new JGoPen( JGoPen.SOLID, 2,  ColorMap.getColor( "black")));
+    int penWidth = partialPlanView.getOpenJGoPenWidth( partialPlanView.getZoomFactor());
+    setPen( new JGoPen( JGoPen.SOLID, penWidth, ColorMap.getColor( "black")));
     return (areNodesChanged || areLinksChanged);
   } // end addObjectObjects
 

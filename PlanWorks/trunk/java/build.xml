@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: build.xml,v 1.11 2004-01-12 19:24:24 miatauro Exp $ -->
+<!-- $Id: build.xml,v 1.12 2004-03-16 02:24:07 taylor Exp $ -->
 <project name="PlanWorks" default="compile" basedir=".">
     <description>
         Planworks Build Targets
@@ -66,18 +66,4 @@
     <echo message="clean class files completed"/>
   </target>
 
-  <target name="javah"
-        description="generate EuropaJNI.h and copy to 'javahDestdir'" >
-    <!-- compile EuropaJNI.java -->
-    <delete file="${build}/gov/nasa/arc/planworks/europa/EuropaJNI.class"/>
-    <javac srcdir="${src}" destdir="${build}" debug="${debug}"
-           includes="gov/nasa/arc/planworks/europa/EuropaJNI.java"/>
-    <!-- generate EuropaJNI.h in 'javahSrc' directory -->
-    <delete file="${src}/gov/nasa/arc/planworks/europa/EuropaJNI.h"/>
-    <javah outputFile="${src}/gov/nasa/arc/planworks/europa/EuropaJNI.h" 
-           classpath="${build}" class="gov.nasa.arc.planworks.europa.EuropaJNI"/>
-    <delete file="${javahDestdir}/EuropaJNI.h"/>
-    <copy file="${src}/gov/nasa/arc/planworks/europa/EuropaJNI.h" todir="${javahDestdir}"/>
-    <echo message="generation/copy of EuropaJNI.h completed"/>
-  </target>
 </project>
