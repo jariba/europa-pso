@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPlanningSequence.java,v 1.5 2003-06-08 00:14:07 taylor Exp $
+// $Id: PwPlanningSequence.java,v 1.6 2003-06-11 01:02:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -33,28 +33,28 @@ public interface PwPlanningSequence {
    *
    * @return - <code>int</code> - 
    */
-  public int getStepCount();
+  public abstract int getStepCount();
 
   /**
    * <code>getUrl</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getUrl();
+  public abstract String getUrl();
 
   /**
    * <code>getName</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getName();
+  public abstract String getName();
 
   /**
    * <code>getModel</code>
    *
    * @return - <code>PwModel</code> - 
    */
-  public PwModel getModel();
+  public abstract PwModel getModel();
 
   /**
    * <code>listTransactions</code>
@@ -63,7 +63,7 @@ public interface PwPlanningSequence {
    * @return - <code>List</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
    */
-  public List listTransactions( int step) throws IndexOutOfBoundsException;
+  public abstract List listTransactions( int step) throws IndexOutOfBoundsException;
 
   /**
    * <code>getPartialPlan</code>
@@ -72,8 +72,17 @@ public interface PwPlanningSequence {
    * @return - <code>PartialPlan</code> - 
    * @exception IndexOutOfBoundsException if an error occurs
    */
-  public PwPartialPlan getPartialPlan( int step) throws IndexOutOfBoundsException;
+  public abstract PwPartialPlan getPartialPlan( int step) throws IndexOutOfBoundsException;
 
+
+  /**
+   * <code>getPartialPlan</code>
+   *
+   * @param planName - <code>String</code> - 
+   * @return - <code>PwPartialPlan</code> - 
+   */
+  public abstract PwPartialPlan getPartialPlan( String planName)
+    throws ResourceNotFoundException;
 
   /**
    * <code>addPartialPlan</code> -
@@ -84,7 +93,7 @@ public interface PwPlanningSequence {
    * @return - <code>PartialPlan</code> - 
    * @exception ResourceNotFoundException if an error occurs
    */
-  public PwPartialPlan addPartialPlan( String url, String partialPlanName)
-    throws ResourceNotFoundException ;
+  public abstract PwPartialPlan addPartialPlan( String url, String partialPlanName)
+    throws ResourceNotFoundException;
 
 } // end interface PwPlanningSequence

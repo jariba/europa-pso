@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.5 2003-06-08 00:14:09 taylor Exp $
+// $Id: TimelineView.java,v 1.6 2003-06-11 01:02:13 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -34,7 +34,7 @@ import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
 import com.nwoods.jgo.JGoDocument;
-// import com.nwoods.jgo.JGoListPosition;
+import com.nwoods.jgo.JGoListPosition;
 // import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoView;
 
@@ -48,6 +48,7 @@ import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.SlotNode;
 import gov.nasa.arc.planworks.viz.nodes.TimelineNode;
+import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.views.VizView;
 
 /**
@@ -60,18 +61,24 @@ import gov.nasa.arc.planworks.viz.views.VizView;
  */
 public class TimelineView extends VizView {
 
+  private PwPartialPlan partialPlan;
+  private ViewSet viewSet;
   private JGoView jGoView;
-  private JGoDocument jGoDoc;
-  private List timelineNodeList; // element TimelineNode
+  private JGoDocument jGoDocument;
 
+  private List timelineNodeList; // element TimelineNode
   private Font font;
   private FontMetrics fontMetrics;
   private int slotLabelMinLength;
+  private List jGoObjectPositionList;
 
 
-  public TimelineView( PwPartialPlan partialPlan) {
+  public TimelineView( PwPartialPlan partialPlan, ViewSet viewSet) {
     super( partialPlan);
+    this.partialPlan = partialPlan;
+    this.viewSet = viewSet;
     this.timelineNodeList = new ArrayList();
+    this.jGoObjectPositionList = new ArrayList();
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
@@ -86,6 +93,9 @@ public class TimelineView extends VizView {
                      ViewConstants.TIMELINE_VIEW_FONT_SIZE);
     jGoView.setFont( font);
     this.setVisible( true);
+
+    // print content spec
+    // viewSet.printSpec();
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -117,24 +127,58 @@ public class TimelineView extends VizView {
     fontMetrics = graphics.getFontMetrics( font);
     graphics.dispose();
 
-    jGoDoc = jGoView.getDocument();
+    jGoDocument = jGoView.getDocument();
 
     createTimelineAndSlotNodes();
 
     // print out info for created nodes
-    // iterateOverJGoDoc(); // slower - many more nodes to go thru
+    // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
 
   } // end init
 
 
   /**
-   * <code>getJGoView</code>
+   * <code>redraw</code> - called by Content Spec to apply user's content spec request
    *
-   * @return - <code>JGoView</code> - 
    */
-  public JGoView getJGoView()  {
-    return this.jGoView;
+  public void redraw() {
+    // remove old objects from jGoDocument
+    Iterator objectPositionItr = jGoObjectPositionList.iterator();
+    while (objectPositionItr.hasNext()) {
+      jGoDocument.removeObjectAtPos( (JGoListPosition) objectPositionItr.next());
+    }
+    this.jGoObjectPositionList = new ArrayList();
+   
+    createTimelineAndSlotNodes();
+  } // end redraw
+
+
+  /**
+   * <code>getJGoDocument</code>
+   *
+   * @return - <code>JGoDocument</code> - 
+   */
+  public JGoDocument getJGoDocument()  {
+    return this.jGoDocument;
+  }
+
+  /**
+   * <code>addJGoObjectPosition</code>
+   *
+   * @param position - <code>JGoListPosition</code> - 
+   */
+  public void addJGoObjectPosition( JGoListPosition position) {
+    jGoObjectPositionList.add( position);
+  }
+
+  /**
+   * <code>getViewSet</code>
+   *
+   * @return - <code>ViewSet</code> - 
+   */
+  public ViewSet getViewSet() {
+    return this.viewSet;
   }
 
   /**
@@ -174,41 +218,57 @@ public class TimelineView extends VizView {
   }
 
   private void createTimelineAndSlotNodes() {
-    JGoDocument jGoDoc = jGoView.getDocument();
     int x = ViewConstants.TIMELINE_VIEW_X_INIT;
     int y = ViewConstants.TIMELINE_VIEW_Y_INIT;
     List objectList = partialPlan.getObjectList();
     Iterator objectIterator = objectList.iterator();
     while (objectIterator.hasNext()) {
       PwObject object = (PwObject) objectIterator.next();
-      String objectName = object.getName();
-      List timelineList = object.getTimelineList();
-      int timelineNodeWidth = computeTimelineNodesWidth( timelineList, objectName);
-      Iterator timelineIterator = timelineList.iterator();
-      while (timelineIterator.hasNext()) {
-        x = ViewConstants.TIMELINE_VIEW_X_INIT;
-        PwTimeline timeline = (PwTimeline) timelineIterator.next();
-        String timelineName = timeline.getName();
-        String timelineKey = timeline.getKey();
-        String timelineNodeName = objectName + " : " + timelineName;
-        TimelineNode timelineNode =
-          new TimelineNode( timelineNodeName, timeline, new Point( x, y), this);
-        timelineNodeList.add( timelineNode);
-        // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
-        jGoDoc.addObjectAtTail( timelineNode);
-        timelineNode.setSize( timelineNodeWidth,
-                              (int) timelineNode.getSize().getHeight());
-        x += timelineNode.getSize().getWidth();
-
-        List slotList = timeline.getSlotList();
-        Iterator slotIterator = slotList.iterator();
-        PwToken previousToken = null;
-        while (slotIterator.hasNext()) {
-          PwSlot slot = (PwSlot) slotIterator.next();
-          PwToken token = null;
-          if (slot.getTokenList().size() > 0) {
-            token = (PwToken) slot.getTokenList().get( 0);
+      if (viewSet.isInContentSpec( object.getKey())) {
+        String objectName = object.getName();
+        List timelineList = object.getTimelineList();
+        int timelineNodeWidth = computeTimelineNodesWidth( timelineList, objectName);
+        Iterator timelineIterator = timelineList.iterator();
+        while (timelineIterator.hasNext()) {
+          x = ViewConstants.TIMELINE_VIEW_X_INIT;
+          slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
+          PwTimeline timeline = (PwTimeline) timelineIterator.next();
+          TimelineNode timelineNode = null;
+          if (viewSet.isInContentSpec( timeline.getKey())) {
+            String timelineName = timeline.getName();
+            String timelineKey = timeline.getKey();
+            String timelineNodeName = objectName + " : " + timelineName;
+            timelineNode =
+              new TimelineNode( timelineNodeName, timeline, new Point( x, y), this);
+            timelineNodeList.add( timelineNode);
+            // System.err.println( "createTimelineAndSlotNodes: TimelineNode x " + x + " y " + y);
+            jGoObjectPositionList.add( jGoDocument.addObjectAtTail( timelineNode));
+            timelineNode.setSize( timelineNodeWidth,
+                                  (int) timelineNode.getSize().getHeight());
+            x += timelineNode.getSize().getWidth();
           }
+
+          createSlotNodes( timeline, timelineNode, x, y);
+
+          y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
+        }
+      }
+    }
+  } // end createTimelineAndSlotNodes
+
+  private void createSlotNodes( PwTimeline timeline, TimelineNode timelineNode,
+                                int x, int y) {
+    List slotList = timeline.getSlotList();
+    Iterator slotIterator = slotList.iterator();
+    PwToken previousToken = null;
+    while (slotIterator.hasNext()) {
+      PwSlot slot = (PwSlot) slotIterator.next();
+      if (viewSet.isInContentSpec( slot.getKey())) {
+        PwToken token = null;
+        if (slot.getTokenList().size() > 0) {
+          token = (PwToken) slot.getTokenList().get( 0);
+        }
+        if ((token == null) || viewSet.isInContentSpec( token.getKey())) {
           String slotNodeLabel = getSlotNodeLabel( token);
           boolean isLastSlot = (! slotIterator.hasNext());
           SlotNode slotNode =
@@ -216,14 +276,13 @@ public class TimelineView extends VizView {
                           isLastSlot, this);
           timelineNode.addToSlotNodeList( slotNode);
           // System.err.println( "createTimelineAndSlotNodes: SlotNode x " + x + " y " + y);
-          jGoDoc.addObjectAtTail( slotNode);
+          jGoObjectPositionList.add( jGoDocument.addObjectAtTail( slotNode));
           previousToken = token;
           x += slotNode.getSize().getWidth();
         }
-        y += ViewConstants.TIMELINE_VIEW_Y_DELTA;
       }
     }
-  } // end createTimelineAndSlotNodes
+  } // end createSlotNodes
 
 
   // make all timeline nodes the same width
@@ -293,25 +352,25 @@ public class TimelineView extends VizView {
 
 
 
-//   public void iterateOverJGoDoc() {
-//     JGoListPosition position = jGoDoc.getFirstObjectPos();
-//     JGoListPosition lastPosition = jGoDoc.getLastObjectPos();
-//     JGoObject object = jGoDoc.getObjectAtPos( position);
+//   public void iterateOverJGoDocument() {
+//     JGoListPosition position = jGoDocument.getFirstObjectPos();
+//     JGoListPosition lastPosition = jGoDocument.getLastObjectPos();
+//     JGoObject object = jGoDocument.getObjectAtPos( position);
 //     System.err.println( "iterateOverJGoDoc: position " + position + " lastPosition " +
 //                         lastPosition + " className " + object.getClass().getName());
-//     position = jGoDoc.getNextObjectPos( position);
+//     position = jGoDocument.getNextObjectPos( position);
 //     int cnt = 0;
 //     while (! position.equals( lastPosition)) {
-//       object = jGoDoc.getObjectAtPos( position);
+//       object = jGoDocument.getObjectAtPos( position);
 //       System.err.println( "iterateOverJGoDoc: position " + position + " className " +
 //                           object.getClass().getName());
-//       position = jGoDoc.getNextObjectPos( position);
+//       position = jGoDocument.getNextObjectPos( position);
 //       cnt += 1;
 //       if (cnt > 100) {
 //         break;
 //       }
 //     }
-//   } // end iterateOverJGoDoc
+//   } // end iterateOverJGoDocument
 
 
 

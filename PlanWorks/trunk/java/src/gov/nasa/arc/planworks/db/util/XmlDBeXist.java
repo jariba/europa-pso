@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlDBeXist.java,v 1.8 2003-06-08 00:14:08 taylor Exp $
+// $Id: XmlDBeXist.java,v 1.9 2003-06-11 01:02:12 taylor Exp $
 //
 // XmlDBeXist - XML data base interface thru XML:DB API to
 //              eXist-0.9 db server
@@ -19,6 +19,7 @@
 package gov.nasa.arc.planworks.db.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -264,7 +265,7 @@ public class XmlDBeXist {
       // set conformance level = 1 
 //       if ( ! database.getConformanceLevel().equals( "1") ) {
 //         System.err.println( "This program requires a Core Level 1 XML:DB API driver");
-//         System.exit(1);
+//         System.exit( -1);
 //       }
       DatabaseManager.registerDatabase( database);
       database.setProperty( "create-database", "true");
@@ -280,22 +281,22 @@ public class XmlDBeXist {
       System.err.println( xmlDbExcepStr + "(e1): " + e1.errorCode + " " +
                           e1.getMessage());
       e1.printStackTrace(); 
-      System.exit( 1);
+      System.exit( -1);
     } catch (ClassNotFoundException e2) {
       System.err.println( "ClassNotFoundException in registerDataBase :" +
                          e2);
       e2.printStackTrace(); 
-      System.exit( 1);
+      System.exit( -1);
     } catch (InstantiationException e3) {
       System.err.println( "InstantiationException in registerDataBase :" +
                          e3);
       e3.printStackTrace(); 
-      System.exit( 1);
+      System.exit( -1);
     } catch (IllegalAccessException e4) {
       System.err.println( "IllegalAccessException in registerDataBase :" +
                          e4);
       e4.printStackTrace(); 
-      System.exit( 1);
+      System.exit( -1);
     }
   } // end registerDataBase
 
@@ -311,7 +312,7 @@ public class XmlDBeXist {
       System.err.println("XML:DB Exception in closeDataBase: " +
                          excp.errorCode + " " + excp.getMessage());
       excp.printStackTrace();
-      System.exit( 1);
+      System.exit( -1);
     }
   } // end closeDataBase
 
@@ -362,7 +363,7 @@ public class XmlDBeXist {
               System.err.println("XML:DB Exception in createCollection0: " +
                                  e0.errorCode + " " + e0.getMessage());
               e0.printStackTrace();
-              System.exit( 1);
+              System.exit( -1);
             }
           }
           collection = 
@@ -374,7 +375,7 @@ public class XmlDBeXist {
         System.err.println("XML:DB Exception in createCollection1: " +
                            e1.errorCode + " " + e1.getMessage());
         e1.printStackTrace();
-        System.exit( 1);
+        System.exit( -1);
       }
       // System.err.println("createCollection: collectionName " + collectionName +
       //                    " collection " + collection);
@@ -415,7 +416,7 @@ public class XmlDBeXist {
       System.err.println("XML:DB Exception in removeCollection: " +
                          excp.errorCode + " " + excp.getMessage());
       excp.printStackTrace();
-      System.exit( 1);
+      System.exit( -1);
     }
   } // end removeCollection
 
@@ -445,7 +446,7 @@ public class XmlDBeXist {
       System.err.println("XML:DB Exception in removeCollectionResources: " +
                          excp.errorCode + " " + excp.getMessage());
       excp.printStackTrace();
-      System.exit( 1);
+      System.exit( -1);
     }
   } // removeCollectionResources
 
@@ -484,7 +485,7 @@ public class XmlDBeXist {
     } catch (XMLDBException e1) {
       System.err.println("XML:DB Exception in addXMLFileToCollection: " +
                          e1.errorCode + " " + e1.getMessage());
-      System.exit( 1);
+      System.exit( -1);
     }
   } // end addXMLFileToCollection
 
@@ -505,7 +506,7 @@ public class XmlDBeXist {
         System.err.println( "changeCurrrentCollection: closing currentCollection" +
                             ex.errorCode + " " + ex.getMessage());
         ex.printStackTrace();
-        System.exit( 1);
+        System.exit( -1);
       }
       try {
         Collection collection = 
@@ -514,7 +515,7 @@ public class XmlDBeXist {
         if (collection == null) {
           System.err.println( "changeCurrrentCollection: collection " + URI +
                               ROOT_COLLECTION_NAME + collectionName + " not found");
-          System.exit( 1);
+          System.exit( -1);
         } else {
           currentCollection = collection;
           currentCollectionName = collectionName;
@@ -523,7 +524,7 @@ public class XmlDBeXist {
         System.err.println( "changeCurrrentCollection: getCollection" +
                             ex.errorCode + " " + ex.getMessage());
         ex.printStackTrace();
-        System.exit( 1);
+        System.exit( -1);
       }
     }
   } // end changeCurrentCollection
@@ -542,7 +543,7 @@ public class XmlDBeXist {
       System.err.println( "getCollection: DatabaseManager.getCollection" +
                           ex.errorCode + " " + ex.getMessage());
       ex.printStackTrace();
-      System.exit( 1);
+      System.exit( -1);
     }
     return null;
   } // end getCollection
@@ -587,7 +588,7 @@ public class XmlDBeXist {
       System.err.println( "query '" + query + "'");
       if (e1.errorCode != 1) {  // skip parse errors
         e1.printStackTrace();
-        System.exit( 1);
+        System.exit( -1);
       }
     }
     return nodeContentList;
@@ -651,50 +652,6 @@ public class XmlDBeXist {
       }
     }
   } // end printDomNodeTriplets
-
-
-  static class ParsedDomNode {
-    // static => do not have to instantiate the outer class, to instantiate this class
-    //           members of this class cannot access members of the outer class
-    private Short nodeType;
-    private String nodeName;
-    private String nodeValue;
-
-    ParsedDomNode( Short nodeType, String nodeName, String nodeValue) {
-      this.nodeType = nodeType;
-      this.nodeName = nodeName;
-      this.nodeValue = nodeValue;
-    } // end constructor
-
-
-    /**
-     * Gets the value of nodeType
-     *
-     * @return the value of nodeType
-     */
-    public Short getNodeType()  {
-      return this.nodeType;
-    }
-
-    /**
-     * Gets the value of nodeName
-     *
-     * @return the value of nodeName
-     */
-    public String getNodeName()  {
-      return this.nodeName;
-    }
-
-    /**
-     * Gets the value of nodeValue
-     *
-     * @return the value of nodeValue
-     */
-    public String getNodeValue()  {
-      return this.nodeValue;
-    }
-
-  } // end class ParsedDomNode
 
 
   private static final String getNodeTypeString( short nodeType) {
@@ -1136,7 +1093,7 @@ public class XmlDBeXist {
     } else {
       System.err.println( "XmlDBeXist.queryElementKeysByType cannot handle type " +
                           type);
-      System.exit( 1);
+      System.exit( -1);
     }
     return keyList;
   } // end queryElementKeysByType

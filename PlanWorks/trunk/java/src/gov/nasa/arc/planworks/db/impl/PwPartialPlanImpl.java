@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwPartialPlanImpl.java,v 1.9 2003-06-08 00:14:08 taylor Exp $
+// $Id: PwPartialPlanImpl.java,v 1.10 2003-06-11 01:02:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -104,12 +104,14 @@ public class PwPartialPlanImpl implements PwPartialPlan {
                                            "' cannot be parsed for '/'");
     } 
     xmlFileName = url.substring( index + 1);
+    index = xmlFileName.lastIndexOf( ".");
+    xmlFileName = xmlFileName.substring( 0, index);
     collectionBuffer.append( xmlFileName);
     collectionName = collectionBuffer.toString();
     System.err.println( "PwPartialPlanImpl collectionName: " + collectionName);
 
     if (XmlDBeXist.INSTANCE.getCollection( collectionName) == null) {
-      System.err.println( "Load " + url);
+      System.err.println( "Loading " + url + " ...");
       long startLoadTimeMSecs = (new Date()).getTime();
 
       XmlDBeXist.INSTANCE.addXMLFileToCollection( collectionName, url);
@@ -126,6 +128,7 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
 
   private void createPartialPlan() {
+    System.err.println( "Creating PwPartialPlan from Collection ...");
     long startTimeMSecs = (new Date()).getTime();
 
     List partialPlanKeys = XmlDBeXist.INSTANCE.queryPartialPlanKeys( collectionName);
@@ -153,10 +156,8 @@ public class PwPartialPlanImpl implements PwPartialPlan {
 
     }
     long stopTimeMSecs = (new Date()).getTime();
-    String timeString = "Create PwPartialPlan from Collection \n   ... elapsed time: " +
-      //       writeTime( (stopTimeMSecs - startTimeMSecs)) + " seconds.";
-      (stopTimeMSecs - startTimeMSecs) + " msecs.";
-    System.err.println( timeString);
+    System.err.println( "   ... elapsed time: " +
+                        (stopTimeMSecs - startTimeMSecs) + " msecs.");
   } // end createPartialPlan
 
 
@@ -191,15 +192,15 @@ public class PwPartialPlanImpl implements PwPartialPlan {
       getVariable( (String) keysIterator.next());
     }
 
-//     System.err.println( "objectMap " + objectMap.keySet());
-//     System.err.println( "timelineMap " + timelineMap.keySet());
-//     System.err.println( "slotMap " + slotMap.keySet());
-//     System.err.println( "tokenMap " + tokenMap.keySet());
-//     System.err.println( "constraintMap " + constraintMap.keySet());
-//     System.err.println( "predicateMap " + predicateMap.keySet());
-//     System.err.println( "parameterMap " + parameterMap.keySet());
-//     System.err.println( "tokenRelationMap " + tokenRelationMap.keySet());
-//     System.err.println( "variableMap " + variableMap.keySet());
+    System.err.println( "objectMap #keys " + objectMap.keySet().size());
+    System.err.println( "timelineMap #keys " + timelineMap.keySet().size());
+    System.err.println( "slotMap #keys " + slotMap.keySet().size());
+    System.err.println( "tokenMap #keys " + tokenMap.keySet().size());
+    System.err.println( "constraintMap #keys " + constraintMap.keySet().size());
+    System.err.println( "predicateMap #keys " + predicateMap.keySet().size());
+    System.err.println( "parameterMap #keys " + parameterMap.keySet().size());
+    System.err.println( "tokenRelationMap #keys " + tokenRelationMap.keySet().size());
+    System.err.println( "variableMap #keys " + variableMap.keySet().size());
   } // end fillElementMaps
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: XmlFileFilter.java,v 1.2 2003-05-15 18:38:45 taylor Exp $
+// $Id: XmlFileFilter.java,v 1.3 2003-06-11 01:02:13 taylor Exp $
 //
 // JFileChooser filter for XML files
 //
@@ -26,10 +26,16 @@ import javax.swing.filechooser.FileFilter;
 public class XmlFileFilter extends FileFilter {
 
   /**
-   * constant <code>PLAN_EXTENSION</code> - String -
+   * constant <code>XML_EXTENSION</code> - String -
    *
    */
   public static final String XML_EXTENSION = "xml";
+
+  /**
+   * constant <code>XML_EXTENSION_W_DOT</code> - String -
+   *
+   */
+  public static final String XML_EXTENSION_W_DOT = ".xml";
 
   /**
    * XmlFileFilter - constructor
@@ -57,7 +63,7 @@ public class XmlFileFilter extends FileFilter {
    * @return string to describe this filter
    */
   public String getDescription() {
-    return "Planner XML Output Files (*.xml)";
+    return "Planner XML Output Files (*" + XML_EXTENSION_W_DOT + ")";
   }
 } // end class XmlFileFilter
 

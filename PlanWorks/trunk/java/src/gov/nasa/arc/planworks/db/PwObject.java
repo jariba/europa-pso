@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwObject.java,v 1.3 2003-05-20 18:25:34 taylor Exp $
+// $Id: PwObject.java,v 1.4 2003-06-11 01:02:11 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -31,14 +31,14 @@ public interface PwObject {
    *
    * @return key - <code>String</code> -
    */
-  public String getKey();
+  public abstract String getKey();
 
   /**
    * <code>getName</code>
    *
    * @return name - <code>String</code> -
    */
-  public String getName();
+  public abstract String getName();
 
 
   /**
@@ -46,7 +46,7 @@ public interface PwObject {
    *
    * @return timelineList - <code>List</code> - of PwTimeline
    */
-  public List getTimelineList();
+  public abstract List getTimelineList();
 
 
 } // end interface PwObject

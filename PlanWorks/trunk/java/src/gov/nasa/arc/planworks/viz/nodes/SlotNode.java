@@ -33,17 +33,17 @@ import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPort;
 import com.nwoods.jgo.JGoText;
-import com.nwoods.jgo.JGoView;
+import com.nwoods.jgo.JGoDocument;
 
 // PlanWorks/java/lib/JGo/Classier.jar
 import com.nwoods.jgo.examples.TextNode;
 
+import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPredicate;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwVariable;
-import gov.nasa.arc.planworks.db.impl.PwEnumeratedDomainImpl;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.Utilities;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -59,7 +59,7 @@ import gov.nasa.arc.planworks.viz.views.timeline.TimelineView;
  *       NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class SlotNode extends TextNode implements ViewConstants {
+public class SlotNode extends TextNode {
 
   // top left bottom right
   private static final Insets NODE_INSETS =
@@ -92,7 +92,10 @@ public class SlotNode extends TextNode implements ViewConstants {
    *
    * @param predicateName - <code>String</code> - 
    * @param slot - <code>PwSlot</code> - 
-   * @param view - <code>VizView</code> - 
+   * @param slotLocation - <code>Point</code> - 
+   * @param previousToken - <code>PwToken</code> - 
+   * @param isLastSlot - <code>boolean</code> - 
+   * @param view - <code>TimelineView</code> - 
    */
   public SlotNode( String predicateName, PwSlot slot, Point slotLocation,
                    PwToken previousToken, boolean isLastSlot, TimelineView view) {
@@ -180,10 +183,10 @@ public class SlotNode extends TextNode implements ViewConstants {
         // first slot is empty
         if (isLastSlot == true) {
           // this is also the last slot
-          intervalDomain = new PwEnumeratedDomainImpl( "0");
-          lastIntervalDomain = new PwEnumeratedDomainImpl( "_plus_infinity_");
+          intervalDomain = DbConstants.ZERO_DOMAIN;
+          lastIntervalDomain = DbConstants.PLUS_INFINITY_DOMAIN;
         } else {
-           intervalDomain = new PwEnumeratedDomainImpl( "0");         
+           intervalDomain = DbConstants.ZERO_DOMAIN;
         }
       } else {
         // empty slot between filled slots
@@ -198,8 +201,10 @@ public class SlotNode extends TextNode implements ViewConstants {
 
     if (intervalVariable == null) {
       startTimeIntervalDomain = intervalDomain;
-    } else {
+    } else if (view.getViewSet().isInContentSpec( intervalVariable.getKey())) {
       startTimeIntervalDomain = intervalVariable.getDomain();
+    } else {
+      startTimeIntervalDomain = DbConstants.NULL_DOMAIN;
     }
     // System.err.println( "startTimeIntervalDomain " + startTimeIntervalDomain.toString());
     Point startLoc = new Point( (int) this.getLocation().getX() - this.getXOffset(),
@@ -210,8 +215,10 @@ public class SlotNode extends TextNode implements ViewConstants {
     if ((lastIntervalVariable != null) || (lastIntervalDomain != null)) {
       if (lastIntervalVariable == null) {
         endTimeIntervalDomain = lastIntervalDomain;
-      } else {
+      } else if (view.getViewSet().isInContentSpec( lastIntervalVariable.getKey())){
         endTimeIntervalDomain = lastIntervalVariable.getDomain();
+      } else {
+        endTimeIntervalDomain = DbConstants.NULL_DOMAIN;
       }
       // System.err.println( "endTimeIntervalDomain " + endTimeIntervalDomain.toString());
       Point endLoc = new Point( (int) (this.getLocation().getX() +
@@ -243,7 +250,7 @@ public class SlotNode extends TextNode implements ViewConstants {
     textObject.setResizable( false);
     textObject.setEditOnSingleClick( false);
     textObject.setBkColor( ColorMap.getColor( "lightGray"));
-    view.getJGoView().getDocument().addObjectAtTail( textObject);
+    view.addJGoObjectPosition( view.getJGoDocument().addObjectAtTail( textObject));
     return textObject;
   } // end renderText
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwTokenRelation.java,v 1.2 2003-05-18 00:02:25 taylor Exp $
+// $Id: PwTokenRelation.java,v 1.3 2003-06-11 01:02:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -30,21 +30,21 @@ public interface PwTokenRelation {
    *
    * @return name - <code>String</code> -
    */
-  public String getKey();
+  public abstract String getKey();
 	
   /**
    * <code>getMasterToken</code>
    *
    * @return - <code>PwToken</code> - 
    */
-  public PwToken getMasterToken();
+  public abstract PwToken getMasterToken();
  
   /**
    * <code>getSlaveToken</code>
    *
    * @return - <code>PwToken</code> - 
    */
-  public PwToken getSlaveToken();
+  public abstract PwToken getSlaveToken();
 
 
 } // end interface PwTokenRelation

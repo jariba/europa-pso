@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PwToken.java,v 1.3 2003-05-21 23:48:35 taylor Exp $
+// $Id: PwToken.java,v 1.4 2003-06-11 01:02:12 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -32,70 +32,70 @@ public interface PwToken {
    *
    * @return name - <code>String</code> -
    */
-  public String getKey();
+  public abstract String getKey();
 	
   /**
    * <code>getPredicate</code>
    *
    * @return - <code>PwPredicate</code> - 
    */
-  public PwPredicate getPredicate();
+  public abstract PwPredicate getPredicate();
 
   /**
    * <code>getStartVariable</code>
    *
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getStartVariable();
+  public abstract PwVariable getStartVariable();
 		
   /**
    * <code>getEndVariable</code>
    *
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getEndVariable();
+  public abstract PwVariable getEndVariable();
 
   /**
    * <code>getDurationVariable</code>
    *
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getDurationVariable();
+  public abstract PwVariable getDurationVariable();
 
   /**
    * <code>getObjectVariable</code>
    *
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getObjectVariable();
+  public abstract PwVariable getObjectVariable();
 
   /**
    * <code>getRejectVariable</code>
    *
    * @return - <code>PwVariable</code> - 
    */
-  public PwVariable getRejectVariable();
+  public abstract PwVariable getRejectVariable();
 
   /**
    * <code>getTokenRelationsList</code>
    *
    * @return - <code>List</code> - of PwTokenRelation
    */
-  public List getTokenRelationsList();
+  public abstract List getTokenRelationsList();
 
   /**
    * <code>getParamVarsList</code>
    *
    * @return - <code>List</code> - of PwVariable
    */
-  public List getParamVarsList();
+  public abstract List getParamVarsList();
 
   /**
    * <code>getSlotId</code>
    *
    * @return - <code>String</code> - 
    */
-  public String getSlotId();
+  public abstract String getSlotId();
  
 
 } // end interface PwToken
