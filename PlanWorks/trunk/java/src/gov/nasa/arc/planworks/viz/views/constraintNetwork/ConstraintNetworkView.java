@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConstraintNetworkView.java,v 1.10 2003-08-29 01:21:40 taylor Exp $
+// $Id: ConstraintNetworkView.java,v 1.11 2003-08-29 22:08:59 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -133,7 +133,8 @@ public class ConstraintNetworkView extends VizView {
     maxViewWidth = PlanWorks.INTERNAL_FRAME_WIDTH;
     maxViewHeight = PlanWorks.INTERNAL_FRAME_HEIGHT;
 
-    isDebugPrint = true;
+    // isDebugPrint = true;
+    isDebugPrint = false;
 
     setLayout( new BoxLayout( this, BoxLayout.Y_AXIS));
 

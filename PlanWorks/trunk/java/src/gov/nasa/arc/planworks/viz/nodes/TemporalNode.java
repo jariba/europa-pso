@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TemporalNode.java,v 1.7 2003-08-29 01:21:40 taylor Exp $
+// $Id: TemporalNode.java,v 1.8 2003-08-29 22:08:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -356,7 +356,8 @@ public class TemporalNode extends BasicNode implements Extent {
       new TemporalNodeTimeMark( PwDomain.MINUS_INFINITY_INT);
     minusInfinityMark.setDraggable( false);
     minusInfinityMark.setResizable(false);
-    int xMinusInfinity = view.scaleTime( time);
+    // offset to the left to prevent overlap with earliestStartMark
+    int xMinusInfinity = view.scaleTime( time) - ViewConstants.TEMPORAL_NODE_X_DELTA - 2;
     // System.err.println( "renderMinusInfinityMark: time " + time + " xMinusInfinity " +
     //                     xMinusInfinity);
     minusInfinityMark.addPoint( xMinusInfinity, y);
@@ -393,7 +394,7 @@ public class TemporalNode extends BasicNode implements Extent {
     plusInfinityMark.setDraggable( false);
     plusInfinityMark.setResizable(false);
     // offset to the right to prevent overlap with earliestEndMark
-    int xPlusInfinity = view.scaleTime( time) + ViewConstants.TEMPORAL_NODE_X_DELTA;
+    int xPlusInfinity = view.scaleTime( time) + ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     // System.err.println( "renderPlusInfinityMark: time " + time + " xPlusInfinity " +
     //                     xPlusInfinity);
     plusInfinityMark.addPoint( xPlusInfinity, y);
@@ -415,10 +416,14 @@ public class TemporalNode extends BasicNode implements Extent {
     bridge.setDraggable( false);
     bridge.setResizable(false);
     bridge.setPen( new JGoPen( JGoPen.SOLID, lineWidth, ColorMap.getColor( "black")));
-    bridge.addPoint( view.scaleTime( startTime), y);
+    int xStartTime = view.scaleTime( startTime);
+    if (isEarliestStartMinusInf) {
+      xStartTime -= ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
+    }
+    bridge.addPoint( xStartTime, y);
     int xEndTime = view.scaleTime( endTime);
     if (isLatestEndPlusInf) {
-      xEndTime += ViewConstants.TEMPORAL_NODE_X_DELTA;
+      xEndTime += ViewConstants.TEMPORAL_NODE_X_DELTA + 2;
     }
     bridge.addPoint( xEndTime, y);
     markAndBridgeList.add( bridge);

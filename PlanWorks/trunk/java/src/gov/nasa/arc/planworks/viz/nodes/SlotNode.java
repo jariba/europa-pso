@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.20 2003-08-29 01:21:40 taylor Exp $
+// $Id: SlotNode.java,v 1.21 2003-08-29 22:08:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -281,19 +281,25 @@ public class SlotNode extends TextNode {
     PwVariable durationVariable = null;
     if ((slot == null) ||  // free token
         (slot.getBaseToken() == null)) { // empty slot
-      int lowerDiff = PwDomain.PLUS_INFINITY_INT;
-      if ((endTimeIntervalDomain.getLowerBoundInt() != PwDomain.PLUS_INFINITY_INT) &&
-          (startTimeIntervalDomain.getLowerBoundInt() != PwDomain.PLUS_INFINITY_INT)) {
-        lowerDiff = endTimeIntervalDomain.getLowerBoundInt() -
-          startTimeIntervalDomain.getLowerBoundInt();
+      int startUpper = startTimeIntervalDomain.getUpperBoundInt();
+      int endUpper = endTimeIntervalDomain.getUpperBoundInt();
+      int startLower = startTimeIntervalDomain.getLowerBoundInt();
+      int endLower = endTimeIntervalDomain.getLowerBoundInt();
+      int valueStart = Math.max( startLower, startUpper);
+      if (valueStart == PwDomain.PLUS_INFINITY_INT) {
+        valueStart = Math.min( startLower, startUpper);
       }
-      int upperDiff = PwDomain.PLUS_INFINITY_INT;
-      if ((endTimeIntervalDomain.getUpperBoundInt() != PwDomain.PLUS_INFINITY_INT) &&
-          (startTimeIntervalDomain.getUpperBoundInt() != PwDomain.PLUS_INFINITY_INT)) {
-        upperDiff = endTimeIntervalDomain.getUpperBoundInt() -
-          startTimeIntervalDomain.getUpperBoundInt();
+      if (valueStart == PwDomain.MINUS_INFINITY_INT) {
+        valueStart = 0;
       }
-      return String.valueOf( Math.min( lowerDiff, upperDiff));
+      int valueEnd = Math.min( endLower, endUpper);
+      if (valueEnd == PwDomain.MINUS_INFINITY_INT) {
+        valueEnd = Math.max( endLower, endUpper);
+      }
+      if (valueEnd == PwDomain.PLUS_INFINITY_INT) {
+        valueEnd = 0;
+      }
+      return String.valueOf( Math.abs( valueEnd - valueStart));
     } else {
       durationVariable = slot.getBaseToken().getDurationVariable();
       if (durationVariable != null) {

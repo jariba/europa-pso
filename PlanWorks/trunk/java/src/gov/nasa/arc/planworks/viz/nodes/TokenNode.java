@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TokenNode.java,v 1.15 2003-08-26 01:37:12 taylor Exp $
+// $Id: TokenNode.java,v 1.16 2003-08-29 22:08:59 taylor Exp $
 //
 // PlanWorks
 //
@@ -88,8 +88,8 @@ public class TokenNode extends BasicNode {
       predicateName = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL;
     }
     // debug
-    nodeLabel = predicateName + " " + token.getId().toString();
-    // nodeLabel = predicateName;
+    // nodeLabel = predicateName + " " + token.getId().toString();
+    nodeLabel = predicateName;
     
     // System.err.println( "TokenNode: " + nodeLabel);
     variableNodeList = new ArrayList();

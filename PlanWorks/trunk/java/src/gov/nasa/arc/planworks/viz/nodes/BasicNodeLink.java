@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: BasicNodeLink.java,v 1.3 2003-08-20 18:52:36 taylor Exp $
+// $Id: BasicNodeLink.java,v 1.4 2003-08-29 22:08:58 taylor Exp $
 //
 // PlanWorks
 //
@@ -60,8 +60,8 @@ public class BasicNodeLink extends JGoLabeledLink {
     inLayout = false;
     resetLink( false);
 
-    // isDebug = false;
-    isDebug = true;
+    isDebug = false;
+    // isDebug = true;
     
     this.setArrowHeads( false, false); // fromArrowHead toArrowHead
     // do no allow user to select and move links
