@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.105 2004-06-21 22:42:57 taylor Exp $
+# $Id: README,v 1.106 2004-06-22 21:40:26 miatauro Exp $
 #
 
 SUMMARY
@@ -12,6 +12,9 @@ SUMMARY
 o If you are using PlanWorks with PLASMA, this revision requires PLASMA
   from the CVS head.  The PartialPlanWriter has been modified to capture
   rule instances.
+
+o This revision requires an upgrade in MySQL version.  You *must* be working with
+  MySQL 4.1 or later.
 
 o The Token Network View handling of rules has been revised:
   - Mouse-Right: "Rule Window" on the view background has been removed;
@@ -34,6 +37,10 @@ o Rule Instance nodes, which have variables, now appear rendered as ovals in the
 o "Help->Node Shapes" has been added to the PlanWorks menubar.  It will create a
   top-level window, separate from the PlanWorks desktop, which shows the shapes
   of the different nodes rendered in the partial plan views.
+
+o The first version of the Test Definition Language has been completed. The
+  specification is located at PlanWorks/doc/TestLangSpec.txt.  It can be
+  accessed through Project->Run Test
 
 o  GNATS PRs and CRs completed:
 
