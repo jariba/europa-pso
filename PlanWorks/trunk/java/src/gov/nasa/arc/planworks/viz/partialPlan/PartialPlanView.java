@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PartialPlanView.java,v 1.24 2004-02-06 00:27:24 miatauro Exp $
+// $Id: PartialPlanView.java,v 1.25 2004-02-10 02:35:54 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -63,7 +63,7 @@ import gov.nasa.arc.planworks.viz.ViewGenerics;
 import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.VizViewOverview;
 import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
-import gov.nasa.arc.planworks.viz.util.JGoButton;
+import gov.nasa.arc.planworks.viz.util.StepButton;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewManager;
 import gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.partialPlan.ContentSpecWindow;
@@ -81,6 +81,9 @@ public class PartialPlanView extends VizView {
   protected PwPartialPlan partialPlan;
   protected List validTokenIds;
   protected List displayedTokenIds;
+
+  private StepButton backwardButton;
+  private StepButton forwardButton;
 
   /**
    * <code>PartialPlanView</code> - constructor 
@@ -261,8 +264,8 @@ public class PartialPlanView extends VizView {
     Rectangle viewRect = view.getViewRect();
     Point backwardButtonPt = new Point((int)viewRect.getX(), 
                                        (int)(viewRect.getY() + viewRect.getHeight()));
-    JGoButton backwardButton = new JGoButton(backwardButtonPt, ColorMap.getColor("khaki2"), "<",
-                                             "Step backward.");
+    backwardButton = new StepButton(backwardButtonPt, ColorMap.getColor("khaki2"), "<",
+                                   "Step backward.");
     backwardButton.setLocation((int)(viewRect.getX() + backwardButton.getSize().getWidth()),
                                (int)(viewRect.getY() + viewRect.getHeight() - 
                                      backwardButton.getSize().getHeight()));
@@ -270,8 +273,8 @@ public class PartialPlanView extends VizView {
     Point forwardButtonPt = new Point((int)(viewRect.getX() + 
                                        backwardButton.getSize().getWidth() + 10),
                                       (int)(viewRect.getY() + viewRect.getHeight()));
-    JGoButton forwardButton = new JGoButton(forwardButtonPt, ColorMap.getColor("khaki2"), ">", 
-                                            "Step forward.");
+    forwardButton = new StepButton(forwardButtonPt, ColorMap.getColor("khaki2"), ">", 
+                                  "Step forward.");
     forwardButton.setLocation((int)(backwardButton.getLocation().getX() + 
                                     backwardButton.getWidth()),
                               (int)(backwardButton.getLocation().getY()));
@@ -413,9 +416,9 @@ public class PartialPlanView extends VizView {
 
   class ButtonAdjustmentListener implements AdjustmentListener {
     private JGoView view;
-    private JGoButton back;
-    private JGoButton forward;
-    public ButtonAdjustmentListener(JGoView view, JGoButton back, JGoButton forward) {
+    private StepButton back;
+    private StepButton forward;
+    public ButtonAdjustmentListener(JGoView view, StepButton back, StepButton forward) {
       this.view = view;
       this.back = back;
       this.forward = forward;
@@ -444,9 +447,9 @@ public class PartialPlanView extends VizView {
 
   class ButtonViewListener implements JGoViewListener {
     private JGoView view;
-    private JGoButton back;
-    private JGoButton forward;
-    public ButtonViewListener(JGoView view, JGoButton back, JGoButton forward) {
+    private StepButton back;
+    private StepButton forward;
+    public ButtonViewListener(JGoView view, StepButton back, StepButton forward) {
       this.view = view;
       this.back = back;
       this.forward = forward;
@@ -462,7 +465,25 @@ public class PartialPlanView extends VizView {
                             (int)(back.getLocation().getY()));
         //}
     }
-  }
+  } // end class ButtonViewListener
+
+  /**
+   * <code>expandViewFrameForStepButtons</code>
+   *
+   * @param viewFrame - <code>MDIInternalFrame</code> - 
+   */
+  protected void expandViewFrameForStepButtons( MDIInternalFrame viewFrame) {
+    viewFrame.setSize( (int) viewFrame.getSize().getWidth(),
+                       (int) (viewFrame.getSize().getHeight() +
+                              forwardButton.getSize().getHeight()));
+    forwardButton.setLocation( (int) forwardButton.getLocation().getX(),
+                               (int) (forwardButton.getLocation().getY() +
+                                      forwardButton.getSize().getHeight()));
+    backwardButton.setLocation( (int) backwardButton.getLocation().getX(),
+                               (int) (backwardButton.getLocation().getY() +
+                                      backwardButton.getSize().getHeight()));
+  } // end expandViewFrameForStepButtons
+
   /**
    * <code>createOpenViewItems</code> - partial plan background Mouse-Right item
    *
@@ -531,24 +552,29 @@ public class PartialPlanView extends VizView {
   } // end openNavigatorViewFrame
 
   /**
-   * <code>areThereNavigatorWindows</code>
+   * <code>doesViewFrameExist</code> - check for String view key or Class view key
    *
    * @return - <code>boolean</code> - 
    */
-  public boolean areThereNavigatorWindows() {
-    String navigatorWindowName = PlanWorks.NAVIGATOR_VIEW.replaceAll( " ", "");
-    List windowKeyList = 
+  public boolean doesViewFrameExist( String viewName) {
+    String windowName = viewName.replaceAll( " ", "");
+    // System.err.println( "doesViewFrameExist '" + windowName + "'");
+    List windowKeyList =  
       new ArrayList( viewSet.getViews().keySet());
     Iterator windowListItr = windowKeyList.iterator();
     while (windowListItr.hasNext()) {
       Object windowKey = (Object) windowListItr.next();
+      // System.err.println( "windowKey " + windowKey);
       if ((windowKey instanceof String) &&
-          (((String) windowKey).indexOf( navigatorWindowName) >= 0)) {
+          (((String) windowKey).indexOf( windowName) >= 0)) {
+        return true;
+      } else if ((windowKey instanceof Class) &&
+          (((Class) windowKey).getName().indexOf( windowName) >= 0)) {
         return true;
       }
     }
     return false;
-  } // end areThereNavigatorWindows
+  } // end doesViewFrameExist
 
   /**
    * <code>createCloseNavigatorWindowsItem</code>

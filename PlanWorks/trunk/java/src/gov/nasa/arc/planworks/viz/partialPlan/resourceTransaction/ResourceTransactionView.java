@@ -4,21 +4,19 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ResourceProfileView.java,v 1.4 2004-02-10 02:35:55 taylor Exp $
+// $Id: ResourceTransactionView.java,v 1.1 2004-02-10 02:35:56 taylor Exp $
 //
 // PlanWorks -- 
 //
-// Will Taylor -- started 26Jan04
+// Will Taylor -- started 04feb04
 //
 
-package gov.nasa.arc.planworks.viz.partialPlan.resourceProfile;
+package gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -53,6 +51,7 @@ import gov.nasa.arc.planworks.db.PwIntervalDomain;
 import gov.nasa.arc.planworks.db.impl.PwIntervalDomainImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceImpl;
 import gov.nasa.arc.planworks.db.impl.PwResourceInstantImpl;
+import gov.nasa.arc.planworks.db.impl.PwResourceTransactionImpl;
 
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
@@ -68,25 +67,19 @@ import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanView;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewState;
 import gov.nasa.arc.planworks.viz.partialPlan.TimeScaleView;
-import gov.nasa.arc.planworks.viz.partialPlan.resourceTransaction.ResourceTransactionView;
+import gov.nasa.arc.planworks.viz.partialPlan.resourceProfile.ResourceProfileView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewSet;
 
 /**
- * <code>ResourceProfileView</code> - render the profiles of a
+ * <code>ResourceTransactionView</code> - render the transactions of a
  *                partial plan's resources
  *
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *                  NASA Ames Research Center - Code IC
  * @version 0.0
  */
-public class ResourceProfileView extends PartialPlanView  {
-
-  /**
-   * constant <code>LEVEL_SCALE_FONT_SIZE</code>
-   *
-   */
-  protected static final int LEVEL_SCALE_FONT_SIZE = 8;
+public class ResourceTransactionView extends PartialPlanView  {
 
   private static final int SLEEP_FOR_50MS = 50;
 
@@ -97,12 +90,12 @@ public class ResourceProfileView extends PartialPlanView  {
   private JGoView jGoLevelScaleView;
   private TimeScaleView jGoRulerView;
   private Component horizontalStrut;
-  private List resourceProfileList; // element ResourceProfile
+  private List resourceTransactionSetList; // element ResourceTransactionSet
   private int slotLabelMinLength;
   private int maxSlots;
   private int startXLoc;
-  private int xOrigin;
   private int startYLoc;
+  private int xOrigin;
   private int maxCellRow;
   private float timeScale;
   private JGoStroke timeScaleMark;
@@ -111,24 +104,28 @@ public class ResourceProfileView extends PartialPlanView  {
   private int maxYExtent;
   private JGoStroke maxExtentViewHeightPoint;
   private JGoStroke maxLevelViewHeightPoint;
-  private Font levelScaleFont;
-  private FontMetrics levelScaleFontMetrics;
   private boolean isStepButtonView;
+
+  /**
+   * variable <code>currentYLoc</code>
+   *
+   */
+  protected int currentYLoc;
 
   private static Point docCoords;
 
 
   /**
-   * <code>ResourceProfileView</code> - constructor 
+   * <code>ResourceTransactionView</code> - constructor 
    *                             Use SwingUtilities.invokeLater( runInit) to
    *                             properly render the JGo widgets
    *
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param vSet - <code>ViewSet</code> - 
    */
-  public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet) {
+  public ResourceTransactionView( final ViewableObject partialPlan, final ViewSet vSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
-    resourceProfileViewInit( vSet);
+    resourceTransactionViewInit( vSet);
     isStepButtonView = false;
 
     SwingUtilities.invokeLater( runInit);
@@ -136,28 +133,29 @@ public class ResourceProfileView extends PartialPlanView  {
 
 
   /**
-   * <code>ResourceProfileView</code> - constructor 
+   * <code>ResourceTransactionView</code> - constructor 
    *
    * @param partialPlan - <code>ViewableObject</code> - 
    * @param vSet - <code>ViewSet</code> - 
    * @param state - <code>PartialPlanViewState</code> - 
    */
-  public ResourceProfileView( final ViewableObject partialPlan, final ViewSet vSet, 
-                              final PartialPlanViewState state) {
+  public ResourceTransactionView( final ViewableObject partialPlan, final ViewSet vSet, 
+                                  final PartialPlanViewState state) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) vSet);
-    resourceProfileViewInit( vSet);
+    resourceTransactionViewInit( vSet);
     isStepButtonView = true;
     setState( state);
     SwingUtilities.invokeLater( runInit);
   }
 
-  private void resourceProfileViewInit( final ViewSet vSet) {
+  private void resourceTransactionViewInit( final ViewSet vSet) {
     this.startTimeMSecs = System.currentTimeMillis();
     this.viewSet = (PartialPlanViewSet) vSet;
     
     // startXLoc = ViewConstants.TIMELINE_VIEW_X_INIT * 2;
     startXLoc = 1;
     startYLoc = ViewConstants.TIMELINE_VIEW_Y_INIT;
+    currentYLoc = startYLoc;
     maxCellRow = 0;
     timeScaleMark = null;
     maxYExtent = 0;
@@ -165,7 +163,7 @@ public class ResourceProfileView extends PartialPlanView  {
     maxLevelViewHeightPoint = null;
     slotLabelMinLength = ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL_LEN;
     // create panels/views after fontMetrics available
-   } // end resourceProfileViewInit
+   } // end resourceTransactionViewInit
 
   private void createLevelScaleAndExtentPanel() {
     LevelScalePanel levelScalePanel = new LevelScalePanel();
@@ -224,7 +222,7 @@ public class ResourceProfileView extends PartialPlanView  {
    * @return - <code>PartialPlanViewState</code> - 
    */
   public final PartialPlanViewState getState() {
-    return new ResourceProfileViewState( this);
+    return new ResourceTransactionViewState( this);
   }
 
 //   public boolean showLabels(){return isShowLabels;}
@@ -237,7 +235,7 @@ public class ResourceProfileView extends PartialPlanView  {
    */
   public final void setState( final PartialPlanViewState state) {
     super.setState( state);
-    ResourceProfileViewState resourceState = (ResourceProfileViewState) state;
+    ResourceTransactionViewState resourceState = (ResourceTransactionViewState) state;
 //     isShowLabels = state.showingLabels();
 //     temporalDisplayMode = state.displayMode();
   }
@@ -261,7 +259,7 @@ public class ResourceProfileView extends PartialPlanView  {
    */
   public final void init() {
     // jGoExtentView.setCursor( new Cursor( Cursor.WAIT_CURSOR));
-    // wait for ResourceProfileView instance to become displayable
+    // wait for ResourceTransactionView instance to become displayable
     while (! this.isDisplayable()) {
       try {
         Thread.currentThread().sleep( SLEEP_FOR_50MS);
@@ -270,15 +268,7 @@ public class ResourceProfileView extends PartialPlanView  {
       // System.err.println( "timelineView displayable " + this.isDisplayable());
     }
     this.computeFontMetrics( this);
-
-    // resource names font
-    levelScaleFont = new Font( ViewConstants.TIMELINE_VIEW_FONT_NAME,
-                               ViewConstants.TIMELINE_VIEW_FONT_STYLE,
-                               LEVEL_SCALE_FONT_SIZE);
-    Graphics graphics = ((JPanel) this).getGraphics();
-    levelScaleFontMetrics = graphics.getFontMetrics( levelScaleFont);
-    graphics.dispose();
-
+    
     levelScaleViewWidth = computeMaxResourceLabelWidth();
     fillerWidth = levelScaleViewWidth + ViewConstants.JGO_SCROLL_BAR_WIDTH;
 
@@ -287,12 +277,12 @@ public class ResourceProfileView extends PartialPlanView  {
     createLevelScaleAndExtentPanel();
 
     createFillerAndRulerPanel();
-   
+  
     this.setVisible( true);
-
+    
     boolean doFreeTokens = false;
-      xOrigin = jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
-      jGoRulerView.createTimeScale();
+    xOrigin = jGoRulerView.collectAndComputeTimeScaleMetrics( doFreeTokens, this);
+    jGoRulerView.createTimeScale();
 
     boolean isRedraw = false, isScrollBarAdjustment = false;
     renderResourceExtent();
@@ -318,7 +308,6 @@ public class ResourceProfileView extends PartialPlanView  {
     if (! isStepButtonView) {
       expandViewFrameForStepButtons( viewFrame);
     }
-
     // equalize ExtentView & ScaleView widths so horizontal scrollbars are equal
     // equalize ExtentView & LevelScaleView heights so vertical scrollbars are equal
     equalizeViewWidthsAndHeights( maxStepButtonY, isRedraw, isScrollBarAdjustment);
@@ -354,7 +343,10 @@ public class ResourceProfileView extends PartialPlanView  {
 
     public final void run() {
       boolean isRedraw = true, isScrollBarAdjustment = false;
+      currentYLoc = startYLoc;
+
       renderResourceExtent();
+
       int maxStepButtonY = addStepButtons( jGoExtentView);
       if (! isStepButtonView) {
         expandViewFrameForStepButtons( viewFrame);
@@ -371,18 +363,17 @@ public class ResourceProfileView extends PartialPlanView  {
 
     validTokenIds = viewSet.getValidIds();
     displayedTokenIds = new ArrayList();
-    if (resourceProfileList != null) {
-      resourceProfileList.clear();
+    if (resourceTransactionSetList != null) {
+      resourceTransactionSetList.clear();
     }
-    resourceProfileList = new UniqueSet();
+    resourceTransactionSetList = new UniqueSet();
 
-    createResourceProfiles();
+    createResourceTransactionSets();
 
     boolean showDialog = true;
-    // isContentSpecRendered( PlanWorks.RESOURCE_PROFILE_VIEW, showDialog);
+    // isContentSpecRendered( PlanWorks.RESOURCE_TRANSACTION_VIEW, showDialog);
 
-    layoutResourceProfiles();
-  } // end createResourceProfileView
+  } // end createResourceTransactionView
 
   /**
    * <code>getJGoExtentView</code> - 
@@ -421,12 +412,12 @@ public class ResourceProfileView extends PartialPlanView  {
   }
 
   /**
-   * <code>getResourceProfileList</code>
+   * <code>getResourceTransactionSetList</code>
    *
-   * @return - <code>List</code> - of ResourceProfile
+   * @return - <code>List</code> - of ResourceTransactionSet
    */
-  public final List getResourceProfileList() {
-    return resourceProfileList;
+  public final List getResourceTransactionSetList() {
+    return resourceTransactionSetList;
   }
 
   /**
@@ -454,15 +445,6 @@ public class ResourceProfileView extends PartialPlanView  {
    */
   public final int getTimeScaleEnd() {
     return jGoRulerView.getTimeScaleEnd();
-  }
-
-  /**
-   * <code>getStartYLoc</code>
-   *
-   * @return - <code>int</code> - 
-   */
-  public final int getStartYLoc() {
-    return startYLoc;
   }
 
   /**
@@ -495,46 +477,77 @@ public class ResourceProfileView extends PartialPlanView  {
     resourceInstantList.add
       ( new PwResourceInstantImpl( new Integer( 99014),
                                    new PwIntervalDomainImpl( "type", "50", "50"), 2., 4.));
+
+    UniqueSet transactionSet = new UniqueSet();
+    transactionSet.add
+      ( new PwResourceTransactionImpl( new Integer( 990111),
+                                       new PwIntervalDomainImpl( "type", "10", "50"), 2., 2.));
+    transactionSet.add
+      ( new PwResourceTransactionImpl( new Integer( 990112),
+                                       new PwIntervalDomainImpl( "type", "20", "50"), 6., 6.));
+    transactionSet.add
+      ( new PwResourceTransactionImpl( new Integer( 990113),
+                                       new PwIntervalDomainImpl( "type", "30", "50"), -8., -8.));
+
     PwResource dummyResource =
       new PwResourceImpl( new Integer( 9901), "Resource1", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
+                          transactionSet, resourceInstantList);
     resourceList.add( dummyResource);
+
+    transactionSet = new UniqueSet();
+    transactionSet.add
+      ( new PwResourceTransactionImpl( new Integer( 990111),
+                                       new PwIntervalDomainImpl( "type", "10", "50"), 2., 2.));
+    transactionSet.add
+      ( new PwResourceTransactionImpl( new Integer( 990112),
+                                       new PwIntervalDomainImpl( "type", "20", "50"), 6., 6.));
+    transactionSet.add
+      ( new PwResourceTransactionImpl( new Integer( 990113),
+                                       new PwIntervalDomainImpl( "type", "30", "50"), -8., -8.));
+    transactionSet.add
+      ( new PwResourceTransactionImpl( new Integer( 990114),
+                                       new PwIntervalDomainImpl( "type", "40", "50"), 4., 4.));
+    transactionSet.add
+      ( new PwResourceTransactionImpl( new Integer( 990115),
+                                       new PwIntervalDomainImpl( "type", "50", "60"), -4., -4.));
+        
     dummyResource =
       new PwResourceImpl( new Integer( 9902), "Resource2", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
+                          transactionSet, resourceInstantList);
     resourceList.add( dummyResource);
     dummyResource =
       new PwResourceImpl( new Integer( 9903), "ResourceThree", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
+                          transactionSet, resourceInstantList);
     resourceList.add( dummyResource);
     dummyResource =
       new PwResourceImpl( new Integer( 9904), "ResourceFour", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
+                          transactionSet, resourceInstantList);
     resourceList.add( dummyResource);
     dummyResource =
       new PwResourceImpl( new Integer( 9905), "ResourceFive", 4., 0., 12., startTime, endTime,
-                          new UniqueSet(), resourceInstantList);
+                          transactionSet, resourceInstantList);
     resourceList.add( dummyResource);
     return resourceList;
   } // end createDummyData
 
 
-  private void createResourceProfiles() {
+  private void createResourceTransactionSets() {
     boolean isNamesOnly = false;
     // resourceList will come from partialPlan
     List resourceList = createDummyData( isNamesOnly);
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
-      ResourceProfile resourceProfile =
-        new ResourceProfile( resource, ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR),
-                             levelScaleFontMetrics, this);
-      // System.err.println( "resourceProfile " + resourceProfile);
-      jGoExtentView.getDocument().addObjectAtTail( resourceProfile);
-      resourceProfileList.add( resourceProfile);
+      ResourceTransactionSet resourceTransactionSet =
+        new ResourceTransactionSet( resource,
+                                    ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR),
+                                    this);
+      // System.err.println( "resourceTransactionSet " + resourceTransactionSet);
+      jGoExtentView.getDocument().addObjectAtTail( resourceTransactionSet);
+      resourceTransactionSetList.add( resourceTransactionSet);
     }
 
-  } // end createResourceProfiles
+  } // end createResourceTransactionSets
 
   private int computeMaxResourceLabelWidth() {
     boolean isNamesOnly = true;
@@ -544,7 +557,7 @@ public class ResourceProfileView extends PartialPlanView  {
     Iterator resourceItr = resourceList.iterator();
     while (resourceItr.hasNext()) {
       PwResource resource = (PwResource) resourceItr.next();
-      int width = ResourceProfile.getNodeLabelWidth( resource.getName(), this);
+      int width = ResourceTransactionSet.getNodeLabelWidth( resource.getName(), this);
       if (width > maxWidth) {
         maxWidth = width;
       }
@@ -552,51 +565,16 @@ public class ResourceProfileView extends PartialPlanView  {
     return maxWidth;
   } // end computeMaxResourceLabelWidth
 
-  private void layoutResourceProfiles() {
-    /*List extents = new ArrayList();
-    Iterator resourceProfileIterator = resourceProfileList.iterator();
-    while (resourceProfileIterator.hasNext()) {
-      ResourceProfile resourceProfile = (ResourceProfile) resourceProfileIterator.next();
-      extents.add( resourceProfile);
-      }*/
-    List extents = new ArrayList(resourceProfileList);
-    // do the layout -- compute cellRow for each node
-    List results =
-      Algorithms.allocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
-                               jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
-                               extents);
-//     List results =
-//       Algorithms.betterAllocateRows( jGoRulerView.scaleTime( jGoRulerView.getTimeScaleStart()),
-//                                      jGoRulerView.scaleTime( jGoRulerView.getTimeScaleEnd()),
-//                                      extents);
-    if (resourceProfileList.size() != results.size()) {
-      String message = String.valueOf( resourceProfileList.size() - results.size()) +
-        " nodes not successfully allocated";
-      JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                     "Resource Profile View Layout Exception",
-                                     JOptionPane.ERROR_MESSAGE);
-      return;
-    }
-    for (Iterator it = extents.iterator(); it.hasNext();) {
-      ResourceProfile resourceProfile = (ResourceProfile) it.next();
-      // System.err.println( resourceProfile.getName() + " cellRow " + resourceProfile.getRow());
-      if (resourceProfile.getRow() > maxCellRow) {
-        maxCellRow = resourceProfile.getRow();
-      }
-      // render the profile
-      resourceProfile.configure();
-    }
-  } // end layoutResourceProfiles
 
 
 //   private void iterateOverNodes() {
-//     int numResourceProfiles = resourceProfileList.size();
-//     //System.err.println( "iterateOverNodes: numResourceProfiles " + numResourceProfiles);
-//     Iterator resourceIterator = resourceProfileList.iterator();
+//     int numResourceTransactionSets = resourceTransactionSetList.size();
+//     //System.err.println( "iterateOverNodes: numResourceTransactionSets " + numResourceTransactionSets);
+//     Iterator resourceIterator = resourceTransactionSetList.iterator();
 //     while (resourceIterator.hasNext()) {
-//       ResourceProfile resourceProfile = (ResourceProfile) resourceIterator.next();
-//       System.err.println( "name '" + resourceProfile.getPredicateName() + "' location " +
-//                           resourceProfile.getLocation());
+//       ResourceTransactionSet resourceTransactionSet = (ResourceTransactionSet) resourceIterator.next();
+//       System.err.println( "name '" + resourceTransactionSet.getPredicateName() + "' location " +
+//                           resourceTransactionSet.getLocation());
 //     }
 //   } // end iterateOverNodes
 
@@ -609,8 +587,8 @@ public class ResourceProfileView extends PartialPlanView  {
 //       position = jGoExtentView.getDocument().getNextObjectPosAtTop( position);
 //       //System.err.println( "iterateOverJGoDoc: position " + position +
 //       //                   " className " + object.getClass().getName());
-//       if (object instanceof ResourceProfile) {
-//         ResourceProfile resourceProfile = (ResourceProfile) object;
+//       if (object instanceof ResourceTransactionSet) {
+//         ResourceTransactionSet resourceTransactionSet = (ResourceTransactionSet) object;
 
 //       }
 //       cnt += 1;
@@ -683,9 +661,7 @@ public class ResourceProfileView extends PartialPlanView  {
 
   private void equalizeViewHeights( final int maxWidth, final int maxStepButtonY) {
     // always put mark at max y location, so on redraw jGoRulerView does not expand
-    int maxY = Math.max( startYLoc + ((maxCellRow + 1) *
-                                      ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT) + 2,
-                         maxStepButtonY);
+    int maxY = Math.max( currentYLoc + 2, maxStepButtonY);
     if (maxY > maxYExtent) {
       maxYExtent = maxY;
       if (maxExtentViewHeightPoint != null) {
@@ -739,7 +715,7 @@ public class ResourceProfileView extends PartialPlanView  {
       return new Dimension
         ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
                  jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
-          (int) (ResourceProfileView.this.getSize().getHeight() -
+          (int) (ResourceTransactionView.this.getSize().getHeight() -
                  jGoRulerView.getDocumentSize().getHeight() -
                  jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
     }
@@ -753,7 +729,7 @@ public class ResourceProfileView extends PartialPlanView  {
       return new Dimension
         ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
                  jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
-          (int) (ResourceProfileView.this.getSize().getHeight() -
+          (int) (ResourceTransactionView.this.getSize().getHeight() -
                  jGoRulerView.getDocumentSize().getHeight() -
                  jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
     }
@@ -767,7 +743,7 @@ public class ResourceProfileView extends PartialPlanView  {
       return new Dimension
         ( (int) (jGoLevelScaleView.getDocumentSize().getWidth() +
                  jGoLevelScaleView.getVerticalScrollBar().getSize().getWidth()),
-          (int) (ResourceProfileView.this.getSize().getHeight() -
+          (int) (ResourceTransactionView.this.getSize().getHeight() -
                  jGoRulerView.getDocumentSize().getHeight() -
                  jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
     }
@@ -795,7 +771,7 @@ public class ResourceProfileView extends PartialPlanView  {
      * @return - <code>Dimension</code> - used by BoxLaout
      */
     public final Dimension getMinimumSize() {
-      return new Dimension( (int) ResourceProfileView.this.getSize().getWidth(),
+      return new Dimension( (int) ResourceTransactionView.this.getSize().getWidth(),
                             (int) (jGoRulerView.getDocumentSize().getHeight() +
                                    jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
     }
@@ -806,7 +782,7 @@ public class ResourceProfileView extends PartialPlanView  {
      * @return - <code>Dimension</code> - used by BoxLaout
      */
     public final Dimension getMaximumSize() {
-      return new Dimension( (int) ResourceProfileView.this.getSize().getWidth(),
+      return new Dimension( (int) ResourceTransactionView.this.getSize().getWidth(),
                             (int) (jGoRulerView.getDocumentSize().getHeight() +
                                    jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
     }
@@ -817,7 +793,7 @@ public class ResourceProfileView extends PartialPlanView  {
      * @return - <code>Dimension</code> - 
      */
     public final Dimension getPreferredSize() {
-      return new Dimension( (int) ResourceProfileView.this.getSize().getWidth(),
+      return new Dimension( (int) ResourceTransactionView.this.getSize().getWidth(),
                             (int) (jGoRulerView.getDocumentSize().getHeight() +
                                    jGoRulerView.getHorizontalScrollBar().getSize().getHeight()));
     }
@@ -902,7 +878,7 @@ public class ResourceProfileView extends PartialPlanView  {
     /**
      * <code>doBackgroundClick</code> - Mouse-Right pops up menu:
      *                             1) draws vertical line in extent view to
-     *                                focus that time point across all resource profiles
+     *                                focus that time point across all resource nodes
      *
      * @param modifiers - <code>int</code> - 
      * @param dCoords - <code>Point</code> - 
@@ -915,7 +891,7 @@ public class ResourceProfileView extends PartialPlanView  {
       if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
         // do nothing
       } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-        ResourceProfileView.docCoords = dCoords;
+        ResourceTransactionView.docCoords = dCoords;
         mouseRightPopupMenu( resource, viewCoords);
       }
     } // end doBackgroundClick
@@ -923,21 +899,21 @@ public class ResourceProfileView extends PartialPlanView  {
 
   } // end class ExtentView
 
-
   private PwResource findNearestResource( final Point dCoords) {
     int docY = (int) dCoords.getY();
     PwResource resourceCandidate = null;
-    Iterator reourceProfileItr = resourceProfileList.iterator();
-    while (reourceProfileItr.hasNext()) {
-      ResourceProfile resourceProfile = (ResourceProfile) reourceProfileItr.next();
-      if (docY >= resourceProfile.getProfileYOrigin()) {
-        resourceCandidate = resourceProfile.getResource();
+    Iterator reourceTransSetItr = resourceTransactionSetList.iterator();
+    while (reourceTransSetItr.hasNext()) {
+      ResourceTransactionSet resourceTransSet =
+        (ResourceTransactionSet) reourceTransSetItr.next();
+      if (docY >= resourceTransSet.getTransactionSetYOrigin()) {
+        resourceCandidate = resourceTransSet.getResource();
       } else {
         break;
       }
     }
     return resourceCandidate;
-  } // end findNearestResourceProfile
+  } // end findNearestResource
 
 
   private void mouseRightPopupMenu( final PwResource resource, final Point viewCoords) {
@@ -950,7 +926,7 @@ public class ResourceProfileView extends PartialPlanView  {
 //     mouseRightPopup.add( nodeByKeyItem);
 
     createOpenViewItems( partialPlan, partialPlanName, planSequence, mouseRightPopup,
-                         PlanWorks.RESOURCE_PROFILE_VIEW);
+                         PlanWorks.RESOURCE_TRANSACTION_VIEW);
 
     JMenuItem overviewWindowItem = new JMenuItem( "Overview Window");
     createOverviewWindowItem( overviewWindowItem, this, viewCoords);
@@ -959,10 +935,10 @@ public class ResourceProfileView extends PartialPlanView  {
     JMenuItem raiseContentSpecItem = new JMenuItem( "Raise Content Filter");
     createRaiseContentSpecItem( raiseContentSpecItem);
     mouseRightPopup.add( raiseContentSpecItem);
-
+    
     String timeMarkTitle = "Set Time Scale Line";
     if (doesViewFrameExist( PlanWorks.RESOURCE_TRANSACTION_VIEW)) {
-      timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Transactions");
+      timeMarkTitle = timeMarkTitle.concat( "/Snap to Resource Profile");
     }
     JMenuItem timeMarkItem = new JMenuItem( timeMarkTitle);
     createTimeMarkItem( timeMarkItem, resource);
@@ -988,11 +964,9 @@ public class ResourceProfileView extends PartialPlanView  {
 //     activeResourceItem.addActionListener( new ActionListener() {
 //         public final void actionPerformed( final ActionEvent evt) {
 //           PwResource activeResource =
-//             ((PartialPlanViewSet) ResourceProfileView.this.getViewSet()).getActiveResource();
+//             ((PartialPlanViewSet) ResourceTransactionView.this.getViewSet()).getActiveResource();
 //           if (activeResource != null) {
-//             boolean isByKey = false;
-//             PwSlot slot = null;
-//             findAndSelectResource( activeResource, isByKey);
+//             findAndSelectResource( activeResource);
 //           }
 //         }
 //       });
@@ -1003,7 +977,7 @@ public class ResourceProfileView extends PartialPlanView  {
 //     nodeByKeyItem.addActionListener( new ActionListener() {
 //         public final void actionPerformed( final ActionEvent evt) {
 //           AskNodeByKey nodeByKeyDialog =
-//             new AskNodeByKey( "Find by Key", "key (int)", ResourceProfileView.this);
+//             new AskNodeByKey( "Find by Key", "key (int)", ResourceTransactionView.this);
 //           Integer nodeKey = nodeByKeyDialog.getNodeKey();
 //           if (nodeKey != null) {
 //             // System.err.println( "createNodeByKeyItem: nodeKey " + nodeKey.toString());
@@ -1011,8 +985,7 @@ public class ResourceProfileView extends PartialPlanView  {
 //             PwResource resourceToFind = null;
 //             // PwResource resourceToFind = partialPlan.getResource( nodeKey);
             
-//             boolean isByKey = true;
-//             findAndSelectResource( resourceToFind, isByKey);
+//             findAndSelectResource( resourceToFind);
 //           }
 //         }
 //       });
@@ -1028,14 +1001,14 @@ public class ResourceProfileView extends PartialPlanView  {
   public final void findAndSelectResource( final PwResource resourceToFind,
                                            final int xLoc) {
     boolean isResourceFound = false;
-    Iterator resourceSetListItr = resourceProfileList.iterator();
+    Iterator resourceSetListItr = resourceTransactionSetList.iterator();
     while (resourceSetListItr.hasNext()) {
-      ResourceProfile resourceProfile =
-        (ResourceProfile) resourceSetListItr.next();
+      ResourceTransactionSet resourceTransactionSet =
+        (ResourceTransactionSet) resourceSetListItr.next();
 //       System.err.println( "resourceToFind id = " + resourceToFind.getId() +
-//                           " resource id = " + resourceProfile.getResource().getId());
-      if (resourceProfile.getResource().getId().equals( resourceToFind.getId())) {
-        System.err.println( "ResourceProfileView found resource: " +
+//                           " resource id = " + resourceTransactionSet.getResource().getId());
+      if (resourceTransactionSet.getResource().getId().equals( resourceToFind.getId())) {
+        System.err.println( "ResourceTransactionView found resource: " +
                             resourceToFind.getName() + 
                             " (key=" + resourceToFind.getId().toString() + ")");
         isResourceFound = true;
@@ -1052,7 +1025,7 @@ public class ResourceProfileView extends PartialPlanView  {
       String message = "Resource '" +  resourceToFind.getName() +
         "' (key=" + resourceToFind.getId().toString() + ") not found.";
       JOptionPane.showMessageDialog( PlanWorks.getPlanWorks(), message,
-                                     "Resource Not Found in ResourceProfileView",
+                                     "Resource Not Found in ResourceTransactionView",
                                      JOptionPane.ERROR_MESSAGE);
       System.err.println( message);
     }
@@ -1061,12 +1034,12 @@ public class ResourceProfileView extends PartialPlanView  {
 
   private int findResourceYLoc( final PwResource resourceToFind) {
     int yLoc = 0;
-    Iterator resourceProfileItr = resourceProfileList.iterator();
-    while (resourceProfileItr.hasNext()) {
-      ResourceProfile resourceProfile =
-        (ResourceProfile) resourceProfileItr.next();
-      if (resourceToFind.getId().equals( resourceProfile.getResource().getId())) {
-        return resourceProfile.getProfileYOrigin();
+    Iterator resourceTransSetItr = resourceTransactionSetList.iterator();
+    while (resourceTransSetItr.hasNext()) {
+      ResourceTransactionSet resourceTransSet =
+        (ResourceTransactionSet) resourceTransSetItr.next();
+      if (resourceToFind.getId().equals( resourceTransSet.getResource().getId())) {
+        return resourceTransSet.getTransactionSetYOrigin();
       }
     }
     return yLoc;
@@ -1077,30 +1050,30 @@ public class ResourceProfileView extends PartialPlanView  {
                                    final  PwResource resourceToFind) {
     timeMarkItem.addActionListener( new ActionListener() {
         public final void actionPerformed( final ActionEvent evt) {
-          int xLoc = (int) ResourceProfileView.docCoords.getX();
+          int xLoc = (int) ResourceTransactionView.docCoords.getX();
 //           System.err.println( "doMouseClick: xLoc " + xLoc + " time " +
 //                               jGoRulerView.scaleXLoc( xLoc));
           createTimeMark( xLoc);
 
-          // draw mark in ResourceTransactionView & scroll to same resource
-          if (doesViewFrameExist( PlanWorks.RESOURCE_TRANSACTION_VIEW)) {
-            MDIInternalFrame resourceTransFrame =
+          // draw mark in ResourceProfileView & scroll to same resource
+          if (doesViewFrameExist( PlanWorks.RESOURCE_PROFILE_VIEW)) {
+            MDIInternalFrame resourceProfileFrame =
               viewSet.openView( PlanWorks. getViewClassName
-                                ( PlanWorks.RESOURCE_TRANSACTION_VIEW));
-            ResourceTransactionView resourceTransactionView = null;
-            Container contentPane = resourceTransFrame.getContentPane();
+                                ( PlanWorks.RESOURCE_PROFILE_VIEW));
+            ResourceProfileView resourceProfileView = null;
+            Container contentPane = resourceProfileFrame.getContentPane();
             for (int i = 0, n = contentPane.getComponentCount(); i < n; i++) {
               // System.err.println( "i " + i + " " +
               //                    contentPane.getComponent( i).getClass().getName());
-              if (contentPane.getComponent( i) instanceof ResourceTransactionView) {
-                resourceTransactionView =
-                  (ResourceTransactionView) contentPane.getComponent( i);
+              if (contentPane.getComponent( i) instanceof ResourceProfileView) {
+                resourceProfileView =
+                  (ResourceProfileView) contentPane.getComponent( i);
               }
             }
-            if (resourceTransactionView != null) {
-              resourceTransactionView.createTimeMark( xLoc);
-              // scroll ResourceTransactionView to resourceToFind and timeMark
-              resourceTransactionView.findAndSelectResource( resourceToFind, xLoc);
+            if (resourceProfileView != null) {
+              resourceProfileView.createTimeMark( xLoc);
+              // scroll ResourceProfileView to resourceToFind and timeMark
+              resourceProfileView.findAndSelectResource( resourceToFind, xLoc);
             }
           }
         }
@@ -1109,13 +1082,13 @@ public class ResourceProfileView extends PartialPlanView  {
 
 
   private void createOverviewWindowItem( final JMenuItem overviewWindowItem,
-                                         final ResourceProfileView resourceProfileView,
+                                         final ResourceTransactionView resourceTransactionView,
                                          final Point viewCoords) {
     overviewWindowItem.addActionListener( new ActionListener() { 
         public final void actionPerformed( final ActionEvent evt) {
           VizViewOverview currentOverview =
-            ViewGenerics.openOverviewFrame( PlanWorks.RESOURCE_PROFILE_VIEW, partialPlan,
-                                            resourceProfileView, viewSet, jGoExtentView,
+            ViewGenerics.openOverviewFrame( PlanWorks.RESOURCE_TRANSACTION_VIEW, partialPlan,
+                                            resourceTransactionView, viewSet, jGoExtentView,
                                             viewCoords);
           if (currentOverview != null) {
             overview = currentOverview;
@@ -1125,7 +1098,7 @@ public class ResourceProfileView extends PartialPlanView  {
   } // end createOverviewWindowItem
 
   /**
-   * <code>createTimeMark</code> -- allow ResourceTransaction to set same time mark here
+   * <code>createTimeMark</code> -- allow ResourceProfile to set same time mark here
    *
    * @param xLoc - <code>int</code> - 
    */
@@ -1136,12 +1109,9 @@ public class ResourceProfileView extends PartialPlanView  {
     } 
     timeScaleMark = new TimeScaleMark( xLoc);
     timeScaleMark.addPoint( xLoc, startYLoc);
-    timeScaleMark.addPoint( xLoc, startYLoc +
-                            ((maxCellRow + 1) *
-                             ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT) + 2);
+    timeScaleMark.addPoint( xLoc, currentYLoc + 2);
     jGoExtentView.getDocument().addObjectAtTail( timeScaleMark);
   } // end createTimeMark
-
 
   /**
    * <code>TimeScaleMark</code> - color the mark and provide its time value
@@ -1174,7 +1144,7 @@ public class ResourceProfileView extends PartialPlanView  {
 
     
 
-} // end class ResourceProfileView
+} // end class ResourceTransactionView
  
 
 

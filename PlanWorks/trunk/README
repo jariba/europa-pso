@@ -4,12 +4,24 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.69 2004-02-03 20:43:40 taylor Exp $
+# $Id: README,v 1.70 2004-02-10 02:35:51 taylor Exp $
 #
 
 SUMMARY
 =======
-o 
+o Two resource views have been added: ResourceProfileView and
+  ResourceTransactionView.  When both are present, Mouse-Right:
+  "Set Time Scale Line" on one will display it on both views.
+  The "slave" view will be scrolled to the consistent time and
+  resource.
+
+o The forward/backward step buttons on the partial plan views
+  are now initially placed so that is most cases, they do not 
+  overlay displayed nodes.
+
+o The forward/backward step buttons on the partial plan views
+  now maintain the user's view frame size.
+
 
 o  GNATS PRs and CRs completed:
    
@@ -150,7 +162,9 @@ o Content Filter specifications are maintained across partial plan view
   stepping operations.
 
 o  GNATS PRs and CRs completed:
+   #2186: Provide scoped viewing of information related to an item of interest.
    #2192: Snap to Earliest Start/Latest end in Temporal extent view.
+   #2196: Provide integrated exploration view.
    #2205: Bad behavior when you try to switch to another project.
    #2206: Need ability to turn off auto outputing writing when using the planwriter.
 

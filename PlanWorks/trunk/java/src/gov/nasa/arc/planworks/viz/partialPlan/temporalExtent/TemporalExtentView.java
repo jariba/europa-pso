@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TemporalExtentView.java,v 1.31 2004-02-05 23:25:35 miatauro Exp $
+// $Id: TemporalExtentView.java,v 1.32 2004-02-10 02:35:56 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -52,6 +52,7 @@ import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
@@ -87,6 +88,7 @@ public class TemporalExtentView extends PartialPlanView  {
 
   private long startTimeMSecs;
   private ViewSet viewSet;
+  private MDIInternalFrame viewFrame;
   private ExtentView jGoExtentView;
   private TimeScaleView jGoRulerView;
   private RulerPanel rulerPanel;
@@ -101,6 +103,7 @@ public class TemporalExtentView extends PartialPlanView  {
   private static Point docCoords;
   private boolean isShowLabels;
   private int temporalDisplayMode;
+  private boolean isStepButtonView;
 
 
   /**
@@ -114,6 +117,7 @@ public class TemporalExtentView extends PartialPlanView  {
   public TemporalExtentView( ViewableObject partialPlan, ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     temporalExtentViewInit(viewSet);
+    isStepButtonView = false;
 
     SwingUtilities.invokeLater( runInit);
   } // end constructor
@@ -123,6 +127,7 @@ public class TemporalExtentView extends PartialPlanView  {
                             PartialPlanViewState s) {
     super((PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     temporalExtentViewInit(viewSet);
+    isStepButtonView = true;
     setState(s);
     SwingUtilities.invokeLater(runInit);
   }
@@ -212,21 +217,27 @@ public class TemporalExtentView extends PartialPlanView  {
     boolean isRedraw = false;
     renderTemporalExtent( isRedraw);
 
-    expandViewFrame( viewSet.openView( this.getClass().getName()),
-                     (int) Math.max( jGoExtentView.getDocumentSize().getWidth(),
-                                     jGoRulerView.getDocumentSize().getWidth()),
-                     (int) (jGoExtentView.getDocumentSize().getHeight() +
-                            jGoRulerView.getDocumentSize().getHeight()));
-
+    viewFrame = viewSet.openView( this.getClass().getName());
+    if (! isStepButtonView) {
+      expandViewFrame( viewFrame,
+                       (int) Math.max( jGoExtentView.getDocumentSize().getWidth(),
+                                       jGoRulerView.getDocumentSize().getWidth()),
+                       (int) (jGoExtentView.getDocumentSize().getHeight() +
+                              jGoRulerView.getDocumentSize().getHeight()));
+    }
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
+
+    addStepButtons( jGoExtentView);
+    if (! isStepButtonView) {
+      expandViewFrameForStepButtons( viewFrame);
+    }
 
     long stopTimeMSecs = System.currentTimeMillis();
     System.err.println( "   ... elapsed time: " +
                         (stopTimeMSecs - startTimeMSecs) + " msecs.");
     
-    addStepButtons(jGoExtentView);
     jGoExtentView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
@@ -255,7 +266,10 @@ public class TemporalExtentView extends PartialPlanView  {
     public void run() {
       boolean isRedraw = true;
       renderTemporalExtent( isRedraw);
-      addStepButtons(jGoExtentView);
+      addStepButtons( jGoExtentView);
+      if (! isStepButtonView) {
+        expandViewFrameForStepButtons( viewFrame);
+      }
     } //end run
 
   } // end class RedrawViewThread
@@ -712,7 +726,7 @@ public class TemporalExtentView extends PartialPlanView  {
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
-    if (areThereNavigatorWindows()) {
+    if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);

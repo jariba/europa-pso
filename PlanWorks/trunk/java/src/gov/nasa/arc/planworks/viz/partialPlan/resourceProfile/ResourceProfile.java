@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ResourceProfile.java,v 1.2 2004-02-04 20:16:39 taylor Exp $
+// $Id: ResourceProfile.java,v 1.3 2004-02-10 02:35:55 taylor Exp $
 //
 // PlanWorks
 //
@@ -18,7 +18,6 @@ import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JMenuItem;
@@ -26,7 +25,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 // PlanWorks/java/lib/JGo/JGo.jar
-import com.nwoods.jgo.JGoBrush;
 import com.nwoods.jgo.JGoDocument;
 import com.nwoods.jgo.JGoObject;
 import com.nwoods.jgo.JGoPen;
@@ -38,12 +36,9 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.BasicNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
-import gov.nasa.arc.planworks.db.DbConstants;
-import gov.nasa.arc.planworks.db.PwDomain;
 import gov.nasa.arc.planworks.db.PwPartialPlan;
 import gov.nasa.arc.planworks.db.PwResource;
 import gov.nasa.arc.planworks.db.PwResourceInstant;
-import gov.nasa.arc.planworks.db.PwResourceTransaction;
 import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.Algorithms;
 import gov.nasa.arc.planworks.util.ColorMap;
@@ -51,8 +46,8 @@ import gov.nasa.arc.planworks.util.Extent;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
+import gov.nasa.arc.planworks.viz.nodes.ResourceNameNode;
 import gov.nasa.arc.planworks.viz.partialPlan.PartialPlanViewSet;
-import gov.nasa.arc.planworks.viz.partialPlan.navigator.NavigatorView;
 
 
 /**
@@ -67,6 +62,7 @@ public class ResourceProfile extends BasicNode implements Extent {
   private static final int RESOURCE_NAME_Y_OFFSET = 2;
   private static final int NUM_LEVEL_SCALE_TICKS = 6;
   private static final int LEVEL_SCALE_TICK_WIDTH = 10;
+  private static final double ONE_HALF_MULTIPLIER = 0.5;
 
   private PwResource resource;
   private int earliestStartTime;
@@ -85,6 +81,7 @@ public class ResourceProfile extends BasicNode implements Extent {
   private String resourceId;
   private int extentYTop;
   private int extentYBottom;
+  private int profileYOrigin;
   private double levelScaleScaling;
   private int levelScaleWidth;
   private double levelMax; // actual levels
@@ -92,9 +89,17 @@ public class ResourceProfile extends BasicNode implements Extent {
   private double levelLimitMin; // level limits - can be exceeded
   private double levelLimitMax;
 
-  public ResourceProfile( PwResource resource, Color backgroundColor,
-                          FontMetrics levelScaleFontMetrics,
-                          ResourceProfileView resourceProfileView) {
+  /**
+   * <code>ResourceProfile</code> - constructor 
+   *
+   * @param resource - <code>PwResource</code> - 
+   * @param backgroundColor - <code>Color</code> - 
+   * @param levelScaleFontMetrics - <code>FontMetrics</code> - 
+   * @param resourceProfileView - <code>ResourceProfileView</code> - 
+   */
+  public ResourceProfile( final PwResource resource, final Color backgroundColor,
+                          final FontMetrics levelScaleFontMetrics,
+                          final ResourceProfileView resourceProfileView) {
     super();
     this.resource = resource;
     earliestStartTime = resource.getHorizonStart();
@@ -116,17 +121,15 @@ public class ResourceProfile extends BasicNode implements Extent {
   /**
    * <code>getNodeLabelWidth</code>
    *
-   * @param nodeLabel - <code>String</code> - 
-   * @param resourceProfileView - <code>ResourceProfileView</code> - 
+   * @param label - <code>String</code> - 
+   * @param view - <code>ResourceProfileView</code> - 
    * @return - <code>int</code> - 
    */
-  public static int getNodeLabelWidth( String nodeLabel,
-                                       ResourceProfileView resourceProfileView) {
-    while (resourceProfileView.getFontMetrics() == null) {
+  public static int getNodeLabelWidth( final String label, final ResourceProfileView view) {
+    while (view.getFontMetrics() == null) {
       Thread.yield();
     }
-    return SwingUtilities.computeStringWidth( resourceProfileView.getFontMetrics(),
-                                              nodeLabel) +
+    return SwingUtilities.computeStringWidth( view.getFontMetrics(), label) +
       ViewConstants.TIMELINE_VIEW_INSET_SIZE;
   } // end getNodeLabelWidth
 
@@ -135,7 +138,7 @@ public class ResourceProfile extends BasicNode implements Extent {
    * <code>configure</code> - called by ResourceProfileView.layoutResourceProfiles
    *
    */
-  public void configure() {
+  public final void configure() {
     // put the label in the LevelScaleView, rather than the ExtentView
 
     renderBorders( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
@@ -177,7 +180,7 @@ public class ResourceProfile extends BasicNode implements Extent {
    *
    * @return - <code>PwResource</code> - 
    */
-  public PwResource getResource() {
+  public final PwResource getResource() {
     return resource;
   }
 
@@ -186,15 +189,43 @@ public class ResourceProfile extends BasicNode implements Extent {
    *
    * @return - <code>String</code> - 
    */
-  public String getName() {
+  public final String getName() {
     return resource.getName();
   }
 
-  private void renderBorders( int xLeft, int xRight, JGoDocument jGoDocument) {
-    int dividerY = scaleY( 0);
+  /**
+   * <code>getExtentYTop</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getExtentYTop() {
+    return extentYTop;
+  }
+
+  /**
+   * <code>getExtentYBottom</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getExtentYBottom() {
+    return extentYBottom;
+  }
+
+  /**
+   * <code>getProfileYOrigin</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int getProfileYOrigin() {
+    return profileYOrigin;
+  }
+
+  private void renderBorders( final int xLeft, final int xRight,
+                              final JGoDocument jGoDocument) {
+    profileYOrigin = scaleY( 0);
     JGoStroke divider = new JGoStroke();
-    divider.addPoint( xLeft, dividerY);
-    divider.addPoint( xRight, dividerY);
+    divider.addPoint( xLeft, profileYOrigin);
+    divider.addPoint( xRight, profileYOrigin);
     divider.setDraggable( false); divider.setResizable( false);
     divider.setPen( new JGoPen( JGoPen.SOLID, 2, ColorMap.getColor( "black")));
     jGoDocument.addObjectAtTail( divider);
@@ -218,16 +249,15 @@ public class ResourceProfile extends BasicNode implements Extent {
   } // end renderBorders
 
   private void renderResourceName() {
-    String text = resource.getName();
     int xTop = resourceProfileView.getLevelScaleViewWidth() - nodeLabelWidth +
-      (int) (ViewConstants.TIMELINE_VIEW_INSET_SIZE * 0.5);
-    Point textLoc = new Point( xTop, scaleY( RESOURCE_NAME_Y_OFFSET));
-    JGoText textObject = new JGoText( textLoc, text);
-    textObject.setResizable( false);
-    textObject.setEditable( false);
-    textObject.setDraggable( false);
-    textObject.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
-    resourceProfileView.getJGoLevelScaleDocument().addObjectAtTail( textObject);
+      (int) (ViewConstants.TIMELINE_VIEW_INSET_SIZE * ONE_HALF_MULTIPLIER);
+    Point nameLoc = new Point( xTop, scaleY( RESOURCE_NAME_Y_OFFSET));
+    ResourceNameNode nameNode = new ResourceNameNode( nameLoc, resource);
+    nameNode.setResizable( false);
+    nameNode.setEditable( false);
+    nameNode.setDraggable( false);
+    nameNode.setBkColor( ViewConstants.VIEW_BACKGROUND_COLOR);
+    resourceProfileView.getJGoLevelScaleDocument().addObjectAtTail( nameNode);
   } // end renderResourceName
 
   private void renderLevelScaleLinesAndTicks() {
@@ -241,6 +271,7 @@ public class ResourceProfile extends BasicNode implements Extent {
       tickLine.addPoint( levelScaleWidth - LEVEL_SCALE_TICK_WIDTH,
                          scaleResourceLevel( (double) level));
       tickLine.addPoint( levelScaleWidth, scaleResourceLevel( (double) level));
+      tickLine.setDraggable( false); tickLine.setResizable( false);
       tickLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "white")));
       resourceProfileView.getJGoLevelScaleDocument().addObjectAtTail( tickLine);
 
@@ -249,14 +280,9 @@ public class ResourceProfile extends BasicNode implements Extent {
                               scaleTime( earliestStartTime),
                               scaleResourceLevel( (double) level));
       tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
-                              scaleTime( earliestStartTime + 10),
-                              scaleResourceLevel( (double) level));
-      tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
-                              scaleTime( earliestStartTime + 20),
-                              scaleResourceLevel( (double) level));
-      tickLevelLine.addPoint( resourceProfileView.getJGoRulerView().
                               scaleTime( latestEndTime),
                               scaleResourceLevel( (double) level));
+      tickLevelLine.setDraggable( false); tickLevelLine.setResizable( false);
       tickLevelLine.setPen( new JGoPen( JGoPen.SOLID, 1, ColorMap.getColor( "white")));
       resourceProfileView.getJGoExtentDocument().addObjectAtTail( tickLevelLine);
 
@@ -270,7 +296,7 @@ public class ResourceProfile extends BasicNode implements Extent {
       Point labelLoc =
         new Point( levelScaleWidth - LEVEL_SCALE_TICK_WIDTH - 2 -
                    SwingUtilities.computeStringWidth( levelScaleFontMetrics, label),
-                   scaleResourceLevel( (double) level + tickDelta * 0.5));
+                   scaleResourceLevel( (double) level + tickDelta * ONE_HALF_MULTIPLIER));
       JGoText labelObject = new JGoText( labelLoc, label);
       labelObject.setResizable( false);
       labelObject.setEditable( false);
@@ -312,8 +338,8 @@ public class ResourceProfile extends BasicNode implements Extent {
     double initialCapacity = resource.getInitialCapacity();
     List instantList = resource.getInstantList();
     Iterator instantItr = instantList.iterator();
-    JGoStroke levelMaxLine = new JGoStroke();
-    JGoStroke levelMinLine = new JGoStroke();
+    ProfileLine levelMaxLine = new ProfileLine();
+    ProfileLine levelMinLine = new ProfileLine();
     double lastLevelMax = initialCapacity;
     double lastLevelMin = initialCapacity;
     levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime),
@@ -329,17 +355,17 @@ public class ResourceProfile extends BasicNode implements Extent {
         System.exit( -1);
       }
       int time = instant.getTime().getLowerBoundInt();
-      double levelMax = instant.getLevelMax();
-      double levelMin = instant.getLevelMin();
+      double currentLevelMax = instant.getLevelMax();
+      double currentLevelMin = instant.getLevelMin();
       levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
                              scaleResourceLevel( lastLevelMax));
       levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
-                             scaleResourceLevel(levelMax ));
+                             scaleResourceLevel( currentLevelMax ));
       levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
                              scaleResourceLevel( lastLevelMin));
       levelMinLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( time),
-                             scaleResourceLevel( levelMin));
-      lastLevelMax = levelMax; lastLevelMin = levelMin;
+                             scaleResourceLevel( currentLevelMin));
+      lastLevelMax = currentLevelMax; lastLevelMin = currentLevelMin;
     }
     levelMaxLine.addPoint( resourceProfileView.getJGoRulerView().scaleTime( latestEndTime),
                            scaleResourceLevel( lastLevelMax));
@@ -354,22 +380,62 @@ public class ResourceProfile extends BasicNode implements Extent {
   } // end renderLevels
 
 
-  private int scaleResourceLevel( double level) {
+  private int scaleResourceLevel( final double level) {
     return (extentYBottom - (int) ((level - levelMin) * levelScaleScaling));
   }
 
-  /**
-   * <code>getToolTipText</code>
-   *
-   * @return - <code>String</code> - 
-   */
-  public String getToolTipText() {
-    StringBuffer tip = new StringBuffer( "<html>key = ");
-    tip.append( resource.getId().toString());
-    tip.append( "</html>");
-    return tip.toString();
-  } // end getToolTipText
+//   /**
+//    * <code>getToolTipText</code>
+//    *
+//    * @return - <code>String</code> - 
+//    */
+//   public final String getToolTipText() {
+//     StringBuffer tip = new StringBuffer( "<html>key = ");
+//     tip.append( resource.getId().toString());
+//     tip.append( "</html>");
+//     return tip.toString();
+//   } // end getToolTipText
 
+
+//   /**
+//    * <code>getToolTipText</code> - when over 1/8 scale overview resource node
+//    *
+//    * @param isOverview - <code>boolean</code> - 
+//    * @return - <code>String</code> - 
+//    */
+//   public final String getToolTipText( final boolean isOverview) {
+//     StringBuffer tip = new StringBuffer( "<html> ");
+//     tip.append( resource.getName());
+//     tip.append( "<br>key=");
+//     tip.append( resource.getId().toString());
+//     tip.append( "</html>");
+//     return tip.toString();
+//   } // end getToolTipText
+
+
+
+  /**
+   * <code>ProfileLine</code> - render profile as a line
+   *
+   */
+  public  class ProfileLine extends JGoStroke {
+
+    /**
+     * <code>ProfileLine</code> - constructor 
+     *
+     */
+    public ProfileLine() {
+      super();
+    }
+
+    /**
+     * <code>getToolTipText</code>
+     *
+     * @return - <code>String</code> - 
+     */
+    public final String getToolTipText() {
+      return null;
+    } // end getToolTipText
 
   /**
    * <code>getToolTipText</code> - when over 1/8 scale overview resource node
@@ -377,7 +443,7 @@ public class ResourceProfile extends BasicNode implements Extent {
    * @param isOverview - <code>boolean</code> - 
    * @return - <code>String</code> - 
    */
-  public String getToolTipText( boolean isOverview) {
+  public final String getToolTipText( final boolean isOverview) {
     StringBuffer tip = new StringBuffer( "<html> ");
     tip.append( resource.getName());
     tip.append( "<br>key=");
@@ -386,6 +452,33 @@ public class ResourceProfile extends BasicNode implements Extent {
     return tip.toString();
   } // end getToolTipText
 
+    /**
+     * <code>doMouseClick</code> - 
+     *
+     * @param modifiers - <code>int</code> - 
+     * @param docCoords - <code>Point</code> - 
+     * @param viewCoords - <code>Point</code> - 
+     * @param view - <code>JGoView</code> - 
+     * @return - <code>boolean</code> - 
+     */
+    public final boolean doMouseClick( final int modifiers, final Point docCoords,
+                                       final Point viewCoords, final JGoView view) {
+      JGoObject obj = view.pickDocObject( docCoords, false);
+      //         System.err.println( "doMouseClick obj class " +
+      //                             obj.getTopLevelObject().getClass().getName());
+      ProfileLine transactionObject = (ProfileLine) obj.getTopLevelObject();
+      if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+        // do nothing
+      } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
+        //       mouseRightPopupMenu( viewCoords);
+        //       return true;
+      }
+      return false;
+    } // end doMouseClick   
+
+  } // end class ProfileLine
+
+
   /**
    * <code>getStart</code> - implements Extent
    *
@@ -393,7 +486,7 @@ public class ResourceProfile extends BasicNode implements Extent {
    *
    * @return - <code>int</code> - 
    */
-  public int getStart() {
+  public final int getStart() {
     int xStart = resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime);
 //     if (resourceId.equals( "185") || resourceId.equals( "978")) {
 //       System.err.println( "xStart: " + predicateName + " xStart " +
@@ -409,7 +502,7 @@ public class ResourceProfile extends BasicNode implements Extent {
    *
    * @return - <code>int</code> - 
    */
-  public int getEnd() {
+  public final int getEnd() {
     int xStart = resourceProfileView.getJGoRulerView().scaleTime( earliestStartTime);
     int xEnd = resourceProfileView.getJGoRulerView().scaleTime( latestEndTime);
     int xStartPlusLabel = xStart;
@@ -430,7 +523,7 @@ public class ResourceProfile extends BasicNode implements Extent {
    *
    * @return - <code>int</code> - 
    */
-  public int getRow() {
+  public final int getRow() {
     return cellRow;
   }
 
@@ -439,19 +532,39 @@ public class ResourceProfile extends BasicNode implements Extent {
    *
    * @param row - <code>int</code> - 
    */
-  public void setRow( int row) {
+  public final void setRow( final int row) {
     cellRow = row;
   }
 
-  public String toString() {
+  /**
+   * <code>toString</code>
+   *
+   * @return - <code>String</code> - 
+   */
+  public final String toString() {
     return resource.getId().toString();
   }
 
-  public boolean equals(ResourceProfile other) {
+  /**
+   * <code>equals</code>
+   *
+   * @param other - <code>ResourceProfile</code> - 
+   * @return - <code>boolean</code> - 
+   */
+  public final boolean equals( final ResourceProfile other) {
     return resource.getId().equals( other.getResource().getId());
   }
 
-  private int scaleY( int cellDelta) {
+  /**
+   * <code>hashCode</code>
+   *
+   * @return - <code>int</code> - 
+   */
+  public final int hashCode() {
+    return resource.getId().intValue();
+  }
+
+  private int scaleY( final int cellDelta) {
     return resourceProfileView.getStartYLoc() +
       (int) (cellRow * ViewConstants.RESOURCE_PROFILE_CELL_HEIGHT) + cellDelta;
   }
@@ -467,26 +580,27 @@ public class ResourceProfile extends BasicNode implements Extent {
    * @param view - <code>JGoView</code> - 
    * @return - <code>boolean</code> - 
    */
-  public boolean doMouseClick( int modifiers, Point docCoords, Point viewCoords,
-                               JGoView view) {
+  public final boolean doMouseClick( final int modifiers, final Point docCoords,
+                                     final Point viewCoords, final JGoView view) {
     JGoObject obj = view.pickDocObject( docCoords, false);
     //         System.err.println( "doMouseClick obj class " +
     //                             obj.getTopLevelObject().getClass().getName());
     ResourceProfile resourceProfile = (ResourceProfile) obj.getTopLevelObject();
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
+      // do nothing
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      mouseRightPopupMenu( viewCoords);
-      return true;
+//       mouseRightPopupMenu( viewCoords);
+//       return true;
     }
     return false;
   } // end doMouseClick   
 
-  private void mouseRightPopupMenu( Point viewCoords) {
+  private void mouseRightPopupMenu( final Point viewCoords) {
     JPopupMenu mouseRightPopup = new JPopupMenu();
 
     JMenuItem navigatorItem = new JMenuItem( "Open Navigator View");
     navigatorItem.addActionListener( new ActionListener() {
-        public void actionPerformed( ActionEvent evt) {
+        public final void actionPerformed( final ActionEvent evt) {
           MDIInternalFrame navigatorFrame = resourceProfileView.openNavigatorViewFrame();
           Container contentPane = navigatorFrame.getContentPane();
           PwPartialPlan partialPlan = resourceProfileView.getPartialPlan();
@@ -502,8 +616,9 @@ public class ResourceProfile extends BasicNode implements Extent {
     // check for empty slots
     if (activeResource != null) {
       activeResourceItem.addActionListener( new ActionListener() {
-          public void actionPerformed( ActionEvent evt) {
-            ((PartialPlanViewSet) resourceProfileView.getViewSet()).setActiveResource( activeResource);
+          public final void actionPerformed( final ActionEvent evt) {
+            ((PartialPlanViewSet) resourceProfileView.getViewSet()).
+              setActiveResource( activeResource);
             System.err.println( "ResourceProfile setActiveResource: " +
                                 activeResource.getName() +
                                 " (key=" + activeResource.getId().toString() + ")");

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.27 2004-02-05 23:26:08 miatauro Exp $
+// $Id: TokenNetworkView.java,v 1.28 2004-02-10 02:35:57 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -44,6 +44,7 @@ import gov.nasa.arc.planworks.db.PwSlot;
 import gov.nasa.arc.planworks.db.PwTimeline;
 import gov.nasa.arc.planworks.db.PwToken;
 import gov.nasa.arc.planworks.db.PwTokenRelation;
+import gov.nasa.arc.planworks.mdi.MDIInternalFrame;
 import gov.nasa.arc.planworks.util.ColorMap;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
@@ -70,10 +71,12 @@ public class TokenNetworkView extends PartialPlanView {
 
   private long startTimeMSecs;
   private ViewSet viewSet;
+  private MDIInternalFrame viewFrame;
   private TokenNetworkJGoView jGoView;
   private JGoDocument jGoDocument;
   private Map tokenNodeMap; // key = tokenId, element TokenNode
   private Map tokenLinkMap; // key = linkName, element TokenLink
+  private boolean isStepButtonView;
 
   /**
    * <code>TokenNetworkView</code> - constructor - 
@@ -86,6 +89,7 @@ public class TokenNetworkView extends PartialPlanView {
   public TokenNetworkView( ViewableObject partialPlan,  ViewSet viewSet) {
     super( (PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     tokenNetworkViewInit(viewSet);
+    isStepButtonView = false;
     // print content spec
     // viewSet.printSpec();
 
@@ -95,6 +99,7 @@ public class TokenNetworkView extends PartialPlanView {
   public TokenNetworkView(ViewableObject partialPlan, ViewSet viewSet, PartialPlanViewState s) {
     super((PwPartialPlan) partialPlan, (PartialPlanViewSet) viewSet);
     tokenNetworkViewInit(viewSet);
+    isStepButtonView = true;
     setState(s);
     SwingUtilities.invokeLater(runInit);
   }
@@ -142,19 +147,24 @@ public class TokenNetworkView extends PartialPlanView {
     boolean isRedraw = false;
     renderTokenNetwork( isRedraw);
 
+    viewFrame = viewSet.openView( this.getClass().getName());
     Rectangle documentBounds = jGoView.getDocument().computeBounds();
     jGoView.getDocument().setDocumentSize( (int) documentBounds.getWidth() +
                                            (ViewConstants.TIMELINE_VIEW_X_INIT * 2),
                                            (int) documentBounds.getHeight() +
                                            (ViewConstants.TIMELINE_VIEW_Y_INIT * 2));
-    expandViewFrame( viewSet.openView( this.getClass().getName()),
-                     (int) jGoView.getDocumentSize().getWidth(),
-                     (int) jGoView.getDocumentSize().getHeight());
+    if (! isStepButtonView) {
+      expandViewFrame( viewFrame, (int) jGoView.getDocumentSize().getWidth(),
+                       (int) jGoView.getDocumentSize().getHeight());
+    }
     // print out info for created nodes
     // iterateOverJGoDocument(); // slower - many more nodes to go thru
     // iterateOverNodes();
     
-    addStepButtons(jGoView);
+    addStepButtons( jGoView);
+    if (! isStepButtonView) {
+      expandViewFrameForStepButtons( viewFrame);
+    }
     jGoView.setCursor( new Cursor( Cursor.DEFAULT_CURSOR));
   } // end init
 
@@ -177,7 +187,10 @@ public class TokenNetworkView extends PartialPlanView {
     public void run() {
       boolean isRedraw = true;
       renderTokenNetwork( isRedraw);
-      addStepButtons(jGoView);
+      addStepButtons( jGoView);
+      if (! isStepButtonView) {
+        expandViewFrameForStepButtons( viewFrame);
+      }
     } //end run
 
   } // end class RedrawViewThread
@@ -392,7 +405,7 @@ public class TokenNetworkView extends PartialPlanView {
     createActiveTokenItem( activeTokenItem);
     mouseRightPopup.add( activeTokenItem);
 
-    if (areThereNavigatorWindows()) {
+    if (doesViewFrameExist( PlanWorks.NAVIGATOR_VIEW)) {
       mouseRightPopup.addSeparator();
       JMenuItem closeWindowsItem = new JMenuItem( "Close Navigator Views");
       createCloseNavigatorWindowsItem( closeWindowsItem);
