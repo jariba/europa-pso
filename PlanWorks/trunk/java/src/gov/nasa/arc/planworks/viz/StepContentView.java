@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepContentView.java,v 1.7 2003-11-11 02:44:52 taylor Exp $
+// $Id: StepContentView.java,v 1.8 2003-11-13 23:21:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -114,7 +114,7 @@ public class StepContentView extends JGoView {
       PwTransaction transaction = (PwTransaction) transItr.next();
       StepField stepNumField =
         new StepField( transaction.getStepNumber().toString(), new Point( x, y),
-                       JGoText.ALIGN_RIGHT, bgColor, viewableObject);
+                       JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
       jGoDocument.addObjectAtTail( stepNumField);
       stepNumField.setSize( (int) headerJGoView.getStepNumNode().getSize().getWidth(),
                             (int) stepNumField.getSize().getHeight());

@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: SlotNode.java,v 1.2 2003-10-08 19:10:29 taylor Exp $
+// $Id: SlotNode.java,v 1.3 2003-11-13 23:21:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -17,6 +17,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -303,8 +304,24 @@ public class SlotNode extends TextNode {
    * @return - <code>String</code> - 
    */
   public String getToolTipText() {
-    if (slot.getTokenList().size() > 0) {
-      return ((PwToken) slot.getTokenList().get( 0)).toString();
+    int numTokens = slot.getTokenList().size();
+    if (numTokens > 0) {
+      StringBuffer tip = new StringBuffer( "<html> ");
+      tip.append( ((PwToken) slot.getTokenList().get( 0)).toString());
+      tip.append( "<br>token key");
+      if (numTokens > 1) {
+        tip.append( "s");
+      }
+      tip.append( "=");
+      Iterator tokenItr = slot.getTokenList().iterator();
+      while (tokenItr.hasNext()) {
+        tip.append( ((PwToken) tokenItr.next()).getId().toString());
+        if (tokenItr.hasNext()) {
+          tip.append( ", ");
+        }
+      }
+      tip.append( " </html>");
+      return tip.toString();
     } else {
       return "";
     }

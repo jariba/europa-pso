@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionHeaderView.java,v 1.10 2003-11-11 02:44:52 taylor Exp $
+// $Id: TransactionHeaderView.java,v 1.11 2003-11-13 23:21:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -120,10 +120,12 @@ public class TransactionHeaderView extends JGoView {
     jGoDocument.addObjectAtTail( objectKeyNode);
     x += objectKeyNode.getSize().getWidth();
 
-    stepNumNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_STEP_NUM_HEADER, vizView);
-    configureTextNode( stepNumNode, new Point( x, y), bgColor);
-    jGoDocument.addObjectAtTail( stepNumNode);
-    x += stepNumNode.getSize().getWidth();
+    if (vizView instanceof TransactionQueryView) {
+      stepNumNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_STEP_NUM_HEADER, vizView);
+      configureTextNode( stepNumNode, new Point( x, y), bgColor);
+      jGoDocument.addObjectAtTail( stepNumNode);
+      x += stepNumNode.getSize().getWidth();
+    }
 
     objectNameNode = new TransactionHeaderNode( ViewConstants.TRANSACTION_OBJ_NAME_HEADER,
                                                 vizView);

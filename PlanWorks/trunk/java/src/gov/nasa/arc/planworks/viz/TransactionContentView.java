@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: TransactionContentView.java,v 1.9 2003-10-28 23:23:24 taylor Exp $
+// $Id: TransactionContentView.java,v 1.10 2003-11-13 23:21:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -37,6 +37,7 @@ import gov.nasa.arc.planworks.db.PwVariable;
 import gov.nasa.arc.planworks.util.UniqueSet;
 import gov.nasa.arc.planworks.viz.nodes.NodeGenerics;
 import gov.nasa.arc.planworks.viz.nodes.TransactionField;
+import gov.nasa.arc.planworks.viz.sequence.sequenceQuery.TransactionQueryView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
@@ -148,13 +149,15 @@ public class TransactionContentView extends JGoView {
                              (int) objectKeyField.getSize().getHeight());
       x += headerJGoView.getObjectKeyNode().getSize().getWidth();
 
-      TransactionField stepNumField =
-        new TransactionField( transaction.getStepNumber().toString(), new Point( x, y),
-                              JGoText.ALIGN_RIGHT, bgColor, viewableObject);
-      jGoDocument.addObjectAtTail( stepNumField);
-      stepNumField.setSize( (int) headerJGoView.getStepNumNode().getSize().getWidth(),
-                            (int) stepNumField.getSize().getHeight());
-      x += headerJGoView.getStepNumNode().getSize().getWidth();
+      if (vizView instanceof TransactionQueryView) {
+        TransactionField stepNumField =
+          new TransactionField( transaction.getStepNumber().toString(), new Point( x, y),
+                                JGoText.ALIGN_RIGHT, bgColor, viewableObject, vizView);
+        jGoDocument.addObjectAtTail( stepNumField);
+        stepNumField.setSize( (int) headerJGoView.getStepNumNode().getSize().getWidth(),
+                              (int) stepNumField.getSize().getHeight());
+        x += headerJGoView.getStepNumNode().getSize().getWidth();
+      }
 
       // String objectName = getObjectName( transaction.getObjectId());
       if (transaction.getInfo()[0] == null) {

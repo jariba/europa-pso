@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepField.java,v 1.1 2003-10-18 01:27:54 taylor Exp $
+// $Id: StepField.java,v 1.2 2003-11-13 23:21:16 taylor Exp $
 //
 // PlanWorks
 //
@@ -25,13 +25,15 @@ import com.nwoods.jgo.JGoView;
 import com.nwoods.jgo.examples.TextNode;
 
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.util.MouseEventOSX;
 import gov.nasa.arc.planworks.viz.ViewConstants;
+import gov.nasa.arc.planworks.viz.VizView;
 import gov.nasa.arc.planworks.viz.viewMgr.ViewableObject;
 
 
 /**
- * <code>StepField</code> - JGo widget to render an field of a step entry
+ * <code>StepField</code> - JGo widget to render an field of a SequenceQuery Steps entry
 
  * @author <a href="mailto:william.m.taylor@nasa.gov">Will Taylor</a>
  *       NASA Ames Research Center - Code IC
@@ -48,6 +50,8 @@ public class StepField extends TextNode {
 
   private String fieldName;
   private ViewableObject viewableObject; // PwPartialPlan or PwPlanningSequence
+  private VizView vizView;
+  private boolean fieldIsStepNumber;
 
   /**
    * <code>StepField</code> - constructor 
@@ -63,6 +67,30 @@ public class StepField extends TextNode {
     super( fieldName);
     this.fieldName = fieldName;
     this.viewableObject = viewableObject;
+    fieldIsStepNumber = false;
+    this.vizView = null;
+
+    configure( location, alignment, bgColor);
+  } // end constructor
+
+
+  /**
+   * <code>StepField</code> - constructor 
+   *
+   * @param fieldName - <code>String</code> - 
+   * @param location - <code>Point</code> - 
+   * @param alignment - <code>int</code> - 
+   * @param bgColor - <code>Color</code> - 
+   * @param viewableObject - <code>ViewableObject</code> - 
+   * @param vizView - <code>VizView</code> - 
+   */
+  public StepField( String fieldName, Point location, int alignment, Color bgColor,
+                           ViewableObject viewableObject, VizView vizView) {
+    super( fieldName);
+    this.fieldName = fieldName;
+    this.viewableObject = viewableObject;
+    fieldIsStepNumber = true;
+    this.vizView = vizView;
 
     configure( location, alignment, bgColor);
   } // end constructor
@@ -112,21 +140,16 @@ public class StepField extends TextNode {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      // mouseRightPopupMenu( viewCoords);
-      // return true;
+      if (fieldIsStepNumber && (viewableObject instanceof PwPlanningSequence)) {
+        NodeGenerics.partialPlanViewsPopupMenu( Integer.parseInt( fieldName),
+                                                (PwPlanningSequence) viewableObject,
+                                                vizView, viewCoords);
+        return true;
+      }
     }
     return false;
   } // end doMouseClick   
 
-
-  private void mouseRightPopupMenu( Point viewCoords) {
-//     PartialPlanViewMenu mouseRightPopup = new PartialPlanViewMenu();
-//     JMenuItem header = new JMenuItem( "step" + stepNumber);
-//     mouseRightPopup.add( header);
-//     mouseRightPopup.addSeparator();
-
-//     NodeGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
-  } // end mouseRightPopupMenu
 
 
 } // end class StepField

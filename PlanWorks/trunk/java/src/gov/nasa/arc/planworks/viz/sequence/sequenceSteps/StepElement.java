@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: StepElement.java,v 1.7 2003-11-07 00:05:00 taylor Exp $
+// $Id: StepElement.java,v 1.8 2003-11-13 23:21:17 taylor Exp $
 //
 // PlanWorks
 //
@@ -70,7 +70,6 @@ public class StepElement extends HistogramElement {
 
   private String partialPlanName;
   private PwPlanningSequence planSequence;
-  private PwPartialPlan partialPlanIfLoaded;
   private List transactionList;
   private SequenceView sequenceView;
   private String dbType;
@@ -155,37 +154,12 @@ public class StepElement extends HistogramElement {
     if (MouseEventOSX.isMouseLeftClick( modifiers, PlanWorks.isMacOSX())) {
 
     } else if (MouseEventOSX.isMouseRightClick( modifiers, PlanWorks.isMacOSX())) {
-      mouseRightPopupMenu( viewCoords);
+      NodeGenerics.partialPlanViewsPopupMenu( stepNumber, planSequence, sequenceView,
+                                              viewCoords);
       return true;
     }
     return false;
   } // end doMouseClick   
-
-
-  private void mouseRightPopupMenu( Point viewCoords) {
-    JPopupMenu mouseRightPopup = new PartialPlanViewMenu();
-    JMenuItem header = new JMenuItem( "step" + stepNumber);
-    mouseRightPopup.add( header);
-    mouseRightPopup.addSeparator();
-
-    ((PartialPlanViewMenu) mouseRightPopup).
-      buildPartialPlanViewMenu( partialPlanName, planSequence);
-
-    try {
-      partialPlanIfLoaded = planSequence.getPartialPlanIfLoaded( partialPlanName);
-    } catch (ResourceNotFoundException rnfExcep) {
-      int index = rnfExcep.getMessage().indexOf( ":");
-      JOptionPane.showMessageDialog
-        (PlanWorks.planWorks, rnfExcep.getMessage().substring( index + 1),
-         "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-      System.err.println( rnfExcep);
-      rnfExcep.printStackTrace();
-    }
-    sequenceView.createAllViewItems( partialPlanIfLoaded, partialPlanName,
-                                     planSequence, mouseRightPopup);
-
-    NodeGenerics.showPopupMenu( mouseRightPopup, sequenceView, viewCoords);
-  } // end mouseRightPopupMenu
 
 
 

@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TimelineView.java,v 1.13 2003-11-11 02:44:53 taylor Exp $
+// $Id: TimelineView.java,v 1.14 2003-11-13 23:21:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -252,7 +252,7 @@ public class TimelineView extends PartialPlanView {
         if (isTimelineInContentSpec( timeline)) {
           String timelineName = timeline.getName();
           String timelineNodeName = objectName + " : " + timelineName +
-            "\nkey=" + timeline.getId().toString();
+            "\ntimeline key=" + timeline.getId().toString();
           Color timelineColor =
             ((PartialPlanViewSet) viewSet).getColorStream().getColor( timelineCnt);
           TimelineNode timelineNode =
@@ -276,13 +276,14 @@ public class TimelineView extends PartialPlanView {
     Iterator freeTokenItr = freeTokenList.iterator();
     boolean isFreeToken = true, isDraggable = false;
     Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+    PwSlot slot = null;
     while (freeTokenItr.hasNext()) {
       PwToken freeToken = (PwToken) freeTokenItr.next();
       if (isTokenInContentSpec( freeToken))  {
         // increment by half the label width, since x is center, not left edge
         x = x +  SwingUtilities.computeStringWidth( this.fontMetrics,
                                                     freeToken.getPredicate().getName()) / 2;
-        TokenNode freeTokenNode = new TokenNode( freeToken, new Point( x, y),
+        TokenNode freeTokenNode = new TokenNode( freeToken, slot, new Point( x, y),
                                                  backgroundColor, isFreeToken,
                                                  isDraggable, this);
         freeTokenNodeList.add( freeTokenNode);
@@ -436,7 +437,7 @@ public class TimelineView extends PartialPlanView {
    */
   public String getSlotNodeLabel( PwToken token, PwSlot slot, boolean isFirstSlot) {
     StringBuffer label = null;
-    String keyValue = "\nkey=" + slot.getId().toString();
+    String keyValue = "\nslot key=" + slot.getId().toString();
     if (token == null) { // empty slot
       label = new StringBuffer( ViewConstants.TIMELINE_VIEW_EMPTY_NODE_LABEL);
     } else {

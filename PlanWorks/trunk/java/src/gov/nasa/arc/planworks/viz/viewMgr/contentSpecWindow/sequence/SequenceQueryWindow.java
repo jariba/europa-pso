@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: SequenceQueryWindow.java,v 1.9 2003-11-11 02:44:53 taylor Exp $
+// $Id: SequenceQueryWindow.java,v 1.10 2003-11-13 23:21:18 taylor Exp $
 //
 package gov.nasa.arc.planworks.viz.viewMgr.contentSpecWindow.sequence;
 
@@ -32,7 +32,9 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
+import gov.nasa.arc.planworks.CreateSequenceViewThread;
 import gov.nasa.arc.planworks.PlanWorks;
+import gov.nasa.arc.planworks.SequenceViewMenuItem;
 import gov.nasa.arc.planworks.db.DbConstants;
 import gov.nasa.arc.planworks.db.PwPlanningSequence;
 import gov.nasa.arc.planworks.db.util.ContentSpec;
@@ -196,11 +198,11 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
     buttonGridBag.setConstraints(queryButton, buttonConstraints);
     buttonPanel.add(queryButton);
 
-    JButton resetButton = new JButton("Reset Query");
-    resetButton.addActionListener(new QueryListener(this));
-    buttonConstraints.gridx++;
-    buttonGridBag.setConstraints(resetButton, buttonConstraints);
-    buttonPanel.add(resetButton);
+//     JButton resetButton = new JButton("Reset Query");
+//     resetButton.addActionListener(new QueryListener(this));
+//     buttonConstraints.gridx++;
+//     buttonGridBag.setConstraints(resetButton, buttonConstraints);
+//     buttonPanel.add(resetButton);
 
     constraints.gridy = GridBagConstraints.RELATIVE;
     constraints.anchor = GridBagConstraints.CENTER;
@@ -301,6 +303,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
                 getStepsWithUnitVariableBindingDecisions();
             }
             if (stepList != null) {
+              ensureSequenceStepsViewExists();
               renderStepQueryFrame( stepsQuery, stepList, startTimeMSecs);
             }
           }
@@ -319,6 +322,7 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
               transactionList =  getTransactionsInRange();
             }
             if (transactionList != null) {
+              ensureSequenceStepsViewExists();
               renderTransactionQueryFrame( transactionsQuery, transactionList, startTimeMSecs);
             }
           }
@@ -339,6 +343,32 @@ public class SequenceQueryWindow extends JPanel implements MouseListener {
         queryWindow.refresh();
       }
     } // end actionPerformed
+
+    private void ensureSequenceStepsViewExists() {
+      // since SequenceStepsView is closable by user, we must recreate it prior to
+      // creating a QueryResults window
+      boolean sequenceStepsViewExists = false;
+      List windowKeyList =
+        new ArrayList( ((SequenceViewSet) viewSet).getViews().keySet());
+      Iterator windowListItr = windowKeyList.iterator();
+      while (windowListItr.hasNext()) {
+        Object windowKey = (Object) windowListItr.next();
+        if ((windowKey instanceof Class) &&
+            ((Class) windowKey).getName().equals
+            ( PlanWorks.planWorks.viewClassNameMap.get( PlanWorks.SEQUENCE_STEPS_VIEW))) {
+          sequenceStepsViewExists = true;
+        }
+      }
+      if (! sequenceStepsViewExists) {
+        String seqName = ((PwPlanningSequence) viewable).getName();
+        String seqUrl = ((PwPlanningSequence) viewable).getUrl();
+        SequenceViewMenuItem seqViewItem =
+          new SequenceViewMenuItem( seqName, seqUrl, seqName);
+        boolean isInvokeAndWait = true;
+        new CreateSequenceViewThread( PlanWorks.SEQUENCE_STEPS_VIEW, seqViewItem,
+                                      isInvokeAndWait).start();
+      }
+    } // end ensureSequenceStepsViewExists
 
     private void renderStepQueryFrame( String stepsQuery, List stepList,
                                        long startTimeMSecs) {

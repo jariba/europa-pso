@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: TokenNetworkView.java,v 1.10 2003-11-11 02:44:53 taylor Exp $
+// $Id: TokenNetworkView.java,v 1.11 2003-11-13 23:21:17 taylor Exp $
 //
 // PlanWorks -- 
 //
@@ -392,10 +392,11 @@ public class TokenNetworkView extends PartialPlanView {
     Iterator freeTokenItr = freeTokenList.iterator();
     boolean isFreeToken = true, isDraggable = false;
     Color backgroundColor = ColorMap.getColor( ViewConstants.FREE_TOKEN_BG_COLOR);
+    PwSlot slot = null;
     while (freeTokenItr.hasNext()) {
       PwToken freeToken = (PwToken) freeTokenItr.next();
       if (isTokenInContentSpec( freeToken)) {
-        TokenNode freeTokenNode = new TokenNode( freeToken, new Point( x, y),
+        TokenNode freeTokenNode = new TokenNode( freeToken, slot, new Point( x, y),
                                                  backgroundColor, isFreeToken,
                                                  isDraggable, this);
         if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
@@ -424,7 +425,7 @@ public class TokenNetworkView extends PartialPlanView {
         PwToken token = (PwToken) tokenIterator.next();
         if (isTokenInContentSpec( token)) {
           TokenNode tokenNode =
-            new TokenNode( token, new Point( x, y), backgroundColor, isFreeToken,
+            new TokenNode( token, slot, new Point( x, y), backgroundColor, isFreeToken,
                            isDraggable, this);
           if (x == ViewConstants.TIMELINE_VIEW_X_INIT) {
             x += tokenNode.getSize().getWidth() * 0.5;
