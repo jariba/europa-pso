@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: PartialPlanWriter.cc,v 1.18 2003-12-10 20:47:38 miatauro Exp $
+// $Id: PartialPlanWriter.cc,v 1.19 2003-12-10 21:54:05 miatauro Exp $
 //
 #include <cstring>
 #include <errno.h>
@@ -294,8 +294,10 @@ void PartialPlanWriter::write(void) {
     globalVarIterator.step();
     }*/
   //List<TokenId> allTokens = tnet->getAllTokens();
-  //List<TokenId> freeTokenList = tnet->getFreeValueTokens();
-  List<TokenId> freeTokenList = tnet->getFreeValueTokensWithoutCompatUpdate();
+
+  //Nobody's EUROPA has the getFreeValueTokensWithoutCompatUpdate method. ~MJI
+  List<TokenId> freeTokenList = tnet->getFreeValueTokens();
+  //List<TokenId> freeTokenList = tnet->getFreeValueTokensWithoutCompatUpdate();
   //numTokens = allTokens.getSize();
 
   ListIterator<TokenId> freeTokenIterator = ListIterator<TokenId>(freeTokenList);
