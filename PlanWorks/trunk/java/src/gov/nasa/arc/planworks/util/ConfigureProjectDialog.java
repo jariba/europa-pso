@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: ConfigureProjectDialog.java,v 1.5 2004-09-24 22:39:58 taylor Exp $
+// $Id: ConfigureProjectDialog.java,v 1.6 2004-09-27 19:19:03 taylor Exp $
 //
 package gov.nasa.arc.planworks.util;
 
@@ -39,6 +39,7 @@ import gov.nasa.arc.planworks.PlanWorks;
  */
 public class ConfigureProjectDialog extends JDialog {
 
+  private static final int DELIMS_FIELD_WIDTH = 2;
   private static final int NAME_FIELD_WIDTH = 15;
   private static final int PATH_FIELD_WIDTH = 30;
 
@@ -53,10 +54,12 @@ public class ConfigureProjectDialog extends JDialog {
   private JTextField modelNameField;
   private String modelPath;
   private JTextField modelPathField;
-  private String modelOutputDestDir;
-  private JTextField modelOutputDestDirField;
   private String modelInitStatePath;
   private JTextField modelInitStatePathField;
+  private String modelOutputDestDir;
+  private JTextField modelOutputDestDirField;
+  private String modelRuleDelimiters;
+  private JTextField modelRuleDelimitersField;
 
   private String btnString1;
   private String btnString2;
@@ -96,6 +99,8 @@ public class ConfigureProjectDialog extends JDialog {
     modelInitStatePathField = new JTextField( PATH_FIELD_WIDTH);
     final JButton modelInitStatePathBrowseButton = new JButton( browseTitle);
     modelInitStatePathBrowseButton.addActionListener( new ModelInitStatePathButtonListener());
+    final JLabel modelRuleDelimitersLabel= new JLabel( "model rule delimiters");
+    modelRuleDelimitersField = new JTextField( DELIMS_FIELD_WIDTH);
     // current values
     try {
       String currentProjectName = planWorks.getCurrentProjectName();
@@ -119,6 +124,8 @@ public class ConfigureProjectDialog extends JDialog {
       modelInitStatePath = new File( ConfigureAndPlugins.getProjectConfigValue
                                      ( ConfigureAndPlugins.PROJECT_MODEL_INIT_STATE_PATH,
                                        currentProjectName)).getCanonicalPath();
+      modelRuleDelimiters = ConfigureAndPlugins.getProjectConfigValue
+        ( ConfigureAndPlugins.PROJECT_MODEL_RULE_DELIMITERS, currentProjectName);
     } catch (IOException ioExcep) {
     }
     workingDirField.setText( workingDir);
@@ -127,6 +134,7 @@ public class ConfigureProjectDialog extends JDialog {
     modelPathField.setText( modelPath);
     modelOutputDestDirField.setText( modelOutputDestDir);
     modelInitStatePathField.setText( modelInitStatePath);
+    modelRuleDelimitersField.setText( modelRuleDelimiters);
     btnString1 = "Enter";
     btnString2 = "Cancel";
     Object[] options = {btnString1, btnString2};
@@ -209,6 +217,14 @@ public class ConfigureProjectDialog extends JDialog {
     c.gridx++;
     gridBag.setConstraints( modelOutputDestDirBrowseButton, c);
     dialogPanel.add( modelOutputDestDirBrowseButton);
+
+    c.gridx = 0;  
+    c.gridy++;
+    gridBag.setConstraints( modelRuleDelimitersLabel, c);
+    dialogPanel.add( modelRuleDelimitersLabel);
+    c.gridy++;
+    gridBag.setConstraints( modelRuleDelimitersField, c);
+    dialogPanel.add( modelRuleDelimitersField);
 
     optionPane = new JOptionPane
       ( dialogPanel, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION,
@@ -340,7 +356,7 @@ public class ConfigureProjectDialog extends JDialog {
               projectName = null; workingDir = null;
               plannerPath = null; modelName = null;
               modelPath = null; modelOutputDestDir = null;
-              modelInitStatePath = null;
+              modelInitStatePath = null; modelRuleDelimiters = null;
               setVisible( false);
             }
           }
@@ -401,6 +417,18 @@ public class ConfigureProjectDialog extends JDialog {
         haveSeenError = true;
       } else {
         modelOutputDestDir = modelOutputDestDirTemp;
+      }
+    }
+
+    String modelRuleDelimitersTemp = modelRuleDelimitersField.getText().trim();
+    if (! modelRuleDelimiters.equals( modelRuleDelimitersTemp)) {
+      if (modelRuleDelimitersTemp.length() != 2) {
+        JOptionPane.showMessageDialog
+          ( PlanWorks.getPlanWorks(), "Not exactly two characters",
+            "Invalid Delimiters", JOptionPane.ERROR_MESSAGE);
+        haveSeenError = true;
+      } else {
+        modelRuleDelimiters = modelRuleDelimitersTemp;
       }
     }
 
@@ -474,6 +502,10 @@ public class ConfigureProjectDialog extends JDialog {
    */
   public String getModelInitStatePath() {
     return modelInitStatePath;
+  }
+
+  public String getModelRuleDelimiters() {
+    return modelRuleDelimiters;
   }
 
 } // end class ConfigureProjectDialog

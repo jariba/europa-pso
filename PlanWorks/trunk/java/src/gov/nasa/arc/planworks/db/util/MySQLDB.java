@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES.
 //
 
-// $Id: MySQLDB.java,v 1.119 2004-08-26 23:00:08 miatauro Exp $
+// $Id: MySQLDB.java,v 1.120 2004-09-27 19:19:01 taylor Exp $
 //
 package gov.nasa.arc.planworks.db.util;
 
@@ -1132,7 +1132,8 @@ public class MySQLDB {
     }
   }
 
-  synchronized public static Map queryRules(final Long sequenceId) {
+  synchronized public static Map queryRules(final Long sequenceId,
+                                            final String modelRuleDelimiters) {
     Map retval = new HashMap();
     try {
       ResultSet ruleTextInDb = queryDatabase("SELECT RulesText FROM Sequence WHERE SequenceId=".concat(sequenceId.toString()));
@@ -1154,8 +1155,10 @@ public class MySQLDB {
         rulesText.put(fileName, text[i]);
       }
 
-      char startDelim = System.getProperty("model.rule.delimiter").charAt(0);
-      char endDelim = System.getProperty("model.rule.delimiter").charAt(1);
+      // char startDelim = System.getProperty("model.rule.delimiter").charAt(0);
+      // char endDelim = System.getProperty("model.rule.delimiter").charAt(1);
+      char startDelim = modelRuleDelimiters.charAt(0);
+      char endDelim = modelRuleDelimiters.charAt(1);
 
       ResultSet rules = queryDatabase("SELECT SequenceId, RuleId, RuleSource FROM Rules WHERE SequenceId=".concat(sequenceId.toString()).concat(" ORDER BY RuleSource"));
       while(rules.next()) {

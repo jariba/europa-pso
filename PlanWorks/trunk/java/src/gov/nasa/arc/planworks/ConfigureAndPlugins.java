@@ -3,7 +3,7 @@
 // * information on usage and redistribution of this file, 
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
-// $Id: ConfigureAndPlugins.java,v 1.7 2004-09-14 22:59:37 taylor Exp $
+// $Id: ConfigureAndPlugins.java,v 1.8 2004-09-27 19:18:56 taylor Exp $
 //
 // PlanWorks
 //
@@ -51,8 +51,9 @@ public class ConfigureAndPlugins {
   public static final String PROJECT_PLANNER_PATH = "projectPlannerPath";
   public static final String PROJECT_MODEL_NAME = "projectModelName";
   public static final String PROJECT_MODEL_PATH = "projectModelPath";
-  public static final String PROJECT_MODEL_OUTPUT_DEST_DIR = "projectModelOutputDestDir";
   public static final String PROJECT_MODEL_INIT_STATE_PATH = "projectModelInitStatePath";
+  public static final String PROJECT_MODEL_OUTPUT_DEST_DIR = "projectModelOutputDestDir";
+  public static final String PROJECT_MODEL_RULE_DELIMITERS = "projectModelRuleDelimiters";
   public static final String PLANNER_LIB_NAME_MATCH = "_JNI_adapter.so"; 
   public static List PROJECT_CONFIG_PARAMS;
   public static List PROJECT_PATH_DIR_CONFIG_PARAMS;
@@ -76,11 +77,14 @@ public class ConfigureAndPlugins {
     PROJECT_CONFIG_PARAMS.add( PROJECT_PLANNER_PATH);
     PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_NAME);
     PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_PATH);
-    PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_OUTPUT_DEST_DIR);
     PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_INIT_STATE_PATH);
+    PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_OUTPUT_DEST_DIR);
+    PROJECT_CONFIG_PARAMS.add( PROJECT_MODEL_RULE_DELIMITERS);
 
     PROJECT_PATH_DIR_CONFIG_PARAMS = new ArrayList( PROJECT_CONFIG_PARAMS);
     int indx = PROJECT_PATH_DIR_CONFIG_PARAMS.indexOf( PROJECT_MODEL_NAME);
+    PROJECT_PATH_DIR_CONFIG_PARAMS.remove( indx);
+    indx = PROJECT_PATH_DIR_CONFIG_PARAMS.indexOf( PROJECT_MODEL_RULE_DELIMITERS);
     PROJECT_PATH_DIR_CONFIG_PARAMS.remove( indx);
 
     PLUG_IN_JAR_MAP = new HashMap();
@@ -335,6 +339,12 @@ public class ConfigureAndPlugins {
                           configFile.getCanonicalPath());
     } catch (IOException ioExcep) {
     }
+
+    PlanWorks.PROJECT_CONFIG_MAP = processProjectsConfigFileImpl( configFile);
+  } // end processProjectsConfigFile
+
+  private static Map processProjectsConfigFileImpl( File configFile) {
+    Map configMap = new HashMap();
     try {
       BufferedReader in = new BufferedReader( new FileReader( configFile));
       List liveTokens = null, nameValueList = null;
@@ -363,7 +373,7 @@ public class ConfigureAndPlugins {
           // System.err.println( "fieldValue '" + fieldValue + "'");
           if (fieldName.equals( PROJECT_NAME)) {
             if (nameValueList != null) {
-              PlanWorks.PROJECT_CONFIG_MAP.put( projectName, nameValueList);
+              configMap.put( projectName, nameValueList);
             }
             projectName = fieldValue;
             nameValueList = new ArrayList();
@@ -377,9 +387,9 @@ public class ConfigureAndPlugins {
         }
       }
       in.close();
-      PlanWorks.PROJECT_CONFIG_MAP.put( projectName, nameValueList);
+      configMap.put( projectName, nameValueList);
       if (! isDefaultProjectFound) {
-        System.err.println( "processProjectsConfigFile: default project entry (" +
+        System.err.println( "processProjectsConfigFileImpl: default project entry (" +
                             "projectName=" + DEFAULT_PROJECT_NAME + ") not found");
         System.exit( -1);
       }
@@ -390,7 +400,8 @@ public class ConfigureAndPlugins {
       ioExcep.printStackTrace();
       System.exit( -1);
     }
-  } // end processProjectsConfigFile
+    return configMap;
+  } // end processProjectsConfigFileImpl
 
   /**
    * <code>isProjectInConfigMap</code>
@@ -410,22 +421,42 @@ public class ConfigureAndPlugins {
    * @return - <code>String</code> - 
    */
   public static String getProjectConfigValue( String configName, String projectName) {
-//     System.err.println( "getProjectConfigValue: configName '" + configName +
-//                         "' projectName '" + projectName + "'");
+    //     System.err.println( "getProjectConfigValue: configName '" + configName +
+    //                         "' projectName '" + projectName + "'");
     List nameValueList = (List) PlanWorks.PROJECT_CONFIG_MAP.get( projectName);
+    List defaultNameValueList = null;
     if (nameValueList == null) {
+      // not yet set for this project -- use default
       System.err.println( "getProjectConfigValue: projectName " + projectName +
-                          " has no entry in PROJECT_CONFIG_MAP, using project: " +
+                          " has no entry in PROJECT_CONFIG_MAP, using projectName " +
                           DEFAULT_PROJECT_NAME);
       nameValueList = (List) PlanWorks.PROJECT_CONFIG_MAP.get( DEFAULT_PROJECT_NAME);
     }
     String retval = getProjectConfigValue( configName, nameValueList);
     if (retval == null) {
-      // not yet set for this project -- use default
-      // System.err.println( "getProjectConfigValue: config name " + configName +
-      //                     " not found for projectName " + projectName);
-      nameValueList = (List) PlanWorks.PROJECT_CONFIG_MAP.get( DEFAULT_PROJECT_NAME);
-      return getProjectConfigValue( configName, nameValueList);
+      defaultNameValueList = (List) PlanWorks.PROJECT_CONFIG_MAP.get( DEFAULT_PROJECT_NAME);
+      retval = getProjectConfigValue( configName, defaultNameValueList);
+      if (retval == null) {
+        // not in project default of projects.config  -- check in projects.config.template
+        Map templateConfigMap =
+          processProjectsConfigFileImpl( new File( System.getProperty( "projects.config") +
+                                                   ".template"));
+        nameValueList = (List) templateConfigMap.get( DEFAULT_PROJECT_NAME);
+        retval = getProjectConfigValue( configName, nameValueList);
+        if (retval == null) {
+          System.err.println( "getProjectConfigValue: config name " + configName +
+                              " not found for projectName " + projectName);
+          return null;
+        } else {
+          // put it in project default of projects.config
+          defaultNameValueList.add( configName);
+          defaultNameValueList.add( retval);
+          updateProjectConfigMap( DEFAULT_PROJECT_NAME, defaultNameValueList);
+          return retval;
+        }
+      } else {
+        return retval;
+     }
     } else {
       return retval;
     }
