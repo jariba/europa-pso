@@ -4,7 +4,7 @@
 # * and for a DISCLAIMER OF ALL WARRANTIES. 
 # 
 
-# $Id: README,v 1.97 2004-06-05 00:24:07 taylor Exp $
+# $Id: README,v 1.98 2004-06-05 00:32:29 taylor Exp $
 #
 
 SUMMARY
@@ -107,9 +107,7 @@ o PlanWorks starts up without any default project name or default sequence
 
 BUILDING THE PARTIAL PLAN WRITER
 ================================
-
-Instructions for building the PartialPlanWriter class are in 
-PlanWorks/cpp/integration/europa/README
+The PartialPlanWriter is included in the standard PLASMA build.
 
 
 BUILDING & RUNNING PLANWORKS
