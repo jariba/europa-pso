@@ -4,7 +4,7 @@
 // * and for a DISCLAIMER OF ALL WARRANTIES. 
 // 
 
-// $Id: PlanWorks.java,v 1.65 2003-10-08 19:10:28 taylor Exp $
+// $Id: PlanWorks.java,v 1.66 2003-10-09 22:07:43 taylor Exp $
 //
 package gov.nasa.arc.planworks;
 
@@ -16,8 +16,8 @@ import java.awt.GraphicsDevice;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
@@ -82,8 +82,8 @@ public class PlanWorks extends MDIDesktopFrame {
   protected static final String DELSEQ_MENU_ITEM = "Delete Sequence ...";
   protected static final String CREATE = "create";
   protected static final String OPEN = "open";
-  protected static final String PLANSEQ_MENU = "Planning Sequence";
 
+  public static final String PLANSEQ_MENU = "Planning Sequence";
   public static final Map viewClassNameMap;
   public static final String CONSTRAINT_NETWORK_VIEW = "Constraint Network View";
   public static final String TEMPORAL_EXTENT_VIEW    = "Temporal Extent View";
@@ -177,10 +177,10 @@ public class PlanWorks extends MDIDesktopFrame {
    *
    */
   public static PlanWorks planWorks;
-
   public static List supportedViewNames; // List of String
+  public static JMenu projectMenu;
+  public PwProject currentProject;
 
-  protected static JMenu projectMenu;
   protected final DirectoryChooser sequenceDirChooser;
   protected static String sequenceParentDirectory; // pathname
   protected static File [] sequenceDirectories; // directory name
@@ -203,7 +203,6 @@ public class PlanWorks extends MDIDesktopFrame {
   synchronized public static boolean isWindowBuilt() { return windowBuilt;}
 
   protected String currentProjectName;
-  protected PwProject currentProject;
   protected ViewManager viewManager;
   protected Map sequenceNameMap; // postfixes (1), etc for duplicate seq names
 
@@ -347,10 +346,6 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end setProjectMenuEnabled
 
-  protected String trimView( String viewName) {
-    return viewName.substring( 0, viewName.indexOf( " View"));
-  }
-
   private String getSequenceMenuItemName( String seqName, JMenu seqPartialPlanViewMenu) {
     int nameCount = 0;
     for (int i = 0; i < seqPartialPlanViewMenu.getItemCount(); i++) {
@@ -447,65 +442,41 @@ public class PlanWorks extends MDIDesktopFrame {
     new DeleteSequenceThread().start();
   }
 
-  protected void addSeqPartialPlanViewMenu( PwProject project, JMenu partialPlanMenu) {
+  protected void addPlanSeqViewMenu( PwProject project, JMenu planSeqMenu) {
     // Create Dynamic Cascading Seq/PartialPlan/View Menu
     MDIDynamicMenuBar dynamicMenuBar = (MDIDynamicMenuBar) PlanWorks.this.getJMenuBar();
-    if (partialPlanMenu == null) {
+    if (planSeqMenu == null) {
       dynamicMenuBar.addConstantMenu
-        ( buildSeqPartialPlanViewMenu( project, partialPlanMenu));
+        ( buildPlanSeqViewMenu( project, planSeqMenu));
     } else {
-      buildSeqPartialPlanViewMenu( project, partialPlanMenu);
+      buildPlanSeqViewMenu( project, planSeqMenu);
     }
     dynamicMenuBar.validate();
   } // end addSeqPartialPlanMenu
 
 
-  protected JMenu buildSeqPartialPlanViewMenu( PwProject project,
-                                             JMenu seqPartialPlanViewMenu) {
-    if (seqPartialPlanViewMenu == null) {
-      seqPartialPlanViewMenu = new JMenu( PLANSEQ_MENU);
+  protected JMenu buildPlanSeqViewMenu( PwProject project, JMenu planSeqViewMenu) {
+    if (planSeqViewMenu == null) {
+      planSeqViewMenu = new JMenu( PLANSEQ_MENU);
     }
-    seqPartialPlanViewMenu.removeAll();
+    planSeqViewMenu.removeAll();
     sequenceNameMap = new HashMap();
-    //System.err.println( "buildSeqPartialPlanViewMenu");
+    //System.err.println( "buildPlanSeqViewMenu");
     List planSeqNames = project.listPlanningSequences();
     Collections.sort(planSeqNames, new SeqNameComparator());
     Iterator seqUrlsItr = planSeqNames.iterator();
     while (seqUrlsItr.hasNext()) {
       String seqUrl = (String) seqUrlsItr.next();
       String seqName = getSequenceMenuItemName( Utilities.getUrlLeaf( seqUrl),
-                                                seqPartialPlanViewMenu);
+                                                planSeqViewMenu);
       //System.err.println( "  sequenceName " + seqName);
       sequenceNameMap.put(seqUrl, seqName);
       JMenu seqMenu = new JMenu( seqName);
-      seqPartialPlanViewMenu.add( seqMenu);
+      planSeqViewMenu.add( seqMenu);
       buildSequenceViewSubMenu( seqMenu, seqUrl, seqName);
-      seqMenu.addSeparator();
-      try {
-        Iterator ppNamesItr =
-          project.getPlanningSequence( seqUrl).getPartialPlanNamesList().iterator();
-        while (ppNamesItr.hasNext()) {
-          String partialPlanName = (String) ppNamesItr.next();
-          //System.err.println( "    partialPlanName " + partialPlanName);
-          JMenu partialPlanMenu = new JMenu( partialPlanName);
-          //change seqUrl
-          // System.err.println("PartialPlan name: " + partialPlanName);
-          buildPartialPlanViewSubMenu( partialPlanMenu, seqUrl,
-                                       (String) sequenceNameMap.get(seqUrl),
-                                       partialPlanName);
-          seqMenu.add( partialPlanMenu);
-        }
-      } catch (ResourceNotFoundException rnfExcep) {
-        int index = rnfExcep.getMessage().indexOf( ":");
-        JOptionPane.showMessageDialog
-          (PlanWorks.this, rnfExcep.getMessage().substring( index + 1),
-           "Resource Not Found Exception", JOptionPane.ERROR_MESSAGE);
-        System.err.println( rnfExcep);
-        rnfExcep.printStackTrace();
-      }
     }
-    return seqPartialPlanViewMenu;
-  } // end buildSeqPartialPlanViewMenu
+    return planSeqViewMenu;
+  } // end buildPlanSeqViewMenu
 
 
   private void buildSequenceViewSubMenu( JMenu seqMenu, String seqUrl, String seqName) {
@@ -514,7 +485,7 @@ public class PlanWorks extends MDIDesktopFrame {
       String viewName = (String) viewNamesItr.next();
       if (viewName.equals( SEQUENCE_STEPS_VIEW)) {
         SequenceViewMenuItem planDbSizeItem =
-          new SequenceViewMenuItem( trimView( SEQUENCE_STEPS_VIEW),
+          new SequenceViewMenuItem( Utilities.trimView( SEQUENCE_STEPS_VIEW),
                                     seqUrl, seqName);
         planDbSizeItem.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent evt) {
@@ -527,123 +498,11 @@ public class PlanWorks extends MDIDesktopFrame {
     }
   } // end buildSequenceViewSubMenu
 
-  private void buildPartialPlanViewSubMenu( JMenu partialPlanMenu, String seqUrl,
-                                            String seqName, String partialPlanName) {
-    Iterator viewNamesItr = supportedViewNames.iterator();
-    while (viewNamesItr.hasNext()) {
-      String viewName = (String) viewNamesItr.next();
-      if (viewName.equals( CONSTRAINT_NETWORK_VIEW)) {
-        SeqPartPlanViewMenuItem constraintNetworkViewItem =
-          new SeqPartPlanViewMenuItem( trimView( CONSTRAINT_NETWORK_VIEW),
-                                       seqUrl, seqName, partialPlanName);
-        constraintNetworkViewItem.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e) {
-              PlanWorks.planWorks.createPartialPlanViewThread
-                ( CONSTRAINT_NETWORK_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
-            }});
-        partialPlanMenu.add( constraintNetworkViewItem);
-      } else if (viewName.equals( TEMPORAL_EXTENT_VIEW)) {
-        SeqPartPlanViewMenuItem temporalExtentViewItem =
-          new SeqPartPlanViewMenuItem( trimView( TEMPORAL_EXTENT_VIEW),
-                                       seqUrl, seqName, partialPlanName);
-        temporalExtentViewItem.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e) {
-              PlanWorks.planWorks.createPartialPlanViewThread
-                ( TEMPORAL_EXTENT_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
-            }});
-        partialPlanMenu.add( temporalExtentViewItem);
-      } else if (viewName.equals( TEMPORAL_NETWORK_VIEW)) {
-        SeqPartPlanViewMenuItem temporalNetworkViewItem =
-          new SeqPartPlanViewMenuItem( trimView( TEMPORAL_NETWORK_VIEW),
-                                       seqUrl, seqName, partialPlanName);
-        temporalNetworkViewItem.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e) {
-              PlanWorks.planWorks.createPartialPlanViewThread
-                ( TEMPORAL_NETWORK_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
-            }});
-        partialPlanMenu.add( temporalNetworkViewItem);
-        temporalNetworkViewItem.setEnabled(false);
-      } else if (viewName.equals( TIMELINE_VIEW)) {
-        SeqPartPlanViewMenuItem timelineViewItem =
-          new SeqPartPlanViewMenuItem( trimView( TIMELINE_VIEW),
-                                       seqUrl, seqName, partialPlanName);
-        timelineViewItem.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e) {
-              PlanWorks.planWorks.createPartialPlanViewThread
-                ( TIMELINE_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
-            }});
-        partialPlanMenu.add( timelineViewItem);
-      } else if (viewName.equals( TOKEN_NETWORK_VIEW)) {
-        SeqPartPlanViewMenuItem tokenNetworkViewItem =
-          new SeqPartPlanViewMenuItem( trimView( TOKEN_NETWORK_VIEW),
-                                       seqUrl, seqName, partialPlanName);
-        tokenNetworkViewItem.addActionListener( new ActionListener() {
-            public void actionPerformed( ActionEvent e) {
-              PlanWorks.planWorks.createPartialPlanViewThread
-                ( TOKEN_NETWORK_VIEW, (SeqPartPlanViewMenuItem) e.getSource());
-            }});
-        partialPlanMenu.add( tokenNetworkViewItem);
-      }
-    }
-  } // end buildPartialPlanViewSubMenu
-
-
   private void createSequenceViewThread( String viewName, SequenceViewMenuItem menuItem) {
     new CreateSequenceViewThread( viewName, menuItem).start();
   } // end createSequenceViewThread
 
-
-  private void createPartialPlanViewThread( String viewName,
-                                            SeqPartPlanViewMenuItem menuItem) {
-    new CreatePartialPlanViewThread(viewName, menuItem).start();
-  } // end createPartialPlanViewThread
-
-  /**
-   * <code>SequenceViewMenuItem</code> - class is public for JFCUnit Test classes
-   *
-   */
-  public class SequenceViewMenuItem extends JMenuItem {
-
-    private String seqUrl;
-    private String sequenceName;
-
-    public SequenceViewMenuItem( String viewName, String seqUrl, String seqName) {
-      super( viewName);
-      this.seqUrl = seqUrl;
-      this.sequenceName = seqName;
-    }
-
-    public String getSeqUrl() {
-      return seqUrl;
-    }
-
-    public String getSequenceName() {
-      return sequenceName;
-    }
-
-  } // end class SequenceViewMenuItem
-
-  /**
-   * <code>SeqPartPlanViewMenuItem</code> - class is public for JFCUnit Test classes
-   *
-   */
-  public class SeqPartPlanViewMenuItem extends SequenceViewMenuItem {
-
-    private String partialPlanName;
-
-    public SeqPartPlanViewMenuItem( String viewName, String seqUrl, String seqName,
-                                    String partialPlanName) {
-      super( viewName, seqUrl, seqName);
-      this.partialPlanName = partialPlanName;
-    }
-
-    public String getPartialPlanName() {
-      return partialPlanName;
-    }
-
-  } // end class SeqPartPlanViewMenuItem
-
-  private final void createDirectoryChooser() {
+  private final void createDirectoryChooser() { 
     sequenceDirChooser.setCurrentDirectory
       ( new File( System.getProperty( "default.sequence.dir")));
     sequenceDirChooser.setDialogTitle
